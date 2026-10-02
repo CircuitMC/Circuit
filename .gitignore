@@ -1,0 +1,6 @@
+# Public planning repository. Core implementation has its own LOCAL Git history.
+# An allowlist prevents accidental publication of source, worlds or credentials.
+/*
+!/.gitignore
+!/README.md
+!/TODO.md
