@@ -1,7 +1,34 @@
-# Only the public overview and roadmap are published from this repository.
-# Implementation, internal documentation, dependencies and runtime data remain local.
-# Ignore rules do not protect files that are already tracked; audit each public commit.
-/*
-!/.gitignore
-!/README.md
-!/TODO.md
+# Internal execution/design documents remain local. Public docs and source are tracked.
+/AGENTS.md
+/docs/EXECUTION_PLAN.md
+/docs/ARCHITECTURE.md
+/docs/VERIFICATION.md
+/docs/internal/
+/legal/COMMERCIAL-LICENSE-DRAFT.md
+
+# Local archives, tooling state, runtime data and secrets are never source inputs.
+/.local/
+/.agents/
+/.codex/
+/.aws/
+/.xmake/
+/.xmake-global/
+/build/
+/compile_commands.json
+/worlds/
+/logs/
+/run/
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+__pycache__/
+*.pyc
+*.o
+*.a
+*.so
+*.dll
+*.dylib
+*.class
+*.jar

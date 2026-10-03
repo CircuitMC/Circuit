@@ -2,17 +2,25 @@
 
 Circuit targets Minecraft Java Edition with C++23, xmake, and standalone Asio. Java Edition 1.21.8 is the initial implementation target. A second complete version bundle will validate the version-selection architecture.
 
-## Milestones
+## Part I — Simulation and technical gameplay
 
-- [x] **M0 — Framework:** establish the build, task executor, synthetic simulation fixtures, native plugin example, and module interfaces.
+The first major deliverable is a headless simulation core with independently checked behavior. This work takes priority over networking, persistence, and extensions. Technical-gameplay cases inform the contracts and reference model throughout development.
+
 - [ ] **M1 — Simulation contracts:** define stable identities, owner generations, logical time, version bundles, and normalized commands.
 - [ ] **M2 — Reference world:** implement an independent sequential model and replayable scenarios for a minimal world.
 - [ ] **M3 — Parallel simulation:** implement chunk ownership, event propagation, coordinated operations, and differential validation against the reference model.
-- [ ] **M4 — Playable vertical slice:** support the initial version's connection flow, identity providers, authoritative actions, and minimal world interaction.
-- [ ] **M5 — Persistence:** add consistent checkpoints, crash recovery, and vanilla import/export within a documented compatibility range.
-- [ ] **M6 — Extension ecosystem:** complete native plugin/mod capabilities, the Circuit Java bridge, and initial technical tools.
 - [ ] **M7 — Technical gameplay:** validate redstone, pistons, containers, fluids, and entity interactions across chunk boundaries.
+
+Completion requires stable state and event traces under different scheduling choices, version-specific behavioral evidence, and explicit coverage limits. A client connection is not a prerequisite for the headless core.
+
+## Part II — Integration and additional capabilities
+
+- [ ] **M4 — Playable vertical slice:** add the initial version's connection flow, identity providers, authoritative actions, and world interaction.
+- [ ] **M5 — Persistence:** add consistent checkpoints, crash recovery, and vanilla import/export within a documented compatibility range.
+- [ ] **M6 — Extension ecosystem:** complete native plugin/mod capabilities, the Circuit Java bridge, and technical tools exposed through extension APIs.
 - [ ] **M8 — Optimization and version expansion:** measure storage and scheduling improvements, complete a second version bundle, and prepare a release compatibility matrix.
+
+**Foundation:** M0 provides the build, executor, synthetic fixtures, native plugin example, and module interfaces. This baseline does not complete any Part I milestone.
 
 ## Simulation and compatibility
 
