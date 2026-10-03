@@ -1,5 +1,6 @@
-# Public planning repository. Core implementation has its own LOCAL Git history.
-# An allowlist prevents accidental publication of source, worlds or credentials.
+# Only the public overview and roadmap are published from this repository.
+# Implementation, internal documentation, dependencies and runtime data remain local.
+# Ignore rules do not protect files that are already tracked; audit each public commit.
 /*
 !/.gitignore
 !/README.md

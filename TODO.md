@@ -1,52 +1,51 @@
-# Circuit 高层路线图
+# Circuit Roadmap
 
-目标：使用 **C++23、xmake、standalone Asio** 实现区块级多线程 Minecraft Java Edition 服务端；启动时选择一个版本包。首个实现目标为 Java 1.21.8，随后以第二个版本验证架构。
+Circuit targets Minecraft Java Edition with C++23, xmake, and standalone Asio. Java Edition 1.21.8 is the initial implementation target. A second complete version bundle will validate the version-selection architecture.
 
-当前是 **M0 本地框架原型**，还不能让 Minecraft 客户端登录或游玩。本仓库仅公开高层任务；核心实现、细化设计、许可草案及实现工作树保存在被忽略的本地 `.local/` 内。公开 clone 不包含可构建的服务器代码。
+## Milestones
 
-## 里程碑
+- [x] **M0 — Framework:** establish the build, task executor, synthetic simulation fixtures, native plugin example, and module interfaces.
+- [ ] **M1 — Simulation contracts:** define stable identities, owner generations, logical time, version bundles, and normalized commands.
+- [ ] **M2 — Reference world:** implement an independent sequential model and replayable scenarios for a minimal world.
+- [ ] **M3 — Parallel simulation:** implement chunk ownership, event propagation, coordinated operations, and differential validation against the reference model.
+- [ ] **M4 — Playable vertical slice:** support the initial version's connection flow, identity providers, authoritative actions, and minimal world interaction.
+- [ ] **M5 — Persistence:** add consistent checkpoints, crash recovery, and vanilla import/export within a documented compatibility range.
+- [ ] **M6 — Extension ecosystem:** complete native plugin/mod capabilities, the Circuit Java bridge, and initial technical tools.
+- [ ] **M7 — Technical gameplay:** validate redstone, pistons, containers, fluids, and entity interactions across chunk boundaries.
+- [ ] **M8 — Optimization and version expansion:** measure storage and scheduling improvements, complete a second version bundle, and prepare a release compatibility matrix.
 
-- [x] M0a：本地 C++23/xmake/Asio 工程、并发演示、原生共享库插件示例、模块接口及基础验证。
-- [x] M0b：独立本地实现仓库，划分九个 worktree 执行方向。
-- [ ] M1：最小世界、独立单线程参考执行器、区块所有权与跨线程一致性验证。
-- [ ] M2：首个版本的连接、独立身份验证模块、权威操作校验及最小可玩闭环。
-- [ ] M3：可靠世界持久化、崩溃恢复、受支持范围内的原版存档导入导出。
-- [ ] M4：原生插件/模组生命周期与 SDK、Circuit Java 插件桥接、首批生电工具。
-- [ ] M5：跨区块红石、活塞、容器、实体及其他核心玩法的版本语义验证。
-- [ ] M6：压缩存档、可验证基线与稀疏修改记录、性能与空间收益测量。
-- [ ] M7：第二个完整版本包、运行时选择、兼容性矩阵、发布与许可流程。
+## Simulation and compatibility
 
-## 并行 worktree 计划
+- [ ] Separate time advancement, immediate causal events, and future scheduled events.
+- [ ] Preserve event order and intermediate states required by each version's rules.
+- [ ] Coordinate multi-owner operations without duplicate updates or partial publication.
+- [ ] Compare state and event traces across worker counts and scheduling orders.
+- [ ] Select one authoritative version bundle per server instance; reject unsupported configurations.
+- [ ] Document protocol, content, behavior, and extension compatibility separately.
 
-这些是独立**本地实现仓库**内的分支，不是此公开规划仓库的源码分支。每个方向有自己的工作树；共享接口先评审再集成。
+## Plugins and technical tools
 
-| 分支 | 主要目标 | 集成依赖 |
-| --- | --- | --- |
-| `codex/contracts` | 共享契约、构建目标、版本与 SDK 边界 | M0 基线 |
-| `codex/scheduler` | 区块任务、阶段推进、跨所有者协调、回放 | contracts、参考规则 |
-| `codex/protocol` | 版本协议、会话、资源限额、独立认证 | contracts、玩法及校验入口 |
-| `codex/gameplay` | 单线程参考实现、版本化世界与玩法 | contracts |
-| `codex/storage` | 原生格式、可靠恢复、原版互通与压缩 | contracts、一致世界快照 |
-| `codex/native-plugins` | C++ 继承 SDK、共享库插件和启动期模组 | contracts、受控世界 API |
-| `codex/java-bridge` | 自有 Java SDK、JVM 桥接与生命周期 | 消息契约、插件入口 |
-| `codex/validation` | 权威规则、数值边界、差分测试与模糊测试 | contracts、gameplay、scheduler |
-| `codex/tooling` | 生电诊断、冻结/步进、统计、基准与构建标识 | SDK、调度观测、玩法查询 |
+- [ ] Provide an inheritance-based C++ SDK with shared-library loading, ABI checks, and explicit lifetimes.
+- [ ] Support startup-time mod registration of content and rules.
+- [ ] Run Circuit Java API plugins through a bounded, versioned bridge.
+- [ ] Evaluate Bukkit/Spigot/Paper compatibility as a separate project with its own compatibility matrix.
+- [ ] Add tick and chunk profiling, freeze/step controls, entity inspection, redstone traces, item-flow counters, and spawning statistics.
 
-九个方向可先并行完成各自规格、纯数据组件与测试夹具；集成按 contracts → 参考世界/调度/差分 → 接入/存储 → 插件工具 → 完整玩法与优化推进。根构建、启动接线和共享契约由指定维护者统一合并，避免多分支互相覆盖。
+## Storage and validation
 
-## 功能目标与验收原则
+- [ ] Persist consistent world checkpoints and verify recovery under interrupted writes.
+- [ ] Import and export supported vanilla saves without overwriting source data or silently discarding unsupported content.
+- [ ] Compare palette encoding and compression options using representative worlds.
+- [ ] Store sparse changes only when the exact baseline can be verified or retained.
+- [ ] Validate movement, reach, cooldowns, inventory conservation, and resource consumption using authoritative version rules.
+- [ ] Reject malformed, non-finite, overflowing, replayed, and out-of-state inputs.
+- [ ] Keep identity verification separate from protocol and simulation.
 
-- [ ] 区块默认单写者；时间推进、即时因果事件和未来事件分别处理。跨区块交互不能假设固定两轮足够。
-- [ ] 相同输入在不同线程数与任务顺序下，通过独立参考模型和版本场景检查结果及关键事件。
-- [ ] 一个运行实例使用一个确定版本包；协议、内容、行为与存档支持范围分别声明。
-- [ ] 原生插件采用共享库和继承接口，检查工具链/SDK 兼容性；模组扩展注册表与规则。
-- [ ] 支持 Circuit 自有 Java API。Bukkit/Spigot/Paper 兼容另行评估和测试，不默认承诺兼容。
-- [ ] 生电工具优先实现耗时诊断、冻结/步进、区块与实体检查、红石轨迹、物品流量及生成统计。
-- [ ] 原版导入导出保留源文件，明确报告不支持或有损数据。
-- [ ] 存档先保证完整快照和恢复，再优化压缩及少量修改区块；生成器不匹配不能静默再生。
-- [ ] 服务器权威校验操作数值和状态；覆盖移动、距离、冷却、库存守恒与异常输入，不承诺消除所有作弊。
-- [ ] 身份验证模块独立；关闭正版验证不代表自动免除适用的 Mojang/Microsoft 条款。
-- [ ] 标准 AGPLv3 加可选商业双重许可；遵守 AGPLv3 的商业使用允许。发布前核实贡献授权与第三方许可。
-- [ ] 使用公开、可审计的核心标识和签名构建信息；不加入隐藏后门、秘密遥测或权限绕过。
+## Release readiness
 
-完成状态以实际构建、场景测试和兼容性记录为准；M0 的合成测试、候选版本列表和 Java 接口不等于完整服务器实现。
+- [ ] Publish reproducible correctness and performance results, including known limitations.
+- [ ] Provide documented build identity and verifiable release provenance.
+- [ ] Review contributor rights and third-party notices for AGPLv3 and alternative commercial licensing.
+- [ ] Define supported platforms, migration paths, operational limits, and recovery procedures.
+
+Milestone completion requires the relevant behavioral and integration tests. Framework fixtures and declared version candidates do not constitute playable version support.
