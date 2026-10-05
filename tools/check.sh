@@ -17,6 +17,7 @@ xmake run contract_tests
 xmake run rules_tests
 xmake run simulation_tests
 xmake run control_tests
+xmake run evidence_tests
 if command -v javac >/dev/null; then
     mkdir -p build/java-spi
     mapfile -t sources < <(find modules/java-bridge -name '*.java' | sort)

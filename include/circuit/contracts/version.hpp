@@ -18,10 +18,11 @@ enum class CompatibilityTier : std::uint8_t {
     l2_declared_deviation,  // intentionally differs, with the difference documented
 };
 enum class EvidenceSource : std::uint8_t {
-    none,
-    documented_behavior,    // public descriptions; not checked against the target version
-    harness_trace,          // checked against traces from an instrumented target-version server
-    controlled_experiment,
+    none = 0,
+    documented_behavior = 1,   // public descriptions; not checked against the target version
+    harness_trace = 2,         // checked against traces from an instrumented target-version server
+    controlled_experiment = 3,
+    circuit_reference = 4,     // recorded from Circuit's own reference rules; never compatibility evidence
 };
 
 // One row of the compatibility table. `target` is the intended tier; `claimed`

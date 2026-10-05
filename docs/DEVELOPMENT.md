@@ -12,12 +12,14 @@ Circuit/
   src/contracts/            Version bundles, compatibility table, trace and replay records
   src/gameplay/             Reference rules (circuit-reference-rules-v0)
   src/runtime/              Region-parallel engine, job runners, executor, synthetic kernel
+  src/evidence/             circuit-trace fixture format, content mapping, recording and evaluation
   src/plugin/               Native shared-library loader
   examples/technical_tools/ Native timing plugin
   modules/java-bridge/      Java SPI and example sources
   src/exploration/          Standalone reasoning models, not linked into the server
   tests/                    Framework, rule, differential and parallel-reasoning checks
   tests/oracle/             Independent sequential executor; never linked into the server
+  tests/fixtures/           circuit-trace skeletons, reference recordings and documented fixtures
   tools/                    Local build/check and snapshot commands
   docs/                     Public guides and explicitly ignored internal notes
   LICENSE                   Unmodified AGPLv3 text
@@ -71,7 +73,10 @@ xmake run contract_tests    # identities, coordinates, bundles, replay limits
 xmake run rules_tests       # reference rules against hand-derived expectations
 xmake run simulation_tests  # runtime against the oracle across workers, layouts and seeds
 xmake run control_tests     # seeded schedules, tick clock, digest
+xmake run evidence_tests    # trace fixtures, content mapping, committed fixtures
 ```
+
+`evidence_tests` re-records every skeleton in `tests/fixtures/skeletons/` and compares the result with `tests/fixtures/reference/`. When a rule change is intended, re-record with `--record-fixture`, review the diff, and commit both. See [the trace fixture format](TRACE_FORMAT.md).
 
 The xmake modes include `debug`, `release`, `asan`, and `tsan`. On kernels with high mmap randomization, ThreadSanitizer stops before tests run with an unexpected-memory-mapping error. Disable ASLR for the test process only; do not change host settings:
 

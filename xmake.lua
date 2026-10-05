@@ -46,10 +46,17 @@ target("circuit_plugins")
     if is_plat("linux") then add_syslinks("dl", {public = true}) end
 target_end()
 
+-- circuit-trace fixtures: format, content mapping, evaluation and recording.
+target("circuit_evidence")
+    set_kind("static")
+    add_files("src/evidence/*.cpp")
+    add_deps("circuit_runtime")
+target_end()
+
 target("circuit-server")
     set_kind("binary")
     add_files("app/*.cpp")
-    add_deps("circuit_runtime", "circuit_plugins")
+    add_deps("circuit_runtime", "circuit_plugins", "circuit_evidence")
 target_end()
 
 target("technical_tools")
@@ -120,6 +127,16 @@ target("simulation_tests")
     set_default(false)
     add_files("tests/sim/*.cpp")
     add_deps("circuit_oracle", "circuit_runtime")
+target_end()
+
+target("evidence_tests")
+    set_kind("binary")
+    set_default(false)
+    add_files("tests/evidence/*.cpp")
+    add_deps("circuit_evidence", "circuit_oracle")
+    on_run(function (target)
+        os.execv(target:targetfile(), {path.join(os.projectdir(), "tests", "fixtures")})
+    end)
 target_end()
 
 target("control_tests")

@@ -1,0 +1,24 @@
+circuit-trace 1
+# Skeleton: a hopper moves items from a chest above into a chest beside it.
+title Hopper transfer cooldown between two chests
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms hopper block_entity_order
+area -1 0 -1 2 1 1
+ticks 30
+
+at 0 set 0 1 0 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 0 insert 0 1 0 0 minecraft:iron_ingot 3
+at 0 set 0 0 0 minecraft:hopper[enabled=true,facing=east]
+at 0 set 1 0 0 minecraft:chest[facing=north,type=single,waterlogged=false]
+
+slot 0 0 1 0 0 ?
+slot 0 0 0 0 0 ?
+slot 7 0 0 0 0 ?
+slot 8 1 0 0 0 ?
+slot 16 0 1 0 0 ?
+slot 16 1 0 0 0 ?
+slot 24 0 0 0 0 ?
+slot 24 1 0 0 0 ?
+slot 30 1 0 0 0 ?

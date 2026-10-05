@@ -2,6 +2,7 @@
 #include <circuit/plugin/loader.hpp>
 #include <circuit/protocol.hpp>
 #include <circuit/runtime/demo_kernel.hpp>
+#include "fixtures.hpp"
 #include "simulate.hpp"
 #include <asio/io_context.hpp>
 #include <asio/signal_set.hpp>
@@ -34,6 +35,8 @@ void usage() {
     std::cout << "Circuit 0.0.1 — headless simulation prototype (no Minecraft listener)\n"
         "  --simulate [--game-version java-1.21.8] [--workers 1..64] [--ticks 1..1000000]\n"
         "             [--seed N] [--replay <file>] [--record <file>] [--realtime]\n"
+        "  --check-fixture <file> [--check-fixture <file> ...] [--workers 1..64]\n"
+        "  --record-fixture <skeleton> --output <file>\n"
         "  --demo [--game-version java-1.21.8|java-1.20.4]\n"
         "         [--workers 1..64] [--ticks 1..1000000] [--plugin <shared-library>]\n"
         "  --list-versions | --version | --help\n";
@@ -44,6 +47,8 @@ int main(int argc, char** argv) {
         unsigned workers = 4, ticks = 20;
         bool demo = false, simulate = false, ticks_given = false;
         circuit::app::SimulateOptions simulation;
+        std::vector<std::string> fixtures;
+        std::string record_fixture, fixture_output;
         std::string selected = "java-1.21.8";
         std::vector<std::string> libraries;
         for (int i = 1; i < argc; ++i) {
@@ -70,6 +75,9 @@ int main(int argc, char** argv) {
             else if (arg == "--replay") simulation.replay_path = value();
             else if (arg == "--record") simulation.record_path = value();
             else if (arg == "--realtime") simulation.realtime = true;
+            else if (arg == "--check-fixture") fixtures.emplace_back(value());
+            else if (arg == "--record-fixture") record_fixture = value();
+            else if (arg == "--output") fixture_output = value();
             else if (arg == "--game-version") selected = value();
             else if (arg == "--plugin") libraries.emplace_back(value());
             else throw std::invalid_argument("unknown option: " + std::string(arg));
@@ -77,6 +85,11 @@ int main(int argc, char** argv) {
         const auto version = circuit::protocol::builtin_registry::select(selected);
         if (!version) throw std::invalid_argument("unknown game version: " + selected);
         if (simulate && demo) throw std::invalid_argument("--simulate and --demo are exclusive");
+        if (!record_fixture.empty()) {
+            if (fixture_output.empty()) throw std::invalid_argument("--record-fixture requires --output");
+            return circuit::app::record_fixture_file(record_fixture, fixture_output, workers);
+        }
+        if (!fixtures.empty()) return circuit::app::check_fixtures(fixtures, workers);
         if (simulate) {
             simulation.game_version = selected;
             simulation.workers = workers;

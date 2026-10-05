@@ -1,0 +1,26 @@
+circuit-trace 1
+# Skeleton: a sticky piston moves a slime structure across the x=16 chunk edge and back.
+title Sticky piston with slime across a chunk edge
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms piston block_events neighbor_updates
+area 12 0 -2 20 1 2
+ticks 6
+changes ordered
+
+at 0 set 14 0 0 minecraft:slime_block
+at 0 set 14 1 0 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 13 0 0 minecraft:sticky_piston[extended=false,facing=east]
+at 1 set 13 0 -1 minecraft:redstone_block
+at 4 set 13 0 -1 minecraft:air
+
+block 1 14 0 0 ?
+block 1 15 0 0 ?
+block 1 16 0 0 ?
+block 1 15 1 0 ?
+block 4 14 0 0 ?
+block 4 15 0 0 ?
+block 4 16 0 0 ?

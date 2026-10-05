@@ -71,6 +71,7 @@ Every observable action produces a trace record keyed by (tick, phase, root, seq
 - `rules_tests`: hand-derived expectations for every mechanism, including chunk-edge crossings, a chain returning across an edge within one tick, pulse extension, priority order, chain truncation, piston limits, conservation in hopper races, water timing, stream locality, generation checks, command validation and capacity failure.
 - `simulation_tests`: nine scenarios compared with the oracle trace-by-trace every tick and state-by-state at checkpoints. Configurations: 1/2/4/8/16 pool workers, a single region, seeded random and priority interleavings, injected aborts, and perturbed layouts. A deliberately unsafe mode without ownership checks must produce a detected divergence.
 - `control_tests`: seeded-schedule reproducibility, tick-clock catch-up, and the state digest.
+- `evidence_tests`: the [trace fixture format](TRACE_FORMAT.md), the content mapping (every reference state round-trips through target-version notation), recording and evaluation on both the engine and the oracle, and the committed fixtures in `tests/fixtures/`.
 
 GCC ThreadSanitizer runs once ASLR is disabled for the test process (`setarch "$(uname -m)" -R`). See the [development guide](DEVELOPMENT.md).
 
@@ -83,6 +84,8 @@ xmake run circuit-server --simulate --ticks 200 --realtime
 ```
 
 `--simulate` without `--replay` runs a built-in demonstration with machines that straddle chunk edges. The output includes a 64-bit state digest; equal digests across worker counts are a quick check, not proof. `--realtime` paces ticks at 20 Hz. When it falls more than 40 ticks behind, it drops the wall-clock backlog; logical ticks are never skipped.
+
+Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked or recorded with `--check-fixture <file>` and `--record-fixture <skeleton> --output <file>`.
 
 ## Limitations
 
