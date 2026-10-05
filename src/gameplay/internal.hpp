@@ -17,7 +17,9 @@ inline constexpr std::array<Direction, 4> spread_order{
 void notify_neighbors(RuleContext& ctx, BlockPos source);
 void on_placed(RuleContext& ctx, BlockPos pos, BlockState state);
 void on_neighbor_changed(RuleContext& ctx, BlockPos target, BlockPos from);
-std::uint8_t emitted_power(BlockState state, Direction toward) noexcept;
+// Power the block at `pos` emits toward the neighbor in direction `toward`.
+// Comparators read their output signal from their block entity.
+std::uint8_t emitted_power(RuleContext& ctx, BlockPos pos, BlockState state, Direction toward);
 bool schedule(RuleContext& ctx, TickList list, BlockPos pos, BlockType block, std::uint32_t delay, std::int8_t priority);
 bool queue_block_event(RuleContext& ctx, const BlockEvent& event);
 
@@ -34,6 +36,18 @@ void run_piston_event(RuleContext& ctx, const BlockEvent& event, BlockState stat
 
 void check_hopper(RuleContext& ctx, BlockPos pos);
 void tick_hopper(RuleContext& ctx, BlockPos pos);
+
+// Positions of the container at `pos` in combined slot order (left chest half
+// first); empty if `pos` holds no container.
+std::vector<BlockPos> container_parts(RuleContext& ctx, BlockPos pos);
+// Comparator reading of a container: 0 when empty, else 1 + 14 * fullness.
+std::uint8_t container_signal(RuleContext& ctx, BlockPos pos);
+// Notifies comparators that read a container whose contents changed.
+void container_changed(RuleContext& ctx, BlockPos pos);
+void check_chest(RuleContext& ctx, BlockPos pos);
+
+void check_comparator(RuleContext& ctx, BlockPos pos);
+void tick_comparator(RuleContext& ctx, BlockPos pos, BlockState state);
 
 void tick_water(RuleContext& ctx, BlockPos pos, BlockState state);
 void wheat_random_tick(RuleContext& ctx, BlockPos pos, BlockState state, Rng& stream);

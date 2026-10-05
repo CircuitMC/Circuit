@@ -37,17 +37,26 @@ Plan plan(RuleContext& ctx, const contracts::SetBlock& c) {
     return [&ctx, pos = c.pos, s = *state] { set_block(ctx, pos, s); };
 }
 
-Plan plan(RuleContext& ctx, const contracts::UseLever& c) {
+Plan plan(RuleContext& ctx, const contracts::UseBlock& c) {
     if (auto ok = check_loaded(ctx, c.pos); !ok) return std::unexpected(ok.error());
     const auto s = ctx.block(c.pos);
-    if (!s.is(BlockType::lever)) return std::unexpected(ErrorCode::not_a_lever);
-    return [&ctx, pos = c.pos, s] { set_block(ctx, pos, s.with_flag(!s.flag())); };
+    switch (s.type()) {
+    case BlockType::lever: return [&ctx, pos = c.pos, s] { set_block(ctx, pos, s.with_flag(!s.flag())); };
+    case BlockType::repeater:
+        return [&ctx, pos = c.pos, s] { set_block(ctx, pos, s.with_delay(static_cast<std::uint8_t>(s.delay() % 4 + 1))); };
+    case BlockType::comparator:
+        return [&ctx, pos = c.pos, s] {
+            set_block(ctx, pos, s.with_level(s.level() == 0 ? 1 : 0));
+            detail::check_comparator(ctx, pos);
+        };
+    default: return std::unexpected(ErrorCode::not_usable);
+    }
 }
 
 Plan plan(RuleContext& ctx, const contracts::InsertItem& c) {
     if (auto ok = check_loaded(ctx, c.pos); !ok) return std::unexpected(ok.error());
     const auto* be = ctx.peek_block_entity(c.pos);
-    if (!be) return std::unexpected(ErrorCode::not_a_container);
+    if (!be || !is_container(ctx.block(c.pos).type())) return std::unexpected(ErrorCode::not_a_container);
     if (c.slot >= be->slots.size()) return std::unexpected(ErrorCode::invalid_slot);
     if (!valid_stack(c.stack)) return std::unexpected(ErrorCode::invalid_argument);
     const auto existing = be->slots[c.slot];
@@ -59,6 +68,7 @@ Plan plan(RuleContext& ctx, const contracts::InsertItem& c) {
         const ItemStack after{c.stack.item, static_cast<std::uint8_t>(total)};
         target->slots[c.slot] = after;
         ctx.record(TraceKind::inventory_changed, c.pos, c.slot, contracts::pack_stack(existing), contracts::pack_stack(after));
+        for (const auto part : detail::container_parts(ctx, c.pos)) detail::container_changed(ctx, part);
     };
 }
 

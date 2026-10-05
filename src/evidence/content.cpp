@@ -181,10 +181,26 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
         return simple(blocks::hopper(facing, enabled));
     }
     if (id == "minecraft:chest") {
-        CIRCUIT_CHECK(p.ignored("facing", {"north", "south", "west", "east"}));
-        CIRCUIT_CHECK(p.only("type", "single"));
+        CIRCUIT_TRY(facing, p.direction("facing"));
+        CIRCUIT_TRY(type, p.required("type"));
         CIRCUIT_CHECK(p.only("waterlogged", "false"));
-        return simple(blocks::chest());
+        if (!contracts::is_horizontal(facing)) return std::unexpected("minecraft:chest: facing must be horizontal");
+        // Unverified convention: a left half pairs clockwise of its facing, a right half counter-clockwise.
+        const auto kind = type == "single" ? blocks::ChestType::single
+                        : type == "left"   ? blocks::ChestType::left
+                        : type == "right"  ? blocks::ChestType::right
+                                           : static_cast<blocks::ChestType>(255);
+        if (static_cast<int>(kind) == 255) return std::unexpected("minecraft:chest: invalid type");
+        return simple(blocks::chest(facing, kind));
+    }
+    if (id == "minecraft:comparator") {
+        CIRCUIT_TRY(facing, p.direction("facing"));
+        CIRCUIT_TRY(mode, p.required("mode"));
+        CIRCUIT_TRY(powered, p.flag("powered"));
+        if (!contracts::is_horizontal(facing)) return std::unexpected("minecraft:comparator: facing must be horizontal");
+        if (mode != "compare" && mode != "subtract") return std::unexpected("minecraft:comparator: invalid mode");
+        // Unverified convention, as for repeaters: `facing` names the input side.
+        return simple(blocks::comparator(contracts::opposite(facing), mode == "subtract", powered));
     }
     if (id == "minecraft:water") {
         CIRCUIT_TRY(level, p.integer("level", 0, 15));
@@ -225,7 +241,13 @@ std::string ContentMapping::notation(BlockState s) const {
         return std::format("minecraft:piston_head[facing={},type={}]", direction_name(s.facing()), s.flag() ? "sticky" : "normal");
     case BlockType::hopper:
         return std::format("minecraft:hopper[enabled={},facing={}]", b(s.flag()), direction_name(s.facing()));
-    case BlockType::chest: return "minecraft:chest";
+    case BlockType::chest: {
+        static constexpr std::string_view types[]{"single", "left", "right"};
+        return std::format("minecraft:chest[facing={},type={}]", direction_name(s.facing()), types[s.level() % 3]);
+    }
+    case BlockType::comparator:
+        return std::format("minecraft:comparator[facing={},mode={},powered={}]", direction_name(contracts::opposite(s.facing())),
+                           s.level() == 1 ? "subtract" : "compare", b(s.flag()));
     case BlockType::water:
         return std::format("minecraft:water[level={}]", s.flag() ? 8 : s.level());
     case BlockType::wheat: return std::format("minecraft:wheat[age={}]", s.level());

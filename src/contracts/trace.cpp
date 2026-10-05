@@ -23,6 +23,7 @@ std::string_view kind_name(TraceKind kind) {
     case TraceKind::chunk_level_changed: return "chunk_level_changed";
     case TraceKind::piston_blocked: return "piston_blocked";
     case TraceKind::entity_stack_changed: return "entity_stack_changed";
+    case TraceKind::signal_changed: return "signal_changed";
     }
     return "unknown";
 }

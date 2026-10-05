@@ -1,0 +1,44 @@
+circuit-trace 1
+# Skeleton: one comparator reads a hopper; another reads a hopper through stone and
+# subtracts a separate side input before switching to compare mode.
+title Comparator container reading and subtraction
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms comparator hopper redstone_wire redstone_lamp
+area -1 0 -1 5 0 8
+ticks 12
+changes ordered
+
+at 0 set 0 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 0 0 minecraft:comparator[facing=west,mode=compare,powered=false]
+at 0 set 2 0 0 minecraft:redstone_lamp[lit=false]
+at 0 set 0 0 7 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 0 7 minecraft:stone
+at 0 set 2 0 7 minecraft:comparator[facing=west,mode=subtract,powered=false]
+at 0 set 3 0 7 minecraft:redstone_wire[power=0]
+at 0 set 4 0 7 minecraft:redstone_wire[power=0]
+at 0 set 2 0 6 minecraft:redstone_wire[power=0]
+at 0 set 2 0 5 minecraft:redstone_wire[power=0]
+at 0 set 2 0 4 minecraft:redstone_wire[power=0]
+at 0 set 2 0 3 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 insert 0 0 0 0 minecraft:stone 64
+at 1 insert 0 0 0 1 minecraft:stone 64
+at 1 insert 0 0 0 2 minecraft:stone 64
+at 1 insert 0 0 7 0 minecraft:stone 64
+at 1 insert 0 0 7 1 minecraft:stone 64
+at 1 insert 0 0 7 2 minecraft:stone 64
+at 1 insert 0 0 7 3 minecraft:stone 64
+at 1 insert 0 0 7 4 minecraft:stone 64
+at 4 use 2 0 3
+at 8 use 2 0 7
+
+block 3 1 0 0 ?
+block 3 2 0 0 ?
+block 3 3 0 7 ?
+block 6 2 0 6 ?
+block 6 3 0 7 ?
+block 6 4 0 7 ?
+block 10 2 0 7 ?
+block 10 3 0 7 ?
+slot 1 0 0 7 4 ?

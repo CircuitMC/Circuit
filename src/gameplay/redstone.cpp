@@ -7,11 +7,12 @@ namespace {
 std::uint8_t wire_input(RuleContext& ctx, BlockPos pos) {
     int best = 0;
     for (auto d : contracts::all_directions) {
-        const auto n = ctx.block(pos.relative(d));
+        const auto at = pos.relative(d);
+        const auto n = ctx.block(at);
         if (n.is(BlockType::redstone_wire)) {
             if (contracts::is_horizontal(d)) best = std::max(best, static_cast<int>(n.level()) - 1);
         } else {
-            best = std::max(best, static_cast<int>(emitted_power(n, contracts::opposite(d))));
+            best = std::max(best, static_cast<int>(emitted_power(ctx, at, n, contracts::opposite(d))));
         }
     }
     return static_cast<std::uint8_t>(best);
@@ -19,7 +20,7 @@ std::uint8_t wire_input(RuleContext& ctx, BlockPos pos) {
 
 bool repeater_input(RuleContext& ctx, BlockPos pos, BlockState s) {
     const auto behind = pos.relative(contracts::opposite(s.facing()));
-    return emitted_power(ctx.block(behind), s.facing()) > 0;
+    return emitted_power(ctx, behind, ctx.block(behind), s.facing()) > 0;
 }
 
 std::uint32_t repeater_delay(BlockState s) { return static_cast<std::uint32_t>(s.delay()) * 2; }

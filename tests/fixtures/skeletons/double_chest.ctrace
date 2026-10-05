@@ -1,0 +1,27 @@
+circuit-trace 1
+# Skeleton: a double chest across the x=16 chunk edge forms, takes hopper input in combined slot order, splits and re-forms.
+title Double chest across a chunk edge
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms double_chest hopper comparator
+area 14 0 -1 18 1 2
+ticks 14
+changes ordered
+
+at 0 set 16 0 0 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 1 set 15 0 0 minecraft:chest[facing=north,type=left,waterlogged=false]
+at 1 set 15 0 1 minecraft:comparator[facing=north,mode=compare,powered=false]
+at 1 set 16 1 0 minecraft:hopper[enabled=true,facing=down]
+at 1 insert 16 1 0 0 minecraft:iron_ingot 3
+at 12 set 16 0 0 minecraft:air
+at 13 set 16 0 0 minecraft:chest[facing=north,type=right,waterlogged=false]
+
+block 1 15 0 0 ?
+block 1 16 0 0 ?
+slot 1 15 0 0 0 ?
+slot 9 15 0 0 0 ?
+slot 9 16 0 0 0 ?
+block 12 15 0 0 ?
+block 13 15 0 0 ?
+block 13 16 0 0 ?

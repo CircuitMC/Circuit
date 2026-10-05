@@ -19,9 +19,11 @@ struct SetBlock {
     std::optional<Generation> expected_generation; // Rejects a write prepared for an older chunk lifetime.
     bool operator==(const SetBlock&) const = default;
 };
-struct UseLever {
+// Interaction with a block, as a player's use: toggles a lever, cycles a
+// repeater's delay, toggles a comparator's mode.
+struct UseBlock {
     BlockPos pos;
-    bool operator==(const UseLever&) const = default;
+    bool operator==(const UseBlock&) const = default;
 };
 struct InsertItem {
     BlockPos pos;
@@ -52,7 +54,7 @@ struct RemoveTicket {
     bool operator==(const RemoveTicket&) const = default;
 };
 
-using CommandBody = std::variant<SetBlock, UseLever, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket>;
+using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.

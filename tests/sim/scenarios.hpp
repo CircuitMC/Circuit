@@ -212,9 +212,38 @@ inline Scenario piston_chain_scenario() {
     }, 5};
 }
 
+// A double chest straddling x=16, fed by hoppers in both chunks, drained into
+// a third chest, and read by comparators in both chunks.
+inline Scenario comparator_chest_scenario() {
+    using blocks::ChestType;
+    return {"comparators_and_double_chests", 37, 200, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 2)};
+        if (t == 2)
+            return {place({15, 1, 10}, blocks::chest(D::north, ChestType::left)),
+                    place({16, 1, 10}, blocks::chest(D::north, ChestType::right)),
+                    place({15, 3, 10}, blocks::chest()), insert({15, 3, 10}, 0, items::iron_ingot, 64),
+                    place({16, 3, 10}, blocks::chest()), insert({16, 3, 10}, 0, items::stone, 64),
+                    insert({16, 3, 10}, 1, items::stone, 64),
+                    place({15, 2, 10}, blocks::hopper(D::down)), place({16, 2, 10}, blocks::hopper(D::down)),
+                    place({16, 0, 10}, blocks::hopper(D::east)), place({17, 0, 10}, blocks::chest()),
+                    place({15, 1, 11}, blocks::comparator(D::south)), place({15, 1, 12}, blocks::wire()),
+                    place({15, 1, 13}, blocks::wire()), place({15, 1, 14}, blocks::lamp()),
+                    place({16, 1, 11}, blocks::comparator(D::south, true)), place({16, 1, 12}, blocks::lamp()),
+                    place({17, 1, 11}, blocks::wire()), place({18, 1, 11}, blocks::lever()),
+                    place({17, 0, 11}, blocks::comparator(D::south)), place({17, 0, 12}, blocks::lamp())};
+        std::vector<CommandBody> c;
+        if (t % 13 == 5) c.push_back(use_lever({18, 1, 11}));
+        if (t == 50) c.push_back(use_block({16, 1, 11}));
+        if (t == 120) c.push_back(place({15, 1, 10}, blocks::air()));
+        if (t == 140) c.push_back(place({15, 1, 10}, blocks::chest(D::north, ChestType::left)));
+        return c;
+    }};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
-            wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario()};
+            wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
+            comparator_chest_scenario()};
 }
 
 } // namespace circuit::test

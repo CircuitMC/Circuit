@@ -12,7 +12,7 @@ See [the roadmap](TODO.md) for milestones and [the executable reasoning models](
 
 ## Status
 
-The headless Part I core is implemented for Circuit's own reference rules: shared contracts, redstone, pistons, hoppers, water, crops, item entities and chunk tickets, an independent sequential oracle, and a region-parallel runtime that matches the oracle exactly across worker counts, region layouts and seeded schedules. These rules are written from documented behavior and are not yet verified against Java Edition 1.21.8; no mechanism claims exact vanilla compatibility. See [the simulation core](docs/SIMULATION.md).
+The headless Part I core is implemented for Circuit's own reference rules: shared contracts, redstone (including comparators), pistons, hoppers and double chests, water, crops, item entities and chunk tickets, an independent sequential oracle, and a region-parallel runtime that matches the oracle exactly across worker counts, region layouts and seeded schedules. These rules are written from documented behavior and are not yet verified against Java Edition 1.21.8; no mechanism claims exact vanilla compatibility. See [the simulation core](docs/SIMULATION.md).
 
 The framework also provides Linux native shared-library plugins, numerical validation helpers, interface scaffolds, and 13 abstract concurrency models. Minecraft client login, playable worlds and persistence are not yet supported.
 

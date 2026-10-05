@@ -13,7 +13,8 @@ using namespace circuit::contracts;
 using namespace circuit::gameplay;
 
 inline CommandBody place(BlockPos p, BlockState s) { return SetBlock{p, s.raw(), std::nullopt}; }
-inline CommandBody use_lever(BlockPos p) { return UseLever{p}; }
+inline CommandBody use_lever(BlockPos p) { return UseBlock{p}; }
+inline CommandBody use_block(BlockPos p) { return UseBlock{p}; }
 inline CommandBody ticket(std::uint32_t id, ChunkPos center, std::uint8_t radius) { return AddTicket{id, center, radius}; }
 inline CommandBody insert(BlockPos p, std::uint8_t slot, std::uint16_t item, std::uint8_t count) {
     return InsertItem{p, slot, {item, count}};

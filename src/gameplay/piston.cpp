@@ -117,14 +117,15 @@ void retract(RuleContext& ctx, BlockPos pos, BlockState s) {
 bool piston_powered(RuleContext& ctx, BlockPos pos, Direction facing) {
     for (auto d : contracts::all_directions) {
         if (d == facing) continue;
-        if (emitted_power(ctx.block(pos.relative(d)), contracts::opposite(d)) > 0) return true;
+        const auto n = pos.relative(d);
+        if (emitted_power(ctx, n, ctx.block(n), contracts::opposite(d)) > 0) return true;
     }
     // Quasi-connectivity: power reaching the cell above also activates the piston.
     const auto above = pos.relative(Direction::up);
     for (auto d : contracts::all_directions) {
         const auto n = above.relative(d);
         if (n == pos) continue;
-        if (emitted_power(ctx.block(n), contracts::opposite(d)) > 0) return true;
+        if (emitted_power(ctx, n, ctx.block(n), contracts::opposite(d)) > 0) return true;
     }
     return false;
 }

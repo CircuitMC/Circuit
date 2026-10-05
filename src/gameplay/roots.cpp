@@ -18,6 +18,7 @@ void run_scheduled_tick(RuleContext& ctx, TickList list, const ScheduledTick& ti
     case BlockType::redstone_lamp: tick_lamp(ctx, tick.pos, s); break;
     case BlockType::observer: tick_observer(ctx, tick.pos, s); break;
     case BlockType::piston: case BlockType::sticky_piston: check_piston(ctx, tick.pos); break;
+    case BlockType::comparator: tick_comparator(ctx, tick.pos, s); break;
     default: break;
     }
 }

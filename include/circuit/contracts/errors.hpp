@@ -28,7 +28,7 @@ enum class ErrorCode : std::uint16_t {
     unknown_ticket = 17,
     duplicate_ticket = 18,
     stale_view = 19,
-    not_a_lever = 20,
+    not_usable = 20,
     unknown_command = 21,
 };
 
@@ -53,7 +53,7 @@ constexpr std::string_view error_name(ErrorCode code) noexcept {
     case ErrorCode::unknown_ticket: return "unknown_ticket";
     case ErrorCode::duplicate_ticket: return "duplicate_ticket";
     case ErrorCode::stale_view: return "stale_view";
-    case ErrorCode::not_a_lever: return "not_a_lever";
+    case ErrorCode::not_usable: return "not_usable";
     case ErrorCode::unknown_command: return "unknown_command";
     }
     return "unknown_error";

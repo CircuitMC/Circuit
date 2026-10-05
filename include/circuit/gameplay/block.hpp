@@ -3,6 +3,7 @@
 #include <circuit/contracts/errors.hpp>
 #include <circuit/contracts/ids.hpp>
 #include <cstdint>
+#include <optional>
 
 // Block registry of circuit-reference-rules-v0. These are Circuit's own rule
 // definitions, written from documented behavior; they are not a vanilla registry.
@@ -25,9 +26,10 @@ enum class BlockType : std::uint8_t {
     piston_head,    // facing: same as its piston; flag: sticky
     slime_block,
     hopper,         // facing: output side (not up); flag: enabled
-    chest,
+    chest,          // facing: front (horizontal); level: ChestType
     water,          // level 0: source, 1-7: flowing distance; flag: falling (level 0)
     wheat,          // level: age 0-7
+    comparator,     // facing: output side (horizontal); level: 0 compare, 1 subtract; flag: powered
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -93,7 +95,13 @@ constexpr BlockState piston(Direction push, bool sticky = false) {
 constexpr BlockState hopper(Direction output = Direction::down, bool enabled = true) {
     return BlockState::of(BlockType::hopper).with_facing(output).with_flag(enabled);
 }
-constexpr BlockState chest() { return BlockState::of(BlockType::chest); }
+enum class ChestType : std::uint8_t { single = 0, left = 1, right = 2 };
+constexpr BlockState chest(Direction facing = Direction::north, ChestType type = ChestType::single) {
+    return BlockState::of(BlockType::chest).with_facing(facing).with_level(static_cast<std::uint8_t>(type));
+}
+constexpr BlockState comparator(Direction output, bool subtract = false, bool powered = false) {
+    return BlockState::of(BlockType::comparator).with_facing(output).with_level(subtract ? 1 : 0).with_flag(powered);
+}
 constexpr BlockState water_source() { return BlockState::of(BlockType::water); }
 constexpr BlockState water_flowing(std::uint8_t distance) { return BlockState::of(BlockType::water).with_level(distance); }
 constexpr BlockState water_falling() { return BlockState::of(BlockType::water).with_flag(true); }
@@ -101,7 +109,17 @@ constexpr BlockState wheat(std::uint8_t age = 0) { return BlockState::of(BlockTy
 } // namespace blocks
 
 constexpr bool is_piston(BlockType t) noexcept { return t == BlockType::piston || t == BlockType::sticky_piston; }
-constexpr bool has_block_entity(BlockType t) noexcept { return t == BlockType::hopper || t == BlockType::chest; }
+constexpr bool is_container(BlockType t) noexcept { return t == BlockType::hopper || t == BlockType::chest; }
+// Block entities hold container slots, hopper cooldowns and comparator output signals.
+constexpr bool has_block_entity(BlockType t) noexcept { return is_container(t) || t == BlockType::comparator; }
+// Direction from a chest half to its partner (reference convention: left pairs
+// clockwise, right counter-clockwise, seen from above); nullopt for single chests.
+constexpr std::optional<Direction> chest_partner(BlockState s) noexcept {
+    if (!s.is(BlockType::chest)) return std::nullopt;
+    if (s.level() == static_cast<std::uint8_t>(blocks::ChestType::left)) return contracts::clockwise(s.facing());
+    if (s.level() == static_cast<std::uint8_t>(blocks::ChestType::right)) return contracts::counter_clockwise(s.facing());
+    return std::nullopt;
+}
 constexpr std::uint8_t container_size(BlockType t) noexcept {
     return t == BlockType::hopper ? 5 : t == BlockType::chest ? 27 : 0;
 }

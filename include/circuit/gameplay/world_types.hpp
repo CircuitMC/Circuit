@@ -28,6 +28,7 @@ struct BlockEntity {
     std::uint64_t order{}; // Creation order; also the block-entity tick order.
     std::vector<ItemStack> slots;
     std::uint8_t cooldown{};
+    std::uint8_t signal{}; // Comparator output, 0-15.
     bool operator==(const BlockEntity&) const = default;
 };
 

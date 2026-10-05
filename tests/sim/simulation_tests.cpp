@@ -133,6 +133,18 @@ int main() {
         require(chained >= 50, std::format("events run in the phase that queued them: {}", chained));
     });
 
+    suite.run("comparators and double chests are exercised", [&] {
+        std::size_t signals = 0, inventory = 0, chest_types = 0;
+        for (const auto& t : references[9].traces) {
+            signals += of_kind(t, TraceKind::signal_changed).size();
+            inventory += of_kind(t, TraceKind::inventory_changed).size();
+            for (const auto& r : of_kind(t, TraceKind::block_changed))
+                chest_types += BlockState::decode(static_cast<std::uint32_t>(r.b)).value().is(BlockType::chest);
+        }
+        require(signals >= 10 && inventory >= 100 && chest_types >= 3,
+                std::format("signals {} inventory {} chest states {}", signals, inventory, chest_types));
+    });
+
     suite.run("oracle is deterministic", [&] {
         for (std::size_t i = 0; i < scenarios.size(); ++i) {
             const auto again = run_oracle(scenarios[i], inputs[i]);

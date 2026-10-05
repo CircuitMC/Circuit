@@ -400,7 +400,7 @@ int main() {
                 SpawnItem{at_block(0.5, 5, 0.5), {5000, 0, 0}, {items::stone, 1}}, RemoveEntity{{999}},
                 ticket(1, {0, 0}, 1), RemoveTicket{77}, ticket(9, {0, 0}, 9)});
         const std::vector expected{ErrorCode::out_of_bounds, ErrorCode::unloaded_chunk, ErrorCode::invalid_block_state,
-                                   ErrorCode::invalid_block_state, ErrorCode::invalid_block_state, ErrorCode::not_a_lever,
+                                   ErrorCode::invalid_block_state, ErrorCode::invalid_block_state, ErrorCode::not_usable,
                                    ErrorCode::not_a_container, ErrorCode::invalid_slot, ErrorCode::invalid_argument,
                                    ErrorCode::item_mismatch, ErrorCode::stack_overflow, ErrorCode::invalid_argument,
                                    ErrorCode::unknown_entity, ErrorCode::duplicate_ticket, ErrorCode::unknown_ticket,
@@ -411,6 +411,119 @@ int main() {
             require(rejected[i].b == static_cast<std::uint64_t>(expected[i]) && rejected[i].key.root == i,
                     std::format("command {} code {}", i, rejected[i].b));
         require(of_kind(s.last, TraceKind::block_changed).empty(), "rejected commands have no effect");
+    });
+
+    suite.run("comparator compares after two ticks", [] {
+        Sim s;
+        s.tick({place({0, 0, 0}, blocks::lever()), place({1, 0, 0}, blocks::comparator(D::east)), place({2, 0, 0}, blocks::lamp())});
+        s.tick({use_lever({0, 0, 0})}); // 3: due 5
+        s.until(4);
+        require(!s.at({1, 0, 0}).flag() && !s.at({2, 0, 0}).flag(), "comparator delay");
+        s.tick(); // 5
+        require(s.at({1, 0, 0}).flag() && s.at({2, 0, 0}).flag(), "output on tick 5");
+        require(block_entity_at(s.oracle.dump(), {1, 0, 0})->signal == 15, "full strength from a lever");
+        const auto changed = of_kind(s.last, TraceKind::signal_changed);
+        require(changed.size() == 1 && changed[0].a == 0 && changed[0].b == 15, "signal change recorded");
+        s.until(6);
+        s.tick({use_lever({0, 0, 0})}); // 7: due 9, lamp off at 13
+        s.until(9);
+        require(!s.at({1, 0, 0}).flag() && s.at({2, 0, 0}).flag(), "comparator off at 9, lamp delays");
+        s.until(13);
+        require(!s.at({2, 0, 0}).flag(), "lamp off at 13");
+    });
+
+    suite.run("comparator subtract and compare with a side input", [] {
+        Sim s;
+        s.tick({place({0, 0, 0}, blocks::lever()), place({1, 0, 0}, blocks::comparator(D::east, true)),
+                place({2, 0, 0}, blocks::wire()), place({3, 0, 0}, blocks::wire()), place({4, 0, 0}, blocks::wire()),
+                place({1, 0, 1}, blocks::wire()), place({1, 0, 2}, blocks::wire()), place({1, 0, 3}, blocks::wire()),
+                place({1, 0, 4}, blocks::lever())});
+        s.tick({use_lever({1, 0, 4})}); // 3: side input 13, rear 0: output stays 0
+        require(wire_level(s, {1, 0, 1}) == 13 && !s.at({1, 0, 0}).flag(), "side input alone gives no output");
+        s.tick({use_lever({0, 0, 0})}); // 4: 15 - 13 = 2, due 6
+        s.until(6);
+        require(block_entity_at(s.oracle.dump(), {1, 0, 0})->signal == 2, "subtract");
+        require(wire_level(s, {2, 0, 0}) == 2 && wire_level(s, {3, 0, 0}) == 1 && wire_level(s, {4, 0, 0}) == 0,
+                "output strength drives dust");
+        s.tick({use_block({1, 0, 0})}); // 7: compare mode, due 9
+        require(s.at({1, 0, 0}).level() == 0, "use toggles the mode");
+        s.until(9);
+        require(wire_level(s, {2, 0, 0}) == 15 && wire_level(s, {4, 0, 0}) == 13, "compare passes the rear signal");
+        const auto changed = of_kind(s.last, TraceKind::signal_changed);
+        require(changed.size() == 1 && changed[0].a == 2 && changed[0].b == 15, "strength change without a state change");
+    });
+
+    suite.run("comparator reads container fullness", [] {
+        Sim s;
+        s.tick({place({0, 0, 0}, blocks::hopper(D::down)), place({1, 0, 0}, blocks::comparator(D::east)),
+                place({2, 0, 0}, blocks::lamp()), place({0, 0, 5}, blocks::chest()), place({1, 0, 5}, blocks::stone()),
+                place({2, 0, 5}, blocks::comparator(D::east))});
+        s.tick({insert({0, 0, 0}, 0, items::stone, 1), insert({0, 0, 5}, 0, items::stone, 1)}); // 3
+        s.until(5);
+        auto d = s.oracle.dump();
+        require(block_entity_at(d, {1, 0, 0})->signal == 1 && state_at(d, {2, 0, 0}).flag(), "one item reads 1");
+        require(block_entity_at(d, {2, 0, 5})->signal == 1, "reads a chest through a stone block");
+        s.tick({insert({0, 0, 0}, 1, items::stone, 64), insert({0, 0, 0}, 2, items::stone, 64)}); // 6
+        s.until(8);
+        // 129 items in 5 slots of 64: 1 + 14 * 129 / 320 = 6.
+        require(block_entity_at(s.oracle.dump(), {1, 0, 0})->signal == 6, "partial fullness");
+        std::vector<CommandBody> fill;
+        for (std::uint8_t i = 0; i < 27; ++i) fill.push_back(insert({0, 0, 5}, i, items::stone, i == 0 ? 63 : 64));
+        s.tick(fill);
+        s.until(s.oracle.time() + 2);
+        require(block_entity_at(s.oracle.dump(), {2, 0, 5})->signal == 15, "full chest reads 15");
+    });
+
+    suite.run("double chest pairs, splits and combines slots", [] {
+        Sim s;
+        s.tick({place({1, 0, 0}, blocks::chest(D::north))});
+        s.tick({place({0, 0, 0}, blocks::chest(D::north, blocks::ChestType::left))}); // 3: claims the single chest
+        require(s.at({0, 0, 0}) == blocks::chest(D::north, blocks::ChestType::left)
+                    && s.at({1, 0, 0}) == blocks::chest(D::north, blocks::ChestType::right), "pair formed");
+        s.tick({place({1, 0, 0}, blocks::air())});
+        require(s.at({0, 0, 0}) == blocks::chest(D::north), "orphaned half becomes single");
+        s.tick({place({1, 0, 0}, blocks::chest(D::north, blocks::ChestType::right))});
+        require(s.at({0, 0, 0}) == blocks::chest(D::north, blocks::ChestType::left), "re-paired");
+
+        // Hopper above the right half fills the left half first (combined order).
+        std::vector<CommandBody> b;
+        for (std::uint8_t i = 0; i < 27; ++i) b.push_back(insert({0, 0, 0}, i, items::stone, i == 26 ? 63 : 64));
+        b.push_back(place({1, 1, 0}, blocks::hopper(D::down)));
+        b.push_back(insert({1, 1, 0}, 0, items::stone, 2));
+        s.tick(b); // T
+        const auto t0 = s.oracle.time();
+        auto d = s.oracle.dump();
+        require(block_entity_at(d, {0, 0, 0})->slots[26].count == 64 && block_entity_at(d, {1, 0, 0})->slots[0].empty(),
+                "first item goes to the left half");
+        s.until(t0 + 8);
+        d = s.oracle.dump();
+        require(block_entity_at(d, {1, 0, 0})->slots[0] == ItemStack{items::stone, 1}, "then the right half");
+    });
+
+    suite.run("comparator reads a double chest across a chunk edge", [] {
+        Sim s;
+        s.tick({place({15, 0, 0}, blocks::chest(D::north, blocks::ChestType::left)),
+                place({16, 0, 0}, blocks::chest(D::north, blocks::ChestType::right)),
+                place({15, 0, 1}, blocks::comparator(D::south))});
+        require(s.at({16, 0, 0}).level() == 2, "halves in chunks 0 and 1 are paired");
+        std::vector<CommandBody> fill;
+        for (std::uint8_t i = 0; i < 27; ++i) fill.push_back(insert({16, 0, 0}, i, items::stone, 64));
+        s.tick(fill);
+        s.until(s.oracle.time() + 2);
+        // 1728 items over 54 slots: 1 + 14 * 1728 / 3456 = 8 (a single chest would read 15).
+        require(block_entity_at(s.oracle.dump(), {15, 0, 1})->signal == 8, "combined fullness");
+    });
+
+    suite.run("use cycles repeater delay", [] {
+        Sim s;
+        s.tick({place({0, 0, 0}, blocks::repeater(D::east, 4))});
+        s.tick({use_block({0, 0, 0})});
+        require(s.at({0, 0, 0}).delay() == 1, "4 wraps to 1");
+        s.tick({use_block({0, 0, 0}), use_block({5, 0, 5}), insert({0, 0, 0}, 0, items::stone, 1)});
+        require(s.at({0, 0, 0}).delay() == 2, "1 to 2");
+        const auto rejected = of_kind(s.last, TraceKind::command_rejected);
+        require(rejected.size() == 2 && rejected[0].b == static_cast<std::uint64_t>(ErrorCode::not_usable)
+                    && rejected[1].b == static_cast<std::uint64_t>(ErrorCode::not_a_container), "air is not usable");
     });
 
     suite.run("block event capacity failure is explicit", [] {

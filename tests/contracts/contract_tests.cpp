@@ -84,10 +84,10 @@ int main() {
 
     suite.run("command queue", [] {
         CommandQueue q(2);
-        const auto a = q.admit(UseLever{{0, 0, 0}});
-        const auto b = q.admit(UseLever{{1, 0, 0}});
+        const auto a = q.admit(UseBlock{{0, 0, 0}});
+        const auto b = q.admit(UseBlock{{1, 0, 0}});
         require(a && b && *a < *b, "admission ids increase");
-        require(q.admit(UseLever{{2, 0, 0}}).error() == ErrorCode::capacity_exceeded, "capacity");
+        require(q.admit(UseBlock{{2, 0, 0}}).error() == ErrorCode::capacity_exceeded, "capacity");
         require(q.cancel(*a) && !q.cancel(*a), "cancel once before drain");
         const auto drained = q.drain();
         require(drained.size() == 1 && drained[0].admission == *b && q.size() == 0, "drain in admission order");
@@ -110,7 +110,7 @@ int main() {
         log.ticks.push_back({1, {{1, SetBlock{{-5, 70, 9}, 0x1234, Generation{2}}},
                                  {2, SpawnItem{{-1, 2, 3}, {4, -5, 6}, {7, 8}}},
                                  {3, AddTicket{9, {-3, 4}, 2}}}});
-        log.ticks.push_back({4, {{7, UseLever{{1, 2, 3}}}, {8, InsertItem{{1, 1, 1}, 3, {2, 64}}},
+        log.ticks.push_back({4, {{7, UseBlock{{1, 2, 3}}}, {8, InsertItem{{1, 1, 1}, 3, {2, 64}}},
                                  {9, RemoveEntity{{11}}}, {10, RemoveTicket{9}}, {11, SetBlock{{0, 0, 0}, 1, std::nullopt}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");

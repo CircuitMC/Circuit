@@ -7,10 +7,10 @@ namespace {
 using enum CompatibilityTier;
 using enum EvidenceSource;
 
-// Compatibility table for circuit-reference-rules-v0. Nothing is checked
+// Compatibility table for circuit-reference-rules-v1. Nothing is checked
 // against the target version yet: no row claims L0. L2 rows record known
 // simplifications; rows without a claim are unverified.
-constexpr std::array reference_v0_mechanisms{
+constexpr std::array reference_v1_mechanisms{
     MechanismEntry{"neighbor_updates", l0_exact, std::nullopt, documented_behavior,
         "Order west, east, down, up, north, south; emissions during one delivery run depth-first in "
         "emission order. A single update kind serves both neighbor and shape updates. Unverified."},
@@ -25,7 +25,7 @@ constexpr std::array reference_v0_mechanisms{
         "Connects horizontally on one level only; emits its level in every direction except up; no "
         "power conduction through solid blocks."},
     MechanismEntry{"repeater", l0_exact, l2_declared_deviation, documented_behavior,
-        "Delay 2-8 game ticks, pulse extension to its delay, priority -1; no locking."},
+        "Delay 2-8 game ticks, pulse extension to its delay, priority -1; use cycles the delay; no locking."},
     MechanismEntry{"redstone_lamp", l0_exact, std::nullopt, documented_behavior,
         "Lights immediately; turns off 4 game ticks after losing power."},
     MechanismEntry{"observer", l0_exact, l2_declared_deviation, documented_behavior,
@@ -40,7 +40,16 @@ constexpr std::array reference_v0_mechanisms{
         "unloaded chunks are deferred in order."},
     MechanismEntry{"hopper", l0_exact, l2_declared_deviation, documented_behavior,
         "Push then pull, 8-tick cooldown after any transfer, disabled while powered, picks up item "
-        "entities in the cell above; single chests only."},
+        "entities in the cell above; no chained-hopper cooldown adjustments."},
+    MechanismEntry{"double_chest", l0_exact, std::nullopt, documented_behavior,
+        "Halves with the same facing pair as left (clockwise) and right (counter-clockwise). A half claims a "
+        "single chest of the same facing at its partner position; otherwise it becomes single, also when its "
+        "partner disappears. Hoppers and comparators see one 54-slot container, left half first. The pairing "
+        "convention and slot order are unverified."},
+    MechanismEntry{"comparator", l0_exact, l2_declared_deviation, documented_behavior,
+        "Compare and subtract modes, 2-tick delay at priority 0, output held in a block entity. Rear input is "
+        "power or the fullness of a container behind it, also through stone, obsidian or a lamp; side inputs "
+        "come from dust, repeaters, comparators, redstone blocks and observers. No other analog sources."},
     MechanismEntry{"water", l0_exact, l2_declared_deviation, documented_behavior,
         "5-tick fluid ticks; spreads into air only, horizontally to every side without shortest-path "
         "preference; falling water from above."},
@@ -74,8 +83,8 @@ constexpr std::array bundles{
         .id = "java-1.21.8",
         .game_version = "1.21.8",
         .protocol_candidate = "java-1.21.8",
-        .rules = RuleSet{"circuit-reference-rules-v0", RngPolicy::per_section_derived_stream,
-                         reference_v0_mechanisms},
+        .rules = RuleSet{"circuit-reference-rules-v1", RngPolicy::per_section_derived_stream,
+                         reference_v1_mechanisms},
         .world = {-64, 384},
         .limits = vanilla_like_limits,
         .generator = "empty",

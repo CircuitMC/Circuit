@@ -30,6 +30,7 @@ enum class TraceKind : std::uint8_t {
     chunk_level_changed = 15,// pos = chunk origin, a = old level, b = new level
     piston_blocked = 16,     // pos = piston
     entity_stack_changed = 17,// a = entity id, b = old stack, c = new stack
+    signal_changed = 18,     // pos, a = old output signal, b = new output signal (block-entity state)
 };
 
 struct TraceRecord {

@@ -47,6 +47,25 @@ constexpr Direction opposite(Direction d) noexcept {
 constexpr bool is_horizontal(Direction d) noexcept {
     return d != Direction::down && d != Direction::up;
 }
+// Rotation seen from above; vertical directions are unchanged.
+constexpr Direction clockwise(Direction d) noexcept {
+    switch (d) {
+    case Direction::north: return Direction::east;
+    case Direction::east: return Direction::south;
+    case Direction::south: return Direction::west;
+    case Direction::west: return Direction::north;
+    default: return d;
+    }
+}
+constexpr Direction counter_clockwise(Direction d) noexcept {
+    switch (d) {
+    case Direction::north: return Direction::west;
+    case Direction::west: return Direction::south;
+    case Direction::south: return Direction::east;
+    case Direction::east: return Direction::north;
+    default: return d;
+    }
+}
 
 // Horizontal positions are bounded by the world border; derived neighbor
 // coordinates therefore cannot overflow 32-bit arithmetic.

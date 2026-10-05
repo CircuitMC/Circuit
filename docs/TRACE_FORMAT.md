@@ -31,7 +31,7 @@ A fixture is UTF-8 text with one statement per line. Blank lines and lines start
 | Body line | Meaning |
 | --- | --- |
 | `at <t> set <x> <y> <z> <state>` | Replace the block at the start of tick `t` |
-| `at <t> use <x> <y> <z>` | Toggle the lever at the start of tick `t` |
+| `at <t> use <x> <y> <z>` | Use the block at the start of tick `t`: toggle a lever, cycle a repeater's delay, or toggle a comparator's mode |
 | `at <t> insert <x> <y> <z> <slot> <item> <count>` | Add items to a container slot at the start of tick `t` |
 | `change <t> <x> <y> <z> <old> <new>` | A block changed during tick `t ≥ 1` |
 | `block <t> <x> <y> <z> <state or ?>` | Block state at the end of tick `t` |
@@ -51,7 +51,7 @@ Evaluation reports one of four outcomes:
 
 - `PASS` — every compared observation matched.
 - `FAIL` — the first mismatch, with its fixture line.
-- `UNSUPPORTED` — the fixture uses content or setups the reference rules cannot represent, such as moving pistons, locked repeaters, double chests, unknown blocks, or a setup action the rules reject.
+- `UNSUPPORTED` — the fixture uses content or setups the reference rules cannot represent, such as moving pistons, locked repeaters, waterlogged chests, unknown blocks, or a setup action the rules reject.
 - `INVALID` — skeletons with placeholders and unknown mechanisms.
 
 ## Content mapping for 1.21.8
@@ -69,7 +69,8 @@ The mapping translates target-version notation into the reference registry. Prop
 | `piston`, `sticky_piston` | `facing`, `extended` | — |
 | `piston_head` | `facing`, `type` | `short` ignored |
 | `hopper` | `facing` (not `up`), `enabled` | — |
-| `chest` | — | `facing` ignored; `type` must be `single`, `waterlogged` must be `false` |
+| `chest` | `facing`, `type` (`single`, `left`, `right`) | `waterlogged` must be `false`; a `left` half is taken to pair clockwise of its facing, `right` counter-clockwise |
+| `comparator` | `facing`, `mode`, `powered` | `facing` is taken to name the **input** side; the output signal is block-entity state and is not part of the notation |
 | `water` | `level`: 0 source, 1–7 flowing distance, 8–15 falling | — |
 | `wheat` | `age` 0–7 | — |
 

@@ -36,7 +36,7 @@ std::vector<CommandBody> demo_inputs(Tick t) {
                 place({15, 1, 20}, blocks::chest()), InsertItem{{15, 1, 20}, 0, {items::iron_ingot, 64}},
                 place({15, 0, 20}, blocks::hopper(D::east)), place({16, 0, 20}, blocks::hopper(D::east)),
                 place({17, 0, 20}, blocks::chest())};
-    if (t % 10 == 3) return {UseLever{{13, 0, 0}}};
+    if (t % 10 == 3) return {UseBlock{{13, 0, 0}}};
     return {};
 }
 

@@ -15,6 +15,8 @@ constexpr Properties properties(BlockType t) noexcept {
     case BlockType::piston_head: case BlockType::hopper:
         return {true, false, true, false};
     case BlockType::water: return {false, true, true, false};
+    case BlockType::chest: return {true, true, false, false};
+    case BlockType::comparator: return {true, true, true, false};
     default: return {false, false, false, false};
     }
 }
@@ -38,6 +40,12 @@ contracts::Result<BlockState> BlockState::decode(std::uint32_t raw) noexcept {
         break;
     case BlockType::hopper:
         if (s.facing() == Direction::up) return invalid;
+        break;
+    case BlockType::chest:
+        if (!contracts::is_horizontal(s.facing()) || s.level() > 2) return invalid;
+        break;
+    case BlockType::comparator:
+        if (!contracts::is_horizontal(s.facing()) || s.level() > 1) return invalid;
         break;
     case BlockType::water:
         if (s.level() > 7 || (s.flag() && s.level() != 0)) return invalid;

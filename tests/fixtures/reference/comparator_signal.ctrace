@@ -1,0 +1,73 @@
+circuit-trace 1
+title Comparator container reading and subtraction
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v1
+mechanisms comparator hopper redstone_wire redstone_lamp
+area -1 0 -1 5 0 8
+ticks 12
+changes ordered
+
+at 0 set 0 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 0 0 minecraft:comparator[facing=west,mode=compare,powered=false]
+at 0 set 2 0 0 minecraft:redstone_lamp[lit=false]
+at 0 set 0 0 7 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 0 7 minecraft:stone
+at 0 set 2 0 7 minecraft:comparator[facing=west,mode=subtract,powered=false]
+at 0 set 3 0 7 minecraft:redstone_wire[power=0]
+at 0 set 4 0 7 minecraft:redstone_wire[power=0]
+at 0 set 2 0 6 minecraft:redstone_wire[power=0]
+at 0 set 2 0 5 minecraft:redstone_wire[power=0]
+at 0 set 2 0 4 minecraft:redstone_wire[power=0]
+at 0 set 2 0 3 minecraft:lever[face=floor,facing=north,powered=false]
+
+at 1 insert 0 0 0 0 minecraft:stone 64
+at 1 insert 0 0 0 1 minecraft:stone 64
+at 1 insert 0 0 0 2 minecraft:stone 64
+at 1 insert 0 0 7 0 minecraft:stone 64
+at 1 insert 0 0 7 1 minecraft:stone 64
+at 1 insert 0 0 7 2 minecraft:stone 64
+at 1 insert 0 0 7 3 minecraft:stone 64
+at 1 insert 0 0 7 4 minecraft:stone 64
+slot 1 0 0 7 4 minecraft:stone 64
+
+change 3 1 0 0 minecraft:comparator[facing=west,mode=compare,powered=false] minecraft:comparator[facing=west,mode=compare,powered=true]
+change 3 2 0 0 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+change 3 2 0 7 minecraft:comparator[facing=west,mode=subtract,powered=false] minecraft:comparator[facing=west,mode=subtract,powered=true]
+change 3 3 0 7 minecraft:redstone_wire[power=0] minecraft:redstone_wire[power=15]
+change 3 4 0 7 minecraft:redstone_wire[power=0] minecraft:redstone_wire[power=14]
+block 3 1 0 0 minecraft:comparator[facing=west,mode=compare,powered=true]
+block 3 2 0 0 minecraft:redstone_lamp[lit=true]
+block 3 3 0 7 minecraft:redstone_wire[power=15]
+
+at 4 use 2 0 3
+change 4 2 0 3 minecraft:lever[powered=false] minecraft:lever[powered=true]
+change 4 2 0 4 minecraft:redstone_wire[power=0] minecraft:redstone_wire[power=15]
+change 4 2 0 5 minecraft:redstone_wire[power=0] minecraft:redstone_wire[power=14]
+change 4 2 0 6 minecraft:redstone_wire[power=0] minecraft:redstone_wire[power=13]
+
+change 6 3 0 7 minecraft:redstone_wire[power=15] minecraft:redstone_wire[power=13]
+change 6 4 0 7 minecraft:redstone_wire[power=14] minecraft:redstone_wire[power=12]
+change 6 3 0 7 minecraft:redstone_wire[power=13] minecraft:redstone_wire[power=11]
+change 6 4 0 7 minecraft:redstone_wire[power=12] minecraft:redstone_wire[power=10]
+change 6 3 0 7 minecraft:redstone_wire[power=11] minecraft:redstone_wire[power=9]
+change 6 4 0 7 minecraft:redstone_wire[power=10] minecraft:redstone_wire[power=8]
+change 6 3 0 7 minecraft:redstone_wire[power=9] minecraft:redstone_wire[power=7]
+change 6 4 0 7 minecraft:redstone_wire[power=8] minecraft:redstone_wire[power=6]
+change 6 3 0 7 minecraft:redstone_wire[power=7] minecraft:redstone_wire[power=5]
+change 6 4 0 7 minecraft:redstone_wire[power=6] minecraft:redstone_wire[power=4]
+change 6 3 0 7 minecraft:redstone_wire[power=5] minecraft:redstone_wire[power=3]
+change 6 4 0 7 minecraft:redstone_wire[power=4] minecraft:redstone_wire[power=2]
+change 6 3 0 7 minecraft:redstone_wire[power=3] minecraft:redstone_wire[power=2]
+change 6 4 0 7 minecraft:redstone_wire[power=2] minecraft:redstone_wire[power=1]
+block 6 2 0 6 minecraft:redstone_wire[power=13]
+block 6 3 0 7 minecraft:redstone_wire[power=2]
+block 6 4 0 7 minecraft:redstone_wire[power=1]
+
+at 8 use 2 0 7
+change 8 2 0 7 minecraft:comparator[facing=west,mode=subtract,powered=true] minecraft:comparator[facing=west,mode=compare,powered=true]
+
+change 10 3 0 7 minecraft:redstone_wire[power=2] minecraft:redstone_wire[power=15]
+change 10 4 0 7 minecraft:redstone_wire[power=1] minecraft:redstone_wire[power=14]
+block 10 2 0 7 minecraft:comparator[facing=west,mode=compare,powered=true]
+block 10 3 0 7 minecraft:redstone_wire[power=15]

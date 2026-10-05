@@ -63,7 +63,7 @@ void encode_command(Writer& w, const Command& c) {
             w.put(body.state);
             w.put(static_cast<std::uint8_t>(body.expected_generation.has_value()));
             if (body.expected_generation) w.put(body.expected_generation->value);
-        } else if constexpr (std::is_same_v<T, UseLever>) {
+        } else if constexpr (std::is_same_v<T, UseBlock>) {
             w.pos(body.pos);
         } else if constexpr (std::is_same_v<T, InsertItem>) {
             w.pos(body.pos);
@@ -102,7 +102,7 @@ bool decode_command(Reader& r, Command& c) {
         c.body = b;
         return true;
     }
-    case 1: { UseLever b; if (!r.pos(b.pos)) return false; c.body = b; return true; }
+    case 1: { UseBlock b; if (!r.pos(b.pos)) return false; c.body = b; return true; }
     case 2: {
         InsertItem b;
         if (!r.pos(b.pos) || !r.get(b.slot) || !r.stack(b.stack)) return false;

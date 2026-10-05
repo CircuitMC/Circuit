@@ -93,7 +93,7 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
             body = contracts::SetBlock{a.pos, s->raw(), std::nullopt};
             break;
         }
-        case Action::Kind::use: body = contracts::UseLever{a.pos}; break;
+        case Action::Kind::use: body = contracts::UseBlock{a.pos}; break;
         case Action::Kind::insert: {
             const auto item = p.mapping->item(a.item);
             if (!item) return fail_line(a.line, item.error());

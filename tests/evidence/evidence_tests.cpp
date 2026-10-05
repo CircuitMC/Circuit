@@ -157,7 +157,14 @@ int main(int argc, char** argv) {
         };
         unsupported("minecraft:moving_piston[facing=east,type=normal]");
         unsupported("minecraft:repeater[delay=1,facing=west,locked=true,powered=false]");
-        unsupported("minecraft:chest[facing=north,type=left,waterlogged=false]");
+        unsupported("minecraft:chest[facing=north,type=single,waterlogged=true]");
+        unsupported("minecraft:trapped_chest[facing=north,type=single,waterlogged=false]");
+        require(m->block("minecraft:chest[facing=north,type=left,waterlogged=false]")
+                    == circuit::gameplay::blocks::chest(circuit::contracts::Direction::north, circuit::gameplay::blocks::ChestType::left),
+                "double chest halves are modeled");
+        require(m->block("minecraft:comparator[facing=north,mode=subtract,powered=true]")
+                    == circuit::gameplay::blocks::comparator(circuit::contracts::Direction::south, true, true),
+                "comparator facing names the input side (unverified convention)");
         unsupported("minecraft:dirt");
         require(!m->block("minecraft:stone[snowy=true]").has_value(), "unknown property");
         require(!m->block("minecraft:repeater[delay=1,facing=west]").has_value(), "missing modeled property");
@@ -182,7 +189,7 @@ int main(int argc, char** argv) {
         require(text == write_fixture(*by_oracle), "engine and oracle record identical fixtures");
         const auto recorded = parse(text);
         require(recorded.source == circuit::contracts::EvidenceSource::circuit_reference
-                    && recorded.harness == "circuit-reference-rules-v0", "provenance");
+                    && recorded.harness == "circuit-reference-rules-v1", "provenance");
         require(!recorded.recorded_changes.empty(), "changes recorded");
         for (const auto& exec : {engine_executor(1), engine_executor(8), oracle_executor()}) {
             const auto r = evaluate_fixture(recorded, exec);
@@ -261,7 +268,7 @@ int main(int argc, char** argv) {
                     std::format("{} no longer matches the reference rules; re-record and review it", committed.string()));
             ++rerecorded;
         }
-        require(evaluated >= 7 && rerecorded >= 6, std::format("{} evaluated, {} re-recorded", evaluated, rerecorded));
+        require(evaluated >= 9 && rerecorded >= 8, std::format("{} evaluated, {} re-recorded", evaluated, rerecorded));
     });
 
     return suite.finish();

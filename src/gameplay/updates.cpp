@@ -20,8 +20,10 @@ bool set_block(RuleContext& ctx, BlockPos pos, BlockState next) {
 
 std::uint8_t received_power(RuleContext& ctx, BlockPos pos) {
     std::uint8_t best = 0;
-    for (auto d : contracts::all_directions)
-        best = std::max(best, emitted_power(ctx.block(pos.relative(d)), contracts::opposite(d)));
+    for (auto d : contracts::all_directions) {
+        const auto n = pos.relative(d);
+        best = std::max(best, emitted_power(ctx, n, ctx.block(n), contracts::opposite(d)));
+    }
     return best;
 }
 
@@ -68,6 +70,8 @@ void on_placed(RuleContext& ctx, BlockPos pos, BlockState state) {
     case BlockType::piston: case BlockType::sticky_piston: check_piston(ctx, pos); break;
     case BlockType::hopper: check_hopper(ctx, pos); break;
     case BlockType::water: schedule(ctx, TickList::fluid, pos, BlockType::water, 5, 0); break;
+    case BlockType::chest: check_chest(ctx, pos); break;
+    case BlockType::comparator: check_comparator(ctx, pos); break;
     default: break;
     }
 }
@@ -84,12 +88,19 @@ void on_neighbor_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
     case BlockType::piston: case BlockType::sticky_piston: check_piston(ctx, target); break;
     case BlockType::hopper: check_hopper(ctx, target); break;
     case BlockType::water: schedule(ctx, TickList::fluid, target, BlockType::water, 5, 0); break;
+    case BlockType::chest: check_chest(ctx, target); break;
+    case BlockType::comparator: check_comparator(ctx, target); break;
     default: break;
     }
 }
 
-std::uint8_t emitted_power(BlockState s, Direction toward) noexcept {
+std::uint8_t emitted_power(RuleContext& ctx, BlockPos pos, BlockState s, Direction toward) {
     switch (s.type()) {
+    case BlockType::comparator: {
+        if (toward != s.facing()) return 0;
+        const auto* be = ctx.peek_block_entity(pos);
+        return be ? be->signal : 0;
+    }
     case BlockType::lever: return s.flag() ? 15 : 0;
     case BlockType::redstone_block: return 15;
     case BlockType::repeater: return s.flag() && toward == s.facing() ? 15 : 0;
