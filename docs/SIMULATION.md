@@ -96,13 +96,13 @@ xmake run circuit-server --simulate --replay "$PWD/demo.crpl" --workers 16
 xmake run circuit-server --simulate --ticks 200 --realtime
 ```
 
-`--simulate` without `--replay` runs a built-in demonstration with machines that straddle chunk edges. The output includes a 64-bit state digest; equal digests across worker counts are a quick check, not proof. `--realtime` paces ticks at 20 Hz. When it falls more than 40 ticks behind, it drops the wall-clock backlog; logical ticks are never skipped.
+`--simulate` without `--replay` runs a built-in demonstration with machines that straddle chunk edges. Replay records (format version 2) store the bundle and the rule-set id. A record made under different reference rules is refused with `rules_mismatch` instead of replaying with silently different behavior. The output includes a 64-bit state digest; equal digests across worker counts are a quick check, not proof. `--realtime` paces ticks at 20 Hz. When it falls more than 40 ticks behind, it drops the wall-clock backlog; logical ticks are never skipped.
 
 Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked or recorded with `--check-fixture <file>` and `--record-fixture <skeleton> --output <file>`.
 
 ## Limitations
 
-- No mechanism is verified against the target version. Pistons (no drops, no entity pushing), dust, water, wheat and item physics are declared simplifications.
+- No mechanism is verified against the target version. Pistons (fixed drops, half-block item pushing), dust, water, wheat and item physics are declared simplifications.
 - There is no lighting, world generation (chunks start empty), mob spawning or second dimension. Comparators read containers only, not other analog sources.
 - Snapshots copy whole column data on first write, and commit is serial. On the current small fixtures, coordination overhead outweighs parallel gains; performance work belongs to M8.
 - A capacity failure, such as exceeding 1,000,000 block events in one tick, fails the tick and leaves the engine unusable. Nothing is silently dropped.

@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include <circuit/contracts/replay.hpp>
+#include <circuit/contracts/version.hpp>
 
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
-constexpr std::uint16_t format_version = 1;
+constexpr std::uint16_t format_version = 2;
 
 class Writer {
 public:
@@ -129,6 +130,7 @@ bool decode_command(Reader& r, Command& c) {
 
 Result<void> check_structure(const ReplayLog& log, const ReplayLimits& limits) {
     if (log.bundle_id.empty() || log.bundle_id.size() > limits.max_bundle_id) return std::unexpected(ErrorCode::malformed_record);
+    if (log.rules_id.empty() || log.rules_id.size() > limits.max_bundle_id) return std::unexpected(ErrorCode::malformed_record);
     if (log.ticks.size() > limits.max_ticks) return std::unexpected(ErrorCode::record_too_large);
     std::optional<Tick> last_tick;
     std::optional<std::uint64_t> last_admission;
@@ -150,8 +152,10 @@ Result<std::vector<std::byte>> encode_replay(const ReplayLog& log, const ReplayL
     Writer w;
     for (auto b : magic) w.put(b);
     w.put(format_version);
-    w.put(static_cast<std::uint16_t>(log.bundle_id.size()));
-    for (char ch : log.bundle_id) w.put(static_cast<std::uint8_t>(ch));
+    for (const auto* id : {&log.bundle_id, &log.rules_id}) {
+        w.put(static_cast<std::uint16_t>(id->size()));
+        for (char ch : *id) w.put(static_cast<std::uint8_t>(ch));
+    }
     w.put(log.seed);
     w.put(static_cast<std::uint32_t>(log.ticks.size()));
     for (const auto& t : log.ticks) {
@@ -173,11 +177,13 @@ Result<ReplayLog> decode_replay(std::span<const std::byte> bytes, const ReplayLi
     }
     std::uint16_t version{}, id_length{};
     if (!r.get(version) || version != format_version) return std::unexpected(ErrorCode::malformed_record);
-    if (!r.get(id_length) || id_length == 0 || id_length > limits.max_bundle_id) return std::unexpected(ErrorCode::malformed_record);
     ReplayLog log;
+    for (auto* id : {&log.bundle_id, &log.rules_id}) {
+        if (!r.get(id_length) || id_length == 0 || id_length > limits.max_bundle_id || !r.bytes(id_length, *id))
+            return std::unexpected(ErrorCode::malformed_record);
+    }
     std::uint32_t tick_count{};
-    if (!r.bytes(id_length, log.bundle_id) || !r.get(log.seed) || !r.get(tick_count))
-        return std::unexpected(ErrorCode::malformed_record);
+    if (!r.get(log.seed) || !r.get(tick_count)) return std::unexpected(ErrorCode::malformed_record);
     if (tick_count > limits.max_ticks) return std::unexpected(ErrorCode::record_too_large);
     log.ticks.reserve(tick_count);
     for (std::uint32_t i = 0; i < tick_count; ++i) {
@@ -193,6 +199,12 @@ Result<ReplayLog> decode_replay(std::span<const std::byte> bytes, const ReplayLi
     if (!r.finished()) return std::unexpected(ErrorCode::malformed_record);
     if (auto ok = check_structure(log, limits); !ok) return std::unexpected(ok.error());
     return log;
+}
+
+Result<void> check_replay_rules(const ReplayLog& log, const VersionBundle& bundle) noexcept {
+    if (!bundle.rules) return std::unexpected(ErrorCode::unsupported_version);
+    if (log.bundle_id != bundle.id || log.rules_id != bundle.rules->id) return std::unexpected(ErrorCode::rules_mismatch);
+    return {};
 }
 
 } // namespace circuit::contracts

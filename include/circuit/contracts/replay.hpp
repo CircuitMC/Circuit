@@ -20,6 +20,7 @@ struct TickInput {
 };
 struct ReplayLog {
     std::string bundle_id;
+    std::string rules_id; // Rule set the inputs were recorded under; replay requires the same rules.
     std::uint64_t seed{};
     std::vector<TickInput> ticks; // Strictly increasing ticks; admissions strictly increasing overall.
     bool operator==(const ReplayLog&) const = default;
@@ -31,7 +32,14 @@ struct ReplayLimits {
     std::size_t max_bundle_id = 64;
 };
 
+// Format version 2 (version 1 records lack the rule-set id and are rejected).
 Result<std::vector<std::byte>> encode_replay(const ReplayLog& log, const ReplayLimits& limits = {});
 Result<ReplayLog> decode_replay(std::span<const std::byte> bytes, const ReplayLimits& limits = {});
+
+struct VersionBundle;
+// A record replays only on a bundle with an executable rule set whose id
+// matches the recorded one; otherwise the same inputs could silently produce
+// different behavior.
+Result<void> check_replay_rules(const ReplayLog& log, const VersionBundle& bundle) noexcept;
 
 } // namespace circuit::contracts

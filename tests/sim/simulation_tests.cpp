@@ -280,14 +280,14 @@ int main() {
 
     suite.run("replay record reproduces the run", [&] {
         const auto& s = scenarios[2];
-        ReplayLog log{"java-1.21.8", s.seed, {}};
+        ReplayLog log{"java-1.21.8", std::string(bundle().rules->id), s.seed, {}};
         for (Tick t = 1; t <= s.ticks; ++t) log.ticks.push_back({t, inputs[2].per_tick[t - 1]});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);
         require(decoded.has_value() && *decoded == log, "decode");
         const auto replay_bundle = BundleRegistry::select_for_simulation(decoded->bundle_id);
-        require(replay_bundle.has_value(), "bundle from record");
+        require(replay_bundle.has_value() && check_replay_rules(*decoded, **replay_bundle).has_value(), "bundle and rules from record");
         Engine engine(**replay_bundle, decoded->seed, pool(4));
         for (const auto& t : decoded->ticks) engine.advance(t.commands);
         require(engine.dump() == references[2].dumps.at(s.ticks), "replayed final state");

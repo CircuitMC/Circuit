@@ -48,7 +48,7 @@ int main() {
     suite.run("error codes are stable", [] {
         require(static_cast<int>(ErrorCode::invalid_argument) == 1, "first code");
         require(static_cast<int>(ErrorCode::stale_generation) == 4, "stale generation code");
-        require(static_cast<int>(ErrorCode::unknown_command) == 21, "last code");
+        require(static_cast<int>(ErrorCode::unknown_command) == 21, "code 21");
         require(error_name(ErrorCode::capacity_exceeded) == "capacity_exceeded", "names");
     });
 
@@ -106,7 +106,7 @@ int main() {
     });
 
     suite.run("replay round trip and limits", [] {
-        ReplayLog log{"java-1.21.8", 42, {}};
+        ReplayLog log{"java-1.21.8", "circuit-reference-rules-v3", 42, {}};
         log.ticks.push_back({1, {{1, SetBlock{{-5, 70, 9}, 0x1234, Generation{2}}},
                                  {2, SpawnItem{{-1, 2, 3}, {4, -5, 6}, {7, 8}}},
                                  {3, AddTicket{9, {-3, 4}, 2}}}});
@@ -139,9 +139,30 @@ int main() {
 
         // Corrupt the command tag of the first command (after magic, version, id, seed, counts).
         auto bad_tag = *bytes;
-        const std::size_t first_tag = 4 + 2 + 2 + log.bundle_id.size() + 8 + 4 + 8 + 4 + 8;
+        const std::size_t first_tag = 4 + 2 + 2 + log.bundle_id.size() + 2 + log.rules_id.size() + 8 + 4 + 8 + 4 + 8;
         bad_tag[first_tag] = std::byte{99};
         require(decode_replay(bad_tag).error() == ErrorCode::malformed_record, "unknown command tag");
+
+        auto version_one = *bytes;
+        version_one[4] = std::byte{1};
+        require(decode_replay(version_one).error() == ErrorCode::malformed_record, "version 1 lacks the rule-set id");
+        auto unnamed = log;
+        unnamed.rules_id.clear();
+        require(encode_replay(unnamed).error() == ErrorCode::malformed_record, "rule-set id required");
+    });
+
+    suite.run("replay records are bound to the rule set", [] {
+        const auto& bundle = **BundleRegistry::select_for_simulation("java-1.21.8");
+        ReplayLog log{"java-1.21.8", std::string(bundle.rules->id), 1, {}};
+        require(check_replay_rules(log, bundle).has_value(), "matching rules");
+        log.rules_id = "circuit-reference-rules-v0";
+        require(check_replay_rules(log, bundle).error() == ErrorCode::rules_mismatch, "older rules are refused");
+        log.rules_id = bundle.rules->id;
+        log.bundle_id = "java-1.20.4";
+        require(check_replay_rules(log, bundle).error() == ErrorCode::rules_mismatch, "bundle must match");
+        require(check_replay_rules(log, **BundleRegistry::find("java-1.20.4")).error() == ErrorCode::unsupported_version,
+                "bundle without rules");
+        require(static_cast<int>(ErrorCode::rules_mismatch) == 22, "stable code");
     });
 
     return suite.finish();

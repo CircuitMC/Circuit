@@ -66,7 +66,11 @@ int run_simulation(const SimulateOptions& options) {
         log = *decoded;
         last = log.ticks.empty() ? 0 : log.ticks.back().tick;
     } else {
+        const auto selected = BundleRegistry::select_for_simulation(options.game_version);
+        if (!selected)
+            throw std::runtime_error(std::format("cannot simulate {}: {}", options.game_version, error_name(selected.error())));
         log.bundle_id = options.game_version;
+        log.rules_id = std::string((*selected)->rules->id);
         log.seed = options.seed;
         std::uint64_t admission = 1;
         for (Tick t = 1; t <= options.ticks; ++t) {
@@ -80,6 +84,9 @@ int run_simulation(const SimulateOptions& options) {
     }
     const auto bundle = BundleRegistry::select_for_simulation(log.bundle_id);
     if (!bundle) throw std::runtime_error(std::format("cannot simulate {}: {}", log.bundle_id, error_name(bundle.error())));
+    if (const auto ok = check_replay_rules(log, **bundle); !ok)
+        throw std::runtime_error(std::format("replay recorded under {} on {}; this build runs {}: {}", log.rules_id, log.bundle_id,
+                                             (*bundle)->rules->id, error_name(ok.error())));
     if (!options.record_path.empty()) {
         const auto bytes = encode_replay(log);
         if (!bytes) throw std::runtime_error(std::format("cannot record replay: {}", error_name(bytes.error())));
