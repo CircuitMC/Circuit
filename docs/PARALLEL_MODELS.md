@@ -34,6 +34,20 @@ xmake run parallel_models
 
 S01 runs on the actual Asio pool at 1/2/4/8/16 workers with forward, reversed, and rotated submission plus yield injection. Expected values and per-action observations are explicit arithmetic constants. Other scenarios are deliberately sequential models of conflicting plans and invalid state transitions. They do not claim concurrent transaction correctness.
 
+Varying worker counts and submission order changes interleavings only incidentally and tends to repeat the same few schedules. It is not schedule exploration. The simulation runtime therefore has a deterministic seeded runner that replaces the pool in tests (see [the simulation core](SIMULATION.md)). Memory-level races still require ThreadSanitizer on the real pool.
+
+## Relation to the simulation runtime
+
+The region-parallel runtime implements the contracts these models motivated: generation-checked chunk lifetimes (S09), once-per-tick entity advancement through migration (S08), complete footprints enforced by region ownership (S01, S05, S07, S10), level-wide counters assigned in serial order at commit, the block-event FIFO, and phase completion without cross-task messages (S02, S04, S13). Its differential tests also cover cases the models did not:
+
+- derived sub-order keys against a shared-counter oracle;
+- update chains crossing region boundaries;
+- conflict-driven merging and splitting of a clock that straddles a chunk edge;
+- a deliberately unsafe mode whose missing isolation seeded exploration must detect;
+- identical traces under random region layouts.
+
+The models remain in this repository as small explanations; the runtime does not use them.
+
 ## What the models establish
 
 `dependency_waves` adds a dependency from every earlier conflicting action to a later one. It includes read/write anti-dependencies, not just write/write conflicts. Actions in one wave touch disjoint mutable resources and may finish in any order. Results are collected into per-action slots before canonical publication.
@@ -58,5 +72,9 @@ In S07 the event outbox preserves labels for internal steps. It does not impleme
 - Lighting revision visibility when used by gameplay; stale read-only results alone do not define permitted lag.
 - Vibration candidate selection, occlusion and arrival times, and non-spatial resource claims.
 - Tick-stage closure under real transport/cancellation, entity unloading, and global-state changes.
+- Level-wide ordering that disjoint footprints do not capture: scheduled-tick sub-order from a shared counter, the block-event queue, the neighbor-update chain limit, entity tick order, and chunk tick order.
+- Shared random streams whose draw counts are data-dependent, and streams the target version seeds non-reproducibly.
+- Region merge and split: identical traces across region layouts, transfer of pending work and chain-owned counters, and conflict-driven merging without oscillation.
+- Active-set changes from chunk load levels, player input admission order, generated chunks entering simulation, and tick-overrun catch-up.
 
-For each mechanism, capture the target-version ordering and observable trace, implement an independent sequential rule fixture, then adapt the scheduler. A model pass must never be promoted into a compatibility claim merely because its case name resembles a Minecraft feature.
+For each mechanism, capture the target-version ordering and observable trace, implement an independent sequential rule fixture, then adapt the scheduler. Each mechanism also declares a compatibility tier: exact, region-local equivalence, or a documented deviation. A model pass must never be promoted into a compatibility claim merely because its case name resembles a Minecraft feature.

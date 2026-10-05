@@ -3,6 +3,7 @@
 | Document | Purpose |
 | --- | --- |
 | [Development guide](DEVELOPMENT.md) | Build, validation, repository layout, and contribution boundaries |
+| [Headless simulation core](SIMULATION.md) | Contracts, reference rules, region-parallel runtime, verification, and limitations |
 | [Parallel reasoning models](PARALLEL_MODELS.md) | Executable concurrency cases, assumptions, and open questions |
 | [Native plugin API](PLUGIN_API.md) | Implemented interfaces, lifetime rules, and ABI constraints |
 | [Java bridge](../modules/java-bridge/README.md) | Java SPI scaffold and bridge plan |

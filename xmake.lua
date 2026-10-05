@@ -22,9 +22,22 @@ add_defines("ASIO_STANDALONE", "ASIO_NO_DEPRECATED")
 add_includedirs("include")
 if is_plat("linux") then add_syslinks("pthread") end
 
+target("circuit_contracts")
+    set_kind("static")
+    add_files("src/contracts/*.cpp")
+target_end()
+
+-- Reference rules; executors supply storage and ordering through RuleContext.
+target("circuit_gameplay")
+    set_kind("static")
+    add_files("src/gameplay/*.cpp")
+    add_deps("circuit_contracts")
+target_end()
+
 target("circuit_runtime")
     set_kind("static")
     add_files("src/runtime/*.cpp")
+    add_deps("circuit_gameplay")
 target_end()
 
 target("circuit_plugins")
@@ -35,7 +48,7 @@ target_end()
 
 target("circuit-server")
     set_kind("binary")
-    add_files("app/main.cpp")
+    add_files("app/*.cpp")
     add_deps("circuit_runtime", "circuit_plugins")
 target_end()
 
@@ -78,6 +91,42 @@ target("validation_tests")
     set_kind("binary")
     set_default(false)
     add_files("tests/validation_tests.cpp")
+target_end()
+
+target("contract_tests")
+    set_kind("binary")
+    set_default(false)
+    add_files("tests/contracts/*.cpp")
+    add_deps("circuit_contracts")
+target_end()
+
+-- Independent sequential reference executor; never linked into the server.
+target("circuit_oracle")
+    set_kind("static")
+    set_default(false)
+    add_files("tests/oracle/*.cpp")
+    add_deps("circuit_gameplay")
+target_end()
+
+target("rules_tests")
+    set_kind("binary")
+    set_default(false)
+    add_files("tests/rules/*.cpp")
+    add_deps("circuit_oracle")
+target_end()
+
+target("simulation_tests")
+    set_kind("binary")
+    set_default(false)
+    add_files("tests/sim/*.cpp")
+    add_deps("circuit_oracle", "circuit_runtime")
+target_end()
+
+target("control_tests")
+    set_kind("binary")
+    set_default(false)
+    add_files("tests/control/*.cpp")
+    add_deps("circuit_runtime")
 target_end()
 
 -- Exploration code is isolated from the server and does not define game rules.

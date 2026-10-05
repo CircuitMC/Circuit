@@ -9,12 +9,15 @@ Circuit/
   xmake.lua                 Build entry point
   app/                      Application startup and composition
   include/circuit/          Module interfaces and runtime contracts
-  src/runtime/              Executor and synthetic kernel
+  src/contracts/            Version bundles, compatibility table, trace and replay records
+  src/gameplay/             Reference rules (circuit-reference-rules-v0)
+  src/runtime/              Region-parallel engine, job runners, executor, synthetic kernel
   src/plugin/               Native shared-library loader
   examples/technical_tools/ Native timing plugin
   modules/java-bridge/      Java SPI and example sources
   src/exploration/          Standalone reasoning models, not linked into the server
-  tests/                    Framework and parallel-reasoning checks
+  tests/                    Framework, rule, differential and parallel-reasoning checks
+  tests/oracle/             Independent sequential executor; never linked into the server
   tools/                    Local build/check and snapshot commands
   docs/                     Public guides and explicitly ignored internal notes
   LICENSE                   Unmodified AGPLv3 text
@@ -22,14 +25,14 @@ Circuit/
   .local/                   Local archives and publication hook
 ```
 
-Add `src/gameplay/`, `src/protocol/`, `src/auth/`, and `src/storage/` when their first implementations land; the current headers describe interfaces, not completed services. Empty directories are not implementation milestones.
+Add `src/protocol/`, `src/auth/`, and `src/storage/` when their first implementations land; those headers describe interfaces, not completed services. Empty directories are not implementation milestones. The simulation core is described in [the simulation guide](SIMULATION.md).
 
 ## Requirements
 
 - Linux x86_64 for the current native plugin loader.
-- xmake 3.0 or later and a C++23 compiler with `std::expected`; GCC 13 is verified.
+- xmake 3.0 or later and a C++23 compiler with `std::expected`; GCC 13 is verified. Clang 18 with libstdc++ 13 does not provide `std::expected`; use GCC, Clang 19 or later, or libc++.
 - Standalone Asio 1.34.2; Boost.Asio is not used.
-- Bash and Python 3 for local maintenance. `rg` is used by the Java source check.
+- Bash, Python 3 and standard POSIX utilities for local maintenance.
 - JDK 17 or later for the optional Java SPI compilation check.
 
 ## Build and run
@@ -38,10 +41,11 @@ Add `src/gameplay/`, `src/protocol/`, `src/auth/`, and `src/storage/` when their
 export XMAKE_GLOBALDIR="$PWD/.xmake-global"
 xmake f -m debug -y
 xmake build -y --all
+xmake run circuit-server --simulate --ticks 300 --workers 4
 xmake run circuit-server --demo --workers 4 --ticks 20
 ```
 
-The default dependency path resolves the pinned Asio package through xmake. For offline builds, provide an existing standalone Asio include directory:
+`--simulate` runs the headless core; `--demo` runs the earlier synthetic scheduler fixture. The default dependency path resolves the pinned Asio package through xmake. For offline builds, provide an existing standalone Asio include directory:
 
 ```bash
 export CIRCUIT_ASIO_INCLUDE=/path/to/asio/include
@@ -56,13 +60,34 @@ xmake run circuit-server --demo --game-version java-1.21.8 --workers 4 --ticks 2
   --plugin "$PWD/build/linux/x86_64/debug/libtechnical_tools.so"
 ```
 
-`--list-versions` lists planned candidates; `--version` returns public build identity. The demo opens no network listener. Starting without `--demo` fails because playable protocol support is not implemented.
+`--list-versions` lists planned candidates; `--version` returns public build identity. Neither mode opens a network listener. Starting without `--simulate` or `--demo` fails because playable protocol support is not implemented.
 
 ## Validation
 
-`bash tools/check.sh` configures debug mode, builds all targets, runs the framework and parallel-model test programs, and compiles the Java SPI/example when `javac` is installed. A missing JDK is reported as a skip. Use focused targets during development, then run the relevant integration checks before marking a milestone complete.
+`bash tools/check.sh` configures debug mode, builds all targets, and runs the framework, contract, rule, differential simulation, control and parallel-model test programs. It also compiles the Java SPI/example when `javac` is installed; a missing JDK is reported as a skip. Use focused targets during development, then run the relevant integration checks before marking a milestone complete:
 
-The xmake modes include `debug`, `release`, `asan`, and `tsan`. Sanitizer availability depends on the compiler and host. GCC TSan previously failed before test execution with an unexpected-memory-mapping error on the development host; it has not supplied evidence of race freedom. Neither arithmetic demo tests nor a clean sanitizer run proves vanilla gameplay compatibility.
+```bash
+xmake run contract_tests    # identities, coordinates, bundles, replay limits
+xmake run rules_tests       # reference rules against hand-derived expectations
+xmake run simulation_tests  # runtime against the oracle across workers, layouts and seeds
+xmake run control_tests     # seeded schedules, tick clock, digest
+```
+
+The xmake modes include `debug`, `release`, `asan`, and `tsan`. On kernels with high mmap randomization, ThreadSanitizer stops before tests run with an unexpected-memory-mapping error. Disable ASLR for the test process only; do not change host settings:
+
+```bash
+export XMAKE_GLOBALDIR="$PWD/.xmake-global"
+xmake f -m tsan --toolchain=gcc -y
+xmake build runtime_tests simulation_tests
+setarch "$(uname -m)" -R ./build/linux/x86_64/tsan/runtime_tests
+setarch "$(uname -m)" -R ./build/linux/x86_64/tsan/simulation_tests
+```
+
+GCC warns that ThreadSanitizer does not model the `std::atomic_thread_fence` that Asio uses. A clean run is evidence about the engine's own accesses, not a proof that Asio internals are race-free. Add `--asio_include=/path/to/asio/include` to the configure step for offline builds, and run `bash tools/check.sh` afterwards to restore the debug configuration. Neither sanitizer runs nor differential tests prove vanilla gameplay compatibility.
+
+## Behavior sources
+
+Implement Minecraft behavior from specifications, observed traces, and test fixtures. Do not copy, translate, or paraphrase decompiled, deobfuscated, or mapped game source into this repository. Reference traces come from an instrumented target-version server maintained outside this repository. Committed fixtures record their source and target version and are reviewed for third-party content. This is a project contribution rule, not legal advice.
 
 ## Source and documentation boundaries
 

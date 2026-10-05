@@ -2,10 +2,12 @@
 #include <circuit/plugin/loader.hpp>
 #include <circuit/protocol.hpp>
 #include <circuit/runtime/demo_kernel.hpp>
+#include "simulate.hpp"
 #include <asio/io_context.hpp>
 #include <asio/signal_set.hpp>
 #include <asio/steady_timer.hpp>
 #include <charconv>
+#include <cstdint>
 #include <chrono>
 #include <csignal>
 #include <iostream>
@@ -29,7 +31,9 @@ unsigned number(std::string_view input, unsigned low, unsigned high) {
     return value;
 }
 void usage() {
-    std::cout << "Circuit 0.0.1 — local framework prototype (no Minecraft listener)\n"
+    std::cout << "Circuit 0.0.1 — headless simulation prototype (no Minecraft listener)\n"
+        "  --simulate [--game-version java-1.21.8] [--workers 1..64] [--ticks 1..1000000]\n"
+        "             [--seed N] [--replay <file>] [--record <file>] [--realtime]\n"
         "  --demo [--game-version java-1.21.8|java-1.20.4]\n"
         "         [--workers 1..64] [--ticks 1..1000000] [--plugin <shared-library>]\n"
         "  --list-versions | --version | --help\n";
@@ -38,7 +42,8 @@ void usage() {
 int main(int argc, char** argv) {
     try {
         unsigned workers = 4, ticks = 20;
-        bool demo = false;
+        bool demo = false, simulate = false, ticks_given = false;
+        circuit::app::SimulateOptions simulation;
         std::string selected = "java-1.21.8";
         std::vector<std::string> libraries;
         for (int i = 1; i < argc; ++i) {
@@ -58,17 +63,30 @@ int main(int argc, char** argv) {
                 return 0;
             }
             if (arg == "--demo") demo = true;
+            else if (arg == "--simulate") simulate = true;
             else if (arg == "--workers") workers = number(value(), 1, 64);
-            else if (arg == "--ticks") ticks = number(value(), 1, 1000000);
+            else if (arg == "--ticks") { ticks = number(value(), 1, 1000000); ticks_given = true; }
+            else if (arg == "--seed") simulation.seed = number(value(), 0, UINT32_MAX);
+            else if (arg == "--replay") simulation.replay_path = value();
+            else if (arg == "--record") simulation.record_path = value();
+            else if (arg == "--realtime") simulation.realtime = true;
             else if (arg == "--game-version") selected = value();
             else if (arg == "--plugin") libraries.emplace_back(value());
             else throw std::invalid_argument("unknown option: " + std::string(arg));
         }
         const auto version = circuit::protocol::builtin_registry::select(selected);
         if (!version) throw std::invalid_argument("unknown game version: " + selected);
+        if (simulate && demo) throw std::invalid_argument("--simulate and --demo are exclusive");
+        if (simulate) {
+            simulation.game_version = selected;
+            simulation.workers = workers;
+            simulation.ticks = ticks_given ? ticks : 200;
+            return circuit::app::run_simulation(simulation);
+        }
         if (!demo) {
             usage();
-            std::cerr << "Play protocol is not implemented. Use --demo for the synthetic scheduler.\n";
+            std::cerr << "Play protocol is not implemented. Use --simulate for the headless core or --demo for the "
+                         "synthetic scheduler.\n";
             return 2;
         }
         Host host; // Must outlive every loaded plugin.

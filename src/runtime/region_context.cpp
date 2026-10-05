@@ -1,0 +1,229 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+#include "region_context.hpp"
+#include <circuit/gameplay/rules.hpp>
+#include <stdexcept>
+
+namespace circuit::runtime::detail {
+using contracts::block_of;
+using contracts::chunk_of;
+
+RegionContext::RegionContext(const contracts::VersionBundle& bundle, WorldStore& world, const RegionMap& regions,
+                             RegionId region, Phase phase, bool record_trace, bool unchecked)
+    : RuleContext(bundle), world_(world), regions_(regions), region_(region), phase_(phase),
+      record_trace_(record_trace), unchecked_(unchecked) {}
+
+void RegionContext::begin_root(std::uint64_t root, ChunkPos home) {
+    root_ = root;
+    seq_ = 0;
+    home_ = home;
+    updater().reset();
+}
+
+void RegionContext::rollback() {
+    for (auto& [c, snapshot] : snapshots) *world_.loaded.at(c) = std::move(snapshot);
+    snapshots.clear();
+    trace.clear();
+    entity_moves.clear();
+    interactions.clear();
+    fifo.clear();
+    fifo_pending.clear();
+    children.clear();
+}
+
+ChunkData* RegionContext::loaded_in_world(BlockPos pos) const {
+    if (!gameplay::in_world(bundle(), pos)) return nullptr;
+    return world_.find_loaded(chunk_of(pos));
+}
+
+ChunkData& RegionContext::owned(ChunkPos c, ChunkData& data) {
+    if (!unchecked_ && region_ != all_regions && regions_.owner.at(c) != region_) throw ForeignAccess{c};
+    if (c != home_ && phase_ != Phase::commands) interactions.insert(std::minmax(home_, c));
+    return data;
+}
+
+ChunkData& RegionContext::writable(ChunkPos c, ChunkData& data) {
+    owned(c, data);
+    if (!snapshots.contains(c)) snapshots.emplace(c, data);
+    return data;
+}
+
+BlockState RegionContext::block(BlockPos pos) {
+    auto* data = loaded_in_world(pos);
+    if (!data) return BlockState::unloaded_sentinel();
+    const auto& chunk = owned(chunk_of(pos), *data);
+    const auto& section = chunk.sections[section_of(pos.y)];
+    return section ? section->blocks[contracts::section_local_index(pos)] : gameplay::blocks::air();
+}
+
+void RegionContext::write_block(BlockPos pos, BlockState state) {
+    auto* data = loaded_in_world(pos);
+    if (!data) throw std::logic_error("runtime: write to an unloaded position");
+    auto& chunk = writable(chunk_of(pos), *data);
+    auto& section = chunk.sections[section_of(pos.y)];
+    if (!section) {
+        if (state.is_air()) return;
+        section = std::make_shared<Section>();
+    } else if (section.use_count() > 1) {
+        section = std::make_shared<Section>(*section); // Copy on write: the snapshot keeps the old section.
+    }
+    section->blocks[contracts::section_local_index(pos)] = state;
+}
+
+std::optional<contracts::Generation> RegionContext::chunk_generation(ChunkPos chunk) {
+    // Loading state and generations are fixed while a phase runs: no ownership needed.
+    if (const auto* data = world_.find_loaded(chunk)) return data->generation;
+    return std::nullopt;
+}
+
+bool RegionContext::has_tick(TickList list, BlockPos pos, BlockType type) {
+    auto* data = loaded_in_world(pos);
+    if (!data) return false;
+    return owned(chunk_of(pos), *data).ticks[static_cast<int>(list)].contains({pos, type});
+}
+
+void RegionContext::add_tick(TickList list, BlockPos pos, BlockType type, Tick due, std::int8_t priority, std::uint32_t seq) {
+    auto* data = loaded_in_world(pos);
+    if (!data) throw std::logic_error("runtime: tick scheduled at an unloaded position");
+    auto& chunk = writable(chunk_of(pos), *data);
+    chunk.ticks[static_cast<int>(list)][{pos, type}] = TickEntry{due, priority, 0, {true, root_, seq}};
+}
+
+bool RegionContext::has_block_event(const BlockEvent& event) {
+    auto* data = loaded_in_world(event.pos);
+    if (!data) return false;
+    const auto& chunk = owned(chunk_of(event.pos), *data);
+    if (fifo_pending.contains(event)) return true;
+    for (const auto& e : chunk.events)
+        if (e.event == event) return true;
+    return false;
+}
+
+void RegionContext::push_local(const BlockEvent& event) {
+    fifo.push_back({event, next_local++});
+    fifo_pending.insert(event);
+    children.emplace_back();
+}
+
+void RegionContext::add_block_event(const BlockEvent& event, std::uint32_t seq) {
+    auto* data = loaded_in_world(event.pos);
+    if (!data) throw std::logic_error("runtime: block event at an unloaded position");
+    const auto c = chunk_of(event.pos);
+    if (phase_ == Phase::block_events && data->level == ChunkLevel::ticking) {
+        owned(c, *data);
+        // Runs later in this phase; its global position is derived at commit.
+        children.at(root_).push_back(next_local);
+        push_local(event);
+        return;
+    }
+    writable(c, *data).events.push_back({event, 0, {true, root_, seq}});
+}
+
+const BlockEntity* RegionContext::peek_block_entity(BlockPos pos) {
+    auto* data = loaded_in_world(pos);
+    if (!data) return nullptr;
+    const auto& map = owned(chunk_of(pos), *data).block_entities;
+    const auto it = map.find(pos);
+    return it == map.end() ? nullptr : &it->second;
+}
+
+BlockEntity* RegionContext::block_entity(BlockPos pos) {
+    auto* data = loaded_in_world(pos);
+    if (!data) return nullptr;
+    auto& map = owned(chunk_of(pos), *data).block_entities;
+    if (!map.contains(pos)) return nullptr;
+    return &writable(chunk_of(pos), *data).block_entities.at(pos);
+}
+
+void RegionContext::create_block_entity(BlockPos pos, BlockType kind) {
+    if (phase_ != Phase::commands) throw std::logic_error("runtime: block entity created outside the command phase");
+    auto* data = loaded_in_world(pos);
+    if (!data) throw std::logic_error("runtime: block entity at an unloaded position");
+    writable(chunk_of(pos), *data).block_entities[pos] =
+        BlockEntity{kind, world_.next_block_entity_order++, std::vector<contracts::ItemStack>(gameplay::container_size(kind)), 0};
+}
+
+void RegionContext::remove_block_entity(BlockPos pos) {
+    if (auto* data = loaded_in_world(pos)) writable(chunk_of(pos), *data).block_entities.erase(pos);
+}
+
+std::vector<EntityId> RegionContext::entities_in_cell(BlockPos cell) {
+    std::vector<EntityId> out;
+    const auto c = chunk_of(cell);
+    auto* data = world_.find_loaded(c);
+    if (!data) return out;
+    for (const auto& [id, e] : owned(c, *data).entities)
+        if (block_of(e.position) == cell) out.push_back(id);
+    return out;
+}
+
+std::optional<ChunkPos> RegionContext::locate(EntityId id) const {
+    if (const auto it = entity_moves.find(id); it != entity_moves.end()) return it->second;
+    if (const auto it = world_.entity_index.find(id); it != world_.entity_index.end()) return it->second;
+    return std::nullopt;
+}
+
+const Entity* RegionContext::peek_entity(EntityId id) {
+    const auto c = locate(id);
+    if (!c) return nullptr;
+    auto* data = world_.find_loaded(*c);
+    if (!data) return nullptr;
+    const auto& map = owned(*c, *data).entities;
+    const auto it = map.find(id);
+    return it == map.end() ? nullptr : &it->second;
+}
+
+Entity* RegionContext::entity(EntityId id) {
+    const auto c = locate(id);
+    if (!c) return nullptr;
+    auto* data = world_.find_loaded(*c);
+    if (!data) return nullptr;
+    if (!owned(*c, *data).entities.contains(id)) return nullptr;
+    return &writable(*c, *data).entities.at(id);
+}
+
+EntityId RegionContext::spawn_entity(const Entity& prototype) {
+    if (phase_ != Phase::commands) throw std::logic_error("runtime: entity spawned outside the command phase");
+    const auto c = chunk_of(block_of(prototype.position));
+    auto* data = world_.find_loaded(c);
+    if (!data) throw std::logic_error("runtime: entity spawned in an unloaded chunk");
+    if (world_.next_entity_id == UINT64_MAX) throw std::overflow_error("runtime: entity ids exhausted");
+    const EntityId id{world_.next_entity_id++};
+    auto e = prototype;
+    e.id = id;
+    writable(c, *data).entities[id] = e;
+    entity_moves[id] = c;
+    return id;
+}
+
+void RegionContext::relocate_entity(EntityId id, contracts::FixedVec position) {
+    const auto from = locate(id);
+    const auto to = chunk_of(block_of(position));
+    auto* source = from ? world_.find_loaded(*from) : nullptr;
+    auto* target = world_.find_loaded(to);
+    if (!source || !target) throw std::logic_error("runtime: invalid entity relocation");
+    if (*from == to) {
+        writable(to, *target).entities.at(id).position = position;
+        return;
+    }
+    auto& src = writable(*from, *source);
+    auto& dst = writable(to, *target); // May abort before anything moved.
+    auto node = src.entities.extract(id);
+    node.mapped().position = position;
+    dst.entities.insert(std::move(node));
+    entity_moves[id] = to;
+}
+
+void RegionContext::remove_entity(EntityId id) {
+    const auto c = locate(id);
+    if (!c) return;
+    if (auto* data = world_.find_loaded(*c)) writable(*c, *data).entities.erase(id);
+    entity_moves[id] = std::nullopt;
+}
+
+std::uint32_t RegionContext::record(TraceKind kind, BlockPos pos, std::uint64_t a, std::uint64_t b, std::uint64_t c) {
+    const auto seq = seq_++;
+    if (record_trace_) trace.push_back({{world_.time, phase_, root_, seq}, kind, pos, a, b, c});
+    return seq;
+}
+
+} // namespace circuit::runtime::detail

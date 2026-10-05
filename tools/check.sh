@@ -13,9 +13,13 @@ xmake run interface_tests
 xmake run validation_tests
 xmake run plugin_tests
 xmake run parallel_models
+xmake run contract_tests
+xmake run rules_tests
+xmake run simulation_tests
+xmake run control_tests
 if command -v javac >/dev/null; then
     mkdir -p build/java-spi
-    mapfile -t sources < <(rg --files modules/java-bridge -g '*.java')
+    mapfile -t sources < <(find modules/java-bridge -name '*.java' | sort)
     javac --release 17 -d build/java-spi "${sources[@]}"
 else
     echo 'Java SPI compilation skipped: javac 17+ is not available.'

@@ -1,0 +1,114 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+#pragma once
+#include <circuit/contracts/version.hpp>
+#include <circuit/gameplay/world_types.hpp>
+#include <array>
+#include <map>
+#include <memory>
+#include <set>
+#include <unordered_map>
+#include <vector>
+
+// Chunk-column storage of the runtime. A ChunkData object is mutated only by
+// the region that owns its column during a phase, or by the coordinator
+// between phases.
+namespace circuit::runtime::detail {
+using contracts::BlockPos;
+using contracts::ChunkPos;
+using contracts::EntityId;
+using contracts::Tick;
+using gameplay::BlockEntity;
+using gameplay::BlockEvent;
+using gameplay::BlockState;
+using gameplay::BlockType;
+using gameplay::ChunkLevel;
+using gameplay::Entity;
+
+struct Section {
+    std::array<BlockState, 4096> blocks{};
+};
+
+// Staging metadata: a provisional entry was created in the current phase and
+// receives its level-wide counter value at commit, ordered by (root, seq).
+struct Provisional {
+    bool pending{};
+    std::uint64_t root{};
+    std::uint32_t seq{};
+};
+
+struct TickEntry {
+    Tick due{};
+    std::int8_t priority{};
+    std::uint64_t suborder{};
+    Provisional provisional;
+};
+using TickKey = std::pair<BlockPos, BlockType>;
+
+struct EventEntry {
+    BlockEvent event;
+    std::uint64_t seq{};
+    Provisional provisional;
+};
+
+struct ChunkData {
+    ChunkPos pos;
+    contracts::Generation generation;
+    ChunkLevel level{};
+    // Sections are shared copy-on-write between a chunk and its rollback snapshot.
+    std::vector<std::shared_ptr<Section>> sections;
+    std::map<BlockPos, BlockEntity> block_entities;
+    std::map<EntityId, Entity> entities;
+    std::map<TickKey, TickEntry> ticks[2];
+    std::vector<EventEntry> events; // Pending block events at this column; deferred while not ticking.
+};
+
+struct WorldStore {
+    std::map<ChunkPos, std::unique_ptr<ChunkData>> loaded; // Structure changes only between phases.
+    std::map<ChunkPos, std::unique_ptr<ChunkData>> saved;  // Unloaded columns with all their state.
+    std::unordered_map<EntityId, ChunkPos> entity_index;   // Updated at commit.
+    Tick time{};
+    std::uint64_t next_suborder{};
+    std::uint64_t next_event_seq{};
+    std::uint64_t next_entity_id{1};
+    std::uint64_t next_block_entity_order{};
+    gameplay::TicketSet tickets;
+
+    [[nodiscard]] ChunkData* find_loaded(ChunkPos c) const {
+        const auto it = loaded.find(c);
+        return it == loaded.end() ? nullptr : it->second.get();
+    }
+};
+
+using RegionId = std::uint64_t;
+inline constexpr RegionId all_regions = 0;
+
+struct RegionMap {
+    std::unordered_map<ChunkPos, RegionId> owner; // Every loaded column has exactly one owner.
+    std::map<RegionId, std::set<ChunkPos>> members;
+    RegionId next_id{1};
+
+    RegionId add_singleton(ChunkPos c) {
+        const auto id = next_id++;
+        owner[c] = id;
+        members[id].insert(c);
+        return id;
+    }
+    void remove(ChunkPos c) {
+        const auto it = owner.find(c);
+        if (it == owner.end()) return;
+        auto& set = members[it->second];
+        set.erase(c);
+        if (set.empty()) members.erase(it->second);
+        owner.erase(it);
+    }
+    // Moves every member of `from` into `into`.
+    void absorb(RegionId into, RegionId from) {
+        if (into == from) return;
+        auto node = members.extract(from);
+        if (node.empty()) return;
+        for (const auto c : node.mapped()) owner[c] = into;
+        members[into].merge(node.mapped());
+    }
+};
+
+} // namespace circuit::runtime::detail
