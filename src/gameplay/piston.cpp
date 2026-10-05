@@ -68,6 +68,12 @@ public:
         if (has_block_entity(ctx_.block(p).type())) ctx_.remove_block_entity(p);
         write(p, blocks::air());
     }
+    // A block destroyed by the move: removed, and its drops spawned.
+    void destroy(BlockPos p) {
+        const auto s = ctx_.block(p);
+        clear(p);
+        drop_items(ctx_, p, s);
+    }
     // Places a moving piston that turns into `carried` after the move.
     void moving(BlockPos p, BlockState carried, Motion motion, bool sticky) {
         if (has_block_entity(ctx_.block(p).type())) ctx_.remove_block_entity(p);
@@ -87,7 +93,7 @@ public:
     void move(const Structure& structure, Direction dir, Motion motion, bool sticky) {
         std::vector<BlockState> states;
         for (auto p : structure.moved) states.push_back(ctx_.block(p));
-        for (auto p : structure.destroyed) clear(p);
+        for (auto p : structure.destroyed) destroy(p);
         for (auto p : structure.moved) write(p, blocks::air());
         for (std::size_t i = 0; i < structure.moved.size(); ++i)
             moving(structure.moved[i].relative(dir), states[i], motion, sticky);
@@ -205,11 +211,40 @@ void run_piston_event(RuleContext& ctx, const BlockEvent& event, BlockState s) {
     }
 }
 
+namespace {
+constexpr std::int64_t push_step = contracts::fixed_one / 2;
+
+// Moves item entities in the moving block's cell half a block along the
+// motion. A retracting base does not move, so it pushes nothing.
+void push_entities(RuleContext& ctx, BlockPos pos, Motion motion) {
+    if (motion.source && !motion.extending) return;
+    const auto o = contracts::offset(motion.extending ? motion.facing : contracts::opposite(motion.facing));
+    for (const auto id : ctx.entities_in_cell(pos)) {
+        const auto* e = ctx.peek_entity(id);
+        if (!e) continue;
+        auto next = e->position;
+        next.x += o.dx * push_step;
+        next.y += o.dy * push_step;
+        next.z += o.dz * push_step;
+        const auto cell = contracts::block_of(next);
+        if (!ctx.chunk_generation(contracts::chunk_of(cell))) continue;
+        if (cell != pos && is_solid(ctx.block(cell).type())) continue;
+        const auto from = contracts::chunk_of(contracts::block_of(e->position));
+        const auto to = contracts::chunk_of(cell);
+        if (from != to)
+            ctx.record(TraceKind::entity_changed_chunk, cell, id.value, contracts::pack_chunk(from), contracts::pack_chunk(to));
+        ctx.relocate_entity(id, next);
+    }
+}
+} // namespace
+
 void tick_moving_piston(RuleContext& ctx, BlockPos pos) {
     auto* be = ctx.block_entity(pos);
     if (!be) return;
     if (be->progress < move_ticks) {
+        const auto motion = Motion::unpack(be->motion);
         ++be->progress;
+        push_entities(ctx, pos, motion); // `be` must not be used after entities move.
         return;
     }
     const auto carried = BlockState::decode(be->moving).value_or(blocks::air());

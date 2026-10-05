@@ -151,6 +151,16 @@ int main() {
         require(moving >= 60 && executed >= 40, std::format("moving pistons {} events {}", moving, executed));
     });
 
+    suite.run("drops spawn in parallel phases and items cross edges", [&] {
+        std::size_t parallel_spawns = 0, pushed_across = 0;
+        for (const auto& t : references[11].traces) {
+            for (const auto& r : of_kind(t, TraceKind::entity_spawned)) parallel_spawns += r.key.phase == Phase::block_events;
+            for (const auto& r : of_kind(t, TraceKind::entity_changed_chunk)) pushed_across += r.key.phase == Phase::block_entities;
+        }
+        require(parallel_spawns >= 60 && pushed_across >= 25,
+                std::format("drops in block events {}, pushes across edges {}", parallel_spawns, pushed_across));
+    });
+
     suite.run("oracle is deterministic", [&] {
         for (std::size_t i = 0; i < scenarios.size(); ++i) {
             const auto again = run_oracle(scenarios[i], inputs[i]);

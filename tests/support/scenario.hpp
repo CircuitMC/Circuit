@@ -24,6 +24,10 @@ inline FixedVec at_block(double x, double y, double z) {
             static_cast<std::int64_t>(z * fixed_one)};
 }
 
+inline void append(std::vector<CommandBody>& to, std::vector<CommandBody> from) {
+    for (auto& c : from) to.push_back(std::move(c));
+}
+
 // Assigns increasing admission ids, as a coordinator would.
 class Admissions {
 public:

@@ -7,10 +7,10 @@ namespace {
 using enum CompatibilityTier;
 using enum EvidenceSource;
 
-// Compatibility table for circuit-reference-rules-v2. Nothing is checked
+// Compatibility table for circuit-reference-rules-v3. Nothing is checked
 // against the target version yet: no row claims L0. L2 rows record known
 // simplifications; rows without a claim are unverified.
-constexpr std::array reference_v2_mechanisms{
+constexpr std::array reference_v3_mechanisms{
     MechanismEntry{"neighbor_updates", l0_exact, std::nullopt, documented_behavior,
         "Order west, east, down, up, north, south; emissions during one delivery run depth-first in "
         "emission order. A single update kind serves both neighbor and shape updates. Unverified."},
@@ -35,8 +35,9 @@ constexpr std::array reference_v2_mechanisms{
         "move: the base extends at once, while the head and moved blocks, or on retraction the base and pulled "
         "blocks, become moving pistons that finish in the block-entity phase two ticks later. A sticky piston "
         "retracting before its push finished leaves the block behind. Dust, levers, repeaters, comparators, "
-        "water and wheat are destroyed without drops; entities are not pushed. Phase placement and drop "
-        "timing are unverified."},
+        "water and wheat are destroyed; their fixed drops appear at the block center without velocity or "
+        "random quantities. Moving blocks push item entities in their cell half a block per tick. Phase "
+        "placement, drop timing and pushing details are unverified."},
     MechanismEntry{"block_events", l0_exact, std::nullopt, documented_behavior,
         "Level-wide FIFO with set semantics, drained including additions; events in non-ticking or "
         "unloaded chunks are deferred in order."},
@@ -62,7 +63,8 @@ constexpr std::array reference_v2_mechanisms{
         "Grows with probability 1/3 per random tick; ignores light, hydration and support."},
     MechanismEntry{"item_entity", l0_exact, l2_declared_deviation, documented_behavior,
         "Fixed-point gravity, drag and axis collision; despawns after 6000 ticks; no merging; cannot "
-        "enter unloaded chunks."},
+        "enter unloaded chunks; pushed by moving blocks. Ids of entities spawned outside the command phase "
+        "are assigned in serial order."},
     MechanismEntry{"chunk_tickets", l0_exact, l2_declared_deviation, documented_behavior,
         "A ticket of radius r makes chunks within Chebyshev distance r ticking and the next ring "
         "border-loaded; no ticket types or level propagation."},
@@ -85,8 +87,8 @@ constexpr std::array bundles{
         .id = "java-1.21.8",
         .game_version = "1.21.8",
         .protocol_candidate = "java-1.21.8",
-        .rules = RuleSet{"circuit-reference-rules-v2", RngPolicy::per_section_derived_stream,
-                         reference_v2_mechanisms},
+        .rules = RuleSet{"circuit-reference-rules-v3", RngPolicy::per_section_derived_stream,
+                         reference_v3_mechanisms},
         .world = {-64, 384},
         .limits = vanilla_like_limits,
         .generator = "empty",

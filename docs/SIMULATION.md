@@ -4,7 +4,7 @@
 
 The Part I core runs headless: shared contracts, a set of reference rules, an independent sequential oracle, and a region-parallel runtime checked against the oracle. It opens no network port and has no persistence.
 
-The rules are **circuit-reference-rules-v2**, Circuit's own definitions written from publicly documented Java Edition behavior. No mechanism has been checked against Java Edition 1.21.8: the instrumented reference server that would provide target-version traces does not exist yet. Passing tests here shows that the parallel runtime reproduces the reference rules exactly. It does not show vanilla compatibility.
+The rules are **circuit-reference-rules-v3**, Circuit's own definitions written from publicly documented Java Edition behavior. No mechanism has been checked against Java Edition 1.21.8: the instrumented reference server that would provide target-version traces does not exist yet. Passing tests here shows that the parallel runtime reproduces the reference rules exactly. It does not show vanilla compatibility.
 
 The compatibility table is part of the version bundle (`src/contracts/version.cpp`, exposed through `BundleRegistry`). Each row states a target tier (L0 exact, L1 region-equivalent, L2 declared deviation), the tier currently claimed, the evidence source, and the known limitations. No row claims L0. Rows with known simplifications claim L2.
 
@@ -48,14 +48,15 @@ Every observable action produces a trace record keyed by (tick, phase, root, seq
   - **Retraction:** the base and any pulled blocks move the same way.
   - **Moving blocks:** they block movement and do not conduct power.
   - **Block dropping:** a sticky piston that retracts before its push finished leaves the block behind.
-  - **Destroyed blocks:** dust, levers, repeaters, comparators, water and wheat in a push line are destroyed, without drops.
+  - **Destroyed blocks:** dust, levers, repeaters, comparators, water and wheat in a push line are destroyed. They drop fixed items at the block center without velocity; fully grown wheat drops wheat and seeds, younger wheat seeds only, and water nothing.
+  - **Pushing:** on each of its two steps, a moving block pushes item entities in its cell half a block along its motion. A retracting base pushes nothing.
 - **Hoppers and chests:** push before pull, 8-tick cooldown, disabled while powered, and pickup of item entities in the cell above.
 - **Double chests:** two halves with the same facing pair as left and right. A half claims a single chest at its partner position and becomes single when its partner disappears. Hoppers and comparators see one 54-slot container, left half first, even across a chunk edge.
 - **Comparators:** compare and subtract modes with a 2-tick delay. The output signal (0–15) lives in a block entity. The rear input is power, or the fullness of a container behind the comparator, also read through stone, obsidian or a lamp. Side inputs come from dust, repeaters, comparators, redstone blocks and observers. Container changes notify the comparators reading them.
 - **Use:** using a block toggles a lever, cycles a repeater's delay, or toggles a comparator's mode.
 - **Water:** sources, flowing distance 1–7, falling water, 5-tick fluid ticks.
 - **Wheat:** grows on random ticks. Random-tick positions and rule draws use a stream derived from (seed, tick, chunk, section). This is a declared L1 choice relative to a level-wide stream.
-- **Item entities:** fixed-point gravity, drag and collision, migration between chunks, despawn after 6000 ticks.
+- **Item entities:** fixed-point gravity, drag and collision, migration between chunks, despawn after 6000 ticks. They are spawned by commands and by destroyed blocks, and pushed by moving blocks.
 - **Chunk tickets:** a ticket of radius r makes chunks within Chebyshev distance r ticking and the next ring border-loaded. Changes apply at the end of the command phase. Unloading keeps all chunk state, including pending ticks. A reload increments the chunk generation, and commands can name the generation they expect.
 
 ## Region-parallel runtime
@@ -64,7 +65,11 @@ Every observable action produces a trace record keyed by (tick, phase, root, seq
 
 **Conflicts.** The coordinator rolls back an aborted attempt using copy-on-first-write snapshots of the written columns. It then merges the two regions, discards any staged results of the merged regions, and runs the merged region again. Regions that never touched each other keep their results. Each conflict reduces the number of regions, so a phase always finishes; in the worst case everything becomes one region and runs serially.
 
-**Level-wide counters.** Scheduled-tick sub-orders, block-event queue positions and the creation order of block entities created during a phase (moving pistons) are not drawn from shared counters during a phase. New entries carry their (root, sequence) key. At commit, the coordinator sorts all staged entries and assigns counter values in serial order. Entity ids are assigned only in the serial command phase.
+**Level-wide counters.** These are not drawn from shared counters during a phase:
+- scheduled-tick sub-orders;
+- block-event queue positions;
+- the creation order of block entities created during a phase (moving pistons);
+- the ids of entities spawned during a phase (drops). New entries carry their (root, sequence) key. At commit, the coordinator sorts all staged entries and assigns counter values in serial order. Entities spawned in parallel roots hold provisional ids until then; commit rewrites them in storage, the entity index and the trace.
 
 **Block-event order.** Each region drains its own FIFO. At commit, the global FIFO order is rebuilt from the initial queue and the children each event appended. Trace records are renumbered to their global positions.
 
@@ -77,7 +82,7 @@ Every observable action produces a trace record keyed by (tick, phase, root, seq
 ## Verification
 
 - `rules_tests`: hand-derived expectations for every mechanism, including chunk-edge crossings, a chain returning across an edge within one tick, pulse extension, priority order, chain truncation, piston limits, conservation in hopper races, water timing, stream locality, generation checks, command validation and capacity failure.
-- `simulation_tests`: eleven scenarios compared with the oracle trace-by-trace every tick and state-by-state at checkpoints. Configurations: 1/2/4/8/16 pool workers, a single region, seeded random and priority interleavings, injected aborts, and perturbed layouts. A deliberately unsafe mode without ownership checks must produce a detected divergence.
+- `simulation_tests`: twelve scenarios compared with the oracle trace-by-trace every tick and state-by-state at checkpoints. Configurations: 1/2/4/8/16 pool workers, a single region, seeded random and priority interleavings, injected aborts, and perturbed layouts. A deliberately unsafe mode without ownership checks must produce a detected divergence.
 - `control_tests`: seeded-schedule reproducibility, tick-clock catch-up, and the state digest.
 - `evidence_tests`: the [trace fixture format](TRACE_FORMAT.md), the content mapping (every reference state round-trips through target-version notation), recording and evaluation on both the engine and the oracle, and the committed fixtures in `tests/fixtures/`.
 

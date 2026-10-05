@@ -171,7 +171,11 @@ inline constexpr std::uint16_t stone = 1;
 inline constexpr std::uint16_t redstone = 2;
 inline constexpr std::uint16_t wheat = 3;
 inline constexpr std::uint16_t iron_ingot = 4;
-inline constexpr std::uint16_t max_id = 4;
+inline constexpr std::uint16_t lever = 5;
+inline constexpr std::uint16_t repeater = 6;
+inline constexpr std::uint16_t comparator = 7;
+inline constexpr std::uint16_t wheat_seeds = 8;
+inline constexpr std::uint16_t max_id = 8;
 } // namespace items
 
 } // namespace circuit::gameplay

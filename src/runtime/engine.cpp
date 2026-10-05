@@ -454,6 +454,7 @@ void Engine::Impl::run_phase(Phase phase, std::vector<RootItem> roots) {
                 for (auto& e : data.events)
                     if (e.provisional.pending) e.provisional.root = map.at(e.provisional.root);
                 for (auto& [pos, provisional] : data.new_block_entities) provisional.root = map.at(provisional.root);
+                for (auto& [id, provisional] : data.new_entities) provisional.root = map.at(provisional.root);
             }
         }
     }
@@ -476,10 +477,16 @@ void Engine::Impl::commit(Phase, const std::vector<RegionContext*>& contexts) {
         std::uint32_t seq;
         BlockEntity* entry;
     };
+    struct SpawnRef {
+        std::uint64_t root;
+        std::uint32_t seq;
+        ChunkData* chunk;
+        EntityId provisional;
+    };
     std::vector<TickRef> ticks;
     std::vector<EventRef> events;
     std::vector<EntityRef> block_entities;
-    std::vector<TraceRecord> records;
+    std::vector<SpawnRef> spawns;
     for (auto* ctx : contexts) {
         for (auto& [c, snapshot] : ctx->snapshots) {
             auto& data = *world.loaded.at(c);
@@ -491,14 +498,9 @@ void Engine::Impl::commit(Phase, const std::vector<RegionContext*>& contexts) {
             for (const auto& [pos, provisional] : data.new_block_entities)
                 block_entities.push_back({provisional.root, provisional.seq, &data.block_entities.at(pos)});
             data.new_block_entities.clear();
+            for (const auto& [id, provisional] : data.new_entities) spawns.push_back({provisional.root, provisional.seq, &data, id});
+            data.new_entities.clear();
         }
-        for (const auto& [id, c] : ctx->entity_moves) {
-            if (c) world.entity_index[id] = *c;
-            else world.entity_index.erase(id);
-        }
-        for (const auto& edge : ctx->interactions) edges[edge] = world.time;
-        records.insert(records.end(), ctx->trace.begin(), ctx->trace.end());
-        ctx->snapshots.clear();
     }
     // Level-wide counters are assigned in serial order: by root, then by action within the root.
     const auto by_key = [](const auto& a, const auto& b) { return a.root != b.root ? a.root < b.root : a.seq < b.seq; };
@@ -518,6 +520,43 @@ void Engine::Impl::commit(Phase, const std::vector<RegionContext*>& contexts) {
     for (auto& e : block_entities) {
         if (world.next_block_entity_order == UINT64_MAX) throw std::overflow_error("engine: block-entity order exhausted");
         e.entry->order = world.next_block_entity_order++;
+    }
+    // Entities spawned in parallel roots receive their ids now; provisional ids
+    // are rewritten in storage, the index and the trace.
+    std::ranges::sort(spawns, by_key);
+    std::unordered_map<std::uint64_t, std::uint64_t> real_ids;
+    for (const auto& s : spawns) {
+        if (world.next_entity_id == UINT64_MAX) throw std::overflow_error("engine: entity ids exhausted");
+        const EntityId id{world.next_entity_id++};
+        auto node = s.chunk->entities.extract(s.provisional);
+        node.key() = id;
+        node.mapped().id = id;
+        s.chunk->entities.insert(std::move(node));
+        real_ids[s.provisional.value] = id.value;
+    }
+    const auto real = [&](std::uint64_t value) {
+        const auto it = real_ids.find(value);
+        return it == real_ids.end() ? value : it->second;
+    };
+    std::vector<TraceRecord> records;
+    for (auto* ctx : contexts) {
+        for (const auto& [id, c] : ctx->entity_moves) {
+            const EntityId key{real(id.value)};
+            if (c) world.entity_index[key] = *c;
+            else world.entity_index.erase(key);
+        }
+        for (const auto& edge : ctx->interactions) edges[edge] = world.time;
+        for (auto record : ctx->trace) {
+            switch (record.kind) {
+            case TraceKind::entity_spawned: case TraceKind::entity_removed:
+            case TraceKind::entity_changed_chunk: case TraceKind::entity_stack_changed:
+                record.a = real(record.a);
+                break;
+            default: break;
+            }
+            records.push_back(record);
+        }
+        ctx->snapshots.clear();
     }
     std::ranges::sort(records, {}, &TraceRecord::key);
     trace.insert(trace.end(), records.begin(), records.end());

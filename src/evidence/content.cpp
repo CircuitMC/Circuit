@@ -106,11 +106,15 @@ private:
 #define CIRCUIT_CHECK(expr)                                         \
     if (auto check_result = (expr); !check_result) return std::unexpected(check_result.error())
 
-constexpr std::array<std::pair<std::string_view, std::uint16_t>, 4> item_ids{{
+constexpr std::array<std::pair<std::string_view, std::uint16_t>, 8> item_ids{{
     {"minecraft:stone", gameplay::items::stone},
     {"minecraft:redstone", gameplay::items::redstone},
     {"minecraft:wheat", gameplay::items::wheat},
     {"minecraft:iron_ingot", gameplay::items::iron_ingot},
+    {"minecraft:lever", gameplay::items::lever},
+    {"minecraft:repeater", gameplay::items::repeater},
+    {"minecraft:comparator", gameplay::items::comparator},
+    {"minecraft:wheat_seeds", gameplay::items::wheat_seeds},
 }};
 } // namespace
 

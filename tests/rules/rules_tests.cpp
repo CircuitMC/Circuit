@@ -257,6 +257,52 @@ int main() {
         require(state_at(d, {1, 0, 4}).is(BlockType::piston_head) && !block_entity_at(d, {1, 0, 4}), "comparator destroyed");
     });
 
+    suite.run("destroyed blocks drop items in event order", [] {
+        Sim s;
+        std::vector<CommandBody> build;
+        for (int x = 0; x <= 6; ++x)
+            for (int z = 0; z <= 6; ++z) build.push_back(place({x, -1, z}, blocks::stone()));
+        append(build, {place({1, 0, 0}, blocks::stone()), place({2, 0, 0}, blocks::wire()), place({0, 0, 0}, blocks::piston(D::east)),
+                       place({1, 0, 3}, blocks::comparator(D::north)), place({0, 0, 3}, blocks::piston(D::east)),
+                       place({1, 0, 5}, blocks::wheat(7)), place({0, 0, 5}, blocks::piston(D::east)),
+                       place({1, 0, 6}, blocks::water_source()), place({0, 0, 6}, blocks::piston(D::east))});
+        s.tick(build);
+        // One tick, four pistons: events run in queue order, so drop ids follow it; water drops nothing.
+        s.tick({place({0, 1, 0}, blocks::redstone_block()), place({0, 1, 3}, blocks::redstone_block()),
+                place({0, 1, 5}, blocks::redstone_block()), place({0, 1, 6}, blocks::redstone_block())});
+        const auto d = s.oracle.dump();
+        require(d.entities.size() == 4, std::format("four drops, got {}", d.entities.size()));
+        require(d.entities[0].stack == ItemStack{items::redstone, 1} && d.entities[1].stack == ItemStack{items::comparator, 1}
+                    && d.entities[2].stack == ItemStack{items::wheat, 1} && d.entities[3].stack == ItemStack{items::wheat_seeds, 1},
+                "drops in event order");
+        // Spawned at the dust's center inside the arriving block, then lifted onto it by the entity tick.
+        require(d.entities[0].position == FixedVec{2 * fixed_one + 2048, fixed_one, 2048} && d.entities[0].on_ground,
+                "drop position");
+        const auto spawned = of_kind(s.last, TraceKind::entity_spawned);
+        require(spawned.size() == 4 && spawned[0].key.phase == Phase::block_events && spawned[0].a == 1 && spawned[3].a == 4,
+                "spawn records carry serial ids");
+        require(block_entity_at(d, {1, 0, 3})->kind == BlockType::moving_piston, "comparator block entity replaced by the moving head");
+        require(state_at(d, {1, 0, 6}).is(BlockType::moving_piston), "water destroyed without a drop");
+    });
+
+    suite.run("moving blocks push item entities across a chunk edge", [] {
+        Sim s;
+        std::vector<CommandBody> build;
+        for (int x = 12; x <= 18; ++x) build.push_back(place({x, -1, 0}, blocks::stone()));
+        append(build, {place({14, 0, 0}, blocks::stone()), place({13, 0, 0}, blocks::piston(D::east)),
+                       SpawnItem{at_block(15.5, 0.0, 0.5), {}, {items::stone, 1}}});
+        s.tick(build); // 2
+        s.tick({place({13, 0, 1}, blocks::redstone_block())}); // 3: stone starts moving into cell 15
+        const auto d = s.oracle.dump();
+        require(d.entities.size() == 1 && d.entities[0].position.x == 16 * fixed_one, "pushed half a block, out of the cell");
+        const auto crossed = of_kind(s.last, TraceKind::entity_changed_chunk);
+        require(crossed.size() == 1 && crossed[0].key.phase == Phase::block_entities && crossed[0].c == pack_chunk({1, 0}),
+                "pushed into chunk 1");
+        s.until(5);
+        require(entity_in(s.oracle.dump(), EntityId{1})->position.x == 16 * fixed_one && s.at({15, 0, 0}).is(BlockType::stone),
+                "pushed once; block arrived");
+    });
+
     suite.run("moving blocks do not conduct power", [] {
         Sim s;
         s.tick({place({1, 0, 0}, blocks::redstone_block()), place({3, 0, 0}, blocks::lamp()), place({0, 0, 0}, blocks::piston(D::east)),

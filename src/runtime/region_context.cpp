@@ -193,15 +193,23 @@ Entity* RegionContext::entity(EntityId id) {
 }
 
 EntityId RegionContext::spawn_entity(const Entity& prototype) {
-    if (phase_ != Phase::commands) throw std::logic_error("runtime: entity spawned outside the command phase");
     const auto c = chunk_of(block_of(prototype.position));
     auto* data = world_.find_loaded(c);
     if (!data) throw std::logic_error("runtime: entity spawned in an unloaded chunk");
-    if (world_.next_entity_id == UINT64_MAX) throw std::overflow_error("runtime: entity ids exhausted");
-    const EntityId id{world_.next_entity_id++};
+    auto& chunk = writable(c, *data);
+    EntityId id;
+    if (region_ == all_regions) {
+        if (world_.next_entity_id == UINT64_MAX) throw std::overflow_error("runtime: entity ids exhausted");
+        id = EntityId{world_.next_entity_id++}; // Serial command phase.
+    } else {
+        // Entity ids are level-wide: the real id is assigned at commit in serial order.
+        if (provisional_entities_ == (1U << 24) - 1) throw std::overflow_error("runtime: provisional entity ids exhausted");
+        id = EntityId{provisional_entity_bit | (region_ << 24) | provisional_entities_++};
+        chunk.new_entities[id] = {true, root_, creations_++};
+    }
     auto e = prototype;
     e.id = id;
-    writable(c, *data).entities[id] = e;
+    chunk.entities[id] = e;
     entity_moves[id] = c;
     return id;
 }
@@ -221,13 +229,18 @@ void RegionContext::relocate_entity(EntityId id, contracts::FixedVec position) {
     auto node = src.entities.extract(id);
     node.mapped().position = position;
     dst.entities.insert(std::move(node));
+    if (auto staged = src.new_entities.extract(id)) dst.new_entities.insert(std::move(staged));
     entity_moves[id] = to;
 }
 
 void RegionContext::remove_entity(EntityId id) {
     const auto c = locate(id);
     if (!c) return;
-    if (auto* data = world_.find_loaded(*c)) writable(*c, *data).entities.erase(id);
+    if (auto* data = world_.find_loaded(*c)) {
+        auto& chunk = writable(*c, *data);
+        chunk.entities.erase(id);
+        chunk.new_entities.erase(id);
+    }
     entity_moves[id] = std::nullopt;
 }
 

@@ -65,7 +65,7 @@ public:
     // is removed.
     virtual const BlockEntity* peek_block_entity(BlockPos pos) = 0;
     virtual BlockEntity* block_entity(BlockPos pos) = 0;
-    // Command phase only: block-entity creation order is a level-wide counter.
+    // Block-entity creation order is a level-wide counter, staged like entity ids.
     virtual void create_block_entity(BlockPos pos, BlockType kind) = 0;
     virtual void remove_block_entity(BlockPos pos) = 0;
 
@@ -75,7 +75,8 @@ public:
     // Pointer stays valid until the current root finishes or the entity moves
     // between chunks or is removed.
     virtual Entity* entity(EntityId id) = 0;
-    // Command phase only: entity ids are a level-wide counter.
+    // Assigns the entity id. Ids are a level-wide counter: executors that run
+    // roots in parallel stage the assignment and give out ids in serial order.
     virtual EntityId spawn_entity(const Entity& prototype) = 0;
     // Precondition: the destination chunk is loaded.
     virtual void relocate_entity(EntityId id, FixedVec position) = 0;

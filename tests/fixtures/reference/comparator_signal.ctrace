@@ -2,7 +2,7 @@ circuit-trace 1
 title Comparator container reading and subtraction
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v2
+harness circuit-reference-rules-v3
 mechanisms comparator hopper redstone_wire redstone_lamp
 area -1 0 -1 5 0 8
 ticks 12

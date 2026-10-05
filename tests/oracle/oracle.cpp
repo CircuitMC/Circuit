@@ -76,7 +76,6 @@ public:
     const Entity* peek_entity(EntityId id) override { return find_entity(id); }
     Entity* entity(EntityId id) override { return find_entity(id); }
     EntityId spawn_entity(const Entity& prototype) override {
-        if (phase_ != Phase::commands) throw std::logic_error("oracle: entity spawned outside the command phase");
         const EntityId id{o_.next_entity_id_++};
         auto e = prototype;
         e.id = id;

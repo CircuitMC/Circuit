@@ -24,9 +24,6 @@ inline std::vector<CommandBody> redstone_line(std::int32_t x, std::int32_t y, st
             place({x + 7, y, z}, blocks::lamp())};
 }
 
-inline void append(std::vector<CommandBody>& to, std::vector<CommandBody> from) {
-    for (auto& c : from) to.push_back(std::move(c));
-}
 
 inline Scenario slice_scenario() {
     return {"vertical_slice", 3, 80, [](Tick t) -> std::vector<CommandBody> {
@@ -262,10 +259,49 @@ inline Scenario piston_pulse_scenario() {
     }};
 }
 
+// In every chunk of a 5x5 area at once: sticky pistons destroy a different
+// destroyable block each (drops spawned in parallel roots), and other pistons
+// push items across the east chunk edge. The cycle repeats every 20 ticks.
+inline Scenario drops_scenario() {
+    return {"drops_and_pushes", 43, 100, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 2)};
+        std::vector<CommandBody> c;
+        int kind = 0;
+        for (int cx = -2; cx <= 2; ++cx)
+            for (int cz = -2; cz <= 2; ++cz, ++kind) {
+                const int x = cx * 16, z = cz * 16;
+                const BlockState destroyables[]{blocks::wire(), blocks::lever(), blocks::repeater(D::east),
+                                                blocks::comparator(D::east), blocks::wheat(7), blocks::water_source()};
+                const auto destroyable = destroyables[kind % 6];
+                if (t == 2) {
+                    for (int dx = 0; dx < 16; ++dx) {
+                        c.push_back(place({x + dx, -1, z + 3}, blocks::stone()));
+                        c.push_back(place({x + dx, -1, z + 8}, blocks::stone()));
+                    }
+                    append(c, {place({x + 2, 0, z + 3}, blocks::stone()), place({x + 3, 0, z + 3}, destroyable),
+                               place({x + 1, 0, z + 3}, blocks::piston(D::east, true)),
+                               place({x + 14, 0, z + 8}, blocks::stone()), place({x + 13, 0, z + 8}, blocks::piston(D::east, true))});
+                }
+                const auto phase = t % 20;
+                if (phase == 4) c.push_back(SpawnItem{at_block(x + 15.5, 0.0, z + 8.5), {}, {items::iron_ingot, 1}});
+                if (phase == 5) {
+                    c.push_back(place({x + 1, 1, z + 3}, blocks::redstone_block()));
+                    c.push_back(place({x + 13, 1, z + 8}, blocks::redstone_block()));
+                }
+                if (phase == 15) {
+                    c.push_back(place({x + 1, 1, z + 3}, blocks::air()));
+                    c.push_back(place({x + 13, 1, z + 8}, blocks::air()));
+                }
+                if (phase == 18 && t > 20) c.push_back(place({x + 3, 0, z + 3}, destroyable));
+            }
+        return c;
+    }, 5};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
-            comparator_chest_scenario(), piston_pulse_scenario()};
+            comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario()};
 }
 
 } // namespace circuit::test

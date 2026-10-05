@@ -62,7 +62,11 @@ struct ChunkData {
     std::vector<EventEntry> events; // Pending block events at this column; deferred while not ticking.
     // Block entities created in this phase; their creation order is assigned at commit.
     std::map<BlockPos, Provisional> new_block_entities;
+    // Entities spawned in this phase under provisional ids; real ids are assigned at commit.
+    std::map<EntityId, Provisional> new_entities;
 };
+// Provisional entity ids: high bit, region id, and a per-context counter.
+inline constexpr std::uint64_t provisional_entity_bit = 1ULL << 63;
 
 struct WorldStore {
     std::map<ChunkPos, std::unique_ptr<ChunkData>> loaded; // Structure changes only between phases.
