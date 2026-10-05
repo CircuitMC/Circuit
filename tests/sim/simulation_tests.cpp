@@ -121,16 +121,12 @@ int main() {
     });
 
     suite.run("block events queue events in the same phase", [&] {
+        // Events queued while the block-event phase drains run in that phase; the
+        // runtime must rebuild their global order from per-region queues.
         std::size_t chained = 0;
-        for (const auto& t : references[8].traces) {
-            std::uint64_t executed = 0, initial = 0;
-            for (const auto& r : t) {
-                if (r.kind == TraceKind::block_event_executed) ++executed;
-                if (r.kind == TraceKind::block_event_queued && r.key.phase != Phase::block_events) ++initial;
-            }
-            if (executed > initial) chained += executed - initial;
-        }
-        require(chained >= 50, std::format("events run in the phase that queued them: {}", chained));
+        for (const auto& t : references[8].traces)
+            for (const auto& r : of_kind(t, TraceKind::block_event_queued)) chained += r.key.phase == Phase::block_events;
+        require(chained >= 50, std::format("events queued during the block-event phase: {}", chained));
     });
 
     suite.run("comparators and double chests are exercised", [&] {
@@ -143,6 +139,16 @@ int main() {
         }
         require(signals >= 10 && inventory >= 100 && chest_types >= 3,
                 std::format("signals {} inventory {} chest states {}", signals, inventory, chest_types));
+    });
+
+    suite.run("piston pulses drop, pull and destroy", [&] {
+        std::size_t moving = 0, executed = 0;
+        for (const auto& t : references[10].traces) {
+            executed += of_kind(t, TraceKind::block_event_executed).size();
+            for (const auto& r : of_kind(t, TraceKind::block_changed))
+                moving += BlockState::decode(static_cast<std::uint32_t>(r.b)).value().is(BlockType::moving_piston);
+        }
+        require(moving >= 60 && executed >= 40, std::format("moving pistons {} events {}", moving, executed));
     });
 
     suite.run("oracle is deterministic", [&] {

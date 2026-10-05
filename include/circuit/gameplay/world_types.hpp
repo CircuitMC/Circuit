@@ -29,7 +29,26 @@ struct BlockEntity {
     std::vector<ItemStack> slots;
     std::uint8_t cooldown{};
     std::uint8_t signal{}; // Comparator output, 0-15.
+    // Moving piston: the block being moved, ticks of movement completed (0-2),
+    // and motion bits (see `Motion`).
+    std::uint32_t moving{};
+    std::uint8_t progress{};
+    std::uint8_t motion{};
     bool operator==(const BlockEntity&) const = default;
+};
+
+// Motion of a moving piston: the facing of the piston that moves it, whether
+// the piston is extending, and whether this is the piston's own head or base.
+struct Motion {
+    contracts::Direction facing{};
+    bool extending{};
+    bool source{};
+    [[nodiscard]] constexpr std::uint8_t pack() const noexcept {
+        return static_cast<std::uint8_t>(static_cast<unsigned>(facing) | (extending ? 8u : 0u) | (source ? 16u : 0u));
+    }
+    static constexpr Motion unpack(std::uint8_t bits) noexcept {
+        return {static_cast<contracts::Direction>(bits & 7), (bits & 8) != 0, (bits & 16) != 0};
+    }
 };
 
 struct Entity {

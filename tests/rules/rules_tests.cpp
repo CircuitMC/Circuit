@@ -158,17 +158,33 @@ int main() {
         require(cut.size() == 1 && cut[0].pos == BlockPos{6, 0, 0} && cut[0].a == 12, "truncation point is recorded");
     });
 
-    suite.run("piston pushes a line across a chunk edge", [] {
+    suite.run("piston moves a line across a chunk edge in two ticks", [] {
         Sim s;
         s.tick({place({14, 0, 0}, blocks::stone()), place({15, 0, 0}, blocks::stone()), place({16, 0, 0}, blocks::stone()),
                 place({13, 0, 0}, blocks::piston(D::east)), place({13, 0, 1}, blocks::lever())});
-        s.tick({use_lever({13, 0, 1})}); // 3
-        require(s.at({13, 0, 0}).flag(), "extended");
-        require(s.at({14, 0, 0}).is(BlockType::piston_head) && s.at({14, 0, 0}).facing() == D::east, "head");
-        for (int x = 15; x <= 17; ++x) require(s.at({x, 0, 0}).is(BlockType::stone), "line moved by one");
-        s.tick({use_lever({13, 0, 1})}); // 4: re-check tick then retract
-        require(!s.at({13, 0, 0}).flag() && s.at({14, 0, 0}).is_air(), "retracted");
-        require(s.at({15, 0, 0}).is(BlockType::stone) && s.at({17, 0, 0}).is(BlockType::stone), "regular piston leaves blocks");
+        s.tick({use_lever({13, 0, 1})}); // 3: extend starts
+        require(s.at({13, 0, 0}).flag(), "base extends at once");
+        for (int x = 14; x <= 17; ++x) require(s.at({x, 0, 0}).is(BlockType::moving_piston), "head and line are moving");
+        const auto moving = s.oracle.dump(); // Keep the dump alive while pointing into it.
+        const auto* head = block_entity_at(moving, {14, 0, 0});
+        require(head && head->progress == 1 && Motion::unpack(head->motion).source
+                    && BlockState::decode(head->moving).value().is(BlockType::piston_head), "moving head");
+        s.tick(); // 4
+        require(s.at({15, 0, 0}).is(BlockType::moving_piston), "still moving on tick 4");
+        s.tick(); // 5
+        require(s.at({14, 0, 0}).is(BlockType::piston_head) && s.at({14, 0, 0}).facing() == D::east, "head arrives on tick 5");
+        for (int x = 15; x <= 17; ++x) require(s.at({x, 0, 0}).is(BlockType::stone), "line arrives on tick 5");
+        require(!block_entity_at(s.oracle.dump(), {15, 0, 0}), "moving block entities are gone");
+        s.tick({use_lever({13, 0, 1})}); // 6: retract starts
+        require(s.at({13, 0, 0}).is(BlockType::moving_piston) && s.at({14, 0, 0}).is_air(), "base moves, head removed");
+        s.tick({use_lever({13, 0, 1})}); // 7: power returns while the base is moving
+        require(s.at({13, 0, 0}).is(BlockType::moving_piston), "a moving base ignores power");
+        s.tick(); // 8: the base arrives and reacts to its power
+        require(s.at({13, 0, 0}) == blocks::piston(D::east), "base arrives retracted");
+        require(s.oracle.dump().block_events.size() == 1, "extension queued for the next block-event phase");
+        s.tick(); // 9
+        require(s.at({13, 0, 0}).flag() && s.at({14, 0, 0}).is(BlockType::moving_piston), "extends again on tick 9");
+        require(s.at({15, 0, 0}).is(BlockType::stone) && s.at({17, 0, 0}).is(BlockType::stone), "regular piston left the line");
     });
 
     suite.run("piston push limit and immovable blocks", [] {
@@ -196,19 +212,61 @@ int main() {
         Sim s;
         s.tick({place({1, 0, 0}, blocks::stone()), place({0, 0, 0}, blocks::piston(D::east, true))});
         s.tick({place({0, 0, 1}, blocks::redstone_block())}); // 3: extend
+        s.until(5);
         require(s.at({2, 0, 0}).is(BlockType::stone) && s.at({1, 0, 0}).is(BlockType::piston_head) && s.at({1, 0, 0}).flag(),
-                "sticky head");
-        s.tick(); // 4: re-check tick, still powered
-        s.tick({place({0, 0, 1}, blocks::air())}); // 5: retract and pull
-        require(!s.at({0, 0, 0}).flag() && s.at({1, 0, 0}).is(BlockType::stone) && s.at({2, 0, 0}).is_air(), "pulled back");
+                "sticky head after the move");
+        s.tick({place({0, 0, 1}, blocks::air())}); // 6: retract and pull
+        require(s.at({0, 0, 0}).is(BlockType::moving_piston) && s.at({1, 0, 0}).is(BlockType::moving_piston)
+                    && s.at({2, 0, 0}).is_air(), "base and pulled block move");
+        s.until(8);
+        require(s.at({0, 0, 0}) == blocks::piston(D::east, true) && s.at({1, 0, 0}).is(BlockType::stone), "pulled back");
 
         Sim t;
         t.tick({place({1, 0, 0}, blocks::slime()), place({1, 1, 0}, blocks::stone()), place({1, 0, 1}, blocks::stone()),
                 place({1, 0, -1}, blocks::obsidian()), place({0, 0, 0}, blocks::piston(D::east, true))});
         t.tick({place({0, 0, 1}, blocks::redstone_block())});
+        t.until(5);
         require(t.at({2, 0, 0}).is(BlockType::slime_block) && t.at({2, 1, 0}).is(BlockType::stone)
                     && t.at({2, 0, 1}).is(BlockType::stone), "slime structure moves together");
         require(t.at({1, 0, -1}).is(BlockType::obsidian) && t.at({1, 1, 0}).is_air(), "immovable neighbor stays");
+    });
+
+    suite.run("sticky piston drops its block on a short pulse", [] {
+        Sim s;
+        s.tick({place({1, 0, 0}, blocks::stone()), place({0, 0, 0}, blocks::piston(D::east, true)), place({0, 0, 1}, blocks::lever())});
+        s.tick({use_lever({0, 0, 1})}); // 3: extension starts
+        s.tick({use_lever({0, 0, 1})}); // 4: retraction before the push finished
+        require(s.at({2, 0, 0}).is(BlockType::stone), "pushed block placed at once");
+        require(s.at({1, 0, 0}).is_air() && s.at({0, 0, 0}).is(BlockType::moving_piston), "head removed, base moving");
+        s.until(6);
+        require(s.at({0, 0, 0}) == blocks::piston(D::east, true) && s.at({1, 0, 0}).is_air()
+                    && s.at({2, 0, 0}).is(BlockType::stone), "block left behind");
+    });
+
+    suite.run("pistons destroy dust and comparators in their path", [] {
+        Sim s;
+        s.tick({place({1, 0, 0}, blocks::stone()), place({2, 0, 0}, blocks::wire()), place({3, 0, 0}, blocks::stone()),
+                place({0, 0, 0}, blocks::piston(D::east)), place({1, 0, 4}, blocks::comparator(D::north)),
+                place({0, 0, 4}, blocks::piston(D::east))});
+        require(block_entity_at(s.oracle.dump(), {1, 0, 4}), "comparator block entity");
+        s.tick({place({0, 0, -1}, blocks::redstone_block()), place({0, 0, 5}, blocks::redstone_block())}); // 3
+        require(s.at({2, 0, 0}).is(BlockType::moving_piston) && s.at({1, 0, 4}).is(BlockType::moving_piston), "destroyed and replaced");
+        s.until(5);
+        const auto d = s.oracle.dump();
+        require(state_at(d, {2, 0, 0}).is(BlockType::stone) && state_at(d, {3, 0, 0}).is(BlockType::stone), "line ended at the dust");
+        require(state_at(d, {1, 0, 4}).is(BlockType::piston_head) && !block_entity_at(d, {1, 0, 4}), "comparator destroyed");
+    });
+
+    suite.run("moving blocks do not conduct power", [] {
+        Sim s;
+        s.tick({place({1, 0, 0}, blocks::redstone_block()), place({3, 0, 0}, blocks::lamp()), place({0, 0, 0}, blocks::piston(D::east)),
+                place({0, 0, 1}, blocks::lever())});
+        s.tick({use_lever({0, 0, 1})}); // 3: the redstone block starts moving next to the lamp
+        require(s.at({2, 0, 0}).is(BlockType::moving_piston) && !s.at({3, 0, 0}).flag(), "unlit while moving");
+        s.tick();
+        require(!s.at({3, 0, 0}).flag(), "unlit on tick 4");
+        s.tick();
+        require(s.at({2, 0, 0}).is(BlockType::redstone_block) && s.at({3, 0, 0}).flag(), "lit when it arrives on tick 5");
     });
 
     suite.run("quasi-connectivity needs an update", [] {
@@ -216,8 +274,10 @@ int main() {
         s.tick({place({0, 0, 0}, blocks::piston(D::north))});
         s.tick({place({1, 1, 0}, blocks::lever(true))}); // powers the cell above the piston only
         require(!s.at({0, 0, 0}).flag(), "no update reached the piston");
-        s.tick({place({-1, 0, 0}, blocks::stone())}); // neighbor update
-        require(s.at({0, 0, 0}).flag() && s.at({0, 0, -1}).is(BlockType::piston_head), "updated piston extends");
+        s.tick({place({-1, 0, 0}, blocks::stone())}); // 4: neighbor update
+        require(s.at({0, 0, 0}).flag() && s.at({0, 0, -1}).is(BlockType::moving_piston), "updated piston extends");
+        s.until(6);
+        require(s.at({0, 0, -1}).is(BlockType::piston_head), "head arrives");
     });
 
     suite.run("hoppers compete for the last free space", [] {

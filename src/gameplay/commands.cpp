@@ -31,8 +31,8 @@ Plan plan(RuleContext& ctx, const contracts::SetBlock& c) {
         return std::unexpected(ErrorCode::stale_generation);
     const auto state = BlockState::decode(c.state);
     if (!state) return std::unexpected(state.error());
-    // Piston heads and extended pistons only arise from piston actions.
-    if (state->is(BlockType::piston_head) || (is_piston(state->type()) && state->flag()))
+    // Piston heads, moving pistons and extended pistons only arise from piston actions.
+    if (state->is(BlockType::piston_head) || state->is(BlockType::moving_piston) || (is_piston(state->type()) && state->flag()))
         return std::unexpected(ErrorCode::invalid_block_state);
     return [&ctx, pos = c.pos, s = *state] { set_block(ctx, pos, s); };
 }

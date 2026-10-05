@@ -453,6 +453,7 @@ void Engine::Impl::run_phase(Phase phase, std::vector<RootItem> roots) {
                         if (e.provisional.pending) e.provisional.root = map.at(e.provisional.root);
                 for (auto& e : data.events)
                     if (e.provisional.pending) e.provisional.root = map.at(e.provisional.root);
+                for (auto& [pos, provisional] : data.new_block_entities) provisional.root = map.at(provisional.root);
             }
         }
     }
@@ -470,8 +471,14 @@ void Engine::Impl::commit(Phase, const std::vector<RegionContext*>& contexts) {
         std::uint32_t seq;
         EventEntry* entry;
     };
+    struct EntityRef {
+        std::uint64_t root;
+        std::uint32_t seq;
+        BlockEntity* entry;
+    };
     std::vector<TickRef> ticks;
     std::vector<EventRef> events;
+    std::vector<EntityRef> block_entities;
     std::vector<TraceRecord> records;
     for (auto* ctx : contexts) {
         for (auto& [c, snapshot] : ctx->snapshots) {
@@ -481,6 +488,9 @@ void Engine::Impl::commit(Phase, const std::vector<RegionContext*>& contexts) {
                     if (e.provisional.pending) ticks.push_back({e.provisional.root, e.provisional.seq, &e});
             for (auto& e : data.events)
                 if (e.provisional.pending) events.push_back({e.provisional.root, e.provisional.seq, &e});
+            for (const auto& [pos, provisional] : data.new_block_entities)
+                block_entities.push_back({provisional.root, provisional.seq, &data.block_entities.at(pos)});
+            data.new_block_entities.clear();
         }
         for (const auto& [id, c] : ctx->entity_moves) {
             if (c) world.entity_index[id] = *c;
@@ -503,6 +513,11 @@ void Engine::Impl::commit(Phase, const std::vector<RegionContext*>& contexts) {
         if (world.next_event_seq == UINT64_MAX) throw std::overflow_error("engine: event sequence exhausted");
         e.entry->seq = world.next_event_seq++;
         e.entry->provisional = {};
+    }
+    std::ranges::sort(block_entities, by_key);
+    for (auto& e : block_entities) {
+        if (world.next_block_entity_order == UINT64_MAX) throw std::overflow_error("engine: block-entity order exhausted");
+        e.entry->order = world.next_block_entity_order++;
     }
     std::ranges::sort(records, {}, &TraceRecord::key);
     trace.insert(trace.end(), records.begin(), records.end());

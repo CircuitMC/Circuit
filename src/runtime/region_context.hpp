@@ -83,6 +83,7 @@ private:
     bool unchecked_;
     std::uint64_t root_{};
     std::uint32_t seq_{};
+    std::uint32_t creations_{}; // Block entities created in the current root.
     ChunkPos home_{};
 };
 

@@ -15,6 +15,7 @@ RegionContext::RegionContext(const contracts::VersionBundle& bundle, WorldStore&
 void RegionContext::begin_root(std::uint64_t root, ChunkPos home) {
     root_ = root;
     seq_ = 0;
+    creations_ = 0;
     home_ = home;
     updater().reset();
 }
@@ -135,15 +136,25 @@ BlockEntity* RegionContext::block_entity(BlockPos pos) {
 }
 
 void RegionContext::create_block_entity(BlockPos pos, BlockType kind) {
-    if (phase_ != Phase::commands) throw std::logic_error("runtime: block entity created outside the command phase");
     auto* data = loaded_in_world(pos);
     if (!data) throw std::logic_error("runtime: block entity at an unloaded position");
-    writable(chunk_of(pos), *data).block_entities[pos] =
-        BlockEntity{kind, world_.next_block_entity_order++, std::vector<contracts::ItemStack>(gameplay::container_size(kind)), 0};
+    auto& chunk = writable(chunk_of(pos), *data);
+    BlockEntity be{kind, 0, std::vector<contracts::ItemStack>(gameplay::container_size(kind)), 0};
+    if (region_ == all_regions) {
+        be.order = world_.next_block_entity_order++; // Serial command phase.
+    } else {
+        // Creation order is level-wide: staged and assigned at commit in serial order.
+        chunk.new_block_entities[pos] = {true, root_, creations_++};
+    }
+    chunk.block_entities[pos] = std::move(be);
 }
 
 void RegionContext::remove_block_entity(BlockPos pos) {
-    if (auto* data = loaded_in_world(pos)) writable(chunk_of(pos), *data).block_entities.erase(pos);
+    if (auto* data = loaded_in_world(pos)) {
+        auto& chunk = writable(chunk_of(pos), *data);
+        chunk.block_entities.erase(pos);
+        chunk.new_block_entities.erase(pos);
+    }
 }
 
 std::vector<EntityId> RegionContext::entities_in_cell(BlockPos cell) {

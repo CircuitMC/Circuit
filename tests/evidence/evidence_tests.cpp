@@ -155,7 +155,6 @@ int main(int argc, char** argv) {
             const auto r = m->block(s);
             require(!r && r.error().find("unsupported") != std::string::npos, std::format("{} -> {}", s, r ? "ok" : r.error()));
         };
-        unsupported("minecraft:moving_piston[facing=east,type=normal]");
         unsupported("minecraft:repeater[delay=1,facing=west,locked=true,powered=false]");
         unsupported("minecraft:chest[facing=north,type=single,waterlogged=true]");
         unsupported("minecraft:trapped_chest[facing=north,type=single,waterlogged=false]");
@@ -175,6 +174,8 @@ int main(int argc, char** argv) {
                     == circuit::gameplay::blocks::repeater(circuit::contracts::Direction::east, 2, true),
                 "repeater facing names the input side (unverified convention)");
         require(m->block("minecraft:water[level=12]") == circuit::gameplay::blocks::water_falling(), "falling water");
+        require(m->block("minecraft:moving_piston[facing=east,type=sticky]")
+                    == circuit::gameplay::blocks::moving_piston(circuit::contracts::Direction::east, true), "moving piston");
         require(!m->item("minecraft:diamond").has_value(), "unknown item");
     });
 
@@ -189,7 +190,7 @@ int main(int argc, char** argv) {
         require(text == write_fixture(*by_oracle), "engine and oracle record identical fixtures");
         const auto recorded = parse(text);
         require(recorded.source == circuit::contracts::EvidenceSource::circuit_reference
-                    && recorded.harness == "circuit-reference-rules-v1", "provenance");
+                    && recorded.harness == "circuit-reference-rules-v2", "provenance");
         require(!recorded.recorded_changes.empty(), "changes recorded");
         for (const auto& exec : {engine_executor(1), engine_executor(8), oracle_executor()}) {
             const auto r = evaluate_fixture(recorded, exec);
@@ -236,7 +237,7 @@ int main(int argc, char** argv) {
 
     suite.run("unsupported and invalid fixtures", [] {
         const std::string h = header;
-        auto r = evaluate_fixture(parse(h + "changes ordered\nchange 1 0 0 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]\n"),
+        auto r = evaluate_fixture(parse(h + "changes ordered\nchange 1 0 0 0 minecraft:air minecraft:dirt\n"),
                                   engine_executor());
         require(r.outcome == Outcome::unsupported && r.detail.find("line 10") != std::string::npos, r.detail);
         r = evaluate_fixture(parse(h + "at 0 set 0 0 0 minecraft:piston[extended=true,facing=up]\n"), engine_executor());

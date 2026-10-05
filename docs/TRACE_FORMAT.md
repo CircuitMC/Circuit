@@ -51,7 +51,7 @@ Evaluation reports one of four outcomes:
 
 - `PASS` — every compared observation matched.
 - `FAIL` — the first mismatch, with its fixture line.
-- `UNSUPPORTED` — the fixture uses content or setups the reference rules cannot represent, such as moving pistons, locked repeaters, waterlogged chests, unknown blocks, or a setup action the rules reject.
+- `UNSUPPORTED` — the fixture uses content or setups the reference rules cannot represent, such as locked repeaters, waterlogged chests, unknown blocks, or a setup action the rules reject.
 - `INVALID` — skeletons with placeholders and unknown mechanisms.
 
 ## Content mapping for 1.21.8
@@ -68,6 +68,7 @@ The mapping translates target-version notation into the reference registry. Prop
 | `observer` | `facing` (observed side), `powered` | — |
 | `piston`, `sticky_piston` | `facing`, `extended` | — |
 | `piston_head` | `facing`, `type` | `short` ignored |
+| `moving_piston` | `facing`, `type` | the moving block is block-entity state and is not part of the notation |
 | `hopper` | `facing` (not `up`), `enabled` | — |
 | `chest` | `facing`, `type` (`single`, `left`, `right`) | `waterlogged` must be `false`; a `left` half is taken to pair clockwise of its facing, `right` counter-clockwise |
 | `comparator` | `facing`, `mode`, `powered` | `facing` is taken to name the **input** side; the output signal is block-entity state and is not part of the notation |

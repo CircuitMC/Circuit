@@ -17,7 +17,6 @@ void run_scheduled_tick(RuleContext& ctx, TickList list, const ScheduledTick& ti
     case BlockType::repeater: tick_repeater(ctx, tick.pos, s); break;
     case BlockType::redstone_lamp: tick_lamp(ctx, tick.pos, s); break;
     case BlockType::observer: tick_observer(ctx, tick.pos, s); break;
-    case BlockType::piston: case BlockType::sticky_piston: check_piston(ctx, tick.pos); break;
     case BlockType::comparator: tick_comparator(ctx, tick.pos, s); break;
     default: break;
     }
@@ -44,6 +43,10 @@ void run_block_event(RuleContext& ctx, const BlockEvent& event) {
     if (is_piston(event.block)) run_piston_event(ctx, event, s);
 }
 
-void run_block_entity(RuleContext& ctx, BlockPos pos) { tick_hopper(ctx, pos); }
+void run_block_entity(RuleContext& ctx, BlockPos pos) {
+    const auto s = ctx.block(pos);
+    if (s.is(BlockType::hopper)) tick_hopper(ctx, pos);
+    else if (s.is(BlockType::moving_piston)) tick_moving_piston(ctx, pos);
+}
 
 } // namespace circuit::gameplay

@@ -7,10 +7,10 @@ namespace {
 using enum CompatibilityTier;
 using enum EvidenceSource;
 
-// Compatibility table for circuit-reference-rules-v1. Nothing is checked
+// Compatibility table for circuit-reference-rules-v2. Nothing is checked
 // against the target version yet: no row claims L0. L2 rows record known
 // simplifications; rows without a claim are unverified.
-constexpr std::array reference_v1_mechanisms{
+constexpr std::array reference_v2_mechanisms{
     MechanismEntry{"neighbor_updates", l0_exact, std::nullopt, documented_behavior,
         "Order west, east, down, up, north, south; emissions during one delivery run depth-first in "
         "emission order. A single update kind serves both neighbor and shape updates. Unverified."},
@@ -31,10 +31,12 @@ constexpr std::array reference_v1_mechanisms{
     MechanismEntry{"observer", l0_exact, l2_declared_deviation, documented_behavior,
         "Reacts to any update from its observed position; 2-tick delay and 2-tick pulse."},
     MechanismEntry{"piston", l0_exact, l2_declared_deviation, documented_behavior,
-        "Moves a structure of at most 12 blocks in one block event without moving-block states or "
-        "extension time; acts at most once per tick and re-checks power on a 1-tick scheduled tick. "
-        "Quasi-connectivity is checked. Dust, levers, repeaters, water and crops are immovable instead "
-        "of destroyed."},
+        "Structures of at most 12 blocks, slime attachment and quasi-connectivity. A block event starts the "
+        "move: the base extends at once, while the head and moved blocks, or on retraction the base and pulled "
+        "blocks, become moving pistons that finish in the block-entity phase two ticks later. A sticky piston "
+        "retracting before its push finished leaves the block behind. Dust, levers, repeaters, comparators, "
+        "water and wheat are destroyed without drops; entities are not pushed. Phase placement and drop "
+        "timing are unverified."},
     MechanismEntry{"block_events", l0_exact, std::nullopt, documented_behavior,
         "Level-wide FIFO with set semantics, drained including additions; events in non-ticking or "
         "unloaded chunks are deferred in order."},
@@ -83,8 +85,8 @@ constexpr std::array bundles{
         .id = "java-1.21.8",
         .game_version = "1.21.8",
         .protocol_candidate = "java-1.21.8",
-        .rules = RuleSet{"circuit-reference-rules-v1", RngPolicy::per_section_derived_stream,
-                         reference_v1_mechanisms},
+        .rules = RuleSet{"circuit-reference-rules-v2", RngPolicy::per_section_derived_stream,
+                         reference_v2_mechanisms},
         .world = {-64, 384},
         .limits = vanilla_like_limits,
         .generator = "empty",

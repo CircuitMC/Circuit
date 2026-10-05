@@ -67,8 +67,9 @@ std::string text(const std::pair<BlockPos, std::uint32_t>& b) { return std::form
 std::string text(const std::pair<BlockPos, BlockEntity>& b) {
     std::string slots;
     for (const auto& s : b.second.slots) slots += std::format("{}x{} ", s.item, s.count);
-    return std::format("block_entity {} kind={} order={} cooldown={} signal={} slots=[{}]", pos_text(b.first),
-                       static_cast<int>(b.second.kind), b.second.order, b.second.cooldown, b.second.signal, slots);
+    return std::format("block_entity {} kind={} order={} cooldown={} signal={} moving={:#x} progress={} motion={} slots=[{}]",
+                       pos_text(b.first), static_cast<int>(b.second.kind), b.second.order, b.second.cooldown,
+                       b.second.signal, b.second.moving, b.second.progress, b.second.motion, slots);
 }
 std::string text(const Entity& e) {
     return std::format("entity {} pos=({},{},{}) vel=({},{},{}) stack={}x{} age={} last_tick={} ground={}", e.id.value,
@@ -140,6 +141,7 @@ std::uint64_t digest(const WorldDump& d) {
     h.add(d.block_entities.size());
     for (const auto& [p, be] : d.block_entities) {
         h.add(p); h.add(static_cast<std::uint64_t>(be.kind)); h.add(be.order); h.add(be.cooldown); h.add(be.signal);
+        h.add(be.moving); h.add(be.progress); h.add(be.motion);
         for (const auto& s : be.slots) h.add(contracts::pack_stack(s));
     }
     h.add(d.entities.size());

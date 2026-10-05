@@ -12,7 +12,7 @@ constexpr Properties properties(BlockType t) noexcept {
     case BlockType::redstone_wire: case BlockType::wheat: return {false, true, false, false};
     case BlockType::repeater: return {true, false, true, true};
     case BlockType::observer: case BlockType::piston: case BlockType::sticky_piston:
-    case BlockType::piston_head: case BlockType::hopper:
+    case BlockType::piston_head: case BlockType::hopper: case BlockType::moving_piston:
         return {true, false, true, false};
     case BlockType::water: return {false, true, true, false};
     case BlockType::chest: return {true, true, false, false};

@@ -60,6 +60,8 @@ struct ChunkData {
     std::map<EntityId, Entity> entities;
     std::map<TickKey, TickEntry> ticks[2];
     std::vector<EventEntry> events; // Pending block events at this column; deferred while not ticking.
+    // Block entities created in this phase; their creation order is assigned at commit.
+    std::map<BlockPos, Provisional> new_block_entities;
 };
 
 struct WorldStore {

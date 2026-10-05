@@ -30,6 +30,7 @@ enum class BlockType : std::uint8_t {
     water,          // level 0: source, 1-7: flowing distance; flag: falling (level 0)
     wheat,          // level: age 0-7
     comparator,     // facing: output side (horizontal); level: 0 compare, 1 subtract; flag: powered
+    moving_piston,  // facing: facing of the moving piston; flag: sticky. Block entity holds the moving block.
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -99,6 +100,9 @@ enum class ChestType : std::uint8_t { single = 0, left = 1, right = 2 };
 constexpr BlockState chest(Direction facing = Direction::north, ChestType type = ChestType::single) {
     return BlockState::of(BlockType::chest).with_facing(facing).with_level(static_cast<std::uint8_t>(type));
 }
+constexpr BlockState moving_piston(Direction facing, bool sticky) {
+    return BlockState::of(BlockType::moving_piston).with_facing(facing).with_flag(sticky);
+}
 constexpr BlockState comparator(Direction output, bool subtract = false, bool powered = false) {
     return BlockState::of(BlockType::comparator).with_facing(output).with_level(subtract ? 1 : 0).with_flag(powered);
 }
@@ -110,8 +114,10 @@ constexpr BlockState wheat(std::uint8_t age = 0) { return BlockState::of(BlockTy
 
 constexpr bool is_piston(BlockType t) noexcept { return t == BlockType::piston || t == BlockType::sticky_piston; }
 constexpr bool is_container(BlockType t) noexcept { return t == BlockType::hopper || t == BlockType::chest; }
-// Block entities hold container slots, hopper cooldowns and comparator output signals.
-constexpr bool has_block_entity(BlockType t) noexcept { return is_container(t) || t == BlockType::comparator; }
+// Block entities hold container slots, hopper cooldowns, comparator output signals and moving blocks.
+constexpr bool has_block_entity(BlockType t) noexcept {
+    return is_container(t) || t == BlockType::comparator || t == BlockType::moving_piston;
+}
 // Direction from a chest half to its partner (reference convention: left pairs
 // clockwise, right counter-clockwise, seen from above); nullopt for single chests.
 constexpr std::optional<Direction> chest_partner(BlockState s) noexcept {
@@ -129,6 +135,7 @@ constexpr bool is_solid(BlockType t) noexcept {
     case BlockType::stone: case BlockType::glass: case BlockType::obsidian: case BlockType::redstone_block:
     case BlockType::redstone_lamp: case BlockType::observer: case BlockType::piston: case BlockType::sticky_piston:
     case BlockType::piston_head: case BlockType::slime_block: case BlockType::hopper: case BlockType::chest:
+    case BlockType::moving_piston:
         return true;
     default:
         return false;
@@ -142,6 +149,17 @@ constexpr bool is_movable(BlockState s) noexcept {
         return true;
     case BlockType::piston: case BlockType::sticky_piston:
         return !s.flag();
+    default:
+        return false;
+    }
+}
+
+// Blocks a piston destroys (without drops) instead of moving or being blocked by.
+constexpr bool destroyed_by_piston(BlockType t) noexcept {
+    switch (t) {
+    case BlockType::redstone_wire: case BlockType::lever: case BlockType::repeater: case BlockType::comparator:
+    case BlockType::water: case BlockType::wheat:
+        return true;
     default:
         return false;
     }

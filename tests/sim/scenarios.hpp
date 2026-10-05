@@ -240,10 +240,32 @@ inline Scenario comparator_chest_scenario() {
     }};
 }
 
+// Short and long pulses on sticky pistons whose moves cross chunk edges:
+// block dropping, pulls, destroyed dust, and moving blocks next to lamps.
+inline Scenario piston_pulse_scenario() {
+    return {"piston_pulses", 41, 120, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 2)};
+        std::vector<CommandBody> c;
+        for (int row = 0; row < 4; ++row) {
+            const int z = row * 3;
+            if (t == 2)
+                append(c, {place({15, 0, z}, blocks::stone()), place({16, 0, z}, blocks::wire()),
+                           place({14, 0, z}, blocks::piston(D::east, true)), place({14, 0, z + 1}, blocks::lever()),
+                           place({17, 0, z + 1}, blocks::lamp()), place({16, 0, z + 1}, blocks::redstone_block()),
+                           place({15, 0, z + 1}, blocks::piston(D::east))});
+            // Row r pulses with length r + 1 every 12 ticks; rows start at different ticks.
+            const Tick start = 5 + static_cast<Tick>(row) * 2;
+            if (t >= start && (t - start) % 12 == 0) c.push_back(use_lever({14, 0, z + 1}));
+            if (t >= start + row + 1 && (t - start - row - 1) % 12 == 0) c.push_back(use_lever({14, 0, z + 1}));
+        }
+        return c;
+    }};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
-            comparator_chest_scenario()};
+            comparator_chest_scenario(), piston_pulse_scenario()};
 }
 
 } // namespace circuit::test

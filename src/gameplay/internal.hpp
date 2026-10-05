@@ -33,6 +33,8 @@ void tick_observer(RuleContext& ctx, BlockPos pos, BlockState state);
 bool piston_powered(RuleContext& ctx, BlockPos pos, Direction facing);
 void check_piston(RuleContext& ctx, BlockPos pos);
 void run_piston_event(RuleContext& ctx, const BlockEvent& event, BlockState state);
+// Block-entity tick of a moving piston: completes the move after two ticks.
+void tick_moving_piston(RuleContext& ctx, BlockPos pos);
 
 void check_hopper(RuleContext& ctx, BlockPos pos);
 void tick_hopper(RuleContext& ctx, BlockPos pos);

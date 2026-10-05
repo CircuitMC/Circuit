@@ -4,7 +4,7 @@
 
 The Part I core runs headless: shared contracts, a set of reference rules, an independent sequential oracle, and a region-parallel runtime checked against the oracle. It opens no network port and has no persistence.
 
-The rules are **circuit-reference-rules-v1**, Circuit's own definitions written from publicly documented Java Edition behavior. No mechanism has been checked against Java Edition 1.21.8: the instrumented reference server that would provide target-version traces does not exist yet. Passing tests here shows that the parallel runtime reproduces the reference rules exactly. It does not show vanilla compatibility.
+The rules are **circuit-reference-rules-v2**, Circuit's own definitions written from publicly documented Java Edition behavior. No mechanism has been checked against Java Edition 1.21.8: the instrumented reference server that would provide target-version traces does not exist yet. Passing tests here shows that the parallel runtime reproduces the reference rules exactly. It does not show vanilla compatibility.
 
 The compatibility table is part of the version bundle (`src/contracts/version.cpp`, exposed through `BundleRegistry`). Each row states a target tier (L0 exact, L1 region-equivalent, L2 declared deviation), the tier currently claimed, the evidence source, and the known limitations. No row claims L0. Rows with known simplifications claim L2.
 
@@ -43,7 +43,12 @@ Every observable action produces a trace record keyed by (tick, phase, root, seq
 - **Neighbor updates:** a changed block notifies its six neighbors in the order west, east, down, up, north, south. Notifications emitted during one delivery run depth-first in emission order. A chain stops after 1,000,000 deliveries, and the truncation is recorded.
 - **Redstone:** levers, redstone blocks, dust (same-level horizontal connections, decay one per block), repeaters (delay 1–4, pulse extension), lamps (4-tick turn-off), and observers (2-tick delay and pulse). There is no power conduction through solid blocks.
 - **Scheduled ticks:** at most one pending tick per (position, block). The level-wide sub-order counter is shared by block and fluid ticks.
-- **Pistons:** regular, sticky and slime structures of up to 12 blocks, with quasi-connectivity. A move completes inside one block event and has no moving-block states. A piston acts at most once per tick and re-checks its power on the next tick.
+- **Pistons:** regular, sticky and slime structures of up to 12 blocks, with quasi-connectivity. Each move takes two ticks.
+  - **Extension:** a block event extends the base at once and turns the head and pushed blocks into moving pistons. The moving pistons become the real blocks in the block-entity phase two ticks later.
+  - **Retraction:** the base and any pulled blocks move the same way.
+  - **Moving blocks:** they block movement and do not conduct power.
+  - **Block dropping:** a sticky piston that retracts before its push finished leaves the block behind.
+  - **Destroyed blocks:** dust, levers, repeaters, comparators, water and wheat in a push line are destroyed, without drops.
 - **Hoppers and chests:** push before pull, 8-tick cooldown, disabled while powered, and pickup of item entities in the cell above.
 - **Double chests:** two halves with the same facing pair as left and right. A half claims a single chest at its partner position and becomes single when its partner disappears. Hoppers and comparators see one 54-slot container, left half first, even across a chunk edge.
 - **Comparators:** compare and subtract modes with a 2-tick delay. The output signal (0–15) lives in a block entity. The rear input is power, or the fullness of a container behind the comparator, also read through stone, obsidian or a lamp. Side inputs come from dust, repeaters, comparators, redstone blocks and observers. Container changes notify the comparators reading them.
@@ -59,7 +64,7 @@ Every observable action produces a trace record keyed by (tick, phase, root, seq
 
 **Conflicts.** The coordinator rolls back an aborted attempt using copy-on-first-write snapshots of the written columns. It then merges the two regions, discards any staged results of the merged regions, and runs the merged region again. Regions that never touched each other keep their results. Each conflict reduces the number of regions, so a phase always finishes; in the worst case everything becomes one region and runs serially.
 
-**Level-wide counters.** Scheduled-tick sub-orders and block-event queue positions are not drawn from shared counters during a phase. New entries carry their (root, sequence) key. At commit, the coordinator sorts all staged entries and assigns counter values in serial order. Entity ids and block-entity creation order are assigned only in the serial command phase.
+**Level-wide counters.** Scheduled-tick sub-orders, block-event queue positions and the creation order of block entities created during a phase (moving pistons) are not drawn from shared counters during a phase. New entries carry their (root, sequence) key. At commit, the coordinator sorts all staged entries and assigns counter values in serial order. Entity ids are assigned only in the serial command phase.
 
 **Block-event order.** Each region drains its own FIFO. At commit, the global FIFO order is rebuilt from the initial queue and the children each event appended. Trace records are renumbered to their global positions.
 
@@ -72,7 +77,7 @@ Every observable action produces a trace record keyed by (tick, phase, root, seq
 ## Verification
 
 - `rules_tests`: hand-derived expectations for every mechanism, including chunk-edge crossings, a chain returning across an edge within one tick, pulse extension, priority order, chain truncation, piston limits, conservation in hopper races, water timing, stream locality, generation checks, command validation and capacity failure.
-- `simulation_tests`: ten scenarios compared with the oracle trace-by-trace every tick and state-by-state at checkpoints. Configurations: 1/2/4/8/16 pool workers, a single region, seeded random and priority interleavings, injected aborts, and perturbed layouts. A deliberately unsafe mode without ownership checks must produce a detected divergence.
+- `simulation_tests`: eleven scenarios compared with the oracle trace-by-trace every tick and state-by-state at checkpoints. Configurations: 1/2/4/8/16 pool workers, a single region, seeded random and priority interleavings, injected aborts, and perturbed layouts. A deliberately unsafe mode without ownership checks must produce a detected divergence.
 - `control_tests`: seeded-schedule reproducibility, tick-clock catch-up, and the state digest.
 - `evidence_tests`: the [trace fixture format](TRACE_FORMAT.md), the content mapping (every reference state round-trips through target-version notation), recording and evaluation on both the engine and the oracle, and the committed fixtures in `tests/fixtures/`.
 
@@ -92,7 +97,7 @@ Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked or recorded w
 
 ## Limitations
 
-- No mechanism is verified against the target version. Pistons, dust, water, wheat and item physics are declared simplifications.
+- No mechanism is verified against the target version. Pistons (no drops, no entity pushing), dust, water, wheat and item physics are declared simplifications.
 - There is no lighting, world generation (chunks start empty), mob spawning or second dimension. Comparators read containers only, not other analog sources.
 - Snapshots copy whole column data on first write, and commit is serial. On the current small fixtures, coordination overhead outweighs parallel gains; performance work belongs to M8.
 - A capacity failure, such as exceeding 1,000,000 block events in one tick, fails the tick and leaves the engine unusable. Nothing is silently dropped.

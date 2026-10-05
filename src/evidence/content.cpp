@@ -174,6 +174,13 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
         CIRCUIT_CHECK(p.ignored("short", {"true", "false"}));
         return simple(BlockState::of(BlockType::piston_head).with_facing(facing).with_flag(type == "sticky"));
     }
+    if (id == "minecraft:moving_piston") {
+        CIRCUIT_TRY(facing, p.direction("facing"));
+        CIRCUIT_TRY(type, p.required("type"));
+        if (type != "normal" && type != "sticky") return std::unexpected("minecraft:moving_piston: invalid type");
+        // The moving block itself is block-entity state and not part of the notation.
+        return simple(blocks::moving_piston(facing, type == "sticky"));
+    }
     if (id == "minecraft:hopper") {
         CIRCUIT_TRY(facing, p.direction("facing"));
         CIRCUIT_TRY(enabled, p.flag("enabled"));
@@ -239,6 +246,8 @@ std::string ContentMapping::notation(BlockState s) const {
                            b(s.flag()), direction_name(s.facing()));
     case BlockType::piston_head:
         return std::format("minecraft:piston_head[facing={},type={}]", direction_name(s.facing()), s.flag() ? "sticky" : "normal");
+    case BlockType::moving_piston:
+        return std::format("minecraft:moving_piston[facing={},type={}]", direction_name(s.facing()), s.flag() ? "sticky" : "normal");
     case BlockType::hopper:
         return std::format("minecraft:hopper[enabled={},facing={}]", b(s.flag()), direction_name(s.facing()));
     case BlockType::chest: {

@@ -61,7 +61,6 @@ public:
     const BlockEntity* peek_block_entity(BlockPos pos) override { return find_block_entity(pos); }
     BlockEntity* block_entity(BlockPos pos) override { return find_block_entity(pos); }
     void create_block_entity(BlockPos pos, BlockType kind) override {
-        if (phase_ != Phase::commands) throw std::logic_error("oracle: block entity created outside the command phase");
         o_.block_entities_[pos] = BlockEntity{kind, o_.next_block_entity_order_++,
                                               std::vector<contracts::ItemStack>(container_size(kind)), 0};
     }
