@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
-#include <deque>
+#include <algorithm>
 #include <optional>
 #include <set>
 
@@ -9,59 +9,100 @@ namespace {
 constexpr std::size_t push_limit = 12;
 constexpr std::uint8_t move_ticks = 2;
 
-struct Structure {
-    std::vector<BlockPos> moved;     // In discovery order.
-    std::vector<BlockPos> destroyed; // Destroyed (without drops) where a push line reaches them.
-};
+bool sticky(BlockState s) { return s.is(BlockType::slime_block); }
 
-// Discovers the blocks that move when `start` is pushed or pulled in `dir`.
-// Fails if an immovable block (including an unloaded or out-of-world cell)
-// lies in a push line or more than 12 blocks would move. A destroyable block
-// ends its push line. Slime blocks attach their movable neighbors.
-std::optional<Structure> resolve(RuleContext& ctx, BlockPos start, Direction dir, BlockPos piston) {
-    Structure out;
-    std::set<BlockPos> seen;
-    std::deque<BlockPos> queue{start};
-    while (!queue.empty()) {
-        const auto p = queue.front();
-        queue.pop_front();
-        if (seen.contains(p)) continue;
-        const auto s = ctx.block(p);
-        if (s.is_air()) continue;
-        if (p == piston) return std::nullopt;
-        seen.insert(p);
-        if (destroyed_by_piston(s.type())) {
-            out.destroyed.push_back(p);
-            continue;
-        }
-        if (!is_movable(s)) return std::nullopt;
-        out.moved.push_back(p);
-        if (out.moved.size() > push_limit) return std::nullopt;
-        queue.push_back(p.relative(dir));
-        if (s.is(BlockType::slime_block)) {
-            for (auto d : update_order) {
-                if (d == dir) continue;
-                const auto q = p.relative(d);
-                if (q == piston) continue;
-                const auto qs = ctx.block(q);
-                if (!qs.is_air() && is_movable(qs)) queue.push_back(q);
+// Structure discovery of the target version as observed in harness traces:
+// a line runs from the sticky chain behind its origin through the origin and
+// forward until air or a destroyable block; every sticky block in the list
+// then branches into lines from its neighbors off the movement axis, in the
+// game's direction order (down, up, north, south, west, east).
+class Resolver {
+public:
+    Resolver(RuleContext& ctx, BlockPos piston, Direction movement) : ctx_(ctx), piston_(piston), movement_(movement) {}
+
+    bool resolve(BlockPos start) {
+        const auto s = ctx_.block(start);
+        if (s.is_air()) return true;
+        if (!is_movable(s) || start == piston_) {
+            if (destroyed_by_piston(s.type())) {
+                destroyed.push_back(start);
+                return true;
             }
+            return false;
+        }
+        if (!line(start)) return false;
+        for (std::size_t i = 0; i < moved.size(); ++i)
+            if (sticky(ctx_.block(moved[i])) && !branches(moved[i])) return false;
+        return true;
+    }
+
+    std::vector<BlockPos> moved;
+    std::vector<BlockPos> destroyed;
+
+private:
+    bool contains(BlockPos p) const { return std::ranges::find(moved, p) != moved.end(); }
+
+    bool line(BlockPos origin) {
+        auto state = ctx_.block(origin);
+        if (state.is_air() || !is_movable(state) || origin == piston_ || contains(origin)) return true;
+        std::size_t count = 1;
+        if (count + moved.size() > push_limit) return false;
+        // Sticky blocks drag the chain behind them.
+        while (sticky(state)) {
+            const auto behind = origin.relative(contracts::opposite(movement_), static_cast<std::int32_t>(count));
+            const auto bs = ctx_.block(behind);
+            if (bs.is_air() || !is_movable(bs) || behind == piston_) break;
+            if (++count + moved.size() > push_limit) return false;
+            state = bs;
+        }
+        for (std::size_t k = count; k-- > 0;)
+            moved.push_back(origin.relative(contracts::opposite(movement_), static_cast<std::int32_t>(k)));
+        for (std::int32_t j = 1;; ++j) {
+            const auto ahead = origin.relative(movement_, j);
+            const auto as = ctx_.block(ahead);
+            if (as.is_air()) return true;
+            if (destroyed_by_piston(as.type())) {
+                destroyed.push_back(ahead);
+                return true;
+            }
+            if (!is_movable(as) || ahead == piston_) return false;
+            if (contains(ahead)) return true;
+            if (moved.size() + 1 > push_limit) return false;
+            moved.push_back(ahead);
         }
     }
-    return out;
-}
 
-// Writes of one piston action. Other roots cannot observe the intermediate
-// states; changes are recorded and propagated when the action finishes.
+    bool branches(BlockPos p) {
+        for (auto d : contracts::all_directions) {
+            if (d == movement_ || d == contracts::opposite(movement_)) continue;
+            const auto n = p.relative(d);
+            const auto ns = ctx_.block(n);
+            if (ns.is_air() || !is_movable(ns) || n == piston_) continue;
+            if (!line(n)) return false;
+        }
+        return true;
+    }
+
+    RuleContext& ctx_;
+    BlockPos piston_;
+    Direction movement_;
+};
+
+// Writes of one piston action, in the target version's order. Every write
+// sends shape updates at once (observed in target-version traces); neighbor
+// updates for the changed positions follow when the action finishes, in
+// first-write order.
 class Edit {
 public:
     explicit Edit(RuleContext& ctx) : ctx_(ctx) {}
+    // Every write is recorded as it happens, including intermediate states.
     void write(BlockPos p, BlockState s) {
-        if (!touched_.contains(p)) {
-            touched_.insert(p);
-            original_.push_back({p, ctx_.block(p)});
-        }
+        const auto before = ctx_.block(p);
+        if (before == s) return;
         ctx_.write_block(p, s);
+        ctx_.record(TraceKind::block_changed, p, before.raw(), s.raw());
+        if (touched_.insert(p).second) changed_.push_back(p);
+        notify_shapes(ctx_, p);
     }
     // Replaces a block, and its block entity if any, with air.
     void clear(BlockPos p) {
@@ -75,9 +116,9 @@ public:
         drop_items(ctx_, p, s);
     }
     // Places a moving piston that turns into `carried` after the move.
-    void moving(BlockPos p, BlockState carried, Motion motion, bool sticky) {
+    void moving(BlockPos p, BlockState carried, Motion motion, bool sticky_type) {
         if (has_block_entity(ctx_.block(p).type())) ctx_.remove_block_entity(p);
-        write(p, blocks::moving_piston(motion.facing, sticky));
+        write(p, blocks::moving_piston(motion.facing, sticky_type));
         ctx_.create_block_entity(p, BlockType::moving_piston);
         auto* be = ctx_.block_entity(p);
         be->moving = carried.raw();
@@ -90,42 +131,51 @@ public:
         write(p, carried);
         placed_.push_back(p);
     }
-    void move(const Structure& structure, Direction dir, Motion motion, bool sticky) {
+    // Moves a resolved structure one block along `dir`: destroyed blocks first,
+    // then moving blocks from the last discovered to the first, then `head`
+    // (if any), then vacated cells in hash order.
+    void move(const Resolver& structure, Direction dir, Motion motion, std::optional<std::pair<BlockPos, BlockState>> head,
+              bool head_sticky) {
         std::vector<BlockState> states;
         for (auto p : structure.moved) states.push_back(ctx_.block(p));
-        for (auto p : structure.destroyed) destroy(p);
-        for (auto p : structure.moved) write(p, blocks::air());
-        for (std::size_t i = 0; i < structure.moved.size(); ++i)
-            moving(structure.moved[i].relative(dir), states[i], motion, sticky);
+        for (auto it = structure.destroyed.rbegin(); it != structure.destroyed.rend(); ++it) destroy(*it);
+        std::set<BlockPos> occupied;
+        for (std::size_t i = structure.moved.size(); i-- > 0;) {
+            const auto destination = structure.moved[i].relative(dir);
+            moving(destination, states[i], motion, false);
+            occupied.insert(destination);
+        }
+        if (head) {
+            moving(head->first, head->second, {motion.facing, motion.extending, true}, head_sticky);
+            occupied.insert(head->first);
+        }
+        std::vector<BlockPos> vacated;
+        for (auto p : structure.moved)
+            if (!occupied.contains(p)) vacated.push_back(p);
+        for (auto p : hash_order(vacated, structure.moved.size())) write(p, blocks::air());
     }
     void finish() {
-        std::vector<BlockPos> changed;
-        for (const auto& [p, before] : original_) {
-            const auto after = ctx_.block(p);
-            if (after == before) continue;
-            ctx_.record(TraceKind::block_changed, p, before.raw(), after.raw());
-            changed.push_back(p);
-        }
-        for (auto p : placed_) on_placed(ctx_, p, ctx_.block(p));
-        for (auto p : changed) notify_neighbors(ctx_, p);
+        for (auto p : placed_) on_placed(ctx_, p, ctx_.block(p), BlockType::moving_piston);
+        for (auto p : changed_) notify_neighbors(ctx_, p);
     }
 
 private:
     RuleContext& ctx_;
     std::set<BlockPos> touched_;
-    std::vector<std::pair<BlockPos, BlockState>> original_;
+    std::vector<BlockPos> changed_;
     std::vector<BlockPos> placed_;
 };
 
 bool extend(RuleContext& ctx, BlockPos pos, BlockState s) {
     const auto facing = s.facing();
     const auto head_pos = pos.relative(facing);
-    const bool sticky = s.is(BlockType::sticky_piston);
-    const auto structure = resolve(ctx, head_pos, facing, pos);
-    if (!structure) return false;
+    const bool sticky_piston = s.is(BlockType::sticky_piston);
+    Resolver structure(ctx, pos, facing);
+    if (!structure.resolve(head_pos)) return false;
     Edit edit(ctx);
-    edit.move(*structure, facing, {facing, true, false}, sticky);
-    edit.moving(head_pos, BlockState::of(BlockType::piston_head).with_facing(facing).with_flag(sticky), {facing, true, true}, sticky);
+    edit.move(structure, facing, {facing, true, false},
+              std::pair{head_pos, BlockState::of(BlockType::piston_head).with_facing(facing).with_flag(sticky_piston)},
+              sticky_piston);
     edit.write(pos, s.with_flag(true));
     edit.finish();
     return true;
@@ -145,30 +195,30 @@ void retract(RuleContext& ctx, BlockPos pos, BlockState s) {
     const auto facing = s.facing();
     const auto head_pos = pos.relative(facing);
     const auto target = pos.relative(facing, 2);
-    const bool sticky = s.is(BlockType::sticky_piston);
+    const bool sticky_piston = s.is(BlockType::sticky_piston);
     Edit edit(ctx);
-    bool dropped = false;
-    if (sticky) {
-        // Retracting before the push finished: the block is left where it was going.
-        if (const auto carried = pushed_block(ctx, target, facing)) {
-            edit.finish_moving(target, *carried);
-            dropped = true;
-        }
-    }
-    const auto head = ctx.block(head_pos);
-    bool head_moving = false;
-    if (head.is(BlockType::moving_piston))
+    // A head still extending is removed first.
+    if (ctx.block(head_pos).is(BlockType::moving_piston))
         if (const auto* be = ctx.peek_block_entity(head_pos)) {
             const auto m = Motion::unpack(be->motion);
-            head_moving = m.source && m.extending && m.facing == facing;
+            if (m.source && m.extending && m.facing == facing) edit.clear(head_pos);
         }
-    if ((head.is(BlockType::piston_head) && head.facing() == facing) || head_moving) edit.clear(head_pos);
-    edit.moving(pos, s.with_flag(false), {facing, false, true}, sticky);
-    if (sticky && !dropped && ctx.block(head_pos).is_air()) {
+    edit.moving(pos, s.with_flag(false), {facing, false, true}, sticky_piston);
+    const auto head = ctx.block(head_pos);
+    if (head.is(BlockType::piston_head) && head.facing() == facing) edit.write(head_pos, blocks::air());
+    if (!sticky_piston) {
+        edit.finish();
+        return;
+    }
+    // Retracting before the push finished: the block is left where it was going.
+    if (const auto carried = pushed_block(ctx, target, facing)) {
+        edit.finish_moving(target, *carried);
+    } else if (ctx.block(head_pos).is_air()) {
         const auto ts = ctx.block(target);
-        if (!ts.is_air() && is_movable(ts))
-            if (const auto structure = resolve(ctx, target, contracts::opposite(facing), pos))
-                edit.move(*structure, contracts::opposite(facing), {facing, false, false}, sticky);
+        if (!ts.is_air() && is_movable(ts)) {
+            Resolver structure(ctx, pos, contracts::opposite(facing));
+            if (structure.resolve(target)) edit.move(structure, contracts::opposite(facing), {facing, false, false}, std::nullopt, false);
+        }
     }
     edit.finish();
 }

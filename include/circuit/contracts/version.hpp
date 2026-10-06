@@ -15,7 +15,7 @@ namespace circuit::contracts {
 enum class CompatibilityTier : std::uint8_t {
     l0_exact,               // state, event order and RNG consumption match the target version
     l1_region_equivalent,   // exact within a region; cross-region invariants only
-    l2_declared_deviation,  // intentionally differs, with the difference documented
+    l2_declared_deviation,  // Circuit's own definition; known or uncompared differences are listed
 };
 enum class EvidenceSource : std::uint8_t {
     none = 0,

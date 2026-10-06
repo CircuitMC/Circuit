@@ -1,0 +1,16 @@
+circuit-trace 1
+title Hopper above the left half of a double chest fills the right half first
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms double_chest hopper
+area 14 -1 -1 18 1 2
+ticks 10
+at 0 set 15 -1 0 minecraft:stone
+at 0 set 16 -1 0 minecraft:stone
+at 0 set 16 0 0 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 1 set 15 0 0 minecraft:chest[facing=north,type=left,waterlogged=false]
+at 1 set 15 1 0 minecraft:hopper[enabled=true,facing=down]
+at 1 insert 15 1 0 0 minecraft:iron_ingot 3
+slot 9 15 0 0 0 ?
+slot 9 16 0 0 0 ?

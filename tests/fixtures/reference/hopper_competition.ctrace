@@ -1,0 +1,45 @@
+circuit-trace 1
+title Two hoppers compete for the last free space
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v4
+mechanisms hopper block_entity_order
+area 14 -1 -1 18 0 1
+ticks 3
+
+at 0 set 16 0 0 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 0 insert 16 0 0 0 minecraft:stone 64
+at 0 insert 16 0 0 1 minecraft:stone 64
+at 0 insert 16 0 0 2 minecraft:stone 64
+at 0 insert 16 0 0 3 minecraft:stone 64
+at 0 insert 16 0 0 4 minecraft:stone 64
+at 0 insert 16 0 0 5 minecraft:stone 64
+at 0 insert 16 0 0 6 minecraft:stone 64
+at 0 insert 16 0 0 7 minecraft:stone 64
+at 0 insert 16 0 0 8 minecraft:stone 64
+at 0 insert 16 0 0 9 minecraft:stone 64
+at 0 insert 16 0 0 10 minecraft:stone 64
+at 0 insert 16 0 0 11 minecraft:stone 64
+at 0 insert 16 0 0 12 minecraft:stone 64
+at 0 insert 16 0 0 13 minecraft:stone 64
+at 0 insert 16 0 0 14 minecraft:stone 64
+at 0 insert 16 0 0 15 minecraft:stone 64
+at 0 insert 16 0 0 16 minecraft:stone 64
+at 0 insert 16 0 0 17 minecraft:stone 64
+at 0 insert 16 0 0 18 minecraft:stone 64
+at 0 insert 16 0 0 19 minecraft:stone 64
+at 0 insert 16 0 0 20 minecraft:stone 64
+at 0 insert 16 0 0 21 minecraft:stone 64
+at 0 insert 16 0 0 22 minecraft:stone 64
+at 0 insert 16 0 0 23 minecraft:stone 64
+at 0 insert 16 0 0 24 minecraft:stone 64
+at 0 insert 16 0 0 25 minecraft:stone 64
+at 0 insert 16 0 0 26 minecraft:stone 63
+
+at 1 set 15 0 0 minecraft:hopper[enabled=true,facing=east]
+at 1 insert 15 0 0 0 minecraft:stone 1
+at 1 set 17 0 0 minecraft:hopper[enabled=true,facing=west]
+at 1 insert 17 0 0 0 minecraft:stone 1
+slot 1 15 0 0 0 empty 0
+slot 1 16 0 0 26 minecraft:stone 64
+slot 1 17 0 0 0 minecraft:stone 1

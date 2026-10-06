@@ -1,0 +1,32 @@
+circuit-trace 1
+# Skeleton: a piston pushes stone into dust, a lever and a repeater; the destroyed blocks end their lines.
+title Piston destroys dust, a lever and a repeater
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms piston block_events
+area -1 -1 -1 6 0 5
+ticks 4
+changes ordered
+
+at 0 set 1 -1 0 minecraft:stone
+at 0 set 2 -1 0 minecraft:stone
+at 0 set 3 -1 0 minecraft:stone
+at 0 set 1 -1 2 minecraft:stone
+at 0 set 2 -1 2 minecraft:stone
+at 0 set 1 -1 4 minecraft:stone
+at 0 set 2 -1 4 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 2 0 0 minecraft:redstone_wire[power=0]
+at 0 set 0 0 0 minecraft:piston[extended=false,facing=east]
+at 0 set 1 0 2 minecraft:lever[face=floor,facing=east,powered=false]
+at 0 set 0 0 2 minecraft:piston[extended=false,facing=east]
+at 0 set 1 0 4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+at 0 set 0 0 4 minecraft:piston[extended=false,facing=east]
+at 1 set -1 0 0 minecraft:redstone_block
+at 1 set -1 0 2 minecraft:redstone_block
+at 1 set -1 0 4 minecraft:redstone_block
+
+block 3 2 0 0 ?
+block 3 1 0 2 ?
+block 3 1 0 4 ?

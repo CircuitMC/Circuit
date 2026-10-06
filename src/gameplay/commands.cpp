@@ -46,8 +46,9 @@ Plan plan(RuleContext& ctx, const contracts::UseBlock& c) {
         return [&ctx, pos = c.pos, s] { set_block(ctx, pos, s.with_delay(static_cast<std::uint8_t>(s.delay() % 4 + 1))); };
     case BlockType::comparator:
         return [&ctx, pos = c.pos, s] {
-            set_block(ctx, pos, s.with_level(s.level() == 0 ? 1 : 0));
-            detail::check_comparator(ctx, pos);
+            const auto toggled = s.with_level(s.level() == 0 ? 1 : 0);
+            detail::set_block_quiet(ctx, pos, toggled);
+            detail::refresh_comparator(ctx, pos, toggled);
         };
     default: return std::unexpected(ErrorCode::not_usable);
     }

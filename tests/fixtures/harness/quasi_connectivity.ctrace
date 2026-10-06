@@ -1,0 +1,23 @@
+circuit-trace 1
+title Quasi-connected piston waits for an update
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.1.0+mc1.21.8
+mechanisms piston neighbor_updates
+area -1 0 -2 1 1 1
+ticks 4
+changes ordered
+
+at 0 set 0 0 0 minecraft:piston[extended=false,facing=north]
+
+at 1 set 1 1 0 minecraft:lever[face=floor,facing=north,powered=true]
+change 1 1 1 0 minecraft:air minecraft:lever[face=floor,facing=north,powered=true]
+
+block 2 0 0 0 minecraft:piston[extended=false,facing=north]
+
+at 3 set -1 0 0 minecraft:stone
+change 3 -1 0 0 minecraft:air minecraft:stone
+change 3 0 0 -1 minecraft:air minecraft:moving_piston[facing=north,type=normal]
+change 3 0 0 0 minecraft:piston[extended=false,facing=north] minecraft:piston[extended=true,facing=north]
+block 3 0 0 0 minecraft:piston[extended=true,facing=north]
+block 3 0 0 -1 minecraft:moving_piston[facing=north,type=normal]

@@ -5,10 +5,23 @@ game-version 1.21.8
 source circuit_reference
 harness -
 mechanisms piston block_events neighbor_updates
-area 12 0 -2 20 1 2
+area 12 -1 -2 20 1 2
 ticks 6
 changes ordered
 
+# Supporting floor: components need support in the target version.
+at 0 set 13 -1 -1 minecraft:stone
+at 0 set 13 -1 0 minecraft:stone
+at 0 set 13 -1 1 minecraft:stone
+at 0 set 14 -1 -1 minecraft:stone
+at 0 set 14 -1 0 minecraft:stone
+at 0 set 14 -1 1 minecraft:stone
+at 0 set 15 -1 -1 minecraft:stone
+at 0 set 15 -1 0 minecraft:stone
+at 0 set 15 -1 1 minecraft:stone
+at 0 set 16 -1 -1 minecraft:stone
+at 0 set 16 -1 0 minecraft:stone
+at 0 set 16 -1 1 minecraft:stone
 at 0 set 14 0 0 minecraft:slime_block
 at 0 set 14 1 0 minecraft:stone
 at 0 set 15 0 0 minecraft:stone

@@ -5,10 +5,15 @@ game-version 1.21.8
 source circuit_reference
 harness -
 mechanisms double_chest hopper comparator
-area 14 0 -1 18 1 2
+area 14 -1 -1 18 1 2
 ticks 14
 changes ordered
 
+# Supporting floor: components need support in the target version.
+at 0 set 15 -1 0 minecraft:stone
+at 0 set 15 -1 1 minecraft:stone
+at 0 set 16 -1 0 minecraft:stone
+at 0 set 16 -1 1 minecraft:stone
 at 0 set 16 0 0 minecraft:chest[facing=north,type=single,waterlogged=false]
 at 1 set 15 0 0 minecraft:chest[facing=north,type=left,waterlogged=false]
 at 1 set 15 0 1 minecraft:comparator[facing=north,mode=compare,powered=false]

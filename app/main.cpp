@@ -37,6 +37,8 @@ void usage() {
         "             [--seed N] [--replay <file>] [--record <file>] [--realtime]\n"
         "  --check-fixture <file> [--check-fixture <file> ...] [--workers 1..64]\n"
         "  --record-fixture <skeleton> --output <file>\n"
+        "  --profile-fixture <file> [--ticks N] [--workers 1..64]\n"
+        "  --compatibility [--game-version java-1.21.8]\n"
         "  --demo [--game-version java-1.21.8|java-1.20.4]\n"
         "         [--workers 1..64] [--ticks 1..1000000] [--plugin <shared-library>]\n"
         "  --list-versions | --version | --help\n";
@@ -45,10 +47,10 @@ void usage() {
 int main(int argc, char** argv) {
     try {
         unsigned workers = 4, ticks = 20;
-        bool demo = false, simulate = false, ticks_given = false;
+        bool demo = false, simulate = false, ticks_given = false, compatibility = false;
         circuit::app::SimulateOptions simulation;
         std::vector<std::string> fixtures;
-        std::string record_fixture, fixture_output;
+        std::string record_fixture, fixture_output, profile;
         std::string selected = "java-1.21.8";
         std::vector<std::string> libraries;
         for (int i = 1; i < argc; ++i) {
@@ -78,6 +80,8 @@ int main(int argc, char** argv) {
             else if (arg == "--check-fixture") fixtures.emplace_back(value());
             else if (arg == "--record-fixture") record_fixture = value();
             else if (arg == "--output") fixture_output = value();
+            else if (arg == "--profile-fixture") profile = value();
+            else if (arg == "--compatibility") compatibility = true;
             else if (arg == "--game-version") selected = value();
             else if (arg == "--plugin") libraries.emplace_back(value());
             else throw std::invalid_argument("unknown option: " + std::string(arg));
@@ -90,6 +94,8 @@ int main(int argc, char** argv) {
             return circuit::app::record_fixture_file(record_fixture, fixture_output, workers);
         }
         if (!fixtures.empty()) return circuit::app::check_fixtures(fixtures, workers);
+        if (!profile.empty()) return circuit::app::profile_fixture(profile, ticks_given ? ticks : 600, workers);
+        if (compatibility) return circuit::app::print_compatibility(selected);
         if (simulate) {
             simulation.game_version = selected;
             simulation.workers = workers;

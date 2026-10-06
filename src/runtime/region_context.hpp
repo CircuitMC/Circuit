@@ -28,7 +28,8 @@ public:
     void rollback();
     [[nodiscard]] Phase phase() const noexcept { return phase_; }
 
-    Tick now() const override { return world_.time; }
+    // Commands are inputs between ticks: they observe the previous tick's time.
+    Tick now() const override { return phase_ == Phase::commands ? world_.time - 1 : world_.time; }
     BlockState block(BlockPos pos) override;
     void write_block(BlockPos pos, BlockState state) override;
     std::optional<contracts::Generation> chunk_generation(ChunkPos chunk) override;
@@ -65,6 +66,10 @@ public:
     std::vector<std::vector<std::uint32_t>> children;
     std::uint32_t next_local{};
     void push_local(const BlockEvent& event);
+
+    // Tick phases: this region's drained ticks that have not run yet. They
+    // still count as scheduled until they run.
+    std::set<TickKey> pending_ticks;
 
 private:
     ChunkData* loaded_in_world(BlockPos pos) const;

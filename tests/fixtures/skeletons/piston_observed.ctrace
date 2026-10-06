@@ -1,0 +1,51 @@
+circuit-trace 1
+# Skeleton: stationary observers watch pistons. Row z=0: the base (from
+# above), the cell the head enters, and the cell the pushed block enters.
+# Row z=4: a sticky piston's pushed and pulled block. Row z=8: a slime block
+# whose attached block leaves a vacated cell.
+title Observers watching a piston
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms observer piston neighbor_updates
+area -2 -1 -2 3 1 11
+ticks 20
+changes ordered
+
+at 0 set -1 -1 0 minecraft:stone
+at 0 set 0 -1 0 minecraft:stone
+at 0 set 1 -1 0 minecraft:stone
+at 0 set 2 -1 0 minecraft:stone
+at 0 set 0 0 0 minecraft:piston[extended=false,facing=east]
+at 0 set 1 0 0 minecraft:stone
+at 0 set 0 1 0 minecraft:observer[facing=down,powered=false]
+at 0 set 1 0 1 minecraft:observer[facing=north,powered=false]
+at 0 set 2 0 -1 minecraft:observer[facing=south,powered=false]
+at 0 set -1 0 0 minecraft:lever[face=floor,facing=east,powered=false]
+
+at 0 set -1 -1 4 minecraft:stone
+at 0 set 0 0 4 minecraft:sticky_piston[extended=false,facing=east]
+at 0 set 1 0 4 minecraft:stone
+at 0 set 2 0 3 minecraft:observer[facing=south,powered=false]
+at 0 set 1 0 5 minecraft:observer[facing=north,powered=false]
+at 0 set -1 0 4 minecraft:lever[face=floor,facing=east,powered=false]
+
+at 0 set -1 -1 8 minecraft:stone
+at 0 set 0 0 8 minecraft:piston[extended=false,facing=east]
+at 0 set 1 0 8 minecraft:slime_block
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:observer[facing=north,powered=false]
+at 0 set 2 0 7 minecraft:observer[facing=south,powered=false]
+at 0 set -1 0 8 minecraft:lever[face=floor,facing=east,powered=false]
+
+at 2 use -1 0 0
+at 2 use -1 0 4
+at 2 use -1 0 8
+at 10 use -1 0 0
+at 10 use -1 0 4
+at 10 use -1 0 8
+
+block 20 1 0 0 ?
+block 20 2 0 0 ?
+block 20 1 0 4 ?
+block 20 2 0 9 ?

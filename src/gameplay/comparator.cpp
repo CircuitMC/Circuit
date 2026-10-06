@@ -5,7 +5,6 @@
 namespace circuit::gameplay::detail {
 namespace {
 constexpr std::uint32_t comparator_delay = 2;
-constexpr std::int8_t comparator_priority = 0;
 
 // Components accepted as side inputs.
 bool side_source(BlockType t) {
@@ -54,11 +53,12 @@ void check_comparator(RuleContext& ctx, BlockPos pos) {
     const auto* be = ctx.peek_block_entity(pos);
     if (!be) return;
     const auto target = output(ctx, pos, s);
+    // A comparator feeding another diode schedules at -1, otherwise at 0.
     if (target != be->signal || (target > 0) != s.flag())
-        schedule(ctx, TickList::block, pos, BlockType::comparator, comparator_delay, comparator_priority);
+        schedule(ctx, TickList::block, pos, BlockType::comparator, comparator_delay, feeds_diode(ctx, pos, s) ? -1 : 0);
 }
 
-void tick_comparator(RuleContext& ctx, BlockPos pos, BlockState s) {
+void refresh_comparator(RuleContext& ctx, BlockPos pos, BlockState s) {
     auto* be = ctx.block_entity(pos);
     if (!be) return;
     const auto next = output(ctx, pos, s);
@@ -67,9 +67,12 @@ void tick_comparator(RuleContext& ctx, BlockPos pos, BlockState s) {
         be->signal = next;
         ctx.record(TraceKind::signal_changed, pos, previous, next);
     }
-    if ((next > 0) != s.flag()) set_block(ctx, pos, s.with_flag(next > 0));
-    else if (next != previous) notify_neighbors(ctx, pos); // Strength changed without a state change.
+    const bool flag_change = (next > 0) != s.flag();
+    if (flag_change) set_block_quiet(ctx, pos, s.with_flag(next > 0));
+    if (flag_change || next != previous) update_front(ctx, pos, s.facing());
 }
+
+void tick_comparator(RuleContext& ctx, BlockPos pos, BlockState s) { refresh_comparator(ctx, pos, s); }
 
 void container_changed(RuleContext& ctx, BlockPos pos) {
     for (auto d : spread_order) {

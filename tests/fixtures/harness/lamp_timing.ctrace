@@ -1,0 +1,21 @@
+circuit-trace 1
+title Redstone lamp switches on at once and off after four ticks
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.1.0+mc1.21.8
+mechanisms redstone_lamp
+area 0 0 0 1 0 0
+ticks 8
+
+at 0 set 0 0 0 minecraft:lever[face=floor,facing=east,powered=false]
+at 0 set 1 0 0 minecraft:redstone_lamp[lit=false]
+block 0 1 0 0 minecraft:redstone_lamp[lit=false]
+
+at 1 use 0 0 0
+block 1 1 0 0 minecraft:redstone_lamp[lit=true]
+
+at 3 use 0 0 0
+
+block 5 1 0 0 minecraft:redstone_lamp[lit=true]
+
+block 6 1 0 0 minecraft:redstone_lamp[lit=false]

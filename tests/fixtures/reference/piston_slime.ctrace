@@ -2,12 +2,24 @@ circuit-trace 1
 title Sticky piston with slime across a chunk edge
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v3
+harness circuit-reference-rules-v4
 mechanisms piston block_events neighbor_updates
-area 12 0 -2 20 1 2
+area 12 -1 -2 20 1 2
 ticks 6
 changes ordered
 
+at 0 set 13 -1 -1 minecraft:stone
+at 0 set 13 -1 0 minecraft:stone
+at 0 set 13 -1 1 minecraft:stone
+at 0 set 14 -1 -1 minecraft:stone
+at 0 set 14 -1 0 minecraft:stone
+at 0 set 14 -1 1 minecraft:stone
+at 0 set 15 -1 -1 minecraft:stone
+at 0 set 15 -1 0 minecraft:stone
+at 0 set 15 -1 1 minecraft:stone
+at 0 set 16 -1 -1 minecraft:stone
+at 0 set 16 -1 0 minecraft:stone
+at 0 set 16 -1 1 minecraft:stone
 at 0 set 14 0 0 minecraft:slime_block
 at 0 set 14 1 0 minecraft:stone
 at 0 set 15 0 0 minecraft:stone
@@ -16,41 +28,52 @@ at 0 set 13 0 0 minecraft:sticky_piston[extended=false,facing=east]
 
 at 1 set 13 0 -1 minecraft:redstone_block
 change 1 13 0 -1 minecraft:air minecraft:redstone_block
+change 1 15 0 1 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 1 15 1 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 1 17 -1 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 1 16 -1 0 minecraft:stone minecraft:moving_piston[facing=east,type=normal]
+change 1 15 -1 0 minecraft:stone minecraft:moving_piston[facing=east,type=normal]
+change 1 16 0 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 1 15 0 0 minecraft:stone minecraft:moving_piston[facing=east,type=normal]
 change 1 14 0 0 minecraft:slime_block minecraft:moving_piston[facing=east,type=sticky]
-change 1 15 0 0 minecraft:stone minecraft:moving_piston[facing=east,type=sticky]
+change 1 14 -1 0 minecraft:stone minecraft:air
 change 1 14 1 0 minecraft:stone minecraft:air
 change 1 14 0 1 minecraft:stone minecraft:air
-change 1 16 0 0 minecraft:air minecraft:moving_piston[facing=east,type=sticky]
-change 1 15 1 0 minecraft:air minecraft:moving_piston[facing=east,type=sticky]
-change 1 15 0 1 minecraft:air minecraft:moving_piston[facing=east,type=sticky]
 change 1 13 0 0 minecraft:sticky_piston[extended=false,facing=east] minecraft:sticky_piston[extended=true,facing=east]
 block 1 14 0 0 minecraft:moving_piston[facing=east,type=sticky]
-block 1 15 0 0 minecraft:moving_piston[facing=east,type=sticky]
-block 1 15 1 0 minecraft:moving_piston[facing=east,type=sticky]
-block 1 16 0 0 minecraft:moving_piston[facing=east,type=sticky]
+block 1 15 0 0 minecraft:moving_piston[facing=east,type=normal]
+block 1 15 1 0 minecraft:moving_piston[facing=east,type=normal]
+block 1 16 0 0 minecraft:moving_piston[facing=east,type=normal]
 
-change 3 15 0 0 minecraft:moving_piston[facing=east,type=sticky] minecraft:slime_block
-change 3 16 0 0 minecraft:moving_piston[facing=east,type=sticky] minecraft:stone
-change 3 15 1 0 minecraft:moving_piston[facing=east,type=sticky] minecraft:stone
-change 3 15 0 1 minecraft:moving_piston[facing=east,type=sticky] minecraft:stone
+change 3 15 0 1 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 3 15 1 0 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 3 17 -1 0 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 3 16 -1 0 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 3 15 -1 0 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 3 16 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 3 15 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:slime_block
 change 3 14 0 0 minecraft:moving_piston[facing=east,type=sticky] minecraft:piston_head[facing=east,type=sticky]
 
 at 4 set 13 0 -1 minecraft:air
 change 4 13 0 -1 minecraft:redstone_block minecraft:air
-change 4 14 0 0 minecraft:piston_head[facing=east,type=sticky] minecraft:moving_piston[facing=east,type=sticky]
 change 4 13 0 0 minecraft:sticky_piston[extended=true,facing=east] minecraft:moving_piston[facing=east,type=sticky]
-change 4 15 0 0 minecraft:slime_block minecraft:moving_piston[facing=east,type=sticky]
+change 4 14 0 0 minecraft:piston_head[facing=east,type=sticky] minecraft:air
+change 4 14 0 1 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 4 14 1 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 4 14 -1 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 4 14 0 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 4 15 0 0 minecraft:slime_block minecraft:moving_piston[facing=east,type=normal]
 change 4 16 0 0 minecraft:stone minecraft:air
-change 4 15 1 0 minecraft:stone minecraft:air
 change 4 15 0 1 minecraft:stone minecraft:air
-change 4 14 1 0 minecraft:air minecraft:moving_piston[facing=east,type=sticky]
-change 4 14 0 1 minecraft:air minecraft:moving_piston[facing=east,type=sticky]
-block 4 14 0 0 minecraft:moving_piston[facing=east,type=sticky]
-block 4 15 0 0 minecraft:moving_piston[facing=east,type=sticky]
+change 4 15 1 0 minecraft:stone minecraft:air
+change 4 15 -1 0 minecraft:stone minecraft:air
+block 4 14 0 0 minecraft:moving_piston[facing=east,type=normal]
+block 4 15 0 0 minecraft:moving_piston[facing=east,type=normal]
 block 4 16 0 0 minecraft:air
 
 change 6 13 0 0 minecraft:moving_piston[facing=east,type=sticky] minecraft:sticky_piston[extended=false,facing=east]
-change 6 14 0 0 minecraft:moving_piston[facing=east,type=sticky] minecraft:slime_block
-change 6 15 0 0 minecraft:moving_piston[facing=east,type=sticky] minecraft:stone
-change 6 14 1 0 minecraft:moving_piston[facing=east,type=sticky] minecraft:stone
-change 6 14 0 1 minecraft:moving_piston[facing=east,type=sticky] minecraft:stone
+change 6 14 0 1 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 6 14 1 0 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 6 14 -1 0 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 6 14 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:slime_block
+change 6 15 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:stone

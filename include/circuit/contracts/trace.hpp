@@ -20,7 +20,7 @@ enum class TraceKind : std::uint8_t {
     tick_executed = 5,       // pos, a = list << 8 | block, b = 1 if the block still matched
     block_event_queued = 6,  // pos, a = block, b = event, c = param
     block_event_executed = 7,// pos, a = block, b = event, c = 1 if the block still matched
-    chain_truncated = 8,     // pos = source of the update that hit the limit, a = updates delivered
+    chain_truncated = 8,     // pos = source of the first dropped update, a = updates counted in the chain
     inventory_changed = 9,   // pos, a = slot, b = old stack, c = new stack (item << 8 | count)
     entity_spawned = 10,     // pos = block position, a = entity id, b = item << 8 | count
     entity_changed_chunk = 11,// a = entity id, b = old chunk, c = new chunk (packed)

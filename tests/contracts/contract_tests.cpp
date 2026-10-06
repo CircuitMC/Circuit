@@ -4,6 +4,7 @@
 #include <circuit/contracts/replay.hpp>
 #include <circuit/contracts/trace.hpp>
 #include <circuit/contracts/version.hpp>
+#include <format>
 #include <set>
 
 using namespace circuit::contracts;
@@ -77,8 +78,13 @@ int main() {
         for (const auto& m : rules.mechanisms) {
             require(ids.insert(m.id).second, "unique mechanism ids");
             require(!m.limitation.empty(), "every row states its limitation");
-            require(m.claimed != CompatibilityTier::l0_exact, "no exact claim without harness evidence");
-            require(m.evidence != EvidenceSource::harness_trace, "no harness evidence exists yet");
+            require(m.claimed != CompatibilityTier::l0_exact || m.evidence == EvidenceSource::harness_trace,
+                    "exact claims need harness evidence");
+            require(m.claimed != CompatibilityTier::l0_exact || m.limitation.find("Gap") == std::string_view::npos,
+                    "exact claims list no gaps");
+            require(m.claimed.has_value(), std::format("`{}` declares a claimed tier", m.id));
+            require(m.claimed != CompatibilityTier::l2_declared_deviation || m.limitation.find("Gap") != std::string_view::npos,
+                    std::format("`{}` lists the gaps behind its L2 claim", m.id));
         }
     });
 
@@ -106,7 +112,7 @@ int main() {
     });
 
     suite.run("replay round trip and limits", [] {
-        ReplayLog log{"java-1.21.8", "circuit-reference-rules-v3", 42, {}};
+        ReplayLog log{"java-1.21.8", "circuit-reference-rules-v4", 42, {}};
         log.ticks.push_back({1, {{1, SetBlock{{-5, 70, 9}, 0x1234, Generation{2}}},
                                  {2, SpawnItem{{-1, 2, 3}, {4, -5, 6}, {7, 8}}},
                                  {3, AddTicket{9, {-3, 4}, 2}}}});

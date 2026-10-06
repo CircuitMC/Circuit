@@ -91,7 +91,8 @@ private:
         }
         if (t.empty() || t[0].front() == '#') return {};
         static const std::set<std::string_view> header_keys{"title", "game-version", "source", "harness", "mechanisms",
-                                                            "area", "ticks", "random-tick-speed", "changes"};
+                                                            "area", "ticks", "random-tick-speed", "neighbor-update-limit",
+                                                            "changes"};
         if (header_keys.contains(t[0])) {
             if (header_done_) return fail(line_, "header key after the body started");
             if (!seen_.insert(std::string(t[0])).second) return fail(line_, std::format("duplicate key `{}`", t[0]));
@@ -161,6 +162,10 @@ private:
             if (!number(value, f_.ticks) || f_.ticks < 1 || f_.ticks > limits_.max_ticks) return fail(line_, "invalid tick count");
         } else if (key == "random-tick-speed") {
             if (!number(value, f_.random_tick_speed) || f_.random_tick_speed > 4096) return fail(line_, "invalid random tick speed");
+        } else if (key == "neighbor-update-limit") {
+            if (!number(value, f_.neighbor_update_limit) || f_.neighbor_update_limit < 1
+                || f_.neighbor_update_limit > 1'000'000)
+                return fail(line_, "invalid neighbor update limit");
         } else if (key == "changes") {
             if (value == "ordered") f_.changes = ChangeMode::ordered;
             else if (value == "unordered") f_.changes = ChangeMode::unordered;
@@ -348,6 +353,7 @@ std::string write_fixture(const Fixture& f) {
     for (const auto& m : f.mechanisms) out += " " + m;
     out += std::format("\narea {} {}\nticks {}\n", pos_text(f.area_min), pos_text(f.area_max), f.ticks);
     if (f.random_tick_speed != 0) out += std::format("random-tick-speed {}\n", f.random_tick_speed);
+    if (f.neighbor_update_limit != 0) out += std::format("neighbor-update-limit {}\n", f.neighbor_update_limit);
     if (f.changes != ChangeMode::none) out += std::format("changes {}\n", f.changes == ChangeMode::ordered ? "ordered" : "unordered");
     std::map<Tick, std::vector<std::string>> body;
     for (const auto& a : f.actions) {

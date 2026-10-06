@@ -73,6 +73,7 @@ struct Fixture {
     BlockPos area_min, area_max; // Inclusive.
     Tick ticks{};                // Scenario ticks after the setup tick 0.
     std::uint32_t random_tick_speed{};
+    std::uint32_t neighbor_update_limit{}; // Chained neighbor update limit; 0 keeps the bundle's limit.
     ChangeMode changes{ChangeMode::none};
     std::vector<Action> actions;
     std::vector<Change> recorded_changes;

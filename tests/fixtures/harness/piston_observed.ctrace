@@ -1,0 +1,108 @@
+circuit-trace 1
+title Observers watching a piston
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.1.0+mc1.21.8
+mechanisms observer piston neighbor_updates
+area -2 -1 -2 3 1 11
+ticks 20
+changes ordered
+
+at 0 set -1 -1 0 minecraft:stone
+at 0 set 0 -1 0 minecraft:stone
+at 0 set 1 -1 0 minecraft:stone
+at 0 set 2 -1 0 minecraft:stone
+at 0 set 0 0 0 minecraft:piston[extended=false,facing=east]
+at 0 set 1 0 0 minecraft:stone
+at 0 set 0 1 0 minecraft:observer[facing=down,powered=false]
+at 0 set 1 0 1 minecraft:observer[facing=north,powered=false]
+at 0 set 2 0 -1 minecraft:observer[facing=south,powered=false]
+at 0 set -1 0 0 minecraft:lever[face=floor,facing=east,powered=false]
+at 0 set -1 -1 4 minecraft:stone
+at 0 set 0 0 4 minecraft:sticky_piston[extended=false,facing=east]
+at 0 set 1 0 4 minecraft:stone
+at 0 set 2 0 3 minecraft:observer[facing=south,powered=false]
+at 0 set 1 0 5 minecraft:observer[facing=north,powered=false]
+at 0 set -1 0 4 minecraft:lever[face=floor,facing=east,powered=false]
+at 0 set -1 -1 8 minecraft:stone
+at 0 set 0 0 8 minecraft:piston[extended=false,facing=east]
+at 0 set 1 0 8 minecraft:slime_block
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:observer[facing=north,powered=false]
+at 0 set 2 0 7 minecraft:observer[facing=south,powered=false]
+at 0 set -1 0 8 minecraft:lever[face=floor,facing=east,powered=false]
+
+at 2 use -1 0 0
+change 2 -1 0 0 minecraft:lever[face=floor,facing=east,powered=false] minecraft:lever[face=floor,facing=east,powered=true]
+at 2 use -1 0 4
+change 2 -1 0 4 minecraft:lever[face=floor,facing=east,powered=false] minecraft:lever[face=floor,facing=east,powered=true]
+at 2 use -1 0 8
+change 2 -1 0 8 minecraft:lever[face=floor,facing=east,powered=false] minecraft:lever[face=floor,facing=east,powered=true]
+change 2 2 0 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 2 1 0 0 minecraft:stone minecraft:moving_piston[facing=east,type=normal]
+change 2 0 0 0 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
+change 2 2 0 4 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 2 1 0 4 minecraft:stone minecraft:moving_piston[facing=east,type=sticky]
+change 2 0 0 4 minecraft:sticky_piston[extended=false,facing=east] minecraft:sticky_piston[extended=true,facing=east]
+change 2 2 0 9 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 2 2 0 8 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 2 1 0 8 minecraft:slime_block minecraft:moving_piston[facing=east,type=normal]
+change 2 1 0 9 minecraft:stone minecraft:air
+change 2 0 0 8 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
+
+change 4 2 0 -1 minecraft:observer[facing=south,powered=false] minecraft:observer[facing=south,powered=true]
+change 4 1 0 1 minecraft:observer[facing=north,powered=false] minecraft:observer[facing=north,powered=true]
+change 4 0 1 0 minecraft:observer[facing=down,powered=false] minecraft:observer[facing=down,powered=true]
+change 4 2 0 3 minecraft:observer[facing=south,powered=false] minecraft:observer[facing=south,powered=true]
+change 4 1 0 5 minecraft:observer[facing=north,powered=false] minecraft:observer[facing=north,powered=true]
+change 4 2 0 7 minecraft:observer[facing=south,powered=false] minecraft:observer[facing=south,powered=true]
+change 4 1 0 10 minecraft:observer[facing=north,powered=false] minecraft:observer[facing=north,powered=true]
+change 4 2 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 4 1 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+change 4 2 0 4 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 4 1 0 4 minecraft:moving_piston[facing=east,type=sticky] minecraft:piston_head[facing=east,short=false,type=sticky]
+change 4 2 0 9 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 4 2 0 8 minecraft:moving_piston[facing=east,type=normal] minecraft:slime_block
+change 4 1 0 8 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+
+change 6 2 0 -1 minecraft:observer[facing=south,powered=true] minecraft:observer[facing=south,powered=false]
+change 6 1 0 1 minecraft:observer[facing=north,powered=true] minecraft:observer[facing=north,powered=false]
+change 6 0 1 0 minecraft:observer[facing=down,powered=true] minecraft:observer[facing=down,powered=false]
+change 6 2 0 3 minecraft:observer[facing=south,powered=true] minecraft:observer[facing=south,powered=false]
+change 6 1 0 5 minecraft:observer[facing=north,powered=true] minecraft:observer[facing=north,powered=false]
+change 6 2 0 7 minecraft:observer[facing=south,powered=true] minecraft:observer[facing=south,powered=false]
+change 6 1 0 10 minecraft:observer[facing=north,powered=true] minecraft:observer[facing=north,powered=false]
+
+at 10 use -1 0 0
+change 10 -1 0 0 minecraft:lever[face=floor,facing=east,powered=true] minecraft:lever[face=floor,facing=east,powered=false]
+at 10 use -1 0 4
+change 10 -1 0 4 minecraft:lever[face=floor,facing=east,powered=true] minecraft:lever[face=floor,facing=east,powered=false]
+at 10 use -1 0 8
+change 10 -1 0 8 minecraft:lever[face=floor,facing=east,powered=true] minecraft:lever[face=floor,facing=east,powered=false]
+change 10 0 0 0 minecraft:piston[extended=true,facing=east] minecraft:moving_piston[facing=east,type=normal]
+change 10 1 0 0 minecraft:piston_head[facing=east,short=false,type=normal] minecraft:air
+change 10 0 0 4 minecraft:sticky_piston[extended=true,facing=east] minecraft:moving_piston[facing=east,type=sticky]
+change 10 1 0 4 minecraft:piston_head[facing=east,short=false,type=sticky] minecraft:air
+change 10 1 0 4 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 10 2 0 4 minecraft:stone minecraft:air
+change 10 0 0 8 minecraft:piston[extended=true,facing=east] minecraft:moving_piston[facing=east,type=normal]
+change 10 1 0 8 minecraft:piston_head[facing=east,short=false,type=normal] minecraft:air
+
+change 12 0 1 0 minecraft:observer[facing=down,powered=false] minecraft:observer[facing=down,powered=true]
+change 12 1 0 1 minecraft:observer[facing=north,powered=false] minecraft:observer[facing=north,powered=true]
+change 12 1 0 5 minecraft:observer[facing=north,powered=false] minecraft:observer[facing=north,powered=true]
+change 12 2 0 3 minecraft:observer[facing=south,powered=false] minecraft:observer[facing=south,powered=true]
+change 12 0 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:piston[extended=false,facing=east]
+change 12 0 0 4 minecraft:moving_piston[facing=east,type=sticky] minecraft:sticky_piston[extended=false,facing=east]
+change 12 1 0 4 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 12 0 0 8 minecraft:moving_piston[facing=east,type=normal] minecraft:piston[extended=false,facing=east]
+
+change 14 0 1 0 minecraft:observer[facing=down,powered=true] minecraft:observer[facing=down,powered=false]
+change 14 1 0 1 minecraft:observer[facing=north,powered=true] minecraft:observer[facing=north,powered=false]
+change 14 1 0 5 minecraft:observer[facing=north,powered=true] minecraft:observer[facing=north,powered=false]
+change 14 2 0 3 minecraft:observer[facing=south,powered=true] minecraft:observer[facing=south,powered=false]
+
+block 20 1 0 0 minecraft:air
+block 20 2 0 0 minecraft:stone
+block 20 1 0 4 minecraft:stone
+block 20 2 0 9 minecraft:stone

@@ -67,6 +67,7 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
     if (!found) return std::unexpected(report(Outcome::unsupported, std::format("no executable bundle for {}", f.game_version)));
     p.bundle = *found;
     p.bundle.limits.random_tick_speed = f.random_tick_speed;
+    if (f.neighbor_update_limit != 0) p.bundle.limits.max_chained_neighbor_updates = f.neighbor_update_limit;
     for (const auto& m : f.mechanisms) {
         const auto& table = p.bundle.rules->mechanisms;
         if (std::ranges::none_of(table, [&](const auto& e) { return e.id == m; }))
@@ -180,6 +181,12 @@ std::string_view outcome_name(Outcome outcome) noexcept {
     case Outcome::invalid: return "INVALID";
     }
     return "INVALID";
+}
+
+std::expected<FixtureInputs, std::string> fixture_inputs(const Fixture& f) {
+    auto prepared = prepare(f, false);
+    if (!prepared) return std::unexpected(prepared.error().detail);
+    return FixtureInputs{prepared->bundle, prepared->inputs};
 }
 
 FixtureReport evaluate_fixture(const Fixture& f, const ExecutorFactory& factory) {

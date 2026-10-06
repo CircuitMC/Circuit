@@ -1,0 +1,27 @@
+circuit-trace 1
+title Hopper transfer cooldown between two chests
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.1.0+mc1.21.8
+mechanisms hopper block_entity_order
+area -1 0 -1 2 1 1
+ticks 30
+
+at 0 set 0 1 0 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 0 insert 0 1 0 0 minecraft:iron_ingot 3
+at 0 set 0 0 0 minecraft:hopper[enabled=true,facing=east]
+at 0 set 1 0 0 minecraft:chest[facing=north,type=single,waterlogged=false]
+slot 0 0 1 0 0 minecraft:iron_ingot 2
+slot 0 0 0 0 0 minecraft:iron_ingot 1
+
+slot 7 0 0 0 0 minecraft:iron_ingot 1
+
+slot 8 1 0 0 0 minecraft:iron_ingot 1
+
+slot 16 0 1 0 0 empty 0
+slot 16 1 0 0 0 minecraft:iron_ingot 2
+
+slot 24 0 0 0 0 empty 0
+slot 24 1 0 0 0 minecraft:iron_ingot 3
+
+slot 30 1 0 0 0 minecraft:iron_ingot 3

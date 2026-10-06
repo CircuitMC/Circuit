@@ -25,7 +25,8 @@ public:
         updater().reset();
     }
 
-    Tick now() const override { return o_.time_; }
+    // Commands are inputs between ticks: they observe the previous tick's time.
+    Tick now() const override { return phase_ == Phase::commands ? o_.time_ - 1 : o_.time_; }
 
     BlockState block(BlockPos pos) override {
         if (!in_world(o_.bundle_, pos) || o_.level(contracts::chunk_of(pos)) == ChunkLevel::unloaded)
@@ -203,9 +204,10 @@ void Oracle::run_tick_list(TickList list) {
         due.resize(bundle_.limits.max_scheduled_ticks_per_list);
     }
     ticks_[l] = std::move(rest);
-    for (const auto& t : due) tick_index_[l].erase({t.pos, t.block});
     const auto phase = list == TickList::block ? Phase::block_ticks : Phase::fluid_ticks;
     for (std::size_t i = 0; i < due.size(); ++i) {
+        // A drained tick still counts as scheduled until it runs.
+        tick_index_[l].erase({due[i].pos, due[i].block});
         ctx_->begin_root(phase, i);
         run_scheduled_tick(*ctx_, list, due[i]);
     }

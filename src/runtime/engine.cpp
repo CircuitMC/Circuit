@@ -4,6 +4,7 @@
 #include <circuit/gameplay/rules.hpp>
 #include <circuit/runtime/engine.hpp>
 #include <algorithm>
+#include <chrono>
 #include <deque>
 #include <stdexcept>
 
@@ -74,6 +75,8 @@ public:
                                               engine.options.record_trace, engine.options.unchecked_ownership_for_testing);
         if (phase == Phase::block_events)
             for (const auto& r : this->roots) ctx->push_local(r.event);
+        if (phase == Phase::block_ticks || phase == Phase::fluid_ticks)
+            for (const auto& r : this->roots) ctx->pending_ticks.insert({r.tick.pos, r.tick.block});
     }
 
     bool step() override {
@@ -119,6 +122,7 @@ public:
 private:
     void execute(const RootItem& r) {
         ctx->begin_root(r.key, r.home);
+        if (phase == Phase::block_ticks || phase == Phase::fluid_ticks) ctx->pending_ticks.erase({r.tick.pos, r.tick.block});
         switch (phase) {
         case Phase::block_ticks: gameplay::run_scheduled_tick(*ctx, TickList::block, r.tick); break;
         case Phase::fluid_ticks: gameplay::run_scheduled_tick(*ctx, TickList::fluid, r.tick); break;
@@ -155,13 +159,19 @@ void Engine::Impl::advance(const std::vector<Command>& commands) {
     ++epoch;
     ++world.time;
     trace.clear();
-    command_phase(commands);
-    tick_phase(TickList::block);
-    tick_phase(TickList::fluid);
-    random_phase();
-    block_event_phase();
-    entity_phase();
-    block_entity_phase();
+    const auto timed = [this](contracts::Phase phase, auto&& run) {
+        const auto start = std::chrono::steady_clock::now();
+        run();
+        stats.phase_nanoseconds[static_cast<std::size_t>(phase)] += static_cast<std::uint64_t>(
+            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start).count());
+    };
+    timed(Phase::commands, [&] { command_phase(commands); });
+    timed(Phase::block_ticks, [&] { tick_phase(TickList::block); });
+    timed(Phase::fluid_ticks, [&] { tick_phase(TickList::fluid); });
+    timed(Phase::random_ticks, [&] { random_phase(); });
+    timed(Phase::block_events, [&] { block_event_phase(); });
+    timed(Phase::entities, [&] { entity_phase(); });
+    timed(Phase::block_entities, [&] { block_entity_phase(); });
     maintain_layout();
     failed = false;
 }

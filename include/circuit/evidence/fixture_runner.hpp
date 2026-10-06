@@ -5,6 +5,7 @@
 #include <circuit/evidence/trace_format.hpp>
 #include <circuit/gameplay/block.hpp>
 #include <functional>
+#include <map>
 #include <memory>
 #include <optional>
 
@@ -44,6 +45,15 @@ struct FixtureReport {
     std::size_t probes_compared{};
 };
 std::string_view outcome_name(FixtureReport::Outcome outcome) noexcept;
+
+// The commands a fixture's actions translate to, by Circuit tick (tick 1 loads
+// the area, fixture tick t runs as Circuit tick t + 2), and the bundle to run
+// them on (random tick speed from the fixture).
+struct FixtureInputs {
+    contracts::VersionBundle bundle;
+    std::map<Tick, std::vector<contracts::Command>> by_tick;
+};
+std::expected<FixtureInputs, std::string> fixture_inputs(const Fixture& fixture);
 
 FixtureReport evaluate_fixture(const Fixture& fixture, const ExecutorFactory& executor);
 

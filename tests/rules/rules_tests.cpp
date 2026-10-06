@@ -63,27 +63,27 @@ int main() {
                 place({18, 0, 0}, blocks::repeater(D::east, 1)), place({19, 0, 0}, blocks::wire()),
                 place({20, 0, 0}, blocks::lamp())});
         require(s.oracle.dump().ticks.empty(), "unpowered setup schedules nothing");
-        s.tick({use_lever({13, 0, 0})}); // tick 3
+        // Commands are inputs between ticks: delays they start count from the previous tick.
+        s.tick({use_lever({13, 0, 0})}); // tick 3, scheduling at time 2
         require(wire_level(s, {14, 0, 0}) == 15 && wire_level(s, {15, 0, 0}) == 14 && wire_level(s, {16, 0, 0}) == 13
                     && wire_level(s, {17, 0, 0}) == 12, "dust decays by one per block across the edge");
         const auto scheduled = of_kind(s.last, TraceKind::tick_scheduled);
-        require(scheduled.size() == 1 && scheduled[0].pos == BlockPos{18, 0, 0} && scheduled[0].b == 5 && scheduled[0].c == 127,
+        require(scheduled.size() == 1 && scheduled[0].pos == BlockPos{18, 0, 0} && scheduled[0].b == 4 && scheduled[0].c == 127,
                 "repeater schedules delay 2 at priority -1");
-        s.tick(); // tick 4
         require(!s.at({18, 0, 0}).flag(), "repeater waits for its delay");
-        s.tick(); // tick 5
+        s.tick(); // tick 4
         require(s.at({18, 0, 0}).flag() && wire_level(s, {19, 0, 0}) == 15 && s.at({20, 0, 0}).flag(),
-                "repeater output powers dust and lamp on tick 5");
+                "repeater output powers dust and lamp on tick 4");
         s.until(6);
         s.tick({use_lever({13, 0, 0})}); // tick 7
         for (int x = 14; x <= 17; ++x) require(wire_level(s, {x, 0, 0}) == 0, "dust depowers completely");
-        require(s.at({18, 0, 0}).flag() && s.at({20, 0, 0}).flag(), "repeater holds until tick 9");
-        s.until(9);
+        require(s.at({18, 0, 0}).flag() && s.at({20, 0, 0}).flag(), "repeater holds until tick 8");
+        s.tick(); // tick 8
         require(!s.at({18, 0, 0}).flag() && wire_level(s, {19, 0, 0}) == 0 && s.at({20, 0, 0}).flag(),
-                "repeater off on tick 9; lamp delays");
-        s.until(12);
-        require(s.at({20, 0, 0}).flag(), "lamp still lit on tick 12");
-        s.tick(); // tick 13
+                "repeater off on tick 8; lamp delays");
+        s.until(11);
+        require(s.at({20, 0, 0}).flag(), "lamp still lit on tick 11");
+        s.tick(); // tick 12
         require(!s.at({20, 0, 0}).flag(), "lamp off four ticks after losing power");
     });
 
@@ -105,57 +105,117 @@ int main() {
         Sim s;
         s.tick({place({0, 0, 3}, blocks::stone()), place({0, 0, 4}, blocks::observer(D::north)),
                 place({0, 0, 5}, blocks::repeater(D::south, 4)), place({0, 0, 6}, blocks::lamp())});
-        s.tick({place({0, 0, 3}, blocks::glass())}); // tick 3: observed block changes
-        s.until(4);
+        s.tick({place({0, 0, 3}, blocks::glass())}); // tick 3 (time 2): observed block changes
         require(!s.at({0, 0, 4}).flag(), "observer delay");
-        s.tick(); // 5
-        require(s.at({0, 0, 4}).flag(), "observer pulse starts on tick 5");
-        s.until(7);
+        s.tick(); // 4
+        require(s.at({0, 0, 4}).flag(), "observer pulse starts on tick 4");
+        s.until(6);
         require(!s.at({0, 0, 4}).flag(), "two-tick observer pulse");
-        s.until(12);
+        s.until(11);
         require(!s.at({0, 0, 5}).flag() && !s.at({0, 0, 6}).flag(), "repeater delay 8");
-        s.tick(); // 13
-        require(s.at({0, 0, 5}).flag() && s.at({0, 0, 6}).flag(), "repeater and lamp on at 13");
-        s.until(20);
+        s.tick(); // 12
+        require(s.at({0, 0, 5}).flag() && s.at({0, 0, 6}).flag(), "repeater and lamp on at 12");
+        s.until(19);
         require(s.at({0, 0, 5}).flag(), "pulse extended to the repeater delay");
-        s.tick(); // 21
-        require(!s.at({0, 0, 5}).flag() && s.at({0, 0, 6}).flag(), "repeater off at 21");
-        s.until(25);
-        require(!s.at({0, 0, 6}).flag(), "lamp off at 25");
+        s.tick(); // 20
+        require(!s.at({0, 0, 5}).flag() && s.at({0, 0, 6}).flag(), "repeater off at 20");
+        s.until(24);
+        require(!s.at({0, 0, 6}).flag(), "lamp off at 24");
     });
 
     suite.run("scheduled tick priority before sub-order", [] {
         Sim s;
         s.tick({place({-1, 0, 0}, blocks::lamp()), place({0, 0, -1}, blocks::repeater(D::north, 2)),
                 place({0, 0, 1}, blocks::repeater(D::south, 2)), place({0, 0, 0}, blocks::lever())});
-        s.tick({use_lever({0, 0, 0})}); // 3: lamp lit; repeaters due 7
+        s.tick({use_lever({0, 0, 0})}); // 3 (time 2): lamp lit; repeaters due 6
         require(s.at({-1, 0, 0}).flag(), "lamp lights immediately");
-        s.until(7);
+        s.until(6);
         const auto first = of_kind(s.last, TraceKind::tick_executed);
         require(first.size() == 2 && first[0].pos == BlockPos{0, 0, -1} && first[1].pos == BlockPos{0, 0, 1},
                 "equal priority follows scheduling order");
-        s.tick({use_lever({0, 0, 0})}); // 8: lamp (prio 0) scheduled before both repeaters (prio -1)
-        s.until(12);
+        s.tick({use_lever({0, 0, 0})}); // 7 (time 6): lamp (prio 0) scheduled before both repeaters (prio -1)
+        s.until(10);
         const auto order = of_kind(s.last, TraceKind::tick_executed);
         require(order.size() == 3 && order[0].pos == BlockPos{0, 0, -1} && order[1].pos == BlockPos{0, 0, 1}
                     && order[2].pos == BlockPos{-1, 0, 0}, "priority -1 drains before an earlier priority-0 tick");
         require(order[0].key.root == 0 && order[2].key.root == 2, "roots follow drain order");
-        require(!s.at({-1, 0, 0}).flag() && !s.at({0, 0, 1}).flag(), "all off on tick 12");
+        require(!s.at({-1, 0, 0}).flag() && !s.at({0, 0, 1}).flag(), "all off on tick 10");
+    });
+
+    suite.run("diodes feeding diodes and turning off drain first", [] {
+        Sim s;
+        // West: a repeater feeding a lamp. East: a repeater feeding a repeater.
+        s.tick({place({-2, 0, 0}, blocks::lamp()), place({-1, 0, 0}, blocks::repeater(D::west, 1)),
+                place({1, 0, 0}, blocks::repeater(D::east, 1)), place({2, 0, 0}, blocks::repeater(D::east, 1)),
+                place({0, 0, 0}, blocks::lever())});
+        s.tick({use_lever({0, 0, 0})}); // 3 (time 2): west scheduled first, both due 4
+        s.tick();
+        auto order = of_kind(s.last, TraceKind::tick_executed);
+        require(order.size() == 2 && order[0].pos == BlockPos{1, 0, 0} && order[1].pos == BlockPos{-1, 0, 0},
+                "a repeater feeding a diode (-3) drains before one feeding a lamp (-1)");
+        s.until(6);
+        s.tick({use_lever({0, 0, 0})}); // 7 (time 6): both turning off, due 8
+        s.tick();
+        order = of_kind(s.last, TraceKind::tick_executed);
+        require(order.size() == 2 && order[0].pos == BlockPos{1, 0, 0} && order[1].pos == BlockPos{-1, 0, 0},
+                "feeding a diode (-3) before turning off (-2)");
+
+        Sim back;
+        // The diode in front faces back into the east repeater: no raised priority.
+        back.tick({place({-2, 0, 0}, blocks::lamp()), place({-1, 0, 0}, blocks::repeater(D::west, 1)),
+                   place({1, 0, 0}, blocks::repeater(D::east, 1)), place({2, 0, 0}, blocks::repeater(D::west, 1)),
+                   place({0, 0, 0}, blocks::lever())});
+        back.tick({use_lever({0, 0, 0})});
+        back.tick();
+        order = of_kind(back.last, TraceKind::tick_executed);
+        require(order.size() == 2 && order[0].pos == BlockPos{-1, 0, 0}, "a diode facing back is not fed");
+    });
+
+    suite.run("an observer moved by a piston pulses at its new position", [] {
+        Sim s;
+        s.tick({place({0, 0, 0}, blocks::piston(D::east, false)), place({1, 0, 0}, blocks::observer(D::north)),
+                place({-1, 0, 0}, blocks::lever())});
+        s.tick(); // 3
+        require(!s.at({1, 0, 0}).flag(), "placing an observer does not fire it");
+        s.tick({use_lever({-1, 0, 0})}); // 4: extension starts
+        s.until(6); // the move finishes in the block-entity phase
+        require(s.at({2, 0, 0}) == blocks::observer(D::north), "observer moved, not yet firing");
+        s.until(8);
+        require(s.at({2, 0, 0}).flag(), "fires two ticks after the move");
+        s.until(10);
+        require(!s.at({2, 0, 0}).flag(), "two-tick pulse");
+    });
+
+    suite.run("an observer watching a piston fires on the block event", [] {
+        Sim s;
+        s.tick({place({0, 0, 0}, blocks::piston(D::east, false)), place({0, 1, 0}, blocks::observer(D::down)),
+                place({-1, 0, 0}, blocks::lever())});
+        s.tick({use_lever({-1, 0, 0})}); // 3: the extension writes send shape updates at once
+        s.tick();
+        require(!s.at({0, 1, 0}).flag(), "observer delay");
+        s.tick(); // 5: the move also finishes, while the observer is on
+        require(s.at({0, 1, 0}).flag(), "fires two ticks after the block event");
+        s.until(7);
+        require(!s.at({0, 1, 0}).flag(), "two-tick pulse");
+        s.until(10);
+        require(!s.at({0, 1, 0}).flag(), "the finished move does not fire it again");
     });
 
     suite.run("neighbor chain limit truncates", [] {
         auto limited = bundle();
-        limited.limits.max_chained_neighbor_updates = 12;
+        limited.limits.max_chained_neighbor_updates = 2;
         Sim s(limited);
         std::vector<CommandBody> build{place({0, 0, 0}, blocks::lever())};
         for (int x = 1; x <= 10; ++x) build.push_back(place({x, 0, 0}, blocks::wire()));
-        s.tick(build);
-        require(of_kind(s.last, TraceKind::chain_truncated).empty(), "short placement chains are complete");
+        s.tick(build); // Placement chains truncate too; the line stays unpowered.
         s.tick({use_lever({0, 0, 0})});
-        for (int x = 1; x <= 6; ++x) require(wire_level(s, {x, 0, 0}) == 16 - x, "updated part of the line");
-        for (int x = 7; x <= 10; ++x) require(wire_level(s, {x, 0, 0}) == 0, "discarded remainder");
+        // Entry 1: the lever's neighbor updates. Its east delivery powers dust 1, whose
+        // first shape update is entry 2; its other shape updates and its seven
+        // neighbor-update entries are dropped. The queued entries still run.
+        require(wire_level(s, {1, 0, 0}) == 15, "dust 1 powered");
+        for (int x = 2; x <= 10; ++x) require(wire_level(s, {x, 0, 0}) == 0, "dropped updates");
         const auto cut = of_kind(s.last, TraceKind::chain_truncated);
-        require(cut.size() == 1 && cut[0].pos == BlockPos{6, 0, 0} && cut[0].a == 12, "truncation point is recorded");
+        require(cut.size() == 1 && cut[0].pos == BlockPos{1, 0, 0} && cut[0].a == 2, "truncation point is recorded");
     });
 
     suite.run("piston moves a line across a chunk edge in two ticks", [] {
@@ -410,10 +470,10 @@ int main() {
             build.push_back(place({x, 1, 1}, blocks::glass()));
         }
         s.tick(build);
-        s.tick({place({0, 1, 0}, blocks::water_source())}); // tick 3
+        s.tick({place({0, 1, 0}, blocks::water_source())}); // tick 3, scheduling at time 2
         for (int n = 1; n <= 7; ++n) {
-            s.until(3 + 5 * static_cast<Tick>(n) - 1);
-            require(s.at({n, 1, 0}).is_air(), std::format("x={} not reached before tick {}", n, 3 + 5 * n));
+            s.until(2 + 5 * static_cast<Tick>(n) - 1);
+            require(s.at({n, 1, 0}).is_air(), std::format("x={} not reached before tick {}", n, 2 + 5 * n));
             s.tick();
             require(s.at({n, 1, 0}) == blocks::water_flowing(static_cast<std::uint8_t>(n)), std::format("x={} level", n));
         }
@@ -522,20 +582,19 @@ int main() {
     suite.run("comparator compares after two ticks", [] {
         Sim s;
         s.tick({place({0, 0, 0}, blocks::lever()), place({1, 0, 0}, blocks::comparator(D::east)), place({2, 0, 0}, blocks::lamp())});
-        s.tick({use_lever({0, 0, 0})}); // 3: due 5
-        s.until(4);
+        s.tick({use_lever({0, 0, 0})}); // 3 (time 2): due 4
         require(!s.at({1, 0, 0}).flag() && !s.at({2, 0, 0}).flag(), "comparator delay");
-        s.tick(); // 5
-        require(s.at({1, 0, 0}).flag() && s.at({2, 0, 0}).flag(), "output on tick 5");
+        s.tick(); // 4
+        require(s.at({1, 0, 0}).flag() && s.at({2, 0, 0}).flag(), "output on tick 4");
         require(block_entity_at(s.oracle.dump(), {1, 0, 0})->signal == 15, "full strength from a lever");
         const auto changed = of_kind(s.last, TraceKind::signal_changed);
         require(changed.size() == 1 && changed[0].a == 0 && changed[0].b == 15, "signal change recorded");
         s.until(6);
-        s.tick({use_lever({0, 0, 0})}); // 7: due 9, lamp off at 13
-        s.until(9);
-        require(!s.at({1, 0, 0}).flag() && s.at({2, 0, 0}).flag(), "comparator off at 9, lamp delays");
-        s.until(13);
-        require(!s.at({2, 0, 0}).flag(), "lamp off at 13");
+        s.tick({use_lever({0, 0, 0})}); // 7 (time 6): due 8, lamp off at 12
+        s.tick();
+        require(!s.at({1, 0, 0}).flag() && s.at({2, 0, 0}).flag(), "comparator off at 8, lamp delays");
+        s.until(12);
+        require(!s.at({2, 0, 0}).flag(), "lamp off at 12");
     });
 
     suite.run("comparator subtract and compare with a side input", [] {
@@ -546,14 +605,14 @@ int main() {
                 place({1, 0, 4}, blocks::lever())});
         s.tick({use_lever({1, 0, 4})}); // 3: side input 13, rear 0: output stays 0
         require(wire_level(s, {1, 0, 1}) == 13 && !s.at({1, 0, 0}).flag(), "side input alone gives no output");
-        s.tick({use_lever({0, 0, 0})}); // 4: 15 - 13 = 2, due 6
-        s.until(6);
+        s.tick({use_lever({0, 0, 0})}); // 4 (time 3): 15 - 13 = 2, due 5
+        s.until(5);
         require(block_entity_at(s.oracle.dump(), {1, 0, 0})->signal == 2, "subtract");
         require(wire_level(s, {2, 0, 0}) == 2 && wire_level(s, {3, 0, 0}) == 1 && wire_level(s, {4, 0, 0}) == 0,
                 "output strength drives dust");
-        s.tick({use_block({1, 0, 0})}); // 7: compare mode, due 9
+        s.tick();
+        s.tick({use_block({1, 0, 0})}); // 7: compare mode takes effect at once
         require(s.at({1, 0, 0}).level() == 0, "use toggles the mode");
-        s.until(9);
         require(wire_level(s, {2, 0, 0}) == 15 && wire_level(s, {4, 0, 0}) == 13, "compare passes the rear signal");
         const auto changed = of_kind(s.last, TraceKind::signal_changed);
         require(changed.size() == 1 && changed[0].a == 2 && changed[0].b == 15, "strength change without a state change");
@@ -591,19 +650,19 @@ int main() {
         s.tick({place({1, 0, 0}, blocks::chest(D::north, blocks::ChestType::right))});
         require(s.at({0, 0, 0}) == blocks::chest(D::north, blocks::ChestType::left), "re-paired");
 
-        // Hopper above the right half fills the left half first (combined order).
+        // The right half's slots come first, whichever half a hopper feeds (harness-verified).
         std::vector<CommandBody> b;
-        for (std::uint8_t i = 0; i < 27; ++i) b.push_back(insert({0, 0, 0}, i, items::stone, i == 26 ? 63 : 64));
-        b.push_back(place({1, 1, 0}, blocks::hopper(D::down)));
-        b.push_back(insert({1, 1, 0}, 0, items::stone, 2));
-        s.tick(b); // T
+        for (std::uint8_t i = 0; i < 27; ++i) b.push_back(insert({1, 0, 0}, i, items::stone, i == 26 ? 63 : 64));
+        b.push_back(place({0, 1, 0}, blocks::hopper(D::down)));
+        b.push_back(insert({0, 1, 0}, 0, items::stone, 2));
+        s.tick(b); // T: hopper above the left half
         const auto t0 = s.oracle.time();
         auto d = s.oracle.dump();
-        require(block_entity_at(d, {0, 0, 0})->slots[26].count == 64 && block_entity_at(d, {1, 0, 0})->slots[0].empty(),
-                "first item goes to the left half");
+        require(block_entity_at(d, {1, 0, 0})->slots[26].count == 64 && block_entity_at(d, {0, 0, 0})->slots[0].empty(),
+                "first item goes to the right half");
         s.until(t0 + 8);
         d = s.oracle.dump();
-        require(block_entity_at(d, {1, 0, 0})->slots[0] == ItemStack{items::stone, 1}, "then the right half");
+        require(block_entity_at(d, {0, 0, 0})->slots[0] == ItemStack{items::stone, 1}, "then the left half");
     });
 
     suite.run("comparator reads a double chest across a chunk edge", [] {

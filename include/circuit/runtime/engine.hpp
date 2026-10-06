@@ -5,6 +5,7 @@
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/world_types.hpp>
 #include <circuit/runtime/job_runner.hpp>
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -40,6 +41,9 @@ struct EngineOptions {
 };
 
 struct EngineStats {
+    // Wall-clock nanoseconds spent per phase (indexed by contracts::Phase),
+    // including coordination and commit.
+    std::array<std::uint64_t, 7> phase_nanoseconds{};
     std::uint64_t phases{};
     std::uint64_t attempts{};
     std::uint64_t tasks{};

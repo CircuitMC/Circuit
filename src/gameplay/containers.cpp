@@ -113,7 +113,8 @@ std::vector<BlockPos> container_parts(RuleContext& ctx, BlockPos pos) {
     if (const auto d = chest_partner(s)) {
         const auto other = pos.relative(*d);
         if (paired(s, ctx.block(other))) {
-            if (static_cast<ChestType>(s.level()) == ChestType::left) return {pos, other};
+            // The right half's slots come first (observed in target-version traces).
+            if (static_cast<ChestType>(s.level()) == ChestType::right) return {pos, other};
             return {other, pos};
         }
     }
@@ -144,11 +145,11 @@ void check_chest(RuleContext& ctx, BlockPos pos) {
             && static_cast<ChestType>(partner.level()) == ChestType::single) {
             // A new half claims a single chest of the same facing as its partner.
             const auto type = static_cast<ChestType>(s.level()) == ChestType::left ? ChestType::right : ChestType::left;
-            set_block(ctx, partner_pos, partner.with_level(static_cast<std::uint8_t>(type)));
+            set_block_quiet(ctx, partner_pos, partner.with_level(static_cast<std::uint8_t>(type)));
             return;
         }
         // A half whose partner is gone becomes a single chest.
-        set_block(ctx, pos, s.with_level(static_cast<std::uint8_t>(ChestType::single)));
+        set_block_quiet(ctx, pos, s.with_level(static_cast<std::uint8_t>(ChestType::single)));
         return;
     }
     // A single chest next to a half that points at it completes the pair.
@@ -156,7 +157,7 @@ void check_chest(RuleContext& ctx, BlockPos pos) {
         const auto n = ctx.block(pos.relative(dir));
         if (!n.is(BlockType::chest) || n.facing() != s.facing() || chest_partner(n) != contracts::opposite(dir)) continue;
         const auto type = dir == contracts::clockwise(s.facing()) ? ChestType::left : ChestType::right;
-        set_block(ctx, pos, s.with_level(static_cast<std::uint8_t>(type)));
+        set_block_quiet(ctx, pos, s.with_level(static_cast<std::uint8_t>(type)));
         return;
     }
 }
@@ -165,7 +166,7 @@ void check_hopper(RuleContext& ctx, BlockPos pos) {
     const auto s = ctx.block(pos);
     if (!s.is(BlockType::hopper)) return;
     const bool enabled = received_power(ctx, pos) == 0;
-    if (enabled != s.flag()) set_block(ctx, pos, s.with_flag(enabled));
+    if (enabled != s.flag()) set_block_quiet(ctx, pos, s.with_flag(enabled));
 }
 
 void tick_hopper(RuleContext& ctx, BlockPos pos) {

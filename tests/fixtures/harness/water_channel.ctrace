@@ -1,0 +1,81 @@
+circuit-trace 1
+title Water spread along a channel
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.1.0+mc1.21.8
+mechanisms water scheduled_ticks
+area -1 0 -1 10 1 1
+ticks 40
+changes ordered
+
+at 0 set -1 1 0 minecraft:glass
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 1 -1 minecraft:glass
+at 0 set 0 1 1 minecraft:glass
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 1 -1 minecraft:glass
+at 0 set 1 1 1 minecraft:glass
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 1 -1 minecraft:glass
+at 0 set 2 1 1 minecraft:glass
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 1 -1 minecraft:glass
+at 0 set 3 1 1 minecraft:glass
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 1 -1 minecraft:glass
+at 0 set 4 1 1 minecraft:glass
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 1 -1 minecraft:glass
+at 0 set 5 1 1 minecraft:glass
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 1 -1 minecraft:glass
+at 0 set 6 1 1 minecraft:glass
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 1 -1 minecraft:glass
+at 0 set 7 1 1 minecraft:glass
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 1 -1 minecraft:glass
+at 0 set 8 1 1 minecraft:glass
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 1 -1 minecraft:glass
+at 0 set 9 1 1 minecraft:glass
+
+at 1 set 0 1 0 minecraft:water[level=0]
+change 1 0 1 0 minecraft:air minecraft:water[level=0]
+
+change 5 1 1 0 minecraft:air minecraft:water[level=1]
+block 5 1 1 0 minecraft:water[level=1]
+
+block 6 1 1 0 minecraft:water[level=1]
+
+change 10 2 1 0 minecraft:air minecraft:water[level=2]
+block 10 2 1 0 minecraft:water[level=2]
+
+block 11 2 1 0 minecraft:water[level=2]
+
+change 15 3 1 0 minecraft:air minecraft:water[level=3]
+block 15 3 1 0 minecraft:water[level=3]
+
+block 16 3 1 0 minecraft:water[level=3]
+
+change 20 4 1 0 minecraft:air minecraft:water[level=4]
+block 20 4 1 0 minecraft:water[level=4]
+
+block 21 4 1 0 minecraft:water[level=4]
+
+change 25 5 1 0 minecraft:air minecraft:water[level=5]
+block 25 5 1 0 minecraft:water[level=5]
+
+block 26 5 1 0 minecraft:water[level=5]
+
+change 30 6 1 0 minecraft:air minecraft:water[level=6]
+block 30 6 1 0 minecraft:water[level=6]
+
+block 31 6 1 0 minecraft:water[level=6]
+
+change 35 7 1 0 minecraft:air minecraft:water[level=7]
+block 35 7 1 0 minecraft:water[level=7]
+
+block 36 7 1 0 minecraft:water[level=7]
+
+block 40 8 1 0 minecraft:air

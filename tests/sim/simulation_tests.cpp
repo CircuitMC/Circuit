@@ -141,6 +141,14 @@ int main() {
                 std::format("signals {} inventory {} chest states {}", signals, inventory, chest_types));
     });
 
+    suite.run("observers fire on piston writes across the edge", [&] {
+        std::size_t fired = 0;
+        for (const auto& t : references[12].traces)
+            for (const auto& r : of_kind(t, TraceKind::tick_executed))
+                fired += r.pos == BlockPos{16, 1, 0} || r.pos == BlockPos{15, 0, 1} || r.pos == BlockPos{16, 0, 13};
+        require(scenarios[12].name == "observed_pistons" && fired >= 20, std::format("{} observer ticks", fired));
+    });
+
     suite.run("piston pulses drop, pull and destroy", [&] {
         std::size_t moving = 0, executed = 0;
         for (const auto& t : references[10].traces) {

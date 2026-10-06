@@ -298,10 +298,35 @@ inline Scenario drops_scenario() {
     }, 5};
 }
 
+// Observers watching piston writes across the x=16 chunk edge (pushed block,
+// head cell, a sticky pull's vacated cell), and a diode chain whose
+// tick priority depends on the diode in front, across the same edge.
+inline Scenario observed_piston_scenario() {
+    return {"observed_pistons", 53, 120, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 2)};
+        if (t == 2)
+            return {place({15, 0, 0}, blocks::stone()), place({14, 0, 0}, blocks::piston(D::east)),
+                    place({16, 1, 0}, blocks::observer(D::down)), place({16, 2, 0}, blocks::lamp()),
+                    place({15, 0, 1}, blocks::observer(D::north)), place({15, 0, 2}, blocks::lamp()),
+                    place({13, 0, 0}, blocks::lever()),
+                    place({15, 0, 9}, blocks::repeater(D::east, 1)), place({16, 0, 9}, blocks::repeater(D::east, 1)),
+                    place({17, 0, 9}, blocks::comparator(D::east)), place({18, 0, 9}, blocks::lamp()),
+                    place({16, 0, 10}, blocks::observer(D::north)), place({14, 0, 9}, blocks::lever()),
+                    place({15, 0, 12}, blocks::stone()), place({14, 0, 12}, blocks::piston(D::east, true)),
+                    place({16, 0, 13}, blocks::observer(D::north)), place({16, 0, 14}, blocks::lamp()),
+                    place({13, 0, 12}, blocks::lever())};
+        std::vector<CommandBody> c;
+        if (t > 2 && t % 7 == 3) c.push_back(use_lever({13, 0, 0}));
+        if (t > 2 && t % 11 == 4) c.push_back(use_lever({14, 0, 9}));
+        if (t > 2 && t % 5 == 1) c.push_back(use_lever({13, 0, 12}));
+        return c;
+    }};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
-            comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario()};
+            comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario()};
 }
 
 } // namespace circuit::test

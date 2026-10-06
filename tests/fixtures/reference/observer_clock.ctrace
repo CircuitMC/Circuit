@@ -1,0 +1,47 @@
+circuit-trace 1
+title Observer clock across a chunk edge
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v4
+mechanisms observer redstone_lamp scheduled_ticks
+area 13 -1 -1 18 0 1
+ticks 16
+changes ordered
+
+at 0 set 14 0 0 minecraft:redstone_lamp[lit=false]
+at 0 set 17 0 0 minecraft:redstone_lamp[lit=false]
+at 0 set 15 0 0 minecraft:observer[facing=east,powered=false]
+
+at 1 set 16 0 0 minecraft:observer[facing=west,powered=false]
+change 1 16 0 0 minecraft:air minecraft:observer[facing=west,powered=false]
+
+change 2 15 0 0 minecraft:observer[facing=east,powered=false] minecraft:observer[facing=east,powered=true]
+change 2 14 0 0 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+
+change 4 16 0 0 minecraft:observer[facing=west,powered=false] minecraft:observer[facing=west,powered=true]
+change 4 17 0 0 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+change 4 15 0 0 minecraft:observer[facing=east,powered=true] minecraft:observer[facing=east,powered=false]
+
+change 6 16 0 0 minecraft:observer[facing=west,powered=true] minecraft:observer[facing=west,powered=false]
+
+change 8 14 0 0 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+change 8 15 0 0 minecraft:observer[facing=east,powered=false] minecraft:observer[facing=east,powered=true]
+change 8 14 0 0 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+block 8 14 0 0 minecraft:redstone_lamp[lit=true]
+block 8 17 0 0 minecraft:redstone_lamp[lit=true]
+
+change 10 17 0 0 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+change 10 16 0 0 minecraft:observer[facing=west,powered=false] minecraft:observer[facing=west,powered=true]
+change 10 17 0 0 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+change 10 15 0 0 minecraft:observer[facing=east,powered=true] minecraft:observer[facing=east,powered=false]
+
+change 12 16 0 0 minecraft:observer[facing=west,powered=true] minecraft:observer[facing=west,powered=false]
+
+change 14 14 0 0 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+change 14 15 0 0 minecraft:observer[facing=east,powered=false] minecraft:observer[facing=east,powered=true]
+change 14 14 0 0 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+
+change 16 17 0 0 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+change 16 16 0 0 minecraft:observer[facing=west,powered=false] minecraft:observer[facing=west,powered=true]
+change 16 17 0 0 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+change 16 15 0 0 minecraft:observer[facing=east,powered=true] minecraft:observer[facing=east,powered=false]

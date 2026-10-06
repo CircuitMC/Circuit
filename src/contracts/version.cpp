@@ -7,71 +7,92 @@ namespace {
 using enum CompatibilityTier;
 using enum EvidenceSource;
 
-// Compatibility table for circuit-reference-rules-v3. Nothing is checked
-// against the target version yet: no row claims L0. L2 rows record known
-// simplifications; rows without a claim are unverified.
-constexpr std::array reference_v3_mechanisms{
-    MechanismEntry{"neighbor_updates", l0_exact, std::nullopt, documented_behavior,
-        "Order west, east, down, up, north, south; emissions during one delivery run depth-first in "
-        "emission order. A single update kind serves both neighbor and shape updates. Unverified."},
-    MechanismEntry{"neighbor_chain_limit", l0_exact, std::nullopt, documented_behavior,
-        "A chain counts deliveries until its stack empties; reaching the limit discards the rest of "
-        "the chain. Unverified."},
-    MechanismEntry{"scheduled_ticks", l0_exact, std::nullopt, documented_behavior,
-        "Order (due, priority, sub-order) with one level-wide sub-order counter shared by block and "
-        "fluid ticks; at most one pending tick per (position, block). Ticks in unloaded or non-ticking "
-        "chunks keep their keys. Priorities are Circuit-assigned."},
-    MechanismEntry{"redstone_wire", l0_exact, l2_declared_deviation, documented_behavior,
-        "Connects horizontally on one level only; emits its level in every direction except up; no "
-        "power conduction through solid blocks."},
-    MechanismEntry{"repeater", l0_exact, l2_declared_deviation, documented_behavior,
-        "Delay 2-8 game ticks, pulse extension to its delay, priority -1; use cycles the delay; no locking."},
-    MechanismEntry{"redstone_lamp", l0_exact, std::nullopt, documented_behavior,
-        "Lights immediately; turns off 4 game ticks after losing power."},
-    MechanismEntry{"observer", l0_exact, l2_declared_deviation, documented_behavior,
-        "Reacts to any update from its observed position; 2-tick delay and 2-tick pulse."},
-    MechanismEntry{"piston", l0_exact, l2_declared_deviation, documented_behavior,
-        "Structures of at most 12 blocks, slime attachment and quasi-connectivity. A block event starts the "
-        "move: the base extends at once, while the head and moved blocks, or on retraction the base and pulled "
-        "blocks, become moving pistons that finish in the block-entity phase two ticks later. A sticky piston "
-        "retracting before its push finished leaves the block behind. Dust, levers, repeaters, comparators, "
-        "water and wheat are destroyed; their fixed drops appear at the block center without velocity or "
-        "random quantities. Moving blocks push item entities in their cell half a block per tick. Phase "
-        "placement, drop timing and pushing details are unverified."},
-    MechanismEntry{"block_events", l0_exact, std::nullopt, documented_behavior,
-        "Level-wide FIFO with set semantics, drained including additions; events in non-ticking or "
-        "unloaded chunks are deferred in order."},
-    MechanismEntry{"hopper", l0_exact, l2_declared_deviation, documented_behavior,
-        "Push then pull, 8-tick cooldown after any transfer, disabled while powered, picks up item "
-        "entities in the cell above; no chained-hopper cooldown adjustments."},
-    MechanismEntry{"double_chest", l0_exact, std::nullopt, documented_behavior,
-        "Halves with the same facing pair as left (clockwise) and right (counter-clockwise). A half claims a "
-        "single chest of the same facing at its partner position; otherwise it becomes single, also when its "
-        "partner disappears. Hoppers and comparators see one 54-slot container, left half first. The pairing "
-        "convention and slot order are unverified."},
-    MechanismEntry{"comparator", l0_exact, l2_declared_deviation, documented_behavior,
-        "Compare and subtract modes, 2-tick delay at priority 0, output held in a block entity. Rear input is "
-        "power or the fullness of a container behind it, also through stone, obsidian or a lamp; side inputs "
-        "come from dust, repeaters, comparators, redstone blocks and observers. No other analog sources."},
-    MechanismEntry{"water", l0_exact, l2_declared_deviation, documented_behavior,
-        "5-tick fluid ticks; spreads into air only, horizontally to every side without shortest-path "
-        "preference; falling water from above."},
-    MechanismEntry{"random_ticks", l1_region_equivalent, std::nullopt, documented_behavior,
-        "Speed 3 per section; positions and rule draws use a stream derived from (seed, tick, chunk, "
-        "section) instead of a level-wide stream; chunks in coordinate order instead of shuffled."},
+// Compatibility table for circuit-reference-rules-v4. Every row claims a tier.
+// A row claims L0 only when harness fixtures recorded on the target version
+// pass and no gap is known; "Not covered" names aspects no fixture exercises.
+// Every other row claims L2 and lists its gaps, which include behavior not yet
+// compared with the target version. Fixture names refer to
+// tests/fixtures/harness/.
+constexpr std::array reference_v4_mechanisms{
+    MechanismEntry{"command_timing", l0_exact, l0_exact, harness_trace,
+        "Inputs apply between ticks: delays they start count from the previous tick (lamp_timing, "
+        "vertical_slice, comparator_signal)."},
+    MechanismEntry{"neighbor_updates", l0_exact, l2_declared_deviation, harness_trace,
+        "Neighbor updates (west, east, down, up, north, south) and shape updates (west, east, north, south, "
+        "down, up) are queued entries run depth-first in emission order; dust updates the neighbors of a "
+        "7-position set in hash order (vertical_slice, chain_limit, piston_observed). Gaps: levers do not "
+        "update the block they are attached to; indirect (diagonal) shape updates are not modeled."},
+    MechanismEntry{"neighbor_chain_limit", l0_exact, l0_exact, harness_trace,
+        "A chain counts the entries queued in it (neighbor-update sets, single updates and shape updates); at "
+        "the limit new entries are dropped while queued entries still run (chain_limit). Not covered: the "
+        "shape-update nesting limit of 512."},
+    MechanismEntry{"scheduled_ticks", l0_exact, l0_exact, harness_trace,
+        "Order (due, priority, sub-order); a drained tick counts as scheduled until it runs (observer_clock); "
+        "priorities: repeaters -3 when feeding a diode that does not face back, -2 when turning off or ending "
+        "an extended pulse, else -1; comparators -1 when feeding a diode, else 0; lamps and observers 0 "
+        "(tick_priority, comparator_priority, diode_priority). Not covered: the per-tick drain limit and ticks "
+        "in non-ticking chunks."},
+    MechanismEntry{"redstone_wire", l0_exact, l2_declared_deviation, harness_trace,
+        "Power decays by one per block; a change updates the neighbors of a 7-position set in hash order "
+        "(vertical_slice, chain_limit). Gaps: no connections up or down steps; no power through solid blocks."},
+    MechanismEntry{"repeater", l0_exact, l2_declared_deviation, harness_trace,
+        "Delay 2-8 game ticks, pulse extension, quiet state change and front updates (vertical_slice, "
+        "observer_pulse, tick_priority, diode_priority). Gaps: no locking; no power through solid blocks."},
+    MechanismEntry{"redstone_lamp", l0_exact, l0_exact, harness_trace,
+        "Lights at once and turns off 4 game ticks after losing power, without neighbor updates (lamp_timing, "
+        "vertical_slice, tick_priority)."},
+    MechanismEntry{"observer", l0_exact, l0_exact, harness_trace,
+        "Fires 2 ticks after a shape update from its observed side, including piston writes, and after being "
+        "moved by a piston; 2-tick pulse; output updates at its back (observer_pulse, observer_clock, "
+        "observer_moved, piston_observed). Not covered: observers moved while powered."},
+    MechanismEntry{"piston", l0_exact, l2_declared_deviation, harness_trace,
+        "Two-tick moves through moving pistons; structure discovery and placement order, vacated cells in hash "
+        "order, shape updates after every write, block dropping, destruction (piston_timing, piston_slime, "
+        "piston_destroys, piston_observed, quasi_connectivity). Gaps: drops at the block center without "
+        "random offsets; items pushed half a block per step; neighbor updates after a move in first-change "
+        "order are not compared."},
+    MechanismEntry{"block_events", l0_exact, l0_exact, harness_trace,
+        "Level-wide FIFO with set semantics, drained including additions (piston_observed, piston_slime, "
+        "piston_timing). Not covered: deferral in non-ticking chunks."},
+    MechanismEntry{"hopper", l0_exact, l2_declared_deviation, harness_trace,
+        "Push then pull, 8-tick cooldown, disabled while powered, item pickup, competition in block-entity order "
+        "(hopper_chain, hopper_competition, double_chest). Gap: no chained-hopper cooldown adjustment."},
+    MechanismEntry{"double_chest", l0_exact, l0_exact, harness_trace,
+        "A left half pairs clockwise of its facing; a half claims a same-facing single chest; pairing changes "
+        "are shape-only; hoppers and comparators see the right half's slots first (double_chest, "
+        "double_chest_left_input)."},
+    MechanismEntry{"comparator", l0_exact, l2_declared_deviation, harness_trace,
+        "Compare and subtract, 2-tick delay, output in a block entity, container reading also through stone, "
+        "obsidian and lamps, side inputs, immediate refresh on a mode change (comparator_signal, "
+        "comparator_priority, diode_priority, double_chest). Gaps: no rear power through solid blocks; "
+        "containers are the only analog source in the registry."},
+    MechanismEntry{"water", l0_exact, l2_declared_deviation, harness_trace,
+        "5-tick fluid ticks and distance-limited spread match water_channel. Gap: spreads to every side without "
+        "the target version's preference for nearby drops."},
+    MechanismEntry{"random_ticks", l1_region_equivalent, l2_declared_deviation, documented_behavior,
+        "Speed from the game rule per section; positions and rule draws use a stream derived from (seed, tick, "
+        "chunk, section) instead of a level-wide stream. Gaps: chunks run in coordinate order instead of a "
+        "shuffled order; not compared with the target version."},
     MechanismEntry{"wheat", l0_exact, l2_declared_deviation, documented_behavior,
-        "Grows with probability 1/3 per random tick; ignores light, hydration and support."},
+        "Gap: grows with probability 1/3 per random tick, ignoring light, hydration and support."},
     MechanismEntry{"item_entity", l0_exact, l2_declared_deviation, documented_behavior,
-        "Fixed-point gravity, drag and axis collision; despawns after 6000 ticks; no merging; cannot "
-        "enter unloaded chunks; pushed by moving blocks. Ids of entities spawned outside the command phase "
-        "are assigned in serial order."},
+        "Fixed-point gravity, drag and axis collision; despawns after 6000 ticks; pushed by moving blocks. Ids "
+        "of entities spawned outside the command phase are assigned in serial order. Gaps: no merging; cannot "
+        "enter unloaded chunks; physics not compared with the target version."},
     MechanismEntry{"chunk_tickets", l0_exact, l2_declared_deviation, documented_behavior,
-        "A ticket of radius r makes chunks within Chebyshev distance r ticking and the next ring "
-        "border-loaded; no ticket types or level propagation."},
-    MechanismEntry{"entity_order", l0_exact, std::nullopt, documented_behavior,
-        "Entities tick in ascending id order once per tick."},
-    MechanismEntry{"block_entity_order", l0_exact, std::nullopt, documented_behavior,
-        "Block entities tick in creation order."},
+        "A ticket of radius r makes chunks within Chebyshev distance r ticking and the next ring border-loaded. "
+        "Gaps: no ticket types or level propagation; unloaded chunks keep pending ticks with absolute due "
+        "times."},
+    MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, documented_behavior,
+        "Entities tick in ascending id order once per tick. Gap: not compared with the target version "
+        "(circuit-trace v1 has no entity observations)."},
+    MechanismEntry{"block_entity_order", l0_exact, l0_exact, harness_trace,
+        "Block entities tick in creation order; moving pistons finish in creation order (piston_slime, "
+        "piston_observed) and competing hoppers act in placement order (hopper_competition). Not covered: "
+        "order after a chunk reload."},
+    MechanismEntry{"support", l0_exact, l2_declared_deviation, harness_trace,
+        "Gap: not modeled; dust, repeaters, comparators and levers survive without support, while the target "
+        "version removes them. Fixtures place a supporting floor."},
 };
 
 constexpr RuleLimits vanilla_like_limits{
@@ -87,8 +108,8 @@ constexpr std::array bundles{
         .id = "java-1.21.8",
         .game_version = "1.21.8",
         .protocol_candidate = "java-1.21.8",
-        .rules = RuleSet{"circuit-reference-rules-v3", RngPolicy::per_section_derived_stream,
-                         reference_v3_mechanisms},
+        .rules = RuleSet{"circuit-reference-rules-v4", RngPolicy::per_section_derived_stream,
+                         reference_v4_mechanisms},
         .world = {-64, 384},
         .limits = vanilla_like_limits,
         .generator = "empty",

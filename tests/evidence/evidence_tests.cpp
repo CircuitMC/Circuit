@@ -107,6 +107,7 @@ int main(int argc, char** argv) {
         expect("circuit-trace 1\ntitle a\ntitle b\n", 3, "duplicate");
         expect("circuit-trace 1\ntitle a\nat 0 use 0 0 0\n", 3, "missing required key `game-version`");
         expect(h + "bogus 1\n", 9, "unknown key");
+        expect(h + "neighbor-update-limit 0\n", 9, "invalid neighbor update limit");
         expect(h + "at 0 use 0 0 0\nticks 5\n", 10, "after the body");
         expect(h + "at 5 use 0 0 0\n", 9, "tick outside");
         expect(h + "at 0 use 9 0 0\n", 9, "outside the area");
@@ -190,7 +191,7 @@ int main(int argc, char** argv) {
         require(text == write_fixture(*by_oracle), "engine and oracle record identical fixtures");
         const auto recorded = parse(text);
         require(recorded.source == circuit::contracts::EvidenceSource::circuit_reference
-                    && recorded.harness == "circuit-reference-rules-v3", "provenance");
+                    && recorded.harness == "circuit-reference-rules-v4", "provenance");
         require(!recorded.recorded_changes.empty(), "changes recorded");
         for (const auto& exec : {engine_executor(1), engine_executor(8), oracle_executor()}) {
             const auto r = evaluate_fixture(recorded, exec);
@@ -270,6 +271,48 @@ int main(int argc, char** argv) {
             ++rerecorded;
         }
         require(evaluated >= 9 && rerecorded >= 8, std::format("{} evaluated, {} re-recorded", evaluated, rerecorded));
+    });
+
+    suite.run("profiling workloads are valid scenarios", [&] {
+        std::size_t workloads = 0;
+        for (const auto& entry : fs::directory_iterator(fixtures / "workloads")) {
+            const auto f = parse(read_text(entry.path()));
+            require(f.block_probes.empty() && f.slot_probes.empty() && !f.actions.empty(), entry.path().string());
+            require(fixture_inputs(f).has_value(), std::format("{}: cannot run", entry.path().string()));
+            ++workloads;
+        }
+        require(workloads >= 5, "workloads present");
+    });
+
+    suite.run("target-version traces pass and match their skeletons", [&] {
+        std::size_t traces = 0;
+        for (const auto& entry : fs::directory_iterator(fixtures / "harness")) {
+            const auto trace = parse(read_text(entry.path()));
+            require(trace.source == circuit::contracts::EvidenceSource::harness_trace && trace.harness.starts_with("circuit-harness:"),
+                    std::format("{}: harness provenance", entry.path().string()));
+            // The trace must come from the scenario currently in the repository.
+            auto origin = fixtures / "skeletons" / entry.path().filename();
+            if (!fs::exists(origin)) origin = fixtures / "documented" / entry.path().filename();
+            require(fs::exists(origin), std::format("{}: no skeleton", entry.path().string()));
+            const auto skeleton = parse(read_text(origin));
+            auto actions = [](const Fixture& f) {
+                std::vector<std::tuple<Tick, int, BlockPos, std::string, int, std::string, int>> out;
+                for (const auto& a : f.actions)
+                    out.emplace_back(a.tick, static_cast<int>(a.kind), a.pos, a.state, a.slot, a.item, a.count);
+                return out;
+            };
+            require(trace.title == skeleton.title && trace.area_min == skeleton.area_min && trace.area_max == skeleton.area_max
+                        && trace.ticks == skeleton.ticks && trace.changes == skeleton.changes
+                        && trace.random_tick_speed == skeleton.random_tick_speed
+                        && trace.neighbor_update_limit == skeleton.neighbor_update_limit && actions(trace) == actions(skeleton),
+                    std::format("{}: recorded from a different scenario; re-record it", entry.path().string()));
+            for (const auto& exec : {engine_executor(4), oracle_executor()}) {
+                const auto r = evaluate_fixture(trace, exec);
+                require(r.outcome == Outcome::passed, std::format("{}: {}", entry.path().string(), r.detail));
+            }
+            ++traces;
+        }
+        require(traces >= 20, std::format("{} target-version traces", traces));
     });
 
     return suite.finish();

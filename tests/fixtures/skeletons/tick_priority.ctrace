@@ -1,0 +1,25 @@
+circuit-trace 1
+# Skeleton: a lamp and two repeaters become due on the same tick; the order of
+# their changes shows the drain order (priority, then scheduling order).
+title Lamp and repeaters due on the same tick
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms scheduled_ticks repeater redstone_lamp
+area -2 -1 -2 1 0 2
+ticks 12
+changes ordered
+
+at 0 set -1 -1 0 minecraft:stone
+at 0 set 0 -1 0 minecraft:stone
+at 0 set 0 -1 -1 minecraft:stone
+at 0 set 0 -1 1 minecraft:stone
+at 0 set -1 0 0 minecraft:redstone_lamp[lit=false]
+at 0 set 0 0 -1 minecraft:repeater[delay=2,facing=south,locked=false,powered=false]
+at 0 set 0 0 1 minecraft:repeater[delay=2,facing=north,locked=false,powered=false]
+at 0 set 0 0 0 minecraft:lever[face=floor,facing=east,powered=false]
+at 1 use 0 0 0
+at 6 use 0 0 0
+
+block 4 0 0 -1 ?
+block 10 -1 0 0 ?

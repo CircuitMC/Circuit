@@ -9,23 +9,41 @@
 namespace circuit::gameplay {
 using contracts::TraceKind;
 
-// Per-root state of immediate neighbor-update propagation. Version rule:
-// deliveries run depth-first; sources emitted while one delivery runs are
-// processed in emission order before the next sibling delivery.
+// Per-root state of immediate update propagation (observed in target-version
+// traces). Neighbor and shape updates are queued entries. An entry emitted
+// while another runs joins the current layer; after each delivery the layer is
+// pushed so that its entries run in emission order before the next sibling
+// delivery (depth-first). An entry emitted outside a chain starts one, which
+// lasts until the queue empties. A chain counts the entries added to it; once
+// the count reaches the version limit, new entries are dropped while queued
+// entries still run. Shape-update nesting is limited separately.
 struct NeighborUpdater {
+    enum class Kind : std::uint8_t {
+        neighbors, // six neighbors of `source`, in update order, except `skip`
+        single,    // one neighbor update to `target`
+        shape,     // one shape update to `target`
+    };
     struct Entry {
+        Kind kind{};
         BlockPos source;
-        std::uint8_t next{};
+        BlockPos target;
+        std::uint8_t next{};   // Next direction index of a `neighbors` entry.
+        std::int8_t skip{-1};  // Direction not notified, or -1.
+        std::uint16_t depth{}; // Nesting of a `shape` entry.
     };
     std::vector<Entry> stack;
-    std::vector<BlockPos> layer;
+    std::vector<Entry> layer;
     bool running{};
-    std::uint64_t delivered{};
+    bool truncated{};
+    std::uint64_t count{};       // Entries added to the current chain.
+    std::uint16_t shape_depth{}; // Nesting of the shape entry being delivered; 0 otherwise.
     void reset() noexcept {
         stack.clear();
         layer.clear();
         running = false;
-        delivered = 0;
+        truncated = false;
+        count = 0;
+        shape_depth = 0;
     }
 };
 

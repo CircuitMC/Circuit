@@ -1,6 +1,8 @@
 circuit-trace 1
 # Expectations from public documentation: a redstone lamp lights as soon as it is
-# powered and turns off 4 game ticks after losing power. Change order is not asserted.
+# powered and turns off 4 game ticks after losing power. Inputs apply between ticks,
+# so a lever flipped for tick 3 starts the delay at the previous tick's time (confirmed
+# by the target-version trace). Change order is not asserted.
 title Redstone lamp switches on at once and off after four ticks
 game-version 1.21.8
 source documented_behavior
@@ -16,5 +18,5 @@ at 3 use 0 0 0
 
 block 0 1 0 0 minecraft:redstone_lamp[lit=false]
 block 1 1 0 0 minecraft:redstone_lamp[lit=true]
-block 6 1 0 0 minecraft:redstone_lamp[lit=true]
-block 7 1 0 0 minecraft:redstone_lamp[lit=false]
+block 5 1 0 0 minecraft:redstone_lamp[lit=true]
+block 6 1 0 0 minecraft:redstone_lamp[lit=false]

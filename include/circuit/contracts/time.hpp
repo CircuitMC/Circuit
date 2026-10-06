@@ -14,7 +14,7 @@ using Tick = std::uint64_t;
 // roots with a phase-specific total order; immediate reactions run inside
 // their root. The executor must reproduce this order independently of threads.
 enum class Phase : std::uint8_t {
-    commands,       // admitted external inputs, then chunk-level changes
+    commands,       // admitted external inputs, then chunk-level changes; observes the previous tick's time
     block_ticks,    // scheduled block ticks: (due, priority, sub-order)
     fluid_ticks,    // scheduled fluid ticks: (due, priority, sub-order)
     random_ticks,   // per ticking chunk and section

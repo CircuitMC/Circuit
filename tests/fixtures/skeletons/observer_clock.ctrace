@@ -1,0 +1,18 @@
+circuit-trace 1
+# Skeleton: two observers facing each other across the x=16 chunk edge form a clock that lights two lamps.
+title Observer clock across a chunk edge
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms observer redstone_lamp scheduled_ticks
+area 13 -1 -1 18 0 1
+ticks 16
+changes ordered
+
+at 0 set 14 0 0 minecraft:redstone_lamp[lit=false]
+at 0 set 17 0 0 minecraft:redstone_lamp[lit=false]
+at 0 set 15 0 0 minecraft:observer[facing=east,powered=false]
+at 1 set 16 0 0 minecraft:observer[facing=west,powered=false]
+
+block 8 14 0 0 ?
+block 8 17 0 0 ?

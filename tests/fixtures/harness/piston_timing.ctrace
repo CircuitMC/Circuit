@@ -1,0 +1,70 @@
+circuit-trace 1
+title Piston timing, block dropping and moving power
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.1.0+mc1.21.8
+mechanisms piston block_events redstone_lamp
+area 12 -1 -1 20 0 5
+ticks 10
+changes ordered
+
+at 0 set 13 -1 0 minecraft:stone
+at 0 set 13 -1 1 minecraft:stone
+at 0 set 13 -1 3 minecraft:stone
+at 0 set 13 -1 4 minecraft:stone
+at 0 set 14 -1 0 minecraft:stone
+at 0 set 14 -1 1 minecraft:stone
+at 0 set 14 -1 3 minecraft:stone
+at 0 set 14 -1 4 minecraft:stone
+at 0 set 15 -1 0 minecraft:stone
+at 0 set 15 -1 1 minecraft:stone
+at 0 set 15 -1 3 minecraft:stone
+at 0 set 15 -1 4 minecraft:stone
+at 0 set 16 -1 0 minecraft:stone
+at 0 set 16 -1 1 minecraft:stone
+at 0 set 16 -1 3 minecraft:stone
+at 0 set 16 -1 4 minecraft:stone
+at 0 set 17 -1 0 minecraft:stone
+at 0 set 17 -1 1 minecraft:stone
+at 0 set 17 -1 3 minecraft:stone
+at 0 set 17 -1 4 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 13 0 0 minecraft:sticky_piston[extended=false,facing=east]
+at 0 set 13 0 1 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 15 0 3 minecraft:redstone_block
+at 0 set 14 0 3 minecraft:piston[extended=false,facing=east]
+at 0 set 17 0 3 minecraft:redstone_lamp[lit=false]
+
+at 1 use 13 0 1
+change 1 13 0 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+at 1 set 14 0 4 minecraft:redstone_block
+change 1 14 0 4 minecraft:air minecraft:redstone_block
+change 1 15 0 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 1 14 0 0 minecraft:stone minecraft:moving_piston[facing=east,type=sticky]
+change 1 13 0 0 minecraft:sticky_piston[extended=false,facing=east] minecraft:sticky_piston[extended=true,facing=east]
+change 1 16 0 3 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 1 15 0 3 minecraft:redstone_block minecraft:moving_piston[facing=east,type=normal]
+change 1 14 0 3 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
+block 1 14 0 0 minecraft:moving_piston[facing=east,type=sticky]
+block 1 15 0 0 minecraft:moving_piston[facing=east,type=normal]
+block 1 16 0 3 minecraft:moving_piston[facing=east,type=normal]
+block 1 17 0 3 minecraft:redstone_lamp[lit=false]
+
+at 2 use 13 0 1
+change 2 13 0 1 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 2 14 0 0 minecraft:moving_piston[facing=east,type=sticky] minecraft:air
+change 2 13 0 0 minecraft:sticky_piston[extended=true,facing=east] minecraft:moving_piston[facing=east,type=sticky]
+change 2 15 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+block 2 15 0 0 minecraft:stone
+block 2 13 0 0 minecraft:moving_piston[facing=east,type=sticky]
+block 2 17 0 3 minecraft:redstone_lamp[lit=false]
+
+change 3 16 0 3 minecraft:moving_piston[facing=east,type=normal] minecraft:redstone_block
+change 3 17 0 3 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+change 3 15 0 3 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+block 3 16 0 3 minecraft:redstone_block
+block 3 17 0 3 minecraft:redstone_lamp[lit=true]
+
+change 4 13 0 0 minecraft:moving_piston[facing=east,type=sticky] minecraft:sticky_piston[extended=false,facing=east]
+block 4 13 0 0 minecraft:sticky_piston[extended=false,facing=east]
+block 4 15 0 0 minecraft:stone
