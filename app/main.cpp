@@ -41,7 +41,9 @@ void usage() {
         "  --record-fixture <skeleton> --output <file>\n"
         "  --profile-fixture <file> [--ticks N] [--workers 1..64]\n"
         "  --compatibility [--game-version java-1.21.8]\n"
-        "  --serve [--config <file>] [--port N] [--offline] [--workers 1..64]\n"
+        "  --serve [--config <file>] [--world <dir>] [--port N] [--offline] [--workers 1..64]\n"
+        "  --import-anvil <java-world> --world <dir> [--config <file>] [--substitute-unsupported]\n"
+        "  --export-anvil <new-java-world> --world <dir> [--config <file>]\n"
         "  --demo [--game-version java-1.21.8|java-1.20.4]\n"
         "         [--workers 1..64] [--ticks 1..1000000] [--plugin <shared-library>]\n"
         "  --list-versions | --version | --help\n";
@@ -50,8 +52,10 @@ void usage() {
 int main(int argc, char** argv) {
     try {
         unsigned workers = 4, ticks = 20;
-        bool demo = false, simulate = false, ticks_given = false, compatibility = false, serve = false, offline = false;
-        std::string config_path;
+        bool demo = false, simulate = false, ticks_given = false, workers_given = false, compatibility = false, serve = false,
+             offline = false;
+        std::string config_path, world_directory, import_source, export_target;
+        bool substitute = false;
         std::optional<std::uint16_t> port;
         circuit::app::SimulateOptions simulation;
         std::vector<std::string> fixtures;
@@ -76,7 +80,7 @@ int main(int argc, char** argv) {
             }
             if (arg == "--demo") demo = true;
             else if (arg == "--simulate") simulate = true;
-            else if (arg == "--workers") workers = number(value(), 1, 64);
+            else if (arg == "--workers") { workers = number(value(), 1, 64); workers_given = true; }
             else if (arg == "--ticks") { ticks = number(value(), 1, 1000000); ticks_given = true; }
             else if (arg == "--seed") simulation.seed = number(value(), 0, UINT32_MAX);
             else if (arg == "--replay") simulation.replay_path = value();
@@ -91,6 +95,10 @@ int main(int argc, char** argv) {
             else if (arg == "--config") config_path = value();
             else if (arg == "--port") port = static_cast<std::uint16_t>(number(value(), 0, 65535));
             else if (arg == "--offline") offline = true;
+            else if (arg == "--world") world_directory = value();
+            else if (arg == "--import-anvil") import_source = value();
+            else if (arg == "--export-anvil") export_target = value();
+            else if (arg == "--substitute-unsupported") substitute = true;
             else if (arg == "--game-version") selected = value();
             else if (arg == "--plugin") libraries.emplace_back(value());
             else throw std::invalid_argument("unknown option: " + std::string(arg));
@@ -105,7 +113,9 @@ int main(int argc, char** argv) {
         if (!fixtures.empty()) return circuit::app::check_fixtures(fixtures, workers);
         if (!profile.empty()) return circuit::app::profile_fixture(profile, ticks_given ? ticks : 600, workers);
         if (compatibility) return circuit::app::print_compatibility(selected);
-        if (serve) {
+        if (serve || !import_source.empty() || !export_target.empty()) {
+            if (static_cast<int>(serve) + !import_source.empty() + !export_target.empty() > 1)
+                throw std::invalid_argument("--serve, --import-anvil and --export-anvil are exclusive");
             circuit::server::ServerConfig config;
             if (!config_path.empty()) {
                 auto loaded = circuit::server::load_config(config_path);
@@ -114,7 +124,10 @@ int main(int argc, char** argv) {
             }
             if (port) config.port = *port;
             if (offline) config.online_mode = false;
-            config.workers = workers;
+            if (!world_directory.empty()) config.world_directory = world_directory;
+            if (workers_given) config.workers = workers;
+            if (!import_source.empty()) return circuit::app::import_anvil(import_source, config, substitute);
+            if (!export_target.empty()) return circuit::app::export_anvil(config, export_target);
             return circuit::app::serve(std::move(config));
         }
         if (simulate) {

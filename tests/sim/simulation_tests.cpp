@@ -287,6 +287,27 @@ int main() {
         require(engine.region_count() >= 40, std::format("regions {}", engine.region_count()));
     });
 
+    suite.run("restored engines continue exactly", [&] {
+        // A checkpoint is a canonical dump: an engine restored from it must
+        // continue exactly like the original, whatever its workers and layout.
+        for (std::size_t i = 0; i < scenarios.size(); ++i) {
+            const auto& s = scenarios[i];
+            for (const Tick split : {Tick{1}, s.ticks / 3, 2 * s.ticks / 3, s.ticks - 1}) {
+                Engine original(bundle(), s.seed, pool(4));
+                for (Tick t = 1; t <= split; ++t) original.advance(inputs[i].per_tick[t - 1]);
+                Engine restored(bundle(), s.seed, original.dump(), seeded({.seed = split}, LayoutPolicy::perturbed, split));
+                require(restored.dump() == original.dump(), std::format("{}: restored state at {}", s.name, split));
+                for (Tick t = split + 1; t <= s.ticks; ++t) {
+                    restored.advance(inputs[i].per_tick[t - 1]);
+                    const auto at = first_divergence(restored.trace(), references[i].traces[t - 1]);
+                    require(!at, std::format("{}: split {} tick {} trace record {}", s.name, split, t, at.value_or(0)));
+                    if (const auto it = references[i].dumps.find(t); it != references[i].dumps.end())
+                        require(first_difference(restored.dump(), it->second).empty(), std::format("{}: split {} tick {} state", s.name, split, t));
+                }
+            }
+        }
+    });
+
     suite.run("replay record reproduces the run", [&] {
         const auto& s = scenarios[2];
         ReplayLog log{"java-1.21.8", std::string(bundle().rules->id), s.seed, {}};

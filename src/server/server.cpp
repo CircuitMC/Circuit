@@ -172,6 +172,7 @@ std::uint16_t Server::port() const {
     return ec ? impl_->config.port : ep.port();
 }
 std::size_t Server::players() const { return impl_->game->players(); }
+bool Server::running() const { return impl_->game_running.load(); }
 std::uint64_t Server::ticks() const { return impl_->game->ticks(); }
 
 namespace {
@@ -228,6 +229,9 @@ std::expected<ServerConfig, std::string> parse_config(std::string_view text) {
         else if (key == "seed") ok = parse_number<std::uint64_t>(value, c.seed, 0, INT64_MAX);
         else if (key == "max-queued-bytes") ok = parse_number<std::size_t>(value, c.max_queued_bytes, 65536, 1u << 30);
         else if (key == "floor-y") ok = parse_number<std::int32_t>(value, c.floor_y, -2048, 2047);
+        else if (key == "world-directory") c.world_directory = value;
+        else if (key == "autosave-ticks") ok = parse_number<std::uint32_t>(value, c.autosave_ticks, 20, 1728000);
+        else if (key == "log-sync-ticks") ok = parse_number<std::uint32_t>(value, c.log_sync_ticks, 1, 1200);
         else if (key == "login-timeout" || key == "keep-alive-timeout") {
             std::int64_t seconds = 0;
             ok = parse_number<std::int64_t>(value, seconds, 1, 600);

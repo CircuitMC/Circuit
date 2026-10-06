@@ -18,7 +18,7 @@ Part I is complete for its declared scope on Java Edition 1.21.8. The reference 
 ## Part II — Integration and additional capabilities
 
 - [x] **M4 — Playable vertical slice:** add the initial version's connection flow, identity providers, authoritative actions, and world interaction.
-- [ ] **M5 — Persistence:** add consistent checkpoints, crash recovery, and vanilla import/export within a documented compatibility range.
+- [x] **M5 — Persistence:** add consistent checkpoints, crash recovery, and vanilla import/export within a documented compatibility range.
 - [ ] **M6 — Extension ecosystem:** complete native plugin/mod capabilities, the Circuit Java bridge, and technical tools exposed through extension APIs.
 - [ ] **M8 — Optimization and version expansion:** measure storage and scheduling improvements, complete a second version bundle, and prepare a release compatibility matrix.
 
@@ -48,8 +48,8 @@ Part I is complete for its declared scope on Java Edition 1.21.8. The reference 
 
 ## Storage and validation
 
-- [ ] Persist consistent world checkpoints and verify recovery under interrupted writes.
-- [ ] Import and export supported vanilla saves without overwriting source data or silently discarding unsupported content.
+- [x] Persist consistent world checkpoints and verify recovery under interrupted writes.
+- [x] Import and export supported vanilla saves without overwriting source data or silently discarding unsupported content.
 - [ ] Compare palette encoding and compression options using representative worlds.
 - [ ] Store sparse changes only when the exact baseline can be verified or retained.
 - [ ] Validate movement, reach, cooldowns, inventory conservation, and resource consumption using authoritative version rules.

@@ -49,6 +49,7 @@ struct Engine::Impl {
     void split_pass();
     RegionId region_for_new_chunk(ChunkPos c);
     WorldDump dump() const;
+    void restore(const WorldDump& state);
 
     const contracts::VersionBundle& bundle;
     std::uint64_t seed;
@@ -678,6 +679,74 @@ WorldDump Engine::Impl::dump() const {
 
 Engine::Engine(const contracts::VersionBundle& bundle, std::uint64_t seed, EngineOptions options)
     : impl_(std::make_unique<Impl>(bundle, seed, std::move(options))) {}
+
+Engine::Engine(const contracts::VersionBundle& bundle, std::uint64_t seed, const gameplay::WorldDump& state,
+               EngineOptions options)
+    : impl_(std::make_unique<Impl>(bundle, seed, std::move(options))) {
+    impl_->restore(state);
+}
+
+void Engine::Impl::restore(const WorldDump& state) {
+    const auto bad = [](std::string_view what) { throw std::invalid_argument(std::format("engine: invalid state: {}", what)); };
+    world.time = state.time;
+    world.next_suborder = state.next_suborder;
+    world.next_entity_id = state.next_entity_id;
+    world.next_block_entity_order = state.next_block_entity_order;
+    std::map<ChunkPos, ChunkData*> columns;
+    for (const auto& c : state.chunks) {
+        auto chunk = std::make_unique<ChunkData>();
+        chunk->pos = c.pos;
+        chunk->generation = contracts::Generation{c.generation};
+        chunk->level = c.level;
+        chunk->sections.resize(static_cast<std::size_t>(bundle.world.sections()));
+        auto* raw = chunk.get();
+        if (!columns.emplace(c.pos, raw).second) bad("duplicate column");
+        if (c.level == ChunkLevel::unloaded) {
+            world.saved.emplace(c.pos, std::move(chunk));
+        } else {
+            world.loaded.emplace(c.pos, std::move(chunk));
+            region_for_new_chunk(c.pos);
+        }
+    }
+    const auto column = [&](BlockPos p) -> ChunkData& {
+        if (!bundle.world.contains_y(p.y) || !contracts::within_border(p)) bad("position outside the world");
+        const auto it = columns.find(contracts::chunk_of(p));
+        if (it == columns.end()) bad("position in an unknown column");
+        return *it->second;
+    };
+    for (const auto& [pos, raw] : state.blocks) {
+        const auto s = gameplay::BlockState::decode(raw);
+        if (!s) bad("block state");
+        if (s->is_air()) continue;
+        auto& chunk = column(pos);
+        auto& section = chunk.sections[static_cast<std::size_t>((pos.y - bundle.world.min_y) >> 4)];
+        if (!section) section = std::make_shared<Section>();
+        section->blocks[contracts::section_local_index(pos)] = *s;
+    }
+    for (const auto& [pos, be] : state.block_entities) {
+        auto& chunk = column(pos);
+        if (!chunk.block_entities.emplace(pos, be).second) bad("duplicate block entity");
+    }
+    for (const auto& e : state.entities) {
+        if (!contracts::fixed_within_border(e.position) || e.id.value == 0 || e.id.value >= world.next_entity_id) bad("entity");
+        // Entities may be above or below the world height (falling out of it).
+        const auto it = columns.find(contracts::chunk_of(contracts::block_of(e.position)));
+        if (it == columns.end()) bad("entity in an unknown column");
+        auto& chunk = *it->second;
+        if (!chunk.entities.emplace(e.id, e).second) bad("duplicate entity id");
+        world.entity_index[e.id] = chunk.pos;
+    }
+    for (const auto& t : state.ticks) {
+        auto& chunk = column(t.tick.pos);
+        const TickEntry entry{t.tick.due, t.tick.priority, t.tick.suborder, {}};
+        if (!chunk.ticks[static_cast<int>(t.list)].emplace(TickKey{t.tick.pos, t.tick.block}, entry).second)
+            bad("duplicate scheduled tick");
+    }
+    // Block events keep their queue order; their internal sequence restarts.
+    for (const auto& e : state.block_events) column(e.pos).events.push_back({e, world.next_event_seq++, {}});
+    for (const auto& t : state.tickets)
+        if (!world.tickets.add({t.id, t.center, t.radius}, bundle.limits)) bad("ticket");
+}
 Engine::~Engine() = default;
 void Engine::advance(const std::vector<Command>& commands) { impl_->advance(commands); }
 contracts::Tick Engine::time() const noexcept { return impl_->world.time; }

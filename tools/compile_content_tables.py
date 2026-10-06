@@ -7,7 +7,11 @@ dataset (MIT) for such data. This tool reads its blocks.json, items.json and
 entities.json at a pinned commit and writes a C++ source file. Block states of
 one block are consecutive; properties vary with the last one fastest and
 boolean properties list true before false (both checked against each block's
-documented default state). Usage:
+documented default state). Each block also gets a coarse shape class from
+the dataset's collision, transparency, light filtering and hardness fields:
+empty (no collision), unbreakable, opaque (a full light-blocking solid) or
+translucent (any other solid). World import uses it only for the explicit
+substitution policy. Usage:
 
   tools/compile_content_tables.py <minecraft-data checkout or download dir>/data/pc/1.21.8 \\
       --protocol 772 --commit <sha> --output src/protocol/content_772.cpp
@@ -24,6 +28,16 @@ def values_of(state):
     if state["type"] == "int" and not state.get("values"):
         return [str(i) for i in range(state["num_values"])]
     return list(state["values"])
+
+
+def shape_of(block):
+    if block.get("boundingBox") == "empty":
+        return "empty"
+    if block.get("hardness") is not None and block["hardness"] < 0:
+        return "unbreakable"
+    if block.get("filterLight") == 15 and not block.get("transparent"):
+        return "opaque"
+    return "translucent"
 
 
 def main():
@@ -52,7 +66,8 @@ def main():
             sys.exit(f"{b['name']}: default state outside its range")
         expected_state = b["maxStateId"] + 1
         prop_text = ", ".join("{\"%s\", {%s}}" % (n, ", ".join(f"\"{v}\"" for v in vs)) for n, vs in props)
-        block_lines.append(f"    {{\"minecraft:{b['name']}\", {b['minStateId']}, {b['defaultState']}, {{{prop_text}}}}},")
+        block_lines.append(f"    {{\"minecraft:{b['name']}\", {b['minStateId']}, {b['defaultState']}, {{{prop_text}}}, "
+                           f"BlockShape::{shape_of(b)}}},")
 
     item_lines = [f"    {{{i['id']}, \"minecraft:{i['name']}\"}}," for i in sorted(items, key=lambda i: i["id"])]
     if [i["id"] for i in sorted(items, key=lambda i: i["id"])] != list(range(len(items))):

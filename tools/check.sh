@@ -19,6 +19,8 @@ xmake run simulation_tests
 xmake run control_tests
 xmake run evidence_tests
 xmake run protocol_tests
+xmake run storage_tests
+xmake run anvil_tests
 xmake run server_tests
 if command -v javac >/dev/null; then
     mkdir -p build/java-spi

@@ -68,7 +68,10 @@ struct Command {
 // command is drained into a tick.
 class CommandQueue {
 public:
-    explicit CommandQueue(std::size_t capacity = 65536) : capacity_(capacity) {}
+    // `first_admission` continues the numbering of an earlier run, so that
+    // admissions stay strictly increasing across restarts.
+    explicit CommandQueue(std::size_t capacity = 65536, std::uint64_t first_admission = 1)
+        : capacity_(capacity), next_(first_admission) {}
     Result<std::uint64_t> admit(CommandBody body) {
         if (pending_.size() >= capacity_) return std::unexpected(ErrorCode::capacity_exceeded);
         if (next_ == UINT64_MAX) return std::unexpected(ErrorCode::counter_overflow);
@@ -78,6 +81,7 @@ public:
     }
     bool cancel(std::uint64_t admission) { return pending_.erase(admission) == 1; }
     [[nodiscard]] std::size_t size() const noexcept { return pending_.size(); }
+    [[nodiscard]] std::uint64_t next_admission() const noexcept { return next_; }
     std::vector<Command> drain() {
         std::vector<Command> out;
         out.reserve(pending_.size());
@@ -88,7 +92,7 @@ public:
 
 private:
     std::size_t capacity_;
-    std::uint64_t next_{1};
+    std::uint64_t next_;
     std::map<std::uint64_t, CommandBody> pending_;
 };
 

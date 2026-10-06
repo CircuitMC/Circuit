@@ -75,7 +75,9 @@ struct checkpoint_manifest {
     std::vector<manifest_entry> chunks;
 };
 
-// Contract only: no serialization, compression or on-disk format is implemented.
+// Draft contract for per-chunk records and generated-baseline deltas, kept for
+// the M8 storage evaluation. It is not implemented: persistence today uses
+// whole-state checkpoints and an input log (circuit/storage/world_directory.hpp).
 // Commit must atomically publish a complete manifest after durable records and
 // global state. Load must verify schema/hash/tick and reject missing delta bases.
 // Delta is optional: incompatible or non-reproducible bases require full snapshots.
@@ -92,7 +94,8 @@ public:
 };
 
 // Conversion must use a frozen checkpoint, preserve a source copy and report
-// unsupported data. Import/export capability is planned, not implemented here.
+// unsupported data. The implemented Anvil conversion works on whole states
+// (circuit/server/anvil.hpp); this interface would serve a chunk-record backend.
 class vanilla_converter {
 public:
     virtual ~vanilla_converter() = default;

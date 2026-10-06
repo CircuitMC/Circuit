@@ -17,6 +17,7 @@ struct ContentTables::Table {
         std::int32_t min_state;
         std::int32_t default_state;
         std::vector<PropertyDef> properties;
+        BlockShape shape;
     };
     struct Named {
         std::int32_t id;

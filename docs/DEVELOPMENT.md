@@ -10,12 +10,14 @@ Circuit/
   app/                      Application startup and composition
   include/circuit/          Module interfaces and runtime contracts
   src/contracts/            Version bundles, compatibility table, trace and replay records
-  src/gameplay/             Reference rules (circuit-reference-rules-v4)
+  src/gameplay/             Reference rules (circuit-reference-rules-v5)
   src/runtime/              Region-parallel engine, job runners, executor, synthetic kernel
   src/evidence/             circuit-trace fixture format, content mapping, recording and evaluation
   src/protocol/             Wire codec: data types, NBT, framing, packet and content tables
   src/auth/                 Identity: offline identities, encryption, session verification
-  src/server/               Network server: sessions, version adapter, the authoritative game loop
+  src/storage/              Checkpoints, the input log and world directories
+  src/server/               Network server: sessions, version adapter, the authoritative game loop,
+                            Anvil import and export
   src/plugin/               Native shared-library loader
   examples/technical_tools/ Native timing plugin
   modules/java-bridge/      Java SPI and example sources
@@ -31,7 +33,7 @@ Circuit/
   .local/                   Local archives and publication hook
 ```
 
-Add `src/storage/` when its first implementation lands; its header describes an interface, not a completed service. Empty directories are not implementation milestones. The simulation core is described in [the simulation guide](SIMULATION.md).
+Empty directories are not implementation milestones. The simulation core is described in [the simulation guide](SIMULATION.md), persistence in [its guide](PERSISTENCE.md).
 
 ## Requirements
 
@@ -66,7 +68,7 @@ xmake run circuit-server --demo --game-version java-1.21.8 --workers 4 --ticks 2
   --plugin "$PWD/build/linux/x86_64/debug/libtechnical_tools.so"
 ```
 
-`--list-versions` lists planned candidates; `--version` returns public build identity. Neither mode opens a network listener. Starting without `--simulate` or `--demo` fails because playable protocol support is not implemented.
+`--list-versions` lists planned candidates; `--version` returns public build identity. Neither mode opens a network listener. `--serve` runs the network server; see [the network server](SERVER.md).
 
 ## Validation
 
@@ -79,7 +81,9 @@ xmake run simulation_tests  # runtime against the oracle across workers, layouts
 xmake run control_tests     # seeded schedules, tick clock, digest
 xmake run evidence_tests    # trace fixtures, content mapping, recordings, target-version traces
 xmake run protocol_tests    # wire codec, NBT, framing limits, packet and content tables
-xmake run server_tests      # in-process server: login, encryption, limits, player actions
+xmake run storage_tests     # checkpoints, the input log, crash and I/O-error injection
+xmake run anvil_tests       # Anvil import and export, unsupported-content policies
+xmake run server_tests      # in-process server: login, encryption, limits, player actions, saving
 ```
 
 `evidence_tests` re-records every skeleton in `tests/fixtures/skeletons/` and compares the result with `tests/fixtures/reference/`. When a rule change is intended, re-record with `--record-fixture`, review the diff, and commit both. See [the trace fixture format](TRACE_FORMAT.md).

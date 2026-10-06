@@ -36,6 +36,9 @@ struct JoinRequest {
 
 class Game {
 public:
+    // Opens the configured world directory (recovering it), or creates an
+    // in-memory world. Throws std::runtime_error when the world cannot be
+    // opened or saved.
     Game(const ServerConfig& config, const contracts::VersionBundle& bundle, const Wire& wire,
          const protocol::ContentTables& content, const evidence::ContentMapping& mapping,
          const std::vector<RegistryEntries>& registries);
@@ -48,8 +51,10 @@ public:
     void submit(std::uint64_t peer, Intent intent);
     void leave(std::uint64_t peer);
 
-    // Game thread only.
+    // Game thread only. A tick that throws leaves the game stopped: the
+    // engine failed, or the input log or a checkpoint could not be written.
     void tick();
+    // Saves the world unless a tick failed, then disconnects every player.
     void shutdown(std::string_view reason);
 
     [[nodiscard]] std::size_t players() const noexcept; // thread-safe

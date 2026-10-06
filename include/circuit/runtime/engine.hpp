@@ -96,6 +96,13 @@ private:
 class Engine {
 public:
     Engine(const contracts::VersionBundle& bundle, std::uint64_t seed, EngineOptions options = {});
+    // Continues from a canonical dump (a checkpoint). The restored engine
+    // behaves exactly like the one that produced the dump: its next tick yields
+    // the same trace and state. Throws std::invalid_argument for a dump that is
+    // inconsistent with the bundle (blocks outside known columns, invalid
+    // states, duplicate ids).
+    Engine(const contracts::VersionBundle& bundle, std::uint64_t seed, const gameplay::WorldDump& state,
+           EngineOptions options = {});
     ~Engine();
     Engine(const Engine&) = delete;
     Engine& operator=(const Engine&) = delete;

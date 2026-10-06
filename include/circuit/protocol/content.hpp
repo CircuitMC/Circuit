@@ -15,6 +15,10 @@ namespace circuit::protocol {
 
 using Property = std::pair<std::string, std::string>;
 
+// Coarse physical class of a block, from the dataset: no collision,
+// unbreakable, a full light-blocking solid, or any other solid.
+enum class BlockShape : std::uint8_t { empty, unbreakable, opaque, translucent };
+
 struct BlockStateInfo {
     std::string_view block;          // e.g. "minecraft:lever"
     std::vector<Property> properties; // every property, in registry order
@@ -34,6 +38,7 @@ public:
     // Same, from notation such as "minecraft:repeater[delay=2,facing=north]".
     [[nodiscard]] std::optional<std::int32_t> state_id(std::string_view notation) const;
     [[nodiscard]] std::optional<std::int32_t> default_state(std::string_view block) const;
+    [[nodiscard]] std::optional<BlockShape> shape(std::string_view block) const;
     [[nodiscard]] std::optional<BlockStateInfo> state(std::int32_t id) const;
     // Full notation of a state id, with every property.
     [[nodiscard]] std::optional<std::string> notation(std::int32_t id) const;

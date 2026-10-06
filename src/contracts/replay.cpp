@@ -201,6 +201,27 @@ Result<ReplayLog> decode_replay(std::span<const std::byte> bytes, const ReplayLi
     return log;
 }
 
+std::vector<std::byte> encode_tick_input(const TickInput& input) {
+    Writer w;
+    w.put(input.tick);
+    w.put(static_cast<std::uint32_t>(input.commands.size()));
+    for (const auto& c : input.commands) encode_command(w, c);
+    return std::move(w.out);
+}
+
+Result<TickInput> decode_tick_input(std::span<const std::byte> bytes, const ReplayLimits& limits) {
+    Reader r(bytes);
+    TickInput t;
+    std::uint32_t count{};
+    if (!r.get(t.tick) || !r.get(count)) return std::unexpected(ErrorCode::malformed_record);
+    if (count > limits.max_commands_per_tick) return std::unexpected(ErrorCode::record_too_large);
+    t.commands.resize(count);
+    for (auto& c : t.commands)
+        if (!decode_command(r, c)) return std::unexpected(ErrorCode::malformed_record);
+    if (!r.finished()) return std::unexpected(ErrorCode::malformed_record);
+    return t;
+}
+
 Result<void> check_replay_rules(const ReplayLog& log, const VersionBundle& bundle) noexcept {
     if (!bundle.rules) return std::unexpected(ErrorCode::unsupported_version);
     if (log.bundle_id != bundle.id || log.rules_id != bundle.rules->id) return std::unexpected(ErrorCode::rules_mismatch);

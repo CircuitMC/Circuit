@@ -70,6 +70,12 @@ std::optional<std::int32_t> ContentTables::default_state(std::string_view block)
     return table_.blocks[it->second].default_state;
 }
 
+std::optional<BlockShape> ContentTables::shape(std::string_view block) const {
+    const auto it = index_->blocks.find(block);
+    if (it == index_->blocks.end()) return std::nullopt;
+    return table_.blocks[it->second].shape;
+}
+
 std::optional<BlockStateInfo> ContentTables::state(std::int32_t id) const {
     if (id < 0 || id >= table_.states) return std::nullopt;
     const auto it = std::ranges::upper_bound(table_.blocks, id, {}, &Table::Block::min_state);

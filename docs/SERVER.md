@@ -4,16 +4,16 @@
 
 Circuit runs a playable creative-mode world for Java Edition 1.21.8 (protocol 772) on top of the headless engine. The world is a flat stone floor at y = −61. The real 1.21.8 client can join in offline and online mode, build with the reference blocks, use levers, repeaters and comparators, and watch redstone, pistons, observers, hoppers, water and item entities run under the reference rules. Several players see each other and chat.
 
-Persistence, survival gameplay and containers are not implemented yet; see [Not supported](#not-supported).
+With a world directory, the world is saved with checkpoints and an input log and survives crashes; Java Edition 1.21.8 worlds can be imported and exported. See [persistence](PERSISTENCE.md). Survival gameplay and containers are not implemented yet; see [Not supported](#not-supported).
 
 ## Running
 
 ```bash
-xmake run circuit-server --serve --offline --port 25565
+xmake run circuit-server --serve --offline --port 25565 --world "$PWD/worlds/main"
 xmake run circuit-server --serve --config "$PWD/server.conf"
 ```
 
-`--offline` sets `online-mode=false`. The server stops on SIGINT or SIGTERM. When it stops, it disconnects every player with a reason and gives their connections up to two seconds to drain.
+`--offline` sets `online-mode=false`, and `--world` sets `world-directory`. The server stops on SIGINT or SIGTERM. When it stops, it saves the world, disconnects every player with a reason and gives their connections up to two seconds to drain. It also stops by itself, with a non-zero exit status, when the world cannot be written.
 
 The configuration file holds `key=value` lines; `#` starts a comment. Unknown keys and invalid values are errors.
 
@@ -30,7 +30,8 @@ The configuration file holds `key=value` lines; `#` starts a comment. Unknown ke
 | `network-threads`, `workers` | `2`, `4` | Asio threads for connections; engine worker threads |
 | `login-timeout`, `keep-alive-timeout` | `30`, `30` | Seconds |
 | `max-queued-bytes` | 16 MiB | Unsent data per connection before it is closed as too slow |
-| `motd`, `seed`, `floor-y` | | Status text, world seed, height of the flat floor |
+| `motd`, `seed`, `floor-y` | | Status text; seed and flat floor height of a new world (a saved world keeps its own) |
+| `world-directory`, `autosave-ticks`, `log-sync-ticks` | none, `6000`, `20` | Saved world and its checkpoint and log-sync intervals; see [persistence](PERSISTENCE.md) |
 
 Setting the environment variable `CIRCUIT_TRACE_PACKETS=1` logs every serverbound play packet.
 
@@ -92,7 +93,8 @@ Clients that report the vanilla data pack receive registry entry names only. Cli
 
 - Survival gameplay: health, hunger, damage, mining times and drops from players, mobs, and crafting.
 - Container screens: chests and hoppers cannot be opened. Dropping items from the inventory is not supported.
-- Lighting: everything is fully lit by sky light. World generation is a flat floor. Persistence comes with M5.
+- Lighting: everything is fully lit by sky light. World generation is a flat floor.
+- Saving is limited to what [persistence](PERSISTENCE.md) describes: checkpoints run on the game thread and pause it while they are written.
 - Signed chat: chat is relayed as system messages. Commands are `/help`, `/players`, `/tp`, `/gamemode creative|spectator` and `/tps`, with no command-tree suggestions.
 - Display gaps: block entity data is not sent to clients, so moving pistons are not animated. Other blocks and entities are out of scope.
 - Other versions: 1.21.4 support is planned in M8.
@@ -102,7 +104,7 @@ Clients that report the vanilla data pack receive registry entry names only. Cli
 | Check | What it covers |
 | --- | --- |
 | `protocol_tests` | Data types against documented examples, NBT, framing and compression limits, packet and content tables, fuzzed input |
-| `server_tests` | An in-process server and a small client built on Circuit's codec. It covers: status; offline and online login (encryption and a mock session service); default deny; version, name and frame errors; connection, rate and login-time limits; movement and reach; placement; a lever lighting a lamp; graceful stop. |
+| `server_tests` | An in-process server and a small client built on Circuit's codec. It covers: status; offline and online login (encryption and a mock session service); default deny; version, name and frame errors; connection, rate and login-time limits; movement and reach; placement; a lever lighting a lamp; graceful stop; saving and restoring a world and a player; the server binary killed and recovered. |
 
 Two clients outside this repository give independent evidence:
 - **Protocol library:** a mineflayer suite, run against both Circuit and the vanilla server.

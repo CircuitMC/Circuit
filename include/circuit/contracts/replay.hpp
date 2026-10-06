@@ -36,6 +36,10 @@ struct ReplayLimits {
 Result<std::vector<std::byte>> encode_replay(const ReplayLog& log, const ReplayLimits& limits = {});
 Result<ReplayLog> decode_replay(std::span<const std::byte> bytes, const ReplayLimits& limits = {});
 
+// One tick's inputs in the same encoding, as a write-ahead log record body.
+std::vector<std::byte> encode_tick_input(const TickInput& input);
+Result<TickInput> decode_tick_input(std::span<const std::byte> bytes, const ReplayLimits& limits = {});
+
 struct VersionBundle;
 // A record replays only on a bundle with an executable rule set whose id
 // matches the recorded one; otherwise the same inputs could silently produce

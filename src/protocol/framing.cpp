@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
+#include <algorithm>
 #include <circuit/protocol/framing.hpp>
 #include <stdexcept>
 #include <zlib.h>
@@ -90,13 +91,26 @@ Decoded<Bytes> inflate_exact(std::span<const std::byte> data, std::size_t size) 
     Bytes out(size);
     z_stream z{};
     if (inflateInit(&z) != Z_OK) throw std::runtime_error("protocol: inflate init failed");
-    z.next_in = reinterpret_cast<Bytef*>(const_cast<std::byte*>(data.data()));
-    z.avail_in = static_cast<uInt>(data.size());
-    z.next_out = reinterpret_cast<Bytef*>(out.data());
-    z.avail_out = static_cast<uInt>(out.size());
-    const auto rc = inflate(&z, Z_FINISH);
-    const auto produced = out.size() - z.avail_out;
-    const bool all_input = z.avail_in == 0;
+    // zlib counts in 32 bits: feed input and output in bounded pieces.
+    constexpr std::size_t piece = std::size_t{1} << 30;
+    std::size_t in = 0, produced = 0;
+    int rc = Z_OK;
+    while (rc == Z_OK) {
+        if (z.avail_in == 0 && in < data.size()) {
+            const auto n = std::min(piece, data.size() - in);
+            z.next_in = reinterpret_cast<Bytef*>(const_cast<std::byte*>(data.data() + in));
+            z.avail_in = static_cast<uInt>(n);
+            in += n;
+        }
+        const auto room = std::min(piece, out.size() - produced);
+        z.next_out = reinterpret_cast<Bytef*>(out.data() + produced);
+        z.avail_out = static_cast<uInt>(room);
+        rc = inflate(&z, in == data.size() ? Z_FINISH : Z_NO_FLUSH);
+        produced += room - z.avail_out;
+        // Without input left or room to fill, more calls make no progress.
+        if (rc == Z_BUF_ERROR || (rc == Z_OK && produced == out.size() && z.avail_in == 0 && in == data.size())) break;
+    }
+    const bool all_input = z.avail_in == 0 && in == data.size();
     inflateEnd(&z);
     // The stream must end exactly at the declared size, using all its input.
     if (rc != Z_STREAM_END || produced != size || !all_input) return std::unexpected(CodecError::malformed);

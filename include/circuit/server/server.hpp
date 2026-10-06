@@ -33,7 +33,14 @@ struct ServerConfig {
     std::size_t max_queued_bytes{16 * 1024 * 1024}; // per connection, before it is closed as too slow
     std::chrono::seconds login_timeout{30};
     std::chrono::seconds keep_alive_timeout{30};
-    std::int32_t floor_y{-61}; // flat world: one stone layer at this height
+    std::int32_t floor_y{-61}; // flat world: one stone layer at this height (new worlds)
+    // Directory of the saved world: checkpoints and the input log. Empty: the
+    // world lives in memory only.
+    std::filesystem::path world_directory;
+    std::uint32_t autosave_ticks{6000}; // between checkpoints
+    // Input log records are synced every this many ticks: a crash loses at
+    // most the inputs of the ticks since the last sync. 1 syncs every tick.
+    std::uint32_t log_sync_ticks{20};
 };
 
 // Parses a `key=value` file (blank lines and `#` comments ignored). Unknown
@@ -43,6 +50,9 @@ std::expected<ServerConfig, std::string> parse_config(std::string_view text);
 
 class Server {
 public:
+    // Opens or creates the world, recovering it after a crash. Throws
+    // std::invalid_argument for a bad configuration and std::runtime_error
+    // for a world that cannot be opened.
     explicit Server(ServerConfig config);
     ~Server();
     Server(const Server&) = delete;
@@ -50,11 +60,16 @@ public:
 
     // Binds and starts the network threads and the tick loop.
     void start();
-    // Disconnects every player, drains their sessions and stops the threads.
+    // Saves the world, disconnects every player, drains their sessions and
+    // stops the threads.
     void stop();
     [[nodiscard]] std::uint16_t port() const;
     [[nodiscard]] std::size_t players() const;
     [[nodiscard]] std::uint64_t ticks() const;
+    // False once the tick loop stopped by itself after an internal or
+    // storage failure; the server then accepts no players and should be
+    // stopped.
+    [[nodiscard]] bool running() const;
 
 private:
     struct Impl;

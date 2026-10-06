@@ -7,9 +7,21 @@
 #include <circuit/auth.hpp>
 #include <circuit/auth/crypto.hpp>
 #include <circuit/protocol/content.hpp>
+#include <circuit/contracts/version.hpp>
+#include <circuit/runtime/engine.hpp>
 #include <circuit/server/server.hpp>
+#include <circuit/storage/world_directory.hpp>
 #include <cmath>
+#include <csignal>
+#include <filesystem>
+#include <fstream>
+#include <regex>
+#include <spawn.h>
+#include <sys/wait.h>
 #include <thread>
+#include <unistd.h>
+
+extern char** environ;
 
 using namespace circuit;
 using namespace circuit::test;
@@ -56,11 +68,43 @@ std::optional<std::int32_t> block_update(TestClient& c, protocol::WirePosition p
     return std::nullopt;
 }
 
-void confirm_spawn(TestClient& c) {
+// Confirms the spawn teleport and returns its position.
+std::array<double, 3> confirm_spawn(TestClient& c) {
     auto pos = c.until(State::play, "player_position");
     require(pos.has_value(), "spawn position");
     auto r = pos->reader();
     c.send(State::play, "accept_teleportation", Writer().varint(r.varint().value()));
+    const auto x = r.f64().value(), y = r.f64().value(), z = r.f64().value();
+    return {x, y, z};
+}
+
+void use_item_on(TestClient& c, std::string_view item, protocol::WirePosition on, std::int32_t seq) {
+    c.send(State::play, "set_creative_mode_slot", Writer().i16(36).varint(1).varint(content().item_id(item).value()).varint(0).varint(0));
+    c.send(State::play, "use_item_on",
+           Writer().varint(0).position(on).varint(1).f32(0.5f).f32(1.0f).f32(0.5f).boolean(false).boolean(false).varint(seq));
+}
+
+std::filesystem::path temporary_directory() {
+    std::string templ = (std::filesystem::temp_directory_path() / "circuit-server-XXXXXX").string();
+    require(::mkdtemp(templ.data()) != nullptr, "temporary directory");
+    return templ;
+}
+
+// The engine state a world directory recovers to, read without a server.
+gameplay::WorldDump recovered_state(const std::filesystem::path& dir) {
+    const auto& bundle = **contracts::BundleRegistry::select_for_simulation("java-1.21.8");
+    storage::PosixFilesystem fs;
+    storage::WorldDirectory world(fs, dir, "java-1.21.8", std::string(bundle.rules->id));
+    auto r = world.recover();
+    require(r && *r, std::format("world recovers: {}", r ? "never saved" : r.error()));
+    runtime::Engine engine(bundle, (*r)->checkpoint.seed, (*r)->checkpoint.state);
+    for (const auto& input : (*r)->inputs) engine.advance(input.commands);
+    return engine.dump();
+}
+std::uint32_t block_at(const gameplay::WorldDump& d, contracts::BlockPos p) {
+    for (const auto& [pos, raw] : d.blocks)
+        if (pos == p) return raw;
+    return 0;
 }
 } // namespace
 
@@ -74,6 +118,9 @@ int main() {
         require(!server::parse_config("bogus=1\n"), "unknown key");
         require(!server::parse_config("online-mode=maybe\n"), "boolean");
         require(server::parse_config("").value().online_mode, "online mode by default");
+        const auto w = server::parse_config("world-directory=/srv/world\nautosave-ticks=1200\nlog-sync-ticks=1\n");
+        require(w && w->world_directory == "/srv/world" && w->autosave_ticks == 1200 && w->log_sync_ticks == 1, "world settings");
+        require(!server::parse_config("log-sync-ticks=0\n") && !server::parse_config("autosave-ticks=5\n"), "world setting ranges");
     });
 
     suite.run("protocol encryption primitives", [] {
@@ -423,6 +470,142 @@ int main() {
         auto kick = c.until(State::play, "disconnect", std::chrono::milliseconds(5000));
         stopper.join();
         require(kick && text_of(*kick).find("stopping") != std::string::npos, "stop reason delivered");
+    });
+
+    suite.run("the world and players are saved and restored", [] {
+        const auto dir = temporary_directory();
+        auto config = offline_config();
+        config.world_directory = dir / "world";
+        const auto stone = gameplay::blocks::stone();
+        {
+            server::Server s(config);
+            s.start();
+            TestClient c(s.port());
+            c.join("Keeper");
+            confirm_spawn(c);
+            use_item_on(c, "minecraft:stone", {0, -61, 2}, 1);
+            require(block_update(c, {0, -60, 2}) == content().state_id("minecraft:stone"), "stone placed");
+            c.send(State::play, "move_player_pos", Writer().f64(3.5).f64(-60.0).f64(4.5).u8(1));
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            s.stop();
+        }
+        require(block_at(recovered_state(config.world_directory), {0, -60, 2}) == stone.raw(), "stone on disk");
+        {
+            server::Server s(config);
+            s.start();
+            TestClient c(s.port());
+            c.join("Keeper");
+            const auto at = confirm_spawn(c);
+            require(at[0] == 3.5 && at[1] == -60.0 && at[2] == 4.5, std::format("saved position, not {} {} {}", at[0], at[1], at[2]));
+            // The world continues: break the stone in the second session.
+            c.send(State::play, "player_action", Writer().varint(0).position({0, -60, 2}).i8(1).varint(2));
+            require(block_update(c, {0, -60, 2}) == 0, "stone broken");
+            s.stop();
+        }
+        require(block_at(recovered_state(config.world_directory), {0, -60, 2}) == 0, "break saved");
+        std::filesystem::remove_all(dir);
+    });
+
+    suite.run("a killed server process loses no synced input", [] {
+        // The real server binary, killed with SIGKILL while players act; the
+        // input log is synced every tick.
+        const auto dir = temporary_directory();
+        const auto world = dir / "world";
+        std::ofstream(dir / "server.conf") << std::format(
+            "bind-address=127.0.0.1\nport=0\nonline-mode=false\nworkers=2\nview-distance=3\nsimulation-distance=2\n"
+            "log-sync-ticks=1\nworld-directory={}\n", world.string());
+        int out[2];
+        require(::pipe(out) == 0, "pipe");
+        posix_spawn_file_actions_t actions;
+        posix_spawn_file_actions_init(&actions);
+        posix_spawn_file_actions_adddup2(&actions, out[1], 2);
+        posix_spawn_file_actions_addclose(&actions, out[0]);
+        const std::string binary = CIRCUIT_SERVER_BINARY, config_path = (dir / "server.conf").string();
+        std::vector<char*> argv{const_cast<char*>(binary.c_str()), const_cast<char*>("--serve"), const_cast<char*>("--config"),
+                                const_cast<char*>(config_path.c_str()), nullptr};
+        pid_t pid = 0;
+        require(posix_spawn(&pid, binary.c_str(), &actions, nullptr, argv.data(), environ) == 0, "server process started");
+        posix_spawn_file_actions_destroy(&actions);
+        ::close(out[1]);
+        // Read the log until the port appears, then keep draining it.
+        std::string log;
+        std::uint16_t port = 0;
+        const std::regex listening(R"(listening on 127\.0\.0\.1:(\d+))");
+        while (port == 0) {
+            char buf[4096];
+            const auto n = ::read(out[0], buf, sizeof buf);
+            if (n <= 0) break;
+            log.append(buf, static_cast<std::size_t>(n));
+            if (std::smatch m; std::regex_search(log, m, listening)) port = static_cast<std::uint16_t>(std::stoi(m[1]));
+        }
+        std::thread drain([fd = out[0]] {
+            char buf[4096];
+            while (::read(fd, buf, sizeof buf) > 0) {
+            }
+        });
+        const auto kill_server = [&] {
+            ::kill(pid, SIGKILL);
+            int status = 0;
+            ::waitpid(pid, &status, 0);
+            drain.join();
+            ::close(out[0]);
+            return status;
+        };
+        try {
+            require(port != 0, "server listening: " + log);
+            TestClient c(port);
+            c.join("Victim");
+            confirm_spawn(c);
+            use_item_on(c, "minecraft:redstone_lamp", {2, -61, 1}, 1);
+            require(block_update(c, {2, -60, 1}).has_value(), "lamp placed");
+            use_item_on(c, "minecraft:lever", {1, -61, 1}, 2);
+            require(block_update(c, {1, -60, 1}).has_value(), "lever placed");
+            c.send(State::play, "use_item_on",
+                   Writer().varint(0).position({1, -60, 1}).varint(1).f32(0.5f).f32(0.5f).f32(0.5f).boolean(false).boolean(false).varint(3));
+            require(block_update(c, {2, -60, 1}) == content().state_id("minecraft:redstone_lamp[lit=true]"), "lamp lit");
+        } catch (...) {
+            kill_server();
+            throw;
+        }
+        const auto status = kill_server();
+        require(WIFSIGNALED(status) && WTERMSIG(status) == SIGKILL, "the server was killed");
+        // Every published change was logged before it was applied.
+        const auto state = recovered_state(world);
+        require(block_at(state, {2, -60, 1}) == gameplay::blocks::lamp(true).raw(), "lit lamp recovered");
+        // A server opens the killed world and continues it.
+        auto config = offline_config();
+        config.world_directory = world;
+        server::Server s(config);
+        s.start();
+        TestClient c(s.port());
+        c.join("Victim");
+        confirm_spawn(c);
+        s.stop();
+        require(block_at(recovered_state(world), {1, -60, 1}) == block_at(state, {1, -60, 1}), "lever kept after restart");
+        std::filesystem::remove_all(dir);
+    });
+
+    suite.run("a world from other rules is refused", [] {
+        const auto dir = temporary_directory();
+        auto config = offline_config();
+        config.world_directory = dir / "world";
+        { server::Server s(config); }
+        std::string manifest;
+        {
+            std::ifstream in(config.world_directory / "manifest");
+            manifest.assign(std::istreambuf_iterator<char>(in), {});
+        }
+        const auto at = manifest.find("rules ");
+        manifest.replace(at, manifest.find('\n', at) - at, "rules some-other-rules");
+        std::ofstream(config.world_directory / "manifest", std::ios::trunc) << manifest;
+        bool refused = false;
+        try {
+            server::Server s(config);
+        } catch (const std::runtime_error& e) {
+            refused = std::string_view(e.what()).find("some-other-rules") != std::string_view::npos;
+        }
+        require(refused, "opening refused with the reason");
+        std::filesystem::remove_all(dir);
     });
 
     return suite.finish();
