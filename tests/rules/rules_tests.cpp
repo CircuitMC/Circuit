@@ -507,6 +507,58 @@ int main() {
         require(run(12, false) != base, "seed changes the outcome");
     });
 
+    suite.run("ticket bounds are checked without overflow", [] {
+        const auto& limits = bundle().limits;
+        const std::int32_t limit = world_border / 16;
+        const auto accepted = [&](ChunkPos center, std::uint8_t radius) {
+            TicketSet tickets;
+            return tickets.add({1, center, radius}, limits).has_value();
+        };
+        for (const auto extreme : {INT32_MIN, INT32_MAX})
+            for (const std::uint8_t radius : {std::uint8_t{0}, limits.max_ticket_radius})
+                require(!accepted({extreme, 0}, radius) && !accepted({0, extreme}, radius), "extreme centers");
+        // A ticket of radius r reaches r + 1 chunks; every reached chunk stays inside the border.
+        for (const std::uint8_t radius : {std::uint8_t{0}, limits.max_ticket_radius}) {
+            const std::int32_t reach = radius + 1;
+            const std::int32_t low = -limit + reach, high = limit - 1 - reach;
+            require(accepted({low, 0}, radius) && accepted({high, 0}, radius) && accepted({0, low}, radius)
+                        && accepted({0, high}, radius),
+                    std::format("radius {} endpoints accepted", radius));
+            require(!accepted({low - 1, 0}, radius) && !accepted({high + 1, 0}, radius) && !accepted({0, low - 1}, radius)
+                        && !accepted({0, high + 1}, radius),
+                    std::format("radius {} beyond the endpoints rejected", radius));
+        }
+        TicketSet tickets;
+        require(tickets.add({1, {0, 0}, static_cast<std::uint8_t>(limits.max_ticket_radius + 1)}, limits).error()
+                    == ErrorCode::out_of_bounds,
+                "radius limit");
+    });
+
+    suite.run("spawn positions are checked before narrowing", [] {
+        Sim s;
+        const auto before = s.oracle.dump();
+        // 2^44 fixed units is 2^32 blocks: narrowing first would alias block (0, 1, 0).
+        s.tick({SpawnItem{{std::int64_t{1} << 44, fixed_one, 0}, {}, {items::stone, 1}},
+                SpawnItem{{0, INT64_MIN, 0}, {}, {items::stone, 1}}});
+        const auto rejected = of_kind(s.last, TraceKind::command_rejected);
+        require(rejected.size() == 2 && rejected[0].b == static_cast<std::uint64_t>(ErrorCode::out_of_bounds)
+                    && rejected[1].b == static_cast<std::uint64_t>(ErrorCode::out_of_bounds),
+                "rejected as out of bounds");
+        auto after = s.oracle.dump();
+        after.time = before.time;
+        require(after == before, "no world mutation");
+        // Valid endpoints: the lowest and highest positions inside the world height.
+        const auto& world = bundle().world;
+        s.tick({SpawnItem{{fixed_one / 2, std::int64_t{world.min_y} * fixed_one, fixed_one / 2}, {}, {items::stone, 1}},
+                SpawnItem{{fixed_one / 2, (std::int64_t{world.min_y} + world.height) * fixed_one - 1, fixed_one / 2}, {},
+                          {items::stone, 1}},
+                SpawnItem{{fixed_border - 1, 0, 0}, {}, {items::stone, 1}}});
+        require(of_kind(s.last, TraceKind::entity_spawned).size() == 2, "height endpoints accepted");
+        const auto last = of_kind(s.last, TraceKind::command_rejected);
+        require(last.size() == 1 && last[0].b == static_cast<std::uint64_t>(ErrorCode::unloaded_chunk),
+                "inside the border but unloaded");
+    });
+
     suite.run("entities migrate once per tick and fall out of the world", [] {
         Sim s;
         std::vector<CommandBody> build;

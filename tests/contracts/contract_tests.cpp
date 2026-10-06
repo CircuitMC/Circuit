@@ -4,6 +4,7 @@
 #include <circuit/contracts/replay.hpp>
 #include <circuit/contracts/trace.hpp>
 #include <circuit/contracts/version.hpp>
+#include <cstdint>
 #include <format>
 #include <set>
 
@@ -23,6 +24,20 @@ int main() {
         require(floor_block(4095) == 0 && floor_block(4096) == 1, "fixed floor positive");
         require(block_of({-1, 4096 * 3, 0}) == BlockPos{-1, 3, 0}, "block_of");
         require(!within_border({world_border, 0, 0}) && within_border({-world_border, 0, 0}), "border");
+        // Entity positions are checked at full width before narrowing.
+        require(fixed_within_border({-fixed_border, 0, fixed_border - 1}) && !fixed_within_border({fixed_border, 0, 0})
+                    && !fixed_within_border({-fixed_border - 1, 0, 0}) && !fixed_within_border({0, 0, fixed_border})
+                    && !fixed_within_border({0, 0, -fixed_border - 1}),
+                "fixed border endpoints");
+        require(!fixed_within_border({INT64_MIN, 0, 0}) && !fixed_within_border({INT64_MAX, 0, 0})
+                    && !fixed_within_border({0, 0, INT64_MIN}) && !fixed_within_border({0, 0, INT64_MAX})
+                    && !fixed_within_border({std::int64_t{1} << 44, 0, 0}),
+                "extreme and aliasing x/z");
+        const WorldShape shape{-64, 384};
+        require(shape.contains_fixed_y(-64 * fixed_one) && shape.contains_fixed_y(320 * fixed_one - 1)
+                    && !shape.contains_fixed_y(-64 * fixed_one - 1) && !shape.contains_fixed_y(320 * fixed_one)
+                    && !shape.contains_fixed_y(INT64_MIN) && !shape.contains_fixed_y(INT64_MAX),
+                "fixed height endpoints");
     });
 
     suite.run("directions", [] {

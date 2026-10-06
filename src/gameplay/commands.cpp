@@ -74,6 +74,9 @@ Plan plan(RuleContext& ctx, const contracts::InsertItem& c) {
 }
 
 Plan plan(RuleContext& ctx, const contracts::SpawnItem& c) {
+    // The full-width position is checked before it is narrowed to a block.
+    if (!contracts::fixed_within_border(c.position) || !ctx.bundle().world.contains_fixed_y(c.position.y))
+        return std::unexpected(ErrorCode::out_of_bounds);
     const auto cell = contracts::block_of(c.position);
     if (auto ok = check_loaded(ctx, cell); !ok) return std::unexpected(ok.error());
     if (!valid_stack(c.stack)) return std::unexpected(ErrorCode::invalid_argument);

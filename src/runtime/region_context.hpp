@@ -2,6 +2,7 @@
 #pragma once
 #include "world_store.hpp"
 #include <circuit/gameplay/context.hpp>
+#include <array>
 #include <deque>
 #include <optional>
 
@@ -71,7 +72,19 @@ public:
     // still count as scheduled until they run.
     std::set<TickKey> pending_ticks;
 
+    // Creation ledger: every level-wide counter value this attempt consumes,
+    // per counter, keyed by (root, sequence). It keeps the creations of objects
+    // removed again before commit, so commit consumes exactly the values the
+    // serial order consumes. Rollback discards it with the attempt.
+    struct Creation {
+        std::uint64_t root{};
+        std::uint32_t seq{};
+        EntityId entity{}; // Provisional id of a spawned entity.
+    };
+    std::array<std::vector<Creation>, counter_kinds> ledger;
+
 private:
+    Provisional stage(Counter counter, std::uint32_t seq, EntityId entity = {});
     ChunkData* loaded_in_world(BlockPos pos) const;
     ChunkData& owned(ChunkPos c, ChunkData& data);
     ChunkData& writable(ChunkPos c, ChunkData& data);

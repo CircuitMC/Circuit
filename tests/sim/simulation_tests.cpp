@@ -6,6 +6,7 @@
 #include "../support/check.hpp"
 #include "scenarios.hpp"
 #include <circuit/contracts/replay.hpp>
+#include <circuit/gameplay/rng.hpp>
 #include <circuit/runtime/engine.hpp>
 #include <chrono>
 #include <format>
@@ -299,6 +300,118 @@ int main() {
         Engine engine(**replay_bundle, decoded->seed, pool(4));
         for (const auto& t : decoded->ticks) engine.advance(t.commands);
         require(engine.dump() == references[2].dumps.at(s.ticks), "replayed final state");
+    });
+
+    suite.run("transient heads consume block-entity creation order", [&] {
+        // Hand-derived: the first piston's head is created (0), the second piston
+        // moves the power source (1) and creates its head (2), then the first
+        // piston retracts, removing its head and moving its base (3). Four
+        // creation values are consumed; three block entities survive.
+        const std::vector<CommandBody> build{place({0, 0, 0}, blocks::piston(D::east)),
+                                             place({-1, 0, -1}, blocks::piston(D::east)),
+                                             place({0, 0, -1}, blocks::redstone_block()),
+                                             place({-1, 0, -2}, blocks::redstone_block())};
+        for (auto options : {pool(4), pool(4, LayoutPolicy::single_region),
+                             seeded({.seed = 5}, LayoutPolicy::perturbed, 5)}) {
+            Engine engine(bundle(), 0, std::move(options));
+            Oracle oracle(bundle(), 0);
+            Admissions admit;
+            for (Tick t = 1; t <= 6; ++t) {
+                const auto commands = admit(t == 1 ? std::vector<CommandBody>{ticket(1, {0, 0}, 1)}
+                                                   : t == 2 ? build : std::vector<CommandBody>{});
+                engine.advance(commands);
+                oracle.advance(commands);
+                const auto dump = engine.dump();
+                require(!first_divergence(engine.trace(), oracle.trace()) && first_difference(dump, oracle.dump()).empty(),
+                        std::format("tick {} matches the oracle", t));
+                if (t == 2)
+                    require(dump.next_block_entity_order == 4 && dump.block_entities.size() == 3,
+                            std::format("order {} with {} block entities", dump.next_block_entity_order,
+                                        dump.block_entities.size()));
+            }
+        }
+    });
+
+    suite.run("seeded random machines match the oracle", [&] {
+        // Bounded exploration: random placements of redstone components, pistons,
+        // slime, hoppers, chests and stone around the chunk corner at (0, 0),
+        // under seeded interleavings and perturbed layouts, compared with the
+        // oracle after every tick.
+        auto b = bundle();
+        b.limits.random_tick_speed = 0;
+        constexpr unsigned seeds = 64;
+        for (unsigned seed = 1; seed <= seeds; ++seed) {
+            circuit::gameplay::Rng rng(seed);
+            Engine engine(b, seed, seeded({.seed = seed}, LayoutPolicy::perturbed, seed));
+            Oracle oracle(b, seed);
+            Admissions admit;
+            for (Tick t = 1; t <= 60; ++t) {
+                std::vector<CommandBody> bodies;
+                if (t == 1) bodies.push_back(ticket(1, {0, 0}, 1));
+                for (unsigned j = 0; t > 1 && j < (t == 2 ? 150u : 8u); ++j) {
+                    const BlockPos p{static_cast<std::int32_t>(rng.bounded(14)) - 7, static_cast<std::int32_t>(rng.bounded(3)),
+                                     static_cast<std::int32_t>(rng.bounded(14)) - 7};
+                    const auto d = horizontal_directions[rng.bounded(4)];
+                    BlockState s;
+                    switch (rng.bounded(15)) {
+                    case 0: s = blocks::piston(d); break;
+                    case 1: s = blocks::piston(d, true); break;
+                    case 2: s = blocks::slime(); break;
+                    case 3: s = blocks::observer(d); break;
+                    case 4: s = blocks::wire(); break;
+                    case 5: s = blocks::repeater(d, static_cast<std::uint8_t>(1 + rng.bounded(4))); break;
+                    case 6: s = blocks::redstone_block(); break;
+                    case 7: s = blocks::lever(rng.bounded(2) == 1); break;
+                    case 8: s = blocks::stone(); break;
+                    case 9: s = blocks::hopper(d); break;
+                    case 10: s = blocks::comparator(d); break;
+                    case 11: s = blocks::chest(d); break;
+                    case 12: s = blocks::lamp(); break;
+                    default: s = blocks::air(); break;
+                    }
+                    bodies.push_back(place(p, s));
+                }
+                const auto commands = admit(std::move(bodies));
+                engine.advance(commands);
+                oracle.advance(commands);
+                const auto at = first_divergence(engine.trace(), oracle.trace());
+                const auto diff = first_difference(engine.dump(), oracle.dump());
+                require(!at && diff.empty(),
+                        std::format("seed {} tick {}: {}{}", seed, t, diff,
+                                    at && *at < engine.trace().size() ? " trace " + describe(engine.trace()[*at]) : ""));
+            }
+        }
+    });
+
+    suite.run("out-of-range inputs are rejected on both executors", [&] {
+        const std::int64_t top = (std::int64_t{bundle().world.min_y} + bundle().world.height) * fixed_one;
+        const auto spawn = [](std::int64_t x, std::int64_t y, std::int64_t z) -> CommandBody {
+            return SpawnItem{{x, y, z}, {}, {items::stone, 1}};
+        };
+        const std::vector<CommandBody> invalid{
+            spawn(std::int64_t{1} << 44, fixed_one, 0), // would alias block (0, 1, 0)
+            spawn(0, INT64_MIN, 0), spawn(0, INT64_MAX, 0), spawn(INT64_MIN, 0, 0), spawn(INT64_MAX, 0, 0),
+            spawn(0, 0, INT64_MIN), spawn(0, 0, INT64_MAX), spawn(fixed_border, 0, 0), spawn(-fixed_border - 1, 0, 0),
+            spawn(0, 0, fixed_border), spawn(0, 0, -fixed_border - 1), spawn(0, top, 0),
+            spawn(0, std::int64_t{bundle().world.min_y} * fixed_one - 1, 0),
+            ticket(2, {INT32_MIN, 0}, 0), ticket(3, {INT32_MAX, 0}, 0), ticket(4, {0, INT32_MIN}, 8),
+            ticket(5, {0, INT32_MAX}, 8)};
+        Engine engine(bundle(), 1, pool(4));
+        Oracle oracle(bundle(), 1);
+        Admissions admit;
+        for (const auto& bodies : {std::vector<CommandBody>{ticket(1, {0, 0}, 0)}, invalid}) {
+            const auto commands = admit(bodies);
+            engine.advance(commands);
+            oracle.advance(commands);
+        }
+        for (const auto* trace : {&engine.trace(), &oracle.trace()}) {
+            const auto rejected = of_kind(*trace, TraceKind::command_rejected);
+            require(rejected.size() == invalid.size(), std::format("{} of {} rejected", rejected.size(), invalid.size()));
+            for (const auto& r : rejected)
+                require(r.b == static_cast<std::uint64_t>(ErrorCode::out_of_bounds), "rejected as out of bounds");
+        }
+        const auto dump = engine.dump();
+        require(dump.entities.empty() && dump.tickets.size() == 1 && dump == oracle.dump(), "no effect on either executor");
     });
 
     suite.run("query views and failure handling", [&] {

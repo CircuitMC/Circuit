@@ -28,12 +28,16 @@ struct Section {
     std::array<BlockState, 4096> blocks{};
 };
 
-// Staging metadata: a provisional entry was created in the current phase and
-// receives its level-wide counter value at commit, ordered by (root, seq).
+// Level-wide counters whose values are staged while regions run in parallel.
+enum class Counter : std::uint8_t { suborder, event_seq, block_entity_order, entity_id };
+inline constexpr std::size_t counter_kinds = 4;
+
+// Staging metadata: an entry created in the current phase. `ledger` indexes the
+// creation in its region context's ledger for the entry's counter; commit
+// assigns the value.
 struct Provisional {
     bool pending{};
-    std::uint64_t root{};
-    std::uint32_t seq{};
+    std::uint32_t ledger{};
 };
 
 struct TickEntry {

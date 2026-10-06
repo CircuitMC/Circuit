@@ -138,12 +138,19 @@ struct FixedVec {
     std::int64_t x{}, y{}, z{};
     auto operator<=>(const FixedVec&) const = default;
 };
+// Precondition: the block coordinate fits in 32 bits. Untrusted positions are
+// checked at full width (fixed_within_border, WorldShape::contains_fixed_y) first;
+// narrowing an unchecked value would alias distant positions.
 constexpr std::int32_t floor_block(std::int64_t fixed) noexcept {
     const auto q = fixed / fixed_one;
     return static_cast<std::int32_t>((fixed % fixed_one != 0 && fixed < 0) ? q - 1 : q);
 }
 constexpr BlockPos block_of(FixedVec v) noexcept {
     return {floor_block(v.x), floor_block(v.y), floor_block(v.z)};
+}
+inline constexpr std::int64_t fixed_border = std::int64_t{world_border} * fixed_one;
+constexpr bool fixed_within_border(FixedVec v) noexcept {
+    return v.x >= -fixed_border && v.x < fixed_border && v.z >= -fixed_border && v.z < fixed_border;
 }
 
 struct ItemStack {

@@ -456,97 +456,83 @@ void Engine::Impl::run_phase(Phase phase, std::vector<RootItem> roots) {
         for (auto& [task, map] : global) {
             auto& ctx = *task->ctx;
             for (auto& record : ctx.trace) record.key.root = map.at(record.key.root);
-            for (auto& [c, snapshot] : ctx.snapshots) {
-                auto& data = *world.loaded.at(c);
-                for (auto& list : data.ticks)
-                    for (auto& [k, e] : list)
-                        if (e.provisional.pending) e.provisional.root = map.at(e.provisional.root);
-                for (auto& e : data.events)
-                    if (e.provisional.pending) e.provisional.root = map.at(e.provisional.root);
-                for (auto& [pos, provisional] : data.new_block_entities) provisional.root = map.at(provisional.root);
-                for (auto& [id, provisional] : data.new_entities) provisional.root = map.at(provisional.root);
-            }
+            for (auto& entries : ctx.ledger)
+                for (auto& e : entries) e.root = map.at(e.root);
         }
     }
     commit(phase, contexts);
 }
 
 void Engine::Impl::commit(Phase, const std::vector<RegionContext*>& contexts) {
-    struct TickRef {
-        std::uint64_t root;
-        std::uint32_t seq;
-        TickEntry* entry;
+    // Level-wide counters are assigned in serial order: by root, then by action
+    // within the root. Every staged creation consumes a value, including those
+    // of objects removed again before commit, as in the serial order.
+    // values[counter][context][ledger index] holds the assigned value.
+    std::array<std::vector<std::vector<std::uint64_t>>, counter_kinds> values;
+    const std::array<std::uint64_t*, counter_kinds> next{&world.next_suborder, &world.next_event_seq,
+                                                         &world.next_block_entity_order, &world.next_entity_id};
+    for (std::size_t k = 0; k < counter_kinds; ++k) {
+        struct Ref {
+            std::uint64_t root;
+            std::uint32_t seq;
+            std::size_t context;
+            std::size_t index;
+        };
+        std::vector<Ref> refs;
+        values[k].resize(contexts.size());
+        for (std::size_t i = 0; i < contexts.size(); ++i) {
+            const auto& entries = contexts[i]->ledger[k];
+            values[k][i].resize(entries.size());
+            for (std::size_t j = 0; j < entries.size(); ++j) refs.push_back({entries[j].root, entries[j].seq, i, j});
+        }
+        std::ranges::sort(refs, [](const Ref& a, const Ref& b) { return a.root != b.root ? a.root < b.root : a.seq < b.seq; });
+        for (const auto& r : refs) {
+            if (*next[k] == UINT64_MAX) throw std::overflow_error("engine: level-wide counter exhausted");
+            values[k][r.context][r.index] = (*next[k])++;
+        }
+    }
+    const auto value = [&](Counter c, std::size_t context, Provisional p) {
+        return values[static_cast<std::size_t>(c)][context].at(p.ledger);
     };
-    struct EventRef {
-        std::uint64_t root;
-        std::uint32_t seq;
-        EventEntry* entry;
-    };
-    struct EntityRef {
-        std::uint64_t root;
-        std::uint32_t seq;
-        BlockEntity* entry;
-    };
-    struct SpawnRef {
-        std::uint64_t root;
-        std::uint32_t seq;
-        ChunkData* chunk;
-        EntityId provisional;
-    };
-    std::vector<TickRef> ticks;
-    std::vector<EventRef> events;
-    std::vector<EntityRef> block_entities;
-    std::vector<SpawnRef> spawns;
-    for (auto* ctx : contexts) {
-        for (auto& [c, snapshot] : ctx->snapshots) {
+    // Entities spawned in parallel roots receive their ids now; provisional ids
+    // are rewritten in storage, the index and the trace, also for entities that
+    // were removed again.
+    std::unordered_map<std::uint64_t, std::uint64_t> real_ids;
+    for (std::size_t i = 0; i < contexts.size(); ++i) {
+        const auto& spawned = contexts[i]->ledger[static_cast<std::size_t>(Counter::entity_id)];
+        for (std::size_t j = 0; j < spawned.size(); ++j)
+            real_ids[spawned[j].entity.value] = values[static_cast<std::size_t>(Counter::entity_id)][i][j];
+    }
+    for (std::size_t i = 0; i < contexts.size(); ++i) {
+        for (auto& [c, snapshot] : contexts[i]->snapshots) {
             auto& data = *world.loaded.at(c);
             for (auto& list : data.ticks)
                 for (auto& [k, e] : list)
-                    if (e.provisional.pending) ticks.push_back({e.provisional.root, e.provisional.seq, &e});
+                    if (e.provisional.pending) {
+                        e.suborder = value(Counter::suborder, i, e.provisional);
+                        e.provisional = {};
+                    }
             for (auto& e : data.events)
-                if (e.provisional.pending) events.push_back({e.provisional.root, e.provisional.seq, &e});
+                if (e.provisional.pending) {
+                    e.seq = value(Counter::event_seq, i, e.provisional);
+                    e.provisional = {};
+                }
             for (const auto& [pos, provisional] : data.new_block_entities)
-                block_entities.push_back({provisional.root, provisional.seq, &data.block_entities.at(pos)});
+                data.block_entities.at(pos).order = value(Counter::block_entity_order, i, provisional);
             data.new_block_entities.clear();
-            for (const auto& [id, provisional] : data.new_entities) spawns.push_back({provisional.root, provisional.seq, &data, id});
+            for (const auto& [provisional_id, provisional] : data.new_entities) {
+                const EntityId id{value(Counter::entity_id, i, provisional)};
+                auto node = data.entities.extract(provisional_id);
+                node.key() = id;
+                node.mapped().id = id;
+                data.entities.insert(std::move(node));
+            }
             data.new_entities.clear();
         }
     }
-    // Level-wide counters are assigned in serial order: by root, then by action within the root.
-    const auto by_key = [](const auto& a, const auto& b) { return a.root != b.root ? a.root < b.root : a.seq < b.seq; };
-    std::ranges::sort(ticks, by_key);
-    for (auto& t : ticks) {
-        if (world.next_suborder == UINT64_MAX) throw std::overflow_error("engine: sub-order exhausted");
-        t.entry->suborder = world.next_suborder++;
-        t.entry->provisional = {};
-    }
-    std::ranges::sort(events, by_key);
-    for (auto& e : events) {
-        if (world.next_event_seq == UINT64_MAX) throw std::overflow_error("engine: event sequence exhausted");
-        e.entry->seq = world.next_event_seq++;
-        e.entry->provisional = {};
-    }
-    std::ranges::sort(block_entities, by_key);
-    for (auto& e : block_entities) {
-        if (world.next_block_entity_order == UINT64_MAX) throw std::overflow_error("engine: block-entity order exhausted");
-        e.entry->order = world.next_block_entity_order++;
-    }
-    // Entities spawned in parallel roots receive their ids now; provisional ids
-    // are rewritten in storage, the index and the trace.
-    std::ranges::sort(spawns, by_key);
-    std::unordered_map<std::uint64_t, std::uint64_t> real_ids;
-    for (const auto& s : spawns) {
-        if (world.next_entity_id == UINT64_MAX) throw std::overflow_error("engine: entity ids exhausted");
-        const EntityId id{world.next_entity_id++};
-        auto node = s.chunk->entities.extract(s.provisional);
-        node.key() = id;
-        node.mapped().id = id;
-        s.chunk->entities.insert(std::move(node));
-        real_ids[s.provisional.value] = id.value;
-    }
-    const auto real = [&](std::uint64_t value) {
-        const auto it = real_ids.find(value);
-        return it == real_ids.end() ? value : it->second;
+    const auto real = [&](std::uint64_t id) {
+        const auto it = real_ids.find(id);
+        return it == real_ids.end() ? id : it->second;
     };
     std::vector<TraceRecord> records;
     for (auto* ctx : contexts) {
@@ -567,6 +553,7 @@ void Engine::Impl::commit(Phase, const std::vector<RegionContext*>& contexts) {
             records.push_back(record);
         }
         ctx->snapshots.clear();
+        for (auto& entries : ctx->ledger) entries.clear();
     }
     std::ranges::sort(records, {}, &TraceRecord::key);
     trace.insert(trace.end(), records.begin(), records.end());

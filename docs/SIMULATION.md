@@ -150,7 +150,7 @@ The table lists what is specific to each mechanism.
 | Migration | Item entities crossing chunk edges in parallel phases (`drops_and_pushes`, rules tests) |
 | Stale reads | Generation-checked commands and `WorldView` queries that report `stale_view` after the engine advances (rules and simulation tests) |
 | RNG retry | Per-section derived streams under injected aborts (`wheat_observers`, injected-abort runs) |
-| Global resources | Staged sub-orders, block-event positions, block-entity creation order and entity ids; ticket changes at the phase boundary |
+| Global resources | Staged sub-orders, block-event positions, block-entity creation order and entity ids, consumed through a creation ledger even for objects removed before commit (`transient_heads`); ticket changes at the phase boundary |
 | In-flight work | Worker failure, atomic publication and future events in `runtime_tests`; a failed tick is not published and leaves the engine unusable |
 
 ### Coverage limits
@@ -171,7 +171,13 @@ The table lists what is specific to each mechanism.
 - the creation order of block entities created during a phase (moving pistons);
 - the ids of entities spawned during a phase (drops).
 
-New entries carry their (root, sequence) key. At commit, the coordinator sorts all staged entries and assigns counter values in serial order. Entities spawned in parallel roots hold provisional ids until then; commit rewrites them in storage, the entity index and the trace.
+Each region context keeps a creation ledger per counter. Every creation adds a (root, sequence) entry, and the staged object points at its entry.
+
+- **Commit:** the coordinator sorts the entries of all regions and assigns counter values in serial order. Then it applies the values to the objects that still exist.
+- **Removed objects:** creations whose objects were removed again within the phase still consume their values, as they do in the serial order. A moving piston's head that is created and removed in the same block-event phase is one example.
+- **Rollback:** an aborted attempt discards its ledger along with its writes.
+
+Entities spawned in parallel roots hold provisional ids until commit. Commit rewrites them in storage, the entity index and the trace, including the ids of entities that were removed again.
 
 **Block-event order.** Each region drains its own FIFO. At commit, the global FIFO order is rebuilt from the initial queue and the children each event appended. Trace records are renumbered to their global positions.
 
@@ -189,9 +195,13 @@ New entries carry their (root, sequence) key. At commit, the coordinator sorts a
   - chain truncation;
   - piston limits, and observers watching and being moved by pistons;
   - conservation in hopper races, water timing and stream locality;
-  - generation checks, command validation and capacity failure.
-- `simulation_tests` compares thirteen scenarios with the oracle, trace by trace every tick and state by state at checkpoints.
+  - generation checks, command validation and capacity failure;
+  - ticket and spawn bounds at their endpoints and at extreme or aliasing coordinates.
+- `simulation_tests` compares fourteen scenarios with the oracle, trace by trace every tick and state by state at checkpoints.
   - **Configurations:** 1/2/4/8/16 pool workers, a single region, seeded random and priority interleavings, injected aborts, and perturbed layouts.
+  - **Transient objects:** the `transient_heads` scenario and a hand-derived case check that block entities created and removed within one phase still consume their creation order.
+  - **Bounded exploration:** 64 seeds of random placements of redstone components, pistons, slime, hoppers, chests and stone around a chunk corner, for 60 ticks each, under seeded interleavings and perturbed layouts. Every tick is compared with the oracle.
+  - **Input rejection:** out-of-range spawns and tickets are rejected on both executors without effect.
   - **Negative check:** a deliberately unsafe mode without ownership checks must produce a detected divergence.
 - `control_tests` checks seeded-schedule reproducibility, tick-clock catch-up and the state digest.
 - `evidence_tests` covers:
@@ -204,7 +214,7 @@ New entries carry their (root, sequence) key. At commit, the coordinator sorts a
   - L0 claims need target-version traces and list no gap;
   - L2 claims list their gaps.
 
-GCC AddressSanitizer and ThreadSanitizer runs are part of milestone checks. ThreadSanitizer needs ASLR disabled for the test process (`setarch "$(uname -m)" -R`). See the [development guide](DEVELOPMENT.md).
+GCC AddressSanitizer, UndefinedBehaviorSanitizer and ThreadSanitizer runs of the test programs are part of milestone checks. The `ubsan` mode stops at the first diagnostic. ThreadSanitizer needs ASLR disabled for the test process (`setarch "$(uname -m)" -R`). See the [development guide](DEVELOPMENT.md).
 
 ## Workload profile
 
@@ -262,4 +272,5 @@ Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked with `--check
   - blocks surviving without support.
 - There is no lighting, world generation, mob spawning or second dimension.
 - Snapshots copy whole column data on first write, and commit is serial. On the measured workloads, coordination overhead outweighs parallel gains.
+- Commands validate their inputs at full width before converting them; for example, a spawn position is checked against the world border and height in fixed-point units before it is narrowed to a block. Out-of-range input is rejected with no effect.
 - A capacity failure, such as exceeding 1,000,000 block events in one tick, fails the tick and leaves the engine unusable. Nothing is silently dropped. The neighbor-update chain limit is the exception: it drops updates as the target version does, and records it.

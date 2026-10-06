@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
 #include <circuit/contracts/errors.hpp>
+#include <circuit/contracts/ids.hpp>
 #include <cstdint>
 #include <optional>
 #include <span>
@@ -41,6 +42,10 @@ struct WorldShape {
     [[nodiscard]] constexpr std::int32_t sections() const noexcept { return height / 16; }
     [[nodiscard]] constexpr bool contains_y(std::int32_t y) const noexcept {
         return y >= min_y && y < min_y + height;
+    }
+    // Full-width check of a fixed-point entity coordinate.
+    [[nodiscard]] constexpr bool contains_fixed_y(std::int64_t y) const noexcept {
+        return y >= std::int64_t{min_y} * fixed_one && y < (std::int64_t{min_y} + height) * fixed_one;
     }
 };
 

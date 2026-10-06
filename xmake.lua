@@ -2,7 +2,13 @@ set_project("Circuit")
 set_version("0.0.1")
 set_xmakever("3.0.0")
 set_languages("c++23")
-add_rules("mode.debug", "mode.release", "mode.asan", "mode.tsan")
+add_rules("mode.debug", "mode.release", "mode.asan", "mode.tsan", "mode.ubsan")
+-- UndefinedBehaviorSanitizer stops at its first diagnostic, so a completed run
+-- has no report.
+if is_mode("ubsan") then
+    add_cxflags("-fno-sanitize-recover=all")
+    add_ldflags("-fno-sanitize-recover=all")
+end
 set_warnings("allextra")
 set_policy("build.fence", true)
 

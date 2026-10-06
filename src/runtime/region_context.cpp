@@ -29,6 +29,13 @@ void RegionContext::rollback() {
     fifo.clear();
     fifo_pending.clear();
     children.clear();
+    for (auto& entries : ledger) entries.clear();
+}
+
+Provisional RegionContext::stage(Counter counter, std::uint32_t seq, EntityId entity) {
+    auto& entries = ledger[static_cast<std::size_t>(counter)];
+    entries.push_back({root_, seq, entity});
+    return {true, static_cast<std::uint32_t>(entries.size() - 1)};
 }
 
 ChunkData* RegionContext::loaded_in_world(BlockPos pos) const {
@@ -89,7 +96,7 @@ void RegionContext::add_tick(TickList list, BlockPos pos, BlockType type, Tick d
     auto* data = loaded_in_world(pos);
     if (!data) throw std::logic_error("runtime: tick scheduled at an unloaded position");
     auto& chunk = writable(chunk_of(pos), *data);
-    chunk.ticks[static_cast<int>(list)][{pos, type}] = TickEntry{due, priority, 0, {true, root_, seq}};
+    chunk.ticks[static_cast<int>(list)][{pos, type}] = TickEntry{due, priority, 0, stage(Counter::suborder, seq)};
 }
 
 bool RegionContext::has_block_event(const BlockEvent& event) {
@@ -119,7 +126,7 @@ void RegionContext::add_block_event(const BlockEvent& event, std::uint32_t seq) 
         push_local(event);
         return;
     }
-    writable(c, *data).events.push_back({event, 0, {true, root_, seq}});
+    writable(c, *data).events.push_back({event, 0, stage(Counter::event_seq, seq)});
 }
 
 const BlockEntity* RegionContext::peek_block_entity(BlockPos pos) {
@@ -147,7 +154,7 @@ void RegionContext::create_block_entity(BlockPos pos, BlockType kind) {
         be.order = world_.next_block_entity_order++; // Serial command phase.
     } else {
         // Creation order is level-wide: staged and assigned at commit in serial order.
-        chunk.new_block_entities[pos] = {true, root_, creations_++};
+        chunk.new_block_entities[pos] = stage(Counter::block_entity_order, creations_++);
     }
     chunk.block_entities[pos] = std::move(be);
 }
@@ -156,7 +163,7 @@ void RegionContext::remove_block_entity(BlockPos pos) {
     if (auto* data = loaded_in_world(pos)) {
         auto& chunk = writable(chunk_of(pos), *data);
         chunk.block_entities.erase(pos);
-        chunk.new_block_entities.erase(pos);
+        chunk.new_block_entities.erase(pos); // Its creation stays in the ledger.
     }
 }
 
@@ -208,7 +215,7 @@ EntityId RegionContext::spawn_entity(const Entity& prototype) {
         // Entity ids are level-wide: the real id is assigned at commit in serial order.
         if (provisional_entities_ == (1U << 24) - 1) throw std::overflow_error("runtime: provisional entity ids exhausted");
         id = EntityId{provisional_entity_bit | (region_ << 24) | provisional_entities_++};
-        chunk.new_entities[id] = {true, root_, creations_++};
+        chunk.new_entities[id] = stage(Counter::entity_id, creations_++, id);
     }
     auto e = prototype;
     e.id = id;
@@ -242,7 +249,7 @@ void RegionContext::remove_entity(EntityId id) {
     if (auto* data = world_.find_loaded(*c)) {
         auto& chunk = writable(*c, *data);
         chunk.entities.erase(id);
-        chunk.new_entities.erase(id);
+        chunk.new_entities.erase(id); // Its creation stays in the ledger.
     }
     entity_moves[id] = std::nullopt;
 }

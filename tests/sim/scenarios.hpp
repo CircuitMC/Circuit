@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
 #include "../support/scenario.hpp"
+#include <array>
 #include <functional>
 #include <string>
 
@@ -323,10 +324,34 @@ inline Scenario observed_piston_scenario() {
     }};
 }
 
+// A piston whose power source is pushed away by a second piston retracts in
+// the same block-event phase and removes the head it just created: the head's
+// creation order is consumed although it never reaches commit. Copies sit
+// inside a chunk, across x and z chunk edges and across a corner; they are
+// cleared and rebuilt every 12 ticks.
+inline Scenario transient_head_scenario() {
+    return {"transient_heads", 59, 100, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        const std::array<BlockPos, 4> origins{{{0, 0, 0}, {16, 0, 8}, {8, 0, 16}, {-1, 0, -8}}};
+        std::vector<CommandBody> c;
+        for (const auto o : origins) {
+            const auto at = [o](int dx, int dz) { return BlockPos{o.x + dx, o.y, o.z + dz}; };
+            if (t % 12 == 2)
+                append(c, {place(at(0, 0), blocks::piston(D::east)), place(at(-1, -1), blocks::piston(D::east)),
+                           place(at(0, -1), blocks::redstone_block()), place(at(-1, -2), blocks::redstone_block())});
+            if (t % 12 == 8)
+                for (int dx = -1; dx <= 2; ++dx)
+                    for (int dz = -2; dz <= 0; ++dz) c.push_back(place(at(dx, dz), blocks::air()));
+        }
+        return c;
+    }};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
-            comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario()};
+            comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
+            transient_head_scenario()};
 }
 
 } // namespace circuit::test

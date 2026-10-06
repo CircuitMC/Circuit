@@ -10,10 +10,11 @@ using contracts::ErrorCode;
 contracts::Result<void> TicketSet::add(const contracts::AddTicket& command, const contracts::RuleLimits& limits) {
     if (tickets_.contains(command.ticket)) return std::unexpected(ErrorCode::duplicate_ticket);
     if (command.radius > limits.max_ticket_radius) return std::unexpected(ErrorCode::out_of_bounds);
-    const auto reach = static_cast<std::int32_t>(command.radius) + 1;
-    const auto limit = contracts::world_border / 16;
-    if (command.center.x - reach < -limit || command.center.x + reach >= limit || command.center.z - reach < -limit
-        || command.center.z + reach >= limit)
+    // Widened first: the center is unvalidated input.
+    const std::int64_t reach = std::int64_t{command.radius} + 1;
+    const std::int64_t limit = contracts::world_border / 16;
+    const std::int64_t x = command.center.x, z = command.center.z;
+    if (x - reach < -limit || x + reach >= limit || z - reach < -limit || z + reach >= limit)
         return std::unexpected(ErrorCode::out_of_bounds);
     tickets_.emplace(command.ticket, Ticket{command.ticket, command.center, command.radius});
     return {};

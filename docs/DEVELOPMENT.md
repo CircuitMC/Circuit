@@ -79,7 +79,7 @@ xmake run evidence_tests    # trace fixtures, content mapping, recordings, targe
 
 `evidence_tests` re-records every skeleton in `tests/fixtures/skeletons/` and compares the result with `tests/fixtures/reference/`. When a rule change is intended, re-record with `--record-fixture`, review the diff, and commit both. See [the trace fixture format](TRACE_FORMAT.md).
 
-The xmake modes include `debug`, `release`, `asan`, and `tsan`. On kernels with high mmap randomization, ThreadSanitizer stops before tests run with an unexpected-memory-mapping error. Disable ASLR for the test process only; do not change host settings:
+The xmake modes include `debug`, `release`, `asan`, `ubsan`, and `tsan`. The `ubsan` mode stops at the first diagnostic, so a completed test program had no undefined-behavior report. Run `plugin_tests` with the paths of `libtechnical_tools.so` and `libplugin_fixture.so` from the same build directory; `xmake run` passes them automatically. On kernels with high mmap randomization, ThreadSanitizer stops before tests run with an unexpected-memory-mapping error. Disable ASLR for the test process only; do not change host settings:
 
 ```bash
 export XMAKE_GLOBALDIR="$PWD/.xmake-global"
