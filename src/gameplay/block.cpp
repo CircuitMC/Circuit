@@ -8,7 +8,8 @@ struct Properties {
 };
 constexpr Properties properties(BlockType t) noexcept {
     switch (t) {
-    case BlockType::lever: case BlockType::redstone_lamp: return {false, false, true, false};
+    case BlockType::lever: return {true, true, true, false};
+    case BlockType::redstone_lamp: return {false, false, true, false};
     case BlockType::redstone_wire: case BlockType::wheat: return {false, true, false, false};
     case BlockType::repeater: return {true, false, true, true};
     case BlockType::observer: case BlockType::piston: case BlockType::sticky_piston:
@@ -37,6 +38,9 @@ contracts::Result<BlockState> BlockState::decode(std::uint32_t raw) noexcept {
     switch (s.type()) {
     case BlockType::repeater:
         if (!contracts::is_horizontal(s.facing())) return invalid;
+        break;
+    case BlockType::lever:
+        if (!contracts::is_horizontal(s.facing()) || s.level() > 2) return invalid;
         break;
     case BlockType::hopper:
         if (s.facing() == Direction::up) return invalid;

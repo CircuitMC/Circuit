@@ -70,6 +70,23 @@ public:
         if (!d) return std::unexpected(std::format("{}: invalid direction `{}`", id_, *v));
         return *d;
     }
+    // Index of the value among `allowed`; `fallback` when the property is absent.
+    std::expected<unsigned, std::string> choice(std::string_view key, std::initializer_list<std::string_view> allowed,
+                                                unsigned fallback) {
+        const auto it = values_.find(std::string(key));
+        if (it == values_.end()) return fallback;
+        used_.insert(it->first);
+        unsigned i = 0;
+        for (auto a : allowed) {
+            if (a == it->second) return i;
+            ++i;
+        }
+        return std::unexpected(std::format("{}: invalid value `{}` for `{}`", id_, it->second, key));
+    }
+    std::expected<Direction, std::string> direction_or(std::string_view key, Direction fallback) {
+        if (!values_.contains(std::string(key))) return fallback;
+        return direction(key);
+    }
     // Accepted for any of the listed values, but not represented.
     std::expected<void, std::string> ignored(std::string_view key, std::initializer_list<std::string_view> allowed) {
         const auto it = values_.find(std::string(key));
@@ -139,9 +156,11 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
     if (id == "minecraft:slime_block") return simple(blocks::slime());
     if (id == "minecraft:lever") {
         CIRCUIT_TRY(powered, p.flag("powered"));
-        CIRCUIT_CHECK(p.ignored("face", {"floor", "wall", "ceiling"}));
-        CIRCUIT_CHECK(p.ignored("facing", {"north", "south", "west", "east"}));
-        return simple(blocks::lever(powered));
+        // Absent mounting properties take the target version's defaults (wall, north).
+        CIRCUIT_TRY(face, p.choice("face", {"floor", "wall", "ceiling"}, 1));
+        CIRCUIT_TRY(facing, p.direction_or("facing", Direction::north));
+        if (!contracts::is_horizontal(facing)) return std::unexpected("minecraft:lever: facing must be horizontal");
+        return simple(blocks::lever(powered, facing, static_cast<blocks::LeverFace>(face)));
     }
     if (id == "minecraft:redstone_wire") {
         CIRCUIT_TRY(power, p.integer("power", 0, 15));
@@ -236,7 +255,11 @@ std::string ContentMapping::notation(BlockState s) const {
     case BlockType::obsidian: return "minecraft:obsidian";
     case BlockType::redstone_block: return "minecraft:redstone_block";
     case BlockType::slime_block: return "minecraft:slime_block";
-    case BlockType::lever: return std::format("minecraft:lever[powered={}]", b(s.flag()));
+    case BlockType::lever: {
+        constexpr std::array<std::string_view, 3> faces{"floor", "wall", "ceiling"};
+        return std::format("minecraft:lever[face={},facing={},powered={}]", faces[s.level() % 3], direction_name(s.facing()),
+                           b(s.flag()));
+    }
     case BlockType::redstone_wire: return std::format("minecraft:redstone_wire[power={}]", s.level());
     case BlockType::repeater:
         return std::format("minecraft:repeater[delay={},facing={},powered={}]", s.delay(),

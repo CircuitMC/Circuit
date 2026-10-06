@@ -2,7 +2,7 @@ circuit-trace 1
 title Dust and repeater across a chunk edge
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v4
+harness circuit-reference-rules-v5
 mechanisms redstone_wire repeater redstone_lamp neighbor_updates scheduled_ticks
 area 12 -1 -1 21 0 1
 ticks 12
@@ -26,7 +26,7 @@ at 0 set 19 0 0 minecraft:redstone_wire[power=0]
 at 0 set 20 0 0 minecraft:redstone_lamp[lit=false]
 
 at 1 use 13 0 0
-change 1 13 0 0 minecraft:lever[powered=false] minecraft:lever[powered=true]
+change 1 13 0 0 minecraft:lever[face=floor,facing=east,powered=false] minecraft:lever[face=floor,facing=east,powered=true]
 change 1 14 0 0 minecraft:redstone_wire[power=0] minecraft:redstone_wire[power=15]
 change 1 15 0 0 minecraft:redstone_wire[power=0] minecraft:redstone_wire[power=14]
 change 1 16 0 0 minecraft:redstone_wire[power=0] minecraft:redstone_wire[power=13]
@@ -42,7 +42,7 @@ block 3 18 0 0 minecraft:repeater[delay=1,facing=west,powered=true]
 block 3 20 0 0 minecraft:redstone_lamp[lit=true]
 
 at 5 use 13 0 0
-change 5 13 0 0 minecraft:lever[powered=true] minecraft:lever[powered=false]
+change 5 13 0 0 minecraft:lever[face=floor,facing=east,powered=true] minecraft:lever[face=floor,facing=east,powered=false]
 change 5 14 0 0 minecraft:redstone_wire[power=15] minecraft:redstone_wire[power=13]
 change 5 15 0 0 minecraft:redstone_wire[power=14] minecraft:redstone_wire[power=12]
 change 5 14 0 0 minecraft:redstone_wire[power=13] minecraft:redstone_wire[power=11]

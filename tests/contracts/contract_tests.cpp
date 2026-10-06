@@ -127,7 +127,7 @@ int main() {
     });
 
     suite.run("replay round trip and limits", [] {
-        ReplayLog log{"java-1.21.8", "circuit-reference-rules-v4", 42, {}};
+        ReplayLog log{"java-1.21.8", "circuit-reference-rules-v5", 42, {}};
         log.ticks.push_back({1, {{1, SetBlock{{-5, 70, 9}, 0x1234, Generation{2}}},
                                  {2, SpawnItem{{-1, 2, 3}, {4, -5, 6}, {7, 8}}},
                                  {3, AddTicket{9, {-3, 4}, 2}}}});

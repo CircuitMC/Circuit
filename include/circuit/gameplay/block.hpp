@@ -16,7 +16,7 @@ enum class BlockType : std::uint8_t {
     glass,
     obsidian,
     redstone_block,
-    lever,          // flag: powered
+    lever,          // flag: powered; facing (horizontal) and level (LeverFace): mounting, display only
     redstone_wire,  // level: power 0-15
     repeater,       // facing: output side (horizontal); delay 1-4; flag: powered
     redstone_lamp,  // flag: lit
@@ -81,7 +81,11 @@ constexpr BlockState glass() { return BlockState::of(BlockType::glass); }
 constexpr BlockState obsidian() { return BlockState::of(BlockType::obsidian); }
 constexpr BlockState redstone_block() { return BlockState::of(BlockType::redstone_block); }
 constexpr BlockState slime() { return BlockState::of(BlockType::slime_block); }
-constexpr BlockState lever(bool on = false) { return BlockState::of(BlockType::lever).with_flag(on); }
+// Lever mounting is display data: the rules ignore it.
+enum class LeverFace : std::uint8_t { floor = 0, wall = 1, ceiling = 2 };
+constexpr BlockState lever(bool on = false, Direction facing = Direction::north, LeverFace face = LeverFace::floor) {
+    return BlockState::of(BlockType::lever).with_flag(on).with_facing(facing).with_level(static_cast<std::uint8_t>(face));
+}
 constexpr BlockState wire(std::uint8_t power = 0) { return BlockState::of(BlockType::redstone_wire).with_level(power); }
 constexpr BlockState repeater(Direction output, std::uint8_t delay = 1, bool powered = false) {
     return BlockState::of(BlockType::repeater).with_facing(output).with_delay(delay).with_flag(powered);

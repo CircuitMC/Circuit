@@ -7,7 +7,7 @@ namespace {
 using enum CompatibilityTier;
 using enum EvidenceSource;
 
-// Compatibility table for circuit-reference-rules-v4. Every row claims a tier.
+// Compatibility table for circuit-reference-rules-v5. Every row claims a tier.
 // A row claims L0 only when harness fixtures recorded on the target version
 // pass and no gap is known; "Not covered" names aspects no fixture exercises.
 // Every other row claims L2 and lists its gaps, which include behavior not yet
@@ -108,7 +108,7 @@ constexpr std::array bundles{
         .id = "java-1.21.8",
         .game_version = "1.21.8",
         .protocol_candidate = "java-1.21.8",
-        .rules = RuleSet{"circuit-reference-rules-v4", RngPolicy::per_section_derived_stream,
+        .rules = RuleSet{"circuit-reference-rules-v5", RngPolicy::per_section_derived_stream,
                          reference_v4_mechanisms},
         .world = {-64, 384},
         .limits = vanilla_like_limits,
