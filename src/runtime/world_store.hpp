@@ -26,7 +26,15 @@ using gameplay::Entity;
 
 struct Section {
     std::array<BlockState, 4096> blocks{};
+    // Blocks that react to random ticks; sections without any are skipped in
+    // the random-tick phase (their per-section random stream is independent).
+    std::uint16_t random_ticking{};
 };
+// Counts the randomly ticking blocks of a section filled without write_block.
+inline void count_random_ticking(Section& s) {
+    s.random_ticking = 0;
+    for (const auto b : s.blocks) s.random_ticking += gameplay::reacts_to_random_ticks(b.type()) ? 1 : 0;
+}
 
 // Level-wide counters whose values are staged while regions run in parallel.
 enum class Counter : std::uint8_t { suborder, event_seq, block_entity_order, entity_id };

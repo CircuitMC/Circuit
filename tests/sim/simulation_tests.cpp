@@ -71,11 +71,14 @@ std::string compare(const Scenario& s, const Inputs& in, const Reference& ref, E
     return {};
 }
 
+// Every phase goes through the pool, however small: the parallel path is
+// what these tests check.
 EngineOptions pool(unsigned workers, LayoutPolicy layout = LayoutPolicy::adaptive, std::uint64_t layout_seed = 1) {
     EngineOptions o;
     o.workers = workers;
     o.layout = layout;
     o.layout_seed = layout_seed;
+    o.inline_roots = 0;
     return o;
 }
 EngineOptions seeded(ExplorationOptions exploration, LayoutPolicy layout = LayoutPolicy::adaptive, std::uint64_t layout_seed = 1) {
@@ -182,6 +185,19 @@ int main() {
             for (unsigned w : {1u, 2u, 4u, 8u, 16u}) {
                 const auto diff = compare(scenarios[i], inputs[i], references[i], pool(w));
                 require(diff.empty(), std::format("workers={} {}", w, diff));
+            }
+    });
+
+    suite.run("small phases run inline with the default options", [&] {
+        // The default runs phase attempts of few roots on the coordinator and
+        // larger ones on the pool; both kinds occur in these scenarios.
+        for (std::size_t i = 0; i < scenarios.size(); ++i)
+            for (unsigned w : {1u, 4u, 16u}) {
+                EngineOptions o;
+                o.workers = w;
+                o.inline_roots = 8;
+                const auto diff = compare(scenarios[i], inputs[i], references[i], o);
+                require(diff.empty(), std::format("inline workers={} {}", w, diff));
             }
     });
 

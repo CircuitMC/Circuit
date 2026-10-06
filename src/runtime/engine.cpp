@@ -82,6 +82,17 @@ public:
 
     bool step() override {
         if (outcome != Outcome::running) return false;
+        // Time spent in rule code, when measured: the useful work of the phase.
+        struct Timer {
+            RegionTask& t;
+            std::chrono::steady_clock::time_point start;
+            ~Timer() {
+                t.nanoseconds += static_cast<std::uint64_t>(
+                    std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start).count());
+            }
+        };
+        std::optional<Timer> timer;
+        if (engine_.options.measure_tasks) timer.emplace(Timer{*this, std::chrono::steady_clock::now()});
         try {
             if (phase == Phase::block_events) {
                 if (!ctx->fifo.empty()) {
@@ -119,6 +130,7 @@ public:
     Outcome outcome{Outcome::running};
     ChunkPos conflict_chunk{};
     std::exception_ptr error;
+    std::uint64_t nanoseconds{}; // in step(), with EngineOptions::measure_tasks
 
 private:
     void execute(const RootItem& r) {
@@ -242,6 +254,8 @@ void Engine::Impl::apply_levels(RegionContext& ctx) {
                         if (!sections.at(s)) sections[s] = std::make_shared<Section>();
                         return sections[s]->blocks;
                     });
+                    for (auto& section : sections)
+                        if (section) count_random_ticking(*section);
                 }
             }
             chunk->level = want;
@@ -293,6 +307,10 @@ void Engine::Impl::random_phase() {
     for (const auto& [c, data] : world.loaded) {
         if (data->level != ChunkLevel::ticking) continue;
         for (std::int32_t s = 0; s < sections; ++s) {
+            // A section without randomly ticking blocks would draw positions
+            // and change nothing; its stream is its own, so skipping it is exact.
+            const auto& section = data->sections[static_cast<std::size_t>(s)];
+            if (!section || section->random_ticking == 0) continue;
             RootItem r;
             r.key = index * static_cast<std::uint64_t>(sections) + static_cast<std::uint64_t>(s);
             r.home = c;
@@ -372,7 +390,29 @@ void Engine::Impl::run_phase(Phase phase, std::vector<RootItem> roots) {
         ++stats.attempts;
         stats.tasks += tasks.size();
         stats.max_tasks_in_phase = std::max<std::uint64_t>(stats.max_tasks_in_phase, tasks.size());
-        runner->run(pointers, attempt++);
+        const auto run_start = std::chrono::steady_clock::now();
+        std::size_t root_count = 0;
+        for (const auto id : to_run) root_count += groups.at(id).size();
+        if (!options.runner && root_count <= options.inline_roots) {
+            // Too little work to wake other threads: run the tasks here, in
+            // order. Any order is a valid schedule.
+            for (auto* t : pointers)
+                while (t->step()) {
+                }
+            ++attempt;
+        } else {
+            runner->run(pointers, attempt++);
+        }
+        stats.runner_nanoseconds += static_cast<std::uint64_t>(
+            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - run_start).count());
+        if (options.measure_tasks) {
+            std::uint64_t longest = 0;
+            for (const auto& t : tasks) {
+                stats.work_nanoseconds += t->nanoseconds;
+                longest = std::max(longest, t->nanoseconds);
+            }
+            stats.critical_nanoseconds += longest;
+        }
 
         to_run.clear();
         std::vector<std::pair<RegionId, RegionId>> conflicts;
@@ -468,7 +508,10 @@ void Engine::Impl::run_phase(Phase phase, std::vector<RootItem> roots) {
                 for (auto& e : entries) e.root = map.at(e.root);
         }
     }
+    const auto commit_start = std::chrono::steady_clock::now();
     commit(phase, contexts);
+    stats.commit_nanoseconds += static_cast<std::uint64_t>(
+        std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - commit_start).count());
 }
 
 void Engine::Impl::commit(Phase, const std::vector<RegionContext*>& contexts) {
@@ -677,6 +720,41 @@ WorldDump Engine::Impl::dump() const {
     return d;
 }
 
+WorldSnapshot Engine::snapshot() const {
+    const auto& world = impl_->world;
+    WorldSnapshot snap;
+    auto& d = snap.state;
+    snap.min_y = impl_->bundle.world.min_y;
+    d.time = world.time;
+    d.next_suborder = world.next_suborder;
+    d.next_entity_id = world.next_entity_id;
+    d.next_block_entity_order = world.next_block_entity_order;
+    std::vector<std::pair<std::uint64_t, BlockEvent>> events;
+    std::map<ChunkPos, std::vector<std::shared_ptr<const ColumnSnapshot::Blocks>>> sections;
+    const auto add = [&](const ChunkData& data, ChunkLevel level) {
+        d.chunks.push_back({data.pos, data.generation.value, level});
+        auto& list = sections[data.pos];
+        list.reserve(data.sections.size());
+        for (const auto& section : data.sections)
+            list.push_back(section ? std::shared_ptr<const ColumnSnapshot::Blocks>(section, &section->blocks) : nullptr);
+        for (const auto& [pos, be] : data.block_entities) d.block_entities.push_back({pos, be});
+        for (const auto& [id, e] : data.entities) d.entities.push_back(e);
+        for (int l = 0; l < 2; ++l)
+            for (const auto& [k, e] : data.ticks[l])
+                d.ticks.push_back({static_cast<TickList>(l), {k.first, k.second, e.due, e.priority, e.suborder}});
+        for (const auto& e : data.events) events.push_back({e.seq, e.event});
+    };
+    for (const auto& [c, data] : world.loaded) add(*data, data->level);
+    for (const auto& [c, data] : world.saved) add(*data, ChunkLevel::unloaded);
+    std::ranges::sort(events, {}, [](const auto& p) { return p.first; });
+    for (const auto& [seq, e] : events) d.block_events.push_back(e);
+    d.tickets = world.tickets.list();
+    gameplay::canonicalize(d);
+    snap.sections.reserve(d.chunks.size());
+    for (const auto& c : d.chunks) snap.sections.push_back(std::move(sections.at(c.pos)));
+    return snap;
+}
+
 Engine::Engine(const contracts::VersionBundle& bundle, std::uint64_t seed, EngineOptions options)
     : impl_(std::make_unique<Impl>(bundle, seed, std::move(options))) {}
 
@@ -722,6 +800,7 @@ void Engine::Impl::restore(const WorldDump& state) {
         auto& section = chunk.sections[static_cast<std::size_t>((pos.y - bundle.world.min_y) >> 4)];
         if (!section) section = std::make_shared<Section>();
         section->blocks[contracts::section_local_index(pos)] = *s;
+        if (gameplay::reacts_to_random_ticks(s->type())) ++section->random_ticking;
     }
     for (const auto& [pos, be] : state.block_entities) {
         auto& chunk = column(pos);

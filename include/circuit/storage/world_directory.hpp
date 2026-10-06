@@ -3,6 +3,7 @@
 #include <circuit/contracts/replay.hpp>
 #include <circuit/storage/checkpoint.hpp>
 #include <circuit/storage/filesystem.hpp>
+#include <mutex>
 #include <optional>
 #include <set>
 
@@ -31,6 +32,13 @@ struct Recovery {
     std::vector<std::string> notes;           // fallbacks used and data discarded
 };
 
+// A checkpoint whose log segment has started but whose data is not written yet.
+struct PendingCheckpoint {
+    std::uint64_t tick{}, generation{};
+    std::string name, segment;
+    std::string base_checkpoint, base_sha; // the checkpoint that was current when it began
+};
+
 class WorldDirectory {
 public:
     WorldDirectory(Filesystem& fs, Path root, std::string bundle_id, std::string rules_id);
@@ -50,14 +58,30 @@ public:
     // failure while replacing the manifest, call recover().
     Status checkpoint(const Checkpoint& checkpoint);
 
+    // The same in two phases, so that the data can be written while logging
+    // goes on. begin_checkpoint, on the thread that logs, ends the current
+    // segment, starts the one for the ticks after `tick` and makes the
+    // manifest list it; appends go to the new segment from then on.
+    // finish_checkpoint, on any thread, writes the encoded checkpoint of the
+    // state at `tick` and makes it current. One checkpoint at a time; if
+    // finishing fails before the manifest switch, the next begin starts over.
+    std::expected<PendingCheckpoint, std::string> begin_checkpoint(std::uint64_t tick);
+    Status finish_checkpoint(const PendingCheckpoint& pending, std::span<const std::byte> encoded);
+
     // Appends one tick's input to the current segment. Ticks must follow the
     // last checkpoint or record without gaps. With `sync` the record is
     // durable when this returns. After a failure, logging resumes only after
     // a checkpoint.
     Status append(const contracts::TickInput& input, bool sync);
 
-    [[nodiscard]] bool logging() const noexcept { return !segment_.empty(); }
-    [[nodiscard]] std::uint64_t last_tick() const noexcept { return last_tick_; }
+    [[nodiscard]] bool logging() noexcept {
+        std::lock_guard lock(mutex_);
+        return !segment_.empty();
+    }
+    [[nodiscard]] std::uint64_t last_tick() noexcept {
+        std::lock_guard lock(mutex_);
+        return last_tick_;
+    }
 
     [[nodiscard]] const Path& root() const noexcept { return root_; }
 
@@ -92,6 +116,8 @@ private:
     std::uint64_t last_tick_{};    // last tick checkpointed or logged
     std::uint64_t generation_{};   // highest generation the manifest refers to
     bool broken_{false};           // a manifest write failed: the durable manifest is unknown
+    bool pending_{false};          // a checkpoint has begun and not finished
+    std::mutex mutex_;             // the state above; file writes of finish_checkpoint run outside it
     std::set<std::string> damaged_; // files recovery found damaged, kept as damaged-<name> once unreferenced
 };
 

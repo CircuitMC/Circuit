@@ -4,6 +4,8 @@
 #include <circuit/protocol/codec.hpp>
 #include <circuit/protocol/framing.hpp>
 #include <circuit/storage/checkpoint.hpp>
+#include <unordered_map>
+#include <utility>
 #include <format>
 #include <openssl/evp.h>
 
@@ -38,37 +40,56 @@ void packed(Writer& w, const std::array<std::uint32_t, 4096>& values, unsigned b
     }
 }
 
-void encode_body(Writer& w, const Checkpoint& c) {
+// Palette and packed indices of one section, without its y. Empty when the
+// section holds only air (value 0), which the format leaves out.
+template <class Raw>
+std::vector<std::byte> encode_section(Raw raw) {
+    std::vector<std::uint32_t> palette;
+    std::unordered_map<std::uint32_t, std::uint32_t> index;
+    std::array<std::uint32_t, 4096> values{};
+    bool any = false;
+    for (std::size_t i = 0; i < 4096; ++i) {
+        const std::uint32_t v = raw(i);
+        any = any || v != 0;
+        std::uint32_t at = 0;
+        // Palettes are usually tiny: search them before hashing.
+        if (palette.size() <= 8) {
+            at = static_cast<std::uint32_t>(std::ranges::find(palette, v) - palette.begin());
+            if (at == palette.size()) {
+                palette.push_back(v);
+                if (palette.size() > 8)
+                    for (std::uint32_t k = 0; k < palette.size(); ++k) index.emplace(palette[k], k);
+            }
+        } else {
+            const auto [it, fresh] = index.try_emplace(v, static_cast<std::uint32_t>(palette.size()));
+            if (fresh) palette.push_back(v);
+            at = it->second;
+        }
+        values[i] = at;
+    }
+    if (!any) return {};
+    Writer w;
+    w.varint(static_cast<std::int32_t>(palette.size()));
+    for (const auto v : palette) w.varint(static_cast<std::int32_t>(v));
+    const auto bits = std::max(1u, static_cast<unsigned>(std::bit_width(palette.size() - 1)));
+    if (palette.size() > 1) packed(w, values, bits);
+    return w.take();
+}
+
+// Writes the column table; `blocks(i)` gives column i's non-empty sections as
+// (section y, encoding) in ascending y.
+template <class Blocks>
+void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
     const auto& s = c.state;
     w.varlong(static_cast<std::int64_t>(s.time)).varlong(static_cast<std::int64_t>(s.next_suborder));
     w.varlong(static_cast<std::int64_t>(s.next_entity_id)).varlong(static_cast<std::int64_t>(s.next_block_entity_order));
-    // Columns, each with the sections that hold any block.
-    std::map<contracts::ChunkPos, std::map<std::int32_t, std::array<std::uint32_t, 4096>>> sections;
-    for (const auto& [p, raw] : s.blocks) {
-        auto& sec = sections[contracts::chunk_of(p)][p.y >> 4];
-        sec[contracts::section_local_index(p)] = raw;
-    }
     w.varint(static_cast<std::int32_t>(s.chunks.size()));
-    for (const auto& ch : s.chunks) {
+    for (std::size_t i = 0; i < s.chunks.size(); ++i) {
+        const auto& ch = s.chunks[i];
         w.i32(ch.pos.x).i32(ch.pos.z).varint(static_cast<std::int32_t>(ch.generation)).u8(static_cast<std::uint8_t>(ch.level));
-        const auto it = sections.find(ch.pos);
-        const auto count = it == sections.end() ? 0 : it->second.size();
-        w.varint(static_cast<std::int32_t>(count));
-        if (count == 0) continue;
-        for (const auto& [sy, blocks] : it->second) {
-            std::vector<std::uint32_t> palette;
-            std::map<std::uint32_t, std::uint32_t> index;
-            std::array<std::uint32_t, 4096> values{};
-            for (std::size_t i = 0; i < 4096; ++i) {
-                const auto [at, fresh] = index.try_emplace(blocks[i], static_cast<std::uint32_t>(palette.size()));
-                if (fresh) palette.push_back(blocks[i]);
-                values[i] = at->second;
-            }
-            w.i32(sy).varint(static_cast<std::int32_t>(palette.size()));
-            for (const auto raw : palette) w.varint(static_cast<std::int32_t>(raw));
-            const auto bits = std::max(1u, static_cast<unsigned>(std::bit_width(palette.size() - 1)));
-            if (palette.size() > 1) packed(w, values, bits);
-        }
+        const auto sections = blocks(i);
+        w.varint(static_cast<std::int32_t>(sections.size()));
+        for (const auto& [sy, bytes] : sections) w.i32(sy).raw(bytes);
     }
     w.varint(static_cast<std::int32_t>(s.block_entities.size()));
     for (const auto& [p, be] : s.block_entities) {
@@ -277,10 +298,24 @@ std::string sha256_hex(std::span<const std::byte> bytes) {
     return out;
 }
 
-std::vector<std::byte> encode_checkpoint(const Checkpoint& checkpoint) {
+namespace {
+// The body of a checkpoint whose blocks are listed in its dump.
+std::vector<std::byte> dump_body(const Checkpoint& checkpoint) {
+    std::map<contracts::ChunkPos, std::map<std::int32_t, std::array<std::uint32_t, 4096>>> sections;
+    for (const auto& [p, raw] : checkpoint.state.blocks) sections[contracts::chunk_of(p)][p.y >> 4][contracts::section_local_index(p)] = raw;
     Writer body;
-    encode_body(body, checkpoint);
-    const auto compressed = protocol::deflate_bytes(body.bytes());
+    encode_body(body, checkpoint, [&](std::size_t i) {
+        std::vector<std::pair<std::int32_t, std::vector<std::byte>>> out;
+        if (const auto it = sections.find(checkpoint.state.chunks[i].pos); it != sections.end())
+            for (const auto& [sy, values] : it->second)
+                if (auto bytes = encode_section([&](std::size_t k) { return values[k]; }); !bytes.empty()) out.emplace_back(sy, std::move(bytes));
+        return out;
+    });
+    return body.take();
+}
+
+std::vector<std::byte> seal(const Checkpoint& checkpoint, const std::vector<std::byte>& body, const CheckpointOptions& options) {
+    const auto compressed = protocol::deflate_bytes(body, options.compression_level);
     Writer w;
     w.raw(protocol::as_bytes(magic)).i32(static_cast<std::int32_t>(version));
     w.string(checkpoint.bundle_id, 64).string(checkpoint.rules_id, 128).i64(static_cast<std::int64_t>(checkpoint.seed));
@@ -291,6 +326,59 @@ std::vector<std::byte> encode_checkpoint(const Checkpoint& checkpoint) {
     w.raw(std::as_bytes(std::span(digest)));
     return w.take();
 }
+} // namespace
+
+std::vector<std::byte> checkpoint_body(const Checkpoint& checkpoint) { return dump_body(checkpoint); }
+
+std::vector<std::byte> encode_checkpoint(const Checkpoint& checkpoint, const CheckpointOptions& options) {
+    return seal(checkpoint, dump_body(checkpoint), options);
+}
+
+struct SectionCache::Entry {
+    std::shared_ptr<const SectionBlocks> section; // kept alive, so its address identifies it
+    std::vector<std::byte> bytes;
+    std::uint64_t used{};
+};
+SectionCache::SectionCache() = default;
+SectionCache::~SectionCache() = default;
+std::size_t SectionCache::size() const noexcept { return entries_.size(); }
+std::vector<std::shared_ptr<const SectionBlocks>> SectionCache::take_dropped() { return std::exchange(dropped_, {}); }
+
+std::vector<std::byte> encode_checkpoint(const Checkpoint& checkpoint, std::span<const ColumnSections> columns, std::int32_t min_y,
+                                         SectionCache* cache, const CheckpointOptions& options) {
+    if (!checkpoint.state.blocks.empty() || columns.size() != checkpoint.state.chunks.size())
+        throw std::invalid_argument("checkpoint: sections must replace the block list, one entry per column");
+    const auto round = cache ? ++cache->round_ : 0;
+    Writer body;
+    encode_body(body, checkpoint, [&](std::size_t i) {
+        std::vector<std::pair<std::int32_t, std::vector<std::byte>>> out;
+        const auto& list = columns[i];
+        for (std::size_t k = 0; k < list.size(); ++k) {
+            const auto& section = list[k];
+            if (!section) continue;
+            const auto sy = (min_y >> 4) + static_cast<std::int32_t>(k);
+            const auto encode = [&] { return encode_section([&](std::size_t n) { return (*section)[n].raw(); }); };
+            if (!cache) {
+                if (auto bytes = encode(); !bytes.empty()) out.emplace_back(sy, std::move(bytes));
+                continue;
+            }
+            auto [it, fresh] = cache->entries_.try_emplace(section.get());
+            if (fresh) it->second = {section, encode(), 0};
+            it->second.used = round;
+            if (!it->second.bytes.empty()) out.emplace_back(sy, it->second.bytes);
+        }
+        return out;
+    });
+    // Sections no longer in the world leave the cache.
+    if (cache)
+        std::erase_if(cache->entries_, [&](auto& e) {
+            if (e.second.used == round) return false;
+            cache->dropped_.push_back(std::move(e.second.section));
+            return true;
+        });
+    return seal(checkpoint, body.take(), options);
+}
+
 
 std::expected<Checkpoint, std::string> decode_checkpoint(std::span<const std::byte> bytes, const CheckpointLimits& limits) {
     if (bytes.size() > limits.max_bytes) return std::unexpected("checkpoint too large");

@@ -1,5 +1,5 @@
 set_project("Circuit")
-set_version("0.0.1")
+set_version("0.1.0")
 set_xmakever("3.0.0")
 set_languages("c++23")
 add_rules("mode.debug", "mode.release", "mode.asan", "mode.tsan", "mode.ubsan")
@@ -217,6 +217,21 @@ target("extension_tests")
         quoted("CIRCUIT_PROBE_MOD", path.absolute(target:dep("sdk_probe_mod"):targetfile()))
         quoted("CIRCUIT_SOURCE_DIR", os.projectdir())
     end)
+target_end()
+
+-- Storage measurements (docs/STORAGE_EVALUATION.md); run on a release build.
+target("storage_bench")
+    set_kind("binary")
+    set_default(false)
+    add_files("tools/bench/storage_bench.cpp")
+    add_deps("circuit_server", "circuit_runtime")
+target_end()
+
+target("chunk_bench")
+    set_kind("binary")
+    set_default(false)
+    add_files("tools/bench/chunk_bench.cpp")
+    add_deps("circuit_server", "circuit_runtime")
 target_end()
 
 target("protocol_tests")

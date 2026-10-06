@@ -7,8 +7,13 @@
 #include <circuit/storage/world_directory.hpp>
 #include <algorithm>
 #include <atomic>
+#include <asio/post.hpp>
+#include <asio/thread_pool.hpp>
 #include <chrono>
 #include <cmath>
+#include <latch>
+#include <condition_variable>
+#include <thread>
 #include <cstdlib>
 #include <format>
 #include <map>
@@ -171,6 +176,7 @@ struct Game::Impl final : GameServices {
     WorldMeta meta;
     std::map<Uuid, SavedPlayer> saved;
     bool healthy{true}; // false after a tick failed: the state is not saved again
+    std::unique_ptr<asio::thread_pool> encode_pool; // chunk packet encoders (workers - 1 threads)
 
     std::mutex inbox_mutex;
     std::vector<Message> inbox;
@@ -204,6 +210,7 @@ struct Game::Impl final : GameServices {
         for (std::uint16_t i = 1; i <= gameplay::items::max_id; ++i)
             if (const auto id = content.item_id(mapping.item_name(i))) item_wire[i] = *id;
         open_world();
+        if (config.workers > 1) encode_pool = std::make_unique<asio::thread_pool>(config.workers - 1);
         extensions = std::make_unique<Extensions>(*this, config, bundle);
         extensions->load();
     }
@@ -293,20 +300,136 @@ struct Game::Impl final : GameServices {
         return s;
     }
 
-    // Writes a checkpoint of the current state, with the players' data.
-    storage::Status save() {
-        if (!world) return {};
+    // ---- checkpoints --------------------------------------------------------
+    //
+    // A checkpoint starts on the game thread: a copy-on-write snapshot of the
+    // engine and the start of a new log segment. A writer thread encodes and
+    // writes it while the game goes on; the game thread releases the snapshot
+    // when the writer is done. Shutdown and errors use the same steps
+    // synchronously.
+
+    struct CheckpointJob {
+        storage::Checkpoint checkpoint; // state without its block list
+        std::vector<storage::ColumnSections> sections;
+        std::int32_t min_y{};
+        storage::PendingCheckpoint pending;
+        std::chrono::steady_clock::time_point began;
+        double game_thread_ms{};
+        std::vector<std::shared_ptr<const storage::SectionBlocks>> dropped; // from the section cache
+    };
+    std::mutex writer_mutex;
+    std::condition_variable writer_wake;
+    std::optional<CheckpointJob> to_write, written;
+    std::string writer_error;
+    bool writer_stop{false}, writing{false};
+    storage::SectionCache section_cache; // writer thread, or the game thread while no job runs
+    std::thread writer;
+
+    // Snapshot and begin, on the game thread.
+    std::expected<CheckpointJob, std::string> begin_save() {
         const auto started_at = std::chrono::steady_clock::now();
         for (const auto& [id, p] : players) saved[p.uuid] = snapshot(p);
         meta.next_admission = queue.next_admission();
         meta.next_ticket = next_ticket;
-        storage::Checkpoint c{std::string(bundle.id), std::string(bundle.rules->id), seed, engine->dump(), {}};
-        c.extras[std::string(meta_extra)] = encode_meta(meta);
-        c.extras[std::string(players_extra)] = encode_players(saved);
-        auto ok = world->checkpoint(c);
-        const auto ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - started_at).count();
-        if (ok) log_info(std::format("saved the world at tick {} in {:.1f} ms", engine->time(), ms));
+        auto snap = engine->snapshot();
+        CheckpointJob job{{std::string(bundle.id), std::string(bundle.rules->id), seed, std::move(snap.state), {}},
+                          std::move(snap.sections), snap.min_y, {}, started_at, 0, {}};
+        job.checkpoint.extras[std::string(meta_extra)] = encode_meta(meta);
+        job.checkpoint.extras[std::string(players_extra)] = encode_players(saved);
+        auto pending = world->begin_checkpoint(job.checkpoint.state.time);
+        if (!pending) return std::unexpected(pending.error());
+        job.pending = std::move(*pending);
+        job.game_thread_ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - started_at).count();
+        return job;
+    }
+    storage::Status finish_save(CheckpointJob& job) {
+        const auto bytes = storage::encode_checkpoint(job.checkpoint, job.sections, job.min_y, &section_cache);
+        job.dropped = section_cache.take_dropped(); // released with the job, on the game thread
+        return world->finish_checkpoint(job.pending, bytes);
+    }
+    void log_saved(const CheckpointJob& job) {
+        const auto total = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - job.began).count();
+        log_info(std::format("saved the world at tick {}: {:.1f} ms on the game thread, {:.1f} ms in all", job.checkpoint.state.time,
+                             job.game_thread_ms, total));
+    }
+
+    void writer_loop() {
+        std::unique_lock lock(writer_mutex);
+        for (;;) {
+            writer_wake.wait(lock, [&] { return writer_stop || to_write.has_value(); });
+            if (!to_write) return;
+            auto job = std::move(*to_write);
+            to_write.reset();
+            lock.unlock();
+            const auto ok = finish_save(job);
+            lock.lock();
+            if (!ok && writer_error.empty()) writer_error = ok.error();
+            written = std::move(job);
+            writer_wake.notify_all();
+        }
+    }
+
+    // Game thread: releases a finished background checkpoint. Throws when it failed.
+    void collect_save(bool wait) {
+        std::optional<CheckpointJob> done;
+        std::string error;
+        {
+            std::unique_lock lock(writer_mutex);
+            if (wait) writer_wake.wait(lock, [&] { return !writing || written.has_value(); });
+            if (!written) return;
+            done = std::move(written);
+            written.reset();
+            error = std::move(writer_error);
+            writer_error.clear();
+            writing = false;
+        }
+        if (!error.empty()) {
+            log_error(std::format("cannot save the world: {}", error));
+            throw std::runtime_error("the world could not be saved; stopping");
+        }
+        log_saved(*done);
+        // The snapshot's sections are released here, between ticks.
+    }
+
+    void start_background_save() {
+        if (writing) {
+            log_warn("the previous checkpoint is still being written; this autosave is skipped");
+            return;
+        }
+        auto job = begin_save();
+        if (!job) {
+            log_error(std::format("cannot save the world: {}", job.error()));
+            throw std::runtime_error("the world could not be saved; stopping");
+        }
+        if (!writer.joinable()) writer = std::thread([this] { writer_loop(); });
+        std::lock_guard lock(writer_mutex);
+        to_write = std::move(*job);
+        writing = true;
+        writer_wake.notify_all();
+    }
+
+    // Writes a checkpoint of the current state now, after any background one.
+    storage::Status save() {
+        if (!world) return {};
+        try {
+            collect_save(true);
+        } catch (const std::runtime_error&) {
+            // Reported; try a complete checkpoint below.
+        }
+        auto job = begin_save();
+        if (!job) return std::unexpected(job.error());
+        auto ok = finish_save(*job);
+        if (ok) log_saved(*job);
         return ok;
+    }
+
+    void stop_writer() {
+        {
+            std::lock_guard lock(writer_mutex);
+            writer_stop = true;
+            writer_wake.notify_all();
+        }
+        if (writer.joinable()) writer.join();
     }
 
     BlockState at(BlockPos p) const {
@@ -794,6 +917,7 @@ struct Game::Impl final : GameServices {
         std::map<ChunkPos, ChunkLevel> loaded;
         for (const auto& [c, level] : engine->loaded_columns()) loaded.emplace(c, level);
         const auto look_up = lookup();
+        std::vector<ChunkJob> jobs;
         for (auto& [id, p] : players) {
             // Forget chunks out of range.
             std::vector<ChunkPos> stale;
@@ -815,16 +939,61 @@ struct Game::Impl final : GameServices {
                 return std::pair{chebyshev(c, p.center), std::abs(c.x - p.center.x) + std::abs(c.z - p.center.z)};
             });
             if (wanted.size() > chunks_per_tick) wanted.resize(chunks_per_tick);
-            p.peer->send(wire.chunk_batch_start());
-            for (const auto c : wanted) {
-                const auto column = engine->column(c);
-                if (!column) continue;
-                p.peer->send(wire.chunk(encode_chunk(*column, palette, look_up, shape, biome, wire.protocol())));
-                p.sent.insert(c);
-                for (const auto& e : column->entities) show_entity(p, e.id.value, e);
-            }
-            p.peer->send(wire.chunk_batch_finished(static_cast<std::int32_t>(wanted.size())));
+            for (const auto c : wanted)
+                if (auto column = engine->column(c)) jobs.push_back({id, std::move(*column), {}});
         }
+        encode_chunks(jobs, look_up, shape);
+        // Packets go out per player in the order chosen above.
+        std::size_t next = 0;
+        for (auto& [id, p] : players) {
+            if (next == jobs.size() || jobs[next].player != id) continue;
+            p.peer->send(wire.chunk_batch_start());
+            std::int32_t count = 0;
+            for (; next < jobs.size() && jobs[next].player == id; ++next) {
+                auto& job = jobs[next];
+                p.peer->send(wire.chunk(std::move(job.fields)));
+                p.sent.insert(job.column.pos);
+                for (const auto& e : job.column.entities) show_entity(p, e.id.value, e);
+                ++count;
+            }
+            p.peer->send(wire.chunk_batch_finished(count));
+        }
+    }
+
+    struct ChunkJob {
+        std::uint64_t player;
+        runtime::ColumnSnapshot column;
+        Bytes fields;
+    };
+    // Chunk packets are encoded in parallel: the engine does not run meanwhile,
+    // so the encoders only read its published state.
+    void encode_chunks(std::vector<ChunkJob>& jobs, const NeighborLookup& look_up, WorldShape shape) {
+        const auto encode = [&](ChunkJob& job) { job.fields = encode_chunk(job.column, palette, look_up, shape, biome, wire.protocol()); };
+        if (jobs.size() < 4 || !encode_pool) {
+            for (auto& job : jobs) encode(job);
+            return;
+        }
+        std::atomic<std::size_t> index{0};
+        const auto take = [&] {
+            for (std::size_t i; (i = index.fetch_add(1, std::memory_order_relaxed)) < jobs.size();) encode(jobs[i]);
+        };
+        const auto helpers = std::min<std::size_t>(config.workers - 1, jobs.size() - 1);
+        std::latch done(static_cast<std::ptrdiff_t>(helpers));
+        std::exception_ptr failure;
+        std::mutex failure_mutex;
+        for (std::size_t i = 0; i < helpers; ++i)
+            asio::post(*encode_pool, [&] {
+                try {
+                    take();
+                } catch (...) {
+                    std::lock_guard lock(failure_mutex);
+                    if (!failure) failure = std::current_exception();
+                }
+                done.count_down();
+            });
+        take();
+        done.wait();
+        if (failure) std::rethrow_exception(failure);
     }
 
     void publish_players() {
@@ -931,12 +1100,15 @@ struct Game::Impl final : GameServices {
         healthy = true;
         if (!run) return;
         if (extensions) extensions->after_tick();
-        if (world && engine->time() % config.autosave_ticks == 0)
-            if (auto ok = save(); !ok) {
-                log_error(std::format("cannot save the world: {}", ok.error()));
+        if (world) {
+            try {
+                collect_save(false);
+                if (engine->time() % config.autosave_ticks == 0) start_background_save();
+            } catch (...) {
                 healthy = false;
-                throw std::runtime_error("the world could not be saved; stopping");
+                throw;
             }
+        }
     }
 
     // Runs one engine tick with the admitted commands and publishes its changes.
@@ -973,7 +1145,9 @@ Game::Game(const ServerConfig& config, const contracts::VersionBundle& bundle, c
            const protocol::ContentTables& content, const evidence::ContentMapping& mapping,
            const std::vector<RegistryEntries>& registries)
     : impl_(std::make_unique<Impl>(config, bundle, wire, content, mapping, registries)) {}
-Game::~Game() = default;
+Game::~Game() {
+    if (impl_) impl_->stop_writer();
+}
 
 void Game::join(JoinRequest request) {
     std::lock_guard lock(impl_->inbox_mutex);
@@ -995,6 +1169,7 @@ void Game::shutdown(std::string_view reason) {
         if (auto ok = i.save(); !ok) log_error(std::format("cannot save the world: {}", ok.error()));
         i.healthy = false; // saved once; later ticks are not expected
     }
+    i.stop_writer();
     if (i.extensions) i.extensions->unload();
     for (auto& [id, p] : impl_->players) p.peer->kick(std::string(reason));
     impl_->players.clear();

@@ -52,7 +52,7 @@ struct PacketView {
 Decoded<PacketView> open_packet(std::span<const std::byte> packet);
 
 // zlib helpers; `inflate_exact` fails unless the stream expands to exactly `size` bytes.
-Bytes deflate_bytes(std::span<const std::byte> data);
+Bytes deflate_bytes(std::span<const std::byte> data, int level = -1); // zlib level 0-9; -1: zlib's default (6)
 Decoded<Bytes> inflate_exact(std::span<const std::byte> data, std::size_t size);
 
 } // namespace circuit::protocol

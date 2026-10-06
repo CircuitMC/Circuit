@@ -36,7 +36,7 @@ unsigned number(std::string_view input, unsigned low, unsigned high) {
     return value;
 }
 void usage() {
-    std::cout << "Circuit 0.0.1 — region-parallel simulation and Java Edition 1.21.8 server\n"
+    std::cout << "Circuit 0.1.0 — region-parallel simulation and Java Edition 1.21.8 / 1.21.4 server\n"
         "  --simulate [--game-version java-1.21.8] [--workers 1..64] [--ticks 1..1000000]\n"
         "             [--seed N] [--replay <file>] [--record <file>] [--realtime]\n"
         "  --check-fixture <file> [--check-fixture <file> ...] [--workers 1..64]\n"
@@ -74,12 +74,14 @@ int main(int argc, char** argv) {
             };
             if (arg == "--help") { usage(); return 0; }
             if (arg == "--version") {
-                std::cout << "Circuit/0.0.1 framework; AGPL-3.0-only; public build identifier\n";
+                std::cout << "Circuit/0.1.0; AGPL-3.0-only; bundles java-1.21.8, java-1.21.4; public build identifier\n";
                 return 0;
             }
             if (arg == "--list-versions") {
                 for (const auto& v : circuit::protocol::builtin_registry::candidates)
-                    std::cout << v.id << " planned; play=false\n";
+                    std::cout << v.id << (v.status == circuit::protocol::implementation_status::supported ? " supported" : " planned")
+                              << "; protocol=" << (v.protocol_number ? std::to_string(*v.protocol_number) : std::string("-"))
+                              << "; play=" << (v.supports_play ? "true" : "false") << '\n';
                 return 0;
             }
             if (arg == "--demo") demo = true;

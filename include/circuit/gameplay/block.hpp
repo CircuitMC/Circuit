@@ -133,6 +133,8 @@ constexpr std::optional<Direction> chest_partner(BlockState s) noexcept {
 constexpr std::uint8_t container_size(BlockType t) noexcept {
     return t == BlockType::hopper ? 5 : t == BlockType::chest ? 27 : 0;
 }
+// Blocks whose random tick can change something (see run_random_ticks).
+constexpr bool reacts_to_random_ticks(BlockType t) noexcept { return t == BlockType::wheat; }
 // Full collision cell for item entities.
 constexpr bool is_solid(BlockType t) noexcept {
     switch (t) {

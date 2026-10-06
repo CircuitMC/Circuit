@@ -48,16 +48,24 @@ The migration reads the latest durable state, replays its log, and writes a new 
 
 Each tick, the server logs the tick's input before the engine applies it. Every `log-sync-ticks` ticks the record is synced before the tick runs. A change that players saw is therefore either in the durable log or after the last sync.
 
-A checkpoint goes through these steps:
-1. Sync the current log segment, so that the previous checkpoint plus the log reach the new checkpoint.
-2. Write the checkpoint to a temporary file, sync it and rename it.
-3. Create the new, empty log segment and sync the directory.
-4. Write the new manifest to a temporary file, sync it, rename it over `manifest` and sync the directory.
-5. Remove files the new manifest no longer names.
+A checkpoint has two phases.
 
-The new checkpoint becomes current at the rename in step 4. A crash before that point leaves the old manifest, which still names complete files; a crash after it leaves the new one. Recovery never sees a mixture of the two.
+**Begin, on the game thread, between ticks:**
+1. Take a copy-on-write snapshot of the engine. This costs time in the number of columns, not of blocks.
+2. Sync the current log segment, so that the current checkpoint plus the log reach the new checkpoint.
+3. Create the new, empty log segment for the ticks after this one, and sync the directory.
+4. Replace the manifest with one that still names the current checkpoint but adds the new segment. Logging continues in the new segment right away.
 
-Checkpoints are written on the game thread. The server writes one at startup, every `autosave-ticks` ticks and when it stops.
+**Finish, on a writer thread, while the game runs on:**
+5. Encode the snapshot and write it to a temporary file, sync it, rename it and sync the directory. Sections that did not change since the last checkpoint reuse their earlier encoding.
+6. Replace the manifest with one that names the new checkpoint and keeps the previous one, with the segments the fallback needs.
+7. Remove files the new manifest no longer names.
+
+Each manifest replacement writes a temporary file, syncs it, renames it over `manifest` and syncs the directory. Every manifest names complete files, and recovery never sees a mixture of two.
+- **Crash between the phases:** recovery continues from the current checkpoint through the new segment.
+- **Crash after step 6:** recovery starts from the new checkpoint.
+
+The server writes a checkpoint at startup, every `autosave-ticks` ticks and when it stops; the first and the last are written synchronously. One checkpoint is written at a time. If the previous one is still being written when the next is due, that autosave is skipped and the log keeps every input meanwhile. [The storage evaluation](STORAGE_EVALUATION.md) has the measurements behind this design and the choice of compression.
 
 ## Recovery
 

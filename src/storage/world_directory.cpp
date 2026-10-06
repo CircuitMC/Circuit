@@ -183,6 +183,8 @@ std::expected<bool, std::string> WorldDirectory::read_segment(const std::string&
 }
 
 std::expected<std::optional<Recovery>, std::string> WorldDirectory::recover() {
+    std::lock_guard lock(mutex_);
+    pending_ = false;
     auto manifest = read_manifest();
     if (!manifest) return std::unexpected(manifest.error());
     if (!*manifest) {
@@ -244,59 +246,96 @@ std::expected<std::optional<Recovery>, std::string> WorldDirectory::recover() {
     return std::optional<Recovery>{std::move(r)};
 }
 
-Status WorldDirectory::checkpoint(const Checkpoint& c) {
+std::expected<PendingCheckpoint, std::string> WorldDirectory::begin_checkpoint(std::uint64_t tick) {
+    std::lock_guard lock(mutex_);
     if (broken_) return std::unexpected("the manifest state is unknown after a failed write; recover first");
-    if (c.bundle_id != bundle_id_ || c.rules_id != rules_id_) return std::unexpected("checkpoint from other bundle or rules");
-    const auto tick = c.state.time;
+    if (pending_) return std::unexpected("a checkpoint is already in progress");
     if (manifest_ && tick != last_tick_) {
         // Before logging resumes, a checkpoint may end the history earlier,
         // abandoning logged inputs that the caller could not apply.
-        const bool abandons = !logging() && tick < last_tick_ && tick >= parse_checkpoint(manifest_->checkpoint)->tick;
+        const bool abandons = segment_.empty() && tick < last_tick_ && tick >= parse_checkpoint(manifest_->checkpoint)->tick;
         if (!abandons)
             return std::unexpected(std::format("checkpoint at tick {} does not match the history at tick {}", tick, last_tick_));
     }
-    if (auto ok = fs_.create_directories(root_); !ok) return ok;
+    if (auto ok = fs_.create_directories(root_); !ok) return std::unexpected(ok.error());
     // The fallback replays the current segment, so it must be complete.
     if (!segment_.empty())
-        if (auto ok = fs_.append(root_ / segment_, {}, true); !ok) return ok;
+        if (auto ok = fs_.append(root_ / segment_, {}, true); !ok) return std::unexpected(ok.error());
     // A new generation never reuses a name the durable manifest refers to.
     const auto generation = generation_ + 1;
-    const auto data = encode_checkpoint(c);
-    const auto name = checkpoint_name(tick, generation);
-    if (auto ok = fs_.write_file(root_ / (name + ".tmp"), data); !ok) return ok;
-    if (auto ok = fs_.rename(root_ / (name + ".tmp"), root_ / name); !ok) return ok;
-    // A new segment for the ticks after this checkpoint.
+    // The segment for the ticks after this checkpoint.
     std::vector<std::byte> header(segment_magic.size());
     std::memcpy(header.data(), segment_magic.data(), segment_magic.size());
     put64(header, tick);
     const auto seg = segment_name(tick, generation);
-    if (auto ok = fs_.write_file(root_ / seg, header); !ok) return ok;
-    if (auto ok = fs_.sync_directory(root_); !ok) return ok;
-    Manifest next;
-    next.checkpoint = name;
-    next.checkpoint_sha = sha256_hex(data);
+    if (auto ok = fs_.write_file(root_ / seg, header); !ok) return std::unexpected(ok.error());
+    if (auto ok = fs_.sync_directory(root_); !ok) return std::unexpected(ok.error());
+    PendingCheckpoint pending{tick, generation, checkpoint_name(tick, generation), seg, {}, {}};
     if (manifest_) {
-        next.previous = manifest_->checkpoint;
-        next.previous_sha = manifest_->checkpoint_sha;
-        // Segments from the previous checkpoint on, so the fallback can replay to now.
-        const auto prev_tick = parse_checkpoint(manifest_->checkpoint)->tick;
-        for (const auto& s : manifest_->segments)
-            if (parse_segment(s)->tick >= prev_tick) next.segments.push_back(s);
+        // Until the checkpoint is written, recovery continues from the current
+        // checkpoint through the new segment.
+        auto next = *manifest_;
+        next.segments.push_back(seg);
+        segment_.clear();
+        if (auto ok = write_manifest(next); !ok) {
+            broken_ = true;
+            return std::unexpected(ok.error());
+        }
+        pending.base_checkpoint = manifest_->checkpoint;
+        pending.base_sha = manifest_->checkpoint_sha;
+        manifest_ = next;
     }
-    next.segments.push_back(seg);
-    // A failure from here on leaves the old or the new manifest durable; either
-    // recovers, but this object can no longer tell which, so it stops logging.
-    segment_.clear();
-    if (auto ok = write_manifest(next); !ok) {
-        broken_ = true;
-        return ok;
-    }
-    manifest_ = next;
     generation_ = generation;
     segment_ = seg;
     last_tick_ = tick;
+    pending_ = true;
+    return pending;
+}
+
+Status WorldDirectory::finish_checkpoint(const PendingCheckpoint& pending, std::span<const std::byte> encoded) {
+    const auto clear = [&] {
+        std::lock_guard lock(mutex_);
+        pending_ = false;
+    };
+    // The data is written without the lock: logging continues meanwhile.
+    if (auto ok = fs_.write_file(root_ / (pending.name + ".tmp"), encoded); !ok) return clear(), ok;
+    if (auto ok = fs_.rename(root_ / (pending.name + ".tmp"), root_ / pending.name); !ok) return clear(), ok;
+    if (auto ok = fs_.sync_directory(root_); !ok) return clear(), ok;
+    Manifest next;
+    {
+        std::lock_guard lock(mutex_);
+        pending_ = false;
+        if (broken_) return std::unexpected("the manifest state is unknown after a failed write; recover first");
+        next.checkpoint = pending.name;
+        next.checkpoint_sha = sha256_hex(encoded);
+        if (manifest_) {
+            next.previous = pending.base_checkpoint;
+            next.previous_sha = pending.base_sha;
+            // Segments from the previous checkpoint on, so the fallback can replay to now.
+            const auto prev_tick = parse_checkpoint(pending.base_checkpoint)->tick;
+            for (const auto& s : manifest_->segments)
+                if (parse_segment(s)->tick >= prev_tick) next.segments.push_back(s);
+        } else {
+            next.segments.push_back(pending.segment);
+        }
+        // A failure from here on leaves the old or the new manifest durable;
+        // either recovers, but this object can no longer tell which.
+        if (auto ok = write_manifest(next); !ok) {
+            broken_ = true;
+            segment_.clear();
+            return ok;
+        }
+        manifest_ = next;
+    }
     remove_unreferenced(next);
     return {};
+}
+
+Status WorldDirectory::checkpoint(const Checkpoint& c) {
+    if (c.bundle_id != bundle_id_ || c.rules_id != rules_id_) return std::unexpected("checkpoint from other bundle or rules");
+    auto pending = begin_checkpoint(c.state.time);
+    if (!pending) return std::unexpected(pending.error());
+    return finish_checkpoint(*pending, encode_checkpoint(c));
 }
 
 void WorldDirectory::remove_unreferenced(const Manifest& m) {
@@ -314,6 +353,7 @@ void WorldDirectory::remove_unreferenced(const Manifest& m) {
 }
 
 Status WorldDirectory::append(const contracts::TickInput& input, bool sync) {
+    std::lock_guard lock(mutex_);
     if (segment_.empty()) return std::unexpected("no checkpoint: the log has no segment");
     if (input.tick != last_tick_ + 1) return std::unexpected(std::format("tick {} does not follow {}", input.tick, last_tick_));
     const auto payload = contracts::encode_tick_input(input);

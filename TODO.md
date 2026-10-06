@@ -1,6 +1,6 @@
 # Circuit Roadmap
 
-Circuit targets Minecraft Java Edition with C++23, xmake, and standalone Asio. Java Edition 1.21.8 is the initial implementation target. A second complete version bundle will validate the version-selection architecture.
+Circuit targets Minecraft Java Edition with C++23, xmake, and standalone Asio. Java Edition 1.21.8 is the initial implementation target. Java Edition 1.21.4 is a second complete bundle, which validates the version-selection architecture.
 
 ## Part I — Simulation and technical gameplay
 
@@ -20,7 +20,7 @@ Part I is complete for its declared scope on Java Edition 1.21.8. The reference 
 - [x] **M4 — Playable vertical slice:** add the initial version's connection flow, identity providers, authoritative actions, and world interaction.
 - [x] **M5 — Persistence:** add consistent checkpoints, crash recovery, and vanilla import/export within a documented compatibility range.
 - [x] **M6 — Extension ecosystem:** complete native plugin/mod capabilities, the Circuit Java bridge, and technical tools exposed through extension APIs.
-- [ ] **M8 — Optimization and version expansion:** measure storage and scheduling improvements, complete a second version bundle, and prepare a release compatibility matrix.
+- [x] **M8 — Optimization and version expansion:** measure storage and scheduling improvements, complete a second version bundle, and prepare a release compatibility matrix.
 
 **Foundation:** M0 provides the build, executor, synthetic fixtures, native plugin example, and module interfaces. This baseline does not complete any Part I milestone.
 
@@ -51,8 +51,8 @@ Part I is complete for its declared scope on Java Edition 1.21.8. The reference 
 
 - [x] Persist consistent world checkpoints and verify recovery under interrupted writes.
 - [x] Import and export supported vanilla saves without overwriting source data or silently discarding unsupported content.
-- [ ] Compare palette encoding and compression options using representative worlds.
-- [ ] Store sparse changes only when the exact baseline can be verified or retained.
+- [x] Compare palette encoding and compression options using representative worlds.
+- [x] Store sparse changes only when the exact baseline can be verified or retained. Encoding reuses unchanged sections, identified exactly; files stay complete snapshots.
 - [ ] Validate movement, reach, cooldowns, inventory conservation, and resource consumption using authoritative version rules.
 - [x] Reject malformed, non-finite, overflowing, replayed, and out-of-state inputs.
 - [x] Keep identity verification separate from protocol and simulation.
@@ -60,14 +60,14 @@ Part I is complete for its declared scope on Java Edition 1.21.8. The reference 
 ## Performance and parallelism
 
 - [x] Profile representative target-version workloads and estimate the serial fraction under the declared compatibility tiers before optimizing.
-- [ ] Evaluate lower-risk parallel layers: world generation, lighting, storage I/O, packet encoding and compression, and read-only pathfinding.
-- [ ] Report speedups only with comparable semantics, fixed inputs, hardware details, and tail latency.
+- [x] Evaluate lower-risk parallel layers: world generation, lighting, storage I/O, packet encoding and compression, and read-only pathfinding. Storage I/O and chunk-packet encoding run in parallel; the others are not needed yet or not applicable.
+- [x] Report speedups only with comparable semantics, fixed inputs, hardware details, and tail latency.
 
 ## Release readiness
 
-- [ ] Publish reproducible correctness and performance results, including known limitations.
-- [ ] Provide documented build identity and verifiable release provenance.
-- [ ] Review contributor rights and third-party notices for AGPLv3 and alternative commercial licensing.
-- [ ] Define supported platforms, migration paths, operational limits, and recovery procedures.
+- [x] Publish reproducible correctness and performance results, including known limitations.
+- [x] Provide documented build identity and verifiable release provenance. Signing a release remains the project owner's step.
+- [ ] Review contributor rights and third-party notices for AGPLv3 and alternative commercial licensing. The notices are current; the contributor rights review is the owner's.
+- [x] Define supported platforms, migration paths, operational limits, and recovery procedures.
 
 Milestone completion requires the relevant behavioral and integration tests. Framework fixtures and declared version candidates do not constitute playable version support.

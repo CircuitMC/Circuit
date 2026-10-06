@@ -31,6 +31,8 @@ Extensions see the world through controlled services: queries of the published s
 
 The technical tools (tick freeze and step, inspection, redstone traces, item counters) are themselves a native plugin. Circuit does not implement the Bukkit API; see [the evaluation](docs/BUKKIT_EVALUATION.md).
 
+Checkpoints are encoded and written in the background from copy-on-write snapshots, and chunk packets are encoded in parallel. [Performance](docs/PERFORMANCE.md) reports tick-time percentiles, critical paths and coordination costs with the hardware and inputs used. [Releases and operation](docs/RELEASE.md) gives the supported scope, operating limits and recovery procedures.
+
 The framework also provides numerical validation helpers, interface scaffolds and 13 abstract concurrency models.
 
 ## Build

@@ -31,6 +31,10 @@ struct EngineOptions {
     unsigned workers{1};                  // used when `runner` is empty
     std::shared_ptr<JobRunner> runner;    // e.g. SeededRunner for schedule exploration
     bool record_trace{true};
+    bool measure_tasks{false}; // time every task step (profiling; adds clock reads per root)
+    // A phase attempt with at most this many roots runs on the calling thread
+    // (only with the built-in pool runner). 0 always uses the pool.
+    std::size_t inline_roots{32};
     LayoutPolicy layout{LayoutPolicy::adaptive};
     std::uint64_t layout_seed{1};
     std::uint32_t split_interval{20};     // ticks between split passes
@@ -59,6 +63,13 @@ struct EngineStats {
     std::uint64_t merges{};
     std::uint64_t splits{};
     std::uint64_t max_tasks_in_phase{};
+    // Parallel phases: wall time inside the job runner, and, with
+    // EngineOptions::measure_tasks, the time tasks spent in rule code (work)
+    // and the sum over runner calls of the longest task (the critical path).
+    std::uint64_t runner_nanoseconds{};
+    std::uint64_t work_nanoseconds{};
+    std::uint64_t critical_nanoseconds{};
+    std::uint64_t commit_nanoseconds{}; // serial commit of parallel phases
 };
 
 class Engine;
@@ -74,6 +85,20 @@ struct ColumnSnapshot {
     std::vector<std::shared_ptr<const Blocks>> sections; // bottom to top; nullptr: all air
     std::vector<std::pair<contracts::BlockPos, gameplay::BlockEntity>> block_entities;
     std::vector<gameplay::Entity> entities;
+};
+
+// A consistent image of the whole world between ticks, for background
+// checkpoints. `state` is a canonical dump without its block list; the blocks
+// are `sections`, one list per entry of `state.chunks` (bottom to top, null
+// for an empty section), shared copy-on-write with the engine: the engine
+// copies a section before writing to it while a snapshot holds it. Taking a
+// snapshot costs time in the number of columns, entities and scheduled ticks,
+// not in the number of blocks. Release it on the thread that advances the
+// engine, between ticks.
+struct WorldSnapshot {
+    gameplay::WorldDump state;
+    std::int32_t min_y{};
+    std::vector<std::vector<std::shared_ptr<const ColumnSnapshot::Blocks>>> sections;
 };
 
 // Immutable query view of the state committed at the end of a tick. It
@@ -113,6 +138,7 @@ public:
     [[nodiscard]] contracts::Tick time() const noexcept;
     [[nodiscard]] const std::vector<contracts::TraceRecord>& trace() const noexcept;
     [[nodiscard]] gameplay::WorldDump dump() const;
+    [[nodiscard]] WorldSnapshot snapshot() const;
     [[nodiscard]] const EngineStats& stats() const noexcept;
     [[nodiscard]] std::size_t region_count() const noexcept;
     [[nodiscard]] std::size_t loaded_chunks() const noexcept;

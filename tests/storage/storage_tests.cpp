@@ -70,6 +70,9 @@ Tick check_recovery(const History& h, const Recovery& r, std::string_view label)
 struct Policy {
     Tick sync_every{3};
     Tick checkpoint_every{7};
+    // Finish each checkpoint this many ticks after beginning it, logging in
+    // between, as a background writer does; 0 checkpoints at once.
+    Tick finish_after{0};
 };
 struct Outcome {
     Tick durable{};          // every tick up to here was confirmed durable
@@ -91,16 +94,29 @@ Outcome run(circuit::storage::Filesystem& fs, const History& h, Policy p, Tick f
     if (!dir.checkpoint(checkpoint_at(h, from))) return o;
     o.saved = true;
     o.durable = from;
+    std::optional<circuit::storage::PendingCheckpoint> pending;
     for (Tick t = from + 1; t <= h.ticks(); ++t) {
         const bool sync = t % p.sync_every == 0;
         o.attempted = t;
         if (!dir.append(input_at(h, t), sync)) return o;
         if (sync) o.durable = t;
-        if (t % p.checkpoint_every == 0) {
-            if (!dir.checkpoint(checkpoint_at(h, t))) return o;
-            o.durable = t;
+        if (pending && t >= pending->tick + p.finish_after) {
+            if (!dir.finish_checkpoint(*pending, circuit::storage::encode_checkpoint(checkpoint_at(h, pending->tick)))) return o;
+            o.durable = std::max(o.durable, pending->tick);
+            pending.reset();
+        }
+        if (t % p.checkpoint_every == 0 && !pending) {
+            if (p.finish_after == 0) {
+                if (!dir.checkpoint(checkpoint_at(h, t))) return o;
+                o.durable = t;
+            } else {
+                auto begun = dir.begin_checkpoint(t);
+                if (!begun) return o;
+                pending = std::move(*begun);
+            }
         }
     }
+    if (pending && !dir.finish_checkpoint(*pending, circuit::storage::encode_checkpoint(checkpoint_at(h, pending->tick)))) return o;
     return o;
 }
 
@@ -157,6 +173,29 @@ int main() {
                 require(circuit::storage::encode_checkpoint(*decoded) == encoded, std::format("{} at {}: encoding is canonical", s.name, t));
             }
         }
+    });
+
+    suite.run("snapshots encode like dumps and stay fixed while the engine runs", [&] {
+        circuit::storage::SectionCache cache;
+        for (const auto& s : all_scenarios()) {
+            Engine engine(bundle(), s.seed);
+            Admissions admit;
+            for (Tick t = 1; t <= s.ticks; ++t) {
+                engine.advance(admit(s.inputs(t)));
+                if (t % std::max<Tick>(1, s.ticks / 3) != 0) continue;
+                const auto expected = circuit::storage::encode_checkpoint({bundle_id, rules_id(), s.seed, engine.dump(), {}});
+                auto snap = engine.snapshot();
+                // The engine keeps running; copy-on-write keeps the snapshot as it was.
+                for (Tick k = 1; k <= 5 && t + k <= s.ticks; ++k) engine.advance(admit(s.inputs(t + k)));
+                Checkpoint c{bundle_id, rules_id(), s.seed, std::move(snap.state), {}};
+                const auto plain = circuit::storage::encode_checkpoint(c, snap.sections, snap.min_y, nullptr);
+                const auto cached = circuit::storage::encode_checkpoint(c, snap.sections, snap.min_y, &cache);
+                const auto again = circuit::storage::encode_checkpoint(c, snap.sections, snap.min_y, &cache);
+                require(plain == expected && cached == expected && again == expected, std::format("{} at {}: snapshot encoding", s.name, t));
+                t = std::min(s.ticks, t + 5); // those ticks already ran
+            }
+        }
+        require(cache.size() > 0, "the cache keeps the last world's sections");
     });
 
     suite.run("damaged checkpoints are rejected", [&] {
@@ -349,7 +388,7 @@ int main() {
         // only add block entities, which the round-trip cases cover.
         for (const auto* h_ptr : {&histories[0], &histories[2]}) {
             const auto& h = *h_ptr;
-            for (const Policy p : {Policy{3, 7}, Policy{1, 5}, Policy{1000, 4}}) {
+            for (const Policy p : {Policy{3, 7}, Policy{1, 5}, Policy{1000, 4}, Policy{2, 6, 3}}) {
                 MemoryFilesystem clean;
                 const auto all = run(clean, h, p);
                 require(all.attempted == h.ticks(), "clean run completes");

@@ -74,7 +74,10 @@ void RegionContext::write_block(BlockPos pos, BlockState state) {
     } else if (section.use_count() > 1) {
         section = std::make_shared<Section>(*section); // Copy on write: the snapshot keeps the old section.
     }
-    section->blocks[contracts::section_local_index(pos)] = state;
+    auto& cell = section->blocks[contracts::section_local_index(pos)];
+    section->random_ticking = static_cast<std::uint16_t>(section->random_ticking - (gameplay::reacts_to_random_ticks(cell.type()) ? 1 : 0) +
+                                                         (gameplay::reacts_to_random_ticks(state.type()) ? 1 : 0));
+    cell = state;
 }
 
 std::optional<contracts::Generation> RegionContext::chunk_generation(ChunkPos chunk) {

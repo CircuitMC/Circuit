@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
+#include <atomic>
+#include <memory>
 #include <circuit/runtime/job_runner.hpp>
 #include <algorithm>
 #include <functional>
@@ -8,14 +10,25 @@
 namespace circuit::runtime {
 
 void PoolRunner::run(std::span<Task* const> tasks, std::uint32_t) {
-    std::vector<std::function<void()>> jobs;
-    jobs.reserve(tasks.size());
-    for (auto* task : tasks)
-        jobs.emplace_back([task] {
-            while (task->step()) {
-            }
-        });
-    pool_.submit(std::move(jobs)).get();
+    const auto drain = [](Task* task) {
+        while (task->step()) {
+        }
+    };
+    if (tasks.size() <= 1 || workers_ <= 1) {
+        for (auto* task : tasks) drain(task);
+        return;
+    }
+    // Helpers and the calling thread take tasks from a shared index: one pool
+    // job per helper instead of one per task, and no thread sits idle while
+    // the caller waits.
+    auto next = std::make_shared<std::atomic<std::size_t>>(0);
+    const auto take = [tasks, next, drain] {
+        for (std::size_t i; (i = next->fetch_add(1, std::memory_order_relaxed)) < tasks.size();) drain(tasks[i]);
+    };
+    const auto helpers = std::min<std::size_t>(workers_, tasks.size()) - 1;
+    auto done = pool_.submit(std::vector<std::function<void()>>(helpers, take));
+    take();
+    done.get();
 }
 
 SeededRunner::SeededRunner(ExplorationOptions options) : options_(options), state_(options.seed) {}

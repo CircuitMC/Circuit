@@ -68,7 +68,7 @@ xmake run circuit-server --demo --game-version java-1.21.8 --workers 4 --ticks 2
   --plugin "$PWD/build/linux/x86_64/debug/libtechnical_tools.so"
 ```
 
-`--list-versions` lists planned candidates; `--version` returns public build identity. Neither mode opens a network listener. `--serve` runs the network server; see [the network server](SERVER.md).
+`--list-versions` lists the version candidates with their protocol and play support; `--version` returns the public build identity. Neither mode opens a network listener. `--serve` runs the network server; see [the network server](SERVER.md).
 
 ## Validation
 
@@ -125,6 +125,8 @@ xmake f -m release -y
 xmake build circuit-server
 xmake run circuit-server --profile-fixture "$PWD/tests/fixtures/workloads/dust_clocks.ctrace" --ticks 600 --workers 8
 ```
+
+The profile reports tick-time percentiles, rule work, the critical path and coordination costs; [performance](PERFORMANCE.md) explains them. `storage_bench` and `chunk_bench` (`tools/bench/`) measure checkpoint costs and chunk-packet encoding on a release build.
 
 Run `bash tools/check.sh` afterwards to restore the debug configuration. `xmake run circuit-server --compatibility` prints the compatibility table that these traces support. Change a claimed tier only with the evidence that `contract_tests` requires: an L0 claim needs target-version traces and no known gap, and an L2 claim lists its gaps.
 

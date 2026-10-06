@@ -102,7 +102,7 @@ Clients that report the vanilla data pack receive registry entry names only. Cli
 - Survival gameplay: health, hunger, damage, mining times and drops from players, mobs, and crafting.
 - Container screens: chests and hoppers cannot be opened. Dropping items from the inventory is not supported.
 - Lighting: everything is fully lit by sky light. World generation is a flat floor.
-- Saving is limited to what [persistence](PERSISTENCE.md) describes: checkpoints run on the game thread and pause it while they are written.
+- Saving is limited to what [persistence](PERSISTENCE.md) describes. Checkpoints are written in the background; the game thread takes a snapshot and syncs the start of a new log segment.
 - Signed chat: chat is relayed as system messages. Commands are `/help`, `/players`, `/tp`, `/gamemode creative|spectator` and `/tps`, with no command-tree suggestions.
 - Display gaps: block entity data is not sent to clients, so moving pistons are not animated. Other blocks and entities are out of scope.
 - **Other versions:** 1.21.8 and 1.21.4 only. Anvil import and export are defined for 1.21.8 worlds only. A world directory belongs to one bundle; `--migrate-world` copies it to another bundle when both run the same rules.

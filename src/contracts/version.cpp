@@ -70,8 +70,9 @@ constexpr std::array reference_v4_mechanisms{
         "5-tick fluid ticks and distance-limited spread match water_channel. Gap: spreads to every side without "
         "the target version's preference for nearby drops."},
     MechanismEntry{"random_ticks", l1_region_equivalent, l2_declared_deviation, documented_behavior,
-        "Speed from the game rule per section; positions and rule draws use a stream derived from (seed, tick, "
-        "chunk, section) instead of a level-wide stream. Gaps: chunks run in coordinate order instead of a "
+        "Speed from the game rule per section; sections without blocks that react are skipped, as in the target "
+        "version; positions and rule draws use a stream derived from (seed, tick, chunk, section) instead of a "
+        "level-wide stream. Gaps: chunks run in coordinate order instead of a "
         "shuffled order; not compared with the target version."},
     MechanismEntry{"wheat", l0_exact, l2_declared_deviation, documented_behavior,
         "Gap: grows with probability 1/3 per random tick, ignoring light, hydration and support."},

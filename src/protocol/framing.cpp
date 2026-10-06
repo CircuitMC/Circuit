@@ -76,11 +76,11 @@ Decoded<PacketView> open_packet(std::span<const std::byte> packet) {
     return PacketView{*id, Reader(r.rest())};
 }
 
-Bytes deflate_bytes(std::span<const std::byte> data) {
+Bytes deflate_bytes(std::span<const std::byte> data, int level) {
     uLongf size = compressBound(static_cast<uLong>(data.size()));
     Bytes out(size);
     if (compress2(reinterpret_cast<Bytef*>(out.data()), &size, reinterpret_cast<const Bytef*>(data.data()),
-                  static_cast<uLong>(data.size()), Z_DEFAULT_COMPRESSION)
+                  static_cast<uLong>(data.size()), level)
         != Z_OK)
         throw std::runtime_error("protocol: compression failed");
     out.resize(size);

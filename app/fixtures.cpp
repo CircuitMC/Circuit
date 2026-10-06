@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
+#include <algorithm>
 #include "fixtures.hpp"
 #include <circuit/evidence/fixture_runner.hpp>
 #include <circuit/evidence/trace_format.hpp>
@@ -49,6 +50,7 @@ int profile_fixture(const std::string& path, unsigned ticks, unsigned workers) {
     runtime::EngineOptions options;
     options.workers = workers;
     options.record_trace = false;
+    options.measure_tasks = true;
     runtime::Engine engine(inputs->bundle, 0, options);
     const std::vector<contracts::Command> none;
     const auto step = [&] {
@@ -56,17 +58,42 @@ int profile_fixture(const std::string& path, unsigned ticks, unsigned workers) {
         engine.advance(it == inputs->by_tick.end() ? none : it->second);
     };
     while (engine.time() < parsed->ticks + 2) step(); // Load, setup and settle.
-    const auto before = engine.stats().phase_nanoseconds;
+    const auto before = engine.stats();
+    std::vector<double> durations;
+    durations.reserve(ticks);
     const auto start = std::chrono::steady_clock::now();
-    for (unsigned i = 0; i < ticks; ++i) step();
-    const auto total = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
-    std::cout << std::format("profile {} ticks={} workers={} total_ms={:.1f} mean_tick_ms={:.3f} regions={} max_parallel_tasks={}\n",
-                             path, ticks, workers, total, total / ticks, engine.region_count(), engine.stats().max_tasks_in_phase);
-    for (std::size_t p = 1; p < contracts::phase_order.size(); ++p) {
-        const auto ms = static_cast<double>(engine.stats().phase_nanoseconds[p] - before[p]) / 1e6;
-        std::cout << std::format("  phase {:<15} {:9.1f} ms {:5.1f}%\n", contracts::phase_name(contracts::phase_order[p]), ms,
-                                 100.0 * ms / total);
+    for (unsigned i = 0; i < ticks; ++i) {
+        const auto t = std::chrono::steady_clock::now();
+        step();
+        durations.push_back(std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t).count());
     }
+    const auto total = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
+    const auto& after = engine.stats();
+    std::ranges::sort(durations);
+    const auto at = [&](double q) { return durations[std::min(durations.size() - 1, static_cast<std::size_t>(q * static_cast<double>(durations.size())))]; };
+    std::cout << std::format("profile {} ticks={} workers={} total_ms={:.1f} mean_tick_ms={:.3f} p50={:.3f} p95={:.3f} p99={:.3f} max={:.3f} "
+                             "regions={} max_parallel_tasks={}\n",
+                             path, ticks, workers, total, total / ticks, at(0.50), at(0.95), at(0.99), durations.back(), engine.region_count(),
+                             after.max_tasks_in_phase);
+    double phases = 0;
+    for (std::size_t p = 1; p < contracts::phase_order.size(); ++p) {
+        const auto ms = static_cast<double>(after.phase_nanoseconds[p] - before.phase_nanoseconds[p]) / 1e6;
+        phases += ms;
+        std::cout << std::format("  phase {:<15} {:9.1f} ms {:5.1f}%\n", contracts::phase_name(contracts::phase_order[p]), ms, 100.0 * ms / total);
+    }
+    // Where the time of the parallel phases goes: rule work, the critical path
+    // (the longest task of each runner call) and coordination around it.
+    const auto ms = [](std::uint64_t ns) { return static_cast<double>(ns) / 1e6; };
+    const auto work = ms(after.work_nanoseconds - before.work_nanoseconds);
+    const auto critical = ms(after.critical_nanoseconds - before.critical_nanoseconds);
+    const auto runner = ms(after.runner_nanoseconds - before.runner_nanoseconds);
+    const auto serial = ms(after.phase_nanoseconds[0] - before.phase_nanoseconds[0]);
+    const auto commit = ms(after.commit_nanoseconds - before.commit_nanoseconds);
+    std::cout << std::format("  rule work {:.1f} ms; critical path {:.1f} ms; in the job runner {:.1f} ms; commands phase {:.1f} ms; "
+                             "coordination outside the runner {:.1f} ms, of which commit {:.1f} ms; work per worker-ms in the runner {:.2f}; "
+                             "layout {:.1f} ms\n",
+                             work, critical, runner, serial, phases - runner, commit, runner > 0 ? work / (runner * workers) : 0.0,
+                             total - phases - serial);
     return 0;
 }
 

@@ -27,16 +27,19 @@ public:
     [[nodiscard]] virtual bool concurrent() const noexcept = 0;
 };
 
-// Runs each task as one job on the Asio worker pool; the calling thread
-// waits for the batch. Workers never wait for other pool jobs.
+// Runs tasks on the Asio worker pool: up to `workers` threads, the calling
+// thread included, take tasks from a shared index until none is left. A
+// single task, or a single worker, runs on the calling thread. Workers never
+// wait for other pool jobs.
 class PoolRunner final : public JobRunner {
 public:
-    explicit PoolRunner(unsigned workers) : pool_(workers) {}
+    explicit PoolRunner(unsigned workers) : pool_(workers > 1 ? workers - 1 : 1), workers_(workers) {}
     void run(std::span<Task* const> tasks, std::uint32_t attempt) override;
-    [[nodiscard]] bool concurrent() const noexcept override { return true; }
+    [[nodiscard]] bool concurrent() const noexcept override { return workers_ > 1; }
 
 private:
     StageExecutor pool_;
+    unsigned workers_;
 };
 
 // Deterministic schedule exploration on the calling thread. A seed fully
