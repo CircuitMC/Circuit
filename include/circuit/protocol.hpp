@@ -26,8 +26,9 @@ struct version_descriptor {
     bool supports_play;
 };
 
-// Selecting a version chooses ONE adapter for the server process. It does not
-// claim wire compatibility: these candidates currently have no play codec.
+// Selecting a version chooses ONE adapter for the server process. Only
+// candidates marked supported have a play codec; the network server is in
+// src/server.
 class selected_version {
 public:
     explicit constexpr selected_version(version_descriptor value) : value_(value) {}
@@ -42,8 +43,10 @@ private:
 class builtin_registry {
 public:
     inline static constexpr std::array candidates{
-        version_descriptor{"java-1.21.8", "java", "1.21.8", std::nullopt,
-                           implementation_status::planned, false},
+        version_descriptor{"java-1.21.8", "java", "1.21.8", 772,
+                           implementation_status::supported, true},
+        version_descriptor{"java-1.21.4", "java", "1.21.4", 769,
+                           implementation_status::supported, true},
         version_descriptor{"java-1.20.4", "java", "1.20.4", std::nullopt,
                            implementation_status::planned, false},
     };

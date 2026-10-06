@@ -1,0 +1,46 @@
+circuit-trace 1
+title Observer pulse extended by a repeater
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.1.1+mc1.21.4
+mechanisms observer repeater redstone_lamp scheduled_ticks
+area -1 -1 2 1 0 7
+ticks 24
+changes ordered
+
+at 0 set 0 -1 3 minecraft:stone
+at 0 set 0 -1 4 minecraft:stone
+at 0 set 0 -1 5 minecraft:stone
+at 0 set 0 -1 6 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:observer[facing=north,powered=false]
+at 0 set 0 0 5 minecraft:repeater[delay=4,facing=north,locked=false,powered=false]
+at 0 set 0 0 6 minecraft:redstone_lamp[lit=false]
+
+at 1 set 0 0 3 minecraft:glass
+change 1 0 0 3 minecraft:stone minecraft:glass
+
+change 2 0 0 4 minecraft:observer[facing=north,powered=false] minecraft:observer[facing=north,powered=true]
+
+block 3 0 0 4 minecraft:observer[facing=north,powered=true]
+
+change 4 0 0 4 minecraft:observer[facing=north,powered=true] minecraft:observer[facing=north,powered=false]
+
+block 5 0 0 4 minecraft:observer[facing=north,powered=false]
+
+change 10 0 0 5 minecraft:repeater[delay=4,facing=north,locked=false,powered=false] minecraft:repeater[delay=4,facing=north,locked=false,powered=true]
+change 10 0 0 6 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+block 10 0 0 5 minecraft:repeater[delay=4,facing=north,locked=false,powered=true]
+
+block 11 0 0 5 minecraft:repeater[delay=4,facing=north,locked=false,powered=true]
+block 11 0 0 6 minecraft:redstone_lamp[lit=true]
+
+change 18 0 0 5 minecraft:repeater[delay=4,facing=north,locked=false,powered=true] minecraft:repeater[delay=4,facing=north,locked=false,powered=false]
+block 18 0 0 5 minecraft:repeater[delay=4,facing=north,locked=false,powered=false]
+
+block 19 0 0 5 minecraft:repeater[delay=4,facing=north,locked=false,powered=false]
+
+change 22 0 0 6 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+block 22 0 0 6 minecraft:redstone_lamp[lit=false]
+
+block 23 0 0 6 minecraft:redstone_lamp[lit=false]

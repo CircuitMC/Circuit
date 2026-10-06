@@ -2,9 +2,15 @@
 
 ## Status
 
-The Part I core runs headless: shared contracts, a set of reference rules, an independent sequential oracle, and a region-parallel runtime checked against the oracle. It opens no network port and has no persistence.
+The Part I core runs headless: shared contracts, a set of reference rules, an independent sequential oracle, and a region-parallel runtime checked against the oracle. The [network server](SERVER.md) and [persistence](PERSISTENCE.md) are built on it.
 
-The rules are **circuit-reference-rules-v4**. They are Circuit's own definitions, written from public documentation and from traces of Java Edition 1.21.8 recorded by an instrumented server outside this repository. All 20 target-version traces in `tests/fixtures/harness/` pass on both the parallel runtime and the oracle.
+The rules are **circuit-reference-rules-v5**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
+
+Two version bundles run them: `java-1.21.8` and `java-1.21.4`. Each version has 20 traces recorded on the unmodified server:
+- 1.21.8 traces are in `tests/fixtures/harness/`;
+- 1.21.4 traces are in `tests/fixtures/harness-1.21.4/`.
+
+The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 40 pass on both the parallel runtime and the oracle.
 
 The compatibility table is part of the version bundle (`src/contracts/version.cpp`). `circuit-server --compatibility` prints it. Each row states a target tier, a claimed tier, the evidence source, and its limitations:
 

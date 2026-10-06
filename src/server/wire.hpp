@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
+#include "registries.hpp"
 #include <circuit/protocol/codec.hpp>
 #include <circuit/protocol/nbt.hpp>
 #include <circuit/protocol/packets.hpp>
@@ -122,6 +123,8 @@ public:
     Bytes registry_data(std::string_view registry,
                         const std::vector<std::pair<std::string_view, protocol::nbt::Tag>>& entries) const;
     Bytes finish_configuration() const;
+    // Update Tags (configuration): tag entries are numeric ids in `registries`.
+    Bytes update_tags(const std::vector<RegistryTags>& tags, const std::vector<RegistryEntries>& registries) const;
 
     // Play.
     struct JoinGame {

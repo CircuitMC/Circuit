@@ -285,10 +285,13 @@ int main(int argc, char** argv) {
     });
 
     suite.run("target-version traces pass and match their skeletons", [&] {
+      // Traces of each supported game version, recorded by the external harness.
+      for (const auto& [directory, version] : {std::pair{"harness", "1.21.8"}, std::pair{"harness-1.21.4", "1.21.4"}}) {
         std::size_t traces = 0;
-        for (const auto& entry : fs::directory_iterator(fixtures / "harness")) {
+        for (const auto& entry : fs::directory_iterator(fixtures / directory)) {
             const auto trace = parse(read_text(entry.path()));
-            require(trace.source == circuit::contracts::EvidenceSource::harness_trace && trace.harness.starts_with("circuit-harness:"),
+            require(trace.source == circuit::contracts::EvidenceSource::harness_trace && trace.harness.starts_with("circuit-harness:") &&
+                        trace.game_version == version && trace.harness.ends_with(std::string("+mc") + version),
                     std::format("{}: harness provenance", entry.path().string()));
             // The trace must come from the scenario currently in the repository.
             auto origin = fixtures / "skeletons" / entry.path().filename();
@@ -312,7 +315,8 @@ int main(int argc, char** argv) {
             }
             ++traces;
         }
-        require(traces >= 20, std::format("{} target-version traces", traces));
+        require(traces >= 20, std::format("{} target-version traces for {}", traces, version));
+      }
     });
 
     return suite.finish();

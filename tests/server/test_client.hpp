@@ -22,9 +22,11 @@ using protocol::Writer;
 
 class TestClient {
 public:
-    explicit TestClient(std::uint16_t port) : socket_(io_) {
+    // A client of protocol 772 (1.21.8) or 769 (1.21.4).
+    explicit TestClient(std::uint16_t port, std::int32_t protocol_version = 772)
+        : socket_(io_), protocol_(protocol_version), game_version_(protocol_version == 769 ? "1.21.4" : "1.21.8") {
         socket_.connect({asio::ip::make_address("127.0.0.1"), port});
-        ids_ = protocol::PacketIds::for_protocol(772);
+        ids_ = protocol::PacketIds::for_protocol(protocol_version);
     }
 
     std::int32_t id(State s, Bound b, std::string_view name) const { return ids_->id(s, b, name); }
@@ -88,9 +90,9 @@ public:
     }
 
     // Handshake with intent 2 (login) and Login Start.
-    void start_login(std::string_view name, std::int32_t protocol_version = 772) {
+    void start_login(std::string_view name, std::optional<std::int32_t> protocol_version = std::nullopt) {
         send(id(State::handshaking, Bound::serverbound, "intention"),
-             Writer().varint(protocol_version).string("localhost").u16(25565).varint(2));
+             Writer().varint(protocol_version.value_or(protocol_)).string("localhost").u16(25565).varint(2));
         send(State::login, "hello", Writer().string(name, 16).uuid({}));
     }
 
@@ -108,7 +110,7 @@ public:
             throw std::runtime_error("test client: login not accepted");
         send(State::login, "login_acknowledged");
         if (!until(State::configuration, "select_known_packs")) throw std::runtime_error("test client: no known packs");
-        send(State::configuration, "select_known_packs", Writer().varint(1).string("minecraft").string("core").string("1.21.8"));
+        send(State::configuration, "select_known_packs", Writer().varint(1).string("minecraft").string("core").string(game_version_));
         send(State::configuration, "client_information",
              Writer().string("en_us", 16).i8(4).varint(0).boolean(true).u8(0x7F).varint(1).boolean(false).boolean(true).varint(0));
         if (!until(State::configuration, "finish_configuration")) throw std::runtime_error("test client: no finish");
@@ -152,6 +154,8 @@ private:
     asio::ip::tcp::socket socket_;
     protocol::FrameDecoder decoder_{protocol::FrameLimits{.max_frame = 2097151, .max_uncompressed = 8388608, .max_buffered = 64 * 1024 * 1024}};
     std::int32_t threshold_{-1};
+    std::int32_t protocol_;
+    std::string game_version_;
     bool closed_{false};
     std::unique_ptr<auth::Cfb8> in_cipher_, out_cipher_;
     const protocol::PacketIds* ids_;

@@ -103,18 +103,36 @@ constexpr RuleLimits vanilla_like_limits{
     .max_ticket_radius = 8,
 };
 
+// Both supported versions run the same reference rules: the 20 harness traces
+// recorded on 1.21.4 are identical to those recorded on 1.21.8.
+constexpr RuleSet reference_rules{"circuit-reference-rules-v5", RngPolicy::per_section_derived_stream, reference_v4_mechanisms};
+
 constexpr std::array bundles{
     VersionBundle{
         .id = "java-1.21.8",
         .game_version = "1.21.8",
         .protocol_candidate = "java-1.21.8",
-        .rules = RuleSet{"circuit-reference-rules-v5", RngPolicy::per_section_derived_stream,
-                         reference_v4_mechanisms},
+        .rules = reference_rules,
         .world = {-64, 384},
         .limits = vanilla_like_limits,
         .generator = "empty",
+        .protocol = 772,
+        .data_version = 4440,
+        .save_conversion = true,
+        .play_supported = true,
+    },
+    VersionBundle{
+        .id = "java-1.21.4",
+        .game_version = "1.21.4",
+        .protocol_candidate = "java-1.21.4",
+        .rules = reference_rules,
+        .world = {-64, 384},
+        .limits = vanilla_like_limits,
+        .generator = "empty",
+        .protocol = 769,
+        .data_version = 4189,
         .save_conversion = false,
-        .play_supported = false,
+        .play_supported = true,
     },
     VersionBundle{
         .id = "java-1.20.4",
@@ -124,6 +142,8 @@ constexpr std::array bundles{
         .world = {-64, 384},
         .limits = vanilla_like_limits,
         .generator = "none",
+        .protocol = 0,
+        .data_version = 0,
         .save_conversion = false,
         .play_supported = false,
     },

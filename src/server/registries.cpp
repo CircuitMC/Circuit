@@ -117,7 +117,32 @@ const std::vector<RegistryEntries> registries_772{
      }},
 };
 
-std::vector<RegistryData> data_772() {
+// Registry entries for protocol 769 (Java Edition 1.21.4). The cat, chicken,
+// cow, frog, pig and wolf-sound variant registries became synchronized only in
+// 1.21.5, so they are not sent. Sources, all from early 2025 and describing
+// 1.21.4:
+// - dimension types, biomes, damage types and chat types: as for 1.21.8.
+//   minecraft.wiki "Damage type" revision 2892923 lists the same 49 types
+//   (campfire and wind_charge since 1.21, mace_smash and ender_pearl since
+//   1.21.2), and minecraft-data's 1.21.4 biomes.json the same 65 biomes;
+// - paintings: minecraft.wiki "Painting" revision 2884854. "Dennis" came only
+//   in 1.21.7;
+// - wolf variants: minecraft.wiki "Wolf" revision 2897968 (9 variants).
+std::vector<RegistryEntries> make_769() {
+    std::vector<RegistryEntries> out;
+    for (const auto& r : registries_772) {
+        if (r.registry == "minecraft:dimension_type" || r.registry == "minecraft:worldgen/biome" || r.registry == "minecraft:damage_type" ||
+            r.registry == "minecraft:chat_type" || r.registry == "minecraft:wolf_variant")
+            out.push_back(r);
+        else if (r.registry == "minecraft:painting_variant") {
+            out.push_back(r);
+            std::erase(out.back().entries, std::string_view("minecraft:dennis"));
+        }
+    }
+    return out;
+}
+
+std::vector<RegistryData> data_772(bool with_cloud_height = true) {
     // Overworld column of minecraft.wiki "Dimension type" (revision 3019989).
     auto overworld = nbt::Tag::compound();
     overworld.set("ultrawarm", nbt::Tag::boolean(false));
@@ -133,7 +158,7 @@ std::vector<RegistryData> data_772() {
     overworld.set("min_y", nbt::Tag::int_(-64));
     overworld.set("height", nbt::Tag::int_(384));
     overworld.set("logical_height", nbt::Tag::int_(384));
-    overworld.set("cloud_height", nbt::Tag::int_(192));
+    if (with_cloud_height) overworld.set("cloud_height", nbt::Tag::int_(192)); // 1.21.5+
     auto light = nbt::Tag::compound();
     light.set("type", nbt::Tag::string("minecraft:uniform"));
     light.set("min_inclusive", nbt::Tag::int_(0));
@@ -182,18 +207,38 @@ std::vector<RegistryData> data_772() {
 } // namespace
 
 const std::vector<RegistryEntries>* synced_registries(std::int32_t protocol) noexcept {
+    static const auto registries_769 = make_769();
     switch (protocol) {
     case 772: return &registries_772;
+    case 769: return &registries_769;
     default: return nullptr;
     }
 }
 
 const std::vector<RegistryData>* registries_with_data(std::int32_t protocol) {
     static const auto v772 = data_772();
+    static const auto v769 = data_772(false);
     switch (protocol) {
     case 772: return &v772;
+    case 769: return &v769;
     default: return nullptr;
     }
+}
+
+const std::vector<RegistryTags>& synced_tags(std::int32_t protocol) {
+    // The 1.21.4 wolf variants refer to these biome tags, and the client
+    // refuses unbound tags. Contents: minecraft.wiki "Biome tag (Java
+    // Edition)" revision 2888034.
+    static const std::vector<RegistryTags> v769{
+        {"minecraft:worldgen/biome",
+         {
+             {"minecraft:is_badlands", {"minecraft:badlands", "minecraft:eroded_badlands", "minecraft:wooded_badlands"}},
+             {"minecraft:is_jungle", {"minecraft:bamboo_jungle", "minecraft:jungle", "minecraft:sparse_jungle"}},
+             {"minecraft:is_savanna", {"minecraft:savanna", "minecraft:savanna_plateau", "minecraft:windswept_savanna"}},
+         }},
+    };
+    static const std::vector<RegistryTags> none;
+    return protocol == 769 ? v769 : none;
 }
 
 std::optional<std::int32_t> registry_index(const std::vector<RegistryEntries>& registries, std::string_view registry,

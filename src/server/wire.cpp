@@ -14,7 +14,7 @@ struct Wire::Ids {
     std::int32_t status_response, pong_response;
     std::int32_t login_disconnect, hello, login_compression, login_finished;
     std::int32_t cfg_custom_payload, cfg_disconnect, cfg_finish, cfg_keep_alive, cfg_registry_data, cfg_features,
-        cfg_known_packs;
+        cfg_known_packs, cfg_update_tags;
     std::int32_t login, set_health, game_event, player_abilities, set_held_slot, spawn_position, set_time, chunk_center,
         chunk_batch_start, chunk_batch_finished, level_chunk, forget_chunk, block_update, block_changed_ack,
         player_position, keep_alive, system_chat, player_info_update, player_info_remove, add_entity,
@@ -47,6 +47,7 @@ Wire::Wire(std::int32_t protocol) : protocol_(protocol), ids_([&]() -> const pro
     ids->cfg_registry_data = cb(State::configuration, "registry_data");
     ids->cfg_features = cb(State::configuration, "update_enabled_features");
     ids->cfg_known_packs = cb(State::configuration, "select_known_packs");
+    ids->cfg_update_tags = cb(State::configuration, "update_tags");
     ids->login = cb(State::play, "login");
     ids->game_event = cb(State::play, "game_event");
     ids->set_health = cb(State::play, "set_health");
@@ -173,6 +174,19 @@ Bytes Wire::registry_data(std::string_view registry,
     return packet(id_->cfg_registry_data, w);
 }
 Bytes Wire::finish_configuration() const { return packet(id_->cfg_finish, Writer()); }
+
+Bytes Wire::update_tags(const std::vector<RegistryTags>& tags, const std::vector<RegistryEntries>& registries) const {
+    Writer w;
+    w.varint(static_cast<std::int32_t>(tags.size()));
+    for (const auto& r : tags) {
+        w.string(r.registry).varint(static_cast<std::int32_t>(r.tags.size()));
+        for (const auto& [name, entries] : r.tags) {
+            w.string(name).varint(static_cast<std::int32_t>(entries.size()));
+            for (const auto e : entries) w.varint(registry_index(registries, r.registry, e).value());
+        }
+    }
+    return packet(id_->cfg_update_tags, w);
+}
 
 Bytes Wire::join_game(const JoinGame& j) const {
     Writer w;

@@ -19,14 +19,18 @@ void check(bool condition, const char* name) {
 } // namespace
 
 int main() {
-    for (const auto id : {"java-1.21.8", "java-1.20.4"}) {
+    for (const auto& [id, protocol] : {std::pair{"java-1.21.8", 772}, std::pair{"java-1.21.4", 769}, std::pair{"java-1.20.4", 0}}) {
         const auto selected = circuit::protocol::builtin_registry::select(id);
         check(selected.has_value(), "declared candidate is selectable");
         if (selected) {
             const auto& descriptor = selected->descriptor();
             check(descriptor.id == id, "selection returns requested version");
-            check(!descriptor.supports_play, "unimplemented adapter never claims Play support");
-            check(!descriptor.protocol_number, "unverified protocol numbers stay unset");
+            if (protocol == 0) {
+                check(!descriptor.supports_play, "unimplemented adapter never claims Play support");
+                check(!descriptor.protocol_number, "unverified protocol numbers stay unset");
+            } else {
+                check(descriptor.supports_play && descriptor.protocol_number == protocol, "implemented adapters name their protocol");
+            }
         }
     }
     const auto unknown = circuit::protocol::builtin_registry::select("java-unknown");

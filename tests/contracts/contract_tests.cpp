@@ -78,7 +78,12 @@ int main() {
         const auto current = BundleRegistry::select_for_simulation("java-1.21.8");
         require(current.has_value(), "first target has an executable rule set");
         const auto& bundle = **current;
-        require(!bundle.play_supported && !bundle.save_conversion, "no play or save claims");
+        require(bundle.play_supported && bundle.save_conversion && bundle.protocol == 772 && bundle.data_version == 4440,
+                "1.21.8 plays and converts saves");
+        const auto second = BundleRegistry::select_for_simulation("java-1.21.4");
+        require(second && (*second)->play_supported && !(*second)->save_conversion && (*second)->protocol == 769 &&
+                    (*second)->rules->id == bundle.rules->id,
+                "1.21.4 plays with the same rules, without save conversion");
         require(bundle.world.sections() == 24 && bundle.world.contains_y(-64) && !bundle.world.contains_y(320), "world shape");
         require(BundleRegistry::select_for_simulation("java-1.20.4").error() == ErrorCode::unsupported_version,
                 "candidate without rules cannot execute");

@@ -1,0 +1,43 @@
+circuit-trace 1
+title Double chest across a chunk edge
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.1.1+mc1.21.4
+mechanisms double_chest hopper comparator
+area 14 -1 -1 18 1 2
+ticks 14
+changes ordered
+
+at 0 set 15 -1 0 minecraft:stone
+at 0 set 15 -1 1 minecraft:stone
+at 0 set 16 -1 0 minecraft:stone
+at 0 set 16 -1 1 minecraft:stone
+at 0 set 16 0 0 minecraft:chest[facing=north,type=single,waterlogged=false]
+
+at 1 set 15 0 0 minecraft:chest[facing=north,type=left,waterlogged=false]
+change 1 15 0 0 minecraft:air minecraft:chest[facing=north,type=left,waterlogged=false]
+change 1 16 0 0 minecraft:chest[facing=north,type=single,waterlogged=false] minecraft:chest[facing=north,type=right,waterlogged=false]
+at 1 set 15 0 1 minecraft:comparator[facing=north,mode=compare,powered=false]
+change 1 15 0 1 minecraft:air minecraft:comparator[facing=north,mode=compare,powered=false]
+at 1 set 16 1 0 minecraft:hopper[enabled=true,facing=down]
+change 1 16 1 0 minecraft:air minecraft:hopper[enabled=true,facing=down]
+at 1 insert 16 1 0 0 minecraft:iron_ingot 3
+block 1 15 0 0 minecraft:chest[facing=north,type=left,waterlogged=false]
+block 1 16 0 0 minecraft:chest[facing=north,type=right,waterlogged=false]
+slot 1 15 0 0 0 empty 0
+
+change 3 15 0 1 minecraft:comparator[facing=north,mode=compare,powered=false] minecraft:comparator[facing=north,mode=compare,powered=true]
+
+slot 9 15 0 0 0 empty 0
+slot 9 16 0 0 0 minecraft:iron_ingot 2
+
+at 12 set 16 0 0 minecraft:air
+change 12 16 0 0 minecraft:chest[facing=north,type=right,waterlogged=false] minecraft:air
+change 12 15 0 0 minecraft:chest[facing=north,type=left,waterlogged=false] minecraft:chest[facing=north,type=single,waterlogged=false]
+block 12 15 0 0 minecraft:chest[facing=north,type=single,waterlogged=false]
+
+at 13 set 16 0 0 minecraft:chest[facing=north,type=right,waterlogged=false]
+change 13 16 0 0 minecraft:air minecraft:chest[facing=north,type=right,waterlogged=false]
+change 13 15 0 0 minecraft:chest[facing=north,type=single,waterlogged=false] minecraft:chest[facing=north,type=left,waterlogged=false]
+block 13 15 0 0 minecraft:chest[facing=north,type=left,waterlogged=false]
+block 13 16 0 0 minecraft:chest[facing=north,type=right,waterlogged=false]

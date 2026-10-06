@@ -61,6 +61,13 @@ public:
 
     [[nodiscard]] const Path& root() const noexcept { return root_; }
 
+    // The bundle and rule-set ids a world directory was saved under; nullopt
+    // when it holds no world.
+    struct Identity {
+        std::string bundle_id, rules_id;
+    };
+    static std::expected<std::optional<Identity>, std::string> identity(const Filesystem& fs, const Path& root);
+
 private:
     struct Manifest {
         std::string checkpoint, checkpoint_sha;

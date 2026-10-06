@@ -5,6 +5,7 @@
 #include <circuit/runtime/demo_kernel.hpp>
 #include "fixtures.hpp"
 #include "serve.hpp"
+#include <circuit/server/anvil.hpp>
 #include "simulate.hpp"
 #include <asio/io_context.hpp>
 #include <asio/signal_set.hpp>
@@ -45,6 +46,7 @@ void usage() {
         "  --serve [--config <file>] [--world <dir>] [--port N] [--offline] [--workers 1..64]\n"
         "  --import-anvil <java-world> --world <dir> [--config <file>] [--substitute-unsupported]\n"
         "  --export-anvil <new-java-world> --world <dir> [--config <file>]\n"
+        "  --migrate-world <new-dir> --world <dir> --game-version java-1.21.8|java-1.21.4\n"
         "  --demo [--game-version java-1.21.8|java-1.20.4]\n"
         "         [--workers 1..64] [--ticks 1..1000000] [--plugin <shared-library>]\n"
         "  --list-versions | --version | --help\n";
@@ -55,7 +57,8 @@ int main(int argc, char** argv) {
         unsigned workers = 4, ticks = 20;
         bool demo = false, simulate = false, ticks_given = false, workers_given = false, compatibility = false, serve = false,
              offline = false;
-        std::string config_path, world_directory, import_source, export_target;
+        std::string config_path, world_directory, import_source, export_target, migrate_target;
+        bool version_given = false;
         bool substitute = false;
         std::optional<std::uint16_t> port;
         circuit::app::SimulateOptions simulation;
@@ -100,7 +103,8 @@ int main(int argc, char** argv) {
             else if (arg == "--import-anvil") import_source = value();
             else if (arg == "--export-anvil") export_target = value();
             else if (arg == "--substitute-unsupported") substitute = true;
-            else if (arg == "--game-version") selected = value();
+            else if (arg == "--game-version") { selected = value(); version_given = true; }
+            else if (arg == "--migrate-world") migrate_target = value();
             else if (arg == "--plugin") libraries.emplace_back(value());
             else throw std::invalid_argument("unknown option: " + std::string(arg));
         }
@@ -114,6 +118,16 @@ int main(int argc, char** argv) {
         if (!fixtures.empty()) return circuit::app::check_fixtures(fixtures, workers);
         if (!profile.empty()) return circuit::app::profile_fixture(profile, ticks_given ? ticks : 600, workers);
         if (compatibility) return circuit::app::print_compatibility(selected);
+        if (!migrate_target.empty()) {
+            if (world_directory.empty() || !version_given) throw std::invalid_argument("--migrate-world needs --world and --game-version");
+            const auto tick = circuit::server::migrate_world(world_directory, migrate_target, selected);
+            if (!tick) {
+                std::cerr << "circuit-server: migration failed: " << tick.error() << '\n';
+                return 1;
+            }
+            std::cout << "migrated " << world_directory << " to " << migrate_target << " for " << selected << " at tick " << *tick << '\n';
+            return 0;
+        }
         if (serve || !import_source.empty() || !export_target.empty()) {
             if (static_cast<int>(serve) + !import_source.empty() + !export_target.empty() > 1)
                 throw std::invalid_argument("--serve, --import-anvil and --export-anvil are exclusive");
@@ -126,6 +140,7 @@ int main(int argc, char** argv) {
             if (port) config.port = *port;
             if (offline) config.online_mode = false;
             if (!world_directory.empty()) config.world_directory = world_directory;
+            if (version_given) config.game_version = selected;
             if (workers_given) config.workers = workers;
             if (!import_source.empty()) return circuit::app::import_anvil(import_source, config, substitute);
             if (!export_target.empty()) return circuit::app::export_anvil(config, export_target);

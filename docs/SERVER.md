@@ -2,7 +2,7 @@
 
 ## Status
 
-Circuit runs a playable creative-mode world for Java Edition 1.21.8 (protocol 772) on top of the headless engine. The world is a flat stone floor at y = −61. The real 1.21.8 client can join in offline and online mode, build with the reference blocks, use levers, repeaters and comparators, and watch redstone, pistons, observers, hoppers, water and item entities run under the reference rules. Several players see each other and chat. Native modules and Java plugins can extend it through controlled services; see [the plugin API](PLUGIN_API.md).
+Circuit runs a playable creative-mode world for Java Edition 1.21.8 (protocol 772) or 1.21.4 (protocol 769) on top of the headless engine. One server runs one version, chosen with `game-version`. The world is a flat stone floor at y = −61. The real client of either version can join in offline and online mode, build with the reference blocks, use levers, repeaters and comparators, and watch redstone, pistons, observers, hoppers, water and item entities run under the reference rules. Several players see each other and chat. Native modules and Java plugins can extend it through controlled services; see [the plugin API](PLUGIN_API.md).
 
 With a world directory, the world is saved with checkpoints and an input log and survives crashes; Java Edition 1.21.8 worlds can be imported and exported. See [persistence](PERSISTENCE.md). Survival gameplay and containers are not implemented yet; see [Not supported](#not-supported).
 
@@ -20,7 +20,7 @@ The configuration file holds `key=value` lines; `#` starts a comment. Unknown ke
 | Key | Default | Meaning |
 | --- | --- | --- |
 | `bind-address`, `port` | `0.0.0.0`, `25565` | Listening address |
-| `game-version` | `java-1.21.8` | Version bundle; only bundles with a play protocol can serve |
+| `game-version` | `java-1.21.8` | Version bundle: `java-1.21.8` or `java-1.21.4`. Clients of another protocol are refused at login |
 | `online-mode` | `true` | Require session verification. See [Identity](#identity) |
 | `session-server` | `https://sessionserver.mojang.com` | Session service for online mode; plain `http` only on loopback |
 | `auth-timeout-ms` | `5000` | Deadline for one verification |
@@ -80,12 +80,18 @@ Numeric protocol data is compiled from public documentation, and every table nam
 | --- | --- | --- |
 | Packet ids | minecraft.wiki "Java Edition protocol/Packets", revision 3258009 (1.21.8) and 2938097 (1.21.4) | `tools/extract_packet_ids.py` |
 | Block states, items, entity types | PrismarineJS minecraft-data (MIT) at commit `095709f3`, which the wiki's protocol FAQ points to | `tools/compile_content_tables.py` |
-| Registry entries and their data | minecraft.wiki pages cited in `src/server/registries.cpp` | by hand |
+| Registry entries, their data and the biome tags 1.21.4 needs | minecraft.wiki pages cited in `src/server/registries.cpp` | by hand |
 | Field layouts | minecraft.wiki protocol pages at the same revisions | by hand, in `src/server/wire.cpp` |
 
 Two consistency checks guard these tables:
-- **Packet ids:** where the two public sources name the same packet (83 packets), their ids agree, and per state and direction they list the same number of packets for 1.21.8.
+- **Packet ids:** where the two public sources name the same packet (83 packets), their ids agree. Per state and direction they list the same number of packets for 1.21.8.
+- **1.21.4 packet count:** minecraft-data lists two more serverbound configuration packets for 1.21.4, `custom_report_details` and `server_links`. These are clientbound packets in the wiki's tables, so the server follows the wiki. The eight ids both sources share agree.
 - **Block states:** every block's state count matches its properties, and every state id round-trips through its notation.
+
+**1.21.4 differences.** The 1.21.4 wire protocol differs from 1.21.8 in what the server uses:
+- **Chunk data:** heightmaps are an NBT compound, and paletted containers carry their data-array length.
+- **Registries:** the cat, chicken, cow, frog, pig and wolf-sound variants are not synchronized, and "Dennis" is not yet a painting.
+- **Tags:** its wolf variants need the `is_badlands`, `is_jungle` and `is_savanna` biome tags, which the server sends.
 
 The real client exercises the rest.
 
@@ -99,7 +105,7 @@ Clients that report the vanilla data pack receive registry entry names only. Cli
 - Saving is limited to what [persistence](PERSISTENCE.md) describes: checkpoints run on the game thread and pause it while they are written.
 - Signed chat: chat is relayed as system messages. Commands are `/help`, `/players`, `/tp`, `/gamemode creative|spectator` and `/tps`, with no command-tree suggestions.
 - Display gaps: block entity data is not sent to clients, so moving pistons are not animated. Other blocks and entities are out of scope.
-- Other versions: 1.21.4 support is planned in M8.
+- **Other versions:** 1.21.8 and 1.21.4 only. Anvil import and export are defined for 1.21.8 worlds only. A world directory belongs to one bundle; `--migrate-world` copies it to another bundle when both run the same rules.
 
 ## Testing
 
@@ -110,6 +116,6 @@ Clients that report the vanilla data pack receive registry entry names only. Cli
 
 Two clients outside this repository give independent evidence:
 - **Protocol library:** a mineflayer suite, run against both Circuit and the vanilla server.
-- **Real client:** a Fabric client mod drives the real 1.21.8 client from step scripts and checks the blocks and entities the client shows.
+- **Real client:** a Fabric client mod drives the real 1.21.8 or 1.21.4 client from step scripts and checks the blocks and entities the client shows.
 
 The [verification guide](DEVELOPMENT.md#client-testing) describes how to run them.

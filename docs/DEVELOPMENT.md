@@ -115,7 +115,7 @@ The harness is a separate project. Running it requires accepting the Minecraft E
 - record every block state change inside the area at the moment it is written, including intermediate states, and read probes after the tick ends;
 - write a `harness_trace` fixture with its own build identity in the `harness` key.
 
-Copy only the resulting trace files into `tests/fixtures/harness/`, under the name of the skeleton they came from, and review them before committing. `evidence_tests` then requires them to pass on the engine and the oracle.
+Copy only the resulting trace files into `tests/fixtures/harness/` (1.21.8), or into `tests/fixtures/harness-1.21.4/` for a 1.21.4 build of the harness, under the name of the skeleton they came from. Review them before committing. Each trace names the game version of the server that recorded it. `evidence_tests` then requires every trace to pass on the engine and the oracle, under the bundle of its version.
 
 The harness can also time the target version's tick phases for a workload. Compare that profile with Circuit's own on a release build:
 
@@ -138,14 +138,14 @@ The server is also checked with two clients that live outside this repository. N
 - a piston push and a piston destroying dust into an item entity;
 - player visibility and chat.
 
-Calibrate it against an offline-mode vanilla 1.21.8 server with a flat world, with the bots listed as operators. Then run it against Circuit:
+Calibrate it against an offline-mode vanilla server of the same version with a flat world, with the bots listed as operators. Then run it against Circuit (set `MC_VERSION=1.21.4` and `game-version=java-1.21.4` for the second version):
 
 ```bash
 xmake run circuit-server --serve --offline --port 25580 &
 node suite.js 25580 -61
 ```
 
-**Real client.** A Fabric client mod for the 1.21.8 client runs a step script through Loom's development launch. The client joins the server with quick play, and the script places blocks, uses them, and checks the block states and entities the client shows. It also takes screenshots and writes a report. Scripts are plain text:
+**Real client.** A Fabric client mod for the 1.21.8 client, with a 1.21.4 build of the same mod, runs a step script through Loom's development launch. The client joins the server with quick play, and the script places blocks, uses them, and checks the block states and entities the client shows. It also takes screenshots and writes a report. Scripts are plain text:
 
 ```text
 wait_world

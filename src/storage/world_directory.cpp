@@ -76,6 +76,24 @@ Status WorldDirectory::write_manifest(const Manifest& m) {
     return fs_.sync_directory(root_);
 }
 
+std::expected<std::optional<WorldDirectory::Identity>, std::string> WorldDirectory::identity(const Filesystem& fs, const Path& root) {
+    if (!fs.exists(root / manifest_file)) return std::optional<Identity>{};
+    const auto data = fs.read_file(root / manifest_file);
+    if (!data) return std::unexpected(data.error());
+    std::istringstream in(std::string(reinterpret_cast<const char*>(data->data()), data->size()));
+    std::string line;
+    Identity id;
+    while (std::getline(in, line)) {
+        std::istringstream words(line);
+        std::string key, value;
+        words >> key >> value;
+        if (key == "bundle") id.bundle_id = value;
+        else if (key == "rules") id.rules_id = value;
+    }
+    if (id.bundle_id.empty() || id.rules_id.empty()) return std::unexpected("incomplete manifest");
+    return std::optional<Identity>{std::move(id)};
+}
+
 std::expected<std::optional<WorldDirectory::Manifest>, std::string> WorldDirectory::read_manifest() const {
     if (!fs_.exists(root_ / manifest_file)) return std::optional<Manifest>{};
     const auto data = fs_.read_file(root_ / manifest_file);

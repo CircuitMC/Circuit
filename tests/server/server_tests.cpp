@@ -9,6 +9,7 @@
 #include <circuit/protocol/content.hpp>
 #include <circuit/contracts/version.hpp>
 #include <circuit/runtime/engine.hpp>
+#include <circuit/server/anvil.hpp>
 #include <circuit/server/server.hpp>
 #include <circuit/storage/world_directory.hpp>
 #include <cmath>
@@ -472,6 +473,58 @@ int main() {
         require(kick && text_of(*kick).find("stopping") != std::string::npos, "stop reason delivered");
     });
 
+    suite.run("a 1.21.4 server serves protocol 769", [] {
+        auto config = offline_config();
+        config.game_version = "java-1.21.4";
+        server::Server s(config);
+        s.start();
+        const auto& tables = *protocol::ContentTables::for_protocol(769);
+        {
+            TestClient c(s.port(), 769);
+            c.send(c.id(State::handshaking, Bound::serverbound, "intention"), Writer().varint(769).string("localhost").u16(25565).varint(1));
+            c.send(State::status, "status_request");
+            auto status = c.next();
+            require(status && status->id == c.id(State::status, Bound::clientbound, "status_response"), "status response");
+            const auto json = status->reader().string().value();
+            require(json.find("\"protocol\":769") != std::string::npos && json.find("\"name\":\"1.21.4\"") != std::string::npos, json);
+        }
+        {
+            TestClient c(s.port(), 772);
+            c.start_login("Steve");
+            auto p = c.next();
+            require(p && p->id == c.id(State::login, Bound::clientbound, "login_disconnect"), "a 1.21.8 client is refused");
+        }
+        TestClient c(s.port(), 769);
+        c.join("OldClient");
+        auto pos = c.until(State::play, "player_position");
+        require(pos.has_value(), "spawn");
+        c.send(State::play, "accept_teleportation", Writer().varint(pos->reader().varint().value()));
+        const auto place = [&](std::string_view item, protocol::WirePosition on, std::int32_t seq) {
+            c.send(State::play, "set_creative_mode_slot", Writer().i16(36).varint(1).varint(tables.item_id(item).value()).varint(0).varint(0));
+            c.send(State::play, "use_item_on",
+                   Writer().varint(0).position(on).varint(1).f32(0.5f).f32(1.0f).f32(0.5f).boolean(false).boolean(false).varint(seq));
+        };
+        const auto update = [&](protocol::WirePosition at) -> std::optional<std::int32_t> {
+            const auto want = c.id(State::play, Bound::clientbound, "block_update");
+            const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+            while (std::chrono::steady_clock::now() < deadline) {
+                auto p = c.next(std::chrono::milliseconds(500));
+                if (!p || p->id != want) continue;
+                auto r = p->reader();
+                if (r.position().value() == at) return r.varint().value();
+            }
+            return std::nullopt;
+        };
+        place("minecraft:redstone_lamp", {2, -61, 1}, 1);
+        require(update({2, -60, 1}) == tables.state_id("minecraft:redstone_lamp[lit=false]"), "lamp placed with 1.21.4 ids");
+        place("minecraft:lever", {1, -61, 1}, 2);
+        require(update({1, -60, 1}).has_value(), "lever placed");
+        c.send(State::play, "use_item_on",
+               Writer().varint(0).position({1, -60, 1}).varint(1).f32(0.5f).f32(0.5f).f32(0.5f).boolean(false).boolean(false).varint(3));
+        require(update({2, -60, 1}) == tables.state_id("minecraft:redstone_lamp[lit=true]"), "the lamp lights on 1.21.4");
+        s.stop();
+    });
+
     suite.run("the world and players are saved and restored", [] {
         const auto dir = temporary_directory();
         auto config = offline_config();
@@ -582,6 +635,62 @@ int main() {
         confirm_spawn(c);
         s.stop();
         require(block_at(recovered_state(world), {1, -60, 1}) == block_at(state, {1, -60, 1}), "lever kept after restart");
+        std::filesystem::remove_all(dir);
+    });
+
+    suite.run("worlds move between bundles only through a migration", [] {
+        const auto dir = temporary_directory();
+        auto config = offline_config();
+        config.world_directory = dir / "world";
+        {
+            server::Server s(config);
+            s.start();
+            TestClient c(s.port());
+            c.join("Mover");
+            confirm_spawn(c);
+            use_item_on(c, "minecraft:stone", {0, -61, 3}, 1);
+            require(block_update(c, {0, -60, 3}).has_value(), "stone placed");
+            s.stop();
+        }
+        auto old_client = config;
+        old_client.game_version = "java-1.21.4";
+        bool refused = false;
+        try {
+            server::Server s(old_client);
+        } catch (const std::runtime_error& e) {
+            refused = std::string_view(e.what()).find("java-1.21.8") != std::string_view::npos;
+        }
+        require(refused, "a 1.21.8 world is not opened by a 1.21.4 server");
+        require(!server::migrate_world(config.world_directory, dir / "unsupported", "java-1.20.4"), "no migration to a bundle without rules");
+        const auto tick = server::migrate_world(config.world_directory, dir / "world-1.21.4", "java-1.21.4");
+        require(tick.has_value(), std::format("migration: {}", tick ? "" : tick.error()));
+        require(!server::migrate_world(config.world_directory, dir / "world-1.21.4", "java-1.21.4"), "an existing target is not overwritten");
+        old_client.world_directory = dir / "world-1.21.4";
+        {
+            server::Server s(old_client);
+            s.start();
+            TestClient c(s.port(), 769);
+            c.join("Mover");
+            const auto at = confirm_spawn(c);
+            require(at[0] == 0.5 && at[1] == -60.0 && at[2] == 0.5, "the player's saved position came along");
+            s.stop();
+        }
+        // The migrated world keeps the stone.
+        {
+            const auto& bundle = **contracts::BundleRegistry::select_for_simulation("java-1.21.4");
+            storage::PosixFilesystem fs;
+            storage::WorldDirectory world(fs, dir / "world-1.21.4", "java-1.21.4", std::string(bundle.rules->id));
+            auto r = world.recover();
+            require(r && *r, "migrated world recovers");
+            runtime::Engine engine(bundle, (*r)->checkpoint.seed, (*r)->checkpoint.state);
+            for (const auto& input : (*r)->inputs) engine.advance(input.commands);
+            require(block_at(engine.dump(), {0, -60, 3}) == gameplay::blocks::stone().raw(), "stone migrated");
+        }
+        // Anvil interchange is defined for 1.21.8 worlds only.
+        auto anvil_config = old_client;
+        anvil_config.world_directory = dir / "anvil-target";
+        const auto imported = server::import_anvil_world(dir / "nowhere", anvil_config);
+        require(!imported, "no Anvil import for 1.21.4");
         std::filesystem::remove_all(dir);
     });
 

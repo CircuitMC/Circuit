@@ -1,0 +1,49 @@
+circuit-trace 1
+title Piston destroys dust, a lever and a repeater
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.1.1+mc1.21.4
+mechanisms piston block_events
+area -1 -1 -1 6 0 5
+ticks 4
+changes ordered
+
+at 0 set 1 -1 0 minecraft:stone
+at 0 set 2 -1 0 minecraft:stone
+at 0 set 3 -1 0 minecraft:stone
+at 0 set 1 -1 2 minecraft:stone
+at 0 set 2 -1 2 minecraft:stone
+at 0 set 1 -1 4 minecraft:stone
+at 0 set 2 -1 4 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 2 0 0 minecraft:redstone_wire[power=0]
+at 0 set 0 0 0 minecraft:piston[extended=false,facing=east]
+at 0 set 1 0 2 minecraft:lever[face=floor,facing=east,powered=false]
+at 0 set 0 0 2 minecraft:piston[extended=false,facing=east]
+at 0 set 1 0 4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+at 0 set 0 0 4 minecraft:piston[extended=false,facing=east]
+
+at 1 set -1 0 0 minecraft:redstone_block
+change 1 -1 0 0 minecraft:air minecraft:redstone_block
+at 1 set -1 0 2 minecraft:redstone_block
+change 1 -1 0 2 minecraft:air minecraft:redstone_block
+at 1 set -1 0 4 minecraft:redstone_block
+change 1 -1 0 4 minecraft:air minecraft:redstone_block
+change 1 2 0 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:air
+change 1 2 0 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 1 1 0 0 minecraft:stone minecraft:moving_piston[facing=east,type=normal]
+change 1 0 0 0 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
+change 1 1 0 2 minecraft:lever[face=floor,facing=east,powered=false] minecraft:air
+change 1 1 0 2 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 1 0 0 2 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
+change 1 1 0 4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false] minecraft:air
+change 1 1 0 4 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 1 0 0 4 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
+
+change 3 2 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 3 1 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+change 3 1 0 2 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+change 3 1 0 4 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+block 3 2 0 0 minecraft:stone
+block 3 1 0 2 minecraft:piston_head[facing=east,short=false,type=normal]
+block 3 1 0 4 minecraft:piston_head[facing=east,short=false,type=normal]

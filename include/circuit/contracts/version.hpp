@@ -77,6 +77,8 @@ struct VersionBundle {
     WorldShape world;
     RuleLimits limits;
     std::string_view generator;   // Identity of the chunk generator.
+    std::int32_t protocol;        // Play protocol number; 0: no play codec.
+    std::int32_t data_version;    // Vanilla save DataVersion of the game version; 0: unknown.
     bool save_conversion;         // Vanilla import/export available.
     bool play_supported;          // A real client can play.
 };

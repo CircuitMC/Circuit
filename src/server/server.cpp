@@ -38,7 +38,7 @@ struct Server::Impl {
         if (!selected) throw std::invalid_argument(std::format("server: {} has no executable rules", config.game_version));
         bundle = *selected;
         // The play protocol of the bundle's game version.
-        const std::int32_t protocol_number = bundle->game_version == "1.21.8" ? 772 : 0;
+        const std::int32_t protocol_number = bundle->protocol;
         content = protocol::ContentTables::for_protocol(protocol_number);
         registries = synced_registries(protocol_number);
         mapping = evidence::ContentMapping::for_game_version(bundle->game_version);

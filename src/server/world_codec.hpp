@@ -46,16 +46,19 @@ struct WorldShape {
     std::int32_t height;
 };
 
-// Fields of a level_chunk_with_light packet after its id (protocol 772):
-// coordinates, heightmaps, section data, block entities and light. The world
-// is lit fully by sky light; Circuit has no lighting engine yet.
+// Fields of a level_chunk_with_light packet after its id: coordinates,
+// heightmaps, section data, block entities and light. The world is lit fully
+// by sky light; Circuit has no lighting engine yet. Protocol 772 (1.21.5+)
+// sends heightmaps as a typed list and implies data array lengths; protocol
+// 769 (1.21.4) sends heightmaps as NBT and prefixes data arrays with their
+// length.
 Bytes encode_chunk(const runtime::ColumnSnapshot& column, const BlockPalette& palette, const NeighborLookup& at,
-                   WorldShape shape, std::int32_t biome_id);
+                   WorldShape shape, std::int32_t biome_id, std::int32_t protocol);
 
 // Section data of one 16x16x16 section as sent in chunk packets (block count,
 // block states, biomes), exposed for tests.
 void encode_section(protocol::Writer& w, const std::array<std::int32_t, 4096>& states, std::int32_t biome_id,
-                    std::int32_t state_bits_direct);
+                    std::int32_t state_bits_direct, bool length_prefixed);
 
 // Packs `values` with `bits` bits each, no entry spanning two longs.
 std::vector<std::int64_t> pack_entries(std::span<const std::uint32_t> values, unsigned bits);

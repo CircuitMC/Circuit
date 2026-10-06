@@ -278,7 +278,7 @@ public:
         : tables_(protocol::ContentTables::for_protocol(772)),
           mapping_(evidence::ContentMapping::for_game_version(bundle.game_version)) {
         if (bundle.game_version != "1.21.8" || !tables_ || !mapping_)
-            throw std::invalid_argument(std::format("anvil: no 1.21.8 content for {}", bundle.id));
+            throw std::invalid_argument(std::format("Anvil import and export support java-1.21.8 worlds only, not {}", bundle.id));
         palette_.emplace(*tables_, *mapping_);
     }
     // The reference state for a stored block state, or nullopt.

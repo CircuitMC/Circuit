@@ -819,7 +819,7 @@ struct Game::Impl final : GameServices {
             for (const auto c : wanted) {
                 const auto column = engine->column(c);
                 if (!column) continue;
-                p.peer->send(wire.chunk(encode_chunk(*column, palette, look_up, shape, biome)));
+                p.peer->send(wire.chunk(encode_chunk(*column, palette, look_up, shape, biome, wire.protocol())));
                 p.sent.insert(c);
                 for (const auto& e : column->entities) show_entity(p, e.id.value, e);
             }

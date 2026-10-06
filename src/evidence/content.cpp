@@ -16,6 +16,9 @@ using contracts::Direction;
 namespace blocks = gameplay::blocks;
 
 constexpr ContentMapping java_1_21_8{"1.21.8"};
+// The modeled blocks and items have the same names and properties in 1.21.4
+// (checked against the 1.21.4 content table in evidence_tests).
+constexpr ContentMapping java_1_21_4{"1.21.4"};
 
 std::string_view direction_name(Direction d) {
     switch (d) {
@@ -136,7 +139,9 @@ constexpr std::array<std::pair<std::string_view, std::uint16_t>, 8> item_ids{{
 } // namespace
 
 const ContentMapping* ContentMapping::for_game_version(std::string_view game_version) noexcept {
-    return game_version == java_1_21_8.game_version() ? &java_1_21_8 : nullptr;
+    if (game_version == java_1_21_8.game_version()) return &java_1_21_8;
+    if (game_version == java_1_21_4.game_version()) return &java_1_21_4;
+    return nullptr;
 }
 
 std::expected<BlockState, std::string> ContentMapping::block(std::string_view notation) const {

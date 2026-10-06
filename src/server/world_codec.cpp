@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "world_codec.hpp"
+#include <circuit/protocol/nbt.hpp>
 #include <algorithm>
 #include <bit>
 #include <format>
@@ -104,7 +105,7 @@ std::vector<std::int64_t> pack_entries(std::span<const std::uint32_t> values, un
 }
 
 void encode_section(protocol::Writer& w, const std::array<std::int32_t, 4096>& states, std::int32_t biome_id,
-                    std::int32_t state_bits_direct) {
+                    std::int32_t state_bits_direct, bool length_prefixed) {
     std::int16_t non_air = 0;
     std::vector<std::int32_t> palette;
     std::unordered_map<std::int32_t, std::uint32_t> index;
@@ -118,6 +119,7 @@ void encode_section(protocol::Writer& w, const std::array<std::int32_t, 4096>& s
     w.i16(non_air);
     if (palette.size() == 1) {
         w.u8(0).varint(palette[0]); // single valued, no data array
+        if (length_prefixed) w.varint(0);
     } else {
         std::array<std::uint32_t, 4096> values{};
         unsigned bits;
@@ -131,16 +133,19 @@ void encode_section(protocol::Writer& w, const std::array<std::int32_t, 4096>& s
             w.u8(static_cast<std::uint8_t>(bits));
             for (std::size_t i = 0; i < 4096; ++i) values[i] = static_cast<std::uint32_t>(states[i]);
         }
-        // Protocol 772 (1.21.5+): the data array length is implied.
-        for (const auto v : pack_entries(values, bits)) w.i64(v);
+        const auto longs = pack_entries(values, bits);
+        if (length_prefixed) w.varint(static_cast<std::int32_t>(longs.size()));
+        for (const auto v : longs) w.i64(v);
     }
     w.u8(0).varint(biome_id); // one biome per section
+    if (length_prefixed) w.varint(0);
 }
 
 Bytes encode_chunk(const runtime::ColumnSnapshot& column, const BlockPalette& palette, const NeighborLookup& at,
-                   WorldShape shape, std::int32_t biome_id) {
+                   WorldShape shape, std::int32_t biome_id, std::int32_t protocol) {
     const auto sections = static_cast<std::size_t>(shape.height / 16);
-    const std::int32_t direct_bits = 15; // ceil(log2(27946)) for the 1.21.8 palette
+    const bool modern = protocol >= 770;
+    const std::int32_t direct_bits = 15; // ceil(log2(state count)): 27946 states (1.21.8), 27866 (1.21.4)
     const std::int32_t ox = column.pos.x * 16, oz = column.pos.z * 16;
     std::array<std::int32_t, 256> top{}; // highest occupied y index + 1 per column (x fastest)
 
@@ -169,20 +174,30 @@ Bytes encode_chunk(const runtime::ColumnSnapshot& column, const BlockPalette& pa
                 top[column_index] = std::max(top[column_index], static_cast<std::int32_t>(s * 16 + (i >> 8) + 1));
             }
         }
-        encode_section(data, states, biome_id, direct_bits);
+        encode_section(data, states, biome_id, direct_bits, !modern);
     }
 
     protocol::Writer w;
     w.i32(column.pos.x).i32(column.pos.z);
-    // Heightmaps (1.21.5+): world surface (1) and motion blocking (4), 9 bits for 385 heights.
+    // Heightmaps: world surface and motion blocking, 9 bits for 385 heights.
     const unsigned height_bits = static_cast<unsigned>(std::bit_width(static_cast<unsigned>(shape.height)));
     std::array<std::uint32_t, 256> heights{};
     for (std::size_t i = 0; i < 256; ++i) heights[i] = static_cast<std::uint32_t>(top[i]);
     const auto packed = pack_entries(heights, height_bits);
-    w.varint(2);
-    for (const std::int32_t type : {1, 4}) {
-        w.varint(type).varint(static_cast<std::int32_t>(packed.size()));
-        for (const auto v : packed) w.i64(v);
+    if (modern) {
+        // 1.21.5+: a list of (type, longs); 1 is WORLD_SURFACE, 4 MOTION_BLOCKING.
+        w.varint(2);
+        for (const std::int32_t type : {1, 4}) {
+            w.varint(type).varint(static_cast<std::int32_t>(packed.size()));
+            for (const auto v : packed) w.i64(v);
+        }
+    } else {
+        // 1.21.4: a network NBT compound of long arrays named by heightmap.
+        auto maps = protocol::nbt::Tag::compound();
+        std::vector<std::int64_t> longs(packed.begin(), packed.end());
+        maps.set("MOTION_BLOCKING", protocol::nbt::Tag::long_array(longs));
+        maps.set("WORLD_SURFACE", protocol::nbt::Tag::long_array(std::move(longs)));
+        protocol::nbt::write_network(w, maps);
     }
     w.prefixed_bytes(data.bytes());
     w.varint(0); // block entities: the client creates them from block states

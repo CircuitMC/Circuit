@@ -4,7 +4,7 @@
 
 The network server saves its world in a world directory: checkpoints of the engine state plus a write-ahead log of the inputs admitted after them. After a crash, the server restarts from the latest durable checkpoint and replays the logged inputs, so it continues exactly where the durable history ends.
 
-Java Edition 1.21.8 worlds in the Anvil format can be imported into a world directory and exported from one. Import and export cover the content the reference rules model. Other content is rejected unless the substitution policy is chosen explicitly; see [Anvil import and export](#anvil-import-and-export).
+Java Edition 1.21.8 worlds in the Anvil format can be imported into a world directory and exported from one; a `java-1.21.4` server refuses Anvil interchange. Import and export cover the content the reference rules model. Other content is rejected unless the substitution policy is chosen explicitly; see [Anvil import and export](#anvil-import-and-export).
 
 ## World directory
 
@@ -33,6 +33,16 @@ The directory holds:
 | `wal-<tick>-<generation>.log` | Log segment: one record per tick after `<tick>`, each with its length and CRC-32 |
 
 Each checkpoint has a new generation number, so no file that the durable manifest names is ever rewritten.
+
+### Migrating between versions
+
+A world directory records its bundle and rule set, and a server of another bundle refuses it. To move a world to another version:
+
+```bash
+xmake run circuit-server --migrate-world "$PWD/worlds/main-1.21.4" --world "$PWD/worlds/main" --game-version java-1.21.4
+```
+
+The migration reads the latest durable state, replays its log, and writes a new world directory for the target bundle; the source is only read. It is refused when the two bundles run different rule sets, because the saved state would not mean the same.
 
 ## Durability protocol
 

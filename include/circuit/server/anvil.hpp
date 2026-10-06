@@ -92,4 +92,12 @@ std::expected<anvil::ImportReport, std::string> import_anvil_world(const std::fi
 // Exports the latest durable state of the configured world directory as a new
 // Anvil world at `target`. The world directory is only read.
 std::expected<anvil::ExportReport, std::string> export_anvil_world(const ServerConfig& config, const std::filesystem::path& target);
+
+// Copies the latest durable state of the world at `source` into a new world
+// directory at `target` that belongs to `bundle_id`. Allowed only when both
+// bundles run the same rule set, so that the state means the same; otherwise
+// the migration is refused. The source is only read. Returns the tick of the
+// migrated state.
+std::expected<std::uint64_t, std::string> migrate_world(const std::filesystem::path& source, const std::filesystem::path& target,
+                                                        std::string_view bundle_id);
 } // namespace circuit::server
