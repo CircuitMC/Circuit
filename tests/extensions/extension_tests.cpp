@@ -9,6 +9,7 @@
 #include <circuit/server/server.hpp>
 #include <cstdlib>
 #include <filesystem>
+#include <optional>
 #include <fstream>
 #include <thread>
 
@@ -211,7 +212,8 @@ int main() {
 
         auto c = config_with({});
         c.java_bridge = classes.string();
-        c.java_plugin_classes = {"org.circuitmc.example.ExamplePlugin", "org.circuitmc.test.BridgeTestPlugin"};
+        c.java_plugin_classes = {"org.circuitmc.example.ExamplePlugin", "org.circuitmc.test.BridgeTestPlugin",
+                                 "org.circuitmc.test.StartupQueryPlugin"};
         c.java_permissions = "world.read,world.write,world.observe,commands";
         c.java_max_lag_ticks = 40;
         {
@@ -223,6 +225,9 @@ int main() {
             for (int i = 0; i < 50 && (reply = p.command("block 0 -61 0", "", std::chrono::milliseconds(2000))).find("Unknown") != std::string::npos; ++i)
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
             require(reply == "minecraft:stone", "a Java query: " + reply);
+            // onEnable waited for a world query and got its answer.
+            const auto startup = p.command("jstartup", "startup");
+            require(startup.starts_with("startup query answered at tick"), "a startup callback can wait for a query: " + startup);
             require(p.command("pulse 2 -60 2 10", "Pulse") == "Pulse at 2 -60 2 for 10 ticks", "a Java command");
             require(p.command("block 2 -60 2", "minecraft:") == "minecraft:redstone_block", "the Java plugin placed a block");
             std::string removed;
@@ -280,6 +285,30 @@ int main() {
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));
             require(reply.find("failed") != std::string::npos && reply.find("world.write") != std::string::npos, "writing denied: " + reply);
             s.stop();
+        }
+        {
+            // The server stops while onEnable waits for a query it will not
+            // answer (no tick ran): the wait fails at once and the JVM exits
+            // by itself, before the server's two-second kill deadline.
+            const auto report = classes / "startup-report.txt";
+            ::setenv("CIRCUIT_TEST_STARTUP_REPORT", report.c_str(), 1);
+            auto stopping = c;
+            stopping.java_plugin_classes = {"org.circuitmc.test.StartupQueryPlugin"};
+            std::chrono::steady_clock::duration took{};
+            {
+                std::optional<server::Server> s(std::in_place, stopping);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1500)); // onEnable is waiting
+                const auto began = std::chrono::steady_clock::now();
+                s.reset();
+                took = std::chrono::steady_clock::now() - began;
+            }
+            ::unsetenv("CIRCUIT_TEST_STARTUP_REPORT");
+            std::ifstream in(report);
+            std::string outcome;
+            std::getline(in, outcome);
+            require(outcome.starts_with("failed: the bridge stopped"), "the waiting startup callback failed promptly: " + outcome);
+            require(took < std::chrono::milliseconds(1900), std::format("the JVM stopped by itself in {} ms",
+                                                                        std::chrono::duration_cast<std::chrono::milliseconds>(took).count()));
         }
         {
             // A JVM that presents the wrong token is refused at startup.

@@ -507,6 +507,42 @@ int main() {
         require(run(12, false) != base, "seed changes the outcome");
     });
 
+    suite.run("player actions resolve against the state earlier commands left", [] {
+        Sim s;
+        const auto use = [](BlockPos pos, D face, std::optional<BlockState> place, std::uint8_t allowed = 3, bool sneaking = false) {
+            return circuit::contracts::PlayerUse{pos, face, place ? std::optional(place->raw()) : std::nullopt, sneaking, place.has_value(), allowed};
+        };
+        const auto outcomes = [&] {
+            std::vector<std::uint64_t> out; // 0 applied, else the error code, in admission order
+            for (const auto& r : s.last) {
+                if (r.kind == TraceKind::command_applied) out.push_back(0);
+                if (r.kind == TraceKind::command_rejected) out.push_back(r.b);
+            }
+            return out;
+        };
+        const auto code = [](ErrorCode e) { return static_cast<std::uint64_t>(e); };
+        s.tick({SetBlock{{1, 0, 1}, blocks::stone().raw(), {}},
+                use({1, 0, 1}, D::up, blocks::stone()),                 // beside: (1,1,1)
+                use({1, 1, 1}, D::up, blocks::wire()),                  // dust on the stone placed just before
+                use({1, 0, 1}, D::east, blocks::lever(false, D::east, blocks::LeverFace::wall)), // (2,0,1), on the stone
+                use({2, 0, 1}, D::up, blocks::stone()),                 // uses the new lever
+                use({2, 0, 1}, D::up, blocks::stone(), 3, true),        // sneaking with an item: places on top of it instead
+                use({1, 0, 1}, D::up, blocks::stone()),                 // (1,1,1) holds dust now
+                use({1, 1, 1}, D::north, blocks::stone(), 1),           // the neighbor is not allowed (reach)
+                use({5, 0, 5}, D::up, blocks::wire()),                  // replaces air at (5,0,5): nothing below
+                use({6, 0, 6}, D::up, blocks::lever()),                 // a lever cannot replace air
+                use({1, 0, 1}, D::up, std::nullopt),                    // empty hand on stone
+                circuit::contracts::PlayerBreak{{7, 0, 7}},                               // air
+                circuit::contracts::PlayerBreak{{1, 0, 1}}});
+        const std::vector<std::uint64_t> expected{0, 0, 0, 0, 0, 0, code(ErrorCode::occupied), code(ErrorCode::out_of_reach),
+                                                  code(ErrorCode::unsupported), code(ErrorCode::unsupported),
+                                                  code(ErrorCode::not_usable), code(ErrorCode::not_breakable), 0};
+        require(outcomes() == expected, "outcomes in admission order");
+        require(s.at({1, 0, 1}).is_air(), "the stone was broken");
+        require(s.at({2, 0, 1}).is(BlockType::lever) && s.at({2, 0, 1}).flag(), "the lever placed in the same tick was used");
+        require(s.at({2, 1, 1}).is(BlockType::stone), "sneaking placed instead of using");
+    });
+
     suite.run("ticket bounds are checked without overflow", [] {
         const auto& limits = bundle().limits;
         const std::int32_t limit = world_border / 16;
@@ -528,10 +564,27 @@ int main() {
                         && !accepted({0, high + 1}, radius),
                     std::format("radius {} beyond the endpoints rejected", radius));
         }
+        // A load radius beyond radius + 1 reaches further, and is bounded the same way.
+        const auto loads = [&](ChunkPos center, std::uint8_t load) {
+            TicketSet tickets;
+            return tickets.add({1, center, 1, load}, limits).has_value();
+        };
+        const std::int32_t far = limits.max_load_radius;
+        require(loads({-limit + far, 0}, limits.max_load_radius) && !loads({-limit + far - 1, 0}, limits.max_load_radius)
+                    && loads({0, limit - 1 - far}, limits.max_load_radius) && !loads({0, limit - far}, limits.max_load_radius),
+                "load radius endpoints");
         TicketSet tickets;
         require(tickets.add({1, {0, 0}, static_cast<std::uint8_t>(limits.max_ticket_radius + 1)}, limits).error()
                     == ErrorCode::out_of_bounds,
                 "radius limit");
+        require(tickets.add({1, {0, 0}, 1, static_cast<std::uint8_t>(limits.max_load_radius + 1)}, limits).error()
+                    == ErrorCode::out_of_bounds,
+                "load radius limit");
+        require(tickets.add({2, {0, 0}, 2, 5}, limits).has_value(), "view ticket");
+        const auto l = tickets.levels();
+        require(l.size() == 121 && l.at({2, 0}) == ChunkLevel::ticking && l.at({3, 0}) == ChunkLevel::border
+                    && l.at({5, 5}) == ChunkLevel::border && !l.contains({6, 0}),
+                "ticking within the radius, loaded within the load radius");
     });
 
     suite.run("spawn positions are checked before narrowing", [] {

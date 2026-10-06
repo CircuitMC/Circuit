@@ -7,6 +7,7 @@
 #include <circuit/protocol/content.hpp>
 #include <circuit/protocol/framing.hpp>
 #include <circuit/protocol/nbt.hpp>
+#include <circuit/protocol/output_queue.hpp>
 #include <circuit/protocol/packets.hpp>
 #include <climits>
 #include <random>
@@ -194,6 +195,45 @@ int main() {
         reject(Writer().varint(2097152).take(), -1, CodecError::too_large, "frame limit");
         reject(hex({0x80, 0x80, 0x80, 0x01}), -1, CodecError::too_large, "four-byte frame length");
         reject(hex({0x00}), -1, CodecError::malformed, "empty frame");
+    });
+
+    suite.run("output frames stay alive until their write completes", [] {
+        OutputQueue q;
+        q.push(Bytes(100, std::byte{1}));
+        q.push(Bytes(50, std::byte{2}));
+        require(q.bytes() == 150 && !q.writing(), "two frames wait");
+        auto first = q.begin();
+        require(first && first->size() == 100 && q.writing() && q.waiting() == 1, "the first frame is active");
+        require(!q.begin(), "one write at a time");
+        // Normal completion releases the active frame and its bytes.
+        q.finish(first);
+        require(q.bytes() == 50 && !q.writing(), "first write accounted");
+        first.reset();
+
+        // Closing discards the queue while a write is outstanding: the handler
+        // still owns the buffer, and its completion changes nothing.
+        auto second = q.begin();
+        const std::weak_ptr<const Bytes> watch = second;
+        const auto* data = second->data();
+        q.push(Bytes(10, std::byte{3}));
+        q.discard();
+        require(q.bytes() == 0 && q.waiting() == 0 && !q.writing(), "queue discarded");
+        require(!watch.expired() && watch.lock()->data() == data && watch.lock()->size() == 50,
+                "the outstanding write's buffer is unchanged");
+        q.finish(second); // a completion already queued before the close
+        require(q.bytes() == 0, "a late completion does not underflow the count");
+        second.reset();
+        require(watch.expired(), "the buffer is released by its handler");
+
+        // A stale completion cannot release a newer active frame.
+        q.push(Bytes(7, std::byte{4}));
+        auto stale = std::make_shared<const Bytes>(Bytes(7, std::byte{4}));
+        auto third = q.begin();
+        q.finish(stale);
+        require(q.writing() && q.bytes() == 7, "only the active frame's completion counts");
+        q.finish(third);
+        require(!q.writing() && q.bytes() == 0, "drained");
+        q.finish(nullptr);
     });
 
     suite.run("documented packet ids", [] {

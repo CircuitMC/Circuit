@@ -65,18 +65,20 @@ std::expected<ServerConfig, std::string> parse_config(std::string_view text);
 
 class Server {
 public:
-    // Opens or creates the world, recovering it after a crash. Throws
-    // std::invalid_argument for a bad configuration and std::runtime_error
-    // for a world that cannot be opened.
+    // Binds the port, then opens or creates the world, recovering it after a
+    // crash. The world directory stays owned by this server until stop().
+    // Throws std::invalid_argument for a bad configuration and
+    // std::runtime_error for a port that cannot be bound or a world that
+    // cannot be opened, including one another server owns.
     explicit Server(ServerConfig config);
     ~Server();
     Server(const Server&) = delete;
     Server& operator=(const Server&) = delete;
 
-    // Binds and starts the network threads and the tick loop.
+    // Starts accepting connections, the network threads and the tick loop.
     void start();
-    // Saves the world, disconnects every player, drains their sessions and
-    // stops the threads.
+    // Saves the world, releases its directory, disconnects every player,
+    // drains their sessions and stops the threads.
     void stop();
     [[nodiscard]] std::uint16_t port() const;
     [[nodiscard]] std::size_t players() const;

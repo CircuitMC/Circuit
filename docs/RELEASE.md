@@ -61,6 +61,7 @@ These are the measured or configured limits; plan capacity with margin:
 
 - **Rule-set changes:** a world directory names the bundle and the rule set it was saved under. A server with other rules refuses to open it rather than reinterpret the state.
 - **Moving to another supported version with the same rules:** use `--migrate-world`; the source is only read. See [persistence](PERSISTENCE.md#migrating-between-versions).
-- **Back up a world directory:** copy it while the server is stopped, or copy the files the manifest names while it runs. A copy taken while the server runs may need the log tail discarded on recovery, which is reported.
+- **Back up a world directory:** copy it while the server is stopped, or copy the files the manifest names while it runs. A copy taken while the server runs may need the log tail discarded on recovery, which is reported. Export and migration refuse a world a server owns; run them on a stopped server's directory or on a copy.
+- **One owner per world:** a second server, or a tool, on a directory that a running server owns is refused before it changes anything ([ownership](PERSISTENCE.md#ownership)).
 - **After a crash:** start the server on the same directory. It recovers the latest durable state, reports what it discarded, and keeps damaged files as `damaged-<name>`.
 - **If recovery refuses a world:** the error names the cause, for example no readable checkpoint, a corrupt log record or another rule set. The files are left untouched for diagnosis. Export the latest state of a healthy copy with `--export-anvil`, or restore a backup.

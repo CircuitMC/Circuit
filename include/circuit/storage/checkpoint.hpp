@@ -12,7 +12,8 @@
 #include <vector>
 
 // Checkpoint files: the canonical state of an engine between ticks, with the
-// identity needed to continue it. Format version 1:
+// identity needed to continue it. Format version 2 (version 1, read only,
+// lacks the tickets' load radius):
 //   "CIRCKPT\0", u32 version, bundle id, rule-set id, u64 seed, u64 tick,
 //   u64 raw length, u64 compressed length, zlib(body), SHA-256 of all before.
 // The body holds columns with palette-packed sections, block entities,

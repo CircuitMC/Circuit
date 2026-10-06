@@ -65,6 +65,15 @@ std::string segment_name(std::uint64_t tick, std::uint64_t generation) {
 WorldDirectory::WorldDirectory(Filesystem& fs, Path root, std::string bundle_id, std::string rules_id)
     : fs_(fs), root_(std::move(root)), bundle_id_(std::move(bundle_id)), rules_id_(std::move(rules_id)) {}
 
+Status WorldDirectory::acquire() {
+    if (lock_) return {};
+    if (auto ok = fs_.create_directories(root_); !ok) return ok;
+    auto held = fs_.lock(root_ / lock_file_name);
+    if (!held) return std::unexpected(std::format("the world {} is in use: {}", root_.string(), held.error()));
+    lock_ = std::move(*held);
+    return {};
+}
+
 Status WorldDirectory::write_manifest(const Manifest& m) {
     std::string text = std::format("circuit-world 1\nbundle {}\nrules {}\ncheckpoint {} {}\n", bundle_id_, rules_id_, m.checkpoint,
                                    m.checkpoint_sha);
@@ -184,6 +193,7 @@ std::expected<bool, std::string> WorldDirectory::read_segment(const std::string&
 
 std::expected<std::optional<Recovery>, std::string> WorldDirectory::recover() {
     std::lock_guard lock(mutex_);
+    if (auto ok = acquire(); !ok) return std::unexpected(ok.error());
     pending_ = false;
     auto manifest = read_manifest();
     if (!manifest) return std::unexpected(manifest.error());
@@ -248,6 +258,7 @@ std::expected<std::optional<Recovery>, std::string> WorldDirectory::recover() {
 
 std::expected<PendingCheckpoint, std::string> WorldDirectory::begin_checkpoint(std::uint64_t tick) {
     std::lock_guard lock(mutex_);
+    if (auto ok = acquire(); !ok) return std::unexpected(ok.error());
     if (broken_) return std::unexpected("the manifest state is unknown after a failed write; recover first");
     if (pending_) return std::unexpected("a checkpoint is already in progress");
     if (manifest_ && tick != last_tick_) {
@@ -257,7 +268,6 @@ std::expected<PendingCheckpoint, std::string> WorldDirectory::begin_checkpoint(s
         if (!abandons)
             return std::unexpected(std::format("checkpoint at tick {} does not match the history at tick {}", tick, last_tick_));
     }
-    if (auto ok = fs_.create_directories(root_); !ok) return std::unexpected(ok.error());
     // The fallback replays the current segment, so it must be complete.
     if (!segment_.empty())
         if (auto ok = fs_.append(root_ / segment_, {}, true); !ok) return std::unexpected(ok.error());
@@ -354,6 +364,7 @@ void WorldDirectory::remove_unreferenced(const Manifest& m) {
 
 Status WorldDirectory::append(const contracts::TickInput& input, bool sync) {
     std::lock_guard lock(mutex_);
+    if (!lock_) return std::unexpected("the world directory is not owned");
     if (segment_.empty()) return std::unexpected("no checkpoint: the log has no segment");
     if (input.tick != last_tick_ + 1) return std::unexpected(std::format("tick {} does not follow {}", input.tick, last_tick_));
     const auto payload = contracts::encode_tick_input(input);

@@ -31,8 +31,17 @@ The directory holds:
 | `manifest` | The current checkpoint, the previous one and the log segments after the previous one, with SHA-256 digests of the checkpoints |
 | `ckpt-<tick>-<generation>.bin` | A checkpoint: the canonical engine state at the end of `<tick>` |
 | `wal-<tick>-<generation>.log` | Log segment: one record per tick after `<tick>`, each with its length and CRC-32 |
+| `session.lock` | Ownership of the directory; holds the owner's process id |
 
 Each checkpoint has a new generation number, so no file that the durable manifest names is ever rewritten.
+
+### Ownership
+
+One process at a time owns a world directory. The owner holds an exclusive `flock` on `session.lock` before it reads or writes any world file, and keeps it until it stops; the kernel releases it when the process exits for any reason, so a crash never leaves the world locked. Any other owner is refused before it touches a file, with an error that names the holder:
+- **Servers:** a second server on the same directory, in the same or another process, does not start.
+- **Tools:** import, export and migration take ownership of every directory they use, so they refuse a world that a running server owns. Stop the server first, or export a copy (see [backups](RELEASE.md#upgrades-migration-and-recovery)).
+
+A server binds its port before it opens its world, so a server that cannot listen fails without changing the world.
 
 ### Migrating between versions
 
@@ -42,7 +51,7 @@ A world directory records its bundle and rule set, and a server of another bundl
 xmake run circuit-server --migrate-world "$PWD/worlds/main-1.21.4" --world "$PWD/worlds/main" --game-version java-1.21.4
 ```
 
-The migration reads the latest durable state, replays its log, and writes a new world directory for the target bundle; the source is only read. It is refused when the two bundles run different rule sets, because the saved state would not mean the same.
+The migration owns both directories while it runs. It reads the latest durable state, replays its log, and writes a new world directory for the target bundle; the source is only read. It is refused when the two bundles run different rule sets, because the saved state would not mean the same.
 
 ## Durability protocol
 
@@ -75,6 +84,7 @@ At startup the server reads the manifest:
 3. **Fresh segment:** it writes a checkpoint of the recovered state before accepting players, so that new records never follow a discarded tail.
 
 Recovery fails, and the server does not start, when:
+- another process owns the directory;
 - the manifest names a world saved by another bundle or rule set;
 - no named checkpoint is readable;
 - a log record has a valid checksum but cannot be decoded, which means the log is corrupt rather than torn.
@@ -106,7 +116,7 @@ xmake run circuit-server --import-anvil /path/to/java-world --world "$PWD/worlds
 xmake run circuit-server --export-anvil /path/to/new-java-world --world "$PWD/worlds/imported"
 ```
 
-Import reads the source world and never writes to it. It creates a new world directory and refuses one that already holds a world. Export reads the latest durable state of a world directory and never writes to it, so it can run while the server uses the directory; if the server replaces the checkpoint during the export, the export fails and can be repeated. It writes a new world to a temporary sibling directory and renames it at the end, and it refuses a target that exists.
+Import reads the source world and never writes to it. It creates a new world directory and refuses one that already holds a world. Export reads the latest durable state of a world directory and writes no world file to it. It takes ownership of the directory, so it refuses a world while a server runs on it. It writes a new world to a temporary sibling directory and renames it at the end, and it refuses a target that exists.
 
 **Supported.** A 1.21.8 world (DataVersion 4440), overworld only:
 

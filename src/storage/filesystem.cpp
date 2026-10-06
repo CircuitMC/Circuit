@@ -4,6 +4,7 @@
 #include <cstring>
 #include <fcntl.h>
 #include <format>
+#include <sys/file.h>
 #include <unistd.h>
 
 namespace circuit::storage {
@@ -107,6 +108,43 @@ std::expected<std::vector<std::string>, std::string> PosixFilesystem::list(const
 bool PosixFilesystem::exists(const Path& file) const {
     std::error_code ec;
     return std::filesystem::exists(file, ec);
+}
+
+namespace {
+class FlockLock final : public FileLock {
+public:
+    explicit FlockLock(int fd) : fd_(fd) {}
+    ~FlockLock() override { ::close(fd_); } // closing the last descriptor releases the lock
+    FlockLock(const FlockLock&) = delete;
+    FlockLock& operator=(const FlockLock&) = delete;
+
+private:
+    int fd_;
+};
+} // namespace
+
+// flock locks belong to the open file description, so a second open of the
+// same file conflicts even within one process, and the kernel releases the
+// lock when its holder exits for any reason.
+std::expected<std::unique_ptr<FileLock>, std::string> PosixFilesystem::lock(const Path& file) {
+    Fd f{::open(file.c_str(), O_RDWR | O_CREAT | O_CLOEXEC, 0644)};
+    if (f.fd < 0) return fail("open", file);
+    while (::flock(f.fd, LOCK_EX | LOCK_NB) != 0) {
+        if (errno == EINTR) continue;
+        if (errno != EWOULDBLOCK) return fail("lock", file);
+        std::string holder;
+        char buf[32]{};
+        if (const auto n = ::pread(f.fd, buf, sizeof buf - 1, 0); n > 0) holder.assign(buf, static_cast<std::size_t>(n));
+        while (!holder.empty() && (holder.back() == '\n' || holder.back() == ' ')) holder.pop_back();
+        return std::unexpected(std::format("{} is held by {}", file.string(),
+                                           holder.empty() ? std::string("another owner") : "process " + holder));
+    }
+    const auto pid = std::format("{}\n", ::getpid());
+    if (::ftruncate(f.fd, 0) != 0 || ::pwrite(f.fd, pid.data(), pid.size(), 0) != static_cast<ssize_t>(pid.size()))
+        return fail("write", file);
+    const int fd = f.fd;
+    f.fd = -1;
+    return std::make_unique<FlockLock>(fd);
 }
 
 } // namespace circuit::storage

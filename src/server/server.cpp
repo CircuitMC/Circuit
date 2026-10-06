@@ -48,6 +48,13 @@ struct Server::Impl {
         if (config.view_distance < 2 || config.view_distance > 32) throw std::invalid_argument("server: view distance must be 2-32");
         if (config.simulation_distance < 1 || config.simulation_distance > static_cast<std::int32_t>(bundle->limits.max_ticket_radius))
             throw std::invalid_argument("server: simulation distance outside the ticket limit");
+        // The port is bound before the world is opened: a server that cannot
+        // listen fails without touching its world.
+        const asio::ip::tcp::endpoint endpoint(asio::ip::make_address(config.bind_address), config.port);
+        acceptor.open(endpoint.protocol());
+        acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
+        acceptor.bind(endpoint);
+        acceptor.listen();
         game = std::make_unique<Game>(config, *bundle, *wire, *content, *mapping, *registries);
         shared = std::make_unique<Shared>(config, *wire, *registries, *registries_with_data(protocol_number),
                                           bundle->game_version, *game, offline);
@@ -114,11 +121,6 @@ Server::~Server() { stop(); }
 void Server::start() {
     auto& i = *impl_;
     if (i.started) return;
-    const asio::ip::tcp::endpoint endpoint(asio::ip::make_address(i.config.bind_address), i.config.port);
-    i.acceptor.open(endpoint.protocol());
-    i.acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
-    i.acceptor.bind(endpoint);
-    i.acceptor.listen();
     i.work.emplace(i.io.get_executor());
     i.accept();
     for (unsigned t = 0; t < std::max(1u, i.config.network_threads); ++t) i.network.emplace_back([&i] { i.io.run(); });

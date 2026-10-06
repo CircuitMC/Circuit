@@ -39,7 +39,7 @@ java-permissions=world.read,world.write,world.observe,commands
 - **Queries** (`time`, `blockAt`, `itemsInChunk`) read the state the server published after the last tick.
 - **Commands** (`setBlock`, `useBlock`) are admitted like player input. They are logged for replay and applied at the start of a later tick. The future completes with the admission number when the command is admitted, not when it takes effect.
 
-Results arrive asynchronously. A callback may wait on a future, but this delays the next tick it receives.
+Results arrive asynchronously. Any callback may wait on a future, including `onLoad` and `onEnable`: the bridge reads the server's answers from the moment it connects, and the server answers between ticks. Waiting delays the next tick or command the plugin receives; ticks and commands that arrive during startup are delivered after `onEnable`. When the connection ends, every pending future fails at once with reason `UNAVAILABLE`, so a waiting callback continues and the JVM can exit.
 
 **Chat commands.** They are registered by name. The server forwards a player's command to the JVM and sends the reply to the player.
 

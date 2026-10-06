@@ -22,6 +22,7 @@ std::expected<anvil::ImportReport, std::string> import_anvil_world(const std::fi
     if (!bundle) return std::unexpected(bundle.error());
     storage::PosixFilesystem fs;
     storage::WorldDirectory world(fs, config.world_directory, std::string((*bundle)->id), std::string((*bundle)->rules->id));
+    if (auto ok = world.acquire(); !ok) return std::unexpected(ok.error());
     if (fs.exists(config.world_directory / "manifest"))
         return std::unexpected(std::format("{} already holds a world", config.world_directory.string()));
     auto imported = anvil::import_world(source, **bundle, options);
@@ -46,6 +47,8 @@ std::expected<anvil::ExportReport, std::string> export_anvil_world(const ServerC
     const auto bundle = bundle_for(config);
     if (!bundle) return std::unexpected(bundle.error());
     storage::PosixFilesystem fs;
+    if (!fs.exists(config.world_directory)) return std::unexpected(std::format("{} does not exist", config.world_directory.string()));
+    // Recovery takes ownership: a world that a running server owns is refused.
     storage::WorldDirectory world(fs, config.world_directory, std::string((*bundle)->id), std::string((*bundle)->rules->id));
     auto recovered = world.recover();
     if (!recovered) return std::unexpected(recovered.error());
@@ -87,8 +90,16 @@ std::expected<std::uint64_t, std::string> migrate_world(const std::filesystem::p
     if ((*to)->rules->id != (*identity)->rules_id)
         return std::unexpected(std::format("the world runs {} and {} runs {}: the state cannot be migrated", (*identity)->rules_id, bundle_id,
                                            (*to)->rules->id));
-    if (fs.exists(target / "manifest")) return std::unexpected(std::format("{} already holds a world", target.string()));
+    // Both directories are owned for the whole migration; a running server's
+    // world is refused. The identity is read again under ownership.
     storage::WorldDirectory from(fs, source, (*identity)->bundle_id, (*identity)->rules_id);
+    if (auto ok = from.acquire(); !ok) return std::unexpected(ok.error());
+    if (const auto again = storage::WorldDirectory::identity(fs, source);
+        !again || !*again || (*again)->bundle_id != (*identity)->bundle_id || (*again)->rules_id != (*identity)->rules_id)
+        return std::unexpected(std::format("{} changed while it was opened", source.string()));
+    storage::WorldDirectory to_dir(fs, target, std::string(bundle_id), (*identity)->rules_id);
+    if (auto ok = to_dir.acquire(); !ok) return std::unexpected(ok.error());
+    if (fs.exists(target / "manifest")) return std::unexpected(std::format("{} already holds a world", target.string()));
     auto recovered = from.recover();
     if (!recovered) return std::unexpected(recovered.error());
     auto& r = **recovered;
@@ -113,7 +124,6 @@ std::expected<std::uint64_t, std::string> migrate_world(const std::filesystem::p
         return std::unexpected(std::format("the saved world cannot be replayed: {}", e.what()));
     }
     c.extras[std::string(meta_extra)] = encode_meta(meta);
-    storage::WorldDirectory to_dir(fs, target, std::string(bundle_id), (*identity)->rules_id);
     if (auto ok = to_dir.checkpoint(c); !ok) return std::unexpected(ok.error());
     return c.state.time;
 }

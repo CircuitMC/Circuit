@@ -659,11 +659,22 @@ private:
                 continue;
             }
             if (e.find("Passengers")) unsupported("entity passengers");
+            // Checked before conversion: inside the border, and no further below or
+            // above the world than the rules let items fall or fly.
+            if (std::abs((*pos)[0]) >= contracts::world_border || std::abs((*pos)[2]) >= contracts::world_border
+                || (*pos)[1] < bundle_.world.min_y - 64.0 || (*pos)[1] >= bundle_.world.min_y + bundle_.world.height + 4096.0) {
+                unsupported("item entity outside the world");
+                continue;
+            }
             const auto fixed = [](double v) { return static_cast<std::int64_t>(std::llround(v * contracts::fixed_one)); };
             gameplay::Entity out;
             out.position = {fixed((*pos)[0]), fixed((*pos)[1]), fixed((*pos)[2])};
-            out.velocity = {fixed(std::clamp(motion[0], -10.0, 10.0)), fixed(std::clamp(motion[1], -10.0, 10.0)),
-                            fixed(std::clamp(motion[2], -10.0, 10.0))};
+            // The rules move items less than a block per tick on each axis.
+            const auto speed = [&](double v) {
+                const auto f = std::isfinite(v) ? fixed(std::clamp(v, -10.0, 10.0)) : 0;
+                return std::clamp(f, -gameplay::max_entity_speed, gameplay::max_entity_speed);
+            };
+            out.velocity = {speed(motion[0]), speed(motion[1]), speed(motion[2])};
             const auto block = contracts::block_of(out.position);
             if (!imported_.contains(contracts::chunk_of(block))) {
                 unsupported("item entity outside the imported chunks");

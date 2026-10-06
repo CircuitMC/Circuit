@@ -806,9 +806,18 @@ void Engine::Impl::restore(const WorldDump& state) {
         auto& chunk = column(pos);
         if (!chunk.block_entities.emplace(pos, be).second) bad("duplicate block entity");
     }
+    // Entities may be above or below the world height (falling out of it),
+    // within the bounds the rules can reach; everything else is checked at
+    // full width so that ticking a restored state cannot overflow.
+    const std::int64_t lowest = (std::int64_t{bundle.world.min_y} - 65) * contracts::fixed_one;
+    const std::int64_t highest = (std::int64_t{bundle.world.min_y} + bundle.world.height + 4096) * contracts::fixed_one;
+    const auto valid_speed = [](std::int64_t v) { return v >= -gameplay::max_entity_speed && v <= gameplay::max_entity_speed; };
     for (const auto& e : state.entities) {
         if (!contracts::fixed_within_border(e.position) || e.id.value == 0 || e.id.value >= world.next_entity_id) bad("entity");
-        // Entities may be above or below the world height (falling out of it).
+        if (e.position.y < lowest || e.position.y >= highest) bad("entity height");
+        if (!valid_speed(e.velocity.x) || !valid_speed(e.velocity.y) || !valid_speed(e.velocity.z)) bad("entity velocity");
+        if (e.stack.item < 1 || e.stack.item > gameplay::items::max_id || e.stack.count < 1 || e.stack.count > contracts::max_stack_size)
+            bad("entity stack");
         const auto it = columns.find(contracts::chunk_of(contracts::block_of(e.position)));
         if (it == columns.end()) bad("entity in an unknown column");
         auto& chunk = *it->second;
@@ -824,7 +833,7 @@ void Engine::Impl::restore(const WorldDump& state) {
     // Block events keep their queue order; their internal sequence restarts.
     for (const auto& e : state.block_events) column(e.pos).events.push_back({e, world.next_event_seq++, {}});
     for (const auto& t : state.tickets)
-        if (!world.tickets.add({t.id, t.center, t.radius}, bundle.limits)) bad("ticket");
+        if (!world.tickets.add({t.id, t.center, t.radius, t.load_radius}, bundle.limits)) bad("ticket");
 }
 Engine::~Engine() = default;
 void Engine::advance(const std::vector<Command>& commands) { impl_->advance(commands); }

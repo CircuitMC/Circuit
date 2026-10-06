@@ -9,14 +9,15 @@ using contracts::ErrorCode;
 
 contracts::Result<void> TicketSet::add(const contracts::AddTicket& command, const contracts::RuleLimits& limits) {
     if (tickets_.contains(command.ticket)) return std::unexpected(ErrorCode::duplicate_ticket);
-    if (command.radius > limits.max_ticket_radius) return std::unexpected(ErrorCode::out_of_bounds);
+    if (command.radius > limits.max_ticket_radius || command.load_radius > limits.max_load_radius)
+        return std::unexpected(ErrorCode::out_of_bounds);
     // Widened first: the center is unvalidated input.
-    const std::int64_t reach = std::int64_t{command.radius} + 1;
+    const std::int64_t reach = std::max<std::int64_t>(std::int64_t{command.radius} + 1, command.load_radius);
     const std::int64_t limit = contracts::world_border / 16;
     const std::int64_t x = command.center.x, z = command.center.z;
     if (x - reach < -limit || x + reach >= limit || z - reach < -limit || z + reach >= limit)
         return std::unexpected(ErrorCode::out_of_bounds);
-    tickets_.emplace(command.ticket, Ticket{command.ticket, command.center, command.radius});
+    tickets_.emplace(command.ticket, Ticket{command.ticket, command.center, command.radius, command.load_radius});
     return {};
 }
 
@@ -28,9 +29,9 @@ contracts::Result<void> TicketSet::remove(std::uint32_t id) {
 std::map<ChunkPos, ChunkLevel> TicketSet::levels() const {
     std::map<ChunkPos, ChunkLevel> out;
     for (const auto& [id, t] : tickets_) {
-        const std::int32_t r = t.radius;
-        for (std::int32_t dx = -r - 1; dx <= r + 1; ++dx)
-            for (std::int32_t dz = -r - 1; dz <= r + 1; ++dz) {
+        const std::int32_t r = t.radius, reach = t.reach();
+        for (std::int32_t dx = -reach; dx <= reach; ++dx)
+            for (std::int32_t dz = -reach; dz <= reach; ++dz) {
                 const ChunkPos c{t.center.x + dx, t.center.z + dz};
                 const auto level = contracts::chebyshev_distance(c, t.center) <= r ? ChunkLevel::ticking : ChunkLevel::border;
                 auto& slot = out[c];

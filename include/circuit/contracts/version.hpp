@@ -54,7 +54,8 @@ struct RuleLimits {
     std::uint32_t max_scheduled_ticks_per_list{};  // version rule: excess stays scheduled
     std::uint32_t random_tick_speed{};             // version rule (default game rule value)
     std::uint32_t max_block_events_per_tick{};     // Circuit capacity: exceeding it fails the tick
-    std::uint8_t max_ticket_radius{};              // Circuit capacity
+    std::uint8_t max_ticket_radius{};              // Circuit capacity: ticking radius
+    std::uint8_t max_load_radius{};                // Circuit capacity: loaded, non-ticking radius
 };
 
 enum class RngPolicy : std::uint8_t {

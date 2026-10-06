@@ -66,6 +66,8 @@ Logical time advances by one per executed tick. Each tick runs these phases in o
 
 Commands are external inputs applied between ticks, so they observe the previous tick's time. A delay that a command starts counts from that time.
 
+Commands apply serially in admission order, each with its immediate reactions, so a command sees everything the earlier commands of the tick changed. Player actions use this: `PlayerUse` (a click on a block face) and `PlayerBreak` decide what to use, where to place and whether the block is supported when they are applied, not when they are admitted. A player's actions therefore give the same world however they are grouped into ticks. The server checks only reach, player overlap and the held item at admission.
+
 Every observable action produces a trace record keyed by (tick, phase, root, sequence within the root). Two executions are equivalent only if their trace records are identical, including order. Their canonical state dumps must also be identical.
 
 ## Reference rules v4
@@ -121,7 +123,7 @@ Every observable action produces a trace record keyed by (tick, phase, root, seq
 - **Water:** sources, flowing distance 1–7, falling water, 5-tick fluid ticks.
 - **Wheat:** grows on random ticks. Random-tick positions and rule draws use a stream derived from (seed, tick, chunk, section) instead of a level-wide stream.
 - **Item entities:** fixed-point gravity, drag and collision, migration between chunks, despawn after 6000 ticks. They are spawned by commands and by destroyed blocks, and pushed by moving blocks.
-- **Chunk tickets:** a ticket of radius r makes chunks within Chebyshev distance r ticking and the next ring border-loaded. Changes apply at the end of the command phase. Unloading keeps all chunk state, including pending ticks. A reload increments the chunk generation, and commands can name the generation they expect.
+- **Chunk tickets:** a ticket of radius r makes chunks within Chebyshev distance r ticking and loads the chunks within max(r + 1, its load radius) at border level, without ticking. A player's load radius is their view distance. Changes apply at the end of the command phase. Unloading keeps all chunk state, including pending ticks. A reload increments the chunk generation, and commands can name the generation they expect.
 
 ## Part I mechanism contracts
 

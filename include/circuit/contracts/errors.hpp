@@ -31,6 +31,10 @@ enum class ErrorCode : std::uint16_t {
     not_usable = 20,
     unknown_command = 21,
     rules_mismatch = 22,
+    out_of_reach = 23,
+    occupied = 24,
+    unsupported = 25,
+    not_breakable = 26,
 };
 
 constexpr std::string_view error_name(ErrorCode code) noexcept {
@@ -57,6 +61,10 @@ constexpr std::string_view error_name(ErrorCode code) noexcept {
     case ErrorCode::not_usable: return "not_usable";
     case ErrorCode::unknown_command: return "unknown_command";
     case ErrorCode::rules_mismatch: return "rules_mismatch";
+    case ErrorCode::out_of_reach: return "out_of_reach";
+    case ErrorCode::occupied: return "occupied";
+    case ErrorCode::unsupported: return "unsupported";
+    case ErrorCode::not_breakable: return "not_breakable";
     }
     return "unknown_error";
 }

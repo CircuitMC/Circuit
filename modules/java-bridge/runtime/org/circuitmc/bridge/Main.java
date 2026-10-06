@@ -56,6 +56,7 @@ public final class Main {
             final var out = new DataOutputStream(new BufferedOutputStream(Channels.newOutputStream(channel)));
             final Bridge bridge = new Bridge(in, out);
             bridge.handshake(token);
+            // Startup runs on the plugin thread while this thread reads answers.
             bridge.start(plugins);
             bridge.run();
         }

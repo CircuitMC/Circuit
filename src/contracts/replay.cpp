@@ -54,9 +54,16 @@ private:
     std::size_t at_{};
 };
 
+// Record tags: 0 SetBlock, 1 UseBlock, 2 InsertItem, 3 SpawnItem,
+// 4 RemoveEntity, 5 AddTicket without a load radius (read only), 6 RemoveTicket,
+// 7 PlayerUse, 8 PlayerBreak, 9 AddTicket.
+std::uint8_t tag_of(const CommandBody& body) {
+    return std::holds_alternative<AddTicket>(body) ? 9 : static_cast<std::uint8_t>(body.index());
+}
+
 void encode_command(Writer& w, const Command& c) {
     w.put(c.admission);
-    w.put(static_cast<std::uint8_t>(c.body.index()));
+    w.put(tag_of(c.body));
     std::visit([&](const auto& body) {
         using T = std::decay_t<decltype(body)>;
         if constexpr (std::is_same_v<T, SetBlock>) {
@@ -81,8 +88,19 @@ void encode_command(Writer& w, const Command& c) {
             w.put(body.center.x);
             w.put(body.center.z);
             w.put(body.radius);
+            w.put(body.load_radius);
         } else if constexpr (std::is_same_v<T, RemoveTicket>) {
             w.put(body.ticket);
+        } else if constexpr (std::is_same_v<T, PlayerUse>) {
+            w.pos(body.pos);
+            w.put(static_cast<std::uint8_t>(body.face));
+            w.put(static_cast<std::uint8_t>(body.place.has_value()));
+            if (body.place) w.put(*body.place);
+            w.put(static_cast<std::uint8_t>(body.sneaking));
+            w.put(static_cast<std::uint8_t>(body.holding));
+            w.put(body.allowed);
+        } else if constexpr (std::is_same_v<T, PlayerBreak>) {
+            w.pos(body.pos);
         }
     }, c.body);
 }
@@ -124,6 +142,29 @@ bool decode_command(Reader& r, Command& c) {
         return true;
     }
     case 6: { RemoveTicket b; if (!r.get(b.ticket)) return false; c.body = b; return true; }
+    case 7: {
+        PlayerUse b;
+        std::uint8_t face{}, has{}, sneaking{}, holding{};
+        if (!r.pos(b.pos) || !r.get(face) || face > 5 || !r.get(has) || has > 1) return false;
+        b.face = static_cast<Direction>(face);
+        if (has) {
+            std::uint32_t state{};
+            if (!r.get(state)) return false;
+            b.place = state;
+        }
+        if (!r.get(sneaking) || !r.get(holding) || !r.get(b.allowed) || sneaking > 1 || holding > 1 || b.allowed > 3) return false;
+        b.sneaking = sneaking == 1;
+        b.holding = holding == 1;
+        c.body = b;
+        return true;
+    }
+    case 8: { PlayerBreak b; if (!r.pos(b.pos)) return false; c.body = b; return true; }
+    case 9: {
+        AddTicket b;
+        if (!r.get(b.ticket) || !r.get(b.center.x) || !r.get(b.center.z) || !r.get(b.radius) || !r.get(b.load_radius)) return false;
+        c.body = b;
+        return true;
+    }
     default: return false;
     }
 }

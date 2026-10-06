@@ -25,7 +25,7 @@ The configuration file holds `key=value` lines; `#` starts a comment. Unknown ke
 | `session-server` | `https://sessionserver.mojang.com` | Session service for online mode; plain `http` only on loopback |
 | `auth-timeout-ms` | `5000` | Deadline for one verification |
 | `max-players`, `max-connections` | `20`, `256` | Players in the game; open sockets of any kind |
-| `view-distance`, `simulation-distance` | `6`, `4` | Chunks sent around a player; ticking radius of the player's chunk ticket |
+| `view-distance`, `simulation-distance` | `6`, `4` | Chunks loaded and sent around a player, without ticking; ticking radius of the player's chunk ticket |
 | `compression-threshold` | `256` | Packets of at least this size are compressed; `-1` disables compression |
 | `network-threads`, `workers` | `2`, `4` | Asio threads for connections; engine worker threads |
 | `login-timeout`, `keep-alive-timeout` | `30`, `30` | Seconds |
@@ -51,15 +51,26 @@ Players never touch engine state directly.
 **Authority.** Every player action is validated before it becomes a command:
 - **Movement:** finite coordinates inside the world border; at most 10 blocks per packet; only into delivered chunks. Too-fast moves are corrected with a teleport, and non-finite ones are kicked.
 - **Reach:** blocks within 6 blocks of the eyes, measured to the nearest point of the block (creative interaction range 5 plus 1).
-- **Placement:**
-  - the target must be empty or water, outside every player;
-  - dust, repeaters and comparators need a solid block below, and levers a solid block to attach to.
 - **Inventory:** creative slots 0–45 with known items and at most 99 per stack.
 
-A refused action is answered with the current state of the affected blocks, and every block action is acknowledged with its sequence number.
+**Block actions.** Clicks and creative breaking become the commands `PlayerUse` and `PlayerBreak`. The rules resolve them when they are applied, in admission order, against the state the earlier commands left. A player's actions therefore mean the same however they fall into ticks: a block placed and then built on, or a lever placed and then used, gives the same world whether the packets arrive in one tick or several. Admission checks only what the world does not decide:
+- the held item's block state, oriented by the player and the clicked face;
+- which of the two possible positions, the clicked block or its neighbor, is within reach and free of players.
+
+When the command is applied:
+- **Use:** a lever, repeater or comparator is used, unless the player sneaks while holding an item.
+- **Placement:**
+  - the block replaces the clicked block if that is air or water, otherwise it goes next to it;
+  - the target must be air or water;
+  - dust, repeaters and comparators need a solid block below, and levers a solid block to attach to;
+  - a chest joins a neighboring single chest as the official server does: next to one of the same facing, clockwise first, unless the player sneaks; when sneaking, the chest whose side was clicked, taking its facing.
+- **Breaking:** any block but air and piston parts.
+
+A refused action is answered with the current state of the affected blocks, or, for a command refused when applied, restored by the client when the action is acknowledged. Every block action is acknowledged with its sequence number.
 
 **World delivery.**
 - **Chunks:** encoded from copy-on-write column snapshots: paletted block sections, plains biome, heightmaps and full sky light, with no lighting engine yet. At most 32 chunks per player per tick, nearest first.
+- **View and simulation:** a player's chunk ticket ticks the chunks within the simulation distance and loads, without ticking, those within the view distance the client asked for (at most `view-distance`). Every chunk of the view is sent, whether the view is wider or narrower than the simulation distance.
 - **Display properties:** dust connections and similar properties are derived for display only and never feed back into the rules.
 - **Updates and entities:** block changes in a tick become block updates for every player who has the chunk. Item entities are spawned, moved and removed from the engine trace.
 
@@ -112,7 +123,7 @@ Clients that report the vanilla data pack receive registry entry names only. Cli
 | Check | What it covers |
 | --- | --- |
 | `protocol_tests` | Data types against documented examples, NBT, framing and compression limits, packet and content tables, fuzzed input |
-| `server_tests` | An in-process server and a small client built on Circuit's codec. It covers: status; offline and online login (encryption and a mock session service); default deny; version, name and frame errors; connection, rate and login-time limits; movement and reach; placement; a lever lighting a lamp; graceful stop; saving and restoring a world and a player; the server binary killed and recovered. |
+| `server_tests` | An in-process server and a small client built on Circuit's codec. It covers: status; offline and online login (encryption and a mock session service); default deny; version, name and frame errors; connection, rate and login-time limits; movement and reach; placement, with player actions grouped into ticks in different ways and chest pairing; view loading without ticking; a lever lighting a lamp; a client that stops reading; one owner per world; graceful stop; saving and restoring a world and a player; the server binary killed and recovered. |
 
 Two clients outside this repository give independent evidence:
 - **Protocol library:** a mineflayer suite, run against both Circuit and the vanilla server.

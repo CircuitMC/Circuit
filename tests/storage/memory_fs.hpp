@@ -14,6 +14,7 @@
 #include <map>
 #include <memory>
 #include <random>
+#include <set>
 
 namespace circuit::test {
 using storage::Path;
@@ -111,6 +112,12 @@ public:
         return names;
     }
     bool exists(const Path& p) const override { return current_.contains(p.string()); }
+    // Locks are not files and not operations: they never fail by injection,
+    // and a crashed image starts with none held.
+    std::expected<std::unique_ptr<storage::FileLock>, std::string> lock(const Path& p) override {
+        if (!locks_->insert(p.string()).second) return std::unexpected(p.string() + " is held by another owner");
+        return std::make_unique<Held>(locks_, p.string());
+    }
 
     // Mutable access to a file's bytes (corruption tests).
     std::vector<std::byte>* bytes(const Path& p) {
@@ -121,6 +128,13 @@ public:
     }
 
 private:
+    struct Held final : storage::FileLock {
+        Held(std::shared_ptr<std::set<std::string>> set, std::string path) : set_(std::move(set)), path_(std::move(path)) {}
+        ~Held() override { set_->erase(path_); }
+        std::shared_ptr<std::set<std::string>> set_;
+        std::string path_;
+    };
+
     Status step() {
         const auto index = ops_++;
         if (index >= crash_at_) return std::unexpected("simulated crash");
@@ -129,6 +143,7 @@ private:
     }
 
     std::map<std::string, std::shared_ptr<File>> current_, durable_;
+    std::shared_ptr<std::set<std::string>> locks_ = std::make_shared<std::set<std::string>>();
     std::size_t ops_{};
     std::size_t crash_at_{std::numeric_limits<std::size_t>::max()};
     std::size_t fail_once_{std::numeric_limits<std::size_t>::max()};

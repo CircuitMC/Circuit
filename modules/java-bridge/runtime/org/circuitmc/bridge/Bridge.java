@@ -23,8 +23,11 @@ import org.circuitmc.spi.World;
 
 /**
  * The bridge side of a connection: plugin contexts, pending requests and the
- * plugin thread. A reader thread decodes frames from the server; plugin code
- * runs only on the single plugin thread.
+ * plugin thread. The reader (the thread that calls {@link #run}) decodes
+ * frames from the server from the start, so plugin code, which runs only on
+ * the single plugin thread, can wait for answers in any callback, including
+ * {@code onLoad} and {@code onEnable}. When the connection ends, every
+ * pending request fails at once.
  */
 final class Bridge {
     private interface Decoder<T> {
@@ -46,6 +49,8 @@ final class Bridge {
     private final List<TickListener> tickListeners = new ArrayList<>();
     private final List<Loaded> plugins = new ArrayList<>();
     private volatile boolean subscribed;
+    private volatile boolean closed;
+    private final java.util.concurrent.atomic.AtomicBoolean stopping = new java.util.concurrent.atomic.AtomicBoolean();
     private int permissions;
 
     private record Loaded(String id, CircuitPlugin plugin) {}
@@ -73,7 +78,11 @@ final class Bridge {
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
-        send(m.payload());
+        try {
+            send(m.payload());
+        } catch (CircuitException e) {
+            System.err.println(text); // the connection is gone
+        }
     }
 
     /** Authenticates and waits for the server's welcome. */
@@ -91,9 +100,13 @@ final class Bridge {
         permissions = welcome.readInt();
     }
 
-    /** Loads and enables the plugins on the plugin thread. */
-    void start(List<CircuitPlugin> instances) throws Exception {
-        pluginThread.submit(() -> {
+    /**
+     * Queues loading and enabling the plugins on the plugin thread and returns
+     * at once; call {@link #run} next. Ticks and commands that arrive during
+     * startup are queued behind it, so plugins see them after {@code onEnable}.
+     */
+    void start(List<CircuitPlugin> instances) {
+        pluginThread.execute(() -> {
             for (final CircuitPlugin p : instances) {
                 final String id = p.getClass().getName();
                 try {
@@ -104,37 +117,50 @@ final class Bridge {
                     log(2, id + " failed to start: " + e);
                 }
             }
-            final var ready = new Protocol.Message(Protocol.READY);
-            ready.out.writeInt(plugins.size());
-            for (final Loaded l : plugins) ready.out.writeUTF(l.id());
-            send(ready.payload());
-            return null;
-        }).get();
-    }
-
-    /** Reads frames until the server stops the bridge or the connection ends. */
-    void run() throws IOException {
-        while (true) {
-            final byte[] frame = Protocol.readFrame(in);
-            if (frame == null) break;
-            final var msg = new DataInputStream(new ByteArrayInputStream(frame));
-            final int type = msg.readUnsignedByte();
-            if (type == Protocol.RESPONSE) {
-                response(msg);
-            } else if (type == Protocol.TICK) {
-                tick(msg);
-            } else if (type == Protocol.COMMAND) {
-                command(msg);
-            } else if (type == Protocol.SHUTDOWN) {
-                break;
-            } else {
-                throw new IOException("unknown message type " + type);
+            try {
+                final var ready = new Protocol.Message(Protocol.READY);
+                ready.out.writeInt(plugins.size());
+                for (final Loaded l : plugins) ready.out.writeUTF(l.id());
+                send(ready.payload());
+            } catch (IOException | CircuitException e) {
+                System.err.println("circuit bridge: the server is gone before startup finished");
             }
-        }
-        stop();
+        });
     }
 
+    /** Reads frames until the server stops the bridge or the connection ends, then stops the plugins. */
+    void run() throws IOException {
+        try {
+            while (true) {
+                final byte[] frame = Protocol.readFrame(in);
+                if (frame == null) break;
+                final var msg = new DataInputStream(new ByteArrayInputStream(frame));
+                final int type = msg.readUnsignedByte();
+                if (type == Protocol.RESPONSE) {
+                    response(msg);
+                } else if (type == Protocol.TICK) {
+                    tick(msg);
+                } else if (type == Protocol.COMMAND) {
+                    command(msg);
+                } else if (type == Protocol.SHUTDOWN) {
+                    break;
+                } else {
+                    throw new IOException("unknown message type " + type);
+                }
+            }
+        } finally {
+            stop();
+        }
+    }
+
+    /**
+     * Fails the pending requests first, so that a plugin waiting for one,
+     * even in a startup callback, continues; then disables the plugins.
+     */
     void stop() {
+        if (!stopping.compareAndSet(false, true)) return;
+        closed = true;
+        failPending();
         try {
             pluginThread.submit(() -> {
                 for (int i = plugins.size() - 1; i >= 0; --i) {
@@ -150,8 +176,15 @@ final class Bridge {
             System.err.println("plugins did not stop in time: " + e);
         }
         pluginThread.shutdownNow();
-        for (final Pending p : pending.values())
-            p.future().completeExceptionally(new CircuitException(CircuitException.Reason.UNAVAILABLE, "the bridge stopped"));
+        failPending();
+    }
+
+    private void failPending() {
+        for (final Long id : List.copyOf(pending.keySet())) {
+            final Pending p = pending.remove(id);
+            if (p != null)
+                p.future().completeExceptionally(new CircuitException(CircuitException.Reason.UNAVAILABLE, "the bridge stopped"));
+        }
     }
 
     private void response(DataInputStream msg) throws IOException {
@@ -226,6 +259,11 @@ final class Bridge {
         final long id = nextRequest.getAndIncrement();
         final var future = new CompletableFuture<Object>();
         pending.put(id, new Pending(future, decoder));
+        // After stop() set `closed`, its sweep may have missed this entry.
+        if (closed && pending.remove(id) != null) {
+            future.completeExceptionally(new CircuitException(CircuitException.Reason.UNAVAILABLE, "the bridge stopped"));
+            return (CompletableFuture<T>) (CompletableFuture<?>) future;
+        }
         final var m = new Protocol.Message(Protocol.REQUEST);
         try {
             m.out.writeLong(id);

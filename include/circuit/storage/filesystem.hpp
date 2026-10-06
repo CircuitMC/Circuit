@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <expected>
 #include <filesystem>
+#include <memory>
 #include <span>
 #include <string>
 #include <vector>
@@ -15,6 +16,12 @@ namespace circuit::storage {
 
 using Status = std::expected<void, std::string>;
 using Path = std::filesystem::path;
+
+// Exclusive ownership of a file, held until this object is destroyed.
+class FileLock {
+public:
+    virtual ~FileLock() = default;
+};
 
 class Filesystem {
 public:
@@ -32,6 +39,11 @@ public:
     // Names of the regular files in `dir`.
     [[nodiscard]] virtual std::expected<std::vector<std::string>, std::string> list(const Path& dir) const = 0;
     [[nodiscard]] virtual bool exists(const Path& file) const = 0;
+    // Takes exclusive ownership of `file`, creating it if needed, without
+    // waiting. Fails when another owner holds it, in this process or another.
+    // Ownership ends when the returned object is destroyed or the process
+    // exits, so a crash never leaves it held. It changes no other file.
+    [[nodiscard]] virtual std::expected<std::unique_ptr<FileLock>, std::string> lock(const Path& file) = 0;
 };
 
 // The host file system, with fsync for file contents and directories.
@@ -46,6 +58,8 @@ public:
     [[nodiscard]] std::expected<std::vector<std::byte>, std::string> read_file(const Path& file) const override;
     [[nodiscard]] std::expected<std::vector<std::string>, std::string> list(const Path& dir) const override;
     [[nodiscard]] bool exists(const Path& file) const override;
+    // flock(2) on the file; the file holds the owner's process id.
+    [[nodiscard]] std::expected<std::unique_ptr<FileLock>, std::string> lock(const Path& file) override;
 };
 
 } // namespace circuit::storage

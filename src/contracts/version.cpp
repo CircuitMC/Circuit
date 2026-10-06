@@ -81,7 +81,8 @@ constexpr std::array reference_v4_mechanisms{
         "of entities spawned outside the command phase are assigned in serial order. Gaps: no merging; cannot "
         "enter unloaded chunks; physics not compared with the target version."},
     MechanismEntry{"chunk_tickets", l0_exact, l2_declared_deviation, documented_behavior,
-        "A ticket of radius r makes chunks within Chebyshev distance r ticking and the next ring border-loaded. "
+        "A ticket of radius r makes chunks within Chebyshev distance r ticking and loads the chunks within "
+        "max(r + 1, its load radius) without ticking (border level); players' load radii are their view distances. "
         "Gaps: no ticket types or level propagation; unloaded chunks keep pending ticks with absolute due "
         "times."},
     MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, documented_behavior,
@@ -102,6 +103,7 @@ constexpr RuleLimits vanilla_like_limits{
     .random_tick_speed = 3,
     .max_block_events_per_tick = 1'000'000,
     .max_ticket_radius = 8,
+    .max_load_radius = 33, // a view distance of 32, plus one
 };
 
 // Both supported versions run the same reference rules: the 20 harness traces

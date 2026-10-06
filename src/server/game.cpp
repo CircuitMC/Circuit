@@ -479,7 +479,7 @@ struct Game::Impl final : GameServices {
         p.view_distance = std::clamp(r.view_distance, 2, config.view_distance);
         p.center = chunk_at(p.pos);
         p.ticket = next_ticket++;
-        admit(contracts::AddTicket{p.ticket, p.center, static_cast<std::uint8_t>(config.simulation_distance)});
+        admit(player_ticket(p, p.center));
 
         Wire::JoinGame j{p.entity_id, config.max_players, p.view_distance, config.simulation_distance, dimension_type,
                          p.game_mode};
@@ -547,6 +547,12 @@ struct Game::Impl final : GameServices {
         log_info(std::format("{} left", name));
     }
 
+    // A player's chunks: those within the simulation distance tick, and those
+    // within the view distance are loaded to be sent, without ticking.
+    contracts::AddTicket player_ticket(const Player& p, ChunkPos center) const {
+        return {p.ticket, center, static_cast<std::uint8_t>(config.simulation_distance), static_cast<std::uint8_t>(p.view_distance)};
+    }
+
     void teleport(Player& p, Vec3 to) {
         p.pos = to;
         const auto id = p.next_teleport++;
@@ -606,7 +612,7 @@ struct Game::Impl final : GameServices {
             p.center = chunk;
             p.peer->send(wire.chunk_center(chunk.x, chunk.z));
             admit(contracts::RemoveTicket{p.ticket});
-            admit(contracts::AddTicket{p.ticket, chunk, static_cast<std::uint8_t>(config.simulation_distance)});
+            admit(player_ticket(p, chunk));
         }
     }
 
@@ -617,14 +623,11 @@ struct Game::Impl final : GameServices {
         return dx * dx + dy * dy + dz * dz <= reach * reach;
     }
 
-    bool placeable_at(BlockPos b) const {
-        if (!gameplay::in_world(bundle, b)) return false;
-        const auto s = at(b);
-        return s.is_air() || s.is(BlockType::water);
-    }
-
-    // A block would intersect a player standing or flying in the world.
-    bool occupied_by_player(BlockPos b) const {
+    // A block of this state would intersect a player standing or flying there.
+    bool occupied_by_player(BlockPos b, BlockState state) const {
+        // Blocks without collision never obstruct.
+        if (state.is(BlockType::redstone_wire) || state.is(BlockType::lever) || state.is(BlockType::wheat) || state.is(BlockType::water))
+            return false;
         for (const auto& [id, o] : players) {
             if (o.game_mode == spectator) continue;
             const bool x = b.x + 1 > o.pos.x - 0.3 && b.x < o.pos.x + 0.3;
@@ -640,6 +643,10 @@ struct Game::Impl final : GameServices {
             p.peer->send(wire.block_update(wire_pos(b), display_state(palette, lookup(), b, at(b))));
     }
 
+    // Breaking and placing are resolved by the rules when the command is
+    // applied, after the commands admitted before it (PlayerBreak, PlayerUse).
+    // Here only what the world does not decide is checked. A refused command
+    // changes nothing; the client restores its prediction at the acknowledgement.
     void handle(Player& p, intent::Dig& d) {
         const auto b = block_pos(d.pos);
         p.acks.push_back(d.sequence);
@@ -648,12 +655,7 @@ struct Game::Impl final : GameServices {
             correct(p, b);
             return;
         }
-        const auto s = at(b);
-        if (s.is_air() || s.is(BlockType::piston_head) || s.is(BlockType::moving_piston)) {
-            correct(p, b);
-            return;
-        }
-        admit(contracts::SetBlock{b, blocks::air().raw(), std::nullopt});
+        admit(contracts::PlayerBreak{b});
     }
 
     // State placed by the held item, oriented by the player and the clicked face.
@@ -687,11 +689,6 @@ struct Game::Impl final : GameServices {
         return std::nullopt;
     }
 
-    // Blocks that need a solid block below them.
-    static bool needs_floor(BlockState s) {
-        return s.is(BlockType::redstone_wire) || s.is(BlockType::repeater) || s.is(BlockType::comparator);
-    }
-
     void handle(Player& p, intent::UseOn& u) {
         p.acks.push_back(u.sequence);
         const auto b = block_pos(u.pos);
@@ -701,27 +698,21 @@ struct Game::Impl final : GameServices {
             if (u.face >= 0 && u.face <= 5) correct(p, b.relative(static_cast<Direction>(u.face)));
             return;
         }
+        // The client sends the off hand only when the main hand did nothing,
+        // and the off hand holds nothing in this server.
+        if (u.hand != 0) return;
         const auto face = static_cast<Direction>(u.face);
-        const auto clicked = at(b);
-        const bool usable = clicked.is(BlockType::lever) || clicked.is(BlockType::repeater) || clicked.is(BlockType::comparator);
-        if (usable && !p.sneaking) {
-            admit(contracts::UseBlock{b});
-            return;
-        }
-        if (u.hand != 0) return; // the off hand holds nothing in this server
         const auto [item, count] = p.inventory[static_cast<std::size_t>(hotbar_first + p.held)];
-        const auto target = placeable_at(b) ? b : b.relative(face);
         const auto name = count > 0 ? content.item_name(item) : std::nullopt;
         const auto state = name ? placement(p, *name, face) : std::nullopt;
-        if (!state || !placeable_at(target) || !in_reach(p, target)
-            || (needs_floor(*state) && !gameplay::is_solid(at(target.relative(Direction::down)).type()))
-            || (state->is(BlockType::lever) && (target == b || !gameplay::is_solid(clicked.type())))
-            || occupied_by_player(target)) {
-            correct(p, b);
-            correct(p, target);
-            return;
+        contracts::PlayerUse use{b, face, std::nullopt, p.sneaking, count > 0, 0};
+        if (state) {
+            use.place = state->raw();
+            const auto beside = b.relative(face);
+            if (!occupied_by_player(b, *state)) use.allowed |= 1;
+            if (gameplay::in_world(bundle, beside) && in_reach(p, beside) && !occupied_by_player(beside, *state)) use.allowed |= 2;
         }
-        admit(contracts::SetBlock{target, state->raw(), std::nullopt});
+        admit(use);
     }
 
     void handle(Player& p, intent::Use& u) { p.acks.push_back(u.sequence); }
@@ -791,7 +782,7 @@ struct Game::Impl final : GameServices {
             p.center = chunk;
             p.peer->send(wire.chunk_center(chunk.x, chunk.z));
             admit(contracts::RemoveTicket{p.ticket});
-            admit(contracts::AddTicket{p.ticket, chunk, static_cast<std::uint8_t>(config.simulation_distance)});
+            admit(player_ticket(p, chunk));
         } else if (args[0] == "gamemode" && args.size() == 2 && (args[1] == "creative" || args[1] == "spectator")) {
             p.game_mode = args[1] == "creative" ? creative : spectator;
             p.peer->send(wire.game_event(3, static_cast<float>(p.game_mode)));
@@ -1170,6 +1161,8 @@ void Game::shutdown(std::string_view reason) {
         i.healthy = false; // saved once; later ticks are not expected
     }
     i.stop_writer();
+    // Nothing writes the world any more: release its directory for other owners.
+    i.world.reset();
     if (i.extensions) i.extensions->unload();
     for (auto& [id, p] : impl_->players) p.peer->kick(std::string(reason));
     impl_->players.clear();

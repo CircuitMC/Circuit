@@ -7,7 +7,7 @@
 #include <circuit/auth/crypto.hpp>
 #include <circuit/auth/session.hpp>
 #include <circuit/protocol/framing.hpp>
-#include <deque>
+#include <circuit/protocol/output_queue.hpp>
 #include <mutex>
 #include <unordered_map>
 
@@ -67,6 +67,7 @@ private:
     void verified(std::expected<auth::VerifiedProfile, auth::SessionError> result);
     void write();
     void fail(std::string reason); // kick on the strand
+    void close_after_writes();
     void terminate();
     void schedule_timer();
     void timer_fired();
@@ -80,10 +81,9 @@ private:
     Phase phase_{Phase::handshake};
     protocol::FrameDecoder decoder_;
     std::array<std::byte, 16384> buffer_{};
-    std::deque<Bytes> out_;
-    std::size_t out_bytes_{};
-    bool writing_{};
-    bool closing_{};
+    protocol::OutputQueue out_;
+    bool closing_{}; // the last frames are written, then the connection closes
+    std::chrono::steady_clock::time_point closing_since_;
     std::int32_t out_threshold_{-1};
     std::int32_t client_protocol_{};
     std::string name_;

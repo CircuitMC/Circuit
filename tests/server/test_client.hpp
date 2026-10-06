@@ -23,8 +23,14 @@ using protocol::Writer;
 class TestClient {
 public:
     // A client of protocol 772 (1.21.8) or 769 (1.21.4).
-    explicit TestClient(std::uint16_t port, std::int32_t protocol_version = 772)
+    // A positive `receive_buffer` limits the socket's receive buffer, so that
+    // a client that stops reading soon stops the server's writes.
+    explicit TestClient(std::uint16_t port, std::int32_t protocol_version = 772, int receive_buffer = 0)
         : socket_(io_), protocol_(protocol_version), game_version_(protocol_version == 769 ? "1.21.4" : "1.21.8") {
+        if (receive_buffer > 0) {
+            socket_.open(asio::ip::tcp::v4());
+            socket_.set_option(asio::socket_base::receive_buffer_size(receive_buffer));
+        }
         socket_.connect({asio::ip::make_address("127.0.0.1"), port});
         ids_ = protocol::PacketIds::for_protocol(protocol_version);
     }

@@ -24,6 +24,12 @@
 // a torn tail and fails on a record whose checksum is valid but whose
 // content is not. Files from which recovery discarded data are renamed to
 // damaged-<name> instead of being removed once no manifest needs them.
+//
+//   session.lock              exclusive ownership (see `acquire`)
+//
+// One WorldDirectory object at a time, in one process, owns a directory: it
+// takes the lock before it reads or writes any world file and keeps it until
+// it is destroyed. A second owner is refused before it touches the world.
 namespace circuit::storage {
 
 struct Recovery {
@@ -42,6 +48,12 @@ struct PendingCheckpoint {
 class WorldDirectory {
 public:
     WorldDirectory(Filesystem& fs, Path root, std::string bundle_id, std::string rules_id);
+
+    // Takes ownership of the directory, creating it if needed. The other
+    // operations take it first themselves; calling this first only reports a
+    // refusal earlier. Fails while another object or process owns it.
+    Status acquire();
+    [[nodiscard]] bool owned() const noexcept { return lock_ != nullptr; }
 
     // The latest durable state; nullopt for a world that was never saved.
     // Fails when a manifest exists but none of its checkpoints is usable, or
@@ -119,8 +131,10 @@ private:
     bool pending_{false};          // a checkpoint has begun and not finished
     std::mutex mutex_;             // the state above; file writes of finish_checkpoint run outside it
     std::set<std::string> damaged_; // files recovery found damaged, kept as damaged-<name> once unreferenced
+    std::unique_ptr<FileLock> lock_; // ownership, from the first operation until destruction
 };
 
+inline constexpr std::string_view lock_file_name = "session.lock";
 std::string checkpoint_name(std::uint64_t tick, std::uint64_t generation);
 std::string segment_name(std::uint64_t tick, std::uint64_t generation);
 

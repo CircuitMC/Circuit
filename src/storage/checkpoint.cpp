@@ -16,7 +16,7 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
-constexpr std::uint32_t version = 1;
+constexpr std::uint32_t version = 2; // 2: tickets carry a load radius; 1 is still read
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
 
@@ -118,7 +118,7 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
         w.u8(static_cast<std::uint8_t>(e.block)).u8(e.event).u8(e.param);
     }
     w.varint(static_cast<std::int32_t>(s.tickets.size()));
-    for (const auto& t : s.tickets) w.i32(static_cast<std::int32_t>(t.id)).i32(t.center.x).i32(t.center.z).u8(t.radius);
+    for (const auto& t : s.tickets) w.i32(static_cast<std::int32_t>(t.id)).i32(t.center.x).i32(t.center.z).u8(t.radius).u8(t.load_radius);
     w.varint(static_cast<std::int32_t>(c.extras.size()));
     for (const auto& [name, bytes] : c.extras) w.string(name, 256).prefixed_bytes(bytes);
 }
@@ -126,6 +126,7 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
 struct BodyReader {
     Reader r;
     std::string error;
+    std::int32_t version{};
 
     template <class T>
     bool get(protocol::Decoded<T> v, T& out) {
@@ -273,6 +274,7 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
         gameplay::Ticket t;
         std::int32_t id{};
         if (!b.get(b.r.i32(), id) || !b.get(b.r.i32(), t.center.x) || !b.get(b.r.i32(), t.center.z) || !b.get(b.r.u8(), t.radius)) return false;
+        if (b.version >= 2 && !b.get(b.r.u8(), t.load_radius)) return false;
         t.id = static_cast<std::uint32_t>(id);
         s.tickets.push_back(t);
     }
@@ -391,7 +393,7 @@ std::expected<Checkpoint, std::string> decode_checkpoint(std::span<const std::by
     const auto m = r.raw(magic.size());
     if (!m || !std::equal(m->begin(), m->end(), protocol::as_bytes(magic).begin())) return std::unexpected("not a checkpoint");
     const auto v = r.i32();
-    if (!v || *v != static_cast<std::int32_t>(version)) return std::unexpected("unsupported checkpoint version");
+    if (!v || *v < 1 || *v > static_cast<std::int32_t>(version)) return std::unexpected("unsupported checkpoint version");
     Checkpoint c;
     const auto bundle = r.string(64), rules = r.string(128);
     const auto seed = r.i64(), tick = r.i64(), raw_size = r.i64(), compressed_size = r.i64();
@@ -404,7 +406,7 @@ std::expected<Checkpoint, std::string> decode_checkpoint(std::span<const std::by
     c.seed = static_cast<std::uint64_t>(*seed);
     auto body = protocol::inflate_exact(r.rest(), static_cast<std::size_t>(*raw_size));
     if (!body) return std::unexpected("checkpoint body does not inflate");
-    BodyReader b{Reader(*body), {}};
+    BodyReader b{Reader(*body), {}, *v};
     if (!decode_body(b, c)) return std::unexpected("checkpoint body: " + b.error);
     if (c.state.time != static_cast<std::uint64_t>(*tick)) return std::unexpected("checkpoint tick mismatch");
     return c;

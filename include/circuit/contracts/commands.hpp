@@ -43,10 +43,13 @@ struct RemoveEntity {
 };
 // Tickets determine which chunks are loaded and ticking. Changes take effect
 // at the end of the command phase, never in the middle of a simulation phase.
+// Chunks within Chebyshev distance `radius` of the center tick; chunks within
+// max(radius + 1, load_radius) are loaded without ticking (a player's view).
 struct AddTicket {
     std::uint32_t ticket{};
     ChunkPos center;
     std::uint8_t radius{};
+    std::uint8_t load_radius{};
     bool operator==(const AddTicket&) const = default;
 };
 struct RemoveTicket {
@@ -54,7 +57,34 @@ struct RemoveTicket {
     bool operator==(const RemoveTicket&) const = default;
 };
 
-using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket>;
+// A player's click on a block face, resolved when it is applied, against the
+// state that earlier commands of the same tick left. Admission checks only
+// what does not depend on the world: the held item's block state, oriented by
+// the player and the face, and which of the two possible positions the player
+// reaches without overlapping a player. When applied:
+// - a usable block (lever, repeater, comparator) is used, unless the player
+//   sneaks while holding an item;
+// - otherwise the held block replaces the clicked block if that one is
+//   replaceable, or goes next to it on the clicked face, if that position is
+//   allowed, replaceable and supports the block.
+struct PlayerUse {
+    BlockPos pos;                       // the clicked block
+    Direction face{};                   // the clicked face
+    std::optional<std::uint32_t> place; // held block's state, as the rule set encodes it
+    bool sneaking{};
+    bool holding{};                     // an item in the main hand
+    std::uint8_t allowed{};             // bit 0: `pos` may receive the block; bit 1: its neighbor on `face`
+    bool operator==(const PlayerUse&) const = default;
+};
+// A creative player's breaking, resolved when applied: air and piston parts
+// cannot be broken.
+struct PlayerBreak {
+    BlockPos pos;
+    bool operator==(const PlayerBreak&) const = default;
+};
+
+using CommandBody =
+    std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket, PlayerUse, PlayerBreak>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.

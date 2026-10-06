@@ -12,6 +12,7 @@ using protocol::State;
 namespace {
 constexpr auto keep_alive_interval = std::chrono::seconds(10);
 constexpr std::uint32_t max_packets_per_second = 1000;
+constexpr auto close_deadline = std::chrono::seconds(5); // for the last frames of a closing connection
 
 std::optional<Uuid> parse_uuid(std::string_view text) {
     std::string hex;
@@ -159,8 +160,7 @@ bool Session::on_status(std::int32_t id, protocol::Reader& r) {
             return false;
         }
         queue(shared_.wire.pong_response(*payload));
-        closing_ = true; // close once the pong is written
-        if (!writing_) terminate();
+        close_after_writes();
         return false;
     }
     terminate();
@@ -357,31 +357,34 @@ void Session::queue(Bytes packet) {
     if (phase_ == Phase::closed || closing_) return;
     auto frame = protocol::encode_frame(packet, out_threshold_);
     if (out_cipher_) out_cipher_->apply(frame);
-    out_bytes_ += frame.size();
-    out_.push_back(std::move(frame));
-    if (out_bytes_ > shared_.config.max_queued_bytes) {
+    out_.push(std::move(frame));
+    if (out_.bytes() > shared_.config.max_queued_bytes) {
         log_warn(std::format("{} ({}) cannot keep up; disconnected", name_.empty() ? remote_ : name_, remote_));
         terminate();
         return;
     }
-    if (!writing_) write();
+    write();
 }
 
+// Starts writing the next frame unless a write is active. The completion
+// handler owns the frame it writes, so terminating the connection, which
+// discards the queue, never frees a buffer an outstanding write still reads.
 void Session::write() {
-    if (out_.empty()) {
-        writing_ = false;
-        if (closing_) terminate();
+    if (phase_ == Phase::closed) return;
+    auto frame = out_.begin();
+    if (!frame) {
+        if (closing_ && !out_.writing()) terminate();
         return;
     }
-    writing_ = true;
-    asio::async_write(socket_, asio::buffer(out_.front()),
-                      asio::bind_executor(strand_, [self = shared_from_this()](const asio::error_code& ec, std::size_t) {
+    asio::async_write(socket_, asio::buffer(*frame),
+                      asio::bind_executor(strand_, [self = shared_from_this(), frame](const asio::error_code& ec, std::size_t) {
+                          // After terminate the queue was discarded; nothing is left to account for.
+                          if (self->phase_ == Phase::closed) return;
+                          self->out_.finish(frame);
                           if (ec) {
                               self->terminate();
                               return;
                           }
-                          self->out_bytes_ -= self->out_.front().size();
-                          self->out_.pop_front();
                           self->write();
                       }));
 }
@@ -397,8 +400,16 @@ void Session::fail(std::string reason) {
     default: break;
     }
     if (!name_.empty()) log_info(std::format("{} disconnected: {}", name_, reason));
-    closing_ = true; // the reason is written before the socket closes
-    if (!writing_) terminate();
+    close_after_writes(); // the reason is written before the socket closes
+}
+
+// Closes once the queued frames are written. A peer that stops reading cannot
+// hold the connection open: the timer closes it after `close_deadline`.
+void Session::close_after_writes() {
+    if (phase_ == Phase::closed || closing_) return;
+    closing_ = true;
+    closing_since_ = std::chrono::steady_clock::now();
+    if (!out_.writing()) terminate();
 }
 
 void Session::terminate() {
@@ -407,9 +418,8 @@ void Session::terminate() {
     asio::error_code ec;
     timer_.cancel();
     socket_.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
-    socket_.close(ec);
-    out_.clear();
-    out_bytes_ = 0;
+    socket_.close(ec); // an outstanding write completes with an error and keeps its frame until then
+    out_.discard();
     if (joined_) {
         joined_ = false;
         shared_.game.leave(id_);
@@ -428,7 +438,12 @@ void Session::schedule_timer() {
 void Session::timer_fired() {
     if (phase_ == Phase::closed) return;
     const auto now = std::chrono::steady_clock::now();
-    if (phase_ != Phase::play) {
+    if (closing_) {
+        if (now - closing_since_ > close_deadline) {
+            terminate();
+            return;
+        }
+    } else if (phase_ != Phase::play) {
         if (now - started_ > shared_.config.login_timeout) {
             fail("Took too long to log in");
             return;

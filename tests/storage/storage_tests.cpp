@@ -8,8 +8,12 @@
 #include <circuit/protocol/framing.hpp>
 #include <circuit/runtime/engine.hpp>
 #include <circuit/storage/world_directory.hpp>
+#include <climits>
 #include <filesystem>
 #include <format>
+#include <map>
+#include <optional>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <zlib.h>
 
@@ -120,9 +124,23 @@ Outcome run(circuit::storage::Filesystem& fs, const History& h, Policy p, Tick f
     return o;
 }
 
+// Recovery by a new owner; nothing else may own the directory.
 std::expected<std::optional<Recovery>, std::string> recover(MemoryFilesystem& fs) {
     WorldDirectory dir(fs, "/world", bundle_id, rules_id());
     return dir.recover();
+}
+// Recovery after the current owner's process lost power: from the durable
+// image, while the owner object in this test still exists.
+std::expected<std::optional<Recovery>, std::string> recover_image(const MemoryFilesystem& fs) {
+    MemoryFilesystem image = fs.crashed();
+    return recover(image);
+}
+// Every file and its current content.
+std::map<std::string, std::vector<std::byte>> contents(const circuit::storage::Filesystem& fs, const circuit::storage::Path& dir) {
+    std::map<std::string, std::vector<std::byte>> out;
+    const auto names = fs.list(dir).value();
+    for (const auto& n : names) out[n] = fs.read_file(dir / n).value();
+    return out;
 }
 
 // After a crash or failure: recovery must succeed and hold every durable
@@ -268,6 +286,33 @@ int main() {
         std::cout << std::format("  mutated bodies: {} decoded, {} restored and ticked\n", decoded, restored);
     });
 
+    suite.run("restored entities stay within the bounds the rules keep", [&] {
+        // A checkpoint with a valid digest can still hold values the rules never
+        // produce; restoring must refuse them instead of overflowing later.
+        const auto& h = histories[2]; // drops: item entities
+        Tick t = 0;
+        while (t < h.ticks() && h.dumps[t].entities.empty()) ++t;
+        require(!h.dumps[t].entities.empty(), "the history has item entities");
+        const auto refused = [&](auto edit, std::string_view what) {
+            auto state = h.dumps[t];
+            edit(state.entities.front());
+            try {
+                Engine engine(bundle(), h.seed, state);
+            } catch (const std::invalid_argument& e) {
+                require(std::string_view(e.what()).find(what) != std::string_view::npos, std::format("refused for {}: {}", what, e.what()));
+                return;
+            }
+            throw std::runtime_error(std::format("a restored entity with a bad {} was accepted", what));
+        };
+        refused([](circuit::gameplay::Entity& e) { e.velocity.x = INT64_MIN / 2; }, "velocity");
+        refused([](circuit::gameplay::Entity& e) { e.velocity.y = circuit::contracts::fixed_one; }, "velocity");
+        refused([](circuit::gameplay::Entity& e) { e.position.y = INT64_MAX - 5; }, "height");
+        refused([](circuit::gameplay::Entity& e) { e.stack.count = 0; }, "stack");
+        refused([](circuit::gameplay::Entity& e) { e.stack.item = 999; }, "stack");
+        Engine fine(bundle(), h.seed, h.dumps[t]);
+        fine.advance({});
+    });
+
     suite.run("world directory saves, logs and recovers", [&] {
         const auto& h = histories[0];
         MemoryFilesystem fs;
@@ -282,7 +327,7 @@ int main() {
         Checkpoint other = checkpoint_at(h, 10);
         other.rules_id = "other-rules";
         require(!dir.checkpoint(other), "checkpoint of other rules refused");
-        const auto r = recover(fs);
+        const auto r = recover_image(fs);
         require(r && *r && (*r)->checkpoint.state.time == 0 && (*r)->inputs.size() == 10 && (*r)->notes.empty(), "log replayed");
         require(check_recovery(h, **r, "log") == 10, "replayed to 10");
         require(dir.checkpoint(checkpoint_at(h, 10)).has_value(), "second checkpoint");
@@ -291,11 +336,14 @@ int main() {
         require(dir.checkpoint(checkpoint_at(h, 15)).has_value(), "checkpoint at the same tick");
         const auto names = fs.list("/world").value();
         require(names.size() == 5, std::format("manifest, two checkpoints and two segments remain, not {}", names.size()));
-        const auto again = recover(fs);
+        const auto again = recover_image(fs);
         require(again && *again && check_recovery(h, **again, "again") == 15, "recovered at 15");
         for (const auto& [bundle_name, rules] : {std::pair<std::string, std::string>{"java-1.21.4", rules_id()}, {bundle_id, "other"}}) {
-            WorldDirectory foreign(fs, "/world", bundle_name, rules);
-            require(!foreign.recover(), std::format("a world of {} / {} is refused", bundle_name, rules));
+            MemoryFilesystem image = fs.crashed();
+            WorldDirectory foreign(image, "/world", bundle_name, rules);
+            const auto refused = foreign.recover();
+            require(!refused && refused.error().find("in use") == std::string::npos,
+                    std::format("a world of {} / {} is refused", bundle_name, rules));
         }
     });
 
@@ -313,13 +361,15 @@ int main() {
             return newest;
         };
         const auto damaged = corrupt_current();
-        WorldDirectory dir(fs, "/world", bundle_id, rules_id());
-        const auto r = dir.recover();
-        require(r && *r && (*r)->notes.size() == 2, "fallback noted");
-        require(check_recovery(h, **r, "fallback") == h.ticks(), "fallback replays to the end");
-        // The next checkpoint keeps the readable one as its fallback.
-        require(dir.checkpoint(checkpoint_at(h, h.ticks())).has_value(), "checkpoint after fallback");
-        require(!fs.exists("/world/" + damaged) && fs.exists("/world/damaged-" + damaged), "damaged checkpoint kept aside");
+        {
+            WorldDirectory dir(fs, "/world", bundle_id, rules_id());
+            const auto r = dir.recover();
+            require(r && *r && (*r)->notes.size() == 2, "fallback noted");
+            require(check_recovery(h, **r, "fallback") == h.ticks(), "fallback replays to the end");
+            // The next checkpoint keeps the readable one as its fallback.
+            require(dir.checkpoint(checkpoint_at(h, h.ticks())).has_value(), "checkpoint after fallback");
+            require(!fs.exists("/world/" + damaged) && fs.exists("/world/damaged-" + damaged), "damaged checkpoint kept aside");
+        }
         corrupt_current();
         const auto second = recover(fs);
         require(second && *second && check_recovery(h, **second, "second fallback") == h.ticks(), "second fallback");
@@ -327,7 +377,8 @@ int main() {
         const auto names = fs.list("/world").value();
         for (const auto& n : names)
             if (n.starts_with("ckpt-")) (*fs.bytes("/world/" + n))[40] ^= std::byte{2};
-        require(!recover(fs), "no usable checkpoint is an error");
+        const auto none = recover(fs);
+        require(!none && none.error().find("no usable checkpoint") != std::string::npos, "no usable checkpoint is an error");
     });
 
     suite.run("torn and damaged log tails", [&] {
@@ -441,16 +492,18 @@ int main() {
             require(!dir.append(input_at(h, 2), true), "no append after a failure");
             require(dir.checkpoint(checkpoint_at(h, 1)).has_value() && dir.logging(), "checkpoint at tick 1 restarts logging");
             for (Tick t = 2; t <= 5; ++t) require(dir.append(input_at(h, t), true).has_value(), "append");
-            const auto r = recover(fs);
+            const auto r = recover_image(fs);
             require(r && *r && check_recovery(h, **r, "resumed") == 5, "history continues");
         }
         // After recovery, a checkpoint may end the history before inputs that
         // could not be applied, but not before the recovered checkpoint.
         {
             MemoryFilesystem fs;
-            WorldDirectory dir(fs, "/world", bundle_id, rules_id());
-            require(dir.checkpoint(checkpoint_at(h, 4)).has_value(), "checkpoint at 4");
-            for (Tick t = 5; t <= 9; ++t) require(dir.append(input_at(h, t), true).has_value(), "append");
+            {
+                WorldDirectory dir(fs, "/world", bundle_id, rules_id());
+                require(dir.checkpoint(checkpoint_at(h, 4)).has_value(), "checkpoint at 4");
+                for (Tick t = 5; t <= 9; ++t) require(dir.append(input_at(h, t), true).has_value(), "append");
+            }
             WorldDirectory again(fs, "/world", bundle_id, rules_id());
             const auto r = again.recover();
             require(r && *r && (*r)->inputs.size() == 5, "five logged inputs");
@@ -458,7 +511,7 @@ int main() {
             require(again.checkpoint(checkpoint_at(h, 6)).has_value(), "checkpoint abandoning ticks 7-9");
             require(!again.checkpoint(checkpoint_at(h, 5)), "logging resumed: the history is at 6");
             require(again.append(input_at(h, 7), true).has_value(), "logging continues after 6");
-            const auto after = recover(fs);
+            const auto after = recover_image(fs);
             require(after && *after && check_recovery(h, **after, "abandoned") == 7, "the abandoned inputs are gone");
         }
         // A failed manifest switch: further checkpoints are refused until recovery.
@@ -487,6 +540,29 @@ int main() {
         }
     });
 
+    suite.run("a world directory has one owner", [&] {
+        const auto& h = histories[0];
+        MemoryFilesystem fs;
+        std::optional<WorldDirectory> first(std::in_place, fs, "/world", bundle_id, rules_id());
+        require(first->checkpoint(checkpoint_at(h, 0)).has_value() && first->owned(), "the first object owns the world");
+        for (Tick t = 1; t <= 3; ++t) require(first->append(input_at(h, t), true).has_value(), "append");
+        const auto before = contents(fs, "/world");
+        {
+            // The second owner is refused before it reads or writes anything.
+            WorldDirectory second(fs, "/world", bundle_id, rules_id());
+            const auto r = second.recover();
+            require(!r && r.error().find("in use") != std::string::npos, "recovery refused");
+            require(!second.checkpoint(checkpoint_at(h, 3)) && !second.begin_checkpoint(3), "checkpoints refused");
+            require(!second.append(input_at(h, 4), true) && !second.owned(), "appends refused");
+            require(contents(fs, "/world") == before, "the refused owner changed no file");
+        }
+        require(first->append(input_at(h, 4), true).has_value(), "the first owner continues");
+        first.reset();
+        WorldDirectory next(fs, "/world", bundle_id, rules_id());
+        const auto r = next.recover();
+        require(r && *r && check_recovery(h, **r, "next owner") == 4, "a new owner recovers after the first is gone");
+    });
+
     suite.run("posix filesystem", [&] {
         char templ[] = "/tmp/circuit-storage-XXXXXX";
         const auto* made = ::mkdtemp(templ);
@@ -494,12 +570,38 @@ int main() {
         const std::filesystem::path root = std::filesystem::path(made) / "world";
         circuit::storage::PosixFilesystem fs;
         const auto& h = histories[1];
-        WorldDirectory disk(fs, root, bundle_id, rules_id());
-        require(disk.checkpoint(checkpoint_at(h, 0)).has_value(), "checkpoint on disk");
-        for (Tick t = 1; t <= h.ticks(); ++t) require(disk.append(input_at(h, t), t % 4 == 0).has_value(), "append on disk");
-        WorldDirectory reader(fs, root, bundle_id, rules_id());
-        const auto r = reader.recover();
+        {
+            WorldDirectory disk(fs, root, bundle_id, rules_id());
+            require(disk.checkpoint(checkpoint_at(h, 0)).has_value(), "checkpoint on disk");
+            for (Tick t = 1; t <= h.ticks(); ++t) require(disk.append(input_at(h, t), t % 4 == 0).has_value(), "append on disk");
+        }
+        std::optional<WorldDirectory> reader(std::in_place, fs, root, bundle_id, rules_id());
+        const auto r = reader->recover();
         require(r && *r && check_recovery(h, **r, "disk") == h.ticks(), "recovered from disk");
+        // Ownership between objects and between processes. flock belongs to
+        // the open file, so a second object of this process conflicts too.
+        {
+            WorldDirectory other(fs, root, bundle_id, rules_id());
+            const auto refused = other.recover();
+            require(!refused && refused.error().find(std::format("process {}", ::getpid())) != std::string::npos,
+                    "a second object is refused and the holder named");
+        }
+        const auto before = contents(fs, root);
+        const auto child_recovers = [&] {
+            const pid_t pid = ::fork();
+            if (pid == 0) {
+                WorldDirectory d(fs, root, bundle_id, rules_id());
+                const auto r = d.recover();
+                ::_exit(r && *r ? 0 : (!r && r.error().find("in use") != std::string::npos ? 3 : 1));
+            }
+            int status = 0;
+            ::waitpid(pid, &status, 0);
+            return WIFEXITED(status) ? WEXITSTATUS(status) : -1;
+        };
+        require(child_recovers() == 3, "another process is refused while the world is owned");
+        require(contents(fs, root) == before, "the refused process changed no file");
+        reader.reset();
+        require(child_recovers() == 0, "another process recovers once the owner is gone");
         require(fs.write_file(root / "x", bytes("abc")).has_value() && fs.read_file(root / "x").value() == bytes("abc"), "write and read");
         require(!fs.read_file(root / "missing") && !fs.append(root / "missing", bytes("a"), true), "missing files fail");
         std::filesystem::remove_all(made);

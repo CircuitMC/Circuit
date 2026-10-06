@@ -51,6 +51,10 @@ struct Motion {
     }
 };
 
+// Item entities move less than one block per tick on each axis, so they never
+// skip a cell; restored states are checked against this bound.
+inline constexpr std::int64_t max_entity_speed = contracts::fixed_one - 1;
+
 struct Entity {
     EntityId id;
     FixedVec position;
@@ -97,7 +101,11 @@ enum class ChunkLevel : std::uint8_t { unloaded = 0, border = 1, ticking = 2 };
 struct Ticket {
     std::uint32_t id{};
     ChunkPos center;
-    std::uint8_t radius{};
+    std::uint8_t radius{};      // ticking
+    std::uint8_t load_radius{}; // loaded without ticking: max(radius + 1, load_radius)
+    [[nodiscard]] constexpr std::int32_t reach() const noexcept {
+        return std::max<std::int32_t>(std::int32_t{radius} + 1, load_radius);
+    }
     bool operator==(const Ticket&) const = default;
 };
 

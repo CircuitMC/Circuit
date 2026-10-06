@@ -97,6 +97,51 @@ Plan plan(RuleContext& ctx, const contracts::RemoveEntity& c) {
     };
 }
 
+// ---- player actions -------------------------------------------------------
+//
+// Resolved against the state earlier commands left, so that a player's
+// actions mean the same however they are grouped into ticks.
+
+// Blocks a placement replaces instead of placing next to.
+bool replaceable(BlockState s) { return s.is_air() || s.is(BlockType::water); }
+bool usable(BlockState s) { return s.is(BlockType::lever) || s.is(BlockType::repeater) || s.is(BlockType::comparator); }
+// Blocks that need a solid block below them.
+bool needs_floor(BlockState s) {
+    return s.is(BlockType::redstone_wire) || s.is(BlockType::repeater) || s.is(BlockType::comparator);
+}
+
+Plan plan(RuleContext& ctx, const contracts::UseBlock& c);
+
+Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
+    if (auto ok = check_loaded(ctx, c.pos); !ok) return std::unexpected(ok.error());
+    const auto clicked = ctx.block(c.pos);
+    if (usable(clicked) && !(c.sneaking && c.holding)) return plan(ctx, contracts::UseBlock{c.pos});
+    if (!c.place) return std::unexpected(ErrorCode::not_usable);
+    auto state = BlockState::decode(*c.place);
+    if (!state) return std::unexpected(state.error());
+    if (state->is_air() || state->is(BlockType::piston_head) || state->is(BlockType::moving_piston)
+        || (is_piston(state->type()) && state->flag()))
+        return std::unexpected(ErrorCode::invalid_block_state);
+    const bool replace = replaceable(clicked);
+    const auto target = replace ? c.pos : c.pos.relative(c.face);
+    if ((c.allowed & (replace ? 1 : 2)) == 0) return std::unexpected(ErrorCode::out_of_reach);
+    if (auto ok = check_loaded(ctx, target); !ok) return std::unexpected(ok.error());
+    if (!replaceable(ctx.block(target))) return std::unexpected(ErrorCode::occupied);
+    if (needs_floor(*state) && !is_solid(ctx.block(target.relative(Direction::down)).type()))
+        return std::unexpected(ErrorCode::unsupported);
+    // A lever hangs on the solid block it was placed against.
+    if (state->is(BlockType::lever) && (replace || !is_solid(clicked.type()))) return std::unexpected(ErrorCode::unsupported);
+    if (state->is(BlockType::chest)) state = detail::placed_chest(ctx, target, *state, c.face, c.sneaking);
+    return [&ctx, target, s = *state] { set_block(ctx, target, s); };
+}
+
+Plan plan(RuleContext& ctx, const contracts::PlayerBreak& c) {
+    if (auto ok = check_loaded(ctx, c.pos); !ok) return std::unexpected(ok.error());
+    const auto s = ctx.block(c.pos);
+    if (s.is_air() || s.is(BlockType::piston_head) || s.is(BlockType::moving_piston)) return std::unexpected(ErrorCode::not_breakable);
+    return [&ctx, pos = c.pos] { set_block(ctx, pos, blocks::air()); };
+}
+
 Plan plan(RuleContext&, const contracts::AddTicket&) { return std::unexpected(ErrorCode::unknown_command); }
 Plan plan(RuleContext&, const contracts::RemoveTicket&) { return std::unexpected(ErrorCode::unknown_command); }
 } // namespace

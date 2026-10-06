@@ -138,6 +138,9 @@ int main() {
                                  {3, AddTicket{9, {-3, 4}, 2}}}});
         log.ticks.push_back({4, {{7, UseBlock{{1, 2, 3}}}, {8, InsertItem{{1, 1, 1}, 3, {2, 64}}},
                                  {9, RemoveEntity{{11}}}, {10, RemoveTicket{9}}, {11, SetBlock{{0, 0, 0}, 1, std::nullopt}}}});
+        log.ticks.push_back({5, {{12, PlayerUse{{-1, -60, 2}, Direction::east, 0x1234u, true, true, 2}},
+                                 {13, PlayerUse{{3, 4, 5}, Direction::down, std::nullopt, false, true, 0}},
+                                 {14, PlayerBreak{{-7, 8, -9}}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);
@@ -168,6 +171,27 @@ int main() {
         const std::size_t first_tag = 4 + 2 + 2 + log.bundle_id.size() + 2 + log.rules_id.size() + 8 + 4 + 8 + 4 + 8;
         bad_tag[first_tag] = std::byte{99};
         require(decode_replay(bad_tag).error() == ErrorCode::malformed_record, "unknown command tag");
+
+        // Player-use fields are range-checked: a face beyond the six, or reach bits beyond two.
+        for (const auto& [face, allowed] : {std::pair<int, int>{6, 0}, {0, 4}}) {
+            ReplayLog one{"java-1.21.8", "circuit-reference-rules-v5", 1, {}};
+            one.ticks.push_back({1, {{1, PlayerUse{{0, 0, 0}, static_cast<Direction>(face), std::nullopt, false, false,
+                                                   static_cast<std::uint8_t>(allowed)}}}});
+            const auto encoded = encode_replay(one);
+            require(encoded && decode_replay(*encoded).error() == ErrorCode::malformed_record, "player use fields range-checked");
+        }
+
+        // Records written before tickets had a load radius (tag 5) still decode.
+        {
+            ReplayLog one{"java-1.21.8", "circuit-reference-rules-v5", 1, {}};
+            one.ticks.push_back({1, {{1, AddTicket{9, {-3, 4}, 2, 0}}}});
+            auto legacy = encode_replay(one).value();
+            const std::size_t tag = 4 + 2 + 2 + one.bundle_id.size() + 2 + one.rules_id.size() + 8 + 4 + 8 + 4 + 8;
+            require(legacy[tag] == std::byte{9}, "tickets are written with tag 9");
+            legacy[tag] = std::byte{5};
+            legacy.pop_back(); // the load radius, the command's last field
+            require(decode_replay(legacy).value() == one, "a legacy ticket decodes with load radius 0");
+        }
 
         auto version_one = *bytes;
         version_one[4] = std::byte{1};

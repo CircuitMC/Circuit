@@ -68,6 +68,10 @@ std::uint8_t container_signal(RuleContext& ctx, BlockPos pos);
 // Notifies comparators that read a container whose contents changed.
 void container_changed(RuleContext& ctx, BlockPos pos);
 void check_chest(RuleContext& ctx, BlockPos pos);
+// The chest a player places at `pos`, from the placed state's facing, the
+// clicked face and sneaking: it joins a neighboring single chest (see
+// containers.cpp).
+BlockState placed_chest(RuleContext& ctx, BlockPos pos, BlockState placed, Direction face, bool sneaking);
 
 void check_comparator(RuleContext& ctx, BlockPos pos);
 void tick_comparator(RuleContext& ctx, BlockPos pos, BlockState state);

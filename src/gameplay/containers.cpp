@@ -162,6 +162,36 @@ void check_chest(RuleContext& ctx, BlockPos pos) {
     }
 }
 
+// Placement of a player's chest (documented behavior of the target version,
+// checked with the client harness against the official server):
+// - Sneaking and clicking the side of a single chest whose facing is
+//   perpendicular to the clicked face joins that chest, taking its facing.
+// - Otherwise, without sneaking, the chest joins a single chest of the same
+//   facing beside it, clockwise first (seen from above), so it becomes the left
+//   half; else counter-clockwise, as the right half.
+// The partner turns into the other half through the shape update (check_chest).
+BlockState placed_chest(RuleContext& ctx, BlockPos pos, BlockState placed, Direction face, bool sneaking) {
+    auto facing = placed.facing();
+    auto type = ChestType::single;
+    const auto single_facing = [&](Direction d) -> std::optional<Direction> {
+        const auto n = ctx.block(pos.relative(d));
+        if (n.is(BlockType::chest) && static_cast<ChestType>(n.level()) == ChestType::single) return n.facing();
+        return std::nullopt;
+    };
+    if (sneaking && contracts::is_horizontal(face)) {
+        const auto toward = contracts::opposite(face);
+        if (const auto f = single_facing(toward); f && *f != face && *f != toward) {
+            facing = *f;
+            type = contracts::counter_clockwise(*f) == toward ? ChestType::right : ChestType::left;
+        }
+    }
+    if (type == ChestType::single && !sneaking) {
+        if (single_facing(contracts::clockwise(facing)) == facing) type = ChestType::left;
+        else if (single_facing(contracts::counter_clockwise(facing)) == facing) type = ChestType::right;
+    }
+    return blocks::chest(facing, type);
+}
+
 void check_hopper(RuleContext& ctx, BlockPos pos) {
     const auto s = ctx.block(pos);
     if (!s.is(BlockType::hopper)) return;

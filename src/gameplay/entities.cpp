@@ -8,7 +8,7 @@ using contracts::block_of;
 using contracts::fixed_one;
 constexpr std::uint32_t despawn_age = 6000;
 constexpr std::int64_t gravity = 160;              // ~0.04 blocks per tick squared
-constexpr std::int64_t max_speed = fixed_one - 1;  // below one block per tick: no cell is skipped
+constexpr std::int64_t max_speed = max_entity_speed;
 
 std::int64_t clamp_speed(std::int64_t v) { return std::clamp(v, -max_speed, max_speed); }
 } // namespace
