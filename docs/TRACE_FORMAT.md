@@ -44,7 +44,7 @@ Every position must lie inside the area. Actions run in file order within a tick
 
 - **Loading.** The chunks covering the area plus one chunk of margin are loaded and ticking for the whole run; the next ring is border-loaded. A harness must keep the same chunks force-loaded.
 - **Actions.** All actions for a tick are applied before that tick's scheduled ticks, with normal neighbor updates, as inputs at the start of the tick would be.
-- **Changes.** With `changes ordered`, the recorder lists every block state change inside the area during each tick from 1 on, in the order the changes were applied, including intermediate states. `unordered` compares each tick's changes as a multiset. A change that only affects properties the reference rules do not model, such as dust connection shape, maps to no change and is dropped before comparison.
+- **Changes.** With `changes ordered`, the recorder lists every block state change inside the area during each tick from 1 on, in the order the changes were applied, including intermediate states. `unordered` compares each tick's changes as a multiset. A change that only affects properties the reference rules do not model maps to no change and is dropped before comparison; since rules v6 every property of the modeled blocks except `piston_head` `short` is modeled, so dust shape changes are compared too.
 - **Probes.** Probes read state at the end of the tick, after all phases.
 - **Randomness.** Random ticks are off unless `random-tick-speed` is set. Circuit's random-tick stream is a declared L1 choice, so exact random outcomes are not expected to match the target version.
 
@@ -52,7 +52,7 @@ Evaluation reports one of four outcomes:
 
 - `PASS` — every compared observation matched.
 - `FAIL` — the first mismatch, with its fixture line.
-- `UNSUPPORTED` — the fixture uses content or setups the reference rules cannot represent, such as locked repeaters, waterlogged chests, unknown blocks, or a setup action the rules reject.
+- `UNSUPPORTED` — the fixture uses content or setups the reference rules cannot represent, such as waterlogged chests, unknown blocks, or a setup action the rules reject.
 - `INVALID` — skeletons with placeholders and unknown mechanisms.
 
 ## Content mapping for 1.21.8
@@ -69,9 +69,9 @@ A wrong convention makes fixtures fail rather than pass.
 | Block | Modeled properties | Ignored or restricted |
 | --- | --- | --- |
 | `air`, `cave_air`, `void_air`, `stone`, `glass`, `obsidian`, `redstone_block`, `slime_block` | — | no other properties |
-| `lever` | `powered` | `face`, `facing` ignored |
-| `redstone_wire` | `power` 0–15 | `north`/`south`/`east`/`west` ignored |
-| `repeater` | `delay` 1–4, `facing`, `powered` | `locked` must be `false`; `facing` is taken to name the **input** side |
+| `lever` | `face`, `facing`, `powered` | `face` and `facing` locate the block the lever hangs on |
+| `redstone_wire` | `power` 0–15, `north`/`south`/`east`/`west` (`none`, `side`, `up`) | the stored shape; absent sides are `none`, so dust given without sides is a dot |
+| `repeater` | `delay` 1–4, `facing`, `locked`, `powered` | `facing` names the **input** side |
 | `redstone_lamp` | `lit` | — |
 | `observer` | `facing` (observed side), `powered` | — |
 | `piston`, `sticky_piston` | `facing`, `extended` | — |

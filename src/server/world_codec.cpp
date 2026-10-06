@@ -12,36 +12,19 @@ using contracts::Direction;
 using gameplay::BlockType;
 
 BlockPalette::BlockPalette(const protocol::ContentTables& tables, const evidence::ContentMapping& mapping) {
-    for (std::uint32_t raw = 0; raw < (1u << 18); ++raw) {
-        const auto state = BlockState::decode(raw);
-        if (!state) continue;
-        const auto id = tables.state_id(mapping.notation(*state));
-        if (!id) throw std::runtime_error(std::format("server: no wire state for {}", mapping.notation(*state)));
-        to_wire_.emplace(raw, *id);
+    gameplay::for_each_block_state([&](BlockState state) {
+        const auto id = tables.state_id(mapping.notation(state));
+        if (!id) throw std::runtime_error(std::format("server: no wire state for {}", mapping.notation(state)));
+        to_wire_.emplace(state.raw(), *id);
         // The reverse map keeps the first reference state for each id; display
         // properties make several ids map to one state.
-        from_wire_.try_emplace(*id, *state);
-    }
-    const auto base = tables.state_id("minecraft:redstone_wire[east=up,north=up,power=0,south=up,west=up]");
-    if (!base) throw std::runtime_error("server: no redstone_wire states");
-    dust_base_ = *base;
-    // Every dust state, with every connection shape, maps back to its power.
-    for (std::uint8_t power = 0; power < 16; ++power)
-        for (int e = 0; e < 3; ++e)
-            for (int n = 0; n < 3; ++n)
-                for (int s = 0; s < 3; ++s)
-                    for (int w = 0; w < 3; ++w)
-                        from_wire_.try_emplace(dust(power, e, n, s, w), gameplay::blocks::wire(power));
+        from_wire_.try_emplace(*id, state);
+    });
 }
 
 std::int32_t BlockPalette::wire(BlockState state) const {
     const auto it = to_wire_.find(state.raw());
     return it == to_wire_.end() ? 0 : it->second;
-}
-
-std::int32_t BlockPalette::dust(std::uint8_t power, int east, int north, int south, int west) const {
-    // Properties east, north, power, south, west; the last varies fastest.
-    return dust_base_ + (((east * 3 + north) * 16 + power) * 3 + south) * 3 + west;
 }
 
 std::optional<BlockState> BlockPalette::reference(std::int32_t wire_id) const {
@@ -50,46 +33,10 @@ std::optional<BlockState> BlockPalette::reference(std::int32_t wire_id) const {
     return it->second;
 }
 
-namespace {
-constexpr int conn_up = 0, conn_side = 1, conn_none = 2;
-
-// Whether dust visually connects to a non-dust neighbor in direction `d`.
-bool connects(BlockState n, Direction d) {
-    switch (n.type()) {
-    case BlockType::lever: case BlockType::redstone_block: return true;
-    case BlockType::repeater: case BlockType::comparator:
-        return n.facing() == d || n.facing() == contracts::opposite(d);
-    case BlockType::observer: return n.facing() == d; // its output (back) faces the dust
-    default: return false;
-    }
-}
-
-int dust_shape(const NeighborLookup& at, BlockPos pos, Direction d) {
-    const auto side = pos.relative(d);
-    const auto n = at(side);
-    if (n.is(BlockType::redstone_wire) || connects(n, d)) return conn_side;
-    const auto above = at(pos.relative(Direction::up));
-    if (!gameplay::is_solid(above.type()) && at(side.relative(Direction::up)).is(BlockType::redstone_wire)) return conn_up;
-    if (!gameplay::is_solid(n.type()) && at(side.relative(Direction::down)).is(BlockType::redstone_wire)) return conn_side;
-    return conn_none;
-}
-} // namespace
-
-std::int32_t display_state(const BlockPalette& palette, const NeighborLookup& at, BlockPos pos, BlockState s) {
-    if (!s.is(BlockType::redstone_wire)) return palette.wire(s);
-    int e = dust_shape(at, pos, Direction::east), n = dust_shape(at, pos, Direction::north);
-    int so = dust_shape(at, pos, Direction::south), w = dust_shape(at, pos, Direction::west);
-    const bool ew = e != conn_none || w != conn_none, ns = n != conn_none || so != conn_none;
-    if (!ew && !ns) {
-        e = n = so = w = conn_side; // An isolated dust is drawn as a cross.
-    } else {
-        // A single connection on an axis extends to the opposite side.
-        if (e != conn_none && w == conn_none && !ns) w = conn_side;
-        if (w != conn_none && e == conn_none && !ns) e = conn_side;
-        if (n != conn_none && so == conn_none && !ew) so = conn_side;
-        if (so != conn_none && n == conn_none && !ew) n = conn_side;
-    }
-    return palette.dust(s.level(), e, n, so, w);
+std::int32_t display_state(const BlockPalette& palette, const NeighborLookup&, BlockPos, BlockState s) {
+    // Dust keeps its shape as the rules store it; lever mounting is part of
+    // the state. Nothing is derived for display any more.
+    return palette.wire(s);
 }
 
 std::vector<std::int64_t> pack_entries(std::span<const std::uint32_t> values, unsigned bits) {

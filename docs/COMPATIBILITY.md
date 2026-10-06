@@ -34,9 +34,9 @@ The reference rules model a fixed set of blocks and items. Their names and state
 | Blocks | Properties the rules use | Display-only properties |
 | --- | --- | --- |
 | `stone`, `glass`, `obsidian`, `redstone_block`, `slime_block` | — | — |
-| `redstone_wire` | `power` | `north`, `south`, `east`, `west` (connections) |
-| `lever` | `powered` | `face`, `facing` (mounting) |
-| `repeater` | `delay`, `facing`, `powered`, `locked` (always false) | — |
+| `redstone_wire` | `power`, `north`, `south`, `east`, `west` (the stored shape) | — |
+| `lever` | `face`, `facing`, `powered` | — |
+| `repeater` | `delay`, `facing`, `locked`, `powered` | — |
 | `comparator` | `facing`, `mode`, `powered` | — |
 | `redstone_lamp` | `lit` | — |
 | `observer` | `facing`, `powered` | — |

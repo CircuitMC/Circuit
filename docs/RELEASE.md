@@ -34,7 +34,7 @@ Ship their notices with any binary distribution. The benchmark tool can load zst
 | Area | Supported | Not supported |
 | --- | --- | --- |
 | Versions | Java Edition 1.21.8 (protocol 772) and 1.21.4 (protocol 769), one per server | Other versions; clients of another protocol are refused |
-| Gameplay | Creative building with the blocks the reference rules model; redstone, pistons, hoppers, chests, water, crops and item entities under circuit-reference-rules-v5 | Survival, mobs, container screens, lighting, other dimensions |
+| Gameplay | Creative building with the blocks the reference rules model; redstone, pistons, hoppers, chests, water, crops and item entities under circuit-reference-rules-v6 | Survival, mobs, container screens, lighting, other dimensions |
 | Identity | Online mode with session verification; explicitly unverified offline mode | Signed chat |
 | Worlds | World directories with checkpoints and an input log; Anvil import and export of 1.21.8 worlds | Anvil interchange for 1.21.4 |
 | Extensions | Native modules (trusted code), Java plugins in a separate JVM | The Bukkit, Spigot or Paper APIs |

@@ -4,13 +4,13 @@
 
 The Part I core runs headless: shared contracts, a set of reference rules, an independent sequential oracle, and a region-parallel runtime checked against the oracle. The [network server](SERVER.md) and [persistence](PERSISTENCE.md) are built on it.
 
-The rules are **circuit-reference-rules-v5**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
+The rules are **circuit-reference-rules-v6**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
 
-Two version bundles run them: `java-1.21.8` and `java-1.21.4`. Each version has 20 traces recorded on the unmodified server:
+Two version bundles run them: `java-1.21.8` and `java-1.21.4`. Each version has 27 traces recorded on the unmodified server:
 - 1.21.8 traces are in `tests/fixtures/harness/`;
 - 1.21.4 traces are in `tests/fixtures/harness-1.21.4/`.
 
-The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 40 pass on both the parallel runtime and the oracle.
+The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 54 pass on both the parallel runtime and the oracle.
 
 The compatibility table is part of the version bundle (`src/contracts/version.cpp`). `circuit-server --compatibility` prints it. Each row states a target tier, a claimed tier, the evidence source, and its limitations:
 
@@ -22,14 +22,21 @@ The tiers are defined in the architecture: L0 exact, L1 region-equivalent, L2 de
 | Mechanism | Claimed | Evidence |
 | --- | --- | --- |
 | `command_timing` | L0 | lamp_timing, vertical_slice, comparator_signal |
+| `neighbor_updates` | L0 | vertical_slice, chain_limit, piston_observed, lever_attachment, dust_steps, support |
 | `neighbor_chain_limit` | L0 | chain_limit |
 | `scheduled_ticks` | L0 | tick_priority, comparator_priority, diode_priority, observer_clock |
+| `redstone_wire` | L0 | vertical_slice, chain_limit, strong_power, weak_power, dust_shape, dust_steps |
+| `repeater` | L0 | vertical_slice, observer_pulse, tick_priority, diode_priority, strong_power, repeater_lock |
+| `comparator` | L0 | comparator_signal, comparator_priority, diode_priority, double_chest, weak_power |
+| `support` | L0 | support, lever_attachment |
 | `redstone_lamp` | L0 | lamp_timing, vertical_slice, tick_priority |
 | `observer` | L0 | observer_pulse, observer_clock, observer_moved, piston_observed |
 | `block_events` | L0 | piston_observed, piston_slime, piston_timing |
 | `double_chest` | L0 | double_chest, double_chest_left_input |
 | `block_entity_order` | L0 | piston_slime, piston_observed, hopper_competition |
-| `neighbor_updates`, `redstone_wire`, `repeater`, `comparator`, `piston`, `hopper`, `water_corner`, `support` | L2 | Harness traces pass. Gaps are listed in the table: lever attachment updates, dust steps, power through solid blocks, repeater locking, drop offsets, chained-hopper cooldown, water's drop preference, and block support. |
+| `hopper` | L0 | hopper_chain, hopper_competition, double_chest, hopper_chained |
+| `water` | L0 | water_channel, water_drop, water_washes |
+| `piston` | L2 | Harness traces pass. Gaps are listed in the table: drop offsets and item pushing. |
 | `random_ticks`, `wheat`, `item_entity`, `chunk_tickets`, `entity_order` | L2 | Documented behavior only. These are not compared with the target version; circuit-trace v1 has no entity observations. |
 
 An L0 claim rests on the scenarios its fixtures exercise. It is not a proof for untested configurations.
@@ -70,7 +77,7 @@ Commands apply serially in admission order, each with its immediate reactions, s
 
 Every observable action produces a trace record keyed by (tick, phase, root, sequence within the root). Two executions are equivalent only if their trace records are identical, including order. Their canonical state dumps must also be identical.
 
-## Reference rules v4
+## Reference rules v6
 
 - **Update queue:** neighbor updates and shape updates are queued entries.
   - **Entries:**
@@ -80,15 +87,21 @@ Every observable action produces a trace record keyed by (tick, phase, root, seq
   - **Order:** an entry emitted while another runs joins the current layer. After each delivery, the layer runs in emission order before the next sibling delivery. An entry emitted outside a chain starts one.
   - **Chain limit:** a chain counts the entries queued in it. Once the count reaches the limit (1,000,000), new entries are dropped and the drop is recorded; entries already queued still run.
   - **Shape nesting:** shape-update nesting is limited to 512.
-- **Quiet changes:** state-only changes of repeaters, observers, lamps, comparators, chest pairing and hoppers send shape updates only. A diode then updates the block in front of it, and that block's neighbors except the diode itself.
-- **Redstone:**
-  - levers and redstone blocks;
-  - dust: same-level horizontal connections, decaying one per block. A power change updates the neighbors of the dust and of its six neighbors, in Java hash-set order.
-  - repeaters: delay 1–4, pulse extension;
-  - lamps: light at once, turn off after 4 ticks;
+- **Changes:** a full change runs the removal reactions of the old block and the placement reactions of the new one, then neighbor updates, then shape updates. Quiet changes (state-only changes of repeaters, observers, lamps, comparators, dust, chest pairing and hoppers) skip the neighbor updates. Every state change of a diode updates the block in front of it, and that block's neighbors except the diode itself, before the shape updates.
+- **Power:**
+  - **Sources:** levers, redstone blocks, repeaters, comparators, observers and dust give power to their neighbors. A lever strongly powers the block it hangs on, a repeater or comparator the block in front, an observer the block at its back.
+  - **Conductors:** stone, obsidian and lamps. A conductor that a source powers strongly powers dust and components next to it. Dust powers the block below it and the blocks it points into; a conductor powered only by dust powers components, not dust.
+- **Dust:**
+  - **Power:** the strongest power its neighbors give it (dust giving nothing), or one less than the strongest dust it reaches on its level, one step up (unless a conductor lies above it) or one step down (unless the block at the side is a conductor). A power change updates the neighbors of the dust and of its six neighbors, in Java hash-set order.
+  - **Shape:** stored as the target version stores it: each side none, side or up. Shape updates change it; a dot (no sides) stays a dot while nothing connects; a lone connection extends to the opposite side; a player places a cross. Dust points into the sides its current shape connects, and changes of shape update diagonal dust.
+  - **Placement and removal:** dust updates the blocks above and below it and the dust around it, also one step up or down.
+  - **Use:** using an isolated cross makes a dot and the other way round.
+- **Components:**
+  - repeaters: delay 1–4, pulse extension; locked, with the `locked` state, while a powered diode faces into either side;
+  - lamps: light at once when an update finds them powered, turn off after 4 ticks;
   - observers: fire 2 ticks after a shape update from the observed side, or after being moved by a piston, with a 2-tick pulse.
-
-  There is no power conduction through solid blocks.
+- **Support:** dust needs a whole top face or a hopper below it, repeaters and comparators a whole top face, levers a whole face to hang on. An update that finds the support gone breaks them with their drops.
+- **Levers:** a toggle updates around the lever and around the block it hangs on; so does removing a powered lever.
 - **Scheduled ticks:**
   - **Uniqueness:** at most one pending tick per (position, block). A drained tick counts as scheduled until it runs.
   - **Sub-order:** the level-wide counter is shared by block and fluid ticks.
@@ -113,14 +126,17 @@ Every observable action produces a trace record keyed by (tick, phase, root, seq
   - **Moving blocks:** moving pistons finish in the block-entity phase two ticks after the event. They block movement and do not conduct power. A sticky piston that retracts before its push finished leaves the block behind.
   - **Destroyed blocks:** dust, levers, repeaters, comparators, water and wheat in a push line are destroyed. They drop fixed items at the block center without velocity. Fully grown wheat drops wheat and seeds, younger wheat seeds only, and water nothing.
   - **Pushing:** on each of its two steps, a moving block pushes item entities in its cell half a block along its motion. A retracting base pushes nothing.
-- **Hoppers and chests:** push before pull, an 8-tick cooldown, disabled while powered, and pickup of item entities in the cell above. Competing hoppers act in block-entity creation order.
+- **Hoppers and chests:** push before pull, an 8-tick cooldown, disabled while powered, and pickup of item entities in the cell above. Competing hoppers act in block-entity creation order. A hopper that receives an item into an empty inventory from another hopper waits 8 game ticks, or 7 when it already ticked in that tick, so the item moves on 8 ticks later either way.
 - **Double chests:** two halves with the same facing pair as left and right; a left half pairs clockwise of its facing. A half claims a single chest at its partner position and becomes single when its partner disappears; pairing changes are quiet. Hoppers and comparators see one 54-slot container with the right half's slots first, even across a chunk edge.
 - **Comparators:** compare and subtract modes with a 2-tick delay; the output signal (0–15) lives in a block entity.
-  - **Rear input:** power, or the fullness of a container behind the comparator, also read through stone, obsidian or a lamp.
-  - **Side inputs:** dust, repeaters, comparators, redstone blocks and observers.
+  - **Rear input:** power, also through a conductor, or the fullness of a container behind the comparator; a container behind a conductor replaces a weaker signal.
+  - **Side inputs:** dust of any shape, redstone blocks, and the strong power of repeaters, comparators and observers facing in.
   - **Updates:** container changes notify the comparators reading them. A mode change refreshes the output at once.
-- **Use:** using a block toggles a lever, cycles a repeater's delay, or toggles a comparator's mode.
+- **Use:** using a block toggles a lever, cycles a repeater's delay, toggles a comparator's mode, or toggles isolated dust between a cross and a dot.
 - **Water:** sources, flowing distance 1–7, falling water, 5-tick fluid ticks.
+  - **Spread:** down first; otherwise to the sides in the order north, south, west, east, but only toward the nearest drops within five blocks when there are any. Flowing water above water stops; sources keep spreading.
+  - **New sources:** a cell between two sources becomes a source when it stands on solid ground or a source.
+  - **Washing away:** water replaces dust, levers, repeaters, comparators and wheat, which drop their items.
 - **Wheat:** grows on random ticks. Random-tick positions and rule draws use a stream derived from (seed, tick, chunk, section) instead of a level-wide stream.
 - **Item entities:** fixed-point gravity, drag and collision, migration between chunks, despawn after 6000 ticks. They are spawned by commands and by destroyed blocks, and pushed by moving blocks.
 - **Chunk tickets:** a ticket of radius r makes chunks within Chebyshev distance r ticking and loads the chunks within max(r + 1, its load radius) at border level, without ticking. A player's load radius is their view distance. Changes apply at the end of the command phase. Unloading keeps all chunk state, including pending ticks. A reload increments the chunk generation, and commands can name the generation they expect.

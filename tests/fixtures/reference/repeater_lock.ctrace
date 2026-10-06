@@ -1,0 +1,70 @@
+circuit-trace 1
+title A repeater locked by a diode at its side
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v6
+mechanisms repeater redstone_lamp scheduled_ticks
+area -1 -1 -1 5 1 4
+ticks 24
+changes ordered
+
+at 0 set 0 -1 0 minecraft:stone
+at 0 set 1 -1 0 minecraft:stone
+at 0 set 2 -1 0 minecraft:stone
+at 0 set 3 -1 0 minecraft:stone
+at 0 set 4 -1 0 minecraft:stone
+at 0 set 2 -1 1 minecraft:stone
+at 0 set 2 -1 2 minecraft:stone
+at 0 set 1 0 0 minecraft:lever[face=floor,facing=east,powered=false]
+at 0 set 2 0 0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+at 0 set 3 0 0 minecraft:redstone_lamp[lit=false]
+at 0 set 2 0 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+at 0 set 2 0 2 minecraft:lever[face=floor,facing=east,powered=false]
+
+at 1 use 2 0 2
+change 1 2 0 2 minecraft:lever[face=floor,facing=east,powered=false] minecraft:lever[face=floor,facing=east,powered=true]
+
+change 2 2 0 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false] minecraft:repeater[delay=1,facing=south,locked=false,powered=true]
+change 2 2 0 0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false] minecraft:repeater[delay=1,facing=west,locked=true,powered=false]
+
+block 4 2 0 0 minecraft:repeater[delay=1,facing=west,locked=true,powered=false]
+block 4 2 0 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=true]
+block 4 3 0 0 minecraft:redstone_lamp[lit=false]
+
+at 5 use 1 0 0
+change 5 1 0 0 minecraft:lever[face=floor,facing=east,powered=false] minecraft:lever[face=floor,facing=east,powered=true]
+
+block 8 2 0 0 minecraft:repeater[delay=1,facing=west,locked=true,powered=false]
+block 8 2 0 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=true]
+block 8 3 0 0 minecraft:redstone_lamp[lit=false]
+
+at 9 use 2 0 2
+change 9 2 0 2 minecraft:lever[face=floor,facing=east,powered=true] minecraft:lever[face=floor,facing=east,powered=false]
+
+change 10 2 0 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=true] minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+change 10 2 0 0 minecraft:repeater[delay=1,facing=west,locked=true,powered=false] minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+
+change 12 2 0 0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false] minecraft:repeater[delay=1,facing=west,locked=false,powered=true]
+change 12 3 0 0 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+block 12 2 0 0 minecraft:repeater[delay=1,facing=west,locked=false,powered=true]
+block 12 2 0 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+block 12 3 0 0 minecraft:redstone_lamp[lit=true]
+
+block 14 2 0 0 minecraft:repeater[delay=1,facing=west,locked=false,powered=true]
+block 14 2 0 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+block 14 3 0 0 minecraft:redstone_lamp[lit=true]
+
+at 15 use 1 0 0
+change 15 1 0 0 minecraft:lever[face=floor,facing=east,powered=true] minecraft:lever[face=floor,facing=east,powered=false]
+
+change 16 2 0 0 minecraft:repeater[delay=1,facing=west,locked=false,powered=true] minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+
+block 18 2 0 0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+block 18 2 0 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+block 18 3 0 0 minecraft:redstone_lamp[lit=true]
+
+change 20 3 0 0 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+
+block 24 2 0 0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+block 24 2 0 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+block 24 3 0 0 minecraft:redstone_lamp[lit=false]

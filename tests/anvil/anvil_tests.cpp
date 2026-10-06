@@ -152,6 +152,7 @@ fs::path hand_made_world(const fs::path& dir, std::vector<std::pair<ChunkPos, Ta
 
 // What an export followed by an import keeps of a state: the import makes every
 // column unloaded and renumbers creation orders, entity ids and tick suborders.
+// A hopper's last tick only matters within a tick and is not saved.
 struct Kept {
     Tick time{};
     std::vector<ChunkPos> chunks;
@@ -164,7 +165,10 @@ struct Kept {
 Kept kept(const WorldDump& d) {
     Kept k{d.time, {}, d.blocks, d.block_entities, {}, {}};
     for (const auto& c : d.chunks) k.chunks.push_back(c.pos);
-    for (auto& [pos, be] : k.block_entities) be.order = 0;
+    for (auto& [pos, be] : k.block_entities) {
+        be.order = 0;
+        be.ticked = 0;
+    }
     for (const auto& t : d.ticks)
         k.ticks.insert({static_cast<int>(t.list), t.tick.pos, static_cast<int>(t.tick.block), t.tick.due, t.tick.priority});
     for (const auto& e : d.entities)

@@ -41,7 +41,16 @@ Plan plan(RuleContext& ctx, const contracts::UseBlock& c) {
     if (auto ok = check_loaded(ctx, c.pos); !ok) return std::unexpected(ok.error());
     const auto s = ctx.block(c.pos);
     switch (s.type()) {
-    case BlockType::lever: return [&ctx, pos = c.pos, s] { set_block(ctx, pos, s.with_flag(!s.flag())); };
+    case BlockType::lever:
+        // A lever also updates around the block it hangs on.
+        return [&ctx, pos = c.pos, s] {
+            set_block(ctx, pos, s.with_flag(!s.flag()));
+            detail::notify_neighbors(ctx, pos);
+            detail::notify_neighbors(ctx, pos.relative(detail::lever_attachment(s)));
+        };
+    case BlockType::redstone_wire:
+        if (!detail::is_dot(s) && !detail::is_cross(s)) return std::unexpected(ErrorCode::not_usable);
+        return [&ctx, pos = c.pos, s] { detail::toggle_wire(ctx, pos, s); };
     case BlockType::repeater:
         return [&ctx, pos = c.pos, s] { set_block(ctx, pos, s.with_delay(static_cast<std::uint8_t>(s.delay() % 4 + 1))); };
     case BlockType::comparator:
@@ -104,10 +113,9 @@ Plan plan(RuleContext& ctx, const contracts::RemoveEntity& c) {
 
 // Blocks a placement replaces instead of placing next to.
 bool replaceable(BlockState s) { return s.is_air() || s.is(BlockType::water); }
-bool usable(BlockState s) { return s.is(BlockType::lever) || s.is(BlockType::repeater) || s.is(BlockType::comparator); }
-// Blocks that need a solid block below them.
-bool needs_floor(BlockState s) {
-    return s.is(BlockType::redstone_wire) || s.is(BlockType::repeater) || s.is(BlockType::comparator);
+bool usable(BlockState s) {
+    return s.is(BlockType::lever) || s.is(BlockType::repeater) || s.is(BlockType::comparator) || detail::is_dot(s)
+        || detail::is_cross(s);
 }
 
 Plan plan(RuleContext& ctx, const contracts::UseBlock& c);
@@ -127,12 +135,25 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
     if ((c.allowed & (replace ? 1 : 2)) == 0) return std::unexpected(ErrorCode::out_of_reach);
     if (auto ok = check_loaded(ctx, target); !ok) return std::unexpected(ok.error());
     if (!replaceable(ctx.block(target))) return std::unexpected(ErrorCode::occupied);
-    if (needs_floor(*state) && !is_solid(ctx.block(target.relative(Direction::down)).type()))
-        return std::unexpected(ErrorCode::unsupported);
-    // A lever hangs on the solid block it was placed against.
-    if (state->is(BlockType::lever) && (replace || !is_solid(clicked.type()))) return std::unexpected(ErrorCode::unsupported);
-    if (state->is(BlockType::chest)) state = detail::placed_chest(ctx, target, *state, c.face, c.sneaking);
-    return [&ctx, target, s = *state] { set_block(ctx, target, s); };
+    // The placed block must be able to stand where it goes.
+    if (state->is(BlockType::lever) && (replace || !detail::face_sturdy(clicked, c.face))) return std::unexpected(ErrorCode::unsupported);
+    if (!detail::can_survive(ctx, target, *state)) return std::unexpected(ErrorCode::unsupported);
+    // States the placement takes from the surroundings.
+    switch (state->type()) {
+    case BlockType::chest: state = detail::placed_chest(ctx, target, *state, c.face, c.sneaking); break;
+    case BlockType::redstone_wire: state = detail::fresh_wire_shape(ctx, target, *state, false); break;
+    case BlockType::repeater: state = state->with_level(detail::repeater_locked_now(ctx, target, *state) ? 1 : 0); break;
+    case BlockType::redstone_lamp: state = state->with_flag(detail::has_neighbor_signal(ctx, target)); break;
+    default: break;
+    }
+    return [&ctx, target, s = *state] {
+        set_block(ctx, target, s);
+        // A diode placed with its input on starts after one tick.
+        const auto placed = ctx.block(target);
+        if ((placed.is(BlockType::repeater) && detail::repeater_input(ctx, target, placed))
+            || (placed.is(BlockType::comparator) && detail::comparator_output(ctx, target, placed) > 0))
+            detail::schedule(ctx, TickList::block, target, placed.type(), 1, 0);
+    };
 }
 
 Plan plan(RuleContext& ctx, const contracts::PlayerBreak& c) {

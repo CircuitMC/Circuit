@@ -17,8 +17,8 @@ enum class BlockType : std::uint8_t {
     obsidian,
     redstone_block,
     lever,          // flag: powered; facing (horizontal) and level (LeverFace): mounting, display only
-    redstone_wire,  // level: power 0-15
-    repeater,       // facing: output side (horizontal); delay 1-4; flag: powered
+    redstone_wire,  // level: power 0-15; wire sides (WireSide per horizontal side, stored as the target version stores them)
+    repeater,       // facing: output side (horizontal); delay 1-4; flag: powered; level: 1 locked
     redstone_lamp,  // flag: lit
     observer,       // facing: observed side; flag: powered (output at the back)
     piston,         // facing: push side; flag: extended
@@ -35,7 +35,12 @@ enum class BlockType : std::uint8_t {
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
 
-// Packed state: bits 0-7 type, 8-10 facing, 11-14 level, 15 flag, 16-17 delay-1.
+// How dust meets one horizontal side: not at all, on its level, or climbing the
+// block on that side.
+enum class WireSide : std::uint8_t { none = 0, side = 1, up = 2 };
+
+// Packed state: bits 0-7 type, 8-10 facing, 11-14 level, 15 flag, 16-17 delay-1,
+// 18-25 the four wire sides (two bits each: north, south, west, east).
 class BlockState {
 public:
     constexpr BlockState() noexcept = default;
@@ -53,6 +58,10 @@ public:
     [[nodiscard]] constexpr std::uint8_t level() const noexcept { return static_cast<std::uint8_t>((raw_ >> 11) & 15); }
     [[nodiscard]] constexpr bool flag() const noexcept { return (raw_ >> 15) & 1; }
     [[nodiscard]] constexpr std::uint8_t delay() const noexcept { return static_cast<std::uint8_t>(((raw_ >> 16) & 3) + 1); }
+    [[nodiscard]] constexpr WireSide wire_side(Direction d) const noexcept {
+        return static_cast<WireSide>((raw_ >> wire_shift(d)) & 3);
+    }
+    [[nodiscard]] constexpr bool wire_connected(Direction d) const noexcept { return wire_side(d) != WireSide::none; }
 
     [[nodiscard]] constexpr BlockState with_facing(Direction d) const noexcept {
         return BlockState((raw_ & ~(7u << 8)) | (static_cast<std::uint32_t>(d) << 8));
@@ -66,10 +75,27 @@ public:
     [[nodiscard]] constexpr BlockState with_delay(std::uint8_t delay) const noexcept {
         return BlockState((raw_ & ~(3u << 16)) | (static_cast<std::uint32_t>((delay - 1) & 3) << 16));
     }
+    [[nodiscard]] constexpr BlockState with_wire_side(Direction d, WireSide side) const noexcept {
+        return BlockState((raw_ & ~(3u << wire_shift(d))) | (static_cast<std::uint32_t>(side) << wire_shift(d)));
+    }
+    // All four wire sides at once (used to compare shapes).
+    [[nodiscard]] constexpr std::uint32_t wire_shape() const noexcept { return (raw_ >> 18) & 0xFF; }
+    [[nodiscard]] constexpr BlockState with_wire_shape(std::uint32_t shape) const noexcept {
+        return BlockState((raw_ & ~(0xFFu << 18)) | ((shape & 0xFF) << 18));
+    }
     constexpr bool operator==(const BlockState&) const noexcept = default;
 
 private:
     explicit constexpr BlockState(std::uint32_t raw) noexcept : raw_(raw) {}
+    static constexpr unsigned wire_shift(Direction d) noexcept {
+        switch (d) {
+        case Direction::north: return 18;
+        case Direction::south: return 20;
+        case Direction::west: return 22;
+        case Direction::east: return 24;
+        default: return 26; // vertical directions have no wire side; bits beyond the state are zero
+        }
+    }
     std::uint32_t raw_{};
 };
 
@@ -86,9 +112,18 @@ enum class LeverFace : std::uint8_t { floor = 0, wall = 1, ceiling = 2 };
 constexpr BlockState lever(bool on = false, Direction facing = Direction::north, LeverFace face = LeverFace::floor) {
     return BlockState::of(BlockType::lever).with_flag(on).with_facing(facing).with_level(static_cast<std::uint8_t>(face));
 }
+// Dust with no stored sides: a dot, as the target version stores dust placed
+// without a shape. Players place a cross, which the rules compute.
 constexpr BlockState wire(std::uint8_t power = 0) { return BlockState::of(BlockType::redstone_wire).with_level(power); }
-constexpr BlockState repeater(Direction output, std::uint8_t delay = 1, bool powered = false) {
-    return BlockState::of(BlockType::repeater).with_facing(output).with_delay(delay).with_flag(powered);
+constexpr BlockState wire(std::uint8_t power, WireSide north, WireSide south, WireSide west, WireSide east) {
+    return wire(power)
+        .with_wire_side(Direction::north, north)
+        .with_wire_side(Direction::south, south)
+        .with_wire_side(Direction::west, west)
+        .with_wire_side(Direction::east, east);
+}
+constexpr BlockState repeater(Direction output, std::uint8_t delay = 1, bool powered = false, bool locked = false) {
+    return BlockState::of(BlockType::repeater).with_facing(output).with_delay(delay).with_flag(powered).with_level(locked ? 1 : 0);
 }
 constexpr BlockState lamp(bool lit = false) { return BlockState::of(BlockType::redstone_lamp).with_flag(lit); }
 constexpr BlockState observer(Direction observed, bool powered = false) {
@@ -117,6 +152,10 @@ constexpr BlockState wheat(std::uint8_t age = 0) { return BlockState::of(BlockTy
 } // namespace blocks
 
 constexpr bool is_piston(BlockType t) noexcept { return t == BlockType::piston || t == BlockType::sticky_piston; }
+constexpr bool repeater_locked(BlockState s) noexcept { return s.is(BlockType::repeater) && s.level() == 1; }
+// Every valid state of the registry, in raw order.
+template <class F>
+void for_each_block_state(F&& f);
 constexpr bool is_container(BlockType t) noexcept { return t == BlockType::hopper || t == BlockType::chest; }
 // Block entities hold container slots, hopper cooldowns, comparator output signals and moving blocks.
 constexpr bool has_block_entity(BlockType t) noexcept {
@@ -183,5 +222,18 @@ inline constexpr std::uint16_t comparator = 7;
 inline constexpr std::uint16_t wheat_seeds = 8;
 inline constexpr std::uint16_t max_id = 8;
 } // namespace items
+
+template <class F>
+void for_each_block_state(F&& f) {
+    for (std::uint32_t raw = 0; raw < (1u << 18); ++raw)
+        if (const auto s = BlockState::decode(raw)) {
+            if (!s->is(BlockType::redstone_wire)) {
+                f(*s);
+                continue;
+            }
+            for (std::uint32_t shape = 0; shape < 256; ++shape)
+                if (const auto w = BlockState::decode(raw | (shape << 18))) f(*w);
+        }
+}
 
 } // namespace circuit::gameplay

@@ -11,7 +11,7 @@ constexpr Properties properties(BlockType t) noexcept {
     case BlockType::lever: return {true, true, true, false};
     case BlockType::redstone_lamp: return {false, false, true, false};
     case BlockType::redstone_wire: case BlockType::wheat: return {false, true, false, false};
-    case BlockType::repeater: return {true, false, true, true};
+    case BlockType::repeater: return {true, true, true, true};
     case BlockType::observer: case BlockType::piston: case BlockType::sticky_piston:
     case BlockType::piston_head: case BlockType::hopper: case BlockType::moving_piston:
         return {true, false, true, false};
@@ -25,9 +25,15 @@ constexpr Properties properties(BlockType t) noexcept {
 
 contracts::Result<BlockState> BlockState::decode(std::uint32_t raw) noexcept {
     const auto invalid = std::unexpected(contracts::ErrorCode::invalid_block_state);
-    if (raw >> 18) return invalid;
     if ((raw & 0xFF) >= static_cast<std::uint32_t>(BlockType::count_)) return invalid;
     const BlockState s(raw);
+    if (raw >> 26) return invalid;
+    if (raw >> 18) {
+        // Only dust stores sides, each none, side or up.
+        if (!s.is(BlockType::redstone_wire)) return invalid;
+        for (auto d : contracts::horizontal_directions)
+            if (static_cast<std::uint8_t>(s.wire_side(d)) > 2) return invalid;
+    }
     const auto p = properties(s.type());
     const auto facing = (raw >> 8) & 7;
     const auto delay_bits = (raw >> 16) & 3;
@@ -37,7 +43,7 @@ contracts::Result<BlockState> BlockState::decode(std::uint32_t raw) noexcept {
     if (!p.delay && delay_bits != 0) return invalid;
     switch (s.type()) {
     case BlockType::repeater:
-        if (!contracts::is_horizontal(s.facing())) return invalid;
+        if (!contracts::is_horizontal(s.facing()) || s.level() > 1) return invalid;
         break;
     case BlockType::lever:
         if (!contracts::is_horizontal(s.facing()) || s.level() > 2) return invalid;

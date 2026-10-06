@@ -1,0 +1,89 @@
+circuit-trace 1
+title Water breaks dust and components in its way
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.1.0+mc1.21.8
+mechanisms water support
+area -2 -1 -2 9 2 2
+ticks 30
+changes ordered
+
+at 0 set -1 0 0 minecraft:stone
+at 0 set -1 1 -1 minecraft:glass
+at 0 set -1 1 1 minecraft:glass
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 1 -1 minecraft:glass
+at 0 set 0 1 1 minecraft:glass
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 1 -1 minecraft:glass
+at 0 set 1 1 1 minecraft:glass
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 1 -1 minecraft:glass
+at 0 set 2 1 1 minecraft:glass
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 1 -1 minecraft:glass
+at 0 set 3 1 1 minecraft:glass
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 1 -1 minecraft:glass
+at 0 set 4 1 1 minecraft:glass
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 1 -1 minecraft:glass
+at 0 set 5 1 1 minecraft:glass
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 1 -1 minecraft:glass
+at 0 set 6 1 1 minecraft:glass
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 1 -1 minecraft:glass
+at 0 set 7 1 1 minecraft:glass
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 1 -1 minecraft:glass
+at 0 set 8 1 1 minecraft:glass
+at 0 set -1 1 0 minecraft:glass
+at 0 set 1 1 0 minecraft:redstone_wire[power=0]
+at 0 set 2 1 0 minecraft:lever[face=floor,facing=east,powered=false]
+at 0 set 3 1 0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+at 0 set 4 1 0 minecraft:comparator[facing=west,mode=compare,powered=false]
+
+at 1 set 0 1 0 minecraft:water[level=0]
+change 1 0 1 0 minecraft:air minecraft:water[level=0]
+
+change 5 1 1 0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:water[level=1]
+
+block 6 1 1 0 minecraft:water[level=1]
+block 6 2 1 0 minecraft:lever[face=floor,facing=east,powered=false]
+block 6 3 1 0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+block 6 4 1 0 minecraft:comparator[facing=west,mode=compare,powered=false]
+block 6 5 1 0 minecraft:air
+
+change 10 2 1 0 minecraft:lever[face=floor,facing=east,powered=false] minecraft:water[level=2]
+
+block 11 1 1 0 minecraft:water[level=1]
+block 11 2 1 0 minecraft:water[level=2]
+block 11 3 1 0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+block 11 4 1 0 minecraft:comparator[facing=west,mode=compare,powered=false]
+block 11 5 1 0 minecraft:air
+
+change 15 3 1 0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false] minecraft:water[level=3]
+
+block 16 1 1 0 minecraft:water[level=1]
+block 16 2 1 0 minecraft:water[level=2]
+block 16 3 1 0 minecraft:water[level=3]
+block 16 4 1 0 minecraft:comparator[facing=west,mode=compare,powered=false]
+block 16 5 1 0 minecraft:air
+
+change 20 4 1 0 minecraft:comparator[facing=west,mode=compare,powered=false] minecraft:water[level=4]
+
+block 21 1 1 0 minecraft:water[level=1]
+block 21 2 1 0 minecraft:water[level=2]
+block 21 3 1 0 minecraft:water[level=3]
+block 21 4 1 0 minecraft:water[level=4]
+block 21 5 1 0 minecraft:air
+
+change 25 5 1 0 minecraft:air minecraft:water[level=5]
+
+change 30 6 1 0 minecraft:air minecraft:water[level=6]
+block 30 1 1 0 minecraft:water[level=1]
+block 30 2 1 0 minecraft:water[level=2]
+block 30 3 1 0 minecraft:water[level=3]
+block 30 4 1 0 minecraft:water[level=4]
+block 30 5 1 0 minecraft:water[level=5]

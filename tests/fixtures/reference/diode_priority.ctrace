@@ -2,7 +2,7 @@ circuit-trace 1
 title Scheduled-tick priorities of repeaters and comparators
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v5
+harness circuit-reference-rules-v6
 mechanisms scheduled_ticks repeater comparator
 area -3 -1 -7 4 0 13
 ticks 70
@@ -66,31 +66,31 @@ change 1 0 0 0 minecraft:lever[face=floor,facing=east,powered=false] minecraft:l
 
 at 2 use 0 0 3
 change 2 0 0 3 minecraft:lever[face=floor,facing=east,powered=false] minecraft:lever[face=floor,facing=east,powered=true]
-change 2 1 0 0 minecraft:repeater[delay=1,facing=west,powered=false] minecraft:repeater[delay=1,facing=west,powered=true]
-change 2 -1 0 0 minecraft:repeater[delay=1,facing=east,powered=false] minecraft:repeater[delay=1,facing=east,powered=true]
+change 2 1 0 0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false] minecraft:repeater[delay=1,facing=west,locked=false,powered=true]
+change 2 -1 0 0 minecraft:repeater[delay=1,facing=east,locked=false,powered=false] minecraft:repeater[delay=1,facing=east,locked=false,powered=true]
 change 2 -2 0 0 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
 
-change 3 1 0 3 minecraft:repeater[delay=1,facing=west,powered=false] minecraft:repeater[delay=1,facing=west,powered=true]
+change 3 1 0 3 minecraft:repeater[delay=1,facing=west,locked=false,powered=false] minecraft:repeater[delay=1,facing=west,locked=false,powered=true]
 change 3 2 0 3 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
 
-change 4 2 0 0 minecraft:repeater[delay=1,facing=west,powered=false] minecraft:repeater[delay=1,facing=west,powered=true]
+change 4 2 0 0 minecraft:repeater[delay=1,facing=west,locked=false,powered=false] minecraft:repeater[delay=1,facing=west,locked=false,powered=true]
 change 4 3 0 0 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
 
 at 8 use 0 0 0
 change 8 0 0 0 minecraft:lever[face=floor,facing=east,powered=true] minecraft:lever[face=floor,facing=east,powered=false]
 
-change 9 1 0 0 minecraft:repeater[delay=1,facing=west,powered=true] minecraft:repeater[delay=1,facing=west,powered=false]
-change 9 -1 0 0 minecraft:repeater[delay=1,facing=east,powered=true] minecraft:repeater[delay=1,facing=east,powered=false]
+change 9 1 0 0 minecraft:repeater[delay=1,facing=west,locked=false,powered=true] minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+change 9 -1 0 0 minecraft:repeater[delay=1,facing=east,locked=false,powered=true] minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
 
-change 11 2 0 0 minecraft:repeater[delay=1,facing=west,powered=true] minecraft:repeater[delay=1,facing=west,powered=false]
+change 11 2 0 0 minecraft:repeater[delay=1,facing=west,locked=false,powered=true] minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 
 at 12 use 0 0 -3
 at 12 use 0 0 3
 change 12 0 0 -3 minecraft:lever[face=floor,facing=east,powered=false] minecraft:lever[face=floor,facing=east,powered=true]
 change 12 0 0 3 minecraft:lever[face=floor,facing=east,powered=true] minecraft:lever[face=floor,facing=east,powered=false]
 
-change 13 1 0 3 minecraft:repeater[delay=1,facing=west,powered=true] minecraft:repeater[delay=1,facing=west,powered=false]
-change 13 1 0 -3 minecraft:repeater[delay=1,facing=west,powered=false] minecraft:repeater[delay=1,facing=west,powered=true]
+change 13 1 0 3 minecraft:repeater[delay=1,facing=west,locked=false,powered=true] minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+change 13 1 0 -3 minecraft:repeater[delay=1,facing=west,locked=false,powered=false] minecraft:repeater[delay=1,facing=west,locked=false,powered=true]
 change 13 2 0 -3 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
 change 13 -2 0 0 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
 
@@ -104,7 +104,7 @@ change 17 2 0 3 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=fa
 change 17 -1 0 6 minecraft:comparator[facing=east,mode=compare,powered=false] minecraft:comparator[facing=east,mode=compare,powered=true]
 change 17 -2 0 6 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
 
-change 19 2 0 6 minecraft:repeater[delay=1,facing=west,powered=false] minecraft:repeater[delay=1,facing=west,powered=true]
+change 19 2 0 6 minecraft:repeater[delay=1,facing=west,locked=false,powered=false] minecraft:repeater[delay=1,facing=west,locked=false,powered=true]
 change 19 3 0 6 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
 
 at 22 use 0 0 6
@@ -113,14 +113,14 @@ change 22 0 0 6 minecraft:lever[face=floor,facing=east,powered=true] minecraft:l
 change 23 1 0 6 minecraft:comparator[facing=west,mode=compare,powered=true] minecraft:comparator[facing=west,mode=compare,powered=false]
 change 23 -1 0 6 minecraft:comparator[facing=east,mode=compare,powered=true] minecraft:comparator[facing=east,mode=compare,powered=false]
 
-change 25 2 0 6 minecraft:repeater[delay=1,facing=west,powered=true] minecraft:repeater[delay=1,facing=west,powered=false]
+change 25 2 0 6 minecraft:repeater[delay=1,facing=west,locked=false,powered=true] minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 
 at 26 use 0 0 -6
 change 26 0 0 -6 minecraft:lever[face=floor,facing=east,powered=false] minecraft:lever[face=floor,facing=east,powered=true]
 
-change 27 -1 0 -6 minecraft:repeater[delay=1,facing=east,powered=false] minecraft:repeater[delay=1,facing=east,powered=true]
+change 27 -1 0 -6 minecraft:repeater[delay=1,facing=east,locked=false,powered=false] minecraft:repeater[delay=1,facing=east,locked=false,powered=true]
 change 27 -2 0 -6 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
-change 27 1 0 -6 minecraft:repeater[delay=1,facing=west,powered=false] minecraft:repeater[delay=1,facing=west,powered=true]
+change 27 1 0 -6 minecraft:repeater[delay=1,facing=west,locked=false,powered=false] minecraft:repeater[delay=1,facing=west,locked=false,powered=true]
 change 27 -2 0 6 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
 
 change 29 3 0 6 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
@@ -128,15 +128,15 @@ change 29 3 0 6 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=fa
 at 32 use 0 0 -6
 change 32 0 0 -6 minecraft:lever[face=floor,facing=east,powered=true] minecraft:lever[face=floor,facing=east,powered=false]
 
-change 33 -1 0 -6 minecraft:repeater[delay=1,facing=east,powered=true] minecraft:repeater[delay=1,facing=east,powered=false]
-change 33 1 0 -6 minecraft:repeater[delay=1,facing=west,powered=true] minecraft:repeater[delay=1,facing=west,powered=false]
+change 33 -1 0 -6 minecraft:repeater[delay=1,facing=east,locked=false,powered=true] minecraft:repeater[delay=1,facing=east,locked=false,powered=false]
+change 33 1 0 -6 minecraft:repeater[delay=1,facing=west,locked=false,powered=true] minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 
 at 36 use 0 0 12
 change 36 0 0 12 minecraft:lever[face=floor,facing=east,powered=false] minecraft:lever[face=floor,facing=east,powered=true]
 
 change 37 -2 0 -6 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
 
-change 43 1 0 12 minecraft:repeater[delay=4,facing=west,powered=false] minecraft:repeater[delay=4,facing=west,powered=true]
+change 43 1 0 12 minecraft:repeater[delay=4,facing=west,locked=false,powered=false] minecraft:repeater[delay=4,facing=west,locked=false,powered=true]
 change 43 2 0 12 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
 
 at 50 use 0 0 12
@@ -147,15 +147,15 @@ change 50 0 0 9 minecraft:lever[face=floor,facing=east,powered=false] minecraft:
 at 51 use 0 0 9
 change 51 0 0 9 minecraft:lever[face=floor,facing=east,powered=true] minecraft:lever[face=floor,facing=east,powered=false]
 
-change 53 1 0 9 minecraft:repeater[delay=2,facing=west,powered=false] minecraft:repeater[delay=2,facing=west,powered=true]
+change 53 1 0 9 minecraft:repeater[delay=2,facing=west,locked=false,powered=false] minecraft:repeater[delay=2,facing=west,locked=false,powered=true]
 
-change 55 2 0 9 minecraft:repeater[delay=1,facing=west,powered=false] minecraft:repeater[delay=1,facing=west,powered=true]
+change 55 2 0 9 minecraft:repeater[delay=1,facing=west,locked=false,powered=false] minecraft:repeater[delay=1,facing=west,locked=false,powered=true]
 change 55 3 0 9 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
 
-change 57 1 0 12 minecraft:repeater[delay=4,facing=west,powered=true] minecraft:repeater[delay=4,facing=west,powered=false]
-change 57 1 0 9 minecraft:repeater[delay=2,facing=west,powered=true] minecraft:repeater[delay=2,facing=west,powered=false]
+change 57 1 0 12 minecraft:repeater[delay=4,facing=west,locked=false,powered=true] minecraft:repeater[delay=4,facing=west,locked=false,powered=false]
+change 57 1 0 9 minecraft:repeater[delay=2,facing=west,locked=false,powered=true] minecraft:repeater[delay=2,facing=west,locked=false,powered=false]
 
-change 59 2 0 9 minecraft:repeater[delay=1,facing=west,powered=true] minecraft:repeater[delay=1,facing=west,powered=false]
+change 59 2 0 9 minecraft:repeater[delay=1,facing=west,locked=false,powered=true] minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
 
 change 61 2 0 12 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
 

@@ -2,7 +2,7 @@ circuit-trace 1
 title Observer pulse extended by a repeater
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v5
+harness circuit-reference-rules-v6
 mechanisms observer repeater redstone_lamp scheduled_ticks
 area -1 -1 2 1 0 7
 ticks 24
@@ -28,17 +28,17 @@ change 4 0 0 4 minecraft:observer[facing=north,powered=true] minecraft:observer[
 
 block 5 0 0 4 minecraft:observer[facing=north,powered=false]
 
-change 10 0 0 5 minecraft:repeater[delay=4,facing=north,powered=false] minecraft:repeater[delay=4,facing=north,powered=true]
+change 10 0 0 5 minecraft:repeater[delay=4,facing=north,locked=false,powered=false] minecraft:repeater[delay=4,facing=north,locked=false,powered=true]
 change 10 0 0 6 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
-block 10 0 0 5 minecraft:repeater[delay=4,facing=north,powered=true]
+block 10 0 0 5 minecraft:repeater[delay=4,facing=north,locked=false,powered=true]
 
-block 11 0 0 5 minecraft:repeater[delay=4,facing=north,powered=true]
+block 11 0 0 5 minecraft:repeater[delay=4,facing=north,locked=false,powered=true]
 block 11 0 0 6 minecraft:redstone_lamp[lit=true]
 
-change 18 0 0 5 minecraft:repeater[delay=4,facing=north,powered=true] minecraft:repeater[delay=4,facing=north,powered=false]
-block 18 0 0 5 minecraft:repeater[delay=4,facing=north,powered=false]
+change 18 0 0 5 minecraft:repeater[delay=4,facing=north,locked=false,powered=true] minecraft:repeater[delay=4,facing=north,locked=false,powered=false]
+block 18 0 0 5 minecraft:repeater[delay=4,facing=north,locked=false,powered=false]
 
-block 19 0 0 5 minecraft:repeater[delay=4,facing=north,powered=false]
+block 19 0 0 5 minecraft:repeater[delay=4,facing=north,locked=false,powered=false]
 
 change 22 0 0 6 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
 block 22 0 0 6 minecraft:redstone_lamp[lit=false]

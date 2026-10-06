@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
+#include <algorithm>
 
 namespace circuit::gameplay::detail {
 namespace {
@@ -52,8 +53,18 @@ void take_one(ItemStack& s) {
     if (s.count == 0) s = {};
 }
 
+bool all_empty(const BlockEntity& be) {
+    return std::ranges::all_of(be.slots, [](const ItemStack& s) { return s.empty(); });
+}
+
 // Moves one item from `from` to `to`, trying source slots in combined order.
-bool transfer_one(RuleContext& ctx, const Inventory& from, const Inventory& to) {
+// A hopper that receives into an empty inventory waits 8 game ticks before it
+// moves the item on, or 7 when it already ticked in this tick before the
+// pushing hopper (hopper_chained): either way it passes the item on 8 ticks later.
+bool transfer_one(RuleContext& ctx, const Inventory& from, const Inventory& to, bool from_hopper = false) {
+    BlockEntity* receiving_hopper = nullptr;
+    if (to.parts.size() == 1 && ctx.block(to.parts[0]).is(BlockType::hopper) && all_empty(*to.entities[0]))
+        receiving_hopper = to.entities[0];
     for (std::size_t i = 0; i < from.entities.size(); ++i)
         for (std::size_t j = 0; j < from.entities[i]->slots.size(); ++j) {
             auto& source = from.entities[i]->slots[j];
@@ -68,6 +79,8 @@ bool transfer_one(RuleContext& ctx, const Inventory& from, const Inventory& to) 
             ctx.record(TraceKind::inventory_changed, from.parts[i], j, pack_stack(before_from), pack_stack(source));
             ctx.record(TraceKind::inventory_changed, to.parts[target->first], target->second, pack_stack(before_to),
                        pack_stack(destination));
+            if (receiving_hopper)
+                receiving_hopper->cooldown = static_cast<std::uint8_t>(hopper_cooldown - (from_hopper && receiving_hopper->ticked >= ctx.now() ? 1 : 0));
             from.changed(ctx);
             to.changed(ctx);
             return true;
@@ -195,7 +208,7 @@ BlockState placed_chest(RuleContext& ctx, BlockPos pos, BlockState placed, Direc
 void check_hopper(RuleContext& ctx, BlockPos pos) {
     const auto s = ctx.block(pos);
     if (!s.is(BlockType::hopper)) return;
-    const bool enabled = received_power(ctx, pos) == 0;
+    const bool enabled = !has_neighbor_signal(ctx, pos);
     if (enabled != s.flag()) set_block_quiet(ctx, pos, s.with_flag(enabled));
 }
 
@@ -204,6 +217,7 @@ void tick_hopper(RuleContext& ctx, BlockPos pos) {
     if (!s.is(BlockType::hopper)) return;
     auto* self_entity = ctx.block_entity(pos);
     if (!self_entity) return;
+    self_entity->ticked = ctx.now();
     if (self_entity->cooldown > 0) {
         --self_entity->cooldown;
         if (self_entity->cooldown > 0) return;
@@ -212,7 +226,7 @@ void tick_hopper(RuleContext& ctx, BlockPos pos) {
     const auto self = Inventory::open(ctx, pos);
     bool moved = false;
     if (const auto target = Inventory::open(ctx, pos.relative(s.facing())); target.valid())
-        moved = transfer_one(ctx, self, target);
+        moved = transfer_one(ctx, self, target, true);
     const auto above_pos = pos.relative(Direction::up);
     const auto above = ctx.block(above_pos);
     if (is_container(above.type())) {

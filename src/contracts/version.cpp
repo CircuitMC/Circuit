@@ -7,7 +7,7 @@ namespace {
 using enum CompatibilityTier;
 using enum EvidenceSource;
 
-// Compatibility table for circuit-reference-rules-v5. Every row claims a tier.
+// Compatibility table for circuit-reference-rules-v6. Every row claims a tier.
 // A row claims L0 only when harness fixtures recorded on the target version
 // pass and no gap is known; "Not covered" names aspects no fixture exercises.
 // Every other row claims L2 and lists its gaps, which include behavior not yet
@@ -17,11 +17,13 @@ constexpr std::array reference_v4_mechanisms{
     MechanismEntry{"command_timing", l0_exact, l0_exact, harness_trace,
         "Inputs apply between ticks: delays they start count from the previous tick (lamp_timing, "
         "vertical_slice, comparator_signal)."},
-    MechanismEntry{"neighbor_updates", l0_exact, l2_declared_deviation, harness_trace,
+    MechanismEntry{"neighbor_updates", l0_exact, l0_exact, harness_trace,
         "Neighbor updates (west, east, down, up, north, south) and shape updates (west, east, north, south, "
         "down, up) are queued entries run depth-first in emission order; dust updates the neighbors of a "
-        "7-position set in hash order (vertical_slice, chain_limit, piston_observed). Gaps: levers do not "
-        "update the block they are attached to; indirect (diagonal) shape updates are not modeled."},
+        "7-position set in hash order and gives diagonal dust shape updates; a lever updates around itself "
+        "and around the block it hangs on; removal and placement reactions precede the neighbor and shape "
+        "updates of a change (vertical_slice, chain_limit, piston_observed, lever_attachment, dust_steps, "
+        "support). Not covered: removal updates of dust that a piston destroys."},
     MechanismEntry{"neighbor_chain_limit", l0_exact, l0_exact, harness_trace,
         "A chain counts the entries queued in it (neighbor-update sets, single updates and shape updates); at "
         "the limit new entries are dropped while queued entries still run (chain_limit). Not covered: the "
@@ -32,12 +34,17 @@ constexpr std::array reference_v4_mechanisms{
         "an extended pulse, else -1; comparators -1 when feeding a diode, else 0; lamps and observers 0 "
         "(tick_priority, comparator_priority, diode_priority). Not covered: the per-tick drain limit and ticks "
         "in non-ticking chunks."},
-    MechanismEntry{"redstone_wire", l0_exact, l2_declared_deviation, harness_trace,
-        "Power decays by one per block; a change updates the neighbors of a 7-position set in hash order "
-        "(vertical_slice, chain_limit). Gaps: no connections up or down steps; no power through solid blocks."},
-    MechanismEntry{"repeater", l0_exact, l2_declared_deviation, harness_trace,
-        "Delay 2-8 game ticks, pulse extension, quiet state change and front updates (vertical_slice, "
-        "observer_pulse, tick_priority, diode_priority). Gaps: no locking; no power through solid blocks."},
+    MechanismEntry{"redstone_wire", l0_exact, l0_exact, harness_trace,
+        "Power decays by one per block and climbs or descends a step unless a conductor cuts it; dust reads "
+        "power that sources give conductors strongly, powers the block below it and the blocks it points "
+        "into, and keeps its shape as stored state, dots included; a change updates the neighbors of a "
+        "7-position set in hash order (vertical_slice, chain_limit, strong_power, weak_power, dust_shape, "
+        "dust_steps). Players' placement and dot toggling were compared with the official server through a "
+        "protocol client. Not covered: dust on hoppers."},
+    MechanismEntry{"repeater", l0_exact, l0_exact, harness_trace,
+        "Delay 2-8 game ticks, pulse extension, quiet state change and front updates; strong power into the "
+        "block in front; locked while a powered diode faces into either side (vertical_slice, observer_pulse, "
+        "tick_priority, diode_priority, strong_power, repeater_lock)."},
     MechanismEntry{"redstone_lamp", l0_exact, l0_exact, harness_trace,
         "Lights at once and turns off 4 game ticks after losing power, without neighbor updates (lamp_timing, "
         "vertical_slice, tick_priority)."},
@@ -54,21 +61,26 @@ constexpr std::array reference_v4_mechanisms{
     MechanismEntry{"block_events", l0_exact, l0_exact, harness_trace,
         "Level-wide FIFO with set semantics, drained including additions (piston_observed, piston_slime, "
         "piston_timing). Not covered: deferral in non-ticking chunks."},
-    MechanismEntry{"hopper", l0_exact, l2_declared_deviation, harness_trace,
-        "Push then pull, 8-tick cooldown, disabled while powered, item pickup, competition in block-entity order "
-        "(hopper_chain, hopper_competition, double_chest). Gap: no chained-hopper cooldown adjustment."},
+    MechanismEntry{"hopper", l0_exact, l0_exact, harness_trace,
+        "Push then pull, 8-tick cooldown, disabled while powered, item pickup, competition in block-entity order; "
+        "a hopper receiving into an empty inventory from another hopper waits 8 game ticks, or 7 when it "
+        "already ticked in that tick (hopper_chain, hopper_competition, double_chest, hopper_chained). Not "
+        "covered: pickup of item entities that a trace cannot observe (circuit-trace v1)."},
     MechanismEntry{"double_chest", l0_exact, l0_exact, harness_trace,
         "A left half pairs clockwise of its facing; a half claims a same-facing single chest; pairing changes "
         "are shape-only; hoppers and comparators see the right half's slots first (double_chest, "
         "double_chest_left_input)."},
-    MechanismEntry{"comparator", l0_exact, l2_declared_deviation, harness_trace,
-        "Compare and subtract, 2-tick delay, output in a block entity, container reading also through stone, "
-        "obsidian and lamps, side inputs, immediate refresh on a mode change (comparator_signal, "
-        "comparator_priority, diode_priority, double_chest). Gaps: no rear power through solid blocks; "
-        "containers are the only analog source in the registry."},
-    MechanismEntry{"water", l0_exact, l2_declared_deviation, harness_trace,
-        "5-tick fluid ticks and distance-limited spread match water_channel. Gap: spreads to every side without "
-        "the target version's preference for nearby drops."},
+    MechanismEntry{"comparator", l0_exact, l0_exact, harness_trace,
+        "Compare and subtract, 2-tick delay, output in a block entity, container reading also through "
+        "conductors, rear power through conductors, side inputs without it, immediate refresh on a mode change "
+        "(comparator_signal, comparator_priority, diode_priority, double_chest, weak_power). Not covered: a "
+        "container behind a conductor replacing a weaker rear signal. Containers are the only analog source "
+        "in the registry."},
+    MechanismEntry{"water", l0_exact, l0_exact, harness_trace,
+        "5-tick fluid ticks; distance-limited spread in the order north, south, west, east, only toward the "
+        "nearest drops within reach when there are any; a new source between two sources on solid ground; "
+        "dust, levers, repeaters and comparators washed away with their drops (water_channel, water_drop, "
+        "water_washes). Not covered: sources above flowing water and three sources beside falling water."},
     MechanismEntry{"random_ticks", l1_region_equivalent, l2_declared_deviation, documented_behavior,
         "Speed from the game rule per section; sections without blocks that react are skipped, as in the target "
         "version; positions and rule draws use a stream derived from (seed, tick, chunk, section) instead of a "
@@ -92,9 +104,10 @@ constexpr std::array reference_v4_mechanisms{
         "Block entities tick in creation order; moving pistons finish in creation order (piston_slime, "
         "piston_observed) and competing hoppers act in placement order (hopper_competition). Not covered: "
         "order after a chunk reload."},
-    MechanismEntry{"support", l0_exact, l2_declared_deviation, harness_trace,
-        "Gap: not modeled; dust, repeaters, comparators and levers survive without support, while the target "
-        "version removes them. Fixtures place a supporting floor."},
+    MechanismEntry{"support", l0_exact, l0_exact, harness_trace,
+        "Dust needs a whole top face or a hopper below it, repeaters and comparators a whole top face, levers "
+        "a whole face to hang on; an update that finds the support gone breaks them with their drops "
+        "(support, lever_attachment). The drops' positions follow item_entity."},
 };
 
 constexpr RuleLimits vanilla_like_limits{
@@ -108,7 +121,7 @@ constexpr RuleLimits vanilla_like_limits{
 
 // Both supported versions run the same reference rules: the 20 harness traces
 // recorded on 1.21.4 are identical to those recorded on 1.21.8.
-constexpr RuleSet reference_rules{"circuit-reference-rules-v5", RngPolicy::per_section_derived_stream, reference_v4_mechanisms};
+constexpr RuleSet reference_rules{"circuit-reference-rules-v6", RngPolicy::per_section_derived_stream, reference_v4_mechanisms};
 
 constexpr std::array bundles{
     VersionBundle{

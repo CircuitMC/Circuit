@@ -28,6 +28,7 @@ struct BlockEntity {
     std::uint64_t order{}; // Creation order; also the block-entity tick order.
     std::vector<ItemStack> slots;
     std::uint8_t cooldown{};
+    Tick ticked{};          // Hopper: the last tick it ticked (whether it already ticked this tick).
     std::uint8_t signal{}; // Comparator output, 0-15.
     // Moving piston: the block being moved, ticks of movement completed (0-2),
     // and motion bits (see `Motion`).

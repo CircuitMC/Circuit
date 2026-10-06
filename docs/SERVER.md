@@ -71,7 +71,7 @@ A refused action is answered with the current state of the affected blocks, or, 
 **World delivery.**
 - **Chunks:** encoded from copy-on-write column snapshots: paletted block sections, plains biome, heightmaps and full sky light, with no lighting engine yet. At most 32 chunks per player per tick, nearest first.
 - **View and simulation:** a player's chunk ticket ticks the chunks within the simulation distance and loads, without ticking, those within the view distance the client asked for (at most `view-distance`). Every chunk of the view is sent, whether the view is wider or narrower than the simulation distance.
-- **Display properties:** dust connections and similar properties are derived for display only and never feed back into the rules.
+- **Block states:** every displayed property is rule state, including dust shapes, lever mounting and repeater locks, so clients see the state the rules hold.
 - **Updates and entities:** block changes in a tick become block updates for every player who has the chunk. Item entities are spawned, moved and removed from the engine trace.
 
 ## Identity

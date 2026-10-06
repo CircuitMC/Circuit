@@ -2,7 +2,7 @@ circuit-trace 1
 title Piston destroys dust, a lever and a repeater
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v5
+harness circuit-reference-rules-v6
 mechanisms piston block_events
 area -1 -1 -1 6 0 5
 ticks 4
@@ -29,14 +29,14 @@ at 1 set -1 0 4 minecraft:redstone_block
 change 1 -1 0 0 minecraft:air minecraft:redstone_block
 change 1 -1 0 2 minecraft:air minecraft:redstone_block
 change 1 -1 0 4 minecraft:air minecraft:redstone_block
-change 1 2 0 0 minecraft:redstone_wire[power=0] minecraft:air
+change 1 2 0 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:air
 change 1 2 0 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]
 change 1 1 0 0 minecraft:stone minecraft:moving_piston[facing=east,type=normal]
 change 1 0 0 0 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
 change 1 1 0 2 minecraft:lever[face=floor,facing=east,powered=false] minecraft:air
 change 1 1 0 2 minecraft:air minecraft:moving_piston[facing=east,type=normal]
 change 1 0 0 2 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
-change 1 1 0 4 minecraft:repeater[delay=1,facing=west,powered=false] minecraft:air
+change 1 1 0 4 minecraft:repeater[delay=1,facing=west,locked=false,powered=false] minecraft:air
 change 1 1 0 4 minecraft:air minecraft:moving_piston[facing=east,type=normal]
 change 1 0 0 4 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
 

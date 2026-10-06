@@ -169,17 +169,22 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
     }
     if (id == "minecraft:redstone_wire") {
         CIRCUIT_TRY(power, p.integer("power", 0, 15));
-        for (auto side : {"north", "south", "west", "east"}) CIRCUIT_CHECK(p.ignored(side, {"up", "side", "none"}));
-        return simple(blocks::wire(static_cast<std::uint8_t>(power)));
+        // The stored shape matters: a dust without sides (a dot) points nowhere.
+        auto s = blocks::wire(static_cast<std::uint8_t>(power));
+        for (const auto d : {Direction::north, Direction::south, Direction::west, Direction::east}) {
+            CIRCUIT_TRY(side, p.choice(direction_name(d), {"none", "side", "up"}, 0));
+            s = s.with_wire_side(d, static_cast<gameplay::WireSide>(side));
+        }
+        return simple(s);
     }
     if (id == "minecraft:repeater") {
         CIRCUIT_TRY(delay, p.integer("delay", 1, 4));
         CIRCUIT_TRY(facing, p.direction("facing"));
         CIRCUIT_TRY(powered, p.flag("powered"));
-        CIRCUIT_CHECK(p.only("locked", "false"));
+        CIRCUIT_TRY(locked, p.choice("locked", {"false", "true"}, 0));
         if (!contracts::is_horizontal(facing)) return std::unexpected("minecraft:repeater: facing must be horizontal");
-        // Unverified convention: `facing` names the input side; the output is opposite.
-        return simple(blocks::repeater(contracts::opposite(facing), static_cast<std::uint8_t>(delay), powered));
+        // `facing` names the input side; the output is opposite (confirmed by traces).
+        return simple(blocks::repeater(contracts::opposite(facing), static_cast<std::uint8_t>(delay), powered, locked == 1));
     }
     if (id == "minecraft:redstone_lamp") {
         CIRCUIT_TRY(lit, p.flag("lit"));
@@ -265,10 +270,15 @@ std::string ContentMapping::notation(BlockState s) const {
         return std::format("minecraft:lever[face={},facing={},powered={}]", faces[s.level() % 3], direction_name(s.facing()),
                            b(s.flag()));
     }
-    case BlockType::redstone_wire: return std::format("minecraft:redstone_wire[power={}]", s.level());
+    case BlockType::redstone_wire: {
+        constexpr std::array<std::string_view, 3> sides{"none", "side", "up"};
+        const auto side = [&](Direction d) { return sides[static_cast<std::size_t>(s.wire_side(d)) % 3]; };
+        return std::format("minecraft:redstone_wire[east={},north={},power={},south={},west={}]", side(Direction::east),
+                           side(Direction::north), s.level(), side(Direction::south), side(Direction::west));
+    }
     case BlockType::repeater:
-        return std::format("minecraft:repeater[delay={},facing={},powered={}]", s.delay(),
-                           direction_name(contracts::opposite(s.facing())), b(s.flag()));
+        return std::format("minecraft:repeater[delay={},facing={},locked={},powered={}]", s.delay(),
+                           direction_name(contracts::opposite(s.facing())), b(gameplay::repeater_locked(s)), b(s.flag()));
     case BlockType::redstone_lamp: return std::format("minecraft:redstone_lamp[lit={}]", b(s.flag()));
     case BlockType::observer:
         return std::format("minecraft:observer[facing={},powered={}]", direction_name(s.facing()), b(s.flag()));

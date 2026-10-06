@@ -807,16 +807,9 @@ struct Game::Impl final : GameServices {
             if (r.kind == contracts::TraceKind::block_changed) changed.insert(r.pos);
             if (r.kind == contracts::TraceKind::chunk_unloaded) unloaded.insert(contracts::chunk_of(r.pos));
         }
-        // Dust next to a change may change shape on screen.
-        std::set<BlockPos> shown = changed;
-        for (const auto b : changed)
-            for (const auto d : contracts::horizontal_directions)
-                for (const int dy : {-1, 0, 1}) {
-                    const auto n = b.relative(d).relative(Direction::up, dy);
-                    if (gameplay::in_world(bundle, n) && at(n).is(BlockType::redstone_wire)) shown.insert(n);
-                }
+        // Every displayed property is rule state: the changes are what clients need.
         const auto look_up = lookup();
-        for (const auto b : shown) {
+        for (const auto b : changed) {
             const auto c = contracts::chunk_of(b);
             std::optional<Bytes> packet;
             for (auto& [id, p] : players) {

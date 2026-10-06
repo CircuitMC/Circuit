@@ -34,6 +34,19 @@ struct Sim {
     std::vector<TraceRecord> last;
 };
 
+// A stone floor at y = -1 under x in [x0, x1] and z in [z0, z1]: dust and
+// diodes need support.
+std::vector<CommandBody> floor(std::int32_t x0, std::int32_t x1, std::int32_t z0, std::int32_t z1) {
+    std::vector<CommandBody> out;
+    for (auto x = x0; x <= x1; ++x)
+        for (auto z = z0; z <= z1; ++z) out.push_back(place({x, -1, z}, blocks::stone()));
+    return out;
+}
+std::vector<CommandBody> with_floor(std::vector<CommandBody> floor_cmds, std::vector<CommandBody> rest) {
+    floor_cmds.insert(floor_cmds.end(), rest.begin(), rest.end());
+    return floor_cmds;
+}
+
 std::uint8_t wire_level(const Sim& s, BlockPos p) {
     const auto st = s.at(p);
     require(st.is(BlockType::redstone_wire), "expected wire");
@@ -58,10 +71,11 @@ int main() {
     suite.run("vertical slice: line and repeater across a chunk edge", [] {
         Sim s;
         // Lever at x=13; dust x=14..17 crosses from chunk 0 into chunk 1 at x=16.
-        s.tick({place({13, 0, 0}, blocks::lever()), place({14, 0, 0}, blocks::wire()), place({15, 0, 0}, blocks::wire()),
-                place({16, 0, 0}, blocks::wire()), place({17, 0, 0}, blocks::wire()),
-                place({18, 0, 0}, blocks::repeater(D::east, 1)), place({19, 0, 0}, blocks::wire()),
-                place({20, 0, 0}, blocks::lamp())});
+        s.tick(with_floor(floor(13, 20, 0, 0),
+                          {place({13, 0, 0}, blocks::lever()), place({14, 0, 0}, blocks::wire()), place({15, 0, 0}, blocks::wire()),
+                           place({16, 0, 0}, blocks::wire()), place({17, 0, 0}, blocks::wire()),
+                           place({18, 0, 0}, blocks::repeater(D::east, 1)), place({19, 0, 0}, blocks::wire()),
+                           place({20, 0, 0}, blocks::lamp())}));
         require(s.oracle.dump().ticks.empty(), "unpowered setup schedules nothing");
         // Commands are inputs between ticks: delays they start count from the previous tick.
         s.tick({use_lever({13, 0, 0})}); // tick 3, scheduling at time 2
@@ -90,9 +104,10 @@ int main() {
     suite.run("immediate chain returns across the edge in one tick", [] {
         Sim s;
         // Lever and lamp in chunk 0; the dust leaves into chunk 1 and comes back.
-        s.tick({place({14, 0, 0}, blocks::lever()), place({15, 0, 0}, blocks::wire()), place({16, 0, 0}, blocks::wire()),
-                place({16, 0, 1}, blocks::wire()), place({16, 0, 2}, blocks::wire()), place({15, 0, 2}, blocks::wire()),
-                place({14, 0, 2}, blocks::lamp())});
+        s.tick(with_floor(floor(14, 16, 0, 2),
+                          {place({14, 0, 0}, blocks::lever()), place({15, 0, 0}, blocks::wire()), place({16, 0, 0}, blocks::wire()),
+                           place({16, 0, 1}, blocks::wire()), place({16, 0, 2}, blocks::wire()), place({15, 0, 2}, blocks::wire()),
+                           place({14, 0, 2}, blocks::lamp())}));
         s.tick({use_lever({14, 0, 0})});
         require(wire_level(s, {15, 0, 2}) == 11 && s.at({14, 0, 2}).flag(), "lamp lit in the same tick after two crossings");
         std::set<std::int32_t> chunks_seen;
@@ -103,8 +118,8 @@ int main() {
 
     suite.run("observer pulse is extended by a repeater", [] {
         Sim s;
-        s.tick({place({0, 0, 3}, blocks::stone()), place({0, 0, 4}, blocks::observer(D::north)),
-                place({0, 0, 5}, blocks::repeater(D::south, 4)), place({0, 0, 6}, blocks::lamp())});
+        s.tick(with_floor(floor(0, 0, 3, 6), {place({0, 0, 3}, blocks::stone()), place({0, 0, 4}, blocks::observer(D::north)),
+                                              place({0, 0, 5}, blocks::repeater(D::south, 4)), place({0, 0, 6}, blocks::lamp())}));
         s.tick({place({0, 0, 3}, blocks::glass())}); // tick 3 (time 2): observed block changes
         require(!s.at({0, 0, 4}).flag(), "observer delay");
         s.tick(); // 4
@@ -125,8 +140,8 @@ int main() {
 
     suite.run("scheduled tick priority before sub-order", [] {
         Sim s;
-        s.tick({place({-1, 0, 0}, blocks::lamp()), place({0, 0, -1}, blocks::repeater(D::north, 2)),
-                place({0, 0, 1}, blocks::repeater(D::south, 2)), place({0, 0, 0}, blocks::lever())});
+        s.tick(with_floor(floor(-1, 0, -1, 1), {place({-1, 0, 0}, blocks::lamp()), place({0, 0, -1}, blocks::repeater(D::north, 2)),
+                                                place({0, 0, 1}, blocks::repeater(D::south, 2)), place({0, 0, 0}, blocks::lever())}));
         s.tick({use_lever({0, 0, 0})}); // 3 (time 2): lamp lit; repeaters due 6
         require(s.at({-1, 0, 0}).flag(), "lamp lights immediately");
         s.until(6);
@@ -145,9 +160,9 @@ int main() {
     suite.run("diodes feeding diodes and turning off drain first", [] {
         Sim s;
         // West: a repeater feeding a lamp. East: a repeater feeding a repeater.
-        s.tick({place({-2, 0, 0}, blocks::lamp()), place({-1, 0, 0}, blocks::repeater(D::west, 1)),
-                place({1, 0, 0}, blocks::repeater(D::east, 1)), place({2, 0, 0}, blocks::repeater(D::east, 1)),
-                place({0, 0, 0}, blocks::lever())});
+        s.tick(with_floor(floor(-2, 2, 0, 0), {place({-2, 0, 0}, blocks::lamp()), place({-1, 0, 0}, blocks::repeater(D::west, 1)),
+                                               place({1, 0, 0}, blocks::repeater(D::east, 1)), place({2, 0, 0}, blocks::repeater(D::east, 1)),
+                                               place({0, 0, 0}, blocks::lever())}));
         s.tick({use_lever({0, 0, 0})}); // 3 (time 2): west scheduled first, both due 4
         s.tick();
         auto order = of_kind(s.last, TraceKind::tick_executed);
@@ -162,9 +177,9 @@ int main() {
 
         Sim back;
         // The diode in front faces back into the east repeater: no raised priority.
-        back.tick({place({-2, 0, 0}, blocks::lamp()), place({-1, 0, 0}, blocks::repeater(D::west, 1)),
-                   place({1, 0, 0}, blocks::repeater(D::east, 1)), place({2, 0, 0}, blocks::repeater(D::west, 1)),
-                   place({0, 0, 0}, blocks::lever())});
+        back.tick(with_floor(floor(-2, 2, 0, 0), {place({-2, 0, 0}, blocks::lamp()), place({-1, 0, 0}, blocks::repeater(D::west, 1)),
+                                                  place({1, 0, 0}, blocks::repeater(D::east, 1)), place({2, 0, 0}, blocks::repeater(D::west, 1)),
+                                                  place({0, 0, 0}, blocks::lever())}));
         back.tick({use_lever({0, 0, 0})});
         back.tick();
         order = of_kind(back.last, TraceKind::tick_executed);
@@ -205,7 +220,8 @@ int main() {
         auto limited = bundle();
         limited.limits.max_chained_neighbor_updates = 2;
         Sim s(limited);
-        std::vector<CommandBody> build{place({0, 0, 0}, blocks::lever())};
+        std::vector<CommandBody> build = floor(0, 10, 0, 0);
+        build.push_back(place({0, 0, 0}, blocks::lever()));
         for (int x = 1; x <= 10; ++x) build.push_back(place({x, 0, 0}, blocks::wire()));
         s.tick(build); // Placement chains truncate too; the line stays unpowered.
         s.tick({use_lever({0, 0, 0})});
@@ -305,9 +321,9 @@ int main() {
 
     suite.run("pistons destroy dust and comparators in their path", [] {
         Sim s;
-        s.tick({place({1, 0, 0}, blocks::stone()), place({2, 0, 0}, blocks::wire()), place({3, 0, 0}, blocks::stone()),
-                place({0, 0, 0}, blocks::piston(D::east)), place({1, 0, 4}, blocks::comparator(D::north)),
-                place({0, 0, 4}, blocks::piston(D::east))});
+        s.tick(with_floor(floor(0, 3, 0, 4), {place({1, 0, 0}, blocks::stone()), place({2, 0, 0}, blocks::wire()), place({3, 0, 0}, blocks::stone()),
+                                              place({0, 0, 0}, blocks::piston(D::east)), place({1, 0, 4}, blocks::comparator(D::north)),
+                                              place({0, 0, 4}, blocks::piston(D::east))}));
         require(block_entity_at(s.oracle.dump(), {1, 0, 4}), "comparator block entity");
         s.tick({place({0, 0, -1}, blocks::redstone_block()), place({0, 0, 5}, blocks::redstone_block())}); // 3
         require(s.at({2, 0, 0}).is(BlockType::moving_piston) && s.at({1, 0, 4}).is(BlockType::moving_piston), "destroyed and replaced");
@@ -523,11 +539,11 @@ int main() {
         const auto code = [](ErrorCode e) { return static_cast<std::uint64_t>(e); };
         s.tick({SetBlock{{1, 0, 1}, blocks::stone().raw(), {}},
                 use({1, 0, 1}, D::up, blocks::stone()),                 // beside: (1,1,1)
-                use({1, 1, 1}, D::up, blocks::wire()),                  // dust on the stone placed just before
+                use({1, 1, 1}, D::up, blocks::wire()),                  // (1,2,1): dust on the stone placed just before
                 use({1, 0, 1}, D::east, blocks::lever(false, D::east, blocks::LeverFace::wall)), // (2,0,1), on the stone
                 use({2, 0, 1}, D::up, blocks::stone()),                 // uses the new lever
                 use({2, 0, 1}, D::up, blocks::stone(), 3, true),        // sneaking with an item: places on top of it instead
-                use({1, 0, 1}, D::up, blocks::stone()),                 // (1,1,1) holds dust now
+                use({1, 0, 1}, D::up, blocks::stone()),                 // (1,1,1) is taken
                 use({1, 1, 1}, D::north, blocks::stone(), 1),           // the neighbor is not allowed (reach)
                 use({5, 0, 5}, D::up, blocks::wire()),                  // replaces air at (5,0,5): nothing below
                 use({6, 0, 6}, D::up, blocks::lever()),                 // a lever cannot replace air
@@ -538,8 +554,16 @@ int main() {
                                                   code(ErrorCode::unsupported), code(ErrorCode::unsupported),
                                                   code(ErrorCode::not_usable), code(ErrorCode::not_breakable), 0};
         require(outcomes() == expected, "outcomes in admission order");
-        require(s.at({1, 0, 1}).is_air(), "the stone was broken");
-        require(s.at({2, 0, 1}).is(BlockType::lever) && s.at({2, 0, 1}).flag(), "the lever placed in the same tick was used");
+        // Breaking the stone takes the lever hanging on it, which was used
+        // earlier in the tick; its drop spawns. The stone above stays.
+        require(s.at({1, 0, 1}).is_air() && s.at({2, 0, 1}).is_air(), "support removed");
+        require(s.at({1, 1, 1}).is(BlockType::stone) && s.at({1, 2, 1}).is(BlockType::redstone_wire), "blocks that need no support stay");
+        std::size_t lever_uses = 0;
+        for (const auto& r : s.last)
+            if (r.kind == TraceKind::block_changed && r.pos == BlockPos{2, 0, 1} && BlockState::decode(static_cast<std::uint32_t>(r.b))->flag())
+                ++lever_uses;
+        require(lever_uses == 1, "the lever placed in the same tick was used");
+        require(s.oracle.dump().entities.size() == 1, "the lever dropped");
         require(s.at({2, 1, 1}).is(BlockType::stone), "sneaking placed instead of using");
     });
 
@@ -635,9 +659,10 @@ int main() {
 
     suite.run("tickets, generations and deferred ticks", [] {
         Sim s(bundle(), 7, 0); // tick 1: chunk (0,0) ticking, ring border
+        // The levers come after the lamps: setting a block does not update the block itself.
         s.tick({place({0, 0, 0}, blocks::stone()), place({16, 0, 0}, blocks::stone()), place({40, 0, 0}, blocks::stone()),
-                place({1, 0, 5}, blocks::lever(true)), place({2, 0, 5}, blocks::lamp()),
-                place({17, 0, 5}, blocks::lever(true)), place({18, 0, 5}, blocks::lamp())});
+                place({2, 0, 5}, blocks::lamp()), place({1, 0, 5}, blocks::lever(true)),
+                place({18, 0, 5}, blocks::lamp()), place({17, 0, 5}, blocks::lever(true))});
         const auto rejected = of_kind(s.last, TraceKind::command_rejected);
         require(rejected.size() == 1 && rejected[0].b == static_cast<std::uint64_t>(ErrorCode::unloaded_chunk), "unloaded write");
         require(s.at({2, 0, 5}).flag() && s.at({18, 0, 5}).flag(), "lamps lit in ticking and border chunks");
@@ -686,7 +711,8 @@ int main() {
 
     suite.run("comparator compares after two ticks", [] {
         Sim s;
-        s.tick({place({0, 0, 0}, blocks::lever()), place({1, 0, 0}, blocks::comparator(D::east)), place({2, 0, 0}, blocks::lamp())});
+        s.tick(with_floor(floor(0, 2, 0, 0),
+                          {place({0, 0, 0}, blocks::lever()), place({1, 0, 0}, blocks::comparator(D::east)), place({2, 0, 0}, blocks::lamp())}));
         s.tick({use_lever({0, 0, 0})}); // 3 (time 2): due 4
         require(!s.at({1, 0, 0}).flag() && !s.at({2, 0, 0}).flag(), "comparator delay");
         s.tick(); // 4
@@ -704,10 +730,11 @@ int main() {
 
     suite.run("comparator subtract and compare with a side input", [] {
         Sim s;
-        s.tick({place({0, 0, 0}, blocks::lever()), place({1, 0, 0}, blocks::comparator(D::east, true)),
-                place({2, 0, 0}, blocks::wire()), place({3, 0, 0}, blocks::wire()), place({4, 0, 0}, blocks::wire()),
-                place({1, 0, 1}, blocks::wire()), place({1, 0, 2}, blocks::wire()), place({1, 0, 3}, blocks::wire()),
-                place({1, 0, 4}, blocks::lever())});
+        s.tick(with_floor(floor(0, 4, 0, 4),
+                          {place({0, 0, 0}, blocks::lever()), place({1, 0, 0}, blocks::comparator(D::east, true)),
+                           place({2, 0, 0}, blocks::wire()), place({3, 0, 0}, blocks::wire()), place({4, 0, 0}, blocks::wire()),
+                           place({1, 0, 1}, blocks::wire()), place({1, 0, 2}, blocks::wire()), place({1, 0, 3}, blocks::wire()),
+                           place({1, 0, 4}, blocks::lever())}));
         s.tick({use_lever({1, 0, 4})}); // 3: side input 13, rear 0: output stays 0
         require(wire_level(s, {1, 0, 1}) == 13 && !s.at({1, 0, 0}).flag(), "side input alone gives no output");
         s.tick({use_lever({0, 0, 0})}); // 4 (time 3): 15 - 13 = 2, due 5
@@ -725,9 +752,10 @@ int main() {
 
     suite.run("comparator reads container fullness", [] {
         Sim s;
-        s.tick({place({0, 0, 0}, blocks::hopper(D::down)), place({1, 0, 0}, blocks::comparator(D::east)),
-                place({2, 0, 0}, blocks::lamp()), place({0, 0, 5}, blocks::chest()), place({1, 0, 5}, blocks::stone()),
-                place({2, 0, 5}, blocks::comparator(D::east))});
+        s.tick(with_floor(floor(1, 2, 0, 5),
+                          {place({0, 0, 0}, blocks::hopper(D::down)), place({1, 0, 0}, blocks::comparator(D::east)),
+                           place({2, 0, 0}, blocks::lamp()), place({0, 0, 5}, blocks::chest()), place({1, 0, 5}, blocks::stone()),
+                           place({2, 0, 5}, blocks::comparator(D::east))}));
         s.tick({insert({0, 0, 0}, 0, items::stone, 1), insert({0, 0, 5}, 0, items::stone, 1)}); // 3
         s.until(5);
         auto d = s.oracle.dump();
@@ -772,9 +800,9 @@ int main() {
 
     suite.run("comparator reads a double chest across a chunk edge", [] {
         Sim s;
-        s.tick({place({15, 0, 0}, blocks::chest(D::north, blocks::ChestType::left)),
-                place({16, 0, 0}, blocks::chest(D::north, blocks::ChestType::right)),
-                place({15, 0, 1}, blocks::comparator(D::south))});
+        s.tick(with_floor(floor(15, 15, 1, 1), {place({15, 0, 0}, blocks::chest(D::north, blocks::ChestType::left)),
+                                                place({16, 0, 0}, blocks::chest(D::north, blocks::ChestType::right)),
+                                                place({15, 0, 1}, blocks::comparator(D::south))}));
         require(s.at({16, 0, 0}).level() == 2, "halves in chunks 0 and 1 are paired");
         std::vector<CommandBody> fill;
         for (std::uint8_t i = 0; i < 27; ++i) fill.push_back(insert({16, 0, 0}, i, items::stone, 64));
@@ -786,7 +814,7 @@ int main() {
 
     suite.run("use cycles repeater delay", [] {
         Sim s;
-        s.tick({place({0, 0, 0}, blocks::repeater(D::east, 4))});
+        s.tick(with_floor(floor(0, 0, 0, 0), {place({0, 0, 0}, blocks::repeater(D::east, 4))}));
         s.tick({use_block({0, 0, 0})});
         require(s.at({0, 0, 0}).delay() == 1, "4 wraps to 1");
         s.tick({use_block({0, 0, 0}), use_block({5, 0, 5}), insert({0, 0, 0}, 0, items::stone, 1)});

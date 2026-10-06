@@ -128,7 +128,7 @@ Import reads the source world and never writes to it. It creates a new world dir
 | Scheduled ticks | Block and fluid ticks of supported blocks, with their delay and priority |
 | Level data | Time, seed, spawn point and level name |
 
-Display properties that the rules do not model, such as dust connections and lever mounting, are derived again on export.
+Dust shapes, lever mounting and repeater locks are rule state and round-trip unchanged.
 
 **Unsupported content and policies.** Anything else is unsupported content, for example:
 - other blocks, block entities and entities, and items with data components;

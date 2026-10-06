@@ -13,21 +13,17 @@ bool set_block(RuleContext& ctx, BlockPos pos, BlockState next) {
     if (replaced && has_block_entity(prev.type())) ctx.remove_block_entity(pos);
     ctx.write_block(pos, next);
     ctx.record(TraceKind::block_changed, pos, prev.raw(), next.raw());
+    // Removal and placement reactions come first, then the neighbor updates,
+    // then the shape updates (the target version's order).
+    if (replaced) on_removed(ctx, pos, prev);
     if (replaced && has_block_entity(next.type())) ctx.create_block_entity(pos, next.type());
-    if (replaced) on_placed(ctx, pos, next, prev.type());
+    on_placed(ctx, pos, next, prev);
     notify_neighbors(ctx, pos);
-    notify_shapes(ctx, pos);
+    shape_updates(ctx, pos, prev, next);
     return true;
 }
 
-std::uint8_t received_power(RuleContext& ctx, BlockPos pos) {
-    std::uint8_t best = 0;
-    for (auto d : contracts::all_directions) {
-        const auto n = pos.relative(d);
-        best = std::max(best, emitted_power(ctx, n, ctx.block(n), contracts::opposite(d)));
-    }
-    return best;
-}
+std::uint8_t received_power(RuleContext& ctx, BlockPos pos) { return best_neighbor_signal(ctx, pos, true); }
 
 namespace detail {
 
@@ -82,6 +78,22 @@ void enqueue(RuleContext& ctx, NeighborUpdater::Entry entry) {
     }
     u.running = false;
 }
+
+// Direction from `target` to its neighbor `from`.
+std::optional<Direction> direction_to(BlockPos target, BlockPos from) {
+    for (const auto d : contracts::all_directions)
+        if (target.relative(d) == from) return d;
+    return std::nullopt;
+}
+
+// A block that can no longer stand breaks with its drops; diodes also update
+// around the cell they left.
+void break_unsupported(RuleContext& ctx, BlockPos pos, BlockState s) {
+    destroy_block(ctx, pos);
+    if (s.is(BlockType::repeater) || s.is(BlockType::comparator))
+        for (const auto d : {Direction::down, Direction::up, Direction::north, Direction::south, Direction::west, Direction::east})
+            notify_neighbors(ctx, pos.relative(d));
+}
 } // namespace
 
 void notify_neighbors(RuleContext& ctx, BlockPos source, std::optional<Direction> except) {
@@ -93,11 +105,20 @@ void notify_single(RuleContext& ctx, BlockPos target, BlockPos from) {
     enqueue(ctx, {.kind = Kind::single, .source = from, .target = target, .next = 0, .skip = -1, .depth = 0});
 }
 
-void notify_shapes(RuleContext& ctx, BlockPos source) {
+void notify_shape(RuleContext& ctx, BlockPos target, BlockPos from) {
     const auto depth = static_cast<std::uint16_t>(ctx.updater().shape_depth + 1);
     if (depth > shape_depth_limit) return;
-    for (auto d : shape_order)
-        enqueue(ctx, {.kind = Kind::shape, .source = source, .target = source.relative(d), .next = 0, .skip = -1, .depth = depth});
+    enqueue(ctx, {.kind = Kind::shape, .source = from, .target = target, .next = 0, .skip = -1, .depth = depth});
+}
+
+void notify_shapes(RuleContext& ctx, BlockPos source) {
+    for (auto d : shape_order) notify_shape(ctx, source.relative(d), source);
+}
+
+void shape_updates(RuleContext& ctx, BlockPos pos, BlockState prev, BlockState next) {
+    indirect_shapes(ctx, pos, prev);
+    notify_shapes(ctx, pos);
+    indirect_shapes(ctx, pos, next);
 }
 
 void set_block_quiet(RuleContext& ctx, BlockPos pos, BlockState next) {
@@ -105,7 +126,17 @@ void set_block_quiet(RuleContext& ctx, BlockPos pos, BlockState next) {
     if (prev.is_unloaded() || prev == next) return;
     ctx.write_block(pos, next);
     ctx.record(TraceKind::block_changed, pos, prev.raw(), next.raw());
-    notify_shapes(ctx, pos);
+    // A diode's front is updated before the shape updates (vertical_slice).
+    on_placed(ctx, pos, next, prev);
+    shape_updates(ctx, pos, prev, next);
+}
+
+void destroy_block(RuleContext& ctx, BlockPos pos) {
+    const auto s = ctx.block(pos);
+    if (s.is_air() || s.is_unloaded()) return;
+    // Drops first, then the block goes with full updates.
+    drop_items(ctx, pos, s);
+    set_block(ctx, pos, blocks::air());
 }
 
 void update_front(RuleContext& ctx, BlockPos pos, Direction output) {
@@ -116,29 +147,70 @@ void update_front(RuleContext& ctx, BlockPos pos, Direction output) {
 
 void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
     const auto s = ctx.block(target);
+    const auto d = direction_to(target, from);
+    if (!d) return;
     switch (s.type()) {
     case BlockType::observer:
-        if (target.relative(s.facing()) == from) schedule(ctx, TickList::block, target, BlockType::observer, 2, 0);
+        if (s.facing() == *d) schedule(ctx, TickList::block, target, BlockType::observer, 2, 0);
         break;
     case BlockType::chest: check_chest(ctx, target); break;
+    case BlockType::redstone_wire: wire_shape_update(ctx, target, *d); break;
+    case BlockType::repeater: repeater_shape_update(ctx, target, *d); break;
+    case BlockType::comparator:
+        if (*d == Direction::down && !can_survive(ctx, target, s)) destroy_block(ctx, target);
+        break;
+    case BlockType::lever:
+        if (*d == lever_attachment(s) && !can_survive(ctx, target, s)) destroy_block(ctx, target);
+        break;
     default: break;
     }
 }
 
-void on_placed(RuleContext& ctx, BlockPos pos, BlockState state, BlockType replaced) {
+void on_placed(RuleContext& ctx, BlockPos pos, BlockState state, BlockState previous) {
+    const bool fresh = previous.type() != state.type();
+    const bool moved_in = previous.is(BlockType::moving_piston);
     switch (state.type()) {
-    case BlockType::redstone_wire: update_wire(ctx, pos); break;
-    case BlockType::repeater: check_repeater(ctx, pos); break;
-    case BlockType::redstone_lamp: check_lamp(ctx, pos); break;
-    case BlockType::piston: case BlockType::sticky_piston: check_piston(ctx, pos); break;
-    case BlockType::hopper: check_hopper(ctx, pos); break;
+    case BlockType::redstone_wire:
+        if (fresh) wire_placed(ctx, pos);
+        break;
+    // Every state change of a diode updates the block in front.
+    case BlockType::repeater: case BlockType::comparator: update_front(ctx, pos, state.facing()); break;
+    // A block a piston moved here reacts to its new neighbors.
+    case BlockType::redstone_lamp:
+        if (moved_in) check_lamp(ctx, pos);
+        break;
+    case BlockType::piston: case BlockType::sticky_piston:
+        if (fresh) check_piston(ctx, pos);
+        break;
+    case BlockType::hopper:
+        if (fresh) check_hopper(ctx, pos);
+        break;
+    // Every change of water schedules its next fluid tick.
     case BlockType::water: schedule(ctx, TickList::fluid, pos, BlockType::water, 5, 0); break;
-    case BlockType::chest: check_chest(ctx, pos); break;
-    case BlockType::comparator: check_comparator(ctx, pos); break;
+    case BlockType::chest:
+        if (fresh) check_chest(ctx, pos);
+        break;
     case BlockType::observer:
         // An observer moved by a piston fires at its new position (observed in
         // target-version traces); other placements do not.
-        if (replaced == BlockType::moving_piston) schedule(ctx, TickList::block, pos, BlockType::observer, 2, 0);
+        if (moved_in) schedule(ctx, TickList::block, pos, BlockType::observer, 2, 0);
+        break;
+    default: break;
+    }
+}
+
+void on_removed(RuleContext& ctx, BlockPos pos, BlockState previous) {
+    switch (previous.type()) {
+    case BlockType::redstone_wire: wire_removed(ctx, pos, previous); break;
+    case BlockType::repeater: case BlockType::comparator: update_front(ctx, pos, previous.facing()); break;
+    case BlockType::observer:
+        if (previous.flag()) update_front(ctx, pos, contracts::opposite(previous.facing()));
+        break;
+    case BlockType::lever:
+        if (previous.flag()) {
+            notify_neighbors(ctx, pos);
+            notify_neighbors(ctx, pos.relative(lever_attachment(previous)));
+        }
         break;
     default: break;
     }
@@ -147,30 +219,23 @@ void on_placed(RuleContext& ctx, BlockPos pos, BlockState state, BlockType repla
 void on_neighbor_changed(RuleContext& ctx, BlockPos target, [[maybe_unused]] BlockPos from) {
     const auto s = ctx.block(target);
     switch (s.type()) {
-    case BlockType::redstone_wire: update_wire(ctx, target); break;
-    case BlockType::repeater: check_repeater(ctx, target); break;
+    case BlockType::redstone_wire:
+        if (!can_survive(ctx, target, s)) destroy_block(ctx, target);
+        else update_wire(ctx, target);
+        break;
+    case BlockType::repeater:
+        if (!can_survive(ctx, target, s)) break_unsupported(ctx, target, s);
+        else check_repeater(ctx, target);
+        break;
+    case BlockType::comparator:
+        if (!can_survive(ctx, target, s)) break_unsupported(ctx, target, s);
+        else check_comparator(ctx, target);
+        break;
     case BlockType::redstone_lamp: check_lamp(ctx, target); break;
     case BlockType::piston: case BlockType::sticky_piston: check_piston(ctx, target); break;
     case BlockType::hopper: check_hopper(ctx, target); break;
     case BlockType::water: schedule(ctx, TickList::fluid, target, BlockType::water, 5, 0); break;
-    case BlockType::comparator: check_comparator(ctx, target); break;
     default: break;
-    }
-}
-
-std::uint8_t emitted_power(RuleContext& ctx, BlockPos pos, BlockState s, Direction toward) {
-    switch (s.type()) {
-    case BlockType::comparator: {
-        if (toward != s.facing()) return 0;
-        const auto* be = ctx.peek_block_entity(pos);
-        return be ? be->signal : 0;
-    }
-    case BlockType::lever: return s.flag() ? 15 : 0;
-    case BlockType::redstone_block: return 15;
-    case BlockType::repeater: return s.flag() && toward == s.facing() ? 15 : 0;
-    case BlockType::observer: return s.flag() && toward == contracts::opposite(s.facing()) ? 15 : 0;
-    case BlockType::redstone_wire: return toward != Direction::up ? s.level() : 0;
-    default: return 0;
     }
 }
 

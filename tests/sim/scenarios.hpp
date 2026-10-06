@@ -224,11 +224,15 @@ inline Scenario comparator_chest_scenario() {
                     insert({16, 3, 10}, 1, items::stone, 64),
                     place({15, 2, 10}, blocks::hopper(D::down)), place({16, 2, 10}, blocks::hopper(D::down)),
                     place({16, 0, 10}, blocks::hopper(D::east)), place({17, 0, 10}, blocks::chest()),
+                    // Supports for the components on top.
+                    place({15, 0, 11}, blocks::stone()), place({15, 0, 12}, blocks::stone()), place({15, 0, 13}, blocks::stone()),
+                    place({16, 0, 11}, blocks::stone()), place({17, 0, 11}, blocks::stone()), place({18, 0, 11}, blocks::stone()),
+                    place({17, -1, 9}, blocks::stone()),
                     place({15, 1, 11}, blocks::comparator(D::south)), place({15, 1, 12}, blocks::wire()),
                     place({15, 1, 13}, blocks::wire()), place({15, 1, 14}, blocks::lamp()),
                     place({16, 1, 11}, blocks::comparator(D::south, true)), place({16, 1, 12}, blocks::lamp()),
                     place({17, 1, 11}, blocks::wire()), place({18, 1, 11}, blocks::lever()),
-                    place({17, 0, 11}, blocks::comparator(D::south)), place({17, 0, 12}, blocks::lamp())};
+                    place({17, 0, 9}, blocks::comparator(D::north)), place({17, 0, 8}, blocks::lamp())};
         std::vector<CommandBody> c;
         if (t % 13 == 5) c.push_back(use_lever({18, 1, 11}));
         if (t == 50) c.push_back(use_block({16, 1, 11}));

@@ -16,7 +16,9 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
-constexpr std::uint32_t version = 2; // 2: tickets carry a load radius; 1 is still read
+// 3: hopper block entities carry the tick they last ticked; 2: tickets carry a
+// load radius. Versions 1 and 2 are still read.
+constexpr std::uint32_t version = 3;
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
 
@@ -97,6 +99,7 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
         w.u8(static_cast<std::uint8_t>(be.kind)).varlong(static_cast<std::int64_t>(be.order)).varint(static_cast<std::int32_t>(be.slots.size()));
         for (const auto& st : be.slots) w.u16(st.item).u8(st.count);
         w.u8(be.cooldown).u8(be.signal).i32(static_cast<std::int32_t>(be.moving)).u8(be.progress).u8(be.motion);
+        w.varlong(static_cast<std::int64_t>(be.ticked));
     }
     w.varint(static_cast<std::int32_t>(s.entities.size()));
     for (const auto& e : s.entities) {
@@ -231,6 +234,11 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
         if (!b.get(b.r.u8(), be.cooldown) || !b.get(b.r.u8(), be.signal) || !b.get(b.r.i32(), moving) || !b.get(b.r.u8(), be.progress)
             || !b.get(b.r.u8(), be.motion))
             return false;
+        if (b.version >= 3) {
+            std::int64_t ticked{};
+            if (!b.get(b.r.varlong(), ticked) || ticked < 0) return false;
+            be.ticked = static_cast<gameplay::Tick>(ticked);
+        }
         be.moving = static_cast<std::uint32_t>(moving);
         s.block_entities.push_back({p, std::move(be)});
     }

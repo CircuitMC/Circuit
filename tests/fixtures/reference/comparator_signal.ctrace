@@ -2,7 +2,7 @@ circuit-trace 1
 title Comparator container reading and subtraction
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v5
+harness circuit-reference-rules-v6
 mechanisms comparator hopper redstone_wire redstone_lamp
 area -1 -1 -1 5 0 8
 ticks 12
@@ -64,42 +64,42 @@ slot 1 0 0 7 4 minecraft:stone 64
 change 2 1 0 0 minecraft:comparator[facing=west,mode=compare,powered=false] minecraft:comparator[facing=west,mode=compare,powered=true]
 change 2 2 0 0 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
 change 2 2 0 7 minecraft:comparator[facing=west,mode=subtract,powered=false] minecraft:comparator[facing=west,mode=subtract,powered=true]
-change 2 3 0 7 minecraft:redstone_wire[power=0] minecraft:redstone_wire[power=15]
-change 2 4 0 7 minecraft:redstone_wire[power=0] minecraft:redstone_wire[power=14]
+change 2 3 0 7 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=15,south=none,west=side]
+change 2 4 0 7 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=14,south=none,west=side]
 
 block 3 1 0 0 minecraft:comparator[facing=west,mode=compare,powered=true]
 block 3 2 0 0 minecraft:redstone_lamp[lit=true]
-block 3 3 0 7 minecraft:redstone_wire[power=15]
+block 3 3 0 7 minecraft:redstone_wire[east=side,north=none,power=15,south=none,west=side]
 
 at 4 use 2 0 3
 change 4 2 0 3 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
-change 4 2 0 4 minecraft:redstone_wire[power=0] minecraft:redstone_wire[power=15]
-change 4 2 0 5 minecraft:redstone_wire[power=0] minecraft:redstone_wire[power=14]
-change 4 2 0 6 minecraft:redstone_wire[power=0] minecraft:redstone_wire[power=13]
+change 4 2 0 4 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 4 2 0 5 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=14,south=side,west=none]
+change 4 2 0 6 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none]
 
-change 5 3 0 7 minecraft:redstone_wire[power=15] minecraft:redstone_wire[power=13]
-change 5 4 0 7 minecraft:redstone_wire[power=14] minecraft:redstone_wire[power=12]
-change 5 3 0 7 minecraft:redstone_wire[power=13] minecraft:redstone_wire[power=11]
-change 5 4 0 7 minecraft:redstone_wire[power=12] minecraft:redstone_wire[power=10]
-change 5 3 0 7 minecraft:redstone_wire[power=11] minecraft:redstone_wire[power=9]
-change 5 4 0 7 minecraft:redstone_wire[power=10] minecraft:redstone_wire[power=8]
-change 5 3 0 7 minecraft:redstone_wire[power=9] minecraft:redstone_wire[power=7]
-change 5 4 0 7 minecraft:redstone_wire[power=8] minecraft:redstone_wire[power=6]
-change 5 3 0 7 minecraft:redstone_wire[power=7] minecraft:redstone_wire[power=5]
-change 5 4 0 7 minecraft:redstone_wire[power=6] minecraft:redstone_wire[power=4]
-change 5 3 0 7 minecraft:redstone_wire[power=5] minecraft:redstone_wire[power=3]
-change 5 4 0 7 minecraft:redstone_wire[power=4] minecraft:redstone_wire[power=2]
-change 5 3 0 7 minecraft:redstone_wire[power=3] minecraft:redstone_wire[power=2]
-change 5 4 0 7 minecraft:redstone_wire[power=2] minecraft:redstone_wire[power=1]
+change 5 3 0 7 minecraft:redstone_wire[east=side,north=none,power=15,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=13,south=none,west=side]
+change 5 4 0 7 minecraft:redstone_wire[east=side,north=none,power=14,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=12,south=none,west=side]
+change 5 3 0 7 minecraft:redstone_wire[east=side,north=none,power=13,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=11,south=none,west=side]
+change 5 4 0 7 minecraft:redstone_wire[east=side,north=none,power=12,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=10,south=none,west=side]
+change 5 3 0 7 minecraft:redstone_wire[east=side,north=none,power=11,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=9,south=none,west=side]
+change 5 4 0 7 minecraft:redstone_wire[east=side,north=none,power=10,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=8,south=none,west=side]
+change 5 3 0 7 minecraft:redstone_wire[east=side,north=none,power=9,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=7,south=none,west=side]
+change 5 4 0 7 minecraft:redstone_wire[east=side,north=none,power=8,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=6,south=none,west=side]
+change 5 3 0 7 minecraft:redstone_wire[east=side,north=none,power=7,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side]
+change 5 4 0 7 minecraft:redstone_wire[east=side,north=none,power=6,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=4,south=none,west=side]
+change 5 3 0 7 minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side]
+change 5 4 0 7 minecraft:redstone_wire[east=side,north=none,power=4,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=2,south=none,west=side]
+change 5 3 0 7 minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=2,south=none,west=side]
+change 5 4 0 7 minecraft:redstone_wire[east=side,north=none,power=2,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side]
 
-block 6 2 0 6 minecraft:redstone_wire[power=13]
-block 6 3 0 7 minecraft:redstone_wire[power=2]
-block 6 4 0 7 minecraft:redstone_wire[power=1]
+block 6 2 0 6 minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none]
+block 6 3 0 7 minecraft:redstone_wire[east=side,north=none,power=2,south=none,west=side]
+block 6 4 0 7 minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side]
 
 at 8 use 2 0 7
 change 8 2 0 7 minecraft:comparator[facing=west,mode=subtract,powered=true] minecraft:comparator[facing=west,mode=compare,powered=true]
-change 8 3 0 7 minecraft:redstone_wire[power=2] minecraft:redstone_wire[power=15]
-change 8 4 0 7 minecraft:redstone_wire[power=1] minecraft:redstone_wire[power=14]
+change 8 3 0 7 minecraft:redstone_wire[east=side,north=none,power=2,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=15,south=none,west=side]
+change 8 4 0 7 minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=14,south=none,west=side]
 
 block 10 2 0 7 minecraft:comparator[facing=west,mode=compare,powered=true]
-block 10 3 0 7 minecraft:redstone_wire[power=15]
+block 10 3 0 7 minecraft:redstone_wire[east=side,north=none,power=15,south=none,west=side]

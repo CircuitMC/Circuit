@@ -8,9 +8,8 @@
 #include <unordered_map>
 
 // Translation of Circuit world state to wire data: block-state ids of the
-// global palette and chunk packets. Display-only properties that the reference
-// rules do not model (dust connections, lever mounting) are derived here and
-// never feed back into the simulation.
+// global palette and chunk packets. Every displayed property is part of the
+// rule state (dust shapes, lever mounting, repeater locks).
 namespace circuit::server {
 
 using gameplay::BlockState;
@@ -22,8 +21,6 @@ public:
     BlockPalette(const protocol::ContentTables& tables, const evidence::ContentMapping& mapping);
 
     [[nodiscard]] std::int32_t wire(BlockState state) const;
-    // Dust with display connections: each value is 0 up, 1 side, 2 none.
-    [[nodiscard]] std::int32_t dust(std::uint8_t power, int east, int north, int south, int west) const;
     // Reference state for a target-version state id, when the rules model it.
     [[nodiscard]] std::optional<BlockState> reference(std::int32_t wire_id) const;
     [[nodiscard]] std::size_t size() const noexcept { return to_wire_.size(); }
@@ -31,14 +28,12 @@ public:
 private:
     std::unordered_map<std::uint32_t, std::int32_t> to_wire_;
     std::unordered_map<std::int32_t, BlockState> from_wire_;
-    std::int32_t dust_base_{};
 };
 
 // Block lookup outside a column (for display properties at column edges).
 using NeighborLookup = std::function<BlockState(contracts::BlockPos)>;
 
-// Wire id of the block at `pos`, with display properties derived from its
-// neighbors.
+// Wire id of the block at `pos`.
 std::int32_t display_state(const BlockPalette& palette, const NeighborLookup& at, contracts::BlockPos pos, BlockState s);
 
 struct WorldShape {

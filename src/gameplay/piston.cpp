@@ -155,7 +155,7 @@ public:
         for (auto p : hash_order(vacated, structure.moved.size())) write(p, blocks::air());
     }
     void finish() {
-        for (auto p : placed_) on_placed(ctx_, p, ctx_.block(p), BlockType::moving_piston);
+        for (auto p : placed_) on_placed(ctx_, p, ctx_.block(p), blocks::moving_piston(Direction::down, false));
         for (auto p : changed_) notify_neighbors(ctx_, p);
     }
 
@@ -225,18 +225,14 @@ void retract(RuleContext& ctx, BlockPos pos, BlockState s) {
 } // namespace
 
 bool piston_powered(RuleContext& ctx, BlockPos pos, Direction facing) {
-    for (auto d : contracts::all_directions) {
-        if (d == facing) continue;
-        const auto n = pos.relative(d);
-        if (emitted_power(ctx, n, ctx.block(n), contracts::opposite(d)) > 0) return true;
-    }
+    constexpr std::array<Direction, 6> order{Direction::down, Direction::up, Direction::north,
+                                             Direction::south, Direction::west, Direction::east};
+    for (auto d : order)
+        if (d != facing && signal_from(ctx, pos.relative(d), contracts::opposite(d)) > 0) return true;
     // Quasi-connectivity: power reaching the cell above also activates the piston.
     const auto above = pos.relative(Direction::up);
-    for (auto d : contracts::all_directions) {
-        const auto n = above.relative(d);
-        if (n == pos) continue;
-        if (emitted_power(ctx, n, ctx.block(n), contracts::opposite(d)) > 0) return true;
-    }
+    for (auto d : order)
+        if (d != Direction::down && signal_from(ctx, above.relative(d), contracts::opposite(d)) > 0) return true;
     return false;
 }
 

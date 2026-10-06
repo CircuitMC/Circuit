@@ -1,0 +1,75 @@
+circuit-trace 1
+# Skeleton: one hopper pushes into an empty hopper, which waits 8 game ticks before passing the
+# item on, or 7 when it already ticked in that game tick (it was created first).
+title A hopper feeding an empty hopper sets its cooldown
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms hopper block_entity_order
+area -1 -1 -1 3 1 4
+ticks 24
+changes ordered
+
+at 0 set 0 -1 0 minecraft:stone
+at 0 set 0 -1 3 minecraft:stone
+at 0 set 1 -1 0 minecraft:stone
+at 0 set 1 -1 3 minecraft:stone
+at 0 set 2 -1 0 minecraft:stone
+at 0 set 2 -1 3 minecraft:stone
+at 0 set 1 0 0 minecraft:hopper[enabled=true,facing=east]
+at 0 set 0 0 0 minecraft:hopper[enabled=true,facing=east]
+at 0 set 2 0 0 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 0 set 0 0 3 minecraft:hopper[enabled=true,facing=east]
+at 0 set 1 0 3 minecraft:hopper[enabled=true,facing=east]
+at 0 set 2 0 3 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 1 insert 0 0 0 0 minecraft:iron_ingot 1
+at 1 insert 0 0 3 0 minecraft:iron_ingot 1
+
+slot 1 1 0 0 0 ?
+slot 1 2 0 0 0 ?
+slot 1 1 0 3 0 ?
+slot 1 2 0 3 0 ?
+slot 2 1 0 0 0 ?
+slot 2 2 0 0 0 ?
+slot 2 1 0 3 0 ?
+slot 2 2 0 3 0 ?
+slot 3 1 0 0 0 ?
+slot 3 2 0 0 0 ?
+slot 3 1 0 3 0 ?
+slot 3 2 0 3 0 ?
+slot 4 1 0 0 0 ?
+slot 4 2 0 0 0 ?
+slot 4 1 0 3 0 ?
+slot 4 2 0 3 0 ?
+slot 5 1 0 0 0 ?
+slot 5 2 0 0 0 ?
+slot 5 1 0 3 0 ?
+slot 5 2 0 3 0 ?
+slot 6 1 0 0 0 ?
+slot 6 2 0 0 0 ?
+slot 6 1 0 3 0 ?
+slot 6 2 0 3 0 ?
+slot 7 1 0 0 0 ?
+slot 7 2 0 0 0 ?
+slot 7 1 0 3 0 ?
+slot 7 2 0 3 0 ?
+slot 8 1 0 0 0 ?
+slot 8 2 0 0 0 ?
+slot 8 1 0 3 0 ?
+slot 8 2 0 3 0 ?
+slot 9 1 0 0 0 ?
+slot 9 2 0 0 0 ?
+slot 9 1 0 3 0 ?
+slot 9 2 0 3 0 ?
+slot 10 1 0 0 0 ?
+slot 10 2 0 0 0 ?
+slot 10 1 0 3 0 ?
+slot 10 2 0 3 0 ?
+slot 11 1 0 0 0 ?
+slot 11 2 0 0 0 ?
+slot 11 1 0 3 0 ?
+slot 11 2 0 3 0 ?
+slot 12 1 0 0 0 ?
+slot 12 2 0 0 0 ?
+slot 12 1 0 3 0 ?
+slot 12 2 0 3 0 ?

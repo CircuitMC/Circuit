@@ -138,14 +138,12 @@ int main(int argc, char** argv) {
         const auto* m = ContentMapping::for_game_version("1.21.8");
         require(m && !ContentMapping::for_game_version("1.20.4"), "mapping availability");
         unsigned states = 0;
-        for (std::uint32_t raw = 0; raw < (1u << 18); ++raw) {
-            const auto s = circuit::gameplay::BlockState::decode(raw);
-            if (!s) continue;
+        circuit::gameplay::for_each_block_state([&](circuit::gameplay::BlockState s) {
             ++states;
-            const auto back = m->block(m->notation(*s));
-            require(back && *back == *s, std::format("round trip {} via {}", raw, m->notation(*s)));
-        }
-        require(states > 100, "enumerated registry");
+            const auto back = m->block(m->notation(s));
+            require(back && *back == s, std::format("round trip {} via {}", s.raw(), m->notation(s)));
+        });
+        require(states > 1296, "enumerated registry, with every dust shape");
         for (std::uint16_t i = 1; i <= circuit::gameplay::items::max_id; ++i)
             require(m->item(m->item_name(i)) == i, "item round trip");
     });
@@ -156,7 +154,7 @@ int main(int argc, char** argv) {
             const auto r = m->block(s);
             require(!r && r.error().find("unsupported") != std::string::npos, std::format("{} -> {}", s, r ? "ok" : r.error()));
         };
-        unsupported("minecraft:repeater[delay=1,facing=west,locked=true,powered=false]");
+        require(m->block("minecraft:repeater[delay=1,facing=west,locked=true,powered=false]").has_value(), "locked repeaters are modeled");
         unsupported("minecraft:chest[facing=north,type=single,waterlogged=true]");
         unsupported("minecraft:trapped_chest[facing=north,type=single,waterlogged=false]");
         require(m->block("minecraft:chest[facing=north,type=left,waterlogged=false]")
@@ -169,8 +167,10 @@ int main(int argc, char** argv) {
         require(!m->block("minecraft:stone[snowy=true]").has_value(), "unknown property");
         require(!m->block("minecraft:repeater[delay=1,facing=west]").has_value(), "missing modeled property");
         require(!m->block("minecraft:repeater[delay=5,facing=west,powered=false]").has_value(), "range");
+        using circuit::gameplay::WireSide;
         require(m->block("minecraft:redstone_wire[east=side,north=none,power=7,south=up,west=none]")
-                    == circuit::gameplay::blocks::wire(7), "dust shape is ignored");
+                    == circuit::gameplay::blocks::wire(7, WireSide::none, WireSide::up, WireSide::none, WireSide::side),
+                "dust shape is modeled");
         require(m->block("minecraft:repeater[delay=2,facing=west,locked=false,powered=true]")
                     == circuit::gameplay::blocks::repeater(circuit::contracts::Direction::east, 2, true),
                 "repeater facing names the input side (unverified convention)");
@@ -191,7 +191,7 @@ int main(int argc, char** argv) {
         require(text == write_fixture(*by_oracle), "engine and oracle record identical fixtures");
         const auto recorded = parse(text);
         require(recorded.source == circuit::contracts::EvidenceSource::circuit_reference
-                    && recorded.harness == "circuit-reference-rules-v5", "provenance");
+                    && recorded.harness == "circuit-reference-rules-v6", "provenance");
         require(!recorded.recorded_changes.empty(), "changes recorded");
         for (const auto& exec : {engine_executor(1), engine_executor(8), oracle_executor()}) {
             const auto r = evaluate_fixture(recorded, exec);
