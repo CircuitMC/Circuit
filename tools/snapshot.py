@@ -8,7 +8,7 @@ from pathlib import Path
 import tarfile
 
 ROOT = Path(__file__).resolve().parents[1]
-ROOT_FILES = ("xmake.lua", "LICENSE", "LICENSING.md", "README.md", "TODO.md", ".gitignore", "AGENTS.md")
+ROOT_FILES = ("xmake.lua", "LICENSE", "LICENSING.md", "THIRD_PARTY_NOTICES.md", "README.md", "TODO.md", ".gitignore", "AGENTS.md")
 SOURCE_DIRS = ("app", "include", "src", "examples", "modules", "tests", "tools", "docs", "legal")
 SUFFIXES = {".h", ".hpp", ".c", ".cpp", ".cc", ".cxx", ".java", ".lua", ".md", ".sh", ".py"}
 

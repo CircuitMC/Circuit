@@ -52,6 +52,20 @@ target("circuit_plugins")
     if is_plat("linux") then add_syslinks("dl", {public = true}) end
 target_end()
 
+-- Java Edition wire protocol: data types, NBT, framing and packet ids.
+target("circuit_protocol")
+    set_kind("static")
+    add_files("src/protocol/*.cpp")
+    add_syslinks("z", {public = true})
+target_end()
+
+-- Identity providers: offline identities now, session verification later.
+target("circuit_auth")
+    set_kind("static")
+    add_files("src/auth/*.cpp")
+    add_syslinks("ssl", "crypto", {public = true})
+target_end()
+
 -- circuit-trace fixtures: format, content mapping, evaluation and recording.
 target("circuit_evidence")
     set_kind("static")
@@ -62,7 +76,7 @@ target_end()
 target("circuit-server")
     set_kind("binary")
     add_files("app/*.cpp")
-    add_deps("circuit_runtime", "circuit_plugins", "circuit_evidence")
+    add_deps("circuit_runtime", "circuit_plugins", "circuit_evidence", "circuit_server")
 target_end()
 
 target("technical_tools")
@@ -143,6 +157,27 @@ target("evidence_tests")
     on_run(function (target)
         os.execv(target:targetfile(), {path.join(os.projectdir(), "tests", "fixtures")})
     end)
+target_end()
+
+-- Network server: sessions, version adapter and the authoritative game loop.
+target("circuit_server")
+    set_kind("static")
+    add_files("src/server/*.cpp")
+    add_deps("circuit_protocol", "circuit_auth", "circuit_evidence")
+target_end()
+
+target("server_tests")
+    set_kind("binary")
+    set_default(false)
+    add_files("tests/server/*.cpp")
+    add_deps("circuit_server")
+target_end()
+
+target("protocol_tests")
+    set_kind("binary")
+    set_default(false)
+    add_files("tests/protocol/*.cpp")
+    add_deps("circuit_protocol")
 target_end()
 
 target("control_tests")

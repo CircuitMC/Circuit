@@ -17,7 +17,7 @@ Part I is complete for its declared scope on Java Edition 1.21.8. The reference 
 
 ## Part II — Integration and additional capabilities
 
-- [ ] **M4 — Playable vertical slice:** add the initial version's connection flow, identity providers, authoritative actions, and world interaction.
+- [x] **M4 — Playable vertical slice:** add the initial version's connection flow, identity providers, authoritative actions, and world interaction.
 - [ ] **M5 — Persistence:** add consistent checkpoints, crash recovery, and vanilla import/export within a documented compatibility range.
 - [ ] **M6 — Extension ecosystem:** complete native plugin/mod capabilities, the Circuit Java bridge, and technical tools exposed through extension APIs.
 - [ ] **M8 — Optimization and version expansion:** measure storage and scheduling improvements, complete a second version bundle, and prepare a release compatibility matrix.
@@ -53,8 +53,8 @@ Part I is complete for its declared scope on Java Edition 1.21.8. The reference 
 - [ ] Compare palette encoding and compression options using representative worlds.
 - [ ] Store sparse changes only when the exact baseline can be verified or retained.
 - [ ] Validate movement, reach, cooldowns, inventory conservation, and resource consumption using authoritative version rules.
-- [ ] Reject malformed, non-finite, overflowing, replayed, and out-of-state inputs.
-- [ ] Keep identity verification separate from protocol and simulation.
+- [x] Reject malformed, non-finite, overflowing, replayed, and out-of-state inputs.
+- [x] Keep identity verification separate from protocol and simulation.
 
 ## Performance and parallelism
 

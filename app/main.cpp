@@ -3,6 +3,7 @@
 #include <circuit/protocol.hpp>
 #include <circuit/runtime/demo_kernel.hpp>
 #include "fixtures.hpp"
+#include "serve.hpp"
 #include "simulate.hpp"
 #include <asio/io_context.hpp>
 #include <asio/signal_set.hpp>
@@ -12,6 +13,7 @@
 #include <chrono>
 #include <csignal>
 #include <iostream>
+#include <optional>
 #include <stdexcept>
 #include <string>
 
@@ -39,6 +41,7 @@ void usage() {
         "  --record-fixture <skeleton> --output <file>\n"
         "  --profile-fixture <file> [--ticks N] [--workers 1..64]\n"
         "  --compatibility [--game-version java-1.21.8]\n"
+        "  --serve [--config <file>] [--port N] [--offline] [--workers 1..64]\n"
         "  --demo [--game-version java-1.21.8|java-1.20.4]\n"
         "         [--workers 1..64] [--ticks 1..1000000] [--plugin <shared-library>]\n"
         "  --list-versions | --version | --help\n";
@@ -47,7 +50,9 @@ void usage() {
 int main(int argc, char** argv) {
     try {
         unsigned workers = 4, ticks = 20;
-        bool demo = false, simulate = false, ticks_given = false, compatibility = false;
+        bool demo = false, simulate = false, ticks_given = false, compatibility = false, serve = false, offline = false;
+        std::string config_path;
+        std::optional<std::uint16_t> port;
         circuit::app::SimulateOptions simulation;
         std::vector<std::string> fixtures;
         std::string record_fixture, fixture_output, profile;
@@ -82,6 +87,10 @@ int main(int argc, char** argv) {
             else if (arg == "--output") fixture_output = value();
             else if (arg == "--profile-fixture") profile = value();
             else if (arg == "--compatibility") compatibility = true;
+            else if (arg == "--serve") serve = true;
+            else if (arg == "--config") config_path = value();
+            else if (arg == "--port") port = static_cast<std::uint16_t>(number(value(), 0, 65535));
+            else if (arg == "--offline") offline = true;
             else if (arg == "--game-version") selected = value();
             else if (arg == "--plugin") libraries.emplace_back(value());
             else throw std::invalid_argument("unknown option: " + std::string(arg));
@@ -96,6 +105,18 @@ int main(int argc, char** argv) {
         if (!fixtures.empty()) return circuit::app::check_fixtures(fixtures, workers);
         if (!profile.empty()) return circuit::app::profile_fixture(profile, ticks_given ? ticks : 600, workers);
         if (compatibility) return circuit::app::print_compatibility(selected);
+        if (serve) {
+            circuit::server::ServerConfig config;
+            if (!config_path.empty()) {
+                auto loaded = circuit::server::load_config(config_path);
+                if (!loaded) throw std::invalid_argument(loaded.error());
+                config = std::move(*loaded);
+            }
+            if (port) config.port = *port;
+            if (offline) config.online_mode = false;
+            config.workers = workers;
+            return circuit::app::serve(std::move(config));
+        }
         if (simulate) {
             simulation.game_version = selected;
             simulation.workers = workers;

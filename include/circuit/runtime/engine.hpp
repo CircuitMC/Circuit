@@ -6,6 +6,7 @@
 #include <circuit/gameplay/world_types.hpp>
 #include <circuit/runtime/job_runner.hpp>
 #include <array>
+#include <functional>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -34,6 +35,12 @@ struct EngineOptions {
     std::uint64_t layout_seed{1};
     std::uint32_t split_interval{20};     // ticks between split passes
     std::uint32_t quiet_ticks{40};        // interaction-free ticks before a split
+    // Fills the blocks of a column created for the first time (not a reloaded
+    // one): `blocks(section)` yields a section's 4096 states, y-major. It must
+    // be deterministic, since replays and checkpoints depend on it. Empty:
+    // new columns are air.
+    std::function<void(contracts::ChunkPos, const std::function<std::array<gameplay::BlockState, 4096>&(std::size_t)>&)>
+        generator;
     // Deliberately unsafe test mode that skips ownership checks. It exists to
     // show that differential exploration detects missing isolation, and is
     // only accepted with a non-concurrent runner.
@@ -55,6 +62,19 @@ struct EngineStats {
 };
 
 class Engine;
+
+// Copy of one loaded chunk column's state between ticks. Sections are shared
+// with the engine copy-on-write, so taking a snapshot is cheap and later
+// writes do not change it; it may outlive the tick and move to other threads.
+struct ColumnSnapshot {
+    using Blocks = std::array<gameplay::BlockState, 4096>; // y-major, then z, then x
+    contracts::ChunkPos pos;
+    contracts::Generation generation;
+    gameplay::ChunkLevel level{};
+    std::vector<std::shared_ptr<const Blocks>> sections; // bottom to top; nullptr: all air
+    std::vector<std::pair<contracts::BlockPos, gameplay::BlockEntity>> block_entities;
+    std::vector<gameplay::Entity> entities;
+};
 
 // Immutable query view of the state committed at the end of a tick. It
 // reports stale_view after the engine advances; it must not outlive the engine.
@@ -90,6 +110,11 @@ public:
     [[nodiscard]] std::size_t region_count() const noexcept;
     [[nodiscard]] std::size_t loaded_chunks() const noexcept;
     [[nodiscard]] WorldView view() const noexcept;
+    // Snapshot of a loaded column; nullopt when the column is not loaded.
+    // Must not be called while advance() runs.
+    [[nodiscard]] std::optional<ColumnSnapshot> column(contracts::ChunkPos pos) const;
+    // Loaded columns and their levels, in coordinate order.
+    [[nodiscard]] std::vector<std::pair<contracts::ChunkPos, gameplay::ChunkLevel>> loaded_columns() const;
 
     struct Impl;
 

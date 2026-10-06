@@ -1,0 +1,40 @@
+# Third-party notices
+
+Circuit is licensed under AGPL-3.0-only (see `LICENSE`). It uses or includes material from the following third parties, which keep their own terms.
+
+| Component | Use | License |
+| --- | --- | --- |
+| Standalone Asio 1.34.2 | Networking and executors (headers, not included in this repository) | Boost Software License 1.0 |
+| zlib | Packet compression (system library) | zlib License |
+| OpenSSL 3 | Protocol encryption, TLS for session verification (system library) | Apache License 2.0 |
+| PrismarineJS minecraft-data, commit `095709f3ad62b043069141dc127fc80ef6cd10fa` | Block-state, item and entity-type tables in `src/protocol/content_*.cpp`, compiled by `tools/compile_content_tables.py` | MIT (below) |
+
+Packet ids, registry entries and protocol field layouts were compiled from the public protocol documentation on minecraft.wiki, at the revisions cited in the source files and in `docs/SERVER.md`. Circuit takes identifiers and numeric facts from those pages and cites them. It does not copy their prose; the page texts remain under their own license.
+
+Minecraft is a trademark of Mojang AB. Circuit is not affiliated with Mojang or Microsoft and contains no game code or assets.
+
+## PrismarineJS minecraft-data (MIT)
+
+The minecraft-data README states its license as MIT. The repository has no separate license file and names no copyright holder; the notice below names its contributors.
+
+```text
+Copyright (c) the PrismarineJS minecraft-data contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```

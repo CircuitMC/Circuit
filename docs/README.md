@@ -4,6 +4,7 @@
 | --- | --- |
 | [Development guide](DEVELOPMENT.md) | Build, validation, repository layout, and contribution boundaries |
 | [Headless simulation core](SIMULATION.md) | Contracts, reference rules, region-parallel runtime, verification, and limitations |
+| [Network server](SERVER.md) | Running and configuring the server, identity, protocol data sources, limits and unsupported features |
 | [Trace fixture format](TRACE_FORMAT.md) | circuit-trace v1 fixtures, content mapping, recording and evaluation |
 | [Parallel reasoning models](PARALLEL_MODELS.md) | Executable concurrency cases, assumptions, and open questions |
 | [Native plugin API](PLUGIN_API.md) | Implemented interfaces, lifetime rules, and ABI constraints |

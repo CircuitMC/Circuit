@@ -21,7 +21,9 @@ The headless Part I core is complete for its declared scope. It provides:
 
 The rules are checked against 20 traces recorded on an unmodified Java Edition 1.21.8 server. Eight mechanisms claim exact behavior, including scheduled-tick order, block-event order, the update-chain limit, observers and double chests. The others declare their deviations, such as no power through solid blocks. See [the simulation core](docs/SIMULATION.md) for the compatibility table and coverage limits.
 
-The framework also provides Linux native shared-library plugins, numerical validation helpers, interface scaffolds, and 13 abstract concurrency models. Minecraft client login, playable worlds and persistence are not yet supported.
+The network server runs a playable creative-mode world for the Java Edition 1.21.8 client on top of the same engine. It supports offline identities and online mode (encrypted, verified by the session service, refused when verification fails), and the real client is tested against it. Persistence, survival gameplay and container screens are not yet supported; see [the network server](docs/SERVER.md).
+
+The framework also provides Linux native shared-library plugins, numerical validation helpers, interface scaffolds, and 13 abstract concurrency models.
 
 ## Build
 
@@ -31,6 +33,7 @@ Requires Linux, xmake 3.0+, a C++23 compiler with `std::expected` (GCC 13 verifi
 xmake f -m debug -y
 xmake build -y --all
 xmake run circuit-server --simulate --ticks 300 --workers 4
+xmake run circuit-server --serve --offline --port 25565
 xmake run simulation_tests
 ```
 

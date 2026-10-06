@@ -1,0 +1,209 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+#include "registries.hpp"
+
+namespace circuit::server {
+namespace nbt = protocol::nbt;
+namespace {
+// Registry entries for protocol 772 (Java Edition 1.21.8), hand-compiled from
+// public documentation:
+// - dimension types: minecraft.wiki "Dimension type", revision 3019989;
+// - biomes: minecraft.wiki "Biome" (Biome IDs) and PrismarineJS minecraft-data
+//   1.21.8 biomes.json (commit 095709f3), which agree;
+// - damage types: minecraft.wiki "Damage type", revision 3162861;
+// - chat types: minecraft.wiki "Chat type", revision 3032067;
+// - mob and painting variants: the pages cited at each registry. The 1.21.8
+//   client requires these registries to be non-empty.
+// Entries are sent without data to clients that share the "minecraft:core"
+// pack. Their order defines the numeric ids; the first entry of each registry
+// is the one the server uses.
+const std::vector<RegistryEntries> registries_772{
+    {"minecraft:dimension_type",
+     {
+        "minecraft:overworld", "minecraft:overworld_caves", "minecraft:the_nether", "minecraft:the_end",
+     }},
+    {"minecraft:worldgen/biome",
+     {
+        "minecraft:plains", "minecraft:badlands", "minecraft:bamboo_jungle", "minecraft:basalt_deltas",
+        "minecraft:beach", "minecraft:birch_forest", "minecraft:cherry_grove", "minecraft:cold_ocean",
+        "minecraft:crimson_forest", "minecraft:dark_forest", "minecraft:deep_cold_ocean", "minecraft:deep_dark",
+        "minecraft:deep_frozen_ocean", "minecraft:deep_lukewarm_ocean", "minecraft:deep_ocean", "minecraft:desert",
+        "minecraft:dripstone_caves", "minecraft:end_barrens", "minecraft:end_highlands", "minecraft:end_midlands",
+        "minecraft:eroded_badlands", "minecraft:flower_forest", "minecraft:forest", "minecraft:frozen_ocean",
+        "minecraft:frozen_peaks", "minecraft:frozen_river", "minecraft:grove", "minecraft:ice_spikes",
+        "minecraft:jagged_peaks", "minecraft:jungle", "minecraft:lukewarm_ocean", "minecraft:lush_caves",
+        "minecraft:mangrove_swamp", "minecraft:meadow", "minecraft:mushroom_fields", "minecraft:nether_wastes",
+        "minecraft:ocean", "minecraft:old_growth_birch_forest", "minecraft:old_growth_pine_taiga",
+        "minecraft:old_growth_spruce_taiga", "minecraft:pale_garden", "minecraft:river", "minecraft:savanna",
+        "minecraft:savanna_plateau", "minecraft:small_end_islands", "minecraft:snowy_beach", "minecraft:snowy_plains",
+        "minecraft:snowy_slopes", "minecraft:snowy_taiga", "minecraft:soul_sand_valley", "minecraft:sparse_jungle",
+        "minecraft:stony_peaks", "minecraft:stony_shore", "minecraft:sunflower_plains", "minecraft:swamp",
+        "minecraft:taiga", "minecraft:the_end", "minecraft:the_void", "minecraft:warm_ocean",
+        "minecraft:warped_forest", "minecraft:windswept_forest", "minecraft:windswept_gravelly_hills",
+        "minecraft:windswept_hills", "minecraft:windswept_savanna", "minecraft:wooded_badlands",
+     }},
+    {"minecraft:damage_type",
+     {
+        "minecraft:arrow", "minecraft:bad_respawn_point", "minecraft:cactus", "minecraft:campfire",
+        "minecraft:cramming", "minecraft:dragon_breath", "minecraft:drown", "minecraft:dry_out",
+        "minecraft:ender_pearl", "minecraft:explosion", "minecraft:fall", "minecraft:falling_anvil",
+        "minecraft:falling_block", "minecraft:falling_stalactite", "minecraft:fireball", "minecraft:fireworks",
+        "minecraft:fly_into_wall", "minecraft:freeze", "minecraft:generic", "minecraft:generic_kill",
+        "minecraft:hot_floor", "minecraft:in_fire", "minecraft:in_wall", "minecraft:indirect_magic", "minecraft:lava",
+        "minecraft:lightning_bolt", "minecraft:mace_smash", "minecraft:magic", "minecraft:mob_attack",
+        "minecraft:mob_attack_no_aggro", "minecraft:mob_projectile", "minecraft:on_fire", "minecraft:out_of_world",
+        "minecraft:outside_border", "minecraft:player_attack", "minecraft:player_explosion", "minecraft:sonic_boom",
+        "minecraft:spit", "minecraft:stalagmite", "minecraft:starve", "minecraft:sting", "minecraft:sweet_berry_bush",
+        "minecraft:thorns", "minecraft:thrown", "minecraft:trident", "minecraft:unattributed_fireball",
+        "minecraft:wind_charge", "minecraft:wither", "minecraft:wither_skull",
+     }},
+    {"minecraft:chat_type",
+     {
+        "minecraft:chat", "minecraft:emote_command", "minecraft:msg_command_incoming",
+        "minecraft:msg_command_outgoing", "minecraft:say_command", "minecraft:team_msg_command_incoming",
+        "minecraft:team_msg_command_outgoing",
+     }},
+    // minecraft.wiki "Cat" revision 3166263
+    {"minecraft:cat_variant",
+     {
+        "minecraft:all_black", "minecraft:black", "minecraft:british_shorthair", "minecraft:calico",
+        "minecraft:jellie", "minecraft:persian", "minecraft:ragdoll", "minecraft:red", "minecraft:siamese",
+        "minecraft:tabby", "minecraft:white",
+     }},
+    // minecraft.wiki "Chicken" revision 3170487 (temperate, warm and cold chickens)
+    {"minecraft:chicken_variant",
+     {
+        "minecraft:temperate", "minecraft:warm", "minecraft:cold",
+     }},
+    // minecraft.wiki "Cow" revision 3166539
+    {"minecraft:cow_variant",
+     {
+        "minecraft:temperate", "minecraft:warm", "minecraft:cold",
+     }},
+    // minecraft.wiki "Frog" revision 3166353
+    {"minecraft:frog_variant",
+     {
+        "minecraft:temperate", "minecraft:warm", "minecraft:cold",
+     }},
+    // minecraft.wiki "Painting" (Canvases) revision 3164308
+    {"minecraft:painting_variant",
+     {
+        "minecraft:kebab", "minecraft:aztec", "minecraft:alban", "minecraft:aztec2", "minecraft:bomb",
+        "minecraft:plant", "minecraft:wasteland", "minecraft:meditative", "minecraft:wanderer", "minecraft:graham",
+        "minecraft:prairie_ride", "minecraft:pool", "minecraft:courbet", "minecraft:sunset", "minecraft:sea",
+        "minecraft:creebet", "minecraft:match", "minecraft:bust", "minecraft:stage", "minecraft:void",
+        "minecraft:skull_and_roses", "minecraft:wither", "minecraft:baroque", "minecraft:humble", "minecraft:bouquet",
+        "minecraft:cavebird", "minecraft:cotan", "minecraft:endboss", "minecraft:fern", "minecraft:owlemons",
+        "minecraft:sunflowers", "minecraft:tides", "minecraft:dennis", "minecraft:backyard", "minecraft:pond",
+        "minecraft:fighters", "minecraft:changing", "minecraft:finding", "minecraft:lowmist", "minecraft:passage",
+        "minecraft:skeleton", "minecraft:donkey_kong", "minecraft:pointer", "minecraft:pigscene",
+        "minecraft:burning_skull", "minecraft:orb", "minecraft:unpacked",
+     }},
+    // minecraft.wiki "Pig" revision 3159133
+    {"minecraft:pig_variant",
+     {
+        "minecraft:temperate", "minecraft:warm", "minecraft:cold",
+     }},
+    // minecraft.wiki "Wolf" (Sound Variants) revision 3171446
+    {"minecraft:wolf_sound_variant",
+     {
+        "minecraft:classic", "minecraft:angry", "minecraft:big", "minecraft:cute", "minecraft:grumpy",
+        "minecraft:puglin", "minecraft:sad",
+     }},
+    // minecraft.wiki "Wolf" (Variants) revision 3171446
+    {"minecraft:wolf_variant",
+     {
+        "minecraft:pale", "minecraft:ashen", "minecraft:black", "minecraft:chestnut", "minecraft:rusty",
+        "minecraft:snowy", "minecraft:spotted", "minecraft:striped", "minecraft:woods",
+     }},
+};
+
+std::vector<RegistryData> data_772() {
+    // Overworld column of minecraft.wiki "Dimension type" (revision 3019989).
+    auto overworld = nbt::Tag::compound();
+    overworld.set("ultrawarm", nbt::Tag::boolean(false));
+    overworld.set("natural", nbt::Tag::boolean(true));
+    overworld.set("piglin_safe", nbt::Tag::boolean(false));
+    overworld.set("respawn_anchor_works", nbt::Tag::boolean(false));
+    overworld.set("bed_works", nbt::Tag::boolean(true));
+    overworld.set("has_raids", nbt::Tag::boolean(true));
+    overworld.set("has_skylight", nbt::Tag::boolean(true));
+    overworld.set("has_ceiling", nbt::Tag::boolean(false));
+    overworld.set("coordinate_scale", nbt::Tag::double_(1.0));
+    overworld.set("ambient_light", nbt::Tag::float_(0.0f));
+    overworld.set("min_y", nbt::Tag::int_(-64));
+    overworld.set("height", nbt::Tag::int_(384));
+    overworld.set("logical_height", nbt::Tag::int_(384));
+    overworld.set("cloud_height", nbt::Tag::int_(192));
+    auto light = nbt::Tag::compound();
+    light.set("type", nbt::Tag::string("minecraft:uniform"));
+    light.set("min_inclusive", nbt::Tag::int_(0));
+    light.set("max_inclusive", nbt::Tag::int_(7));
+    overworld.set("monster_spawn_light_level", std::move(light));
+    overworld.set("monster_spawn_block_light_limit", nbt::Tag::int_(0));
+    overworld.set("infiniburn", nbt::Tag::string("#minecraft:infiniburn_overworld"));
+    overworld.set("effects", nbt::Tag::string("minecraft:overworld"));
+
+    // Plains row of minecraft.wiki "Biome" (List of biome climates, revision
+    // 3167982); water colors are the standard defaults.
+    auto plains = nbt::Tag::compound();
+    plains.set("has_precipitation", nbt::Tag::boolean(true));
+    plains.set("temperature", nbt::Tag::float_(0.8f));
+    plains.set("downfall", nbt::Tag::float_(0.4f));
+    auto effects = nbt::Tag::compound();
+    effects.set("sky_color", nbt::Tag::int_(0x78a7ff));
+    effects.set("fog_color", nbt::Tag::int_(0xc0d8ff));
+    effects.set("water_color", nbt::Tag::int_(0x3f76e4));
+    effects.set("water_fog_color", nbt::Tag::int_(0x050533));
+    plains.set("effects", std::move(effects));
+
+    // "chat" row of minecraft.wiki "Chat type" (revision 3032067).
+    const auto decoration = [](std::string key) {
+        auto d = nbt::Tag::compound();
+        d.set("translation_key", nbt::Tag::string(std::move(key)));
+        auto params = nbt::Tag::list(nbt::TagType::string);
+        params.push(nbt::Tag::string("sender"));
+        params.push(nbt::Tag::string("content"));
+        d.set("parameters", std::move(params));
+        return d;
+    };
+    auto chat = nbt::Tag::compound();
+    chat.set("chat", decoration("chat.type.text"));
+    chat.set("narration", decoration("chat.type.text.narrate"));
+
+    std::vector<RegistryData> out;
+    out.push_back({"minecraft:dimension_type", {}});
+    out.back().entries.emplace_back("minecraft:overworld", std::move(overworld));
+    out.push_back({"minecraft:worldgen/biome", {}});
+    out.back().entries.emplace_back("minecraft:plains", std::move(plains));
+    out.push_back({"minecraft:chat_type", {}});
+    out.back().entries.emplace_back("minecraft:chat", std::move(chat));
+    return out;
+}
+} // namespace
+
+const std::vector<RegistryEntries>* synced_registries(std::int32_t protocol) noexcept {
+    switch (protocol) {
+    case 772: return &registries_772;
+    default: return nullptr;
+    }
+}
+
+const std::vector<RegistryData>* registries_with_data(std::int32_t protocol) {
+    static const auto v772 = data_772();
+    switch (protocol) {
+    case 772: return &v772;
+    default: return nullptr;
+    }
+}
+
+std::optional<std::int32_t> registry_index(const std::vector<RegistryEntries>& registries, std::string_view registry,
+                                           std::string_view entry) noexcept {
+    for (const auto& r : registries) {
+        if (r.registry != registry) continue;
+        for (std::size_t i = 0; i < r.entries.size(); ++i)
+            if (r.entries[i] == entry) return static_cast<std::int32_t>(i);
+    }
+    return std::nullopt;
+}
+
+} // namespace circuit::server

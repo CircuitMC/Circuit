@@ -13,6 +13,9 @@ Circuit/
   src/gameplay/             Reference rules (circuit-reference-rules-v4)
   src/runtime/              Region-parallel engine, job runners, executor, synthetic kernel
   src/evidence/             circuit-trace fixture format, content mapping, recording and evaluation
+  src/protocol/             Wire codec: data types, NBT, framing, packet and content tables
+  src/auth/                 Identity: offline identities, encryption, session verification
+  src/server/               Network server: sessions, version adapter, the authoritative game loop
   src/plugin/               Native shared-library loader
   examples/technical_tools/ Native timing plugin
   modules/java-bridge/      Java SPI and example sources
@@ -28,7 +31,7 @@ Circuit/
   .local/                   Local archives and publication hook
 ```
 
-Add `src/protocol/`, `src/auth/`, and `src/storage/` when their first implementations land; those headers describe interfaces, not completed services. Empty directories are not implementation milestones. The simulation core is described in [the simulation guide](SIMULATION.md).
+Add `src/storage/` when its first implementation lands; its header describes an interface, not a completed service. Empty directories are not implementation milestones. The simulation core is described in [the simulation guide](SIMULATION.md).
 
 ## Requirements
 
@@ -75,6 +78,8 @@ xmake run rules_tests       # reference rules against hand-derived expectations
 xmake run simulation_tests  # runtime against the oracle across workers, layouts and seeds
 xmake run control_tests     # seeded schedules, tick clock, digest
 xmake run evidence_tests    # trace fixtures, content mapping, recordings, target-version traces
+xmake run protocol_tests    # wire codec, NBT, framing limits, packet and content tables
+xmake run server_tests      # in-process server: login, encryption, limits, player actions
 ```
 
 `evidence_tests` re-records every skeleton in `tests/fixtures/skeletons/` and compares the result with `tests/fixtures/reference/`. When a rule change is intended, re-record with `--record-fixture`, review the diff, and commit both. See [the trace fixture format](TRACE_FORMAT.md).
@@ -117,6 +122,37 @@ xmake run circuit-server --profile-fixture "$PWD/tests/fixtures/workloads/dust_c
 ```
 
 Run `bash tools/check.sh` afterwards to restore the debug configuration. `xmake run circuit-server --compatibility` prints the compatibility table that these traces support. Change a claimed tier only with the evidence that `contract_tests` requires: an L0 claim needs target-version traces and no known gap, and an L2 claim lists its gaps.
+
+## Client testing
+
+The server is also checked with two clients that live outside this repository. Neither is a build dependency.
+
+**Protocol library.** A mineflayer suite (Node.js) joins two bots and covers:
+- creative placement and breaking;
+- dust powering a lamp;
+- a piston push and a piston destroying dust into an item entity;
+- player visibility and chat.
+
+Calibrate it against an offline-mode vanilla 1.21.8 server with a flat world, with the bots listed as operators. Then run it against Circuit:
+
+```bash
+xmake run circuit-server --serve --offline --port 25580 &
+node suite.js 25580 -61
+```
+
+**Real client.** A Fabric client mod for the 1.21.8 client runs a step script through Loom's development launch. The client joins the server with quick play, and the script places blocks, uses them, and checks the block states and entities the client shows. It also takes screenshots and writes a report. Scripts are plain text:
+
+```text
+wait_world
+give 0 minecraft:lever
+use 2 -61 2 up
+use 2 -60 2 up
+expect 3 -60 2 minecraft:redstone_lamp[lit=true] 40
+```
+
+The real client needs a display. In development it logs in with an offline name; online mode needs a real account and is a manual check. Set `pauseOnLostFocus:false` in the client options so that a window without focus keeps running.
+
+Both clients use the official server and client under the Minecraft EULA. Like the trace harness, they stay outside this repository.
 
 ## Source and documentation boundaries
 

@@ -6,6 +6,7 @@
 #include <expected>
 #include <span>
 #include <string>
+#include <string_view>
 
 namespace circuit::auth {
 
@@ -46,8 +47,21 @@ public:
     }
 };
 
-// An optional future offline provider must explicitly label identities
-// offline_unverified and use a separate identity namespace. Disabling online
-// verification does not establish an exemption from Mojang/Microsoft terms.
+// Player names accepted at login: 1-16 characters of [A-Za-z0-9_].
+bool valid_player_name(std::string_view name) noexcept;
+
+// UUID text of an offline player: the name-based (version 3, MD5) UUID of
+// "OfflinePlayer:" + name, the convention clients and vanilla servers use.
+std::string offline_uuid(std::string_view name);
+
+// Offline provider. Identities are labelled offline_unverified and live in the
+// offline UUID namespace; the claimed name is not proof of anything. Disabling
+// online verification does not establish an exemption from Mojang/Microsoft
+// terms.
+class offline_authenticator final : public authenticator {
+public:
+    std::expected<authenticated_identity, error>
+    authenticate(const login_request& request, std::chrono::steady_clock::time_point deadline) override;
+};
 
 } // namespace circuit::auth

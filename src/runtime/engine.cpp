@@ -235,6 +235,13 @@ void Engine::Impl::apply_levels(RegionContext& ctx) {
                 chunk = std::make_unique<ChunkData>();
                 chunk->pos = c;
                 chunk->sections.resize(static_cast<std::size_t>(bundle.world.sections()));
+                if (options.generator) {
+                    auto& sections = chunk->sections;
+                    options.generator(c, [&sections](std::size_t s) -> std::array<gameplay::BlockState, 4096>& {
+                        if (!sections.at(s)) sections[s] = std::make_shared<Section>();
+                        return sections[s]->blocks;
+                    });
+                }
             }
             chunk->level = want;
             ctx.record(TraceKind::chunk_loaded, origin, chunk->generation.value, static_cast<std::uint64_t>(want), 0);
@@ -680,6 +687,26 @@ const EngineStats& Engine::stats() const noexcept { return impl_->stats; }
 std::size_t Engine::region_count() const noexcept { return impl_->regions.members.size(); }
 std::size_t Engine::loaded_chunks() const noexcept { return impl_->world.loaded.size(); }
 WorldView Engine::view() const noexcept { return WorldView(this, impl_->epoch, impl_->world.time); }
+
+std::optional<ColumnSnapshot> Engine::column(ChunkPos pos) const {
+    const auto* data = impl_->world.find_loaded(pos);
+    if (!data) return std::nullopt;
+    ColumnSnapshot s{pos, data->generation, data->level, {}, {}, {}};
+    s.sections.reserve(data->sections.size());
+    for (const auto& section : data->sections)
+        // Aliasing pointer: shares ownership of the section, so the engine copies
+        // it before its next write instead of changing the snapshot.
+        s.sections.push_back(section ? std::shared_ptr<const ColumnSnapshot::Blocks>(section, &section->blocks) : nullptr);
+    for (const auto& [p, be] : data->block_entities) s.block_entities.emplace_back(p, be);
+    for (const auto& [id, e] : data->entities) s.entities.push_back(e);
+    return s;
+}
+
+std::vector<std::pair<ChunkPos, gameplay::ChunkLevel>> Engine::loaded_columns() const {
+    std::vector<std::pair<ChunkPos, gameplay::ChunkLevel>> out;
+    for (const auto& [c, data] : impl_->world.loaded) out.emplace_back(c, data->level);
+    return out;
+}
 
 contracts::Result<gameplay::BlockState> WorldView::block(BlockPos pos) const {
     const auto& impl = *engine_->impl_;
