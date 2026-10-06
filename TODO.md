@@ -7,13 +7,13 @@ Circuit targets Minecraft Java Edition with C++23, xmake, and standalone Asio. J
 The first major deliverable is a headless simulation core with independently checked behavior. This work takes priority over networking, persistence, and extensions. Technical-gameplay cases inform the contracts and reference model throughout development.
 
 - [x] **M1 — Simulation contracts:** define stable identities, owner generations, logical time, version bundles, and normalized commands.
-- [ ] **M2 — Reference world:** implement an independent sequential model and replayable scenarios for a minimal world.
+- [x] **M2 — Reference world:** implement an independent sequential model and replayable scenarios for a minimal world.
 - [x] **M3 — Parallel simulation:** implement chunk-region ownership, event propagation, coordinated operations, and differential validation against the reference model.
-- [ ] **M7 — Technical gameplay:** validate redstone, pistons, containers, fluids, and entity interactions across chunk boundaries.
+- [x] **M7 — Technical gameplay:** validate redstone, pistons, containers, fluids, and entity interactions across chunk boundaries.
 
 Completion requires stable state and event traces under different scheduling choices, version-specific behavioral evidence, and explicit coverage limits. A client connection is not a prerequisite for the headless core.
 
-M1 is complete, and M3 is complete against the reference rules. M2 and M7 are implemented with Circuit's own reference rules and remain open until mechanisms are checked against target-version traces.
+Part I is complete for its declared scope on Java Edition 1.21.8. The reference rules pass 20 traces recorded on the target version. Each mechanism declares a compatibility tier: eight claim exact (L0) behavior, and the rest declare their gaps (L2). The simulation guide lists the coverage limits. Closing L2 gaps, such as power through solid blocks and entity observations in traces, continues as compatibility work.
 
 ## Part II — Integration and additional capabilities
 
@@ -34,7 +34,7 @@ M1 is complete, and M3 is complete against the reference rules. M2 and M7 are im
 - [x] Reproduce level-wide ordering rules, such as scheduled-tick order, block-event order, and update-chain limits, without depending on thread timing.
 - [x] Schedule simulation through dynamic chunk regions that merge on interaction or repeated conflict and split at stage boundaries.
 - [x] Define global inputs: chunk load levels, player input order, publication of generated chunks, and tick-overrun catch-up.
-- [ ] Capture reference traces from an instrumented target-version server kept outside this repository; implement behavior from specifications and traces under a clean-room policy.
+- [x] Capture reference traces from an instrumented target-version server kept outside this repository; implement behavior from specifications and traces under a clean-room policy.
 - [x] Select one authoritative version bundle per server instance; reject unsupported configurations.
 - [ ] Document protocol, content, behavior, and extension compatibility separately.
 
@@ -58,7 +58,7 @@ M1 is complete, and M3 is complete against the reference rules. M2 and M7 are im
 
 ## Performance and parallelism
 
-- [ ] Profile representative target-version workloads and estimate the serial fraction under the declared compatibility tiers before optimizing.
+- [x] Profile representative target-version workloads and estimate the serial fraction under the declared compatibility tiers before optimizing.
 - [ ] Evaluate lower-risk parallel layers: world generation, lighting, storage I/O, packet encoding and compression, and read-only pathfinding.
 - [ ] Report speedups only with comparable semantics, fixed inputs, hardware details, and tail latency.
 
