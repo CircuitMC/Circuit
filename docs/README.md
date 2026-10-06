@@ -4,6 +4,7 @@
 | --- | --- |
 | [Development guide](DEVELOPMENT.md) | Build, validation, repository layout, and contribution boundaries |
 | [Headless simulation core](SIMULATION.md) | Contracts, reference rules, region-parallel runtime, verification, and limitations |
+| [Compatibility](COMPATIBILITY.md) | Protocol, content, behavior and extension compatibility, stated separately |
 | [Network server](SERVER.md) | Running and configuring the server, identity, protocol data sources, limits and unsupported features |
 | [Persistence](PERSISTENCE.md) | World directories, the durability and recovery protocol, and Anvil import and export |
 | [Storage evaluation](STORAGE_EVALUATION.md) | Measured checkpoint sizes and costs, compression, background checkpoints and deltas |

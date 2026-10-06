@@ -36,7 +36,7 @@ Part I is complete for its declared scope on Java Edition 1.21.8. The reference 
 - [x] Define global inputs: chunk load levels, player input order, publication of generated chunks, and tick-overrun catch-up.
 - [x] Capture reference traces from an instrumented target-version server kept outside this repository; implement behavior from specifications and traces under a clean-room policy.
 - [x] Select one authoritative version bundle per server instance; reject unsupported configurations.
-- [ ] Document protocol, content, behavior, and extension compatibility separately.
+- [x] Document protocol, content, behavior, and extension compatibility separately ([compatibility](docs/COMPATIBILITY.md)).
 
 ## Plugins and technical tools
 
