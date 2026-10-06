@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
+#include "extensions.hpp"
 #include "log.hpp"
 #include "session.hpp"
 #include <circuit/contracts/version.hpp>
@@ -232,6 +233,20 @@ std::expected<ServerConfig, std::string> parse_config(std::string_view text) {
         else if (key == "world-directory") c.world_directory = value;
         else if (key == "autosave-ticks") ok = parse_number<std::uint32_t>(value, c.autosave_ticks, 20, 1728000);
         else if (key == "log-sync-ticks") ok = parse_number<std::uint32_t>(value, c.log_sync_ticks, 1, 1200);
+        else if (key == "plugin") c.plugins.emplace_back(value);
+        else if (key.starts_with("plugin-permissions.") && key.size() > 19) {
+            ok = parse_permissions(value).has_value();
+            c.plugin_permissions[key.substr(19)] = value;
+        }
+        else if (key == "java-bridge") c.java_bridge = value;
+        else if (key == "java") c.java = value;
+        else if (key == "java-plugin-class") c.java_plugin_classes.push_back(value);
+        else if (key == "java-plugins") c.java_plugins = value;
+        else if (key == "java-permissions") {
+            ok = parse_permissions(value).has_value();
+            c.java_permissions = value;
+        }
+        else if (key == "java-max-lag-ticks") ok = parse_number<std::uint32_t>(value, c.java_max_lag_ticks, 20, 72000);
         else if (key == "login-timeout" || key == "keep-alive-timeout") {
             std::int64_t seconds = 0;
             ok = parse_number<std::int64_t>(value, seconds, 1, 600);

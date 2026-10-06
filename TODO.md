@@ -19,7 +19,7 @@ Part I is complete for its declared scope on Java Edition 1.21.8. The reference 
 
 - [x] **M4 — Playable vertical slice:** add the initial version's connection flow, identity providers, authoritative actions, and world interaction.
 - [x] **M5 — Persistence:** add consistent checkpoints, crash recovery, and vanilla import/export within a documented compatibility range.
-- [ ] **M6 — Extension ecosystem:** complete native plugin/mod capabilities, the Circuit Java bridge, and technical tools exposed through extension APIs.
+- [x] **M6 — Extension ecosystem:** complete native plugin/mod capabilities, the Circuit Java bridge, and technical tools exposed through extension APIs.
 - [ ] **M8 — Optimization and version expansion:** measure storage and scheduling improvements, complete a second version bundle, and prepare a release compatibility matrix.
 
 **Foundation:** M0 provides the build, executor, synthetic fixtures, native plugin example, and module interfaces. This baseline does not complete any Part I milestone.
@@ -40,11 +40,12 @@ Part I is complete for its declared scope on Java Edition 1.21.8. The reference 
 
 ## Plugins and technical tools
 
-- [ ] Provide an inheritance-based C++ SDK with shared-library loading, ABI checks, and explicit lifetimes.
-- [ ] Support startup-time mod registration of content and rules.
-- [ ] Run Circuit Java API plugins through a bounded, versioned bridge.
-- [ ] Evaluate Bukkit/Spigot/Paper compatibility as a separate project with its own compatibility matrix.
-- [ ] Add tick and chunk profiling, freeze/step controls, entity inspection, redstone traces, item-flow counters, and spawning statistics.
+- [x] Provide an inheritance-based C++ SDK with shared-library loading, ABI checks, and explicit lifetimes.
+- [x] Support startup-time mod registration with dependency order and a frozen registry. Content and rules stay fixed by the rule set.
+- [x] Run Circuit Java API plugins through a bounded, versioned bridge.
+- [x] Evaluate Bukkit/Spigot/Paper compatibility as a separate project with its own compatibility matrix.
+- [x] Add tick profiling, freeze/step controls, chunk and block inspection, redstone traces and item-flow counters.
+- [ ] Add spawning statistics and entity inspection beyond item entities, once the rules model mobs.
 
 ## Storage and validation
 

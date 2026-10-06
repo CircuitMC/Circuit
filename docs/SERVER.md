@@ -2,7 +2,7 @@
 
 ## Status
 
-Circuit runs a playable creative-mode world for Java Edition 1.21.8 (protocol 772) on top of the headless engine. The world is a flat stone floor at y = −61. The real 1.21.8 client can join in offline and online mode, build with the reference blocks, use levers, repeaters and comparators, and watch redstone, pistons, observers, hoppers, water and item entities run under the reference rules. Several players see each other and chat.
+Circuit runs a playable creative-mode world for Java Edition 1.21.8 (protocol 772) on top of the headless engine. The world is a flat stone floor at y = −61. The real 1.21.8 client can join in offline and online mode, build with the reference blocks, use levers, repeaters and comparators, and watch redstone, pistons, observers, hoppers, water and item entities run under the reference rules. Several players see each other and chat. Native modules and Java plugins can extend it through controlled services; see [the plugin API](PLUGIN_API.md).
 
 With a world directory, the world is saved with checkpoints and an input log and survives crashes; Java Edition 1.21.8 worlds can be imported and exported. See [persistence](PERSISTENCE.md). Survival gameplay and containers are not implemented yet; see [Not supported](#not-supported).
 
@@ -32,6 +32,8 @@ The configuration file holds `key=value` lines; `#` starts a comment. Unknown ke
 | `max-queued-bytes` | 16 MiB | Unsent data per connection before it is closed as too slow |
 | `motd`, `seed`, `floor-y` | | Status text; seed and flat floor height of a new world (a saved world keeps its own) |
 | `world-directory`, `autosave-ticks`, `log-sync-ticks` | none, `6000`, `20` | Saved world and its checkpoint and log-sync intervals; see [persistence](PERSISTENCE.md) |
+| `plugin`, `plugin-permissions.<id>` | none | A native module to load (repeatable) and its permissions; see [the plugin API](PLUGIN_API.md) |
+| `java-bridge`, `java`, `java-plugin-class`, `java-plugins`, `java-permissions`, `java-max-lag-ticks` | none, `java`, none, none, `world.read`, `200` | The Java bridge; see [its guide](../modules/java-bridge/README.md) |
 
 Setting the environment variable `CIRCUIT_TRACE_PACKETS=1` logs every serverbound play packet.
 

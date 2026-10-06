@@ -22,6 +22,7 @@ xmake run protocol_tests
 xmake run storage_tests
 xmake run anvil_tests
 xmake run server_tests
+xmake run extension_tests
 if command -v javac >/dev/null; then
     mkdir -p build/java-spi
     mapfile -t sources < <(find modules/java-bridge -name '*.java' | sort)

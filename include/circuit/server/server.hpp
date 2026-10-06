@@ -4,8 +4,10 @@
 #include <cstdint>
 #include <expected>
 #include <filesystem>
+#include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 // Network server: Java Edition connections on top of the headless engine.
 namespace circuit::server {
@@ -41,6 +43,19 @@ struct ServerConfig {
     // Input log records are synced every this many ticks: a crash loses at
     // most the inputs of the ticks since the last sync. 1 syncs every tick.
     std::uint32_t log_sync_ticks{20};
+    // Native modules (shared libraries), loaded at startup: mods during
+    // registration, then plugins, each after its dependencies.
+    std::vector<std::filesystem::path> plugins;
+    // Permissions per module id, e.g. "world.read,world.write,commands".
+    // Modules not listed get world.read and world.observe.
+    std::map<std::string, std::string> plugin_permissions;
+    // Java bridge: the class path of the bridge runtime; empty disables it.
+    std::string java_bridge;
+    std::string java{"java"};
+    std::vector<std::string> java_plugin_classes;
+    std::filesystem::path java_plugins; // directory of plugin jars
+    std::string java_permissions{"world.read"};
+    std::uint32_t java_max_lag_ticks{200}; // unacknowledged ticks before the bridge is stopped
 };
 
 // Parses a `key=value` file (blank lines and `#` comments ignored). Unknown

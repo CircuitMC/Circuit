@@ -25,7 +25,13 @@ The network server runs a playable creative-mode world for the Java Edition 1.21
 
 Worlds are saved as checkpoints plus a write-ahead input log and recover every synced change after a crash. Java Edition 1.21.8 worlds can be imported and exported for the content the rules model; other content is refused unless an explicit substitution policy is chosen. See [persistence](docs/PERSISTENCE.md).
 
-The framework also provides Linux native shared-library plugins, numerical validation helpers, interface scaffolds, and 13 abstract concurrency models.
+Extensions see the world through controlled services: queries of the published state, commands admitted like player input, tick reports and permissions per module. There are two kinds:
+- **Native modules:** mods and plugins, loaded in dependency order.
+- **Java plugins:** these run in a separate JVM behind an authenticated socket. A JVM that crashes, stalls or floods the server is stopped while the server keeps ticking.
+
+The technical tools (tick freeze and step, inspection, redstone traces, item counters) are themselves a native plugin. Circuit does not implement the Bukkit API; see [the evaluation](docs/BUKKIT_EVALUATION.md).
+
+The framework also provides numerical validation helpers, interface scaffolds and 13 abstract concurrency models.
 
 ## Build
 

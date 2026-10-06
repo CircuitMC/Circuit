@@ -18,9 +18,9 @@ Circuit/
   src/storage/              Checkpoints, the input log and world directories
   src/server/               Network server: sessions, version adapter, the authoritative game loop,
                             Anvil import and export
-  src/plugin/               Native shared-library loader
-  examples/technical_tools/ Native timing plugin
-  modules/java-bridge/      Java SPI and example sources
+  src/plugin/               Native shared-library loader and load order
+  examples/technical_tools/ Technical tools as a native plugin
+  modules/java-bridge/      Java SPI, bridge runtime and example plugin
   src/exploration/          Standalone reasoning models, not linked into the server
   tests/                    Framework, rule, differential and parallel-reasoning checks
   tests/oracle/             Independent sequential executor; never linked into the server
@@ -84,6 +84,7 @@ xmake run protocol_tests    # wire codec, NBT, framing limits, packet and conten
 xmake run storage_tests     # checkpoints, the input log, crash and I/O-error injection
 xmake run anvil_tests       # Anvil import and export, unsupported-content policies
 xmake run server_tests      # in-process server: login, encryption, limits, player actions, saving
+xmake run extension_tests   # native modules, permissions, technical tools, the Java bridge (needs a JDK)
 ```
 
 `evidence_tests` re-records every skeleton in `tests/fixtures/skeletons/` and compares the result with `tests/fixtures/reference/`. When a rule change is intended, re-record with `--record-fixture`, review the diff, and commit both. See [the trace fixture format](TRACE_FORMAT.md).

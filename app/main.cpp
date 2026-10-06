@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
+#include <circuit/plugin/basic_host.hpp>
 #include <circuit/plugin/loader.hpp>
 #include <circuit/protocol.hpp>
 #include <circuit/runtime/demo_kernel.hpp>
@@ -19,7 +20,7 @@
 
 namespace {
 using namespace std::chrono;
-struct Host final : circuit::plugin::IHost {
+struct Host final : circuit::plugin::HostWithoutWorld {
     circuit::plugin::TickMetrics metrics;
     void log(circuit::plugin::LogLevel, std::string_view message) noexcept override {
         std::cout << "[plugin] " << message << '\n';
@@ -34,7 +35,7 @@ unsigned number(std::string_view input, unsigned low, unsigned high) {
     return value;
 }
 void usage() {
-    std::cout << "Circuit 0.0.1 — headless simulation prototype (no Minecraft listener)\n"
+    std::cout << "Circuit 0.0.1 — region-parallel simulation and Java Edition 1.21.8 server\n"
         "  --simulate [--game-version java-1.21.8] [--workers 1..64] [--ticks 1..1000000]\n"
         "             [--seed N] [--replay <file>] [--record <file>] [--realtime]\n"
         "  --check-fixture <file> [--check-fixture <file> ...] [--workers 1..64]\n"

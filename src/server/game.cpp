@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "game.hpp"
+#include "extensions.hpp"
 #include "log.hpp"
 #include "world_meta.hpp"
 #include <circuit/gameplay/rules.hpp>
@@ -153,7 +154,7 @@ Direction look(float yaw, float pitch) {
 }
 } // namespace
 
-struct Game::Impl {
+struct Game::Impl final : GameServices {
     const ServerConfig& config;
     const contracts::VersionBundle& bundle;
     const Wire& wire;
@@ -186,6 +187,13 @@ struct Game::Impl {
     std::unordered_map<std::uint16_t, std::int32_t> item_wire; // reference item -> wire item id
     bool started{false};
 
+    // Tick control (freeze and step) and timing of recent ticks.
+    bool frozen{false};
+    std::uint64_t pending_steps{};
+    std::array<double, 1200> durations{}; // milliseconds, ring buffer
+    std::size_t durations_seen{};
+    std::uint64_t last_tick_ns{}, total_tick_ns{};
+
     Impl(const ServerConfig& c, const contracts::VersionBundle& b, const Wire& w, const protocol::ContentTables& t,
          const evidence::ContentMapping& m, const std::vector<RegistryEntries>& r)
         : config(c), bundle(b), wire(w), content(t), mapping(m), registries(r), palette(t, m) {
@@ -196,6 +204,8 @@ struct Game::Impl {
         for (std::uint16_t i = 1; i <= gameplay::items::max_id; ++i)
             if (const auto id = content.item_id(mapping.item_name(i))) item_wire[i] = *id;
         open_world();
+        extensions = std::make_unique<Extensions>(*this, config, bundle);
+        extensions->load();
     }
 
     runtime::EngineOptions engine_options(std::int32_t floor_y) const { return world_engine_options(bundle, floor_y, config.workers); }
@@ -634,7 +644,9 @@ struct Game::Impl {
         }
         if (args.empty()) return;
         if (args[0] == "help") {
-            message(p, "Commands: /help, /players, /tp <x> <y> <z>, /gamemode <creative|spectator>, /tps");
+            std::string extra;
+            for (const auto& [name, usage] : extensions->commands()) extra += std::format(", /{}{}{}", name, usage.empty() ? "" : " ", usage);
+            message(p, "Commands: /help, /players, /tp <x> <y> <z>, /gamemode <creative|spectator>, /tps" + extra);
         } else if (args[0] == "players") {
             std::string names;
             for (const auto& [id, o] : players) names += (names.empty() ? "" : ", ") + o.name;
@@ -665,6 +677,8 @@ struct Game::Impl {
             broadcast(wire.player_info_add({entry(p)}));
         } else if (args[0] == "tps") {
             message(p, std::format("tick {}", engine->time()));
+        } else if (const auto reply = extensions->command(p.name, args[0], std::span(args).subspan(1))) {
+            if (!reply->empty()) message(p, *reply, "white");
         } else {
             message(p, std::format("Unknown command: /{}", args[0]), "red");
         }
@@ -839,6 +853,52 @@ struct Game::Impl {
             }
     }
 
+    // ---- services for modules (game thread) ------------------------------
+
+    const runtime::Engine& simulation() const override { return *engine; }
+    const evidence::ContentMapping& content_mapping() const override { return mapping; }
+    std::optional<std::uint64_t> submit(contracts::CommandBody body) override {
+        const auto a = queue.admit(std::move(body));
+        return a ? std::optional<std::uint64_t>(*a) : std::nullopt;
+    }
+    bool withdraw(std::uint64_t admission) override { return queue.cancel(admission); }
+    bool tell(std::string_view player, std::string_view text) override {
+        for (auto& [id, p] : players)
+            if (p.name == player) {
+                message(p, std::string(text), "white");
+                return true;
+            }
+        return false;
+    }
+    void freeze(bool value) override {
+        frozen = value;
+        if (!value) pending_steps = 0;
+    }
+    void step(std::uint32_t ticks) override {
+        frozen = true;
+        pending_steps += ticks;
+    }
+    plugin::TickStatus tick_status() const override {
+        plugin::TickStatus s{engine->time(), frozen, pending_steps, 0, 0, 0, 0, 0};
+        const auto n = std::min(durations_seen, durations.size());
+        if (n == 0) return s;
+        std::vector<double> d(durations.begin(), durations.begin() + static_cast<std::ptrdiff_t>(n));
+        std::ranges::sort(d);
+        double sum = 0;
+        for (const auto v : d) sum += v;
+        const auto at = [&](double q) { return d[std::min(n - 1, static_cast<std::size_t>(q * static_cast<double>(n)))]; };
+        s.mean_ms = sum / static_cast<double>(n);
+        s.p50_ms = at(0.50);
+        s.p95_ms = at(0.95);
+        s.p99_ms = at(0.99);
+        s.max_ms = d.back();
+        return s;
+    }
+    plugin::TickMetrics tick_metrics() const override {
+        const auto t = engine->time();
+        return {t, last_tick_ns, durations_seen == 0 ? 0 : total_tick_ns / durations_seen};
+    }
+
     void tick() {
         healthy = false; // until the tick completes
         if (!started) {
@@ -857,6 +917,32 @@ struct Game::Impl {
             case Message::Kind::leave: on_leave(m.peer); break;
             }
         }
+        if (extensions) extensions->before_tick();
+        // While frozen, players move and chunks are sent, but the world waits.
+        const bool run = !frozen || pending_steps > 0;
+        if (run) advance();
+        publish_chunks();
+        publish_players();
+        for (auto& [id, p] : players) {
+            for (const auto seq : p.acks) p.peer->send(wire.block_changed_ack(seq));
+            p.acks.clear();
+        }
+        ++tick_count;
+        healthy = true;
+        if (!run) return;
+        if (extensions) extensions->after_tick();
+        if (world && engine->time() % config.autosave_ticks == 0)
+            if (auto ok = save(); !ok) {
+                log_error(std::format("cannot save the world: {}", ok.error()));
+                healthy = false;
+                throw std::runtime_error("the world could not be saved; stopping");
+            }
+    }
+
+    // Runs one engine tick with the admitted commands and publishes its changes.
+    void advance() {
+        const auto started_at = std::chrono::steady_clock::now();
+        if (frozen) --pending_steps;
         auto commands = queue.drain();
         if (world) {
             // The input is logged before it is applied, so that recovery can
@@ -872,21 +958,15 @@ struct Game::Impl {
         engine->advance(commands);
         publish_blocks();
         publish_entities();
-        publish_chunks();
-        publish_players();
-        for (auto& [id, p] : players) {
-            for (const auto seq : p.acks) p.peer->send(wire.block_changed_ack(seq));
-            p.acks.clear();
-        }
-        ++tick_count;
-        healthy = true;
-        if (world && engine->time() % config.autosave_ticks == 0)
-            if (auto ok = save(); !ok) {
-                log_error(std::format("cannot save the world: {}", ok.error()));
-                healthy = false;
-                throw std::runtime_error("the world could not be saved; stopping");
-            }
+        const auto ns = static_cast<std::uint64_t>(
+            std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - started_at).count());
+        last_tick_ns = ns;
+        total_tick_ns += ns;
+        durations[durations_seen++ % durations.size()] = static_cast<double>(ns) / 1e6;
     }
+
+    // Last member: modules are unloaded before anything they use is destroyed.
+    std::unique_ptr<Extensions> extensions;
 };
 
 Game::Game(const ServerConfig& config, const contracts::VersionBundle& bundle, const Wire& wire,
@@ -915,6 +995,7 @@ void Game::shutdown(std::string_view reason) {
         if (auto ok = i.save(); !ok) log_error(std::format("cannot save the world: {}", ok.error()));
         i.healthy = false; // saved once; later ticks are not expected
     }
+    if (i.extensions) i.extensions->unload();
     for (auto& [id, p] : impl_->players) p.peer->kick(std::string(reason));
     impl_->players.clear();
     impl_->player_count = 0;
