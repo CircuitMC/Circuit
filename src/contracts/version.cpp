@@ -116,9 +116,10 @@ constexpr std::array reference_v4_mechanisms{
     MechanismEntry{"survival_actions", l0_exact, l2_declared_deviation, documented_behavior,
         "Placement uses up items; dig progress from hardness, tool speed and tier, ground and water; drops by "
         "tool (stone gives cobblestone), container contents and tool wear; pickup by box with the target "
-        "version's slot order and pickup delays (10 for block drops, 40 for thrown items). Gaps: thrown items "
-        "have no random spread; loot is limited to the modeled blocks; no health, damage, hunger or "
-        "crafting."},
+        "version's slot order and pickup delays (10 for block drops, 40 for thrown items); a dead player's "
+        "inventory drops in the target version's order. Gaps: thrown items have no random spread and death "
+        "drops spread in a fixed pattern; loot is limited to the modeled blocks; no crafting. Health, hunger "
+        "and movement are checked by the server, not by the rules."},
 };
 
 constexpr RuleLimits vanilla_like_limits{

@@ -5,6 +5,7 @@
 // compared with the official server through a protocol client).
 #include "internal.hpp"
 #include <algorithm>
+#include <array>
 
 namespace circuit::gameplay::detail {
 namespace {
@@ -23,10 +24,6 @@ std::uint8_t armor_slot(std::uint16_t item) {
     return 0;
 }
 bool offhand_item(std::uint16_t item) { return item == items::shield; }
-
-std::int16_t window_slot(std::size_t inventory_index) {
-    return static_cast<std::int16_t>(inventory_index < 9 ? contracts::hotbar_first + inventory_index : inventory_index);
-}
 
 // One menu: a list of slots, each a container slot or a player slot.
 class Menu {
@@ -487,6 +484,57 @@ contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const cont
             inv.cursor = {};
             record_slot(ctx, inv, player_slots);
             throw_item(ctx, c.drop_position, c.drop_velocity, add_to_player(ctx, inv, carried, contracts::hotbar_first));
+        }
+    };
+}
+
+// A dead player's items spread around the position, in a fixed pattern (the
+// target version picks each direction and speed at random): eight directions
+// at 0.25 and then 0.125 blocks per tick, and 0.2 upwards.
+namespace {
+contracts::FixedVec death_drop_velocity(std::size_t n) {
+    constexpr std::int64_t diagonal = 724; // 0.25 / sqrt(2) in 1/4096 blocks
+    constexpr std::array<std::pair<std::int64_t, std::int64_t>, 8> directions{
+        {{0, 1024}, {diagonal, diagonal}, {1024, 0}, {diagonal, -diagonal}, {0, -1024}, {-diagonal, -diagonal}, {-1024, 0},
+         {-diagonal, diagonal}}};
+    const auto [x, z] = directions[n % 8];
+    const auto shift = (n / 8) % 2;
+    return {x >> shift, 819, z >> shift};
+}
+} // namespace
+
+contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const contracts::PlayerDeath& c) {
+    const auto cell = contracts::block_of(c.position);
+    const bool in_world = contracts::fixed_within_border(c.position) && ctx.bundle().world.contains_fixed_y(c.position.y)
+                          && ctx.chunk_generation(contracts::chunk_of(cell)).has_value();
+    return [&ctx, c, cell, in_world] {
+        if (!ctx.peek_player(c.player)) return; // nothing to drop
+        auto& inv = ctx.player(c.player);
+        reset_drag(inv);
+        // The target version's order: hotbar, main inventory, armor from the
+        // feet up, off hand; then the crafting grid and the carried stack.
+        std::vector<std::uint8_t> order;
+        for (std::uint8_t s = contracts::hotbar_first; s < contracts::offhand_slot; ++s) order.push_back(s);
+        for (std::uint8_t s = 9; s < contracts::hotbar_first; ++s) order.push_back(s);
+        for (std::uint8_t s = 8; s >= 5; --s) order.push_back(s);
+        order.push_back(contracts::offhand_slot);
+        for (std::uint8_t s = 1; s <= 4; ++s) order.push_back(s);
+        std::size_t n = 0;
+        const auto drop = [&](ItemStack stack) {
+            if (in_world) spawn_dropped(ctx, cell, c.position, death_drop_velocity(n++), stack, 40);
+        };
+        for (const auto s : order) {
+            if (inv.slots[s].empty()) continue;
+            const auto stack = inv.slots[s];
+            inv.slots[s] = {};
+            record_slot(ctx, inv, s);
+            drop(stack);
+        }
+        if (!inv.cursor.empty()) {
+            const auto stack = inv.cursor;
+            inv.cursor = {};
+            record_slot(ctx, inv, contracts::player_slots);
+            drop(stack);
         }
     };
 }

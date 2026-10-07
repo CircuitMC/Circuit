@@ -27,6 +27,12 @@ struct ServerConfig {
     // verifier they are refused (default deny). When false, identities are
     // explicitly offline and unverified.
     bool online_mode{true};
+    // Survival players may hover without being kicked for flying (as the
+    // target version's allow-flight property).
+    bool allow_flight{false};
+    // 0 peaceful, 1 easy (the target version's default), 2 normal, 3 hard:
+    // how far players starve, and peaceful regeneration.
+    std::uint8_t difficulty{1};
     std::string motd{"A Circuit server"};
     // Session service for online mode: https, or plain http on loopback (tests).
     std::string session_server{"https://sessionserver.mojang.com"};

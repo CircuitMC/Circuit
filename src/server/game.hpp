@@ -22,6 +22,8 @@ public:
     virtual ~Peer() = default;
     [[nodiscard]] virtual std::uint64_t id() const noexcept = 0;
     virtual void send(Bytes packet) = 0;
+    // A reason "translate:<key>" is shown in play as the client's translation
+    // of the key (for the target version's own messages).
     virtual void kick(std::string reason) = 0;
 };
 

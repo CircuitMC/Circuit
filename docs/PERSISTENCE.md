@@ -93,7 +93,7 @@ An input that the engine cannot apply during replay ends the history before it. 
 
 Files from which recovery discarded data are not deleted: a damaged checkpoint, or a segment with a discarded tail. Once no manifest needs them, they are renamed to `damaged-<name>` and kept for diagnosis. Delete them when they are no longer needed.
 
-Players are not connected after a restart: their chunk tickets are removed in the first tick. Player inventories are simulation state: every change is a logged command, so recovery restores them like the world. Player positions and game modes are saved with each checkpoint and when a player leaves; a crash can lose those since the last checkpoint, but never logged world or inventory changes.
+Players are not connected after a restart: their chunk tickets are removed in the first tick. Player inventories are simulation state: every change is a logged command, so recovery restores them like the world. Player positions, game modes, health and hunger are saved with each checkpoint and when a player leaves; a crash can lose those since the last checkpoint, but never logged world or inventory changes. A player who left dead joins respawned at the world spawn.
 
 ## Failure handling
 

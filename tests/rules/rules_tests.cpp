@@ -754,6 +754,43 @@ int main() {
         }
     });
 
+    suite.run("a dead player's items drop around them, or are lost below the world", [] {
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::PlayerDeath;
+        using circuit::contracts::SetPlayerSlot;
+        Sim s;
+        const circuit::contracts::PlayerKey alex{3, 4};
+        auto setup = floor(0, 3, 0, 3);
+        for (const auto& [slot, stack] : std::vector<std::pair<std::uint8_t, ItemStack>>{
+                 {40, {items::redstone, 64, 0}}, {12, {items::stone, 5, 0}}, {5, {items::diamond_helmet, 1, 30}},
+                 {8, {items::iron_boots, 1, 0}}, {45, {items::shield, 1, 0}}, {2, {items::wheat, 3, 0}}, {37, {items::lever, 7, 0}}})
+            setup.push_back(SetPlayerSlot{alex, slot, stack});
+        s.tick(setup);
+        // Picking up the hotbar's levers leaves them carried.
+        s.tick({ContainerClick{alex, std::nullopt, 37, 0, 0, false, {}, {}}});
+        const auto position = at_block(1.5, 1.32, 1.5);
+        s.tick({PlayerDeath{alex, position}});
+        const auto d = s.oracle.dump();
+        require(d.players.empty(), "the inventory is empty");
+        // Hotbar, main inventory, armor from the feet up, off hand, crafting grid, carried stack.
+        const std::vector<ItemStack> expected{{items::redstone, 64, 0}, {items::stone, 5, 0}, {items::iron_boots, 1, 0},
+                                              {items::diamond_helmet, 1, 30}, {items::shield, 1, 0}, {items::wheat, 3, 0},
+                                              {items::lever, 7, 0}};
+        require(d.entities.size() == expected.size(), std::format("{} entities", d.entities.size()));
+        for (std::size_t i = 0; i < expected.size(); ++i) {
+            require(d.entities[i].stack == expected[i], std::format("drop {} in order", i));
+            require(d.entities[i].pickup_delay > 30, "with the thrown pickup delay");
+        }
+        // They spread in different directions.
+        std::set<std::pair<std::int64_t, std::int64_t>> directions;
+        for (const auto& e : d.entities) directions.insert({e.velocity.x, e.velocity.z});
+        require(directions.size() == expected.size(), "spread");
+        // Below the world nothing can drop: the items are lost, as in the void.
+        s.tick({SetPlayerSlot{alex, 36, {items::stone, 2, 0}}});
+        s.tick({PlayerDeath{alex, at_block(1.5, -200, 1.5)}});
+        require(s.oracle.dump().players.empty() && s.oracle.dump().entities.size() == expected.size(), "lost below the world");
+    });
+
     suite.run("ticket bounds are checked without overflow", [] {
         const auto& limits = bundle().limits;
         const std::int32_t limit = world_border / 16;

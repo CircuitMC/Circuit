@@ -17,6 +17,7 @@
 #include <cmath>
 #include <csignal>
 #include <algorithm>
+#include <array>
 #include <filesystem>
 #include <fstream>
 #include <map>
@@ -944,6 +945,183 @@ int main() {
         f.game->tick();
         f.game->tick();
         require(has(window_packets(), "close", 2, 0), "closed out of reach");
+    });
+
+    suite.run("survival movement is replayed against block shapes", [] {
+        using I = server::Intent;
+        GameFixture f;
+        auto peer = f.join(1, "Walker");
+        // A two-block wall east of the spawn, a repeater to the south.
+        f.hold(1, "minecraft:stone");
+        f.game->submit(1, GameFixture::click({2, -61, 0}, 1));
+        f.game->tick();
+        f.game->submit(1, GameFixture::click({2, -60, 0}, 2));
+        f.hold(1, "minecraft:repeater");
+        f.game->submit(1, GameFixture::click({0, -61, 2}, 3));
+        f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
+        f.game->submit(1, I{server::intent::ConfirmTeleport{1}});
+        f.game->tick();
+        require(f.at({2, -59, 0}) == "minecraft:stone" && f.at({0, -60, 2}).starts_with("minecraft:repeater"), "built");
+        std::size_t seen = 0;
+        // Teleports sent since the last call, as (id, x, y, z).
+        const auto corrections = [&] {
+            const auto id = f.wire.ids().id(State::play, Bound::clientbound, "player_position");
+            std::vector<std::array<double, 4>> out;
+            std::lock_guard lock(peer->mutex);
+            for (; seen < peer->packets.size(); ++seen)
+                if (auto pk = protocol::open_packet(peer->packets[seen]); pk && pk->id == id) {
+                    const auto t = pk->fields.varint().value();
+                    const auto x = pk->fields.f64().value(), y = pk->fields.f64().value(), z = pk->fields.f64().value();
+                    out.push_back({static_cast<double>(t), x, y, z});
+                }
+            return out;
+        };
+        (void)corrections();
+        const auto move = [&](double x, double y, double z, bool ground = true) {
+            f.game->submit(1, I{server::intent::Move{server::Vec3{x, y, z}, std::nullopt, ground}});
+            f.game->tick();
+        };
+        move(1.0, -60.0, 0.5);
+        require(corrections().empty(), "walking is accepted");
+        // Walking into the wall: the box stops at x = 1.7, 0.8 short of the claim.
+        move(2.5, -60.0, 0.5);
+        auto c = corrections();
+        require(c.size() == 1 && c[0][1] == 1.0 && c[0][2] == -60.0, "moved wrongly: back to the last position");
+        f.game->submit(1, I{server::intent::ConfirmTeleport{static_cast<std::int32_t>(c[0][0])}});
+        // Up to the wall's face is fine; stepping onto a repeater (1/8 high) is too.
+        move(1.65, -60.0, 0.5);
+        move(0.5, -60.0, 1.5);
+        move(0.5, -59.875, 2.5);
+        require(corrections().empty(), "steps up 1/8 of a block");
+        // A full block is too high to step onto; a move that rises first (a
+        // jump) gets on top, since vertical movement is applied first and is
+        // not compared, as in the target version.
+        move(0.5, -59.875, 1.5);
+        move(1.65, -60.0, 0.5);
+        require(corrections().empty(), "back at the wall");
+        move(2.1, -60.0, 0.5);
+        c = corrections();
+        require(c.size() == 1 && c[0][1] == 1.65, "no stepping onto a full block");
+        f.game->submit(1, I{server::intent::ConfirmTeleport{static_cast<std::int32_t>(c[0][0])}});
+        move(2.5, -58.0, 0.5);
+        require(corrections().empty(), "a jump onto the wall is accepted");
+        // Creative players may move anywhere free, but not into a block.
+        f.game->submit(1, I{server::intent::Command{"gamemode creative"}});
+        move(1.5, -55.0, 0.5, false);
+        require(corrections().empty(), "creative players fly");
+        move(2.5, -59.5, 0.5, false);
+        c = corrections();
+        require(c.size() == 1 && c[0][1] == 1.5 && c[0][2] == -55.0, "not into the wall");
+    });
+
+    suite.run("survival players float, fall, die and respawn", [] {
+        using I = server::Intent;
+        auto config = offline_config();
+        GameFixture f(config);
+        auto peer = f.join(1, "Faller");
+        const contracts::PlayerKey key{1, 1};
+        f.game->submit(1, I{server::intent::CreativeSlot{36, 10, content().item_id("minecraft:redstone").value()}});
+        f.game->submit(1, I{server::intent::CreativeSlot{9, 1, content().item_id("minecraft:iron_pickaxe").value(), 7}});
+        f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
+        f.game->submit(1, I{server::intent::ConfirmTeleport{1}});
+        f.game->tick();
+        std::size_t seen = 0;
+        // Health updates and death screens sent since the last call.
+        const auto vitals = [&] {
+            const auto health = f.wire.ids().id(State::play, Bound::clientbound, "set_health");
+            const auto kill = f.wire.ids().id(State::play, Bound::clientbound, "player_combat_kill");
+            const auto respawn = f.wire.ids().id(State::play, Bound::clientbound, "respawn");
+            std::vector<std::pair<std::string, float>> out;
+            std::lock_guard lock(peer->mutex);
+            for (; seen < peer->packets.size(); ++seen) {
+                auto pk = protocol::open_packet(peer->packets[seen]);
+                if (!pk) continue;
+                if (pk->id == health) out.emplace_back("health", pk->fields.f32().value());
+                if (pk->id == kill) out.emplace_back("death", 0.0f);
+                if (pk->id == respawn) out.emplace_back("respawn", 0.0f);
+            }
+            return out;
+        };
+        const auto move = [&](double y, bool ground) {
+            f.game->submit(1, I{server::intent::Move{server::Vec3{0.5, y, 0.5}, std::nullopt, ground}});
+        };
+        // Falling 9 blocks: 6 damage on landing. As in the target version, the
+        // distance is what the player descended before the move that lands.
+        const auto land = [&] { f.game->submit(1, I{server::intent::Move{std::nullopt, std::nullopt, true}}); };
+        move(-51.0, false);
+        for (double y = -52.0; y >= -60.0; y -= 1.0) move(y, false);
+        land();
+        f.game->tick();
+        auto v = vitals();
+        require(!v.empty() && v.back() == std::pair<std::string, float>{"health", 14.0f}, "six points of fall damage");
+        // With full food, health comes back by saturation/6 every 10 ticks.
+        for (int i = 0; i < 10; ++i) f.game->tick();
+        v = vitals();
+        require(!v.empty() && std::abs(v.back().second - (14.0f + 5.0f / 6.0f)) < 1e-4f, "regeneration");
+        // Hovering 81 ticks gets a survival player kicked; it does not end the test's session here,
+        // because the fixture's peer records the kick.
+        move(-55.0, false);
+        for (int i = 0; i < 81; ++i) {
+            f.game->submit(1, I{server::intent::Move{std::nullopt, std::nullopt, false}});
+            f.game->tick();
+        }
+        {
+            std::lock_guard lock(peer->mutex);
+            require(peer->kicks.size() == 1 && peer->kicks[0] == "translate:multiplayer.disconnect.flying", "floating kick");
+        }
+        // Falling 25 blocks is deadly: the inventory drops around the player.
+        move(-46.0, false);
+        move(-37.0, false);
+        move(-35.0, false);
+        for (double y = -36.0; y >= -60.0; y -= 1.0) move(y, false);
+        land();
+        f.game->tick();
+        f.game->tick();
+        v = vitals();
+        require(std::ranges::any_of(v, [](const auto& e) { return e.first == "death"; }), "the death screen");
+        const auto d = f.game->engine().dump();
+        require(d.players.empty() || std::ranges::all_of(d.players[0].slots, [](const auto& st) { return st.empty(); }), "inventory dropped");
+        std::map<std::uint16_t, int> dropped;
+        for (const auto& e : d.entities) dropped[e.stack.item] += e.stack.count;
+        require(dropped[gameplay::items::redstone] == 10 && dropped[gameplay::items::iron_pickaxe] == 1, "every item dropped");
+        // Dead players do not move or act; asking to respawn brings them back to the spawn.
+        move(-59.0, true);
+        f.game->tick();
+        f.game->submit(1, I{server::intent::ClientCommand{0}});
+        f.game->tick();
+        v = vitals();
+        require(std::ranges::any_of(v, [](const auto& e) { return e.first == "respawn"; }) && v.back() == std::pair<std::string, float>{"health", 20.0f},
+                "respawned with full health");
+        (void)key;
+    });
+
+    suite.run("players below the world take void damage until they die", [] {
+        using I = server::Intent;
+        GameFixture f;
+        auto peer = f.join(1, "Diver");
+        f.game->submit(1, I{server::intent::CreativeSlot{36, 3, content().item_id("minecraft:stone").value()}});
+        f.game->submit(1, I{server::intent::ConfirmTeleport{1}});
+        f.game->submit(1, I{server::intent::Command{"tp 0.5 -140 0.5"}});
+        f.game->tick();
+        f.game->submit(1, I{server::intent::ConfirmTeleport{2}});
+        // Creative players are not spared: four points every ten ticks, against
+        // regeneration while saturation lasts.
+        int ticks = 0;
+        const auto kill = f.wire.ids().id(State::play, Bound::clientbound, "player_combat_kill");
+        const auto died = [&] {
+            std::lock_guard lock(peer->mutex);
+            return std::ranges::any_of(peer->packets, [&](const auto& b) {
+                auto pk = protocol::open_packet(b);
+                return pk && pk->id == kill;
+            });
+        };
+        while (!died() && ticks < 200) {
+            f.game->tick();
+            ++ticks;
+        }
+        require(died() && ticks > 40 && ticks < 80, std::format("died after {} ticks", ticks));
+        const auto d = f.game->engine().dump();
+        require(d.entities.empty() && (d.players.empty() || d.players[0].slots[36].empty()), "the items are lost below the world");
     });
 
     suite.run("a lever lights a lamp through the engine", [] {

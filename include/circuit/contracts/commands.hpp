@@ -155,8 +155,18 @@ struct CloseContainer {
     bool operator==(const CloseContainer&) const = default;
 };
 
+// A player dies: the whole inventory, then the crafting grid and the carried
+// stack, drops around `position` (the eyes less 0.3). Items dropped where no
+// entity can exist, such as below the world, are lost.
+struct PlayerDeath {
+    PlayerKey player;
+    FixedVec position;
+    bool operator==(const PlayerDeath&) const = default;
+};
+
 using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket,
-                                 PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer>;
+                                 PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
+                                 PlayerDeath>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.

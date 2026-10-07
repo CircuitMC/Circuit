@@ -2,6 +2,7 @@
 #include "game.hpp"
 #include "extensions.hpp"
 #include "log.hpp"
+#include "movement.hpp"
 #include "world_meta.hpp"
 #include <circuit/gameplay/rules.hpp>
 #include <circuit/gameplay/survival.hpp>
@@ -89,6 +90,28 @@ struct Player {
     std::vector<std::int32_t> acks;
     bool moved{};
     std::set<std::uint64_t> seen_by; // peers whose clients show this player's entity
+    // Vitals, kept by the server as the target version keeps them on the
+    // player: health and hunger (food, saturation, exhaustion and the
+    // regeneration timer), the distance fallen since the ground, the hurt
+    // cooldown (damage within its last 10 ticks counts only above the last
+    // hurt), floating without sinking, and death; plus what the client was
+    // last told.
+    float health{20.0f};
+    std::int32_t food{20};
+    float saturation{5.0f};
+    float exhaustion{};
+    std::int32_t food_timer{};
+    std::uint64_t ticks_alive{};
+    double fall_distance{};
+    std::int32_t hurt_cooldown{};
+    float last_hurt{};
+    bool floating{};
+    std::int32_t floating_ticks{};
+    bool sprinting{};
+    bool dead{};
+    float sent_health{-1.0f};
+    std::int32_t sent_food{-1};
+    bool sent_saturation_zero{};
 };
 
 // What the world keeps of a player between sessions besides the inventory,
@@ -98,20 +121,26 @@ struct SavedPlayer {
     float yaw{}, pitch{};
     std::uint8_t game_mode{creative};
     std::int32_t held{};
+    float health{20.0f};
+    std::int32_t food{20};
+    float saturation{5.0f};
+    float exhaustion{};
 };
 
 std::vector<std::byte> encode_players(const std::map<Uuid, SavedPlayer>& players) {
     protocol::Writer w;
-    w.varint(2).varint(static_cast<std::int32_t>(players.size()));
+    w.varint(3).varint(static_cast<std::int32_t>(players.size()));
     for (const auto& [uuid, p] : players)
-        w.uuid(uuid).f64(p.pos.x).f64(p.pos.y).f64(p.pos.z).f32(p.yaw).f32(p.pitch).u8(p.game_mode).varint(p.held);
+        w.uuid(uuid).f64(p.pos.x).f64(p.pos.y).f64(p.pos.z).f32(p.yaw).f32(p.pitch).u8(p.game_mode).varint(p.held).f32(p.health)
+            .varint(p.food).f32(p.saturation).f32(p.exhaustion);
     return w.take();
 }
 std::optional<std::map<Uuid, SavedPlayer>> decode_players(std::span<const std::byte> bytes) {
     protocol::Reader r(bytes);
     const auto version = r.varint();
     const auto count = r.length(1u << 20, 30);
-    if (!version || *version != 2 || !count) return std::nullopt;
+    // Version 2 had no health.
+    if (!version || (*version != 2 && *version != 3) || !count) return std::nullopt;
     std::map<Uuid, SavedPlayer> out;
     for (std::size_t i = 0; i < *count; ++i) {
         SavedPlayer p;
@@ -121,6 +150,16 @@ std::optional<std::map<Uuid, SavedPlayer>> decode_players(std::span<const std::b
         const auto mode = r.u8();
         const auto held = r.varint();
         if (!uuid || !x || !y || !z || !yaw || !pitch || !mode || !held) return std::nullopt;
+        if (*version == 3) {
+            const auto health = r.f32();
+            const auto food = r.varint();
+            const auto saturation = r.f32(), exhaustion = r.f32();
+            if (!health || !food || !saturation || !exhaustion) return std::nullopt;
+            p.health = *health;
+            p.food = *food;
+            p.saturation = *saturation;
+            p.exhaustion = *exhaustion;
+        }
         p.pos = {*x, *y, *z};
         p.yaw = *yaw;
         p.pitch = *pitch;
@@ -311,7 +350,9 @@ struct Game::Impl final : GameServices {
         if (auto ok = save(); !ok) throw std::runtime_error(std::format("world {}: cannot save: {}", where, ok.error()));
     }
 
-    SavedPlayer snapshot(const Player& p) const { return {p.pos, p.yaw, p.pitch, p.game_mode, p.held}; }
+    SavedPlayer snapshot(const Player& p) const {
+        return {p.pos, p.yaw, p.pitch, p.game_mode, p.held, p.dead ? 0.0f : p.health, p.food, p.saturation, p.exhaustion};
+    }
 
     // ---- checkpoints --------------------------------------------------------
     //
@@ -487,7 +528,7 @@ struct Game::Impl final : GameServices {
         p.properties = r.properties;
         p.verified = r.verified;
         p.entity_id = next_entity_id++;
-        p.pos = {meta.spawn.x + 0.5, static_cast<double>(meta.spawn.y) + 1.0, meta.spawn.z + 0.5};
+        p.pos = spawn_point();
         if (const auto it = saved.find(p.uuid); it != saved.end()) restore(p, it->second);
         p.view_distance = std::clamp(r.view_distance, 2, config.view_distance);
         p.center = chunk_at(p.pos);
@@ -500,7 +541,7 @@ struct Game::Impl final : GameServices {
         peer.send(wire.join_game(j));
         peer.send(wire.player_abilities(abilities(p.game_mode), 0.05f, 0.1f));
         peer.send(wire.set_held_slot(p.held));
-        peer.send(wire.set_health(20.0f, 20, 5.0f));
+        send_vitals(p);
         peer.send(wire.empty_commands());
         peer.send(wire.spawn_position(wire_pos({meta.spawn.x, meta.spawn.y + 1, meta.spawn.z}), 0.0f));
         peer.send(wire.set_time(static_cast<std::int64_t>(engine->time()), 6000, false));
@@ -530,7 +571,17 @@ struct Game::Impl final : GameServices {
         }
         if (s.game_mode == survival || s.game_mode == creative || s.game_mode == spectator) p.game_mode = s.game_mode;
         if (s.held >= 0 && s.held < 9) p.held = s.held;
+        // A player who left dead joins respawned at the world spawn.
+        if (std::isfinite(s.health) && s.health > 0.0f) {
+            p.health = std::min(s.health, 20.0f);
+            if (s.food >= 0 && s.food <= 20) p.food = s.food;
+            if (std::isfinite(s.saturation)) p.saturation = std::clamp(s.saturation, 0.0f, static_cast<float>(p.food));
+            if (std::isfinite(s.exhaustion)) p.exhaustion = std::clamp(s.exhaustion, 0.0f, 40.0f);
+        } else {
+            p.pos = spawn_point();
+        }
     }
+    Vec3 spawn_point() const { return {meta.spawn.x + 0.5, static_cast<double>(meta.spawn.y) + 1.0, meta.spawn.z + 0.5}; }
 
     PlayerListEntry entry(const Player& p) const {
         return {p.uuid, p.name, p.properties, p.game_mode, true, 0};
@@ -684,16 +735,33 @@ struct Game::Impl final : GameServices {
         if (p.awaiting_teleport == t.id) p.awaiting_teleport.reset();
     }
 
+    // Block shapes for movement checks; unloaded cells are air.
+    movement::ShapeLookup shapes() const {
+        return [this](BlockPos b) -> movement::BlockShape {
+            const auto v = engine->view().block(b);
+            if (!v || v->is_air()) return {};
+            const auto boxes = collision_boxes(wire.protocol(), palette.wire(*v));
+            return {false, boxes ? *boxes : std::span<const CollisionBox>{}};
+        };
+    }
+
+    // Movement, as the target version's server checks it: the claimed move
+    // is replayed with collision from the last accepted position. A move that
+    // ends more than 0.25 blocks away horizontally (survival; vertical
+    // differences are not compared) is refused unless the player was stuck in
+    // a block, and so is a move into a block the player was not already in
+    // (any mode but spectator). Refused moves teleport the player back.
     void handle(Player& p, intent::Move& m) {
+        if (p.dead) return;
         if (m.rotation && std::isfinite(m.rotation->first) && std::isfinite(m.rotation->second)) {
             p.yaw = m.rotation->first;
             p.pitch = std::clamp(m.rotation->second, -90.0f, 90.0f);
             p.moved = true;
         }
+        const bool was_on_ground = p.on_ground;
         p.on_ground = m.on_ground;
-        if (!m.position) return;
         if (p.awaiting_teleport) return; // moves before the teleport is confirmed are stale
-        const auto to = *m.position;
+        const auto to = m.position.value_or(p.pos);
         if (!finite(to) || std::abs(to.x) >= 3.0e7 || std::abs(to.z) >= 3.0e7 || std::abs(to.y) > 4096.0) {
             p.peer->kick("Invalid movement");
             return;
@@ -712,14 +780,262 @@ struct Game::Impl final : GameServices {
             teleport(p, p.pos);
             return;
         }
+        bool landed_on_block = false;
+        if (p.game_mode != spectator) {
+            const auto look = shapes();
+            const auto from = movement::player_box(p.pos, p.sneaking);
+            const auto moved = movement::collide(from, {dx, dy, dz}, was_on_ground, look);
+            const double ex = to.x - (p.pos.x + moved.x), ez = to.z - (p.pos.z + moved.z);
+            const bool wrongly = p.game_mode == survival && ex * ex + ez * ez > 0.0625;
+            if ((wrongly && !movement::collides(from, look)) || movement::collides_with_anything_new(from, movement::player_box(to, p.sneaking), look)) {
+                log_warn(std::format("{} moved wrongly; corrected", p.name));
+                teleport(p, p.pos);
+                return;
+            }
+            landed_on_block = dy < 0.0 && moved.y != dy;
+            // Hovering: not sinking, not on anything, nothing around, and not
+            // allowed to fly.
+            p.floating = p.game_mode == survival && !config.allow_flight && dy >= -0.03125 && !landed_on_block
+                         && movement::no_blocks_around(movement::player_box(to, p.sneaking), look);
+        }
+        // Leaving the ground upwards is a jump.
+        if (was_on_ground && !m.on_ground && dy > 0.0) exhaust(p, p.sprinting ? 0.2f : 0.05f);
         p.pos = to;
-        p.moved = true;
+        if (m.position) p.moved = true;
+        move_exhaustion(p, dx, dy, dz);
+        fall(p, dy, m.on_ground);
         if (chunk.x != p.center.x || chunk.z != p.center.z) {
             p.center = chunk;
             p.peer->send(wire.chunk_center(chunk.x, chunk.z));
             admit(contracts::RemoveTicket{p.ticket});
             admit(player_ticket(p, chunk));
         }
+    }
+
+    // ---- vitals --------------------------------------------------------------
+    //
+    // As the target version keeps them for players (the documented health and
+    // hunger rules). Food only goes down: eating is not modeled.
+
+    // Whether the player's box touches water.
+    bool in_water(const Player& p) const {
+        const auto box = movement::player_box(p.pos, p.sneaking).deflate(0.001);
+        for (auto x = static_cast<std::int32_t>(std::floor(box.min_x)); x <= static_cast<std::int32_t>(std::floor(box.max_x)); ++x)
+            for (auto y = static_cast<std::int32_t>(std::floor(box.min_y)); y <= static_cast<std::int32_t>(std::floor(box.max_y)); ++y)
+                for (auto z = static_cast<std::int32_t>(std::floor(box.min_z)); z <= static_cast<std::int32_t>(std::floor(box.max_z)); ++z) {
+                    const BlockPos c{x, y, z};
+                    const auto h = gameplay::fluid_height(at(c), at(c.relative(contracts::Direction::up)));
+                    if (h > 0.0f && c.y + static_cast<double>(h) >= box.min_y) return true;
+                }
+        return false;
+    }
+
+    // Exhaustion from actions; players in creative and spectator mode do not tire.
+    void exhaust(Player& p, float amount) {
+        if (p.game_mode != survival || p.dead) return;
+        p.exhaustion = std::min(p.exhaustion + amount, 40.0f);
+    }
+
+    // Exhaustion from an accepted move: 0.01 per metre through water (with
+    // the eyes under water, in three dimensions), 0.1 per metre sprinting on
+    // the ground; distances count in whole centimetres.
+    void move_exhaustion(Player& p, double dx, double dy, double dz) {
+        const auto cm = [](double d) { return static_cast<float>(std::lround(d * 100.0)); };
+        if (eyes_in_water(p)) exhaust(p, 0.01f * cm(std::sqrt(dx * dx + dy * dy + dz * dz)) * 0.01f);
+        else if (in_water(p)) exhaust(p, 0.01f * cm(std::sqrt(dx * dx + dz * dz)) * 0.01f);
+        else if (p.on_ground && p.sprinting) exhaust(p, 0.1f * cm(std::sqrt(dx * dx + dz * dz)) * 0.01f);
+    }
+
+    // Fall distance grows while the player moves down off the ground; on
+    // landing, every block beyond 3 deals one point of damage (none on a slime
+    // block unless sneaking). Water and flying reset it.
+    void fall(Player& p, double dy, bool on_ground) {
+        if (p.game_mode == spectator || p.flying || in_water(p)) {
+            p.fall_distance = 0.0;
+            return;
+        }
+        if (!on_ground) {
+            if (dy < 0.0) p.fall_distance -= dy;
+            return;
+        }
+        const auto distance = p.fall_distance;
+        p.fall_distance = 0.0;
+        if (distance <= 0.0) return;
+        const BlockPos below{static_cast<std::int32_t>(std::floor(p.pos.x)), static_cast<std::int32_t>(std::floor(p.pos.y - 0.2)),
+                             static_cast<std::int32_t>(std::floor(p.pos.z))};
+        if (at(below).is(BlockType::slime_block) && !p.sneaking) return;
+        const auto damage = std::ceil(distance - 3.0);
+        if (damage > 0.0) hurt(p, static_cast<float>(damage), Harm::fall, distance);
+    }
+
+    enum class Harm : std::uint8_t { fall, void_, starve };
+
+    // Damage: creative and spectator players take none but from the void
+    // (spectators not even that). Within the last 10 ticks of the 20-tick
+    // hurt cooldown, damage counts only by how much it exceeds the last.
+    // These damage types cost no exhaustion.
+    void hurt(Player& p, float amount, Harm harm, double fall_distance = 0.0) {
+        if (p.dead || amount <= 0.0f) return;
+        if (harm != Harm::void_ && p.game_mode != survival) return;
+        if (harm == Harm::void_ && p.game_mode == spectator) return;
+        float applied = amount;
+        if (p.hurt_cooldown > 10) {
+            if (amount <= p.last_hurt) return;
+            applied = amount - p.last_hurt;
+        } else {
+            p.hurt_cooldown = 20;
+        }
+        p.last_hurt = amount;
+        p.health = std::max(0.0f, p.health - applied);
+        const auto name = harm == Harm::fall ? "minecraft:fall" : harm == Harm::void_ ? "minecraft:out_of_world" : "minecraft:starve";
+        const auto event = wire.damage_event(p.entity_id, registry_index(registries, "minecraft:damage_type", name).value_or(0));
+        p.peer->send(event);
+        for (const auto viewer : p.seen_by)
+            if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(event);
+        if (p.health <= 0.0f) die(p, harm, fall_distance);
+    }
+    void heal(Player& p, float amount) {
+        if (!p.dead) p.health = std::min(20.0f, p.health + amount);
+    }
+
+    // Death: the inventory drops (a command, so that the rules account for
+    // every item), the client shows the death screen and everyone reads the
+    // death message.
+    void die(Player& p, Harm harm, double fall_distance) {
+        p.dead = true;
+        p.digging.reset();
+        p.floating = false;
+        p.fall_distance = 0.0;
+        if (p.window) close_window(p, true);
+        admit(contracts::PlayerDeath{key_of(p), contracts::FixedVec{fixed(p.pos.x), fixed(p.pos.y + 1.32), fixed(p.pos.z)}});
+        const auto key = harm == Harm::void_ ? "death.attack.outOfWorld"
+                         : harm == Harm::starve ? "death.attack.starve"
+                         : fall_distance > 5.0 ? "death.fell.accident.generic" : "death.attack.fall";
+        auto with = nbt::Tag::list(nbt::TagType::compound);
+        auto name = nbt::Tag::compound();
+        name.set("text", nbt::Tag::string(p.name));
+        with.push(std::move(name));
+        auto text = nbt::Tag::compound();
+        text.set("translate", nbt::Tag::string(key));
+        text.set("with", std::move(with));
+        p.peer->send(wire.combat_kill(p.entity_id, text));
+        broadcast(wire.system_chat(text));
+        log_info(std::format("{} died ({})", p.name, key));
+        const auto remove = wire.remove_entities({p.entity_id});
+        for (const auto viewer : p.seen_by)
+            if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(remove);
+        p.seen_by.clear();
+    }
+    static std::int64_t fixed(double v) { return static_cast<std::int64_t>(std::llround(v * contracts::fixed_one)); }
+
+    // Respawning at the world spawn with full health and hunger.
+    void respawn(Player& p) {
+        p.dead = false;
+        p.health = 20.0f;
+        p.food = 20;
+        p.saturation = 5.0f;
+        p.exhaustion = 0.0f;
+        p.food_timer = 0;
+        p.hurt_cooldown = 0;
+        p.last_hurt = 0.0f;
+        p.fall_distance = 0.0;
+        p.floating = false;
+        p.floating_ticks = 0;
+        Wire::JoinGame j{p.entity_id, config.max_players, p.view_distance, config.simulation_distance, dimension_type, p.game_mode};
+        p.peer->send(wire.respawn(j));
+        p.peer->send(wire.player_abilities(abilities(p.game_mode), 0.05f, 0.1f));
+        p.peer->send(wire.set_held_slot(p.held));
+        p.peer->send(wire.spawn_position(wire_pos({meta.spawn.x, meta.spawn.y + 1, meta.spawn.z}), 0.0f));
+        p.remote_window = -1;
+        // The client may have dropped its chunks: send the view again.
+        p.sent.clear();
+        p.peer->send(wire.game_event(13, 0.0f));
+        const auto to = spawn_point();
+        const auto chunk = chunk_at(to);
+        p.center = chunk;
+        p.peer->send(wire.chunk_center(chunk.x, chunk.z));
+        admit(contracts::RemoveTicket{p.ticket});
+        admit(player_ticket(p, chunk));
+        teleport(p, to);
+        send_vitals(p);
+        p.moved = true;
+    }
+
+    // Health, food and saturation, sent when they change (saturation only
+    // when it reaches or leaves zero), as the target version does.
+    void send_vitals(Player& p, bool if_changed = false) {
+        const bool zero = p.saturation == 0.0f;
+        if (if_changed && p.health == p.sent_health && p.food == p.sent_food && zero == p.sent_saturation_zero) return;
+        p.peer->send(wire.set_health(p.health, p.food, p.saturation));
+        p.sent_health = p.health;
+        p.sent_food = p.food;
+        p.sent_saturation_zero = zero;
+    }
+
+    // Hunger, once per tick in every game mode: exhaustion beyond 4 uses up saturation, then
+    // food. A hurt player regenerates: with full food and saturation left,
+    // saturation/6 (at most 1) every 10 ticks for that much exhaustion; with
+    // food 18 or more, 1 every 80 ticks for 6. Without food, starvation
+    // hurts every 80 ticks down to 10 health (easy), 1 (normal) or death
+    // (hard). In peaceful, health and food come back by themselves.
+    void hunger(Player& p) {
+        const auto difficulty = config.difficulty;
+        if (p.exhaustion > 4.0f) {
+            p.exhaustion -= 4.0f;
+            if (p.saturation > 0.0f) p.saturation = std::max(p.saturation - 1.0f, 0.0f);
+            else if (difficulty != 0) p.food = std::max(p.food - 1, 0);
+        }
+        const bool hurt_now = p.health < 20.0f;
+        if (p.saturation > 0.0f && hurt_now && p.food >= 20) {
+            if (++p.food_timer >= 10) {
+                const auto f = std::min(p.saturation, 6.0f);
+                heal(p, f / 6.0f);
+                p.exhaustion = std::min(p.exhaustion + f, 40.0f);
+                p.food_timer = 0;
+            }
+        } else if (p.food >= 18 && hurt_now) {
+            if (++p.food_timer >= 80) {
+                heal(p, 1.0f);
+                p.exhaustion = std::min(p.exhaustion + 6.0f, 40.0f);
+                p.food_timer = 0;
+            }
+        } else if (p.food <= 0) {
+            if (++p.food_timer >= 80) {
+                if (p.health > 10.0f || difficulty == 3 || (p.health > 1.0f && difficulty == 2)) hurt(p, 1.0f, Harm::starve);
+                p.food_timer = 0;
+            }
+        } else {
+            p.food_timer = 0;
+        }
+        if (difficulty == 0 && !p.dead) {
+            if (hurt_now && p.ticks_alive % 20 == 0) heal(p, 1.0f);
+            if (p.food < 20 && p.ticks_alive % 10 == 0) ++p.food;
+        }
+    }
+
+    // Once per tick: falling out of the world (4 damage below 64 blocks under
+    // it), hunger and regeneration in survival, the hurt cooldown, and the
+    // floating kick after 80 ticks.
+    void update_vitals(bool world_runs) {
+        std::vector<std::uint64_t> kicked;
+        for (auto& [id, p] : players) {
+            if (!p.dead) {
+                if (p.floating && ++p.floating_ticks > 80) {
+                    log_warn(std::format("{} was kicked for floating too long", p.name));
+                    kicked.push_back(id);
+                    continue;
+                }
+                if (!p.floating) p.floating_ticks = 0;
+            }
+            if (world_runs && !p.dead) {
+                ++p.ticks_alive;
+                if (p.hurt_cooldown > 0) --p.hurt_cooldown;
+                if (p.pos.y < bundle.world.min_y - 64.0) hurt(p, 4.0f, Harm::void_);
+                hunger(p); // in every mode (only survival actions tire), also in the tick of a death
+            }
+            send_vitals(p, true);
+        }
+        for (const auto id : kicked) players.at(id).peer->kick("translate:multiplayer.disconnect.flying");
     }
 
     bool in_reach(const Player& p, BlockPos b) const {
@@ -768,6 +1084,7 @@ struct Game::Impl final : GameServices {
     // Here only what the world does not decide is checked. A refused command
     // changes nothing; the client restores its prediction at the acknowledgement.
     void handle(Player& p, intent::Dig& d) {
+        if (p.dead) return;
         const auto b = block_pos(d.pos);
         if (d.status == 3 || d.status == 4) {
             drop(p, d.status == 3);
@@ -795,6 +1112,8 @@ struct Game::Impl final : GameServices {
         if (d.status == 0) {
             if (progress >= 1.0f) {
                 admit(contracts::PlayerBreak{key_of(p), b, true, main_hand(p)});
+            exhaust(p, 0.005f); // breaking a block
+                exhaust(p, 0.005f); // breaking a block
                 p.digging.reset();
             } else {
                 p.digging = Player::Digging{b, tick_count.load(), false};
@@ -837,6 +1156,7 @@ struct Game::Impl final : GameServices {
             const auto ticks = static_cast<float>(tick_count.load() - p.digging->start);
             if (gameplay::destroy_progress(state, slot_of(p, main_hand(p)), p.on_ground, eyes_in_water(p)) * (ticks + 1.0f) >= 1.0f) {
                 admit(contracts::PlayerBreak{key_of(p), p.digging->pos, true, main_hand(p)});
+                exhaust(p, 0.005f); // breaking a block
                 p.digging.reset();
             }
         }
@@ -905,6 +1225,7 @@ struct Game::Impl final : GameServices {
     }
 
     void handle(Player& p, intent::UseOn& u) {
+        if (p.dead) return;
         p.acks.push_back(u.sequence);
         const auto b = block_pos(u.pos);
         if (u.face < 0 || u.face > 5 || p.game_mode == spectator || !in_reach(p, b) || !gameplay::in_world(bundle, b)) {
@@ -944,6 +1265,7 @@ struct Game::Impl final : GameServices {
     }
 
     void handle(Player& p, intent::CreativeSlot& c) {
+        if (p.dead) return;
         if (p.game_mode != creative) return;
         if (c.slot < 0 || c.slot >= static_cast<std::int16_t>(inventory_slots)) return; // dropping is not supported
         if (c.count == 0) {
@@ -968,7 +1290,12 @@ struct Game::Impl final : GameServices {
             p.remote[static_cast<std::size_t>(c.slot)] = wire_stack(stack);
     }
 
+    void handle(Player& p, intent::ClientCommand& c) {
+        if (c.action == 0 && p.dead) respawn(p);
+    }
+
     void handle(Player& p, intent::Sneak& s) { p.sneaking = s.sneaking; }
+    void handle(Player& p, intent::Sprint& s) { p.sprinting = s.sprinting; }
     void handle(Player& p, intent::Flying& f) { p.flying = f.flying && (p.game_mode == creative || p.game_mode == spectator); }
     void handle(Player&, intent::Loaded&) {}
 
@@ -977,6 +1304,7 @@ struct Game::Impl final : GameServices {
     // so that only wrong predictions are corrected after the tick; a click made
     // on a stale state id gets the whole window.
     void handle(Player& p, intent::ContainerClick& c) {
+        if (p.dead) return;
         const auto id = p.window ? p.window->id : 0;
         if (c.window != id) return;
         if (p.game_mode == spectator || c.mode < 0 || c.mode > 6 || c.unknown || c.state != p.inventory_state) {
@@ -1024,15 +1352,17 @@ struct Game::Impl final : GameServices {
         if (args[0] == "help") {
             std::string extra;
             for (const auto& [name, usage] : extensions->commands()) extra += std::format(", /{}{}{}", name, usage.empty() ? "" : " ", usage);
-            message(p, "Commands: /help, /players, /tp <x> <y> <z>, /gamemode <survival|creative|spectator>, /tps" + extra);
+            message(p, "Commands: /help, /players, /tp [<own name>] <x> <y> <z>, /gamemode <survival|creative|spectator>, /tps" + extra);
         } else if (args[0] == "players") {
             std::string names;
             for (const auto& [id, o] : players) names += (names.empty() ? "" : ", ") + o.name;
             message(p, std::format("{} online: {}", players.size(), names));
-        } else if (args[0] == "tp" && args.size() == 4) {
+        } else if (args[0] == "tp" && (args.size() == 4 || (args.size() == 5 && args[1] == p.name))) {
+            // `/tp <x> <y> <z>`, or `/tp <own name> <x> <y> <z>`.
+            const std::size_t first = args.size() - 3;
             Vec3 to;
             try {
-                to = {std::stod(args[1]), std::stod(args[2]), std::stod(args[3])};
+                to = {std::stod(args[first]), std::stod(args[first + 1]), std::stod(args[first + 2])};
             } catch (const std::exception&) {
                 message(p, "Usage: /tp <x> <y> <z>", "red");
                 return;
@@ -1043,6 +1373,7 @@ struct Game::Impl final : GameServices {
             }
             const auto chunk = chunk_at(to);
             teleport(p, to);
+            p.fall_distance = 0.0;
             p.center = chunk;
             p.peer->send(wire.chunk_center(chunk.x, chunk.z));
             admit(contracts::RemoveTicket{p.ticket});
@@ -1282,7 +1613,7 @@ struct Game::Impl final : GameServices {
         for (auto& [id, p] : players)
             for (auto& [oid, o] : players) {
                 if (oid == id) continue;
-                const bool visible = o.sent.contains(chunk_at(p.pos));
+                const bool visible = !p.dead && o.sent.contains(chunk_at(p.pos));
                 if (visible && p.seen_by.insert(oid).second) {
                     o.peer->send(wire.spawn_entity(p.entity_id, p.uuid, player_entity_type, p.pos, p.pitch, p.yaw, p.yaw, 0));
                 } else if (!visible && p.seen_by.erase(oid)) {
@@ -1358,6 +1689,7 @@ struct Game::Impl final : GameServices {
         if (extensions) extensions->before_tick();
         // While frozen, players move and chunks are sent, but the world waits.
         const bool run = !frozen || pending_steps > 0;
+        update_vitals(run);
         if (run) {
             // Player-driven inputs that follow from the world as last published.
             continue_digging();

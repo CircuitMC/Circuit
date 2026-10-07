@@ -39,7 +39,7 @@ The tiers are defined in the architecture: L0 exact, L1 region-equivalent, L2 de
 | `piston` | L2 | Harness traces pass. Gaps are listed in the table: drop offsets and item pushing. |
 | `random_ticks`, `wheat`, `item_entity`, `chunk_tickets`, `entity_order` | L2 | Documented behavior only. These are not compared with the target version; circuit-trace v1 has no entity observations. |
 | `container_menus` | L2 | A 48-step client scenario gives the same windows as the official servers of both versions. Crafting is not modeled, and no harness traces of menus exist. |
-| `survival_actions` | L2 | Documented hardness, tools and pickup rules. Thrown items have no random spread, and loot covers only the modeled blocks. |
+| `survival_actions` | L2 | Documented hardness, tools and pickup rules. Thrown items have no random spread, death drops spread in a fixed pattern, and loot covers only the modeled blocks. |
 
 An L0 claim rests on the scenarios its fixtures exercise. It is not a proof for untested configurations.
 
@@ -88,6 +88,7 @@ Player inventories are simulation state, changed only by commands in the command
 | `DropItem` | Throws one item or the stack from a slot |
 | `ContainerClick` | One click in the player's own window or an open container's window |
 | `CloseContainer` | Returns the carried stack and the crafting grid to the inventory, or throws them |
+| `PlayerDeath` | Drops the whole inventory, the crafting grid and the carried stack around the player; below the world the items are lost |
 
 Every slot change records `player_slot_changed`; a use that opens a container records `container_opened`.
 
@@ -165,6 +166,7 @@ Every observable action produces a trace record keyed by (tick, phase, root, seq
   - **Click modes:** pick up and place (left: the stack, right: half or one), quick move (shift), swap with a hotbar slot or the off hand, clone (creative only), throw (one or the stack), drag (split evenly, one each, or full stacks in creative) and collect (double click), with the target version's slot order for quick moves.
   - **Slot rules:** armor slots take only matching armor, one item each. The crafting grid holds items, but the rules do not craft: the result slot stays empty.
   - **Closing:** the carried stack and the crafting grid go back to the inventory, or are thrown when it is full.
+- **Death drops:** in the target version's order (hotbar, main inventory, armor from the feet up, off hand), then the crafting grid and the carried stack, each with a 40-tick pickup delay. They spread in eight directions at 0.25 and then 0.125 blocks per tick, and 0.2 upwards; the target version picks each direction and speed at random.
 - **Chunk tickets:** a ticket of radius r makes chunks within Chebyshev distance r ticking and loads the chunks within max(r + 1, its load radius) at border level, without ticking. A player's load radius is their view distance. Changes apply at the end of the command phase. Unloading keeps all chunk state, including pending ticks. A reload increments the chunk generation, and commands can name the generation they expect.
 
 ## Part I mechanism contracts

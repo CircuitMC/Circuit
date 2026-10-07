@@ -83,6 +83,7 @@ bool player_has_room(const PlayerInventory& inv, ItemStack stack, std::uint8_t s
 // Container menus (menus.cpp).
 contracts::Result<std::function<void()>> plan_click(RuleContext& ctx, const contracts::ContainerClick& c);
 contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const contracts::CloseContainer& c);
+contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const contracts::PlayerDeath& c);
 
 // ---- dust (redstone.cpp) ----
 bool is_dot(BlockState s);

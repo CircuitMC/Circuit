@@ -4,9 +4,9 @@
 
 Circuit runs a playable world for Java Edition 1.21.8 (protocol 772) or 1.21.4 (protocol 769) on top of the headless engine. One server runs one version, chosen with `game-version`. The world is a flat stone floor at y = −61. The real client of either version can join in offline and online mode, build with the reference blocks, use levers, repeaters and comparators, and watch redstone, pistons, observers, hoppers, water and item entities run under the reference rules. Several players see each other and chat. Native modules and Java plugins can extend it through controlled services; see [the plugin API](PLUGIN_API.md).
 
-Players play in creative or survival mode. In survival, placing uses up items, breaking takes the block's dig time and drops what the tool harvests, items are thrown and picked up, and chests, double chests and hoppers open with every click mode. Inventories are simulation state; see [Survival and inventories](#survival-and-inventories).
+Players play in creative or survival mode. In survival, placing uses up items, breaking takes the block's dig time and drops what the tool harvests, items are thrown and picked up, and chests, double chests and hoppers open with every click mode. Movement is checked against block shapes; players get hungry, take fall and void damage, die, drop their inventory and respawn. Inventories are simulation state; see [Survival and inventories](#survival-and-inventories).
 
-With a world directory, the world is saved with checkpoints and an input log and survives crashes; Java Edition 1.21.8 worlds can be imported and exported. See [persistence](PERSISTENCE.md). Health, damage, mobs and crafting are not implemented; see [Not supported](#not-supported).
+With a world directory, the world is saved with checkpoints and an input log and survives crashes; Java Edition 1.21.8 worlds can be imported and exported. See [persistence](PERSISTENCE.md). Mobs, eating and crafting are not implemented; see [Not supported](#not-supported).
 
 ## Running
 
@@ -24,6 +24,7 @@ The configuration file holds `key=value` lines; `#` starts a comment. Unknown ke
 | `bind-address`, `port` | `0.0.0.0`, `25565` | Listening address |
 | `game-version` | `java-1.21.8` | Version bundle: `java-1.21.8` or `java-1.21.4`. Clients of another protocol are refused at login |
 | `online-mode` | `true` | Require session verification. See [Identity](#identity) |
+| `allow-flight`, `difficulty` | `false`, `easy` | Whether survival players may hover; `peaceful`, `easy`, `normal` or `hard` (how far players starve, and peaceful regeneration) |
 | `session-server` | `https://sessionserver.mojang.com` | Session service for online mode; plain `http` only on loopback |
 | `auth-timeout-ms` | `5000` | Deadline for one verification |
 | `max-players`, `max-connections` | `20`, `256` | Players in the game; open sockets of any kind |
@@ -51,7 +52,7 @@ The game runs on one thread at 20 ticks per second, using the engine's tick cloc
 Players never touch engine state directly.
 
 **Authority.** Every player action is validated before it becomes a command:
-- **Movement:** finite coordinates inside the world border; at most 10 blocks per packet; only into delivered chunks. Too-fast moves are corrected with a teleport, and non-finite ones are kicked.
+- **Movement:** finite coordinates inside the world border; at most 10 blocks per packet; only into delivered chunks; checked against block shapes (see [Movement and vitals](#movement-and-vitals)). Refused moves are corrected with a teleport, and non-finite ones are kicked.
 - **Reach:** blocks within the interaction range plus 1 of the eyes, measured to the nearest point of the block: 6 blocks in creative (range 5), 5.5 in survival (range 4.5). An open container stays usable up to 4 blocks further.
 - **Inventory:** creative slots 0–45 with known items, at most the item's stack size; clicks only in the window the player has open.
 
@@ -89,6 +90,19 @@ A refused action is answered with the current state of the affected blocks, or, 
 
 The clicks were calibrated against the official 1.21.8 and 1.21.4 servers. The same 48-step mineflayer scenario gives identical windows, carried stacks and inventories on both servers and on Circuit. It covers every click mode, double chests, hoppers, the own window, thrown items and pickups.
 
+### Movement and vitals
+
+The server follows the target version's movement handling for every player but spectators:
+- **Collision:** a claimed move is replayed from the last accepted position against the collision shapes of the blocks (compiled from minecraft-data at the pinned commit by `tools/compile_collision_shapes.py`). The vertical axis moves first, then the horizontal axis with the larger movement, and a player on the ground steps up to 0.6 blocks.
+- **Refused moves:** in survival, a move that ends more than 0.25 blocks away horizontally from the replayed one is refused, unless the player was already stuck in a block. In any mode, a move into a block the player was not already in is refused. Vertical differences are not compared, as in the target version.
+- **Floating:** a survival player who neither sinks nor stands on or next to anything for 80 ticks is kicked with the client's "Flying is not enabled" message, unless `allow-flight` is set.
+- **Falls:** the distance fallen since the ground, without the move that lands, deals one point per block beyond 3. Water and flying reset it; a slime block cancels the damage unless the player sneaks.
+- **Hunger:** food, saturation and exhaustion follow the documented rules: jumps (0.05, sprinting 0.2), sprinting on the ground (0.1 per metre), moving through water (0.01 per metre), breaking blocks (0.005) and healing tire players in survival. Healing comes from saturation with full food (saturation/6 every 10 ticks) or from food 18 or more (one point every 80 ticks), in every game mode; without food players starve down to the difficulty's limit. Eating is not modeled, so food only goes down.
+- **Damage:** fall and starvation damage only survival players; the void (more than 64 blocks below the world) deals 4 points to every player but spectators. A hurt cooldown of 20 ticks lets only stronger damage through in its last 10 ticks.
+- **Death and respawn:** at zero health the client shows the death screen with the target version's message (a translation key), everyone reads it, and the inventory drops (a `PlayerDeath` command; items dropped below the world are lost). Asking to respawn brings the player back at the world spawn with full health and hunger.
+
+The client is told health, food and saturation when they change, as the target version does. Two black-box scenarios (`vitals.js` and `collision.js` in the external client tests) give identical results on the official 1.21.8 and 1.21.4 servers and on Circuit: a wall correction, fall damage, regeneration with draining saturation, a deadly fall with its drops, respawning, void damage against regeneration, the death messages, the floating kick, and moves against chests, repeaters, a hopper's bowl and full blocks.
+
 ## Identity
 
 `online-mode=true` performs the documented key exchange: a 1024-bit RSA key, AES-128/CFB8 in both directions, and the login hash. The server then asks the session service whether the player joined.
@@ -125,8 +139,10 @@ Clients that report the vanilla data pack receive registry entry names only. Cli
 
 ## Not supported
 
-- Health, hunger, damage, death, mobs and crafting. The crafting grid holds items but makes nothing.
-- Item use other than placement (food, buckets of other fluids, tools on blocks) and item cooldowns.
+- Mobs, combat between players, armor protection, experience, and crafting. The crafting grid holds items but makes nothing.
+- Item use other than placement (eating, buckets of other fluids, tools on blocks) and item cooldowns.
+- Respawning picks the exact world spawn; the target version picks a random position around it. Death drops spread in a fixed pattern instead of at random.
+- Swimming and crawling poses, climbing, elytra flight and vehicles: their movement is checked like walking.
 - Lighting: everything is fully lit by sky light. World generation is a flat floor.
 - Saving is limited to what [persistence](PERSISTENCE.md) describes. Checkpoints are written in the background; the game thread takes a snapshot and syncs the start of a new log segment.
 - Signed chat: chat is relayed as system messages. Commands are `/help`, `/players`, `/tp`, `/gamemode survival|creative|spectator` and `/tps`, with no command-tree suggestions.
@@ -138,10 +154,10 @@ Clients that report the vanilla data pack receive registry entry names only. Cli
 | Check | What it covers |
 | --- | --- |
 | `protocol_tests` | Data types against documented examples, NBT, framing and compression limits, packet and content tables, fuzzed input |
-| `server_tests` | An in-process server and a small client built on Circuit's codec. It covers: status; offline and online login (encryption and a mock session service); default deny; version, name and frame errors; connection, rate and login-time limits; movement and reach; placement, with player actions grouped into ticks in different ways and chest pairing; survival placement, digging time, drops, pickups and item conservation; container windows and their incremental synchronization; view loading without ticking; a lever lighting a lamp; a client that stops reading; one owner per world; graceful stop; saving and restoring a world and a player; the server binary killed and recovered. |
+| `server_tests` | An in-process server and a small client built on Circuit's codec. It covers: status; offline and online login (encryption and a mock session service); default deny; version, name and frame errors; connection, rate and login-time limits; movement and reach; placement, with player actions grouped into ticks in different ways and chest pairing; survival placement, digging time, drops, pickups and item conservation; container windows and their incremental synchronization; movement against block shapes with step-up, the floating kick, falls, regeneration, death, respawn and the void; view loading without ticking; a lever lighting a lamp; a client that stops reading; one owner per world; graceful stop; saving and restoring a world and a player; the server binary killed and recovered. |
 
 Two clients outside this repository give independent evidence:
-- **Protocol library:** mineflayer suites run against both Circuit and the vanilla server: building and redstone, chest placement, and container windows.
+- **Protocol library:** mineflayer suites run against both Circuit and the vanilla server: building and redstone, chest placement, container windows, vitals and collision.
 - **Real client:** a Fabric client mod drives the real 1.21.8 or 1.21.4 client from step scripts and checks the blocks and entities the client shows.
 
 The [verification guide](DEVELOPMENT.md#client-testing) describes how to run them.

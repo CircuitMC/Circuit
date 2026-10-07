@@ -13,7 +13,7 @@ The first major deliverable is a headless simulation core with independently che
 
 Completion requires stable state and event traces under different scheduling choices, version-specific behavioral evidence, and explicit coverage limits. A client connection is not a prerequisite for the headless core.
 
-Part I is complete for its declared scope on Java Edition 1.21.8. The reference rules pass 20 traces recorded on the target version. Each mechanism declares a compatibility tier: eight claim exact (L0) behavior, and the rest declare their gaps (L2). The simulation guide lists the coverage limits. Closing L2 gaps, such as power through solid blocks and entity observations in traces, continues as compatibility work.
+Part I is complete for its declared scope on Java Edition 1.21.8 and 1.21.4. The reference rules pass 27 traces recorded on each target version. Each mechanism declares a compatibility tier: fifteen claim exact (L0) behavior, and the rest declare their gaps (L2). The simulation guide lists the coverage limits. Closing the remaining L2 gaps, such as entity observations in traces, continues as compatibility work.
 
 ## Part II — Integration and additional capabilities
 
@@ -53,7 +53,7 @@ Part I is complete for its declared scope on Java Edition 1.21.8. The reference 
 - [x] Import and export supported vanilla saves without overwriting source data or silently discarding unsupported content.
 - [x] Compare palette encoding and compression options using representative worlds.
 - [x] Store sparse changes only when the exact baseline can be verified or retained. Encoding reuses unchanged sections, identified exactly; files stay complete snapshots.
-- [ ] Validate movement, reach, cooldowns, inventory conservation, and resource consumption using authoritative version rules.
+- [x] Validate movement, reach, cooldowns, inventory conservation, and resource consumption using authoritative version rules. Survival play follows the target version: movement against block shapes, reach, dig time, hurt cooldowns, hunger, item use and container clicks, checked against the official servers. Items other than blocks have no use yet, so item cooldowns do not arise.
 - [x] Reject malformed, non-finite, overflowing, replayed, and out-of-state inputs.
 - [x] Keep identity verification separate from protocol and simulation.
 

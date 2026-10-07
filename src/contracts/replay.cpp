@@ -59,7 +59,7 @@ private:
 // Record tags: 0 SetBlock, 1 UseBlock, 2 InsertItem, 3 SpawnItem,
 // 4 RemoveEntity, 5 AddTicket without a load radius (read only), 6 RemoveTicket,
 // 7 PlayerUse, 8 PlayerBreak, 9 AddTicket, 10 SetPlayerSlot, 11 PickUp,
-// 12 DropItem, 13 ContainerClick, 14 CloseContainer.
+// 12 DropItem, 13 ContainerClick, 14 CloseContainer, 15 PlayerDeath.
 std::uint8_t tag_of(const CommandBody& body) {
     if (std::holds_alternative<AddTicket>(body)) return 9;
     if (std::holds_alternative<SetPlayerSlot>(body)) return 10;
@@ -67,6 +67,7 @@ std::uint8_t tag_of(const CommandBody& body) {
     if (std::holds_alternative<DropItem>(body)) return 12;
     if (std::holds_alternative<ContainerClick>(body)) return 13;
     if (std::holds_alternative<CloseContainer>(body)) return 14;
+    if (std::holds_alternative<PlayerDeath>(body)) return 15;
     return static_cast<std::uint8_t>(body.index());
 }
 
@@ -145,6 +146,9 @@ void encode_command(Writer& w, const Command& c) {
             w.player(body.player);
             w.vec(body.drop_position);
             w.vec(body.drop_velocity);
+        } else if constexpr (std::is_same_v<T, PlayerDeath>) {
+            w.player(body.player);
+            w.vec(body.position);
         }
     }, c.body);
 }
@@ -257,6 +261,12 @@ bool decode_command(Reader& r, Command& c) {
     case 14: {
         CloseContainer b;
         if (!r.player(b.player) || !r.vec(b.drop_position) || !r.vec(b.drop_velocity)) return false;
+        c.body = b;
+        return true;
+    }
+    case 15: {
+        PlayerDeath b;
+        if (!r.player(b.player) || !r.vec(b.position)) return false;
         c.body = b;
         return true;
     }

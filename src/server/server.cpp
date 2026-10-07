@@ -222,6 +222,16 @@ std::expected<ServerConfig, std::string> parse_config(std::string_view text) {
             if (value == "true") c.online_mode = true;
             else if (value == "false") c.online_mode = false;
             else ok = false;
+        } else if (key == "allow-flight") {
+            if (value == "true") c.allow_flight = true;
+            else if (value == "false") c.allow_flight = false;
+            else ok = false;
+        } else if (key == "difficulty") {
+            if (value == "peaceful") c.difficulty = 0;
+            else if (value == "easy") c.difficulty = 1;
+            else if (value == "normal") c.difficulty = 2;
+            else if (value == "hard") c.difficulty = 3;
+            else ok = false;
         } else if (key == "motd") c.motd = value;
         else if (key == "session-server") c.session_server = value;
         else if (key == "auth-timeout-ms") {

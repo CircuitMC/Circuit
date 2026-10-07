@@ -137,7 +137,8 @@ The server is also checked with two clients that live outside this repository. N
 **Protocol library.** Mineflayer scripts (Node.js) cover:
 - creative placement and breaking, dust powering a lamp, a piston push and a piston destroying dust into an item entity, player visibility and chat (`suite.js`, two bots);
 - chest placement and pairing (`chests.js`);
-- container windows (`windows.js`): every click mode in a chest, the own window, a double chest and a hopper, thrown items and pickups. Each step prints the window, carried stack and inventory the server reports.
+- container windows (`windows.js`): every click mode in a chest, the own window, a double chest and a hopper, thrown items and pickups. Each step prints the window, carried stack and inventory the server reports;
+- vitals (`vitals.js`) and collision (`collision.js`): scripted moves with mineflayer's physics off, printing the corrections, health, hunger, deaths and kicks the server sends.
 
 Calibrate each script against an offline-mode vanilla server of the same version with a fresh flat world, with the bots listed as operators. Then run it against Circuit (set `MC_VERSION=1.21.4` and `game-version=java-1.21.4` for the second version) and compare the outputs:
 
@@ -155,6 +156,8 @@ use 2 -61 2 up
 use 2 -60 2 up
 expect 3 -60 2 minecraft:redstone_lamp[lit=true] 40
 ```
+
+Movement steps (`hold <key> <ticks>`, `expect_pos`, `expect_health`, `expect_dead`, `respawn`) let a script walk, jump and sprint with the client's own physics; `survival.txt` uses them to check that the server accepts real movement and applies falls, death and respawning.
 
 The real client needs a display. In development it logs in with an offline name; online mode needs a real account and is a manual check. Set `pauseOnLostFocus:false` in the client options so that a window without focus keeps running.
 

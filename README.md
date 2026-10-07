@@ -15,13 +15,13 @@ See [the roadmap](TODO.md) for milestones and [the executable reasoning models](
 The headless Part I core is complete for its declared scope. It provides:
 
 - shared contracts;
-- reference rules for redstone (including comparators and observers), pistons, hoppers and double chests, water, crops, item entities and chunk tickets;
+- reference rules for redstone (including comparators and observers), pistons, hoppers and double chests, water, crops, item entities, chunk tickets, and player inventories with survival use and container menus;
 - an independent sequential oracle;
 - a region-parallel runtime that matches the oracle exactly across worker counts, region layouts and seeded schedules.
 
-The rules are checked against traces recorded on unmodified Java Edition servers: 20 on 1.21.8 and the same 20 on 1.21.4, with identical results. Eight mechanisms claim exact behavior, including scheduled-tick order, block-event order, the update-chain limit, observers and double chests. The others declare their deviations, such as no power through solid blocks. See [the simulation core](docs/SIMULATION.md) for the compatibility table and coverage limits.
+The rules are checked against traces recorded on unmodified Java Edition servers: 27 on 1.21.8 and the same 27 on 1.21.4, with identical results. Fifteen mechanisms claim exact behavior, including scheduled-tick order, block-event order, the update-chain limit, power through solid blocks, dust, repeaters, comparators, observers, hoppers, double chests and water. The others declare their deviations, such as the random parts of piston drops. See [the simulation core](docs/SIMULATION.md) for the compatibility table and coverage limits.
 
-The network server runs a playable creative-mode world for the Java Edition 1.21.8 or 1.21.4 client on top of the same engine, one version per server. It supports offline identities and online mode (encrypted, verified by the session service, refused when verification fails), and the real client is tested against it. Survival gameplay and container screens are not yet supported; see [the network server](docs/SERVER.md).
+The network server runs a playable creative and survival world for the Java Edition 1.21.8 or 1.21.4 client on top of the same engine, one version per server. It supports offline identities and online mode (encrypted, verified by the session service, refused when verification fails), and the real client is tested against it. In survival, blocks take their dig time and drop what the tool harvests, items are used up, thrown and picked up, chests and hoppers open with every click mode, and movement, falls, hunger, death and respawning follow the target version; these were compared with the official servers of both versions. Mobs, eating and crafting are not supported; see [the network server](docs/SERVER.md).
 
 Worlds are saved as checkpoints plus a write-ahead input log and recover every synced change after a crash. Java Edition 1.21.8 worlds can be imported and exported for the content the rules model; other content is refused unless an explicit substitution policy is chosen. See [persistence](docs/PERSISTENCE.md).
 

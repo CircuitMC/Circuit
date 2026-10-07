@@ -114,10 +114,18 @@ struct Flying {
     bool flying{};
 };
 struct Loaded {};
+// Client status: 0 asks to respawn after death.
+struct ClientCommand {
+    std::int32_t action{};
+};
+struct Sprint {
+    bool sprinting{};
+};
 } // namespace intent
 using Intent = std::variant<intent::Move, intent::ConfirmTeleport, intent::Dig, intent::UseOn, intent::Use,
                             intent::HeldSlot, intent::CreativeSlot, intent::Command, intent::Chat, intent::Sneak,
-                            intent::Flying, intent::Loaded, intent::ContainerClick, intent::ContainerClose>;
+                            intent::Flying, intent::Loaded, intent::ContainerClick, intent::ContainerClose,
+                            intent::ClientCommand, intent::Sprint>;
 
 class Wire {
 public:
@@ -162,6 +170,12 @@ public:
         std::uint8_t game_mode{};
     };
     Bytes join_game(const JoinGame& j) const;
+    // Respawning in the overworld after death, keeping no client data.
+    Bytes respawn(const JoinGame& j) const;
+    // The death screen, with the death message.
+    Bytes combat_kill(std::int32_t entity_id, const protocol::nbt::Tag& message) const;
+    // An entity was hurt (red flash and sound), with the damage type's registry id.
+    Bytes damage_event(std::int32_t entity_id, std::int32_t damage_type) const;
     Bytes game_event(std::uint8_t event, float value) const;
     Bytes player_abilities(std::uint8_t flags, float flying_speed, float fov_modifier) const;
     Bytes set_held_slot(std::int32_t slot) const;

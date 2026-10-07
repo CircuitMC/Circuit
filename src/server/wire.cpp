@@ -20,12 +20,12 @@ struct Wire::Ids {
         chunk_batch_start, chunk_batch_finished, level_chunk, forget_chunk, block_update, block_changed_ack,
         player_position, keep_alive, system_chat, player_info_update, player_info_remove, add_entity,
         set_entity_data, remove_entities, entity_position_sync, rotate_head, container_set_content, disconnect, take_item_entity,
-        open_screen, container_close, container_set_slot, set_cursor_item, sb_container_click, sb_container_close,
+        open_screen, container_close, container_set_slot, set_cursor_item, respawn, combat_kill, damage_event, sb_container_click, sb_container_close,
         commands;
     // Serverbound play.
     std::int32_t sb_accept_teleportation, sb_move_pos, sb_move_pos_rot, sb_move_rot, sb_move_status,
         sb_player_action, sb_use_item_on, sb_use_item, sb_set_carried_item, sb_set_creative_slot, sb_chat_command,
-        sb_chat_command_signed, sb_chat, sb_player_input, sb_player_abilities, sb_player_loaded;
+        sb_chat_command_signed, sb_chat, sb_player_input, sb_player_abilities, sb_player_loaded, sb_client_command, sb_player_command;
 };
 
 Wire::Wire(std::int32_t protocol) : protocol_(protocol), ids_([&]() -> const protocol::PacketIds& {
@@ -80,6 +80,9 @@ Wire::Wire(std::int32_t protocol) : protocol_(protocol), ids_([&]() -> const pro
     ids->container_close = cb(State::play, "container_close");
     ids->container_set_slot = cb(State::play, "container_set_slot");
     ids->set_cursor_item = cb(State::play, "set_cursor_item");
+    ids->respawn = cb(State::play, "respawn");
+    ids->combat_kill = cb(State::play, "player_combat_kill");
+    ids->damage_event = cb(State::play, "damage_event");
     ids->sb_container_click = sb(State::play, "container_click");
     ids->sb_container_close = sb(State::play, "container_close");
     ids->disconnect = cb(State::play, "disconnect");
@@ -100,6 +103,8 @@ Wire::Wire(std::int32_t protocol) : protocol_(protocol), ids_([&]() -> const pro
     ids->sb_player_input = sb(State::play, "player_input");
     ids->sb_player_abilities = sb(State::play, "player_abilities");
     ids->sb_player_loaded = sb(State::play, "player_loaded");
+    ids->sb_client_command = sb(State::play, "client_command");
+    ids->sb_player_command = sb(State::play, "player_command");
     id_ = std::move(ids);
 }
 
@@ -197,12 +202,9 @@ Bytes Wire::update_tags(const std::vector<RegistryTags>& tags, const std::vector
     return packet(id_->cfg_update_tags, w);
 }
 
-Bytes Wire::join_game(const JoinGame& j) const {
-    Writer w;
-    w.i32(j.entity_id).boolean(false);           // hardcore
-    w.varint(1).string("minecraft:overworld");   // dimension names
-    w.varint(j.max_players).varint(j.view_distance).varint(j.simulation_distance);
-    w.boolean(false).boolean(true).boolean(false); // reduced debug info, respawn screen, limited crafting
+namespace {
+// The spawn information that login and respawn share.
+void spawn_info(Writer& w, const Wire::JoinGame& j) {
     w.varint(j.dimension_type).string("minecraft:overworld");
     w.i64(0);                                    // hashed seed
     w.u8(j.game_mode).i8(-1);                    // game mode, previous game mode
@@ -210,8 +212,34 @@ Bytes Wire::join_game(const JoinGame& j) const {
     w.boolean(false);                            // no death location
     w.varint(0);                                 // portal cooldown
     w.varint(-63);                               // sea level of the flat world
+}
+} // namespace
+
+Bytes Wire::join_game(const JoinGame& j) const {
+    Writer w;
+    w.i32(j.entity_id).boolean(false);           // hardcore
+    w.varint(1).string("minecraft:overworld");   // dimension names
+    w.varint(j.max_players).varint(j.view_distance).varint(j.simulation_distance);
+    w.boolean(false).boolean(true).boolean(false); // reduced debug info, respawn screen, limited crafting
+    spawn_info(w, j);
     w.boolean(false);                            // enforces secure chat
     return packet(id_->login, w);
+}
+Bytes Wire::respawn(const JoinGame& j) const {
+    Writer w;
+    spawn_info(w, j);
+    w.u8(0); // keep neither attributes nor entity data
+    return packet(id_->respawn, w);
+}
+Bytes Wire::combat_kill(std::int32_t entity_id, const nbt::Tag& message) const {
+    Writer w;
+    w.varint(entity_id);
+    nbt::write_network(w, message);
+    return packet(id_->combat_kill, w);
+}
+Bytes Wire::damage_event(std::int32_t entity_id, std::int32_t damage_type) const {
+    // No causing or direct entity (ids + 1, 0 for none) and no source position.
+    return packet(id_->damage_event, Writer().varint(entity_id).varint(damage_type).varint(0).varint(0).boolean(false));
 }
 Bytes Wire::game_event(std::uint8_t event, float value) const { return packet(id_->game_event, Writer().u8(event).f32(value)); }
 Bytes Wire::player_abilities(std::uint8_t flags, float flying_speed, float fov_modifier) const {
@@ -343,7 +371,14 @@ Bytes Wire::open_screen(std::int32_t window, std::int32_t menu_type, std::string
 Bytes Wire::close_screen(std::int32_t window) const { return packet(id_->container_close, Writer().varint(window)); }
 Bytes Wire::play_disconnect(std::string_view reason) const {
     Writer w;
-    nbt::write_network(w, nbt::text(std::string(reason)));
+    if (reason.starts_with("translate:")) {
+        // A key the client translates (see Peer::kick).
+        auto t = nbt::Tag::compound();
+        t.set("translate", nbt::Tag::string(std::string(reason.substr(10))));
+        nbt::write_network(w, t);
+    } else {
+        nbt::write_network(w, nbt::text(std::string(reason)));
+    }
     return packet(id_->disconnect, w);
 }
 Bytes Wire::empty_commands() const {
@@ -502,6 +537,10 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
         }
         return done(std::move(click));
     }
+    if (id == i.sb_client_command) {
+        TRY(action, r.varint());
+        return done(intent::ClientCommand{*action});
+    }
     if (id == i.sb_container_close) {
         TRY(window, r.varint());
         return done(intent::ContainerClose{*window});
@@ -521,6 +560,16 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
     if (id == i.sb_player_abilities) {
         TRY(flags, r.u8());
         return done(intent::Flying{(*flags & 0x02) != 0});
+    }
+    if (id == i.sb_player_command) {
+        // Entity id, action and jump boost; only sprinting is used. Protocol
+        // 769 still lists the sneaking actions first.
+        TRY(entity, r.varint());
+        TRY(action, r.varint());
+        const std::int32_t start = protocol_ >= 770 ? 1 : 3;
+        if (*action == start) return done(intent::Sprint{true});
+        if (*action == start + 1) return done(intent::Sprint{false});
+        return std::optional<Intent>{};
     }
     if (id == i.sb_player_loaded) return done(intent::Loaded{});
     return std::optional<Intent>{};

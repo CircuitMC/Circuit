@@ -143,6 +143,12 @@ int main() {
                                  {13, PlayerUse{alex, 45, {3, 4, 5}, Direction::down, Direction::west, Direction::west, false, false, 0, 3}},
                                  {14, PlayerBreak{alex, {-7, 8, -9}, true}},
                                  {15, SetPlayerSlot{alex, 40, {7, 1, 1561}}}}});
+        log.ticks.push_back({6, {{16, PickUp{alex, {12}, 3, true}},
+                                 {17, DropItem{alex, 36, true, {-4096, 8192, 5}, {1, -2, 3}}},
+                                 {18, ContainerClick{alex, BlockPos{-2, 3, -4}, -999, 1, 5, false, {1, 2, 3}, {-1, 0, 1}}},
+                                 {19, ContainerClick{alex, std::nullopt, 45, 40, 2, true, {}, {}}},
+                                 {20, CloseContainer{alex, {7, 8, 9}, {0, 400, 0}}},
+                                 {21, PlayerDeath{alex, {-40960, -245760, 81920}}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);

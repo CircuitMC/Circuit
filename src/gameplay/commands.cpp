@@ -270,6 +270,7 @@ Plan plan(RuleContext& ctx, const contracts::DropItem& c) {
     };
 }
 
+Plan plan(RuleContext& ctx, const contracts::PlayerDeath& c) { return detail::plan_death(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::ContainerClick& c) { return detail::plan_click(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::CloseContainer& c) { return detail::plan_close(ctx, c); }
 
