@@ -153,10 +153,26 @@ std::optional<std::vector<double>> numbers(const Tag& c, std::string_view key, s
     return out;
 }
 
-// Data components beyond an empty map.
-bool has_components(const Tag& item) {
+// The damage of an item stack from its data components: 0 without any;
+// nullopt when there are others, or the damage is not one the item can take.
+std::optional<std::uint16_t> component_damage(const Tag& item, std::uint16_t id) {
     const auto* c = item.find("components");
-    return c && !(c->type() == TagType::compound && c->keys().empty());
+    if (!c) return 0;
+    if (c->type() != TagType::compound) return std::nullopt;
+    if (c->keys().empty()) return 0;
+    const auto* info = gameplay::items::info(id);
+    if (c->keys().size() != 1 || c->keys()[0] != "minecraft:damage" || !info) return std::nullopt;
+    const auto& value = c->items()[0];
+    if (value.type() != TagType::int_ || value.integer() < 0 || value.integer() > info->max_damage) return std::nullopt;
+    return static_cast<std::uint16_t>(value.integer());
+}
+
+// The data components Circuit keeps: the damage.
+void set_components(Tag& item, const contracts::ItemStack& stack) {
+    if (stack.damage == 0) return;
+    auto c = Tag::compound();
+    c.set("minecraft:damage", Tag::int_(stack.damage));
+    item.set("components", std::move(c));
 }
 
 // "name[key=value,...]" with properties in key order, for the content mapping.
@@ -540,14 +556,14 @@ private:
             } else if (!mapped) {
                 unsupported("item " + id);
                 all = false;
-            } else if (has_components(item)) {
+            } else if (!component_damage(item, *mapped)) {
                 unsupported("item with components");
                 all = false;
-            } else if (count < 1 || count > contracts::max_stack_size) {
+            } else if (count < 1 || count > std::min<std::int64_t>(contracts::max_stack_size, gameplay::items::max_stack(*mapped))) {
                 unsupported(std::format("item stack of {}", count));
                 all = false;
             } else {
-                out.slots[static_cast<std::size_t>(*slot)] = {*mapped, static_cast<std::uint8_t>(count)};
+                out.slots[static_cast<std::size_t>(*slot)] = {*mapped, static_cast<std::uint8_t>(count), *component_damage(item, *mapped)};
             }
         }
         return all;
@@ -654,7 +670,7 @@ private:
             }
             const auto stack = content_.item(text(*item, "id").value_or(""));
             const auto count = integer(*item, "count").value_or(1);
-            if (!stack || has_components(*item) || count < 1 || count > contracts::max_stack_size) {
+            if (!stack || !component_damage(*item, *stack) || count < 1 || count > gameplay::items::max_stack(*stack)) {
                 unsupported("item entity of " + text(*item, "id").value_or("?"));
                 continue;
             }
@@ -680,11 +696,12 @@ private:
                 unsupported("item entity outside the imported chunks");
                 continue;
             }
-            out.stack = {*stack, static_cast<std::uint8_t>(count)};
+            out.stack = {*stack, static_cast<std::uint8_t>(count), *component_damage(*item, *stack)};
             const auto age = integer(e, "Age").value_or(0);
             if (age < 0) ++approximated_; // never-despawning items age normally in Circuit
             out.age = static_cast<std::uint32_t>(std::max<std::int64_t>(age, 0));
             out.on_ground = integer(e, "OnGround").value_or(0) != 0;
+            out.pickup_delay = static_cast<std::uint16_t>(std::clamp<std::int64_t>(integer(e, "PickupDelay").value_or(0), 0, 32767));
             out.last_tick = time_;
             entities_.push_back(out);
         }
@@ -917,6 +934,7 @@ private:
                 item.set("Slot", Tag::byte(static_cast<std::int8_t>(i)));
                 item.set("id", Tag::string(content_.item_name(slots[i].item)));
                 item.set("count", Tag::int_(slots[i].count));
+                set_components(item, slots[i]);
                 list.push(std::move(item));
             }
             return list;
@@ -977,7 +995,7 @@ private:
             t.set("OnGround", Tag::boolean(e->on_ground));
             t.set("Age", Tag::short_(static_cast<std::int16_t>(std::min<std::uint32_t>(e->age, 6000))));
             t.set("Health", Tag::short_(5));
-            t.set("PickupDelay", Tag::short_(0));
+            t.set("PickupDelay", Tag::short_(static_cast<std::int16_t>(e->pickup_delay)));
             t.set("Air", Tag::short_(300));
             t.set("Fire", Tag::short_(-1));
             // A UUID derived from the Circuit entity id ("Circuit" in the high bits).
@@ -987,6 +1005,7 @@ private:
             auto item = Tag::compound();
             item.set("id", Tag::string(content_.item_name(e->stack.item)));
             item.set("count", Tag::int_(e->stack.count));
+            set_components(item, e->stack);
             t.set("Item", std::move(item));
             list.push(std::move(t));
             ++report_.entities;

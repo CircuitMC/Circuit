@@ -2,6 +2,7 @@
 #pragma once
 #include <circuit/gameplay/rules.hpp>
 #include <array>
+#include <functional>
 #include <optional>
 #include <span>
 #include <vector>
@@ -67,6 +68,22 @@ std::uint8_t signal_from(RuleContext& ctx, BlockPos from, Direction toward, bool
 std::uint8_t best_neighbor_signal(RuleContext& ctx, BlockPos pos, bool wires);
 bool has_neighbor_signal(RuleContext& ctx, BlockPos pos);
 
+// ---- players (placement.cpp) ----
+// The block a player places with `item`, oriented by the player's facing and
+// the clicked face; nullopt for items that place no block.
+std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Direction horizontal, Direction look);
+// Whether a block obstructs players standing in its cell.
+bool has_collision(BlockState s);
+// Records a player slot (contracts::player_slots: the cursor) after a change.
+void record_slot(RuleContext& ctx, const PlayerInventory& inventory, std::uint8_t slot);
+// Adds a stack to a player's inventory in the target version's order for
+// picked-up items; returns what does not fit.
+ItemStack add_to_player(RuleContext& ctx, PlayerInventory& inv, ItemStack stack, std::uint8_t selected);
+bool player_has_room(const PlayerInventory& inv, ItemStack stack, std::uint8_t selected);
+// Container menus (menus.cpp).
+contracts::Result<std::function<void()>> plan_click(RuleContext& ctx, const contracts::ContainerClick& c);
+contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const contracts::CloseContainer& c);
+
 // ---- dust (redstone.cpp) ----
 bool is_dot(BlockState s);
 bool is_cross(BlockState s);
@@ -103,8 +120,17 @@ void tick_observer(RuleContext& ctx, BlockPos pos, BlockState state);
 bool piston_powered(RuleContext& ctx, BlockPos pos, Direction facing);
 void check_piston(RuleContext& ctx, BlockPos pos);
 void run_piston_event(RuleContext& ctx, const BlockEvent& event, BlockState state);
-// Spawns the items a destroyed block drops, at the block center without velocity.
-void drop_items(RuleContext& ctx, BlockPos pos, BlockState destroyed);
+// Spawns the items a destroyed block drops, at the block center without
+// velocity: what `tool` harvests (nothing for blocks that need a tool when
+// none is given).
+void drop_items(RuleContext& ctx, BlockPos pos, BlockState destroyed, ItemStack tool = {});
+// Spawns a removed container's contents, one entity per slot.
+void drop_contents(RuleContext& ctx, BlockPos pos, const std::vector<ItemStack>& slots);
+// Spawns an item a player dropped.
+void spawn_dropped(RuleContext& ctx, BlockPos cell, contracts::FixedVec position, contracts::FixedVec velocity, ItemStack stack,
+                   std::uint16_t pickup_delay);
+// Whether a piston head still has its base (or the moving piston taking its place).
+bool head_has_base(RuleContext& ctx, BlockPos pos, BlockState head);
 // Block-entity tick of a moving piston: completes the move after two ticks.
 void tick_moving_piston(RuleContext& ctx, BlockPos pos);
 

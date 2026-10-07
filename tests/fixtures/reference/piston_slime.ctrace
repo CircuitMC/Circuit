@@ -2,7 +2,7 @@ circuit-trace 1
 title Sticky piston with slime across a chunk edge
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v6
+harness circuit-reference-rules-v7
 mechanisms piston block_events neighbor_updates
 area 12 -1 -2 20 1 2
 ticks 6

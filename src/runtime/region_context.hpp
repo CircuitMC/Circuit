@@ -48,6 +48,8 @@ public:
     EntityId spawn_entity(const Entity& prototype) override;
     void relocate_entity(EntityId id, contracts::FixedVec position) override;
     void remove_entity(EntityId id) override;
+    const gameplay::PlayerInventory* peek_player(contracts::PlayerKey player) override;
+    gameplay::PlayerInventory& player(contracts::PlayerKey player) override;
     std::uint32_t record(TraceKind kind, BlockPos pos, std::uint64_t a, std::uint64_t b, std::uint64_t c) override;
 
     // Staged results, consumed by the engine's commit.

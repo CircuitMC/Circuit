@@ -716,6 +716,7 @@ WorldDump Engine::Impl::dump() const {
     std::ranges::sort(events, {}, [](const auto& p) { return p.first; });
     for (const auto& [seq, e] : events) d.block_events.push_back(e);
     d.tickets = world.tickets.list();
+    for (const auto& [key, inv] : world.players) d.players.push_back(inv);
     gameplay::canonicalize(d);
     return d;
 }
@@ -749,6 +750,7 @@ WorldSnapshot Engine::snapshot() const {
     std::ranges::sort(events, {}, [](const auto& p) { return p.first; });
     for (const auto& [seq, e] : events) d.block_events.push_back(e);
     d.tickets = world.tickets.list();
+    for (const auto& [key, inv] : world.players) d.players.push_back(inv);
     gameplay::canonicalize(d);
     snap.sections.reserve(d.chunks.size());
     for (const auto& c : d.chunks) snap.sections.push_back(std::move(sections.at(c.pos)));
@@ -816,7 +818,8 @@ void Engine::Impl::restore(const WorldDump& state) {
         if (!contracts::fixed_within_border(e.position) || e.id.value == 0 || e.id.value >= world.next_entity_id) bad("entity");
         if (e.position.y < lowest || e.position.y >= highest) bad("entity height");
         if (!valid_speed(e.velocity.x) || !valid_speed(e.velocity.y) || !valid_speed(e.velocity.z)) bad("entity velocity");
-        if (e.stack.item < 1 || e.stack.item > gameplay::items::max_id || e.stack.count < 1 || e.stack.count > contracts::max_stack_size)
+        if (!gameplay::items::valid(e.stack.item) || e.stack.count < 1 || e.stack.count > gameplay::items::max_stack(e.stack.item)
+            || e.stack.damage > gameplay::items::info(e.stack.item)->max_damage || e.pickup_delay > 32767)
             bad("entity stack");
         const auto it = columns.find(contracts::chunk_of(contracts::block_of(e.position)));
         if (it == columns.end()) bad("entity in an unknown column");
@@ -834,6 +837,17 @@ void Engine::Impl::restore(const WorldDump& state) {
     for (const auto& e : state.block_events) column(e.pos).events.push_back({e, world.next_event_seq++, {}});
     for (const auto& t : state.tickets)
         if (!world.tickets.add({t.id, t.center, t.radius, t.load_radius}, bundle.limits)) bad("ticket");
+    const auto valid_stack = [](const contracts::ItemStack& s) {
+        if (s.item == 0 && s.count == 0 && s.damage == 0) return true;
+        const auto* info = gameplay::items::info(s.item);
+        return info && s.count >= 1 && s.count <= info->max_stack && s.damage <= info->max_damage;
+    };
+    for (const auto& p : state.players) {
+        if (!valid_stack(p.cursor) || !std::ranges::all_of(p.slots, valid_stack) || p.drag_stage > 1 || p.drag_type > 2
+            || p.drag_slots.size() > 256 || std::ranges::any_of(p.drag_slots, [](std::int16_t s) { return s < 0 || s >= 256; }))
+            bad("player inventory");
+        if (!world.players.emplace(p.player, p).second) bad("duplicate player");
+    }
 }
 Engine::~Engine() = default;
 void Engine::advance(const std::vector<Command>& commands) { impl_->advance(commands); }
@@ -883,6 +897,14 @@ contracts::Result<std::optional<gameplay::BlockEntity>> WorldView::block_entity(
     const auto it = data->block_entities.find(pos);
     if (it == data->block_entities.end()) return std::optional<gameplay::BlockEntity>{};
     return std::optional<gameplay::BlockEntity>{it->second};
+}
+
+contracts::Result<std::optional<gameplay::PlayerInventory>> WorldView::player(contracts::PlayerKey key) const {
+    const auto& impl = *engine_->impl_;
+    if (impl.epoch != epoch_) return std::unexpected(contracts::ErrorCode::stale_view);
+    const auto it = impl.world.players.find(key);
+    if (it == impl.world.players.end()) return std::optional<gameplay::PlayerInventory>{};
+    return std::optional<gameplay::PlayerInventory>{it->second};
 }
 
 contracts::Result<std::optional<gameplay::Entity>> WorldView::entity(EntityId id) const {

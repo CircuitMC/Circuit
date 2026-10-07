@@ -20,6 +20,7 @@ void run_entity(RuleContext& ctx, EntityId id) {
     if (e->last_tick == now) return; // Basic advancement happens at most once per logical tick.
     e->last_tick = now;
     e->age += 1;
+    if (e->pickup_delay > 0 && e->pickup_delay != 32767) --e->pickup_delay; // 32767: never
     const auto start = e->position;
     if (e->age >= despawn_age) {
         ctx.record(TraceKind::entity_removed, block_of(start), id.value, static_cast<std::uint64_t>(RemovalReason::despawned));

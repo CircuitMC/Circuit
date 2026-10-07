@@ -156,10 +156,19 @@ constexpr bool fixed_within_border(FixedVec v) noexcept {
 struct ItemStack {
     std::uint16_t item{};
     std::uint8_t count{};
+    std::uint16_t damage{}; // durability used, for items that have durability
     [[nodiscard]] constexpr bool empty() const noexcept { return item == 0 || count == 0; }
+    // Stacks of the same item and damage merge (up to the item's limit).
+    [[nodiscard]] constexpr bool same_kind(const ItemStack& o) const noexcept { return item == o.item && damage == o.damage; }
     auto operator<=>(const ItemStack&) const = default;
 };
-inline constexpr std::uint8_t max_stack_size = 64;
+
+// A player in the simulation: the profile UUID's two halves.
+struct PlayerKey {
+    std::uint64_t hi{}, lo{};
+    auto operator<=>(const PlayerKey&) const = default;
+};
+inline constexpr std::uint8_t max_stack_size = 64; // per container slot; items may stack lower
 
 } // namespace circuit::contracts
 

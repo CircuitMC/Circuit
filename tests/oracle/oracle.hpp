@@ -60,6 +60,7 @@ private:
     std::deque<gameplay::BlockEvent> events_;
     std::set<gameplay::BlockEvent> pending_events_;
     gameplay::TicketSet tickets_;
+    std::map<contracts::PlayerKey, gameplay::PlayerInventory> players_;
     std::uint64_t next_suborder_{};
     std::uint64_t next_entity_id_{1};
     std::uint64_t next_block_entity_order_{};

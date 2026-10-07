@@ -109,6 +109,8 @@ public:
     [[nodiscard]] contracts::Result<gameplay::BlockState> block(contracts::BlockPos pos) const;
     [[nodiscard]] contracts::Result<std::optional<gameplay::BlockEntity>> block_entity(contracts::BlockPos pos) const;
     [[nodiscard]] contracts::Result<std::optional<gameplay::Entity>> entity(contracts::EntityId id) const;
+    // A player's inventory; nullopt when the player holds nothing.
+    [[nodiscard]] contracts::Result<std::optional<gameplay::PlayerInventory>> player(contracts::PlayerKey key) const;
 
 private:
     friend class Engine;

@@ -4,6 +4,7 @@
 #include "log.hpp"
 #include "world_meta.hpp"
 #include <circuit/gameplay/rules.hpp>
+#include <circuit/gameplay/survival.hpp>
 #include <circuit/storage/world_directory.hpp>
 #include <algorithm>
 #include <atomic>
@@ -33,13 +34,14 @@ namespace nbt = protocol::nbt;
 
 namespace {
 constexpr double max_move_squared = 100.0; // per accepted movement packet
-constexpr double reach = 6.0; // creative interaction range 5 plus 1, to the nearest point of the block
+// Block interaction range plus 1, to the nearest point of the block: 5 + 1 in
+// creative, 4.5 + 1 otherwise.
+constexpr double creative_reach = 6.0, survival_reach = 5.5;
 constexpr std::size_t chunks_per_tick = 32; // per player
 constexpr std::uint32_t spawn_ticket = 1;
 constexpr std::uint8_t spawn_radius = 2;
-constexpr std::size_t inventory_slots = 46;
-constexpr std::int32_t hotbar_first = 36;
-constexpr std::uint8_t creative = 1, spectator = 3;
+constexpr std::size_t inventory_slots = contracts::player_slots;
+constexpr std::uint8_t survival = 0, creative = 1, spectator = 3;
 
 struct Player {
     std::shared_ptr<Peer> peer;
@@ -58,38 +60,58 @@ struct Player {
     std::uint32_t ticket{};
     std::int32_t next_teleport{1};
     std::optional<std::int32_t> awaiting_teleport;
-    std::array<std::pair<std::int32_t, std::int32_t>, inventory_slots> inventory{}; // wire item id, count
-    std::int32_t held{};
+    std::int32_t held{}; // hotbar slot 0-8; the inventory itself is simulation state
+    // A survival player's block breaking in progress: the block, the tick it
+    // started, and whether the client finished early (then it completes when
+    // the progress reaches the whole block).
+    struct Digging {
+        BlockPos pos;
+        std::uint64_t start{};
+        bool delayed{};
+    };
+    std::optional<Digging> digging;
+    // The container window the player has open, if any (window ids 1-100).
+    struct Window {
+        std::int32_t id{};
+        BlockPos pos;
+        std::size_t container_slots{};
+    };
+    std::optional<Window> window;
+    std::int32_t next_window{1};
+    // The client's view of its window, as the target version's container
+    // synchronizer keeps it: the window it describes and its slots and carried
+    // stack as last sent. Unknown entries (nullopt), and the whole window when
+    // `remote_window` differs, are sent at the next synchronization.
+    std::int32_t remote_window{-1};
+    std::vector<std::optional<WireStack>> remote;
+    std::optional<WireStack> remote_carried;
     std::int32_t inventory_state{};
     std::vector<std::int32_t> acks;
     bool moved{};
     std::set<std::uint64_t> seen_by; // peers whose clients show this player's entity
 };
 
-// What the world keeps of a player between sessions. Items are stored by
-// name, so saved inventories do not depend on a protocol's numbering.
+// What the world keeps of a player between sessions besides the inventory,
+// which is simulation state.
 struct SavedPlayer {
     Vec3 pos;
     float yaw{}, pitch{};
     std::uint8_t game_mode{creative};
-    std::array<std::pair<std::string, std::int32_t>, inventory_slots> inventory{};
     std::int32_t held{};
 };
 
 std::vector<std::byte> encode_players(const std::map<Uuid, SavedPlayer>& players) {
     protocol::Writer w;
-    w.varint(1).varint(static_cast<std::int32_t>(players.size()));
-    for (const auto& [uuid, p] : players) {
+    w.varint(2).varint(static_cast<std::int32_t>(players.size()));
+    for (const auto& [uuid, p] : players)
         w.uuid(uuid).f64(p.pos.x).f64(p.pos.y).f64(p.pos.z).f32(p.yaw).f32(p.pitch).u8(p.game_mode).varint(p.held);
-        for (const auto& [name, count] : p.inventory) w.string(name, 256).varint(count);
-    }
     return w.take();
 }
 std::optional<std::map<Uuid, SavedPlayer>> decode_players(std::span<const std::byte> bytes) {
     protocol::Reader r(bytes);
     const auto version = r.varint();
     const auto count = r.length(1u << 20, 30);
-    if (!version || *version != 1 || !count) return std::nullopt;
+    if (!version || *version != 2 || !count) return std::nullopt;
     std::map<Uuid, SavedPlayer> out;
     for (std::size_t i = 0; i < *count; ++i) {
         SavedPlayer p;
@@ -104,13 +126,6 @@ std::optional<std::map<Uuid, SavedPlayer>> decode_players(std::span<const std::b
         p.pitch = *pitch;
         p.game_mode = *mode;
         p.held = *held;
-        for (auto& [name, n] : p.inventory) {
-            const auto item = r.string(256);
-            const auto c = r.varint();
-            if (!item || !c) return std::nullopt;
-            name = *item;
-            n = *c;
-        }
         out[*uuid] = std::move(p);
     }
     if (r.remaining() != 0) return std::nullopt;
@@ -145,7 +160,11 @@ std::int32_t chebyshev(ChunkPos a, ChunkPos b) { return std::max(std::abs(a.x - 
 
 // Horizontal direction the player looks at: yaw 0 is south, 90 west, 180 north, 270 east.
 // Player Abilities flags: invulnerable, flying, may fly, instant build.
-std::uint8_t abilities(std::uint8_t game_mode) { return game_mode == spectator ? 0x01 | 0x02 | 0x04 : 0x01 | 0x04 | 0x08; }
+std::uint8_t abilities(std::uint8_t game_mode) {
+    if (game_mode == spectator) return 0x01 | 0x02 | 0x04;
+    if (game_mode == creative) return 0x01 | 0x04 | 0x08;
+    return 0;
+}
 
 Direction horizontal_look(float yaw) {
     const auto quarter = static_cast<int>(std::floor(static_cast<double>(yaw) / 90.0 + 0.5)) & 3;
@@ -292,13 +311,7 @@ struct Game::Impl final : GameServices {
         if (auto ok = save(); !ok) throw std::runtime_error(std::format("world {}: cannot save: {}", where, ok.error()));
     }
 
-    SavedPlayer snapshot(const Player& p) const {
-        SavedPlayer s{p.pos, p.yaw, p.pitch, p.game_mode, {}, p.held};
-        for (std::size_t i = 0; i < inventory_slots; ++i)
-            if (const auto [item, count] = p.inventory[i]; count > 0)
-                if (const auto name = content.item_name(item)) s.inventory[i] = {std::string(*name), count};
-        return s;
-    }
+    SavedPlayer snapshot(const Player& p) const { return {p.pos, p.yaw, p.pitch, p.game_mode, p.held}; }
 
     // ---- checkpoints --------------------------------------------------------
     //
@@ -497,7 +510,7 @@ struct Game::Impl final : GameServices {
         all.push_back(entry(p));
         peer.send(wire.player_info_add(all));
         broadcast(wire.player_info_add({entry(p)}));
-        send_inventory(p);
+        sync_inventory(p);
         peer.send(wire.game_event(13, 0.0f)); // start waiting for level chunks
         peer.send(wire.chunk_center(p.center.x, p.center.z));
         teleport(p, p.pos);
@@ -515,13 +528,8 @@ struct Game::Impl final : GameServices {
             p.yaw = s.yaw;
             p.pitch = std::clamp(s.pitch, -90.0f, 90.0f);
         }
-        if (s.game_mode == creative || s.game_mode == spectator) p.game_mode = s.game_mode;
+        if (s.game_mode == survival || s.game_mode == creative || s.game_mode == spectator) p.game_mode = s.game_mode;
         if (s.held >= 0 && s.held < 9) p.held = s.held;
-        for (std::size_t i = 0; i < inventory_slots; ++i) {
-            const auto& [name, count] = s.inventory[i];
-            if (name.empty() || count < 1 || count > 99) continue;
-            if (const auto id = content.item_id(name)) p.inventory[i] = {*id, count};
-        }
     }
 
     PlayerListEntry entry(const Player& p) const {
@@ -560,9 +568,107 @@ struct Game::Impl final : GameServices {
         p.peer->send(wire.player_position(id, to, p.yaw, p.pitch));
     }
 
-    void send_inventory(Player& p) {
-        std::vector<std::pair<std::int32_t, std::int32_t>> slots(p.inventory.begin(), p.inventory.end());
-        p.peer->send(wire.inventory_content(++p.inventory_state, slots));
+    static contracts::PlayerKey key_of(const Player& p) { return {p.uuid.high, p.uuid.low}; }
+
+    WireStack wire_stack(contracts::ItemStack s) const {
+        if (s.empty()) return {};
+        const auto it = item_wire.find(s.item);
+        return it == item_wire.end() ? WireStack{} : WireStack{it->second, s.count, s.damage};
+    }
+
+    // The player's open window as the simulation holds it: the own inventory
+    // (window 0), or a container's slots followed by the main inventory and
+    // the hotbar.
+    // Sends the window's slots that differ from the client's view, one by
+    // one, or the whole window when the client describes another one.
+    void sync_inventory(Player& p) {
+        const auto view = engine->view();
+        const auto inv = view.player(key_of(p));
+        const auto player_slot = [&](std::size_t i) {
+            return inv && *inv ? wire_stack((*inv)->slots[i]) : WireStack{};
+        };
+        const auto carried = inv && *inv ? wire_stack((*inv)->cursor) : WireStack{};
+        std::vector<WireStack> slots;
+        if (!p.window) {
+            for (std::size_t i = 0; i < inventory_slots; ++i) slots.push_back(player_slot(i));
+        } else {
+            for (const auto part : container_parts_of(p.window->pos))
+                if (const auto be = view.block_entity(part); be && *be)
+                    for (const auto& s : (*be)->slots) slots.push_back(wire_stack(s));
+            for (std::size_t i = 9; i < 45; ++i) slots.push_back(player_slot(i));
+        }
+        const auto id = p.window ? p.window->id : 0;
+        if (p.remote_window != id || p.remote.size() != slots.size()) {
+            p.peer->send(wire.container_content(id, ++p.inventory_state, slots, carried));
+            p.remote_window = id;
+            p.remote.assign(slots.begin(), slots.end());
+            p.remote_carried = carried;
+            return;
+        }
+        for (std::size_t i = 0; i < slots.size(); ++i)
+            if (p.remote[i] != slots[i]) {
+                p.peer->send(wire.container_slot(id, ++p.inventory_state, static_cast<std::int16_t>(i), slots[i]));
+                p.remote[i] = slots[i];
+            }
+        if (p.remote_carried != carried) {
+            p.peer->send(wire.cursor_item(carried));
+            p.remote_carried = carried;
+        }
+    }
+
+    // The parts of the container at `pos` in the menu's slot order: the right
+    // half of a double chest first.
+    std::vector<BlockPos> container_parts_of(BlockPos pos) const {
+        const auto s = at(pos);
+        if (!gameplay::is_container(s.type())) return {};
+        if (const auto d = gameplay::chest_partner(s)) {
+            const auto other = pos.relative(*d);
+            const auto o = at(other);
+            if (o.is(BlockType::chest) && o.facing() == s.facing() && gameplay::chest_partner(o) == contracts::opposite(*d)) {
+                if (s.level() == static_cast<std::uint8_t>(gameplay::blocks::ChestType::right)) return {pos, other};
+                return {other, pos};
+            }
+        }
+        return {pos};
+    }
+    std::size_t container_slot_count(BlockPos pos) const {
+        std::size_t n = 0;
+        for (const auto part : container_parts_of(pos)) n += gameplay::container_size(at(part).type());
+        return n;
+    }
+
+    // Where items a player throws appear, and how fast: at eye height less
+    // 0.3, 0.3 blocks per tick along the look and 0.1 up (the target version
+    // adds a small random spread).
+    std::pair<contracts::FixedVec, contracts::FixedVec> throw_from(const Player& p) const {
+        constexpr double rad = 3.14159265358979323846 / 180.0;
+        const double yaw = p.yaw * rad, pitch = p.pitch * rad;
+        const auto fixed = [](double d) { return static_cast<std::int64_t>(std::llround(d * contracts::fixed_one)); };
+        return {{fixed(p.pos.x), fixed(p.pos.y + (p.sneaking ? 1.27 : 1.62) - 0.3), fixed(p.pos.z)},
+                {fixed(-std::sin(yaw) * std::cos(pitch) * 0.3), fixed(-std::sin(pitch) * 0.3 + 0.1),
+                 fixed(std::cos(yaw) * std::cos(pitch) * 0.3)}};
+    }
+
+    void open_window(Player& p, BlockPos pos) {
+        const auto slots = container_slot_count(pos);
+        // Menu types of the protocol's menu registry (minecraft.wiki, Java
+        // Edition protocol/Inventory, and observed from the target version):
+        // generic_9x3 2, generic_9x6 5, hopper 16.
+        const std::int32_t type = slots == 54 ? 5 : slots == 5 ? 16 : 2;
+        const auto title = slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper" : "Chest";
+        if (p.window) close_window(p, true);
+        p.window = Player::Window{p.next_window, pos, slots};
+        p.next_window = p.next_window % 100 + 1;
+        p.peer->send(wire.open_screen(p.window->id, type, title));
+        sync_inventory(p);
+    }
+    // Closes the open window; `tell` sends the close to the client.
+    void close_window(Player& p, bool tell) {
+        if (!p.window) return;
+        if (tell) p.peer->send(wire.close_screen(p.window->id));
+        const auto [position, velocity] = throw_from(p);
+        admit(contracts::CloseContainer{key_of(p), position, velocity});
+        p.window.reset();
     }
 
     // ---- intents ----------------------------------------------------------
@@ -620,14 +726,28 @@ struct Game::Impl final : GameServices {
         const double eye = p.pos.y + (p.sneaking ? 1.27 : 1.62);
         const auto axis = [](double v, double low) { return v < low ? low - v : (v > low + 1.0 ? v - low - 1.0 : 0.0); };
         const double dx = axis(p.pos.x, b.x), dy = axis(eye, b.y), dz = axis(p.pos.z, b.z);
+        const double reach = p.game_mode == creative ? creative_reach : survival_reach;
         return dx * dx + dy * dy + dz * dz <= reach * reach;
     }
 
-    // A block of this state would intersect a player standing or flying there.
-    bool occupied_by_player(BlockPos b, BlockState state) const {
-        // Blocks without collision never obstruct.
-        if (state.is(BlockType::redstone_wire) || state.is(BlockType::lever) || state.is(BlockType::wheat) || state.is(BlockType::water))
-            return false;
+    // Within the interaction range plus `extra` (containers stay open up to 4 further).
+    bool in_reach_plus(const Player& p, BlockPos b, double extra) const {
+        const double eye = p.pos.y + (p.sneaking ? 1.27 : 1.62);
+        const auto axis = [](double v, double low) { return v < low ? low - v : (v > low + 1.0 ? v - low - 1.0 : 0.0); };
+        const double dx = axis(p.pos.x, b.x), dy = axis(eye, b.y), dz = axis(p.pos.z, b.z);
+        const double reach = (p.game_mode == creative ? creative_reach : survival_reach) + extra;
+        return dx * dx + dy * dy + dz * dz <= reach * reach;
+    }
+
+    // The stack in a player's slot as the last tick left it.
+    contracts::ItemStack slot_of(const Player& p, std::uint8_t slot) const {
+        if (const auto inv = engine->view().player(key_of(p)); inv && *inv) return (*inv)->slots[slot];
+        return {};
+    }
+    std::uint8_t main_hand(const Player& p) const { return static_cast<std::uint8_t>(contracts::hotbar_first + p.held); }
+
+    // A full block here would intersect a player standing or flying there.
+    bool occupied_by_player(BlockPos b) const {
         for (const auto& [id, o] : players) {
             if (o.game_mode == spectator) continue;
             const bool x = b.x + 1 > o.pos.x - 0.3 && b.x < o.pos.x + 0.3;
@@ -649,44 +769,139 @@ struct Game::Impl final : GameServices {
     // changes nothing; the client restores its prediction at the acknowledgement.
     void handle(Player& p, intent::Dig& d) {
         const auto b = block_pos(d.pos);
+        if (d.status == 3 || d.status == 4) {
+            drop(p, d.status == 3);
+            return;
+        }
         p.acks.push_back(d.sequence);
-        if (d.status != 0 && d.status != 2) return; // creative players break blocks when they start digging
-        if (p.game_mode != creative || !in_reach(p, b) || !gameplay::in_world(bundle, b)) {
+        if (d.status == 1) { // aborted
+            p.digging.reset();
+            return;
+        }
+        if (d.status != 0 && d.status != 2) return;
+        if (p.game_mode == spectator || !in_reach(p, b) || !gameplay::in_world(bundle, b)) {
             correct(p, b);
             return;
         }
-        admit(contracts::PlayerBreak{b});
+        if (p.game_mode == creative) {
+            // Creative players break blocks when they start digging.
+            if (d.status == 0) admit(contracts::PlayerBreak{key_of(p), b, false, main_hand(p)});
+            return;
+        }
+        // Survival: the time a block takes follows the target version's
+        // destroy progress; the client's finish is accepted at 70 % (network
+        // delay), and an early finish completes once the progress is whole.
+        const auto progress = gameplay::destroy_progress(at(b), slot_of(p, main_hand(p)), p.on_ground, eyes_in_water(p));
+        if (d.status == 0) {
+            if (progress >= 1.0f) {
+                admit(contracts::PlayerBreak{key_of(p), b, true, main_hand(p)});
+                p.digging.reset();
+            } else {
+                p.digging = Player::Digging{b, tick_count.load(), false};
+            }
+            return;
+        }
+        if (!p.digging || p.digging->pos != b) {
+            correct(p, b);
+            return;
+        }
+        const auto ticks = static_cast<float>(tick_count.load() - p.digging->start);
+        if (progress * (ticks + 1.0f) >= 0.7f) {
+            admit(contracts::PlayerBreak{key_of(p), b, true, main_hand(p)});
+            p.digging.reset();
+        } else {
+            p.digging->delayed = true;
+        }
     }
 
-    // State placed by the held item, oriented by the player and the clicked face.
-    std::optional<BlockState> placement(const Player& p, std::string_view item, Direction face) const {
-        const auto h = horizontal_look(p.yaw);
-        const auto l = look(p.yaw, p.pitch);
-        if (item == "minecraft:stone") return blocks::stone();
-        if (item == "minecraft:glass") return blocks::glass();
-        if (item == "minecraft:obsidian") return blocks::obsidian();
-        if (item == "minecraft:redstone_block") return blocks::redstone_block();
-        if (item == "minecraft:slime_block") return blocks::slime();
-        if (item == "minecraft:redstone_lamp") return blocks::lamp();
-        if (item == "minecraft:redstone") return blocks::wire();
-        if (item == "minecraft:lever") {
-            // Mounted on the clicked face: floor and ceiling levers face the player's
-            // look, wall levers point away from the wall.
-            if (face == Direction::up) return blocks::lever(false, h, blocks::LeverFace::floor);
-            if (face == Direction::down) return blocks::lever(false, h, blocks::LeverFace::ceiling);
-            return blocks::lever(false, face, blocks::LeverFace::wall);
+    // Whether water covers the player's eyes, as the target version decides
+    // it: the fluid in the cell 1/9 below the eyes reaches above that point.
+    bool eyes_in_water(const Player& p) const {
+        const double y = p.pos.y + (p.sneaking ? 1.27 : 1.62) - 1.0 / 9.0;
+        const BlockPos cell{static_cast<std::int32_t>(std::floor(p.pos.x)), static_cast<std::int32_t>(std::floor(y)),
+                            static_cast<std::int32_t>(std::floor(p.pos.z))};
+        const auto height = gameplay::fluid_height(at(cell), at(cell.relative(contracts::Direction::up)));
+        return height > 0.0f && cell.y + static_cast<double>(height) > y;
+    }
+
+    // Survival digging that the client finished early completes when the
+    // progress reaches the whole block.
+    void continue_digging() {
+        for (auto& [id, p] : players) {
+            if (!p.digging || !p.digging->delayed) continue;
+            const auto state = at(p.digging->pos);
+            if (state.is_air()) {
+                p.digging.reset();
+                continue;
+            }
+            const auto ticks = static_cast<float>(tick_count.load() - p.digging->start);
+            if (gameplay::destroy_progress(state, slot_of(p, main_hand(p)), p.on_ground, eyes_in_water(p)) * (ticks + 1.0f) >= 1.0f) {
+                admit(contracts::PlayerBreak{key_of(p), p.digging->pos, true, main_hand(p)});
+                p.digging.reset();
+            }
         }
-        if (item == "minecraft:repeater") return blocks::repeater(h);
-        if (item == "minecraft:comparator") return blocks::comparator(h);
-        if (item == "minecraft:observer") return blocks::observer(contracts::opposite(l));
-        if (item == "minecraft:piston") return blocks::piston(contracts::opposite(l));
-        if (item == "minecraft:sticky_piston") return blocks::piston(contracts::opposite(l), true);
-        if (item == "minecraft:hopper")
-            return blocks::hopper(face == Direction::up || face == Direction::down ? Direction::down : contracts::opposite(face));
-        if (item == "minecraft:chest") return blocks::chest(contracts::opposite(h));
-        if (item == "minecraft:water_bucket") return blocks::water_source();
-        if (item == "minecraft:wheat_seeds") return blocks::wheat();
-        return std::nullopt;
+    }
+
+    // Dropping from the main hand: one item, or the whole stack.
+    void drop(Player& p, bool whole_stack) {
+        if (p.game_mode == spectator) return;
+        const auto [position, velocity] = throw_from(p);
+        admit(contracts::DropItem{key_of(p), main_hand(p), whole_stack, position, velocity});
+    }
+
+    // Players pick up the items their box, widened by 1 sideways and 0.5 up
+    // and down, touches once the pickup delay is over. One player per item
+    // and tick, in player order.
+    struct Pickup {
+        std::uint64_t player;
+        std::uint64_t entity;
+        std::int32_t count;
+    };
+    std::map<std::uint64_t, Pickup> pickups; // by admission
+    void detect_pickups() {
+        const auto view = engine->view();
+        std::set<std::uint64_t> taken;
+        for (auto& [id, p] : players) {
+            if (p.game_mode == spectator) continue;
+            for (const auto& [entity_id, t] : tracked) {
+                if (taken.contains(entity_id)) continue;
+                const auto e = view.entity(EntityId{entity_id});
+                if (!e || !*e || (*e)->pickup_delay > 0) continue;
+                const auto pos = entity_vec((*e)->position);
+                // The item's box is 0.25 wide and high.
+                const bool x = pos.x + 0.125 > p.pos.x - 1.3 && pos.x - 0.125 < p.pos.x + 1.3;
+                const bool z = pos.z + 0.125 > p.pos.z - 1.3 && pos.z - 0.125 < p.pos.z + 1.3;
+                const bool y = pos.y + 0.25 > p.pos.y - 0.5 && pos.y < p.pos.y + 1.8 + 0.5;
+                if (!x || !y || !z) continue;
+                const auto admission = queue.admit(contracts::PickUp{key_of(p), EntityId{entity_id}, main_hand(p), p.game_mode == creative});
+                if (!admission) continue;
+                taken.insert(entity_id);
+                pickups[*admission] = {id, entity_id, (*e)->stack.count};
+            }
+        }
+    }
+
+    // The pickup animation for every pickup the tick applied.
+    void publish_pickups(const std::vector<contracts::Command>& commands) {
+        if (pickups.empty()) return;
+        std::set<std::uint64_t> applied;
+        for (const auto& r : engine->trace())
+            if (r.kind == contracts::TraceKind::command_applied) applied.insert(r.a);
+        for (const auto& c : commands) {
+            const auto it = pickups.find(c.admission);
+            if (it == pickups.end()) continue;
+            const auto pickup = it->second;
+            pickups.erase(it);
+            if (!applied.contains(c.admission)) continue;
+            const auto collector = players.find(pickup.player);
+            const auto entity = tracked.find(pickup.entity);
+            if (collector == players.end() || entity == tracked.end()) continue;
+            const auto packet = wire.take_item_entity(entity->second.protocol_id, collector->second.entity_id, pickup.count);
+            collector->second.peer->send(packet);
+            for (const auto viewer : entity->second.viewers)
+                if (viewer != pickup.player)
+                    if (const auto v = players.find(viewer); v != players.end()) v->second.peer->send(packet);
+        }
     }
 
     void handle(Player& p, intent::UseOn& u) {
@@ -700,18 +915,21 @@ struct Game::Impl final : GameServices {
         }
         // The client sends the off hand only when the main hand did nothing,
         // and the off hand holds nothing in this server.
-        if (u.hand != 0) return;
         const auto face = static_cast<Direction>(u.face);
-        const auto [item, count] = p.inventory[static_cast<std::size_t>(hotbar_first + p.held)];
-        const auto name = count > 0 ? content.item_name(item) : std::nullopt;
-        const auto state = name ? placement(p, *name, face) : std::nullopt;
-        contracts::PlayerUse use{b, face, std::nullopt, p.sneaking, count > 0, 0};
-        if (state) {
-            use.place = state->raw();
-            const auto beside = b.relative(face);
-            if (!occupied_by_player(b, *state)) use.allowed |= 1;
-            if (gameplay::in_world(bundle, beside) && in_reach(p, beside) && !occupied_by_player(beside, *state)) use.allowed |= 2;
-        }
+        const auto beside = b.relative(face);
+        contracts::PlayerUse use{key_of(p),
+                                 static_cast<std::uint8_t>(u.hand == 0 ? contracts::hotbar_first + p.held : contracts::offhand_slot),
+                                 b,
+                                 face,
+                                 horizontal_look(p.yaw),
+                                 look(p.yaw, p.pitch),
+                                 p.sneaking,
+                                 p.game_mode == survival,
+                                 1,
+                                 0};
+        if (gameplay::in_world(bundle, beside) && in_reach(p, beside)) use.reach |= 2;
+        if (!occupied_by_player(b)) use.free |= 1;
+        if (!occupied_by_player(beside)) use.free |= 2;
         admit(use);
     }
 
@@ -728,16 +946,62 @@ struct Game::Impl final : GameServices {
     void handle(Player& p, intent::CreativeSlot& c) {
         if (p.game_mode != creative) return;
         if (c.slot < 0 || c.slot >= static_cast<std::int16_t>(inventory_slots)) return; // dropping is not supported
-        if (c.count < 0 || c.count > 99 || (c.count > 0 && !content.item_name(c.item))) {
-            send_inventory(p);
+        if (c.count == 0) {
+            admit(contracts::SetPlayerSlot{key_of(p), static_cast<std::uint8_t>(c.slot), {}});
+            if (!p.window && p.remote_window == 0 && static_cast<std::size_t>(c.slot) < p.remote.size())
+                p.remote[static_cast<std::size_t>(c.slot)] = WireStack{};
             return;
         }
-        p.inventory[static_cast<std::size_t>(c.slot)] = c.count == 0 ? std::pair{0, 0} : std::pair{c.item, c.count};
+        // The item must be one the rule set knows, in a valid count.
+        const auto name = content.item_name(c.item);
+        const auto item = name ? mapping.item(*name) : std::unexpected(std::string("unknown"));
+        if (c.count < 0 || !item || c.count > gameplay::items::max_stack(*item)) {
+            p.remote_window = -1; // the client shows what it asked for: send everything again
+            return;
+        }
+        const auto* info = gameplay::items::info(*item);
+        const auto damage = static_cast<std::uint16_t>(std::clamp<std::int32_t>(c.damage, 0, info ? info->max_damage : 0));
+        const contracts::ItemStack stack{*item, static_cast<std::uint8_t>(c.count), damage};
+        admit(contracts::SetPlayerSlot{key_of(p), static_cast<std::uint8_t>(c.slot), stack});
+        // As in the target version, the slot is not echoed: the client already shows it.
+        if (!p.window && p.remote_window == 0 && static_cast<std::size_t>(c.slot) < p.remote.size())
+            p.remote[static_cast<std::size_t>(c.slot)] = wire_stack(stack);
     }
 
     void handle(Player& p, intent::Sneak& s) { p.sneaking = s.sneaking; }
     void handle(Player& p, intent::Flying& f) { p.flying = f.flying && (p.game_mode == creative || p.game_mode == spectator); }
     void handle(Player&, intent::Loaded&) {}
+
+    // Clicks apply to the open window (0: the own inventory). As in the target
+    // version, the client's predicted slots and carried stack become its view,
+    // so that only wrong predictions are corrected after the tick; a click made
+    // on a stale state id gets the whole window.
+    void handle(Player& p, intent::ContainerClick& c) {
+        const auto id = p.window ? p.window->id : 0;
+        if (c.window != id) return;
+        if (p.game_mode == spectator || c.mode < 0 || c.mode > 6 || c.unknown || c.state != p.inventory_state) {
+            p.remote_window = -1;
+        } else {
+            for (const auto& [i, stack] : c.changed)
+                if (i >= 0 && static_cast<std::size_t>(i) < p.remote.size()) p.remote[static_cast<std::size_t>(i)] = stack;
+            p.remote_carried = c.carried;
+        }
+        if (p.game_mode == spectator || c.mode < 0 || c.mode > 6) return;
+        std::optional<BlockPos> container;
+        if (p.window) container = p.window->pos;
+        const auto [position, velocity] = throw_from(p);
+        admit(contracts::ContainerClick{key_of(p), container, c.slot, static_cast<std::uint8_t>(c.button), static_cast<std::uint8_t>(c.mode),
+                                        p.game_mode == creative, position, velocity});
+    }
+
+    void handle(Player& p, intent::ContainerClose& c) {
+        if (p.window && c.window == p.window->id) {
+            close_window(p, false);
+        } else if (!p.window && c.window == 0) {
+            const auto [position, velocity] = throw_from(p);
+            admit(contracts::CloseContainer{key_of(p), position, velocity});
+        }
+    }
 
     void handle(Player& p, intent::Chat& c) {
         std::string text;
@@ -760,7 +1024,7 @@ struct Game::Impl final : GameServices {
         if (args[0] == "help") {
             std::string extra;
             for (const auto& [name, usage] : extensions->commands()) extra += std::format(", /{}{}{}", name, usage.empty() ? "" : " ", usage);
-            message(p, "Commands: /help, /players, /tp <x> <y> <z>, /gamemode <creative|spectator>, /tps" + extra);
+            message(p, "Commands: /help, /players, /tp <x> <y> <z>, /gamemode <survival|creative|spectator>, /tps" + extra);
         } else if (args[0] == "players") {
             std::string names;
             for (const auto& [id, o] : players) names += (names.empty() ? "" : ", ") + o.name;
@@ -783,8 +1047,10 @@ struct Game::Impl final : GameServices {
             p.peer->send(wire.chunk_center(chunk.x, chunk.z));
             admit(contracts::RemoveTicket{p.ticket});
             admit(player_ticket(p, chunk));
-        } else if (args[0] == "gamemode" && args.size() == 2 && (args[1] == "creative" || args[1] == "spectator")) {
-            p.game_mode = args[1] == "creative" ? creative : spectator;
+        } else if (args[0] == "gamemode" && args.size() == 2
+                   && (args[1] == "survival" || args[1] == "creative" || args[1] == "spectator")) {
+            p.game_mode = args[1] == "survival" ? survival : args[1] == "creative" ? creative : spectator;
+            p.digging.reset();
             p.peer->send(wire.game_event(3, static_cast<float>(p.game_mode)));
             // Spectators fly permanently; creative players may fly and build instantly.
             p.peer->send(wire.player_abilities(abilities(p.game_mode), 0.05f, 0.1f));
@@ -845,7 +1111,7 @@ struct Game::Impl final : GameServices {
         }
         if (!t.viewers.insert(p.peer->id()).second) return;
         const auto wire_item = item_wire.contains(e.stack.item) ? item_wire.at(e.stack.item) : 0;
-        p.peer->send(wire.spawn_entity(t.protocol_id, entity_uuid(engine_id), item_entity_type, t.last, 0, 0, 0, 0));
+        p.peer->send(wire.spawn_entity(t.protocol_id, entity_uuid(engine_id), item_entity_type, t.last, 0, 0, 0, 0, entity_vec(e.velocity)));
         p.peer->send(wire.item_metadata(t.protocol_id, wire_item, e.stack.count));
     }
 
@@ -893,6 +1159,25 @@ struct Game::Impl final : GameServices {
             const auto packet = wire.entity_position(t.protocol_id, now, 0, 0, (*e)->on_ground);
             for (const auto viewer : t.viewers)
                 if (const auto p = players.find(viewer); p != players.end()) p->second.peer->send(packet);
+        }
+    }
+
+    // Windows: containers players opened this tick open; windows whose
+    // container is gone, changed size or is out of reach close; then every
+    // client is told how its window differs from what it shows.
+    void publish_inventories() {
+        std::vector<std::pair<contracts::PlayerKey, BlockPos>> opened;
+        for (const auto& r : engine->trace())
+            if (r.kind == contracts::TraceKind::container_opened) opened.push_back({{r.a, r.b}, r.pos});
+        for (auto& [id, p] : players) {
+            for (const auto& [key, pos] : opened)
+                if (key == key_of(p) && p.game_mode != spectator) open_window(p, pos);
+            if (p.window) {
+                const auto size = container_slot_count(p.window->pos);
+                const bool near = in_reach_plus(p, p.window->pos, 4.0);
+                if (size != p.window->container_slots || !near) close_window(p, true);
+            }
+            sync_inventory(p);
         }
     }
 
@@ -1073,7 +1358,12 @@ struct Game::Impl final : GameServices {
         if (extensions) extensions->before_tick();
         // While frozen, players move and chunks are sent, but the world waits.
         const bool run = !frozen || pending_steps > 0;
-        if (run) advance();
+        if (run) {
+            // Player-driven inputs that follow from the world as last published.
+            continue_digging();
+            detect_pickups();
+            advance();
+        }
         publish_chunks();
         publish_players();
         for (auto& [id, p] : players) {
@@ -1113,7 +1403,9 @@ struct Game::Impl final : GameServices {
         }
         engine->advance(commands);
         publish_blocks();
+        publish_pickups(commands); // before the picked-up entities are removed
         publish_entities();
+        publish_inventories();
         const auto ns = static_cast<std::uint64_t>(
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - started_at).count());
         last_tick_ns = ns;

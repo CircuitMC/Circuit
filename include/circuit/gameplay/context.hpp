@@ -100,6 +100,11 @@ public:
     virtual void relocate_entity(EntityId id, FixedVec position) = 0;
     virtual void remove_entity(EntityId id) = 0;
 
+    // Player inventories, in the command phase only (other phases throw). The
+    // reference stays valid until the current root finishes.
+    virtual const PlayerInventory* peek_player(contracts::PlayerKey player) = 0;
+    virtual PlayerInventory& player(contracts::PlayerKey player) = 0; // created empty when absent
+
     // Appends a trace record at the next sequence of the current root and
     // returns that sequence.
     virtual std::uint32_t record(TraceKind kind, BlockPos pos, std::uint64_t a = 0, std::uint64_t b = 0,

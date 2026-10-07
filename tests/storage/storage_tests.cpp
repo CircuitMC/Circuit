@@ -308,7 +308,7 @@ int main() {
         refused([](circuit::gameplay::Entity& e) { e.velocity.y = circuit::contracts::fixed_one; }, "velocity");
         refused([](circuit::gameplay::Entity& e) { e.position.y = INT64_MAX - 5; }, "height");
         refused([](circuit::gameplay::Entity& e) { e.stack.count = 0; }, "stack");
-        refused([](circuit::gameplay::Entity& e) { e.stack.item = 999; }, "stack");
+        refused([](circuit::gameplay::Entity& e) { e.stack.item = 9999; }, "stack");
         Engine fine(bundle(), h.seed, h.dumps[t]);
         fine.advance({});
     });

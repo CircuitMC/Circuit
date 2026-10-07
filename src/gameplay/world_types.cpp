@@ -57,6 +57,8 @@ void canonicalize(WorldDump& d) {
         return tick_before(a.tick, b.tick);
     });
     std::ranges::sort(d.tickets, {}, &Ticket::id);
+    std::erase_if(d.players, [](const PlayerInventory& p) { return p.empty(); });
+    std::ranges::sort(d.players, {}, &PlayerInventory::player);
 }
 
 namespace {
@@ -74,9 +76,9 @@ std::string text(const std::pair<BlockPos, BlockEntity>& b) {
                        b.second.signal, b.second.moving, b.second.progress, b.second.motion, slots);
 }
 std::string text(const Entity& e) {
-    return std::format("entity {} pos=({},{},{}) vel=({},{},{}) stack={}x{} age={} last_tick={} ground={}", e.id.value,
+    return std::format("entity {} pos=({},{},{}) vel=({},{},{}) stack={}x{}/{} age={} last_tick={} ground={} pickup_delay={}", e.id.value,
                        e.position.x, e.position.y, e.position.z, e.velocity.x, e.velocity.y, e.velocity.z, e.stack.item,
-                       e.stack.count, e.age, e.last_tick, e.on_ground);
+                       e.stack.count, e.stack.damage, e.age, e.last_tick, e.on_ground, e.pickup_delay);
 }
 std::string text(const WorldDump::PendingTick& t) {
     return std::format("tick list={} {} block={} due={} priority={} suborder={}", static_cast<int>(t.list),
@@ -85,7 +87,15 @@ std::string text(const WorldDump::PendingTick& t) {
 std::string text(const BlockEvent& e) {
     return std::format("block_event {} block={} event={} param={}", pos_text(e.pos), static_cast<int>(e.block), e.event, e.param);
 }
-std::string text(const Ticket& t) { return std::format("ticket {} center={} radius={}", t.id, chunk_text(t.center), t.radius); }
+std::string text(const Ticket& t) {
+    return std::format("ticket {} center={} radius={} load_radius={}", t.id, chunk_text(t.center), t.radius, t.load_radius);
+}
+std::string text(const PlayerInventory& p) {
+    std::string slots;
+    for (std::size_t i = 0; i < p.slots.size(); ++i)
+        if (!p.slots[i].empty()) slots += std::format("{}:{}x{}/{} ", i, p.slots[i].item, p.slots[i].count, p.slots[i].damage);
+    return std::format("player {:016x}{:016x} cursor={}x{} slots=[{}]", p.player.hi, p.player.lo, p.cursor.item, p.cursor.count, slots);
+}
 
 template <class T>
 std::string compare(std::string_view name, const std::vector<T>& a, const std::vector<T>& b) {
@@ -108,7 +118,8 @@ std::string first_difference(const WorldDump& a, const WorldDump& b) {
     for (auto s : {compare("chunks", a.chunks, b.chunks), compare("blocks", a.blocks, b.blocks),
                    compare("block_entities", a.block_entities, b.block_entities),
                    compare("entities", a.entities, b.entities), compare("ticks", a.ticks, b.ticks),
-                   compare("block_events", a.block_events, b.block_events), compare("tickets", a.tickets, b.tickets)})
+                   compare("block_events", a.block_events, b.block_events), compare("tickets", a.tickets, b.tickets),
+                   compare("players", a.players, b.players)})
         if (!s.empty()) return s;
     return {};
 }
@@ -143,13 +154,13 @@ std::uint64_t digest(const WorldDump& d) {
     h.add(d.block_entities.size());
     for (const auto& [p, be] : d.block_entities) {
         h.add(p); h.add(static_cast<std::uint64_t>(be.kind)); h.add(be.order); h.add(be.cooldown); h.add(be.signal);
-        h.add(be.moving); h.add(be.progress); h.add(be.motion);
+        h.add(be.moving); h.add(be.progress); h.add(be.motion); h.add(be.ticked);
         for (const auto& s : be.slots) h.add(contracts::pack_stack(s));
     }
     h.add(d.entities.size());
     for (const auto& e : d.entities) {
         h.add(e.id.value); h.add(e.position); h.add(e.velocity); h.add(contracts::pack_stack(e.stack));
-        h.add(e.age); h.add(e.last_tick); h.add(e.on_ground);
+        h.add(e.age); h.add(e.last_tick); h.add(e.on_ground); h.add(e.pickup_delay);
     }
     h.add(d.ticks.size());
     for (const auto& t : d.ticks) {
@@ -158,7 +169,14 @@ std::uint64_t digest(const WorldDump& d) {
     }
     h.add(d.block_events.size());
     for (const auto& e : d.block_events) { h.add(e.pos); h.add(static_cast<std::uint64_t>(e.block)); h.add(e.event); h.add(e.param); }
-    for (const auto& t : d.tickets) { h.add(t.id); h.add(contracts::pack_chunk(t.center)); h.add(t.radius); }
+    for (const auto& t : d.tickets) { h.add(t.id); h.add(contracts::pack_chunk(t.center)); h.add(t.radius); h.add(t.load_radius); }
+    h.add(d.players.size());
+    for (const auto& p : d.players) {
+        h.add(p.player.hi); h.add(p.player.lo); h.add(contracts::pack_stack(p.cursor));
+        for (const auto& s : p.slots) h.add(contracts::pack_stack(s));
+        h.add(p.drag_stage); h.add(p.drag_type); h.add(p.drag_slots.size());
+        for (const auto slot : p.drag_slots) h.add(static_cast<std::uint16_t>(slot));
+    }
     return h.value();
 }
 

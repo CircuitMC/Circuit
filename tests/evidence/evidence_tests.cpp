@@ -177,7 +177,8 @@ int main(int argc, char** argv) {
         require(m->block("minecraft:water[level=12]") == circuit::gameplay::blocks::water_falling(), "falling water");
         require(m->block("minecraft:moving_piston[facing=east,type=sticky]")
                     == circuit::gameplay::blocks::moving_piston(circuit::contracts::Direction::east, true), "moving piston");
-        require(!m->item("minecraft:diamond").has_value(), "unknown item");
+        require(m->item("minecraft:diamond").has_value(), "every item of the version is in the registry");
+        require(!m->item("examplemod:gizmo").has_value(), "unknown item");
     });
 
     suite.run("record and evaluate on engine and oracle", [] {
@@ -191,7 +192,7 @@ int main(int argc, char** argv) {
         require(text == write_fixture(*by_oracle), "engine and oracle record identical fixtures");
         const auto recorded = parse(text);
         require(recorded.source == circuit::contracts::EvidenceSource::circuit_reference
-                    && recorded.harness == "circuit-reference-rules-v6", "provenance");
+                    && recorded.harness == "circuit-reference-rules-v7", "provenance");
         require(!recorded.recorded_changes.empty(), "changes recorded");
         for (const auto& exec : {engine_executor(1), engine_executor(8), oracle_executor()}) {
             const auto r = evaluate_fixture(recorded, exec);

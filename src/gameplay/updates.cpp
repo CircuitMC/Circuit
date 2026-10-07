@@ -10,12 +10,21 @@ bool set_block(RuleContext& ctx, BlockPos pos, BlockState next) {
     const auto prev = ctx.block(pos);
     if (prev.is_unloaded() || next.is_unloaded() || prev == next) return false;
     const bool replaced = prev.type() != next.type();
-    if (replaced && has_block_entity(prev.type())) ctx.remove_block_entity(pos);
+    std::vector<contracts::ItemStack> contents;
+    if (replaced && has_block_entity(prev.type())) {
+        if (is_container(prev.type()))
+            if (const auto* be = ctx.peek_block_entity(pos)) contents = be->slots;
+        ctx.remove_block_entity(pos);
+    }
     ctx.write_block(pos, next);
     ctx.record(TraceKind::block_changed, pos, prev.raw(), next.raw());
     // Removal and placement reactions come first, then the neighbor updates,
-    // then the shape updates (the target version's order).
-    if (replaced) on_removed(ctx, pos, prev);
+    // then the shape updates (the target version's order). A removed
+    // container drops its contents.
+    if (replaced) {
+        drop_contents(ctx, pos, contents);
+        on_removed(ctx, pos, prev);
+    }
     if (replaced && has_block_entity(next.type())) ctx.create_block_entity(pos, next.type());
     on_placed(ctx, pos, next, prev);
     notify_neighbors(ctx, pos);
@@ -139,6 +148,12 @@ void destroy_block(RuleContext& ctx, BlockPos pos) {
     set_block(ctx, pos, blocks::air());
 }
 
+bool head_has_base(RuleContext& ctx, BlockPos pos, BlockState head) {
+    const auto base = ctx.block(pos.relative(contracts::opposite(head.facing())));
+    if (is_piston(base.type())) return base.flag() && base.facing() == head.facing();
+    return base.is(BlockType::moving_piston) && base.facing() == head.facing();
+}
+
 void update_front(RuleContext& ctx, BlockPos pos, Direction output) {
     const auto front = pos.relative(output);
     notify_single(ctx, front, pos);
@@ -161,6 +176,10 @@ void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
         break;
     case BlockType::lever:
         if (*d == lever_attachment(s) && !can_survive(ctx, target, s)) destroy_block(ctx, target);
+        break;
+    case BlockType::piston_head:
+        // A head without its base disappears.
+        if (*d == contracts::opposite(s.facing()) && !head_has_base(ctx, target, s)) set_block(ctx, target, blocks::air());
         break;
     default: break;
     }

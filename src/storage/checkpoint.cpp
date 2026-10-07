@@ -16,9 +16,10 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
-// 3: hopper block entities carry the tick they last ticked; 2: tickets carry a
-// load radius. Versions 1 and 2 are still read.
-constexpr std::uint32_t version = 3;
+// 4: stacks carry damage, and player inventories follow the tickets; 3: hopper
+// block entities carry the tick they last ticked; 2: tickets carry a load
+// radius. Versions 1 to 3 are still read.
+constexpr std::uint32_t version = 4;
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
 
@@ -78,6 +79,8 @@ std::vector<std::byte> encode_section(Raw raw) {
     return w.take();
 }
 
+void stack(Writer& w, contracts::ItemStack s) { w.u16(s.item).u8(s.count).u16(s.damage); }
+
 // Writes the column table; `blocks(i)` gives column i's non-empty sections as
 // (section y, encoding) in ascending y.
 template <class Blocks>
@@ -97,7 +100,7 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
     for (const auto& [p, be] : s.block_entities) {
         pos(w, p);
         w.u8(static_cast<std::uint8_t>(be.kind)).varlong(static_cast<std::int64_t>(be.order)).varint(static_cast<std::int32_t>(be.slots.size()));
-        for (const auto& st : be.slots) w.u16(st.item).u8(st.count);
+        for (const auto& st : be.slots) stack(w, st);
         w.u8(be.cooldown).u8(be.signal).i32(static_cast<std::int32_t>(be.moving)).u8(be.progress).u8(be.motion);
         w.varlong(static_cast<std::int64_t>(be.ticked));
     }
@@ -105,8 +108,10 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
     for (const auto& e : s.entities) {
         w.varlong(static_cast<std::int64_t>(e.id.value));
         w.i64(e.position.x).i64(e.position.y).i64(e.position.z).i64(e.velocity.x).i64(e.velocity.y).i64(e.velocity.z);
-        w.u16(e.stack.item).u8(e.stack.count).varint(static_cast<std::int32_t>(e.age)).varlong(static_cast<std::int64_t>(e.last_tick));
+        stack(w, e.stack);
+        w.varint(static_cast<std::int32_t>(e.age)).varlong(static_cast<std::int64_t>(e.last_tick));
         w.boolean(e.on_ground);
+        w.u16(e.pickup_delay);
     }
     w.varint(static_cast<std::int32_t>(s.ticks.size()));
     for (const auto& t : s.ticks) {
@@ -122,6 +127,14 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
     }
     w.varint(static_cast<std::int32_t>(s.tickets.size()));
     for (const auto& t : s.tickets) w.i32(static_cast<std::int32_t>(t.id)).i32(t.center.x).i32(t.center.z).u8(t.radius).u8(t.load_radius);
+    w.varint(static_cast<std::int32_t>(s.players.size()));
+    for (const auto& p : s.players) {
+        w.i64(static_cast<std::int64_t>(p.player.hi)).i64(static_cast<std::int64_t>(p.player.lo));
+        stack(w, p.cursor);
+        for (const auto& st : p.slots) stack(w, st);
+        w.u8(p.drag_stage).u8(p.drag_type).varint(static_cast<std::int32_t>(p.drag_slots.size()));
+        for (const auto slot : p.drag_slots) w.i16(slot);
+    }
     w.varint(static_cast<std::int32_t>(c.extras.size()));
     for (const auto& [name, bytes] : c.extras) w.string(name, 256).prefixed_bytes(bytes);
 }
@@ -130,6 +143,11 @@ struct BodyReader {
     Reader r;
     std::string error;
     std::int32_t version{};
+
+    bool stack(contracts::ItemStack& s) {
+        if (!get(r.u16(), s.item) || !get(r.u8(), s.count)) return false;
+        return version < 4 || get(r.u16(), s.damage);
+    }
 
     template <class T>
     bool get(protocol::Decoded<T> v, T& out) {
@@ -229,7 +247,7 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
         be.kind = static_cast<gameplay::BlockType>(kind);
         be.slots.resize(slots);
         for (auto& st : be.slots)
-            if (!b.get(b.r.u16(), st.item) || !b.get(b.r.u8(), st.count)) return false;
+            if (!b.stack(st)) return false;
         std::int32_t moving{};
         if (!b.get(b.r.u8(), be.cooldown) || !b.get(b.r.u8(), be.signal) || !b.get(b.r.i32(), moving) || !b.get(b.r.u8(), be.progress)
             || !b.get(b.r.u8(), be.motion))
@@ -248,9 +266,10 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
         std::int32_t age{};
         if (!b.u64(e.id.value) || !b.get(b.r.i64(), e.position.x) || !b.get(b.r.i64(), e.position.y) || !b.get(b.r.i64(), e.position.z)
             || !b.get(b.r.i64(), e.velocity.x) || !b.get(b.r.i64(), e.velocity.y) || !b.get(b.r.i64(), e.velocity.z)
-            || !b.get(b.r.u16(), e.stack.item) || !b.get(b.r.u8(), e.stack.count) || !b.get(b.r.varint(), age) || !b.u64(e.last_tick)
+            || !b.stack(e.stack) || !b.get(b.r.varint(), age) || !b.u64(e.last_tick)
             || !b.get(b.r.boolean(), e.on_ground))
             return false;
+        if (b.version >= 4 && !b.get(b.r.u16(), e.pickup_delay)) return false;
         e.age = static_cast<std::uint32_t>(age);
         s.entities.push_back(e);
     }
@@ -285,6 +304,23 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
         if (b.version >= 2 && !b.get(b.r.u8(), t.load_radius)) return false;
         t.id = static_cast<std::uint32_t>(id);
         s.tickets.push_back(t);
+    }
+    if (b.version >= 4) {
+        if (!b.count(n, 16 + 5 * (contracts::player_slots + 1))) return false;
+        for (std::size_t i = 0; i < n; ++i) {
+            gameplay::PlayerInventory p;
+            std::int64_t hi{}, lo{};
+            if (!b.get(b.r.i64(), hi) || !b.get(b.r.i64(), lo) || !b.stack(p.cursor)) return false;
+            for (auto& st : p.slots)
+                if (!b.stack(st)) return false;
+            std::size_t drag = 0;
+            if (!b.get(b.r.u8(), p.drag_stage) || !b.get(b.r.u8(), p.drag_type) || !b.count(drag, 2)) return false;
+            p.drag_slots.resize(drag);
+            for (auto& slot : p.drag_slots)
+                if (!b.get(b.r.i16(), slot)) return false;
+            p.player = {static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)};
+            s.players.push_back(p);
+        }
     }
     if (!b.count(n, 2)) return false;
     for (std::size_t i = 0; i < n; ++i) {

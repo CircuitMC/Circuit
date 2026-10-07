@@ -93,7 +93,7 @@ An input that the engine cannot apply during replay ends the history before it. 
 
 Files from which recovery discarded data are not deleted: a damaged checkpoint, or a segment with a discarded tail. Once no manifest needs them, they are renamed to `damaged-<name>` and kept for diagnosis. Delete them when they are no longer needed.
 
-Players are not connected after a restart: their chunk tickets are removed in the first tick. Player positions, game modes and inventories are saved with each checkpoint and when a player leaves. A crash can lose player data since the last checkpoint, but never logged world changes.
+Players are not connected after a restart: their chunk tickets are removed in the first tick. Player inventories are simulation state: every change is a logged command, so recovery restores them like the world. Player positions and game modes are saved with each checkpoint and when a player leaves; a crash can lose those since the last checkpoint, but never logged world or inventory changes.
 
 ## Failure handling
 
@@ -101,11 +101,12 @@ The server fails closed on storage errors. If a log record cannot be written, th
 
 ## Checkpoint format
 
-A checkpoint file is `CIRCKPT\0`, a format version, the bundle and rule-set ids, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. The body holds:
+A checkpoint file is `CIRCKPT\0`, a format version (4; versions 1–3 are still read), the bundle and rule-set ids, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. The body holds:
 - columns with palette-packed sections;
-- block entities, entities, scheduled ticks and pending block events;
+- block entities, entities (with their pickup delay), scheduled ticks and pending block events;
 - chunk tickets and the engine counters;
-- named extras, such as the server's metadata and player data.
+- player inventories: the 46 slots, the carried stack and a drag in progress; item stacks carry their damage;
+- named extras, such as the server's metadata and player positions.
 
 Decoding checks every length, count and the digest. The engine's restoring constructor then checks the semantics: positions inside known columns, valid block states, and no duplicate ids. A restored engine continues exactly like the one that produced the checkpoint.
 
@@ -123,15 +124,15 @@ Import reads the source world and never writes to it. It creates a new world dir
 | Kind | Supported content |
 | --- | --- |
 | Blocks | The blocks the reference rules model: air, stone, glass, obsidian, redstone block, slime block, lever, redstone dust, repeater, comparator, redstone lamp, observer, pistons and their heads, moving pistons, hopper, chest, water and wheat |
-| Block entities | Chests and hoppers with their items (the reference items), the hopper transfer cooldown, comparator output signals and moving pistons |
-| Entities | Item entities |
+| Block entities | Chests and hoppers with their items (any item of either version; the `minecraft:damage` component of items with durability), the hopper transfer cooldown, comparator output signals and moving pistons |
+| Entities | Item entities, with their pickup delay |
 | Scheduled ticks | Block and fluid ticks of supported blocks, with their delay and priority |
 | Level data | Time, seed, spawn point and level name |
 
 Dust shapes, lever mounting and repeater locks are rule state and round-trip unchanged.
 
 **Unsupported content and policies.** Anything else is unsupported content, for example:
-- other blocks, block entities and entities, and items with data components;
+- other blocks, block entities and entities, and items with data components other than a valid damage;
 - block entities with custom names, loot tables or locks;
 - the Nether and the End;
 - chunks that still have an older DataVersion because the game has not re-saved them.

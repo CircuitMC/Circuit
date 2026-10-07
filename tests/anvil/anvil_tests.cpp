@@ -17,6 +17,7 @@
 #include <cstring>
 #include <set>
 #include <filesystem>
+#include <optional>
 #include <fstream>
 #include <unistd.h>
 #include <zlib.h>
@@ -256,14 +257,16 @@ int main() {
         auto c = chunk({0, 0}, {block("minecraft:air"), block("minecraft:chest", {{"facing", "north"}, {"type", "single"}, {"waterlogged", "false"}}),
                                 block("minecraft:hopper", {{"enabled", "true"}, {"facing", "down"}}),
                                 block("minecraft:oak_sign", {{"rotation", "0"}, {"waterlogged", "false"}})});
-        const auto item = [](std::int8_t slot, std::string id, std::int32_t count, bool components = false) {
+        // `damage` < 0: a custom name instead of a damage component.
+        const auto item = [](std::int8_t slot, std::string id, std::int32_t count, std::optional<std::int32_t> damage = std::nullopt) {
             auto t = Tag::compound();
             t.set("Slot", Tag::byte(slot));
             t.set("id", Tag::string(std::move(id)));
             t.set("count", Tag::int_(count));
-            if (components) {
+            if (damage) {
                 auto c = Tag::compound();
-                c.set("minecraft:custom_name", Tag::string("named"));
+                if (*damage < 0) c.set("minecraft:custom_name", Tag::string("named"));
+                else c.set("minecraft:damage", Tag::int_(*damage));
                 t.set("components", std::move(c));
             }
             return t;
@@ -276,8 +279,11 @@ int main() {
         chest.set("z", Tag::int_(0));
         auto items = Tag::list(TagType::compound);
         items.push(item(0, "minecraft:redstone", 64));
-        items.push(item(5, "minecraft:diamond", 3));
-        items.push(item(6, "minecraft:stone", 2, true));
+        items.push(item(5, "examplemod:gizmo", 3));
+        items.push(item(6, "minecraft:stone", 2, -1));
+        items.push(item(7, "minecraft:iron_pickaxe", 1, 12)); // a damaged tool is supported
+        items.push(item(8, "minecraft:iron_pickaxe", 1, 251)); // beyond its durability (250) it is not
+        items.push(item(9, "minecraft:stone", 1, 1));          // nor is damage on an item without durability
         chest.set("Items", std::move(items));
         bes.push(std::move(chest));
         auto hopper = Tag::compound();
@@ -328,7 +334,7 @@ int main() {
         write(dir / "entities" / "r.0.0.mca", region({{{0, 0}, std::move(ents)}}, 1));
         const auto rejected = anvil::import_world(dir, bundle());
         require(!rejected, "rejected");
-        for (const auto* kind : {"item minecraft:diamond", "item with components", "block entity minecraft:hopper with CustomName",
+        for (const auto* kind : {"item examplemod:gizmo", "item with components", "block entity minecraft:hopper with CustomName",
                                  "entity minecraft:pig", "block minecraft:oak_sign"})
             require(rejected.error().find(kind) != std::string::npos, std::format("names {}: {}", kind, rejected.error()));
         require(rejected.error().find("with components") == rejected.error().find("item with components") + 5, "empty component maps are accepted");
@@ -336,6 +342,15 @@ int main() {
         require(r.has_value(), "substituted");
         const auto* c0 = block_entity_at(r->state, {1, 0, 0});
         require(c0 && c0->slots[0] == ItemStack{items::redstone, 64} && c0->slots[5].empty() && c0->slots[6].empty(), "supported items kept");
+        require(c0->slots[7] == ItemStack{items::iron_pickaxe, 1, 12} && c0->slots[8].empty() && c0->slots[9].empty(), "damage kept when valid");
+        // A damaged tool exports with its damage component and comes back.
+        {
+            auto state = r->state;
+            const auto out = root / "damaged-export";
+            require(anvil::export_world(state, bundle(), out, {.level_name = "damaged", .seed = 1}).has_value(), "exported");
+            const auto again = anvil::import_world(out, bundle());
+            require(again && block_entity_at(again->state, {1, 0, 0})->slots[7] == ItemStack{items::iron_pickaxe, 1, 12}, "damage round-trips");
+        }
         const auto* h = block_entity_at(r->state, {2, 0, 0});
         require(h && h->cooldown == 3, "hopper cooldown");
         require(r->state.entities.size() == 1 && r->state.entities[0].stack == ItemStack{items::wheat, 3} &&

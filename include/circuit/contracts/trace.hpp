@@ -31,6 +31,8 @@ enum class TraceKind : std::uint8_t {
     piston_blocked = 16,     // pos = piston
     entity_stack_changed = 17,// a = entity id, b = old stack, c = new stack
     signal_changed = 18,     // pos, a = old output signal, b = new output signal (block-entity state)
+    player_slot_changed = 19,// a = player key high half, b = low half, c = slot << 48 | new stack (slot 46: the cursor)
+    container_opened = 20,   // pos = the container, a = player key high half, b = low half
 };
 
 struct TraceRecord {
@@ -45,7 +47,7 @@ constexpr std::uint64_t pack_chunk(ChunkPos c) noexcept {
     return (static_cast<std::uint64_t>(static_cast<std::uint32_t>(c.x)) << 32) | static_cast<std::uint32_t>(c.z);
 }
 constexpr std::uint64_t pack_stack(ItemStack s) noexcept {
-    return (static_cast<std::uint64_t>(s.item) << 8) | s.count;
+    return (static_cast<std::uint64_t>(s.damage) << 24) | (static_cast<std::uint64_t>(s.item) << 8) | s.count;
 }
 
 std::string describe(const TraceRecord& record);

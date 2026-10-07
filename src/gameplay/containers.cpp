@@ -1,12 +1,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
 #include <algorithm>
+#include <cmath>
 
 namespace circuit::gameplay::detail {
 namespace {
 using contracts::pack_stack;
 using blocks::ChestType;
 constexpr std::uint8_t hopper_cooldown = 8;
+
+// A container slot holds at most 64 of an item, and no more than the item stacks.
+std::uint8_t slot_limit(std::uint16_t item) { return std::min(contracts::max_stack_size, items::max_stack(item)); }
 
 bool paired(BlockState a, BlockState b) {
     if (!a.is(BlockType::chest) || !b.is(BlockType::chest) || a.facing() != b.facing()) return false;
@@ -35,7 +39,7 @@ struct Inventory {
         for (std::size_t i = 0; i < entities.size(); ++i)
             for (std::size_t j = 0; j < entities[i]->slots.size(); ++j) {
                 const auto& s = entities[i]->slots[j];
-                if (s.empty() || (s.item == item && s.count < contracts::max_stack_size)) return std::pair{i, j};
+                if (s.empty() || (s.item == item && s.count < slot_limit(item))) return std::pair{i, j};
             }
         return std::nullopt;
     }
@@ -134,17 +138,23 @@ std::vector<BlockPos> container_parts(RuleContext& ctx, BlockPos pos) {
     return {pos};
 }
 
+// Fullness as the target version computes it, in single precision: the sum of
+// each slot's count over its limit, divided by the number of slots; 0 when
+// empty, else 1 + floor(14 * fullness).
 std::uint8_t container_signal(RuleContext& ctx, BlockPos pos) {
-    std::uint64_t items = 0, slots = 0;
+    float fullness = 0.0f;
+    std::size_t slots = 0;
     for (const auto p : container_parts(ctx, pos)) {
         const auto* be = ctx.peek_block_entity(p);
         if (!be) continue;
         slots += be->slots.size();
-        for (const auto& s : be->slots) items += s.empty() ? 0 : s.count;
+        for (const auto& s : be->slots)
+            if (!s.empty()) fullness += static_cast<float>(s.count) / static_cast<float>(slot_limit(s.item));
     }
-    if (items == 0 || slots == 0) return 0;
-    // Every reference item stacks to 64: fullness = items / (64 * slots).
-    return static_cast<std::uint8_t>(1 + (14 * items) / (contracts::max_stack_size * slots));
+    if (slots == 0) return 0;
+    fullness /= static_cast<float>(slots);
+    if (fullness <= 0.0f) return 0;
+    return static_cast<std::uint8_t>(static_cast<int>(std::floor(fullness * 14.0f)) + 1);
 }
 
 void check_chest(RuleContext& ctx, BlockPos pos) {

@@ -10,7 +10,7 @@ Circuit/
   app/                      Application startup and composition
   include/circuit/          Module interfaces and runtime contracts
   src/contracts/            Version bundles, compatibility table, trace and replay records
-  src/gameplay/             Reference rules (circuit-reference-rules-v6)
+  src/gameplay/             Reference rules (circuit-reference-rules-v7)
   src/runtime/              Region-parallel engine, job runners, executor, synthetic kernel
   src/evidence/             circuit-trace fixture format, content mapping, recording and evaluation
   src/protocol/             Wire codec: data types, NBT, framing, packet and content tables
@@ -134,13 +134,12 @@ Run `bash tools/check.sh` afterwards to restore the debug configuration. `xmake 
 
 The server is also checked with two clients that live outside this repository. Neither is a build dependency.
 
-**Protocol library.** A mineflayer suite (Node.js) joins two bots and covers:
-- creative placement and breaking;
-- dust powering a lamp;
-- a piston push and a piston destroying dust into an item entity;
-- player visibility and chat.
+**Protocol library.** Mineflayer scripts (Node.js) cover:
+- creative placement and breaking, dust powering a lamp, a piston push and a piston destroying dust into an item entity, player visibility and chat (`suite.js`, two bots);
+- chest placement and pairing (`chests.js`);
+- container windows (`windows.js`): every click mode in a chest, the own window, a double chest and a hopper, thrown items and pickups. Each step prints the window, carried stack and inventory the server reports.
 
-Calibrate it against an offline-mode vanilla server of the same version with a flat world, with the bots listed as operators. Then run it against Circuit (set `MC_VERSION=1.21.4` and `game-version=java-1.21.4` for the second version):
+Calibrate each script against an offline-mode vanilla server of the same version with a fresh flat world, with the bots listed as operators. Then run it against Circuit (set `MC_VERSION=1.21.4` and `game-version=java-1.21.4` for the second version) and compare the outputs:
 
 ```bash
 xmake run circuit-server --serve --offline --port 25580 &

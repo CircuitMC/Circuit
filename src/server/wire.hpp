@@ -7,6 +7,7 @@
 #include <expected>
 #include <memory>
 #include <optional>
+#include <utility>
 #include <string>
 #include <variant>
 #include <vector>
@@ -40,6 +41,14 @@ struct PlayerListEntry {
 };
 
 // Serverbound play packets the server acts on.
+// An item stack as the protocol sends it: wire item id, count and damage.
+struct WireStack {
+    std::int32_t item{};
+    std::int32_t count{};
+    std::int32_t damage{};
+    bool operator==(const WireStack&) const = default;
+};
+
 namespace intent {
 struct Move {
     std::optional<Vec3> position;
@@ -74,6 +83,23 @@ struct CreativeSlot {
     std::int16_t slot{};
     std::int32_t count{};
     std::int32_t item{};
+    std::int32_t damage{};
+};
+struct ContainerClick {
+    std::int32_t window{};
+    std::int32_t state{};
+    std::int16_t slot{};
+    std::int8_t button{};
+    std::int32_t mode{};
+    // The client's predicted slots and carried stack. A stack is nullopt when
+    // the prediction names data components the server does not compare (it is
+    // then sent again); `unknown` when the prediction could not be read at all.
+    std::vector<std::pair<std::int16_t, std::optional<WireStack>>> changed;
+    std::optional<WireStack> carried;
+    bool unknown{};
+};
+struct ContainerClose {
+    std::int32_t window{};
 };
 struct Command {
     std::string text;
@@ -91,7 +117,7 @@ struct Loaded {};
 } // namespace intent
 using Intent = std::variant<intent::Move, intent::ConfirmTeleport, intent::Dig, intent::UseOn, intent::Use,
                             intent::HeldSlot, intent::CreativeSlot, intent::Command, intent::Chat, intent::Sneak,
-                            intent::Flying, intent::Loaded>;
+                            intent::Flying, intent::Loaded, intent::ContainerClick, intent::ContainerClose>;
 
 class Wire {
 public:
@@ -155,12 +181,17 @@ public:
     Bytes player_info_add(const std::vector<PlayerListEntry>& players) const;
     Bytes player_info_remove(const std::vector<Uuid>& players) const;
     Bytes spawn_entity(std::int32_t id, Uuid uuid, std::int32_t type, Vec3 pos, float pitch, float yaw, float head_yaw,
-                       std::int32_t data) const;
+                       std::int32_t data, Vec3 velocity = {}) const;
+    Bytes take_item_entity(std::int32_t collected, std::int32_t collector, std::int32_t count) const;
     Bytes item_metadata(std::int32_t id, std::int32_t item, std::int32_t count) const;
     Bytes remove_entities(const std::vector<std::int32_t>& ids) const;
     Bytes entity_position(std::int32_t id, Vec3 pos, float yaw, float pitch, bool on_ground) const;
     Bytes head_rotation(std::int32_t id, float head_yaw) const;
-    Bytes inventory_content(std::int32_t state_id, const std::vector<std::pair<std::int32_t, std::int32_t>>& slots) const;
+    Bytes container_content(std::int32_t window, std::int32_t state_id, const std::vector<WireStack>& slots, WireStack carried) const;
+    Bytes container_slot(std::int32_t window, std::int32_t state_id, std::int16_t slot, WireStack stack) const;
+    Bytes cursor_item(WireStack stack) const;
+    Bytes open_screen(std::int32_t window, std::int32_t menu_type, std::string_view title) const;
+    Bytes close_screen(std::int32_t window) const;
     Bytes play_disconnect(std::string_view reason) const;
     Bytes empty_commands() const;
 

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "wire.hpp"
+#include <algorithm>
 #include <format>
 #include <stdexcept>
 
@@ -18,7 +19,8 @@ struct Wire::Ids {
     std::int32_t login, set_health, game_event, player_abilities, set_held_slot, spawn_position, set_time, chunk_center,
         chunk_batch_start, chunk_batch_finished, level_chunk, forget_chunk, block_update, block_changed_ack,
         player_position, keep_alive, system_chat, player_info_update, player_info_remove, add_entity,
-        set_entity_data, remove_entities, entity_position_sync, rotate_head, container_set_content, disconnect,
+        set_entity_data, remove_entities, entity_position_sync, rotate_head, container_set_content, disconnect, take_item_entity,
+        open_screen, container_close, container_set_slot, set_cursor_item, sb_container_click, sb_container_close,
         commands;
     // Serverbound play.
     std::int32_t sb_accept_teleportation, sb_move_pos, sb_move_pos_rot, sb_move_rot, sb_move_status,
@@ -73,6 +75,13 @@ Wire::Wire(std::int32_t protocol) : protocol_(protocol), ids_([&]() -> const pro
     ids->entity_position_sync = cb(State::play, "entity_position_sync");
     ids->rotate_head = cb(State::play, "rotate_head");
     ids->container_set_content = cb(State::play, "container_set_content");
+    ids->take_item_entity = cb(State::play, "take_item_entity");
+    ids->open_screen = cb(State::play, "open_screen");
+    ids->container_close = cb(State::play, "container_close");
+    ids->container_set_slot = cb(State::play, "container_set_slot");
+    ids->set_cursor_item = cb(State::play, "set_cursor_item");
+    ids->sb_container_click = sb(State::play, "container_click");
+    ids->sb_container_close = sb(State::play, "container_close");
     ids->disconnect = cb(State::play, "disconnect");
     ids->commands = cb(State::play, "commands");
     ids->sb_accept_teleportation = sb(State::play, "accept_teleportation");
@@ -261,11 +270,16 @@ Bytes Wire::player_info_remove(const std::vector<Uuid>& players) const {
     return packet(id_->player_info_remove, w);
 }
 Bytes Wire::spawn_entity(std::int32_t id, Uuid uuid, std::int32_t type, Vec3 pos, float pitch, float yaw, float head_yaw,
-                         std::int32_t data) const {
+                         std::int32_t data, Vec3 velocity) const {
+    // Velocity in 1/8000 blocks per tick, clamped as the target version does.
+    const auto v = [](double d) { return static_cast<std::int16_t>(std::clamp(d, -3.9, 3.9) * 8000.0); };
     Writer w;
     w.varint(id).uuid(uuid).varint(type).f64(pos.x).f64(pos.y).f64(pos.z);
-    w.angle(pitch).angle(yaw).angle(head_yaw).varint(data).i16(0).i16(0).i16(0);
+    w.angle(pitch).angle(yaw).angle(head_yaw).varint(data).i16(v(velocity.x)).i16(v(velocity.y)).i16(v(velocity.z));
     return packet(id_->add_entity, w);
+}
+Bytes Wire::take_item_entity(std::int32_t collected, std::int32_t collector, std::int32_t count) const {
+    return packet(id_->take_item_entity, Writer().varint(collected).varint(collector).varint(count));
 }
 Bytes Wire::item_metadata(std::int32_t id, std::int32_t item, std::int32_t count) const {
     Writer w;
@@ -290,16 +304,43 @@ Bytes Wire::entity_position(std::int32_t id, Vec3 pos, float yaw, float pitch, b
 Bytes Wire::head_rotation(std::int32_t id, float head_yaw) const {
     return packet(id_->rotate_head, Writer().varint(id).angle(head_yaw));
 }
-Bytes Wire::inventory_content(std::int32_t state_id, const std::vector<std::pair<std::int32_t, std::int32_t>>& slots) const {
+namespace {
+// Slot data: count, then item id and the components added (damage, type 3)
+// and removed.
+void slot(Writer& w, WireStack s) {
+    w.varint(s.count);
+    if (s.count <= 0) return;
+    w.varint(s.item);
+    if (s.damage > 0) w.varint(1).varint(0).varint(3).varint(s.damage);
+    else w.varint(0).varint(0);
+}
+} // namespace
+
+Bytes Wire::container_content(std::int32_t window, std::int32_t state_id, const std::vector<WireStack>& slots, WireStack carried) const {
     Writer w;
-    w.varint(0).varint(state_id).varint(static_cast<std::int32_t>(slots.size()));
-    for (const auto& [item, count] : slots) {
-        w.varint(count);
-        if (count > 0) w.varint(item).varint(0).varint(0);
-    }
-    w.varint(0); // carried item: empty
+    w.varint(window).varint(state_id).varint(static_cast<std::int32_t>(slots.size()));
+    for (const auto& s : slots) slot(w, s);
+    slot(w, carried);
     return packet(id_->container_set_content, w);
 }
+Bytes Wire::container_slot(std::int32_t window, std::int32_t state_id, std::int16_t index, WireStack stack) const {
+    Writer w;
+    w.varint(window).varint(state_id).i16(index);
+    slot(w, stack);
+    return packet(id_->container_set_slot, w);
+}
+Bytes Wire::cursor_item(WireStack stack) const {
+    Writer w;
+    slot(w, stack);
+    return packet(id_->set_cursor_item, w);
+}
+Bytes Wire::open_screen(std::int32_t window, std::int32_t menu_type, std::string_view title) const {
+    Writer w;
+    w.varint(window).varint(menu_type);
+    protocol::nbt::write_network(w, protocol::nbt::text(std::string(title)));
+    return packet(id_->open_screen, w);
+}
+Bytes Wire::close_screen(std::int32_t window) const { return packet(id_->container_close, Writer().varint(window)); }
 Bytes Wire::play_disconnect(std::string_view reason) const {
     Writer w;
     nbt::write_network(w, nbt::text(std::string(reason)));
@@ -374,14 +415,96 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
     if (id == i.sb_set_creative_slot) {
         TRY(slot, r.i16());
         TRY(count, r.varint());
-        std::int32_t item = 0;
+        std::int32_t item = 0, damage = 0;
         if (*count > 0) {
             TRY(it, r.varint());
             item = *it;
-            // Data components follow; the server keeps only id and count, so the
-            // rest of the packet is not interpreted.
+            // Data components follow. The server keeps the damage when it is
+            // the first component added; the rest is not interpreted.
+            const auto added = r.varint();
+            const auto removed = r.varint();
+            if (added && removed && *added > 0)
+                if (const auto type = r.varint(); type && *type == 3)
+                    if (const auto value = r.varint(); value && *value >= 0) damage = *value;
         }
-        return done(intent::CreativeSlot{*slot, *count, item});
+        return done(intent::CreativeSlot{*slot, *count, item, damage});
+    }
+    if (id == i.sb_container_click) {
+        // Window, state id, slot, button and click type, then the slots the
+        // client predicted to change and its predicted carried stack. The
+        // server applies the click itself; the prediction only tells it which
+        // slots the client may now show wrongly. Protocol 772 sends hashed
+        // stacks; 769 sends whole stacks, whose components other than the
+        // damage are not read (the prediction then counts as unknown).
+        TRY(window, r.varint());
+        TRY(state, r.varint());
+        TRY(slot_index, r.i16());
+        TRY(button, r.i8());
+        TRY(mode, r.varint());
+        intent::ContainerClick click;
+        click.window = *window;
+        click.state = *state;
+        click.slot = *slot_index;
+        click.button = *button;
+        click.mode = *mode;
+        // A predicted stack: nullopt when unreadable; a nullopt inside when
+        // it names components other than a whole damage value.
+        using Predicted = std::optional<std::optional<WireStack>>;
+        const auto predicted = [&]() -> Predicted {
+            if (protocol_ >= 770) {
+                const auto present = r.boolean();
+                if (!present) return std::nullopt;
+                if (!*present) return std::optional<WireStack>{WireStack{}};
+                const auto item = r.varint();
+                const auto count = r.varint();
+                const auto added = r.varint();
+                if (!item || !count || !added || *added < 0 || *added > 256) return std::nullopt;
+                for (std::int32_t k = 0; k < *added; ++k)
+                    if (!r.varint() || !r.i32()) return std::nullopt;
+                const auto removed = r.varint();
+                if (!removed || *removed < 0 || *removed > 256) return std::nullopt;
+                for (std::int32_t k = 0; k < *removed; ++k)
+                    if (!r.varint()) return std::nullopt;
+                // Component values are hashed: only a stack without any is known.
+                if (*added != 0 || *removed != 0) return std::optional<WireStack>{};
+                return std::optional<WireStack>{WireStack{*item, *count, 0}};
+            }
+            const auto count = r.varint();
+            if (!count) return std::nullopt;
+            if (*count <= 0) return std::optional<WireStack>{WireStack{}};
+            const auto item = r.varint();
+            const auto added = r.varint();
+            const auto removed = r.varint();
+            if (!item || !added || !removed || *added < 0 || *added > 1 || *removed != 0) return std::nullopt;
+            std::int32_t damage = 0;
+            if (*added == 1) {
+                const auto type = r.varint();
+                const auto value = r.varint();
+                if (!type || *type != 3 || !value) return std::nullopt;
+                damage = *value;
+            }
+            return std::optional<WireStack>{WireStack{*item, *count, damage}};
+        };
+        const auto n = r.varint();
+        if (!n || *n < 0 || *n > 128) {
+            click.unknown = true;
+        } else {
+            for (std::int32_t k = 0; k < *n && !click.unknown; ++k) {
+                const auto at = r.i16();
+                const auto stack = at ? predicted() : Predicted{};
+                if (!stack) click.unknown = true;
+                else click.changed.emplace_back(*at, *stack);
+            }
+            if (!click.unknown) {
+                if (const auto carried = predicted()) click.carried = *carried;
+                else click.unknown = true;
+            }
+        }
+        return done(std::move(click));
+    }
+    if (id == i.sb_container_close) {
+        TRY(window, r.varint());
+        return done(intent::ContainerClose{*window});
     }
     if (id == i.sb_chat_command || id == i.sb_chat_command_signed) {
         TRY(text, r.string(32767));

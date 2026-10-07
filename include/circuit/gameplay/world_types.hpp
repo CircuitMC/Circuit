@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
+#include <algorithm>
+#include <array>
 #include <circuit/contracts/commands.hpp>
 #include <circuit/contracts/ids.hpp>
 #include <circuit/contracts/time.hpp>
@@ -63,11 +65,31 @@ struct Entity {
     ItemStack stack;
     std::uint32_t age{};
     Tick last_tick{}; // Logical tick of the last basic advancement; prevents double ticking.
+    std::uint16_t pickup_delay{}; // ticks until players may pick it up
     bool on_ground{};
     bool operator==(const Entity&) const = default;
 };
 
 enum class RemovalReason : std::uint8_t { despawned = 1, fell_out_of_world = 2, picked_up = 3, command = 4 };
+
+// A player's inventory in the simulation: the slots of the player's own window
+// (see contracts::player_slots) and the stack carried by the cursor. Only
+// players with an item appear in dumps.
+struct PlayerInventory {
+    contracts::PlayerKey player;
+    std::array<ItemStack, contracts::player_slots> slots{};
+    ItemStack cursor;
+    // A drag across slots in progress (several clicks): its stage (0 none,
+    // 1 collecting slots), its type (0 split evenly, 1 one each, 2 full
+    // stacks) and the slots collected so far, in window numbering.
+    std::uint8_t drag_stage{};
+    std::uint8_t drag_type{};
+    std::vector<std::int16_t> drag_slots;
+    [[nodiscard]] bool empty() const noexcept {
+        return cursor.empty() && drag_stage == 0 && std::ranges::all_of(slots, [](const ItemStack& s) { return s.empty(); });
+    }
+    bool operator==(const PlayerInventory&) const = default;
+};
 
 namespace piston_event {
 inline constexpr std::uint8_t extend = 0;
@@ -148,6 +170,7 @@ struct WorldDump {
     std::vector<PendingTick> ticks;                             // by list, then drain order
     std::vector<BlockEvent> block_events;                       // queue order
     std::vector<Ticket> tickets;                                // ascending id
+    std::vector<PlayerInventory> players;                       // ascending player, non-empty only
     bool operator==(const WorldDump&) const = default;
 };
 // Sorts the order-insensitive sections into canonical order.

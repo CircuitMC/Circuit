@@ -90,6 +90,7 @@ struct WorldStore {
     std::uint64_t next_entity_id{1};
     std::uint64_t next_block_entity_order{};
     gameplay::TicketSet tickets;
+    std::map<contracts::PlayerKey, gameplay::PlayerInventory> players; // changed in the command phase only
 
     [[nodiscard]] ChunkData* find_loaded(ChunkPos c) const {
         const auto it = loaded.find(c);

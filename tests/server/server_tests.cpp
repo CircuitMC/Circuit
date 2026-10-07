@@ -16,6 +16,7 @@
 #include <circuit/storage/world_directory.hpp>
 #include <cmath>
 #include <csignal>
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <map>
@@ -26,6 +27,7 @@
 #include <spawn.h>
 #include <sys/wait.h>
 #include <thread>
+#include <tuple>
 #include <unistd.h>
 
 extern char** environ;
@@ -209,6 +211,25 @@ struct GameFixture {
     ServerConfig config;
     std::unique_ptr<server::Game> game;
 };
+
+gameplay::PlayerInventory empty_inventory(contracts::PlayerKey key) {
+    gameplay::PlayerInventory inventory;
+    inventory.player = key;
+    return inventory;
+}
+
+// A click as the client sends it, predicting no changed slot and an empty
+// carried stack.
+server::Intent window_click(std::int32_t window, std::int16_t slot, std::int8_t button, std::int32_t mode, std::int32_t state = 0) {
+    server::intent::ContainerClick click;
+    click.carried = server::WireStack{};
+    click.window = window;
+    click.state = state;
+    click.slot = slot;
+    click.button = button;
+    click.mode = mode;
+    return click;
+}
 
 std::uint32_t block_at(const gameplay::WorldDump& d, contracts::BlockPos p) {
     for (const auto& [pos, raw] : d.blocks)
@@ -712,6 +733,219 @@ int main() {
         }
     });
 
+    suite.run("survival players use up items, dig in time and pick up drops", [] {
+        using I = server::Intent;
+        GameFixture f;
+        auto peer = f.join(1, "Miner");
+        const contracts::PlayerKey key{1, 1};
+        const auto inventory = [&] {
+            const auto inv = f.game->engine().view().player(key).value();
+            return inv ? *inv : empty_inventory(key);
+        };
+        const auto item = [](std::string_view name) { return content().item_id(name).value(); };
+        // Creative stocking, then survival.
+        f.game->submit(1, I{server::intent::CreativeSlot{36, 2, item("minecraft:stone")}});
+        f.game->submit(1, I{server::intent::CreativeSlot{37, 1, item("minecraft:wooden_pickaxe")}});
+        f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
+        f.game->submit(1, I{server::intent::Move{std::nullopt, std::nullopt, true}}); // standing: off the ground digs 5 times slower
+        f.game->tick();
+        require(inventory().slots[36] == contracts::ItemStack{gameplay::items::stone, 2, 0}, "stocked");
+        // Placing uses one stone.
+        f.game->submit(1, GameFixture::click({2, -61, 1}, 1));
+        f.game->tick();
+        require(f.at({2, -60, 1}) == "minecraft:stone" && inventory().slots[36].count == 1, "placement used one stone");
+        // By hand, stone takes 150 ticks (1 / 1.5 / 100 per tick) and drops nothing; finishing
+        // early delays the break until the progress is whole.
+        f.game->submit(1, I{server::intent::Dig{0, {2, -60, 1}, 1, 2}});
+        f.game->tick();
+        f.game->submit(1, I{server::intent::Dig{2, {2, -60, 1}, 1, 3}});
+        for (int i = 0; i < 100; ++i) f.game->tick();
+        require(f.at({2, -60, 1}) == "minecraft:stone", "not broken before the progress is whole");
+        for (int i = 0; i < 60; ++i) f.game->tick();
+        require(f.at({2, -60, 1}) == "minecraft:air", "broken once it is");
+        require(f.game->engine().dump().entities.empty(), "a hand does not harvest stone");
+        // With a wooden pickaxe (2 / 1.5 / 30 per tick) the client may finish at 70 %: 16 ticks.
+        f.game->submit(1, GameFixture::click({3, -61, 1}, 4));
+        f.game->submit(1, I{server::intent::HeldSlot{1}});
+        f.game->tick();
+        f.game->submit(1, I{server::intent::Dig{0, {3, -60, 1}, 1, 5}});
+        f.game->tick();
+        for (int i = 0; i < 14; ++i) f.game->tick();
+        f.game->submit(1, I{server::intent::Dig{2, {3, -60, 1}, 1, 6}});
+        f.game->tick();
+        f.game->tick();
+        require(f.at({3, -60, 1}) == "minecraft:air", "broken with a pickaxe after 16 ticks");
+        const auto inv = inventory();
+        require(inv.slots[37].item == gameplay::items::wooden_pickaxe && inv.slots[37].damage == 1, "the pickaxe wore by one");
+        auto drops = f.game->engine().dump().entities;
+        require(drops.size() == 1 && drops[0].stack.item == gameplay::items::cobblestone, "stone drops cobblestone");
+        // The drop waits 10 ticks, then the player, whose pickup box reaches 1.3 blocks
+        // sideways, takes it.
+        f.game->submit(1, I{server::intent::Command{"tp 2.5 -60 1.5"}});
+        for (int i = 0; i < 14; ++i) f.game->tick();
+        require(f.game->engine().dump().entities.empty(), "picked up");
+        bool cobblestone = false;
+        for (const auto& s : inventory().slots) cobblestone |= s.item == gameplay::items::cobblestone && s.count == 1;
+        require(cobblestone, "the cobblestone is in the inventory");
+        const auto take = f.wire.ids().id(State::play, Bound::clientbound, "take_item_entity");
+        bool animated = false;
+        {
+            std::lock_guard lock(peer->mutex);
+            for (const auto& bytes : peer->packets)
+                if (auto pk = protocol::open_packet(bytes); pk && pk->id == take) animated = true;
+        }
+        require(animated, "the pickup is shown");
+        // Dropping one from the main hand: a thrown item waits 40 ticks.
+        f.game->submit(1, I{server::intent::HeldSlot{0}});
+        f.game->submit(1, I{server::intent::Dig{4, {0, 0, 0}, 0, 0}});
+        f.game->tick();
+        require(inventory().slots[36].empty() && f.game->engine().dump().entities.size() == 1, "the last stone was thrown");
+        require(f.game->engine().dump().entities[0].pickup_delay > 30, "with a long pickup delay");
+    });
+
+    suite.run("dropped and picked-up items are conserved", [] {
+        using I = server::Intent;
+        GameFixture f;
+        f.join(1, "Keeper");
+        const auto item = [](std::string_view name) { return content().item_id(name).value(); };
+        // Conservation: random drops and pickups between two players keep the item count.
+        f.join(2, "Other");
+        f.game->submit(1, I{server::intent::CreativeSlot{36, 64, item("minecraft:redstone")}});
+        f.game->submit(2, I{server::intent::CreativeSlot{36, 32, item("minecraft:redstone")}});
+        f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
+        f.game->submit(2, I{server::intent::Command{"gamemode survival"}});
+        f.game->tick();
+        const auto total = [&] {
+            std::size_t n = 0;
+            const auto d = f.game->engine().dump();
+            for (const auto& p : d.players)
+                for (const auto& s : p.slots)
+                    if (s.item == gameplay::items::redstone) n += s.count;
+            for (const auto& e : d.entities)
+                if (e.stack.item == gameplay::items::redstone) n += e.stack.count;
+            return n;
+        };
+        require(total() == 96, "96 redstone to start");
+        std::mt19937 rng(11);
+        for (int step = 0; step < 300; ++step) {
+            const auto who = std::uniform_int_distribution<int>(1, 2)(rng);
+            const auto what = std::uniform_int_distribution<int>(0, 5)(rng);
+            if (what == 0) f.game->submit(static_cast<std::uint64_t>(who), I{server::intent::Dig{4, {0, 0, 0}, 0, 0}});
+            if (what == 1) f.game->submit(static_cast<std::uint64_t>(who), I{server::intent::Dig{3, {0, 0, 0}, 0, 0}});
+            if (what == 2) f.game->submit(static_cast<std::uint64_t>(who), I{server::intent::HeldSlot{static_cast<std::int16_t>(std::uniform_int_distribution<int>(0, 8)(rng))}});
+            f.game->tick();
+            require(total() == 96, std::format("conserved at step {}", step));
+        }
+    });
+
+    suite.run("players open, click and close container windows", [] {
+        using I = server::Intent;
+        GameFixture f;
+        auto peer = f.join(1, "Clerk");
+        const contracts::PlayerKey key{1, 1};
+        const auto inventory = [&] {
+            const auto inv = f.game->engine().view().player(key).value();
+            return inv ? *inv : empty_inventory(key);
+        };
+        const auto chest_slots = [&] {
+            for (const auto& [pos, be] : f.game->engine().dump().block_entities)
+                if (pos == contracts::BlockPos{2, -60, 1}) return be.slots;
+            return std::vector<contracts::ItemStack>{};
+        };
+        // Window packets since the last call: (packet name, window id, menu
+        // type, slot count or slot index), and the last state id sent.
+        std::size_t seen = 0;
+        std::int32_t state = 0;
+        const auto window_packets = [&] {
+            const auto open = f.wire.ids().id(State::play, Bound::clientbound, "open_screen");
+            const auto content_id = f.wire.ids().id(State::play, Bound::clientbound, "container_set_content");
+            const auto slot_id = f.wire.ids().id(State::play, Bound::clientbound, "container_set_slot");
+            const auto cursor_id = f.wire.ids().id(State::play, Bound::clientbound, "set_cursor_item");
+            const auto close = f.wire.ids().id(State::play, Bound::clientbound, "container_close");
+            std::vector<std::tuple<std::string, std::int32_t, std::int32_t>> out;
+            std::lock_guard lock(peer->mutex);
+            for (; seen < peer->packets.size(); ++seen) {
+                auto pk = protocol::open_packet(peer->packets[seen]);
+                if (!pk) continue;
+                if (pk->id == open) {
+                    const auto window = pk->fields.varint().value();
+                    out.emplace_back("open", window, pk->fields.varint().value());
+                } else if (pk->id == content_id) {
+                    const auto window = pk->fields.varint().value();
+                    state = pk->fields.varint().value();
+                    out.emplace_back("content", window, pk->fields.varint().value());
+                } else if (pk->id == slot_id) {
+                    const auto window = pk->fields.varint().value();
+                    state = pk->fields.varint().value();
+                    out.emplace_back("slot", window, pk->fields.i16().value());
+                } else if (pk->id == cursor_id) {
+                    out.emplace_back("cursor", 0, 0);
+                } else if (pk->id == close) {
+                    out.emplace_back("close", pk->fields.varint().value(), 0);
+                }
+            }
+            return out;
+        };
+        const auto has = [](const auto& packets, std::string_view name, std::int32_t window, std::int32_t value) {
+            return std::ranges::any_of(packets, [&](const auto& t) {
+                return std::get<0>(t) == name && std::get<1>(t) == window && std::get<2>(t) == value;
+            });
+        };
+        f.hold(1, "minecraft:chest");
+        f.game->submit(1, GameFixture::click({2, -61, 1}, 1));
+        f.game->submit(1, I{server::intent::CreativeSlot{37, 64, content().item_id("minecraft:redstone").value()}});
+        f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
+        f.game->tick();
+        require(f.at({2, -60, 1}).starts_with("minecraft:chest"), "chest placed");
+        (void)window_packets();
+        // Using the chest opens a 9x3 window: 27 chest slots, then the 36 inventory slots.
+        f.game->submit(1, GameFixture::click({2, -60, 1}, 2));
+        f.game->tick();
+        auto packets = window_packets();
+        require(has(packets, "open", 1, 2) && has(packets, "content", 1, 63), "a generic_9x3 window opened");
+        // Shift-clicking the redstone in hotbar slot 1 (window slot 27 + 27 + 1) moves it into
+        // the chest; the client is sent the two changed slots only.
+        f.game->submit(1, window_click(1, 55, 0, 1, state));
+        f.game->tick();
+        require(chest_slots().size() == 27 && chest_slots()[0] == contracts::ItemStack{gameplay::items::redstone, 64, 0}, "moved into the chest");
+        require(inventory().slots[37].empty(), "and out of the hotbar");
+        packets = window_packets();
+        require(packets.size() == 2 && has(packets, "slot", 1, 0) && has(packets, "slot", 1, 55), "only the changed slots are sent");
+        // A click on a stale state id is applied, and the whole window is sent again.
+        f.game->submit(1, window_click(1, 0, 0, 0, state - 1));
+        f.game->tick();
+        packets = window_packets();
+        require(inventory().cursor.count == 64 && has(packets, "content", 1, 63), "a stale click resends the window");
+        f.game->submit(1, window_click(1, 0, 0, 0, state));
+        f.game->tick();
+        packets = window_packets();
+        // The client predicted the empty carried stack: only the slot is sent.
+        require(chest_slots()[0].count == 64 && packets.size() == 1 && has(packets, "slot", 1, 0), "put back");
+        // Clicks naming another window are ignored.
+        f.game->submit(1, window_click(0, 0, 0, 0));
+        f.game->tick();
+        require(inventory().cursor.empty() && chest_slots()[0].count == 64, "a stale window id does nothing");
+        // Picking up half with the right button, then closing returns the cursor to the inventory.
+        f.game->submit(1, window_click(1, 0, 1, 0));
+        f.game->tick();
+        require(inventory().cursor == contracts::ItemStack{gameplay::items::redstone, 32, 0} && chest_slots()[0].count == 32, "half picked up");
+        f.game->submit(1, I{server::intent::ContainerClose{1}});
+        f.game->tick();
+        require(inventory().cursor.empty(), "closing returns the carried stack");
+        bool returned = false;
+        for (const auto& st : inventory().slots) returned |= st == contracts::ItemStack{gameplay::items::redstone, 32, 0};
+        require(returned, "into the inventory");
+        // A window whose container goes out of reach closes, and the client is told.
+        f.game->submit(1, GameFixture::click({2, -60, 1}, 3));
+        f.game->tick();
+        packets = window_packets();
+        require(has(packets, "open", 2, 2), "the next window has the next id");
+        f.game->submit(1, I{server::intent::Command{"tp 20.5 -60 20.5"}});
+        f.game->tick();
+        f.game->tick();
+        require(has(window_packets(), "close", 2, 0), "closed out of reach");
+    });
+
     suite.run("a lever lights a lamp through the engine", [] {
         server::Server s(offline_config());
         s.start();
@@ -888,6 +1122,11 @@ int main() {
             s.stop();
         }
         require(block_at(recovered_state(config.world_directory), {0, -60, 2}) == stone.raw(), "stone on disk");
+        {
+            // The inventory is simulation state: the stone the player held is recovered with the world.
+            const auto players = recovered_state(config.world_directory).players;
+            require(players.size() == 1 && players[0].slots[36].item == gameplay::items::stone, "inventory on disk");
+        }
         {
             server::Server s(config);
             s.start();

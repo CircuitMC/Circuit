@@ -83,7 +83,7 @@ A wrong convention makes fixtures fail rather than pass.
 | `water` | `level`: 0 source, 1–7 flowing distance, 8–15 falling | — |
 | `wheat` | `age` 0–7 | — |
 
-Items: `minecraft:stone`, `minecraft:redstone`, `minecraft:wheat`, `minecraft:iron_ingot`, `minecraft:lever`, `minecraft:repeater`, `minecraft:comparator`, `minecraft:wheat_seeds`. Version 1 has no entity observations; dropped and pushed items are visible only through container slots that collect them.
+Items: any item of the rule set's registry (since rules v7, every item of both versions), named `namespace:id`, without data components. Version 1 has no entity observations; dropped and pushed items are visible only through container slots that collect them.
 
 ## Workflow
 

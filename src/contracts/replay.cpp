@@ -5,7 +5,7 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
-constexpr std::uint16_t format_version = 2;
+constexpr std::uint16_t format_version = 3; // 3: stacks carry damage; player commands carry their player
 
 class Writer {
 public:
@@ -20,7 +20,8 @@ public:
     }
     void pos(BlockPos p) { put(p.x); put(p.y); put(p.z); }
     void vec(FixedVec v) { put(v.x); put(v.y); put(v.z); }
-    void stack(ItemStack s) { put(s.item); put(s.count); }
+    void stack(ItemStack s) { put(s.item); put(s.count); put(s.damage); }
+    void player(PlayerKey k) { put(k.hi); put(k.lo); }
     std::vector<std::byte> out;
 };
 
@@ -40,7 +41,8 @@ public:
     }
     bool pos(BlockPos& p) { return get(p.x) && get(p.y) && get(p.z); }
     bool vec(FixedVec& v) { return get(v.x) && get(v.y) && get(v.z); }
-    bool stack(ItemStack& s) { return get(s.item) && get(s.count); }
+    bool stack(ItemStack& s) { return get(s.item) && get(s.count) && get(s.damage); }
+    bool player(PlayerKey& k) { return get(k.hi) && get(k.lo); }
     bool bytes(std::size_t n, std::string& s) {
         if (in_.size() - at_ < n) return false;
         s.assign(reinterpret_cast<const char*>(in_.data() + at_), n);
@@ -56,9 +58,16 @@ private:
 
 // Record tags: 0 SetBlock, 1 UseBlock, 2 InsertItem, 3 SpawnItem,
 // 4 RemoveEntity, 5 AddTicket without a load radius (read only), 6 RemoveTicket,
-// 7 PlayerUse, 8 PlayerBreak, 9 AddTicket.
+// 7 PlayerUse, 8 PlayerBreak, 9 AddTicket, 10 SetPlayerSlot, 11 PickUp,
+// 12 DropItem, 13 ContainerClick, 14 CloseContainer.
 std::uint8_t tag_of(const CommandBody& body) {
-    return std::holds_alternative<AddTicket>(body) ? 9 : static_cast<std::uint8_t>(body.index());
+    if (std::holds_alternative<AddTicket>(body)) return 9;
+    if (std::holds_alternative<SetPlayerSlot>(body)) return 10;
+    if (std::holds_alternative<PickUp>(body)) return 11;
+    if (std::holds_alternative<DropItem>(body)) return 12;
+    if (std::holds_alternative<ContainerClick>(body)) return 13;
+    if (std::holds_alternative<CloseContainer>(body)) return 14;
+    return static_cast<std::uint8_t>(body.index());
 }
 
 void encode_command(Writer& w, const Command& c) {
@@ -92,15 +101,50 @@ void encode_command(Writer& w, const Command& c) {
         } else if constexpr (std::is_same_v<T, RemoveTicket>) {
             w.put(body.ticket);
         } else if constexpr (std::is_same_v<T, PlayerUse>) {
+            w.player(body.player);
+            w.put(body.slot);
             w.pos(body.pos);
             w.put(static_cast<std::uint8_t>(body.face));
-            w.put(static_cast<std::uint8_t>(body.place.has_value()));
-            if (body.place) w.put(*body.place);
+            w.put(static_cast<std::uint8_t>(body.horizontal));
+            w.put(static_cast<std::uint8_t>(body.look));
             w.put(static_cast<std::uint8_t>(body.sneaking));
-            w.put(static_cast<std::uint8_t>(body.holding));
-            w.put(body.allowed);
+            w.put(static_cast<std::uint8_t>(body.survival));
+            w.put(body.reach);
+            w.put(body.free);
         } else if constexpr (std::is_same_v<T, PlayerBreak>) {
+            w.player(body.player);
             w.pos(body.pos);
+            w.put(static_cast<std::uint8_t>(body.survival));
+            w.put(body.slot);
+        } else if constexpr (std::is_same_v<T, SetPlayerSlot>) {
+            w.player(body.player);
+            w.put(body.slot);
+            w.stack(body.stack);
+        } else if constexpr (std::is_same_v<T, PickUp>) {
+            w.player(body.player);
+            w.put(body.entity.value);
+            w.put(body.selected);
+            w.put(static_cast<std::uint8_t>(body.creative));
+        } else if constexpr (std::is_same_v<T, DropItem>) {
+            w.player(body.player);
+            w.put(body.slot);
+            w.put(static_cast<std::uint8_t>(body.whole_stack));
+            w.vec(body.position);
+            w.vec(body.velocity);
+        } else if constexpr (std::is_same_v<T, ContainerClick>) {
+            w.player(body.player);
+            w.put(static_cast<std::uint8_t>(body.container.has_value()));
+            if (body.container) w.pos(*body.container);
+            w.put(body.slot);
+            w.put(body.button);
+            w.put(body.mode);
+            w.put(static_cast<std::uint8_t>(body.creative));
+            w.vec(body.drop_position);
+            w.vec(body.drop_velocity);
+        } else if constexpr (std::is_same_v<T, CloseContainer>) {
+            w.player(body.player);
+            w.vec(body.drop_position);
+            w.vec(body.drop_velocity);
         }
     }, c.body);
 }
@@ -144,24 +188,75 @@ bool decode_command(Reader& r, Command& c) {
     case 6: { RemoveTicket b; if (!r.get(b.ticket)) return false; c.body = b; return true; }
     case 7: {
         PlayerUse b;
-        std::uint8_t face{}, has{}, sneaking{}, holding{};
-        if (!r.pos(b.pos) || !r.get(face) || face > 5 || !r.get(has) || has > 1) return false;
+        std::uint8_t face{}, horizontal{}, look{}, sneaking{}, survival{};
+        if (!r.player(b.player) || !r.get(b.slot) || !r.pos(b.pos) || !r.get(face) || !r.get(horizontal) || !r.get(look)
+            || !r.get(sneaking) || !r.get(survival) || !r.get(b.reach) || !r.get(b.free))
+            return false;
+        if (face > 5 || horizontal > 5 || look > 5 || sneaking > 1 || survival > 1 || b.reach > 3 || b.free > 3) return false;
         b.face = static_cast<Direction>(face);
-        if (has) {
-            std::uint32_t state{};
-            if (!r.get(state)) return false;
-            b.place = state;
-        }
-        if (!r.get(sneaking) || !r.get(holding) || !r.get(b.allowed) || sneaking > 1 || holding > 1 || b.allowed > 3) return false;
+        b.horizontal = static_cast<Direction>(horizontal);
+        b.look = static_cast<Direction>(look);
+        if (!is_horizontal(b.horizontal)) return false;
         b.sneaking = sneaking == 1;
-        b.holding = holding == 1;
+        b.survival = survival == 1;
         c.body = b;
         return true;
     }
-    case 8: { PlayerBreak b; if (!r.pos(b.pos)) return false; c.body = b; return true; }
+    case 8: {
+        PlayerBreak b;
+        std::uint8_t survival{};
+        if (!r.player(b.player) || !r.pos(b.pos) || !r.get(survival) || survival > 1 || !r.get(b.slot)) return false;
+        b.survival = survival == 1;
+        c.body = b;
+        return true;
+    }
     case 9: {
         AddTicket b;
         if (!r.get(b.ticket) || !r.get(b.center.x) || !r.get(b.center.z) || !r.get(b.radius) || !r.get(b.load_radius)) return false;
+        c.body = b;
+        return true;
+    }
+    case 10: {
+        SetPlayerSlot b;
+        if (!r.player(b.player) || !r.get(b.slot) || !r.stack(b.stack)) return false;
+        c.body = b;
+        return true;
+    }
+    case 11: {
+        PickUp b;
+        std::uint8_t creative{};
+        if (!r.player(b.player) || !r.get(b.entity.value) || !r.get(b.selected) || !r.get(creative) || creative > 1) return false;
+        b.creative = creative == 1;
+        c.body = b;
+        return true;
+    }
+    case 12: {
+        DropItem b;
+        std::uint8_t whole{};
+        if (!r.player(b.player) || !r.get(b.slot) || !r.get(whole) || whole > 1 || !r.vec(b.position) || !r.vec(b.velocity)) return false;
+        b.whole_stack = whole == 1;
+        c.body = b;
+        return true;
+    }
+    case 13: {
+        ContainerClick b;
+        std::uint8_t has{}, creative{};
+        if (!r.player(b.player) || !r.get(has) || has > 1) return false;
+        if (has) {
+            BlockPos p;
+            if (!r.pos(p)) return false;
+            b.container = p;
+        }
+        if (!r.get(b.slot) || !r.get(b.button) || !r.get(b.mode) || b.mode > 6 || !r.get(creative) || creative > 1
+            || !r.vec(b.drop_position) || !r.vec(b.drop_velocity))
+            return false;
+        b.creative = creative == 1;
+        c.body = b;
+        return true;
+    }
+    case 14: {
+        CloseContainer b;
+        if (!r.player(b.player) || !r.vec(b.drop_position) || !r.vec(b.drop_velocity)) return false;
         c.body = b;
         return true;
     }

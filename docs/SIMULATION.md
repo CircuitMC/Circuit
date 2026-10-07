@@ -4,7 +4,7 @@
 
 The Part I core runs headless: shared contracts, a set of reference rules, an independent sequential oracle, and a region-parallel runtime checked against the oracle. The [network server](SERVER.md) and [persistence](PERSISTENCE.md) are built on it.
 
-The rules are **circuit-reference-rules-v6**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
+The rules are **circuit-reference-rules-v7**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
 
 Two version bundles run them: `java-1.21.8` and `java-1.21.4`. Each version has 27 traces recorded on the unmodified server:
 - 1.21.8 traces are in `tests/fixtures/harness/`;
@@ -38,6 +38,8 @@ The tiers are defined in the architecture: L0 exact, L1 region-equivalent, L2 de
 | `water` | L0 | water_channel, water_drop, water_washes |
 | `piston` | L2 | Harness traces pass. Gaps are listed in the table: drop offsets and item pushing. |
 | `random_ticks`, `wheat`, `item_entity`, `chunk_tickets`, `entity_order` | L2 | Documented behavior only. These are not compared with the target version; circuit-trace v1 has no entity observations. |
+| `container_menus` | L2 | A 48-step client scenario gives the same windows as the official servers of both versions. Crafting is not modeled, and no harness traces of menus exist. |
+| `survival_actions` | L2 | Documented hardness, tools and pickup rules. Thrown items have no random spread, and loot covers only the modeled blocks. |
 
 An L0 claim rests on the scenarios its fixtures exercise. It is not a proof for untested configurations.
 
@@ -73,11 +75,25 @@ Logical time advances by one per executed tick. Each tick runs these phases in o
 
 Commands are external inputs applied between ticks, so they observe the previous tick's time. A delay that a command starts counts from that time.
 
-Commands apply serially in admission order, each with its immediate reactions, so a command sees everything the earlier commands of the tick changed. Player actions use this: `PlayerUse` (a click on a block face) and `PlayerBreak` decide what to use, where to place and whether the block is supported when they are applied, not when they are admitted. A player's actions therefore give the same world however they are grouped into ticks. The server checks only reach, player overlap and the held item at admission.
+Commands apply serially in admission order, each with its immediate reactions, so a command sees everything the earlier commands of the tick changed. Player actions use this: `PlayerUse` (a click on a block face) and `PlayerBreak` decide what to use, where to place and whether the block is supported when they are applied, not when they are admitted. A player's actions therefore give the same world however they are grouped into ticks. The server checks only reach, player overlap and timing at admission; the held item is read from the inventory when the command is applied.
+
+Player inventories are simulation state, changed only by commands in the command phase:
+
+| Command | Effect |
+| --- | --- |
+| `SetPlayerSlot` | Sets one slot (creative inventory) |
+| `PlayerUse` | Uses a block or places the held item; in survival the item is used up (a water bucket leaves a bucket) |
+| `PlayerBreak` | Breaks a block; in survival it drops what the tool harvests and wears the tool |
+| `PickUp` | Moves an item entity, or part of it, into the inventory |
+| `DropItem` | Throws one item or the stack from a slot |
+| `ContainerClick` | One click in the player's own window or an open container's window |
+| `CloseContainer` | Returns the carried stack and the crafting grid to the inventory, or throws them |
+
+Every slot change records `player_slot_changed`; a use that opens a container records `container_opened`.
 
 Every observable action produces a trace record keyed by (tick, phase, root, sequence within the root). Two executions are equivalent only if their trace records are identical, including order. Their canonical state dumps must also be identical.
 
-## Reference rules v6
+## Reference rules v7
 
 - **Update queue:** neighbor updates and shape updates are queued entries.
   - **Entries:**
@@ -139,6 +155,16 @@ Every observable action produces a trace record keyed by (tick, phase, root, seq
   - **Washing away:** water replaces dust, levers, repeaters, comparators and wheat, which drop their items.
 - **Wheat:** grows on random ticks. Random-tick positions and rule draws use a stream derived from (seed, tick, chunk, section) instead of a level-wide stream.
 - **Item entities:** fixed-point gravity, drag and collision, migration between chunks, despawn after 6000 ticks. They are spawned by commands and by destroyed blocks, and pushed by moving blocks.
+- **Items:** every item of both versions, 1,415 in all, with its stack size and durability, compiled from PrismarineJS minecraft-data (MIT) at the pinned commit by `tools/compile_item_registry.py`. Items without rules are inert: they can be stored, moved, thrown and picked up. Containers hold at most 64 of an item, or less when its stack size is smaller; a comparator reads a container's fullness against those limits.
+- **Player inventories:** each player (profile UUID) has the 46 slots of the player window (crafting result and grid, armor, main inventory, hotbar, off hand), a carried stack and a drag in progress.
+  - **Survival use:** placing a block uses one item. A tool wears by one for each block with nonzero hardness it breaks, and breaks at its durability.
+  - **Breaking:** a block drops what the tool harvests: stone drops cobblestone, and stone, obsidian, redstone blocks, observers and hoppers need a pickaxe of the required tier (obsidian a diamond one). Breaking a container drops its contents; breaking a piston head removes its base too.
+  - **Dig time:** per tick, a block gains the tool's speed divided by its hardness and by 30, or by 100 when the tool does not harvest it, five times less off the ground. Tool speeds: wood 2, stone 4, iron 6, diamond 8, netherite 9, gold 12.
+  - **Pickup:** an item entity whose pickup delay has run out joins the inventory: first the selected hotbar slot and the off hand when they hold the same item with room, then the first slot with room, then the first empty slot. Block drops wait 10 ticks, thrown items 40.
+- **Container menus:** a chest (27 slots), a double chest (54, the right half first) or a hopper (5), followed by the main inventory and the hotbar; or the player's own window.
+  - **Click modes:** pick up and place (left: the stack, right: half or one), quick move (shift), swap with a hotbar slot or the off hand, clone (creative only), throw (one or the stack), drag (split evenly, one each, or full stacks in creative) and collect (double click), with the target version's slot order for quick moves.
+  - **Slot rules:** armor slots take only matching armor, one item each. The crafting grid holds items, but the rules do not craft: the result slot stays empty.
+  - **Closing:** the carried stack and the crafting grid go back to the inventory, or are thrown when it is full.
 - **Chunk tickets:** a ticket of radius r makes chunks within Chebyshev distance r ticking and loads the chunks within max(r + 1, its load radius) at border level, without ticking. A player's load radius is their view distance. Changes apply at the end of the command phase. Unloading keeps all chunk state, including pending ticks. A reload increments the chunk generation, and commands can name the generation they expect.
 
 ## Part I mechanism contracts
@@ -162,6 +188,7 @@ The table lists what is specific to each mechanism.
 | Water | Water block, its four sides and below | Fluid ticks | water_channel | `water_corner` | Merge on cross-region reach |
 | Random ticks and wheat | One section | Chunk coordinate order, sections bottom to top; per-section derived stream | Documented behavior; rules tests | `wheat_observers`, injected aborts | A retried attempt redraws the same values; no shared stream |
 | Item entities | Entity cell and its collision neighbors; migration between columns | Ascending id; ids of spawned entities staged at commit | Documented behavior; rules tests | `drops_and_pushes`, `hoppers_and_items` | Crossing into another region merges; provisional ids are rewritten at commit |
+| Player inventories and menus | The player's inventory, the open container's halves, item entities thrown or picked up | Admission order; the command phase runs serially | Rules tests (every click mode, random clicks conserving items); server tests; a 48-step window scenario compared with the official 1.21.8 and 1.21.4 servers | Command phase only | Not parallel: the command phase runs on the coordinator |
 
 ### Coverage of the Part I cases
 
@@ -179,7 +206,7 @@ The table lists what is specific to each mechanism.
 
 ### Coverage limits
 
-- **Not modeled:** dimensions other than one overworld, lighting, world generation (chunks start empty), mob spawning, block support, power conduction through solid blocks, repeater locking, and analog comparator sources other than containers.
+- **Not modeled:** dimensions other than one overworld, lighting, world generation (chunks start empty), mobs and mob spawning, crafting, and analog comparator sources other than containers.
 - **Not compared with the target version:** random-tick outcomes, wheat growth, item-entity physics and entity order. The circuit-trace format has no entity observations yet.
 - **L2 behavior:** every row claimed L2 is Circuit's own definition. The gaps listed in the compatibility table apply.
 

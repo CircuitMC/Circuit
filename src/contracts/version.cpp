@@ -7,7 +7,7 @@ namespace {
 using enum CompatibilityTier;
 using enum EvidenceSource;
 
-// Compatibility table for circuit-reference-rules-v6. Every row claims a tier.
+// Compatibility table for circuit-reference-rules-v7. Every row claims a tier.
 // A row claims L0 only when harness fixtures recorded on the target version
 // pass and no gap is known; "Not covered" names aspects no fixture exercises.
 // Every other row claims L2 and lists its gaps, which include behavior not yet
@@ -108,6 +108,17 @@ constexpr std::array reference_v4_mechanisms{
         "Dust needs a whole top face or a hopper below it, repeaters and comparators a whole top face, levers "
         "a whole face to hang on; an update that finds the support gone breaks them with their drops "
         "(support, lever_attachment). The drops' positions follow item_entity."},
+    MechanismEntry{"container_menus", l0_exact, l2_declared_deviation, controlled_experiment,
+        "Player windows and chest, double chest and hopper menus with every click mode, applied as commands. "
+        "A 48-step client scenario (every click mode, double chests, hoppers, the own window, throws and "
+        "pickups) gives the same windows, carried stacks and inventories as the official 1.21.8 and 1.21.4 "
+        "servers. Gaps: no crafting (the result slot stays empty); no harness traces of menus."},
+    MechanismEntry{"survival_actions", l0_exact, l2_declared_deviation, documented_behavior,
+        "Placement uses up items; dig progress from hardness, tool speed and tier, ground and water; drops by "
+        "tool (stone gives cobblestone), container contents and tool wear; pickup by box with the target "
+        "version's slot order and pickup delays (10 for block drops, 40 for thrown items). Gaps: thrown items "
+        "have no random spread; loot is limited to the modeled blocks; no health, damage, hunger or "
+        "crafting."},
 };
 
 constexpr RuleLimits vanilla_like_limits{
@@ -119,9 +130,9 @@ constexpr RuleLimits vanilla_like_limits{
     .max_load_radius = 33, // a view distance of 32, plus one
 };
 
-// Both supported versions run the same reference rules: the 20 harness traces
+// Both supported versions run the same reference rules: the 27 harness traces
 // recorded on 1.21.4 are identical to those recorded on 1.21.8.
-constexpr RuleSet reference_rules{"circuit-reference-rules-v6", RngPolicy::per_section_derived_stream, reference_v4_mechanisms};
+constexpr RuleSet reference_rules{"circuit-reference-rules-v7", RngPolicy::per_section_derived_stream, reference_v4_mechanisms};
 
 constexpr std::array bundles{
     VersionBundle{

@@ -21,9 +21,9 @@ One server runs one version. A client of another protocol is refused at login wi
 
 **Connection.** Handshake, status (with ping), login with compression and, in online mode, encryption and session verification, configuration (known packs, registries, tags, feature flags) and play are implemented. Limits on frame size, decompressed size, queued bytes, packet rate and login time apply to every connection; see [the server guide](SERVER.md).
 
-**Play packets.** The server understands these serverbound packets: teleport confirmation, movement (position, rotation, status), player actions (digging), use item and use item on a block, held slot, creative inventory slot, player input (sneaking), abilities (flying), chat, chat commands, keep-alive and player loaded. Others are read and ignored. It sends the packets these need: login, chunks with light, chunk batches, block updates and acknowledgements, entity spawn, movement, data and removal, player info, abilities, health, inventory content, held slot, spawn position, time, game events, system chat, command tree, keep-alive and disconnect.
+**Play packets.** The server understands these serverbound packets: teleport confirmation, movement (position, rotation, status), player actions (digging, dropping items), use item and use item on a block, held slot, creative inventory slot, container clicks and closing, player input (sneaking), abilities (flying), chat, chat commands, keep-alive and player loaded. Others are read and ignored. It sends the packets these need: login, chunks with light, chunk batches, block updates and acknowledgements, entity spawn, movement, data and removal, item pickup, player info, abilities, health, window opening, content, slot and closing, the carried item, held slot, spawn position, time, game events, system chat, command tree, keep-alive and disconnect.
 
-**Not supported:** signed chat (chat is relayed as system messages), container screens, resource packs, boss bars, scoreboards, titles, sounds and particles, other dimensions, and vehicles. A client that sends a packet for one of these gets no effect.
+**Not supported:** signed chat (chat is relayed as system messages), resource packs, boss bars, scoreboards, titles, sounds and particles, other dimensions, and vehicles. A client that sends a packet for one of these gets no effect.
 
 **Data sources.** Packet ids and field layouts come from cited minecraft.wiki revisions and the MIT-licensed minecraft-data dataset; [the server guide](SERVER.md#protocol-data) lists the revisions and the consistency checks.
 
@@ -46,11 +46,11 @@ The reference rules model a fixed set of blocks and items. Their names and state
 | `water` | `level` | — |
 | `wheat` | `age` | — |
 
-Items that the rules move between containers and item entities: `stone`, `redstone`, `wheat`, `wheat_seeds`, `iron_ingot`, `lever`, `repeater`, `comparator`. Creative players can hold any item of the version's registry and place the blocks above.
+**Items.** The rule set knows every item of both versions (1,415), with its stack size and durability, from PrismarineJS minecraft-data (MIT) at the pinned commit. Any item can be held, stored in containers, moved through hoppers, thrown and picked up; items without rules are otherwise inert. Placing works for the blocks above, and a water bucket places water. Item stacks carry one data component, the damage of items with durability; other components are not represented. Each version's protocol uses its own item ids for the same names.
 
-**Saved worlds.** Anvil worlds of Java Edition 1.21.8 (DataVersion 4440) import and export as long as they hold only this content, in the overworld. Other content is refused by default, or substituted or dropped under an explicit policy with a report; see [persistence](PERSISTENCE.md#anvil-import-and-export). A world directory belongs to one version bundle and rule set; `--migrate-world` moves it to the other version when both run the same rules.
+**Saved worlds.** Anvil worlds of Java Edition 1.21.8 (DataVersion 4440) import and export as long as they hold only this content, in the overworld, with no item component other than damage. Other content is refused by default, or substituted or dropped under an explicit policy with a report; see [persistence](PERSISTENCE.md#anvil-import-and-export). A world directory belongs to one version bundle and rule set; `--migrate-world` moves it to the other version when both run the same rules.
 
-**Not represented:** other blocks and items, block entity data beyond containers and comparators, mobs and other entities beyond items and players, biomes other than plains, lighting (everything is lit by the sky), and world generation beyond a flat floor.
+**Not represented:** other blocks, item components other than damage, block entity data beyond containers and comparators, mobs and other entities beyond items and players, biomes other than plains, lighting (everything is lit by the sky), and world generation beyond a flat floor.
 
 ## Behavior
 
@@ -64,7 +64,7 @@ Each mechanism of the rule set declares a compatibility tier:
 
 `circuit-server --compatibility` prints the table of the selected bundle, with each row's tier, evidence and gaps. [The simulation guide](SIMULATION.md#status) explains the rows and the evidence behind them. Both supported versions run the same rule set: the traces recorded on 1.21.4 are identical to those recorded on 1.21.8.
 
-Behavior the server adds on top of the rules, such as player placement, is checked against the official server with the client harnesses; [the server guide](SERVER.md#design) describes what is validated.
+Behavior the server adds on top of the rules, such as player placement, digging time and container windows, is checked against the official server with the client harnesses; [the server guide](SERVER.md#design) describes what is validated. Player inventories, survival use and the click modes of container windows are part of the rule set; their results were compared with the official servers of both versions in a 48-step window scenario.
 
 The parallel runtime never changes behavior: every test compares it with a sequential oracle at several worker counts and region layouts, and the server's results do not depend on how player actions fall into ticks.
 

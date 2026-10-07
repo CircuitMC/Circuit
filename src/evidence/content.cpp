@@ -126,16 +126,6 @@ private:
 #define CIRCUIT_CHECK(expr)                                         \
     if (auto check_result = (expr); !check_result) return std::unexpected(check_result.error())
 
-constexpr std::array<std::pair<std::string_view, std::uint16_t>, 8> item_ids{{
-    {"minecraft:stone", gameplay::items::stone},
-    {"minecraft:redstone", gameplay::items::redstone},
-    {"minecraft:wheat", gameplay::items::wheat},
-    {"minecraft:iron_ingot", gameplay::items::iron_ingot},
-    {"minecraft:lever", gameplay::items::lever},
-    {"minecraft:repeater", gameplay::items::repeater},
-    {"minecraft:comparator", gameplay::items::comparator},
-    {"minecraft:wheat_seeds", gameplay::items::wheat_seeds},
-}};
 } // namespace
 
 const ContentMapping* ContentMapping::for_game_version(std::string_view game_version) noexcept {
@@ -307,14 +297,12 @@ std::string ContentMapping::notation(BlockState s) const {
 }
 
 std::expected<std::uint16_t, std::string> ContentMapping::item(std::string_view id) const {
-    for (const auto& [name, value] : item_ids)
-        if (name == id) return value;
+    if (const auto item = gameplay::items::by_name(id)) return *item;
     return std::unexpected(std::format("unsupported: item `{}` is not in the reference registry", id));
 }
 
 std::string ContentMapping::item_name(std::uint16_t item) const {
-    for (const auto& [name, value] : item_ids)
-        if (value == item) return std::string(name);
+    if (const auto* info = gameplay::items::info(item)) return std::string(info->name);
     return std::format("circuit:item_{}", item);
 }
 

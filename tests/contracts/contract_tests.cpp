@@ -138,9 +138,11 @@ int main() {
                                  {3, AddTicket{9, {-3, 4}, 2}}}});
         log.ticks.push_back({4, {{7, UseBlock{{1, 2, 3}}}, {8, InsertItem{{1, 1, 1}, 3, {2, 64}}},
                                  {9, RemoveEntity{{11}}}, {10, RemoveTicket{9}}, {11, SetBlock{{0, 0, 0}, 1, std::nullopt}}}});
-        log.ticks.push_back({5, {{12, PlayerUse{{-1, -60, 2}, Direction::east, 0x1234u, true, true, 2}},
-                                 {13, PlayerUse{{3, 4, 5}, Direction::down, std::nullopt, false, true, 0}},
-                                 {14, PlayerBreak{{-7, 8, -9}}}}});
+        const PlayerKey alex{0x0123456789abcdefULL, 0xfedcba9876543210ULL};
+        log.ticks.push_back({5, {{12, PlayerUse{alex, 36, {-1, -60, 2}, Direction::east, Direction::south, Direction::up, true, true, 2, 1}},
+                                 {13, PlayerUse{alex, 45, {3, 4, 5}, Direction::down, Direction::west, Direction::west, false, false, 0, 3}},
+                                 {14, PlayerBreak{alex, {-7, 8, -9}, true}},
+                                 {15, SetPlayerSlot{alex, 40, {7, 1, 1561}}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);
@@ -175,8 +177,8 @@ int main() {
         // Player-use fields are range-checked: a face beyond the six, or reach bits beyond two.
         for (const auto& [face, allowed] : {std::pair<int, int>{6, 0}, {0, 4}}) {
             ReplayLog one{"java-1.21.8", "circuit-reference-rules-v5", 1, {}};
-            one.ticks.push_back({1, {{1, PlayerUse{{0, 0, 0}, static_cast<Direction>(face), std::nullopt, false, false,
-                                                   static_cast<std::uint8_t>(allowed)}}}});
+            one.ticks.push_back({1, {{1, PlayerUse{{}, 36, {0, 0, 0}, static_cast<Direction>(face), Direction::north, Direction::north,
+                                                   false, false, static_cast<std::uint8_t>(allowed), 0}}}});
             const auto encoded = encode_replay(one);
             require(encoded && decode_replay(*encoded).error() == ErrorCode::malformed_record, "player use fields range-checked");
         }

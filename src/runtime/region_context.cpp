@@ -257,6 +257,21 @@ void RegionContext::remove_entity(EntityId id) {
     entity_moves[id] = std::nullopt;
 }
 
+// Player inventories are level-wide state; only the serial command phase
+// touches them.
+const gameplay::PlayerInventory* RegionContext::peek_player(contracts::PlayerKey player) {
+    if (phase_ != Phase::commands) throw std::logic_error("runtime: player inventories outside the command phase");
+    const auto it = world_.players.find(player);
+    return it == world_.players.end() ? nullptr : &it->second;
+}
+
+gameplay::PlayerInventory& RegionContext::player(contracts::PlayerKey player) {
+    if (phase_ != Phase::commands) throw std::logic_error("runtime: player inventories outside the command phase");
+    auto [it, fresh] = world_.players.try_emplace(player);
+    if (fresh) it->second.player = player;
+    return it->second;
+}
+
 std::uint32_t RegionContext::record(TraceKind kind, BlockPos pos, std::uint64_t a, std::uint64_t b, std::uint64_t c) {
     const auto seq = seq_++;
     if (record_trace_) trace.push_back({{world_.time, phase_, root_, seq}, kind, pos, a, b, c});

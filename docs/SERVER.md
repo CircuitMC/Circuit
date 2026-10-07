@@ -2,9 +2,11 @@
 
 ## Status
 
-Circuit runs a playable creative-mode world for Java Edition 1.21.8 (protocol 772) or 1.21.4 (protocol 769) on top of the headless engine. One server runs one version, chosen with `game-version`. The world is a flat stone floor at y = −61. The real client of either version can join in offline and online mode, build with the reference blocks, use levers, repeaters and comparators, and watch redstone, pistons, observers, hoppers, water and item entities run under the reference rules. Several players see each other and chat. Native modules and Java plugins can extend it through controlled services; see [the plugin API](PLUGIN_API.md).
+Circuit runs a playable world for Java Edition 1.21.8 (protocol 772) or 1.21.4 (protocol 769) on top of the headless engine. One server runs one version, chosen with `game-version`. The world is a flat stone floor at y = −61. The real client of either version can join in offline and online mode, build with the reference blocks, use levers, repeaters and comparators, and watch redstone, pistons, observers, hoppers, water and item entities run under the reference rules. Several players see each other and chat. Native modules and Java plugins can extend it through controlled services; see [the plugin API](PLUGIN_API.md).
 
-With a world directory, the world is saved with checkpoints and an input log and survives crashes; Java Edition 1.21.8 worlds can be imported and exported. See [persistence](PERSISTENCE.md). Survival gameplay and containers are not implemented yet; see [Not supported](#not-supported).
+Players play in creative or survival mode. In survival, placing uses up items, breaking takes the block's dig time and drops what the tool harvests, items are thrown and picked up, and chests, double chests and hoppers open with every click mode. Inventories are simulation state; see [Survival and inventories](#survival-and-inventories).
+
+With a world directory, the world is saved with checkpoints and an input log and survives crashes; Java Edition 1.21.8 worlds can be imported and exported. See [persistence](PERSISTENCE.md). Health, damage, mobs and crafting are not implemented; see [Not supported](#not-supported).
 
 ## Running
 
@@ -50,8 +52,8 @@ Players never touch engine state directly.
 
 **Authority.** Every player action is validated before it becomes a command:
 - **Movement:** finite coordinates inside the world border; at most 10 blocks per packet; only into delivered chunks. Too-fast moves are corrected with a teleport, and non-finite ones are kicked.
-- **Reach:** blocks within 6 blocks of the eyes, measured to the nearest point of the block (creative interaction range 5 plus 1).
-- **Inventory:** creative slots 0–45 with known items and at most 99 per stack.
+- **Reach:** blocks within the interaction range plus 1 of the eyes, measured to the nearest point of the block: 6 blocks in creative (range 5), 5.5 in survival (range 4.5). An open container stays usable up to 4 blocks further.
+- **Inventory:** creative slots 0–45 with known items, at most the item's stack size; clicks only in the window the player has open.
 
 **Block actions.** Clicks and creative breaking become the commands `PlayerUse` and `PlayerBreak`. The rules resolve them when they are applied, in admission order, against the state the earlier commands left. A player's actions therefore mean the same however they fall into ticks: a block placed and then built on, or a lever placed and then used, gives the same world whether the packets arrive in one tick or several. Admission checks only what the world does not decide:
 - the held item's block state, oriented by the player and the clicked face;
@@ -64,7 +66,7 @@ When the command is applied:
   - the target must be air or water;
   - dust, repeaters and comparators need a solid block below, and levers a solid block to attach to;
   - a chest joins a neighboring single chest as the official server does: next to one of the same facing, clockwise first, unless the player sneaks; when sneaking, the chest whose side was clicked, taking its facing.
-- **Breaking:** any block but air and piston parts.
+- **Breaking:** any block but air and moving pistons; a piston head takes its base along.
 
 A refused action is answered with the current state of the affected blocks, or, for a command refused when applied, restored by the client when the action is acknowledged. Every block action is acknowledged with its sequence number.
 
@@ -73,6 +75,19 @@ A refused action is answered with the current state of the affected blocks, or, 
 - **View and simulation:** a player's chunk ticket ticks the chunks within the simulation distance and loads, without ticking, those within the view distance the client asked for (at most `view-distance`). Every chunk of the view is sent, whether the view is wider or narrower than the simulation distance.
 - **Block states:** every displayed property is rule state, including dust shapes, lever mounting and repeater locks, so clients see the state the rules hold.
 - **Updates and entities:** block changes in a tick become block updates for every player who has the chunk. Item entities are spawned, moved and removed from the engine trace.
+
+## Survival and inventories
+
+`/gamemode survival|creative|spectator` switches modes. Inventories belong to the simulation: every change is a command the rules apply (see [the simulation guide](SIMULATION.md#tick-structure)), so it is logged, replayed and checked for item conservation like the world.
+
+- **Placement:** uses up the item; a water bucket leaves an empty bucket.
+- **Digging:** the server follows the target version's destroy progress for the block, the held tool, the ground and water. A finish is accepted once the progress since the start reaches 70 % (network delay); one that comes too early completes when the progress reaches the whole block. A finish for another block, or without a start, is refused.
+- **Drops and tools:** a broken block drops what the tool harvests, and a container drops its contents. Tools wear by one per block and break at their durability.
+- **Items:** `Q` throws one item from the selected slot and `Ctrl+Q` the stack, from the eyes along the look. Players pick up item entities whose box touches theirs, grown by one block sideways and half a block up and down, once their pickup delay has run out; the client shows the pickup.
+- **Windows:** using a chest, a double chest or a hopper opens a `generic_9x3`, `generic_9x6` or `hopper` window, unless a solid block lies above the chest. All seven click modes work in it and in the player's own window. Windows close when the container is removed or changes size, or the player moves out of range; closing returns the carried stack and the crafting grid.
+- **Synchronization:** as the target version does, the server keeps the client's view of its window. It takes the slots and carried stack the client predicted for a click as that view, and after each tick sends only the slots that differ. A click made on a stale state id, or one whose prediction cannot be read, gets the whole window. Creative slot changes are not echoed.
+
+The clicks were calibrated against the official 1.21.8 and 1.21.4 servers. The same 48-step mineflayer scenario gives identical windows, carried stacks and inventories on both servers and on Circuit. It covers every click mode, double chests, hoppers, the own window, thrown items and pickups.
 
 ## Identity
 
@@ -110,11 +125,11 @@ Clients that report the vanilla data pack receive registry entry names only. Cli
 
 ## Not supported
 
-- Survival gameplay: health, hunger, damage, mining times and drops from players, mobs, and crafting.
-- Container screens: chests and hoppers cannot be opened. Dropping items from the inventory is not supported.
+- Health, hunger, damage, death, mobs and crafting. The crafting grid holds items but makes nothing.
+- Item use other than placement (food, buckets of other fluids, tools on blocks) and item cooldowns.
 - Lighting: everything is fully lit by sky light. World generation is a flat floor.
 - Saving is limited to what [persistence](PERSISTENCE.md) describes. Checkpoints are written in the background; the game thread takes a snapshot and syncs the start of a new log segment.
-- Signed chat: chat is relayed as system messages. Commands are `/help`, `/players`, `/tp`, `/gamemode creative|spectator` and `/tps`, with no command-tree suggestions.
+- Signed chat: chat is relayed as system messages. Commands are `/help`, `/players`, `/tp`, `/gamemode survival|creative|spectator` and `/tps`, with no command-tree suggestions.
 - Display gaps: block entity data is not sent to clients, so moving pistons are not animated. Other blocks and entities are out of scope.
 - **Other versions:** 1.21.8 and 1.21.4 only. Anvil import and export are defined for 1.21.8 worlds only. A world directory belongs to one bundle; `--migrate-world` copies it to another bundle when both run the same rules.
 
@@ -123,10 +138,10 @@ Clients that report the vanilla data pack receive registry entry names only. Cli
 | Check | What it covers |
 | --- | --- |
 | `protocol_tests` | Data types against documented examples, NBT, framing and compression limits, packet and content tables, fuzzed input |
-| `server_tests` | An in-process server and a small client built on Circuit's codec. It covers: status; offline and online login (encryption and a mock session service); default deny; version, name and frame errors; connection, rate and login-time limits; movement and reach; placement, with player actions grouped into ticks in different ways and chest pairing; view loading without ticking; a lever lighting a lamp; a client that stops reading; one owner per world; graceful stop; saving and restoring a world and a player; the server binary killed and recovered. |
+| `server_tests` | An in-process server and a small client built on Circuit's codec. It covers: status; offline and online login (encryption and a mock session service); default deny; version, name and frame errors; connection, rate and login-time limits; movement and reach; placement, with player actions grouped into ticks in different ways and chest pairing; survival placement, digging time, drops, pickups and item conservation; container windows and their incremental synchronization; view loading without ticking; a lever lighting a lamp; a client that stops reading; one owner per world; graceful stop; saving and restoring a world and a player; the server binary killed and recovered. |
 
 Two clients outside this repository give independent evidence:
-- **Protocol library:** a mineflayer suite, run against both Circuit and the vanilla server.
+- **Protocol library:** mineflayer suites run against both Circuit and the vanilla server: building and redstone, chest placement, and container windows.
 - **Real client:** a Fabric client mod drives the real 1.21.8 or 1.21.4 client from step scripts and checks the blocks and entities the client shows.
 
 The [verification guide](DEVELOPMENT.md#client-testing) describes how to run them.

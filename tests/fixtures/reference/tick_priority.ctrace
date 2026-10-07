@@ -2,7 +2,7 @@ circuit-trace 1
 title Lamp and repeaters due on the same tick
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v6
+harness circuit-reference-rules-v7
 mechanisms scheduled_ticks repeater redstone_lamp
 area -2 -1 -2 1 0 2
 ticks 12

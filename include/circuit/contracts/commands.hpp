@@ -57,34 +57,106 @@ struct RemoveTicket {
     bool operator==(const RemoveTicket&) const = default;
 };
 
-// A player's click on a block face, resolved when it is applied, against the
-// state that earlier commands of the same tick left. Admission checks only
-// what does not depend on the world: the held item's block state, oriented by
-// the player and the face, and which of the two possible positions the player
-// reaches without overlapping a player. When applied:
-// - a usable block (lever, repeater, comparator) is used, unless the player
-//   sneaks while holding an item;
-// - otherwise the held block replaces the clicked block if that one is
-//   replaceable, or goes next to it on the clicked face, if that position is
-//   allowed, replaceable and supports the block.
-struct PlayerUse {
-    BlockPos pos;                       // the clicked block
-    Direction face{};                   // the clicked face
-    std::optional<std::uint32_t> place; // held block's state, as the rule set encodes it
-    bool sneaking{};
-    bool holding{};                     // an item in the main hand
-    std::uint8_t allowed{};             // bit 0: `pos` may receive the block; bit 1: its neighbor on `face`
-    bool operator==(const PlayerUse&) const = default;
-};
-// A creative player's breaking, resolved when applied: air and piston parts
-// cannot be broken.
-struct PlayerBreak {
-    BlockPos pos;
-    bool operator==(const PlayerBreak&) const = default;
+// Player inventories use the slot numbers of the player's own window: 0 the
+// crafting result, 1-4 the crafting grid, 5-8 armor, 9-35 the main inventory,
+// 36-44 the hotbar and 45 the off hand.
+inline constexpr std::uint8_t player_slots = 46;
+inline constexpr std::uint8_t hotbar_first = 36;
+inline constexpr std::uint8_t offhand_slot = 45;
+
+// A creative player sets a slot of their inventory (an empty stack clears it).
+struct SetPlayerSlot {
+    PlayerKey player;
+    std::uint8_t slot{};
+    ItemStack stack;
+    bool operator==(const SetPlayerSlot&) const = default;
 };
 
-using CommandBody =
-    std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket, PlayerUse, PlayerBreak>;
+// A player's click on a block face, resolved when it is applied, against the
+// state that earlier commands of the same tick left, including the item in
+// the clicking hand's slot. Admission checks only what the world does not
+// decide: which of the two possible positions, the clicked block or its
+// neighbor on the face, the player reaches (`reach`) and which no player
+// stands in (`free`). When applied:
+// - a usable block is used, unless the player sneaks while holding an item;
+// - otherwise the held item places its block, oriented by the player's facing
+//   and the face: it replaces the clicked block if that one is replaceable,
+//   or goes next to it, if that position is reached, free when the block has
+//   collision, replaceable and supports the block. In survival the item is
+//   used up.
+struct PlayerUse {
+    PlayerKey player;
+    std::uint8_t slot{};                  // the clicking hand's inventory slot (36-44 or 45)
+    BlockPos pos;                         // the clicked block
+    Direction face{};                     // the clicked face
+    Direction horizontal{Direction::north}; // the player's horizontal facing
+    Direction look{Direction::north};     // the player's facing, including up and down
+    bool sneaking{};
+    bool survival{};
+    std::uint8_t reach{};                 // bit 0: `pos`, bit 1: its neighbor on `face`
+    std::uint8_t free{};                  // bit 0: `pos`, bit 1: its neighbor, free of players
+    bool operator==(const PlayerUse&) const = default;
+};
+// A player breaks a block, resolved when applied: air and piston parts
+// cannot be broken. In survival the block drops what the held tool harvests,
+// containers drop their contents, and the tool wears.
+struct PlayerBreak {
+    PlayerKey player;
+    BlockPos pos;
+    bool survival{};
+    std::uint8_t slot{hotbar_first}; // the main hand's inventory slot
+    bool operator==(const PlayerBreak&) const = default;
+};
+// A player picks up an item entity they touch; applied only once its pickup
+// delay is over, as far as the inventory has room. `selected` is the main
+// hand's inventory slot, which items fill first. A creative player takes the
+// whole entity even without room.
+struct PickUp {
+    PlayerKey player;
+    EntityId entity;
+    std::uint8_t selected{};
+    bool creative{};
+    bool operator==(const PickUp&) const = default;
+};
+// A player drops one item (or the whole stack) of an inventory slot, spawned
+// at `position` with `velocity` and a pickup delay of 40 ticks.
+struct DropItem {
+    PlayerKey player;
+    std::uint8_t slot{};
+    bool whole_stack{};
+    FixedVec position;
+    FixedVec velocity;
+    bool operator==(const DropItem&) const = default;
+};
+
+// A click in a player's open window, applied by the rules as the target
+// version's container menus apply it: the player's own window (no
+// container) or the menu of the container at `container` (a chest, a double
+// chest or a hopper), followed by the player's inventory. `mode` and `button`
+// are the protocol's click type and button; slot -999 is outside the window.
+// Items thrown out of the window spawn at `drop_position` with `drop_velocity`.
+struct ContainerClick {
+    PlayerKey player;
+    std::optional<BlockPos> container;
+    std::int16_t slot{};
+    std::uint8_t button{};
+    std::uint8_t mode{};
+    bool creative{};
+    FixedVec drop_position;
+    FixedVec drop_velocity;
+    bool operator==(const ContainerClick&) const = default;
+};
+// A player closes their window: the carried stack and the crafting grid go
+// back into the inventory; what does not fit drops.
+struct CloseContainer {
+    PlayerKey player;
+    FixedVec drop_position;
+    FixedVec drop_velocity;
+    bool operator==(const CloseContainer&) const = default;
+};
+
+using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket,
+                                 PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.

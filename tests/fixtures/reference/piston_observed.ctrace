@@ -2,7 +2,7 @@ circuit-trace 1
 title Observers watching a piston
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v6
+harness circuit-reference-rules-v7
 mechanisms observer piston neighbor_updates
 area -2 -1 -2 3 1 11
 ticks 20

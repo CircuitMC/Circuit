@@ -90,6 +90,18 @@ public:
     }
     void remove_entity(EntityId id) override { o_.entities_.erase(id); }
 
+    const PlayerInventory* peek_player(contracts::PlayerKey player) override {
+        if (phase_ != Phase::commands) throw std::logic_error("oracle: player inventories outside the command phase");
+        const auto it = o_.players_.find(player);
+        return it == o_.players_.end() ? nullptr : &it->second;
+    }
+    PlayerInventory& player(contracts::PlayerKey player) override {
+        if (phase_ != Phase::commands) throw std::logic_error("oracle: player inventories outside the command phase");
+        auto [it, fresh] = o_.players_.try_emplace(player);
+        if (fresh) it->second.player = player;
+        return it->second;
+    }
+
     std::uint32_t record(TraceKind kind, BlockPos pos, std::uint64_t a, std::uint64_t b, std::uint64_t c) override {
         const auto seq = seq_++;
         o_.trace_.push_back({{o_.time_, phase_, root_, seq}, kind, pos, a, b, c});
@@ -281,6 +293,7 @@ WorldDump Oracle::dump() const {
         for (const auto& t : ticks_[l]) d.ticks.push_back({static_cast<TickList>(l), t});
     d.block_events.assign(events_.begin(), events_.end());
     d.tickets = tickets_.list();
+    for (const auto& [key, inv] : players_) d.players.push_back(inv);
     canonicalize(d);
     return d;
 }

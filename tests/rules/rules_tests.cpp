@@ -6,7 +6,11 @@
 #include "../support/check.hpp"
 #include "../support/scenario.hpp"
 #include <circuit/gameplay/rules.hpp>
+#include <circuit/gameplay/survival.hpp>
+#include <cmath>
 #include <format>
+#include <map>
+#include <random>
 #include <set>
 
 using namespace circuit::test;
@@ -525,35 +529,43 @@ int main() {
 
     suite.run("player actions resolve against the state earlier commands left", [] {
         Sim s;
-        const auto use = [](BlockPos pos, D face, std::optional<BlockState> place, std::uint8_t allowed = 3, bool sneaking = false) {
-            return circuit::contracts::PlayerUse{pos, face, place ? std::optional(place->raw()) : std::nullopt, sneaking, place.has_value(), allowed};
-        };
-        const auto outcomes = [&] {
-            std::vector<std::uint64_t> out; // 0 applied, else the error code, in admission order
-            for (const auto& r : s.last) {
-                if (r.kind == TraceKind::command_applied) out.push_back(0);
-                if (r.kind == TraceKind::command_rejected) out.push_back(r.b);
-            }
-            return out;
-        };
+        const circuit::contracts::PlayerKey alex{1, 2};
+        std::vector<CommandBody> commands;
+        std::vector<std::uint64_t> expected; // 0 applied, else the error code, in admission order
         const auto code = [](ErrorCode e) { return static_cast<std::uint64_t>(e); };
-        s.tick({SetBlock{{1, 0, 1}, blocks::stone().raw(), {}},
-                use({1, 0, 1}, D::up, blocks::stone()),                 // beside: (1,1,1)
-                use({1, 1, 1}, D::up, blocks::wire()),                  // (1,2,1): dust on the stone placed just before
-                use({1, 0, 1}, D::east, blocks::lever(false, D::east, blocks::LeverFace::wall)), // (2,0,1), on the stone
-                use({2, 0, 1}, D::up, blocks::stone()),                 // uses the new lever
-                use({2, 0, 1}, D::up, blocks::stone(), 3, true),        // sneaking with an item: places on top of it instead
-                use({1, 0, 1}, D::up, blocks::stone()),                 // (1,1,1) is taken
-                use({1, 1, 1}, D::north, blocks::stone(), 1),           // the neighbor is not allowed (reach)
-                use({5, 0, 5}, D::up, blocks::wire()),                  // replaces air at (5,0,5): nothing below
-                use({6, 0, 6}, D::up, blocks::lever()),                 // a lever cannot replace air
-                use({1, 0, 1}, D::up, std::nullopt),                    // empty hand on stone
-                circuit::contracts::PlayerBreak{{7, 0, 7}},                               // air
-                circuit::contracts::PlayerBreak{{1, 0, 1}}});
-        const std::vector<std::uint64_t> expected{0, 0, 0, 0, 0, 0, code(ErrorCode::occupied), code(ErrorCode::out_of_reach),
-                                                  code(ErrorCode::unsupported), code(ErrorCode::unsupported),
-                                                  code(ErrorCode::not_usable), code(ErrorCode::not_breakable), 0};
-        require(outcomes() == expected, "outcomes in admission order");
+        // Holds `item` (0: nothing) in the first hotbar slot, then clicks.
+        const auto use = [&](BlockPos pos, D face, std::uint16_t item, ErrorCode outcome, std::uint8_t reach = 3, bool sneaking = false,
+                             D horizontal = D::south) {
+            commands.push_back(circuit::contracts::SetPlayerSlot{alex, 36, {item, static_cast<std::uint8_t>(item ? 1 : 0), 0}});
+            expected.push_back(0);
+            commands.push_back(circuit::contracts::PlayerUse{alex, 36, pos, face, horizontal, horizontal, sneaking, false, reach, 3});
+            expected.push_back(outcome == ErrorCode{} ? 0 : code(outcome));
+        };
+        const ErrorCode ok{};
+        commands.push_back(SetBlock{{1, 0, 1}, blocks::stone().raw(), {}});
+        expected.push_back(0);
+        use({1, 0, 1}, D::up, items::stone, ok);                 // beside: (1,1,1)
+        use({1, 1, 1}, D::up, items::redstone, ok);              // (1,2,1): dust on the stone placed just before
+        use({1, 0, 1}, D::east, items::lever, ok);               // (2,0,1), a wall lever on the stone
+        use({2, 0, 1}, D::up, items::stone, ok);                 // uses the new lever
+        use({2, 0, 1}, D::up, items::stone, ok, 3, true);        // sneaking with an item: places on top of it instead
+        use({1, 0, 1}, D::up, items::stone, ErrorCode::occupied);  // (1,1,1) is taken
+        use({1, 1, 1}, D::north, items::stone, ErrorCode::out_of_reach, 1); // the neighbor is not reached
+        use({5, 0, 5}, D::up, items::redstone, ErrorCode::unsupported); // replaces air at (5,0,5): nothing below
+        use({6, 0, 6}, D::up, items::lever, ErrorCode::unsupported);    // a lever cannot replace air
+        use({1, 0, 1}, D::up, 0, ErrorCode::not_usable);                // empty hand on stone
+        use({1, 0, 1}, D::up, items::diamond, ErrorCode::not_usable);   // an item that places nothing
+        commands.push_back(circuit::contracts::PlayerBreak{alex, {7, 0, 7}, false}); // air
+        expected.push_back(code(ErrorCode::not_breakable));
+        commands.push_back(circuit::contracts::PlayerBreak{alex, {1, 0, 1}, false});
+        expected.push_back(0);
+        s.tick(commands);
+        std::vector<std::uint64_t> outcomes;
+        for (const auto& r : s.last) {
+            if (r.kind == TraceKind::command_applied) outcomes.push_back(0);
+            if (r.kind == TraceKind::command_rejected) outcomes.push_back(r.b);
+        }
+        require(outcomes == expected, "outcomes in admission order");
         // Breaking the stone takes the lever hanging on it, which was used
         // earlier in the tick; its drop spawns. The stone above stays.
         require(s.at({1, 0, 1}).is_air() && s.at({2, 0, 1}).is_air(), "support removed");
@@ -565,6 +577,181 @@ int main() {
         require(lever_uses == 1, "the lever placed in the same tick was used");
         require(s.oracle.dump().entities.size() == 1, "the lever dropped");
         require(s.at({2, 1, 1}).is(BlockType::stone), "sneaking placed instead of using");
+
+        // Survival placement uses the item up; a water bucket leaves a bucket.
+        const circuit::contracts::PlayerKey sam{3, 4};
+        s.tick({SetBlock{{8, 0, 8}, blocks::stone().raw(), {}}, SetBlock{{9, 0, 9}, blocks::stone().raw(), {}},
+                circuit::contracts::SetPlayerSlot{sam, 36, {items::stone, 2, 0}},
+                circuit::contracts::SetPlayerSlot{sam, 37, {items::water_bucket, 1, 0}},
+                circuit::contracts::PlayerUse{sam, 36, {8, 0, 8}, D::up, D::south, D::south, false, true, 3, 3},
+                circuit::contracts::PlayerUse{sam, 37, {9, 0, 9}, D::up, D::south, D::south, false, true, 3, 3},
+                circuit::contracts::PlayerUse{sam, 38, {9, 0, 9}, D::up, D::south, D::south, false, true, 3, 3}});
+        const auto d = s.oracle.dump();
+        const auto inventory = std::ranges::find(d.players, sam, &PlayerInventory::player);
+        require(inventory != d.players.end(), "the survival player has an inventory");
+        require(inventory->slots[36] == ItemStack{items::stone, 1, 0} && inventory->slots[37] == ItemStack{items::bucket, 1, 0},
+                "one stone used, the bucket emptied");
+        require(s.at({8, 1, 8}).is(BlockType::stone) && s.at({9, 1, 9}).is(BlockType::water), "both placed");
+        require(of_kind(s.last, TraceKind::player_slot_changed).size() == 4, "every slot change is recorded");
+    });
+
+    suite.run("dig progress follows tools, ground and water", [] {
+        using circuit::gameplay::destroy_progress;
+        using circuit::gameplay::fluid_height;
+        const auto near = [](float a, float b) { return std::abs(a - b) < 1e-6f; };
+        // Stone (hardness 1.5): by hand 1/150 per tick, with a wooden pickaxe 2/45.
+        require(near(destroy_progress(blocks::stone(), {}, true), 1.0f / 150.0f), "by hand");
+        require(near(destroy_progress(blocks::stone(), {items::wooden_pickaxe, 1, 0}, true), 2.0f / 45.0f), "wooden pickaxe");
+        // Five times slower off the ground, and again with the eyes in water.
+        require(near(destroy_progress(blocks::stone(), {items::wooden_pickaxe, 1, 0}, false), 2.0f / 225.0f), "off the ground");
+        require(near(destroy_progress(blocks::stone(), {items::wooden_pickaxe, 1, 0}, false, true), 2.0f / 1125.0f), "under water");
+        // Obsidian needs a diamond pickaxe; dust breaks at once.
+        require(near(destroy_progress(blocks::obsidian(), {items::iron_pickaxe, 1, 0}, true), 6.0f / 50.0f / 100.0f), "iron on obsidian");
+        require(destroy_progress(blocks::wire(), {}, false) >= 1.0f, "instant");
+        // A source is 8/9 high, a flowing cell at distance 3 5/9, water under water 1.
+        require(near(fluid_height(blocks::water_source(), blocks::air()), 8.0f / 9.0f), "source height");
+        require(near(fluid_height(blocks::water_flowing(3), blocks::air()), 5.0f / 9.0f), "flowing height");
+        require(near(fluid_height(blocks::water_flowing(3), blocks::water_source()), 1.0f), "covered");
+    });
+
+    suite.run("broken containers drop their contents, and survival breaking harvests", [] {
+        Sim s;
+        const circuit::contracts::PlayerKey alex{5, 6};
+        s.tick({place({0, 0, 0}, blocks::chest()), place({2, 0, 0}, blocks::stone()), place({4, 0, 0}, blocks::obsidian()),
+                insert({0, 0, 0}, 0, items::iron_ingot, 5), insert({0, 0, 0}, 3, items::redstone, 64),
+                circuit::contracts::SetPlayerSlot{alex, 36, {items::stone_pickaxe, 1, 130}}});
+        // Creative breaking drops the chest's contents, not the chest.
+        s.tick({circuit::contracts::PlayerBreak{alex, {0, 0, 0}, false, 36}});
+        auto d = s.oracle.dump();
+        require(d.entities.size() == 2 && d.entities[0].stack == ItemStack{items::iron_ingot, 5, 0}
+                    && d.entities[1].stack == ItemStack{items::redstone, 64, 0},
+                "contents drop in slot order");
+        // Survival with a stone pickaxe: stone gives cobblestone, obsidian nothing; the
+        // pickaxe (131 uses) breaks on its last use.
+        s.tick({circuit::contracts::PlayerBreak{alex, {2, 0, 0}, true, 36}});
+        d = s.oracle.dump();
+        require(d.entities.size() == 3 && d.entities[2].stack.item == items::cobblestone, "cobblestone");
+        require(d.players.empty(), "the pickaxe broke");
+        s.tick({circuit::contracts::PlayerBreak{alex, {4, 0, 0}, true, 36}});
+        require(s.oracle.dump().entities.size() == 3 && s.at({4, 0, 0}).is_air(), "obsidian by hand drops nothing");
+    });
+
+    suite.run("container clicks follow the target version's menus", [] {
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::PlayerKey;
+        Sim s;
+        const PlayerKey alex{7, 8};
+        const BlockPos chest{0, 0, 0};
+        s.tick({place(chest, blocks::chest()), insert(chest, 0, items::redstone, 5), insert(chest, 1, items::stone, 64),
+                insert(chest, 2, items::redstone, 60)});
+        const auto click = [&](std::int16_t slot, std::uint8_t button, std::uint8_t mode, bool in_chest = true) {
+            return ContainerClick{alex, in_chest ? std::optional(chest) : std::nullopt, slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+        };
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            const auto it = std::ranges::find(d.players, alex, &PlayerInventory::player);
+            if (it != d.players.end()) return *it;
+            PlayerInventory none;
+            none.player = alex;
+            return none;
+        };
+        const auto chest_slot = [&](std::size_t i) { return block_entity_at(s.oracle.dump(), chest)->slots[i]; };
+        // Chest menu: slots 0-26 the chest, 27-53 the main inventory (window 9-35), 54-62 the hotbar (36-44).
+        s.tick({click(0, 1, 0)}); // right click: half of 5, rounded up
+        require(player().cursor == ItemStack{items::redstone, 3, 0} && chest_slot(0).count == 2, "right click takes half");
+        s.tick({click(54, 1, 0)}); // right click on an empty hotbar slot: one
+        require(player().slots[36] == ItemStack{items::redstone, 1, 0} && player().cursor.count == 2, "right click puts one");
+        s.tick({click(54, 0, 0)}); // left click on the same item: all of the cursor
+        require(player().slots[36].count == 3 && player().cursor.empty(), "left click puts all");
+        s.tick({click(1, 0, 1)}); // shift-click from the chest: into the inventory from the hotbar end
+        require(chest_slot(1).empty() && player().slots[44] == ItemStack{items::stone, 64, 0}, "shift-click fills the last hotbar slot");
+        s.tick({click(62, 0, 1)}); // and back: into the first empty chest slot
+        require(chest_slot(1) == ItemStack{items::stone, 64, 0} && player().slots[44].empty(), "shift-click back");
+        s.tick({click(2, 4, 2)}); // swap chest slot 2 with hotbar slot 4
+        require(player().slots[40] == ItemStack{items::redstone, 60, 0} && chest_slot(2).empty(), "number-key swap");
+        s.tick({click(58, 0, 4)}); // throw one from hotbar slot 4
+        require(player().slots[40].count == 59 && s.oracle.dump().entities.size() == 1, "throw one");
+        // Drag 59 evenly over three empty chest slots: 19 each, 2 stay on the cursor.
+        s.tick({click(58, 0, 0), click(-999, 0, 5), click(3, 1, 5), click(4, 1, 5), click(5, 1, 5), click(-999, 2, 5)});
+        require(chest_slot(3).count == 19 && chest_slot(4).count == 19 && chest_slot(5).count == 19 && player().cursor.count == 2,
+                "even drag");
+        // Double click (on the slot the first click emptied) collects matching
+        // items onto the cursor, full stacks last.
+        s.tick({click(6, 0, 6)});
+        require(player().cursor.count == 64, "collect to a full stack");
+        s.tick({click(-999, 1, 0)}); // right click outside: throws one
+        require(player().cursor.count == 63 && s.oracle.dump().entities.size() == 2, "one thrown outside");
+        s.tick({circuit::contracts::CloseContainer{alex, at_block(0.5, 2, 0.5), {}}});
+        require(player().cursor.empty(), "closing returns the cursor to the inventory");
+        // The own window: armor slots take armor only, the crafting result nothing.
+        s.tick({circuit::contracts::SetPlayerSlot{alex, 9, {items::diamond_helmet, 1, 0}}, click(9, 0, 1, false)});
+        require(player().slots[5].item == items::diamond_helmet, "shift-click wears a helmet");
+        s.tick({click(37, 0, 0, false), click(6, 0, 0, false), click(0, 0, 0, false)});
+        require(player().slots[6].empty() && player().slots[0].empty(), "stone is no chestplate and the result takes nothing");
+    });
+
+    suite.run("random container clicks conserve items", [] {
+        using circuit::contracts::ContainerClick;
+        Sim s;
+        const circuit::contracts::PlayerKey alex{9, 9};
+        const BlockPos left{0, 0, 0}, right{1, 0, 0};
+        // Thrown items land on the stone at (3, 0, 3) instead of falling out of the world.
+        std::vector<CommandBody> setup{place(left, blocks::chest(D::north, blocks::ChestType::left)),
+                                       place(right, blocks::chest(D::north, blocks::ChestType::right)), place({3, 0, 3}, blocks::stone())};
+        std::mt19937 rng(23);
+        const std::uint16_t kinds[]{items::redstone, items::stone, items::water_bucket, items::bucket, items::diamond_helmet};
+        for (std::uint8_t i = 0; i < 27; i += 2) {
+            const auto item = kinds[i % 5];
+            setup.push_back(insert(i % 2 ? left : right, i, item, std::min<std::uint8_t>(items::max_stack(item), 1 + i)));
+        }
+        for (std::uint8_t slot = 9; slot < 45; slot += 3) {
+            const auto item = kinds[slot % 5];
+            setup.push_back(circuit::contracts::SetPlayerSlot{alex, slot, {item, items::max_stack(item), 0}});
+        }
+        s.tick(setup);
+        const auto total = [&] {
+            std::map<std::uint16_t, std::size_t> n;
+            const auto d = s.oracle.dump();
+            for (const auto& p : d.players) {
+                n[p.cursor.item] += p.cursor.count;
+                for (const auto& st : p.slots) n[st.item] += st.count;
+            }
+            for (const auto& [pos, be] : d.block_entities)
+                for (const auto& st : be.slots) n[st.item] += st.count;
+            for (const auto& e : d.entities) n[e.stack.item] += e.stack.count;
+            n.erase(0);
+            return n;
+        };
+        const auto before = total();
+        for (int round = 0; round < 3000; ++round) {
+            const bool own = std::uniform_int_distribution<int>(0, 4)(rng) == 0;
+            const auto size = own ? 46 : 54 + 36;
+            const auto mode = static_cast<std::uint8_t>(std::uniform_int_distribution<int>(0, 6)(rng));
+            const auto slot = std::uniform_int_distribution<int>(0, 15)(rng) == 0 ? std::int16_t{-999}
+                                                                                   : static_cast<std::int16_t>(std::uniform_int_distribution<int>(0, size - 1)(rng));
+            const auto button = static_cast<std::uint8_t>(mode == 2 ? std::uniform_int_distribution<int>(0, 9)(rng)
+                                                        : mode == 5 ? std::uniform_int_distribution<int>(0, 10)(rng)
+                                                                    : std::uniform_int_distribution<int>(0, 1)(rng));
+            // Survival clicks only: a creative clone creates items by design.
+            std::vector<CommandBody> c{ContainerClick{alex, own ? std::nullopt : std::optional(left), slot, button == 9 ? std::uint8_t{40} : button, mode,
+                                                      false, at_block(3.5, 1, 3.5), {}}};
+            if (round % 97 == 0) c.push_back(circuit::contracts::CloseContainer{alex, at_block(3.5, 1, 3.5), {}});
+            s.tick(c);
+            if (total() != before) {
+                std::string diff;
+                const auto now = total();
+                for (const auto& [item, n] : before)
+                    if (!now.contains(item) || now.at(item) != n) diff += std::format(" item {} {}->{}", item, n, now.contains(item) ? now.at(item) : 0);
+                for (const auto& [item, n] : now)
+                    if (!before.contains(item)) diff += std::format(" new item {} {}", item, n);
+                require(false, std::format("conserved after click {} (mode {} button {} slot {}){}", round, mode, button, slot, diff));
+            }
+            const auto d = s.oracle.dump();
+            for (const auto& p : d.players)
+                for (const auto& st : p.slots) require(st.empty() || st.count <= items::max_stack(st.item), "slot limits hold");
+            for (const auto& [pos, be] : d.block_entities)
+                for (const auto& st : be.slots) require(st.empty() || st.count <= items::max_stack(st.item), "container limits hold");
+        }
     });
 
     suite.run("ticket bounds are checked without overflow", [] {
@@ -692,7 +879,7 @@ int main() {
         s.tick({place({0, 1000, 0}, blocks::stone()), place({200, 0, 0}, blocks::stone()), SetBlock{{1, 0, 0}, 0xFFFFFFFFu, {}},
                 SetBlock{{1, 0, 0}, piston_head, {}}, SetBlock{{1, 0, 0}, extended, {}}, use_lever({0, 0, 0}),
                 insert({5, 5, 5}, 0, items::stone, 1), insert({0, 0, 0}, 5, items::stone, 1),
-                insert({0, 0, 0}, 1, 99, 1), insert({0, 0, 0}, 0, items::wheat, 1), insert({0, 0, 0}, 0, items::stone, 5),
+                insert({0, 0, 0}, 1, 9999, 1), insert({0, 0, 0}, 0, items::wheat, 1), insert({0, 0, 0}, 0, items::stone, 5),
                 SpawnItem{at_block(0.5, 5, 0.5), {5000, 0, 0}, {items::stone, 1}}, RemoveEntity{{999}},
                 ticket(1, {0, 0}, 1), RemoveTicket{77}, ticket(9, {0, 0}, 9)});
         const std::vector expected{ErrorCode::out_of_bounds, ErrorCode::unloaded_chunk, ErrorCode::invalid_block_state,
