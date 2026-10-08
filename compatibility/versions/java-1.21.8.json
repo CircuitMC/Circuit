@@ -1,0 +1,103 @@
+{
+  "schema": "circuit-version-manifest-1",
+  "bundle": "java-1.21.8",
+  "release": "1.21.8",
+  "series": "main",
+  "stable": true,
+  "protocol": 772,
+  "data_version": 4440,
+  "pack_formats": {
+    "data": 81,
+    "resource": 64
+  },
+  "java_major": 21,
+  "release_time": "2025-07-17T12:04:02+00:00",
+  "verified": {
+    "date": "2026-10-08",
+    "method": "version.json read from the official server and client jars, whose SHA-1 hashes equal Mojang's published version metadata",
+    "metadata_url": "https://piston-meta.mojang.com/v1/packages/403dee3925f64c7138b72a5302130829cb588784/1.21.8.json"
+  },
+  "reference_artifacts": [
+    {
+      "kind": "server",
+      "sha1": "6bce4ef400e4efaa63a13d5e6f6b500be969ef81",
+      "sha256": "2349d9a8f0d4be2c40e7692890ef46a4b07015e7955b075460d02793be7fbbe7",
+      "size": 57555044,
+      "url": "https://piston-data.mojang.com/v1/objects/6bce4ef400e4efaa63a13d5e6f6b500be969ef81/server.jar",
+      "build_time": "2025-07-17T12:00:57+00:00"
+    },
+    {
+      "kind": "client",
+      "sha1": "a19d9badbea944a4369fd0059e53bf7286597576",
+      "sha256": "ea74e9c5e92d01f95f3d39196ddb734e19a077a58b4c433c34109487d600276f",
+      "size": 29525242,
+      "url": "https://piston-data.mojang.com/v1/objects/a19d9badbea944a4369fd0059e53bf7286597576/client.jar",
+      "build_time": "2025-07-17T12:00:57+00:00"
+    }
+  ],
+  "public_data": {
+    "source": "PrismarineJS/minecraft-data (MIT)",
+    "commit": "095709f3ad62b043069141dc127fc80ef6cd10fa",
+    "url": "https://github.com/PrismarineJS/minecraft-data/tree/095709f3ad62b043069141dc127fc80ef6cd10fa"
+  },
+  "profiles": [
+    {
+      "id": "default",
+      "packs": [
+        "vanilla"
+      ],
+      "feature_flags": [
+        "minecraft:vanilla"
+      ],
+      "status": "partial"
+    },
+    {
+      "id": "minecart_improvements",
+      "packs": [
+        "vanilla",
+        "minecart_improvements"
+      ],
+      "feature_flags": [
+        "minecraft:vanilla",
+        "minecraft:minecart_improvements"
+      ],
+      "status": "missing"
+    },
+    {
+      "id": "redstone_experiments",
+      "packs": [
+        "vanilla",
+        "redstone_experiments"
+      ],
+      "feature_flags": [
+        "minecraft:vanilla",
+        "minecraft:redstone_experiments"
+      ],
+      "status": "missing"
+    },
+    {
+      "id": "trade_rebalance",
+      "packs": [
+        "vanilla",
+        "trade_rebalance"
+      ],
+      "feature_flags": [
+        "minecraft:vanilla",
+        "minecraft:trade_rebalance"
+      ],
+      "status": "missing"
+    }
+  ],
+  "circuit_schemas": {
+    "rule_set": "circuit-reference-rules-v7",
+    "trace_format": "circuit-trace 1",
+    "replay_format": 3,
+    "checkpoint_format": 4,
+    "anvil_data_version": 4440,
+    "reference_traces": "tests/fixtures/harness"
+  },
+  "sources": [
+    "https://www.minecraft.net/en-us/article/minecraft-java-edition-1-21-8",
+    "https://piston-meta.mojang.com/v1/packages/403dee3925f64c7138b72a5302130829cb588784/1.21.8.json"
+  ]
+}

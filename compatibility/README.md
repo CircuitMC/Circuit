@@ -1,0 +1,22 @@
+# Compatibility ledger data
+
+This directory holds the machine-readable status of Circuit against the full server-side game of Java Edition 1.21.4 and 1.21.8. The [vanilla completion roadmap](../docs/VANILLA_COMPLETION.md) defines the target; the generated [ledger summary](../docs/VANILLA_LEDGER.md) presents this data.
+
+| File | Kind | Contents |
+| --- | --- | --- |
+| `versions/<bundle>.json` | hand-written | Release, protocol, DataVersion, pack formats, the official server and client artifacts with their hashes, the default and experimental profiles, and the public-data commit |
+| `families.json` | hand-written | Families V01–V36 with named mechanics, their milestone and per-version status; rules assigning every enumerated resource to a family; inventories not yet collected |
+| `resources.json` | hand-written | Status of enumerated resources that differ from their kind's default |
+| `cases.json` | hand-written | Behavior cases other than the reference traces: client scripts, round trips and planned acceptance cases |
+| `inventory/<bundle>.json` | generated | Blocks, items, entity types, effects, enchantments, attributes, biomes, particles, commands, damage types and packets, with counts of block states, sound events, recipes and instruments |
+| `ledger.json` | generated | One feature per mechanic and per enumerated resource, with a record per version: implementation state, evidence state, cases and gaps |
+
+Each feature has a stable id: `V14.dust` for a mechanic, `block/minecraft:stone` for a resource, `play/serverbound/container_click` under `packet/` for a packet. A record is `implemented`, `partial`, `data_only`, `missing` or `not_applicable` (with a reason), and its evidence is `compared`, `reference_only`, `documented`, `mismatch` or `none`. Compared evidence names its cases. The reference traces in `tests/fixtures/harness*/` are cases `trace/<name>`, linked to the blocks they place.
+
+```bash
+python3 tools/compat_ledger.py check      # validate; fails when the generated files are stale
+python3 tools/compat_ledger.py generate   # write ledger.json and docs/VANILLA_LEDGER.md
+python3 tools/compat_ledger.py inventory --mcdata <dir>   # rebuild the inventories
+```
+
+`inventory` reads PrismarineJS minecraft-data (MIT) at the commit the manifests pin: `<dir>/dataPaths.json` and `<dir>/<release>/tables/<table>.json`. Where minecraft-data maps a release to an older table, the inventory is marked approximate. Packets and damage types come from Circuit's own tables, which cite their sources. The manifests' values were read from the official jars after checking their hashes against Mojang's published version metadata; the jars themselves are not part of this repository.

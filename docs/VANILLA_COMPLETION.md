@@ -1,6 +1,6 @@
 # Vanilla completion roadmap
 
-Status: planned. Baseline reviewed on 2026-10-08 at source commit `107738a`, with `circuit-reference-rules-v7`.
+Status: in progress. Baseline reviewed on 2026-10-08 at source commit `107738a`, with `circuit-reference-rules-v7`. Delivered so far: the version manifests and the feature/evidence ledger (C0.1).
 
 Parts I and II delivered a working simulation and integration foundation for a limited gameplay subset. The next deliverable is a server that implements the server-side features of **Java Edition 1.21.4 and 1.21.8**, with one authoritative version selected at startup. Passing the original milestones does not establish full vanilla compatibility.
 
@@ -26,6 +26,8 @@ The numerical inventories below come from the checked-in protocol tables, genera
 | Entity-type names | 149 | 151 | Item entities in the engine; players handled by the server; most entity families absent |
 | Placement mappings | — | — | 17 item cases, including water buckets and wheat seeds |
 | Existing recorded reference scenarios | 30 | 30 | Narrow block/container observations, not a census of vanilla features |
+
+The [vanilla ledger](VANILLA_LEDGER.md) records the same inventories, and more, feature by feature: for each version, every mechanic of families V01–V36 and every enumerated block, item, entity type, effect, enchantment, attribute, damage type, biome, particle, command and packet has an implementation state, an evidence state and its cases. Its data and validator are in [`compatibility/`](../compatibility/README.md); `tools/check.sh` fails when they disagree with the source or with each other. The version manifests there were verified against the official server and client jars.
 
 The internal block format uses an 8-bit type field. Dimensions currently contain only the overworld. The engine entity record is an item-specific structure with fixed-point motion. Both bundles currently share one rule implementation. These are architectural expansion points, not merely missing tests.
 

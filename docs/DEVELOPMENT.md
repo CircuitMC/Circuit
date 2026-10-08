@@ -72,7 +72,7 @@ xmake run circuit-server --demo --game-version java-1.21.8 --workers 4 --ticks 2
 
 ## Validation
 
-`bash tools/check.sh` configures debug mode, builds all targets, and runs the framework, contract, rule, differential simulation, control and parallel-model test programs. It also compiles the Java SPI/example when `javac` is installed; a missing JDK is reported as a skip. Use focused targets during development, then run the relevant integration checks before marking a milestone complete:
+`bash tools/check.sh` configures debug mode, builds all targets, and runs the framework, contract, rule, differential simulation, control and parallel-model test programs. It validates the [compatibility ledger](../compatibility/README.md) and tests its validator, so a status change in the source data must come with a regenerated ledger (`python3 tools/compat_ledger.py generate`). It also compiles the Java SPI/example when `javac` is installed; a missing JDK is reported as a skip. Use focused targets during development, then run the relevant integration checks before marking a milestone complete:
 
 ```bash
 xmake run contract_tests    # identities, coordinates, bundles, compatibility claims, replay limits

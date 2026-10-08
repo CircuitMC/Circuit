@@ -1,0 +1,523 @@
+{
+  "schema": "circuit-compatibility-resources-1",
+  "comment": "Hand-written. Implementation status of enumerated resources that differ from their kind's default. Statuses apply to both versions unless a version is named. Traces that place a block are linked to it automatically; packets referenced by the server code default to partial.",
+  "defaults": {
+    "block": {
+      "impl": "missing",
+      "evidence": "none",
+      "note": "The content mapping refuses the block's states"
+    },
+    "item": {
+      "impl": "data_only",
+      "evidence": "none",
+      "note": "In the item registry with its stack size and durability: stored, moved, thrown and picked up, with no other use"
+    },
+    "entity": {
+      "impl": "missing",
+      "evidence": "none"
+    },
+    "effect": {
+      "impl": "missing",
+      "evidence": "none"
+    },
+    "enchantment": {
+      "impl": "missing",
+      "evidence": "none"
+    },
+    "attribute": {
+      "impl": "missing",
+      "evidence": "none"
+    },
+    "damage_type": {
+      "impl": "data_only",
+      "evidence": "none",
+      "note": "Sent in the damage-type registry"
+    },
+    "biome": {
+      "impl": "data_only",
+      "evidence": "none",
+      "note": "Sent in the biome registry; no world uses it"
+    },
+    "particle": {
+      "impl": "missing",
+      "evidence": "none"
+    },
+    "command": {
+      "impl": "missing",
+      "evidence": "none"
+    },
+    "packet": {
+      "impl": "missing",
+      "evidence": "none"
+    }
+  },
+  "overrides": {
+    "block": {
+      "air": {
+        "impl": "implemented",
+        "evidence": "compared"
+      },
+      "stone": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "silk touch and enchantments"
+        ]
+      },
+      "glass": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "light is not modeled"
+        ]
+      },
+      "obsidian": {
+        "impl": "partial",
+        "evidence": "none"
+      },
+      "redstone_block": {
+        "impl": "partial",
+        "evidence": "compared"
+      },
+      "slime_block": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "bouncing entities"
+        ]
+      },
+      "lever": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "click sounds"
+        ]
+      },
+      "redstone_wire": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "interactions with blocks the rules do not model"
+        ]
+      },
+      "repeater": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "interactions with blocks the rules do not model"
+        ]
+      },
+      "comparator": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "reads chests and hoppers only"
+        ]
+      },
+      "redstone_lamp": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "no light emission"
+        ]
+      },
+      "observer": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "interactions with blocks the rules do not model"
+        ]
+      },
+      "piston": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "drop offsets, entity pushing, honey"
+        ]
+      },
+      "sticky_piston": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "drop offsets, entity pushing, honey"
+        ]
+      },
+      "piston_head": {
+        "impl": "partial",
+        "evidence": "compared"
+      },
+      "moving_piston": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "no collision shape while moving"
+        ]
+      },
+      "hopper": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "interactions with blocks the rules do not model",
+          "item pickup follows the item-entity gaps"
+        ]
+      },
+      "chest": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "waterlogging",
+          "opening animation"
+        ]
+      },
+      "water": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "swimming, entity currents and waterlogging"
+        ]
+      },
+      "wheat": {
+        "impl": "partial",
+        "evidence": "documented",
+        "deviations": [
+          "growth ignores light, farmland and hydration"
+        ]
+      }
+    },
+    "item": {
+      "stone": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed",
+        "cases": [
+          "client/vitals"
+        ]
+      },
+      "glass": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "obsidian": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "redstone_block": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "slime_block": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "redstone_lamp": {
+        "impl": "partial",
+        "evidence": {
+          "java-1.21.4": "none",
+          "java-1.21.8": "compared"
+        },
+        "note": "Placed",
+        "cases": [
+          "client/redstone"
+        ]
+      },
+      "redstone": {
+        "impl": "partial",
+        "evidence": {
+          "java-1.21.4": "none",
+          "java-1.21.8": "compared"
+        },
+        "note": "Placed as dust",
+        "cases": [
+          "client/redstone"
+        ]
+      },
+      "lever": {
+        "impl": "partial",
+        "evidence": {
+          "java-1.21.4": "none",
+          "java-1.21.8": "compared"
+        },
+        "note": "Placed",
+        "cases": [
+          "client/redstone"
+        ]
+      },
+      "repeater": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed",
+        "cases": [
+          "client/redstone",
+          "client/collision"
+        ]
+      },
+      "comparator": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "observer": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "piston": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "sticky_piston": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "hopper": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed",
+        "cases": [
+          "client/windows",
+          "client/collision"
+        ]
+      },
+      "chest": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed and paired",
+        "cases": [
+          "client/chests",
+          "client/windows"
+        ]
+      },
+      "water_bucket": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Places water and leaves a bucket"
+      },
+      "wheat_seeds": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed as wheat"
+      },
+      "wooden_pickaxe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Dig speed, harvest tier and wear"
+      },
+      "stone_pickaxe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Dig speed, harvest tier and wear"
+      },
+      "iron_pickaxe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Dig speed, harvest tier and wear"
+      },
+      "golden_pickaxe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Dig speed, harvest tier and wear"
+      },
+      "diamond_pickaxe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Dig speed, harvest tier and wear"
+      },
+      "netherite_pickaxe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Dig speed, harvest tier and wear"
+      },
+      "wooden_axe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Dig speed and wear on chests"
+      },
+      "stone_axe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Dig speed and wear on chests"
+      },
+      "iron_axe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Dig speed and wear on chests"
+      },
+      "golden_axe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Dig speed and wear on chests"
+      },
+      "diamond_axe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Dig speed and wear on chests"
+      },
+      "netherite_axe": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Dig speed and wear on chests"
+      },
+      "diamond_helmet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Worn in the head slot; no protection",
+        "cases": [
+          "client/windows"
+        ]
+      }
+    },
+    "entity": {
+      "item": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "fixed-point motion, no merging, not compared"
+        ]
+      },
+      "player": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Hosted by the server: movement, vitals, inventory",
+        "cases": [
+          "client/vitals",
+          "client/collision",
+          "realclient/survival"
+        ]
+      }
+    },
+    "damage_type": {
+      "fall": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/vitals"
+        ]
+      },
+      "out_of_world": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/vitals"
+        ]
+      },
+      "starve": {
+        "impl": "partial",
+        "evidence": "documented"
+      }
+    },
+    "biome": {
+      "plains": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Every column"
+      }
+    },
+    "command": {
+      "gamemode": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "no permissions or selectors"
+        ]
+      },
+      "tp": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "the issuer only"
+        ]
+      },
+      "help": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "lists Circuit's commands"
+        ]
+      }
+    },
+    "packet": {
+      "handshaking/serverbound/intention": {
+        "impl": "implemented"
+      },
+      "status/serverbound/status_request": {
+        "impl": "implemented"
+      },
+      "status/serverbound/ping_request": {
+        "impl": "implemented"
+      },
+      "status/clientbound/status_response": {
+        "impl": "implemented"
+      },
+      "status/clientbound/pong_response": {
+        "impl": "implemented"
+      },
+      "login/serverbound/hello": {
+        "impl": "implemented"
+      },
+      "login/serverbound/key": {
+        "impl": "implemented"
+      },
+      "login/serverbound/login_acknowledged": {
+        "impl": "implemented"
+      },
+      "login/clientbound/hello": {
+        "impl": "implemented"
+      },
+      "login/clientbound/login_compression": {
+        "impl": "implemented"
+      },
+      "login/clientbound/login_finished": {
+        "impl": "implemented"
+      },
+      "login/clientbound/login_disconnect": {
+        "impl": "implemented"
+      },
+      "play/serverbound/keep_alive": {
+        "impl": "implemented"
+      },
+      "play/clientbound/keep_alive": {
+        "impl": "implemented"
+      },
+      "configuration/serverbound/keep_alive": {
+        "impl": "implemented"
+      },
+      "configuration/clientbound/keep_alive": {
+        "impl": "implemented"
+      },
+      "play/serverbound/container_click": {
+        "impl": "implemented",
+        "evidence": "compared",
+        "cases": [
+          "client/windows"
+        ]
+      },
+      "play/clientbound/container_set_content": {
+        "impl": "implemented",
+        "evidence": "compared",
+        "cases": [
+          "client/windows"
+        ]
+      },
+      "play/clientbound/container_set_slot": {
+        "impl": "implemented",
+        "evidence": "compared",
+        "cases": [
+          "client/windows"
+        ]
+      },
+      "play/clientbound/set_cursor_item": {
+        "impl": "implemented",
+        "evidence": "compared",
+        "cases": [
+          "client/windows"
+        ]
+      }
+    }
+  }
+}

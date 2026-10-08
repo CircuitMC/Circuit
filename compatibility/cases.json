@@ -1,0 +1,189 @@
+{
+  "schema": "circuit-compatibility-cases-1",
+  "comment": "Hand-written cases outside the trace fixtures. Every trace in tests/fixtures/harness*/ is a case 'trace/<name>' added by the generator. Kinds: official_trace (recorded on the official server and replayed by Circuit), black_box (the same client script against the official server and Circuit, outputs compared), real_client (the unmodified client against Circuit only), round_trip (data through the official server and back), planned (an acceptance case with no expectation recorded yet).",
+  "cases": [
+    {
+      "id": "client/windows",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/windows.js",
+      "status": "passing",
+      "description": "48 steps: every click mode in a chest, the own window, a double chest and a hopper, throws and pickups"
+    },
+    {
+      "id": "client/vitals",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/vitals.js",
+      "status": "passing",
+      "description": "Wall correction, falls, regeneration, death, respawn, the void and the floating kick"
+    },
+    {
+      "id": "client/collision",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/collision.js",
+      "status": "passing",
+      "description": "19 moves against a chest, repeaters, a hopper and a full block"
+    },
+    {
+      "id": "client/chests",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/chests.js",
+      "status": "passing",
+      "description": "Seven chest placement and pairing cases"
+    },
+    {
+      "id": "client/redstone",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/redstone.js",
+      "status": "passing",
+      "description": "Player placement of dust, levers, a step, a wall lever and repeaters"
+    },
+    {
+      "id": "client/suite",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/suite.js",
+      "status": "passing",
+      "description": "Six pass/fail checks calibrated on the official server, then run against Circuit"
+    },
+    {
+      "id": "realclient/survival",
+      "kind": "real_client",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-client-harness/scripts/survival.txt",
+      "status": "passing",
+      "description": "66 steps of walking, jumping, sprinting, falling, death and respawning"
+    },
+    {
+      "id": "realclient/redstone",
+      "kind": "real_client",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-client-harness/scripts/redstone.txt",
+      "status": "passing",
+      "description": "Repeater lines, pistons and a second player"
+    },
+    {
+      "id": "anvil/showcase",
+      "kind": "round_trip",
+      "versions": [
+        "java-1.21.8"
+      ],
+      "location": "external: showcase world round trip (docs/PERSISTENCE.md)",
+      "status": "passing",
+      "description": "A world exported by Circuit, opened and saved by the official server, imported again"
+    },
+    {
+      "id": "TNT-01",
+      "kind": "planned",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "planned",
+      "status": "planned",
+      "description": "TNT placement, breaking and every ignition path"
+    },
+    {
+      "id": "TNT-02",
+      "kind": "planned",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "planned",
+      "status": "planned",
+      "description": "Primed TNT creation order, fuse, motion, collision and removal"
+    },
+    {
+      "id": "TNT-03",
+      "kind": "planned",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "planned",
+      "status": "planned",
+      "description": "Primed TNT on the ground, in the air, in water and at chunk edges"
+    },
+    {
+      "id": "TNT-04",
+      "kind": "planned",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "planned",
+      "status": "planned",
+      "description": "Explosion blocks, drops, chain reactions, damage and knockback, also submerged"
+    },
+    {
+      "id": "TNT-05",
+      "kind": "planned",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "planned",
+      "status": "planned",
+      "description": "Live fuses across save, reload and unload"
+    },
+    {
+      "id": "TNT-06",
+      "kind": "planned",
+      "versions": [
+        "java-1.21.8"
+      ],
+      "location": "planned",
+      "status": "planned",
+      "description": "The tntExplodes game rule on and off (1.21.8 only)"
+    },
+    {
+      "id": "TNT-07",
+      "kind": "planned",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "planned",
+      "status": "planned",
+      "description": "A named TNT duplication design over repeated cycles"
+    },
+    {
+      "id": "TNT-08",
+      "kind": "planned",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "planned",
+      "status": "planned",
+      "description": "The duplication machine at chunk edges and corners, across region changes and restarts"
+    }
+  ]
+}
