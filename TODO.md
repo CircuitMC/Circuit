@@ -1,6 +1,6 @@
 # Circuit Roadmap
 
-Circuit targets Minecraft Java Edition with C++23, xmake, and standalone Asio. Java Edition 1.21.8 is the initial implementation target. Java Edition 1.21.4 is a second complete bundle, which validates the version-selection architecture.
+Circuit targets Minecraft Java Edition with C++23, xmake, and standalone Asio. Java Edition 1.21.8 is the initial implementation target. Java Edition 1.21.4 is a second bundle for the same declared gameplay subset. Full server-side compatibility for both versions is the next major deliverable.
 
 ## Part I — Simulation and technical gameplay
 
@@ -13,7 +13,7 @@ The first major deliverable is a headless simulation core with independently che
 
 Completion requires stable state and event traces under different scheduling choices, version-specific behavioral evidence, and explicit coverage limits. A client connection is not a prerequisite for the headless core.
 
-Part I is complete for its declared scope on Java Edition 1.21.8 and 1.21.4. The reference rules pass 27 traces recorded on each target version. Each mechanism declares a compatibility tier: fifteen claim exact (L0) behavior, and the rest declare their gaps (L2). The simulation guide lists the coverage limits. Closing the remaining L2 gaps, such as entity observations in traces, continues as compatibility work.
+Part I is complete for its declared scope on Java Edition 1.21.8 and 1.21.4. The reference rules pass 30 traces recorded on each target version. Each mechanism declares a compatibility tier: fifteen claim exact (L0) behavior, and the rest declare their gaps (L2). The simulation guide lists the coverage limits. Closing the remaining L2 gaps, such as entity observations in traces, continues as compatibility work.
 
 ## Part II — Integration and additional capabilities
 
@@ -23,6 +23,26 @@ Part I is complete for its declared scope on Java Edition 1.21.8 and 1.21.4. The
 - [x] **M8 — Optimization and version expansion:** measure storage and scheduling improvements, complete a second version bundle, and prepare a release compatibility matrix.
 
 **Foundation:** M0 provides the build, executor, synthetic fixtures, native plugin example, and module interfaces. This baseline does not complete any Part I milestone.
+
+## Part III — Complete vanilla compatibility
+
+Parts I and II completed their original subset, not the complete game. The [vanilla completion roadmap](docs/VANILLA_COMPLETION.md) defines the target, current gaps, version differences, dependencies and acceptance gates. Each phase must validate both 1.21.4 and 1.21.8; registry entries and protocol IDs do not count as implemented gameplay.
+
+- [ ] **C0 — Baselines and evidence:** exact version/profile manifests, a feature/evidence ledger, entity/RNG/lifecycle observations and independent comparisons.
+- [ ] **C1 — Complete data model:** extensible block states, item/entity/block-entity components, versioned schemas and registry/pack foundations.
+- [ ] **C2 — World foundations:** dimension-scoped ownership, vanilla ticket levels, chunk lifecycle, lighting and environmental state.
+- [ ] **C3 — Entities and TNT:** general entity lifecycle/physics, non-living entities and baseline TNT ignition, fuse and explosions.
+- [ ] **C4 — Technical gameplay:** missing components and exact machine behavior, including version-specific TNT duplication and cross-chunk acceptance.
+- [ ] **C5 — Blocks, items and production:** complete block families, item use, fluids/growth, recipes/loot and functional menus.
+- [ ] **C6 — Complete player gameplay:** modes, movement, combat, equipment, effects, food and experience.
+- [ ] **C7 — Worlds and dimensions:** same-seed terrain/biomes/structures, presets, portals and travel.
+- [ ] **C8 — Living world:** mob AI/navigation, spawning/farms, villages/trading/raids, bosses and version-specific creatures.
+- [ ] **C9 — Commands and data packs:** grammar/permissions, functions/selectors, advancements, scoreboards, gamerules and server operations.
+- [ ] **C10 — Complete client integration:** all server-visible state, packets, metadata, audio/visual events, signed chat, packs, maps and dialogs/waypoints.
+- [ ] **C11 — Complete world interchange:** both target formats, all persistent data, tested migrations and interruption recovery.
+- [ ] **C12 — Release qualification:** complete version/profile matrices, survival/machine/farm campaigns, real clients, endurance and performance under accepted semantics.
+
+Persist and expose new state to clients as each feature is delivered. C10 and C11 close the remaining integration inventory. Full compatibility remains open while mandatory behavior is missing, unverified or knowingly different. The checklists below retain the original foundation scope and continuing work.
 
 ## Simulation and compatibility
 

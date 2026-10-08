@@ -4,7 +4,7 @@ Circuit is an experimental Minecraft Java Edition server written in C++23, built
 
 ## Development priorities
 
-**Part I: simulation and technical gameplay.** M1, M2, M3, and M7 establish contracts, an independent reference world, parallel execution, and version-specific technical behavior. This first deliverable is headless; networking and storage are not prerequisites for validating its simulation.
+**Part I: simulation and technical gameplay.** M1, M2, M3, and M7 establish contracts, a sequential reference executor, parallel execution, and version-specific technical behavior. This first deliverable is headless; networking and storage are not prerequisites for validating its simulation.
 
 **Part II: integration and additional capabilities.** M4, M5, M6, and M8 add client access, persistence, native and Java extensions, technical tools, optimization, and additional versions.
 
@@ -16,10 +16,12 @@ The headless Part I core is complete for its declared scope. It provides:
 
 - shared contracts;
 - reference rules for redstone (including comparators and observers), pistons, hoppers and double chests, water, crops, item entities, chunk tickets, and player inventories with survival use and container menus;
-- an independent sequential oracle;
-- a region-parallel runtime that matches the oracle exactly across worker counts, region layouts and seeded schedules.
+- a sequential scheduling oracle that shares the gameplay rules;
+- a region-parallel runtime that matches the oracle across tested worker counts, region layouts and seeded schedules.
 
-The rules are checked against traces recorded on unmodified Java Edition servers: 27 on 1.21.8 and the same 27 on 1.21.4, with identical results. Fifteen mechanisms claim exact behavior, including scheduled-tick order, block-event order, the update-chain limit, power through solid blocks, dust, repeaters, comparators, observers, hoppers, double chests and water. The others declare their deviations, such as the random parts of piston drops. See [the simulation core](docs/SIMULATION.md) for the compatibility table and coverage limits.
+The rules are checked against traces recorded on unmodified Java Edition servers: 30 on 1.21.8 and the same 30 on 1.21.4, with identical results. Fifteen mechanisms claim exact behavior, including scheduled-tick order, block-event order, the update-chain limit, power through solid blocks, dust, repeaters, comparators, observers, hoppers, double chests and water. The others declare their deviations, such as the random parts of piston drops. See [the simulation core](docs/SIMULATION.md) for the compatibility table and coverage limits.
+
+Full vanilla compatibility remains a separate deliverable. The [completion roadmap](docs/VANILLA_COMPLETION.md) inventories the missing systems and version differences, including TNT/technical machines, full content, world generation, mobs, data packs and complete world interchange. Parts I and II describe the implemented foundation; Part III tracks completion against both versions.
 
 The network server runs a playable creative and survival world for the Java Edition 1.21.8 or 1.21.4 client on top of the same engine, one version per server. It supports offline identities and online mode (encrypted, verified by the session service, refused when verification fails), and the real client is tested against it. In survival, blocks take their dig time and drop what the tool harvests, items are used up, thrown and picked up, chests and hoppers open with every click mode, and movement, falls, hunger, death and respawning follow the target version; these were compared with the official servers of both versions. Mobs, eating and crafting are not supported; see [the network server](docs/SERVER.md).
 

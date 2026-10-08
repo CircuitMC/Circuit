@@ -2,6 +2,8 @@
 
 Circuit states compatibility separately for four layers. Passing one layer says nothing about another: a client can connect (protocol) to a world whose blocks it shows correctly (content) while a machine in it behaves differently from the official server (behavior).
 
+This guide describes current support. The [vanilla completion roadmap](VANILLA_COMPLETION.md) defines the full 1.21.4/1.21.8 target, missing systems and future acceptance gates; planned features are not current capabilities.
+
 | Layer | Question it answers | Evidence |
 | --- | --- | --- |
 | [Protocol](#protocol) | Can a client of this version connect and exchange the packets the server uses? | Documented packet tables, a protocol library (mineflayer) and the real client |
@@ -52,6 +54,23 @@ The reference rules model a fixed set of blocks and items. Their names and state
 
 **Not represented:** other blocks, item components other than damage, block entity data beyond containers and comparators, mobs and other entities beyond items and players, biomes other than plains, lighting (everything is lit by the sky), and world generation beyond a flat floor.
 
+### Technical machines
+
+Item registration does not provide block behavior. TNT, rails, coral fans and honey blocks have item and protocol entries, but cannot be placed by the current rules. Common building items such as cobblestone, dirt, sand and oak logs are also inert. Survival inventories and container screens therefore do not constitute complete vanilla survival support.
+
+| Mechanism or machine | Current support |
+| --- | --- |
+| Piston quasi-connectivity and activation after an update | Recorded target-version scenarios pass; this does not cover every BUD layout. |
+| Sticky-piston block dropping on a short pulse | The one-game-tick pulse scenario passes recorded traces for both versions. |
+| Slime structures, the 12-block push limit and observers watching piston writes | Implemented with rule, trace and cross-chunk simulation checks. Pistons remain L2 because item pushing, drops and some update ordering have gaps. |
+| TNT ignition, fuse, motion and explosions | Not implemented; a TNT item cannot be placed as a TNT block. |
+| TNT duplication machines | Not supported. Primed TNT and explosion behavior are absent; common machine components such as rails, minecarts and coral fans are absent too. No TNT-duplication reference fixture exists. |
+| Honey-based flying machines | Not supported; honey-block behavior is absent. Slime and piston tests do not establish compatibility for complete flying-machine designs. |
+| Dispensers, droppers, redstone torches and buttons | Not implemented. Existing wire, lever and diode support does not cover machines requiring these components. |
+| Portal chunk loaders, sand duplication and bedrock-breaking machines | No compatibility claim. Dimensions/portals, falling-block entities and the required block/interaction coverage are absent. |
+
+Importing an unsupported machine with substitution does not preserve its mechanism. Default Anvil import rejects unrepresentable content; explicit substitution can replace blocks or discard entities and reports those losses.
+
 ## Behavior
 
 Each mechanism of the rule set declares a compatibility tier:
@@ -66,7 +85,7 @@ Each mechanism of the rule set declares a compatibility tier:
 
 Behavior the server adds on top of the rules, such as player placement, digging time and container windows, is checked against the official server with the client harnesses; [the server guide](SERVER.md#design) describes what is validated. Player inventories, survival use and the click modes of container windows are part of the rule set; their results were compared with the official servers of both versions in a 48-step window scenario.
 
-The parallel runtime never changes behavior: every test compares it with a sequential oracle at several worker counts and region layouts, and the server's results do not depend on how player actions fall into ticks.
+Differential tests compare the parallel runtime with a sequential executor at several worker counts and region layouts. Grouped player-action regressions also compare dependent placements and uses across batch boundaries. These checks cover their scenarios; because the executors share gameplay rules, independent target-version evidence is required to establish vanilla behavior.
 
 ## Extensions
 

@@ -2,15 +2,15 @@
 
 ## Status
 
-The Part I core runs headless: shared contracts, a set of reference rules, an independent sequential oracle, and a region-parallel runtime checked against the oracle. The [network server](SERVER.md) and [persistence](PERSISTENCE.md) are built on it.
+The Part I core runs headless: shared contracts, a set of reference rules, a sequential scheduling oracle, and a region-parallel runtime checked against the oracle. The oracle shares gameplay rules with the runtime; it checks scheduling equivalence, while external reference observations and hand-derived expectations check the rules themselves. The [network server](SERVER.md) and [persistence](PERSISTENCE.md) are built on it.
 
 The rules are **circuit-reference-rules-v7**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
 
-Two version bundles run them: `java-1.21.8` and `java-1.21.4`. Each version has 27 traces recorded on the unmodified server:
+Two version bundles run them: `java-1.21.8` and `java-1.21.4`. Each version has 30 traces recorded on the unmodified server:
 - 1.21.8 traces are in `tests/fixtures/harness/`;
 - 1.21.4 traces are in `tests/fixtures/harness-1.21.4/`.
 
-The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 54 pass on both the parallel runtime and the oracle.
+The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 60 pass on both the parallel runtime and the oracle.
 
 The compatibility table is part of the version bundle (`src/contracts/version.cpp`). `circuit-server --compatibility` prints it. Each row states a target tier, a claimed tier, the evidence source, and its limitations:
 
@@ -51,7 +51,7 @@ An L0 claim rests on the scenarios its fixtures exercise. It is not a proof for 
 | `include/circuit/gameplay/`, `src/gameplay/` | Block registry, `RuleContext`, the update queue, and the reference rules |
 | `include/circuit/runtime/`, `src/runtime/` | `Engine`, region contexts, job runners, tick clock |
 | `include/circuit/evidence/`, `src/evidence/` | circuit-trace fixtures, content mapping, recording and evaluation |
-| `tests/oracle/` | Independent sequential executor, never linked into the server |
+| `tests/oracle/` | Separate sequential executor using shared gameplay rules, never linked into the server |
 | `tests/rules/` | Rule fixtures with hand-derived expectations |
 | `tests/sim/` | Differential scenarios: runtime against oracle |
 | `tests/fixtures/` | Skeletons, reference recordings, target-version traces, documented fixtures and profiling workloads |
@@ -317,12 +317,13 @@ Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked with `--check
 ## Limitations
 
 - Rows claimed L2 differ from the target version as listed in the compatibility table. The main gaps are:
-  - no power through solid blocks, and no dust steps;
-  - piston drops without random offsets;
-  - simplified item physics;
-  - water without drop preference;
+  - piston drops without random offsets and simplified item pushing;
+  - simplified item physics without merging, and entity order without target-version trace observations;
+  - per-section random streams and coordinate-ordered random-tick chunks;
   - wheat ignoring light and hydration;
-  - blocks surviving without support.
+  - chunk tickets without vanilla ticket types or level propagation;
+  - container menus without crafting and survival loot limited to modeled blocks.
+- TNT blocks, primed TNT entities, explosions, honey blocks, rails and coral fans are not modeled. TNT duplication machines cannot run; piston trace coverage does not establish compatibility for them. See [technical machines](COMPATIBILITY.md#technical-machines).
 - There is no lighting, world generation, mob spawning or second dimension.
 - Snapshots copy whole column data on first write, and commit is serial. On the measured workloads, coordination overhead outweighs parallel gains.
 - Commands validate their inputs at full width before converting them; for example, a spawn position is checked against the world border and height in fixed-point units before it is narrowed to a block. Out-of-range input is rejected with no effect.
