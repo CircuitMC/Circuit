@@ -94,6 +94,9 @@ class LedgerValidation(unittest.TestCase):
     def test_manifest_disagreeing_with_the_bundle(self):
         self.assert_rejected(lambda i: i["manifests"]["java-1.21.4"].update(protocol=770), "differs from src/contracts/version.cpp")
 
+    def test_pack_formats_disagreeing_with_the_bundle(self):
+        self.assert_rejected(lambda i: i["manifests"]["java-1.21.8"]["pack_formats"].update(data=80), "pack formats differ")
+
     def test_unclassified_resource(self):
         def mutate(i):
             i["families"]["classification"]["entity"] = [r for r in i["families"]["classification"]["entity"] if r[1] != ".*"]

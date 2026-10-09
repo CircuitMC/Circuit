@@ -547,7 +547,7 @@ int main(int argc, char** argv) {
         auto other = circuit;
         other.actions.back().tick += 1;
         require(first_difference(circuit, other) == std::optional<std::string>("different scenarios: actions"), "scenario");
-        // Game rules are part of the scenario; Circuit models none.
+        // Game rules are part of the scenario; Circuit models their defaults only.
         const auto with_rule = parse(read_text(fixtures / "open" / "tnt_explodes_disabled.ctrace"));
         require(with_rule.gamerules == std::vector<std::pair<std::string, std::string>>{{"tntExplodes", "false"}}, "game rule read");
         require(write_fixture(parse(write_fixture(with_rule))) == write_fixture(with_rule), "game rules round-trip");
@@ -556,6 +556,36 @@ int main(int argc, char** argv) {
         require(evaluate_fixture(with_rule, engine_executor()).outcome == Outcome::unsupported, "unsupported");
         require(!parse_fixture(std::string(header) + "gamerule tntExplodes false\n"), "game rules need version 2");
         require(!parse_fixture(std::string(header2) + "gamerule a true\ngamerule a false\n"), "duplicate game rule");
+        // A rule at its default changes nothing; a rule the version lacks
+        // makes the scenario invalid there.
+        auto text = read_text(fixtures / "reference" / "item_drop_piston.ctrace");
+        text.insert(text.find("entities observed"), "gamerule tntExplodes true\ngamerule randomTickSpeed 3\n");
+        require(evaluate_fixture(parse(text), engine_executor()).outcome == Outcome::passed, "rules at their defaults");
+        auto changed = text;
+        changed.replace(changed.find("randomTickSpeed 3"), 17, "randomTickSpeed 5");
+        const auto r = evaluate_fixture(parse(changed), engine_executor());
+        require(r.outcome == Outcome::unsupported && r.detail.find("randomTickSpeed") != std::string::npos, r.detail);
+        auto old = text;
+        old.replace(old.find("game-version 1.21.8"), 19, "game-version 1.21.4");
+        const auto o = evaluate_fixture(parse(old), engine_executor());
+        require(o.outcome == Outcome::invalid && o.detail.find("tntExplodes does not exist in 1.21.4") != std::string::npos, o.detail);
+    });
+
+    suite.run("the 1.21.4 rule set rests on identical recordings", [&] {
+        // Both bundles run the same rules because every scenario recorded on
+        // 1.21.4 is identical to its 1.21.8 recording.
+        const auto& b4 = **circuit::contracts::BundleRegistry::select_for_simulation("java-1.21.4");
+        const auto& b8 = **circuit::contracts::BundleRegistry::select_for_simulation("java-1.21.8");
+        require(b4.rules->id == b8.rules->id && b4.rules->basis.find("identical") != std::string_view::npos, "the basis is stated");
+        std::size_t pairs = 0;
+        for (const auto& entry : fs::directory_iterator(fixtures / "harness-1.21.4")) {
+            const auto counterpart = fixtures / "harness" / entry.path().filename();
+            require(fs::exists(counterpart), std::format("{} has a 1.21.8 recording", entry.path().filename().string()));
+            const auto diff = first_difference(parse(read_text(entry.path())), parse(read_text(counterpart)));
+            require(!diff, std::format("{}: {}", entry.path().filename().string(), diff.value_or("")));
+            ++pairs;
+        }
+        require(pairs >= 30, std::format("{} pairs", pairs));
     });
 
     return suite.finish();

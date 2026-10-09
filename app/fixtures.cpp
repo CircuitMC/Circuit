@@ -132,6 +132,14 @@ int print_compatibility(const std::string& bundle_id) {
         return 2;
     }
     const auto& rules = *(*bundle)->rules;
+    const auto& schema = (*bundle)->schema;
+    std::size_t experimental = 0;
+    for (const auto& r : schema.game_rules) experimental += r.experimental ? 1 : 0;
+    std::cout << std::format("{}: content {}, component schema of protocol {}, data packs {}, resource packs {}, "
+                             "registries {}, {} game rules ({} experimental)\n",
+                             bundle_id, schema.content_release, schema.component_schema, schema.data_pack_format,
+                             schema.resource_pack_format, schema.registries, schema.game_rules.size(), experimental);
+    std::cout << std::format("rules {}, block registry {}; basis: {}\n", rules.id, rules.block_registry, rules.basis);
     std::cout << std::format("{}: {} (mechanism, target tier, claimed tier, evidence)\n", bundle_id, rules.id);
     for (const auto& m : rules.mechanisms)
         std::cout << std::format("{:<21} {}  {}  {}\n    {}\n", m.id, contracts::tier_name(m.target),

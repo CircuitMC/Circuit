@@ -37,11 +37,11 @@ struct Server::Impl {
         const auto selected = contracts::BundleRegistry::select_for_simulation(config.game_version);
         if (!selected) throw std::invalid_argument(std::format("server: {} has no executable rules", config.game_version));
         bundle = *selected;
-        // The play protocol of the bundle's game version.
+        // The play protocol, content and registries the bundle names.
         const std::int32_t protocol_number = bundle->protocol;
         content = protocol::ContentTables::for_protocol(protocol_number);
-        registries = synced_registries(protocol_number);
-        mapping = evidence::ContentMapping::for_game_version(bundle->game_version);
+        registries = synced_registries(bundle->schema.registries);
+        mapping = evidence::ContentMapping::for_game_version(bundle->schema.content_release);
         if (!content || !registries || !mapping)
             throw std::invalid_argument(std::format("server: no play protocol for {}", config.game_version));
         wire = std::make_unique<Wire>(protocol_number);
@@ -56,7 +56,7 @@ struct Server::Impl {
         acceptor.bind(endpoint);
         acceptor.listen();
         game = std::make_unique<Game>(config, *bundle, *wire, *content, *mapping, *registries);
-        shared = std::make_unique<Shared>(config, *wire, *registries, *registries_with_data(protocol_number),
+        shared = std::make_unique<Shared>(config, *wire, *registries, *registries_with_data(bundle->schema.registries),
                                           bundle->game_version, *game, offline);
         if (config.online_mode) {
             auto v = auth::SessionVerifier::create(config.session_server);

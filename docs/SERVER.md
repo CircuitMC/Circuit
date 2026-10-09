@@ -121,21 +121,24 @@ Numeric protocol data is compiled from public documentation, and every table nam
 | Packet ids | minecraft.wiki "Java Edition protocol/Packets", revision 3258009 (1.21.8) and 2938097 (1.21.4) | `tools/extract_packet_ids.py` |
 | Block states, items, entity types | PrismarineJS minecraft-data (MIT) at commit `095709f3`, which the wiki's protocol FAQ points to | `tools/compile_content_tables.py` |
 | Registry entries, their data and the biome tags 1.21.4 needs | minecraft.wiki pages cited in `src/server/registries.cpp` | by hand |
+| Item component schema and static registry sizes | PrismarineJS minecraft-data `protocol.json` and registry tables at the same commit | `tools/compile_components.py` |
+| Game rules | minecraft.wiki "Game rule" revision 3099622 | by hand, in `src/contracts/version.cpp` |
 | Field layouts | minecraft.wiki protocol pages at the same revisions | by hand, in `src/server/wire.cpp` |
 
 Two consistency checks guard these tables:
 - **Packet ids:** where the two public sources name the same packet (83 packets), their ids agree. Per state and direction they list the same number of packets for 1.21.8.
 - **1.21.4 packet count:** minecraft-data lists two more serverbound configuration packets for 1.21.4, `custom_report_details` and `server_links`. These are clientbound packets in the wiki's tables, so the server follows the wiki. The eight ids both sources share agree.
 - **Block states:** every block's state count matches its properties, and every state id round-trips through its notation.
+- **Registries and game rules:** every synchronized registry has the same entries as the official server's configuration, and each bundle's game rules are the official server's `/gamerule` list (`tests/fixtures/registries/`, observed 2026-10-10). The check found the four element paintings missing from the painting table, now added. The official servers also send registries Circuit does not: enchantments (their definitions need item and enchantment tags), and in 1.21.8 dialogs and the game-test registries.
 
 **1.21.4 differences.** The 1.21.4 wire protocol differs from 1.21.8 in what the server uses:
 - **Chunk data:** heightmaps are an NBT compound, and paletted containers carry their data-array length.
-- **Registries:** the cat, chicken, cow, frog, pig and wolf-sound variants are not synchronized, and "Dennis" is not yet a painting.
+- **Registries:** the cat, chicken, cow, frog, pig and wolf-sound variants are not synchronized, "Dennis" is not yet a painting, and the jukebox songs lack Tears and Lava Chicken.
 - **Tags:** its wolf variants need the `is_badlands`, `is_jungle` and `is_savanna` biome tags, which the server sends.
 
 The real client exercises the rest.
 
-Clients that report the vanilla data pack receive registry entry names only. Clients that do not, such as protocol libraries, receive a documented minimal set with data: overworld, plains and the `chat` chat type.
+Each version bundle names its registry set (`circuit-server --compatibility` prints it). Clients that report the vanilla data pack receive registry entry names only: 17 registries in 1.21.8 and 11 in 1.21.4, including trim materials and patterns, banner patterns, goat-horn instruments and jukebox songs, whose definitions refer to no tags. Clients that do not, such as protocol libraries, receive a documented minimal set with data: overworld, plains and the `chat` chat type.
 
 ## Not supported
 

@@ -25,6 +25,10 @@ struct ComponentContext {
     std::uint32_t items{};
     std::uint32_t blocks{};
     std::function<std::optional<std::uint32_t>(std::string_view registry)> synced;
+    // Entry names of the synchronized registries ("minecraft:gold"), for
+    // save forms that name entries instead of numbering them.
+    std::function<std::optional<std::string_view>(std::string_view registry, std::uint32_t id)> name_of;
+    std::function<std::optional<std::uint32_t>(std::string_view registry, std::string_view name)> id_of;
 };
 
 // A stack's damage and its other components, as read from the wire.
@@ -62,9 +66,11 @@ public:
 
     // The save form (NBT, as in region files) of a component value, and back,
     // for the components whose save form mirrors their network form (plain
-    // values, text, NBT and lists of them; see components.cpp). The others
-    // are errors that name them: Anvil interchange refuses them for now.
-    [[nodiscard]] std::expected<nbt::Tag, std::string> to_save(std::uint16_t type, std::span<const std::byte> value) const;
+    // values, text, NBT and lists of them) and for those that name registry
+    // entries (trims, banner patterns, base colors; see components.cpp). The
+    // others are errors that name them: Anvil interchange refuses them.
+    [[nodiscard]] std::expected<nbt::Tag, std::string> to_save(std::uint16_t type, std::span<const std::byte> value,
+                                                               const ComponentContext& ctx) const;
     [[nodiscard]] std::expected<Bytes, std::string> from_save(std::uint16_t type, const nbt::Tag& value,
                                                               const ComponentContext& ctx) const;
 

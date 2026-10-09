@@ -183,6 +183,7 @@ target("server_tests")
     -- The crash test runs the server binary as a separate process.
     on_config(function (target)
         target:add("defines", format('CIRCUIT_SERVER_BINARY="%s"', path.absolute(target:dep("circuit-server"):targetfile())))
+        target:add("defines", format('CIRCUIT_SOURCE_DIR="%s"', os.projectdir()))
     end)
 target_end()
 

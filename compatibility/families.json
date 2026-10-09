@@ -249,8 +249,16 @@
           "name": "Synchronized registries with data for clients without the vanilla pack",
           "milestone": "C1",
           "impl": "partial",
-          "evidence": "none",
-          "note": "Documented minimal set"
+          "evidence": "compared",
+          "note": "Each bundle names its registry set: 17 registries for 1.21.8 and 11 for 1.21.4 sent by name to clients with the vanilla pack, the same entries as the official servers; clients without the pack get a documented minimal set with data",
+          "cases": [
+            "registries/official"
+          ],
+          "deviations": [
+            "enchantments are not sent until their tags can be (they need item and enchantment tags)",
+            "1.21.8 dialogs and game-test registries are not sent",
+            "clients without the vanilla pack get only dimension types, plains and the chat type with data"
+          ]
         },
         {
           "id": "tags",
@@ -1912,8 +1920,12 @@
           "id": "gamerules",
           "name": "Game rules",
           "milestone": "C9",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "data_only",
+          "evidence": "reference_only",
+          "cases": [
+            "registries/official"
+          ],
+          "note": "Each bundle lists its game rules with their types and defaults (55 for 1.21.8, 52 for 1.21.4, and the experimental minecartMaxSpeed); scenarios may name a rule at its default; no rule has behavior and /gamerule does not exist"
         },
         {
           "id": "scoreboard_and_teams",

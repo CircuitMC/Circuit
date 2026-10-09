@@ -77,14 +77,23 @@ Vec3d to_vec(contracts::FixedVec v) { return {to_double(v.x), to_double(v.y), to
 
 std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_observations) {
     Prepared p;
-    p.mapping = ContentMapping::for_game_version(f.game_version);
-    if (!p.mapping) return std::unexpected(report(Outcome::unsupported, std::format("no content mapping for {}", f.game_version)));
     const contracts::VersionBundle* found = nullptr;
     for (const auto& b : contracts::BundleRegistry::candidates())
         if (b.game_version == f.game_version && b.rules) found = &b;
     if (!found) return std::unexpected(report(Outcome::unsupported, std::format("no executable bundle for {}", f.game_version)));
-    if (!f.gamerules.empty())
-        return std::unexpected(report(Outcome::unsupported, std::format("game rule {}: the rules model no game rules", f.gamerules.front().first)));
+    p.mapping = ContentMapping::for_game_version(found->schema.content_release);
+    if (!p.mapping) return std::unexpected(report(Outcome::unsupported, std::format("no content mapping for {}", f.game_version)));
+    // A game rule the version lacks makes the scenario invalid there; a rule
+    // at its default changes nothing; any other value is not modeled.
+    for (const auto& [name, value] : f.gamerules) {
+        const auto* rule = found->schema.game_rule(name);
+        if (!rule || rule->experimental)
+            return std::unexpected(report(Outcome::invalid, std::format("game rule {} does not exist in {}", name, f.game_version)));
+        const auto expected = rule->type == contracts::GameRuleType::boolean ? std::string(rule->default_value ? "true" : "false")
+                                                                             : std::to_string(rule->default_value);
+        if (value != expected)
+            return std::unexpected(report(Outcome::unsupported, std::format("game rule {}: the rules model only its default, {}", name, expected)));
+    }
     if (f.dimension != "minecraft:overworld")
         return std::unexpected(report(Outcome::unsupported, std::format("dimension {}: the rules model the overworld only", f.dimension)));
     p.bundle = *found;

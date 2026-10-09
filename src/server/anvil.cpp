@@ -334,7 +334,7 @@ public:
         auto c = Tag::compound();
         if (damage) c.set("minecraft:damage", Tag::int_(*damage));
         for (const auto& a : patch.added()) {
-            auto value = codec_->to_save(a.type, a.value);
+            auto value = codec_->to_save(a.type, a.value, ctx_);
             if (!value) return std::unexpected(value.error());
             if (name && codec_->type_name(a.type) == "custom_name") *name = std::move(*value);
             else c.set(std::format("minecraft:{}", codec_->type_name(a.type)), std::move(*value));

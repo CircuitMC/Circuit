@@ -326,7 +326,7 @@ int main() {
         require(c.until(State::configuration, "select_known_packs").has_value(), "known packs offered");
         c.send(State::configuration, "select_known_packs", Writer().varint(1).string("minecraft").string("core").string("1.21.8"));
         require(c.until(State::configuration, "finish_configuration").has_value(), "configuration finished");
-        require(registries.size() == 12 && registries[0] == "minecraft:dimension_type", "twelve registries sent");
+        require(registries.size() == 17 && registries[0] == "minecraft:dimension_type", "seventeen registries sent");
         c.on_skip = nullptr;
         c.send(State::configuration, "finish_configuration");
         auto login = c.until(State::play, "login");
@@ -1229,6 +1229,50 @@ int main() {
         auto kick = c.until(State::play, "disconnect", std::chrono::milliseconds(5000));
         stopper.join();
         require(kick && text_of(*kick).find("stopping") != std::string::npos, "stop reason delivered");
+    });
+
+    suite.run("synchronized registries and game rules match the official servers", [] {
+        // The tables are compiled from public lists; the official servers'
+        // configuration and command trees (tests/fixtures/registries) check them.
+        for (const auto* id : {"java-1.21.8", "java-1.21.4"}) {
+            const auto& bundle = **contracts::BundleRegistry::find(id);
+            std::map<std::string, std::set<std::string>> observed;
+            std::set<std::string> rules;
+            std::ifstream in(std::format("{}/tests/fixtures/registries/{}.txt", CIRCUIT_SOURCE_DIR, id));
+            for (std::string line; std::getline(in, line);) {
+                std::istringstream words(line);
+                std::string kind, name, entry;
+                words >> kind;
+                if (kind == "registry") {
+                    words >> name;
+                    auto& set = observed[name];
+                    while (words >> entry) set.insert(entry);
+                } else if (kind == "game_rules") {
+                    while (words >> entry) rules.insert(entry);
+                }
+            }
+            require(!observed.empty() && !rules.empty(), "observations read");
+            const auto* registries = server::synced_registries(bundle.schema.registries);
+            std::set<std::string> sent;
+            for (const auto& r : *registries) {
+                const std::set<std::string> entries(r.entries.begin(), r.entries.end());
+                require(observed.contains(std::string(r.registry)) && observed.at(std::string(r.registry)) == entries,
+                        std::format("{}: {} matches the official server", id, r.registry));
+                sent.insert(std::string(r.registry));
+            }
+            // Registries the official server sends that Circuit does not, yet.
+            std::set<std::string> missing;
+            for (const auto& [name, entries] : observed)
+                if (!sent.contains(name)) missing.insert(name);
+            const std::set<std::string> expected_missing = std::string_view(id) == "java-1.21.8"
+                ? std::set<std::string>{"minecraft:dialog", "minecraft:enchantment", "minecraft:test_environment", "minecraft:test_instance"}
+                : std::set<std::string>{"minecraft:enchantment"};
+            require(missing == expected_missing, std::format("{}: {} registries not sent", id, missing.size()));
+            std::set<std::string> names;
+            for (const auto& r : bundle.schema.game_rules)
+                if (!r.experimental) names.insert(std::string(r.name));
+            require(names == rules, std::format("{}: {} game rules, {} observed", id, names.size(), rules.size()));
+        }
     });
 
     suite.run("every block state of both protocols has a palette entry and a collision shape", [] {

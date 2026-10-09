@@ -99,7 +99,7 @@ A file that starts with `circuit-trace 2` may use everything version 1 allows, p
 | `chunks` | `observed` records chunk status lines; default `none` |
 | `rng` | `observed` records draws from the target version's random streams; default `none` |
 | `tolerance` | Allowed difference of entity positions and velocities, 0–1 blocks; default 0 (exact). A tolerance turns a comparison into a declared approximation and belongs in the fixture's review |
-| `gamerule <name> <value>` | A game rule set before the scenario starts; repeatable, one line per rule. Circuit models no game rules, so a fixture with one is unsupported. A harness whose version lacks the rule refuses the skeleton |
+| `gamerule <name> <value>` | A game rule set before the scenario starts; repeatable, one line per rule. Circuit knows each version's game rules but models only their defaults: a rule at its default is accepted, another value makes the fixture unsupported, and a rule the version lacks makes it invalid. A harness whose version lacks the rule refuses the skeleton |
 
 **Stages.** Every event line names the stage it happened in: `commands`, `block_ticks`, `fluid_ticks`, `random_ticks`, `block_events`, `entities` and `block_entities` (Circuit's phases), `players`, `chunks`, `spawning` and `other` (stages only the target version has), or `-` (unknown). Actions run in the `commands` stage. Comparison includes the stage: an event in a different stage is a different event.
 

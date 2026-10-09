@@ -461,6 +461,43 @@ const SchemaNode& resolve(const ComponentSchema& s, std::uint32_t index) {
     return s.nodes[index];
 }
 
+// Dye colors by id (minecraft.wiki "Dye", data values).
+constexpr std::string_view dye_colors[] = {
+    "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
+    "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black",
+};
+std::optional<std::int32_t> dye_id(std::string_view name) {
+    for (std::size_t i = 0; i < std::size(dye_colors); ++i)
+        if (dye_colors[i] == name) return static_cast<std::int32_t>(i);
+    return std::nullopt;
+}
+
+// Components of protocol 772 whose save form names registry entries.
+enum class Named { none, trim, banner_patterns, base_color };
+Named named_form(const ComponentSchema& s, std::uint16_t type) {
+    if (s.protocol != 772) return Named::none;
+    const std::string_view name = schema_string(s.components[type].name);
+    if (name == "trim") return Named::trim;
+    if (name == "banner_patterns") return Named::banner_patterns;
+    if (name == "base_color") return Named::base_color;
+    return Named::none;
+}
+
+// A registry holder (0: an inline definition, else id + 1) as an entry name.
+std::expected<nbt::Tag, std::string> holder_name(Reader& r, std::string_view registry, const ComponentContext& ctx) {
+    const auto v = r.varint();
+    if (!v) return std::unexpected("truncated");
+    if (*v == 0) return std::unexpected(std::format("an inline {} definition has no save form yet", registry));
+    const auto name = ctx.name_of ? ctx.name_of(registry, static_cast<std::uint32_t>(*v - 1)) : std::nullopt;
+    if (!name) return std::unexpected(std::format("{} id {} has no name", registry, *v - 1));
+    return nbt::Tag::string(std::string(*name));
+}
+std::optional<std::int32_t> holder_id(const nbt::Tag& t, std::string_view registry, const ComponentContext& ctx) {
+    if (t.type() != nbt::TagType::string || !ctx.id_of) return std::nullopt;
+    const auto id = ctx.id_of(registry, t.text());
+    return id ? std::optional(static_cast<std::int32_t>(*id + 1)) : std::nullopt;
+}
+
 bool mirrors(const ComponentSchema& s, std::uint16_t type) {
     if (s.protocol != 772) return false;
     const std::string_view name = schema_string(s.components[type].name);
@@ -475,17 +512,55 @@ std::optional<std::int64_t> whole(const nbt::Tag& t) {
 }
 } // namespace
 
-std::expected<nbt::Tag, std::string> ComponentCodec::to_save(std::uint16_t type, std::span<const std::byte> value) const {
+std::expected<nbt::Tag, std::string> ComponentCodec::to_save(std::uint16_t type, std::span<const std::byte> value,
+                                                             const ComponentContext& ctx) const {
     const auto& s = schema_of(schema_);
     if (type >= s.component_count) return std::unexpected("unknown component type");
     const std::string name = std::format("item component minecraft:{}", schema_string(s.components[type].name));
-    if (!mirrors(s, type)) return std::unexpected(name + " has no save form in Circuit yet");
-    const auto& n = resolve(s, s.components[type].node);
     Reader r(value);
     const auto done = [&](nbt::Tag t) -> std::expected<nbt::Tag, std::string> {
         if (r.remaining() != 0) return std::unexpected(name + ": trailing bytes");
         return t;
     };
+    const auto failed = [&](const std::string& why) { return std::unexpected(std::format("{}: {}", name, why)); };
+    switch (named_form(s, type)) {
+    case Named::trim: {
+        // {material: "minecraft:gold", pattern: "minecraft:coast"}
+        auto out = nbt::Tag::compound();
+        auto material = holder_name(r, "trim_material", ctx);
+        if (!material) return failed(material.error());
+        auto pattern = holder_name(r, "trim_pattern", ctx);
+        if (!pattern) return failed(pattern.error());
+        out.set("material", std::move(*material));
+        out.set("pattern", std::move(*pattern));
+        return done(std::move(out));
+    }
+    case Named::banner_patterns: {
+        // [{pattern: "minecraft:stripe_top", color: "red"}, ...]
+        const auto count = r.varint();
+        if (!count || *count < 0) return failed("invalid list");
+        auto list = nbt::Tag::list(nbt::TagType::compound);
+        for (std::int32_t i = 0; i < *count; ++i) {
+            auto pattern = holder_name(r, "banner_pattern", ctx);
+            if (!pattern) return failed(pattern.error());
+            const auto color = r.varint();
+            if (!color || *color < 0 || *color >= static_cast<std::int32_t>(std::size(dye_colors))) return failed("invalid color");
+            auto layer = nbt::Tag::compound();
+            layer.set("pattern", std::move(*pattern));
+            layer.set("color", nbt::Tag::string(std::string(dye_colors[*color])));
+            list.push(std::move(layer));
+        }
+        return done(std::move(list));
+    }
+    case Named::base_color: {
+        const auto color = r.varint();
+        if (!color || *color < 0 || *color >= static_cast<std::int32_t>(std::size(dye_colors))) return failed("invalid color");
+        return done(nbt::Tag::string(std::string(dye_colors[*color])));
+    }
+    case Named::none: break;
+    }
+    if (!mirrors(s, type)) return std::unexpected(name + " has no save form in Circuit yet");
+    const auto& n = resolve(s, s.components[type].node);
     switch (n.op) {
     case SchemaOp::void_: return done(nbt::Tag::compound());
     case SchemaOp::nbt_: {
@@ -547,10 +622,41 @@ std::expected<Bytes, std::string> ComponentCodec::from_save(std::uint16_t type, 
     const auto& s = schema_of(schema_);
     if (type >= s.component_count) return std::unexpected("unknown component type");
     const std::string name = std::format("item component minecraft:{}", schema_string(s.components[type].name));
-    if (!mirrors(s, type)) return std::unexpected(name);
-    const auto& n = resolve(s, s.components[type].node);
     Writer w;
     const auto bad = [&] { return std::unexpected(name + " with an invalid value"); };
+    switch (named_form(s, type)) {
+    case Named::trim: {
+        const auto* material = value.find("material");
+        const auto* pattern = value.find("pattern");
+        const auto m = material ? holder_id(*material, "trim_material", ctx) : std::nullopt;
+        const auto p = pattern ? holder_id(*pattern, "trim_pattern", ctx) : std::nullopt;
+        if (value.type() != nbt::TagType::compound || !m || !p) return bad();
+        w.varint(*m).varint(*p);
+        return canonical_value(type, w.bytes(), ctx);
+    }
+    case Named::banner_patterns: {
+        if (value.type() != nbt::TagType::list) return bad();
+        w.varint(static_cast<std::int32_t>(value.items().size()));
+        for (const auto& layer : value.items()) {
+            const auto* pattern = layer.type() == nbt::TagType::compound ? layer.find("pattern") : nullptr;
+            const auto* color = layer.type() == nbt::TagType::compound ? layer.find("color") : nullptr;
+            const auto p = pattern ? holder_id(*pattern, "banner_pattern", ctx) : std::nullopt;
+            const auto c = color && color->type() == nbt::TagType::string ? dye_id(color->text()) : std::nullopt;
+            if (!p || !c) return bad();
+            w.varint(*p).varint(*c);
+        }
+        return canonical_value(type, w.bytes(), ctx);
+    }
+    case Named::base_color: {
+        const auto c = value.type() == nbt::TagType::string ? dye_id(value.text()) : std::nullopt;
+        if (!c) return bad();
+        w.varint(*c);
+        return canonical_value(type, w.bytes(), ctx);
+    }
+    case Named::none: break;
+    }
+    if (!mirrors(s, type)) return std::unexpected(name);
+    const auto& n = resolve(s, s.components[type].node);
     switch (n.op) {
     case SchemaOp::void_:
         if (value.type() != nbt::TagType::compound) return bad();

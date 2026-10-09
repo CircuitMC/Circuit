@@ -85,7 +85,9 @@ const std::vector<RegistryEntries> registries_772{
      {
         "minecraft:temperate", "minecraft:warm", "minecraft:cold",
      }},
-    // minecraft.wiki "Painting" (Canvases) revision 3164308
+    // minecraft.wiki "Painting" (Canvases) revision 3164308, with the four
+    // element paintings it lists as unplaceable (earth, wind, fire, water);
+    // they were missing until the official servers' registries showed them.
     {"minecraft:painting_variant",
      {
         "minecraft:kebab", "minecraft:aztec", "minecraft:alban", "minecraft:aztec2", "minecraft:bomb",
@@ -97,7 +99,8 @@ const std::vector<RegistryEntries> registries_772{
         "minecraft:sunflowers", "minecraft:tides", "minecraft:dennis", "minecraft:backyard", "minecraft:pond",
         "minecraft:fighters", "minecraft:changing", "minecraft:finding", "minecraft:lowmist", "minecraft:passage",
         "minecraft:skeleton", "minecraft:donkey_kong", "minecraft:pointer", "minecraft:pigscene",
-        "minecraft:burning_skull", "minecraft:orb", "minecraft:unpacked",
+        "minecraft:burning_skull", "minecraft:orb", "minecraft:unpacked", "minecraft:earth", "minecraft:wind",
+        "minecraft:fire", "minecraft:water",
      }},
     // minecraft.wiki "Pig" revision 3159133
     {"minecraft:pig_variant",
@@ -116,12 +119,60 @@ const std::vector<RegistryEntries> registries_772{
         "minecraft:pale", "minecraft:ashen", "minecraft:black", "minecraft:chestnut", "minecraft:rusty",
         "minecraft:snowy", "minecraft:spotted", "minecraft:striped", "minecraft:woods",
      }},
+    // minecraft.wiki "Smithing" revision 3820533 (trim materials and patterns,
+    // the same in 1.21.4 and 1.21.8). Their definitions refer to no tags.
+    {"minecraft:trim_material",
+     {
+        "minecraft:amethyst", "minecraft:copper", "minecraft:diamond", "minecraft:emerald", "minecraft:gold",
+        "minecraft:iron", "minecraft:lapis", "minecraft:netherite", "minecraft:quartz", "minecraft:redstone",
+        "minecraft:resin",
+     }},
+    {"minecraft:trim_pattern",
+     {
+        "minecraft:bolt", "minecraft:coast", "minecraft:dune", "minecraft:eye", "minecraft:flow", "minecraft:host",
+        "minecraft:raiser", "minecraft:rib", "minecraft:sentry", "minecraft:shaper", "minecraft:silence",
+        "minecraft:snout", "minecraft:spire", "minecraft:tide", "minecraft:vex", "minecraft:ward", "minecraft:wayfinder",
+        "minecraft:wild",
+     }},
+    // minecraft.wiki "Banner/Patterns" revision 3556873 (Java Edition resource names)
+    {"minecraft:banner_pattern",
+     {
+        "minecraft:base", "minecraft:stripe_bottom", "minecraft:stripe_top", "minecraft:stripe_left",
+        "minecraft:stripe_right", "minecraft:stripe_center", "minecraft:stripe_middle", "minecraft:stripe_downright",
+        "minecraft:stripe_downleft", "minecraft:small_stripes", "minecraft:cross", "minecraft:straight_cross",
+        "minecraft:diagonal_left", "minecraft:diagonal_right", "minecraft:diagonal_up_left", "minecraft:diagonal_up_right",
+        "minecraft:half_vertical", "minecraft:half_vertical_right", "minecraft:half_horizontal",
+        "minecraft:half_horizontal_bottom", "minecraft:square_bottom_left", "minecraft:square_bottom_right",
+        "minecraft:square_top_left", "minecraft:square_top_right", "minecraft:triangle_bottom", "minecraft:triangle_top",
+        "minecraft:triangles_bottom", "minecraft:triangles_top", "minecraft:circle", "minecraft:rhombus",
+        "minecraft:border", "minecraft:curly_border", "minecraft:bricks", "minecraft:gradient", "minecraft:gradient_up",
+        "minecraft:creeper", "minecraft:skull", "minecraft:flower", "minecraft:mojang", "minecraft:globe",
+        "minecraft:piglin", "minecraft:flow", "minecraft:guster",
+     }},
+    // minecraft.wiki "Instrument definition" revision 3778776 (goat horns)
+    {"minecraft:instrument",
+     {
+        "minecraft:admire_goat_horn", "minecraft:call_goat_horn", "minecraft:dream_goat_horn",
+        "minecraft:feel_goat_horn", "minecraft:ponder_goat_horn", "minecraft:seek_goat_horn",
+        "minecraft:sing_goat_horn", "minecraft:yearn_goat_horn",
+     }},
+    // minecraft.wiki "Music Disc" revision 3798476 (one song per disc),
+    // "Music Disc Creator (Music Box)" revision 3808799 and "Music Disc Lava
+    // Chicken" revision 3831177. Tears came in 1.21.6 and Lava Chicken in 1.21.7.
+    {"minecraft:jukebox_song",
+     {
+        "minecraft:11", "minecraft:13", "minecraft:5", "minecraft:blocks", "minecraft:cat", "minecraft:chirp",
+        "minecraft:creator", "minecraft:creator_music_box", "minecraft:far", "minecraft:lava_chicken",
+        "minecraft:mall", "minecraft:mellohi", "minecraft:otherside", "minecraft:pigstep", "minecraft:precipice",
+        "minecraft:relic", "minecraft:stal", "minecraft:strad", "minecraft:tears", "minecraft:wait", "minecraft:ward",
+     }},
 };
 
 // Registry entries for protocol 769 (Java Edition 1.21.4). The cat, chicken,
 // cow, frog, pig and wolf-sound variant registries became synchronized only in
-// 1.21.5, so they are not sent. Sources, all from early 2025 and describing
-// 1.21.4:
+// 1.21.5, so they are not sent. Trim materials and patterns, banner patterns
+// and instruments are as for 1.21.8; jukebox songs lack Tears and Lava
+// Chicken. Sources, all from early 2025 and describing 1.21.4:
 // - dimension types, biomes, damage types and chat types: as for 1.21.8.
 //   minecraft.wiki "Damage type" revision 2892923 lists the same 49 types
 //   (campfire and wind_charge since 1.21, mace_smash and ender_pearl since
@@ -133,11 +184,16 @@ std::vector<RegistryEntries> make_769() {
     std::vector<RegistryEntries> out;
     for (const auto& r : registries_772) {
         if (r.registry == "minecraft:dimension_type" || r.registry == "minecraft:worldgen/biome" || r.registry == "minecraft:damage_type" ||
-            r.registry == "minecraft:chat_type" || r.registry == "minecraft:wolf_variant")
+            r.registry == "minecraft:chat_type" || r.registry == "minecraft:wolf_variant" || r.registry == "minecraft:trim_material" ||
+            r.registry == "minecraft:trim_pattern" || r.registry == "minecraft:banner_pattern" || r.registry == "minecraft:instrument")
             out.push_back(r);
         else if (r.registry == "minecraft:painting_variant") {
             out.push_back(r);
             std::erase(out.back().entries, std::string_view("minecraft:dennis"));
+        } else if (r.registry == "minecraft:jukebox_song") {
+            out.push_back(r);
+            std::erase(out.back().entries, std::string_view("minecraft:tears"));
+            std::erase(out.back().entries, std::string_view("minecraft:lava_chicken"));
         }
     }
     return out;
@@ -207,26 +263,35 @@ std::vector<RegistryData> data_772(bool with_cloud_height = true) {
 }
 } // namespace
 
-const std::vector<RegistryEntries>* synced_registries(std::int32_t protocol) noexcept {
-    static const auto registries_769 = make_769();
-    switch (protocol) {
-    case 772: return &registries_772;
-    case 769: return &registries_769;
-    default: return nullptr;
-    }
+namespace {
+// The registry set of the bundle that plays a protocol.
+std::string_view set_of(std::int32_t protocol) noexcept {
+    for (const auto& b : contracts::BundleRegistry::candidates())
+        if (b.protocol == protocol && b.rules) return b.schema.registries;
+    return {};
 }
+} // namespace
 
-const std::vector<RegistryData>* registries_with_data(std::int32_t protocol) {
+const std::vector<RegistryEntries>* synced_registries(std::string_view set) noexcept {
+    static const auto registries_769 = make_769();
+    if (set == "java-1.21.8") return &registries_772;
+    if (set == "java-1.21.4") return &registries_769;
+    return nullptr;
+}
+const std::vector<RegistryEntries>* synced_registries(std::int32_t protocol) noexcept { return synced_registries(set_of(protocol)); }
+
+const std::vector<RegistryData>* registries_with_data(std::string_view set) {
     static const auto v772 = data_772();
     static const auto v769 = data_772(false);
-    switch (protocol) {
-    case 772: return &v772;
-    case 769: return &v769;
-    default: return nullptr;
-    }
+    if (set == "java-1.21.8") return &v772;
+    if (set == "java-1.21.4") return &v769;
+    return nullptr;
 }
+const std::vector<RegistryData>* registries_with_data(std::int32_t protocol) { return registries_with_data(set_of(protocol)); }
 
-const std::vector<RegistryTags>& synced_tags(std::int32_t protocol) {
+const std::vector<RegistryTags>& synced_tags(std::int32_t protocol) { return synced_tags(set_of(protocol)); }
+
+const std::vector<RegistryTags>& synced_tags(std::string_view set) {
     // The 1.21.4 wolf variants refer to these biome tags, and the client
     // refuses unbound tags. Contents: minecraft.wiki "Biome tag (Java
     // Edition)" revision 2888034.
@@ -239,22 +304,45 @@ const std::vector<RegistryTags>& synced_tags(std::int32_t protocol) {
          }},
     };
     static const std::vector<RegistryTags> none;
-    return protocol == 769 ? v769 : none;
+    return set == "java-1.21.4" ? v769 : none;
 }
 
-protocol::ComponentContext component_context(std::int32_t protocol) {
+protocol::ComponentContext component_context(const contracts::VersionBundle& bundle) {
     protocol::ComponentContext ctx;
-    if (const auto* tables = protocol::ContentTables::for_protocol(protocol)) {
+    if (const auto* tables = protocol::ContentTables::for_protocol(bundle.schema.component_schema)) {
         ctx.items = tables->item_count();
         ctx.blocks = tables->block_count();
     }
-    ctx.synced = [registries = synced_registries(protocol)](std::string_view name) -> std::optional<std::uint32_t> {
-        if (!registries) return std::nullopt;
+    const auto* registries = synced_registries(bundle.schema.registries);
+    const auto find = [registries](std::string_view name) -> const RegistryEntries* {
+        if (!registries) return nullptr;
         for (const auto& r : *registries)
-            if (r.registry.substr(r.registry.find(':') + 1) == name) return static_cast<std::uint32_t>(r.entries.size());
+            if (r.registry.substr(r.registry.find(':') + 1) == name) return &r;
+        return nullptr;
+    };
+    ctx.synced = [find](std::string_view name) -> std::optional<std::uint32_t> {
+        const auto* r = find(name);
+        return r ? std::optional(static_cast<std::uint32_t>(r->entries.size())) : std::nullopt;
+    };
+    ctx.name_of = [find](std::string_view registry, std::uint32_t id) -> std::optional<std::string_view> {
+        const auto* r = find(registry);
+        return r && id < r->entries.size() ? std::optional(r->entries[id]) : std::nullopt;
+    };
+    ctx.id_of = [find](std::string_view registry, std::string_view entry) -> std::optional<std::uint32_t> {
+        const auto* r = find(registry);
+        if (!r) return std::nullopt;
+        const auto full = entry.find(':') == std::string_view::npos ? "minecraft:" + std::string(entry) : std::string(entry);
+        for (std::size_t i = 0; i < r->entries.size(); ++i)
+            if (r->entries[i] == full) return static_cast<std::uint32_t>(i);
         return std::nullopt;
     };
     return ctx;
+}
+
+protocol::ComponentContext component_context(std::int32_t protocol) {
+    for (const auto& b : contracts::BundleRegistry::candidates())
+        if (b.protocol == protocol && b.rules) return component_context(b);
+    return {};
 }
 
 std::optional<std::int32_t> registry_index(const std::vector<RegistryEntries>& registries, std::string_view registry,

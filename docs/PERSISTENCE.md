@@ -128,7 +128,7 @@ Import reads the source world and never writes to it. It creates a new world dir
 | --- | --- |
 | Blocks | Every block state of 1.21.8. The blocks with rules of their own are air, stone, glass, obsidian, redstone block, slime block, lever, redstone dust, repeater, comparator, redstone lamp, observer, pistons and their heads, moving pistons, hopper, chest, water and wheat; every other block keeps its state and is inert in the rules |
 | Block entities | Chests and hoppers with their items, custom name and components, the hopper transfer cooldown, comparator output signals and moving pistons. Block entities of blocks without rules of their own (signs, banners, furnaces and the rest) are kept as saved and written back unchanged |
-| Item components | The damage, and the components whose save form mirrors their network form: `custom_data`, `max_stack_size`, `max_damage`, `unbreakable`, `custom_name`, `item_name`, `item_model`, `lore`, `rarity`, `repair_cost`, `enchantment_glint_override`, `intangible_projectile`, `glider`, `tooltip_style`, `dyed_color`, `map_color`, `map_id`, `map_decorations`, `potion_duration_scale`, `recipes`, `ominous_bottle_amplifier`, `note_block_sound`, `provides_banner_patterns`, `lock`, `container_loot`, `debug_stick_state`, `entity_data`, `bucket_entity_data` and `block_entity_data`; a removed default (`!minecraft:name`) |
+| Item components | The damage, and the components whose save form mirrors their network form: `custom_data`, `max_stack_size`, `max_damage`, `unbreakable`, `custom_name`, `item_name`, `item_model`, `lore`, `rarity`, `repair_cost`, `enchantment_glint_override`, `intangible_projectile`, `glider`, `tooltip_style`, `dyed_color`, `map_color`, `map_id`, `map_decorations`, `potion_duration_scale`, `recipes`, `ominous_bottle_amplifier`, `note_block_sound`, `provides_banner_patterns`, `lock`, `container_loot`, `debug_stick_state`, `entity_data`, `bucket_entity_data` and `block_entity_data`; those that name registry entries: `trim`, `banner_patterns` and `base_color`; a removed default (`!minecraft:name`) |
 | Entities | Item entities, with their pickup delay |
 | Scheduled ticks | Block and fluid ticks of blocks with rules of their own, with their delay and priority |
 | Level data | Time, seed, spawn point and level name |
@@ -136,7 +136,7 @@ Import reads the source world and never writes to it. It creates a new world dir
 Every block property round-trips unchanged, including dust shapes, lever mounting, repeater locks, cave air and properties the rules only store, such as a chest's `waterlogged`.
 
 **Unsupported content and policies.** Anything else is unsupported content, for example:
-- blocks unknown to 1.21.8 or with invalid properties; scheduled ticks of blocks without rules of their own; other entities; and items with components that have no save form in Circuit yet (enchantments, potions, books, containers and the rest are kept on the network and in checkpoints, but not converted to or from region files yet);
+- blocks unknown to 1.21.8 or with invalid properties; scheduled ticks of blocks without rules of their own; other entities; and items with components that have no save form in Circuit yet (enchantments, potions, books, containers and the rest are kept on the network and in checkpoints, but not converted to or from region files yet; inline trim or banner pattern definitions likewise);
 - containers with a loot table or a lock;
 - block entities with custom names, loot tables or locks;
 - the Nether and the End;

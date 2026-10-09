@@ -299,6 +299,34 @@ int main() {
         items.push(item(8, "minecraft:iron_pickaxe", 1, 251)); // beyond its durability (250) it is not
         items.push(item(9, "minecraft:stone", 1, 1));          // nor is damage on an item without durability
         items.push(item(10, "minecraft:diamond_sword", 1, -2)); // enchantments have no save mapping yet
+        {
+            // Components that name registry entries: a trim, banner patterns, a base color.
+            auto armor = Tag::compound();
+            armor.set("Slot", Tag::byte(11));
+            armor.set("id", Tag::string("minecraft:iron_chestplate"));
+            armor.set("count", Tag::int_(1));
+            auto trim = Tag::compound();
+            trim.set("material", Tag::string("minecraft:gold"));
+            trim.set("pattern", Tag::string("minecraft:coast"));
+            auto c = Tag::compound();
+            c.set("minecraft:trim", std::move(trim));
+            armor.set("components", std::move(c));
+            items.push(std::move(armor));
+            auto banner = Tag::compound();
+            banner.set("Slot", Tag::byte(12));
+            banner.set("id", Tag::string("minecraft:white_banner"));
+            banner.set("count", Tag::int_(1));
+            auto layers = Tag::list(TagType::compound);
+            auto layer = Tag::compound();
+            layer.set("pattern", Tag::string("minecraft:stripe_top"));
+            layer.set("color", Tag::string("red"));
+            layers.push(std::move(layer));
+            auto bc = Tag::compound();
+            bc.set("minecraft:banner_patterns", std::move(layers));
+            bc.set("minecraft:base_color", Tag::string("lime"));
+            banner.set("components", std::move(bc));
+            items.push(std::move(banner));
+        }
         chest.set("Items", std::move(items));
         bes.push(std::move(chest));
         auto hopper = Tag::compound();
@@ -366,6 +394,8 @@ int main() {
                 "a custom name and lore are kept");
         require(c0->slots[7] == ItemStack{items::iron_pickaxe, 1, 12} && c0->slots[8].empty() && c0->slots[9].empty() && c0->slots[10].empty(),
                 "damage kept when valid");
+        require(c0->slots[11].components.added().size() == 1 && c0->slots[12].components.added().size() == 2,
+                "trims, banner patterns and base colors are kept");
         // Damage, components, names and the sign's data export and come back.
         {
             auto state = r->state;
@@ -376,6 +406,7 @@ int main() {
             const auto* chest_again = block_entity_at(again->state, {1, 0, 0});
             require(chest_again->slots[7] == ItemStack{items::iron_pickaxe, 1, 12}, "damage round-trips");
             require(chest_again->slots[6] == c0->slots[6], "components round-trip");
+            require(chest_again->slots[11] == c0->slots[11] && chest_again->slots[12] == c0->slots[12], "named entries round-trip");
             require(block_entity_at(again->state, {2, 0, 0})->components == block_entity_at(r->state, {2, 0, 0})->components,
                     "the hopper's name round-trips");
             require(block_entity_at(again->state, {3, 0, 0})->saved == block_entity_at(r->state, {3, 0, 0})->saved,

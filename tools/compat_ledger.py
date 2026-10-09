@@ -373,6 +373,10 @@ def validate(ledger, manifests, family_ids, inputs):
         protocol = re.search(r"\.protocol = (\d+)", block.group(1))
         if not protocol or int(protocol.group(1)) != m["protocol"] or int(block.group(2)) != m["data_version"]:
             errors.append(f"{b}: protocol or DataVersion differs from src/contracts/version.cpp")
+        packs = re.search(r"\.data_pack_format = (\d+), \.resource_pack_format = (\d+)", block.group(1))
+        formats = m.get("pack_formats", {})
+        if not packs or (int(packs.group(1)), int(packs.group(2))) != (formats.get("data"), formats.get("resource")):
+            errors.append(f"{b}: pack formats differ from src/contracts/version.cpp")
         for key in ("bundle", "release", "protocol", "data_version", "pack_formats", "reference_artifacts", "public_data", "profiles", "sources"):
             if key not in m:
                 errors.append(f"{b}: manifest lacks {key}")

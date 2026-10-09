@@ -215,7 +215,18 @@
       ],
       "location": "external: circuit-clienttest/components-setup.js, components-chest.js",
       "status": "passing",
-      "description": "A world saved by the official server with a named chest, items with a custom name, lore, damage, rarity and glint, and a sign with text: imported by Circuit, shown to a client with the chest title and the components, exported and read back by the official server unchanged"
+      "description": "A world saved by the official server with a named chest, items with a custom name, lore, damage, rarity and glint, and a sign with text: imported by Circuit, shown to a client with the chest title and the components, exported and read back by the official server unchanged; a second world with a trimmed chestplate and a banner with patterns and a base color likewise"
+    },
+    {
+      "id": "registries/official",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "tests/fixtures/registries/",
+      "status": "passing",
+      "description": "Every registry Circuit synchronizes has the same entries as the official server's configuration, and the bundles' game rules are the official /gamerule lists (server_tests); registries not sent are listed"
     }
   ]
 }

@@ -27,7 +27,7 @@ Feature counts per implementation state, then the number of features with compar
 | V01 Version manifests and evidence | C0 | 8 | 5 / 5 | 3 / 3 | 0 / 0 | 0 / 0 | 0 / 0 | 2 / 2 |
 | V02 Block registry and state properties | C1, C5 | 7 | 5 / 5 | 2 / 2 | 0 / 0 | 0 / 0 | 0 / 0 | 3 / 3 |
 | V03 Item and entity components and registries | C1, C5, C6 | 6 | 0 / 1 | 2 / 3 | 0 / 0 | 2 / 2 | 2 / 0 | 2 / 4 |
-| V04 Data and resource-pack negotiation | C1, C9, C10 | 6 | 0 / 0 | 3 / 3 | 0 / 0 | 3 / 3 | 0 / 0 | 0 / 0 |
+| V04 Data and resource-pack negotiation | C1, C9, C10 | 6 | 0 / 0 | 3 / 3 | 0 / 0 | 3 / 3 | 0 / 0 | 1 / 1 |
 | V05 Dimensions, tickets and chunk lifecycle | C2 | 8 | 0 / 0 | 4 / 4 | 0 / 0 | 4 / 4 | 0 / 0 | 0 / 0 |
 | V06 Lighting and environmental state | C2, C7 | 7 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 | 0 / 0 | 0 / 0 |
 | V07 RNG and global event order | C0, C2, C4 | 7 | 4 / 4 | 2 / 2 | 0 / 0 | 1 / 1 | 0 / 0 | 4 / 4 |
@@ -54,7 +54,7 @@ Feature counts per implementation state, then the number of features with compar
 | V28 Villages, raids and trading | C8 | 15 | 0 / 0 | 0 / 0 | 0 / 0 | 15 / 15 | 0 / 0 | 0 / 0 |
 | V29 Bosses and progression | C8 | 11 | 0 / 0 | 0 / 0 | 4 / 4 | 7 / 7 | 0 / 0 | 0 / 0 |
 | V30 Data-pack execution | C1, C5, C9 | 8 | 0 / 0 | 0 / 0 | 0 / 0 | 7 / 8 | 1 / 0 | 0 / 0 |
-| V31 Commands and administration | C9 | 117 | 0 / 0 | 5 / 5 | 16 / 20 | 87 / 92 | 9 / 0 | 0 / 0 |
+| V31 Commands and administration | C9 | 117 | 0 / 0 | 5 / 5 | 17 / 21 | 86 / 91 | 9 / 0 | 0 / 0 |
 | V32 Client-visible world state | C10 | 287 | 5 / 5 | 47 / 47 | 0 / 0 | 228 / 234 | 7 / 1 | 6 / 6 |
 | V33 Communication and connection lifecycle | C10 | 85 | 17 / 17 | 19 / 19 | 0 / 0 | 41 / 49 | 8 / 0 | 0 / 0 |
 | V34 Save compatibility | C11 | 6 | 1 / 1 | 0 / 1 | 0 / 0 | 4 / 3 | 1 / 1 | 0 / 1 |
@@ -127,7 +127,7 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 8 |
+| black_box | passing | 9 |
 | official_trace | failing | 5 |
 | official_trace | passing | 30 |
 | official_trace | unsupported | 1 |
@@ -176,7 +176,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
 | Known-pack exchange and registry data by name | C10 | partial, none | partial, none | Vanilla pack only |
-| Synchronized registries with data for clients without the vanilla pack | C1 | partial, none | partial, none | Documented minimal set |
+| Synchronized registries with data for clients without the vanilla pack | C1 | partial, compared | partial, compared | `registries/official`; 1.21.8 dialogs and game-test registries are not sent; clients without the vanilla pack get only dimension types, plains and the chat type with data; enchantments are not sent until their tags can be (they need item and enchantment tags); Each bundle names its registry set: 17 registries for 1.21.8 and 11 for 1.21.4 sent by name to clients with the vanilla pack, the same entries as the official servers; clients without the pack get a documented minimal set with data |
 | Tag synchronization and evaluation | C1 | partial, none | partial, none | Biome tags 1.21.4 needs |
 | Data-pack stack, selection, ordering and reload | C9 | missing, none | missing, none |  |
 | Experimental feature flags and built-in experimental packs | C12 | missing, none | missing, none | minecart_improvements, redstone_experiments, trade_rebalance in both releases |
@@ -470,7 +470,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Command grammar, suggestions and the command tree | C9 | partial, none | partial, none | a few chat commands with an empty command tree |
 | Selectors and permission levels | C9 | missing, none | missing, none |  |
 | Command blocks | C9 | missing, none | missing, none |  |
-| Game rules | C9 | missing, none | missing, none |  |
+| Game rules | C9 | data_only, reference_only | data_only, reference_only | `registries/official`; Each bundle lists its game rules with their types and defaults (55 for 1.21.8, 52 for 1.21.4, and the experimental minecartMaxSpeed); scenarios may name a rule at its default; no rule has behavior and /gamerule does not exist |
 | Scoreboards, teams and statistics | C9 | missing, none | missing, none |  |
 | Operators, whitelist, bans, server properties, console, RCON and query | C9 | partial, none | partial, none | Circuit's own configuration file; no vanilla files |
 

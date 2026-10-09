@@ -8,9 +8,10 @@
 #include <string_view>
 
 // A version bundle binds everything that must agree for one server process:
-// protocol candidate, block registry and rules, RNG policy, generator identity,
-// world shape, limits and save conversion. Selecting a bundle for simulation is
-// distinct from listing a candidate, and neither claims vanilla compatibility.
+// protocol candidate, content schema and registries, rules, RNG policy,
+// generator identity, world shape, limits and save conversion. Selecting a
+// bundle for simulation is distinct from listing a candidate, and neither
+// claims vanilla compatibility.
 namespace circuit::contracts {
 
 enum class CompatibilityTier : std::uint8_t {
@@ -70,6 +71,36 @@ struct RuleSet {
     std::span<const MechanismEntry> mechanisms;
     // Block registry whose encoding the rules' block states use (gameplay/block_registry.hpp).
     std::string_view block_registry;
+    // Why this version runs these rules: the evidence that the version's
+    // behavior matches the cases the rules were checked against, and the
+    // differences the bundle handles itself.
+    std::string_view basis;
+};
+
+enum class GameRuleType : std::uint8_t { boolean, integer };
+struct GameRule {
+    std::string_view name;
+    GameRuleType type;
+    std::int32_t default_value; // booleans: 0 or 1
+    bool experimental;          // only with an experimental profile
+};
+
+// What a version's content and data look like.
+struct VersionSchema {
+    // Release whose blocks and items the version has (gameplay/block_registry.hpp).
+    std::string_view content_release;
+    // Protocol whose item component schema stacks use (protocol/components.hpp).
+    std::int32_t component_schema{};
+    std::int32_t data_pack_format{};
+    std::int32_t resource_pack_format{};
+    // The synchronized registry set the server sends (server registries).
+    std::string_view registries;
+    std::span<const GameRule> game_rules;
+    [[nodiscard]] const GameRule* game_rule(std::string_view name) const noexcept {
+        for (const auto& r : game_rules)
+            if (r.name == name) return &r;
+        return nullptr;
+    }
 };
 
 struct VersionBundle {
@@ -77,6 +108,7 @@ struct VersionBundle {
     std::string_view game_version;
     std::string_view protocol_candidate;
     std::optional<RuleSet> rules; // Absent: listed candidate that cannot execute.
+    VersionSchema schema;
     WorldShape world;
     RuleLimits limits;
     std::string_view generator;   // Identity of the chunk generator.
