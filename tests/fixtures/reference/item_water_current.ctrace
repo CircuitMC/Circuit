@@ -1,0 +1,120 @@
+circuit-trace 2
+title An item in flowing water
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v7
+mechanisms item_entity water
+area -2 0 -2 6 2 2
+ticks 60
+changes ordered
+entities observed
+
+at 0 set -1 0 0 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 0 1 0 minecraft:water[level=0]
+
+change 4 fluid_ticks 0 1 -1 minecraft:air minecraft:water[level=1]
+change 4 fluid_ticks 0 1 1 minecraft:air minecraft:water[level=1]
+
+change 9 fluid_ticks 0 0 -1 minecraft:air minecraft:water[level=8]
+change 9 fluid_ticks 0 0 1 minecraft:air minecraft:water[level=8]
+
+at 30 spawn-item 1.5 1.25 0.5 0 0 0 minecraft:stone 1
+entity-added 30 commands e1 minecraft:item 1.5 1.25 0.5 0 0 0 item=minecraft:stone count=1
+entity-order 30 entities e1
+entity 30 e1 1.5 1.2109375 0.5 0 -0.0380859375 0 item=minecraft:stone count=1 age=1 pickup-delay=0 on-ground=false
+
+entity-order 31 entities e1
+entity 31 e1 1.5 1.1337890625 0.5 0 -0.075439453125 0 item=minecraft:stone count=1 age=2 pickup-delay=0 on-ground=false
+
+entity-order 32 entities e1
+entity 32 e1 1.5 1.019287109375 0.5 0 -0.112060546875 0 item=minecraft:stone count=1 age=3 pickup-delay=0 on-ground=false
+
+entity-order 33 entities e1
+entity 33 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=4 pickup-delay=0 on-ground=true
+
+entity-order 34 entities e1
+entity 34 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity-order 35 entities e1
+entity 35 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=6 pickup-delay=0 on-ground=true
+
+entity-order 36 entities e1
+entity 36 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=7 pickup-delay=0 on-ground=true
+
+entity-order 37 entities e1
+entity 37 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=8 pickup-delay=0 on-ground=true
+
+entity-order 38 entities e1
+entity 38 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=9 pickup-delay=0 on-ground=true
+
+entity-order 39 entities e1
+entity 39 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=10 pickup-delay=0 on-ground=true
+
+entity-order 40 entities e1
+entity 40 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=11 pickup-delay=0 on-ground=true
+
+entity-order 41 entities e1
+entity 41 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=12 pickup-delay=0 on-ground=true
+
+entity-order 42 entities e1
+entity 42 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=13 pickup-delay=0 on-ground=true
+
+entity-order 43 entities e1
+entity 43 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=14 pickup-delay=0 on-ground=true
+
+entity-order 44 entities e1
+entity 44 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=15 pickup-delay=0 on-ground=true
+
+entity-order 45 entities e1
+entity 45 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=16 pickup-delay=0 on-ground=true
+
+entity-order 46 entities e1
+entity 46 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=17 pickup-delay=0 on-ground=true
+
+entity-order 47 entities e1
+entity 47 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=18 pickup-delay=0 on-ground=true
+
+entity-order 48 entities e1
+entity 48 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=19 pickup-delay=0 on-ground=true
+
+entity-order 49 entities e1
+entity 49 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=20 pickup-delay=0 on-ground=true
+
+entity-order 50 entities e1
+entity 50 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=21 pickup-delay=0 on-ground=true
+
+entity-order 51 entities e1
+entity 51 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=22 pickup-delay=0 on-ground=true
+
+entity-order 52 entities e1
+entity 52 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=23 pickup-delay=0 on-ground=true
+
+entity-order 53 entities e1
+entity 53 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=24 pickup-delay=0 on-ground=true
+
+entity-order 54 entities e1
+entity 54 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=25 pickup-delay=0 on-ground=true
+
+entity-order 55 entities e1
+entity 55 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=26 pickup-delay=0 on-ground=true
+
+entity-order 56 entities e1
+entity 56 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=27 pickup-delay=0 on-ground=true
+
+entity-order 57 entities e1
+entity 57 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=28 pickup-delay=0 on-ground=true
+
+entity-order 58 entities e1
+entity 58 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=29 pickup-delay=0 on-ground=true
+
+entity-order 59 entities e1
+entity 59 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=30 pickup-delay=0 on-ground=true
+
+entity-order 60 entities e1
+entity 60 e1 1.5 1 0.5 0 0 0 item=minecraft:stone count=1 age=31 pickup-delay=0 on-ground=true

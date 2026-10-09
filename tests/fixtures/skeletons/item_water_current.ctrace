@@ -1,0 +1,20 @@
+circuit-trace 2
+title An item in flowing water
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms item_entity water
+area -2 0 -2 6 2 2
+ticks 60
+changes ordered
+entities observed
+
+at 0 set -1 0 0 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 0 1 0 minecraft:water[level=0]
+at 30 spawn-item 1.5 1.25 0.5 0 0 0 minecraft:stone 1

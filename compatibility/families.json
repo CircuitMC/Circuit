@@ -9,7 +9,7 @@
         {"id": "version_manifests", "name": "Exact version manifests verified against the official artifacts", "milestone": "C0", "impl": "implemented", "evidence": "documented", "note": "compatibility/versions/; values read from the official jars, whose hashes match Mojang's published metadata"},
         {"id": "feature_ledger", "name": "Machine-readable feature and evidence ledger with validation", "milestone": "C0", "impl": "implemented", "evidence": "none"},
         {"id": "block_traces", "name": "Reference traces of block state changes (circuit-trace v1)", "milestone": "C0", "impl": "implemented", "evidence": "compared", "cases": ["trace/vertical_slice"]},
-        {"id": "trace_v2", "name": "Trace format with entity, lifecycle, inventory, dimension, ticket and RNG observations", "milestone": "C0", "impl": "missing", "evidence": "none"},
+        {"id": "trace_v2", "name": "Trace format with entity, lifecycle, inventory, dimension, ticket and RNG observations", "milestone": "C0", "impl": "implemented", "evidence": "none", "note": "circuit-trace 2: Circuit records and evaluates it; the reference harness does not record it yet"},
         {"id": "harness_v2", "name": "Reference harness recording v2 observations on both releases, with repeat runs", "milestone": "C0", "impl": "missing", "evidence": "none"},
         {"id": "scenario_adapters", "name": "Scenario adapters for official server, sequential, parallel and real-client runs with first-mismatch reports", "milestone": "C0", "impl": "missing", "evidence": "none"},
         {"id": "protocol_client_calibration", "name": "Protocol-client scenarios compared between the official servers and Circuit", "milestone": "C0", "impl": "partial", "evidence": "compared", "cases": ["client/windows", "client/vitals", "client/collision", "client/chests", "client/redstone"], "note": "External mineflayer scripts; outputs compared by diff"},
@@ -217,7 +217,7 @@
     {
       "id": "V20", "name": "Item entities and experience", "milestones": ["C3", "C6"],
       "mechanics": [
-        {"id": "item_physics", "name": "Item entity motion and collision", "milestone": "C3", "impl": "partial", "evidence": "none", "deviations": ["fixed-point motion; not compared with the target version"]},
+        {"id": "item_physics", "name": "Item entity motion and collision", "milestone": "C3", "impl": "partial", "evidence": "none", "deviations": ["fixed-point motion; not compared with the target version", "no water currents or buoyancy"]},
         {"id": "merging", "name": "Item merging", "milestone": "C3", "impl": "missing", "evidence": "none"},
         {"id": "pickup", "name": "Pickup by players and hoppers, pickup delays", "milestone": "C3", "impl": "partial", "evidence": "compared", "cases": ["client/windows", "client/vitals"]},
         {"id": "despawn", "name": "Despawning", "milestone": "C3", "impl": "partial", "evidence": "documented"},

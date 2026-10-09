@@ -127,6 +127,9 @@ void run_piston_event(RuleContext& ctx, const BlockEvent& event, BlockState stat
 void drop_items(RuleContext& ctx, BlockPos pos, BlockState destroyed, ItemStack tool = {});
 // Spawns a removed container's contents, one entity per slot.
 void drop_contents(RuleContext& ctx, BlockPos pos, const std::vector<ItemStack>& slots);
+// Records a spawned entity: entity_spawned, then entity_spawn_state with its
+// exact position and velocity.
+void record_spawn(RuleContext& ctx, EntityId id, const Entity& e);
 // Spawns an item a player dropped.
 void spawn_dropped(RuleContext& ctx, BlockPos cell, contracts::FixedVec position, contracts::FixedVec velocity, ItemStack stack,
                    std::uint16_t pickup_delay);

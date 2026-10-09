@@ -1,0 +1,16 @@
+circuit-trace 2
+title Items falling onto a hopper and onto stone
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms item_entity hopper
+area -2 0 -2 2 3 2
+ticks 30
+changes ordered
+entities observed
+
+at 0 set -1 0 0 minecraft:stone
+at 0 set 1 0 0 minecraft:hopper[enabled=true,facing=down]
+at 1 spawn-item 1.5 2.5 0.5 0 0 0 minecraft:redstone 3
+at 1 spawn-item -0.5 2.5 0.5 0.125 0.25 0 minecraft:stone 1
+slot 30 1 0 0 0 ?

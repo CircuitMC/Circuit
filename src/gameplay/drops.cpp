@@ -13,8 +13,7 @@ void spawn(RuleContext& ctx, BlockPos pos, ItemStack stack, std::uint16_t pickup
                                      pos.z * contracts::fixed_one + contracts::fixed_one / 2};
     Entity e{{}, center, {}, stack, 0, 0, false};
     e.pickup_delay = pickup_delay;
-    const auto id = ctx.spawn_entity(e);
-    ctx.record(TraceKind::entity_spawned, pos, id.value, contracts::pack_stack(stack));
+    record_spawn(ctx, ctx.spawn_entity(e), e);
 }
 
 // The block's own item when a block breaks; nothing for glass, water and piston parts.
@@ -58,10 +57,16 @@ void drop_contents(RuleContext& ctx, BlockPos pos, const std::vector<ItemStack>&
 
 void spawn_dropped(RuleContext& ctx, BlockPos cell, contracts::FixedVec position, contracts::FixedVec velocity, ItemStack stack,
                    std::uint16_t pickup_delay) {
+    (void)cell;
     Entity e{{}, position, velocity, stack, 0, 0, false};
     e.pickup_delay = pickup_delay;
-    const auto id = ctx.spawn_entity(e);
-    ctx.record(TraceKind::entity_spawned, cell, id.value, contracts::pack_stack(stack));
+    record_spawn(ctx, ctx.spawn_entity(e), e);
+}
+
+void record_spawn(RuleContext& ctx, EntityId id, const Entity& e) {
+    const auto cell = contracts::block_of(e.position);
+    ctx.record(TraceKind::entity_spawned, cell, id.value, contracts::pack_stack(e.stack));
+    ctx.record(TraceKind::entity_spawn_state, cell, id.value, contracts::pack_offsets(e.position), contracts::pack_velocity(e.velocity));
 }
 
 } // namespace circuit::gameplay::detail

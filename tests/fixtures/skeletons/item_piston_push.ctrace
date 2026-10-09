@@ -1,0 +1,18 @@
+circuit-trace 2
+title A piston pushes an item resting on stone
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms item_entity piston
+area -4 0 -2 3 2 2
+ticks 20
+changes ordered
+entities observed
+
+at 0 set -2 0 0 minecraft:stone
+at 0 set -1 0 0 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set -2 1 0 minecraft:piston[extended=false,facing=east]
+at 1 spawn-item -0.5 1 0.5 0 0 0 minecraft:redstone 1
+at 6 set -3 1 0 minecraft:redstone_block

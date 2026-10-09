@@ -24,7 +24,7 @@ Feature counts per implementation state, then the number of features with compar
 
 | Family | Milestones | Features | Implemented | Partial | Data only | Missing | Not applicable | Compared |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| V01 Version manifests and evidence | C0 | 8 | 3 / 3 | 2 / 2 | 0 / 0 | 3 / 3 | 0 / 0 | 2 / 2 |
+| V01 Version manifests and evidence | C0 | 8 | 4 / 4 | 2 / 2 | 0 / 0 | 2 / 2 | 0 / 0 | 2 / 2 |
 | V02 Block registry and state properties | C1, C5 | 7 | 1 / 1 | 4 / 4 | 0 / 0 | 2 / 2 | 0 / 0 | 3 / 3 |
 | V03 Item and entity components and registries | C1, C5, C6 | 6 | 0 / 1 | 1 / 1 | 0 / 0 | 3 / 4 | 2 / 0 | 1 / 2 |
 | V04 Data and resource-pack negotiation | C1, C9, C10 | 6 | 0 / 0 | 3 / 3 | 0 / 0 | 3 / 3 | 0 / 0 | 0 / 0 |
@@ -144,7 +144,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Exact version manifests verified against the official artifacts | C0 | implemented, documented | implemented, documented | compatibility/versions/; values read from the official jars, whose hashes match Mojang's published metadata |
 | Machine-readable feature and evidence ledger with validation | C0 | implemented, none | implemented, none |  |
 | Reference traces of block state changes (circuit-trace v1) | C0 | implemented, compared | implemented, compared | `trace/vertical_slice` |
-| Trace format with entity, lifecycle, inventory, dimension, ticket and RNG observations | C0 | missing, none | missing, none |  |
+| Trace format with entity, lifecycle, inventory, dimension, ticket and RNG observations | C0 | implemented, none | implemented, none | circuit-trace 2: Circuit records and evaluates it; the reference harness does not record it yet |
 | Reference harness recording v2 observations on both releases, with repeat runs | C0 | missing, none | missing, none |  |
 | Scenario adapters for official server, sequential, parallel and real-client runs with first-mismatch reports | C0 | missing, none | missing, none |  |
 | Protocol-client scenarios compared between the official servers and Circuit | C0 | partial, compared | partial, compared | `client/chests`, `client/collision`, `client/redstone`, `client/vitals`, `client/windows`; External mineflayer scripts; outputs compared by diff |
@@ -352,7 +352,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Item entity motion and collision | C3 | partial, none | partial, none | fixed-point motion; not compared with the target version |
+| Item entity motion and collision | C3 | partial, none | partial, none | fixed-point motion; not compared with the target version; no water currents or buoyancy |
 | Item merging | C3 | missing, none | missing, none |  |
 | Pickup by players and hoppers, pickup delays | C3 | partial, compared | partial, compared | `client/vitals`, `client/windows` |
 | Despawning | C3 | partial, documented | partial, documented |  |

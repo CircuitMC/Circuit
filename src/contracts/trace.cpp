@@ -24,6 +24,9 @@ std::string_view kind_name(TraceKind kind) {
     case TraceKind::piston_blocked: return "piston_blocked";
     case TraceKind::entity_stack_changed: return "entity_stack_changed";
     case TraceKind::signal_changed: return "signal_changed";
+    case TraceKind::player_slot_changed: return "player_slot_changed";
+    case TraceKind::container_opened: return "container_opened";
+    case TraceKind::entity_spawn_state: return "entity_spawn_state";
     }
     return "unknown";
 }

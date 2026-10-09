@@ -595,7 +595,7 @@ void Engine::Impl::commit(Phase, const std::vector<RegionContext*>& contexts) {
         for (const auto& edge : ctx->interactions) edges[edge] = world.time;
         for (auto record : ctx->trace) {
             switch (record.kind) {
-            case TraceKind::entity_spawned: case TraceKind::entity_removed:
+            case TraceKind::entity_spawned: case TraceKind::entity_spawn_state: case TraceKind::entity_removed:
             case TraceKind::entity_changed_chunk: case TraceKind::entity_stack_changed:
                 record.a = real(record.a);
                 break;

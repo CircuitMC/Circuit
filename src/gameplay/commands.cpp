@@ -92,9 +92,9 @@ Plan plan(RuleContext& ctx, const contracts::SpawnItem& c) {
     if (!valid_stack(c.stack)) return std::unexpected(ErrorCode::invalid_argument);
     for (auto v : {c.velocity.x, c.velocity.y, c.velocity.z})
         if (v <= -contracts::fixed_one || v >= contracts::fixed_one) return std::unexpected(ErrorCode::invalid_argument);
-    return [&ctx, c, cell] {
-        const auto id = ctx.spawn_entity(Entity{{}, c.position, c.velocity, c.stack, 0, 0, false});
-        ctx.record(TraceKind::entity_spawned, cell, id.value, contracts::pack_stack(c.stack));
+    return [&ctx, c] {
+        const Entity e{{}, c.position, c.velocity, c.stack, 0, 0, false};
+        detail::record_spawn(ctx, ctx.spawn_entity(e), e);
     };
 }
 

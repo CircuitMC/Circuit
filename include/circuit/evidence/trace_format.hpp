@@ -5,16 +5,20 @@
 #include <circuit/contracts/version.hpp>
 #include <cstdint>
 #include <expected>
+#include <array>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
-// circuit-trace v1: a line-oriented behavior fixture shared by Circuit and an
+// circuit-trace: a line-oriented behavior fixture shared by Circuit and an
 // external reference harness. A fixture with `?` placeholders is a skeleton:
 // it specifies a scenario (area, actions, requested observations) that either
 // side can record. Block states and items use target-version notation
 // (`minecraft:repeater[delay=1,...]`); the content mapping translates them.
+// Version 2 adds the stage of every event, entity lifecycle and state
+// observations in double precision, chunk transitions and random-number
+// draws; version 1 files keep their meaning (docs/TRACE_FORMAT.md).
 namespace circuit::evidence {
 using contracts::BlockPos;
 using contracts::Tick;
@@ -28,25 +32,89 @@ struct Observed {
     bool operator==(const Observed&) const = default;
 };
 
+// A position or velocity in blocks (per tick), as fixtures write doubles.
+using Vec3d = std::array<double, 3>;
+// `key=value` observations of an entity, in the order written.
+using Properties = std::vector<std::pair<std::string, std::string>>;
+
 struct Action {
-    enum class Kind : std::uint8_t { set, use, insert };
+    enum class Kind : std::uint8_t { set, use, insert, spawn_item };
     Tick tick{};
     Kind kind{};
-    BlockPos pos;
+    BlockPos pos;                // set, use, insert; the block of `position` for spawn_item
     std::string state;           // set
     std::uint8_t slot{};         // insert
-    std::string item;            // insert
-    std::uint8_t count{};        // insert
+    std::string item;            // insert, spawn_item
+    std::uint8_t count{};        // insert, spawn_item
+    Vec3d position{}, velocity{};// spawn_item (v2)
     std::size_t line{};
     bool operator==(const Action&) const = default;
 };
 struct Change {
     Tick tick{};
+    std::string stage;           // v2: the stage the change happened in; empty in v1
     BlockPos pos;
     std::string before, after;
+    std::size_t seq{};           // position among the tick's events (v2)
     std::size_t line{};
     bool operator==(const Change&) const = default;
 };
+
+// v2 observations. Entities are named by handles e1, e2, ... in the order
+// they were added; stages are the names in `trace_stages`.
+struct EntityEvent {
+    enum class Kind : std::uint8_t { added, removed, changed };
+    Tick tick{};
+    std::string stage;
+    Kind kind{};
+    std::string handle;
+    std::string type;            // added
+    Vec3d position{}, velocity{};// added: at the moment of addition
+    Properties properties;       // added, changed
+    std::string reason;          // removed
+    std::size_t seq{};
+    std::size_t line{};
+    bool operator==(const EntityEvent&) const = default;
+};
+struct EntityProbe {             // a live observed entity at the end of a tick
+    Tick tick{};
+    std::string handle;
+    Vec3d position{}, velocity{};
+    Properties properties;
+    std::size_t line{};
+    bool operator==(const EntityProbe&) const = default;
+};
+struct EntityOrder {             // the order entities ticked in a stage
+    Tick tick{};
+    std::string stage;
+    std::vector<std::string> handles;
+    std::size_t line{};
+    bool operator==(const EntityOrder&) const = default;
+};
+struct ChunkEvent {              // a chunk reaching a status
+    Tick tick{};
+    std::string stage;
+    std::int32_t x{}, z{};
+    std::string status;          // entity_ticking, block_ticking, border or unloaded
+    std::size_t seq{};
+    std::size_t line{};
+    bool operator==(const ChunkEvent&) const = default;
+};
+struct RngObservation {          // draws from one random stream in one stage
+    Tick tick{};
+    std::string stage;
+    std::string stream;
+    std::uint64_t draws{};
+    std::size_t line{};
+    bool operator==(const RngObservation&) const = default;
+};
+
+// Stage names of v2 lines: Circuit's phases, then stages only the target
+// version has. `-` marks an unknown stage.
+inline constexpr std::array<std::string_view, 12> trace_stages{
+    "commands", "block_ticks", "fluid_ticks", "random_ticks", "block_events", "entities",
+    "block_entities", "players", "chunks", "spawning", "other", "-"};
+inline constexpr std::array<std::string_view, 4> chunk_statuses{"entity_ticking", "block_ticking", "border", "unloaded"};
 struct BlockProbe {
     Tick tick{};
     BlockPos pos;
@@ -65,6 +133,7 @@ struct SlotProbe {
 };
 
 struct Fixture {
+    std::uint32_t format{1};     // circuit-trace version: 1 or 2
     std::string title;
     std::string game_version;
     contracts::EvidenceSource source{};
@@ -75,10 +144,22 @@ struct Fixture {
     std::uint32_t random_tick_speed{};
     std::uint32_t neighbor_update_limit{}; // Chained neighbor update limit; 0 keeps the bundle's limit.
     ChangeMode changes{ChangeMode::none};
+    // v2 header: the scenario's dimension, which observations are recorded,
+    // and the tolerance for entity positions and velocities (0: exact).
+    std::string dimension{"minecraft:overworld"};
+    bool observe_entities{};
+    bool observe_chunks{};
+    bool observe_rng{};
+    double tolerance{};
     std::vector<Action> actions;
     std::vector<Change> recorded_changes;
     std::vector<BlockProbe> block_probes;
     std::vector<SlotProbe> slot_probes;
+    std::vector<EntityEvent> entity_events;
+    std::vector<EntityProbe> entity_probes;
+    std::vector<EntityOrder> entity_orders;
+    std::vector<ChunkEvent> chunk_events;
+    std::vector<RngObservation> rng;
 
     [[nodiscard]] bool contains(BlockPos p) const noexcept {
         return p.x >= area_min.x && p.x <= area_max.x && p.y >= area_min.y && p.y <= area_max.y && p.z >= area_min.z
@@ -103,8 +184,11 @@ struct FormatError {
 };
 
 std::expected<Fixture, FormatError> parse_fixture(std::string_view text, const FormatLimits& limits = {});
-// Canonical text: header in fixed order, then actions, changes and probes by tick.
+// Canonical text: header in fixed order, then actions, events and probes by
+// tick. A version-1 fixture is written exactly as before version 2 existed.
 std::string write_fixture(const Fixture& fixture);
+// Shortest decimal text that reads back as the same double.
+std::string format_double(double value);
 
 std::string_view source_name(contracts::EvidenceSource source) noexcept;
 

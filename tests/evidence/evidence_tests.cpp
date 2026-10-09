@@ -15,6 +15,9 @@ using namespace circuit::evidence;
 using circuit::oracle::Oracle;
 using circuit::test::require;
 using Outcome = FixtureReport::Outcome;
+using circuit::evidence::EntityEvent;
+using circuit::evidence::EntityOrder;
+using circuit::evidence::Vec3d;
 namespace fs = std::filesystem;
 
 namespace {
@@ -32,6 +35,7 @@ public:
         if (!be || slot >= be->slots.size()) return std::nullopt;
         return be->slots[slot];
     }
+    std::vector<circuit::gameplay::Entity> entities() const override { return dump_.entities; }
 
 private:
     Oracle oracle_;
@@ -79,6 +83,27 @@ block 1 -1 0 1 ?
 block 4 1 0 0 ?
 block 5 -1 0 1 ?
 )";
+
+const char* items_text = R"(circuit-trace 2
+title Items falling onto a hopper and onto stone
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms item_entity hopper
+area -2 0 -2 2 3 2
+ticks 30
+changes ordered
+entities observed
+
+at 0 set -1 0 0 minecraft:stone
+at 0 set 1 0 0 minecraft:hopper[enabled=true,facing=down]
+at 1 spawn-item 1.5 2.5 0.5 0 0 0 minecraft:redstone 3
+at 1 spawn-item -0.5 2.5 0.5 0.125 0.25 0 minecraft:stone 1
+slot 30 1 0 0 0 ?
+)";
+
+const char* header2 = "circuit-trace 2\ntitle Test\ngame-version 1.21.8\nsource circuit_reference\nharness -\n"
+                      "mechanisms item_entity\narea -2 0 -2 2 1 2\nticks 4\n";
 } // namespace
 
 int main(int argc, char** argv) {
@@ -102,7 +127,7 @@ int main(int argc, char** argv) {
                                 f ? std::string("success") : std::format("{} {}", f.error().line, f.error().message)));
         };
         const std::string h = header;
-        expect("circuit-trace 2\n", 1, "unsupported format");
+        expect("circuit-trace 3\n", 1, "unsupported format");
         expect("title x\n", 1, "first line");
         expect("circuit-trace 1\ntitle a\ntitle b\n", 3, "duplicate");
         expect("circuit-trace 1\ntitle a\nat 0 use 0 0 0\n", 3, "missing required key `game-version`");
@@ -117,6 +142,32 @@ int main(int argc, char** argv) {
         expect(h + "slot 1 0 0 0 0 empty 3\n", 9, "count 0");
         expect(h + "at 0 insert 0 0 0 0 minecraft:stone 65\n", 9, "invalid count");
         expect(std::string(header).replace(std::string(header).find("area"), 18, "area 0 0 0 200 0 0"), 7, "extent");
+    });
+
+    suite.run("version 2 format errors", [] {
+        const auto expect = [](std::string text, std::size_t line, std::string_view fragment) {
+            const auto f = parse_fixture(text);
+            require(!f && f.error().line == line && f.error().message.find(fragment) != std::string::npos,
+                    std::format("expected line {} `{}`, got {}", line, fragment,
+                                f ? std::string("success") : std::format("{} {}", f.error().line, f.error().message)));
+        };
+        const std::string h = header2, e = std::string(header2) + "entities observed\n";
+        expect(std::string(header) + "entities observed\n", 9, "needs circuit-trace 2");
+        expect(std::string(header) + "at 0 spawn-item 0.5 0.5 0.5 0 0 0 minecraft:stone 1\n", 9, "needs circuit-trace 2");
+        expect(h + "entity-added 1 commands e1 minecraft:item 0.5 0.5 0.5 0 0 0\n", 9, "require `entities observed`");
+        expect(h + "chunk 1 commands 0 0 border\n", 9, "require `chunks observed`");
+        expect(h + "draws 1 random_ticks level 2\n", 9, "require `rng observed`");
+        expect(h + "tolerance 2\n", 9, "invalid tolerance");
+        expect(h + "chunks observed\nchunk 1 commands 0 0 loaded\n", 10, "unknown chunk status");
+        expect(e + "entity-added 1 commands e2 minecraft:item 0.5 0.5 0.5 0 0 0\n", 10, "the next entity is e1");
+        expect(e + "entity-added 1 brewing e1 minecraft:item 0.5 0.5 0.5 0 0 0\n", 10, "unknown stage");
+        expect(e + "entity-added 1 commands e1 minecraft:item 0.5 nan 0.5 0 0 0\n", 10, "invalid decimal");
+        expect(e + "entity-removed 1 entities e1 discarded\n", 10, "was not added");
+        expect(e + "entity-added 1 commands e1 minecraft:item 0.5 0.5 0.5 0 0 0\nentity-removed 1 entities e1 discarded\n"
+                   "entity 1 e1 0.5 0.5 0.5 0 0 0\n", 12, "was removed");
+        expect(e + "entity-added 2 commands e1 minecraft:item 0.5 0.5 0.5 0 0 0 count=1 count=2\n", 10, "duplicate property");
+        expect(e + "entity-added 2 commands e1 minecraft:item 0.5 0.5 0.5 0 0 0\nentity-changed 1 entities e1 count=2\n", 11, "tick order");
+        expect(h + "changes ordered\nchange 1 0 0 0 minecraft:air minecraft:stone\n", 10, "tick, stage");
     });
 
     suite.run("format limits", [] {
@@ -198,6 +249,67 @@ int main(int argc, char** argv) {
             const auto r = evaluate_fixture(recorded, exec);
             require(r.outcome == Outcome::passed && r.changes_compared > 0 && r.probes_compared == 4, r.detail);
         }
+    });
+
+    suite.run("version 2 records entity lifecycles and states", [] {
+        const auto skeleton = parse(items_text);
+        const auto by_engine = record_fixture(skeleton, engine_executor(4));
+        const auto by_oracle = record_fixture(skeleton, oracle_executor());
+        require(by_engine && by_oracle, by_engine ? "" : by_engine.error());
+        const auto text = write_fixture(*by_engine);
+        require(text == write_fixture(*by_oracle), "engine and oracle record identical fixtures");
+        const auto recorded = parse(text);
+        require(write_fixture(recorded) == text, "the recording round-trips");
+        // Both items are added in the command stage of tick 1 at their exact positions.
+        require(recorded.entity_events.size() >= 3, "events recorded");
+        const auto& first = recorded.entity_events[0];
+        require(first.kind == EntityEvent::Kind::added && first.handle == "e1" && first.stage == "commands" && first.tick == 1
+                    && first.position == Vec3d{1.5, 2.5, 0.5} && first.type == "minecraft:item",
+                "e1 added at its spawn position");
+        require(recorded.entity_events[1].velocity == Vec3d{0.125, 0.25, 0.0}, "e2 keeps its velocity");
+        // The hopper picks up the redstone in the block-entity stage and holds it.
+        const auto removal = std::ranges::find_if(recorded.entity_events, [](const EntityEvent& e) { return e.kind == EntityEvent::Kind::removed; });
+        require(removal != recorded.entity_events.end() && removal->handle == "e1" && removal->stage == "block_entities"
+                    && removal->reason == "discarded", "the hopper takes e1");
+        require(recorded.slot_probes[0].item.value == "minecraft:redstone" && recorded.slot_probes[0].count == 3, "into its slot");
+        require(!recorded.entity_probes.empty() && !recorded.entity_orders.empty(), "probes and orders recorded");
+        for (const auto& exec : {engine_executor(1), engine_executor(8), oracle_executor()}) {
+            const auto r = evaluate_fixture(recorded, exec);
+            require(r.outcome == Outcome::passed && r.events_compared > 0 && r.probes_compared > 0, r.detail);
+        }
+        // A position 1/8192 block off fails exactly and passes within a declared tolerance.
+        auto moved = recorded;
+        moved.entity_probes[0].position[1] += 1.0 / 8192.0;
+        auto r = evaluate_fixture(moved, engine_executor());
+        require(r.outcome == Outcome::failed && r.detail.find("entity probe") != std::string::npos, r.detail);
+        moved.tolerance = 0.001;
+        require(evaluate_fixture(moved, engine_executor()).outcome == Outcome::passed, "within the tolerance");
+        // Removal reasons, stages and tick order are compared.
+        auto reason = recorded;
+        std::ranges::find_if(reason.entity_events, [](const EntityEvent& e) { return e.kind == EntityEvent::Kind::removed; })->reason = "killed";
+        r = evaluate_fixture(reason, engine_executor());
+        require(r.outcome == Outcome::failed && r.detail.find("removed (killed)") != std::string::npos, r.detail);
+        auto stage = recorded;
+        stage.entity_events[0].stage = "entities";
+        require(evaluate_fixture(stage, engine_executor()).outcome == Outcome::failed, "stages are compared");
+        auto order = recorded;
+        const auto two = std::ranges::find_if(order.entity_orders, [](const EntityOrder& o) { return o.handles.size() == 2; });
+        require(two != order.entity_orders.end(), "both items tick");
+        std::ranges::reverse(two->handles);
+        r = evaluate_fixture(order, engine_executor());
+        require(r.outcome == Outcome::failed && r.detail.find("entity order") != std::string::npos, r.detail);
+        // Circuit does not observe the target version's random streams: such observations fail.
+        auto rng = recorded;
+        rng.observe_rng = true;
+        rng.rng.push_back({1, "random_ticks", "level", 3, 0});
+        r = evaluate_fixture(rng, engine_executor());
+        require(r.outcome == Outcome::failed && r.detail.find("no draws") != std::string::npos, r.detail);
+        // Positions Circuit cannot represent exactly are unsupported, not rounded.
+        auto odd = skeleton;
+        odd.actions[2].position[0] = 1.1;
+        require(evaluate_fixture(*record_fixture(skeleton, engine_executor()), engine_executor()).outcome == Outcome::passed, "baseline");
+        r = evaluate_fixture(odd, engine_executor());
+        require(r.outcome == Outcome::unsupported && r.detail.find("1/4096") != std::string::npos, r.detail);
     });
 
     suite.run("mismatches name the fixture line", [] {
@@ -300,11 +412,15 @@ int main(int argc, char** argv) {
             require(fs::exists(origin), std::format("{}: no skeleton", entry.path().string()));
             const auto skeleton = parse(read_text(origin));
             auto actions = [](const Fixture& f) {
-                std::vector<std::tuple<Tick, int, BlockPos, std::string, int, std::string, int>> out;
+                std::vector<std::tuple<Tick, int, BlockPos, std::string, int, std::string, int, Vec3d, Vec3d>> out;
                 for (const auto& a : f.actions)
-                    out.emplace_back(a.tick, static_cast<int>(a.kind), a.pos, a.state, a.slot, a.item, a.count);
+                    out.emplace_back(a.tick, static_cast<int>(a.kind), a.pos, a.state, a.slot, a.item, a.count, a.position, a.velocity);
                 return out;
             };
+            require(trace.format == skeleton.format && trace.observe_entities == skeleton.observe_entities
+                        && trace.observe_chunks == skeleton.observe_chunks && trace.observe_rng == skeleton.observe_rng
+                        && trace.dimension == skeleton.dimension,
+                    std::format("{}: recorded with other observations than its skeleton", entry.path().string()));
             require(trace.title == skeleton.title && trace.area_min == skeleton.area_min && trace.area_max == skeleton.area_max
                         && trace.ticks == skeleton.ticks && trace.changes == skeleton.changes
                         && trace.random_tick_speed == skeleton.random_tick_speed

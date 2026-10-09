@@ -3,8 +3,11 @@
 #include <circuit/evidence/fixture_runner.hpp>
 #include <circuit/runtime/engine.hpp>
 #include <algorithm>
+#include <cmath>
 #include <format>
 #include <map>
+#include <set>
+#include <variant>
 
 namespace circuit::evidence {
 using contracts::Command;
@@ -32,6 +35,7 @@ public:
         if (!be || !*be || slot >= (*be)->slots.size()) return std::nullopt;
         return (*be)->slots[slot];
     }
+    std::vector<gameplay::Entity> entities() const override { return engine_.dump().entities; }
 
 private:
     runtime::Engine engine_;
@@ -40,8 +44,12 @@ private:
 struct MappedChange {
     BlockPos pos;
     BlockState before, after;
+    std::string stage; // v2
     std::size_t line{};
-    bool operator==(const MappedChange& o) const { return pos == o.pos && before == o.before && after == o.after; }
+    std::size_t seq{}; // v2: position among the tick's events
+    bool operator==(const MappedChange& o) const {
+        return pos == o.pos && before == o.before && after == o.after && stage == o.stage;
+    }
 };
 
 // A fixture translated into commands and reference-registry values.
@@ -55,7 +63,17 @@ struct Prepared {
     std::vector<std::pair<const SlotProbe*, contracts::ItemStack>> slots;
 };
 
-FixtureReport report(Outcome outcome, std::string detail) { return {outcome, std::move(detail), 0, 0}; }
+FixtureReport report(Outcome outcome, std::string detail) { return {outcome, std::move(detail), 0, 0, 0}; }
+
+// A double that is a whole number of fixed-point steps, as Circuit's
+// positions and velocities are.
+std::optional<std::int64_t> exact_fixed(double v) {
+    const double scaled = v * static_cast<double>(contracts::fixed_one);
+    if (!std::isfinite(scaled) || std::floor(scaled) != scaled || std::abs(scaled) > 9.0e15) return std::nullopt;
+    return static_cast<std::int64_t>(scaled);
+}
+double to_double(std::int64_t fixed) { return static_cast<double>(fixed) / static_cast<double>(contracts::fixed_one); }
+Vec3d to_vec(contracts::FixedVec v) { return {to_double(v.x), to_double(v.y), to_double(v.z)}; }
 
 std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_observations) {
     Prepared p;
@@ -65,6 +83,8 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
     for (const auto& b : contracts::BundleRegistry::candidates())
         if (b.game_version == f.game_version && b.rules) found = &b;
     if (!found) return std::unexpected(report(Outcome::unsupported, std::format("no executable bundle for {}", f.game_version)));
+    if (f.dimension != "minecraft:overworld")
+        return std::unexpected(report(Outcome::unsupported, std::format("dimension {}: the rules model the overworld only", f.dimension)));
     p.bundle = *found;
     p.bundle.limits.random_tick_speed = f.random_tick_speed;
     if (f.neighbor_update_limit != 0) p.bundle.limits.max_chained_neighbor_updates = f.neighbor_update_limit;
@@ -101,6 +121,20 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
             body = contracts::InsertItem{a.pos, a.slot, {*item, a.count}};
             break;
         }
+        case Action::Kind::spawn_item: {
+            const auto item = p.mapping->item(a.item);
+            if (!item) return fail_line(a.line, item.error());
+            contracts::FixedVec position, velocity;
+            for (int k = 0; k < 3; ++k) {
+                const auto pk = exact_fixed(a.position[static_cast<std::size_t>(k)]);
+                const auto vk = exact_fixed(a.velocity[static_cast<std::size_t>(k)]);
+                if (!pk || !vk) return fail_line(a.line, "the position or velocity is not a multiple of 1/4096 block");
+                (k == 0 ? position.x : k == 1 ? position.y : position.z) = *pk;
+                (k == 0 ? velocity.x : k == 1 ? velocity.y : velocity.z) = *vk;
+            }
+            body = contracts::SpawnItem{position, velocity, {*item, a.count}};
+            break;
+        }
         }
         p.action_lines[admission] = a.line;
         p.inputs[a.tick + 2].push_back({admission++, std::move(body)});
@@ -113,7 +147,7 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
         const auto after = p.mapping->block(c.after);
         if (!after) return fail_line(c.line, after.error());
         // Changes of properties the reference rules do not model are not observable here.
-        if (*before != *after) p.changes[c.tick].push_back({c.pos, *before, *after, c.line});
+        if (*before != *after) p.changes[c.tick].push_back({c.pos, *before, *after, c.stage, c.line, c.seq});
     }
     for (const auto& probe : f.block_probes) {
         const auto s = p.mapping->block(*probe.state.value);
@@ -153,17 +187,211 @@ std::optional<FixtureReport> execute(const Fixture& f, const Prepared& p, Fixtur
     return std::nullopt;
 }
 
+std::string stage_of(const contracts::TraceRecord& r) { return std::string(contracts::phase_name(r.key.phase)); }
+
 std::vector<MappedChange> area_changes(const Fixture& f, const std::vector<contracts::TraceRecord>& trace) {
     std::vector<MappedChange> out;
     for (const auto& r : trace)
         if (r.kind == TraceKind::block_changed && f.contains(r.pos))
             out.push_back({r.pos, BlockState::decode(static_cast<std::uint32_t>(r.a)).value(),
-                           BlockState::decode(static_cast<std::uint32_t>(r.b)).value(), 0});
+                           BlockState::decode(static_cast<std::uint32_t>(r.b)).value(), f.format >= 2 ? stage_of(r) : "", 0, 0});
     return out;
 }
 
 std::string change_text(const ContentMapping& m, const MappedChange& c) {
-    return std::format("({},{},{}) {} -> {}", c.pos.x, c.pos.y, c.pos.z, m.notation(c.before), m.notation(c.after));
+    return std::format("{}({},{},{}) {} -> {}", c.stage.empty() ? "" : c.stage + " ", c.pos.x, c.pos.y, c.pos.z, m.notation(c.before),
+                       m.notation(c.after));
+}
+
+// ---- circuit-trace 2 observations of Circuit ---------------------------------
+
+// The target version's removal reasons for Circuit's.
+std::string removal_reason(std::uint64_t reason) {
+    switch (static_cast<gameplay::RemovalReason>(reason)) {
+    case gameplay::RemovalReason::despawned:
+    case gameplay::RemovalReason::fell_out_of_world:
+    case gameplay::RemovalReason::picked_up: return "discarded";
+    case gameplay::RemovalReason::command: return "killed";
+    }
+    return "discarded";
+}
+
+std::string chunk_status(std::uint64_t level) {
+    switch (static_cast<gameplay::ChunkLevel>(level)) {
+    case gameplay::ChunkLevel::ticking: return "entity_ticking"; // Circuit ticks entities wherever it ticks blocks
+    case gameplay::ChunkLevel::border: return "border";
+    case gameplay::ChunkLevel::unloaded: return "unloaded";
+    }
+    return "unloaded";
+}
+
+// Entities spawned inside the area are observed for their lifetime under
+// handles e1, e2, ... in spawn order.
+class EntityTracker {
+public:
+    explicit EntityTracker(const ContentMapping& mapping) : mapping_(mapping) {}
+
+    // Appends the tick's events, in trace order and with increasing seq: area
+    // changes (when `with_changes`), then entity and chunk events.
+    void collect(const Fixture& f, Tick tick, const std::vector<contracts::TraceRecord>& trace, bool with_changes,
+                 std::vector<MappedChange>& changes, std::vector<EntityEvent>& entities, std::vector<ChunkEvent>& chunks,
+                 std::size_t& seq) {
+        for (const auto& r : trace) {
+            switch (r.kind) {
+            case TraceKind::block_changed:
+                if (with_changes && tick >= 1 && f.contains(r.pos))
+                    changes.push_back({r.pos, BlockState::decode(static_cast<std::uint32_t>(r.a)).value(),
+                                       BlockState::decode(static_cast<std::uint32_t>(r.b)).value(), stage_of(r), 0, seq++});
+                break;
+            case TraceKind::entity_spawned:
+                if (f.observe_entities && f.contains(r.pos)) {
+                    handles_[r.a] = std::format("e{}", ++count_);
+                    stacks_[r.a] = static_cast<std::uint64_t>(r.b);
+                }
+                break;
+            case TraceKind::entity_spawn_state:
+                if (const auto it = handles_.find(r.a); f.observe_entities && it != handles_.end() && !added_.contains(r.a)) {
+                    added_.insert(r.a);
+                    const auto stack = stacks_[r.a];
+                    entities.push_back({tick, stage_of(r), EntityEvent::Kind::added, it->second, "minecraft:item",
+                                        to_vec(contracts::unpack_position(r.pos, r.b)), to_vec(contracts::unpack_velocity(r.c)),
+                                        stack_properties(stack), "", seq++, 0});
+                }
+                break;
+            case TraceKind::entity_removed:
+                if (const auto it = handles_.find(r.a); f.observe_entities && it != handles_.end()) {
+                    entities.push_back({tick, stage_of(r), EntityEvent::Kind::removed, it->second, "", {}, {}, {}, removal_reason(r.b), seq++, 0});
+                    removed_[r.a] = r.key;
+                }
+                break;
+            case TraceKind::entity_stack_changed:
+                if (const auto it = handles_.find(r.a); f.observe_entities && it != handles_.end()) {
+                    Properties props;
+                    if (((r.b >> 8) & 0xFFFF) != ((r.c >> 8) & 0xFFFF)) props = stack_properties(r.c);
+                    else props.emplace_back("count", std::to_string(r.c & 0xFF));
+                    entities.push_back({tick, stage_of(r), EntityEvent::Kind::changed, it->second, "", {}, {}, std::move(props), "", seq++, 0});
+                }
+                break;
+            case TraceKind::chunk_loaded: case TraceKind::chunk_level_changed: case TraceKind::chunk_unloaded:
+                if (f.observe_chunks) {
+                    const auto chunk = contracts::chunk_of(r.pos);
+                    const auto status = r.kind == TraceKind::chunk_unloaded ? "unloaded"
+                                                                            : chunk_status(r.kind == TraceKind::chunk_loaded ? r.b : r.b);
+                    chunks.push_back({tick, stage_of(r), chunk.x, chunk.z, status, seq++, 0});
+                }
+                break;
+            default: break;
+            }
+        }
+    }
+
+    // End-of-tick state of the observed live entities, by handle.
+    std::vector<EntityProbe> probes(Tick tick, const std::vector<gameplay::Entity>& live) const {
+        std::vector<std::pair<std::size_t, EntityProbe>> out;
+        for (const auto& e : live) {
+            const auto it = handles_.find(e.id.value);
+            if (it == handles_.end()) continue;
+            Properties props = stack_properties(contracts::pack_stack(e.stack));
+            props.emplace_back("age", std::to_string(e.age));
+            props.emplace_back("pickup-delay", std::to_string(e.pickup_delay));
+            props.emplace_back("on-ground", e.on_ground ? "true" : "false");
+            out.push_back({number(it->second), {tick, it->second, to_vec(e.position), to_vec(e.velocity), std::move(props), 0}});
+        }
+        std::ranges::sort(out, {}, &std::pair<std::size_t, EntityProbe>::first);
+        std::vector<EntityProbe> result;
+        for (auto& [n, p] : out) result.push_back(std::move(p));
+        return result;
+    }
+
+    // The observed entities that ticked in the entity phase of Circuit tick
+    // `circuit_tick`, in Circuit's order (ascending id), including those
+    // removed during their own tick.
+    std::optional<EntityOrder> order(Tick tick, Tick circuit_tick, const std::vector<gameplay::Entity>& live) const {
+        std::vector<std::uint64_t> ids;
+        for (const auto& e : live)
+            if (handles_.contains(e.id.value) && e.last_tick == circuit_tick) ids.push_back(e.id.value);
+        for (const auto& [id, key] : removed_)
+            if (key.tick == circuit_tick && key.phase == contracts::Phase::entities) ids.push_back(id);
+        if (ids.empty()) return std::nullopt;
+        std::ranges::sort(ids);
+        EntityOrder o{tick, "entities", {}, 0};
+        for (const auto id : ids) o.handles.push_back(handles_.at(id));
+        return o;
+    }
+
+private:
+    Properties stack_properties(std::uint64_t packed) const {
+        const auto item = static_cast<std::uint16_t>((packed >> 8) & 0xFFFF);
+        Properties props{{"item", mapping_.item_name(item)}, {"count", std::to_string(packed & 0xFF)}};
+        if (const auto damage = (packed >> 24) & 0xFFFF; damage != 0) props.emplace_back("damage", std::to_string(damage));
+        return props;
+    }
+    static std::size_t number(const std::string& handle) { return std::stoul(handle.substr(1)); }
+
+    const ContentMapping& mapping_;
+    std::map<std::uint64_t, std::string> handles_;
+    std::map<std::uint64_t, std::uint64_t> stacks_;
+    std::set<std::uint64_t> added_;
+    std::map<std::uint64_t, contracts::OrderKey> removed_;
+    std::size_t count_{};
+};
+
+bool close(double a, double b, double tolerance) { return tolerance == 0.0 ? a == b : std::abs(a - b) <= tolerance; }
+bool close(const Vec3d& a, const Vec3d& b, double tolerance) {
+    return close(a[0], b[0], tolerance) && close(a[1], b[1], tolerance) && close(a[2], b[2], tolerance);
+}
+bool same_properties(const Properties& a, const Properties& b) {
+    auto x = a, y = b;
+    std::ranges::sort(x);
+    std::ranges::sort(y);
+    return x == y;
+}
+std::string vec_text(const Vec3d& v) { return std::format("({}, {}, {})", format_double(v[0]), format_double(v[1]), format_double(v[2])); }
+std::string properties_text(const Properties& props) {
+    std::string out;
+    for (const auto& [k, v] : props) out += std::format(" {}={}", k, v);
+    return out;
+}
+std::string event_text(const EntityEvent& e) {
+    switch (e.kind) {
+    case EntityEvent::Kind::added:
+        return std::format("{} {} added {} at {} moving {}{}", e.stage, e.handle, e.type, vec_text(e.position), vec_text(e.velocity),
+                           properties_text(e.properties));
+    case EntityEvent::Kind::removed: return std::format("{} {} removed ({})", e.stage, e.handle, e.reason);
+    case EntityEvent::Kind::changed: return std::format("{} {} changed{}", e.stage, e.handle, properties_text(e.properties));
+    }
+    return "";
+}
+bool same_event(const EntityEvent& a, const EntityEvent& b, double tolerance) {
+    if (a.kind != b.kind || a.stage != b.stage || a.handle != b.handle) return false;
+    switch (a.kind) {
+    case EntityEvent::Kind::added:
+        return a.type == b.type && close(a.position, b.position, tolerance) && close(a.velocity, b.velocity, tolerance)
+            && same_properties(a.properties, b.properties);
+    case EntityEvent::Kind::removed: return a.reason == b.reason;
+    case EntityEvent::Kind::changed: return same_properties(a.properties, b.properties);
+    }
+    return false;
+}
+
+// One event of a tick's ordered v2 stream.
+using StreamEvent = std::variant<MappedChange, EntityEvent, ChunkEvent>;
+std::string stream_text(const ContentMapping& m, const StreamEvent& e) {
+    if (const auto* c = std::get_if<MappedChange>(&e)) return "change " + change_text(m, *c);
+    if (const auto* x = std::get_if<EntityEvent>(&e)) return "entity " + event_text(*x);
+    const auto& k = std::get<ChunkEvent>(e);
+    return std::format("chunk {} ({}, {}) {}", k.stage, k.x, k.z, k.status);
+}
+bool same_stream(const StreamEvent& a, const StreamEvent& b, double tolerance) {
+    if (a.index() != b.index()) return false;
+    if (const auto* c = std::get_if<MappedChange>(&a)) return *c == std::get<MappedChange>(b);
+    if (const auto* x = std::get_if<EntityEvent>(&a)) return same_event(*x, std::get<EntityEvent>(b), tolerance);
+    const auto& k = std::get<ChunkEvent>(a);
+    const auto& l = std::get<ChunkEvent>(b);
+    return k.stage == l.stage && k.x == l.x && k.z == l.z && k.status == l.status;
+}
+std::size_t stream_line(const StreamEvent& e) {
+    return std::visit([](const auto& v) { return v.line; }, e);
 }
 } // namespace
 
@@ -194,14 +422,25 @@ FixtureReport evaluate_fixture(const Fixture& f, const ExecutorFactory& factory)
     if (!prepared) return prepared.error();
     const auto& p = *prepared;
     auto exec = factory(p.bundle, 0);
-    std::size_t changes = 0, probes = 0;
+    std::size_t changes = 0, probes = 0, events = 0;
+    EntityTracker tracker(*p.mapping);
+    const bool v2 = f.format >= 2;
+    // In v2 with ordered changes, a tick's changes, entity events and chunk
+    // events form one ordered stream; otherwise changes are compared on
+    // their own as in v1.
+    const bool merged = v2 && f.changes == ChangeMode::ordered;
     const auto observe = [&](Tick t) -> std::optional<FixtureReport> {
-        if (f.changes != ChangeMode::none && t >= 1) {
+        std::vector<MappedChange> observed_changes;
+        std::vector<EntityEvent> observed_entities;
+        std::vector<ChunkEvent> observed_chunks;
+        std::size_t seq = 0;
+        if (v2) tracker.collect(f, t, exec->trace(), merged, observed_changes, observed_entities, observed_chunks, seq);
+        if (f.changes != ChangeMode::none && t >= 1 && !merged) {
             auto actual = area_changes(f, exec->trace());
             const auto it = p.changes.find(t);
             auto expected = it == p.changes.end() ? std::vector<MappedChange>{} : it->second;
             if (f.changes == ChangeMode::unordered) {
-                const auto key = [](const MappedChange& c) { return std::tuple(c.pos, c.before.raw(), c.after.raw()); };
+                const auto key = [](const MappedChange& c) { return std::tuple(c.pos, c.before.raw(), c.after.raw(), c.stage); };
                 std::ranges::sort(actual, {}, key);
                 std::ranges::sort(expected, {}, key);
             }
@@ -217,6 +456,36 @@ FixtureReport evaluate_fixture(const Fixture& f, const ExecutorFactory& factory)
                                           actual.size(),
                                           change_text(*p.mapping, actual.size() > n ? actual[n] : expected[n])));
             changes += expected.size();
+        }
+        if (v2) {
+            // The tick's ordered stream: expected in file order, observed in trace order.
+            std::vector<std::pair<std::size_t, StreamEvent>> expected, observed;
+            if (merged)
+                if (const auto it = p.changes.find(t); it != p.changes.end())
+                    for (const auto& c : it->second) expected.push_back({c.seq, c});
+            for (const auto& e : f.entity_events)
+                if (e.tick == t) expected.push_back({e.seq, e});
+            for (const auto& c : f.chunk_events)
+                if (c.tick == t) expected.push_back({c.seq, c});
+            for (const auto& c : observed_changes) observed.push_back({c.seq, c});
+            for (const auto& e : observed_entities) observed.push_back({e.seq, e});
+            for (const auto& c : observed_chunks) observed.push_back({c.seq, c});
+            std::ranges::stable_sort(expected, {}, &std::pair<std::size_t, StreamEvent>::first);
+            std::ranges::stable_sort(observed, {}, &std::pair<std::size_t, StreamEvent>::first);
+            const auto n = std::min(expected.size(), observed.size());
+            for (std::size_t i = 0; i < n; ++i)
+                if (!same_stream(expected[i].second, observed[i].second, f.tolerance))
+                    return report(Outcome::failed, std::format("tick {} event {} (line {}): expected {}, observed {}", t, i,
+                                                               stream_line(expected[i].second), stream_text(*p.mapping, expected[i].second),
+                                                               stream_text(*p.mapping, observed[i].second)));
+            if (expected.size() != observed.size())
+                return report(Outcome::failed, std::format("tick {}: expected {} events, observed {}; first unmatched: {}", t,
+                                                           expected.size(), observed.size(),
+                                                           stream_text(*p.mapping, observed.size() > n ? observed[n].second : expected[n].second)));
+            for (const auto& [k, e] : expected) {
+                if (std::holds_alternative<MappedChange>(e)) ++changes;
+                else ++events;
+            }
         }
         for (const auto& [probe, state] : p.blocks) {
             if (probe->tick != t) continue;
@@ -239,10 +508,55 @@ FixtureReport evaluate_fixture(const Fixture& f, const ExecutorFactory& factory)
             }
             ++probes;
         }
+        if (v2 && f.observe_entities) {
+            const auto live = exec->entities();
+            const auto actual = tracker.probes(t, live);
+            std::vector<const EntityProbe*> expected;
+            for (const auto& probe : f.entity_probes)
+                if (probe.tick == t) expected.push_back(&probe);
+            const auto n = std::min(actual.size(), expected.size());
+            for (std::size_t i = 0; i < n; ++i) {
+                const auto& e = *expected[i];
+                const auto& a = actual[i];
+                if (e.handle != a.handle || !close(e.position, a.position, f.tolerance) || !close(e.velocity, a.velocity, f.tolerance)
+                    || !same_properties(e.properties, a.properties))
+                    return report(Outcome::failed, std::format("tick {} entity probe (line {}): expected {} at {} moving {}{}, observed {} at {} moving {}{}",
+                                                               t, e.line, e.handle, vec_text(e.position), vec_text(e.velocity),
+                                                               properties_text(e.properties), a.handle, vec_text(a.position),
+                                                               vec_text(a.velocity), properties_text(a.properties)));
+                ++probes;
+            }
+            if (actual.size() != expected.size())
+                return report(Outcome::failed, std::format("tick {}: expected {} live entities, observed {}", t, expected.size(), actual.size()));
+            const auto order = tracker.order(t, t + 2, live);
+            std::vector<const EntityOrder*> expected_orders;
+            for (const auto& o : f.entity_orders)
+                if (o.tick == t) expected_orders.push_back(&o);
+            const bool observed_order = order.has_value();
+            if (expected_orders.size() != (observed_order ? 1u : 0u)
+                || (observed_order && (expected_orders[0]->stage != order->stage || expected_orders[0]->handles != order->handles))) {
+                std::string want = expected_orders.empty() ? "none" : "";
+                for (const auto* o : expected_orders)
+                    for (const auto& h : o->handles) want += " " + h;
+                std::string got = observed_order ? "" : "none";
+                if (observed_order)
+                    for (const auto& h : order->handles) got += " " + h;
+                return report(Outcome::failed, std::format("tick {} entity order: expected{}, observed{}", t,
+                                                           want.empty() ? " none" : want, got.empty() ? " none" : got));
+            }
+            events += expected_orders.size();
+        }
+        if (v2 && f.observe_rng)
+            for (const auto& r : f.rng)
+                if (r.tick == t && r.draws != 0)
+                    return report(Outcome::failed,
+                                  std::format("tick {} rng (line {}): expected {} draws from `{}` in {}; Circuit observes no draws "
+                                              "from the target version's random streams",
+                                              t, r.line, r.draws, r.stream, r.stage));
         return std::nullopt;
     };
     if (auto r = execute(f, p, *exec, observe)) return *r;
-    return {Outcome::passed, std::format("{} changes and {} probes matched", changes, probes), changes, probes};
+    return {Outcome::passed, std::format("{} changes, {} probes and {} events matched", changes, probes, events), changes, probes, events};
 }
 
 std::expected<Fixture, std::string> record_fixture(const Fixture& skeleton, const ExecutorFactory& factory) {
@@ -253,12 +567,24 @@ std::expected<Fixture, std::string> record_fixture(const Fixture& skeleton, cons
     out.source = contracts::EvidenceSource::circuit_reference;
     out.harness = std::string(p.bundle.rules->id);
     out.recorded_changes.clear();
+    out.entity_events.clear();
+    out.entity_probes.clear();
+    out.entity_orders.clear();
+    out.chunk_events.clear();
+    out.rng.clear();
     auto exec = factory(p.bundle, 0);
-    std::string error;
+    EntityTracker tracker(*p.mapping);
+    std::size_t seq = 0;
     const auto observe = [&](Tick t) -> std::optional<FixtureReport> {
-        if (out.changes != ChangeMode::none && t >= 1)
+        if (out.format >= 2) {
+            std::vector<MappedChange> changes;
+            tracker.collect(out, t, exec->trace(), out.changes != ChangeMode::none, changes, out.entity_events, out.chunk_events, seq);
+            for (const auto& c : changes)
+                out.recorded_changes.push_back({t, c.stage, c.pos, p.mapping->notation(c.before), p.mapping->notation(c.after), c.seq, 0});
+        } else if (out.changes != ChangeMode::none && t >= 1) {
             for (const auto& c : area_changes(out, exec->trace()))
-                out.recorded_changes.push_back({t, c.pos, p.mapping->notation(c.before), p.mapping->notation(c.after), 0});
+                out.recorded_changes.push_back({t, "", c.pos, p.mapping->notation(c.before), p.mapping->notation(c.after), 0, 0});
+        }
         for (auto& probe : out.block_probes)
             if (probe.tick == t) probe.state.value = p.mapping->notation(exec->block(probe.pos));
         for (auto& probe : out.slot_probes) {
@@ -267,6 +593,11 @@ std::expected<Fixture, std::string> record_fixture(const Fixture& skeleton, cons
             if (!s) return report(Outcome::invalid, std::format("line {}: no container slot to record", probe.line));
             probe.item.value = s->empty() ? std::string("empty") : p.mapping->item_name(s->item);
             probe.count = s->empty() ? 0 : s->count;
+        }
+        if (out.format >= 2 && out.observe_entities) {
+            const auto live = exec->entities();
+            for (auto& probe : tracker.probes(t, live)) out.entity_probes.push_back(std::move(probe));
+            if (auto order = tracker.order(t, t + 2, live)) out.entity_orders.push_back(std::move(*order));
         }
         return std::nullopt;
     };

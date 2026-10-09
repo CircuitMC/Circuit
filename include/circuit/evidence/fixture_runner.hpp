@@ -4,6 +4,7 @@
 #include <circuit/contracts/trace.hpp>
 #include <circuit/evidence/trace_format.hpp>
 #include <circuit/gameplay/block.hpp>
+#include <circuit/gameplay/world_types.hpp>
 #include <functional>
 #include <map>
 #include <memory>
@@ -26,6 +27,8 @@ public:
     [[nodiscard]] virtual gameplay::BlockState block(BlockPos pos) const = 0;
     // nullopt when there is no container slot at the position.
     [[nodiscard]] virtual std::optional<contracts::ItemStack> slot(BlockPos pos, std::uint8_t slot) const = 0;
+    // Live entities, for circuit-trace 2 observations.
+    [[nodiscard]] virtual std::vector<gameplay::Entity> entities() const = 0;
 };
 using ExecutorFactory =
     std::function<std::unique_ptr<FixtureExecutor>(const contracts::VersionBundle& bundle, std::uint64_t seed)>;
@@ -43,6 +46,7 @@ struct FixtureReport {
     std::string detail;
     std::size_t changes_compared{};
     std::size_t probes_compared{};
+    std::size_t events_compared{}; // v2 entity and chunk events, entity orders and random draws
 };
 std::string_view outcome_name(FixtureReport::Outcome outcome) noexcept;
 
