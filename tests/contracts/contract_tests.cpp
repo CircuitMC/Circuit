@@ -132,7 +132,7 @@ int main() {
     });
 
     suite.run("replay round trip and limits", [] {
-        ReplayLog log{"java-1.21.8", "circuit-reference-rules-v5", 42, {}};
+        ReplayLog log{"java-1.21.8", "circuit-reference-rules-v5", 42, {}, "circuit-blocks-1"};
         log.ticks.push_back({1, {{1, SetBlock{{-5, 70, 9}, 0x1234, Generation{2}}},
                                  {2, SpawnItem{{-1, 2, 3}, {4, -5, 6}, {7, 8}}},
                                  {3, AddTicket{9, {-3, 4}, 2}}}});
@@ -182,7 +182,7 @@ int main() {
 
         // Player-use fields are range-checked: a face beyond the six, or reach bits beyond two.
         for (const auto& [face, allowed] : {std::pair<int, int>{6, 0}, {0, 4}}) {
-            ReplayLog one{"java-1.21.8", "circuit-reference-rules-v5", 1, {}};
+            ReplayLog one{"java-1.21.8", "circuit-reference-rules-v5", 1, {}, "circuit-blocks-1"};
             one.ticks.push_back({1, {{1, PlayerUse{{}, 36, {0, 0, 0}, static_cast<Direction>(face), Direction::north, Direction::north,
                                                    false, false, static_cast<std::uint8_t>(allowed), 0}}}});
             const auto encoded = encode_replay(one);
@@ -191,10 +191,11 @@ int main() {
 
         // Records written before tickets had a load radius (tag 5) still decode.
         {
-            ReplayLog one{"java-1.21.8", "circuit-reference-rules-v5", 1, {}};
+            ReplayLog one{"java-1.21.8", "circuit-reference-rules-v5", 1, {}, "circuit-blocks-1"};
             one.ticks.push_back({1, {{1, AddTicket{9, {-3, 4}, 2, 0}}}});
             auto legacy = encode_replay(one).value();
-            const std::size_t tag = 4 + 2 + 2 + one.bundle_id.size() + 2 + one.rules_id.size() + 8 + 4 + 8 + 4 + 8;
+            const std::size_t tag =
+                4 + 2 + 2 + one.bundle_id.size() + 2 + one.rules_id.size() + 2 + one.block_registry_id.size() + 8 + 4 + 8 + 4 + 8;
             require(legacy[tag] == std::byte{9}, "tickets are written with tag 9");
             legacy[tag] = std::byte{5};
             legacy.pop_back(); // the load radius, the command's last field
@@ -204,6 +205,18 @@ int main() {
         auto version_one = *bytes;
         version_one[4] = std::byte{1};
         require(decode_replay(version_one).error() == ErrorCode::malformed_record, "version 1 lacks the rule-set id");
+        // Version 3 records lack the block registry id; they use the first registry.
+        {
+            auto version_three = *bytes;
+            version_three[4] = std::byte{3};
+            const auto at = static_cast<std::ptrdiff_t>(4 + 2 + 2 + log.bundle_id.size() + 2 + log.rules_id.size());
+            version_three.erase(version_three.begin() + at,
+                                version_three.begin() + at + 2 + static_cast<std::ptrdiff_t>(log.block_registry_id.size()));
+            require(decode_replay(version_three).value() == log, "a version 3 record decodes under circuit-blocks-1");
+        }
+        auto unregistered = log;
+        unregistered.block_registry_id.clear();
+        require(encode_replay(unregistered).error() == ErrorCode::malformed_record, "block registry id required");
         auto unnamed = log;
         unnamed.rules_id.clear();
         require(encode_replay(unnamed).error() == ErrorCode::malformed_record, "rule-set id required");
@@ -211,8 +224,11 @@ int main() {
 
     suite.run("replay records are bound to the rule set", [] {
         const auto& bundle = **BundleRegistry::select_for_simulation("java-1.21.8");
-        ReplayLog log{"java-1.21.8", std::string(bundle.rules->id), 1, {}};
+        ReplayLog log{"java-1.21.8", std::string(bundle.rules->id), 1, {}, std::string(bundle.rules->block_registry)};
         require(check_replay_rules(log, bundle).has_value(), "matching rules");
+        log.block_registry_id = "circuit-blocks-0";
+        require(check_replay_rules(log, bundle).error() == ErrorCode::rules_mismatch, "another block registry is refused");
+        log.block_registry_id = bundle.rules->block_registry;
         log.rules_id = "circuit-reference-rules-v0";
         require(check_replay_rules(log, bundle).error() == ErrorCode::rules_mismatch, "older rules are refused");
         log.rules_id = bundle.rules->id;

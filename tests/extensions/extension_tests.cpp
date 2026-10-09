@@ -129,7 +129,7 @@ int main() {
         const auto admission = p.command("probe set 1 -60 1 minecraft:redstone_lamp[lit=false]");
         require(admission.find("error") == std::string::npos, "set admitted: " + admission);
         require(p.block_update({1, -60, 1}) == content().state_id("minecraft:redstone_lamp[lit=false]"), "the command took effect");
-        require(p.command("probe set 1 -60 2 minecraft:dirt", "error") == "error invalid", "unknown states are refused");
+        require(p.command("probe set 1 -60 2 minecraft:dirt[snowy=maybe]", "error") == "error invalid", "unknown states are refused");
         const auto withdrawn = p.command("probe setcancel 2 -60 2 minecraft:stone", "cancel");
         require(withdrawn == "cancel ok, again error invalid", "withdrawn once: " + withdrawn);
         require(p.command("probe block 2 -60 2") == "minecraft:air", "the withdrawn command never ran");

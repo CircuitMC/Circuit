@@ -351,11 +351,49 @@ inline Scenario transient_head_scenario() {
     }};
 }
 
+// Blocks without rules of their own among machines, across the x=16 chunk
+// edge: an opaque block conducts a repeater's power and a translucent one does
+// not; dust survives on a top slab and pops off a bottom slab; a piston is
+// blocked by an immovable block; items land on blocks with collision and fall
+// through grass; water stops at a wall. Registry blocks also replace each
+// other and are removed.
+inline Scenario registry_block_scenario() {
+    return {"registry_blocks", 61, 120, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 2)};
+        const auto dirt = registry_block("dirt");
+        const auto top_slab = registry_block("oak_slab", {{"type", "top"}});
+        if (t == 2) {
+            std::vector<CommandBody> b{
+                place({15, -1, 0}, dirt), place({15, 0, 0}, blocks::repeater(D::east)), place({16, 0, 0}, dirt),
+                place({17, 0, 0}, blocks::lamp()), place({14, 0, 0}, blocks::lever()),
+                place({15, -1, 2}, top_slab), place({15, 0, 2}, blocks::repeater(D::east)),
+                place({16, 0, 2}, registry_block("white_stained_glass")), place({17, 0, 2}, blocks::lamp()),
+                place({14, 0, 2}, blocks::lever()),
+                place({20, -1, 4}, registry_block("oak_slab", {{"type", "bottom"}})), place({20, 0, 4}, blocks::wire()),
+                place({21, -1, 4}, top_slab), place({21, 0, 4}, blocks::wire()),
+                place({15, 0, 6}, dirt), place({14, 0, 6}, blocks::piston(D::east)), place({13, 0, 6}, blocks::lever()),
+                place({18, 0, 8}, dirt), place({19, -1, 8}, blocks::stone()), place({19, 0, 8}, registry_block("short_grass")),
+                SpawnItem{at_block(18.5, 3.5, 8.5), {}, {items::redstone, 3}}, SpawnItem{at_block(19.5, 3.5, 8.5), {}, {items::stone, 2}}};
+            for (int x = 20; x <= 24; ++x) b.push_back(place({x, 0, 10}, blocks::stone()));
+            b.push_back(place({23, 1, 10}, registry_block("cobblestone")));
+            b.push_back(place({22, 1, 10}, blocks::water_source()));
+            return b;
+        }
+        std::vector<CommandBody> c;
+        if (t == 5) append(c, {place({20, 0, 5}, blocks::stone()), place({21, 0, 5}, blocks::stone())});
+        if (t > 2 && t % 7 == 3) append(c, {use_lever({14, 0, 0}), use_lever({14, 0, 2})});
+        if (t > 2 && t % 9 == 4) c.push_back(use_lever({13, 0, 6}));
+        if (t == 40) c.push_back(place({16, 0, 0}, registry_block("cobblestone")));
+        if (t == 70) c.push_back(place({16, 0, 0}, blocks::air()));
+        return c;
+    }};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
-            transient_head_scenario()};
+            transient_head_scenario(), registry_block_scenario()};
 }
 
 } // namespace circuit::test

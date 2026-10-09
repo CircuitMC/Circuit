@@ -6,6 +6,7 @@
 #include "../support/scenario.hpp"
 #include <circuit/evidence/content.hpp>
 #include <circuit/evidence/fixture_runner.hpp>
+#include <circuit/gameplay/block_registry.hpp>
 #include <filesystem>
 #include <format>
 #include <fstream>
@@ -217,16 +218,37 @@ int main(int argc, char** argv) {
         require(f.source == circuit::contracts::EvidenceSource::documented_behavior && !f.is_skeleton(), "fields");
     });
 
-    suite.run("content mapping round trips every reference state", [] {
+    suite.run("content mapping round trips every target-version state", [] {
+        namespace registry = circuit::gameplay::registry;
+        // Every wire state of each version has exactly one Circuit state, whose
+        // notation names every property.
+        for (const auto* release : {"1.21.8", "1.21.4"}) {
+            const auto* m = ContentMapping::for_game_version(release);
+            require(m != nullptr, "mapping availability");
+            const auto wires = registry::wire_state_count(release);
+            require(wires > 27000, "every wire state");
+            std::set<std::uint32_t> raws;
+            for (std::uint32_t wire = 0; wire < wires; ++wire) {
+                const auto internal = registry::from_wire(release, static_cast<std::int32_t>(wire));
+                require(internal && registry::to_wire(release, *internal) == static_cast<std::int32_t>(wire), "wire round trip");
+                const auto notation = registry::notation(*internal);
+                const auto s = m->block(notation);
+                require(s.has_value(), std::format("{} {}: {}", release, notation, s ? "" : s.error()));
+                require(m->notation(*s) == notation, std::format("{}: {} -> {}", release, notation, m->notation(*s)));
+                require(raws.insert(s->raw()).second, std::format("{}: {} shares its state", release, notation));
+            }
+        }
         const auto* m = ContentMapping::for_game_version("1.21.8");
-        require(m && !ContentMapping::for_game_version("1.20.4"), "mapping availability");
+        require(!ContentMapping::for_game_version("1.20.4"), "no mapping for other versions");
+        // Every valid Circuit state of a 1.21.8 block is one of its wire states.
         unsigned states = 0;
         circuit::gameplay::for_each_block_state([&](circuit::gameplay::BlockState s) {
+            if (s.is(circuit::gameplay::BlockType::other) && !registry::to_wire("1.21.8", s.registry_state())) return;
             ++states;
             const auto back = m->block(m->notation(s));
             require(back && *back == s, std::format("round trip {} via {}", s.raw(), m->notation(s)));
         });
-        require(states > 1296, "enumerated registry, with every dust shape");
+        require(states == registry::wire_state_count("1.21.8"), std::format("{} states", states));
         for (std::uint16_t i = 1; i <= circuit::gameplay::items::max_id; ++i)
             require(m->item(m->item_name(i)) == i, "item round trip");
     });
@@ -238,16 +260,26 @@ int main(int argc, char** argv) {
             require(!r && r.error().find("unsupported") != std::string::npos, std::format("{} -> {}", s, r ? "ok" : r.error()));
         };
         require(m->block("minecraft:repeater[delay=1,facing=west,locked=true,powered=false]").has_value(), "locked repeaters are modeled");
-        unsupported("minecraft:chest[facing=north,type=single,waterlogged=true]");
-        unsupported("minecraft:trapped_chest[facing=north,type=single,waterlogged=false]");
+        require(m->block("minecraft:chest[facing=north,type=single,waterlogged=true]")
+                    == circuit::gameplay::blocks::chest(circuit::contracts::Direction::north).with_flag(true),
+                "waterlogged chests are represented");
+        require(m->block("minecraft:trapped_chest[facing=north,type=single,waterlogged=false]")->is(circuit::gameplay::BlockType::other),
+                "blocks without rules of their own are registry states");
         require(m->block("minecraft:chest[facing=north,type=left,waterlogged=false]")
                     == circuit::gameplay::blocks::chest(circuit::contracts::Direction::north, circuit::gameplay::blocks::ChestType::left),
                 "double chest halves are modeled");
         require(m->block("minecraft:comparator[facing=north,mode=subtract,powered=true]")
                     == circuit::gameplay::blocks::comparator(circuit::contracts::Direction::south, true, true),
                 "comparator facing names the input side (unverified convention)");
-        unsupported("minecraft:dirt");
+        unsupported("examplemod:gadget");
+        const auto* old = ContentMapping::for_game_version("1.21.4");
+        require(!old->block("minecraft:dried_ghast[facing=north,hydration=0,waterlogged=false]").has_value(), "1.21.8 blocks in 1.21.4");
+        require(m->block("minecraft:creaking_heart[axis=y,creaking_heart_state=awake,natural=true]").has_value() &&
+                    old->block("minecraft:creaking_heart[active=true,axis=y,natural=true]").has_value() &&
+                    !m->block("minecraft:creaking_heart[active=true,axis=y,natural=true]").has_value(),
+                "each version has its own creaking heart schema");
         require(!m->block("minecraft:stone[snowy=true]").has_value(), "unknown property");
+        require(!m->block("minecraft:dirt[snowy=true]").has_value(), "unknown property of a registry block");
         require(!m->block("minecraft:repeater[delay=1,facing=west]").has_value(), "missing modeled property");
         require(!m->block("minecraft:repeater[delay=5,facing=west,powered=false]").has_value(), "range");
         using circuit::gameplay::WireSide;
@@ -257,7 +289,7 @@ int main(int argc, char** argv) {
         require(m->block("minecraft:repeater[delay=2,facing=west,locked=false,powered=true]")
                     == circuit::gameplay::blocks::repeater(circuit::contracts::Direction::east, 2, true),
                 "repeater facing names the input side (unverified convention)");
-        require(m->block("minecraft:water[level=12]") == circuit::gameplay::blocks::water_falling(), "falling water");
+        require(m->block("minecraft:water[level=12]") == circuit::gameplay::blocks::water_falling().with_level(4), "falling water");
         require(m->block("minecraft:moving_piston[facing=east,type=sticky]")
                     == circuit::gameplay::blocks::moving_piston(circuit::contracts::Direction::east, true), "moving piston");
         require(m->item("minecraft:diamond").has_value(), "every item of the version is in the registry");
@@ -383,7 +415,7 @@ int main(int argc, char** argv) {
 
     suite.run("unsupported and invalid fixtures", [] {
         const std::string h = header;
-        auto r = evaluate_fixture(parse(h + "changes ordered\nchange 1 0 0 0 minecraft:air minecraft:dirt\n"),
+        auto r = evaluate_fixture(parse(h + "changes ordered\nchange 1 0 0 0 minecraft:air examplemod:gadget\n"),
                                   engine_executor());
         require(r.outcome == Outcome::unsupported && r.detail.find("line 10") != std::string::npos, r.detail);
         r = evaluate_fixture(parse(h + "at 0 set 0 0 0 minecraft:piston[extended=true,facing=up]\n"), engine_executor());

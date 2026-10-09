@@ -13,12 +13,20 @@
 
 namespace circuit::gameplay::detail {
 
-bool is_conductor(BlockType t) noexcept {
-    return t == BlockType::stone || t == BlockType::obsidian || t == BlockType::redstone_lamp;
+// Blocks without rules of their own conduct when they are opaque; their faces
+// are sturdy when opaque or when the collision shape covers the face (an
+// approximation of support shapes from collision data).
+bool is_conductor(BlockState s) noexcept {
+    switch (s.type()) {
+    case BlockType::stone: case BlockType::obsidian: case BlockType::redstone_lamp: return true;
+    case BlockType::other: return other_opaque(s);
+    default: return false;
+    }
 }
 
 bool face_sturdy(BlockState s, Direction face) noexcept {
     switch (s.type()) {
+    case BlockType::other: return other_opaque(s) || other_face_covered(s, face);
     case BlockType::stone: case BlockType::glass: case BlockType::obsidian: case BlockType::redstone_block:
     case BlockType::slime_block: case BlockType::redstone_lamp: case BlockType::observer:
         return true;
@@ -96,7 +104,7 @@ std::uint8_t strong_into(RuleContext& ctx, BlockPos pos, bool wires) {
 std::uint8_t signal_from(RuleContext& ctx, BlockPos from, Direction toward, bool wires) {
     const auto s = ctx.block(from);
     auto power = emitted(ctx, from, s, toward, wires);
-    if (power < 15 && is_conductor(s.type())) power = std::max(power, strong_into(ctx, from, wires));
+    if (power < 15 && is_conductor(s)) power = std::max(power, strong_into(ctx, from, wires));
     return power;
 }
 

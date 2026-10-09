@@ -23,6 +23,8 @@ struct ReplayLog {
     std::string rules_id; // Rule set the inputs were recorded under; replay requires the same rules.
     std::uint64_t seed{};
     std::vector<TickInput> ticks; // Strictly increasing ticks; admissions strictly increasing overall.
+    // Block registry whose encoding the block states of the inputs use.
+    std::string block_registry_id;
     bool operator==(const ReplayLog&) const = default;
 };
 struct ReplayLimits {
@@ -32,7 +34,10 @@ struct ReplayLimits {
     std::size_t max_bundle_id = 64;
 };
 
-// Format version 2 (version 1 records lack the rule-set id and are rejected).
+// Format version 4: magic, version, bundle id, rule-set id, block registry id,
+// seed and the ticks. Version 3 records predate the block registry; their
+// block states are valid in circuit-blocks-1, the first registry, which
+// decoding assigns them. Older versions are rejected.
 Result<std::vector<std::byte>> encode_replay(const ReplayLog& log, const ReplayLimits& limits = {});
 Result<ReplayLog> decode_replay(std::span<const std::byte> bytes, const ReplayLimits& limits = {});
 

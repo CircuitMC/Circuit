@@ -233,6 +233,35 @@ int main() {
         require(!circuit::storage::decode_checkpoint(good, {.max_raw_bytes = 16}), "raw size limit");
     });
 
+    suite.run("checkpoints name their block registry", [&] {
+        // Version 5 names the registry after the rule set; version 4 predates it
+        // and is read as circuit-blocks-1. Another registry is refused.
+        const auto c = checkpoint_at(histories[1], histories[1].ticks());
+        const auto good = circuit::storage::encode_checkpoint(c);
+        const std::span<const std::byte> sealed(good.data(), good.size() - 32);
+        circuit::protocol::Reader header(sealed);
+        (void)header.raw(12);
+        (void)header.string(64);
+        (void)header.string(128);
+        const auto registry_at = sealed.size() - header.remaining();
+        require(header.string(64).value() == "circuit-blocks-1", "the registry is named");
+        const auto rest_at = sealed.size() - header.remaining();
+        const auto reseal = [&](std::int32_t version, std::optional<std::string_view> registry) {
+            circuit::protocol::Writer w;
+            w.raw(sealed.first(8)).i32(version).raw(sealed.subspan(12, registry_at - 12));
+            if (registry) w.string(*registry, 64);
+            w.raw(sealed.subspan(rest_at));
+            auto out = w.take();
+            const auto hex = circuit::storage::sha256_hex(out);
+            for (std::size_t i = 0; i < 32; ++i) out.push_back(static_cast<std::byte>(std::stoi(hex.substr(2 * i, 2), nullptr, 16)));
+            return out;
+        };
+        require(circuit::storage::decode_checkpoint(reseal(5, "circuit-blocks-1")).value() == c, "resealed version 5");
+        require(circuit::storage::decode_checkpoint(reseal(4, std::nullopt)).value() == c, "version 4 reads as circuit-blocks-1");
+        const auto other = circuit::storage::decode_checkpoint(reseal(5, "circuit-blocks-0"));
+        require(!other && other.error().find("block registry circuit-blocks-0") != std::string::npos, "another registry is refused");
+    });
+
     suite.run("bodies with valid digests are decoded safely", [&] {
         // Re-seals mutated bodies so that only the body decoder and the engine's
         // restore checks stand between the data and the engine.
@@ -243,6 +272,7 @@ int main() {
         (void)header.raw(12);
         (void)header.string(64);
         (void)header.string(128);
+        (void)header.string(64);
         (void)header.i64();
         (void)header.i64();
         const auto raw = static_cast<std::size_t>(header.i64().value());

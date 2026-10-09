@@ -31,10 +31,11 @@ One server runs one version. A client of another protocol is refused at login wi
 
 ## Content
 
-The reference rules model a fixed set of blocks and items. Their names and state properties are the official ones.
+Every block state of both versions is represented, with its official name and properties (the block registry `circuit-blocks-1`, from public data). The reference rules give behavior of their own to the blocks below; the properties they only store are listed as display-only.
 
 | Blocks | Properties the rules use | Display-only properties |
 | --- | --- | --- |
+| `air`, `cave_air`, `void_air` | — | — |
 | `stone`, `glass`, `obsidian`, `redstone_block`, `slime_block` | — | — |
 | `redstone_wire` | `power`, `north`, `south`, `east`, `west` (the stored shape) | — |
 | `lever` | `face`, `facing`, `powered` | — |
@@ -44,26 +45,28 @@ The reference rules model a fixed set of blocks and items. Their names and state
 | `observer` | `facing`, `powered` | — |
 | `piston`, `sticky_piston`, `piston_head`, `moving_piston` | `facing`, `extended`, `type` | `short` |
 | `hopper` | `enabled`, `facing` | — |
-| `chest` | `facing`, `type` | `waterlogged` (always false) |
+| `chest` | `facing`, `type` | `waterlogged` (stored, not simulated) |
 | `water` | `level` | — |
 | `wheat` | `age` | — |
 
+**Other blocks** keep every property and are inert: they are solid for items when they have a collision shape, conduct redstone power when opaque, support dust and diodes on faces their collision shape covers (or any face when opaque), cannot be moved by pistons, have no drops, break at their documented hardness with their documented tool, and do nothing else. Players collide with their exact collision shapes. A world may contain them, and the client shows them, but no machine that depends on their behavior works yet.
+
 **Items.** The rule set knows every item of both versions (1,415), with its stack size and durability, from PrismarineJS minecraft-data (MIT) at the pinned commit. Any item can be held, stored in containers, moved through hoppers, thrown and picked up; items without rules are otherwise inert. Placing works for the blocks above, and a water bucket places water. Item stacks carry one data component, the damage of items with durability; other components are not represented. Each version's protocol uses its own item ids for the same names.
 
-**Saved worlds.** Anvil worlds of Java Edition 1.21.8 (DataVersion 4440) import and export as long as they hold only this content, in the overworld, with no item component other than damage. Other content is refused by default, or substituted or dropped under an explicit policy with a report; see [persistence](PERSISTENCE.md#anvil-import-and-export). A world directory belongs to one version bundle and rule set; `--migrate-world` moves it to the other version when both run the same rules.
+**Saved worlds.** Anvil worlds of Java Edition 1.21.8 (DataVersion 4440) import and export with every block state, as long as their block entities, entities and items are the ones described here, in the overworld, with no item component other than damage. Other content is refused by default, or substituted or dropped under an explicit policy with a report; see [persistence](PERSISTENCE.md#anvil-import-and-export). A world directory belongs to one version bundle and rule set; `--migrate-world` moves it to the other version when both run the same rules.
 
-**Not represented:** other blocks, item components other than damage, block entity data beyond containers and comparators, mobs and other entities beyond items and players, biomes other than plains, lighting (everything is lit by the sky), and world generation beyond a flat floor.
+**Not represented:** item components other than damage, block entity data beyond containers and comparators, mobs and other entities beyond items and players, biomes other than plains, lighting (everything is lit by the sky), and world generation beyond a flat floor.
 
 ### Technical machines
 
-Item registration does not provide block behavior. TNT, rails, coral fans and honey blocks have item and protocol entries, but cannot be placed by the current rules. Common building items such as cobblestone, dirt, sand and oak logs are also inert. Survival inventories and container screens therefore do not constitute complete vanilla survival support.
+Block and item registration do not provide behavior. TNT, rails, coral fans and honey blocks exist as inert blocks, and their items cannot be placed by the current rules. Common building blocks such as cobblestone, dirt, sand and oak logs are inert too. Survival inventories and container screens therefore do not constitute complete vanilla survival support.
 
 | Mechanism or machine | Current support |
 | --- | --- |
 | Piston quasi-connectivity and activation after an update | Recorded target-version scenarios pass; this does not cover every BUD layout. |
 | Sticky-piston block dropping on a short pulse | The one-game-tick pulse scenario passes recorded traces for both versions. |
 | Slime structures, the 12-block push limit and observers watching piston writes | Implemented with rule, trace and cross-chunk simulation checks. Pistons remain L2 because item pushing, drops and some update ordering have gaps. |
-| TNT ignition, fuse, motion and explosions | Not implemented; a TNT item cannot be placed as a TNT block. |
+| TNT ignition, fuse, motion and explosions | Not implemented; a TNT block is inert and a TNT item cannot be placed. |
 | TNT duplication machines | Not supported. Primed TNT and explosion behavior are absent; common machine components such as rails, minecarts and coral fans are absent too. No TNT-duplication reference fixture exists. |
 | Honey-based flying machines | Not supported; honey-block behavior is absent. Slime and piston tests do not establish compatibility for complete flying-machine designs. |
 | Dispensers, droppers, redstone torches and buttons | Not implemented. Existing wire, lever and diode support does not cover machines requiring these components. |

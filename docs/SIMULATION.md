@@ -157,10 +157,11 @@ Every observable action produces a trace record keyed by (tick, phase, root, seq
 - **Wheat:** grows on random ticks. Random-tick positions and rule draws use a stream derived from (seed, tick, chunk, section) instead of a level-wide stream.
 - **Item entities:** fixed-point gravity, drag and collision, migration between chunks, despawn after 6000 ticks. They are spawned by commands and by destroyed blocks, and pushed by moving blocks.
 - **Items:** every item of both versions, 1,415 in all, with its stack size and durability, compiled from PrismarineJS minecraft-data (MIT) at the pinned commit by `tools/compile_item_registry.py`. Items without rules are inert: they can be stored, moved, thrown and picked up. Containers hold at most 64 of an item, or less when its stack size is smaller; a comparator reads a container's fullness against those limits.
+- **Other blocks:** every block state of both versions exists, from the block registry `circuit-blocks-1` (compiled from PrismarineJS minecraft-data, MIT, at the pinned commit by `tools/compile_block_registry.py`). Blocks without rules of their own keep all their properties and are inert: solid for item entities when they have a collision shape, conductors when opaque, sturdy on faces their collision shape covers (every face when opaque), immovable by pistons, without drops, and water does not flow into them. Their hardness, effective tool and harvest tier come from the same data.
 - **Player inventories:** each player (profile UUID) has the 46 slots of the player window (crafting result and grid, armor, main inventory, hotbar, off hand), a carried stack and a drag in progress.
   - **Survival use:** placing a block uses one item. A tool wears by one for each block with nonzero hardness it breaks, and breaks at its durability.
   - **Breaking:** a block drops what the tool harvests: stone drops cobblestone, and stone, obsidian, redstone blocks, observers and hoppers need a pickaxe of the required tier (obsidian a diamond one). Breaking a container drops its contents; breaking a piston head removes its base too.
-  - **Dig time:** per tick, a block gains the tool's speed divided by its hardness and by 30, or by 100 when the tool does not harvest it, five times less off the ground. Tool speeds: wood 2, stone 4, iron 6, diamond 8, netherite 9, gold 12.
+  - **Dig time:** per tick, a block gains the tool's speed divided by its hardness and by 30, or by 100 when the tool does not harvest it, five times less off the ground. Pickaxes, axes, shovels and hoes have the speeds wood 2, stone 4, iron 6, diamond 8, netherite 9, gold 12; swords and shears are not modeled tools.
   - **Pickup:** an item entity whose pickup delay has run out joins the inventory: first the selected hotbar slot and the off hand when they hold the same item with room, then the first slot with room, then the first empty slot. Block drops wait 10 ticks, thrown items 40.
 - **Container menus:** a chest (27 slots), a double chest (54, the right half first) or a hopper (5), followed by the main inventory and the hotbar; or the player's own window.
   - **Click modes:** pick up and place (left: the stack, right: half or one), quick move (shift), swap with a hotbar slot or the off hand, clone (creative only), throw (one or the stack), drag (split evenly, one each, or full stacks in creative) and collect (double click), with the target version's slot order for quick moves.
@@ -308,7 +309,7 @@ xmake run circuit-server --profile-fixture "$PWD/tests/fixtures/workloads/observ
 
 `--simulate` without `--replay` runs a built-in demonstration with machines that straddle chunk edges.
 
-- **Replay records:** records (format version 2) store the bundle and the rule-set id. A record made under different reference rules is refused with `rules_mismatch` instead of replaying with silently different behavior.
+- **Replay records:** records (format version 4) store the bundle, the rule-set id and the block registry id, whose encoding their block states use. A record made under different reference rules or another block registry is refused with `rules_mismatch` instead of replaying with silently different behavior. Version 3 records predate the registry and are read as `circuit-blocks-1`.
 - **Digest:** the output includes a 64-bit state digest. Equal digests across worker counts are a quick check, not proof.
 - **`--realtime`:** paces ticks at 20 Hz. When it falls more than 40 ticks behind, it drops the wall-clock backlog; logical ticks are never skipped.
 
@@ -323,7 +324,7 @@ Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked with `--check
   - wheat ignoring light and hydration;
   - chunk tickets without vanilla ticket types or level propagation;
   - container menus without crafting and survival loot limited to modeled blocks.
-- TNT blocks, primed TNT entities, explosions, honey blocks, rails and coral fans are not modeled. TNT duplication machines cannot run; piston trace coverage does not establish compatibility for them. See [technical machines](COMPATIBILITY.md#technical-machines).
+- Blocks without rules of their own, among them TNT, honey blocks, rails and coral fans, are inert: solid when they have a collision shape, conductors when opaque, immovable by pistons and without drops. Primed TNT entities and explosions are not modeled. TNT duplication machines cannot run; piston trace coverage does not establish compatibility for them. See [technical machines](COMPATIBILITY.md#technical-machines).
 - There is no lighting, world generation, mob spawning or second dimension.
 - Snapshots copy whole column data on first write, and commit is serial. On the measured workloads, coordination overhead outweighs parallel gains.
 - Commands validate their inputs at full width before converting them; for example, a spawn position is checked against the world border and height in fixed-point units before it is narrowed to a block. Out-of-range input is rejected with no effect.

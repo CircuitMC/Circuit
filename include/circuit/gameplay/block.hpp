@@ -6,13 +6,14 @@
 #include <cstdint>
 #include <optional>
 
-// Block registry of circuit-reference-rules-v0. These are Circuit's own rule
-// definitions, written from documented behavior; they are not a vanilla registry.
+// Block states of the reference rules. Blocks with rules of their own have a
+// BlockType and a packed state; every other block state of the registry
+// (block_registry.hpp) is an `other` state that carries its internal state id.
 namespace circuit::gameplay {
 using contracts::Direction;
 
 enum class BlockType : std::uint8_t {
-    air = 0,
+    air = 0,        // level: 0 air, 1 cave air, 2 void air
     stone,
     glass,
     obsidian,
@@ -24,14 +25,15 @@ enum class BlockType : std::uint8_t {
     observer,       // facing: observed side; flag: powered (output at the back)
     piston,         // facing: push side; flag: extended
     sticky_piston,  // facing: push side; flag: extended
-    piston_head,    // facing: same as its piston; flag: sticky
+    piston_head,    // facing: same as its piston; flag: sticky; level: 1 short
     slime_block,
     hopper,         // facing: output side (not up); flag: enabled
-    chest,          // facing: front (horizontal); level: ChestType
-    water,          // level 0: source, 1-7: flowing distance; flag: falling (level 0)
+    chest,          // facing: front (horizontal); level: ChestType; flag: waterlogged (not simulated)
+    water,          // level 0: source, 1-7: flowing distance; flag: falling (level: stored level - 8, display only)
     wheat,          // level: age 0-7
     comparator,     // facing: output side (horizontal); level: 0 compare, 1 subtract; flag: powered
     moving_piston,  // facing: facing of the moving piston; flag: sticky. Block entity holds the moving block.
+    other,          // Any other registry block: bits 8-31 hold its internal state. Inert (see below).
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -41,12 +43,17 @@ enum class BlockType : std::uint8_t {
 enum class WireSide : std::uint8_t { none = 0, side = 1, up = 2 };
 
 // Packed state: bits 0-7 type, 8-10 facing, 11-14 level, 15 flag, 16-17 delay-1,
-// 18-25 the four wire sides (two bits each: north, south, west, east).
+// 18-25 the four wire sides (two bits each: north, south, west, east). An
+// `other` state keeps its internal registry state in bits 8-31 instead.
 class BlockState {
 public:
     constexpr BlockState() noexcept = default;
     static constexpr BlockState of(BlockType type) noexcept { return BlockState(static_cast<std::uint32_t>(type)); }
     static constexpr BlockState unloaded_sentinel() noexcept { return of(BlockType::unloaded); }
+    // A registry state of a block without rules of its own (not validated; see decode).
+    static constexpr BlockState registered(std::uint32_t internal_state) noexcept {
+        return BlockState(static_cast<std::uint32_t>(BlockType::other) | internal_state << 8);
+    }
     // Validates a registry value received from a command or a record.
     static contracts::Result<BlockState> decode(std::uint32_t raw) noexcept;
 
@@ -55,6 +62,8 @@ public:
     [[nodiscard]] constexpr bool is(BlockType t) const noexcept { return type() == t; }
     [[nodiscard]] constexpr bool is_air() const noexcept { return type() == BlockType::air; }
     [[nodiscard]] constexpr bool is_unloaded() const noexcept { return type() == BlockType::unloaded; }
+    // Internal registry state of an `other` state.
+    [[nodiscard]] constexpr std::uint32_t registry_state() const noexcept { return raw_ >> 8; }
     [[nodiscard]] constexpr Direction facing() const noexcept { return static_cast<Direction>((raw_ >> 8) & 7); }
     [[nodiscard]] constexpr std::uint8_t level() const noexcept { return static_cast<std::uint8_t>((raw_ >> 11) & 15); }
     [[nodiscard]] constexpr bool flag() const noexcept { return (raw_ >> 15) & 1; }
@@ -103,6 +112,8 @@ private:
 // Convenience constructors used by rules and fixtures.
 namespace blocks {
 constexpr BlockState air() { return BlockState::of(BlockType::air); }
+constexpr BlockState cave_air() { return air().with_level(1); }
+constexpr BlockState void_air() { return air().with_level(2); }
 constexpr BlockState stone() { return BlockState::of(BlockType::stone); }
 constexpr BlockState glass() { return BlockState::of(BlockType::glass); }
 constexpr BlockState obsidian() { return BlockState::of(BlockType::obsidian); }
@@ -152,9 +163,20 @@ constexpr BlockState water_falling() { return BlockState::of(BlockType::water).w
 constexpr BlockState wheat(std::uint8_t age = 0) { return BlockState::of(BlockType::wheat).with_level(age); }
 } // namespace blocks
 
+// Whether an internal registry block has rules of its own (a BlockType other
+// than `other`); its states never use the registry encoding.
+bool modeled_block(std::uint32_t internal_block) noexcept;
+
+// Coarse data of an `other` state, from the registry: whether the block has a
+// collision shape, blocks all light, and covers a face completely.
+bool other_has_collision(BlockState s) noexcept;
+bool other_opaque(BlockState s) noexcept;
+bool other_face_covered(BlockState s, Direction face) noexcept;
+
 constexpr bool is_piston(BlockType t) noexcept { return t == BlockType::piston || t == BlockType::sticky_piston; }
 constexpr bool repeater_locked(BlockState s) noexcept { return s.is(BlockType::repeater) && s.level() == 1; }
-// Every valid state of the registry, in raw order.
+// Every valid state: the modeled states in raw order, then the `other` states
+// in internal order.
 template <class F>
 void for_each_block_state(F&& f);
 constexpr bool is_container(BlockType t) noexcept { return t == BlockType::hopper || t == BlockType::chest; }
@@ -175,19 +197,22 @@ constexpr std::uint8_t container_size(BlockType t) noexcept {
 }
 // Blocks whose random tick can change something (see run_random_ticks).
 constexpr bool reacts_to_random_ticks(BlockType t) noexcept { return t == BlockType::wheat; }
-// Full collision cell for item entities.
-constexpr bool is_solid(BlockType t) noexcept {
-    switch (t) {
+// Full collision cell for item entities. Blocks without rules of their own
+// are solid when they have any collision shape (cell-level approximation).
+inline bool is_solid(BlockState s) noexcept {
+    switch (s.type()) {
     case BlockType::stone: case BlockType::glass: case BlockType::obsidian: case BlockType::redstone_block:
     case BlockType::redstone_lamp: case BlockType::observer: case BlockType::piston: case BlockType::sticky_piston:
     case BlockType::piston_head: case BlockType::slime_block: case BlockType::hopper: case BlockType::chest:
     case BlockType::moving_piston:
         return true;
+    case BlockType::other: return other_has_collision(s);
     default:
         return false;
     }
 }
 // Whether a piston may move this state. Air is handled by the structure resolver.
+// Blocks without rules of their own are immovable until their push behavior is modeled.
 constexpr bool is_movable(BlockState s) noexcept {
     switch (s.type()) {
     case BlockType::stone: case BlockType::glass: case BlockType::redstone_block: case BlockType::redstone_lamp:
@@ -211,10 +236,14 @@ constexpr bool destroyed_by_piston(BlockType t) noexcept {
     }
 }
 
+// Number of internal registry states (block_registry.hpp), for iteration.
+std::uint32_t registry_state_count() noexcept;
+
 template <class F>
-void for_each_block_state(F&& f) {
+void for_each_modeled_state(F&& f) {
     for (std::uint32_t raw = 0; raw < (1u << 18); ++raw)
         if (const auto s = BlockState::decode(raw)) {
+            if (s->is(BlockType::other)) continue;
             if (!s->is(BlockType::redstone_wire)) {
                 f(*s);
                 continue;
@@ -222,6 +251,13 @@ void for_each_block_state(F&& f) {
             for (std::uint32_t shape = 0; shape < 256; ++shape)
                 if (const auto w = BlockState::decode(raw | (shape << 18))) f(*w);
         }
+}
+
+template <class F>
+void for_each_block_state(F&& f) {
+    for_each_modeled_state(f);
+    for (std::uint32_t id = 1; id <= registry_state_count(); ++id)
+        if (const auto s = BlockState::decode(BlockState::registered(id).raw())) f(*s);
 }
 
 } // namespace circuit::gameplay

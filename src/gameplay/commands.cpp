@@ -135,7 +135,7 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
         if (is_container(clicked.type())) {
             // A chest under a solid block does not open.
             for (const auto part : detail::container_parts(ctx, c.pos))
-                if (ctx.block(part).is(BlockType::chest) && detail::is_conductor(ctx.block(part.relative(Direction::up)).type()))
+                if (ctx.block(part).is(BlockType::chest) && detail::is_conductor(ctx.block(part.relative(Direction::up))))
                     return std::unexpected(ErrorCode::not_usable);
             return [&ctx, c] { ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo); };
         }
@@ -205,7 +205,7 @@ Plan plan(RuleContext& ctx, const contracts::PlayerBreak& c) {
         const auto base_pos = c.pos.relative(contracts::opposite(s.facing()));
         const bool head_with_base = s.is(BlockType::piston_head) && detail::head_has_base(ctx, c.pos, s);
         if (head_with_base && !c.survival) set_block(ctx, base_pos, blocks::air());
-        if (c.survival && hardness(s.type()) != 0.0f && tool.item != 0) {
+        if (c.survival && hardness(s) != 0.0f && tool.item != 0) {
             // The tool wears by one and breaks at its durability.
             if (const auto* info = items::info(tool.item); info && info->max_damage > 0) {
                 auto& inv = ctx.player(c.player);

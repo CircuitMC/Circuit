@@ -69,7 +69,7 @@ void RegionContext::write_block(BlockPos pos, BlockState state) {
     auto& chunk = writable(chunk_of(pos), *data);
     auto& section = chunk.sections[section_of(pos.y)];
     if (!section) {
-        if (state.is_air()) return;
+        if (state == gameplay::blocks::air()) return;
         section = std::make_shared<Section>();
     } else if (section.use_count() > 1) {
         section = std::make_shared<Section>(*section); // Copy on write: the snapshot keeps the old section.

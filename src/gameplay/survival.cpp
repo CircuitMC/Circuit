@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
+#include <circuit/gameplay/block_registry.hpp>
 #include <circuit/gameplay/survival.hpp>
 
 namespace circuit::gameplay {
@@ -25,13 +26,40 @@ ToolInfo tool_of(std::uint16_t item) noexcept {
     case items::golden_axe: return {Tool::axe, 12.0f, 1};
     case items::diamond_axe: return {Tool::axe, 8.0f, 4};
     case items::netherite_axe: return {Tool::axe, 9.0f, 5};
+    case items::wooden_shovel: return {Tool::shovel, 2.0f, 1};
+    case items::stone_shovel: return {Tool::shovel, 4.0f, 2};
+    case items::iron_shovel: return {Tool::shovel, 6.0f, 3};
+    case items::golden_shovel: return {Tool::shovel, 12.0f, 1};
+    case items::diamond_shovel: return {Tool::shovel, 8.0f, 4};
+    case items::netherite_shovel: return {Tool::shovel, 9.0f, 5};
+    case items::wooden_hoe: return {Tool::hoe, 2.0f, 1};
+    case items::stone_hoe: return {Tool::hoe, 4.0f, 2};
+    case items::iron_hoe: return {Tool::hoe, 6.0f, 3};
+    case items::golden_hoe: return {Tool::hoe, 12.0f, 1};
+    case items::diamond_hoe: return {Tool::hoe, 8.0f, 4};
+    case items::netherite_hoe: return {Tool::hoe, 9.0f, 5};
     default: return {};
     }
 }
 
+std::optional<registry::BlockInfo> other_info(BlockState s) noexcept {
+    const auto b = registry::block_of(s.registry_state());
+    return b ? std::optional(registry::block(*b)) : std::nullopt;
+}
+
 // The tool kind that is effective on a block (its mineable tag).
-Tool effective_tool(BlockType t) noexcept {
-    switch (t) {
+Tool effective_tool(BlockState s) noexcept {
+    switch (s.type()) {
+    case BlockType::other: {
+        const auto info = other_info(s);
+        switch (info ? info->tool : registry::Tool::none) {
+        case registry::Tool::pickaxe: return Tool::pickaxe;
+        case registry::Tool::axe: return Tool::axe;
+        case registry::Tool::shovel: return Tool::shovel;
+        case registry::Tool::hoe: return Tool::hoe;
+        default: return Tool::none;
+        }
+    }
     case BlockType::stone: case BlockType::obsidian: case BlockType::redstone_block: case BlockType::observer:
     case BlockType::piston: case BlockType::sticky_piston: case BlockType::piston_head: case BlockType::hopper:
         return Tool::pickaxe;
@@ -41,8 +69,12 @@ Tool effective_tool(BlockType t) noexcept {
 }
 
 // Lowest tier a block needs for its drops; 0 when it drops with any tool.
-int required_tier(BlockType t) noexcept {
-    switch (t) {
+int required_tier(BlockState s) noexcept {
+    switch (s.type()) {
+    case BlockType::other: {
+        const auto info = other_info(s);
+        return info ? info->tier : 0;
+    }
     case BlockType::stone: case BlockType::redstone_block: case BlockType::observer: case BlockType::hopper: return 1;
     case BlockType::obsidian: return 4;
     default: return 0;
@@ -50,8 +82,12 @@ int required_tier(BlockType t) noexcept {
 }
 } // namespace
 
-float hardness(BlockType t) noexcept {
-    switch (t) {
+float hardness(BlockState s) noexcept {
+    switch (s.type()) {
+    case BlockType::other: {
+        const auto info = other_info(s);
+        return info ? info->hardness : -1.0f;
+    }
     case BlockType::stone: case BlockType::piston: case BlockType::sticky_piston: case BlockType::piston_head: return 1.5f;
     case BlockType::glass: case BlockType::redstone_lamp: return 0.3f;
     case BlockType::obsidian: return 50.0f;
@@ -67,18 +103,18 @@ float hardness(BlockType t) noexcept {
 }
 
 bool harvests(BlockState s, contracts::ItemStack tool) noexcept {
-    const auto need = required_tier(s.type());
+    const auto need = required_tier(s);
     if (need == 0) return true;
     const auto t = tool.empty() ? ToolInfo{} : tool_of(tool.item);
-    return t.kind == effective_tool(s.type()) && t.tier >= need;
+    return t.kind == effective_tool(s) && t.tier >= need;
 }
 
 float destroy_progress(BlockState s, contracts::ItemStack tool, bool on_ground, bool eyes_in_water) noexcept {
-    const float h = hardness(s.type());
+    const float h = hardness(s);
     if (h < 0.0f) return 0.0f;
     if (h == 0.0f) return 1.0f;
     const auto t = tool.empty() ? ToolInfo{} : tool_of(tool.item);
-    float speed = t.kind != Tool::none && t.kind == effective_tool(s.type()) ? t.speed : 1.0f;
+    float speed = t.kind != Tool::none && t.kind == effective_tool(s) ? t.speed : 1.0f;
     if (eyes_in_water) speed *= 0.2f; // the submerged mining speed
     if (!on_ground) speed /= 5.0f;
     return speed / h / (harvests(s, tool) ? 30.0f : 100.0f);

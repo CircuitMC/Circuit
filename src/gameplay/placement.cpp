@@ -38,6 +38,7 @@ bool has_collision(BlockState s) {
     switch (s.type()) {
     case BlockType::air: case BlockType::redstone_wire: case BlockType::lever: case BlockType::wheat: case BlockType::water:
         return false;
+    case BlockType::other: return other_has_collision(s);
     default: return true;
     }
 }

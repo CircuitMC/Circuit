@@ -46,23 +46,23 @@ block 1 1 0 0 minecraft:piston[extended=true,facing=east]
 block 1 1 0 2 minecraft:redstone_lamp[lit=true]
 block 1 2 0 0 minecraft:moving_piston[facing=east,type=normal]
 
-change 3 2 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,type=normal]
-change 3 -2 0 2 minecraft:moving_piston[facing=west,type=normal] minecraft:piston_head[facing=west,type=normal]
-block 3 -2 0 2 minecraft:piston_head[facing=west,type=normal]
+change 3 2 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+change 3 -2 0 2 minecraft:moving_piston[facing=west,type=normal] minecraft:piston_head[facing=west,short=false,type=normal]
+block 3 -2 0 2 minecraft:piston_head[facing=west,short=false,type=normal]
 block 3 -1 0 2 minecraft:piston[extended=true,facing=west]
 block 3 0 1 0 minecraft:redstone_lamp[lit=true]
 block 3 1 0 0 minecraft:piston[extended=true,facing=east]
 block 3 1 0 2 minecraft:redstone_lamp[lit=true]
-block 3 2 0 0 minecraft:piston_head[facing=east,type=normal]
+block 3 2 0 0 minecraft:piston_head[facing=east,short=false,type=normal]
 
 at 7 use -1 0 0
 at 7 use 0 1 2
 change 7 -1 0 0 minecraft:lever[face=wall,facing=west,powered=true] minecraft:lever[face=wall,facing=west,powered=false]
 change 7 0 1 2 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
 change 7 1 0 0 minecraft:piston[extended=true,facing=east] minecraft:moving_piston[facing=east,type=normal]
-change 7 2 0 0 minecraft:piston_head[facing=east,type=normal] minecraft:air
+change 7 2 0 0 minecraft:piston_head[facing=east,short=false,type=normal] minecraft:air
 change 7 -1 0 2 minecraft:piston[extended=true,facing=west] minecraft:moving_piston[facing=west,type=normal]
-change 7 -2 0 2 minecraft:piston_head[facing=west,type=normal] minecraft:air
+change 7 -2 0 2 minecraft:piston_head[facing=west,short=false,type=normal] minecraft:air
 block 7 -2 0 2 minecraft:air
 block 7 -1 0 2 minecraft:moving_piston[facing=west,type=normal]
 block 7 0 1 0 minecraft:redstone_lamp[lit=true]

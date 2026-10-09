@@ -3,9 +3,9 @@
   "comment": "Hand-written. Implementation status of enumerated resources that differ from their kind's default. Statuses apply to both versions unless a version is named. Traces that place a block are linked to it automatically; packets referenced by the server code default to partial.",
   "defaults": {
     "block": {
-      "impl": "missing",
+      "impl": "data_only",
       "evidence": "none",
-      "note": "The content mapping refuses the block's states"
+      "note": "A registry state without rules of its own: represented, stored, sent, imported and exported; solid when it has a collision shape, a conductor when opaque, immovable by pistons, with no drops"
     },
     "item": {
       "impl": "data_only",
@@ -56,6 +56,16 @@
       "air": {
         "impl": "implemented",
         "evidence": "compared"
+      },
+      "cave_air": {
+        "impl": "implemented",
+        "evidence": "none",
+        "note": "Air with its own state; the rules treat it as air"
+      },
+      "void_air": {
+        "impl": "implemented",
+        "evidence": "none",
+        "note": "Air with its own state; the rules treat it as air"
       },
       "stone": {
         "impl": "partial",
@@ -184,8 +194,8 @@
         ]
       },
       "tnt": {
-        "impl": "missing",
-        "evidence": "reference_only",
+        "impl": "data_only",
+        "evidence": "mismatch",
         "cases": [
           "trace/tnt_redstone_ignition"
         ]

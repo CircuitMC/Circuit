@@ -5,6 +5,8 @@
 #include "../oracle/oracle.hpp"
 #include "../support/check.hpp"
 #include "../support/scenario.hpp"
+#include <circuit/contracts/version.hpp>
+#include <circuit/gameplay/block_registry.hpp>
 #include <circuit/gameplay/rules.hpp>
 #include <circuit/gameplay/survival.hpp>
 #include <cmath>
@@ -68,8 +70,69 @@ int main() {
         require(!BlockState::decode(blocks::stone().with_flag(true).raw()).has_value(), "stone has no flag");
         require(!BlockState::decode(0xFFFFFFFFu).has_value(), "stray bits");
         require(!BlockState::decode(static_cast<std::uint32_t>(BlockType::count_)).has_value(), "unknown type");
-        require(!BlockState::decode(blocks::water_falling().with_level(3).raw()).has_value(), "falling water has level 0");
+        require(BlockState::decode(blocks::water_falling().with_level(3).raw()).has_value(), "falling water keeps its stored level");
+        require(!BlockState::decode(blocks::air().with_level(3).raw()).has_value(), "three kinds of air");
+        require(!BlockState::decode(BlockState::registered(0).raw()).has_value(), "internal states start at 1");
+        require(!BlockState::decode(BlockState::registered(circuit::gameplay::registry_state_count() + 1).raw()).has_value(),
+                "internal states end at the registry size");
+        require(!BlockState::decode(BlockState::registered(2).raw()).has_value(), "stone is modeled and never a registry state");
+        require(BlockState::decode(BlockState::registered(3).raw()).has_value(), "granite is a registry state");
+        for (const auto& bundle : circuit::contracts::BundleRegistry::candidates())
+            if (bundle.rules)
+                require(bundle.rules->block_registry == circuit::gameplay::registry::id(), "rule sets name the built registry");
         require(blocks::repeater(D::west, 3).delay() == 3 && blocks::wire(9).level() == 9, "accessors");
+    });
+
+    suite.run("blocks without rules of their own are inert", [] {
+        const auto dirt = registry_block("dirt");
+        // An opaque block conducts a repeater's power; a translucent one does not.
+        for (const auto& [middle, conducts] : {std::pair{dirt, true}, std::pair{registry_block("white_stained_glass"), false}}) {
+            Sim s;
+            s.tick({place({0, -1, 0}, dirt), place({0, 0, 0}, blocks::repeater(D::east)), place({1, 0, 0}, middle),
+                    place({2, 0, 0}, blocks::lamp()), place({-1, 0, 0}, blocks::redstone_block())});
+            s.until(8);
+            require(s.at({0, 0, 0}).flag() && s.at({2, 0, 0}).flag() == conducts, conducts ? "dirt conducts" : "stained glass does not");
+        }
+        // Dust stays on a covered top face or an opaque block.
+        {
+            Sim s;
+            s.tick({place({0, -1, 0}, registry_block("oak_slab", {{"type", "bottom"}})), place({0, 0, 0}, blocks::wire()),
+                    place({2, -1, 0}, registry_block("oak_slab", {{"type", "top"}})), place({2, 0, 0}, blocks::wire()),
+                    place({4, -1, 0}, registry_block("soul_sand")), place({4, 0, 0}, blocks::wire())});
+            s.tick({place({0, 0, 1}, blocks::stone()), place({2, 0, 1}, blocks::stone()), place({4, 0, 1}, blocks::stone())});
+            require(s.at({0, 0, 0}).is_air() && s.at({2, 0, 0}).is(BlockType::redstone_wire) && s.at({4, 0, 0}).is(BlockType::redstone_wire),
+                    "dust support");
+        }
+        // Pistons cannot move them.
+        {
+            Sim s;
+            s.tick({place({1, 0, 0}, dirt), place({0, 0, 0}, blocks::piston(D::east))});
+            s.tick({place({0, 0, 1}, blocks::redstone_block())});
+            require(!s.at({0, 0, 0}).flag() && s.at({1, 0, 0}) == dirt && of_kind(s.last, TraceKind::piston_blocked).size() == 1,
+                    "immovable");
+        }
+        // Items land on blocks with collision and fall through those without.
+        {
+            Sim s;
+            s.tick({place({0, 0, 0}, dirt), place({2, -1, 0}, blocks::stone()), place({2, 0, 0}, registry_block("short_grass")),
+                    SpawnItem{at_block(0.5, 3.5, 0.5), {}, {items::redstone, 1}}, SpawnItem{at_block(2.5, 3.5, 0.5), {}, {items::stone, 1}}});
+            s.until(60);
+            const auto d = s.oracle.dump();
+            require(d.entities.size() == 2, "both items rest");
+            for (const auto& e : d.entities)
+                require(e.position.y == (e.stack.item == items::redstone ? fixed_one : 0), std::format("item rests at {}", e.position.y));
+        }
+        // Breaking follows the block's hardness, tool and tier.
+        using circuit::gameplay::destroy_progress;
+        const auto near = [](float a, float b) { return std::abs(a - b) < 1e-6f; };
+        require(near(destroy_progress(dirt, {}, true), 1.0f / 0.5f / 30.0f), "dirt by hand");
+        require(near(destroy_progress(dirt, {items::iron_shovel, 1, 0}, true), 6.0f / 0.5f / 30.0f), "dirt with a shovel");
+        require(near(destroy_progress(dirt, {items::iron_pickaxe, 1, 0}, true), 1.0f / 0.5f / 30.0f), "a pickaxe is no faster on dirt");
+        require(near(destroy_progress(registry_block("iron_ore"), {items::wooden_pickaxe, 1, 0}, true), 2.0f / 3.0f / 100.0f),
+                "iron ore needs a stone pickaxe");
+        require(near(destroy_progress(registry_block("iron_ore"), {items::stone_pickaxe, 1, 0}, true), 4.0f / 3.0f / 30.0f), "stone pickaxe");
+        require(destroy_progress(registry_block("bedrock"), {}, true) == 0.0f, "unbreakable");
+        require(destroy_progress(registry_block("short_grass"), {}, true) >= 1.0f, "instant");
     });
 
     suite.run("vertical slice: line and repeater across a chunk edge", [] {

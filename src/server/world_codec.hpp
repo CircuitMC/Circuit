@@ -17,15 +17,16 @@ using protocol::Bytes;
 
 class BlockPalette {
 public:
-    // Maps every valid reference state through the target version's notation.
+    // Maps the modeled states through the target version's notation and the
+    // registry states through the registry's wire table.
     BlockPalette(const protocol::ContentTables& tables, const evidence::ContentMapping& mapping);
 
     [[nodiscard]] std::int32_t wire(BlockState state) const;
-    // Reference state for a target-version state id, when the rules model it.
+    // The state of a target-version state id.
     [[nodiscard]] std::optional<BlockState> reference(std::int32_t wire_id) const;
-    [[nodiscard]] std::size_t size() const noexcept { return to_wire_.size(); }
 
 private:
+    std::string_view release_;
     std::unordered_map<std::uint32_t, std::int32_t> to_wire_;
     std::unordered_map<std::int32_t, BlockState> from_wire_;
 };
@@ -51,9 +52,10 @@ Bytes encode_chunk(const runtime::ColumnSnapshot& column, const BlockPalette& pa
                    WorldShape shape, std::int32_t biome_id, std::int32_t protocol);
 
 // Section data of one 16x16x16 section as sent in chunk packets (block count,
-// block states, biomes), exposed for tests.
+// block states, biomes), exposed for tests. The block count excludes every
+// kind of air; without `non_air_blocks` it counts the states other than 0.
 void encode_section(protocol::Writer& w, const std::array<std::int32_t, 4096>& states, std::int32_t biome_id,
-                    std::int32_t state_bits_direct, bool length_prefixed);
+                    std::int32_t state_bits_direct, bool length_prefixed, std::int32_t non_air_blocks = -1);
 
 // Packs `values` with `bits` bits each, no entry spanning two longs.
 std::vector<std::int64_t> pack_entries(std::span<const std::uint32_t> values, unsigned bits);

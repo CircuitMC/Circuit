@@ -42,7 +42,7 @@ entity 6 e1 0 1 0.5 0 0 0 item=minecraft:redstone count=1 age=6 pickup-delay=0 o
 entity-order 7 entities e1
 entity 7 e1 0 1 0.5 0 0 0 item=minecraft:redstone count=1 age=7 pickup-delay=0 on-ground=true
 
-change 8 block_entities -1 1 0 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,type=normal]
+change 8 block_entities -1 1 0 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
 entity-order 8 entities e1
 entity 8 e1 0 1 0.5 0 0 0 item=minecraft:redstone count=1 age=8 pickup-delay=0 on-ground=true
 

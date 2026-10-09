@@ -61,7 +61,7 @@ block 2 17 0 3 minecraft:redstone_lamp[lit=false]
 
 change 3 16 0 3 minecraft:moving_piston[facing=east,type=normal] minecraft:redstone_block
 change 3 17 0 3 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
-change 3 15 0 3 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,type=normal]
+change 3 15 0 3 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
 block 3 16 0 3 minecraft:redstone_block
 block 3 17 0 3 minecraft:redstone_lamp[lit=true]
 

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Compiles the collision shapes of the blocks the reference rules model.
+"""Compiles the collision shapes of every block state.
 
 The server checks player movement against block collision shapes. They come
 from PrismarineJS minecraft-data (MIT) at the pinned commit that the content
 tables use: blockCollisionShapes.json lists, for every block state, a shape
 made of boxes in block coordinates; blocks.json gives each block's first
-state id. The output maps target-version block state ids of the modeled
-blocks to their boxes, for each protocol version. Usage:
+state id. The output maps every target-version block state id to its boxes,
+for each protocol version. Usage:
 
   tools/compile_collision_shapes.py <minecraft-data>/data/pc/1.21.8:772 <minecraft-data>/data/pc/1.21.4:769 \\
       --commit <sha> --output src/server/collision_shapes.cpp
@@ -15,14 +15,6 @@ import argparse
 import json
 import os
 import sys
-
-# The blocks the reference rules model (src/evidence/content.cpp).
-BLOCKS = [
-    "air", "stone", "glass", "obsidian", "redstone_block", "slime_block", "lever", "redstone_wire", "repeater",
-    "comparator", "redstone_lamp", "observer", "piston", "sticky_piston", "piston_head", "moving_piston", "hopper",
-    "chest", "water", "wheat",
-]
-
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -54,9 +46,8 @@ def main():
         blocks = {b["name"]: b for b in json.load(open(os.path.join(directory, "blocks.json"), encoding="utf-8"))}
         collision = json.load(open(os.path.join(directory, "blockCollisionShapes.json"), encoding="utf-8"))
         ranges = []
-        for name in BLOCKS:
-            block = blocks.get(name)
-            if block is None or name not in collision["blocks"]:
+        for name, block in blocks.items():
+            if name not in collision["blocks"]:
                 sys.exit(f"{directory}: {name} is missing")
             count = block["maxStateId"] - block["minStateId"] + 1
             ids = collision["blocks"][name]

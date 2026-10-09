@@ -41,7 +41,7 @@ BlockState new_liquid(RuleContext& ctx, BlockPos pos) {
     }
     if (sources >= 2) {
         const auto below = ctx.block(pos.relative(Direction::down));
-        if (is_solid(below.type()) || is_source(below)) return blocks::water_source();
+        if (is_solid(below) || is_source(below)) return blocks::water_source();
     }
     if (ctx.block(pos.relative(Direction::up)).is(BlockType::water)) return blocks::water_falling();
     const int k = best - 1;

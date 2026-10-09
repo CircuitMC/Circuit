@@ -5,7 +5,11 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
-constexpr std::uint16_t format_version = 3; // 3: stacks carry damage; player commands carry their player
+// 4: the block registry id; 3: stacks carry damage, player commands carry their player.
+constexpr std::uint16_t format_version = 4;
+constexpr std::uint16_t oldest_version = 3;
+// The registry of version 3 records, which store only states that predate it.
+constexpr std::string_view version_3_registry = "circuit-blocks-1";
 
 class Writer {
 public:
@@ -277,6 +281,8 @@ bool decode_command(Reader& r, Command& c) {
 Result<void> check_structure(const ReplayLog& log, const ReplayLimits& limits) {
     if (log.bundle_id.empty() || log.bundle_id.size() > limits.max_bundle_id) return std::unexpected(ErrorCode::malformed_record);
     if (log.rules_id.empty() || log.rules_id.size() > limits.max_bundle_id) return std::unexpected(ErrorCode::malformed_record);
+    if (log.block_registry_id.empty() || log.block_registry_id.size() > limits.max_bundle_id)
+        return std::unexpected(ErrorCode::malformed_record);
     if (log.ticks.size() > limits.max_ticks) return std::unexpected(ErrorCode::record_too_large);
     std::optional<Tick> last_tick;
     std::optional<std::uint64_t> last_admission;
@@ -298,7 +304,7 @@ Result<std::vector<std::byte>> encode_replay(const ReplayLog& log, const ReplayL
     Writer w;
     for (auto b : magic) w.put(b);
     w.put(format_version);
-    for (const auto* id : {&log.bundle_id, &log.rules_id}) {
+    for (const auto* id : {&log.bundle_id, &log.rules_id, &log.block_registry_id}) {
         w.put(static_cast<std::uint16_t>(id->size()));
         for (char ch : *id) w.put(static_cast<std::uint8_t>(ch));
     }
@@ -322,9 +328,12 @@ Result<ReplayLog> decode_replay(std::span<const std::byte> bytes, const ReplayLi
         if (!r.get(b) || b != expected) return std::unexpected(ErrorCode::malformed_record);
     }
     std::uint16_t version{}, id_length{};
-    if (!r.get(version) || version != format_version) return std::unexpected(ErrorCode::malformed_record);
+    if (!r.get(version) || version < oldest_version || version > format_version) return std::unexpected(ErrorCode::malformed_record);
     ReplayLog log;
-    for (auto* id : {&log.bundle_id, &log.rules_id}) {
+    std::vector<std::string*> ids{&log.bundle_id, &log.rules_id};
+    if (version >= 4) ids.push_back(&log.block_registry_id);
+    else log.block_registry_id = version_3_registry;
+    for (auto* id : ids) {
         if (!r.get(id_length) || id_length == 0 || id_length > limits.max_bundle_id || !r.bytes(id_length, *id))
             return std::unexpected(ErrorCode::malformed_record);
     }
@@ -370,7 +379,8 @@ Result<TickInput> decode_tick_input(std::span<const std::byte> bytes, const Repl
 
 Result<void> check_replay_rules(const ReplayLog& log, const VersionBundle& bundle) noexcept {
     if (!bundle.rules) return std::unexpected(ErrorCode::unsupported_version);
-    if (log.bundle_id != bundle.id || log.rules_id != bundle.rules->id) return std::unexpected(ErrorCode::rules_mismatch);
+    if (log.bundle_id != bundle.id || log.rules_id != bundle.rules->id || log.block_registry_id != bundle.rules->block_registry)
+        return std::unexpected(ErrorCode::rules_mismatch);
     return {};
 }
 

@@ -8,7 +8,7 @@
 namespace circuit::gameplay {
 
 // Destroy time of a block; negative for blocks players cannot break.
-float hardness(BlockType t) noexcept;
+float hardness(BlockState s) noexcept;
 // Whether the tool harvests the block (gets its drops).
 bool harvests(BlockState s, contracts::ItemStack tool) noexcept;
 // Fraction of the block a player breaks per tick: the tool's speed when it

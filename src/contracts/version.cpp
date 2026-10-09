@@ -133,7 +133,8 @@ constexpr RuleLimits vanilla_like_limits{
 
 // Both supported versions run the same reference rules: the 27 harness traces
 // recorded on 1.21.4 are identical to those recorded on 1.21.8.
-constexpr RuleSet reference_rules{"circuit-reference-rules-v7", RngPolicy::per_section_derived_stream, reference_v4_mechanisms};
+constexpr RuleSet reference_rules{"circuit-reference-rules-v7", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
+                                  "circuit-blocks-1"};
 
 constexpr std::array bundles{
     VersionBundle{

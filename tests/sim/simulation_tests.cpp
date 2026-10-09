@@ -326,7 +326,7 @@ int main() {
 
     suite.run("replay record reproduces the run", [&] {
         const auto& s = scenarios[2];
-        ReplayLog log{"java-1.21.8", std::string(bundle().rules->id), s.seed, {}};
+        ReplayLog log{"java-1.21.8", std::string(bundle().rules->id), s.seed, {}, std::string(bundle().rules->block_registry)};
         for (Tick t = 1; t <= s.ticks; ++t) log.ticks.push_back({t, inputs[2].per_tick[t - 1]});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");

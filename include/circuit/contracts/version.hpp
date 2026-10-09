@@ -68,6 +68,8 @@ struct RuleSet {
     std::string_view id;
     RngPolicy rng;
     std::span<const MechanismEntry> mechanisms;
+    // Block registry whose encoding the rules' block states use (gameplay/block_registry.hpp).
+    std::string_view block_registry;
 };
 
 struct VersionBundle {

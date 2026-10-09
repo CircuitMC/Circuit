@@ -697,7 +697,7 @@ WorldDump Engine::Impl::dump() const {
             if (!data.sections[s]) continue;
             for (std::uint32_t i = 0; i < 4096; ++i) {
                 const auto state = data.sections[s]->blocks[i];
-                if (state.is_air()) continue;
+                if (state == gameplay::blocks::air()) continue;
                 d.blocks.push_back({BlockPos{data.pos.x * 16 + static_cast<std::int32_t>(i & 15),
                                              bundle.world.min_y + static_cast<std::int32_t>(s) * 16 + static_cast<std::int32_t>((i >> 8) & 15),
                                              data.pos.z * 16 + static_cast<std::int32_t>((i >> 4) & 15)},
@@ -797,7 +797,7 @@ void Engine::Impl::restore(const WorldDump& state) {
     for (const auto& [pos, raw] : state.blocks) {
         const auto s = gameplay::BlockState::decode(raw);
         if (!s) bad("block state");
-        if (s->is_air()) continue;
+        if (*s == gameplay::blocks::air()) continue;
         auto& chunk = column(pos);
         auto& section = chunk.sections[static_cast<std::size_t>((pos.y - bundle.world.min_y) >> 4)];
         if (!section) section = std::make_shared<Section>();

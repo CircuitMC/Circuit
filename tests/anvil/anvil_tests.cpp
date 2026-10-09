@@ -231,15 +231,18 @@ int main() {
     });
 
     suite.run("unsupported content is rejected or substituted by policy", [&] {
+        // Every block state of the target version imports; unknown blocks and
+        // invalid properties are unsupported.
         const auto dir = hand_made_world(root / "unsupported",
-                                         {{{0, 0}, chunk({0, 0}, {block("minecraft:air"), block("minecraft:dirt"), block("minecraft:bedrock"),
-                                                                  block("minecraft:glass_pane", {{"east", "false"}, {"north", "false"}, {"south", "false"}, {"waterlogged", "false"}, {"west", "false"}}),
-                                                                  block("minecraft:redstone_torch", {{"lit", "true"}}),
+                                         {{{0, 0}, chunk({0, 0}, {block("minecraft:air"), block("minecraft:dirt", {{"snowy", "true"}}),
+                                                                  block("minecraft:bedrock", {{"bogus", "1"}}),
+                                                                  block("minecraft:glass_pane", {{"east", "maybe"}}),
+                                                                  block("examplemod:gadget"),
                                                                   block("minecraft:lever", {{"face", "floor"}, {"facing", "east"}, {"powered", "true"}})},
                                                           12)}});
         const auto rejected = anvil::import_world(dir, bundle());
         require(!rejected, "rejected by default");
-        for (const auto* kind : {"block minecraft:dirt", "block minecraft:bedrock", "block minecraft:glass_pane", "block minecraft:redstone_torch"})
+        for (const auto* kind : {"block minecraft:dirt", "block minecraft:bedrock", "block minecraft:glass_pane", "block examplemod:gadget"})
             require(rejected.error().find(kind) != std::string::npos, std::format("names {}: {}", kind, rejected.error()));
         require(rejected.error().find("lever") == std::string::npos, "supported blocks are not listed");
         const auto substituted = anvil::import_world(dir, bundle(), {.unsupported = anvil::Unsupported::substitute});
@@ -335,7 +338,7 @@ int main() {
         const auto rejected = anvil::import_world(dir, bundle());
         require(!rejected, "rejected");
         for (const auto* kind : {"item examplemod:gizmo", "item with components", "block entity minecraft:hopper with CustomName",
-                                 "entity minecraft:pig", "block minecraft:oak_sign"})
+                                 "entity minecraft:pig", "block entity minecraft:sign"})
             require(rejected.error().find(kind) != std::string::npos, std::format("names {}: {}", kind, rejected.error()));
         require(rejected.error().find("with components") == rejected.error().find("item with components") + 5, "empty component maps are accepted");
         const auto r = anvil::import_world(dir, bundle(), {.unsupported = anvil::Unsupported::substitute});

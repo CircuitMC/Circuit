@@ -4,6 +4,7 @@
 // limits and the translation of player actions into simulation commands.
 #include "../support/check.hpp"
 #include "test_client.hpp"
+#include "../../src/server/collision_shapes.hpp"
 #include "../../src/server/game.hpp"
 #include "../../src/server/world_meta.hpp"
 #include <circuit/auth.hpp>
@@ -615,7 +616,7 @@ int main() {
         };
         // The player looks south (yaw 0): chests face north.
         const auto chest = [](std::string_view facing, std::string_view type) {
-            return std::format("minecraft:chest[facing={},type={}]", facing, type);
+            return std::format("minecraft:chest[facing={},type={},waterlogged=false]", facing, type);
         };
         place({2, -61, 4}, 1);
         place({3, -61, 4}, 1);
@@ -1228,6 +1229,20 @@ int main() {
         auto kick = c.until(State::play, "disconnect", std::chrono::milliseconds(5000));
         stopper.join();
         require(kick && text_of(*kick).find("stopping") != std::string::npos, "stop reason delivered");
+    });
+
+    suite.run("every block state of both protocols has a palette entry and a collision shape", [] {
+        for (const auto& [protocol, version] : {std::pair{772, "1.21.8"}, std::pair{769, "1.21.4"}}) {
+            const auto& tables = *protocol::ContentTables::for_protocol(protocol);
+            const auto& mapping = *evidence::ContentMapping::for_game_version(version);
+            const server::BlockPalette palette(tables, mapping);
+            for (std::int32_t id = 0; id < tables.state_count(); ++id) {
+                const auto s = palette.reference(id);
+                require(s && palette.wire(*s) == id, std::format("{}: state {} maps both ways", version, id));
+                require(mapping.block(*tables.notation(id)) == *s, std::format("{}: state {} is {}", version, id, *tables.notation(id)));
+                require(server::collision_boxes(protocol, id).has_value(), std::format("{}: shape of state {}", version, id));
+            }
+        }
     });
 
     suite.run("a 1.21.4 server serves protocol 769", [] {

@@ -7,7 +7,7 @@ Circuit is licensed under AGPL-3.0-only (see `LICENSE`). It uses or includes mat
 | Standalone Asio 1.34.2 | Networking and executors (headers, not included in this repository) | Boost Software License 1.0 |
 | zlib | Packet, checkpoint and Anvil region compression (system library) | zlib License |
 | OpenSSL 3 | Protocol encryption, TLS for session verification (system library) | Apache License 2.0 |
-| PrismarineJS minecraft-data, commit `095709f3ad62b043069141dc127fc80ef6cd10fa` | Block-state, item and entity-type tables and coarse block shapes in `src/protocol/content_*.cpp`, compiled by `tools/compile_content_tables.py`; 1.21.4 biome list cross-check | MIT (below) |
+| PrismarineJS minecraft-data, commit `095709f3ad62b043069141dc127fc80ef6cd10fa` | Block-state, item and entity-type tables and coarse block shapes in `src/protocol/content_*.cpp` (`tools/compile_content_tables.py`); the block registry in `src/gameplay/block_registry_data.cpp` (`tools/compile_block_registry.py`); the item registry in `src/gameplay/item_registry.cpp` (`tools/compile_item_registry.py`); collision shapes in `src/server/collision_shapes.cpp` (`tools/compile_collision_shapes.py`); 1.21.4 biome list cross-check | MIT (below) |
 
 Packet ids, registry entries, tags and protocol field layouts were compiled from the public protocol documentation on minecraft.wiki, at the revisions cited in the source files and in `docs/SERVER.md`; the Anvil, chunk, entity, block entity and level formats likewise, at the revisions cited in `docs/PERSISTENCE.md`. Circuit takes identifiers and numeric facts from those pages and cites them. It does not copy their prose; the page texts remain under their own license.
 

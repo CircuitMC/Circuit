@@ -242,7 +242,7 @@ void tick_hopper(RuleContext& ctx, BlockPos pos) {
     if (is_container(above.type())) {
         if (const auto source = Inventory::open(ctx, above_pos); source.valid())
             moved = transfer_one(ctx, source, self) || moved;
-    } else if (!above.is_unloaded() && !is_solid(above.type())) {
+    } else if (!above.is_unloaded() && !is_solid(above)) {
         moved = pick_up(ctx, self, above_pos) || moved;
     }
     if (moved) self_entity->cooldown = hopper_cooldown;

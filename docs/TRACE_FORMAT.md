@@ -44,7 +44,7 @@ Every position must lie inside the area. Actions run in file order within a tick
 
 - **Loading.** The chunks covering the area plus one chunk of margin are loaded and ticking for the whole run; the next ring is border-loaded. A harness must keep the same chunks force-loaded.
 - **Actions.** All actions for a tick are applied before that tick's scheduled ticks, with normal neighbor updates, as inputs at the start of the tick would be.
-- **Changes.** With `changes ordered`, the recorder lists every block state change inside the area during each tick from 1 on, in the order the changes were applied, including intermediate states. `unordered` compares each tick's changes as a multiset. A change that only affects properties the reference rules do not model maps to no change and is dropped before comparison; since rules v6 every property of the modeled blocks except `piston_head` `short` is modeled, so dust shape changes are compared too.
+- **Changes.** With `changes ordered`, the recorder lists every block state change inside the area during each tick from 1 on, in the order the changes were applied, including intermediate states. `unordered` compares each tick's changes as a multiset. Every property of every block state is represented (block registry `circuit-blocks-1`), so every change is compared, including dust shapes and properties the rules only store.
 - **Probes.** Probes read state at the end of the tick, after all phases.
 - **Randomness.** Random ticks are off unless `random-tick-speed` is set. Circuit's random-tick stream is a declared L1 choice, so exact random outcomes are not expected to match the target version.
 
@@ -52,12 +52,12 @@ Evaluation reports one of four outcomes:
 
 - `PASS` — every compared observation matched.
 - `FAIL` — the first mismatch, with its fixture line.
-- `UNSUPPORTED` — the fixture uses content or setups the reference rules cannot represent, such as waterlogged chests, unknown blocks, or a setup action the rules reject.
+- `UNSUPPORTED` — the fixture uses content or setups the reference rules cannot represent, such as blocks unknown to the target version, or a setup action the rules reject.
 - `INVALID` — skeletons with placeholders and unknown mechanisms.
 
 ## Content mapping for 1.21.8
 
-The mapping translates target-version notation into the reference registry. Properties listed as ignored are accepted and discarded. Target-version traces confirm the conventions below:
+The mapping translates target-version notation into Circuit block states. Every block state of the target version has exactly one Circuit state and back. The blocks in the table below have rules of their own and packed states; every other block is a registry state of the block registry `circuit-blocks-1` (`include/circuit/gameplay/block_registry.hpp`), which keeps all of its properties and is inert in the rules (see [the simulation](SIMULATION.md)). A block whose properties differ between versions has one registry block per version: `creaking_heart` is the only one between 1.21.4 and 1.21.8. Notation names every property, in key order, as the target version writes it. Target-version traces confirm the conventions below:
 
 - repeater and comparator `facing` names the input side (vertical_slice, diode_priority, comparator_signal);
 - observer `facing` names the observed side (observer_pulse);
@@ -66,21 +66,22 @@ The mapping translates target-version notation into the reference registry. Prop
 
 A wrong convention makes fixtures fail rather than pass.
 
-| Block | Modeled properties | Ignored or restricted |
+| Block | Properties | Notes |
 | --- | --- | --- |
-| `air`, `cave_air`, `void_air`, `stone`, `glass`, `obsidian`, `redstone_block`, `slime_block` | — | no other properties |
+| `air`, `cave_air`, `void_air` | — | three states of the same air block in the rules |
+| `stone`, `glass`, `obsidian`, `redstone_block`, `slime_block` | — | no other properties |
 | `lever` | `face`, `facing`, `powered` | `face` and `facing` locate the block the lever hangs on |
 | `redstone_wire` | `power` 0–15, `north`/`south`/`east`/`west` (`none`, `side`, `up`) | the stored shape; absent sides are `none`, so dust given without sides is a dot |
 | `repeater` | `delay` 1–4, `facing`, `locked`, `powered` | `facing` names the **input** side |
 | `redstone_lamp` | `lit` | — |
 | `observer` | `facing` (observed side), `powered` | — |
 | `piston`, `sticky_piston` | `facing`, `extended` | — |
-| `piston_head` | `facing`, `type` | `short` ignored |
+| `piston_head` | `facing`, `short`, `type` | `short` is stored; the rules place heads with `short=false` |
 | `moving_piston` | `facing`, `type` | the moving block is block-entity state and is not part of the notation |
 | `hopper` | `facing` (not `up`), `enabled` | — |
-| `chest` | `facing`, `type` (`single`, `left`, `right`) | `waterlogged` must be `false`; a `left` half is taken to pair clockwise of its facing, `right` counter-clockwise |
+| `chest` | `facing`, `type` (`single`, `left`, `right`), `waterlogged` | waterlogging is stored but not simulated; a `left` half pairs clockwise of its facing, `right` counter-clockwise |
 | `comparator` | `facing`, `mode`, `powered` | `facing` is taken to name the **input** side; the output signal is block-entity state and is not part of the notation |
-| `water` | `level`: 0 source, 1–7 flowing distance, 8–15 falling | — |
+| `water` | `level`: 0 source, 1–7 flowing distance, 8–15 falling | the rules treat every falling level alike and write 8 |
 | `wheat` | `age` 0–7 | — |
 
 Items: any item of the rule set's registry (since rules v7, every item of both versions), named `namespace:id`, without data components. Version 1 has no entity observations; dropped and pushed items are visible only through container slots that collect them. Version 2 observes them directly.

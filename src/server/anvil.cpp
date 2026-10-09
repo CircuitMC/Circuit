@@ -319,8 +319,9 @@ public:
     std::optional<BlockType> tick_type(const std::string& name) {
         const auto id = tables_->default_state(name);
         if (!id) return std::nullopt;
+        // Blocks without rules of their own have no scheduled behavior to resume.
         const auto s = block(*tables_->notation(*id));
-        return s ? std::optional<BlockType>(s->type()) : std::nullopt;
+        return s && !s->is(BlockType::other) ? std::optional<BlockType>(s->type()) : std::nullopt;
     }
     std::optional<std::uint16_t> item(const std::string& name) const {
         const auto i = mapping_->item(name);
@@ -520,7 +521,7 @@ private:
         }
         for (std::size_t i = 0; i < 4096; ++i) {
             const auto s = *mapped[index[i]];
-            if (s.is_air()) continue;
+            if (s == gameplay::blocks::air()) continue;
             result_.state.blocks.push_back({BlockPos{chunk.x * 16 + static_cast<std::int32_t>(i & 15),
                                                      static_cast<std::int32_t>(*y) * 16 + static_cast<std::int32_t>(i >> 8),
                                                      chunk.z * 16 + static_cast<std::int32_t>((i >> 4) & 15)},

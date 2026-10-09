@@ -41,9 +41,9 @@ change 1 1 0 4 minecraft:air minecraft:moving_piston[facing=east,type=normal]
 change 1 0 0 4 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
 
 change 3 2 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
-change 3 1 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,type=normal]
-change 3 1 0 2 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,type=normal]
-change 3 1 0 4 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,type=normal]
-block 3 1 0 2 minecraft:piston_head[facing=east,type=normal]
-block 3 1 0 4 minecraft:piston_head[facing=east,type=normal]
+change 3 1 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+change 3 1 0 2 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+change 3 1 0 4 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+block 3 1 0 2 minecraft:piston_head[facing=east,short=false,type=normal]
+block 3 1 0 4 minecraft:piston_head[facing=east,short=false,type=normal]
 block 3 2 0 0 minecraft:stone

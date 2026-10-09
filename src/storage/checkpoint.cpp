@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include <bit>
 #include <cstdlib>
+#include <circuit/gameplay/block_registry.hpp>
 #include <circuit/protocol/codec.hpp>
 #include <circuit/protocol/framing.hpp>
 #include <circuit/storage/checkpoint.hpp>
@@ -16,10 +17,12 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
-// 4: stacks carry damage, and player inventories follow the tickets; 3: hopper
-// block entities carry the tick they last ticked; 2: tickets carry a load
-// radius. Versions 1 to 3 are still read.
-constexpr std::uint32_t version = 4;
+// 5: the header names the block registry; 4: stacks carry damage, and player
+// inventories follow the tickets; 3: hopper block entities carry the tick they
+// last ticked; 2: tickets carry a load radius. Versions 1 to 4 are still read:
+// they predate the registry and hold only states that circuit-blocks-1 keeps.
+constexpr std::uint32_t version = 5;
+constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
 
@@ -364,7 +367,8 @@ std::vector<std::byte> seal(const Checkpoint& checkpoint, const std::vector<std:
     const auto compressed = protocol::deflate_bytes(body, options.compression_level);
     Writer w;
     w.raw(protocol::as_bytes(magic)).i32(static_cast<std::int32_t>(version));
-    w.string(checkpoint.bundle_id, 64).string(checkpoint.rules_id, 128).i64(static_cast<std::int64_t>(checkpoint.seed));
+    w.string(checkpoint.bundle_id, 64).string(checkpoint.rules_id, 128).string(gameplay::registry::id(), 64);
+    w.i64(static_cast<std::int64_t>(checkpoint.seed));
     w.i64(static_cast<std::int64_t>(checkpoint.state.time));
     w.i64(static_cast<std::int64_t>(body.size())).i64(static_cast<std::int64_t>(compressed.size()));
     w.raw(compressed);
@@ -440,6 +444,15 @@ std::expected<Checkpoint, std::string> decode_checkpoint(std::span<const std::by
     if (!v || *v < 1 || *v > static_cast<std::int32_t>(version)) return std::unexpected("unsupported checkpoint version");
     Checkpoint c;
     const auto bundle = r.string(64), rules = r.string(128);
+    std::string registry(version_4_registry);
+    if (*v >= 5) {
+        const auto named = r.string(64);
+        if (!named) return std::unexpected("checkpoint header truncated");
+        registry = *named;
+    }
+    // Block states are stored in the registry's encoding.
+    if (registry != gameplay::registry::id())
+        return std::unexpected(std::format("checkpoint uses block registry {}, not {}", registry, gameplay::registry::id()));
     const auto seed = r.i64(), tick = r.i64(), raw_size = r.i64(), compressed_size = r.i64();
     if (!bundle || !rules || !seed || !tick || !raw_size || !compressed_size) return std::unexpected("checkpoint header truncated");
     if (*raw_size < 0 || static_cast<std::uint64_t>(*raw_size) > limits.max_raw_bytes || *compressed_size < 0

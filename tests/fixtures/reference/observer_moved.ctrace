@@ -47,11 +47,11 @@ change 2 1 0 8 minecraft:observer[facing=east,powered=false] minecraft:moving_pi
 change 2 0 0 8 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
 
 change 4 2 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:observer[facing=north,powered=false]
-change 4 1 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,type=normal]
+change 4 1 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
 change 4 2 0 4 minecraft:moving_piston[facing=east,type=normal] minecraft:observer[facing=west,powered=false]
-change 4 1 0 4 minecraft:moving_piston[facing=east,type=sticky] minecraft:piston_head[facing=east,type=sticky]
+change 4 1 0 4 minecraft:moving_piston[facing=east,type=sticky] minecraft:piston_head[facing=east,short=false,type=sticky]
 change 4 2 0 8 minecraft:moving_piston[facing=east,type=normal] minecraft:observer[facing=east,powered=false]
-change 4 1 0 8 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,type=normal]
+change 4 1 0 8 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
 
 change 6 2 0 0 minecraft:observer[facing=north,powered=false] minecraft:observer[facing=north,powered=true]
 change 6 2 0 4 minecraft:observer[facing=west,powered=false] minecraft:observer[facing=west,powered=true]
@@ -68,13 +68,13 @@ change 10 -1 0 0 minecraft:lever[face=floor,facing=east,powered=true] minecraft:
 change 10 -1 0 4 minecraft:lever[face=floor,facing=east,powered=true] minecraft:lever[face=floor,facing=east,powered=false]
 change 10 -1 0 8 minecraft:lever[face=floor,facing=east,powered=true] minecraft:lever[face=floor,facing=east,powered=false]
 change 10 0 0 0 minecraft:piston[extended=true,facing=east] minecraft:moving_piston[facing=east,type=normal]
-change 10 1 0 0 minecraft:piston_head[facing=east,type=normal] minecraft:air
+change 10 1 0 0 minecraft:piston_head[facing=east,short=false,type=normal] minecraft:air
 change 10 0 0 4 minecraft:sticky_piston[extended=true,facing=east] minecraft:moving_piston[facing=east,type=sticky]
-change 10 1 0 4 minecraft:piston_head[facing=east,type=sticky] minecraft:air
+change 10 1 0 4 minecraft:piston_head[facing=east,short=false,type=sticky] minecraft:air
 change 10 1 0 4 minecraft:air minecraft:moving_piston[facing=east,type=normal]
 change 10 2 0 4 minecraft:observer[facing=west,powered=false] minecraft:air
 change 10 0 0 8 minecraft:piston[extended=true,facing=east] minecraft:moving_piston[facing=east,type=normal]
-change 10 1 0 8 minecraft:piston_head[facing=east,type=normal] minecraft:air
+change 10 1 0 8 minecraft:piston_head[facing=east,short=false,type=normal] minecraft:air
 
 change 12 0 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:piston[extended=false,facing=east]
 change 12 0 0 4 minecraft:moving_piston[facing=east,type=sticky] minecraft:sticky_piston[extended=false,facing=east]

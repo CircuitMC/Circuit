@@ -25,7 +25,7 @@ Full vanilla compatibility remains a separate deliverable. The [completion roadm
 
 The network server runs a playable creative and survival world for the Java Edition 1.21.8 or 1.21.4 client on top of the same engine, one version per server. It supports offline identities and online mode (encrypted, verified by the session service, refused when verification fails), and the real client is tested against it. In survival, blocks take their dig time and drop what the tool harvests, items are used up, thrown and picked up, chests and hoppers open with every click mode, and movement, falls, hunger, death and respawning follow the target version; these were compared with the official servers of both versions. Mobs, eating and crafting are not supported; see [the network server](docs/SERVER.md).
 
-Worlds are saved as checkpoints plus a write-ahead input log and recover every synced change after a crash. Java Edition 1.21.8 worlds can be imported and exported for the content the rules model; other content is refused unless an explicit substitution policy is chosen. See [persistence](docs/PERSISTENCE.md).
+Worlds are saved as checkpoints plus a write-ahead input log and recover every synced change after a crash. Java Edition 1.21.8 worlds can be imported and exported with every block state; blocks without rules of their own are inert, and other unsupported content is refused unless an explicit substitution policy is chosen. See [persistence](docs/PERSISTENCE.md).
 
 Extensions see the world through controlled services: queries of the published state, commands admitted like player input, tick reports and permissions per module. There are two kinds:
 - **Native modules:** mods and plugins, loaded in dependency order.

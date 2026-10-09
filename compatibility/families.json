@@ -106,22 +106,20 @@
           "id": "state_representation",
           "name": "Internal representation of every block and state property",
           "milestone": "C1",
-          "impl": "partial",
-          "evidence": "none",
-          "deviations": [
-            "8-bit block type field; 20 internal types"
-          ]
+          "impl": "implemented",
+          "evidence": "documented",
+          "note": "circuit-blocks-1 from public data: 1,106 internal blocks and 27,958 internal states with stable ids; every state of both releases round-trips through notation and wire ids"
         },
         {
           "id": "wire_state_mapping",
           "name": "Per-version mapping between internal states and protocol state ids",
           "milestone": "C1",
-          "impl": "partial",
+          "impl": "implemented",
           "evidence": "compared",
           "cases": [
             "trace/dust_shape"
           ],
-          "note": "Only the modeled blocks map; others are refused or substituted"
+          "note": "Every state of both releases maps to one Circuit state and back"
         },
         {
           "id": "collision_shapes",
@@ -132,7 +130,7 @@
           "cases": [
             "client/collision"
           ],
-          "note": "Modeled blocks only, from minecraft-data"
+          "note": "Every state for player movement, from minecraft-data; the rules see blocks without rules of their own per cell (no, partial or full collision, and the faces it covers)"
         },
         {
           "id": "block_properties",
@@ -140,7 +138,7 @@
           "milestone": "C1",
           "impl": "partial",
           "evidence": "documented",
-          "note": "Hardness and harvest rules for modeled blocks"
+          "note": "Hardness, effective tool and harvest tier of every block from public data; opacity from its light filtering"
         }
       ]
     },

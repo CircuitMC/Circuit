@@ -36,7 +36,7 @@ void run_entity(RuleContext& ctx, EntityId id) {
     next.y += v.y;
     if (v.y != 0) {
         const auto cell = block_of(next);
-        if (is_solid(ctx.block(cell).type())) {
+        if (is_solid(ctx.block(cell))) {
             if (v.y < 0) {
                 next.y = (static_cast<std::int64_t>(cell.y) + 1) * fixed_one;
                 on_ground = true;
@@ -53,7 +53,7 @@ void run_entity(RuleContext& ctx, EntityId id) {
         candidate.*axis += speed;
         const auto cell = block_of(candidate);
         // Entities do not enter unloaded chunks.
-        if (!ctx.chunk_generation(contracts::chunk_of(cell)) || is_solid(ctx.block(cell).type())) {
+        if (!ctx.chunk_generation(contracts::chunk_of(cell)) || is_solid(ctx.block(cell))) {
             speed = 0;
             return;
         }

@@ -25,7 +25,7 @@ Feature counts per implementation state, then the number of features with compar
 | Family | Milestones | Features | Implemented | Partial | Data only | Missing | Not applicable | Compared |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | V01 Version manifests and evidence | C0 | 8 | 5 / 5 | 3 / 3 | 0 / 0 | 0 / 0 | 0 / 0 | 2 / 2 |
-| V02 Block registry and state properties | C1, C5 | 7 | 1 / 1 | 4 / 4 | 0 / 0 | 2 / 2 | 0 / 0 | 3 / 3 |
+| V02 Block registry and state properties | C1, C5 | 7 | 5 / 5 | 2 / 2 | 0 / 0 | 0 / 0 | 0 / 0 | 3 / 3 |
 | V03 Item and entity components and registries | C1, C5, C6 | 6 | 0 / 1 | 1 / 1 | 0 / 0 | 3 / 4 | 2 / 0 | 1 / 2 |
 | V04 Data and resource-pack negotiation | C1, C9, C10 | 6 | 0 / 0 | 3 / 3 | 0 / 0 | 3 / 3 | 0 / 0 | 0 / 0 |
 | V05 Dimensions, tickets and chunk lifecycle | C2 | 8 | 0 / 0 | 4 / 4 | 0 / 0 | 4 / 4 | 0 / 0 | 0 / 0 |
@@ -33,14 +33,14 @@ Feature counts per implementation state, then the number of features with compar
 | V07 RNG and global event order | C0, C2, C4 | 7 | 4 / 4 | 2 / 2 | 0 / 0 | 1 / 1 | 0 / 0 | 4 / 4 |
 | V08 Terrain and biomes | C7 | 70 | 0 / 0 | 2 / 2 | 64 / 64 | 4 / 4 | 0 / 0 | 0 / 0 |
 | V09 Structures and decoration | C7, C5 | 6 | 0 / 0 | 0 / 0 | 0 / 0 | 6 / 6 | 0 / 0 | 0 / 0 |
-| V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 1 / 1 | 18 / 18 | 24 / 24 | 0 / 0 | 1 / 1 |
-| V11 Common building blocks | C5 | 1344 | 0 / 0 | 6 / 6 | 621 / 621 | 717 / 717 | 0 / 0 | 3 / 3 |
-| V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 3 / 3 | 32 / 32 | 47 / 47 | 0 / 0 | 2 / 2 |
-| V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 2 / 2 | 129 / 136 | 175 / 182 | 14 / 0 | 0 / 0 |
-| V14 Redstone sources and signal consumers | C4 | 138 | 5 / 5 | 15 / 15 | 55 / 55 | 63 / 63 | 0 / 0 | 15 / 17 |
-| V15 Pistons and moving structures | C3, C4 | 16 | 1 / 1 | 12 / 12 | 1 / 1 | 2 / 2 | 0 / 0 | 7 / 7 |
-| V16 Automation and storage blocks | C4, C5 | 62 | 2 / 2 | 5 / 5 | 26 / 26 | 29 / 29 | 0 / 0 | 6 / 6 |
-| V17 TNT and explosions | C3, C4 | 11 | 0 / 0 | 0 / 0 | 1 / 1 | 9 / 10 | 1 / 0 | 0 / 0 |
+| V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 1 / 1 | 39 / 39 | 3 / 3 | 0 / 0 | 1 / 1 |
+| V11 Common building blocks | C5 | 1344 | 0 / 0 | 6 / 6 | 1334 / 1334 | 4 / 4 | 0 / 0 | 3 / 3 |
+| V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 3 / 3 | 73 / 73 | 6 / 6 | 0 / 0 | 2 / 2 |
+| V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 2 / 2 | 298 / 312 | 6 / 6 | 14 / 0 | 0 / 0 |
+| V14 Redstone sources and signal consumers | C4 | 138 | 5 / 5 | 15 / 15 | 112 / 112 | 6 / 6 | 0 / 0 | 15 / 17 |
+| V15 Pistons and moving structures | C3, C4 | 16 | 1 / 1 | 12 / 12 | 2 / 2 | 1 / 1 | 0 / 0 | 7 / 7 |
+| V16 Automation and storage blocks | C4, C5 | 62 | 2 / 2 | 5 / 5 | 52 / 52 | 3 / 3 | 0 / 0 | 6 / 6 |
+| V17 TNT and explosions | C3, C4 | 11 | 0 / 0 | 0 / 0 | 2 / 2 | 8 / 9 | 1 / 0 | 0 / 0 |
 | V18 Technical machines and vanilla quirks | C4, C7 | 6 | 0 / 0 | 1 / 1 | 0 / 0 | 5 / 5 | 0 / 0 | 1 / 1 |
 | V19 General entity lifecycle | C3 | 17 | 0 / 0 | 4 / 4 | 0 / 0 | 13 / 13 | 0 / 0 | 0 / 0 |
 | V20 Item entities and experience | C3, C6 | 7 | 0 / 0 | 4 / 4 | 0 / 0 | 3 / 3 | 0 / 0 | 1 / 1 |
@@ -48,13 +48,13 @@ Feature counts per implementation state, then the number of features with compar
 | V22 Movement and player modes | C6 | 7 | 3 / 3 | 2 / 2 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
 | V23 Combat, attributes and effects | C6 | 219 | 1 / 1 | 6 / 6 | 91 / 91 | 118 / 121 | 3 / 0 | 6 / 6 |
 | V24 Food, equipment and item use | C5, C6 | 143 | 0 / 0 | 16 / 16 | 121 / 123 | 4 / 4 | 2 / 0 | 1 / 2 |
-| V25 Menus, recipes and production | C5 | 186 | 1 / 1 | 3 / 3 | 159 / 159 | 23 / 23 | 0 / 0 | 1 / 2 |
-| V26 Mob AI and navigation | C8 | 94 | 0 / 0 | 0 / 0 | 7 / 8 | 84 / 86 | 3 / 0 | 0 / 0 |
-| V27 Spawning and farms | C8 | 104 | 0 / 0 | 0 / 0 | 90 / 91 | 13 / 13 | 1 / 0 | 0 / 0 |
+| V25 Menus, recipes and production | C5 | 186 | 1 / 1 | 3 / 3 | 177 / 177 | 5 / 5 | 0 / 0 | 1 / 2 |
+| V26 Mob AI and navigation | C8 | 94 | 0 / 0 | 0 / 0 | 14 / 16 | 77 / 78 | 3 / 0 | 0 / 0 |
+| V27 Spawning and farms | C8 | 104 | 0 / 0 | 0 / 0 | 99 / 100 | 4 / 4 | 1 / 0 | 0 / 0 |
 | V28 Villages, raids and trading | C8 | 15 | 0 / 0 | 0 / 0 | 0 / 0 | 15 / 15 | 0 / 0 | 0 / 0 |
-| V29 Bosses and progression | C8 | 11 | 0 / 0 | 0 / 0 | 2 / 2 | 9 / 9 | 0 / 0 | 0 / 0 |
+| V29 Bosses and progression | C8 | 11 | 0 / 0 | 0 / 0 | 4 / 4 | 7 / 7 | 0 / 0 | 0 / 0 |
 | V30 Data-pack execution | C1, C5, C9 | 8 | 0 / 0 | 0 / 0 | 0 / 0 | 7 / 8 | 1 / 0 | 0 / 0 |
-| V31 Commands and administration | C9 | 117 | 0 / 0 | 5 / 5 | 8 / 10 | 95 / 102 | 9 / 0 | 0 / 0 |
+| V31 Commands and administration | C9 | 117 | 0 / 0 | 5 / 5 | 16 / 20 | 87 / 92 | 9 / 0 | 0 / 0 |
 | V32 Client-visible world state | C10 | 287 | 5 / 5 | 47 / 47 | 0 / 0 | 228 / 234 | 7 / 1 | 6 / 6 |
 | V33 Communication and connection lifecycle | C10 | 85 | 17 / 17 | 19 / 19 | 0 / 0 | 41 / 49 | 8 / 0 | 0 / 0 |
 | V34 Save compatibility | C11 | 6 | 1 / 1 | 0 / 1 | 0 / 0 | 4 / 3 | 1 / 1 | 0 / 1 |
@@ -67,7 +67,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 1 / 1 | 19 / 19 | 0 / 0 | 1075 / 1085 |
+| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 3 / 3 | 19 / 19 | 1073 / 1083 | 0 / 0 |
 | item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 30 / 30 | 1354 / 1385 | 0 / 0 |
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 2 / 2 | 0 / 0 | 147 / 149 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
@@ -128,9 +128,9 @@ Their counts are unknown, not zero.
 | Kind | Status | Cases |
 | --- | --- | ---: |
 | black_box | passing | 6 |
-| official_trace | failing | 4 |
+| official_trace | failing | 5 |
 | official_trace | passing | 30 |
-| official_trace | unsupported | 2 |
+| official_trace | unsupported | 1 |
 | planned | planned | 8 |
 | real_client | passing | 2 |
 | round_trip | passing | 1 |
@@ -156,10 +156,10 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Internal representation of every block and state property | C1 | partial, none | partial, none | 8-bit block type field; 20 internal types |
-| Per-version mapping between internal states and protocol state ids | C1 | partial, compared | partial, compared | `trace/dust_shape`; Only the modeled blocks map; others are refused or substituted |
-| Collision shapes of block states | C1 | partial, compared | partial, compared | `client/collision`; Modeled blocks only, from minecraft-data |
-| Hardness, blast resistance, harvest tools, light emission and opacity, friction, sounds | C1 | partial, documented | partial, documented | Hardness and harvest rules for modeled blocks |
+| Internal representation of every block and state property | C1 | implemented, documented | implemented, documented | circuit-blocks-1 from public data: 1,106 internal blocks and 27,958 internal states with stable ids; every state of both releases round-trips through notation and wire ids |
+| Per-version mapping between internal states and protocol state ids | C1 | implemented, compared | implemented, compared | `trace/dust_shape`; Every state of both releases maps to one Circuit state and back |
+| Collision shapes of block states | C1 | partial, compared | partial, compared | `client/collision`; Every state for player movement, from minecraft-data; the rules see blocks without rules of their own per cell (no, partial or full collision, and the faces it covers) |
+| Hardness, blast resistance, harvest tools, light emission and opacity, friction, sounds | C1 | partial, documented | partial, documented | Hardness, effective tool and harvest tier of every block from public data; opacity from its light filtering |
 
 ### V03 Item and entity components and registries
 

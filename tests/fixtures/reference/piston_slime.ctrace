@@ -52,12 +52,12 @@ change 3 16 -1 0 minecraft:moving_piston[facing=east,type=normal] minecraft:ston
 change 3 15 -1 0 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
 change 3 16 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
 change 3 15 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:slime_block
-change 3 14 0 0 minecraft:moving_piston[facing=east,type=sticky] minecraft:piston_head[facing=east,type=sticky]
+change 3 14 0 0 minecraft:moving_piston[facing=east,type=sticky] minecraft:piston_head[facing=east,short=false,type=sticky]
 
 at 4 set 13 0 -1 minecraft:air
 change 4 13 0 -1 minecraft:redstone_block minecraft:air
 change 4 13 0 0 minecraft:sticky_piston[extended=true,facing=east] minecraft:moving_piston[facing=east,type=sticky]
-change 4 14 0 0 minecraft:piston_head[facing=east,type=sticky] minecraft:air
+change 4 14 0 0 minecraft:piston_head[facing=east,short=false,type=sticky] minecraft:air
 change 4 14 0 1 minecraft:air minecraft:moving_piston[facing=east,type=normal]
 change 4 14 1 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]
 change 4 14 -1 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]

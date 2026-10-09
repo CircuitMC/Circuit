@@ -31,12 +31,12 @@ std::uint8_t wire_target(RuleContext& ctx, BlockPos pos) {
     const int best = best_neighbor_signal(ctx, pos, false);
     int wires = 0;
     if (best < 15) {
-        const bool open_above = !is_conductor(ctx.block(pos.relative(Direction::up)).type());
+        const bool open_above = !is_conductor(ctx.block(pos.relative(Direction::up)));
         for (const auto d : plane) {
             const auto n = pos.relative(d);
             const auto ns = ctx.block(n);
             wires = std::max<int>(wires, wire_power(ns));
-            if (is_conductor(ns.type())) {
+            if (is_conductor(ns)) {
                 if (open_above) wires = std::max<int>(wires, wire_power(ctx.block(n.relative(Direction::up))));
             } else {
                 wires = std::max<int>(wires, wire_power(ctx.block(n.relative(Direction::down))));
@@ -65,7 +65,7 @@ void neighboring_wire_corners(RuleContext& ctx, BlockPos pos) {
     for (const auto d : plane) check_corner(ctx, pos.relative(d));
     for (const auto d : plane) {
         const auto n = pos.relative(d);
-        check_corner(ctx, n.relative(is_conductor(ctx.block(n).type()) ? Direction::up : Direction::down));
+        check_corner(ctx, n.relative(is_conductor(ctx.block(n)) ? Direction::up : Direction::down));
     }
 }
 
@@ -104,12 +104,12 @@ WireSide connecting_side(RuleContext& ctx, BlockPos pos, Direction d, bool open_
         return face_sturdy(s, contracts::opposite(d)) ? WireSide::up : WireSide::side;
     if (connects_to(s, d)) return WireSide::side;
     // Descending: dust below the side, unless the side block is a conductor.
-    if (!is_conductor(s.type()) && connects_to(ctx.block(side.relative(Direction::down)), std::nullopt)) return WireSide::side;
+    if (!is_conductor(s) && connects_to(ctx.block(side.relative(Direction::down)), std::nullopt)) return WireSide::side;
     return WireSide::none;
 }
 
 BlockState fresh_wire_shape(RuleContext& ctx, BlockPos pos, BlockState s, bool keep_dot) {
-    const bool open_above = !is_conductor(ctx.block(pos.relative(Direction::up)).type());
+    const bool open_above = !is_conductor(ctx.block(pos.relative(Direction::up)));
     auto out = s.with_wire_shape(0);
     for (const auto d : plane) out = out.with_wire_side(d, connecting_side(ctx, pos, d, open_above));
     // A dot stays a dot while nothing connects; otherwise a lone connection
@@ -135,7 +135,7 @@ void wire_shape_update(RuleContext& ctx, BlockPos pos, Direction d) {
     if (d == Direction::up) {
         next = fresh_wire_shape(ctx, pos, s, is_dot(s));
     } else {
-        const auto side = connecting_side(ctx, pos, d, !is_conductor(ctx.block(pos.relative(Direction::up)).type()));
+        const auto side = connecting_side(ctx, pos, d, !is_conductor(ctx.block(pos.relative(Direction::up))));
         if ((side != WireSide::none) == s.wire_connected(d) && !is_cross(s)) next = s.with_wire_side(d, side);
         else next = fresh_wire_shape(ctx, pos, s, false);
     }
@@ -190,7 +190,7 @@ void toggle_wire(RuleContext& ctx, BlockPos pos, BlockState s) {
     set_block(ctx, pos, next);
     // Conductors that the dust now points into, or no longer does, update around.
     for (const auto d : plane)
-        if (s.wire_connected(d) != next.wire_connected(d) && is_conductor(ctx.block(pos.relative(d)).type()))
+        if (s.wire_connected(d) != next.wire_connected(d) && is_conductor(ctx.block(pos.relative(d))))
             notify_neighbors(ctx, pos.relative(d), contracts::opposite(d));
 }
 

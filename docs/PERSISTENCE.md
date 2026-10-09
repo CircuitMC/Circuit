@@ -4,7 +4,7 @@
 
 The network server saves its world in a world directory: checkpoints of the engine state plus a write-ahead log of the inputs admitted after them. After a crash, the server restarts from the latest durable checkpoint and replays the logged inputs, so it continues exactly where the durable history ends.
 
-Java Edition 1.21.8 worlds in the Anvil format can be imported into a world directory and exported from one; a `java-1.21.4` server refuses Anvil interchange. Import and export cover the content the reference rules model. Other content is rejected unless the substitution policy is chosen explicitly; see [Anvil import and export](#anvil-import-and-export).
+Java Edition 1.21.8 worlds in the Anvil format can be imported into a world directory and exported from one; a `java-1.21.4` server refuses Anvil interchange. Import and export cover every block state, and the block entities, entities and items Circuit models. Other content is rejected unless the substitution policy is chosen explicitly; see [Anvil import and export](#anvil-import-and-export).
 
 ## World directory
 
@@ -101,7 +101,7 @@ The server fails closed on storage errors. If a log record cannot be written, th
 
 ## Checkpoint format
 
-A checkpoint file is `CIRCKPT\0`, a format version (4; versions 1–3 are still read), the bundle and rule-set ids, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. The body holds:
+A checkpoint file is `CIRCKPT\0`, a format version (5; versions 1–4 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Versions 1–4 predate the registry: their block states are a subset of `circuit-blocks-1` and are read as such. The body holds:
 - columns with palette-packed sections;
 - block entities, entities (with their pickup delay), scheduled ticks and pending block events;
 - chunk tickets and the engine counters;
@@ -123,25 +123,25 @@ Import reads the source world and never writes to it. It creates a new world dir
 
 | Kind | Supported content |
 | --- | --- |
-| Blocks | The blocks the reference rules model: air, stone, glass, obsidian, redstone block, slime block, lever, redstone dust, repeater, comparator, redstone lamp, observer, pistons and their heads, moving pistons, hopper, chest, water and wheat |
+| Blocks | Every block state of 1.21.8. The blocks with rules of their own are air, stone, glass, obsidian, redstone block, slime block, lever, redstone dust, repeater, comparator, redstone lamp, observer, pistons and their heads, moving pistons, hopper, chest, water and wheat; every other block keeps its state and is inert in the rules |
 | Block entities | Chests and hoppers with their items (any item of either version; the `minecraft:damage` component of items with durability), the hopper transfer cooldown, comparator output signals and moving pistons |
 | Entities | Item entities, with their pickup delay |
-| Scheduled ticks | Block and fluid ticks of supported blocks, with their delay and priority |
+| Scheduled ticks | Block and fluid ticks of blocks with rules of their own, with their delay and priority |
 | Level data | Time, seed, spawn point and level name |
 
-Dust shapes, lever mounting and repeater locks are rule state and round-trip unchanged.
+Every block property round-trips unchanged, including dust shapes, lever mounting, repeater locks, cave air and properties the rules only store, such as a chest's `waterlogged`.
 
 **Unsupported content and policies.** Anything else is unsupported content, for example:
-- other blocks, block entities and entities, and items with data components other than a valid damage;
+- blocks unknown to 1.21.8 or with invalid properties; block entities of blocks without rules of their own (signs, furnaces and the rest), and their scheduled ticks; other entities; and items with data components other than a valid damage;
 - block entities with custom names, loot tables or locks;
 - the Nether and the End;
 - chunks that still have an older DataVersion because the game has not re-saved them.
 
 By default, an import that meets unsupported content imports nothing and lists every kind with its count. With `--substitute-unsupported`, the import goes ahead:
-- **Blocks** are replaced by a stand-in of the same coarse shape: air for blocks without collision, obsidian for unbreakable blocks, stone for full light-blocking solids and glass for other solids.
+- **Blocks** with invalid properties are replaced by a stand-in of the same coarse shape: air for blocks without collision, obsidian for unbreakable blocks, stone for full light-blocking solids and glass for other solids. Unknown blocks become air.
 - **Other content** is dropped: block entities, items and entities.
 
-The report lists every replacement. Substitution changes behavior: for example, a torch becomes air and a slab becomes glass. A substituted world is therefore not evidence about the original machine.
+The report lists every replacement. Substitution changes behavior: for example, a sign loses its text and a furnace its items. A substituted world is therefore not evidence about the original machine.
 
 **Not kept.** Import keeps none of the following:
 - light, heightmaps and biomes;

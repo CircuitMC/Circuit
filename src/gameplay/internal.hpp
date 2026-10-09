@@ -47,7 +47,7 @@ void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from);
 // ---- power (power.cpp) ----
 // Full opaque blocks of the registry: powered strongly by a source, they power
 // dust and components next to them; powered by dust only, components only.
-bool is_conductor(BlockType t) noexcept;
+bool is_conductor(BlockState s) noexcept;
 // Whether the face of `s` toward `face` is whole: dust rests on it and levers hang on it.
 bool face_sturdy(BlockState s, Direction face) noexcept;
 bool supports_dust(BlockState below) noexcept;

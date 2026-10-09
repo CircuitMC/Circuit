@@ -8,13 +8,12 @@
 
 namespace circuit::evidence {
 
-// Translation between target-version content notation and the reference
-// registry. Properties the reference rules do not model (dust shape, lever
-// mounting, chest facing) are accepted and ignored; values that the rules
-// cannot represent (locked repeaters, double chests, moving pistons, unknown
-// blocks) are reported as unsupported. The conventions below are unverified
-// until harness traces confirm them; a wrong convention makes fixtures fail
-// loudly rather than pass silently.
+// Translation between target-version content notation and Circuit block
+// states. Every block state of the target version has a state: the blocks
+// with rules of their own map to their packed states, every other block to
+// its registry state (gameplay/block_registry.hpp). Unknown blocks,
+// properties and values are errors; unknown blocks are reported as
+// unsupported.
 class ContentMapping {
 public:
     // nullptr when no mapping exists for the game version.
@@ -22,7 +21,7 @@ public:
 
     [[nodiscard]] std::string_view game_version() const noexcept { return game_version_; }
     [[nodiscard]] std::expected<gameplay::BlockState, std::string> block(std::string_view notation) const;
-    // Canonical notation with modeled properties only, in key order.
+    // Canonical notation with every property, in key order.
     [[nodiscard]] std::string notation(gameplay::BlockState state) const;
     [[nodiscard]] std::expected<std::uint16_t, std::string> item(std::string_view id) const;
     [[nodiscard]] std::string item_name(std::uint16_t item) const;

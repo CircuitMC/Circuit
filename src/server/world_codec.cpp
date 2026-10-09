@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "world_codec.hpp"
+#include <circuit/gameplay/block_registry.hpp>
 #include <circuit/protocol/nbt.hpp>
 #include <algorithm>
 #include <bit>
@@ -11,26 +12,32 @@ using contracts::BlockPos;
 using contracts::Direction;
 using gameplay::BlockType;
 
-BlockPalette::BlockPalette(const protocol::ContentTables& tables, const evidence::ContentMapping& mapping) {
-    gameplay::for_each_block_state([&](BlockState state) {
+BlockPalette::BlockPalette(const protocol::ContentTables& tables, const evidence::ContentMapping& mapping)
+    : release_(mapping.game_version()) {
+    if (gameplay::registry::wire_state_count(release_) != static_cast<std::uint32_t>(tables.state_count()))
+        throw std::runtime_error(std::format("server: the block registry and the content table of {} disagree", release_));
+    // Modeled states go through their notation; registry states map directly.
+    gameplay::for_each_modeled_state([&](BlockState state) {
         const auto id = tables.state_id(mapping.notation(state));
         if (!id) throw std::runtime_error(std::format("server: no wire state for {}", mapping.notation(state)));
+        if (!from_wire_.emplace(*id, state).second)
+            throw std::runtime_error(std::format("server: two states map to {}", mapping.notation(state)));
         to_wire_.emplace(state.raw(), *id);
-        // The reverse map keeps the first reference state for each id; display
-        // properties make several ids map to one state.
-        from_wire_.try_emplace(*id, state);
     });
 }
 
 std::int32_t BlockPalette::wire(BlockState state) const {
+    if (state.is(BlockType::other)) return gameplay::registry::to_wire(release_, state.registry_state()).value_or(0);
     const auto it = to_wire_.find(state.raw());
     return it == to_wire_.end() ? 0 : it->second;
 }
 
 std::optional<BlockState> BlockPalette::reference(std::int32_t wire_id) const {
-    const auto it = from_wire_.find(wire_id);
-    if (it == from_wire_.end()) return std::nullopt;
-    return it->second;
+    if (const auto it = from_wire_.find(wire_id); it != from_wire_.end()) return it->second;
+    const auto internal = gameplay::registry::from_wire(release_, wire_id);
+    if (!internal) return std::nullopt;
+    const auto s = BlockState::decode(BlockState::registered(*internal).raw());
+    return s ? std::optional(*s) : std::nullopt;
 }
 
 std::int32_t display_state(const BlockPalette& palette, const NeighborLookup&, BlockPos, BlockState s) {
@@ -52,18 +59,18 @@ std::vector<std::int64_t> pack_entries(std::span<const std::uint32_t> values, un
 }
 
 void encode_section(protocol::Writer& w, const std::array<std::int32_t, 4096>& states, std::int32_t biome_id,
-                    std::int32_t state_bits_direct, bool length_prefixed) {
+                    std::int32_t state_bits_direct, bool length_prefixed, std::int32_t non_air_blocks) {
     std::int16_t non_air = 0;
     std::vector<std::int32_t> palette;
     std::unordered_map<std::int32_t, std::uint32_t> index;
     for (const auto id : states) {
-        if (id != 0) ++non_air; // State 0 is air; cave and void air are never produced.
+        if (id != 0) ++non_air;
         if (index.size() <= 256 && !index.contains(id)) {
             index.emplace(id, static_cast<std::uint32_t>(palette.size()));
             palette.push_back(id);
         }
     }
-    w.i16(non_air);
+    w.i16(non_air_blocks >= 0 ? static_cast<std::int16_t>(non_air_blocks) : non_air);
     if (palette.size() == 1) {
         w.u8(0).varint(palette[0]); // single valued, no data array
         if (length_prefixed) w.varint(0);
@@ -99,12 +106,18 @@ Bytes encode_chunk(const runtime::ColumnSnapshot& column, const BlockPalette& pa
     protocol::Writer data;
     for (std::size_t s = 0; s < sections; ++s) {
         std::array<std::int32_t, 4096> states{};
+        std::int32_t non_air = 0;
         const auto& blocks = s < column.sections.size() ? column.sections[s] : nullptr;
         if (blocks) {
             const auto base_y = shape.min_y + static_cast<std::int32_t>(s) * 16;
             for (std::size_t i = 0; i < 4096; ++i) {
                 const auto st = (*blocks)[i];
-                if (st.is_air()) continue;
+                if (st == gameplay::blocks::air()) continue;
+                if (st.is_air()) {
+                    states[i] = palette.wire(st); // cave and void air: sent, but not counted or in heightmaps
+                    continue;
+                }
+                ++non_air;
                 const BlockPos p{ox + static_cast<std::int32_t>(i & 15), base_y + static_cast<std::int32_t>(i >> 8),
                                  oz + static_cast<std::int32_t>((i >> 4) & 15)};
                 // Neighbors inside this column come from the snapshot.
@@ -121,7 +134,7 @@ Bytes encode_chunk(const runtime::ColumnSnapshot& column, const BlockPalette& pa
                 top[column_index] = std::max(top[column_index], static_cast<std::int32_t>(s * 16 + (i >> 8) + 1));
             }
         }
-        encode_section(data, states, biome_id, direct_bits, !modern);
+        encode_section(data, states, biome_id, direct_bits, !modern, non_air);
     }
 
     protocol::Writer w;

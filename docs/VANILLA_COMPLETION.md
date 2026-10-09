@@ -1,6 +1,6 @@
 # Vanilla completion roadmap
 
-Status: in progress. Baseline reviewed on 2026-10-08 at source commit `107738a`, with `circuit-reference-rules-v7`. Delivered so far: C0 (version manifests, the feature/evidence ledger, circuit-trace v2 with entity, lifecycle and random-draw observations recorded on both official servers, and first-difference reports).
+Status: in progress. Baseline reviewed on 2026-10-08 at source commit `107738a`, with `circuit-reference-rules-v7`. Delivered so far: C0 (version manifests, the feature/evidence ledger, circuit-trace v2 with entity, lifecycle and random-draw observations recorded on both official servers, and first-difference reports) and C1.1 (a representation of every block state of both versions).
 
 Parts I and II delivered a working simulation and integration foundation for a limited gameplay subset. The next deliverable is a server that implements the server-side features of **Java Edition 1.21.4 and 1.21.8**, with one authoritative version selected at startup. Passing the original milestones does not establish full vanilla compatibility.
 
@@ -20,8 +20,8 @@ The numerical inventories below come from the checked-in protocol tables, genera
 
 | Inventory | Java 1.21.4 | Java 1.21.8 | Current Circuit behavior |
 | --- | ---: | ---: | --- |
-| Block names | 1,095 | 1,105 | 20 internal types, including air and piston intermediate states |
-| Block-state IDs | 27,866 | 27,946 | Only states represented by the small internal registry have behavior |
+| Block names | 1,095 | 1,105 | All represented by the block registry `circuit-blocks-1` (1,106 blocks, one per property schema); 22 have rules of their own, the others are inert |
+| Block-state IDs | 27,866 | 27,946 | All map to one internal state and back; only the 22 modeled blocks have behavior |
 | Item entries, including air | 1,385 | 1,416 | Union registry of 1,415 non-air items; storage/transfer is broader than item use |
 | Entity-type names | 149 | 151 | Item entities in the engine; players handled by the server; most entity families absent |
 | Placement mappings | — | — | 17 item cases, including water buckets and wheat seeds |
@@ -29,7 +29,7 @@ The numerical inventories below come from the checked-in protocol tables, genera
 
 The [vanilla ledger](VANILLA_LEDGER.md) records the same inventories, and more, feature by feature: for each version, every mechanic of families V01–V36 and every enumerated block, item, entity type, effect, enchantment, attribute, damage type, biome, particle, command and packet has an implementation state, an evidence state and its cases. Its data and validator are in [`compatibility/`](../compatibility/README.md); `tools/check.sh` fails when they disagree with the source or with each other. The version manifests there were verified against the official server and client jars.
 
-The internal block format uses an 8-bit type field. Dimensions currently contain only the overworld. The engine entity record is an item-specific structure with fixed-point motion. Both bundles currently share one rule implementation. These are architectural expansion points, not merely missing tests.
+Every block state of both versions has an internal representation (C1.1): blocks with rules of their own keep a packed state, and every other block is a state of the block registry `circuit-blocks-1`, inert in the rules. Dimensions currently contain only the overworld. The engine entity record is an item-specific structure with fixed-point motion. Both bundles currently share one rule implementation. These are architectural expansion points, not merely missing tests.
 
 The 2026-10-08 debug run passed all 15 test programs, including previous review regressions. Existing traces support the documented subset. There is no defensible overall completion percentage: equal weight for a decorative block, world generation and mob AI would produce a misleading number. The remaining work includes multiple major systems as well as deeper validation of existing systems.
 
@@ -56,7 +56,7 @@ These release notes seed a version-difference inventory; they are not a full beh
 | ID | Capability family | Current gap | Delivery |
 | --- | --- | --- | --- |
 | V01 | Version manifests and evidence | Partial: packet/content IDs exist; full feature, schema and behavioral-difference inventory does not | C0 |
-| V02 | Block registry and state properties | Partial: fixed 20-type model; most names, properties and state-dependent geometry absent | C1, C5 |
+| V02 | Block registry and state properties | Partial: every block, property and collision shape represented; behavior for 22 blocks, the others inert with data-derived opacity, face coverage, hardness and tools | C1, C5 |
 | V03 | Item/entity components and registries | Partial: stack size/durability and damage component; names, enchantments, books, potions, attributes, bundles and other components need semantics | C1, C5, C6 |
 | V04 | Data and resource-pack negotiation | Partial: minimal known-pack/registry configuration; full registries, tags, pack stacks, reload and validation missing | C1, C9, C10 |
 | V05 | Dimensions, tickets and chunk lifecycle | Partial: overworld, radius tickets; vanilla ticket types, level propagation, entity/block ticking distinctions and dimensions missing | C2 |

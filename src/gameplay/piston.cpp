@@ -274,7 +274,7 @@ void push_entities(RuleContext& ctx, BlockPos pos, Motion motion) {
         next.z += o.dz * push_step;
         const auto cell = contracts::block_of(next);
         if (!ctx.chunk_generation(contracts::chunk_of(cell))) continue;
-        if (cell != pos && is_solid(ctx.block(cell).type())) continue;
+        if (cell != pos && is_solid(ctx.block(cell))) continue;
         const auto from = contracts::chunk_of(contracts::block_of(e->position));
         const auto to = contracts::chunk_of(cell);
         if (from != to)

@@ -71,6 +71,7 @@ int run_simulation(const SimulateOptions& options) {
             throw std::runtime_error(std::format("cannot simulate {}: {}", options.game_version, error_name(selected.error())));
         log.bundle_id = options.game_version;
         log.rules_id = std::string((*selected)->rules->id);
+        log.block_registry_id = std::string((*selected)->rules->block_registry);
         log.seed = options.seed;
         std::uint64_t admission = 1;
         for (Tick t = 1; t <= options.ticks; ++t) {

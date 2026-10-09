@@ -2,9 +2,12 @@
 #pragma once
 #include <circuit/contracts/commands.hpp>
 #include <circuit/contracts/trace.hpp>
+#include <circuit/gameplay/block_registry.hpp>
 #include <circuit/gameplay/world_types.hpp>
 #include <algorithm>
 #include <span>
+#include <stdexcept>
+#include <string>
 #include <vector>
 
 // Fixture helpers shared by rule and differential tests.
@@ -13,6 +16,13 @@ using namespace circuit::contracts;
 using namespace circuit::gameplay;
 
 inline CommandBody place(BlockPos p, BlockState s) { return SetBlock{p, s.raw(), std::nullopt}; }
+// The registry state of a 1.21.8 block without rules of its own.
+inline BlockState registry_block(std::string_view name, std::vector<registry::Property> properties = {}) {
+    const auto block = registry::find_block("1.21.8", name);
+    const auto state = block ? registry::state_of(*block, properties) : std::nullopt;
+    if (!state) throw std::logic_error("no registry state for " + std::string(name));
+    return BlockState::registered(*state);
+}
 inline CommandBody use_lever(BlockPos p) { return UseBlock{p}; }
 inline CommandBody use_block(BlockPos p) { return UseBlock{p}; }
 inline CommandBody ticket(std::uint32_t id, ChunkPos center, std::uint8_t radius) { return AddTicket{id, center, radius}; }

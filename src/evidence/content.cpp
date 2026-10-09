@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include <circuit/evidence/content.hpp>
 #include <circuit/evidence/trace_format.hpp>
+#include <circuit/gameplay/block_registry.hpp>
 #include <array>
 #include <charconv>
 #include <format>
@@ -143,7 +144,9 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
         CIRCUIT_CHECK(p.done());
         return s;
     };
-    if (id == "minecraft:air" || id == "minecraft:cave_air" || id == "minecraft:void_air") return simple(blocks::air());
+    if (id == "minecraft:air") return simple(blocks::air());
+    if (id == "minecraft:cave_air") return simple(blocks::cave_air());
+    if (id == "minecraft:void_air") return simple(blocks::void_air());
     if (id == "minecraft:stone") return simple(blocks::stone());
     if (id == "minecraft:glass") return simple(blocks::glass());
     if (id == "minecraft:obsidian") return simple(blocks::obsidian());
@@ -194,8 +197,9 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
         CIRCUIT_TRY(facing, p.direction("facing"));
         CIRCUIT_TRY(type, p.required("type"));
         if (type != "normal" && type != "sticky") return std::unexpected("minecraft:piston_head: invalid type");
-        CIRCUIT_CHECK(p.ignored("short", {"true", "false"}));
-        return simple(BlockState::of(BlockType::piston_head).with_facing(facing).with_flag(type == "sticky"));
+        CIRCUIT_TRY(short_arm, p.choice("short", {"false", "true"}, 0));
+        return simple(BlockState::of(BlockType::piston_head).with_facing(facing).with_flag(type == "sticky").with_level(
+            static_cast<std::uint8_t>(short_arm)));
     }
     if (id == "minecraft:moving_piston") {
         CIRCUIT_TRY(facing, p.direction("facing"));
@@ -213,7 +217,7 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
     if (id == "minecraft:chest") {
         CIRCUIT_TRY(facing, p.direction("facing"));
         CIRCUIT_TRY(type, p.required("type"));
-        CIRCUIT_CHECK(p.only("waterlogged", "false"));
+        CIRCUIT_TRY(waterlogged, p.choice("waterlogged", {"false", "true"}, 0));
         if (!contracts::is_horizontal(facing)) return std::unexpected("minecraft:chest: facing must be horizontal");
         // Unverified convention: a left half pairs clockwise of its facing, a right half counter-clockwise.
         const auto kind = type == "single" ? blocks::ChestType::single
@@ -221,7 +225,7 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
                         : type == "right"  ? blocks::ChestType::right
                                            : static_cast<blocks::ChestType>(255);
         if (static_cast<int>(kind) == 255) return std::unexpected("minecraft:chest: invalid type");
-        return simple(blocks::chest(facing, kind));
+        return simple(blocks::chest(facing, kind).with_flag(waterlogged == 1));
     }
     if (id == "minecraft:comparator") {
         CIRCUIT_TRY(facing, p.direction("facing"));
@@ -234,22 +238,28 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
     }
     if (id == "minecraft:water") {
         CIRCUIT_TRY(level, p.integer("level", 0, 15));
-        // Unverified convention: 0 source, 1-7 flowing distance, 8-15 falling.
+        // 0 source, 1-7 flowing distance, 8-15 falling (the rules treat every falling level alike).
         if (level == 0) return simple(blocks::water_source());
         if (level <= 7) return simple(blocks::water_flowing(static_cast<std::uint8_t>(level)));
-        return simple(blocks::water_falling());
+        return simple(blocks::water_falling().with_level(static_cast<std::uint8_t>(level - 8)));
     }
     if (id == "minecraft:wheat") {
         CIRCUIT_TRY(age, p.integer("age", 0, 7));
         return simple(blocks::wheat(static_cast<std::uint8_t>(age)));
     }
-    return std::unexpected(std::format("unsupported: block `{}` is not in the reference registry", id));
+    // Every other block is a registry state without rules of its own.
+    const auto block = gameplay::registry::find_block(game_version_, id);
+    if (!block || gameplay::modeled_block(*block))
+        return std::unexpected(std::format("unsupported: block `{}` is not in the {} registry", id, game_version_));
+    const auto state = gameplay::registry::state_of(*block, spec->properties);
+    if (!state) return std::unexpected(std::format("{}: unknown property or value in `{}`", id, notation));
+    return BlockState::registered(*state);
 }
 
 std::string ContentMapping::notation(BlockState s) const {
     const auto b = [](bool v) { return v ? "true" : "false"; };
     switch (s.type()) {
-    case BlockType::air: return "minecraft:air";
+    case BlockType::air: return s.level() == 1 ? "minecraft:cave_air" : s.level() == 2 ? "minecraft:void_air" : "minecraft:air";
     case BlockType::stone: return "minecraft:stone";
     case BlockType::glass: return "minecraft:glass";
     case BlockType::obsidian: return "minecraft:obsidian";
@@ -277,21 +287,24 @@ std::string ContentMapping::notation(BlockState s) const {
         return std::format("minecraft:{}[extended={},facing={}]", s.is(BlockType::piston) ? "piston" : "sticky_piston",
                            b(s.flag()), direction_name(s.facing()));
     case BlockType::piston_head:
-        return std::format("minecraft:piston_head[facing={},type={}]", direction_name(s.facing()), s.flag() ? "sticky" : "normal");
+        return std::format("minecraft:piston_head[facing={},short={},type={}]", direction_name(s.facing()), b(s.level() == 1),
+                           s.flag() ? "sticky" : "normal");
     case BlockType::moving_piston:
         return std::format("minecraft:moving_piston[facing={},type={}]", direction_name(s.facing()), s.flag() ? "sticky" : "normal");
     case BlockType::hopper:
         return std::format("minecraft:hopper[enabled={},facing={}]", b(s.flag()), direction_name(s.facing()));
     case BlockType::chest: {
         static constexpr std::string_view types[]{"single", "left", "right"};
-        return std::format("minecraft:chest[facing={},type={}]", direction_name(s.facing()), types[s.level() % 3]);
+        return std::format("minecraft:chest[facing={},type={},waterlogged={}]", direction_name(s.facing()), types[s.level() % 3],
+                           b(s.flag()));
     }
     case BlockType::comparator:
         return std::format("minecraft:comparator[facing={},mode={},powered={}]", direction_name(contracts::opposite(s.facing())),
                            s.level() == 1 ? "subtract" : "compare", b(s.flag()));
     case BlockType::water:
-        return std::format("minecraft:water[level={}]", s.flag() ? 8 : s.level());
+        return std::format("minecraft:water[level={}]", s.flag() ? 8 + s.level() : s.level());
     case BlockType::wheat: return std::format("minecraft:wheat[age={}]", s.level());
+    case BlockType::other: return gameplay::registry::notation(s.registry_state());
     default: return std::format("circuit:unrepresentable[raw={}]", s.raw());
     }
 }
