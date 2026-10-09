@@ -11,7 +11,7 @@ This directory holds the machine-readable status of Circuit against the full ser
 | `inventory/<bundle>.json` | generated | Blocks, items, entity types, effects, enchantments, attributes, biomes, particles, commands, damage types and packets, with counts of block states, sound events, recipes and instruments |
 | `ledger.json` | generated | One feature per mechanic and per enumerated resource, with a record per version: implementation state, evidence state, cases and gaps |
 
-Each feature has a stable id: `V14.dust` for a mechanic, `block/minecraft:stone` for a resource, `play/serverbound/container_click` under `packet/` for a packet. A record is `implemented`, `partial`, `data_only`, `missing` or `not_applicable` (with a reason), and its evidence is `compared`, `reference_only`, `documented`, `mismatch` or `none`. Compared evidence names its cases. The reference traces in `tests/fixtures/harness*/` are cases `trace/<name>`, linked to the blocks they place.
+Each feature has a stable id: `V14.dust` for a mechanic, `block/minecraft:stone` for a resource, `play/serverbound/container_click` under `packet/` for a packet. A record is `implemented`, `partial`, `data_only`, `missing` or `not_applicable` (with a reason), and its evidence is `compared`, `reference_only`, `documented`, `mismatch` or `none`. Compared evidence names a passing case, mismatch evidence a failing one, and reference-only evidence an official observation. The target-version traces are cases `trace/<name>`: passing ones in `tests/fixtures/harness*/`, linked to the blocks they place, and failing or unsupported ones in `tests/fixtures/open*/`.
 
 ```bash
 python3 tools/compat_ledger.py check      # validate; fails when the generated files are stale

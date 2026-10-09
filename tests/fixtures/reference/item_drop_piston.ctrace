@@ -1,0 +1,61 @@
+circuit-trace 2
+title A piston destroys dust, which drops as an item
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v7
+mechanisms piston item_entity
+area -3 0 -2 3 2 2
+ticks 12
+changes ordered
+entities observed
+rng observed
+
+at 0 set -2 0 0 minecraft:stone
+at 0 set -1 0 0 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set -1 1 0 minecraft:piston[extended=false,facing=east]
+at 0 set 0 1 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+
+at 1 set -2 1 0 minecraft:redstone_block
+change 1 commands -2 1 0 minecraft:air minecraft:redstone_block
+change 1 block_events 0 1 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:air
+entity-added 1 block_events e1 minecraft:item 0.5 1.5 0.5 0 0 0 item=minecraft:redstone count=1
+change 1 block_events 0 1 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 1 block_events -1 1 0 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
+entity-order 1 entities e1
+entity 1 e1 0.5 2 0.5 0 0 0 item=minecraft:redstone count=1 age=1 pickup-delay=9 on-ground=true
+
+entity-order 2 entities e1
+entity 2 e1 0.5 2 0.5 0 0 0 item=minecraft:redstone count=1 age=2 pickup-delay=8 on-ground=true
+
+change 3 block_entities 0 1 0 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,type=normal]
+entity-order 3 entities e1
+entity 3 e1 0.5 2 0.5 0 0 0 item=minecraft:redstone count=1 age=3 pickup-delay=7 on-ground=true
+
+entity-order 4 entities e1
+entity 4 e1 0.5 2 0.5 0 0 0 item=minecraft:redstone count=1 age=4 pickup-delay=6 on-ground=true
+
+entity-order 5 entities e1
+entity 5 e1 0.5 2 0.5 0 0 0 item=minecraft:redstone count=1 age=5 pickup-delay=5 on-ground=true
+
+entity-order 6 entities e1
+entity 6 e1 0.5 2 0.5 0 0 0 item=minecraft:redstone count=1 age=6 pickup-delay=4 on-ground=true
+
+entity-order 7 entities e1
+entity 7 e1 0.5 2 0.5 0 0 0 item=minecraft:redstone count=1 age=7 pickup-delay=3 on-ground=true
+
+entity-order 8 entities e1
+entity 8 e1 0.5 2 0.5 0 0 0 item=minecraft:redstone count=1 age=8 pickup-delay=2 on-ground=true
+
+entity-order 9 entities e1
+entity 9 e1 0.5 2 0.5 0 0 0 item=minecraft:redstone count=1 age=9 pickup-delay=1 on-ground=true
+
+entity-order 10 entities e1
+entity 10 e1 0.5 2 0.5 0 0 0 item=minecraft:redstone count=1 age=10 pickup-delay=0 on-ground=true
+
+entity-order 11 entities e1
+entity 11 e1 0.5 2 0.5 0 0 0 item=minecraft:redstone count=1 age=11 pickup-delay=0 on-ground=true
+
+entity-order 12 entities e1
+entity 12 e1 0.5 2 0.5 0 0 0 item=minecraft:redstone count=1 age=12 pickup-delay=0 on-ground=true

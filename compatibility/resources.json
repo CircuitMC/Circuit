@@ -182,6 +182,13 @@
         "deviations": [
           "growth ignores light, farmland and hydration"
         ]
+      },
+      "tnt": {
+        "impl": "missing",
+        "evidence": "reference_only",
+        "cases": [
+          "trace/tnt_redstone_ignition"
+        ]
       }
     },
     "item": {
@@ -375,9 +382,15 @@
     "entity": {
       "item": {
         "impl": "partial",
-        "evidence": "none",
+        "evidence": "mismatch",
         "deviations": [
           "fixed-point motion, no merging, not compared"
+        ],
+        "cases": [
+          "trace/item_hopper_pickup",
+          "trace/item_piston_push",
+          "trace/item_water_current",
+          "trace/item_drop_piston"
         ]
       },
       "player": {
@@ -388,6 +401,13 @@
           "client/vitals",
           "client/collision",
           "realclient/survival"
+        ]
+      },
+      "tnt": {
+        "impl": "missing",
+        "evidence": "reference_only",
+        "cases": [
+          "trace/tnt_redstone_ignition"
         ]
       }
     },

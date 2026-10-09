@@ -90,11 +90,12 @@
   ],
   "circuit_schemas": {
     "rule_set": "circuit-reference-rules-v7",
-    "trace_format": "circuit-trace 1",
+    "trace_format": "circuit-trace 1 and 2",
     "replay_format": 3,
     "checkpoint_format": 4,
     "anvil_data_version": null,
-    "reference_traces": "tests/fixtures/harness-1.21.4"
+    "reference_traces": "tests/fixtures/harness-1.21.4",
+    "open_traces": "tests/fixtures/open-1.21.4"
   },
   "sources": [
     "https://www.minecraft.net/en-us/article/minecraft-java-edition-1-21-4",

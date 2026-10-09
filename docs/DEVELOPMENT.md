@@ -117,6 +117,8 @@ The harness is a separate project. Running it requires accepting the Minecraft E
 
 Copy only the resulting trace files into `tests/fixtures/harness/` (1.21.8), or into `tests/fixtures/harness-1.21.4/` for a 1.21.4 build of the harness, under the name of the skeleton they came from. Review them before committing. Each trace names the game version of the server that recorded it. `evidence_tests` then requires every trace to pass on the engine and the oracle, under the bundle of its version.
 
+Version-2 traces (entities, stages, random draws) are recorded the same way. Record each one twice on fresh worlds and keep it only when both recordings are identical (the harness's `run_repeat.sh`). A trace Circuit does not match yet goes into `tests/fixtures/open/` or `open-1.21.4/`, with its outcome and first mismatch added to that directory's `EXPECTED.txt`, and its status into the [compatibility ledger](../compatibility/README.md). It moves to the harness directory once Circuit passes it.
+
 The harness can also time the target version's tick phases for a workload. Compare that profile with Circuit's own on a release build:
 
 ```bash

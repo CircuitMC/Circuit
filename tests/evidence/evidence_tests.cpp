@@ -10,6 +10,7 @@
 #include <format>
 #include <fstream>
 #include <iterator>
+#include <sstream>
 
 using namespace circuit::evidence;
 using circuit::oracle::Oracle;
@@ -104,6 +105,36 @@ slot 30 1 0 0 0 ?
 
 const char* header2 = "circuit-trace 2\ntitle Test\ngame-version 1.21.8\nsource circuit_reference\nharness -\n"
                       "mechanisms item_entity\narea -2 0 -2 2 1 2\nticks 4\n";
+// A target-version trace has harness provenance and was recorded from the
+// scenario currently in the repository.
+void require_recorded_from_skeleton(const fs::path& fixtures, const fs::path& path, const Fixture& trace, std::string_view version) {
+    require(trace.source == circuit::contracts::EvidenceSource::harness_trace && trace.harness.starts_with("circuit-harness:") &&
+                trace.game_version == version && trace.harness.ends_with(std::string("+mc") + std::string(version)),
+            std::format("{}: harness provenance", path.string()));
+    fs::path origin;
+    for (const auto* dir : {"skeletons", "documented", "open-skeletons"})
+        if (fs::exists(fixtures / dir / path.filename())) {
+            origin = fixtures / dir / path.filename();
+            break;
+        }
+    require(!origin.empty(), std::format("{}: no skeleton", path.string()));
+    const auto skeleton = parse(read_text(origin));
+    auto actions = [](const Fixture& f) {
+        std::vector<std::tuple<Tick, int, BlockPos, std::string, int, std::string, int, Vec3d, Vec3d>> out;
+        for (const auto& a : f.actions)
+            out.emplace_back(a.tick, static_cast<int>(a.kind), a.pos, a.state, a.slot, a.item, a.count, a.position, a.velocity);
+        return out;
+    };
+    require(trace.format == skeleton.format && trace.observe_entities == skeleton.observe_entities
+                && trace.observe_chunks == skeleton.observe_chunks && trace.observe_rng == skeleton.observe_rng
+                && trace.dimension == skeleton.dimension,
+            std::format("{}: recorded with other observations than its skeleton", path.string()));
+    require(trace.title == skeleton.title && trace.area_min == skeleton.area_min && trace.area_max == skeleton.area_max
+                && trace.ticks == skeleton.ticks && trace.changes == skeleton.changes
+                && trace.random_tick_speed == skeleton.random_tick_speed
+                && trace.neighbor_update_limit == skeleton.neighbor_update_limit && actions(trace) == actions(skeleton),
+            std::format("{}: recorded from a different scenario; re-record it", path.string()));
+}
 } // namespace
 
 int main(int argc, char** argv) {
@@ -403,29 +434,7 @@ int main(int argc, char** argv) {
         std::size_t traces = 0;
         for (const auto& entry : fs::directory_iterator(fixtures / directory)) {
             const auto trace = parse(read_text(entry.path()));
-            require(trace.source == circuit::contracts::EvidenceSource::harness_trace && trace.harness.starts_with("circuit-harness:") &&
-                        trace.game_version == version && trace.harness.ends_with(std::string("+mc") + version),
-                    std::format("{}: harness provenance", entry.path().string()));
-            // The trace must come from the scenario currently in the repository.
-            auto origin = fixtures / "skeletons" / entry.path().filename();
-            if (!fs::exists(origin)) origin = fixtures / "documented" / entry.path().filename();
-            require(fs::exists(origin), std::format("{}: no skeleton", entry.path().string()));
-            const auto skeleton = parse(read_text(origin));
-            auto actions = [](const Fixture& f) {
-                std::vector<std::tuple<Tick, int, BlockPos, std::string, int, std::string, int, Vec3d, Vec3d>> out;
-                for (const auto& a : f.actions)
-                    out.emplace_back(a.tick, static_cast<int>(a.kind), a.pos, a.state, a.slot, a.item, a.count, a.position, a.velocity);
-                return out;
-            };
-            require(trace.format == skeleton.format && trace.observe_entities == skeleton.observe_entities
-                        && trace.observe_chunks == skeleton.observe_chunks && trace.observe_rng == skeleton.observe_rng
-                        && trace.dimension == skeleton.dimension,
-                    std::format("{}: recorded with other observations than its skeleton", entry.path().string()));
-            require(trace.title == skeleton.title && trace.area_min == skeleton.area_min && trace.area_max == skeleton.area_max
-                        && trace.ticks == skeleton.ticks && trace.changes == skeleton.changes
-                        && trace.random_tick_speed == skeleton.random_tick_speed
-                        && trace.neighbor_update_limit == skeleton.neighbor_update_limit && actions(trace) == actions(skeleton),
-                    std::format("{}: recorded from a different scenario; re-record it", entry.path().string()));
+            require_recorded_from_skeleton(fixtures, entry.path(), trace, version);
             for (const auto& exec : {engine_executor(4), oracle_executor()}) {
                 const auto r = evaluate_fixture(trace, exec);
                 require(r.outcome == Outcome::passed, std::format("{}: {}", entry.path().string(), r.detail));
@@ -434,6 +443,42 @@ int main(int argc, char** argv) {
         }
         require(traces >= 20, std::format("{} target-version traces for {}", traces, version));
       }
+    });
+
+    suite.run("open target-version traces keep their first mismatch", [&] {
+        // Traces Circuit does not match yet stay visible, apart from the passing
+        // suite, with the outcome and first mismatch recorded in EXPECTED.txt.
+        for (const auto& [directory, version] : {std::pair{"open", "1.21.8"}, std::pair{"open-1.21.4", "1.21.4"}}) {
+            std::map<std::string, std::string> expected;
+            std::istringstream lines(read_text(fixtures / directory / "EXPECTED.txt"));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto space = line.find(' ');
+                expected[line.substr(0, space)] = line.substr(space + 1);
+            }
+            std::size_t traces = 0;
+            for (const auto& entry : fs::directory_iterator(fixtures / directory)) {
+                if (entry.path().extension() != ".ctrace") continue;
+                const auto trace = parse(read_text(entry.path()));
+                require_recorded_from_skeleton(fixtures, entry.path(), trace, version);
+                const auto name = entry.path().filename().string();
+                require(expected.contains(name), std::format("{}: not listed in EXPECTED.txt", entry.path().string()));
+                for (const auto& exec : {engine_executor(4), oracle_executor()}) {
+                    const auto r = evaluate_fixture(trace, exec);
+                    require(r.outcome != Outcome::passed,
+                            std::format("{} passes now: move it to the harness directory and update the ledger", entry.path().string()));
+                    require(r.outcome == Outcome::failed || r.outcome == Outcome::unsupported,
+                            std::format("{}: {}", entry.path().string(), r.detail));
+                    const auto observed = std::format("{} {}", outcome_name(r.outcome), r.detail.substr(0, r.detail.find(':')));
+                    require(observed == expected[name], std::format("{}: the first mismatch moved from `{}` to `{}`: {}", entry.path().string(),
+                                                                    expected[name], observed, r.detail));
+                }
+                expected.erase(name);
+                ++traces;
+            }
+            require(expected.empty(), std::format("{}: EXPECTED.txt lists missing traces", directory));
+            require(traces >= 5, std::format("{} open traces for {}", traces, version));
+        }
     });
 
     return suite.finish();

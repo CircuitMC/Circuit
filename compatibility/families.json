@@ -1,465 +1,2489 @@
 {
   "schema": "circuit-compatibility-families-1",
   "comment": "Hand-written. Families V01-V36 of docs/VANILLA_COMPLETION.md, their named mechanics, and the rules that assign every enumerated resource to a family. Statuses describe the source at the commit that changes this file; tools/compat_ledger.py validates it and generates compatibility/ledger.json and docs/VANILLA_LEDGER.md.",
-  "versions": ["java-1.21.4", "java-1.21.8"],
+  "versions": [
+    "java-1.21.4",
+    "java-1.21.8"
+  ],
   "families": [
     {
-      "id": "V01", "name": "Version manifests and evidence", "milestones": ["C0"],
+      "id": "V01",
+      "name": "Version manifests and evidence",
+      "milestones": [
+        "C0"
+      ],
       "mechanics": [
-        {"id": "version_manifests", "name": "Exact version manifests verified against the official artifacts", "milestone": "C0", "impl": "implemented", "evidence": "documented", "note": "compatibility/versions/; values read from the official jars, whose hashes match Mojang's published metadata"},
-        {"id": "feature_ledger", "name": "Machine-readable feature and evidence ledger with validation", "milestone": "C0", "impl": "implemented", "evidence": "none"},
-        {"id": "block_traces", "name": "Reference traces of block state changes (circuit-trace v1)", "milestone": "C0", "impl": "implemented", "evidence": "compared", "cases": ["trace/vertical_slice"]},
-        {"id": "trace_v2", "name": "Trace format with entity, lifecycle, inventory, dimension, ticket and RNG observations", "milestone": "C0", "impl": "implemented", "evidence": "none", "note": "circuit-trace 2: Circuit records and evaluates it; the reference harness does not record it yet"},
-        {"id": "harness_v2", "name": "Reference harness recording v2 observations on both releases, with repeat runs", "milestone": "C0", "impl": "missing", "evidence": "none"},
-        {"id": "scenario_adapters", "name": "Scenario adapters for official server, sequential, parallel and real-client runs with first-mismatch reports", "milestone": "C0", "impl": "missing", "evidence": "none"},
-        {"id": "protocol_client_calibration", "name": "Protocol-client scenarios compared between the official servers and Circuit", "milestone": "C0", "impl": "partial", "evidence": "compared", "cases": ["client/windows", "client/vitals", "client/collision", "client/chests", "client/redstone"], "note": "External mineflayer scripts; outputs compared by diff"},
-        {"id": "real_client_harness", "name": "Real-client step scripts against Circuit", "milestone": "C0", "impl": "partial", "evidence": "none", "cases": ["realclient/survival", "realclient/redstone"], "note": "Checks Circuit with the unmodified client; not a comparison with the official server"}
+        {
+          "id": "version_manifests",
+          "name": "Exact version manifests verified against the official artifacts",
+          "milestone": "C0",
+          "impl": "implemented",
+          "evidence": "documented",
+          "note": "compatibility/versions/; values read from the official jars, whose hashes match Mojang's published metadata"
+        },
+        {
+          "id": "feature_ledger",
+          "name": "Machine-readable feature and evidence ledger with validation",
+          "milestone": "C0",
+          "impl": "implemented",
+          "evidence": "none"
+        },
+        {
+          "id": "block_traces",
+          "name": "Reference traces of block state changes (circuit-trace v1)",
+          "milestone": "C0",
+          "impl": "implemented",
+          "evidence": "compared",
+          "cases": [
+            "trace/vertical_slice"
+          ]
+        },
+        {
+          "id": "trace_v2",
+          "name": "Trace format with entity, lifecycle, inventory, dimension, ticket and RNG observations",
+          "milestone": "C0",
+          "impl": "implemented",
+          "evidence": "none",
+          "note": "circuit-trace 2: Circuit records and evaluates it; the reference harness does not record it yet"
+        },
+        {
+          "id": "harness_v2",
+          "name": "Reference harness recording v2 observations on both releases, with repeat runs",
+          "milestone": "C0",
+          "impl": "implemented",
+          "evidence": "none",
+          "note": "Both releases; repeat runs on fresh worlds; the level random is seeded with 0"
+        },
+        {
+          "id": "scenario_adapters",
+          "name": "Scenario adapters for official server, sequential, parallel and real-client runs with first-mismatch reports",
+          "milestone": "C0",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "protocol_client_calibration",
+          "name": "Protocol-client scenarios compared between the official servers and Circuit",
+          "milestone": "C0",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "client/windows",
+            "client/vitals",
+            "client/collision",
+            "client/chests",
+            "client/redstone"
+          ],
+          "note": "External mineflayer scripts; outputs compared by diff"
+        },
+        {
+          "id": "real_client_harness",
+          "name": "Real-client step scripts against Circuit",
+          "milestone": "C0",
+          "impl": "partial",
+          "evidence": "none",
+          "cases": [
+            "realclient/survival",
+            "realclient/redstone"
+          ],
+          "note": "Checks Circuit with the unmodified client; not a comparison with the official server"
+        }
       ]
     },
     {
-      "id": "V02", "name": "Block registry and state properties", "milestones": ["C1", "C5"],
+      "id": "V02",
+      "name": "Block registry and state properties",
+      "milestones": [
+        "C1",
+        "C5"
+      ],
       "mechanics": [
-        {"id": "state_representation", "name": "Internal representation of every block and state property", "milestone": "C1", "impl": "partial", "evidence": "none", "deviations": ["8-bit block type field; 20 internal types"]},
-        {"id": "wire_state_mapping", "name": "Per-version mapping between internal states and protocol state ids", "milestone": "C1", "impl": "partial", "evidence": "compared", "cases": ["trace/dust_shape"], "note": "Only the modeled blocks map; others are refused or substituted"},
-        {"id": "collision_shapes", "name": "Collision shapes of block states", "milestone": "C1", "impl": "partial", "evidence": "compared", "cases": ["client/collision"], "note": "Modeled blocks only, from minecraft-data"},
-        {"id": "block_properties", "name": "Hardness, blast resistance, harvest tools, light emission and opacity, friction, sounds", "milestone": "C1", "impl": "partial", "evidence": "documented", "note": "Hardness and harvest rules for modeled blocks"}
+        {
+          "id": "state_representation",
+          "name": "Internal representation of every block and state property",
+          "milestone": "C1",
+          "impl": "partial",
+          "evidence": "none",
+          "deviations": [
+            "8-bit block type field; 20 internal types"
+          ]
+        },
+        {
+          "id": "wire_state_mapping",
+          "name": "Per-version mapping between internal states and protocol state ids",
+          "milestone": "C1",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/dust_shape"
+          ],
+          "note": "Only the modeled blocks map; others are refused or substituted"
+        },
+        {
+          "id": "collision_shapes",
+          "name": "Collision shapes of block states",
+          "milestone": "C1",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "client/collision"
+          ],
+          "note": "Modeled blocks only, from minecraft-data"
+        },
+        {
+          "id": "block_properties",
+          "name": "Hardness, blast resistance, harvest tools, light emission and opacity, friction, sounds",
+          "milestone": "C1",
+          "impl": "partial",
+          "evidence": "documented",
+          "note": "Hardness and harvest rules for modeled blocks"
+        }
       ]
     },
     {
-      "id": "V03", "name": "Item and entity components and registries", "milestones": ["C1", "C5", "C6"],
+      "id": "V03",
+      "name": "Item and entity components and registries",
+      "milestones": [
+        "C1",
+        "C5",
+        "C6"
+      ],
       "mechanics": [
-        {"id": "stack_core", "name": "Item stacks with count, stack size and damage", "milestone": "C1", "impl": "partial", "evidence": "compared", "cases": ["client/windows"]},
-        {"id": "item_components", "name": "Other item components: names, lore, enchantments, attributes, potions, food, containers, books, maps, dyes, fireworks, trims and the rest", "milestone": "C1", "impl": "missing", "evidence": "none"},
-        {"id": "component_schema_1_21_5", "name": "Component and entity-data schema changes of 1.21.5", "milestone": "C1", "impl": {"java-1.21.4": "not_applicable", "java-1.21.8": "missing"}, "evidence": "none", "absent_reason": {"java-1.21.4": "introduced in 1.21.5"}},
-        {"id": "hashed_stack_predictions", "name": "Hashed item stacks in container clicks (1.21.5 and later)", "milestone": "C10", "impl": {"java-1.21.4": "not_applicable", "java-1.21.8": "implemented"}, "evidence": {"java-1.21.8": "compared"}, "absent_reason": {"java-1.21.4": "1.21.4 sends whole stacks"}, "cases": ["client/windows"]},
-        {"id": "entity_data_components", "name": "Entity data and components (variants, custom names, equipment)", "milestone": "C3", "impl": "missing", "evidence": "none"}
+        {
+          "id": "stack_core",
+          "name": "Item stacks with count, stack size and damage",
+          "milestone": "C1",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "client/windows"
+          ]
+        },
+        {
+          "id": "item_components",
+          "name": "Other item components: names, lore, enchantments, attributes, potions, food, containers, books, maps, dyes, fireworks, trims and the rest",
+          "milestone": "C1",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "component_schema_1_21_5",
+          "name": "Component and entity-data schema changes of 1.21.5",
+          "milestone": "C1",
+          "impl": {
+            "java-1.21.4": "not_applicable",
+            "java-1.21.8": "missing"
+          },
+          "evidence": "none",
+          "absent_reason": {
+            "java-1.21.4": "introduced in 1.21.5"
+          }
+        },
+        {
+          "id": "hashed_stack_predictions",
+          "name": "Hashed item stacks in container clicks (1.21.5 and later)",
+          "milestone": "C10",
+          "impl": {
+            "java-1.21.4": "not_applicable",
+            "java-1.21.8": "implemented"
+          },
+          "evidence": {
+            "java-1.21.8": "compared"
+          },
+          "absent_reason": {
+            "java-1.21.4": "1.21.4 sends whole stacks"
+          },
+          "cases": [
+            "client/windows"
+          ]
+        },
+        {
+          "id": "entity_data_components",
+          "name": "Entity data and components (variants, custom names, equipment)",
+          "milestone": "C3",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V04", "name": "Data and resource-pack negotiation", "milestones": ["C1", "C9", "C10"],
+      "id": "V04",
+      "name": "Data and resource-pack negotiation",
+      "milestones": [
+        "C1",
+        "C9",
+        "C10"
+      ],
       "mechanics": [
-        {"id": "known_packs", "name": "Known-pack exchange and registry data by name", "milestone": "C10", "impl": "partial", "evidence": "none", "note": "Vanilla pack only"},
-        {"id": "registry_sync", "name": "Synchronized registries with data for clients without the vanilla pack", "milestone": "C1", "impl": "partial", "evidence": "none", "note": "Documented minimal set"},
-        {"id": "tags", "name": "Tag synchronization and evaluation", "milestone": "C1", "impl": "partial", "evidence": "none", "note": "Biome tags 1.21.4 needs"},
-        {"id": "pack_stack", "name": "Data-pack stack, selection, ordering and reload", "milestone": "C9", "impl": "missing", "evidence": "none"},
-        {"id": "experimental_profiles", "name": "Experimental feature flags and built-in experimental packs", "milestone": "C12", "impl": "missing", "evidence": "none", "note": "minecart_improvements, redstone_experiments, trade_rebalance in both releases"},
-        {"id": "resource_packs", "name": "Server resource-pack offers and responses", "milestone": "C10", "impl": "missing", "evidence": "none"}
+        {
+          "id": "known_packs",
+          "name": "Known-pack exchange and registry data by name",
+          "milestone": "C10",
+          "impl": "partial",
+          "evidence": "none",
+          "note": "Vanilla pack only"
+        },
+        {
+          "id": "registry_sync",
+          "name": "Synchronized registries with data for clients without the vanilla pack",
+          "milestone": "C1",
+          "impl": "partial",
+          "evidence": "none",
+          "note": "Documented minimal set"
+        },
+        {
+          "id": "tags",
+          "name": "Tag synchronization and evaluation",
+          "milestone": "C1",
+          "impl": "partial",
+          "evidence": "none",
+          "note": "Biome tags 1.21.4 needs"
+        },
+        {
+          "id": "pack_stack",
+          "name": "Data-pack stack, selection, ordering and reload",
+          "milestone": "C9",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "experimental_profiles",
+          "name": "Experimental feature flags and built-in experimental packs",
+          "milestone": "C12",
+          "impl": "missing",
+          "evidence": "none",
+          "note": "minecart_improvements, redstone_experiments, trade_rebalance in both releases"
+        },
+        {
+          "id": "resource_packs",
+          "name": "Server resource-pack offers and responses",
+          "milestone": "C10",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V05", "name": "Dimensions, tickets and chunk lifecycle", "milestones": ["C2"],
+      "id": "V05",
+      "name": "Dimensions, tickets and chunk lifecycle",
+      "milestones": [
+        "C2"
+      ],
       "mechanics": [
-        {"id": "overworld", "name": "The overworld dimension", "milestone": "C2", "impl": "partial", "evidence": "none", "note": "Flat floor, plains"},
-        {"id": "other_dimensions", "name": "The Nether, the End and custom dimensions with dimension-scoped state", "milestone": "C2", "impl": "missing", "evidence": "none"},
-        {"id": "ticket_types", "name": "Vanilla ticket types (player, forced, portal, spawn, post-teleport and others)", "milestone": "C2", "impl": "partial", "evidence": "none", "deviations": ["radius tickets with a load radius instead of ticket types"]},
-        {"id": "ticket_levels", "name": "Ticket level propagation and entity-ticking versus block-ticking chunks", "milestone": "C2", "impl": "missing", "evidence": "none"},
-        {"id": "unload_reload", "name": "Unload and reload of chunks with pending ticks, block events and entities", "milestone": "C2", "impl": "partial", "evidence": "none", "deviations": ["pending ticks keep absolute due times while unloaded"]},
-        {"id": "view_and_simulation_distance", "name": "View distance and simulation distance", "milestone": "C2", "impl": "partial", "evidence": "none"},
-        {"id": "chunk_generation_status", "name": "Chunk generation stages and publication", "milestone": "C7", "impl": "missing", "evidence": "none"}
+        {
+          "id": "overworld",
+          "name": "The overworld dimension",
+          "milestone": "C2",
+          "impl": "partial",
+          "evidence": "none",
+          "note": "Flat floor, plains"
+        },
+        {
+          "id": "other_dimensions",
+          "name": "The Nether, the End and custom dimensions with dimension-scoped state",
+          "milestone": "C2",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "ticket_types",
+          "name": "Vanilla ticket types (player, forced, portal, spawn, post-teleport and others)",
+          "milestone": "C2",
+          "impl": "partial",
+          "evidence": "none",
+          "deviations": [
+            "radius tickets with a load radius instead of ticket types"
+          ]
+        },
+        {
+          "id": "ticket_levels",
+          "name": "Ticket level propagation and entity-ticking versus block-ticking chunks",
+          "milestone": "C2",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "unload_reload",
+          "name": "Unload and reload of chunks with pending ticks, block events and entities",
+          "milestone": "C2",
+          "impl": "partial",
+          "evidence": "none",
+          "deviations": [
+            "pending ticks keep absolute due times while unloaded"
+          ]
+        },
+        {
+          "id": "view_and_simulation_distance",
+          "name": "View distance and simulation distance",
+          "milestone": "C2",
+          "impl": "partial",
+          "evidence": "none"
+        },
+        {
+          "id": "chunk_generation_status",
+          "name": "Chunk generation stages and publication",
+          "milestone": "C7",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V06", "name": "Lighting and environmental state", "milestones": ["C2", "C7"],
+      "id": "V06",
+      "name": "Lighting and environmental state",
+      "milestones": [
+        "C2",
+        "C7"
+      ],
       "mechanics": [
-        {"id": "sky_light", "name": "Sky light propagation", "milestone": "C2", "impl": "missing", "evidence": "none", "deviations": ["everything is sent fully lit"]},
-        {"id": "block_light", "name": "Block light emission and propagation", "milestone": "C2", "impl": "missing", "evidence": "none"},
-        {"id": "heightmaps", "name": "Heightmaps", "milestone": "C2", "impl": "partial", "evidence": "none", "note": "Sent for the flat world"},
-        {"id": "time_of_day", "name": "Day-night cycle and time advancement", "milestone": "C2", "impl": "partial", "evidence": "none", "note": "World age is sent; daylight stays fixed"},
-        {"id": "weather", "name": "Rain, thunder, snow and their effects", "milestone": "C2", "impl": "missing", "evidence": "none"},
-        {"id": "lightning", "name": "Lightning strikes and lightning rods", "milestone": "C2", "impl": "missing", "evidence": "none"}
+        {
+          "id": "sky_light",
+          "name": "Sky light propagation",
+          "milestone": "C2",
+          "impl": "missing",
+          "evidence": "none",
+          "deviations": [
+            "everything is sent fully lit"
+          ]
+        },
+        {
+          "id": "block_light",
+          "name": "Block light emission and propagation",
+          "milestone": "C2",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "heightmaps",
+          "name": "Heightmaps",
+          "milestone": "C2",
+          "impl": "partial",
+          "evidence": "none",
+          "note": "Sent for the flat world"
+        },
+        {
+          "id": "time_of_day",
+          "name": "Day-night cycle and time advancement",
+          "milestone": "C2",
+          "impl": "partial",
+          "evidence": "none",
+          "note": "World age is sent; daylight stays fixed"
+        },
+        {
+          "id": "weather",
+          "name": "Rain, thunder, snow and their effects",
+          "milestone": "C2",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "lightning",
+          "name": "Lightning strikes and lightning rods",
+          "milestone": "C2",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V07", "name": "RNG and global event order", "milestones": ["C0", "C2", "C4"],
+      "id": "V07",
+      "name": "RNG and global event order",
+      "milestones": [
+        "C0",
+        "C2",
+        "C4"
+      ],
       "mechanics": [
-        {"id": "scheduled_tick_order", "name": "Scheduled-tick order and limits", "milestone": "C4", "impl": "implemented", "evidence": "compared", "tier": "L0", "cases": ["trace/tick_priority", "trace/diode_priority"]},
-        {"id": "block_event_order", "name": "Block-event FIFO", "milestone": "C4", "impl": "implemented", "evidence": "compared", "tier": "L0", "cases": ["trace/piston_timing"]},
-        {"id": "neighbor_update_order", "name": "Neighbor and shape update order and the chain limit", "milestone": "C4", "impl": "implemented", "evidence": "compared", "tier": "L0", "cases": ["trace/chain_limit", "trace/vertical_slice"]},
-        {"id": "block_entity_order", "name": "Block-entity tick order", "milestone": "C4", "impl": "implemented", "evidence": "compared", "tier": "L0", "cases": ["trace/hopper_competition", "trace/piston_slime"]},
-        {"id": "entity_order", "name": "Entity tick order", "milestone": "C3", "impl": "partial", "evidence": "none", "deviations": ["ascending id; not compared with the target version"]},
-        {"id": "level_random", "name": "The level random source and its draw order", "milestone": "C0", "impl": "missing", "evidence": "none", "deviations": ["per-section derived streams"]},
-        {"id": "random_tick_order", "name": "Random-tick chunk order and positions", "milestone": "C2", "impl": "partial", "evidence": "none", "deviations": ["chunks in coordinate order instead of the shuffled order"]}
+        {
+          "id": "scheduled_tick_order",
+          "name": "Scheduled-tick order and limits",
+          "milestone": "C4",
+          "impl": "implemented",
+          "evidence": "compared",
+          "tier": "L0",
+          "cases": [
+            "trace/tick_priority",
+            "trace/diode_priority"
+          ]
+        },
+        {
+          "id": "block_event_order",
+          "name": "Block-event FIFO",
+          "milestone": "C4",
+          "impl": "implemented",
+          "evidence": "compared",
+          "tier": "L0",
+          "cases": [
+            "trace/piston_timing"
+          ]
+        },
+        {
+          "id": "neighbor_update_order",
+          "name": "Neighbor and shape update order and the chain limit",
+          "milestone": "C4",
+          "impl": "implemented",
+          "evidence": "compared",
+          "tier": "L0",
+          "cases": [
+            "trace/chain_limit",
+            "trace/vertical_slice"
+          ]
+        },
+        {
+          "id": "block_entity_order",
+          "name": "Block-entity tick order",
+          "milestone": "C4",
+          "impl": "implemented",
+          "evidence": "compared",
+          "tier": "L0",
+          "cases": [
+            "trace/hopper_competition",
+            "trace/piston_slime"
+          ]
+        },
+        {
+          "id": "entity_order",
+          "name": "Entity tick order",
+          "milestone": "C3",
+          "impl": "partial",
+          "evidence": "reference_only",
+          "deviations": [
+            "ascending id; not compared with the target version"
+          ],
+          "cases": [
+            "trace/item_hopper_pickup"
+          ]
+        },
+        {
+          "id": "level_random",
+          "name": "The level random source and its draw order",
+          "milestone": "C0",
+          "impl": "missing",
+          "evidence": "reference_only",
+          "deviations": [
+            "per-section derived streams"
+          ],
+          "cases": [
+            "trace/item_drop_piston",
+            "trace/tnt_redstone_ignition"
+          ],
+          "note": "Draw counts of the level random recorded per stage"
+        },
+        {
+          "id": "random_tick_order",
+          "name": "Random-tick chunk order and positions",
+          "milestone": "C2",
+          "impl": "partial",
+          "evidence": "none",
+          "deviations": [
+            "chunks in coordinate order instead of the shuffled order"
+          ]
+        }
       ]
     },
     {
-      "id": "V08", "name": "Terrain and biomes", "milestones": ["C7"],
+      "id": "V08",
+      "name": "Terrain and biomes",
+      "milestones": [
+        "C7"
+      ],
       "mechanics": [
-        {"id": "noise_terrain", "name": "Same-seed noise terrain", "milestone": "C7", "impl": "missing", "evidence": "none"},
-        {"id": "biome_source", "name": "Biome allocation", "milestone": "C7", "impl": "missing", "evidence": "none", "note": "Every column is plains"},
-        {"id": "carvers_aquifers", "name": "Caves, carvers and aquifers", "milestone": "C7", "impl": "missing", "evidence": "none"},
-        {"id": "surface_rules", "name": "Surface rules", "milestone": "C7", "impl": "missing", "evidence": "none"},
-        {"id": "world_presets", "name": "World presets (default, flat, large biomes, amplified, single biome, debug)", "milestone": "C7", "impl": "partial", "evidence": "none", "note": "A one-layer stone floor only"}
+        {
+          "id": "noise_terrain",
+          "name": "Same-seed noise terrain",
+          "milestone": "C7",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "biome_source",
+          "name": "Biome allocation",
+          "milestone": "C7",
+          "impl": "missing",
+          "evidence": "none",
+          "note": "Every column is plains"
+        },
+        {
+          "id": "carvers_aquifers",
+          "name": "Caves, carvers and aquifers",
+          "milestone": "C7",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "surface_rules",
+          "name": "Surface rules",
+          "milestone": "C7",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "world_presets",
+          "name": "World presets (default, flat, large biomes, amplified, single biome, debug)",
+          "milestone": "C7",
+          "impl": "partial",
+          "evidence": "none",
+          "note": "A one-layer stone floor only"
+        }
       ]
     },
     {
-      "id": "V09", "name": "Structures and decoration", "milestones": ["C7", "C5"],
+      "id": "V09",
+      "name": "Structures and decoration",
+      "milestones": [
+        "C7",
+        "C5"
+      ],
       "mechanics": [
-        {"id": "features", "name": "Placed features: ores, trees, vegetation, lakes, geodes and others", "milestone": "C7", "impl": "missing", "evidence": "none"},
-        {"id": "structures", "name": "Structures and jigsaw placement", "milestone": "C7", "impl": "missing", "evidence": "none"},
-        {"id": "structure_loot", "name": "Structure loot and archaeology", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "structure_templates", "name": "Structure templates and structure blocks", "milestone": "C9", "impl": "missing", "evidence": "none"}
+        {
+          "id": "features",
+          "name": "Placed features: ores, trees, vegetation, lakes, geodes and others",
+          "milestone": "C7",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "structures",
+          "name": "Structures and jigsaw placement",
+          "milestone": "C7",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "structure_loot",
+          "name": "Structure loot and archaeology",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "structure_templates",
+          "name": "Structure templates and structure blocks",
+          "milestone": "C9",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V10", "name": "Portals and dimension travel", "milestones": ["C7"],
+      "id": "V10",
+      "name": "Portals and dimension travel",
+      "milestones": [
+        "C7"
+      ],
       "mechanics": [
-        {"id": "nether_portals", "name": "Nether portal creation, search, scaling and arrival", "milestone": "C7", "impl": "missing", "evidence": "none"},
-        {"id": "end_portals", "name": "End portals, strongholds and End gateways", "milestone": "C7", "impl": "missing", "evidence": "none"},
-        {"id": "respawn_points", "name": "Beds, respawn anchors and spawn points", "milestone": "C6", "impl": "partial", "evidence": "compared", "cases": ["client/vitals"], "deviations": ["respawn at the exact world spawn; the target version picks a random position around it"]},
-        {"id": "entity_travel", "name": "Players and entities changing dimension", "milestone": "C7", "impl": "missing", "evidence": "none"}
+        {
+          "id": "nether_portals",
+          "name": "Nether portal creation, search, scaling and arrival",
+          "milestone": "C7",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "end_portals",
+          "name": "End portals, strongholds and End gateways",
+          "milestone": "C7",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "respawn_points",
+          "name": "Beds, respawn anchors and spawn points",
+          "milestone": "C6",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "client/vitals"
+          ],
+          "deviations": [
+            "respawn at the exact world spawn; the target version picks a random position around it"
+          ]
+        },
+        {
+          "id": "entity_travel",
+          "name": "Players and entities changing dimension",
+          "milestone": "C7",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V11", "name": "Common building blocks", "milestones": ["C5"],
+      "id": "V11",
+      "name": "Common building blocks",
+      "milestones": [
+        "C5"
+      ],
       "mechanics": [
-        {"id": "orientation_and_shapes", "name": "Placement orientation and shapes: stairs, slabs, walls, fences, panes, doors, beds", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "multi_block", "name": "Two-part blocks: doors, beds, tall plants", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "block_entity_data", "name": "Signs, banners, heads, pots and other block-entity data", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "weathering", "name": "Copper weathering, waxing and scraping", "milestone": "C5", "impl": "missing", "evidence": "none"}
+        {
+          "id": "orientation_and_shapes",
+          "name": "Placement orientation and shapes: stairs, slabs, walls, fences, panes, doors, beds",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "multi_block",
+          "name": "Two-part blocks: doors, beds, tall plants",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "block_entity_data",
+          "name": "Signs, banners, heads, pots and other block-entity data",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "weathering",
+          "name": "Copper weathering, waxing and scraping",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V12", "name": "Fluids, fire and falling blocks", "milestones": ["C3", "C5"],
+      "id": "V12",
+      "name": "Fluids, fire and falling blocks",
+      "milestones": [
+        "C3",
+        "C5"
+      ],
       "mechanics": [
-        {"id": "water", "name": "Water flow, sources and washing away", "milestone": "C5", "impl": "partial", "evidence": "compared", "tier": "L0", "cases": ["trace/water_channel", "trace/water_drop", "trace/water_washes"]},
-        {"id": "lava", "name": "Lava flow and lava-water interactions", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "waterlogging", "name": "Waterlogged blocks", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "buckets", "name": "Filling and emptying buckets", "milestone": "C5", "impl": "partial", "evidence": "none", "note": "Placing water from a bucket"},
-        {"id": "fire", "name": "Fire spread, burning and extinguishing", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "snow_and_ice", "name": "Snow, ice, freezing and melting", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "gravity_blocks", "name": "Falling blocks: sand, gravel, concrete powder, anvils, dripstone, scaffolding", "milestone": "C3", "impl": "missing", "evidence": "none"}
+        {
+          "id": "water",
+          "name": "Water flow, sources and washing away",
+          "milestone": "C5",
+          "impl": "partial",
+          "evidence": "compared",
+          "tier": "L0",
+          "cases": [
+            "trace/water_channel",
+            "trace/water_drop",
+            "trace/water_washes"
+          ]
+        },
+        {
+          "id": "lava",
+          "name": "Lava flow and lava-water interactions",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "waterlogging",
+          "name": "Waterlogged blocks",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "buckets",
+          "name": "Filling and emptying buckets",
+          "milestone": "C5",
+          "impl": "partial",
+          "evidence": "none",
+          "note": "Placing water from a bucket"
+        },
+        {
+          "id": "fire",
+          "name": "Fire spread, burning and extinguishing",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "snow_and_ice",
+          "name": "Snow, ice, freezing and melting",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "gravity_blocks",
+          "name": "Falling blocks: sand, gravel, concrete powder, anvils, dripstone, scaffolding",
+          "milestone": "C3",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V13", "name": "Crops, growth and ecology", "milestones": ["C5"],
+      "id": "V13",
+      "name": "Crops, growth and ecology",
+      "milestones": [
+        "C5"
+      ],
       "mechanics": [
-        {"id": "wheat", "name": "Wheat growth", "milestone": "C5", "impl": "partial", "evidence": "none", "deviations": ["ignores light, farmland and hydration"]},
-        {"id": "farmland", "name": "Farmland, hydration and trampling", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "other_crops", "name": "Other crops and plants: carrots, potatoes, beetroots, stems, sugar cane, cactus, bamboo, kelp, cocoa, berries, nether wart, chorus", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "trees", "name": "Saplings, trees and leaf decay", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "spreading", "name": "Grass, mycelium, nylium, moss and sculk spread", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "bone_meal", "name": "Bone meal", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "coral", "name": "Coral dying without water", "milestone": "C4", "impl": "missing", "evidence": "none"}
+        {
+          "id": "wheat",
+          "name": "Wheat growth",
+          "milestone": "C5",
+          "impl": "partial",
+          "evidence": "none",
+          "deviations": [
+            "ignores light, farmland and hydration"
+          ]
+        },
+        {
+          "id": "farmland",
+          "name": "Farmland, hydration and trampling",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "other_crops",
+          "name": "Other crops and plants: carrots, potatoes, beetroots, stems, sugar cane, cactus, bamboo, kelp, cocoa, berries, nether wart, chorus",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "trees",
+          "name": "Saplings, trees and leaf decay",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "spreading",
+          "name": "Grass, mycelium, nylium, moss and sculk spread",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "bone_meal",
+          "name": "Bone meal",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "coral",
+          "name": "Coral dying without water",
+          "milestone": "C4",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V14", "name": "Redstone sources and signal consumers", "milestones": ["C4"],
+      "id": "V14",
+      "name": "Redstone sources and signal consumers",
+      "milestones": [
+        "C4"
+      ],
       "mechanics": [
-        {"id": "dust", "name": "Redstone dust power, shapes and steps", "milestone": "C4", "impl": "implemented", "evidence": "compared", "tier": "L0", "cases": ["trace/dust_shape", "trace/dust_steps", "trace/weak_power"]},
-        {"id": "conductors", "name": "Strong and weak power through solid blocks", "milestone": "C4", "impl": "partial", "evidence": "compared", "tier": "L0", "cases": ["trace/strong_power", "trace/weak_power"], "note": "Modeled conductors only"},
-        {"id": "diodes", "name": "Repeaters and comparators", "milestone": "C4", "impl": "implemented", "evidence": "compared", "tier": "L0", "cases": ["trace/repeater_lock", "trace/comparator_signal", "trace/comparator_priority"]},
-        {"id": "observer", "name": "Observers", "milestone": "C4", "impl": "implemented", "evidence": "compared", "tier": "L0", "cases": ["trace/observer_pulse", "trace/observer_clock", "trace/observer_moved"]},
-        {"id": "lever_and_lamp", "name": "Levers and redstone lamps", "milestone": "C4", "impl": "implemented", "evidence": "compared", "tier": "L0", "cases": ["trace/lamp_timing", "trace/lever_attachment"]},
-        {"id": "support", "name": "Support of components", "milestone": "C4", "impl": "implemented", "evidence": "compared", "tier": "L0", "cases": ["trace/support"]},
-        {"id": "torches", "name": "Redstone torches and burnout", "milestone": "C4", "impl": "missing", "evidence": "none"},
-        {"id": "buttons_and_plates", "name": "Buttons, pressure plates, tripwire and targets", "milestone": "C4", "impl": "missing", "evidence": "none"},
-        {"id": "sensors", "name": "Daylight detectors, sculk sensors, lightning rods and other sources", "milestone": "C4", "impl": "missing", "evidence": "none"},
-        {"id": "consumers", "name": "Doors, trapdoors, fence gates, note blocks, bells, copper bulbs and other consumers", "milestone": "C4", "impl": "missing", "evidence": "none"},
-        {"id": "rails", "name": "Rails, powered, detector and activator rails", "milestone": "C4", "impl": "missing", "evidence": "none"},
-        {"id": "comparator_sources", "name": "Comparator readings of every container and special block", "milestone": "C4", "impl": "partial", "evidence": "compared", "cases": ["trace/double_chest"], "note": "Chests and hoppers"}
+        {
+          "id": "dust",
+          "name": "Redstone dust power, shapes and steps",
+          "milestone": "C4",
+          "impl": "implemented",
+          "evidence": "compared",
+          "tier": "L0",
+          "cases": [
+            "trace/dust_shape",
+            "trace/dust_steps",
+            "trace/weak_power"
+          ]
+        },
+        {
+          "id": "conductors",
+          "name": "Strong and weak power through solid blocks",
+          "milestone": "C4",
+          "impl": "partial",
+          "evidence": "compared",
+          "tier": "L0",
+          "cases": [
+            "trace/strong_power",
+            "trace/weak_power"
+          ],
+          "note": "Modeled conductors only"
+        },
+        {
+          "id": "diodes",
+          "name": "Repeaters and comparators",
+          "milestone": "C4",
+          "impl": "implemented",
+          "evidence": "compared",
+          "tier": "L0",
+          "cases": [
+            "trace/repeater_lock",
+            "trace/comparator_signal",
+            "trace/comparator_priority"
+          ]
+        },
+        {
+          "id": "observer",
+          "name": "Observers",
+          "milestone": "C4",
+          "impl": "implemented",
+          "evidence": "compared",
+          "tier": "L0",
+          "cases": [
+            "trace/observer_pulse",
+            "trace/observer_clock",
+            "trace/observer_moved"
+          ]
+        },
+        {
+          "id": "lever_and_lamp",
+          "name": "Levers and redstone lamps",
+          "milestone": "C4",
+          "impl": "implemented",
+          "evidence": "compared",
+          "tier": "L0",
+          "cases": [
+            "trace/lamp_timing",
+            "trace/lever_attachment"
+          ]
+        },
+        {
+          "id": "support",
+          "name": "Support of components",
+          "milestone": "C4",
+          "impl": "implemented",
+          "evidence": "compared",
+          "tier": "L0",
+          "cases": [
+            "trace/support"
+          ]
+        },
+        {
+          "id": "torches",
+          "name": "Redstone torches and burnout",
+          "milestone": "C4",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "buttons_and_plates",
+          "name": "Buttons, pressure plates, tripwire and targets",
+          "milestone": "C4",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "sensors",
+          "name": "Daylight detectors, sculk sensors, lightning rods and other sources",
+          "milestone": "C4",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "consumers",
+          "name": "Doors, trapdoors, fence gates, note blocks, bells, copper bulbs and other consumers",
+          "milestone": "C4",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "rails",
+          "name": "Rails, powered, detector and activator rails",
+          "milestone": "C4",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "comparator_sources",
+          "name": "Comparator readings of every container and special block",
+          "milestone": "C4",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/double_chest"
+          ],
+          "note": "Chests and hoppers"
+        }
       ]
     },
     {
-      "id": "V15", "name": "Pistons and moving structures", "milestones": ["C3", "C4"],
+      "id": "V15",
+      "name": "Pistons and moving structures",
+      "milestones": [
+        "C3",
+        "C4"
+      ],
       "mechanics": [
-        {"id": "push_pull", "name": "Pushing, pulling and quasi-connectivity", "milestone": "C4", "impl": "partial", "evidence": "compared", "tier": "L0", "cases": ["trace/piston_timing", "trace/quasi_connectivity", "trace/piston_observed"]},
-        {"id": "slime", "name": "Slime block structures", "milestone": "C4", "impl": "implemented", "evidence": "compared", "cases": ["trace/piston_slime"]},
-        {"id": "honey", "name": "Honey blocks and slime-honey separation", "milestone": "C4", "impl": "missing", "evidence": "none"},
-        {"id": "destroyed_blocks", "name": "Blocks destroyed by pistons and their drops", "milestone": "C4", "impl": "partial", "evidence": "compared", "cases": ["trace/piston_destroys"], "deviations": ["drops without random offsets"]},
-        {"id": "entity_pushing", "name": "Moving blocks pushing entities and players", "milestone": "C3", "impl": "partial", "evidence": "none", "deviations": ["item entities only"]},
-        {"id": "push_reactions", "name": "Push reactions of every block (immovable, destroy, block entities)", "milestone": "C4", "impl": "partial", "evidence": "none", "note": "Modeled blocks only"}
+        {
+          "id": "push_pull",
+          "name": "Pushing, pulling and quasi-connectivity",
+          "milestone": "C4",
+          "impl": "partial",
+          "evidence": "compared",
+          "tier": "L0",
+          "cases": [
+            "trace/piston_timing",
+            "trace/quasi_connectivity",
+            "trace/piston_observed"
+          ]
+        },
+        {
+          "id": "slime",
+          "name": "Slime block structures",
+          "milestone": "C4",
+          "impl": "implemented",
+          "evidence": "compared",
+          "cases": [
+            "trace/piston_slime"
+          ]
+        },
+        {
+          "id": "honey",
+          "name": "Honey blocks and slime-honey separation",
+          "milestone": "C4",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "destroyed_blocks",
+          "name": "Blocks destroyed by pistons and their drops",
+          "milestone": "C4",
+          "impl": "partial",
+          "evidence": "mismatch",
+          "cases": [
+            "trace/piston_destroys",
+            "trace/item_drop_piston"
+          ],
+          "deviations": [
+            "drops without random offsets, after the block instead of before"
+          ]
+        },
+        {
+          "id": "entity_pushing",
+          "name": "Moving blocks pushing entities and players",
+          "milestone": "C3",
+          "impl": "partial",
+          "evidence": "reference_only",
+          "deviations": [
+            "item entities only"
+          ],
+          "cases": [
+            "trace/item_piston_push"
+          ]
+        },
+        {
+          "id": "push_reactions",
+          "name": "Push reactions of every block (immovable, destroy, block entities)",
+          "milestone": "C4",
+          "impl": "partial",
+          "evidence": "none",
+          "note": "Modeled blocks only"
+        }
       ]
     },
     {
-      "id": "V16", "name": "Automation and storage blocks", "milestones": ["C4", "C5"],
+      "id": "V16",
+      "name": "Automation and storage blocks",
+      "milestones": [
+        "C4",
+        "C5"
+      ],
       "mechanics": [
-        {"id": "chests", "name": "Chests and double chests", "milestone": "C4", "impl": "implemented", "evidence": "compared", "tier": "L0", "cases": ["trace/double_chest", "trace/double_chest_left_input", "client/chests"]},
-        {"id": "hoppers", "name": "Hopper transfers, cooldowns and pickup", "milestone": "C4", "impl": "implemented", "evidence": "compared", "tier": "L0", "cases": ["trace/hopper_chain", "trace/hopper_competition", "trace/hopper_chained"]},
-        {"id": "dispensers_droppers", "name": "Dispensers and droppers with dispense behaviors", "milestone": "C4", "impl": "missing", "evidence": "none"},
-        {"id": "crafter", "name": "The Crafter", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "other_storage", "name": "Barrels, shulker boxes, ender chests, trapped chests, chiseled bookshelves, composters", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "component_aware_transfer", "name": "Component-aware automation (stacking of items with components)", "milestone": "C5", "impl": "partial", "evidence": "none", "note": "Damage is the only component"}
+        {
+          "id": "chests",
+          "name": "Chests and double chests",
+          "milestone": "C4",
+          "impl": "implemented",
+          "evidence": "compared",
+          "tier": "L0",
+          "cases": [
+            "trace/double_chest",
+            "trace/double_chest_left_input",
+            "client/chests"
+          ]
+        },
+        {
+          "id": "hoppers",
+          "name": "Hopper transfers, cooldowns and pickup",
+          "milestone": "C4",
+          "impl": "implemented",
+          "evidence": "compared",
+          "tier": "L0",
+          "cases": [
+            "trace/hopper_chain",
+            "trace/hopper_competition",
+            "trace/hopper_chained"
+          ]
+        },
+        {
+          "id": "dispensers_droppers",
+          "name": "Dispensers and droppers with dispense behaviors",
+          "milestone": "C4",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "crafter",
+          "name": "The Crafter",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "other_storage",
+          "name": "Barrels, shulker boxes, ender chests, trapped chests, chiseled bookshelves, composters",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "component_aware_transfer",
+          "name": "Component-aware automation (stacking of items with components)",
+          "milestone": "C5",
+          "impl": "partial",
+          "evidence": "none",
+          "note": "Damage is the only component"
+        }
       ]
     },
     {
-      "id": "V17", "name": "TNT and explosions", "milestones": ["C3", "C4"],
+      "id": "V17",
+      "name": "TNT and explosions",
+      "milestones": [
+        "C3",
+        "C4"
+      ],
       "mechanics": [
-        {"id": "tnt_block", "name": "TNT placement and breaking", "milestone": "C3", "impl": "missing", "evidence": "none", "cases_planned": ["TNT-01"]},
-        {"id": "ignition", "name": "Ignition by redstone, fire, flint and steel, fire charges, burning projectiles and explosions", "milestone": "C3", "impl": "missing", "evidence": "none", "cases_planned": ["TNT-01"]},
-        {"id": "primed_tnt", "name": "Primed TNT entities: fuse, motion, collision and removal", "milestone": "C3", "impl": "missing", "evidence": "none", "cases_planned": ["TNT-02", "TNT-03"]},
-        {"id": "explosions", "name": "Explosions: affected blocks, resistance, fluids, drops, chain reactions, damage and knockback", "milestone": "C3", "impl": "missing", "evidence": "none", "cases_planned": ["TNT-04"]},
-        {"id": "tnt_persistence", "name": "Live fuses across save, reload and unload", "milestone": "C3", "impl": "missing", "evidence": "none", "cases_planned": ["TNT-05"]},
-        {"id": "gamerule_tnt_explodes", "name": "The tntExplodes game rule", "milestone": "C3", "impl": {"java-1.21.4": "not_applicable", "java-1.21.8": "missing"}, "evidence": "none", "absent_reason": {"java-1.21.4": "introduced in 1.21.5"}, "cases_planned": ["TNT-06"]},
-        {"id": "other_explosions", "name": "Creeper, bed, respawn anchor, end crystal, wither and wind charge explosions", "milestone": "C8", "impl": "missing", "evidence": "none"}
+        {
+          "id": "tnt_block",
+          "name": "TNT placement and breaking",
+          "milestone": "C3",
+          "impl": "missing",
+          "evidence": "reference_only",
+          "cases_planned": [
+            "TNT-01"
+          ],
+          "cases": [
+            "trace/tnt_redstone_ignition"
+          ]
+        },
+        {
+          "id": "ignition",
+          "name": "Ignition by redstone, fire, flint and steel, fire charges, burning projectiles and explosions",
+          "milestone": "C3",
+          "impl": "missing",
+          "evidence": "reference_only",
+          "cases_planned": [
+            "TNT-01"
+          ],
+          "cases": [
+            "trace/tnt_redstone_ignition"
+          ]
+        },
+        {
+          "id": "primed_tnt",
+          "name": "Primed TNT entities: fuse, motion, collision and removal",
+          "milestone": "C3",
+          "impl": "missing",
+          "evidence": "reference_only",
+          "cases_planned": [
+            "TNT-02",
+            "TNT-03"
+          ],
+          "cases": [
+            "trace/tnt_redstone_ignition"
+          ]
+        },
+        {
+          "id": "explosions",
+          "name": "Explosions: affected blocks, resistance, fluids, drops, chain reactions, damage and knockback",
+          "milestone": "C3",
+          "impl": "missing",
+          "evidence": "reference_only",
+          "cases_planned": [
+            "TNT-04"
+          ],
+          "cases": [
+            "trace/tnt_redstone_ignition"
+          ]
+        },
+        {
+          "id": "tnt_persistence",
+          "name": "Live fuses across save, reload and unload",
+          "milestone": "C3",
+          "impl": "missing",
+          "evidence": "none",
+          "cases_planned": [
+            "TNT-05"
+          ]
+        },
+        {
+          "id": "gamerule_tnt_explodes",
+          "name": "The tntExplodes game rule",
+          "milestone": "C3",
+          "impl": {
+            "java-1.21.4": "not_applicable",
+            "java-1.21.8": "missing"
+          },
+          "evidence": "none",
+          "absent_reason": {
+            "java-1.21.4": "introduced in 1.21.5"
+          },
+          "cases_planned": [
+            "TNT-06"
+          ]
+        },
+        {
+          "id": "other_explosions",
+          "name": "Creeper, bed, respawn anchor, end crystal, wither and wind charge explosions",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V18", "name": "Technical machines and vanilla quirks", "milestones": ["C4", "C7"],
+      "id": "V18",
+      "name": "Technical machines and vanilla quirks",
+      "milestones": [
+        "C4",
+        "C7"
+      ],
       "mechanics": [
-        {"id": "tnt_duplication", "name": "TNT duplication with a named design", "milestone": "C4", "impl": "missing", "evidence": "none", "cases_planned": ["TNT-07", "TNT-08"]},
-        {"id": "flying_machines", "name": "Flying machines", "milestone": "C4", "impl": "missing", "evidence": "none"},
-        {"id": "chunk_loaders", "name": "Chunk loaders", "milestone": "C7", "impl": "missing", "evidence": "none"},
-        {"id": "gravity_block_machines", "name": "Gravity-block machines and duplication", "milestone": "C4", "impl": "missing", "evidence": "none"},
-        {"id": "bedrock_breaking", "name": "Bedrock breaking", "milestone": "C4", "impl": "missing", "evidence": "none"},
-        {"id": "item_sorters_and_clocks", "name": "Item sorters, clocks and pulse circuits", "milestone": "C4", "impl": "partial", "evidence": "compared", "cases": ["trace/observer_clock", "trace/hopper_chained"], "note": "Component cases, not whole machines"}
+        {
+          "id": "tnt_duplication",
+          "name": "TNT duplication with a named design",
+          "milestone": "C4",
+          "impl": "missing",
+          "evidence": "none",
+          "cases_planned": [
+            "TNT-07",
+            "TNT-08"
+          ]
+        },
+        {
+          "id": "flying_machines",
+          "name": "Flying machines",
+          "milestone": "C4",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "chunk_loaders",
+          "name": "Chunk loaders",
+          "milestone": "C7",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "gravity_block_machines",
+          "name": "Gravity-block machines and duplication",
+          "milestone": "C4",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "bedrock_breaking",
+          "name": "Bedrock breaking",
+          "milestone": "C4",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "item_sorters_and_clocks",
+          "name": "Item sorters, clocks and pulse circuits",
+          "milestone": "C4",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/observer_clock",
+            "trace/hopper_chained"
+          ],
+          "note": "Component cases, not whole machines"
+        }
       ]
     },
     {
-      "id": "V19", "name": "General entity lifecycle", "milestones": ["C3"],
+      "id": "V19",
+      "name": "General entity lifecycle",
+      "milestones": [
+        "C3"
+      ],
       "mechanics": [
-        {"id": "entity_model", "name": "Typed entities with UUIDs, attributes and components", "milestone": "C3", "impl": "partial", "evidence": "none", "deviations": ["the engine models item entities only"]},
-        {"id": "tracking", "name": "Entity tracking ranges, metadata and visibility for clients", "milestone": "C10", "impl": "partial", "evidence": "none", "note": "Items and players"},
-        {"id": "passengers_and_leashes", "name": "Passengers and leashes", "milestone": "C3", "impl": "missing", "evidence": "none"},
-        {"id": "entity_persistence", "name": "Entity persistence across save and reload", "milestone": "C3", "impl": "partial", "evidence": "none", "note": "Item entities"},
-        {"id": "chunk_ownership", "name": "Entity sections, migration between chunks and unloaded chunks", "milestone": "C3", "impl": "partial", "evidence": "none", "deviations": ["items cannot enter unloaded chunks"]}
+        {
+          "id": "entity_model",
+          "name": "Typed entities with UUIDs, attributes and components",
+          "milestone": "C3",
+          "impl": "partial",
+          "evidence": "none",
+          "deviations": [
+            "the engine models item entities only"
+          ]
+        },
+        {
+          "id": "tracking",
+          "name": "Entity tracking ranges, metadata and visibility for clients",
+          "milestone": "C10",
+          "impl": "partial",
+          "evidence": "none",
+          "note": "Items and players"
+        },
+        {
+          "id": "passengers_and_leashes",
+          "name": "Passengers and leashes",
+          "milestone": "C3",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "entity_persistence",
+          "name": "Entity persistence across save and reload",
+          "milestone": "C3",
+          "impl": "partial",
+          "evidence": "none",
+          "note": "Item entities"
+        },
+        {
+          "id": "chunk_ownership",
+          "name": "Entity sections, migration between chunks and unloaded chunks",
+          "milestone": "C3",
+          "impl": "partial",
+          "evidence": "none",
+          "deviations": [
+            "items cannot enter unloaded chunks"
+          ]
+        }
       ]
     },
     {
-      "id": "V20", "name": "Item entities and experience", "milestones": ["C3", "C6"],
+      "id": "V20",
+      "name": "Item entities and experience",
+      "milestones": [
+        "C3",
+        "C6"
+      ],
       "mechanics": [
-        {"id": "item_physics", "name": "Item entity motion and collision", "milestone": "C3", "impl": "partial", "evidence": "none", "deviations": ["fixed-point motion; not compared with the target version", "no water currents or buoyancy"]},
-        {"id": "merging", "name": "Item merging", "milestone": "C3", "impl": "missing", "evidence": "none"},
-        {"id": "pickup", "name": "Pickup by players and hoppers, pickup delays", "milestone": "C3", "impl": "partial", "evidence": "compared", "cases": ["client/windows", "client/vitals"]},
-        {"id": "despawn", "name": "Despawning", "milestone": "C3", "impl": "partial", "evidence": "documented"},
-        {"id": "experience_orbs", "name": "Experience orbs", "milestone": "C6", "impl": "missing", "evidence": "none"}
+        {
+          "id": "item_physics",
+          "name": "Item entity motion and collision",
+          "milestone": "C3",
+          "impl": "partial",
+          "evidence": "mismatch",
+          "deviations": [
+            "fixed-point motion; not compared with the target version",
+            "no water currents or buoyancy"
+          ],
+          "cases": [
+            "trace/item_hopper_pickup",
+            "trace/item_piston_push",
+            "trace/item_water_current"
+          ]
+        },
+        {
+          "id": "merging",
+          "name": "Item merging",
+          "milestone": "C3",
+          "impl": "missing",
+          "evidence": "reference_only",
+          "cases": [
+            "trace/tnt_redstone_ignition"
+          ],
+          "note": "The official explosion drops nine cobblestone as one stack"
+        },
+        {
+          "id": "pickup",
+          "name": "Pickup by players and hoppers, pickup delays",
+          "milestone": "C3",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "client/windows",
+            "client/vitals"
+          ]
+        },
+        {
+          "id": "despawn",
+          "name": "Despawning",
+          "milestone": "C3",
+          "impl": "partial",
+          "evidence": "documented"
+        },
+        {
+          "id": "experience_orbs",
+          "name": "Experience orbs",
+          "milestone": "C6",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V21", "name": "Projectiles, vehicles and mounts", "milestones": ["C3", "C6"],
+      "id": "V21",
+      "name": "Projectiles, vehicles and mounts",
+      "milestones": [
+        "C3",
+        "C6"
+      ],
       "mechanics": [
-        {"id": "projectiles", "name": "Arrows, tridents, thrown items, potions, fireworks, wind charges and fishing bobbers", "milestone": "C3", "impl": "missing", "evidence": "none"},
-        {"id": "boats", "name": "Boats and rafts", "milestone": "C3", "impl": "missing", "evidence": "none"},
-        {"id": "minecarts", "name": "Minecarts of every kind", "milestone": "C3", "impl": "missing", "evidence": "none"},
-        {"id": "riding", "name": "Riding and mount controls", "milestone": "C6", "impl": "missing", "evidence": "none"},
-        {"id": "happy_ghast_harness", "name": "Happy Ghast harnesses and leash changes", "milestone": "C8", "impl": {"java-1.21.4": "not_applicable", "java-1.21.8": "missing"}, "evidence": "none", "absent_reason": {"java-1.21.4": "introduced in 1.21.6"}}
+        {
+          "id": "projectiles",
+          "name": "Arrows, tridents, thrown items, potions, fireworks, wind charges and fishing bobbers",
+          "milestone": "C3",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "boats",
+          "name": "Boats and rafts",
+          "milestone": "C3",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "minecarts",
+          "name": "Minecarts of every kind",
+          "milestone": "C3",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "riding",
+          "name": "Riding and mount controls",
+          "milestone": "C6",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "happy_ghast_harness",
+          "name": "Happy Ghast harnesses and leash changes",
+          "milestone": "C8",
+          "impl": {
+            "java-1.21.4": "not_applicable",
+            "java-1.21.8": "missing"
+          },
+          "evidence": "none",
+          "absent_reason": {
+            "java-1.21.4": "introduced in 1.21.6"
+          }
+        }
       ]
     },
     {
-      "id": "V22", "name": "Movement and player modes", "milestones": ["C6"],
+      "id": "V22",
+      "name": "Movement and player modes",
+      "milestones": [
+        "C6"
+      ],
       "mechanics": [
-        {"id": "game_modes", "name": "Survival, creative and spectator modes", "milestone": "C6", "impl": "partial", "evidence": "compared", "cases": ["client/vitals"]},
-        {"id": "adventure_and_hardcore", "name": "Adventure mode and hardcore worlds", "milestone": "C6", "impl": "missing", "evidence": "none"},
-        {"id": "collision_movement", "name": "Movement checks against block shapes, step-up and corrections", "milestone": "C6", "impl": "implemented", "evidence": "compared", "cases": ["client/collision", "client/vitals", "realclient/survival"], "note": "Walking, jumping and sprinting"},
-        {"id": "floating_kick", "name": "Floating detection and allow-flight", "milestone": "C6", "impl": "implemented", "evidence": "compared", "cases": ["client/vitals"]},
-        {"id": "poses", "name": "Swimming, crawling, climbing, elytra flight and sleeping", "milestone": "C6", "impl": "missing", "evidence": "none"},
-        {"id": "reach_and_digging", "name": "Interaction reach and dig timing", "milestone": "C6", "impl": "implemented", "evidence": "compared", "cases": ["client/windows"], "note": "Reach for blocks and containers; dig time from documented values"}
+        {
+          "id": "game_modes",
+          "name": "Survival, creative and spectator modes",
+          "milestone": "C6",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "client/vitals"
+          ]
+        },
+        {
+          "id": "adventure_and_hardcore",
+          "name": "Adventure mode and hardcore worlds",
+          "milestone": "C6",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "collision_movement",
+          "name": "Movement checks against block shapes, step-up and corrections",
+          "milestone": "C6",
+          "impl": "implemented",
+          "evidence": "compared",
+          "cases": [
+            "client/collision",
+            "client/vitals",
+            "realclient/survival"
+          ],
+          "note": "Walking, jumping and sprinting"
+        },
+        {
+          "id": "floating_kick",
+          "name": "Floating detection and allow-flight",
+          "milestone": "C6",
+          "impl": "implemented",
+          "evidence": "compared",
+          "cases": [
+            "client/vitals"
+          ]
+        },
+        {
+          "id": "poses",
+          "name": "Swimming, crawling, climbing, elytra flight and sleeping",
+          "milestone": "C6",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "reach_and_digging",
+          "name": "Interaction reach and dig timing",
+          "milestone": "C6",
+          "impl": "implemented",
+          "evidence": "compared",
+          "cases": [
+            "client/windows"
+          ],
+          "note": "Reach for blocks and containers; dig time from documented values"
+        }
       ]
     },
     {
-      "id": "V23", "name": "Combat, attributes and effects", "milestones": ["C6"],
+      "id": "V23",
+      "name": "Combat, attributes and effects",
+      "milestones": [
+        "C6"
+      ],
       "mechanics": [
-        {"id": "health_and_hunger", "name": "Health, hunger, saturation, exhaustion and regeneration", "milestone": "C6", "impl": "implemented", "evidence": "compared", "cases": ["client/vitals"], "note": "Eating is not modeled"},
-        {"id": "damage_sources", "name": "Damage sources and the hurt cooldown", "milestone": "C6", "impl": "partial", "evidence": "compared", "cases": ["client/vitals"], "note": "Falls, the void and starvation"},
-        {"id": "death_and_respawn", "name": "Death, drops and respawning", "milestone": "C6", "impl": "partial", "evidence": "compared", "cases": ["client/vitals", "realclient/survival"], "deviations": ["death drops spread in a fixed pattern"]},
-        {"id": "melee_combat", "name": "Melee attacks, attack cooldown, critical hits, sweeping and knockback", "milestone": "C6", "impl": "missing", "evidence": "none"},
-        {"id": "armor_and_shields", "name": "Armor protection, toughness and shields", "milestone": "C6", "impl": "missing", "evidence": "none"},
-        {"id": "effects", "name": "Status effects", "milestone": "C6", "impl": "missing", "evidence": "none"},
-        {"id": "enchantment_effects", "name": "Enchantment effects", "milestone": "C6", "impl": "missing", "evidence": "none"},
-        {"id": "attributes", "name": "Attributes and modifiers", "milestone": "C6", "impl": "missing", "evidence": "none"}
+        {
+          "id": "health_and_hunger",
+          "name": "Health, hunger, saturation, exhaustion and regeneration",
+          "milestone": "C6",
+          "impl": "implemented",
+          "evidence": "compared",
+          "cases": [
+            "client/vitals"
+          ],
+          "note": "Eating is not modeled"
+        },
+        {
+          "id": "damage_sources",
+          "name": "Damage sources and the hurt cooldown",
+          "milestone": "C6",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "client/vitals"
+          ],
+          "note": "Falls, the void and starvation"
+        },
+        {
+          "id": "death_and_respawn",
+          "name": "Death, drops and respawning",
+          "milestone": "C6",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "client/vitals",
+            "realclient/survival"
+          ],
+          "deviations": [
+            "death drops spread in a fixed pattern"
+          ]
+        },
+        {
+          "id": "melee_combat",
+          "name": "Melee attacks, attack cooldown, critical hits, sweeping and knockback",
+          "milestone": "C6",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "armor_and_shields",
+          "name": "Armor protection, toughness and shields",
+          "milestone": "C6",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "effects",
+          "name": "Status effects",
+          "milestone": "C6",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "enchantment_effects",
+          "name": "Enchantment effects",
+          "milestone": "C6",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "attributes",
+          "name": "Attributes and modifiers",
+          "milestone": "C6",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V24", "name": "Food, equipment and item use", "milestones": ["C5", "C6"],
+      "id": "V24",
+      "name": "Food, equipment and item use",
+      "milestones": [
+        "C5",
+        "C6"
+      ],
       "mechanics": [
-        {"id": "placement", "name": "Placing blocks from items", "milestone": "C5", "impl": "partial", "evidence": {"java-1.21.4": "none", "java-1.21.8": "compared"}, "cases": ["client/chests", "client/redstone"], "note": "17 item cases"},
-        {"id": "tools", "name": "Tools, durability and harvest rules", "milestone": "C5", "impl": "partial", "evidence": "documented", "note": "Pickaxes and axes"},
-        {"id": "eating_and_drinking", "name": "Eating and drinking", "milestone": "C6", "impl": "missing", "evidence": "none"},
-        {"id": "ranged_weapons", "name": "Bows, crossbows and tridents", "milestone": "C6", "impl": "missing", "evidence": "none"},
-        {"id": "use_actions", "name": "Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "item_cooldowns", "name": "Item cooldowns", "milestone": "C6", "impl": "missing", "evidence": "none"},
-        {"id": "equipment", "name": "Equipment slots and wearing armor", "milestone": "C6", "impl": "partial", "evidence": "compared", "cases": ["client/windows"], "note": "Armor slots accept armor; no protection"}
+        {
+          "id": "placement",
+          "name": "Placing blocks from items",
+          "milestone": "C5",
+          "impl": "partial",
+          "evidence": {
+            "java-1.21.4": "none",
+            "java-1.21.8": "compared"
+          },
+          "cases": [
+            "client/chests",
+            "client/redstone"
+          ],
+          "note": "17 item cases"
+        },
+        {
+          "id": "tools",
+          "name": "Tools, durability and harvest rules",
+          "milestone": "C5",
+          "impl": "partial",
+          "evidence": "documented",
+          "note": "Pickaxes and axes"
+        },
+        {
+          "id": "eating_and_drinking",
+          "name": "Eating and drinking",
+          "milestone": "C6",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "ranged_weapons",
+          "name": "Bows, crossbows and tridents",
+          "milestone": "C6",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "use_actions",
+          "name": "Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "item_cooldowns",
+          "name": "Item cooldowns",
+          "milestone": "C6",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "equipment",
+          "name": "Equipment slots and wearing armor",
+          "milestone": "C6",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "client/windows"
+          ],
+          "note": "Armor slots accept armor; no protection"
+        }
       ]
     },
     {
-      "id": "V25", "name": "Menus, recipes and production", "milestones": ["C5"],
+      "id": "V25",
+      "name": "Menus, recipes and production",
+      "milestones": [
+        "C5"
+      ],
       "mechanics": [
-        {"id": "player_and_container_menus", "name": "Player window, chest, double-chest and hopper menus with every click mode", "milestone": "C5", "impl": "implemented", "evidence": "compared", "cases": ["client/windows"]},
-        {"id": "crafting", "name": "Crafting (2x2 and table) and the recipe book", "milestone": "C5", "impl": "missing", "evidence": "none", "deviations": ["the crafting grid holds items but makes nothing"]},
-        {"id": "smelting", "name": "Furnaces, smokers, blast furnaces and campfires", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "other_menus", "name": "Brewing, enchanting, anvils, grindstones, stonecutters, smithing, looms, cartography, beacons, merchants, lecterns and mount inventories", "milestone": "C5", "impl": "missing", "evidence": "none"},
-        {"id": "loot", "name": "Loot tables for blocks, entities and containers", "milestone": "C5", "impl": "partial", "evidence": "documented", "note": "Fixed drops of the modeled blocks"}
+        {
+          "id": "player_and_container_menus",
+          "name": "Player window, chest, double-chest and hopper menus with every click mode",
+          "milestone": "C5",
+          "impl": "implemented",
+          "evidence": "compared",
+          "cases": [
+            "client/windows"
+          ]
+        },
+        {
+          "id": "crafting",
+          "name": "Crafting (2x2 and table) and the recipe book",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none",
+          "deviations": [
+            "the crafting grid holds items but makes nothing"
+          ]
+        },
+        {
+          "id": "smelting",
+          "name": "Furnaces, smokers, blast furnaces and campfires",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "other_menus",
+          "name": "Brewing, enchanting, anvils, grindstones, stonecutters, smithing, looms, cartography, beacons, merchants, lecterns and mount inventories",
+          "milestone": "C5",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "loot",
+          "name": "Loot tables for blocks, entities and containers",
+          "milestone": "C5",
+          "impl": "partial",
+          "evidence": "documented",
+          "note": "Fixed drops of the modeled blocks"
+        }
       ]
     },
     {
-      "id": "V26", "name": "Mob AI and navigation", "milestones": ["C8"],
+      "id": "V26",
+      "name": "Mob AI and navigation",
+      "milestones": [
+        "C8"
+      ],
       "mechanics": [
-        {"id": "behavior_framework", "name": "Goals, brains and sensors", "milestone": "C8", "impl": "missing", "evidence": "none"},
-        {"id": "navigation", "name": "Pathfinding and navigation", "milestone": "C8", "impl": "missing", "evidence": "none"},
-        {"id": "breeding_and_taming", "name": "Breeding, taming and conversions", "milestone": "C8", "impl": "missing", "evidence": "none"},
-        {"id": "species", "name": "Species-specific behavior", "milestone": "C8", "impl": "missing", "evidence": "none"},
-        {"id": "creaking", "name": "The Creaking and creaking hearts", "milestone": "C8", "impl": "missing", "evidence": "none", "note": "Present in both releases"}
+        {
+          "id": "behavior_framework",
+          "name": "Goals, brains and sensors",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "navigation",
+          "name": "Pathfinding and navigation",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "breeding_and_taming",
+          "name": "Breeding, taming and conversions",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "species",
+          "name": "Species-specific behavior",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "creaking",
+          "name": "The Creaking and creaking hearts",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none",
+          "note": "Present in both releases"
+        }
       ]
     },
     {
-      "id": "V27", "name": "Spawning and farms", "milestones": ["C8"],
+      "id": "V27",
+      "name": "Spawning and farms",
+      "milestones": [
+        "C8"
+      ],
       "mechanics": [
-        {"id": "natural_spawning", "name": "Natural spawning, caps and distances", "milestone": "C8", "impl": "missing", "evidence": "none"},
-        {"id": "despawning", "name": "Mob despawning", "milestone": "C8", "impl": "missing", "evidence": "none"},
-        {"id": "spawners", "name": "Spawners and trial spawners", "milestone": "C8", "impl": "missing", "evidence": "none"},
-        {"id": "spawning_statistics", "name": "Spawning statistics and entity inspection in the technical tools", "milestone": "C8", "impl": "missing", "evidence": "none"}
+        {
+          "id": "natural_spawning",
+          "name": "Natural spawning, caps and distances",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "despawning",
+          "name": "Mob despawning",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "spawners",
+          "name": "Spawners and trial spawners",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "spawning_statistics",
+          "name": "Spawning statistics and entity inspection in the technical tools",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V28", "name": "Villages, raids and trading", "milestones": ["C8"],
+      "id": "V28",
+      "name": "Villages, raids and trading",
+      "milestones": [
+        "C8"
+      ],
       "mechanics": [
-        {"id": "poi", "name": "Points of interest", "milestone": "C8", "impl": "missing", "evidence": "none"},
-        {"id": "villagers", "name": "Professions, schedules, gossip and reputation", "milestone": "C8", "impl": "missing", "evidence": "none"},
-        {"id": "trading", "name": "Trading and restocking", "milestone": "C8", "impl": "missing", "evidence": "none"},
-        {"id": "raids", "name": "Raids and patrols", "milestone": "C8", "impl": "missing", "evidence": "none"},
-        {"id": "wandering_trader", "name": "Wandering traders", "milestone": "C8", "impl": "missing", "evidence": "none"}
+        {
+          "id": "poi",
+          "name": "Points of interest",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "villagers",
+          "name": "Professions, schedules, gossip and reputation",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "trading",
+          "name": "Trading and restocking",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "raids",
+          "name": "Raids and patrols",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "wandering_trader",
+          "name": "Wandering traders",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V29", "name": "Bosses and progression", "milestones": ["C8"],
+      "id": "V29",
+      "name": "Bosses and progression",
+      "milestones": [
+        "C8"
+      ],
       "mechanics": [
-        {"id": "ender_dragon", "name": "The Ender Dragon fight and End progression", "milestone": "C8", "impl": "missing", "evidence": "none"},
-        {"id": "wither", "name": "The Wither", "milestone": "C8", "impl": "missing", "evidence": "none"},
-        {"id": "trials", "name": "Trial chambers, vaults and ominous systems", "milestone": "C8", "impl": "missing", "evidence": "none"}
+        {
+          "id": "ender_dragon",
+          "name": "The Ender Dragon fight and End progression",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "wither",
+          "name": "The Wither",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "trials",
+          "name": "Trial chambers, vaults and ominous systems",
+          "milestone": "C8",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V30", "name": "Data-pack execution", "milestones": ["C1", "C5", "C9"],
+      "id": "V30",
+      "name": "Data-pack execution",
+      "milestones": [
+        "C1",
+        "C5",
+        "C9"
+      ],
       "mechanics": [
-        {"id": "functions", "name": "Functions and macros", "milestone": "C9", "impl": "missing", "evidence": "none"},
-        {"id": "predicates_and_modifiers", "name": "Predicates and item modifiers", "milestone": "C9", "impl": "missing", "evidence": "none"},
-        {"id": "data_driven_registries", "name": "Data-driven recipes, loot tables, enchantments, damage types and worldgen", "milestone": "C1", "impl": "missing", "evidence": "none"},
-        {"id": "advancements", "name": "Advancements and criteria", "milestone": "C9", "impl": "missing", "evidence": "none"},
-        {"id": "game_tests", "name": "Data-driven game tests", "milestone": "C9", "impl": {"java-1.21.4": "not_applicable", "java-1.21.8": "missing"}, "evidence": "none", "absent_reason": {"java-1.21.4": "introduced in 1.21.5"}}
+        {
+          "id": "functions",
+          "name": "Functions and macros",
+          "milestone": "C9",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "predicates_and_modifiers",
+          "name": "Predicates and item modifiers",
+          "milestone": "C9",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "data_driven_registries",
+          "name": "Data-driven recipes, loot tables, enchantments, damage types and worldgen",
+          "milestone": "C1",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "advancements",
+          "name": "Advancements and criteria",
+          "milestone": "C9",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "game_tests",
+          "name": "Data-driven game tests",
+          "milestone": "C9",
+          "impl": {
+            "java-1.21.4": "not_applicable",
+            "java-1.21.8": "missing"
+          },
+          "evidence": "none",
+          "absent_reason": {
+            "java-1.21.4": "introduced in 1.21.5"
+          }
+        }
       ]
     },
     {
-      "id": "V31", "name": "Commands and administration", "milestones": ["C9"],
+      "id": "V31",
+      "name": "Commands and administration",
+      "milestones": [
+        "C9"
+      ],
       "mechanics": [
-        {"id": "grammar", "name": "Command grammar, suggestions and the command tree", "milestone": "C9", "impl": "partial", "evidence": "none", "deviations": ["a few chat commands with an empty command tree"]},
-        {"id": "selectors_and_permissions", "name": "Selectors and permission levels", "milestone": "C9", "impl": "missing", "evidence": "none"},
-        {"id": "command_blocks", "name": "Command blocks", "milestone": "C9", "impl": "missing", "evidence": "none"},
-        {"id": "gamerules", "name": "Game rules", "milestone": "C9", "impl": "missing", "evidence": "none"},
-        {"id": "scoreboard_and_teams", "name": "Scoreboards, teams and statistics", "milestone": "C9", "impl": "missing", "evidence": "none"},
-        {"id": "server_operation", "name": "Operators, whitelist, bans, server properties, console, RCON and query", "milestone": "C9", "impl": "partial", "evidence": "none", "note": "Circuit's own configuration file; no vanilla files"}
+        {
+          "id": "grammar",
+          "name": "Command grammar, suggestions and the command tree",
+          "milestone": "C9",
+          "impl": "partial",
+          "evidence": "none",
+          "deviations": [
+            "a few chat commands with an empty command tree"
+          ]
+        },
+        {
+          "id": "selectors_and_permissions",
+          "name": "Selectors and permission levels",
+          "milestone": "C9",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "command_blocks",
+          "name": "Command blocks",
+          "milestone": "C9",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "gamerules",
+          "name": "Game rules",
+          "milestone": "C9",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "scoreboard_and_teams",
+          "name": "Scoreboards, teams and statistics",
+          "milestone": "C9",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "server_operation",
+          "name": "Operators, whitelist, bans, server properties, console, RCON and query",
+          "milestone": "C9",
+          "impl": "partial",
+          "evidence": "none",
+          "note": "Circuit's own configuration file; no vanilla files"
+        }
       ]
     },
     {
-      "id": "V32", "name": "Client-visible world state", "milestones": ["C10"],
+      "id": "V32",
+      "name": "Client-visible world state",
+      "milestones": [
+        "C10"
+      ],
       "mechanics": [
-        {"id": "chunks_and_blocks", "name": "Chunks, block updates and acknowledgements", "milestone": "C10", "impl": "partial", "evidence": "compared", "cases": ["client/redstone", "realclient/redstone"]},
-        {"id": "block_entity_data", "name": "Block-entity data and block events (piston animation, chests opening)", "milestone": "C10", "impl": "missing", "evidence": "none"},
-        {"id": "entity_presentation", "name": "Entity metadata, equipment, animations and events", "milestone": "C10", "impl": "partial", "evidence": "none", "note": "Items, players and damage events"},
-        {"id": "sounds_and_particles", "name": "Sounds and particles", "milestone": "C10", "impl": "missing", "evidence": "none"},
-        {"id": "hud", "name": "Boss bars, titles, scoreboards, world border and tab list", "milestone": "C10", "impl": "partial", "evidence": "none", "note": "Tab list"},
-        {"id": "maps_books_signs", "name": "Maps, books, signs and displays", "milestone": "C10", "impl": "missing", "evidence": "none"},
-        {"id": "inventories", "name": "Inventory and window synchronization", "milestone": "C10", "impl": "implemented", "evidence": "compared", "cases": ["client/windows"]}
+        {
+          "id": "chunks_and_blocks",
+          "name": "Chunks, block updates and acknowledgements",
+          "milestone": "C10",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "client/redstone",
+            "realclient/redstone"
+          ]
+        },
+        {
+          "id": "block_entity_data",
+          "name": "Block-entity data and block events (piston animation, chests opening)",
+          "milestone": "C10",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "entity_presentation",
+          "name": "Entity metadata, equipment, animations and events",
+          "milestone": "C10",
+          "impl": "partial",
+          "evidence": "none",
+          "note": "Items, players and damage events"
+        },
+        {
+          "id": "sounds_and_particles",
+          "name": "Sounds and particles",
+          "milestone": "C10",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "hud",
+          "name": "Boss bars, titles, scoreboards, world border and tab list",
+          "milestone": "C10",
+          "impl": "partial",
+          "evidence": "none",
+          "note": "Tab list"
+        },
+        {
+          "id": "maps_books_signs",
+          "name": "Maps, books, signs and displays",
+          "milestone": "C10",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "inventories",
+          "name": "Inventory and window synchronization",
+          "milestone": "C10",
+          "impl": "implemented",
+          "evidence": "compared",
+          "cases": [
+            "client/windows"
+          ]
+        }
       ]
     },
     {
-      "id": "V33", "name": "Communication and connection lifecycle", "milestones": ["C10"],
+      "id": "V33",
+      "name": "Communication and connection lifecycle",
+      "milestones": [
+        "C10"
+      ],
       "mechanics": [
-        {"id": "handshake_status_login", "name": "Handshake, status, login, compression, encryption and session verification", "milestone": "C10", "impl": "implemented", "evidence": "none", "note": "Checked with protocol clients and the real client against Circuit"},
-        {"id": "configuration", "name": "Configuration phase and reconfiguration", "milestone": "C10", "impl": "partial", "evidence": "none", "deviations": ["no reconfiguration"]},
-        {"id": "signed_chat", "name": "Signed chat and chat sessions", "milestone": "C10", "impl": "missing", "evidence": "none", "deviations": ["chat relayed as system messages"]},
-        {"id": "cookies_transfer_links", "name": "Cookies, transfers, server links and custom payloads", "milestone": "C10", "impl": "missing", "evidence": "none"},
-        {"id": "dialogs", "name": "Server dialogs", "milestone": "C10", "impl": {"java-1.21.4": "not_applicable", "java-1.21.8": "missing"}, "evidence": "none", "absent_reason": {"java-1.21.4": "introduced in 1.21.6"}},
-        {"id": "waypoints", "name": "Locator bar waypoints", "milestone": "C10", "impl": {"java-1.21.4": "not_applicable", "java-1.21.8": "missing"}, "evidence": "none", "absent_reason": {"java-1.21.4": "introduced in 1.21.6"}}
+        {
+          "id": "handshake_status_login",
+          "name": "Handshake, status, login, compression, encryption and session verification",
+          "milestone": "C10",
+          "impl": "implemented",
+          "evidence": "none",
+          "note": "Checked with protocol clients and the real client against Circuit"
+        },
+        {
+          "id": "configuration",
+          "name": "Configuration phase and reconfiguration",
+          "milestone": "C10",
+          "impl": "partial",
+          "evidence": "none",
+          "deviations": [
+            "no reconfiguration"
+          ]
+        },
+        {
+          "id": "signed_chat",
+          "name": "Signed chat and chat sessions",
+          "milestone": "C10",
+          "impl": "missing",
+          "evidence": "none",
+          "deviations": [
+            "chat relayed as system messages"
+          ]
+        },
+        {
+          "id": "cookies_transfer_links",
+          "name": "Cookies, transfers, server links and custom payloads",
+          "milestone": "C10",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "dialogs",
+          "name": "Server dialogs",
+          "milestone": "C10",
+          "impl": {
+            "java-1.21.4": "not_applicable",
+            "java-1.21.8": "missing"
+          },
+          "evidence": "none",
+          "absent_reason": {
+            "java-1.21.4": "introduced in 1.21.6"
+          }
+        },
+        {
+          "id": "waypoints",
+          "name": "Locator bar waypoints",
+          "milestone": "C10",
+          "impl": {
+            "java-1.21.4": "not_applicable",
+            "java-1.21.8": "missing"
+          },
+          "evidence": "none",
+          "absent_reason": {
+            "java-1.21.4": "introduced in 1.21.6"
+          }
+        }
       ]
     },
     {
-      "id": "V34", "name": "Save compatibility", "milestones": ["C11"],
+      "id": "V34",
+      "name": "Save compatibility",
+      "milestones": [
+        "C11"
+      ],
       "mechanics": [
-        {"id": "internal_world_directory", "name": "Crash-safe checkpoints and input log", "milestone": "C11", "impl": "implemented", "evidence": "none", "note": "Circuit's own format"},
-        {"id": "anvil_1_21_8", "name": "Anvil import and export of DataVersion 4440", "milestone": "C11", "impl": {"java-1.21.4": "not_applicable", "java-1.21.8": "partial"}, "evidence": {"java-1.21.8": "compared"}, "absent_reason": {"java-1.21.4": "DataVersion 4440 is the 1.21.8 format"}, "note": "Modeled content only; round trips through the official server", "cases": ["anvil/showcase"]},
-        {"id": "anvil_1_21_4", "name": "Anvil import and export of DataVersion 4189", "milestone": "C11", "impl": {"java-1.21.4": "missing", "java-1.21.8": "not_applicable"}, "evidence": "none", "absent_reason": {"java-1.21.8": "DataVersion 4189 is the 1.21.4 format"}},
-        {"id": "player_data", "name": "Vanilla player data, statistics and advancements", "milestone": "C11", "impl": "missing", "evidence": "none"},
-        {"id": "other_saved_data", "name": "POIs, maps, raids, scoreboards and other saved data", "milestone": "C11", "impl": "missing", "evidence": "none"},
-        {"id": "upgrades", "name": "Upgrades from older DataVersions", "milestone": "C11", "impl": "missing", "evidence": "none"}
+        {
+          "id": "internal_world_directory",
+          "name": "Crash-safe checkpoints and input log",
+          "milestone": "C11",
+          "impl": "implemented",
+          "evidence": "none",
+          "note": "Circuit's own format"
+        },
+        {
+          "id": "anvil_1_21_8",
+          "name": "Anvil import and export of DataVersion 4440",
+          "milestone": "C11",
+          "impl": {
+            "java-1.21.4": "not_applicable",
+            "java-1.21.8": "partial"
+          },
+          "evidence": {
+            "java-1.21.8": "compared"
+          },
+          "absent_reason": {
+            "java-1.21.4": "DataVersion 4440 is the 1.21.8 format"
+          },
+          "note": "Modeled content only; round trips through the official server",
+          "cases": [
+            "anvil/showcase"
+          ]
+        },
+        {
+          "id": "anvil_1_21_4",
+          "name": "Anvil import and export of DataVersion 4189",
+          "milestone": "C11",
+          "impl": {
+            "java-1.21.4": "missing",
+            "java-1.21.8": "not_applicable"
+          },
+          "evidence": "none",
+          "absent_reason": {
+            "java-1.21.8": "DataVersion 4189 is the 1.21.4 format"
+          }
+        },
+        {
+          "id": "player_data",
+          "name": "Vanilla player data, statistics and advancements",
+          "milestone": "C11",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "other_saved_data",
+          "name": "POIs, maps, raids, scoreboards and other saved data",
+          "milestone": "C11",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "upgrades",
+          "name": "Upgrades from older DataVersions",
+          "milestone": "C11",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V35", "name": "Version-specific gameplay and optional profiles", "milestones": ["C12"],
+      "id": "V35",
+      "name": "Version-specific gameplay and optional profiles",
+      "milestones": [
+        "C12"
+      ],
       "mechanics": [
-        {"id": "pale_garden", "name": "Pale Garden, pale oak and resin families, eyeblossoms", "milestone": "C7", "impl": "data_only", "evidence": "none", "note": "Names in the registries; present in both releases"},
-        {"id": "spring_to_life", "name": "1.21.5 additions: animal variants, new plants and blocks", "milestone": "C8", "impl": {"java-1.21.4": "not_applicable", "java-1.21.8": "data_only"}, "evidence": "none", "absent_reason": {"java-1.21.4": "introduced in 1.21.5"}},
-        {"id": "chase_the_skies", "name": "1.21.6 additions: Happy Ghast, dried ghasts, harnesses", "milestone": "C8", "impl": {"java-1.21.4": "not_applicable", "java-1.21.8": "data_only"}, "evidence": "none", "absent_reason": {"java-1.21.4": "introduced in 1.21.6"}},
-        {"id": "experiment_minecart_improvements", "name": "Experimental profile: minecart improvements", "milestone": "C12", "impl": "missing", "evidence": "none"},
-        {"id": "experiment_redstone", "name": "Experimental profile: redstone experiments", "milestone": "C12", "impl": "missing", "evidence": "none"},
-        {"id": "experiment_trade_rebalance", "name": "Experimental profile: villager trade rebalance", "milestone": "C12", "impl": "missing", "evidence": "none"}
+        {
+          "id": "pale_garden",
+          "name": "Pale Garden, pale oak and resin families, eyeblossoms",
+          "milestone": "C7",
+          "impl": "data_only",
+          "evidence": "none",
+          "note": "Names in the registries; present in both releases"
+        },
+        {
+          "id": "spring_to_life",
+          "name": "1.21.5 additions: animal variants, new plants and blocks",
+          "milestone": "C8",
+          "impl": {
+            "java-1.21.4": "not_applicable",
+            "java-1.21.8": "data_only"
+          },
+          "evidence": "none",
+          "absent_reason": {
+            "java-1.21.4": "introduced in 1.21.5"
+          }
+        },
+        {
+          "id": "chase_the_skies",
+          "name": "1.21.6 additions: Happy Ghast, dried ghasts, harnesses",
+          "milestone": "C8",
+          "impl": {
+            "java-1.21.4": "not_applicable",
+            "java-1.21.8": "data_only"
+          },
+          "evidence": "none",
+          "absent_reason": {
+            "java-1.21.4": "introduced in 1.21.6"
+          }
+        },
+        {
+          "id": "experiment_minecart_improvements",
+          "name": "Experimental profile: minecart improvements",
+          "milestone": "C12",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "experiment_redstone",
+          "name": "Experimental profile: redstone experiments",
+          "milestone": "C12",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "experiment_trade_rebalance",
+          "name": "Experimental profile: villager trade rebalance",
+          "milestone": "C12",
+          "impl": "missing",
+          "evidence": "none"
+        }
       ]
     },
     {
-      "id": "V36", "name": "Integration, endurance and operating limits", "milestones": ["C12"],
+      "id": "V36",
+      "name": "Integration, endurance and operating limits",
+      "milestones": [
+        "C12"
+      ],
       "mechanics": [
-        {"id": "regression_suites", "name": "Debug and sanitizer regression suites", "milestone": "C12", "impl": "implemented", "evidence": "none"},
-        {"id": "campaigns", "name": "Survival, machine and farm campaigns", "milestone": "C12", "impl": "missing", "evidence": "none"},
-        {"id": "endurance", "name": "Endurance and multiplayer load runs", "milestone": "C12", "impl": "missing", "evidence": "none"},
-        {"id": "performance", "name": "Performance under accepted semantics", "milestone": "C12", "impl": "partial", "evidence": "none", "note": "Profiles of the declared subset"}
+        {
+          "id": "regression_suites",
+          "name": "Debug and sanitizer regression suites",
+          "milestone": "C12",
+          "impl": "implemented",
+          "evidence": "none"
+        },
+        {
+          "id": "campaigns",
+          "name": "Survival, machine and farm campaigns",
+          "milestone": "C12",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "endurance",
+          "name": "Endurance and multiplayer load runs",
+          "milestone": "C12",
+          "impl": "missing",
+          "evidence": "none"
+        },
+        {
+          "id": "performance",
+          "name": "Performance under accepted semantics",
+          "milestone": "C12",
+          "impl": "partial",
+          "evidence": "none",
+          "note": "Profiles of the declared subset"
+        }
       ]
     }
   ],
   "classification": {
     "comment": "Ordered rules: the first matching pattern assigns a resource to a family. The last rule of each kind matches everything, as an explicit default.",
     "block": [
-      ["V02", "^(air|cave_air|void_air)$"],
-      ["V17", "^tnt$"],
-      ["V15", "^(piston|sticky_piston|piston_head|moving_piston|slime_block|honey_block)$"],
-      ["V14", "^(lever|redstone_wire|repeater|comparator|observer|redstone_lamp|redstone_block|redstone_torch|redstone_wall_torch|.*_button|.*_pressure_plate|tripwire|tripwire_hook|target|daylight_detector|note_block|.*copper_bulb|sculk_sensor|calibrated_sculk_sensor|lectern|jukebox|redstone_ore|deepslate_redstone_ore|bell|lightning_rod|rail|powered_rail|detector_rail|activator_rail)$"],
-      ["V16", "^(chest|trapped_chest|ender_chest|hopper|dispenser|dropper|crafter|barrel|.*shulker_box|composter|chiseled_bookshelf|decorated_pot)$"],
-      ["V10", "^(nether_portal|end_portal|end_portal_frame|end_gateway|respawn_anchor|.*_bed)$"],
-      ["V25", "^(crafting_table|furnace|smoker|blast_furnace|brewing_stand|enchanting_table|anvil|chipped_anvil|damaged_anvil|grindstone|stonecutter|smithing_table|loom|cartography_table|fletching_table|beacon|campfire|soul_campfire)$"],
-      ["V27", "^(spawner|trial_spawner|infested_.*)$"],
-      ["V29", "^(vault|dragon_egg)$"],
-      ["V31", "^(command_block|repeating_command_block|chain_command_block|structure_block|structure_void|jigsaw|test_block|test_instance_block|barrier|light)$"],
-      ["V12", "^(water|lava|bubble_column|fire|soul_fire|snow|snow_block|powder_snow|ice|packed_ice|blue_ice|frosted_ice|sand|red_sand|suspicious_sand|gravel|suspicious_gravel|.*_concrete_powder|pointed_dripstone|scaffolding|sponge|wet_sponge|.*cauldron|magma_block)$"],
-      ["V26", "^(turtle_egg|sniffer_egg|frogspawn|bee_nest|beehive|creaking_heart|sculk_shrieker|dried_ghast)$"],
-      ["V13", "^(.*_sapling|mangrove_propagule|.*_leaves|wheat|carrots|potatoes|beetroots|.*_stem|attached_.*_stem|torchflower_crop|pitcher_crop|pitcher_plant|farmland|grass_block|mycelium|podzol|short_grass|tall_grass|fern|large_fern|dead_bush|bush|short_dry_grass|tall_dry_grass|seagrass|tall_seagrass|kelp|kelp_plant|sugar_cane|cactus|cactus_flower|bamboo|bamboo_sapling|vine|cave_vines|cave_vines_plant|weeping_vines|weeping_vines_plant|twisting_vines|twisting_vines_plant|glow_lichen|sweet_berry_bush|cocoa|nether_wart|chorus_plant|chorus_flower|brown_mushroom|red_mushroom|crimson_fungus|warped_fungus|crimson_roots|warped_roots|nether_sprouts|crimson_nylium|warped_nylium|sculk|sculk_vein|sculk_catalyst|moss_block|moss_carpet|pale_moss_block|pale_moss_carpet|pale_hanging_moss|azalea|flowering_azalea|spore_blossom|hanging_roots|big_dripleaf|big_dripleaf_stem|small_dripleaf|lily_pad|sea_pickle|.*coral.*|dandelion|poppy|blue_orchid|allium|azure_bluet|.*_tulip|oxeye_daisy|cornflower|lily_of_the_valley|wither_rose|torchflower|sunflower|lilac|rose_bush|peony|pink_petals|wildflowers|leaf_litter|firefly_bush|open_eyeblossom|closed_eyeblossom|melon|pumpkin|mangrove_roots|muddy_mangrove_roots|rooted_dirt)$"],
-      ["V11", ".*"]
+      [
+        "V02",
+        "^(air|cave_air|void_air)$"
+      ],
+      [
+        "V17",
+        "^tnt$"
+      ],
+      [
+        "V15",
+        "^(piston|sticky_piston|piston_head|moving_piston|slime_block|honey_block)$"
+      ],
+      [
+        "V14",
+        "^(lever|redstone_wire|repeater|comparator|observer|redstone_lamp|redstone_block|redstone_torch|redstone_wall_torch|.*_button|.*_pressure_plate|tripwire|tripwire_hook|target|daylight_detector|note_block|.*copper_bulb|sculk_sensor|calibrated_sculk_sensor|lectern|jukebox|redstone_ore|deepslate_redstone_ore|bell|lightning_rod|rail|powered_rail|detector_rail|activator_rail)$"
+      ],
+      [
+        "V16",
+        "^(chest|trapped_chest|ender_chest|hopper|dispenser|dropper|crafter|barrel|.*shulker_box|composter|chiseled_bookshelf|decorated_pot)$"
+      ],
+      [
+        "V10",
+        "^(nether_portal|end_portal|end_portal_frame|end_gateway|respawn_anchor|.*_bed)$"
+      ],
+      [
+        "V25",
+        "^(crafting_table|furnace|smoker|blast_furnace|brewing_stand|enchanting_table|anvil|chipped_anvil|damaged_anvil|grindstone|stonecutter|smithing_table|loom|cartography_table|fletching_table|beacon|campfire|soul_campfire)$"
+      ],
+      [
+        "V27",
+        "^(spawner|trial_spawner|infested_.*)$"
+      ],
+      [
+        "V29",
+        "^(vault|dragon_egg)$"
+      ],
+      [
+        "V31",
+        "^(command_block|repeating_command_block|chain_command_block|structure_block|structure_void|jigsaw|test_block|test_instance_block|barrier|light)$"
+      ],
+      [
+        "V12",
+        "^(water|lava|bubble_column|fire|soul_fire|snow|snow_block|powder_snow|ice|packed_ice|blue_ice|frosted_ice|sand|red_sand|suspicious_sand|gravel|suspicious_gravel|.*_concrete_powder|pointed_dripstone|scaffolding|sponge|wet_sponge|.*cauldron|magma_block)$"
+      ],
+      [
+        "V26",
+        "^(turtle_egg|sniffer_egg|frogspawn|bee_nest|beehive|creaking_heart|sculk_shrieker|dried_ghast)$"
+      ],
+      [
+        "V13",
+        "^(.*_sapling|mangrove_propagule|.*_leaves|wheat|carrots|potatoes|beetroots|.*_stem|attached_.*_stem|torchflower_crop|pitcher_crop|pitcher_plant|farmland|grass_block|mycelium|podzol|short_grass|tall_grass|fern|large_fern|dead_bush|bush|short_dry_grass|tall_dry_grass|seagrass|tall_seagrass|kelp|kelp_plant|sugar_cane|cactus|cactus_flower|bamboo|bamboo_sapling|vine|cave_vines|cave_vines_plant|weeping_vines|weeping_vines_plant|twisting_vines|twisting_vines_plant|glow_lichen|sweet_berry_bush|cocoa|nether_wart|chorus_plant|chorus_flower|brown_mushroom|red_mushroom|crimson_fungus|warped_fungus|crimson_roots|warped_roots|nether_sprouts|crimson_nylium|warped_nylium|sculk|sculk_vein|sculk_catalyst|moss_block|moss_carpet|pale_moss_block|pale_moss_carpet|pale_hanging_moss|azalea|flowering_azalea|spore_blossom|hanging_roots|big_dripleaf|big_dripleaf_stem|small_dripleaf|lily_pad|sea_pickle|.*coral.*|dandelion|poppy|blue_orchid|allium|azure_bluet|.*_tulip|oxeye_daisy|cornflower|lily_of_the_valley|wither_rose|torchflower|sunflower|lilac|rose_bush|peony|pink_petals|wildflowers|leaf_litter|firefly_bush|open_eyeblossom|closed_eyeblossom|melon|pumpkin|mangrove_roots|muddy_mangrove_roots|rooted_dirt)$"
+      ],
+      [
+        "V11",
+        ".*"
+      ]
     ],
     "item": [
-      ["V27", "_spawn_egg$"],
-      ["V23", "^(.*_sword|.*_helmet|.*_chestplate|.*_leggings|.*_boots|turtle_helmet|shield|bow|crossbow|trident|mace|totem_of_undying|potion|splash_potion|lingering_potion|.*_horse_armor|wolf_armor|elytra)$"],
-      ["V21", "^(.*_boat|.*_chest_boat|.*_raft|.*_chest_raft|minecart|.*_minecart|arrow|spectral_arrow|tipped_arrow|egg|blue_egg|brown_egg|snowball|ender_pearl|ender_eye|fire_charge|wind_charge|firework_rocket|experience_bottle|saddle|.*_harness|lead)$"],
-      ["V24", "^(.*_pickaxe|.*_axe|.*_shovel|.*_hoe|shears|flint_and_steel|fishing_rod|carrot_on_a_stick|warped_fungus_on_a_stick|brush|spyglass|compass|recovery_compass|clock|name_tag|bucket|.*_bucket|bone_meal|music_disc_.*|goat_horn|bundle|.*_bundle|map|filled_map|writable_book|written_book|book|enchanted_book|knowledge_book|debug_stick|glass_bottle|honey_bottle|milk_bucket)$"],
-      ["V24", "^(apple|golden_apple|enchanted_golden_apple|bread|.*_stew|cooked_.*|beef|porkchop|chicken|mutton|rabbit|cod|salmon|tropical_fish|pufferfish|carrot|golden_carrot|potato|baked_potato|poisonous_potato|beetroot|melon_slice|glistering_melon_slice|sweet_berries|glow_berries|chorus_fruit|cookie|pumpkin_pie|cake|dried_kelp|rotten_flesh|spider_eye|suspicious_stew|honey_bottle)$"],
-      ["V31", "^(command_block_minecart|structure_block|jigsaw|barrier|light|command_block|repeating_command_block|chain_command_block|structure_void|test_block|test_instance_block)$"],
-      ["block", ""],
-      ["V25", ".*"]
+      [
+        "V27",
+        "_spawn_egg$"
+      ],
+      [
+        "V23",
+        "^(.*_sword|.*_helmet|.*_chestplate|.*_leggings|.*_boots|turtle_helmet|shield|bow|crossbow|trident|mace|totem_of_undying|potion|splash_potion|lingering_potion|.*_horse_armor|wolf_armor|elytra)$"
+      ],
+      [
+        "V21",
+        "^(.*_boat|.*_chest_boat|.*_raft|.*_chest_raft|minecart|.*_minecart|arrow|spectral_arrow|tipped_arrow|egg|blue_egg|brown_egg|snowball|ender_pearl|ender_eye|fire_charge|wind_charge|firework_rocket|experience_bottle|saddle|.*_harness|lead)$"
+      ],
+      [
+        "V24",
+        "^(.*_pickaxe|.*_axe|.*_shovel|.*_hoe|shears|flint_and_steel|fishing_rod|carrot_on_a_stick|warped_fungus_on_a_stick|brush|spyglass|compass|recovery_compass|clock|name_tag|bucket|.*_bucket|bone_meal|music_disc_.*|goat_horn|bundle|.*_bundle|map|filled_map|writable_book|written_book|book|enchanted_book|knowledge_book|debug_stick|glass_bottle|honey_bottle|milk_bucket)$"
+      ],
+      [
+        "V24",
+        "^(apple|golden_apple|enchanted_golden_apple|bread|.*_stew|cooked_.*|beef|porkchop|chicken|mutton|rabbit|cod|salmon|tropical_fish|pufferfish|carrot|golden_carrot|potato|baked_potato|poisonous_potato|beetroot|melon_slice|glistering_melon_slice|sweet_berries|glow_berries|chorus_fruit|cookie|pumpkin_pie|cake|dried_kelp|rotten_flesh|spider_eye|suspicious_stew|honey_bottle)$"
+      ],
+      [
+        "V31",
+        "^(command_block_minecart|structure_block|jigsaw|barrier|light|command_block|repeating_command_block|chain_command_block|structure_void|test_block|test_instance_block)$"
+      ],
+      [
+        "block",
+        ""
+      ],
+      [
+        "V25",
+        ".*"
+      ]
     ],
     "entity": [
-      ["V22", "^player$"],
-      ["V20", "^(item|experience_orb)$"],
-      ["V17", "^(tnt|tnt_minecart)$"],
-      ["V12", "^falling_block$"],
-      ["V06", "^lightning_bolt$"],
-      ["V21", "^(arrow|spectral_arrow|trident|snowball|egg|ender_pearl|eye_of_ender|potion|splash_potion|lingering_potion|experience_bottle|fireball|small_fireball|dragon_fireball|wither_skull|shulker_bullet|llama_spit|firework_rocket|fishing_bobber|wind_charge|breeze_wind_charge|.*_boat|.*_chest_boat|.*_raft|.*_chest_raft|minecart|chest_minecart|furnace_minecart|hopper_minecart|spawner_minecart|command_block_minecart)$"],
-      ["V29", "^(ender_dragon|wither|end_crystal|ominous_item_spawner)$"],
-      ["V28", "^(villager|wandering_trader|pillager|vindicator|evoker|ravager|witch|illusioner|iron_golem)$"],
-      ["V19", "^(area_effect_cloud|marker|interaction|block_display|item_display|text_display|armor_stand|item_frame|glow_item_frame|painting|leash_knot|evoker_fangs)$"],
-      ["V26", ".*"]
+      [
+        "V22",
+        "^player$"
+      ],
+      [
+        "V20",
+        "^(item|experience_orb)$"
+      ],
+      [
+        "V17",
+        "^(tnt|tnt_minecart)$"
+      ],
+      [
+        "V12",
+        "^falling_block$"
+      ],
+      [
+        "V06",
+        "^lightning_bolt$"
+      ],
+      [
+        "V21",
+        "^(arrow|spectral_arrow|trident|snowball|egg|ender_pearl|eye_of_ender|potion|splash_potion|lingering_potion|experience_bottle|fireball|small_fireball|dragon_fireball|wither_skull|shulker_bullet|llama_spit|firework_rocket|fishing_bobber|wind_charge|breeze_wind_charge|.*_boat|.*_chest_boat|.*_raft|.*_chest_raft|minecart|chest_minecart|furnace_minecart|hopper_minecart|spawner_minecart|command_block_minecart)$"
+      ],
+      [
+        "V29",
+        "^(ender_dragon|wither|end_crystal|ominous_item_spawner)$"
+      ],
+      [
+        "V28",
+        "^(villager|wandering_trader|pillager|vindicator|evoker|ravager|witch|illusioner|iron_golem)$"
+      ],
+      [
+        "V19",
+        "^(area_effect_cloud|marker|interaction|block_display|item_display|text_display|armor_stand|item_frame|glow_item_frame|painting|leash_knot|evoker_fangs)$"
+      ],
+      [
+        "V26",
+        ".*"
+      ]
     ],
-    "effect": [["V23", ".*"]],
-    "enchantment": [["V23", ".*"]],
-    "attribute": [["V23", ".*"]],
-    "damage_type": [["V23", ".*"]],
-    "biome": [["V08", ".*"]],
-    "particle": [["V32", ".*"]],
-    "command": [["V31", ".*"]],
+    "effect": [
+      [
+        "V23",
+        ".*"
+      ]
+    ],
+    "enchantment": [
+      [
+        "V23",
+        ".*"
+      ]
+    ],
+    "attribute": [
+      [
+        "V23",
+        ".*"
+      ]
+    ],
+    "damage_type": [
+      [
+        "V23",
+        ".*"
+      ]
+    ],
+    "biome": [
+      [
+        "V08",
+        ".*"
+      ]
+    ],
+    "particle": [
+      [
+        "V32",
+        ".*"
+      ]
+    ],
+    "command": [
+      [
+        "V31",
+        ".*"
+      ]
+    ],
     "packet": [
-      ["V33", "^(handshaking|status|login|configuration)/"],
-      ["V33", "^play/(serverbound|clientbound)/(keep_alive|ping|pong|ping_request|pong_response|disconnect|chat.*|player_chat|system_chat|disguised_chat|delete_chat|chat_session_update|chat_ack|chat_command.*|signed_chat_command|resource_pack.*|cookie.*|store_cookie|transfer|custom_payload|custom_report_details|server_links|show_dialog|clear_dialog|custom_click_action|start_configuration|configuration_acknowledged|server_data|player_loaded|client_tick_end)$"],
-      ["V32", ".*"]
+      [
+        "V33",
+        "^(handshaking|status|login|configuration)/"
+      ],
+      [
+        "V33",
+        "^play/(serverbound|clientbound)/(keep_alive|ping|pong|ping_request|pong_response|disconnect|chat.*|player_chat|system_chat|disguised_chat|delete_chat|chat_session_update|chat_ack|chat_command.*|signed_chat_command|resource_pack.*|cookie.*|store_cookie|transfer|custom_payload|custom_report_details|server_links|show_dialog|clear_dialog|custom_click_action|start_configuration|configuration_acknowledged|server_data|player_loaded|client_tick_end)$"
+      ],
+      [
+        "V32",
+        ".*"
+      ]
     ]
   },
   "inventories_unknown": [
-    {"id": "gamerules", "family": "V31", "milestone": "C9", "note": "Game rule names and defaults per release; to be collected from cited documentation"},
-    {"id": "server_properties", "family": "V31", "milestone": "C9", "note": "server.properties keys per release"},
-    {"id": "data_pack_resource_types", "family": "V30", "milestone": "C1", "note": "Data-pack directories and dynamic registries per pack format"},
-    {"id": "data_components", "family": "V03", "milestone": "C1", "note": "Item data component types per release"},
-    {"id": "menu_types", "family": "V25", "milestone": "C5", "note": "Menu types of the protocol registry; generic_9x3, generic_9x6 and hopper are verified"},
-    {"id": "ticket_types", "family": "V05", "milestone": "C2", "note": "Chunk ticket types and their levels"},
-    {"id": "loot_tables", "family": "V25", "milestone": "C5", "note": "minecraft-data's tables date from 1.20 and are not used as an inventory"},
-    {"id": "advancements", "family": "V30", "milestone": "C9", "note": "Advancement identifiers"},
-    {"id": "structures", "family": "V09", "milestone": "C7", "note": "Structure and template pool identifiers"},
-    {"id": "placed_features", "family": "V09", "milestone": "C7", "note": "Configured and placed features"},
-    {"id": "poi_types", "family": "V28", "milestone": "C8", "note": "Point-of-interest types"},
-    {"id": "game_events", "family": "V14", "milestone": "C4", "note": "Vibration game events"},
-    {"id": "statistics", "family": "V31", "milestone": "C9", "note": "Statistic types and custom statistics"},
-    {"id": "criteria_triggers", "family": "V30", "milestone": "C9", "note": "Advancement criteria triggers"}
+    {
+      "id": "gamerules",
+      "family": "V31",
+      "milestone": "C9",
+      "note": "Game rule names and defaults per release; to be collected from cited documentation"
+    },
+    {
+      "id": "server_properties",
+      "family": "V31",
+      "milestone": "C9",
+      "note": "server.properties keys per release"
+    },
+    {
+      "id": "data_pack_resource_types",
+      "family": "V30",
+      "milestone": "C1",
+      "note": "Data-pack directories and dynamic registries per pack format"
+    },
+    {
+      "id": "data_components",
+      "family": "V03",
+      "milestone": "C1",
+      "note": "Item data component types per release"
+    },
+    {
+      "id": "menu_types",
+      "family": "V25",
+      "milestone": "C5",
+      "note": "Menu types of the protocol registry; generic_9x3, generic_9x6 and hopper are verified"
+    },
+    {
+      "id": "ticket_types",
+      "family": "V05",
+      "milestone": "C2",
+      "note": "Chunk ticket types and their levels"
+    },
+    {
+      "id": "loot_tables",
+      "family": "V25",
+      "milestone": "C5",
+      "note": "minecraft-data's tables date from 1.20 and are not used as an inventory"
+    },
+    {
+      "id": "advancements",
+      "family": "V30",
+      "milestone": "C9",
+      "note": "Advancement identifiers"
+    },
+    {
+      "id": "structures",
+      "family": "V09",
+      "milestone": "C7",
+      "note": "Structure and template pool identifiers"
+    },
+    {
+      "id": "placed_features",
+      "family": "V09",
+      "milestone": "C7",
+      "note": "Configured and placed features"
+    },
+    {
+      "id": "poi_types",
+      "family": "V28",
+      "milestone": "C8",
+      "note": "Point-of-interest types"
+    },
+    {
+      "id": "game_events",
+      "family": "V14",
+      "milestone": "C4",
+      "note": "Vibration game events"
+    },
+    {
+      "id": "statistics",
+      "family": "V31",
+      "milestone": "C9",
+      "note": "Statistic types and custom statistics"
+    },
+    {
+      "id": "criteria_triggers",
+      "family": "V30",
+      "milestone": "C9",
+      "note": "Advancement criteria triggers"
+    }
   ]
 }

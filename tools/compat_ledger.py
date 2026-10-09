@@ -43,7 +43,7 @@ EVIDENCE = ["compared", "reference_only", "documented", "none", "mismatch"]
 TIERS = ["L0", "L1", "L2"]
 MILESTONES = [f"C{i}" for i in range(13)]
 CASE_KINDS = ["official_trace", "black_box", "real_client", "round_trip", "planned"]
-CASE_STATUS = ["passing", "failing", "planned"]
+CASE_STATUS = ["passing", "failing", "unsupported", "planned"]
 # Resource kinds with one feature per name, and kinds counted only.
 NAMED_KINDS = ["block", "item", "entity", "effect", "enchantment", "attribute", "damage_type", "biome", "particle", "command", "packet"]
 COUNTED_KINDS = ["block_state", "sound_event", "recipe", "instrument"]
@@ -153,28 +153,46 @@ def per_version(value, bundles, default=None):
     return {b: (value if value is not None else default) for b in bundles}
 
 
+def open_outcomes(directory):
+    """Outcomes of the open traces Circuit does not match yet (EXPECTED.txt)."""
+    out = {}
+    for line in read_text(os.path.join(directory, "EXPECTED.txt")).splitlines():
+        if line and not line.startswith("#"):
+            name, outcome = line.split(" ")[:2]
+            out[name] = {"FAIL": "failing", "UNSUPPORTED": "unsupported"}[outcome]
+    return out
+
+
 def trace_cases(bundles):
-    """Every reference trace is a case; returns cases and the blocks each places."""
-    dirs = {}
-    for bundle in bundles:
-        manifest = load(os.path.join(COMPAT, "versions", f"{bundle}.json"))
-        dirs[bundle] = os.path.join(ROOT, manifest["circuit_schemas"]["reference_traces"])
+    """Every target-version trace is a case: passing ones from the harness
+    directories, failing or unsupported ones from the open directories.
+    Returns the cases and the blocks each passing trace places."""
     cases = {}
     blocks = defaultdict(set)
-    for bundle, d in dirs.items():
-        for name in sorted(os.listdir(d)):
-            if not name.endswith(".ctrace"):
-                continue
-            stem = name[: -len(".ctrace")]
-            text = read_text(os.path.join(d, name))
-            header = dict(line.split(" ", 1) for line in text.splitlines()[:12] if " " in line)
-            case = cases.setdefault(f"trace/{stem}", {
-                "id": f"trace/{stem}", "kind": "official_trace", "versions": [], "status": "passing",
-                "location": f"{os.path.relpath(d, ROOT)}/{name}", "description": header.get("title", stem),
-                "mechanisms": header.get("mechanisms", "").split()})
-            case["versions"].append(bundle)
-            for block in set(re.findall(r"minecraft:([a-z_]+)", text)):
-                blocks[(bundle, block)].add(f"trace/{stem}")
+    for bundle in bundles:
+        schemas = load(os.path.join(COMPAT, "versions", f"{bundle}.json"))["circuit_schemas"]
+        sources = [(os.path.join(ROOT, schemas["reference_traces"]), None)]
+        if schemas.get("open_traces"):
+            open_dir = os.path.join(ROOT, schemas["open_traces"])
+            sources.append((open_dir, open_outcomes(open_dir)))
+        for d, outcomes in sources:
+            for name in sorted(os.listdir(d)):
+                if not name.endswith(".ctrace"):
+                    continue
+                stem = name[: -len(".ctrace")]
+                text = read_text(os.path.join(d, name))
+                header = dict(line.split(" ", 1) for line in text.splitlines()[:16] if " " in line)
+                status = "passing" if outcomes is None else outcomes[name]
+                case = cases.setdefault(f"trace/{stem}", {
+                    "id": f"trace/{stem}", "kind": "official_trace", "versions": [], "status": status,
+                    "location": f"{os.path.relpath(d, ROOT)}/{name}", "description": header.get("title", stem),
+                    "mechanisms": header.get("mechanisms", "").split()})
+                if case["status"] != status:
+                    raise Failure(f"trace/{stem}: {case['status']} on one version, {status} on another")
+                case["versions"].append(bundle)
+                if status == "passing":
+                    for block in set(re.findall(r"minecraft:([a-z_]+)", text)):
+                        blocks[(bundle, block)].add(f"trace/{stem}")
     return cases, blocks
 
 
@@ -417,6 +435,14 @@ def validate(ledger, manifests, family_ids, inputs):
                     errors.append(f"{where}: dangling case {c}")
             if rec["evidence"] in ("compared", "mismatch", "reference_only") and not rec["cases"]:
                 errors.append(f"{where}: evidence {rec['evidence']} needs a case")
+            statuses = {case_by_id[c]["status"] for c in rec["cases"] if c in case_by_id}
+            kinds = {case_by_id[c]["kind"] for c in rec["cases"] if c in case_by_id}
+            if rec["evidence"] == "compared" and rec["cases"] and "passing" not in statuses:
+                errors.append(f"{where}: compared evidence needs a passing case")
+            if rec["evidence"] == "mismatch" and rec["cases"] and "failing" not in statuses:
+                errors.append(f"{where}: mismatch evidence needs a failing case")
+            if rec["evidence"] == "reference_only" and rec["cases"] and not kinds & {"official_trace", "black_box", "round_trip"}:
+                errors.append(f"{where}: reference_only evidence needs an official observation")
             if rec["evidence"] == "compared" and rec["impl"] not in ("implemented", "partial"):
                 errors.append(f"{where}: compared evidence needs an implementation")
             if rec["impl"] == "implemented" and rec.get("deviations"):

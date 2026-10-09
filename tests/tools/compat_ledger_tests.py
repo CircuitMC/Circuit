@@ -56,10 +56,18 @@ class LedgerValidation(unittest.TestCase):
         self.assert_rejected(lambda i: self.mechanic(i, "V17", "tnt_block")["cases_planned"].append("TNT-99"), "dangling planned case")
 
     def test_not_applicable_needs_a_reason(self):
-        self.assert_rejected(lambda i: self.mechanic(i, "V17", "tnt_block").update(impl="not_applicable"), "needs a reason")
+        self.assert_rejected(lambda i: self.mechanic(i, "V28", "poi").update(impl="not_applicable"), "needs a reason")
 
     def test_compared_evidence_needs_a_case(self):
-        self.assert_rejected(lambda i: self.mechanic(i, "V17", "tnt_block").update(impl="partial", evidence="compared"), "needs a case")
+        self.assert_rejected(lambda i: self.mechanic(i, "V28", "poi").update(impl="partial", evidence="compared"), "needs a case")
+
+    def test_compared_evidence_needs_a_passing_case(self):
+        # The TNT trace is unsupported by Circuit: it cannot back a compared claim.
+        self.assert_rejected(lambda i: self.mechanic(i, "V17", "tnt_block").update(impl="partial", evidence="compared"),
+                             "needs a passing case")
+
+    def test_mismatch_needs_a_failing_case(self):
+        self.assert_rejected(lambda i: self.mechanic(i, "V14", "dust").update(evidence="mismatch"), "needs a failing case")
 
     def test_compared_evidence_needs_an_implementation(self):
         def mutate(i):

@@ -24,7 +24,7 @@ Feature counts per implementation state, then the number of features with compar
 
 | Family | Milestones | Features | Implemented | Partial | Data only | Missing | Not applicable | Compared |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| V01 Version manifests and evidence | C0 | 8 | 4 / 4 | 2 / 2 | 0 / 0 | 2 / 2 | 0 / 0 | 2 / 2 |
+| V01 Version manifests and evidence | C0 | 8 | 5 / 5 | 2 / 2 | 0 / 0 | 1 / 1 | 0 / 0 | 2 / 2 |
 | V02 Block registry and state properties | C1, C5 | 7 | 1 / 1 | 4 / 4 | 0 / 0 | 2 / 2 | 0 / 0 | 3 / 3 |
 | V03 Item and entity components and registries | C1, C5, C6 | 6 | 0 / 1 | 1 / 1 | 0 / 0 | 3 / 4 | 2 / 0 | 1 / 2 |
 | V04 Data and resource-pack negotiation | C1, C9, C10 | 6 | 0 / 0 | 3 / 3 | 0 / 0 | 3 / 3 | 0 / 0 | 0 / 0 |
@@ -38,7 +38,7 @@ Feature counts per implementation state, then the number of features with compar
 | V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 3 / 3 | 32 / 32 | 47 / 47 | 0 / 0 | 2 / 2 |
 | V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 2 / 2 | 129 / 136 | 175 / 182 | 14 / 0 | 0 / 0 |
 | V14 Redstone sources and signal consumers | C4 | 138 | 5 / 5 | 15 / 15 | 55 / 55 | 63 / 63 | 0 / 0 | 15 / 17 |
-| V15 Pistons and moving structures | C3, C4 | 16 | 1 / 1 | 12 / 12 | 1 / 1 | 2 / 2 | 0 / 0 | 8 / 8 |
+| V15 Pistons and moving structures | C3, C4 | 16 | 1 / 1 | 12 / 12 | 1 / 1 | 2 / 2 | 0 / 0 | 7 / 7 |
 | V16 Automation and storage blocks | C4, C5 | 62 | 2 / 2 | 5 / 5 | 26 / 26 | 29 / 29 | 0 / 0 | 6 / 6 |
 | V17 TNT and explosions | C3, C4 | 11 | 0 / 0 | 0 / 0 | 1 / 1 | 9 / 10 | 1 / 0 | 0 / 0 |
 | V18 Technical machines and vanilla quirks | C4, C7 | 6 | 0 / 0 | 1 / 1 | 0 / 0 | 5 / 5 | 0 / 0 | 1 / 1 |
@@ -128,7 +128,9 @@ Their counts are unknown, not zero.
 | Kind | Status | Cases |
 | --- | --- | ---: |
 | black_box | passing | 6 |
+| official_trace | failing | 4 |
 | official_trace | passing | 30 |
+| official_trace | unsupported | 1 |
 | planned | planned | 8 |
 | real_client | passing | 2 |
 | round_trip | passing | 1 |
@@ -145,7 +147,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Machine-readable feature and evidence ledger with validation | C0 | implemented, none | implemented, none |  |
 | Reference traces of block state changes (circuit-trace v1) | C0 | implemented, compared | implemented, compared | `trace/vertical_slice` |
 | Trace format with entity, lifecycle, inventory, dimension, ticket and RNG observations | C0 | implemented, none | implemented, none | circuit-trace 2: Circuit records and evaluates it; the reference harness does not record it yet |
-| Reference harness recording v2 observations on both releases, with repeat runs | C0 | missing, none | missing, none |  |
+| Reference harness recording v2 observations on both releases, with repeat runs | C0 | implemented, none | implemented, none | Both releases; repeat runs on fresh worlds; the level random is seeded with 0 |
 | Scenario adapters for official server, sequential, parallel and real-client runs with first-mismatch reports | C0 | missing, none | missing, none |  |
 | Protocol-client scenarios compared between the official servers and Circuit | C0 | partial, compared | partial, compared | `client/chests`, `client/collision`, `client/redstone`, `client/vitals`, `client/windows`; External mineflayer scripts; outputs compared by diff |
 | Real-client step scripts against Circuit | C0 | partial, none | partial, none | `realclient/redstone`, `realclient/survival`; Checks Circuit with the unmodified client; not a comparison with the official server |
@@ -211,8 +213,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Block-event FIFO | C4 | implemented, compared | implemented, compared | `trace/piston_timing` |
 | Neighbor and shape update order and the chain limit | C4 | implemented, compared | implemented, compared | `trace/chain_limit`, `trace/vertical_slice` |
 | Block-entity tick order | C4 | implemented, compared | implemented, compared | `trace/hopper_competition`, `trace/piston_slime` |
-| Entity tick order | C3 | partial, none | partial, none | ascending id; not compared with the target version |
-| The level random source and its draw order | C0 | missing, none | missing, none | per-section derived streams |
+| Entity tick order | C3 | partial, reference_only | partial, reference_only | `trace/item_hopper_pickup`; ascending id; not compared with the target version |
+| The level random source and its draw order | C0 | missing, reference_only | missing, reference_only | `trace/item_drop_piston`, `trace/tnt_redstone_ignition`; per-section derived streams; Draw counts of the level random recorded per stage |
 | Random-tick chunk order and positions | C2 | partial, none | partial, none | chunks in coordinate order instead of the shuffled order |
 
 ### V08 Terrain and biomes
@@ -300,8 +302,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Pushing, pulling and quasi-connectivity | C4 | partial, compared | partial, compared | `trace/piston_observed`, `trace/piston_timing`, `trace/quasi_connectivity` |
 | Slime block structures | C4 | implemented, compared | implemented, compared | `trace/piston_slime` |
 | Honey blocks and slime-honey separation | C4 | missing, none | missing, none |  |
-| Blocks destroyed by pistons and their drops | C4 | partial, compared | partial, compared | `trace/piston_destroys`; drops without random offsets |
-| Moving blocks pushing entities and players | C3 | partial, none | partial, none | item entities only |
+| Blocks destroyed by pistons and their drops | C4 | partial, mismatch | partial, mismatch | `trace/item_drop_piston`, `trace/piston_destroys`; drops without random offsets, after the block instead of before |
+| Moving blocks pushing entities and players | C3 | partial, reference_only | partial, reference_only | `trace/item_piston_push`; item entities only |
 | Push reactions of every block (immovable, destroy, block entities) | C4 | partial, none | partial, none | Modeled blocks only |
 
 ### V16 Automation and storage blocks
@@ -319,10 +321,10 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| TNT placement and breaking | C3 | missing, none | missing, none | `TNT-01` |
-| Ignition by redstone, fire, flint and steel, fire charges, burning projectiles and explosions | C3 | missing, none | missing, none | `TNT-01` |
-| Primed TNT entities: fuse, motion, collision and removal | C3 | missing, none | missing, none | `TNT-02`, `TNT-03` |
-| Explosions: affected blocks, resistance, fluids, drops, chain reactions, damage and knockback | C3 | missing, none | missing, none | `TNT-04` |
+| TNT placement and breaking | C3 | missing, reference_only | missing, reference_only | `TNT-01`, `trace/tnt_redstone_ignition` |
+| Ignition by redstone, fire, flint and steel, fire charges, burning projectiles and explosions | C3 | missing, reference_only | missing, reference_only | `TNT-01`, `trace/tnt_redstone_ignition` |
+| Primed TNT entities: fuse, motion, collision and removal | C3 | missing, reference_only | missing, reference_only | `TNT-02`, `TNT-03`, `trace/tnt_redstone_ignition` |
+| Explosions: affected blocks, resistance, fluids, drops, chain reactions, damage and knockback | C3 | missing, reference_only | missing, reference_only | `TNT-04`, `trace/tnt_redstone_ignition` |
 | Live fuses across save, reload and unload | C3 | missing, none | missing, none | `TNT-05` |
 | The tntExplodes game rule | C3 | not_applicable, none | missing, none | `TNT-06` |
 | Creeper, bed, respawn anchor, end crystal, wither and wind charge explosions | C8 | missing, none | missing, none |  |
@@ -352,8 +354,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Item entity motion and collision | C3 | partial, none | partial, none | fixed-point motion; not compared with the target version; no water currents or buoyancy |
-| Item merging | C3 | missing, none | missing, none |  |
+| Item entity motion and collision | C3 | partial, mismatch | partial, mismatch | `trace/item_hopper_pickup`, `trace/item_piston_push`, `trace/item_water_current`; fixed-point motion; not compared with the target version; no water currents or buoyancy |
+| Item merging | C3 | missing, reference_only | missing, reference_only | `trace/tnt_redstone_ignition`; The official explosion drops nine cobblestone as one stack |
 | Pickup by players and hoppers, pickup delays | C3 | partial, compared | partial, compared | `client/vitals`, `client/windows` |
 | Despawning | C3 | partial, documented | partial, documented |  |
 | Experience orbs | C6 | missing, none | missing, none |  |
