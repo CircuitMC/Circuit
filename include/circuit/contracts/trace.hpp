@@ -72,8 +72,11 @@ constexpr FixedVec unpack_velocity(std::uint64_t packed) noexcept {
     };
     return {f(26), f(13), f(0)};
 }
-constexpr std::uint64_t pack_stack(ItemStack s) noexcept {
-    return (static_cast<std::uint64_t>(s.damage) << 24) | (static_cast<std::uint64_t>(s.item) << 8) | s.count;
+// Count, item and damage of a stack, and bits 40-47 of its components' hash
+// as a fingerprint (the full patch is state, not trace).
+inline std::uint64_t pack_stack(const ItemStack& s) noexcept {
+    return ((s.components.hash() & 0xFF) << 40) | (static_cast<std::uint64_t>(s.damage) << 24)
+         | (static_cast<std::uint64_t>(s.item) << 8) | s.count;
 }
 
 std::string describe(const TraceRecord& record);

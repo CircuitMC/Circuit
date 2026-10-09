@@ -173,6 +173,9 @@ bool other_has_collision(BlockState s) noexcept;
 bool other_opaque(BlockState s) noexcept;
 bool other_face_covered(BlockState s, Direction face) noexcept;
 
+// Whether two states are of the same block (for `other`, the same registry block).
+bool same_block(BlockState a, BlockState b) noexcept;
+
 constexpr bool is_piston(BlockType t) noexcept { return t == BlockType::piston || t == BlockType::sticky_piston; }
 constexpr bool repeater_locked(BlockState s) noexcept { return s.is(BlockType::repeater) && s.level() == 1; }
 // Every valid state: the modeled states in raw order, then the `other` states

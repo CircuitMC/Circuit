@@ -11,7 +11,11 @@
 namespace circuit::storage {
 namespace {
 constexpr std::string_view manifest_file = "manifest";
-constexpr std::string_view segment_magic{"CIRCWAL\0", 8};
+// Log segments: "CIRCWAL" and a format byte. 1: stacks carry data components;
+// 0 (read only): stacks without components.
+constexpr std::string_view segment_prefix{"CIRCWAL", 7};
+constexpr char segment_format = 1;
+constexpr std::size_t segment_magic_size = 8;
 constexpr std::size_t max_record = std::size_t{64} << 20;
 
 std::uint32_t crc32_of(std::span<const std::byte> data) {
@@ -156,14 +160,15 @@ std::expected<bool, std::string> WorldDirectory::read_segment(const std::string&
         return false;
     }
     const std::span<const std::byte> in(*data);
-    if (in.size() < segment_magic.size() + 8 || !std::equal(segment_magic.begin(), segment_magic.end(),
-                                                             reinterpret_cast<const char*>(in.data())) ||
-        get(in, segment_magic.size(), 8) != tick) {
+    const auto format = in.size() >= segment_magic_size ? std::to_integer<char>(in[segment_prefix.size()]) : char{-1};
+    if (in.size() < segment_magic_size + 8 || !std::equal(segment_prefix.begin(), segment_prefix.end(),
+                                                          reinterpret_cast<const char*>(in.data())) ||
+        (format != 0 && format != segment_format) || get(in, segment_magic_size, 8) != tick) {
         notes.push_back(std::format("{} has no valid header", name));
         damaged.insert(name);
         return false;
     }
-    std::size_t at = segment_magic.size() + 8;
+    std::size_t at = segment_magic_size + 8;
     contracts::ReplayLimits limits;
     limits.max_commands_per_tick = 1 << 20;
     while (at < in.size()) {
@@ -175,7 +180,7 @@ std::expected<bool, std::string> WorldDirectory::read_segment(const std::string&
         if (crc32_of(payload) != crc) break;
         // A record with a valid checksum is not a torn write: one that does not
         // decode or does not continue the history means the log is corrupt.
-        auto input = contracts::decode_tick_input(payload, limits);
+        auto input = contracts::decode_tick_input(payload, limits, format >= 1);
         if (!input) return std::unexpected(std::format("{}: undecodable record after tick {}: {}", name, tick, contracts::error_name(input.error())));
         if (input->tick != tick + 1)
             return std::unexpected(std::format("{}: record for tick {} after tick {}", name, input->tick, tick));
@@ -274,8 +279,9 @@ std::expected<PendingCheckpoint, std::string> WorldDirectory::begin_checkpoint(s
     // A new generation never reuses a name the durable manifest refers to.
     const auto generation = generation_ + 1;
     // The segment for the ticks after this checkpoint.
-    std::vector<std::byte> header(segment_magic.size());
-    std::memcpy(header.data(), segment_magic.data(), segment_magic.size());
+    std::vector<std::byte> header(segment_magic_size);
+    std::memcpy(header.data(), segment_prefix.data(), segment_prefix.size());
+    header[segment_prefix.size()] = static_cast<std::byte>(segment_format);
     put64(header, tick);
     const auto seg = segment_name(tick, generation);
     if (auto ok = fs_.write_file(root_ / seg, header); !ok) return std::unexpected(ok.error());

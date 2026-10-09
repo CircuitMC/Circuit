@@ -52,6 +52,11 @@ bool modeled_block(std::uint32_t internal_block) noexcept {
 
 std::uint32_t registry_state_count() noexcept { return registry::state_count(); }
 
+bool same_block(BlockState a, BlockState b) noexcept {
+    if (a.type() != b.type()) return false;
+    return !a.is(BlockType::other) || registry::block_of(a.registry_state()) == registry::block_of(b.registry_state());
+}
+
 bool other_has_collision(BlockState s) noexcept { return registry::collision(s.registry_state()) != registry::Collision::empty; }
 
 bool other_opaque(BlockState s) noexcept {

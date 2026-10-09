@@ -173,7 +173,7 @@ int main(int argc, char** argv) {
         expect(h + "at 0 set 0 0 0 minecraft:stone[\n", 9, "unterminated");
         expect(h + "at 2 use 0 0 0\nat 1 use 0 0 0\n", 10, "tick order");
         expect(h + "slot 1 0 0 0 0 empty 3\n", 9, "count 0");
-        expect(h + "at 0 insert 0 0 0 0 minecraft:stone 65\n", 9, "invalid count");
+        expect(h + "at 0 insert 0 0 0 0 minecraft:stone 100\n", 9, "invalid count");
         expect(std::string(header).replace(std::string(header).find("area"), 18, "area 0 0 0 200 0 0"), 7, "extent");
     });
 

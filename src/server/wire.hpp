@@ -2,6 +2,7 @@
 #pragma once
 #include "registries.hpp"
 #include <circuit/protocol/codec.hpp>
+#include <circuit/protocol/components.hpp>
 #include <circuit/protocol/nbt.hpp>
 #include <circuit/protocol/packets.hpp>
 #include <expected>
@@ -41,11 +42,13 @@ struct PlayerListEntry {
 };
 
 // Serverbound play packets the server acts on.
-// An item stack as the protocol sends it: wire item id, count and damage.
+// An item stack as the protocol sends it: wire item id, count, damage and
+// the other data components (canonical, see protocol/components.hpp).
 struct WireStack {
     std::int32_t item{};
     std::int32_t count{};
     std::int32_t damage{};
+    contracts::ComponentPatch components;
     bool operator==(const WireStack&) const = default;
 };
 
@@ -84,6 +87,8 @@ struct CreativeSlot {
     std::int32_t count{};
     std::int32_t item{};
     std::int32_t damage{};
+    contracts::ComponentPatch components;
+    std::string refused; // why the stack's components were refused; empty when read
 };
 struct ContainerClick {
     std::int32_t window{};
@@ -92,8 +97,9 @@ struct ContainerClick {
     std::int8_t button{};
     std::int32_t mode{};
     // The client's predicted slots and carried stack. A stack is nullopt when
-    // the prediction names data components the server does not compare (it is
-    // then sent again); `unknown` when the prediction could not be read at all.
+    // the prediction names data components the server cannot compare (hashed
+    // components, or refused ones; it is then sent again); `unknown` when the
+    // prediction could not be read at all.
     std::vector<std::pair<std::int16_t, std::optional<WireStack>>> changed;
     std::optional<WireStack> carried;
     bool unknown{};
@@ -197,14 +203,17 @@ public:
     Bytes spawn_entity(std::int32_t id, Uuid uuid, std::int32_t type, Vec3 pos, float pitch, float yaw, float head_yaw,
                        std::int32_t data, Vec3 velocity = {}) const;
     Bytes take_item_entity(std::int32_t collected, std::int32_t collector, std::int32_t count) const;
-    Bytes item_metadata(std::int32_t id, std::int32_t item, std::int32_t count) const;
+    Bytes item_metadata(std::int32_t id, const WireStack& stack) const;
     Bytes remove_entities(const std::vector<std::int32_t>& ids) const;
     Bytes entity_position(std::int32_t id, Vec3 pos, float yaw, float pitch, bool on_ground) const;
     Bytes head_rotation(std::int32_t id, float head_yaw) const;
-    Bytes container_content(std::int32_t window, std::int32_t state_id, const std::vector<WireStack>& slots, WireStack carried) const;
-    Bytes container_slot(std::int32_t window, std::int32_t state_id, std::int16_t slot, WireStack stack) const;
-    Bytes cursor_item(WireStack stack) const;
-    Bytes open_screen(std::int32_t window, std::int32_t menu_type, std::string_view title) const;
+    Bytes container_content(std::int32_t window, std::int32_t state_id, const std::vector<WireStack>& slots, const WireStack& carried) const;
+    Bytes container_slot(std::int32_t window, std::int32_t state_id, std::int16_t slot, const WireStack& stack) const;
+    Bytes cursor_item(const WireStack& stack) const;
+    // What item components may refer to on this protocol.
+    [[nodiscard]] const protocol::ComponentContext& component_context() const noexcept { return components_ctx_; }
+    [[nodiscard]] const protocol::ComponentCodec& components() const noexcept { return *components_; }
+    Bytes open_screen(std::int32_t window, std::int32_t menu_type, const protocol::nbt::Tag& title) const;
     Bytes close_screen(std::int32_t window) const;
     Bytes play_disconnect(std::string_view reason) const;
     Bytes empty_commands() const;
@@ -216,9 +225,13 @@ private:
     struct Ids;
     Bytes packet(std::int32_t id, const protocol::Writer& fields) const;
 
+    void slot(protocol::Writer& w, const WireStack& s) const;
+
     std::int32_t protocol_;
     const protocol::PacketIds& ids_;
     std::shared_ptr<const Ids> id_;
+    const protocol::ComponentCodec* components_;
+    protocol::ComponentContext components_ctx_;
 };
 
 // Escapes text for a JSON string literal.

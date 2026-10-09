@@ -12,7 +12,7 @@
 #include <vector>
 
 // Checkpoint files: the canonical state of an engine between ticks, with the
-// identity needed to continue it. Format version 5 (versions 1 to 4 are read;
+// identity needed to continue it. Format version 6 (versions 1 to 5 are read;
 // see checkpoint.cpp for their differences):
 //   "CIRCKPT\0", u32 version, bundle id, rule-set id, block registry id,
 //   u64 seed, u64 tick, u64 raw length, u64 compressed length, zlib(body),

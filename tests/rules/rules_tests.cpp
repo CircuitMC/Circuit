@@ -519,6 +519,19 @@ int main() {
         }
     });
 
+    suite.run("hoppers keep damage and components", [] {
+        Sim s;
+        s.tick({place({0, 1, 0}, blocks::chest()), place({0, 0, 0}, blocks::hopper(D::down)), place({0, -1, 0}, blocks::chest()),
+                InsertItem{{0, 1, 0}, 0, ItemStack{items::iron_pickaxe, 1, 40}}, InsertItem{{0, 1, 0}, 1, named(items::stone, 2, "a")},
+                InsertItem{{0, 1, 0}, 2, ItemStack{items::stone, 2}}});
+        s.until(80);
+        const auto d = s.oracle.dump();
+        const auto* below = block_entity_at(d, {0, -1, 0});
+        require(below && below->slots[0] == ItemStack{items::iron_pickaxe, 1, 40}, "the tool keeps its damage");
+        require(below->slots[1] == named(items::stone, 2, "a") && below->slots[2] == ItemStack{items::stone, 2},
+                "named and plain stone stay apart");
+    });
+
     suite.run("hopper picks up a falling item", [] {
         Sim s;
         s.tick({place({0, 0, 0}, blocks::hopper(D::down)),

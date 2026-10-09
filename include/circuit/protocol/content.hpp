@@ -31,6 +31,9 @@ public:
     [[nodiscard]] std::int32_t protocol() const noexcept;
     [[nodiscard]] std::string_view source_commit() const noexcept;
     [[nodiscard]] std::int32_t state_count() const noexcept;
+    // Entries of the block and item registries.
+    [[nodiscard]] std::uint32_t block_count() const noexcept;
+    [[nodiscard]] std::uint32_t item_count() const noexcept;
 
     // State id of a block with the given properties; properties not listed take
     // the block's default value. nullopt for unknown blocks, properties or values.

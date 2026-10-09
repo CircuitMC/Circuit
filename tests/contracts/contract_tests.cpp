@@ -205,14 +205,39 @@ int main() {
         auto version_one = *bytes;
         version_one[4] = std::byte{1};
         require(decode_replay(version_one).error() == ErrorCode::malformed_record, "version 1 lacks the rule-set id");
-        // Version 3 records lack the block registry id; they use the first registry.
+        // Version 4 records have stacks without components; version 3 records
+        // also lack the block registry id and use the first registry.
         {
-            auto version_three = *bytes;
+            ReplayLog old{"java-1.21.8", "circuit-reference-rules-v5", 3, {}, "circuit-blocks-1"};
+            old.ticks.push_back({1, {{1, SetBlock{{1, 2, 3}, 0x1234, std::nullopt}}, {2, InsertItem{{1, 1, 1}, 3, {2, 64, 5}}}}});
+            const auto current = encode_replay(old).value();
+            auto version_four = current;
+            version_four[4] = std::byte{4};
+            version_four.resize(version_four.size() - 4); // the stack's empty component patch, the record's last field
+            require(decode_replay(version_four).value() == old, "a version 4 record decodes without components");
+            auto version_three = version_four;
             version_three[4] = std::byte{3};
-            const auto at = static_cast<std::ptrdiff_t>(4 + 2 + 2 + log.bundle_id.size() + 2 + log.rules_id.size());
+            const auto at = static_cast<std::ptrdiff_t>(4 + 2 + 2 + old.bundle_id.size() + 2 + old.rules_id.size());
             version_three.erase(version_three.begin() + at,
-                                version_three.begin() + at + 2 + static_cast<std::ptrdiff_t>(log.block_registry_id.size()));
-            require(decode_replay(version_three).value() == log, "a version 3 record decodes under circuit-blocks-1");
+                                version_three.begin() + at + 2 + static_cast<std::ptrdiff_t>(old.block_registry_id.size()));
+            require(decode_replay(version_three).value() == old, "a version 3 record decodes under circuit-blocks-1");
+        }
+        // Stacks keep their components.
+        {
+            ReplayLog with{"java-1.21.8", "circuit-reference-rules-v5", 3, {}, "circuit-blocks-1"};
+            const auto patch = ComponentPatch::make(772, {{1, {std::byte{16}}}, {5, {std::byte{8}, std::byte{0}, std::byte{1}, std::byte{'x'}}}},
+                                                    {9}, {16, std::nullopt});
+            with.ticks.push_back({1, {{1, InsertItem{{1, 1, 1}, 3, {2, 1, 0, patch}}}}});
+            const auto encoded = encode_replay(with).value();
+            const auto decoded = decode_replay(encoded).value();
+            require(decoded == with, "components round-trip");
+            const auto& got = std::get<InsertItem>(decoded.ticks[0].commands[0].body).stack.components;
+            require(got.typed().max_stack_size == 16 && got.added().size() == 2 && got.removed()[0] == 9, "typed fields round-trip");
+            for (std::size_t cut = 1; cut < 12; ++cut) {
+                auto truncated = encoded;
+                truncated.resize(truncated.size() - cut);
+                require(!decode_replay(truncated).has_value(), "a truncated patch is refused");
+            }
         }
         auto unregistered = log;
         unregistered.block_registry_id.clear();

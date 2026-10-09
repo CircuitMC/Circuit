@@ -18,7 +18,7 @@ Result<void> check_loaded(RuleContext& ctx, BlockPos pos) {
 }
 
 bool valid_stack(ItemStack s) {
-    return items::valid(s.item) && s.count >= 1 && s.count <= items::max_stack(s.item);
+    return items::valid(s.item) && s.count >= 1 && s.count <= items::max_stack(s);
 }
 
 // Each command validates completely before its effect starts, so a rejected
@@ -71,12 +71,13 @@ Plan plan(RuleContext& ctx, const contracts::InsertItem& c) {
     if (c.slot >= be->slots.size()) return std::unexpected(ErrorCode::invalid_slot);
     if (!valid_stack(c.stack)) return std::unexpected(ErrorCode::invalid_argument);
     const auto existing = be->slots[c.slot];
-    if (!existing.empty() && existing.item != c.stack.item) return std::unexpected(ErrorCode::item_mismatch);
+    if (!existing.empty() && !existing.same_kind(c.stack)) return std::unexpected(ErrorCode::item_mismatch);
     const unsigned total = (existing.empty() ? 0u : existing.count) + c.stack.count;
-    if (total > std::min(contracts::max_stack_size, items::max_stack(c.stack.item))) return std::unexpected(ErrorCode::stack_overflow);
+    if (total > std::min(contracts::max_stack_size, items::max_stack(c.stack))) return std::unexpected(ErrorCode::stack_overflow);
     return [&ctx, c, existing, total] {
         auto* target = ctx.block_entity(c.pos);
-        const ItemStack after{c.stack.item, static_cast<std::uint8_t>(total)};
+        auto after = c.stack;
+        after.count = static_cast<std::uint8_t>(total);
         target->slots[c.slot] = after;
         ctx.record(TraceKind::inventory_changed, c.pos, c.slot, contracts::pack_stack(existing), contracts::pack_stack(after));
         for (const auto part : detail::container_parts(ctx, c.pos)) detail::container_changed(ctx, part);

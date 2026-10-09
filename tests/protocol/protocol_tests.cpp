@@ -4,16 +4,22 @@
 // "Packets") and from the encoding definitions themselves.
 #include "../support/check.hpp"
 #include <circuit/protocol/codec.hpp>
+#include <circuit/protocol/components.hpp>
 #include <circuit/protocol/content.hpp>
 #include <circuit/protocol/framing.hpp>
 #include <circuit/protocol/nbt.hpp>
 #include <circuit/protocol/output_queue.hpp>
 #include <circuit/protocol/packets.hpp>
 #include <climits>
+#include <format>
+#include <fstream>
+#include <iostream>
+#include <map>
 #include <random>
 #include <set>
 
 using namespace circuit::protocol;
+namespace contracts = circuit::contracts;
 using circuit::test::require;
 using circuit::test::Suite;
 
@@ -22,6 +28,26 @@ Bytes hex(std::initializer_list<unsigned> v) {
     Bytes b;
     for (auto x : v) b.push_back(static_cast<std::byte>(x));
     return b;
+}
+Bytes from_hex(std::string_view text) {
+    Bytes b;
+    for (std::size_t i = 0; i + 1 < text.size(); i += 2) b.push_back(static_cast<std::byte>(std::stoi(std::string(text.substr(i, 2)), nullptr, 16)));
+    return b;
+}
+// Stacks the official servers sent (tests/fixtures/components), as (command, slot bytes).
+std::vector<std::pair<std::string, Bytes>> official_stacks(std::string_view release) {
+    std::vector<std::pair<std::string, Bytes>> out;
+    std::ifstream in(std::format("{}/tests/fixtures/components/java-{}.tsv", CIRCUIT_SOURCE_DIR, release));
+    for (std::string line; std::getline(in, line);) {
+        if (line.empty() || line[0] == '#') continue;
+        const auto tab = line.find('\t');
+        out.emplace_back(line.substr(0, tab), from_hex(line.substr(tab + 1)));
+    }
+    return out;
+}
+ComponentContext open_context(std::int32_t protocol) {
+    const auto* t = ContentTables::for_protocol(protocol);
+    return {t->item_count(), t->block_count(), [](std::string_view) { return std::optional<std::uint32_t>(1u << 16); }};
 }
 template <class T, class F>
 T decode_all(const Bytes& b, F f) {
@@ -283,6 +309,122 @@ int main() {
                     && c->item_id("redstone") == c->item_id("minecraft:redstone"),
                 "items");
         require(c->entity_type("minecraft:item").has_value() && c->entity_type("minecraft:player").has_value(), "entity types");
+    });
+
+    suite.run("item components the official servers sent read, check and write back", [] {
+        for (const auto& [protocol, release] : {std::pair{772, "1.21.8"}, std::pair{769, "1.21.4"}}) {
+            const auto& codec = *ComponentCodec::for_protocol(protocol);
+            const auto ctx = open_context(protocol);
+            std::set<std::uint16_t> types;
+            std::map<std::string, contracts::ComponentPatch> by_command;
+            const auto stacks = official_stacks(release);
+            for (const auto& [command, bytes] : stacks) {
+                Reader r(bytes);
+                const auto count = r.varint();
+                const auto item = r.varint();
+                const auto patch = codec.read(r, ctx);
+                require(count && item && patch && r.remaining() == 0,
+                        std::format("{}: {}: {}", release, command, patch ? "trailing bytes" : patch.error()));
+                // The canonical form has the same size and reads back to the same patch.
+                Writer w;
+                w.varint(*count).varint(*item);
+                codec.write(w, patch->damage, patch->rest);
+                require(w.size() == bytes.size(), std::format("{}: {}: canonical size", release, command));
+                Reader again(w.bytes());
+                (void)again.varint();
+                (void)again.varint();
+                const auto back = codec.read(again, ctx);
+                require(back && back->rest == patch->rest && back->damage == patch->damage, "canonical form reads back");
+                require(codec.check(patch->rest, ctx).value() == patch->rest, "a canonical patch checks");
+                // A stack given twice is the same, whatever order the server sent its maps in.
+                if (const auto [it, fresh] = by_command.emplace(command, patch->rest); !fresh)
+                    require(it->second == patch->rest, std::format("{}: {}: same stack, same components", release, command));
+                for (const auto& a : patch->rest.added()) types.insert(a.type);
+                for (const auto t : patch->rest.removed()) types.insert(t);
+                if (patch->damage) types.insert(*codec.type_id("damage"));
+            }
+            require(stacks.size() >= 26, "every recorded stack");
+            std::cout << std::format("  {}: {} stacks with {} of {} component types\n", release, stacks.size(), types.size(), codec.type_count());
+        }
+    });
+
+    suite.run("item components are canonical and checked", [] {
+        const auto& codec = *ComponentCodec::for_protocol(772);
+        const auto ctx = open_context(772);
+        const auto read = [&](const Bytes& b, const ComponentContext& c, bool prefixed = false) {
+            Reader r(b);
+            auto p = codec.read(r, c, prefixed);
+            if (p && r.remaining() != 0) return std::expected<WirePatch, std::string>(std::unexpected("trailing"));
+            return p;
+        };
+        const auto custom_data = *codec.type_id("custom_data"), max_stack = *codec.type_id("max_stack_size"),
+                   damage = *codec.type_id("damage"), enchantments = *codec.type_id("enchantments");
+        // custom_data {b:1b, a:1b} and max_stack_size 16, in either order.
+        const auto compound_ba = hex({0x0A, 0x01, 0x00, 0x01, 'b', 0x01, 0x01, 0x00, 0x01, 'a', 0x01, 0x00});
+        Writer one, two;
+        one.varint(2).varint(0).varint(custom_data).raw(compound_ba).varint(max_stack).varint(16);
+        two.varint(2).varint(0).varint(max_stack).varint(16).varint(custom_data).raw(compound_ba);
+        const auto a = read(one.bytes(), ctx), b = read(two.bytes(), ctx);
+        require(a && b && a->rest == b->rest && a->rest.typed().max_stack_size == 16, "order does not matter");
+        const auto value = a->rest.added()[0].value;
+        require(value.size() == compound_ba.size() && std::to_integer<char>(value[4]) == 'a', "compound keys in order");
+        // Damage is kept apart and written back among the others.
+        Writer d;
+        d.varint(2).varint(0).varint(max_stack).varint(1).varint(damage).varint(9);
+        const auto with_damage = read(d.bytes(), ctx);
+        require(with_damage && with_damage->damage == 9 && with_damage->rest.added().size() == 1, "damage apart");
+        Writer back;
+        codec.write(back, with_damage->damage, with_damage->rest);
+        Writer sorted;
+        sorted.varint(2).varint(0).varint(max_stack).varint(1).varint(damage).varint(9);
+        require(back.bytes() == sorted.bytes(), "damage in type order");
+        // Malformed and refused patches.
+        const auto refused = [&](const Writer& w, std::string_view why, const ComponentContext& c, bool prefixed = false) {
+            const auto r = read(w.bytes(), c, prefixed);
+            require(!r && r.error().find(why) != std::string::npos, std::format("expected `{}`, got `{}`", why, r ? "ok" : r.error()));
+        };
+        Writer twice, both, unknown, range, too_big;
+        twice.varint(2).varint(0).varint(max_stack).varint(2).varint(max_stack).varint(3);
+        refused(twice, "given twice", ctx);
+        both.varint(1).varint(1).varint(max_stack).varint(2).varint(max_stack);
+        refused(both, "added and removed", ctx);
+        unknown.varint(1).varint(0).varint(static_cast<std::int32_t>(codec.type_count()));
+        refused(unknown, "unknown component type", ctx);
+        too_big.varint(1).varint(0).varint(max_stack).varint(100);
+        refused(too_big, "outside 1-99", ctx);
+        // An enchantment refers to a registry the server must synchronize.
+        range.varint(1).varint(0).varint(enchantments).varint(1).varint(0).varint(1);
+        refused(range, "enchantment registry", ComponentContext{ctx.items, ctx.blocks, {}});
+        require(read(range.bytes(), ctx).has_value(), "with the registry synchronized");
+        Writer far;
+        far.varint(1).varint(0).varint(enchantments).varint(1).varint(1 << 16).varint(1);
+        refused(far, "outside the registry", ctx);
+        // Potions are a static registry of 46 entries in both versions.
+        const auto none = ComponentContext{ctx.items, ctx.blocks, {}};
+        Writer potion, beyond;
+        potion.varint(1).varint(0).varint(*codec.type_id("potion_contents")).u8(1).varint(45).u8(0).varint(0).u8(0);
+        require(read(potion.bytes(), none).has_value(), "the last potion");
+        beyond.varint(1).varint(0).varint(*codec.type_id("potion_contents")).u8(1).varint(46).u8(0).varint(0).u8(0);
+        refused(beyond, "potion id 46 outside the registry", none);
+        // An enumeration value outside its mapping.
+        Writer rarity;
+        rarity.varint(1).varint(0).varint(*codec.type_id("rarity")).varint(4);
+        refused(rarity, "outside its enumeration", ctx);
+        // Length-prefixed values (1.21.5+ creative slots) must use their bytes exactly.
+        Writer prefixed, short_value;
+        prefixed.varint(1).varint(0).varint(max_stack).varint(1).varint(64);
+        require(read(prefixed.bytes(), ctx, true)->rest.typed().max_stack_size == 64, "length-prefixed value");
+        short_value.varint(1).varint(0).varint(max_stack).varint(2).varint(64).u8(0);
+        refused(short_value, "trailing bytes", ctx, true);
+        // Every truncation of a recorded stack is refused.
+        for (const auto& [command, bytes] : official_stacks("1.21.8"))
+            for (std::size_t n = 2; n < bytes.size(); n += 3) {
+                Reader r(std::span<const std::byte>(bytes).first(n));
+                (void)r.varint();
+                (void)r.varint();
+                const auto p = codec.read(r, ctx);
+                require(!p || r.remaining() == 0, "a truncated stack never reads with bytes left");
+            }
     });
 
     suite.run("random input never escapes its bounds", [] {

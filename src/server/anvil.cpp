@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
+#include "registries.hpp"
 #include "world_codec.hpp"
 #include <algorithm>
 #include <bit>
@@ -153,27 +154,6 @@ std::optional<std::vector<double>> numbers(const Tag& c, std::string_view key, s
     return out;
 }
 
-// The damage of an item stack from its data components: 0 without any;
-// nullopt when there are others, or the damage is not one the item can take.
-std::optional<std::uint16_t> component_damage(const Tag& item, std::uint16_t id) {
-    const auto* c = item.find("components");
-    if (!c) return 0;
-    if (c->type() != TagType::compound) return std::nullopt;
-    if (c->keys().empty()) return 0;
-    const auto* info = gameplay::items::info(id);
-    if (c->keys().size() != 1 || c->keys()[0] != "minecraft:damage" || !info) return std::nullopt;
-    const auto& value = c->items()[0];
-    if (value.type() != TagType::int_ || value.integer() < 0 || value.integer() > info->max_damage) return std::nullopt;
-    return static_cast<std::uint16_t>(value.integer());
-}
-
-// The data components Circuit keeps: the damage.
-void set_components(Tag& item, const contracts::ItemStack& stack) {
-    if (stack.damage == 0) return;
-    auto c = Tag::compound();
-    c.set("minecraft:damage", Tag::int_(stack.damage));
-    item.set("components", std::move(c));
-}
 
 // "name[key=value,...]" with properties in key order, for the content mapping.
 std::string notation_of(const Tag& state) {
@@ -292,10 +272,104 @@ class Content {
 public:
     explicit Content(const contracts::VersionBundle& bundle)
         : tables_(protocol::ContentTables::for_protocol(772)),
-          mapping_(evidence::ContentMapping::for_game_version(bundle.game_version)) {
-        if (bundle.game_version != "1.21.8" || !tables_ || !mapping_)
+          mapping_(evidence::ContentMapping::for_game_version(bundle.game_version)),
+          codec_(protocol::ComponentCodec::for_protocol(772)), ctx_(server::component_context(772)) {
+        if (bundle.game_version != "1.21.8" || !tables_ || !mapping_ || !codec_)
             throw std::invalid_argument(std::format("Anvil import and export support java-1.21.8 worlds only, not {}", bundle.id));
         palette_.emplace(*tables_, *mapping_);
+    }
+    // A component map of the save format ("minecraft:name": value, and
+    // "!minecraft:name": {} for a removed default), with `extra` values
+    // already in network form, as a canonical patch; the damage comes apart.
+    std::expected<protocol::WirePatch, std::string> patch(const Tag* components,
+                                                         std::vector<contracts::ComponentPatch::Added> extra = {}) const {
+        auto added = std::move(extra);
+        std::vector<std::uint16_t> removed;
+        std::optional<std::int32_t> damage;
+        if (components) {
+            if (components->type() != TagType::compound) return std::unexpected("malformed components");
+            for (std::size_t i = 0; i < components->keys().size(); ++i) {
+                std::string_view key = components->keys()[i];
+                const bool remove = key.starts_with('!');
+                if (remove) key.remove_prefix(1);
+                const auto type = key.starts_with("minecraft:") ? codec_->type_id(key) : std::nullopt;
+                if (!type) return std::unexpected(std::format("item component {}", key));
+                if (remove) {
+                    removed.push_back(*type);
+                } else if (key == "minecraft:damage") {
+                    const auto& v = components->items()[i];
+                    if (v.type() != TagType::int_ || v.integer() < 0 || v.integer() > INT32_MAX)
+                        return std::unexpected("item component minecraft:damage with an invalid value");
+                    damage = static_cast<std::int32_t>(v.integer());
+                } else {
+                    auto value = codec_->from_save(*type, components->items()[i], ctx_);
+                    if (!value) return std::unexpected(value.error());
+                    added.push_back({*type, std::move(*value)});
+                }
+            }
+        }
+        // Read back as a client's would be: canonical order and typed fields.
+        protocol::Writer w;
+        w.varint(static_cast<std::int32_t>(added.size())).varint(static_cast<std::int32_t>(removed.size()));
+        for (const auto& a : added) w.varint(a.type).raw(a.value);
+        for (const auto t : removed) w.varint(t);
+        protocol::Reader r(w.bytes());
+        auto out = codec_->read(r, ctx_);
+        if (!out) return std::unexpected(out.error());
+        if (damage) out->damage = damage;
+        return out;
+    }
+    // A text component in network form as the value of custom_name.
+    std::expected<contracts::ComponentPatch::Added, std::string> custom_name(const Tag& text) const {
+        const auto type = *codec_->type_id("custom_name");
+        auto value = codec_->from_save(type, text, ctx_);
+        if (!value) return std::unexpected(value.error());
+        return contracts::ComponentPatch::Added{type, std::move(*value)};
+    }
+    // Writes a patch back as a save-format component map; an error names a
+    // component without a save form yet. custom_name goes to `name` instead
+    // when given.
+    std::expected<void, std::string> save(const contracts::ComponentPatch& patch, std::optional<std::int32_t> damage, Tag& out,
+                                          std::optional<Tag>* name = nullptr) const {
+        auto c = Tag::compound();
+        if (damage) c.set("minecraft:damage", Tag::int_(*damage));
+        for (const auto& a : patch.added()) {
+            auto value = codec_->to_save(a.type, a.value);
+            if (!value) return std::unexpected(value.error());
+            if (name && codec_->type_name(a.type) == "custom_name") *name = std::move(*value);
+            else c.set(std::format("minecraft:{}", codec_->type_name(a.type)), std::move(*value));
+        }
+        for (const auto t : patch.removed()) c.set(std::format("!minecraft:{}", codec_->type_name(t)), Tag::compound());
+        out = std::move(c);
+        return {};
+    }
+    // The stack an item tag ("id", "count", "components") describes; an error
+    // names the unsupported content.
+    std::expected<contracts::ItemStack, std::string> stack(const Tag& item) const {
+        const auto id = text(item, "id").value_or("");
+        const auto mapped = mapping_->item(id);
+        if (!mapped) return std::unexpected("item " + id);
+        const auto count = integer(item, "count").value_or(1);
+        auto patch = this->patch(item.find("components"));
+        if (!patch) return std::unexpected(patch.error());
+        const auto damage = patch->damage;
+        contracts::ItemStack s{*mapped, 0, 0, std::move(patch->rest)};
+        if (count < 1 || count > std::min<std::int64_t>(contracts::max_stack_size, gameplay::items::max_stack(s)))
+            return std::unexpected(std::format("item stack of {}", count));
+        s.count = static_cast<std::uint8_t>(count);
+        if (damage && (*damage < 0 || *damage > gameplay::items::max_damage(s)))
+            return std::unexpected("item component minecraft:damage with an invalid value");
+        s.damage = static_cast<std::uint16_t>(damage.value_or(0));
+        return s;
+    }
+    // The "components" of an item tag for a stack; an error names a
+    // component that has no save form yet.
+    std::expected<void, std::string> set_components(Tag& item, const contracts::ItemStack& stack) const {
+        Tag c;
+        if (auto ok = save(stack.components, stack.damage != 0 ? std::optional<std::int32_t>(stack.damage) : std::nullopt, c); !ok)
+            return ok;
+        if (!c.keys().empty()) item.set("components", std::move(c));
+        return {};
     }
     // The reference state for a stored block state, or nullopt.
     std::optional<BlockState> block(const std::string& notation) {
@@ -339,6 +413,8 @@ public:
 private:
     const protocol::ContentTables* tables_;
     const evidence::ContentMapping* mapping_;
+    const protocol::ComponentCodec* codec_;
+    protocol::ComponentContext ctx_;
     std::optional<BlockPalette> palette_;
     std::unordered_map<std::string, std::optional<BlockState>> blocks_;
 };
@@ -548,23 +624,15 @@ private:
         for (const auto& item : items->items()) {
             if (item.type() != TagType::compound) continue;
             const auto slot = integer(item, "Slot");
-            const auto id = text(item, "id").value_or("");
-            const auto count = integer(item, "count").value_or(1);
-            const auto mapped = content_.item(id);
+            auto stack = content_.stack(item);
             if (!slot || *slot < 0 || static_cast<std::size_t>(*slot) >= out.slots.size()) {
                 unsupported(kind + " slot outside the container");
                 all = false;
-            } else if (!mapped) {
-                unsupported("item " + id);
-                all = false;
-            } else if (!component_damage(item, *mapped)) {
-                unsupported("item with components");
-                all = false;
-            } else if (count < 1 || count > std::min<std::int64_t>(contracts::max_stack_size, gameplay::items::max_stack(*mapped))) {
-                unsupported(std::format("item stack of {}", count));
+            } else if (!stack) {
+                unsupported(stack.error());
                 all = false;
             } else {
-                out.slots[static_cast<std::size_t>(*slot)] = {*mapped, static_cast<std::uint8_t>(count), *component_damage(item, *mapped)};
+                out.slots[static_cast<std::size_t>(*slot)] = std::move(*stack);
             }
         }
         return all;
@@ -579,12 +647,37 @@ private:
         const auto block = block_at(pos);
         const auto expect = [&](BlockType t) { return block && block->is(t); };
         BlockEntity out;
-        // Fields Circuit does not keep make the block entity unsupported. The
-        // game writes an empty component map on every block entity.
-        for (const auto* field : {"CustomName", "LootTable", "components", "lock"})
+        if (block && block->is(BlockType::other)) {
+            // A block without rules of its own keeps its block entity as saved.
+            auto kept = Tag::compound();
+            for (std::size_t i = 0; i < be.keys().size(); ++i)
+                if (be.keys()[i] != "x" && be.keys()[i] != "y" && be.keys()[i] != "z") kept.set(be.keys()[i], be.items()[i]);
+            protocol::Writer w;
+            protocol::nbt::write_network(w, protocol::nbt::canonical(kept));
+            out.kind = BlockType::other;
+            out.saved = contracts::Blob(w.take());
+            if (!block_entities_.emplace(pos, std::move(out)).second) return std::unexpected(std::format("{}: duplicate block entity", where));
+            ++report().block_entities;
+            return {};
+        }
+        // Loot tables and locks change what players can do: unsupported until
+        // modeled. The game writes an empty component map on every block entity.
+        for (const auto* field : {"LootTable", "lock"})
             if (const auto* f = be.find(field); f && !(f->type() == TagType::compound && f->keys().empty()))
                 unsupported(std::format("block entity {} with {}", id, field));
         if (integer(be, "keepPacked").value_or(0) != 0) unsupported(std::format("block entity {} with keepPacked", id));
+        // A custom name and other components are kept as components.
+        std::vector<contracts::ComponentPatch::Added> named;
+        if (const auto* name = be.find("CustomName")) {
+            auto value = content_.custom_name(*name);
+            if (value) named.push_back(std::move(*value));
+            else unsupported(std::format("block entity {} with {}", id, value.error()));
+        }
+        if (auto patch = content_.patch(be.find("components"), std::move(named)); !patch || patch->damage)
+            unsupported(std::format("block entity {} with {}", id, patch ? "a damage component" : patch.error()));
+        else
+            out.components = std::move(patch->rest);
+        const auto components = out.components;
         if (id == "minecraft:chest" && expect(BlockType::chest)) {
             out = {BlockType::chest, 0, std::vector<contracts::ItemStack>(27), 0};
             read_items(be, out, "chest");
@@ -618,6 +711,7 @@ private:
             else if (!block) unsupported("block entity " + id);
             return {};
         }
+        out.components = components;
         if (!block_entities_.emplace(pos, std::move(out)).second) return std::unexpected(std::format("{}: duplicate block entity", where));
         ++report().block_entities;
         return {};
@@ -669,10 +763,9 @@ private:
                 unsupported("malformed item entity");
                 continue;
             }
-            const auto stack = content_.item(text(*item, "id").value_or(""));
-            const auto count = integer(*item, "count").value_or(1);
-            if (!stack || !component_damage(*item, *stack) || count < 1 || count > gameplay::items::max_stack(*stack)) {
-                unsupported("item entity of " + text(*item, "id").value_or("?"));
+            auto stack = content_.stack(*item);
+            if (!stack) {
+                unsupported(stack.error());
                 continue;
             }
             if (e.find("Passengers")) unsupported("entity passengers");
@@ -697,7 +790,7 @@ private:
                 unsupported("item entity outside the imported chunks");
                 continue;
             }
-            out.stack = {*stack, static_cast<std::uint8_t>(count), *component_damage(*item, *stack)};
+            out.stack = std::move(*stack);
             const auto age = integer(e, "Age").value_or(0);
             if (age < 0) ++approximated_; // never-despawning items age normally in Circuit
             out.age = static_cast<std::uint32_t>(std::max<std::int64_t>(age, 0));
@@ -801,6 +894,12 @@ private:
             if (const auto it = entities.find(c.pos); it != entities.end())
                 entity_regions[region].emplace_back(c.pos, entity_chunk_tag(c.pos, it->second));
             ++report_.chunks;
+        }
+        // Content the Anvil format of Circuit cannot write yet fails the export.
+        if (!refused_.empty()) {
+            std::string list;
+            for (const auto& [kind, count] : refused_) list += std::format("\n  {} ({})", kind, count);
+            return std::unexpected("the world holds content Circuit cannot write to Anvil yet; nothing was exported:" + list);
         }
         for (const auto& [rc, chunks] : regions)
             if (auto ok = write_region(dir / "region" / std::format("r.{}.{}.mca", rc.first, rc.second), chunks); !ok) return ok;
@@ -927,6 +1026,15 @@ private:
     }
     Tag block_entity_tag(BlockPos pos, const BlockEntity& be) {
         auto t = Tag::compound();
+        if (be.kind == BlockType::other) {
+            // Saved data of a block without rules of its own, as imported.
+            protocol::Reader r(be.saved.bytes());
+            if (auto saved = protocol::nbt::read_network(r); saved && saved->type() == TagType::compound) t = std::move(*saved);
+            t.set("x", Tag::int_(pos.x));
+            t.set("y", Tag::int_(pos.y));
+            t.set("z", Tag::int_(pos.z));
+            return t;
+        }
         const auto items = [&](const std::vector<contracts::ItemStack>& slots) {
             auto list = Tag::list(TagType::compound);
             for (std::size_t i = 0; i < slots.size(); ++i) {
@@ -935,7 +1043,7 @@ private:
                 item.set("Slot", Tag::byte(static_cast<std::int8_t>(i)));
                 item.set("id", Tag::string(content_.item_name(slots[i].item)));
                 item.set("count", Tag::int_(slots[i].count));
-                set_components(item, slots[i]);
+                components(item, slots[i]);
                 list.push(std::move(item));
             }
             return list;
@@ -966,6 +1074,11 @@ private:
         }
         default: break;
         }
+        std::optional<Tag> name;
+        Tag components;
+        if (auto ok = content_.save(be.components, std::nullopt, components, &name); !ok) ++refused_[ok.error()];
+        t.set("components", std::move(components));
+        if (name) t.set("CustomName", std::move(*name));
         t.set("keepPacked", Tag::boolean(false));
         t.set("x", Tag::int_(pos.x));
         t.set("y", Tag::int_(pos.y));
@@ -1006,7 +1119,7 @@ private:
             auto item = Tag::compound();
             item.set("id", Tag::string(content_.item_name(e->stack.item)));
             item.set("count", Tag::int_(e->stack.count));
-            set_components(item, e->stack);
+            components(item, e->stack);
             t.set("Item", std::move(item));
             list.push(std::move(t));
             ++report_.entities;
@@ -1113,6 +1226,10 @@ private:
     std::vector<protocol::BlockStateInfo> infos_;
     std::unordered_map<std::string, std::int32_t> ids_;
     ExportReport report_;
+    std::map<std::string, std::size_t> refused_;
+    void components(Tag& item, const contracts::ItemStack& stack) {
+        if (auto ok = content_.set_components(item, stack); !ok) ++refused_[ok.error()];
+    }
 };
 
 } // namespace

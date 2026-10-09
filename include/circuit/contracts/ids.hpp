@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
+#include <circuit/contracts/components.hpp>
 #include <array>
 #include <compare>
 #include <cstddef>
@@ -157,10 +158,14 @@ struct ItemStack {
     std::uint16_t item{};
     std::uint8_t count{};
     std::uint16_t damage{}; // durability used, for items that have durability
-    [[nodiscard]] constexpr bool empty() const noexcept { return item == 0 || count == 0; }
-    // Stacks of the same item and damage merge (up to the item's limit).
-    [[nodiscard]] constexpr bool same_kind(const ItemStack& o) const noexcept { return item == o.item && damage == o.damage; }
-    auto operator<=>(const ItemStack&) const = default;
+    ComponentPatch components; // every other data component (see components.hpp)
+    [[nodiscard]] bool empty() const noexcept { return item == 0 || count == 0; }
+    // Stacks of the same item, damage and components merge (up to their limit).
+    [[nodiscard]] bool same_kind(const ItemStack& o) const noexcept {
+        return item == o.item && damage == o.damage && components == o.components;
+    }
+    bool operator==(const ItemStack&) const = default;
+    std::strong_ordering operator<=>(const ItemStack&) const = default;
 };
 
 // A player in the simulation: the profile UUID's two halves.
@@ -168,7 +173,9 @@ struct PlayerKey {
     std::uint64_t hi{}, lo{};
     auto operator<=>(const PlayerKey&) const = default;
 };
-inline constexpr std::uint8_t max_stack_size = 64; // per container slot; items may stack lower
+// Per container slot, as in the target versions (since 1.20.5); items stack
+// to their own limit, usually 64 or lower, unless a component raises it.
+inline constexpr std::uint8_t max_stack_size = 99;
 
 } // namespace circuit::contracts
 

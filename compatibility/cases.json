@@ -184,6 +184,38 @@
       "location": "planned",
       "status": "planned",
       "description": "The duplication machine at chunk edges and corners, across region changes and restarts"
+    },
+    {
+      "id": "components/official_stacks",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "tests/fixtures/components/",
+      "status": "passing",
+      "description": "Item stacks with components that the official servers sent after /give: 36 stacks with 93 of 96 component types (1.21.8) and 31 with 65 of 67 (1.21.4) are read, checked, written back in canonical form and read again (protocol_tests)"
+    },
+    {
+      "id": "client/creative_components",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/components-creative.js, components-creative-1214.js",
+      "status": "passing",
+      "description": "Creative slots with a custom name and a potion are kept and sent back with their components; an enchanted book is refused because the enchantment registry is not synchronized"
+    },
+    {
+      "id": "anvil/components",
+      "kind": "round_trip",
+      "versions": [
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/components-setup.js, components-chest.js",
+      "status": "passing",
+      "description": "A world saved by the official server with a named chest, items with a custom name, lore, damage, rarity and glint, and a sign with text: imported by Circuit, shown to a client with the chest title and the components, exported and read back by the official server unchanged"
     }
   ]
 }

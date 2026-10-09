@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "simulate.hpp"
 #include <circuit/contracts/replay.hpp>
+#include <circuit/protocol/components.hpp>
+#include <circuit/server/components.hpp>
 #include <circuit/runtime/engine.hpp>
 #include <circuit/runtime/tick_clock.hpp>
 #include <asio/io_context.hpp>
@@ -88,6 +90,18 @@ int run_simulation(const SimulateOptions& options) {
     if (const auto ok = check_replay_rules(log, **bundle); !ok)
         throw std::runtime_error(std::format("replay recorded under {} on {}; this build runs {}: {}", log.rules_id, log.bundle_id,
                                              (*bundle)->rules->id, error_name(ok.error())));
+    // Item components in the record must be the bundle protocol's and valid.
+    if (const auto* codec = circuit::protocol::ComponentCodec::for_protocol((*bundle)->protocol)) {
+        const auto ctx = circuit::server::component_context((*bundle)->protocol);
+        for (const auto& t : log.ticks)
+            for (const auto& c : t.commands)
+                std::visit([&](const auto& body) {
+                    if constexpr (requires { body.stack; })
+                        if (!body.stack.components.empty())
+                            if (const auto checked = codec->check(body.stack.components, ctx); !checked)
+                                throw std::runtime_error(std::format("invalid replay: tick {}: {}", t.tick, checked.error()));
+                }, c.body);
+    }
     if (!options.record_path.empty()) {
         const auto bytes = encode_replay(log);
         if (!bytes) throw std::runtime_error(std::format("cannot record replay: {}", error_name(bytes.error())));

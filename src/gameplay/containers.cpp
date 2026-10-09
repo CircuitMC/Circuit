@@ -10,7 +10,7 @@ using blocks::ChestType;
 constexpr std::uint8_t hopper_cooldown = 8;
 
 // A container slot holds at most 64 of an item, and no more than the item stacks.
-std::uint8_t slot_limit(std::uint16_t item) { return std::min(contracts::max_stack_size, items::max_stack(item)); }
+std::uint8_t slot_limit(const ItemStack& s) { return std::min(contracts::max_stack_size, items::max_stack(s)); }
 
 bool paired(BlockState a, BlockState b) {
     if (!a.is(BlockType::chest) || !b.is(BlockType::chest) || a.facing() != b.facing()) return false;
@@ -34,12 +34,13 @@ struct Inventory {
         return inv;
     }
     [[nodiscard]] bool valid() const { return !parts.empty(); }
-    // First (part, slot), in combined order, that accepts one more `item`.
-    [[nodiscard]] std::optional<std::pair<std::size_t, std::size_t>> insert_slot(std::uint16_t item) const {
+    // First (part, slot), in combined order, that accepts one more item of
+    // the kind of `stack` (same item, damage and components).
+    [[nodiscard]] std::optional<std::pair<std::size_t, std::size_t>> insert_slot(const ItemStack& stack) const {
         for (std::size_t i = 0; i < entities.size(); ++i)
             for (std::size_t j = 0; j < entities[i]->slots.size(); ++j) {
                 const auto& s = entities[i]->slots[j];
-                if (s.empty() || (s.item == item && s.count < slot_limit(item))) return std::pair{i, j};
+                if (s.empty() || (s.same_kind(stack) && s.count < slot_limit(s))) return std::pair{i, j};
             }
         return std::nullopt;
     }
@@ -48,8 +49,14 @@ struct Inventory {
     }
 };
 
-void add_one(ItemStack& s, std::uint16_t item) {
-    s = s.empty() ? ItemStack{item, 1} : ItemStack{item, static_cast<std::uint8_t>(s.count + 1)};
+// Adds one item of the kind of `kind` to `s` (empty, or of that kind).
+void add_one(ItemStack& s, const ItemStack& kind) {
+    if (s.empty()) {
+        s = kind;
+        s.count = 1;
+    } else {
+        s.count = static_cast<std::uint8_t>(s.count + 1);
+    }
 }
 
 void take_one(ItemStack& s) {
@@ -73,13 +80,13 @@ bool transfer_one(RuleContext& ctx, const Inventory& from, const Inventory& to, 
         for (std::size_t j = 0; j < from.entities[i]->slots.size(); ++j) {
             auto& source = from.entities[i]->slots[j];
             if (source.empty()) continue;
-            const auto target = to.insert_slot(source.item);
+            const auto target = to.insert_slot(source);
             if (!target) continue;
             auto& destination = to.entities[target->first]->slots[target->second];
             const auto before_from = source, before_to = destination;
-            const auto item = source.item;
+            const auto kind = source;
             take_one(source);
-            add_one(destination, item);
+            add_one(destination, kind);
             ctx.record(TraceKind::inventory_changed, from.parts[i], j, pack_stack(before_from), pack_stack(source));
             ctx.record(TraceKind::inventory_changed, to.parts[target->first], target->second, pack_stack(before_to),
                        pack_stack(destination));
@@ -99,11 +106,11 @@ bool pick_up(RuleContext& ctx, const Inventory& self, BlockPos cell) {
         const auto before = e->stack;
         bool moved = false;
         while (!e->stack.empty()) {
-            const auto target = self.insert_slot(e->stack.item);
+            const auto target = self.insert_slot(e->stack);
             if (!target) break;
             auto& slot = self.entities[target->first]->slots[target->second];
             const auto slot_before = slot;
-            add_one(slot, e->stack.item);
+            add_one(slot, e->stack);
             take_one(e->stack);
             ctx.record(TraceKind::inventory_changed, self.parts[target->first], target->second, pack_stack(slot_before),
                        pack_stack(slot));
@@ -149,7 +156,7 @@ std::uint8_t container_signal(RuleContext& ctx, BlockPos pos) {
         if (!be) continue;
         slots += be->slots.size();
         for (const auto& s : be->slots)
-            if (!s.empty()) fullness += static_cast<float>(s.count) / static_cast<float>(slot_limit(s.item));
+            if (!s.empty()) fullness += static_cast<float>(s.count) / static_cast<float>(slot_limit(s));
     }
     if (slots == 0) return 0;
     fullness /= static_cast<float>(slots);

@@ -165,8 +165,18 @@
           "id": "item_components",
           "name": "Other item components: names, lore, enchantments, attributes, potions, food, containers, books, maps, dyes, fireworks, trims and the rest",
           "milestone": "C1",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "components/official_stacks",
+            "client/creative_components",
+            "anvil/components"
+          ],
+          "note": "Every component type of both protocols is read, checked against its registries and kept losslessly in canonical form (schema compiled from minecraft-data); 29 components have a save form for Anvil interchange",
+          "deviations": [
+            "components that refer to registries the server does not synchronize (enchantments, trim materials and patterns, banner patterns, instruments, jukebox songs, data component predicates) are refused",
+            "the rules use only damage, max stack size and max damage"
+          ]
         },
         {
           "id": "component_schema_1_21_5",
@@ -174,12 +184,21 @@
           "milestone": "C1",
           "impl": {
             "java-1.21.4": "not_applicable",
-            "java-1.21.8": "missing"
+            "java-1.21.8": "partial"
           },
-          "evidence": "none",
+          "evidence": {
+            "java-1.21.8": "compared"
+          },
           "absent_reason": {
             "java-1.21.4": "introduced in 1.21.5"
-          }
+          },
+          "cases": [
+            "components/official_stacks"
+          ],
+          "note": "The 1.21.5 component schema (96 types, length-prefixed creative values) is read and written",
+          "deviations": [
+            "entity-data schema changes are not modeled"
+          ]
         },
         {
           "id": "hashed_stack_predictions",
@@ -635,8 +654,15 @@
           "id": "block_entity_data",
           "name": "Signs, banners, heads, pots and other block-entity data",
           "milestone": "C5",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "data_only",
+          "evidence": {
+            "java-1.21.4": "none",
+            "java-1.21.8": "reference_only"
+          },
+          "cases": [
+            "anvil/components"
+          ],
+          "note": "Block entities of blocks without rules of their own keep their saved data through checkpoints and Anvil interchange; nothing interprets it, and clients do not receive it"
         },
         {
           "id": "weathering",
@@ -1038,9 +1064,9 @@
           "id": "component_aware_transfer",
           "name": "Component-aware automation (stacking of items with components)",
           "milestone": "C5",
-          "impl": "partial",
+          "impl": "implemented",
           "evidence": "none",
-          "note": "Damage is the only component"
+          "note": "Stacks merge only with equal item, damage and components; hoppers, pickups, inserts and menus keep components"
         }
       ]
     },
@@ -2072,9 +2098,10 @@
           "absent_reason": {
             "java-1.21.4": "DataVersion 4440 is the 1.21.8 format"
           },
-          "note": "Modeled content only; round trips through the official server",
+          "note": "Every block state; item components with a save form; container names; block entities of blocks without rules kept as saved; modeled entities and scheduled ticks",
           "cases": [
-            "anvil/showcase"
+            "anvil/showcase",
+            "anvil/components"
           ]
         },
         {

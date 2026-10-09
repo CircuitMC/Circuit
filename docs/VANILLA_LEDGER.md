@@ -26,7 +26,7 @@ Feature counts per implementation state, then the number of features with compar
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | V01 Version manifests and evidence | C0 | 8 | 5 / 5 | 3 / 3 | 0 / 0 | 0 / 0 | 0 / 0 | 2 / 2 |
 | V02 Block registry and state properties | C1, C5 | 7 | 5 / 5 | 2 / 2 | 0 / 0 | 0 / 0 | 0 / 0 | 3 / 3 |
-| V03 Item and entity components and registries | C1, C5, C6 | 6 | 0 / 1 | 1 / 1 | 0 / 0 | 3 / 4 | 2 / 0 | 1 / 2 |
+| V03 Item and entity components and registries | C1, C5, C6 | 6 | 0 / 1 | 2 / 3 | 0 / 0 | 2 / 2 | 2 / 0 | 2 / 4 |
 | V04 Data and resource-pack negotiation | C1, C9, C10 | 6 | 0 / 0 | 3 / 3 | 0 / 0 | 3 / 3 | 0 / 0 | 0 / 0 |
 | V05 Dimensions, tickets and chunk lifecycle | C2 | 8 | 0 / 0 | 4 / 4 | 0 / 0 | 4 / 4 | 0 / 0 | 0 / 0 |
 | V06 Lighting and environmental state | C2, C7 | 7 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 | 0 / 0 | 0 / 0 |
@@ -34,12 +34,12 @@ Feature counts per implementation state, then the number of features with compar
 | V08 Terrain and biomes | C7 | 70 | 0 / 0 | 2 / 2 | 64 / 64 | 4 / 4 | 0 / 0 | 0 / 0 |
 | V09 Structures and decoration | C7, C5 | 6 | 0 / 0 | 0 / 0 | 0 / 0 | 6 / 6 | 0 / 0 | 0 / 0 |
 | V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 1 / 1 | 39 / 39 | 3 / 3 | 0 / 0 | 1 / 1 |
-| V11 Common building blocks | C5 | 1344 | 0 / 0 | 6 / 6 | 1334 / 1334 | 4 / 4 | 0 / 0 | 3 / 3 |
+| V11 Common building blocks | C5 | 1344 | 0 / 0 | 6 / 6 | 1335 / 1335 | 3 / 3 | 0 / 0 | 3 / 3 |
 | V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 3 / 3 | 73 / 73 | 6 / 6 | 0 / 0 | 2 / 2 |
 | V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 2 / 2 | 298 / 312 | 6 / 6 | 14 / 0 | 0 / 0 |
 | V14 Redstone sources and signal consumers | C4 | 138 | 5 / 5 | 15 / 15 | 112 / 112 | 6 / 6 | 0 / 0 | 15 / 17 |
 | V15 Pistons and moving structures | C3, C4 | 16 | 1 / 1 | 12 / 12 | 2 / 2 | 1 / 1 | 0 / 0 | 7 / 7 |
-| V16 Automation and storage blocks | C4, C5 | 62 | 2 / 2 | 5 / 5 | 52 / 52 | 3 / 3 | 0 / 0 | 6 / 6 |
+| V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 4 / 4 | 52 / 52 | 3 / 3 | 0 / 0 | 6 / 6 |
 | V17 TNT and explosions | C3, C4 | 11 | 0 / 0 | 0 / 0 | 2 / 2 | 8 / 9 | 1 / 0 | 0 / 0 |
 | V18 Technical machines and vanilla quirks | C4, C7 | 6 | 0 / 0 | 1 / 1 | 0 / 0 | 5 / 5 | 0 / 0 | 1 / 1 |
 | V19 General entity lifecycle | C3 | 17 | 0 / 0 | 4 / 4 | 0 / 0 | 13 / 13 | 0 / 0 | 0 / 0 |
@@ -92,7 +92,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 - **particle:** only in 1.21.8 (2): firefly, tinted_leaves.
 - **command:** only in 1.21.8 (5): dialog, rotate, test, version, waypoint.
 - **packet:** only in 1.21.4 (1): play/clientbound/add_experience_orb; only in 1.21.8 (11): configuration/clientbound/clear_dialog, configuration/clientbound/show_dialog, configuration/serverbound/custom_click_action, play/clientbound/clear_dialog, play/clientbound/show_dialog, play/clientbound/test_instance_block_status, play/clientbound/waypoint, play/serverbound/change_game_mode, play/serverbound/custom_click_action, play/serverbound/set_test_block, play/serverbound/test_instance_block_action.
-- **V03.component_schema_1_21_5** Component and entity-data schema changes of 1.21.5: 1.21.4 not_applicable (introduced in 1.21.5), 1.21.8 missing.
+- **V03.component_schema_1_21_5** Component and entity-data schema changes of 1.21.5: 1.21.4 not_applicable (introduced in 1.21.5), 1.21.8 partial.
 - **V03.hashed_stack_predictions** Hashed item stacks in container clicks (1.21.5 and later): 1.21.4 not_applicable (1.21.4 sends whole stacks), 1.21.8 implemented.
 - **V17.gamerule_tnt_explodes** The tntExplodes game rule: 1.21.4 not_applicable (introduced in 1.21.5), 1.21.8 missing.
 - **V21.happy_ghast_harness** Happy Ghast harnesses and leash changes: 1.21.4 not_applicable (introduced in 1.21.6), 1.21.8 missing.
@@ -127,13 +127,13 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 6 |
+| black_box | passing | 8 |
 | official_trace | failing | 5 |
 | official_trace | passing | 30 |
 | official_trace | unsupported | 1 |
 | planned | planned | 8 |
 | real_client | passing | 2 |
-| round_trip | passing | 1 |
+| round_trip | passing | 2 |
 
 Trace cases are the reference traces in `tests/fixtures/`; the other cases are listed in `compatibility/cases.json`, most of them client scripts kept outside this repository.
 
@@ -166,8 +166,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
 | Item stacks with count, stack size and damage | C1 | partial, compared | partial, compared | `client/windows` |
-| Other item components: names, lore, enchantments, attributes, potions, food, containers, books, maps, dyes, fireworks, trims and the rest | C1 | missing, none | missing, none |  |
-| Component and entity-data schema changes of 1.21.5 | C1 | not_applicable, none | missing, none |  |
+| Other item components: names, lore, enchantments, attributes, potions, food, containers, books, maps, dyes, fireworks, trims and the rest | C1 | partial, compared | partial, compared | `anvil/components`, `client/creative_components`, `components/official_stacks`; components that refer to registries the server does not synchronize (enchantments, trim materials and patterns, banner patterns, instruments, jukebox songs, data component predicates) are refused; the rules use only damage, max stack size and max damage; Every component type of both protocols is read, checked against its registries and kept losslessly in canonical form (schema compiled from minecraft-data); 29 components have a save form for Anvil interchange |
+| Component and entity-data schema changes of 1.21.5 | C1 | not_applicable, none | partial, compared | `components/official_stacks`; entity-data schema changes are not modeled; The 1.21.5 component schema (96 types, length-prefixed creative values) is read and written |
 | Hashed item stacks in container clicks (1.21.5 and later) | C10 | not_applicable, none | implemented, compared | `client/windows` |
 | Entity data and components (variants, custom names, equipment) | C3 | missing, none | missing, none |  |
 
@@ -251,7 +251,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | --- | --- | --- | --- | --- |
 | Placement orientation and shapes: stairs, slabs, walls, fences, panes, doors, beds | C5 | missing, none | missing, none |  |
 | Two-part blocks: doors, beds, tall plants | C5 | missing, none | missing, none |  |
-| Signs, banners, heads, pots and other block-entity data | C5 | missing, none | missing, none |  |
+| Signs, banners, heads, pots and other block-entity data | C5 | data_only, none | data_only, reference_only | `anvil/components`; Block entities of blocks without rules of their own keep their saved data through checkpoints and Anvil interchange; nothing interprets it, and clients do not receive it |
 | Copper weathering, waxing and scraping | C5 | missing, none | missing, none |  |
 
 ### V12 Fluids, fire and falling blocks
@@ -315,7 +315,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Dispensers and droppers with dispense behaviors | C4 | missing, none | missing, none |  |
 | The Crafter | C5 | missing, none | missing, none |  |
 | Barrels, shulker boxes, ender chests, trapped chests, chiseled bookshelves, composters | C5 | missing, none | missing, none |  |
-| Component-aware automation (stacking of items with components) | C5 | partial, none | partial, none | Damage is the only component |
+| Component-aware automation (stacking of items with components) | C5 | implemented, none | implemented, none | Stacks merge only with equal item, damage and components; hoppers, pickups, inserts and menus keep components |
 
 ### V17 TNT and explosions
 
@@ -502,7 +502,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
 | Crash-safe checkpoints and input log | C11 | implemented, none | implemented, none | Circuit's own format |
-| Anvil import and export of DataVersion 4440 | C11 | not_applicable, none | partial, compared | `anvil/showcase`; Modeled content only; round trips through the official server |
+| Anvil import and export of DataVersion 4440 | C11 | not_applicable, none | partial, compared | `anvil/components`, `anvil/showcase`; Every block state; item components with a save form; container names; block entities of blocks without rules kept as saved; modeled entities and scheduled ticks |
 | Anvil import and export of DataVersion 4189 | C11 | missing, none | not_applicable, none |  |
 | Vanilla player data, statistics and advancements | C11 | missing, none | missing, none |  |
 | POIs, maps, raids, scoreboards and other saved data | C11 | missing, none | missing, none |  |

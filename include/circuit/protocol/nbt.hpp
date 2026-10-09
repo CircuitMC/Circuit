@@ -79,6 +79,10 @@ Decoded<Tag> read_network(Reader& r, const Limits& limits = {});
 // Returns the root and fills `name` with its name.
 Decoded<Tag> read_named(Reader& r, std::string& name, const Limits& limits = {});
 
+// The same tag with every compound's keys in order: equal tags, whatever
+// order their keys were written in, encode to equal bytes.
+Tag canonical(const Tag& tag);
+
 // Modified UTF-8 (Java DataOutput.writeUTF) conversion of standard UTF-8.
 [[nodiscard]] std::string to_modified_utf8(std::string_view utf8);
 [[nodiscard]] Decoded<std::string> from_modified_utf8(std::span<const std::byte> bytes);

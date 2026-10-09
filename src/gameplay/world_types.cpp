@@ -155,11 +155,12 @@ std::uint64_t digest(const WorldDump& d) {
     for (const auto& [p, be] : d.block_entities) {
         h.add(p); h.add(static_cast<std::uint64_t>(be.kind)); h.add(be.order); h.add(be.cooldown); h.add(be.signal);
         h.add(be.moving); h.add(be.progress); h.add(be.motion); h.add(be.ticked);
-        for (const auto& s : be.slots) h.add(contracts::pack_stack(s));
+        h.add(be.components.hash()); h.add(be.saved.hash());
+        for (const auto& s : be.slots) { h.add(contracts::pack_stack(s)); h.add(s.components.hash()); }
     }
     h.add(d.entities.size());
     for (const auto& e : d.entities) {
-        h.add(e.id.value); h.add(e.position); h.add(e.velocity); h.add(contracts::pack_stack(e.stack));
+        h.add(e.id.value); h.add(e.position); h.add(e.velocity); h.add(contracts::pack_stack(e.stack)); h.add(e.stack.components.hash());
         h.add(e.age); h.add(e.last_tick); h.add(e.on_ground); h.add(e.pickup_delay);
     }
     h.add(d.ticks.size());
@@ -172,8 +173,8 @@ std::uint64_t digest(const WorldDump& d) {
     for (const auto& t : d.tickets) { h.add(t.id); h.add(contracts::pack_chunk(t.center)); h.add(t.radius); h.add(t.load_radius); }
     h.add(d.players.size());
     for (const auto& p : d.players) {
-        h.add(p.player.hi); h.add(p.player.lo); h.add(contracts::pack_stack(p.cursor));
-        for (const auto& s : p.slots) h.add(contracts::pack_stack(s));
+        h.add(p.player.hi); h.add(p.player.lo); h.add(contracts::pack_stack(p.cursor)); h.add(p.cursor.components.hash());
+        for (const auto& s : p.slots) { h.add(contracts::pack_stack(s)); h.add(s.components.hash()); }
         h.add(p.drag_stage); h.add(p.drag_type); h.add(p.drag_slots.size());
         for (const auto slot : p.drag_slots) h.add(static_cast<std::uint16_t>(slot));
     }

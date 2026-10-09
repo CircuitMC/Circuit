@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "registries.hpp"
+#include <circuit/protocol/content.hpp>
 
 namespace circuit::server {
 namespace nbt = protocol::nbt;
@@ -239,6 +240,21 @@ const std::vector<RegistryTags>& synced_tags(std::int32_t protocol) {
     };
     static const std::vector<RegistryTags> none;
     return protocol == 769 ? v769 : none;
+}
+
+protocol::ComponentContext component_context(std::int32_t protocol) {
+    protocol::ComponentContext ctx;
+    if (const auto* tables = protocol::ContentTables::for_protocol(protocol)) {
+        ctx.items = tables->item_count();
+        ctx.blocks = tables->block_count();
+    }
+    ctx.synced = [registries = synced_registries(protocol)](std::string_view name) -> std::optional<std::uint32_t> {
+        if (!registries) return std::nullopt;
+        for (const auto& r : *registries)
+            if (r.registry.substr(r.registry.find(':') + 1) == name) return static_cast<std::uint32_t>(r.entries.size());
+        return std::nullopt;
+    };
+    return ctx;
 }
 
 std::optional<std::int32_t> registry_index(const std::vector<RegistryEntries>& registries, std::string_view registry,

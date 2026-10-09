@@ -1,6 +1,6 @@
 # Vanilla completion roadmap
 
-Status: in progress. Baseline reviewed on 2026-10-08 at source commit `107738a`, with `circuit-reference-rules-v7`. Delivered so far: C0 (version manifests, the feature/evidence ledger, circuit-trace v2 with entity, lifecycle and random-draw observations recorded on both official servers, and first-difference reports) and C1.1 (a representation of every block state of both versions).
+Status: in progress. Baseline reviewed on 2026-10-08 at source commit `107738a`, with `circuit-reference-rules-v7`. Delivered so far: C0 (version manifests, the feature/evidence ledger, circuit-trace v2 with entity, lifecycle and random-draw observations recorded on both official servers, and first-difference reports) C1.1 (a representation of every block state of both versions) and C1.2 (item and block-entity components kept losslessly).
 
 Parts I and II delivered a working simulation and integration foundation for a limited gameplay subset. The next deliverable is a server that implements the server-side features of **Java Edition 1.21.4 and 1.21.8**, with one authoritative version selected at startup. Passing the original milestones does not establish full vanilla compatibility.
 
@@ -57,7 +57,7 @@ These release notes seed a version-difference inventory; they are not a full beh
 | --- | --- | --- | --- |
 | V01 | Version manifests and evidence | Partial: packet/content IDs exist; full feature, schema and behavioral-difference inventory does not | C0 |
 | V02 | Block registry and state properties | Partial: every block, property and collision shape represented; behavior for 22 blocks, the others inert with data-derived opacity, face coverage, hardness and tools | C1, C5 |
-| V03 | Item/entity components and registries | Partial: stack size/durability and damage component; names, enchantments, books, potions, attributes, bundles and other components need semantics | C1, C5, C6 |
+| V03 | Item/entity components and registries | Partial: every item component of both protocols is read, checked and kept; only damage, max stack size and max damage have behavior; components of unsynchronized registries are refused; entity components missing | C1, C5, C6 |
 | V04 | Data and resource-pack negotiation | Partial: minimal known-pack/registry configuration; full registries, tags, pack stacks, reload and validation missing | C1, C9, C10 |
 | V05 | Dimensions, tickets and chunk lifecycle | Partial: overworld, radius tickets; vanilla ticket types, level propagation, entity/block ticking distinctions and dimensions missing | C2 |
 | V06 | Lighting and environmental state | Missing: block/sky light propagation and weather/thunder effects; full time/day-night interactions need coverage | C2, C7 |

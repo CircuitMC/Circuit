@@ -5,8 +5,9 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
-// 4: the block registry id; 3: stacks carry damage, player commands carry their player.
-constexpr std::uint16_t format_version = 4;
+// 5: stacks carry their data components; 4: the block registry id; 3: stacks
+// carry damage, player commands carry their player.
+constexpr std::uint16_t format_version = 5;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -24,14 +25,20 @@ public:
     }
     void pos(BlockPos p) { put(p.x); put(p.y); put(p.z); }
     void vec(FixedVec v) { put(v.x); put(v.y); put(v.z); }
-    void stack(ItemStack s) { put(s.item); put(s.count); put(s.damage); }
+    void stack(const ItemStack& s) {
+        put(s.item);
+        put(s.count);
+        put(s.damage);
+        write_patch(out, s.components);
+    }
     void player(PlayerKey k) { put(k.hi); put(k.lo); }
     std::vector<std::byte> out;
 };
 
 class Reader {
 public:
-    explicit Reader(std::span<const std::byte> in) : in_(in) {}
+    // `components`: whether stacks carry data components (format 5 and later).
+    explicit Reader(std::span<const std::byte> in, bool components = true) : in_(in), components_(components) {}
     template <class T>
     bool get(T& value) {
         if (in_.size() - at_ < sizeof(T)) return false;
@@ -45,7 +52,18 @@ public:
     }
     bool pos(BlockPos& p) { return get(p.x) && get(p.y) && get(p.z); }
     bool vec(FixedVec& v) { return get(v.x) && get(v.y) && get(v.z); }
-    bool stack(ItemStack& s) { return get(s.item) && get(s.count) && get(s.damage); }
+    bool stack(ItemStack& s) {
+        if (!get(s.item) || !get(s.count) || !get(s.damage)) return false;
+        if (!components_) return true;
+        auto rest = in_.subspan(at_);
+        const auto size = rest.size();
+        auto patch = read_patch(rest);
+        if (!patch) return false;
+        at_ += size - rest.size();
+        s.components = std::move(*patch);
+        return true;
+    }
+    void components(bool on) { components_ = on; }
     bool player(PlayerKey& k) { return get(k.hi) && get(k.lo); }
     bool bytes(std::size_t n, std::string& s) {
         if (in_.size() - at_ < n) return false;
@@ -58,6 +76,7 @@ public:
 private:
     std::span<const std::byte> in_;
     std::size_t at_{};
+    bool components_{};
 };
 
 // Record tags: 0 SetBlock, 1 UseBlock, 2 InsertItem, 3 SpawnItem,
@@ -329,6 +348,7 @@ Result<ReplayLog> decode_replay(std::span<const std::byte> bytes, const ReplayLi
     }
     std::uint16_t version{}, id_length{};
     if (!r.get(version) || version < oldest_version || version > format_version) return std::unexpected(ErrorCode::malformed_record);
+    r.components(version >= 5);
     ReplayLog log;
     std::vector<std::string*> ids{&log.bundle_id, &log.rules_id};
     if (version >= 4) ids.push_back(&log.block_registry_id);
@@ -364,8 +384,8 @@ std::vector<std::byte> encode_tick_input(const TickInput& input) {
     return std::move(w.out);
 }
 
-Result<TickInput> decode_tick_input(std::span<const std::byte> bytes, const ReplayLimits& limits) {
-    Reader r(bytes);
+Result<TickInput> decode_tick_input(std::span<const std::byte> bytes, const ReplayLimits& limits, bool components) {
+    Reader r(bytes, components);
     TickInput t;
     std::uint32_t count{};
     if (!r.get(t.tick) || !r.get(count)) return std::unexpected(ErrorCode::malformed_record);

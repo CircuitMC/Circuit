@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "wire.hpp"
+#include <circuit/protocol/content.hpp>
 #include <algorithm>
 #include <format>
 #include <stdexcept>
@@ -32,7 +33,9 @@ Wire::Wire(std::int32_t protocol) : protocol_(protocol), ids_([&]() -> const pro
     const auto* ids = protocol::PacketIds::for_protocol(protocol);
     if (!ids) throw std::invalid_argument(std::format("server: no packet table for protocol {}", protocol));
     return *ids;
-}()) {
+}()), components_(protocol::ComponentCodec::for_protocol(protocol)) {
+    if (!components_) throw std::invalid_argument(std::format("server: no component schema for protocol {}", protocol));
+    components_ctx_ = server::component_context(protocol);
     const auto cb = [&](State s, std::string_view n) { return ids_.id(s, Bound::clientbound, n); };
     const auto sb = [&](State s, std::string_view n) { return ids_.id(s, Bound::serverbound, n); };
     auto ids = std::make_shared<Ids>();
@@ -309,12 +312,11 @@ Bytes Wire::spawn_entity(std::int32_t id, Uuid uuid, std::int32_t type, Vec3 pos
 Bytes Wire::take_item_entity(std::int32_t collected, std::int32_t collector, std::int32_t count) const {
     return packet(id_->take_item_entity, Writer().varint(collected).varint(collector).varint(count));
 }
-Bytes Wire::item_metadata(std::int32_t id, std::int32_t item, std::int32_t count) const {
+Bytes Wire::item_metadata(std::int32_t id, const WireStack& stack) const {
     Writer w;
     w.varint(id);
     w.u8(8).varint(7); // index 8 (item entity: item stack), type Slot
-    w.varint(count);
-    if (count > 0) w.varint(item).varint(0).varint(0); // no components added or removed
+    slot(w, stack);
     w.u8(0xFF);
     return packet(id_->set_entity_data, w);
 }
@@ -332,40 +334,37 @@ Bytes Wire::entity_position(std::int32_t id, Vec3 pos, float yaw, float pitch, b
 Bytes Wire::head_rotation(std::int32_t id, float head_yaw) const {
     return packet(id_->rotate_head, Writer().varint(id).angle(head_yaw));
 }
-namespace {
-// Slot data: count, then item id and the components added (damage, type 3)
-// and removed.
-void slot(Writer& w, WireStack s) {
+// Slot data: count, then item id and the components added (the damage among
+// them) and removed.
+void Wire::slot(Writer& w, const WireStack& s) const {
     w.varint(s.count);
     if (s.count <= 0) return;
     w.varint(s.item);
-    if (s.damage > 0) w.varint(1).varint(0).varint(3).varint(s.damage);
-    else w.varint(0).varint(0);
+    components_->write(w, s.damage > 0 ? std::optional(s.damage) : std::nullopt, s.components);
 }
-} // namespace
 
-Bytes Wire::container_content(std::int32_t window, std::int32_t state_id, const std::vector<WireStack>& slots, WireStack carried) const {
+Bytes Wire::container_content(std::int32_t window, std::int32_t state_id, const std::vector<WireStack>& slots, const WireStack& carried) const {
     Writer w;
     w.varint(window).varint(state_id).varint(static_cast<std::int32_t>(slots.size()));
     for (const auto& s : slots) slot(w, s);
     slot(w, carried);
     return packet(id_->container_set_content, w);
 }
-Bytes Wire::container_slot(std::int32_t window, std::int32_t state_id, std::int16_t index, WireStack stack) const {
+Bytes Wire::container_slot(std::int32_t window, std::int32_t state_id, std::int16_t index, const WireStack& stack) const {
     Writer w;
     w.varint(window).varint(state_id).i16(index);
     slot(w, stack);
     return packet(id_->container_set_slot, w);
 }
-Bytes Wire::cursor_item(WireStack stack) const {
+Bytes Wire::cursor_item(const WireStack& stack) const {
     Writer w;
     slot(w, stack);
     return packet(id_->set_cursor_item, w);
 }
-Bytes Wire::open_screen(std::int32_t window, std::int32_t menu_type, std::string_view title) const {
+Bytes Wire::open_screen(std::int32_t window, std::int32_t menu_type, const protocol::nbt::Tag& title) const {
     Writer w;
     w.varint(window).varint(menu_type);
-    protocol::nbt::write_network(w, protocol::nbt::text(std::string(title)));
+    protocol::nbt::write_network(w, title);
     return packet(id_->open_screen, w);
 }
 Bytes Wire::close_screen(std::int32_t window) const { return packet(id_->container_close, Writer().varint(window)); }
@@ -450,27 +449,28 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
     if (id == i.sb_set_creative_slot) {
         TRY(slot, r.i16());
         TRY(count, r.varint());
-        std::int32_t item = 0, damage = 0;
+        intent::CreativeSlot c{*slot, *count, 0, 0, {}, {}};
         if (*count > 0) {
             TRY(it, r.varint());
-            item = *it;
-            // Data components follow. The server keeps the damage when it is
-            // the first component added; the rest is not interpreted.
-            const auto added = r.varint();
-            const auto removed = r.varint();
-            if (added && removed && *added > 0)
-                if (const auto type = r.varint(); type && *type == 3)
-                    if (const auto value = r.varint(); value && *value >= 0) damage = *value;
+            c.item = *it;
+            // 1.21.5 and later prefix each component value with its length.
+            auto patch = components_->read(r, components_ctx_, protocol_ >= 770);
+            if (!patch) {
+                c.refused = patch.error();
+                return done(std::move(c)); // the rest of the packet is not read
+            }
+            c.damage = patch->damage.value_or(0);
+            c.components = std::move(patch->rest);
         }
-        return done(intent::CreativeSlot{*slot, *count, item, damage});
+        return done(std::move(c));
     }
     if (id == i.sb_container_click) {
         // Window, state id, slot, button and click type, then the slots the
         // client predicted to change and its predicted carried stack. The
         // server applies the click itself; the prediction only tells it which
         // slots the client may now show wrongly. Protocol 772 sends hashed
-        // stacks; 769 sends whole stacks, whose components other than the
-        // damage are not read (the prediction then counts as unknown).
+        // stacks, whose components the server cannot compare; 769 sends whole
+        // stacks with their components.
         TRY(window, r.varint());
         TRY(state, r.varint());
         TRY(slot_index, r.i16());
@@ -483,7 +483,7 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
         click.button = *button;
         click.mode = *mode;
         // A predicted stack: nullopt when unreadable; a nullopt inside when
-        // it names components other than a whole damage value.
+        // its components are hashed.
         using Predicted = std::optional<std::optional<WireStack>>;
         const auto predicted = [&]() -> Predicted {
             if (protocol_ >= 770) {
@@ -508,17 +508,10 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
             if (!count) return std::nullopt;
             if (*count <= 0) return std::optional<WireStack>{WireStack{}};
             const auto item = r.varint();
-            const auto added = r.varint();
-            const auto removed = r.varint();
-            if (!item || !added || !removed || *added < 0 || *added > 1 || *removed != 0) return std::nullopt;
-            std::int32_t damage = 0;
-            if (*added == 1) {
-                const auto type = r.varint();
-                const auto value = r.varint();
-                if (!type || *type != 3 || !value) return std::nullopt;
-                damage = *value;
-            }
-            return std::optional<WireStack>{WireStack{*item, *count, damage}};
+            if (!item) return std::nullopt;
+            auto patch = components_->read(r, components_ctx_);
+            if (!patch) return std::nullopt; // refused components leave the rest unreadable
+            return std::optional<WireStack>{WireStack{*item, *count, patch->damage.value_or(0), std::move(patch->rest)}};
         };
         const auto n = r.varint();
         if (!n || *n < 0 || *n > 128) {

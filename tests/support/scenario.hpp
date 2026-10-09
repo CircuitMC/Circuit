@@ -16,6 +16,12 @@ using namespace circuit::contracts;
 using namespace circuit::gameplay;
 
 inline CommandBody place(BlockPos p, BlockState s) { return SetBlock{p, s.raw(), std::nullopt}; }
+// A stack with a custom name (protocol 772: component 5, a string tag).
+inline ItemStack named(std::uint16_t item, std::uint8_t count, std::string_view name, std::uint16_t damage = 0) {
+    std::vector<std::byte> value{std::byte{8}, std::byte{0}, static_cast<std::byte>(name.size())};
+    for (const auto c : name) value.push_back(static_cast<std::byte>(c));
+    return {item, count, damage, ComponentPatch::make(772, {{5, std::move(value)}}, {}, {})};
+}
 // The registry state of a 1.21.8 block without rules of its own.
 inline BlockState registry_block(std::string_view name, std::vector<registry::Property> properties = {}) {
     const auto block = registry::find_block("1.21.8", name);

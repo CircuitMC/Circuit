@@ -59,7 +59,7 @@ std::uint8_t player_window_slot(std::size_t inventory_index) {
 int slot_with_room(const PlayerInventory& inv, ItemStack stack, std::uint8_t selected) {
     const auto room = [&](std::uint8_t slot) {
         const auto& s = inv.slots[slot];
-        return !s.empty() && s.same_kind(stack) && s.count < items::max_stack(s.item);
+        return !s.empty() && s.same_kind(stack) && s.count < items::max_stack(s);
     };
     if (room(selected)) return selected;
     if (room(contracts::offhand_slot)) return contracts::offhand_slot;
@@ -88,8 +88,11 @@ ItemStack add_to_player(RuleContext& ctx, PlayerInventory& inv, ItemStack stack,
         if (slot < 0) slot = free_slot(inv);
         if (slot < 0) break;
         auto& s = inv.slots[static_cast<std::size_t>(slot)];
-        if (s.empty()) s = ItemStack{stack.item, 0, stack.damage};
-        const auto moved = std::min<int>(stack.count, items::max_stack(s.item) - s.count);
+        if (s.empty()) {
+            s = stack;
+            s.count = 0;
+        }
+        const auto moved = std::min<int>(stack.count, items::max_stack(s) - s.count);
         s.count = static_cast<std::uint8_t>(s.count + moved);
         stack.count = static_cast<std::uint8_t>(stack.count - moved);
         record_slot(ctx, inv, static_cast<std::uint8_t>(slot));

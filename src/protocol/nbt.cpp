@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include <circuit/protocol/nbt.hpp>
+#include <algorithm>
 #include <stdexcept>
 
 namespace circuit::protocol::nbt {
@@ -330,6 +331,23 @@ Decoded<Tag> read_named(Reader& r, std::string& name, const Limits& limits) {
     if (!n) return std::unexpected(n.error());
     name = std::move(*n);
     return d.payload(static_cast<TagType>(*t), 0);
+}
+
+Tag canonical(const Tag& t) {
+    if (t.type() == TagType::compound) {
+        std::vector<std::size_t> order(t.keys().size());
+        for (std::size_t i = 0; i < order.size(); ++i) order[i] = i;
+        std::sort(order.begin(), order.end(), [&](std::size_t a, std::size_t b) { return t.keys()[a] < t.keys()[b]; });
+        auto out = Tag::compound();
+        for (const auto i : order) out.set(t.keys()[i], canonical(t.items()[i]));
+        return out;
+    }
+    if (t.type() == TagType::list) {
+        auto out = Tag::list(t.element());
+        for (const auto& item : t.items()) out.push(canonical(item));
+        return out;
+    }
+    return t;
 }
 
 } // namespace circuit::protocol::nbt

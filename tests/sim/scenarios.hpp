@@ -356,7 +356,8 @@ inline Scenario transient_head_scenario() {
 // not; dust survives on a top slab and pops off a bottom slab; a piston is
 // blocked by an immovable block; items land on blocks with collision and fall
 // through grass; water stops at a wall. Registry blocks also replace each
-// other and are removed.
+// other and are removed. Named and damaged items pass through hoppers across
+// the edge, and a named item falls into one.
 inline Scenario registry_block_scenario() {
     return {"registry_blocks", 61, 120, [](Tick t) -> std::vector<CommandBody> {
         if (t == 1) return {ticket(1, {0, 0}, 2)};
@@ -377,6 +378,12 @@ inline Scenario registry_block_scenario() {
             for (int x = 20; x <= 24; ++x) b.push_back(place({x, 0, 10}, blocks::stone()));
             b.push_back(place({23, 1, 10}, registry_block("cobblestone")));
             b.push_back(place({22, 1, 10}, blocks::water_source()));
+            append(b, {place({15, 1, 14}, blocks::chest()), place({15, 0, 14}, blocks::hopper(D::east)),
+                       place({16, 0, 14}, blocks::hopper(D::east)), place({17, 0, 14}, blocks::chest()),
+                       InsertItem{{15, 1, 14}, 0, named(items::stone, 5, "tagged")},
+                       InsertItem{{15, 1, 14}, 1, ItemStack{items::iron_pickaxe, 1, 40}},
+                       InsertItem{{15, 1, 14}, 2, named(items::iron_pickaxe, 1, "worn", 7)},
+                       SpawnItem{at_block(16.5, 3.5, 14.5), {}, named(items::redstone, 3, "dust")}});
             return b;
         }
         std::vector<CommandBody> c;

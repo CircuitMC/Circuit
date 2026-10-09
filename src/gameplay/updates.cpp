@@ -9,12 +9,14 @@ using namespace detail;
 bool set_block(RuleContext& ctx, BlockPos pos, BlockState next) {
     const auto prev = ctx.block(pos);
     if (prev.is_unloaded() || next.is_unloaded() || prev == next) return false;
-    const bool replaced = prev.type() != next.type();
+    const bool replaced = !same_block(prev, next);
     std::vector<contracts::ItemStack> contents;
     if (replaced && has_block_entity(prev.type())) {
         if (is_container(prev.type()))
             if (const auto* be = ctx.peek_block_entity(pos)) contents = be->slots;
         ctx.remove_block_entity(pos);
+    } else if (replaced && prev.is(BlockType::other) && ctx.peek_block_entity(pos)) {
+        ctx.remove_block_entity(pos); // the saved data of a block without rules goes with it
     }
     ctx.write_block(pos, next);
     ctx.record(TraceKind::block_changed, pos, prev.raw(), next.raw());

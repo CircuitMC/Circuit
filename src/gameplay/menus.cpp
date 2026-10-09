@@ -86,7 +86,7 @@ public:
     [[nodiscard]] bool may_pickup(std::size_t i) const { return !result(i); }
     [[nodiscard]] int max_stack(std::size_t i, ItemStack stack) const {
         if (own_ && i >= 5 && i <= 8) return 1;
-        return std::min<int>(contracts::max_stack_size, items::max_stack(stack.item));
+        return std::min<int>(contracts::max_stack_size, items::max_stack(stack));
     }
 
     // Moves `stack` into slots [from, to): first onto stacks of the same kind,
@@ -94,7 +94,7 @@ public:
     bool move_into(ItemStack& stack, std::size_t from, std::size_t to, bool reverse) {
         bool moved = false;
         const auto order = [&](std::size_t k) { return reverse ? to - 1 - k : from + k; };
-        if (items::max_stack(stack.item) > 1) {
+        if (items::max_stack(stack) > 1) {
             for (std::size_t k = 0; k < to - from && !stack.empty(); ++k) {
                 const auto i = order(k);
                 auto existing = get(i);
@@ -217,7 +217,7 @@ void throw_item(RuleContext& ctx, const contracts::FixedVec& position, const con
 bool same_kind_fits(ItemStack slot, ItemStack stack, bool size_matters) {
     if (slot.empty()) return true;
     if (!slot.same_kind(stack)) return false;
-    return slot.count + (size_matters ? 0 : stack.count) <= items::max_stack(stack.item);
+    return slot.count + (size_matters ? 0 : stack.count) <= items::max_stack(stack);
 }
 
 void reset_drag(PlayerInventory& inv) {
@@ -273,7 +273,7 @@ void pickup(RuleContext& ctx, Menu& menu, const contracts::ContainerClick& c, st
             menu.set_cursor(in_slot);
         }
     } else if (in_slot.same_kind(carried)) {
-        const auto taken = menu.take(i, std::min<int>(in_slot.count, items::max_stack(carried.item) - carried.count));
+        const auto taken = menu.take(i, std::min<int>(in_slot.count, items::max_stack(carried) - carried.count));
         carried.count = static_cast<std::uint8_t>(carried.count + taken.count);
         menu.set_cursor(carried);
     }
@@ -341,10 +341,10 @@ contracts::Result<std::function<void()>> plan_click(RuleContext& ctx, const cont
                     continue;
                 const auto existing = menu.get(i);
                 const int had = existing.empty() ? 0 : existing.count;
-                const int limit = std::min<int>(items::max_stack(stack.item), menu.max_stack(i, stack));
+                const int limit = std::min<int>(items::max_stack(stack), menu.max_stack(i, stack));
                 const int per = inv.drag_type == 0 ? stack.count / static_cast<int>(slots.size())
                               : inv.drag_type == 1 ? 1
-                                                   : items::max_stack(stack.item);
+                                                   : items::max_stack(stack);
                 const int n = std::min(per + had, limit);
                 left -= n - had;
                 auto placed = stack;
@@ -426,7 +426,7 @@ contracts::Result<std::function<void()>> plan_click(RuleContext& ctx, const cont
             if (!c.creative || !menu.cursor().empty() || c.slot < 0) break;
             auto s = menu.get(static_cast<std::size_t>(c.slot));
             if (s.empty()) break;
-            s.count = items::max_stack(s.item);
+            s.count = items::max_stack(s);
             menu.set_cursor(s);
             break;
         }
@@ -450,12 +450,12 @@ contracts::Result<std::function<void()>> plan_click(RuleContext& ctx, const cont
             if (carried.empty() || (!menu.get(i).empty() && menu.may_pickup(i))) break;
             const bool forward = c.button == 0;
             for (int pass = 0; pass < 2; ++pass)
-                for (std::size_t k = 0; k < menu.size() && carried.count < items::max_stack(carried.item); ++k) {
+                for (std::size_t k = 0; k < menu.size() && carried.count < items::max_stack(carried); ++k) {
                     const auto j = forward ? k : menu.size() - 1 - k;
                     const auto s = menu.get(j);
                     if (s.empty() || !same_kind_fits(s, carried, true) || !menu.may_pickup(j) || menu.result(j)) continue;
-                    if (pass == 0 && s.count == items::max_stack(s.item)) continue;
-                    const auto taken = menu.take(j, std::min<int>(s.count, items::max_stack(carried.item) - carried.count));
+                    if (pass == 0 && s.count == items::max_stack(s)) continue;
+                    const auto taken = menu.take(j, std::min<int>(s.count, items::max_stack(carried) - carried.count));
                     carried.count = static_cast<std::uint8_t>(carried.count + taken.count);
                 }
             menu.set_cursor(carried);

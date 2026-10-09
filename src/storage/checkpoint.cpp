@@ -17,11 +17,13 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
-// 5: the header names the block registry; 4: stacks carry damage, and player
+// 6: stacks carry their data components; 5: the header names the block
+// registry; 4: stacks carry damage, and player
 // inventories follow the tickets; 3: hopper block entities carry the tick they
-// last ticked; 2: tickets carry a load radius. Versions 1 to 4 are still read:
-// they predate the registry and hold only states that circuit-blocks-1 keeps.
-constexpr std::uint32_t version = 5;
+// last ticked; 2: tickets carry a load radius. Versions 1 to 5 are still read:
+// versions before 5 predate the block registry and hold only states that
+// circuit-blocks-1 keeps; versions before 6 have stacks without components.
+constexpr std::uint32_t version = 6;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -82,7 +84,12 @@ std::vector<std::byte> encode_section(Raw raw) {
     return w.take();
 }
 
-void stack(Writer& w, contracts::ItemStack s) { w.u16(s.item).u8(s.count).u16(s.damage); }
+void stack(Writer& w, const contracts::ItemStack& s) {
+    w.u16(s.item).u8(s.count).u16(s.damage);
+    std::vector<std::byte> patch;
+    contracts::write_patch(patch, s.components);
+    w.raw(patch);
+}
 
 // Writes the column table; `blocks(i)` gives column i's non-empty sections as
 // (section y, encoding) in ascending y.
@@ -106,6 +113,9 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
         for (const auto& st : be.slots) stack(w, st);
         w.u8(be.cooldown).u8(be.signal).i32(static_cast<std::int32_t>(be.moving)).u8(be.progress).u8(be.motion);
         w.varlong(static_cast<std::int64_t>(be.ticked));
+        std::vector<std::byte> patch;
+        contracts::write_patch(patch, be.components);
+        w.raw(patch).prefixed_bytes(be.saved.bytes());
     }
     w.varint(static_cast<std::int32_t>(s.entities.size()));
     for (const auto& e : s.entities) {
@@ -149,7 +159,17 @@ struct BodyReader {
 
     bool stack(contracts::ItemStack& s) {
         if (!get(r.u16(), s.item) || !get(r.u8(), s.count)) return false;
-        return version < 4 || get(r.u16(), s.damage);
+        if (version >= 4 && !get(r.u16(), s.damage)) return false;
+        if (version < 6) return true;
+        auto rest = r.rest();
+        const auto size = rest.size();
+        auto patch = contracts::read_patch(rest);
+        if (!patch || !r.raw(size - rest.size())) {
+            error = "malformed item components";
+            return false;
+        }
+        s.components = std::move(*patch);
+        return true;
     }
 
     template <class T>
@@ -259,6 +279,16 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
             std::int64_t ticked{};
             if (!b.get(b.r.varlong(), ticked) || ticked < 0) return false;
             be.ticked = static_cast<gameplay::Tick>(ticked);
+        }
+        if (b.version >= 6) {
+            auto rest = b.r.rest();
+            const auto size = rest.size();
+            auto patch = contracts::read_patch(rest);
+            if (!patch || !b.r.raw(size - rest.size())) return false;
+            be.components = std::move(*patch);
+            protocol::Bytes saved;
+            if (!b.get(b.r.prefixed_bytes(1u << 21), saved)) return false;
+            be.saved = contracts::Blob(std::move(saved));
         }
         be.moving = static_cast<std::uint32_t>(moving);
         s.block_entities.push_back({p, std::move(be)});

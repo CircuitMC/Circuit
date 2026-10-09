@@ -313,6 +313,10 @@ struct Game::Impl final : GameServices {
             seed = r.checkpoint.seed;
             if (seed != config.seed || meta.floor_y != config.floor_y)
                 log_info(std::format("the world keeps its own seed {} and floor height {}", seed, meta.floor_y));
+            // Stored components must be this protocol's, canonical and within
+            // the registries it synchronizes, like those a client sends.
+            if (const auto bad = invalid_components(r.checkpoint.state, r.inputs))
+                throw std::runtime_error(std::format("world {}: invalid item components: {}", where, *bad));
             const auto restore = [&] {
                 return std::make_unique<runtime::Engine>(bundle, seed, r.checkpoint.state, engine_options(meta.floor_y));
             };
@@ -621,10 +625,36 @@ struct Game::Impl final : GameServices {
 
     static contracts::PlayerKey key_of(const Player& p) { return {p.uuid.high, p.uuid.low}; }
 
-    WireStack wire_stack(contracts::ItemStack s) const {
+    // The first problem with the components of a recovered state and its log.
+    std::optional<std::string> invalid_components(const gameplay::WorldDump& d, const std::vector<contracts::TickInput>& inputs) const {
+        std::optional<std::string> bad;
+        const auto check = [&](const contracts::ComponentPatch& patch) {
+            if (bad || patch.empty()) return;
+            const auto checked = wire.components().check(patch, wire.component_context());
+            if (!checked) bad = checked.error();
+            else if (!(checked->typed() == patch.typed())) bad = "typed fields that differ from the components";
+        };
+        for (const auto& [pos, be] : d.block_entities) {
+            check(be.components);
+            for (const auto& s : be.slots) check(s.components);
+        }
+        for (const auto& e : d.entities) check(e.stack.components);
+        for (const auto& p : d.players) {
+            check(p.cursor.components);
+            for (const auto& s : p.slots) check(s.components);
+        }
+        for (const auto& input : inputs)
+            for (const auto& c : input.commands)
+                std::visit([&](const auto& body) {
+                    if constexpr (requires { body.stack; }) check(body.stack.components);
+                }, c.body);
+        return bad;
+    }
+
+    WireStack wire_stack(const contracts::ItemStack& s) const {
         if (s.empty()) return {};
         const auto it = item_wire.find(s.item);
-        return it == item_wire.end() ? WireStack{} : WireStack{it->second, s.count, s.damage};
+        return it == item_wire.end() ? WireStack{} : WireStack{it->second, s.count, s.damage, s.components};
     }
 
     // The player's open window as the simulation holds it: the own inventory
@@ -706,7 +736,23 @@ struct Game::Impl final : GameServices {
         // Edition protocol/Inventory, and observed from the target version):
         // generic_9x3 2, generic_9x6 5, hopper 16.
         const std::int32_t type = slots == 54 ? 5 : slots == 5 ? 16 : 2;
-        const auto title = slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper" : "Chest";
+        // A container's custom name is its title (for a double chest, the
+        // first named half's).
+        auto title = protocol::nbt::text(slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper" : "Chest");
+        const auto view = engine->view();
+        const auto name_type = wire.components().type_id("custom_name");
+        for (const auto part : container_parts_of(pos)) {
+            const auto be = view.block_entity(part);
+            if (!be || !*be) continue;
+            const auto added = (*be)->components.added();
+            const auto it = std::ranges::find(added, name_type, &contracts::ComponentPatch::Added::type);
+            if (it == added.end()) continue;
+            protocol::Reader r(it->value);
+            if (auto name = protocol::nbt::read_network(r)) {
+                title = std::move(*name);
+                break;
+            }
+        }
         if (p.window) close_window(p, true);
         p.window = Player::Window{p.next_window, pos, slots};
         p.next_window = p.next_window % 100 + 1;
@@ -1274,16 +1320,19 @@ struct Game::Impl final : GameServices {
                 p.remote[static_cast<std::size_t>(c.slot)] = WireStack{};
             return;
         }
-        // The item must be one the rule set knows, in a valid count.
+        // The item must be one the rule set knows, in a valid count, with
+        // components the server could read and check.
         const auto name = content.item_name(c.item);
         const auto item = name ? mapping.item(*name) : std::unexpected(std::string("unknown"));
-        if (c.count < 0 || !item || c.count > gameplay::items::max_stack(*item)) {
+        contracts::ItemStack stack{item ? *item : std::uint16_t{0}, static_cast<std::uint8_t>(std::clamp(c.count, 0, 255)), 0,
+                                   c.components};
+        if (!c.refused.empty() || c.count < 0 || !item || c.count > gameplay::items::max_stack(stack)
+            || (gameplay::items::max_damage(stack) > 0 && gameplay::items::max_stack(stack) > 1)) {
+            if (!c.refused.empty()) log_info(std::format("{}: creative stack refused: {}", p.name, c.refused));
             p.remote_window = -1; // the client shows what it asked for: send everything again
             return;
         }
-        const auto* info = gameplay::items::info(*item);
-        const auto damage = static_cast<std::uint16_t>(std::clamp<std::int32_t>(c.damage, 0, info ? info->max_damage : 0));
-        const contracts::ItemStack stack{*item, static_cast<std::uint8_t>(c.count), damage};
+        stack.damage = static_cast<std::uint16_t>(std::clamp<std::int32_t>(c.damage, 0, gameplay::items::max_damage(stack)));
         admit(contracts::SetPlayerSlot{key_of(p), static_cast<std::uint8_t>(c.slot), stack});
         // As in the target version, the slot is not echoed: the client already shows it.
         if (!p.window && p.remote_window == 0 && static_cast<std::size_t>(c.slot) < p.remote.size())
@@ -1441,9 +1490,8 @@ struct Game::Impl final : GameServices {
             t.last = entity_vec(e.position);
         }
         if (!t.viewers.insert(p.peer->id()).second) return;
-        const auto wire_item = item_wire.contains(e.stack.item) ? item_wire.at(e.stack.item) : 0;
         p.peer->send(wire.spawn_entity(t.protocol_id, entity_uuid(engine_id), item_entity_type, t.last, 0, 0, 0, 0, entity_vec(e.velocity)));
-        p.peer->send(wire.item_metadata(t.protocol_id, wire_item, e.stack.count));
+        p.peer->send(wire.item_metadata(t.protocol_id, wire_stack(e.stack)));
     }
 
     void publish_entities() {
@@ -1474,8 +1522,7 @@ struct Game::Impl final : GameServices {
                 if (p.sent.contains(c)) show_entity(p, id, **e);
             if (const auto it = tracked.find(id); it != tracked.end()) {
                 // Stack changes are sent again to everyone who sees the entity.
-                const auto wire_item = item_wire.contains((*e)->stack.item) ? item_wire.at((*e)->stack.item) : 0;
-                const auto meta = wire.item_metadata(it->second.protocol_id, wire_item, (*e)->stack.count);
+                const auto meta = wire.item_metadata(it->second.protocol_id, wire_stack((*e)->stack));
                 for (const auto viewer : it->second.viewers)
                     if (const auto p = players.find(viewer); p != players.end()) p->second.peer->send(meta);
             }

@@ -101,14 +101,17 @@ The server fails closed on storage errors. If a log record cannot be written, th
 
 ## Checkpoint format
 
-A checkpoint file is `CIRCKPT\0`, a format version (5; versions 1–4 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Versions 1–4 predate the registry: their block states are a subset of `circuit-blocks-1` and are read as such. The body holds:
+A checkpoint file is `CIRCKPT\0`, a format version (6; versions 1–5 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Versions 1–4 predate the registry: their block states are a subset of `circuit-blocks-1` and are read as such. Versions before 6 have item stacks without components. The body holds:
 - columns with palette-packed sections;
 - block entities, entities (with their pickup delay), scheduled ticks and pending block events;
 - chunk tickets and the engine counters;
-- player inventories: the 46 slots, the carried stack and a drag in progress; item stacks carry their damage;
+- player inventories: the 46 slots, the carried stack and a drag in progress; item stacks carry their damage and their other data components;
+- block entities' components (a container's name) and the saved data of block entities of blocks without rules of their own;
 - named extras, such as the server's metadata and player positions.
 
-Decoding checks every length, count and the digest. The engine's restoring constructor then checks the semantics: positions inside known columns, valid block states, and no duplicate ids. A restored engine continues exactly like the one that produced the checkpoint.
+Decoding checks every length, count and the digest. The engine's restoring constructor then checks the semantics: positions inside known columns, valid block states, and no duplicate ids. The server checks every item component of the checkpoint and the log as it checks a client's, and refuses a world with components of another protocol or outside the registries it synchronizes. A restored engine continues exactly like the one that produced the checkpoint.
+
+Log segments start with `CIRCWAL` and a format byte: 1 for records whose stacks carry components, 0 (read only) for records written before.
 
 ## Anvil import and export
 
@@ -124,7 +127,8 @@ Import reads the source world and never writes to it. It creates a new world dir
 | Kind | Supported content |
 | --- | --- |
 | Blocks | Every block state of 1.21.8. The blocks with rules of their own are air, stone, glass, obsidian, redstone block, slime block, lever, redstone dust, repeater, comparator, redstone lamp, observer, pistons and their heads, moving pistons, hopper, chest, water and wheat; every other block keeps its state and is inert in the rules |
-| Block entities | Chests and hoppers with their items (any item of either version; the `minecraft:damage` component of items with durability), the hopper transfer cooldown, comparator output signals and moving pistons |
+| Block entities | Chests and hoppers with their items, custom name and components, the hopper transfer cooldown, comparator output signals and moving pistons. Block entities of blocks without rules of their own (signs, banners, furnaces and the rest) are kept as saved and written back unchanged |
+| Item components | The damage, and the components whose save form mirrors their network form: `custom_data`, `max_stack_size`, `max_damage`, `unbreakable`, `custom_name`, `item_name`, `item_model`, `lore`, `rarity`, `repair_cost`, `enchantment_glint_override`, `intangible_projectile`, `glider`, `tooltip_style`, `dyed_color`, `map_color`, `map_id`, `map_decorations`, `potion_duration_scale`, `recipes`, `ominous_bottle_amplifier`, `note_block_sound`, `provides_banner_patterns`, `lock`, `container_loot`, `debug_stick_state`, `entity_data`, `bucket_entity_data` and `block_entity_data`; a removed default (`!minecraft:name`) |
 | Entities | Item entities, with their pickup delay |
 | Scheduled ticks | Block and fluid ticks of blocks with rules of their own, with their delay and priority |
 | Level data | Time, seed, spawn point and level name |
@@ -132,7 +136,8 @@ Import reads the source world and never writes to it. It creates a new world dir
 Every block property round-trips unchanged, including dust shapes, lever mounting, repeater locks, cave air and properties the rules only store, such as a chest's `waterlogged`.
 
 **Unsupported content and policies.** Anything else is unsupported content, for example:
-- blocks unknown to 1.21.8 or with invalid properties; block entities of blocks without rules of their own (signs, furnaces and the rest), and their scheduled ticks; other entities; and items with data components other than a valid damage;
+- blocks unknown to 1.21.8 or with invalid properties; scheduled ticks of blocks without rules of their own; other entities; and items with components that have no save form in Circuit yet (enchantments, potions, books, containers and the rest are kept on the network and in checkpoints, but not converted to or from region files yet);
+- containers with a loot table or a lock;
 - block entities with custom names, loot tables or locks;
 - the Nether and the End;
 - chunks that still have an older DataVersion because the game has not re-saved them.
@@ -141,7 +146,9 @@ By default, an import that meets unsupported content imports nothing and lists e
 - **Blocks** with invalid properties are replaced by a stand-in of the same coarse shape: air for blocks without collision, obsidian for unbreakable blocks, stone for full light-blocking solids and glass for other solids. Unknown blocks become air.
 - **Other content** is dropped: block entities, items and entities.
 
-The report lists every replacement. Substitution changes behavior: for example, a sign loses its text and a furnace its items. A substituted world is therefore not evidence about the original machine.
+Export refuses a state whose items hold a component without a save form, and lists them; it writes nothing.
+
+The report lists every replacement. Substitution changes behavior: for example, an enchanted tool or a container with a loot table is dropped. A substituted world is therefore not evidence about the original machine.
 
 **Not kept.** Import keeps none of the following:
 - light, heightmaps and biomes;

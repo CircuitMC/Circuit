@@ -818,8 +818,8 @@ void Engine::Impl::restore(const WorldDump& state) {
         if (!contracts::fixed_within_border(e.position) || e.id.value == 0 || e.id.value >= world.next_entity_id) bad("entity");
         if (e.position.y < lowest || e.position.y >= highest) bad("entity height");
         if (!valid_speed(e.velocity.x) || !valid_speed(e.velocity.y) || !valid_speed(e.velocity.z)) bad("entity velocity");
-        if (!gameplay::items::valid(e.stack.item) || e.stack.count < 1 || e.stack.count > gameplay::items::max_stack(e.stack.item)
-            || e.stack.damage > gameplay::items::info(e.stack.item)->max_damage || e.pickup_delay > 32767)
+        if (!gameplay::items::valid(e.stack.item) || e.stack.count < 1 || e.stack.count > gameplay::items::max_stack(e.stack)
+            || e.stack.damage > gameplay::items::max_damage(e.stack) || e.pickup_delay > 32767)
             bad("entity stack");
         const auto it = columns.find(contracts::chunk_of(contracts::block_of(e.position)));
         if (it == columns.end()) bad("entity in an unknown column");
@@ -838,9 +838,9 @@ void Engine::Impl::restore(const WorldDump& state) {
     for (const auto& t : state.tickets)
         if (!world.tickets.add({t.id, t.center, t.radius, t.load_radius}, bundle.limits)) bad("ticket");
     const auto valid_stack = [](const contracts::ItemStack& s) {
-        if (s.item == 0 && s.count == 0 && s.damage == 0) return true;
-        const auto* info = gameplay::items::info(s.item);
-        return info && s.count >= 1 && s.count <= info->max_stack && s.damage <= info->max_damage;
+        if (s.item == 0 && s.count == 0 && s.damage == 0 && s.components.empty()) return true;
+        return gameplay::items::valid(s.item) && s.count >= 1 && s.count <= gameplay::items::max_stack(s)
+            && s.damage <= gameplay::items::max_damage(s);
     };
     for (const auto& p : state.players) {
         if (!valid_stack(p.cursor) || !std::ranges::all_of(p.slots, valid_stack) || p.drag_stage > 1 || p.drag_type > 2

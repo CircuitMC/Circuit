@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
 #include <circuit/protocol/nbt.hpp>
+#include <circuit/server/components.hpp>
 #include <cstdint>
 #include <optional>
 #include <string_view>
@@ -36,5 +37,6 @@ const std::vector<RegistryData>* registries_with_data(std::int32_t protocol);
 const std::vector<RegistryTags>& synced_tags(std::int32_t protocol);
 std::optional<std::int32_t> registry_index(const std::vector<RegistryEntries>& registries, std::string_view registry,
                                            std::string_view entry) noexcept;
+
 
 } // namespace circuit::server

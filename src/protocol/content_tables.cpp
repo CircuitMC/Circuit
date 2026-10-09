@@ -30,6 +30,8 @@ const ContentTables* ContentTables::for_protocol(std::int32_t protocol) noexcept
 std::int32_t ContentTables::protocol() const noexcept { return table_.protocol; }
 std::string_view ContentTables::source_commit() const noexcept { return table_.commit; }
 std::int32_t ContentTables::state_count() const noexcept { return table_.states; }
+std::uint32_t ContentTables::block_count() const noexcept { return static_cast<std::uint32_t>(table_.blocks.size()); }
+std::uint32_t ContentTables::item_count() const noexcept { return static_cast<std::uint32_t>(table_.items.size()); }
 
 std::optional<std::int32_t> ContentTables::state_id(std::string_view block, const std::vector<Property>& properties) const {
     const auto name = block.find(':') == std::string_view::npos ? std::string("minecraft:") + std::string(block) : std::string(block);

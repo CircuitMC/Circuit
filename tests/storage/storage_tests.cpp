@@ -235,8 +235,9 @@ int main() {
 
     suite.run("checkpoints name their block registry", [&] {
         // Version 5 names the registry after the rule set; version 4 predates it
-        // and is read as circuit-blocks-1. Another registry is refused.
-        const auto c = checkpoint_at(histories[1], histories[1].ticks());
+        // and is read as circuit-blocks-1. Another registry is refused. The
+        // scenario holds no item stacks, whose encoding changed in version 6.
+        const auto c = checkpoint_at(histories[0], histories[0].ticks());
         const auto good = circuit::storage::encode_checkpoint(c);
         const std::span<const std::byte> sealed(good.data(), good.size() - 32);
         circuit::protocol::Reader header(sealed);
@@ -256,9 +257,10 @@ int main() {
             for (std::size_t i = 0; i < 32; ++i) out.push_back(static_cast<std::byte>(std::stoi(hex.substr(2 * i, 2), nullptr, 16)));
             return out;
         };
-        require(circuit::storage::decode_checkpoint(reseal(5, "circuit-blocks-1")).value() == c, "resealed version 5");
+        require(circuit::storage::decode_checkpoint(reseal(6, "circuit-blocks-1")).value() == c, "resealed version 6");
+        require(circuit::storage::decode_checkpoint(reseal(5, "circuit-blocks-1")).value() == c, "version 5");
         require(circuit::storage::decode_checkpoint(reseal(4, std::nullopt)).value() == c, "version 4 reads as circuit-blocks-1");
-        const auto other = circuit::storage::decode_checkpoint(reseal(5, "circuit-blocks-0"));
+        const auto other = circuit::storage::decode_checkpoint(reseal(6, "circuit-blocks-0"));
         require(!other && other.error().find("block registry circuit-blocks-0") != std::string::npos, "another registry is refused");
     });
 

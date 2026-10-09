@@ -256,11 +256,12 @@ int main() {
                 "level data");
     });
 
-    suite.run("unsupported block entities, items and entities", [&] {
+    suite.run("item components, block entities and unsupported content", [&] {
         auto c = chunk({0, 0}, {block("minecraft:air"), block("minecraft:chest", {{"facing", "north"}, {"type", "single"}, {"waterlogged", "false"}}),
                                 block("minecraft:hopper", {{"enabled", "true"}, {"facing", "down"}}),
                                 block("minecraft:oak_sign", {{"rotation", "0"}, {"waterlogged", "false"}})});
-        // `damage` < 0: a custom name instead of a damage component.
+        // `damage` -1: a custom name and lore instead of a damage component;
+        // -2: enchantments, which have no save mapping yet.
         const auto item = [](std::int8_t slot, std::string id, std::int32_t count, std::optional<std::int32_t> damage = std::nullopt) {
             auto t = Tag::compound();
             t.set("Slot", Tag::byte(slot));
@@ -268,8 +269,18 @@ int main() {
             t.set("count", Tag::int_(count));
             if (damage) {
                 auto c = Tag::compound();
-                if (*damage < 0) c.set("minecraft:custom_name", Tag::string("named"));
-                else c.set("minecraft:damage", Tag::int_(*damage));
+                if (*damage == -1) {
+                    c.set("minecraft:custom_name", Tag::string("named"));
+                    auto lore = Tag::list(TagType::string);
+                    lore.push(Tag::string("line"));
+                    c.set("minecraft:lore", std::move(lore));
+                } else if (*damage == -2) {
+                    auto levels = Tag::compound();
+                    levels.set("minecraft:sharpness", Tag::int_(3));
+                    c.set("minecraft:enchantments", std::move(levels));
+                } else {
+                    c.set("minecraft:damage", Tag::int_(*damage));
+                }
                 t.set("components", std::move(c));
             }
             return t;
@@ -287,6 +298,7 @@ int main() {
         items.push(item(7, "minecraft:iron_pickaxe", 1, 12)); // a damaged tool is supported
         items.push(item(8, "minecraft:iron_pickaxe", 1, 251)); // beyond its durability (250) it is not
         items.push(item(9, "minecraft:stone", 1, 1));          // nor is damage on an item without durability
+        items.push(item(10, "minecraft:diamond_sword", 1, -2)); // enchantments have no save mapping yet
         chest.set("Items", std::move(items));
         bes.push(std::move(chest));
         auto hopper = Tag::compound();
@@ -303,6 +315,10 @@ int main() {
         sign.set("x", Tag::int_(3));
         sign.set("y", Tag::int_(0));
         sign.set("z", Tag::int_(0));
+        auto front = Tag::compound();
+        front.set("has_glowing_text", Tag::byte(0));
+        sign.set("front_text", std::move(front));
+        sign.set("is_waxed", Tag::byte(1));
         bes.push(std::move(sign));
         c.set("block_entities", std::move(bes));
         const auto dir = root / "entities-world";
@@ -337,30 +353,43 @@ int main() {
         write(dir / "entities" / "r.0.0.mca", region({{{0, 0}, std::move(ents)}}, 1));
         const auto rejected = anvil::import_world(dir, bundle());
         require(!rejected, "rejected");
-        for (const auto* kind : {"item examplemod:gizmo", "item with components", "block entity minecraft:hopper with CustomName",
-                                 "entity minecraft:pig", "block entity minecraft:sign"})
+        for (const auto* kind : {"item examplemod:gizmo", "item component minecraft:damage with an invalid value (2)",
+                                 "item component minecraft:enchantments", "entity minecraft:pig"})
             require(rejected.error().find(kind) != std::string::npos, std::format("names {}: {}", kind, rejected.error()));
-        require(rejected.error().find("with components") == rejected.error().find("item with components") + 5, "empty component maps are accepted");
+        require(rejected.error().find("hopper") == std::string::npos && rejected.error().find("sign") == std::string::npos,
+                "names and block entities of other blocks are kept: " + rejected.error());
         const auto r = anvil::import_world(dir, bundle(), {.unsupported = anvil::Unsupported::substitute});
         require(r.has_value(), "substituted");
         const auto* c0 = block_entity_at(r->state, {1, 0, 0});
-        require(c0 && c0->slots[0] == ItemStack{items::redstone, 64} && c0->slots[5].empty() && c0->slots[6].empty(), "supported items kept");
-        require(c0->slots[7] == ItemStack{items::iron_pickaxe, 1, 12} && c0->slots[8].empty() && c0->slots[9].empty(), "damage kept when valid");
-        // A damaged tool exports with its damage component and comes back.
+        require(c0 && c0->slots[0] == ItemStack{items::redstone, 64} && c0->slots[5].empty(), "supported items kept");
+        require(c0->slots[6].item == items::stone && c0->slots[6].count == 2 && c0->slots[6].components.added().size() == 2,
+                "a custom name and lore are kept");
+        require(c0->slots[7] == ItemStack{items::iron_pickaxe, 1, 12} && c0->slots[8].empty() && c0->slots[9].empty() && c0->slots[10].empty(),
+                "damage kept when valid");
+        // Damage, components, names and the sign's data export and come back.
         {
             auto state = r->state;
             const auto out = root / "damaged-export";
             require(anvil::export_world(state, bundle(), out, {.level_name = "damaged", .seed = 1}).has_value(), "exported");
             const auto again = anvil::import_world(out, bundle());
-            require(again && block_entity_at(again->state, {1, 0, 0})->slots[7] == ItemStack{items::iron_pickaxe, 1, 12}, "damage round-trips");
+            require(again.has_value(), again ? "" : again.error());
+            const auto* chest_again = block_entity_at(again->state, {1, 0, 0});
+            require(chest_again->slots[7] == ItemStack{items::iron_pickaxe, 1, 12}, "damage round-trips");
+            require(chest_again->slots[6] == c0->slots[6], "components round-trip");
+            require(block_entity_at(again->state, {2, 0, 0})->components == block_entity_at(r->state, {2, 0, 0})->components,
+                    "the hopper's name round-trips");
+            require(block_entity_at(again->state, {3, 0, 0})->saved == block_entity_at(r->state, {3, 0, 0})->saved,
+                    "the sign's data round-trips");
         }
         const auto* h = block_entity_at(r->state, {2, 0, 0});
-        require(h && h->cooldown == 3, "hopper cooldown");
+        require(h && h->cooldown == 3 && h->components.added().size() == 1, "hopper cooldown and name");
+        const auto* sign_be = block_entity_at(r->state, {3, 0, 0});
+        require(sign_be && sign_be->kind == BlockType::other && !sign_be->saved.empty(), "the sign keeps its saved data");
         require(r->state.entities.size() == 1 && r->state.entities[0].stack == ItemStack{items::wheat, 3} &&
                     r->state.entities[0].position == FixedVec{4 * 4096 + 2048, 4096 + 1024, 4 * 4096 + 2048} &&
                     r->state.entities[0].age == 20,
                 "item entity");
-        require(r->state.block_entities.size() == 2, "the sign's block entity is dropped");
+        require(r->state.block_entities.size() == 3, "the sign's block entity is kept");
     });
 
     suite.run("malformed worlds fail cleanly", [&] {
