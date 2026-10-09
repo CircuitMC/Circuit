@@ -109,6 +109,22 @@ int record_fixture_file(const std::string& skeleton, const std::string& output, 
     return 0;
 }
 
+int diff_fixtures(const std::string& first, const std::string& second, double tolerance) {
+    const auto a = evidence::parse_fixture(read_text(first));
+    const auto b = evidence::parse_fixture(read_text(second));
+    if (!a || !b) {
+        const auto& [path, error] = !a ? std::pair{first, a.error()} : std::pair{second, b.error()};
+        std::cout << std::format("ERROR {}:{}: {}\n", path, error.line, error.message);
+        return 2;
+    }
+    if (const auto difference = evidence::first_difference(*a, *b, tolerance)) {
+        std::cout << std::format("DIFFER {} / {}: {}\n", first, second, *difference);
+        return 1;
+    }
+    std::cout << std::format("SAME {} / {}\n", first, second);
+    return 0;
+}
+
 int print_compatibility(const std::string& bundle_id) {
     const auto bundle = contracts::BundleRegistry::select_for_simulation(bundle_id);
     if (!bundle) {

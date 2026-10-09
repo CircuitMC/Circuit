@@ -40,7 +40,8 @@ void usage() {
         "  --simulate [--game-version java-1.21.8] [--workers 1..64] [--ticks 1..1000000]\n"
         "             [--seed N] [--replay <file>] [--record <file>] [--realtime]\n"
         "  --check-fixture <file> [--check-fixture <file> ...] [--workers 1..64]\n"
-        "  --record-fixture <skeleton> --output <file>\n"
+        "  --record-fixture <skeleton> --output <file> [--workers 1..64]\n"
+        "  --diff-fixtures <first> <second> [--tolerance <blocks>]\n"
         "  --profile-fixture <file> [--ticks N] [--workers 1..64]\n"
         "  --compatibility [--game-version java-1.21.8]\n"
         "  --serve [--config <file>] [--world <dir>] [--port N] [--offline] [--workers 1..64]\n"
@@ -63,7 +64,8 @@ int main(int argc, char** argv) {
         std::optional<std::uint16_t> port;
         circuit::app::SimulateOptions simulation;
         std::vector<std::string> fixtures;
-        std::string record_fixture, fixture_output, profile;
+        std::string record_fixture, fixture_output, profile, diff_first, diff_second;
+        double tolerance = 0.0;
         std::string selected = "java-1.21.8";
         std::vector<std::string> libraries;
         for (int i = 1; i < argc; ++i) {
@@ -94,6 +96,13 @@ int main(int argc, char** argv) {
             else if (arg == "--realtime") simulation.realtime = true;
             else if (arg == "--check-fixture") fixtures.emplace_back(value());
             else if (arg == "--record-fixture") record_fixture = value();
+            else if (arg == "--diff-fixtures") {
+                diff_first = value();
+                diff_second = value();
+            } else if (arg == "--tolerance") {
+                tolerance = std::stod(std::string(value()));
+                if (!(tolerance >= 0.0 && tolerance <= 1.0)) throw std::invalid_argument("--tolerance must be within 0-1");
+            }
             else if (arg == "--output") fixture_output = value();
             else if (arg == "--profile-fixture") profile = value();
             else if (arg == "--compatibility") compatibility = true;
@@ -117,6 +126,7 @@ int main(int argc, char** argv) {
             if (fixture_output.empty()) throw std::invalid_argument("--record-fixture requires --output");
             return circuit::app::record_fixture_file(record_fixture, fixture_output, workers);
         }
+        if (!diff_first.empty()) return circuit::app::diff_fixtures(diff_first, diff_second, tolerance);
         if (!fixtures.empty()) return circuit::app::check_fixtures(fixtures, workers);
         if (!profile.empty()) return circuit::app::profile_fixture(profile, ticks_given ? ticks : 600, workers);
         if (compatibility) return circuit::app::print_compatibility(selected);

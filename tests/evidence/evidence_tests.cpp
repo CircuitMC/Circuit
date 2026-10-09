@@ -10,6 +10,7 @@
 #include <format>
 #include <fstream>
 #include <iterator>
+#include <set>
 #include <sstream>
 
 using namespace circuit::evidence;
@@ -478,7 +479,51 @@ int main(int argc, char** argv) {
             }
             require(expected.empty(), std::format("{}: EXPECTED.txt lists missing traces", directory));
             require(traces >= 5, std::format("{} open traces for {}", traces, version));
+            // Every open skeleton has a trace on each version, or the harness refused it there.
+            std::set<std::string> refused;
+            if (fs::exists(fixtures / directory / "NOT_APPLICABLE.txt")) {
+                std::istringstream na(read_text(fixtures / directory / "NOT_APPLICABLE.txt"));
+                for (std::string line; std::getline(na, line);)
+                    if (!line.empty() && line.front() != '#') refused.insert(line.substr(0, line.find(' ')));
+            }
+            for (const auto& entry : fs::directory_iterator(fixtures / "open-skeletons")) {
+                const auto name = entry.path().filename().string();
+                const bool traced = fs::exists(fixtures / directory / name);
+                require(traced != refused.contains(name),
+                        std::format("{}: {} needs a trace or a NOT_APPLICABLE entry, not both", directory, name));
+            }
         }
+    });
+
+    suite.run("recordings of the same scenario are compared observation by observation", [&] {
+        const auto official = parse(read_text(fixtures / "open" / "item_drop_piston.ctrace"));
+        const auto circuit = parse(read_text(fixtures / "reference" / "item_drop_piston.ctrace"));
+        require(!first_difference(official, official).has_value(), "a recording equals itself");
+        require(!first_difference(official, parse(read_text(fixtures / "open-1.21.4" / "item_drop_piston.ctrace"))).has_value(),
+                "provenance is not compared: both versions recorded the same");
+        const auto d = first_difference(official, circuit);
+        require(d && d->starts_with("tick 1 event 1 (line 22 / line 22)") && d->find("entity-added block_events e1") != std::string::npos, *d);
+        // Property order in block states does not matter; values do.
+        auto dust = parse(read_text(fixtures / "reference" / "item_drop_piston.ctrace"));
+        for (auto& c : dust.recorded_changes)
+            if (c.before.starts_with("minecraft:redstone_wire")) c.before = "minecraft:redstone_wire[west=none,south=none,power=0,north=none,east=none]";
+        require(!first_difference(circuit, dust).has_value(), "properties in another order");
+        // Doubles within a tolerance, and different scenarios.
+        auto moved = circuit;
+        moved.entity_probes.front().position[0] += 1e-9;
+        require(first_difference(circuit, moved).has_value() && !first_difference(circuit, moved, 1e-6).has_value(), "tolerance");
+        auto other = circuit;
+        other.actions.back().tick += 1;
+        require(first_difference(circuit, other) == std::optional<std::string>("different scenarios: actions"), "scenario");
+        // Game rules are part of the scenario; Circuit models none.
+        const auto with_rule = parse(read_text(fixtures / "open" / "tnt_explodes_disabled.ctrace"));
+        require(with_rule.gamerules == std::vector<std::pair<std::string, std::string>>{{"tntExplodes", "false"}}, "game rule read");
+        require(write_fixture(parse(write_fixture(with_rule))) == write_fixture(with_rule), "game rules round-trip");
+        require(first_difference(with_rule, parse(read_text(fixtures / "open" / "tnt_redstone_ignition.ctrace")))
+                    == std::optional<std::string>("different scenarios: observation headers"), "a game rule changes the scenario");
+        require(evaluate_fixture(with_rule, engine_executor()).outcome == Outcome::unsupported, "unsupported");
+        require(!parse_fixture(std::string(header) + "gamerule tntExplodes false\n"), "game rules need version 2");
+        require(!parse_fixture(std::string(header2) + "gamerule a true\ngamerule a false\n"), "duplicate game rule");
     });
 
     return suite.finish();

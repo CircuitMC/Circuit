@@ -1,6 +1,6 @@
 # Vanilla completion roadmap
 
-Status: in progress. Baseline reviewed on 2026-10-08 at source commit `107738a`, with `circuit-reference-rules-v7`. Delivered so far: the version manifests and the feature/evidence ledger (C0.1).
+Status: in progress. Baseline reviewed on 2026-10-08 at source commit `107738a`, with `circuit-reference-rules-v7`. Delivered so far: C0 (version manifests, the feature/evidence ledger, circuit-trace v2 with entity, lifecycle and random-draw observations recorded on both official servers, and first-difference reports).
 
 Parts I and II delivered a working simulation and integration foundation for a limited gameplay subset. The next deliverable is a server that implements the server-side features of **Java Edition 1.21.4 and 1.21.8**, with one authoritative version selected at startup. Passing the original milestones does not establish full vanilla compatibility.
 

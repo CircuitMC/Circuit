@@ -151,6 +151,8 @@ struct Fixture {
     bool observe_chunks{};
     bool observe_rng{};
     double tolerance{};
+    // v2: game rules set before the scenario starts, by name, in file order.
+    std::vector<std::pair<std::string, std::string>> gamerules;
     std::vector<Action> actions;
     std::vector<Change> recorded_changes;
     std::vector<BlockProbe> block_probes;
@@ -189,6 +191,13 @@ std::expected<Fixture, FormatError> parse_fixture(std::string_view text, const F
 std::string write_fixture(const Fixture& fixture);
 // Shortest decimal text that reads back as the same double.
 std::string format_double(double value);
+
+// The first observation on which two recordings of the same scenario differ,
+// described with both files' line numbers; nullopt when they agree. Provenance
+// (source, harness, game version) is not compared. A differing scenario
+// (area, ticks, actions, observation headers) is reported first. Block states
+// are compared by id and properties, doubles within `tolerance`.
+std::optional<std::string> first_difference(const Fixture& a, const Fixture& b, double tolerance = 0.0);
 
 std::string_view source_name(contracts::EvidenceSource source) noexcept;
 

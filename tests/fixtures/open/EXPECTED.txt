@@ -5,3 +5,4 @@ item_hopper_pickup.ctrace FAIL tick 1 entity probe (line 20)
 item_piston_push.ctrace FAIL tick 3 entity probe (line 27)
 item_water_current.ctrace FAIL tick 30 entity probe (line 30)
 tnt_redstone_ignition.ctrace UNSUPPORTED line 22
+tnt_explodes_disabled.ctrace UNSUPPORTED game rule tntExplodes

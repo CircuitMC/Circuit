@@ -83,6 +83,8 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
     for (const auto& b : contracts::BundleRegistry::candidates())
         if (b.game_version == f.game_version && b.rules) found = &b;
     if (!found) return std::unexpected(report(Outcome::unsupported, std::format("no executable bundle for {}", f.game_version)));
+    if (!f.gamerules.empty())
+        return std::unexpected(report(Outcome::unsupported, std::format("game rule {}: the rules model no game rules", f.gamerules.front().first)));
     if (f.dimension != "minecraft:overworld")
         return std::unexpected(report(Outcome::unsupported, std::format("dimension {}: the rules model the overworld only", f.dimension)));
     p.bundle = *found;

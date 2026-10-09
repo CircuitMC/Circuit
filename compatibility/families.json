@@ -58,8 +58,12 @@
           "id": "scenario_adapters",
           "name": "Scenario adapters for official server, sequential, parallel and real-client runs with first-mismatch reports",
           "milestone": "C0",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "none",
+          "note": "tools/scenario.py runs a skeleton sequentially, in parallel and on each harness, and reports the first difference of every pair (circuit-server --diff-fixtures)",
+          "deviations": [
+            "real-client checks are separate scripts, not driven from skeletons"
+          ]
         },
         {
           "id": "protocol_client_calibration",
@@ -1121,13 +1125,20 @@
             "java-1.21.4": "not_applicable",
             "java-1.21.8": "missing"
           },
-          "evidence": "none",
+          "evidence": {
+            "java-1.21.4": "none",
+            "java-1.21.8": "reference_only"
+          },
           "absent_reason": {
             "java-1.21.4": "introduced in 1.21.5"
           },
           "cases_planned": [
             "TNT-06"
-          ]
+          ],
+          "cases": [
+            "trace/tnt_explodes_disabled"
+          ],
+          "note": "With the rule off, 1.21.8 does not prime TNT at all; the 1.21.4 harness refuses the skeleton"
         },
         {
           "id": "other_explosions",

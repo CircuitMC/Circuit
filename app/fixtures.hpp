@@ -15,6 +15,9 @@ int profile_fixture(const std::string& path, unsigned ticks, unsigned workers);
 
 // Records a skeleton fixture from the reference rules into `output`.
 int record_fixture_file(const std::string& skeleton, const std::string& output, unsigned workers);
+// Compares two recordings of the same scenario; prints the first differing
+// observation. Returns 0 when they agree, 1 when they differ, 2 on errors.
+int diff_fixtures(const std::string& first, const std::string& second, double tolerance);
 
 // Prints the compatibility table of an executable bundle: target and claimed
 // tier, evidence source and limitations of every mechanism.

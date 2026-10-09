@@ -24,7 +24,7 @@ Feature counts per implementation state, then the number of features with compar
 
 | Family | Milestones | Features | Implemented | Partial | Data only | Missing | Not applicable | Compared |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| V01 Version manifests and evidence | C0 | 8 | 5 / 5 | 2 / 2 | 0 / 0 | 1 / 1 | 0 / 0 | 2 / 2 |
+| V01 Version manifests and evidence | C0 | 8 | 5 / 5 | 3 / 3 | 0 / 0 | 0 / 0 | 0 / 0 | 2 / 2 |
 | V02 Block registry and state properties | C1, C5 | 7 | 1 / 1 | 4 / 4 | 0 / 0 | 2 / 2 | 0 / 0 | 3 / 3 |
 | V03 Item and entity components and registries | C1, C5, C6 | 6 | 0 / 1 | 1 / 1 | 0 / 0 | 3 / 4 | 2 / 0 | 1 / 2 |
 | V04 Data and resource-pack negotiation | C1, C9, C10 | 6 | 0 / 0 | 3 / 3 | 0 / 0 | 3 / 3 | 0 / 0 | 0 / 0 |
@@ -130,7 +130,7 @@ Their counts are unknown, not zero.
 | black_box | passing | 6 |
 | official_trace | failing | 4 |
 | official_trace | passing | 30 |
-| official_trace | unsupported | 1 |
+| official_trace | unsupported | 2 |
 | planned | planned | 8 |
 | real_client | passing | 2 |
 | round_trip | passing | 1 |
@@ -148,7 +148,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Reference traces of block state changes (circuit-trace v1) | C0 | implemented, compared | implemented, compared | `trace/vertical_slice` |
 | Trace format with entity, lifecycle, inventory, dimension, ticket and RNG observations | C0 | implemented, none | implemented, none | circuit-trace 2: Circuit records and evaluates it; the reference harness does not record it yet |
 | Reference harness recording v2 observations on both releases, with repeat runs | C0 | implemented, none | implemented, none | Both releases; repeat runs on fresh worlds; the level random is seeded with 0 |
-| Scenario adapters for official server, sequential, parallel and real-client runs with first-mismatch reports | C0 | missing, none | missing, none |  |
+| Scenario adapters for official server, sequential, parallel and real-client runs with first-mismatch reports | C0 | partial, none | partial, none | real-client checks are separate scripts, not driven from skeletons; tools/scenario.py runs a skeleton sequentially, in parallel and on each harness, and reports the first difference of every pair (circuit-server --diff-fixtures) |
 | Protocol-client scenarios compared between the official servers and Circuit | C0 | partial, compared | partial, compared | `client/chests`, `client/collision`, `client/redstone`, `client/vitals`, `client/windows`; External mineflayer scripts; outputs compared by diff |
 | Real-client step scripts against Circuit | C0 | partial, none | partial, none | `realclient/redstone`, `realclient/survival`; Checks Circuit with the unmodified client; not a comparison with the official server |
 
@@ -326,7 +326,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Primed TNT entities: fuse, motion, collision and removal | C3 | missing, reference_only | missing, reference_only | `TNT-02`, `TNT-03`, `trace/tnt_redstone_ignition` |
 | Explosions: affected blocks, resistance, fluids, drops, chain reactions, damage and knockback | C3 | missing, reference_only | missing, reference_only | `TNT-04`, `trace/tnt_redstone_ignition` |
 | Live fuses across save, reload and unload | C3 | missing, none | missing, none | `TNT-05` |
-| The tntExplodes game rule | C3 | not_applicable, none | missing, none | `TNT-06` |
+| The tntExplodes game rule | C3 | not_applicable, none | missing, reference_only | `TNT-06`, `trace/tnt_explodes_disabled`; With the rule off, 1.21.8 does not prime TNT at all; the 1.21.4 harness refuses the skeleton |
 | Creeper, bed, respawn anchor, end crystal, wither and wind charge explosions | C8 | missing, none | missing, none |  |
 
 ### V18 Technical machines and vanilla quirks

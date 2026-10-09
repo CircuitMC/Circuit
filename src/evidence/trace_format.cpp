@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include <circuit/evidence/trace_format.hpp>
 #include <algorithm>
+#include <cctype>
 #include <charconv>
 #include <cmath>
 #include <format>
@@ -114,6 +115,19 @@ private:
                                                             "area", "ticks", "random-tick-speed", "neighbor-update-limit",
                                                             "changes", "dimension", "entities", "chunks", "rng", "tolerance"};
         static const std::set<std::string_view> v2_keys{"dimension", "entities", "chunks", "rng", "tolerance"};
+        if (t[0] == "gamerule") {
+            if (f_.format < 2) return fail(line_, "`gamerule` needs circuit-trace 2");
+            if (header_done_) return fail(line_, "header key after the body started");
+            if (t.size() != 3) return fail(line_, "gamerule needs a name and a value");
+            for (char c : t[1])
+                if (!std::isalnum(static_cast<unsigned char>(c))) return fail(line_, "invalid game rule name");
+            for (char c : t[2])
+                if (!property_char(c)) return fail(line_, "invalid game rule value");
+            if (std::ranges::any_of(f_.gamerules, [&](const auto& g) { return g.first == t[1]; }))
+                return fail(line_, std::format("duplicate game rule `{}`", t[1]));
+            f_.gamerules.emplace_back(std::string(t[1]), std::string(t[2]));
+            return {};
+        }
         if (header_keys.contains(t[0])) {
             if (f_.format < 2 && v2_keys.contains(t[0])) return fail(line_, std::format("`{}` needs circuit-trace 2", t[0]));
             if (header_done_) return fail(line_, "header key after the body started");
@@ -571,6 +585,7 @@ std::string write_fixture(const Fixture& f) {
         if (f.observe_chunks) out += "chunks observed\n";
         if (f.observe_rng) out += "rng observed\n";
         if (f.tolerance != 0.0) out += std::format("tolerance {}\n", format_double(f.tolerance));
+        for (const auto& [name, value] : f.gamerules) out += std::format("gamerule {} {}\n", name, value);
     }
     std::map<Tick, std::vector<std::string>> body;
     for (const auto& a : f.actions) {

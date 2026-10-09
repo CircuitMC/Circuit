@@ -1,0 +1,24 @@
+circuit-trace 2
+title Redstone ignites TNT with the tntExplodes game rule off
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms neighbor_updates
+area -4 0 -4 4 4 4
+ticks 90
+changes ordered
+entities observed
+rng observed
+gamerule tntExplodes false
+
+at 0 set -1 0 -1 minecraft:stone
+at 0 set -1 0 0 minecraft:stone
+at 0 set -1 0 1 minecraft:stone
+at 0 set 0 0 -1 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 1 0 -1 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 0 1 0 minecraft:tnt[unstable=false]
+at 1 set 1 1 0 minecraft:redstone_block
