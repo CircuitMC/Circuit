@@ -205,13 +205,28 @@ int main() {
         auto version_one = *bytes;
         version_one[4] = std::byte{1};
         require(decode_replay(version_one).error() == ErrorCode::malformed_record, "version 1 lacks the rule-set id");
-        // Version 4 records have stacks without components; version 3 records
-        // also lack the block registry id and use the first registry.
+        // Version 5 commands have no level byte and are the overworld's;
+        // version 4 records also have stacks without components; version 3
+        // records also lack the block registry id and use the first registry.
         {
             ReplayLog old{"java-1.21.8", "circuit-reference-rules-v5", 3, {}, "circuit-blocks-1"};
-            old.ticks.push_back({1, {{1, SetBlock{{1, 2, 3}, 0x1234, std::nullopt}}, {2, InsertItem{{1, 1, 1}, 3, {2, 64, 5}}}}});
+            old.ticks.push_back({1, {{1, SetBlock{{1, 2, 3}, 0x1234, std::nullopt}}}});
+            old.ticks.push_back({2, {{2, InsertItem{{1, 1, 1}, 3, {2, 64, 5}}}}});
             const auto current = encode_replay(old).value();
-            auto version_four = current;
+            // Each tick holds one command: tick, count, admission, tag, then the level byte.
+            const auto header = static_cast<std::ptrdiff_t>(4 + 2 + 2 + old.bundle_id.size() + 2 + old.rules_id.size() + 2 +
+                                                           old.block_registry_id.size() + 8 + 4);
+            const std::ptrdiff_t first_level = header + 8 + 4 + 8 + 1;
+            const std::ptrdiff_t second_level = first_level + 1 + 17 + 8 + 4 + 8 + 1; // after the SetBlock's 17 bytes
+            require(current[static_cast<std::size_t>(first_level)] == std::byte{0} &&
+                        current[static_cast<std::size_t>(second_level)] == std::byte{0},
+                    "commands name their level");
+            auto version_five = current;
+            version_five.erase(version_five.begin() + second_level);
+            version_five.erase(version_five.begin() + first_level);
+            version_five[4] = std::byte{5};
+            require(decode_replay(version_five).value() == old, "a version 5 record decodes as the overworld's");
+            auto version_four = version_five;
             version_four[4] = std::byte{4};
             version_four.resize(version_four.size() - 4); // the stack's empty component patch, the record's last field
             require(decode_replay(version_four).value() == old, "a version 4 record decodes without components");
@@ -221,6 +236,15 @@ int main() {
             version_three.erase(version_three.begin() + at,
                                 version_three.begin() + at + 2 + static_cast<std::ptrdiff_t>(old.block_registry_id.size()));
             require(decode_replay(version_three).value() == old, "a version 3 record decodes under circuit-blocks-1");
+            // Commands of other levels round-trip; an unknown level is refused.
+            auto levels = old;
+            levels.ticks[0].commands[0].dimension = DimensionId::the_nether;
+            levels.ticks[1].commands[0].dimension = DimensionId::the_end;
+            const auto encoded = encode_replay(levels).value();
+            require(decode_replay(encoded).value() == levels, "levels round-trip");
+            auto unknown = encoded;
+            unknown[static_cast<std::size_t>(first_level)] = std::byte{3};
+            require(decode_replay(unknown).error() == ErrorCode::malformed_record, "an unknown level is refused");
         }
         // Stacks keep their components.
         {

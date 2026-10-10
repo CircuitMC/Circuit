@@ -24,9 +24,11 @@ void run_block_entity(RuleContext& ctx, BlockPos pos);
 bool set_block(RuleContext& ctx, BlockPos pos, BlockState state);
 std::uint8_t received_power(RuleContext& ctx, BlockPos pos);
 
-// Positions outside the world height or border are never loaded.
-constexpr bool in_world(const contracts::VersionBundle& bundle, BlockPos pos) noexcept {
-    return bundle.world.contains_y(pos.y) && contracts::within_border(pos);
+// Positions outside the level's height or the border are never loaded.
+constexpr bool in_world(const contracts::WorldShape& shape, BlockPos pos) noexcept {
+    return shape.contains_y(pos.y) && contracts::within_border(pos);
 }
+// In the overworld.
+constexpr bool in_world(const contracts::VersionBundle& bundle, BlockPos pos) noexcept { return in_world(bundle.world, pos); }
 
 } // namespace circuit::gameplay

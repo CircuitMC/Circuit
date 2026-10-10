@@ -39,7 +39,9 @@ runtime::EngineOptions world_engine_options(const contracts::VersionBundle& bund
     o.workers = workers;
     const auto min_y = bundle.world.min_y;
     if (bundle.world.contains_y(floor_y)) {
-        o.generator = [floor_y, min_y](contracts::ChunkPos, const auto& blocks) {
+        // The overworld is a flat stone floor; no other level is generated.
+        o.generator = [floor_y, min_y](contracts::ChunkKey key, const auto& blocks) {
+            if (key.dimension != contracts::DimensionId::overworld) return;
             auto& section = blocks(static_cast<std::size_t>((floor_y - min_y) >> 4));
             const auto y = static_cast<std::size_t>((floor_y - min_y) & 15);
             for (std::size_t i = 0; i < 256; ++i) section[y * 256 + i] = gameplay::blocks::stone();

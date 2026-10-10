@@ -5,9 +5,10 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
-// 5: stacks carry their data components; 4: the block registry id; 3: stacks
-// carry damage, player commands carry their player.
-constexpr std::uint16_t format_version = 5;
+// 6: each command names its level; 5: stacks carry their data components;
+// 4: the block registry id; 3: stacks carry damage, player commands carry
+// their player. Commands of versions before 6 are the overworld's.
+constexpr std::uint16_t format_version = 6;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -37,8 +38,10 @@ public:
 
 class Reader {
 public:
-    // `components`: whether stacks carry data components (format 5 and later).
-    explicit Reader(std::span<const std::byte> in, bool components = true) : in_(in), components_(components) {}
+    // `components`: whether stacks carry data components (format 5 and later);
+    // `levels`: whether commands name their level (format 6 and later).
+    explicit Reader(std::span<const std::byte> in, bool components = true, bool levels = true)
+        : in_(in), components_(components), levels_(levels) {}
     template <class T>
     bool get(T& value) {
         if (in_.size() - at_ < sizeof(T)) return false;
@@ -64,6 +67,8 @@ public:
         return true;
     }
     void components(bool on) { components_ = on; }
+    void levels(bool on) { levels_ = on; }
+    [[nodiscard]] bool levels() const { return levels_; }
     bool player(PlayerKey& k) { return get(k.hi) && get(k.lo); }
     bool bytes(std::size_t n, std::string& s) {
         if (in_.size() - at_ < n) return false;
@@ -77,6 +82,7 @@ private:
     std::span<const std::byte> in_;
     std::size_t at_{};
     bool components_{};
+    bool levels_{};
 };
 
 // Record tags: 0 SetBlock, 1 UseBlock, 2 InsertItem, 3 SpawnItem,
@@ -97,6 +103,7 @@ std::uint8_t tag_of(const CommandBody& body) {
 void encode_command(Writer& w, const Command& c) {
     w.put(c.admission);
     w.put(tag_of(c.body));
+    w.put(static_cast<std::uint8_t>(c.dimension));
     std::visit([&](const auto& body) {
         using T = std::decay_t<decltype(body)>;
         if constexpr (std::is_same_v<T, SetBlock>) {
@@ -179,6 +186,12 @@ void encode_command(Writer& w, const Command& c) {
 bool decode_command(Reader& r, Command& c) {
     std::uint8_t tag{};
     if (!r.get(c.admission) || !r.get(tag)) return false;
+    c.dimension = DimensionId::overworld;
+    if (r.levels()) {
+        std::uint8_t level{};
+        if (!r.get(level) || !valid_dimension(level)) return false;
+        c.dimension = static_cast<DimensionId>(level);
+    }
     switch (tag) {
     case 0: {
         SetBlock b;
@@ -349,6 +362,7 @@ Result<ReplayLog> decode_replay(std::span<const std::byte> bytes, const ReplayLi
     std::uint16_t version{}, id_length{};
     if (!r.get(version) || version < oldest_version || version > format_version) return std::unexpected(ErrorCode::malformed_record);
     r.components(version >= 5);
+    r.levels(version >= 6);
     ReplayLog log;
     std::vector<std::string*> ids{&log.bundle_id, &log.rules_id};
     if (version >= 4) ids.push_back(&log.block_registry_id);
@@ -384,8 +398,8 @@ std::vector<std::byte> encode_tick_input(const TickInput& input) {
     return std::move(w.out);
 }
 
-Result<TickInput> decode_tick_input(std::span<const std::byte> bytes, const ReplayLimits& limits, bool components) {
-    Reader r(bytes, components);
+Result<TickInput> decode_tick_input(std::span<const std::byte> bytes, const ReplayLimits& limits, bool components, bool levels) {
+    Reader r(bytes, components, levels);
     TickInput t;
     std::uint32_t count{};
     if (!r.get(t.tick) || !r.get(count)) return std::unexpected(ErrorCode::malformed_record);

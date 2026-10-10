@@ -101,10 +101,15 @@ The server fails closed on storage errors. If a log record cannot be written, th
 
 ## Checkpoint format
 
-A checkpoint file is `CIRCKPT\0`, a format version (6; versions 1–5 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Versions 1–4 predate the registry: their block states are a subset of `circuit-blocks-1` and are read as such. Versions before 6 have item stacks without components. The body holds:
-- columns with palette-packed sections;
-- block entities, entities (with their pickup delay), scheduled ticks and pending block events;
-- chunk tickets and the engine counters;
+A checkpoint file is `CIRCKPT\0`, a format version (7; versions 1–6 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+- versions before 7 hold the overworld alone, and their tickets are the overworld's;
+- versions 1–4 also predate the registry: their block states are a subset of `circuit-blocks-1` and are read as such;
+- versions before 6 have item stacks without components.
+
+The body holds:
+- the time and the entity id counter, counted over all levels;
+- per level (overworld, Nether, End; only those with columns): its counters, columns with palette-packed sections, block entities, entities (with their pickup delay), scheduled ticks and pending block events;
+- chunk tickets, each naming its level;
 - player inventories: the 46 slots, the carried stack and a drag in progress; item stacks carry their damage and their other data components;
 - block entities' components (a container's name) and the saved data of block entities of blocks without rules of their own;
 - named extras, such as the server's metadata and player positions.
@@ -113,7 +118,12 @@ Decoding checks every length, count and the digest. The engine's restoring const
 
 The server's metadata records the fingerprint of the [data packs](DATA_PACKS.md#the-worlds-data) the log was written with; a server with other data refuses to replay that log.
 
-Log segments start with `CIRCWAL` and a format byte: 1 for records whose stacks carry components, 0 (read only) for records written before.
+Log segments start with `CIRCWAL` and a format byte:
+- 2: commands name their level;
+- 1 (read only): overworld commands whose stacks carry components;
+- 0 (read only): records written before stacks carried components.
+
+A world directory written by the previous release (version 6 checkpoints, format 1 segments) is kept as a test fixture (`tests/fixtures/storage/`). `storage_tests` recovers it and replays it to the same state, then writes a new checkpoint in the current format.
 
 ## Anvil import and export
 

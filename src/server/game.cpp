@@ -44,6 +44,11 @@ constexpr std::uint8_t spawn_radius = 2;
 constexpr std::size_t inventory_slots = contracts::player_slots;
 constexpr std::uint8_t survival = 0, creative = 1, spectator = 3;
 
+// The level players are in. The overworld is the only level generated and
+// reachable so far; the engine keeps every level's state apart (C2.1), and
+// travel between levels arrives with portals.
+constexpr auto overworld = contracts::DimensionId::overworld;
+
 struct Player {
     std::shared_ptr<Peer> peer;
     Uuid uuid;
@@ -383,9 +388,8 @@ struct Game::Impl final : GameServices {
     // synchronously.
 
     struct CheckpointJob {
-        storage::Checkpoint checkpoint; // state without its block list
-        std::vector<storage::ColumnSections> sections;
-        std::int32_t min_y{};
+        storage::Checkpoint checkpoint; // state without its block lists
+        std::vector<std::vector<storage::ColumnSections>> sections; // per level, per column
         storage::PendingCheckpoint pending;
         std::chrono::steady_clock::time_point began;
         double game_thread_ms{};
@@ -407,7 +411,7 @@ struct Game::Impl final : GameServices {
         meta.next_ticket = next_ticket;
         auto snap = engine->snapshot();
         CheckpointJob job{{std::string(bundle.id), std::string(bundle.rules->id), seed, std::move(snap.state), {}},
-                          std::move(snap.sections), snap.min_y, {}, started_at, 0, {}};
+                          std::move(snap.sections), {}, started_at, 0, {}};
         job.checkpoint.extras[std::string(meta_extra)] = encode_meta(meta);
         job.checkpoint.extras[std::string(players_extra)] = encode_players(saved);
         auto pending = world->begin_checkpoint(job.checkpoint.state.time);
@@ -417,7 +421,7 @@ struct Game::Impl final : GameServices {
         return job;
     }
     storage::Status finish_save(CheckpointJob& job) {
-        const auto bytes = storage::encode_checkpoint(job.checkpoint, job.sections, job.min_y, &section_cache);
+        const auto bytes = storage::encode_checkpoint(job.checkpoint, job.sections, bundle, &section_cache);
         job.dropped = section_cache.take_dropped(); // released with the job, on the game thread
         return world->finish_checkpoint(job.pending, bytes);
     }
@@ -507,7 +511,7 @@ struct Game::Impl final : GameServices {
     }
 
     BlockState at(BlockPos p) const {
-        const auto v = engine->view().block(p);
+        const auto v = engine->view().block(overworld, p);
         return v ? *v : blocks::air();
     }
     NeighborLookup lookup() const {
@@ -650,11 +654,13 @@ struct Game::Impl final : GameServices {
             if (!checked) bad = checked.error();
             else if (!(checked->typed() == patch.typed())) bad = "typed fields that differ from the components";
         };
-        for (const auto& [pos, be] : d.block_entities) {
-            check(be.components);
-            for (const auto& s : be.slots) check(s.components);
+        for (const auto& l : d.levels) {
+            for (const auto& [pos, be] : l.block_entities) {
+                check(be.components);
+                for (const auto& s : be.slots) check(s.components);
+            }
+            for (const auto& e : l.entities) check(e.stack.components);
         }
-        for (const auto& e : d.entities) check(e.stack.components);
         for (const auto& p : d.players) {
             check(p.cursor.components);
             for (const auto& s : p.slots) check(s.components);
@@ -690,7 +696,7 @@ struct Game::Impl final : GameServices {
             for (std::size_t i = 0; i < inventory_slots; ++i) slots.push_back(player_slot(i));
         } else {
             for (const auto part : container_parts_of(p.window->pos))
-                if (const auto be = view.block_entity(part); be && *be)
+                if (const auto be = view.block_entity(overworld, part); be && *be)
                     for (const auto& s : (*be)->slots) slots.push_back(wire_stack(s));
             for (std::size_t i = 9; i < 45; ++i) slots.push_back(player_slot(i));
         }
@@ -758,7 +764,7 @@ struct Game::Impl final : GameServices {
         const auto view = engine->view();
         const auto name_type = wire.components().type_id("custom_name");
         for (const auto part : container_parts_of(pos)) {
-            const auto be = view.block_entity(part);
+            const auto be = view.block_entity(overworld, part);
             if (!be || !*be) continue;
             const auto added = (*be)->components.added();
             const auto it = std::ranges::find(added, name_type, &contracts::ComponentPatch::Added::type);
@@ -800,7 +806,7 @@ struct Game::Impl final : GameServices {
     // Block shapes for movement checks; unloaded cells are air.
     movement::ShapeLookup shapes() const {
         return [this](BlockPos b) -> movement::BlockShape {
-            const auto v = engine->view().block(b);
+            const auto v = engine->view().block(overworld, b);
             if (!v || v->is_air()) return {};
             const auto boxes = collision_boxes(wire.protocol(), palette.wire(*v));
             return {false, boxes ? *boxes : std::span<const CollisionBox>{}};
@@ -837,7 +843,7 @@ struct Game::Impl final : GameServices {
         // Positions outside loaded chunks are refused, so players cannot move
         // into terrain the server has not delivered.
         const auto chunk = chunk_at(to);
-        if (!engine->view().block({static_cast<std::int32_t>(std::floor(to.x)), bundle.world.min_y,
+        if (!engine->view().block(overworld, {static_cast<std::int32_t>(std::floor(to.x)), bundle.world.min_y,
                                   static_cast<std::int32_t>(std::floor(to.z))})) {
             teleport(p, p.pos);
             return;
@@ -1247,7 +1253,7 @@ struct Game::Impl final : GameServices {
             if (p.game_mode == spectator) continue;
             for (const auto& [entity_id, t] : tracked) {
                 if (taken.contains(entity_id)) continue;
-                const auto e = view.entity(EntityId{entity_id});
+                const auto e = view.entity(overworld, EntityId{entity_id});
                 if (!e || !*e || (*e)->pickup_delay > 0) continue;
                 const auto pos = entity_vec((*e)->position);
                 // The item's box is 0.25 wide and high.
@@ -1466,6 +1472,7 @@ struct Game::Impl final : GameServices {
         std::set<BlockPos> changed;
         std::set<ChunkPos> unloaded;
         for (const auto& r : engine->trace()) {
+            if (r.dimension != overworld) continue; // no player is in another level
             if (r.kind == contracts::TraceKind::block_changed) changed.insert(r.pos);
             if (r.kind == contracts::TraceKind::chunk_unloaded) unloaded.insert(contracts::chunk_of(r.pos));
         }
@@ -1514,6 +1521,7 @@ struct Game::Impl final : GameServices {
         const auto view = engine->view();
         std::set<std::uint64_t> touched;
         for (const auto& r : engine->trace()) {
+            if (r.dimension != overworld) continue;
             switch (r.kind) {
             case contracts::TraceKind::entity_spawned: case contracts::TraceKind::entity_changed_chunk:
             case contracts::TraceKind::entity_stack_changed:
@@ -1531,7 +1539,7 @@ struct Game::Impl final : GameServices {
             }
         }
         for (const auto id : touched) {
-            const auto e = view.entity(EntityId{id});
+            const auto e = view.entity(overworld, EntityId{id});
             if (!e || !*e) continue;
             const auto c = contracts::chunk_of(contracts::block_of((*e)->position));
             for (auto& [pid, p] : players)
@@ -1545,7 +1553,7 @@ struct Game::Impl final : GameServices {
         }
         // Position sync for moving entities.
         for (auto& [id, t] : tracked) {
-            const auto e = view.entity(EntityId{id});
+            const auto e = view.entity(overworld, EntityId{id});
             if (!e || !*e) continue;
             const auto now = entity_vec((*e)->position);
             if (now.x == t.last.x && now.y == t.last.y && now.z == t.last.z) continue;
@@ -1562,7 +1570,7 @@ struct Game::Impl final : GameServices {
     void publish_inventories() {
         std::vector<std::pair<contracts::PlayerKey, BlockPos>> opened;
         for (const auto& r : engine->trace())
-            if (r.kind == contracts::TraceKind::container_opened) opened.push_back({{r.a, r.b}, r.pos});
+            if (r.kind == contracts::TraceKind::container_opened && r.dimension == overworld) opened.push_back({{r.a, r.b}, r.pos});
         for (auto& [id, p] : players) {
             for (const auto& [key, pos] : opened)
                 if (key == key_of(p) && p.game_mode != spectator) open_window(p, pos);
@@ -1578,7 +1586,8 @@ struct Game::Impl final : GameServices {
     void publish_chunks() {
         const auto shape = WorldShape{bundle.world.min_y, bundle.world.height};
         std::map<ChunkPos, ChunkLevel> loaded;
-        for (const auto& [c, level] : engine->loaded_columns()) loaded.emplace(c, level);
+        for (const auto& [c, level] : engine->loaded_columns())
+            if (c.dimension == overworld) loaded.emplace(c.pos, level);
         const auto look_up = lookup();
         std::vector<ChunkJob> jobs;
         for (auto& [id, p] : players) {
@@ -1603,7 +1612,7 @@ struct Game::Impl final : GameServices {
             });
             if (wanted.size() > chunks_per_tick) wanted.resize(chunks_per_tick);
             for (const auto c : wanted)
-                if (auto column = engine->column(c)) jobs.push_back({id, std::move(*column), {}});
+                if (auto column = engine->column({overworld, c})) jobs.push_back({id, std::move(*column), {}});
         }
         encode_chunks(jobs, look_up, shape);
         // Packets go out per player in the order chosen above.

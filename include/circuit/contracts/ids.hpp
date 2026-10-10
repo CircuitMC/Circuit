@@ -7,12 +7,35 @@
 #include <cstdint>
 #include <functional>
 #include <optional>
+#include <string_view>
 
 // Stable identities and coordinates shared by every module. Values are plain
 // data: no type here owns or refers to mutable world storage.
 namespace circuit::contracts {
 
-enum class DimensionId : std::uint8_t { overworld = 0 };
+// The levels of a world. Each has its own chunks, scheduled ticks, block
+// events, block entities and entities; positions mean nothing outside their
+// level. Only the overworld is generated and reachable so far.
+enum class DimensionId : std::uint8_t { overworld = 0, the_nether = 1, the_end = 2 };
+inline constexpr std::size_t dimension_count = 3;
+// The order in which the target versions tick their levels: the overworld,
+// then the others in registry order (minecraft.wiki "Tick").
+inline constexpr std::array<DimensionId, dimension_count> level_order{DimensionId::overworld, DimensionId::the_nether,
+                                                                      DimensionId::the_end};
+constexpr std::string_view dimension_name(DimensionId d) noexcept {
+    switch (d) {
+    case DimensionId::overworld: return "minecraft:overworld";
+    case DimensionId::the_nether: return "minecraft:the_nether";
+    case DimensionId::the_end: return "minecraft:the_end";
+    }
+    return "minecraft:unknown";
+}
+constexpr std::optional<DimensionId> dimension_by_name(std::string_view name) noexcept {
+    for (const auto d : level_order)
+        if (dimension_name(d) == name) return d;
+    return std::nullopt;
+}
+constexpr bool valid_dimension(std::uint8_t raw) noexcept { return raw < dimension_count; }
 
 // Axis convention: north = -z, south = +z, west = -x, east = +x.
 enum class Direction : std::uint8_t { down, up, north, south, west, east };
@@ -84,6 +107,14 @@ struct BlockPos {
 struct ChunkPos {
     std::int32_t x{}, z{};
     auto operator<=>(const ChunkPos&) const = default;
+};
+
+// A chunk column of one level: the identity of chunk storage, ownership,
+// tickets and saved state. Ordered by level first.
+struct ChunkKey {
+    DimensionId dimension{};
+    ChunkPos pos;
+    auto operator<=>(const ChunkKey&) const = default;
 };
 
 // Arithmetic right shift is floor division for negative coordinates (C++20).
@@ -184,6 +215,12 @@ struct std::hash<circuit::contracts::ChunkPos> {
     std::size_t operator()(const circuit::contracts::ChunkPos& c) const noexcept {
         return std::hash<std::uint64_t>{}((static_cast<std::uint64_t>(static_cast<std::uint32_t>(c.x)) << 32)
             | static_cast<std::uint32_t>(c.z));
+    }
+};
+template <>
+struct std::hash<circuit::contracts::ChunkKey> {
+    std::size_t operator()(const circuit::contracts::ChunkKey& k) const noexcept {
+        return std::hash<circuit::contracts::ChunkPos>{}(k.pos) ^ (static_cast<std::size_t>(k.dimension) * 0x9E3779B97F4A7C15ULL);
     }
 };
 template <>

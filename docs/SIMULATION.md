@@ -63,13 +63,21 @@ Dependencies point one way: `contracts` ← `gameplay` ← `runtime` ← `app`. 
 
 Logical time advances by one per executed tick. Each tick runs these phases in order (the target version's order). Within a phase, work is a sequence of *roots* in a fixed serial order. Immediate reactions (neighbor and shape updates) finish inside their root.
 
+**Levels.** A world has levels: the overworld, the Nether and the End.
+- **Own state:** each level keeps its own columns, scheduled ticks, block events, block entities and entities. Positions mean nothing outside their level, and rules never reach into another level.
+- **Commands and tickets:** every command, and every ticket, names its level.
+- **Order:** the command phase runs once, for all levels. Then each level with loaded columns runs the phases below, the overworld first, then the Nether, then the End (minecraft.wiki "Tick").
+- **Counters:** tick sub-orders, block-event positions and block-entity creation order count per level; entity ids count over all levels.
+- **Random streams:** random ticks in another level draw from streams that include the level.
+- **Not yet reachable:** only the overworld is generated and reachable by players. The other levels exist for the engine, its tests and the formats; they have no rules of their own yet (C7).
+
 | Phase | Roots in serial order |
 | --- | --- |
 | commands | admitted commands by admission id, then one root applying chunk-level changes |
 | block ticks | scheduled block ticks due now in ticking chunks, by (due, priority, sub-order), at most 65,536 |
 | fluid ticks | scheduled fluid ticks, same order and limit |
 | random ticks | ticking chunks in coordinate order, then sections bottom to top |
-| block events | the level-wide FIFO, including events queued while it drains; events in non-ticking chunks stay queued in order |
+| block events | the level's FIFO, including events queued while it drains; events in non-ticking chunks stay queued in order |
 | entities | entities in ticking chunks, ascending id, at most once per tick |
 | block entities | block entities in ticking chunks, ascending creation order |
 
@@ -92,7 +100,7 @@ Player inventories are simulation state, changed only by commands in the command
 
 Every slot change records `player_slot_changed`; a use that opens a container records `container_opened`.
 
-Every observable action produces a trace record keyed by (tick, phase, root, sequence within the root). Two executions are equivalent only if their trace records are identical, including order. Their canonical state dumps must also be identical.
+Every observable action produces a trace record keyed by (tick, level, phase, root, sequence within the root); a record also names the level of its position. The command phase counts as the overworld's, ahead of every level. Two executions are equivalent only if their trace records are identical, including order. Their canonical state dumps, one part per level, must also be identical.
 
 ## Reference rules v7
 
@@ -215,13 +223,13 @@ The table lists what is specific to each mechanism.
 
 ### Coverage limits
 
-- **Not modeled:** dimensions other than one overworld, lighting, world generation (chunks start empty), mobs and mob spawning, crafting outside the player's grid, and analog comparator sources other than containers.
+- **Not modeled:** generation and rules of the Nether and the End (their levels keep separate state but are not reachable), lighting, world generation (chunks start empty), mobs and mob spawning, crafting outside the player's grid, and analog comparator sources other than containers.
 - **Not compared with the target version:** random-tick outcomes, wheat growth, item-entity physics and entity order. The circuit-trace format has no entity observations yet.
 - **L2 behavior:** every row claimed L2 is Circuit's own definition. The gaps listed in the compatibility table apply.
 
 ## Region-parallel runtime
 
-**Ownership.** Every loaded chunk column belongs to exactly one region. A region task runs its roots in the phase's serial order and may touch only its own columns. A read or write of a column owned by another region throws before touching it.
+**Ownership.** Every loaded chunk column belongs to exactly one region. A region's columns are all of one level. A region task runs its roots in the phase's serial order and may touch only its own columns. A read or write of a column owned by another region throws before touching it.
 
 **Conflicts.** The coordinator rolls back an aborted attempt using copy-on-first-write snapshots of the written columns. It then merges the two regions, discards any staged results of the merged regions, and runs the merged region again. Regions that never touched each other keep their results. Each conflict reduces the number of regions, so a phase always finishes; in the worst case everything becomes one region and runs serially.
 
@@ -315,7 +323,10 @@ xmake run circuit-server --profile-fixture "$PWD/tests/fixtures/workloads/observ
 
 `--simulate` without `--replay` runs a built-in demonstration with machines that straddle chunk edges.
 
-- **Replay records:** records (format version 5) store the bundle, the rule-set id and the block registry id, whose encoding their block states use; item stacks carry their data components, which the simulator checks against the bundle's protocol. A record made under different reference rules or another block registry is refused with `rules_mismatch` instead of replaying with silently different behavior. Version 4 records have stacks without components; version 3 records also predate the registry and are read as `circuit-blocks-1`.
+- **Replay records:** records (format version 6) store the bundle, the rule-set id and the block registry id, whose encoding their block states use. Each command names its level. Item stacks carry their data components, which the simulator checks against the bundle's protocol. A record made under different reference rules or another block registry is refused with `rules_mismatch` instead of replaying with silently different behavior. Older records are still read:
+  - version 5: every command is the overworld's;
+  - version 4: also, stacks have no components;
+  - version 3: also, the record predates the registry and is read as `circuit-blocks-1`.
 - **Digest:** the output includes a 64-bit state digest. Equal digests across worker counts are a quick check, not proof.
 - **`--realtime`:** paces ticks at 20 Hz. When it falls more than 40 ticks behind, it drops the wall-clock backlog; logical ticks are never skipped.
 
@@ -331,7 +342,7 @@ Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked with `--check
   - chunk tickets without vanilla ticket types or level propagation;
   - container menus without the crafting table, special recipes and the recipe book; loot tables without their random parts, and fixed drops for the modeled blocks.
 - Blocks without rules of their own, among them TNT, honey blocks, rails and coral fans, are inert: solid when they have a collision shape, conductors when opaque, immovable by pistons, and drop only from deterministic loot tables. Primed TNT entities and explosions are not modeled. TNT duplication machines cannot run; piston trace coverage does not establish compatibility for them. See [technical machines](COMPATIBILITY.md#technical-machines).
-- There is no lighting, world generation, mob spawning or second dimension.
+- There is no lighting, world generation or mob spawning, and players cannot reach the Nether or the End.
 - Snapshots copy whole column data on first write, and commit is serial. On the measured workloads, coordination overhead outweighs parallel gains.
 - Commands validate their inputs at full width before converting them; for example, a spawn position is checked against the world border and height in fixed-point units before it is narrowed to a block. Out-of-range input is rejected with no effect.
 - A capacity failure, such as exceeding 1,000,000 block events in one tick, fails the tick and leaves the engine unusable. Nothing is silently dropped. The neighbor-update chain limit is the exception: it drops updates as the target version does, and records it.

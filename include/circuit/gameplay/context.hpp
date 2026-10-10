@@ -53,14 +53,22 @@ struct NeighborUpdater {
 // immediately; the parallel runtime restricts access to one region and stages
 // level-wide counters until commit. Rules hold no pointers across calls except
 // the block-entity and entity pointers documented below.
+//
+// A context acts in one level at a time (dimension()): every position, chunk,
+// entity and scheduled tick it names is that level's. Rules never reach into
+// another level.
 class RuleContext {
 public:
-    explicit RuleContext(const contracts::VersionBundle& bundle, const GameData* data = nullptr) noexcept : bundle_(&bundle), data_(data) {}
+    explicit RuleContext(const contracts::VersionBundle& bundle, const GameData* data = nullptr) noexcept
+        : bundle_(&bundle), data_(data), shape_(&bundle.world) {}
     virtual ~RuleContext() = default;
     RuleContext(const RuleContext&) = delete;
     RuleContext& operator=(const RuleContext&) = delete;
 
     [[nodiscard]] const contracts::VersionBundle& bundle() const noexcept { return *bundle_; }
+    [[nodiscard]] contracts::DimensionId dimension() const noexcept { return dimension_; }
+    // The build height of the current level.
+    [[nodiscard]] const contracts::WorldShape& world() const noexcept { return *shape_; }
     // Data-pack data, or nullptr: the rules then use the public registry data.
     [[nodiscard]] const GameData* data() const noexcept { return data_; }
     NeighborUpdater& updater() noexcept { return updater_; }
@@ -113,9 +121,18 @@ public:
     virtual std::uint32_t record(TraceKind kind, BlockPos pos, std::uint64_t a = 0, std::uint64_t b = 0,
                                  std::uint64_t c = 0) = 0;
 
+protected:
+    // Executors switch the level between roots, never within one.
+    void enter(contracts::DimensionId dimension) noexcept {
+        dimension_ = dimension;
+        shape_ = &bundle_->shape(dimension);
+    }
+
 private:
     const contracts::VersionBundle* bundle_;
     const GameData* data_;
+    const contracts::WorldShape* shape_;
+    contracts::DimensionId dimension_{};
     NeighborUpdater updater_;
 };
 

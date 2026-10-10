@@ -14,7 +14,9 @@
 // between phases.
 namespace circuit::runtime::detail {
 using contracts::BlockPos;
+using contracts::ChunkKey;
 using contracts::ChunkPos;
+using contracts::DimensionId;
 using contracts::EntityId;
 using contracts::Tick;
 using gameplay::BlockEntity;
@@ -37,8 +39,15 @@ inline void count_random_ticking(Section& s) {
 }
 
 // Level-wide counters whose values are staged while regions run in parallel.
+// The first three count per level; entity ids count over all levels.
 enum class Counter : std::uint8_t { suborder, event_seq, block_entity_order, entity_id };
 inline constexpr std::size_t counter_kinds = 4;
+
+struct LevelCounters {
+    std::uint64_t next_suborder{};
+    std::uint64_t next_event_seq{};
+    std::uint64_t next_block_entity_order{};
+};
 
 // Staging metadata: an entry created in the current phase. `ledger` indexes the
 // creation in its region context's ledger for the entry's counter; commit
@@ -63,6 +72,7 @@ struct EventEntry {
 };
 
 struct ChunkData {
+    DimensionId dimension{};
     ChunkPos pos;
     contracts::Generation generation;
     ChunkLevel level{};
@@ -81,38 +91,47 @@ struct ChunkData {
 inline constexpr std::uint64_t provisional_entity_bit = 1ULL << 63;
 
 struct WorldStore {
-    std::map<ChunkPos, std::unique_ptr<ChunkData>> loaded; // Structure changes only between phases.
-    std::map<ChunkPos, std::unique_ptr<ChunkData>> saved;  // Unloaded columns with all their state.
-    std::unordered_map<EntityId, ChunkPos> entity_index;   // Updated at commit.
+    // Columns of every level, ordered by level first. Structure changes only between phases.
+    std::map<ChunkKey, std::unique_ptr<ChunkData>> loaded;
+    std::map<ChunkKey, std::unique_ptr<ChunkData>> saved; // Unloaded columns with all their state.
+    std::unordered_map<EntityId, ChunkKey> entity_index;  // Updated at commit.
     Tick time{};
-    std::uint64_t next_suborder{};
-    std::uint64_t next_event_seq{};
     std::uint64_t next_entity_id{1};
-    std::uint64_t next_block_entity_order{};
+    std::array<LevelCounters, contracts::dimension_count> levels{};
     gameplay::TicketSet tickets;
     std::map<contracts::PlayerKey, gameplay::PlayerInventory> players; // changed in the command phase only
 
-    [[nodiscard]] ChunkData* find_loaded(ChunkPos c) const {
+    [[nodiscard]] ChunkData* find_loaded(ChunkKey c) const {
         const auto it = loaded.find(c);
         return it == loaded.end() ? nullptr : it->second.get();
+    }
+    [[nodiscard]] LevelCounters& counters(DimensionId d) { return levels[static_cast<std::size_t>(d)]; }
+    [[nodiscard]] const LevelCounters& counters(DimensionId d) const { return levels[static_cast<std::size_t>(d)]; }
+    // The loaded columns of one level, in position order.
+    template <class F>
+    void for_each_loaded(DimensionId d, F&& f) const {
+        for (auto it = loaded.lower_bound({d, {INT32_MIN, INT32_MIN}}); it != loaded.end() && it->first.dimension == d; ++it)
+            f(it->first.pos, *it->second);
     }
 };
 
 using RegionId = std::uint64_t;
 inline constexpr RegionId all_regions = 0;
 
+// Regions partition the loaded columns; a region's columns are all of one
+// level, since rules never reach into another level.
 struct RegionMap {
-    std::unordered_map<ChunkPos, RegionId> owner; // Every loaded column has exactly one owner.
-    std::map<RegionId, std::set<ChunkPos>> members;
+    std::unordered_map<ChunkKey, RegionId> owner; // Every loaded column has exactly one owner.
+    std::map<RegionId, std::set<ChunkKey>> members;
     RegionId next_id{1};
 
-    RegionId add_singleton(ChunkPos c) {
+    RegionId add_singleton(ChunkKey c) {
         const auto id = next_id++;
         owner[c] = id;
         members[id].insert(c);
         return id;
     }
-    void remove(ChunkPos c) {
+    void remove(ChunkKey c) {
         const auto it = owner.find(c);
         if (it == owner.end()) return;
         auto& set = members[it->second];
@@ -120,7 +139,8 @@ struct RegionMap {
         if (set.empty()) members.erase(it->second);
         owner.erase(it);
     }
-    // Moves every member of `from` into `into`.
+    // Moves every member of `from` into `into`. Precondition: both regions
+    // are of the same level.
     void absorb(RegionId into, RegionId from) {
         if (into == from) return;
         auto node = members.extract(from);

@@ -52,24 +52,34 @@ public:
         for (auto& b : bodies) out.push_back({next_++, std::move(b)});
         return out;
     }
+    // Each command in the level `level(index)` gives.
+    template <class Level>
+    std::vector<Command> operator()(std::vector<CommandBody> bodies, Level&& level) {
+        std::vector<Command> out;
+        for (std::size_t i = 0; i < bodies.size(); ++i) out.push_back({next_++, std::move(bodies[i]), level(i)});
+        return out;
+    }
 
 private:
     std::uint64_t next_{1};
 };
 
-inline BlockState state_at(const WorldDump& d, BlockPos p) {
-    const auto it = std::ranges::lower_bound(d.blocks, p, {}, [](const auto& b) { return b.first; });
-    if (it == d.blocks.end() || it->first != p) return blocks::air();
+// Dump lookups in one level (the overworld unless named).
+inline BlockState state_at(const WorldDump& d, BlockPos p, DimensionId level = DimensionId::overworld) {
+    const auto& blocks = d.level(level).blocks;
+    const auto it = std::ranges::lower_bound(blocks, p, {}, [](const auto& b) { return b.first; });
+    if (it == blocks.end() || it->first != p) return blocks::air();
     return BlockState::decode(it->second).value();
 }
-inline const BlockEntity* block_entity_at(const WorldDump& d, BlockPos p) {
-    for (const auto& [pos, be] : d.block_entities)
+inline const BlockEntity* block_entity_at(const WorldDump& d, BlockPos p, DimensionId level = DimensionId::overworld) {
+    for (const auto& [pos, be] : d.level(level).block_entities)
         if (pos == p) return &be;
     return nullptr;
 }
 inline const Entity* entity_in(const WorldDump& d, EntityId id) {
-    for (const auto& e : d.entities)
-        if (e.id == id) return &e;
+    for (const auto& l : d.levels)
+        for (const auto& e : l.entities)
+            if (e.id == id) return &e;
     return nullptr;
 }
 inline std::vector<TraceRecord> of_kind(std::span<const TraceRecord> trace, TraceKind kind) {
@@ -78,13 +88,16 @@ inline std::vector<TraceRecord> of_kind(std::span<const TraceRecord> trace, Trac
         if (r.kind == kind) out.push_back(r);
     return out;
 }
+// Items in containers and item entities of every level.
 inline unsigned count_items(const WorldDump& d, std::uint16_t item) {
     unsigned n = 0;
-    for (const auto& [pos, be] : d.block_entities)
-        for (const auto& s : be.slots)
-            if (s.item == item) n += s.count;
-    for (const auto& e : d.entities)
-        if (e.stack.item == item) n += e.stack.count;
+    for (const auto& l : d.levels) {
+        for (const auto& [pos, be] : l.block_entities)
+            for (const auto& s : be.slots)
+                if (s.item == item) n += s.count;
+        for (const auto& e : l.entities)
+            if (e.stack.item == item) n += e.stack.count;
+    }
     return n;
 }
 

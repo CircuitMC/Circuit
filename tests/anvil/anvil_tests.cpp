@@ -163,8 +163,9 @@ struct Kept {
     std::multiset<std::tuple<FixedVec, FixedVec, std::uint16_t, int, std::uint32_t, bool>> entities;
     bool operator==(const Kept&) const = default;
 };
-Kept kept(const WorldDump& d) {
-    Kept k{d.time, {}, d.blocks, d.block_entities, {}, {}};
+Kept kept(const WorldDump& world) {
+    const auto& d = world.overworld();
+    Kept k{world.time, {}, d.blocks, d.block_entities, {}, {}};
     for (const auto& c : d.chunks) k.chunks.push_back(c.pos);
     for (auto& [pos, be] : k.block_entities) {
         be.order = 0;
@@ -207,7 +208,7 @@ int main() {
                 engine.advance(admit(s.inputs(t)));
                 if (t % std::max<Tick>(1, s.ticks / 4) != 0 && t != s.ticks) continue;
                 const auto state = engine.dump();
-                if (!state.block_events.empty()) continue;
+                if (!state.overworld().block_events.empty()) continue;
                 const auto target = root / std::format("{}-{}", s.name, t);
                 const auto report = anvil::export_world(state, bundle(), target, {.level_name = s.name, .seed = s.seed});
                 require(report.has_value(), std::format("{} at {}: export: {}", s.name, t, report ? "" : report.error()));
@@ -219,9 +220,9 @@ int main() {
                 Engine resumed(bundle(), s.seed, back->state);
                 resumed.advance({});
                 ++exported;
-                with_ticks += state.ticks.empty() ? 0 : 1;
-                with_entities += state.entities.empty() ? 0 : 1;
-                with_moving += std::ranges::any_of(state.block_entities, [](const auto& b) { return b.second.kind == BlockType::moving_piston; });
+                with_ticks += state.overworld().ticks.empty() ? 0 : 1;
+                with_entities += state.overworld().entities.empty() ? 0 : 1;
+                with_moving += std::ranges::any_of(state.overworld().block_entities, [](const auto& b) { return b.second.kind == BlockType::moving_piston; });
                 if (keep) fs::copy(target, fs::path(keep) / target.filename(), fs::copy_options::recursive | fs::copy_options::overwrite_existing);
             }
         }
@@ -416,11 +417,11 @@ int main() {
         require(h && h->cooldown == 3 && h->components.added().size() == 1, "hopper cooldown and name");
         const auto* sign_be = block_entity_at(r->state, {3, 0, 0});
         require(sign_be && sign_be->kind == BlockType::other && !sign_be->saved.empty(), "the sign keeps its saved data");
-        require(r->state.entities.size() == 1 && r->state.entities[0].stack == ItemStack{items::wheat, 3} &&
-                    r->state.entities[0].position == FixedVec{4 * 4096 + 2048, 4096 + 1024, 4 * 4096 + 2048} &&
-                    r->state.entities[0].age == 20,
+        require(r->state.overworld().entities.size() == 1 && r->state.overworld().entities[0].stack == ItemStack{items::wheat, 3} &&
+                    r->state.overworld().entities[0].position == FixedVec{4 * 4096 + 2048, 4096 + 1024, 4 * 4096 + 2048} &&
+                    r->state.overworld().entities[0].age == 20,
                 "item entity");
-        require(r->state.block_entities.size() == 3, "the sign's block entity is kept");
+        require(r->state.overworld().block_entities.size() == 3, "the sign's block entity is kept");
     });
 
     suite.run("malformed worlds fail cleanly", [&] {
@@ -513,7 +514,7 @@ int main() {
         require(!anvil::export_world(state, bundle(), target), "existing target refused");
         require(fs::is_empty(target), "existing target untouched");
         auto pending = state;
-        pending.block_events.push_back({{0, 0, 0}, BlockType::piston, 0, 0});
+        pending.level(circuit::contracts::DimensionId::overworld).block_events.push_back({{0, 0, 0}, BlockType::piston, 0, 0});
         require(!anvil::export_world(pending, bundle(), root / "pending"), "pending block events refused");
         require(!fs::exists(root / "pending") && !fs::exists(root / "pending.partial"), "no partial world");
     });
@@ -537,7 +538,7 @@ int main() {
         const auto again = anvil::import_world(root / "tool-export", bundle());
         require(again.has_value(), std::format("re-import: {}", again ? "" : again.error()));
         require(state_at(again->state, {0, -60, 0}).is(BlockType::lever) && state_at(again->state, {1, -60, 0}).is(BlockType::redstone_wire),
-                std::format("blocks survive both tools: {} blocks, {} {}", again->state.blocks.size(),
+                std::format("blocks survive both tools: {} blocks, {} {}", again->state.overworld().blocks.size(),
                             state_at(again->state, {0, -60, 0}).raw(), state_at(again->state, {1, -60, 0}).raw()));
         // A server opens the imported world.
         config.port = 0;

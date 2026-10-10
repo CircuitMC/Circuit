@@ -17,13 +17,16 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 7: the state is per level (each with its columns, block entities, entities,
+// scheduled ticks, block events and counters), and tickets name their level;
 // 6: stacks carry their data components; 5: the header names the block
-// registry; 4: stacks carry damage, and player
-// inventories follow the tickets; 3: hopper block entities carry the tick they
-// last ticked; 2: tickets carry a load radius. Versions 1 to 5 are still read:
-// versions before 5 predate the block registry and hold only states that
-// circuit-blocks-1 keeps; versions before 6 have stacks without components.
-constexpr std::uint32_t version = 6;
+// registry; 4: stacks carry damage, and player inventories follow the
+// tickets; 3: hopper block entities carry the tick they last ticked; 2:
+// tickets carry a load radius. Versions 1 to 6 are still read, as the
+// overworld's state: versions before 5 predate the block registry and hold
+// only states that circuit-blocks-1 keeps; versions before 6 have stacks
+// without components.
+constexpr std::uint32_t version = 7;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -91,23 +94,23 @@ void stack(Writer& w, const contracts::ItemStack& s) {
     w.raw(patch);
 }
 
-// Writes the column table; `blocks(i)` gives column i's non-empty sections as
-// (section y, encoding) in ascending y.
+// Writes one level: counters, the column table, block entities, entities,
+// scheduled ticks and block events. `blocks(i)` gives column i's non-empty
+// sections as (section y, encoding) in ascending y.
 template <class Blocks>
-void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
-    const auto& s = c.state;
-    w.varlong(static_cast<std::int64_t>(s.time)).varlong(static_cast<std::int64_t>(s.next_suborder));
-    w.varlong(static_cast<std::int64_t>(s.next_entity_id)).varlong(static_cast<std::int64_t>(s.next_block_entity_order));
-    w.varint(static_cast<std::int32_t>(s.chunks.size()));
-    for (std::size_t i = 0; i < s.chunks.size(); ++i) {
-        const auto& ch = s.chunks[i];
+void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
+    w.u8(static_cast<std::uint8_t>(l.dimension));
+    w.varlong(static_cast<std::int64_t>(l.next_suborder)).varlong(static_cast<std::int64_t>(l.next_block_entity_order));
+    w.varint(static_cast<std::int32_t>(l.chunks.size()));
+    for (std::size_t i = 0; i < l.chunks.size(); ++i) {
+        const auto& ch = l.chunks[i];
         w.i32(ch.pos.x).i32(ch.pos.z).varint(static_cast<std::int32_t>(ch.generation)).u8(static_cast<std::uint8_t>(ch.level));
         const auto sections = blocks(i);
         w.varint(static_cast<std::int32_t>(sections.size()));
         for (const auto& [sy, bytes] : sections) w.i32(sy).raw(bytes);
     }
-    w.varint(static_cast<std::int32_t>(s.block_entities.size()));
-    for (const auto& [p, be] : s.block_entities) {
+    w.varint(static_cast<std::int32_t>(l.block_entities.size()));
+    for (const auto& [p, be] : l.block_entities) {
         pos(w, p);
         w.u8(static_cast<std::uint8_t>(be.kind)).varlong(static_cast<std::int64_t>(be.order)).varint(static_cast<std::int32_t>(be.slots.size()));
         for (const auto& st : be.slots) stack(w, st);
@@ -117,8 +120,8 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
         contracts::write_patch(patch, be.components);
         w.raw(patch).prefixed_bytes(be.saved.bytes());
     }
-    w.varint(static_cast<std::int32_t>(s.entities.size()));
-    for (const auto& e : s.entities) {
+    w.varint(static_cast<std::int32_t>(l.entities.size()));
+    for (const auto& e : l.entities) {
         w.varlong(static_cast<std::int64_t>(e.id.value));
         w.i64(e.position.x).i64(e.position.y).i64(e.position.z).i64(e.velocity.x).i64(e.velocity.y).i64(e.velocity.z);
         stack(w, e.stack);
@@ -126,20 +129,32 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
         w.boolean(e.on_ground);
         w.u16(e.pickup_delay);
     }
-    w.varint(static_cast<std::int32_t>(s.ticks.size()));
-    for (const auto& t : s.ticks) {
+    w.varint(static_cast<std::int32_t>(l.ticks.size()));
+    for (const auto& t : l.ticks) {
         w.u8(static_cast<std::uint8_t>(t.list));
         pos(w, t.tick.pos);
         w.u8(static_cast<std::uint8_t>(t.tick.block)).varlong(static_cast<std::int64_t>(t.tick.due)).i8(t.tick.priority);
         w.varlong(static_cast<std::int64_t>(t.tick.suborder));
     }
-    w.varint(static_cast<std::int32_t>(s.block_events.size()));
-    for (const auto& e : s.block_events) {
+    w.varint(static_cast<std::int32_t>(l.block_events.size()));
+    for (const auto& e : l.block_events) {
         pos(w, e.pos);
         w.u8(static_cast<std::uint8_t>(e.block)).u8(e.event).u8(e.param);
     }
+}
+
+// Writes the body: time, the entity id counter, the levels, tickets, players
+// and extras. `blocks(level, i)` gives the sections of column i of a level.
+template <class Blocks>
+void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
+    const auto& s = c.state;
+    w.varlong(static_cast<std::int64_t>(s.time)).varlong(static_cast<std::int64_t>(s.next_entity_id));
+    w.varint(static_cast<std::int32_t>(s.levels.size()));
+    for (std::size_t k = 0; k < s.levels.size(); ++k)
+        encode_level(w, s.levels[k], [&](std::size_t i) { return blocks(k, i); });
     w.varint(static_cast<std::int32_t>(s.tickets.size()));
-    for (const auto& t : s.tickets) w.i32(static_cast<std::int32_t>(t.id)).i32(t.center.x).i32(t.center.z).u8(t.radius).u8(t.load_radius);
+    for (const auto& t : s.tickets)
+        w.i32(static_cast<std::int32_t>(t.id)).i32(t.center.x).i32(t.center.z).u8(t.radius).u8(t.load_radius).u8(static_cast<std::uint8_t>(t.dimension));
     w.varint(static_cast<std::int32_t>(s.players.size()));
     for (const auto& p : s.players) {
         w.i64(static_cast<std::int64_t>(p.player.hi)).i64(static_cast<std::int64_t>(p.player.lo));
@@ -193,9 +208,10 @@ struct BodyReader {
     bool pos(contracts::BlockPos& p) { return get(r.i32(), p.x) && get(r.i32(), p.y) && get(r.i32(), p.z); }
 };
 
-bool decode_body(BodyReader& b, Checkpoint& c) {
-    auto& s = c.state;
-    if (!b.u64(s.time) || !b.u64(s.next_suborder) || !b.u64(s.next_entity_id) || !b.u64(s.next_block_entity_order)) return false;
+// Reads a level's column table, block entities, entities, scheduled ticks
+// and block events into `l`.
+bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
+    auto& s = l;
     std::size_t chunks = 0;
     if (!b.count(chunks, 11)) return false;
     for (std::size_t i = 0; i < chunks; ++i) {
@@ -329,12 +345,48 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
         e.block = static_cast<gameplay::BlockType>(block);
         s.block_events.push_back(e);
     }
+    return true;
+}
+
+bool decode_body(BodyReader& b, Checkpoint& c) {
+    auto& s = c.state;
+    if (b.version >= 7) {
+        std::size_t levels = 0;
+        if (!b.u64(s.time) || !b.u64(s.next_entity_id) || !b.count(levels, 4)) return false;
+        for (std::size_t k = 0; k < levels; ++k) {
+            std::uint8_t dimension{};
+            if (!b.get(b.r.u8(), dimension)) return false;
+            if (!contracts::valid_dimension(dimension) || (k > 0 && static_cast<std::uint8_t>(s.levels.back().dimension) >= dimension)) {
+                b.error = "invalid level";
+                return false;
+            }
+            auto& l = s.levels.emplace_back();
+            l.dimension = static_cast<contracts::DimensionId>(dimension);
+            if (!b.u64(l.next_suborder) || !b.u64(l.next_block_entity_order) || !decode_level_lists(b, l)) return false;
+        }
+    } else {
+        // Before version 7: the overworld alone, with the counters first.
+        auto& l = s.level(contracts::DimensionId::overworld);
+        if (!b.u64(s.time) || !b.u64(l.next_suborder) || !b.u64(s.next_entity_id) || !b.u64(l.next_block_entity_order)
+            || !decode_level_lists(b, l))
+            return false;
+    }
+    std::size_t n = 0;
     if (!b.count(n, 13)) return false;
     for (std::size_t i = 0; i < n; ++i) {
         gameplay::Ticket t;
         std::int32_t id{};
         if (!b.get(b.r.i32(), id) || !b.get(b.r.i32(), t.center.x) || !b.get(b.r.i32(), t.center.z) || !b.get(b.r.u8(), t.radius)) return false;
         if (b.version >= 2 && !b.get(b.r.u8(), t.load_radius)) return false;
+        if (b.version >= 7) {
+            std::uint8_t dimension{};
+            if (!b.get(b.r.u8(), dimension)) return false;
+            if (!contracts::valid_dimension(dimension)) {
+                b.error = "invalid ticket level";
+                return false;
+            }
+            t.dimension = static_cast<contracts::DimensionId>(dimension);
+        }
         t.id = static_cast<std::uint32_t>(id);
         s.tickets.push_back(t);
     }
@@ -380,14 +432,16 @@ std::string sha256_hex(std::span<const std::byte> bytes) {
 namespace {
 // The body of a checkpoint whose blocks are listed in its dump.
 std::vector<std::byte> dump_body(const Checkpoint& checkpoint) {
-    std::map<contracts::ChunkPos, std::map<std::int32_t, std::array<std::uint32_t, 4096>>> sections;
-    for (const auto& [p, raw] : checkpoint.state.blocks) sections[contracts::chunk_of(p)][p.y >> 4][contracts::section_local_index(p)] = raw;
+    const auto& levels = checkpoint.state.levels;
+    std::vector<std::map<contracts::ChunkPos, std::map<std::int32_t, std::array<std::uint32_t, 4096>>>> sections(levels.size());
+    for (std::size_t k = 0; k < levels.size(); ++k)
+        for (const auto& [p, raw] : levels[k].blocks) sections[k][contracts::chunk_of(p)][p.y >> 4][contracts::section_local_index(p)] = raw;
     Writer body;
-    encode_body(body, checkpoint, [&](std::size_t i) {
+    encode_body(body, checkpoint, [&](std::size_t k, std::size_t i) {
         std::vector<std::pair<std::int32_t, std::vector<std::byte>>> out;
-        if (const auto it = sections.find(checkpoint.state.chunks[i].pos); it != sections.end())
+        if (const auto it = sections[k].find(levels[k].chunks[i].pos); it != sections[k].end())
             for (const auto& [sy, values] : it->second)
-                if (auto bytes = encode_section([&](std::size_t k) { return values[k]; }); !bytes.empty()) out.emplace_back(sy, std::move(bytes));
+                if (auto bytes = encode_section([&](std::size_t n) { return values[n]; }); !bytes.empty()) out.emplace_back(sy, std::move(bytes));
         return out;
     });
     return body.take();
@@ -424,15 +478,19 @@ SectionCache::~SectionCache() = default;
 std::size_t SectionCache::size() const noexcept { return entries_.size(); }
 std::vector<std::shared_ptr<const SectionBlocks>> SectionCache::take_dropped() { return std::exchange(dropped_, {}); }
 
-std::vector<std::byte> encode_checkpoint(const Checkpoint& checkpoint, std::span<const ColumnSections> columns, std::int32_t min_y,
-                                         SectionCache* cache, const CheckpointOptions& options) {
-    if (!checkpoint.state.blocks.empty() || columns.size() != checkpoint.state.chunks.size())
-        throw std::invalid_argument("checkpoint: sections must replace the block list, one entry per column");
+std::vector<std::byte> encode_checkpoint(const Checkpoint& checkpoint, std::span<const std::vector<ColumnSections>> levels,
+                                         const contracts::VersionBundle& bundle, SectionCache* cache, const CheckpointOptions& options) {
+    const auto& state = checkpoint.state;
+    bool shaped = levels.size() == state.levels.size();
+    for (std::size_t k = 0; shaped && k < levels.size(); ++k)
+        shaped = state.levels[k].blocks.empty() && levels[k].size() == state.levels[k].chunks.size();
+    if (!shaped) throw std::invalid_argument("checkpoint: sections must replace the block lists, one entry per column");
     const auto round = cache ? ++cache->round_ : 0;
     Writer body;
-    encode_body(body, checkpoint, [&](std::size_t i) {
+    encode_body(body, checkpoint, [&](std::size_t level, std::size_t i) {
         std::vector<std::pair<std::int32_t, std::vector<std::byte>>> out;
-        const auto& list = columns[i];
+        const auto& list = levels[level][i];
+        const auto min_y = bundle.shape(state.levels[level].dimension).min_y;
         for (std::size_t k = 0; k < list.size(); ++k) {
             const auto& section = list[k];
             if (!section) continue;

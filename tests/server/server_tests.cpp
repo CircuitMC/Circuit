@@ -208,7 +208,7 @@ struct GameFixture {
         return peer;
     }
     std::string at(contracts::BlockPos p) const {
-        const auto s = game->engine().view().block(p);
+        const auto s = game->engine().view().block(contracts::DimensionId::overworld, p);
         return s ? mapping.notation(*s) : "unloaded";
     }
     void hold(std::uint64_t peer, std::string_view item) {
@@ -247,7 +247,7 @@ server::Intent window_click(std::int32_t window, std::int16_t slot, std::int8_t 
 }
 
 std::uint32_t block_at(const gameplay::WorldDump& d, contracts::BlockPos p) {
-    for (const auto& [pos, raw] : d.blocks)
+    for (const auto& [pos, raw] : d.overworld().blocks)
         if (pos == p) return raw;
     return 0;
 }
@@ -690,7 +690,7 @@ int main() {
         };
         const auto levels = [](const server::Game& game) {
             std::map<contracts::ChunkPos, gameplay::ChunkLevel> out;
-            for (const auto& [c, l] : game.engine().loaded_columns()) out[c] = l;
+            for (const auto& [c, l] : game.engine().loaded_columns()) out[c.pos] = l;
             return out;
         };
         const auto square = [](contracts::ChunkPos center, std::int32_t r) {
@@ -778,7 +778,7 @@ int main() {
         require(f.at({2, -60, 1}) == "minecraft:stone", "not broken before the progress is whole");
         for (int i = 0; i < 60; ++i) f.game->tick();
         require(f.at({2, -60, 1}) == "minecraft:air", "broken once it is");
-        require(f.game->engine().dump().entities.empty(), "a hand does not harvest stone");
+        require(f.game->engine().dump().overworld().entities.empty(), "a hand does not harvest stone");
         // With a wooden pickaxe (2 / 1.5 / 30 per tick) the client may finish at 70 %: 16 ticks.
         f.game->submit(1, GameFixture::click({3, -61, 1}, 4));
         f.game->submit(1, I{server::intent::HeldSlot{1}});
@@ -792,13 +792,13 @@ int main() {
         require(f.at({3, -60, 1}) == "minecraft:air", "broken with a pickaxe after 16 ticks");
         const auto inv = inventory();
         require(inv.slots[37].item == gameplay::items::wooden_pickaxe && inv.slots[37].damage == 1, "the pickaxe wore by one");
-        auto drops = f.game->engine().dump().entities;
+        auto drops = f.game->engine().dump().overworld().entities;
         require(drops.size() == 1 && drops[0].stack.item == gameplay::items::cobblestone, "stone drops cobblestone");
         // The drop waits 10 ticks, then the player, whose pickup box reaches 1.3 blocks
         // sideways, takes it.
         f.game->submit(1, I{server::intent::Command{"tp 2.5 -60 1.5"}});
         for (int i = 0; i < 14; ++i) f.game->tick();
-        require(f.game->engine().dump().entities.empty(), "picked up");
+        require(f.game->engine().dump().overworld().entities.empty(), "picked up");
         bool cobblestone = false;
         for (const auto& s : inventory().slots) cobblestone |= s.item == gameplay::items::cobblestone && s.count == 1;
         require(cobblestone, "the cobblestone is in the inventory");
@@ -814,8 +814,8 @@ int main() {
         f.game->submit(1, I{server::intent::HeldSlot{0}});
         f.game->submit(1, I{server::intent::Dig{4, {0, 0, 0}, 0, 0}});
         f.game->tick();
-        require(inventory().slots[36].empty() && f.game->engine().dump().entities.size() == 1, "the last stone was thrown");
-        require(f.game->engine().dump().entities[0].pickup_delay > 30, "with a long pickup delay");
+        require(inventory().slots[36].empty() && f.game->engine().dump().overworld().entities.size() == 1, "the last stone was thrown");
+        require(f.game->engine().dump().overworld().entities[0].pickup_delay > 30, "with a long pickup delay");
     });
 
     suite.run("dropped and picked-up items are conserved", [] {
@@ -836,7 +836,7 @@ int main() {
             for (const auto& p : d.players)
                 for (const auto& s : p.slots)
                     if (s.item == gameplay::items::redstone) n += s.count;
-            for (const auto& e : d.entities)
+            for (const auto& e : d.overworld().entities)
                 if (e.stack.item == gameplay::items::redstone) n += e.stack.count;
             return n;
         };
@@ -863,7 +863,8 @@ int main() {
             return inv ? *inv : empty_inventory(key);
         };
         const auto chest_slots = [&] {
-            for (const auto& [pos, be] : f.game->engine().dump().block_entities)
+            const auto d = f.game->engine().dump();
+            for (const auto& [pos, be] : d.overworld().block_entities)
                 if (pos == contracts::BlockPos{2, -60, 1}) return be.slots;
             return std::vector<contracts::ItemStack>{};
         };
@@ -1096,7 +1097,7 @@ int main() {
         const auto d = f.game->engine().dump();
         require(d.players.empty() || std::ranges::all_of(d.players[0].slots, [](const auto& st) { return st.empty(); }), "inventory dropped");
         std::map<std::uint16_t, int> dropped;
-        for (const auto& e : d.entities) dropped[e.stack.item] += e.stack.count;
+        for (const auto& e : d.overworld().entities) dropped[e.stack.item] += e.stack.count;
         require(dropped[gameplay::items::redstone] == 10 && dropped[gameplay::items::iron_pickaxe] == 1, "every item dropped");
         // Dead players do not move or act; asking to respawn brings them back to the spawn.
         move(-59.0, true);
@@ -1135,7 +1136,7 @@ int main() {
         }
         require(died() && ticks > 40 && ticks < 80, std::format("died after {} ticks", ticks));
         const auto d = f.game->engine().dump();
-        require(d.entities.empty() && (d.players.empty() || d.players[0].slots[36].empty()), "the items are lost below the world");
+        require(d.overworld().entities.empty() && (d.players.empty() || d.players[0].slots[36].empty()), "the items are lost below the world");
     });
 
     suite.run("a lever lights a lamp through the engine", [] {

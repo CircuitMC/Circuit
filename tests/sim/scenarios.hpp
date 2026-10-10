@@ -2,6 +2,9 @@
 #pragma once
 #include "../support/scenario.hpp"
 #include <array>
+#include <format>
+#include <type_traits>
+#include <variant>
 #include <functional>
 #include <string>
 
@@ -16,7 +19,16 @@ struct Scenario {
     Tick ticks{};
     std::function<std::vector<CommandBody>(Tick)> inputs;
     Tick dump_every{10};
+    // The levels of a tick's commands, in order; empty: every command is the overworld's.
+    std::function<std::vector<DimensionId>(Tick)> levels{};
 };
+
+// A tick's commands with admissions and levels.
+inline std::vector<Command> admitted(Admissions& admit, const Scenario& s, Tick t) {
+    if (!s.levels) return admit(s.inputs(t));
+    const auto levels = s.levels(t);
+    return admit(s.inputs(t), [&](std::size_t i) { return levels.at(i); });
+}
 
 inline std::vector<CommandBody> redstone_line(std::int32_t x, std::int32_t y, std::int32_t z, std::uint8_t delay) {
     return {place({x, y, z}, blocks::lever()), place({x + 1, y, z}, blocks::wire()), place({x + 2, y, z}, blocks::wire()),
@@ -394,6 +406,63 @@ inline Scenario registry_block_scenario() {
         if (t == 70) c.push_back(place({16, 0, 0}, blocks::air()));
         return c;
     }};
+}
+
+// The scenario with every position raised by `dy` blocks, so that levels
+// whose world starts at y = 0 (the Nether, the End) hold it too.
+inline Scenario raised(Scenario s, std::int32_t dy) {
+    const auto lift = [dy](CommandBody& b) {
+        const auto up = [dy](BlockPos& p) { p.y += dy; };
+        const auto up_fixed = [dy](FixedVec& v) { v.y += std::int64_t{dy} * fixed_one; };
+        std::visit([&](auto& c) {
+            using T = std::decay_t<decltype(c)>;
+            if constexpr (std::is_same_v<T, SetBlock> || std::is_same_v<T, UseBlock> || std::is_same_v<T, InsertItem>) up(c.pos);
+            else if constexpr (std::is_same_v<T, SpawnItem>) up_fixed(c.position);
+            else if constexpr (std::is_same_v<T, PlayerUse> || std::is_same_v<T, PlayerBreak>) up(c.pos);
+            else if constexpr (std::is_same_v<T, DropItem> || std::is_same_v<T, PlayerDeath>) up_fixed(c.position);
+            else if constexpr (std::is_same_v<T, ContainerClick>) {
+                if (c.container) up(*c.container);
+                up_fixed(c.drop_position);
+            } else if constexpr (std::is_same_v<T, CloseContainer>) up_fixed(c.drop_position);
+        }, b);
+    };
+    auto inner = s.inputs;
+    s.inputs = [inner, lift](Tick t) {
+        auto out = inner(t);
+        for (auto& b : out) lift(b);
+        return out;
+    };
+    s.name += std::format("+{}", dy);
+    return s;
+}
+
+// Two scenarios at once, `a`'s commands in level `la` and then `b`'s in `lb`
+// each tick. `b`'s ticket ids are raised by 1000: ticket ids are unique over
+// all levels.
+inline Scenario in_levels(const Scenario& a, DimensionId la, const Scenario& b, DimensionId lb) {
+    const auto offset = [](CommandBody& c) {
+        if (auto* add = std::get_if<AddTicket>(&c)) add->ticket += 1000;
+        if (auto* remove = std::get_if<RemoveTicket>(&c)) remove->ticket += 1000;
+    };
+    Scenario s{std::format("{}@{}+{}@{}", a.name, dimension_name(la), b.name, dimension_name(lb)), a.seed,
+               std::max(a.ticks, b.ticks), {}, std::min(a.dump_every, b.dump_every), {}};
+    const auto first = [a](Tick t) { return t <= a.ticks ? a.inputs(t) : std::vector<CommandBody>{}; };
+    const auto second = [b, offset](Tick t) {
+        auto out = t <= b.ticks ? b.inputs(t) : std::vector<CommandBody>{};
+        for (auto& c : out) offset(c);
+        return out;
+    };
+    s.inputs = [first, second](Tick t) {
+        auto out = first(t);
+        for (auto& c : second(t)) out.push_back(std::move(c));
+        return out;
+    };
+    s.levels = [first, second, la, lb](Tick t) {
+        std::vector<DimensionId> out(first(t).size(), la);
+        out.resize(out.size() + second(t).size(), lb);
+        return out;
+    };
+    return s;
 }
 
 inline std::vector<Scenario> all_scenarios() {

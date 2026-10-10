@@ -42,6 +42,7 @@ struct TraceRecord {
     TraceKind kind{};
     BlockPos pos;
     std::uint64_t a{}, b{}, c{};
+    DimensionId dimension{}; // the level of `pos` (and of the entity or chunk the record names)
     bool operator==(const TraceRecord&) const = default;
 };
 

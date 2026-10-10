@@ -124,8 +124,8 @@ int main() {
                     SpawnItem{at_block(0.5, 3.5, 0.5), {}, {items::redstone, 1}}, SpawnItem{at_block(2.5, 3.5, 0.5), {}, {items::stone, 1}}});
             s.until(60);
             const auto d = s.oracle.dump();
-            require(d.entities.size() == 2, "both items rest");
-            for (const auto& e : d.entities)
+            require(d.overworld().entities.size() == 2, "both items rest");
+            for (const auto& e : d.overworld().entities)
                 require(e.position.y == (e.stack.item == items::redstone ? fixed_one : 0), std::format("item rests at {}", e.position.y));
         }
         // Breaking follows the block's hardness, tool and tier.
@@ -149,7 +149,7 @@ int main() {
                            place({16, 0, 0}, blocks::wire()), place({17, 0, 0}, blocks::wire()),
                            place({18, 0, 0}, blocks::repeater(D::east, 1)), place({19, 0, 0}, blocks::wire()),
                            place({20, 0, 0}, blocks::lamp())}));
-        require(s.oracle.dump().ticks.empty(), "unpowered setup schedules nothing");
+        require(s.oracle.dump().overworld().ticks.empty(), "unpowered setup schedules nothing");
         // Commands are inputs between ticks: delays they start count from the previous tick.
         s.tick({use_lever({13, 0, 0})}); // tick 3, scheduling at time 2
         require(wire_level(s, {14, 0, 0}) == 15 && wire_level(s, {15, 0, 0}) == 14 && wire_level(s, {16, 0, 0}) == 13
@@ -330,7 +330,7 @@ int main() {
         require(s.at({13, 0, 0}).is(BlockType::moving_piston), "a moving base ignores power");
         s.tick(); // 8: the base arrives and reacts to its power
         require(s.at({13, 0, 0}) == blocks::piston(D::east), "base arrives retracted");
-        require(s.oracle.dump().block_events.size() == 1, "extension queued for the next block-event phase");
+        require(s.oracle.dump().overworld().block_events.size() == 1, "extension queued for the next block-event phase");
         s.tick(); // 9
         require(s.at({13, 0, 0}).flag() && s.at({14, 0, 0}).is(BlockType::moving_piston), "extends again on tick 9");
         require(s.at({15, 0, 0}).is(BlockType::stone) && s.at({17, 0, 0}).is(BlockType::stone), "regular piston left the line");
@@ -420,12 +420,12 @@ int main() {
         s.tick({place({0, 1, 0}, blocks::redstone_block()), place({0, 1, 3}, blocks::redstone_block()),
                 place({0, 1, 5}, blocks::redstone_block()), place({0, 1, 6}, blocks::redstone_block())});
         const auto d = s.oracle.dump();
-        require(d.entities.size() == 4, std::format("four drops, got {}", d.entities.size()));
-        require(d.entities[0].stack == ItemStack{items::redstone, 1} && d.entities[1].stack == ItemStack{items::comparator, 1}
-                    && d.entities[2].stack == ItemStack{items::wheat, 1} && d.entities[3].stack == ItemStack{items::wheat_seeds, 1},
+        require(d.overworld().entities.size() == 4, std::format("four drops, got {}", d.overworld().entities.size()));
+        require(d.overworld().entities[0].stack == ItemStack{items::redstone, 1} && d.overworld().entities[1].stack == ItemStack{items::comparator, 1}
+                    && d.overworld().entities[2].stack == ItemStack{items::wheat, 1} && d.overworld().entities[3].stack == ItemStack{items::wheat_seeds, 1},
                 "drops in event order");
         // Spawned at the dust's center inside the arriving block, then lifted onto it by the entity tick.
-        require(d.entities[0].position == FixedVec{2 * fixed_one + 2048, fixed_one, 2048} && d.entities[0].on_ground,
+        require(d.overworld().entities[0].position == FixedVec{2 * fixed_one + 2048, fixed_one, 2048} && d.overworld().entities[0].on_ground,
                 "drop position");
         const auto spawned = of_kind(s.last, TraceKind::entity_spawned);
         require(spawned.size() == 4 && spawned[0].key.phase == Phase::block_events && spawned[0].a == 1 && spawned[3].a == 4,
@@ -443,7 +443,7 @@ int main() {
         s.tick(build); // 2
         s.tick({place({13, 0, 1}, blocks::redstone_block())}); // 3: stone starts moving into cell 15
         const auto d = s.oracle.dump();
-        require(d.entities.size() == 1 && d.entities[0].position.x == 16 * fixed_one, "pushed half a block, out of the cell");
+        require(d.overworld().entities.size() == 1 && d.overworld().entities[0].position.x == 16 * fixed_one, "pushed half a block, out of the cell");
         const auto crossed = of_kind(s.last, TraceKind::entity_changed_chunk);
         require(crossed.size() == 1 && crossed[0].key.phase == Phase::block_entities && crossed[0].c == pack_chunk({1, 0}),
                 "pushed into chunk 1");
@@ -555,10 +555,10 @@ int main() {
         }
         require(pickup > 2, "expectation computed");
         s.until(pickup - 1);
-        require(s.oracle.dump().entities.size() == 1, "still falling");
+        require(s.oracle.dump().overworld().entities.size() == 1, "still falling");
         s.tick();
         const auto d = s.oracle.dump();
-        require(d.entities.empty() && block_entity_at(d, {0, 0, 0})->slots[0] == ItemStack{items::redstone, 5}, "picked up");
+        require(d.overworld().entities.empty() && block_entity_at(d, {0, 0, 0})->slots[0] == ItemStack{items::redstone, 5}, "picked up");
         const auto removed = of_kind(s.last, TraceKind::entity_removed);
         require(removed.size() == 1 && removed[0].b == static_cast<std::uint64_t>(RemovalReason::picked_up), "reason");
     });
@@ -657,7 +657,7 @@ int main() {
             if (r.kind == TraceKind::block_changed && r.pos == BlockPos{2, 0, 1} && BlockState::decode(static_cast<std::uint32_t>(r.b))->flag())
                 ++lever_uses;
         require(lever_uses == 1, "the lever placed in the same tick was used");
-        require(s.oracle.dump().entities.size() == 1, "the lever dropped");
+        require(s.oracle.dump().overworld().entities.size() == 1, "the lever dropped");
         require(s.at({2, 1, 1}).is(BlockType::stone), "sneaking placed instead of using");
 
         // Survival placement uses the item up; a water bucket leaves a bucket.
@@ -705,17 +705,17 @@ int main() {
         // Creative breaking drops the chest's contents, not the chest.
         s.tick({circuit::contracts::PlayerBreak{alex, {0, 0, 0}, false, 36}});
         auto d = s.oracle.dump();
-        require(d.entities.size() == 2 && d.entities[0].stack == ItemStack{items::iron_ingot, 5, 0}
-                    && d.entities[1].stack == ItemStack{items::redstone, 64, 0},
+        require(d.overworld().entities.size() == 2 && d.overworld().entities[0].stack == ItemStack{items::iron_ingot, 5, 0}
+                    && d.overworld().entities[1].stack == ItemStack{items::redstone, 64, 0},
                 "contents drop in slot order");
         // Survival with a stone pickaxe: stone gives cobblestone, obsidian nothing; the
         // pickaxe (131 uses) breaks on its last use.
         s.tick({circuit::contracts::PlayerBreak{alex, {2, 0, 0}, true, 36}});
         d = s.oracle.dump();
-        require(d.entities.size() == 3 && d.entities[2].stack.item == items::cobblestone, "cobblestone");
+        require(d.overworld().entities.size() == 3 && d.overworld().entities[2].stack.item == items::cobblestone, "cobblestone");
         require(d.players.empty(), "the pickaxe broke");
         s.tick({circuit::contracts::PlayerBreak{alex, {4, 0, 0}, true, 36}});
-        require(s.oracle.dump().entities.size() == 3 && s.at({4, 0, 0}).is_air(), "obsidian by hand drops nothing");
+        require(s.oracle.dump().overworld().entities.size() == 3 && s.at({4, 0, 0}).is_air(), "obsidian by hand drops nothing");
     });
 
     suite.run("container clicks follow the target version's menus", [] {
@@ -752,7 +752,7 @@ int main() {
         s.tick({click(2, 4, 2)}); // swap chest slot 2 with hotbar slot 4
         require(player().slots[40] == ItemStack{items::redstone, 60, 0} && chest_slot(2).empty(), "number-key swap");
         s.tick({click(58, 0, 4)}); // throw one from hotbar slot 4
-        require(player().slots[40].count == 59 && s.oracle.dump().entities.size() == 1, "throw one");
+        require(player().slots[40].count == 59 && s.oracle.dump().overworld().entities.size() == 1, "throw one");
         // Drag 59 evenly over three empty chest slots: 19 each, 2 stay on the cursor.
         s.tick({click(58, 0, 0), click(-999, 0, 5), click(3, 1, 5), click(4, 1, 5), click(5, 1, 5), click(-999, 2, 5)});
         require(chest_slot(3).count == 19 && chest_slot(4).count == 19 && chest_slot(5).count == 19 && player().cursor.count == 2,
@@ -762,7 +762,7 @@ int main() {
         s.tick({click(6, 0, 6)});
         require(player().cursor.count == 64, "collect to a full stack");
         s.tick({click(-999, 1, 0)}); // right click outside: throws one
-        require(player().cursor.count == 63 && s.oracle.dump().entities.size() == 2, "one thrown outside");
+        require(player().cursor.count == 63 && s.oracle.dump().overworld().entities.size() == 2, "one thrown outside");
         s.tick({circuit::contracts::CloseContainer{alex, at_block(0.5, 2, 0.5), {}}});
         require(player().cursor.empty(), "closing returns the cursor to the inventory");
         // The own window: armor slots take armor only, the crafting result nothing.
@@ -798,9 +798,9 @@ int main() {
                 n[p.cursor.item] += p.cursor.count;
                 for (const auto& st : p.slots) n[st.item] += st.count;
             }
-            for (const auto& [pos, be] : d.block_entities)
+            for (const auto& [pos, be] : d.overworld().block_entities)
                 for (const auto& st : be.slots) n[st.item] += st.count;
-            for (const auto& e : d.entities) n[e.stack.item] += e.stack.count;
+            for (const auto& e : d.overworld().entities) n[e.stack.item] += e.stack.count;
             n.erase(0);
             return n;
         };
@@ -831,7 +831,7 @@ int main() {
             const auto d = s.oracle.dump();
             for (const auto& p : d.players)
                 for (const auto& st : p.slots) require(st.empty() || st.count <= items::max_stack(st.item), "slot limits hold");
-            for (const auto& [pos, be] : d.block_entities)
+            for (const auto& [pos, be] : d.overworld().block_entities)
                 for (const auto& st : be.slots) require(st.empty() || st.count <= items::max_stack(st.item), "container limits hold");
         }
     });
@@ -858,19 +858,19 @@ int main() {
         const std::vector<ItemStack> expected{{items::redstone, 64, 0}, {items::stone, 5, 0}, {items::iron_boots, 1, 0},
                                               {items::diamond_helmet, 1, 30}, {items::shield, 1, 0}, {items::wheat, 3, 0},
                                               {items::lever, 7, 0}};
-        require(d.entities.size() == expected.size(), std::format("{} entities", d.entities.size()));
+        require(d.overworld().entities.size() == expected.size(), std::format("{} entities", d.overworld().entities.size()));
         for (std::size_t i = 0; i < expected.size(); ++i) {
-            require(d.entities[i].stack == expected[i], std::format("drop {} in order", i));
-            require(d.entities[i].pickup_delay > 30, "with the thrown pickup delay");
+            require(d.overworld().entities[i].stack == expected[i], std::format("drop {} in order", i));
+            require(d.overworld().entities[i].pickup_delay > 30, "with the thrown pickup delay");
         }
         // They spread in different directions.
         std::set<std::pair<std::int64_t, std::int64_t>> directions;
-        for (const auto& e : d.entities) directions.insert({e.velocity.x, e.velocity.z});
+        for (const auto& e : d.overworld().entities) directions.insert({e.velocity.x, e.velocity.z});
         require(directions.size() == expected.size(), "spread");
         // Below the world nothing can drop: the items are lost, as in the void.
         s.tick({SetPlayerSlot{alex, 36, {items::stone, 2, 0}}});
         s.tick({PlayerDeath{alex, at_block(1.5, -200, 1.5)}});
-        require(s.oracle.dump().players.empty() && s.oracle.dump().entities.size() == expected.size(), "lost below the world");
+        require(s.oracle.dump().players.empty() && s.oracle.dump().overworld().entities.size() == expected.size(), "lost below the world");
     });
 
     suite.run("ticket bounds are checked without overflow", [] {
@@ -878,7 +878,7 @@ int main() {
         const std::int32_t limit = world_border / 16;
         const auto accepted = [&](ChunkPos center, std::uint8_t radius) {
             TicketSet tickets;
-            return tickets.add({1, center, radius}, limits).has_value();
+            return tickets.add({1, center, radius}, DimensionId::overworld, limits).has_value();
         };
         for (const auto extreme : {INT32_MIN, INT32_MAX})
             for (const std::uint8_t radius : {std::uint8_t{0}, limits.max_ticket_radius})
@@ -897,23 +897,23 @@ int main() {
         // A load radius beyond radius + 1 reaches further, and is bounded the same way.
         const auto loads = [&](ChunkPos center, std::uint8_t load) {
             TicketSet tickets;
-            return tickets.add({1, center, 1, load}, limits).has_value();
+            return tickets.add({1, center, 1, load}, DimensionId::overworld, limits).has_value();
         };
         const std::int32_t far = limits.max_load_radius;
         require(loads({-limit + far, 0}, limits.max_load_radius) && !loads({-limit + far - 1, 0}, limits.max_load_radius)
                     && loads({0, limit - 1 - far}, limits.max_load_radius) && !loads({0, limit - far}, limits.max_load_radius),
                 "load radius endpoints");
         TicketSet tickets;
-        require(tickets.add({1, {0, 0}, static_cast<std::uint8_t>(limits.max_ticket_radius + 1)}, limits).error()
+        require(tickets.add({1, {0, 0}, static_cast<std::uint8_t>(limits.max_ticket_radius + 1)}, DimensionId::overworld, limits).error()
                     == ErrorCode::out_of_bounds,
                 "radius limit");
-        require(tickets.add({1, {0, 0}, 1, static_cast<std::uint8_t>(limits.max_load_radius + 1)}, limits).error()
+        require(tickets.add({1, {0, 0}, 1, static_cast<std::uint8_t>(limits.max_load_radius + 1)}, DimensionId::overworld, limits).error()
                     == ErrorCode::out_of_bounds,
                 "load radius limit");
-        require(tickets.add({2, {0, 0}, 2, 5}, limits).has_value(), "view ticket");
+        require(tickets.add({2, {0, 0}, 2, 5}, DimensionId::overworld, limits).has_value(), "view ticket");
         const auto l = tickets.levels();
-        require(l.size() == 121 && l.at({2, 0}) == ChunkLevel::ticking && l.at({3, 0}) == ChunkLevel::border
-                    && l.at({5, 5}) == ChunkLevel::border && !l.contains({6, 0}),
+        require(l.size() == 121 && l.at({DimensionId::overworld, {2, 0}}) == ChunkLevel::ticking && l.at({DimensionId::overworld, {3, 0}}) == ChunkLevel::border
+                    && l.at({DimensionId::overworld, {5, 5}}) == ChunkLevel::border && !l.contains({DimensionId::overworld, {6, 0}}),
                 "ticking within the radius, loaded within the load radius");
     });
 
@@ -977,11 +977,11 @@ int main() {
         require(of_kind(s.last, TraceKind::chunk_unloaded).size() == 9, "nine chunks unloaded");
         s.until(9);
         auto d = s.oracle.dump();
-        require(d.ticks.size() == 2 && state_at(d, {2, 0, 5}).flag(), "pending ticks kept while unloaded");
+        require(d.overworld().ticks.size() == 2 && state_at(d, {2, 0, 5}).flag(), "pending ticks kept while unloaded");
         s.tick({ticket(2, {0, 0}, 0)}); // 10: reload, overdue tick drains
         d = s.oracle.dump();
         require(!state_at(d, {2, 0, 5}).flag() && state_at(d, {18, 0, 5}).flag(), "ticking chunk drains; border waits");
-        require(d.chunks.size() == 9 && d.chunks[4].generation == 1, "reload increments generation");
+        require(d.overworld().chunks.size() == 9 && d.overworld().chunks[4].generation == 1, "reload increments generation");
         s.tick({SetBlock{{3, 0, 0}, blocks::stone().raw(), Generation{0}}, SetBlock{{4, 0, 0}, blocks::stone().raw(), Generation{1}}});
         const auto r = of_kind(s.last, TraceKind::command_rejected);
         require(r.size() == 1 && r[0].b == static_cast<std::uint64_t>(ErrorCode::stale_generation), "stale generation");
@@ -1202,12 +1202,12 @@ int main() {
             for (const auto& [p, slot] : std::vector<std::pair<BlockPos, std::uint8_t>>{
                      {{0, 0, 0}, 39}, {{1, 0, 0}, 36}, {{2, 0, 0}, 39}, {{3, 0, 0}, 37}, {{4, 0, 0}, 38},
                      {{5, 0, 0}, 39}, {{6, 0, 0}, 39}, {{7, 0, 0}, 39}, {{8, 0, 0}, 39}}) {
-                const auto before = s.oracle.dump().entities.size();
+                const auto before = s.oracle.dump().overworld().entities.size();
                 s.tick({PlayerBreak{alex, p, true, slot}});
                 require(s.at(p).is_air(), "broken");
                 const auto d = s.oracle.dump();
                 std::vector<ItemStack> out;
-                for (auto i = before; i < d.entities.size(); ++i) out.push_back(d.entities[i].stack);
+                for (auto i = before; i < d.overworld().entities.size(); ++i) out.push_back(d.overworld().entities[i].stack);
                 drops.push_back(out);
             }
             return drops;
@@ -1379,10 +1379,10 @@ int main() {
         // Transmuting keeps the box's name; throwing the result crafts.
         s.tick({SetPlayerSlot{alex, 1, named(items::shulker_box, 1, "Box")}, SetPlayerSlot{alex, 4, {items::red_dye, 2}}});
         require(slot(0) == named(items::red_shulker_box, 1, "Box"), "the name is kept");
-        const auto before = s.oracle.dump().entities.size();
+        const auto before = s.oracle.dump().overworld().entities.size();
         s.tick({click(0, 0, 4)});
         const auto d = s.oracle.dump();
-        require(d.entities.size() == before + 1 && d.entities.back().stack == named(items::red_shulker_box, 1, "Box") &&
+        require(d.overworld().entities.size() == before + 1 && d.overworld().entities.back().stack == named(items::red_shulker_box, 1, "Box") &&
                     slot(1).empty() && slot(4) == ItemStack{items::red_dye, 1} && slot(0).empty(),
                 "thrown from the result");
         // Closing the window returns the grid and clears the result.

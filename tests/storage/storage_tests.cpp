@@ -10,6 +10,9 @@
 #include <circuit/storage/world_directory.hpp>
 #include <climits>
 #include <filesystem>
+#include <iterator>
+#include <fstream>
+#include <cstring>
 #include <format>
 #include <map>
 #include <optional>
@@ -42,7 +45,7 @@ History record(const Scenario& s, Tick limit) {
     Admissions admit;
     h.dumps.push_back(engine.dump());
     for (Tick t = 1; t <= std::min(limit, s.ticks); ++t) {
-        h.inputs.push_back(admit(s.inputs(t)));
+        h.inputs.push_back(admitted(admit, s, t));
         engine.advance(h.inputs.back());
         h.dumps.push_back(engine.dump());
     }
@@ -167,6 +170,15 @@ void check_after(MemoryFilesystem fs, const History& h, const Outcome& o, std::s
     require(reached == h.ticks(), std::format("{}: second recovery reaches {} from {}: {}", label, reached, (*again)->checkpoint.state.time, notes));
 }
 
+std::vector<std::byte> read_fixture(std::string_view name) {
+    std::ifstream in(std::filesystem::path(CIRCUIT_SOURCE_DIR) / "tests/fixtures/storage" / name, std::ios::binary);
+    const std::vector<char> raw{std::istreambuf_iterator<char>(in), {}};
+    require(!raw.empty(), std::format("fixture {}", name));
+    std::vector<std::byte> out(raw.size());
+    std::memcpy(out.data(), raw.data(), raw.size());
+    return out;
+}
+
 std::vector<std::byte> bytes(std::string_view s) {
     const auto b = std::as_bytes(std::span(s));
     return {b.begin(), b.end()};
@@ -199,16 +211,16 @@ int main() {
             Engine engine(bundle(), s.seed);
             Admissions admit;
             for (Tick t = 1; t <= s.ticks; ++t) {
-                engine.advance(admit(s.inputs(t)));
+                engine.advance(admitted(admit, s, t));
                 if (t % std::max<Tick>(1, s.ticks / 3) != 0) continue;
                 const auto expected = circuit::storage::encode_checkpoint({bundle_id, rules_id(), s.seed, engine.dump(), {}});
                 auto snap = engine.snapshot();
                 // The engine keeps running; copy-on-write keeps the snapshot as it was.
                 for (Tick k = 1; k <= 5 && t + k <= s.ticks; ++k) engine.advance(admit(s.inputs(t + k)));
                 Checkpoint c{bundle_id, rules_id(), s.seed, std::move(snap.state), {}};
-                const auto plain = circuit::storage::encode_checkpoint(c, snap.sections, snap.min_y, nullptr);
-                const auto cached = circuit::storage::encode_checkpoint(c, snap.sections, snap.min_y, &cache);
-                const auto again = circuit::storage::encode_checkpoint(c, snap.sections, snap.min_y, &cache);
+                const auto plain = circuit::storage::encode_checkpoint(c, snap.sections, bundle(), nullptr);
+                const auto cached = circuit::storage::encode_checkpoint(c, snap.sections, bundle(), &cache);
+                const auto again = circuit::storage::encode_checkpoint(c, snap.sections, bundle(), &cache);
                 require(plain == expected && cached == expected && again == expected, std::format("{} at {}: snapshot encoding", s.name, t));
                 t = std::min(s.ticks, t + 5); // those ticks already ran
             }
@@ -234,11 +246,15 @@ int main() {
     });
 
     suite.run("checkpoints name their block registry", [&] {
-        // Version 5 names the registry after the rule set; version 4 predates it
-        // and is read as circuit-blocks-1. Another registry is refused. The
-        // scenario holds no item stacks, whose encoding changed in version 6.
+        // A version 6 checkpoint written by the previous release (the clock
+        // history's last state; tests/fixtures/storage) reads as the
+        // overworld's. Version 5 named the registry the same way, and version
+        // 4 predates it and is read as circuit-blocks-1 (the scenario holds no
+        // item stacks, whose encoding changed in version 6). Another registry
+        // is refused.
         const auto c = checkpoint_at(histories[0], histories[0].ticks());
-        const auto good = circuit::storage::encode_checkpoint(c);
+        const auto good = read_fixture("checkpoint-v6-clock.bin");
+        require(circuit::storage::decode_checkpoint(good).value() == c, "a version 6 checkpoint reads as the overworld's");
         const std::span<const std::byte> sealed(good.data(), good.size() - 32);
         circuit::protocol::Reader header(sealed);
         (void)header.raw(12);
@@ -257,11 +273,35 @@ int main() {
             for (std::size_t i = 0; i < 32; ++i) out.push_back(static_cast<std::byte>(std::stoi(hex.substr(2 * i, 2), nullptr, 16)));
             return out;
         };
-        require(circuit::storage::decode_checkpoint(reseal(6, "circuit-blocks-1")).value() == c, "resealed version 6");
         require(circuit::storage::decode_checkpoint(reseal(5, "circuit-blocks-1")).value() == c, "version 5");
         require(circuit::storage::decode_checkpoint(reseal(4, std::nullopt)).value() == c, "version 4 reads as circuit-blocks-1");
         const auto other = circuit::storage::decode_checkpoint(reseal(6, "circuit-blocks-0"));
         require(!other && other.error().find("block registry circuit-blocks-0") != std::string::npos, "another registry is refused");
+        // The current version writes the levels and reads back the same state.
+        require(circuit::storage::decode_checkpoint(circuit::storage::encode_checkpoint(c)).value() == c, "version 7 round trip");
+    });
+
+    suite.run("a world written by the previous release recovers as the overworld", [&] {
+        // The drops history's world directory as the previous release wrote it:
+        // version 6 checkpoints at ticks 0 and 25, and format 1 log segments
+        // whose commands name no level. Recovery replays it to the same state.
+        MemoryFilesystem fs;
+        for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::path(CIRCUIT_SOURCE_DIR) / "tests/fixtures/storage")) {
+            const auto name = entry.path().filename().string();
+            if (!name.starts_with("world-")) continue;
+            require(fs.write_file("/world/" + name.substr(6), read_fixture(name)).has_value(), "fixture copied");
+        }
+        const auto r = recover(fs);
+        require(r && *r, r ? "no world" : r.error());
+        require(check_recovery(histories[2], **r, "previous release") == histories[2].ticks(), "replayed to the end");
+        // The next checkpoint and log records use the current formats.
+        {
+            WorldDirectory dir(fs, "/world", bundle_id, rules_id());
+            require(dir.recover().has_value() && dir.checkpoint(checkpoint_at(histories[2], histories[2].ticks())).has_value(),
+                    "a new checkpoint");
+        }
+        const auto again = recover(fs);
+        require(again && *again && check_recovery(histories[2], **again, "after migration") == histories[2].ticks(), "recovers again");
     });
 
     suite.run("bodies with valid digests are decoded safely", [&] {
@@ -323,11 +363,11 @@ int main() {
         // produce; restoring must refuse them instead of overflowing later.
         const auto& h = histories[2]; // drops: item entities
         Tick t = 0;
-        while (t < h.ticks() && h.dumps[t].entities.empty()) ++t;
-        require(!h.dumps[t].entities.empty(), "the history has item entities");
+        while (t < h.ticks() && h.dumps[t].overworld().entities.empty()) ++t;
+        require(!h.dumps[t].overworld().entities.empty(), "the history has item entities");
         const auto refused = [&](auto edit, std::string_view what) {
             auto state = h.dumps[t];
-            edit(state.entities.front());
+            edit(state.level(circuit::contracts::DimensionId::overworld).entities.front());
             try {
                 Engine engine(bundle(), h.seed, state);
             } catch (const std::invalid_argument& e) {
@@ -637,6 +677,36 @@ int main() {
         require(fs.write_file(root / "x", bytes("abc")).has_value() && fs.read_file(root / "x").value() == bytes("abc"), "write and read");
         require(!fs.read_file(root / "missing") && !fs.append(root / "missing", bytes("a"), true), "missing files fail");
         std::filesystem::remove_all(made);
+    });
+
+    suite.run("levels survive checkpoints, snapshots, logs and recovery", [&] {
+        // The same machines in the overworld and the Nether, raised into both
+        // levels' height (tests/sim/scenarios.hpp).
+        const auto drops = raised(drops_scenario(), 8);
+        const auto h = record(in_levels(drops, DimensionId::overworld, drops, DimensionId::the_nether), 60);
+        require(h.dumps.back().levels.size() == 2, "two levels hold state");
+        for (const Tick t : {Tick{1}, Tick{30}, h.ticks()}) {
+            const auto c = checkpoint_at(h, t);
+            const auto encoded = circuit::storage::encode_checkpoint(c);
+            const auto decoded = circuit::storage::decode_checkpoint(encoded);
+            require(decoded && *decoded == c, std::format("checkpoint at {} round-trips both levels", t));
+            Engine engine(bundle(), h.seed, c.state);
+            require(engine.dump() == c.state, std::format("restored at {}", t));
+            auto snap = engine.snapshot();
+            const Checkpoint from_snapshot{bundle_id, rules_id(), h.seed, std::move(snap.state), c.extras};
+            const auto via_snapshot = circuit::storage::encode_checkpoint(from_snapshot, snap.sections, bundle(), nullptr);
+            require(via_snapshot == encoded, std::format("snapshot at {} encodes like the dump", t));
+        }
+        // Log records keep each command's level: recovery replays to the same state.
+        MemoryFilesystem fs;
+        const auto o = run(fs, h, {.sync_every = 2, .checkpoint_every = 25});
+        require(o.durable == h.ticks(), "complete run");
+        const auto r = recover(fs);
+        require(r && *r && check_recovery(h, **r, "levels") == h.ticks(), "recovered with both levels");
+        bool nether = false;
+        for (const auto& in : (*r)->inputs)
+            for (const auto& c : in.commands) nether |= c.dimension == DimensionId::the_nether;
+        require(nether, "log records name the Nether");
     });
 
     return suite.finish();

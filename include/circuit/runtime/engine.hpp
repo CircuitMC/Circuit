@@ -44,10 +44,10 @@ struct EngineOptions {
     std::uint32_t split_interval{20};     // ticks between split passes
     std::uint32_t quiet_ticks{40};        // interaction-free ticks before a split
     // Fills the blocks of a column created for the first time (not a reloaded
-    // one): `blocks(section)` yields a section's 4096 states, y-major. It must
-    // be deterministic, since replays and checkpoints depend on it. Empty:
-    // new columns are air.
-    std::function<void(contracts::ChunkPos, const std::function<std::array<gameplay::BlockState, 4096>&(std::size_t)>&)>
+    // one): `blocks(section)` yields a section's 4096 states, y-major, from
+    // the level's lowest section. It must be deterministic, since replays and
+    // checkpoints depend on it. Empty: new columns are air.
+    std::function<void(contracts::ChunkKey, const std::function<std::array<gameplay::BlockState, 4096>&(std::size_t)>&)>
         generator;
     // Deliberately unsafe test mode that skips ownership checks. It exists to
     // show that differential exploration detects missing isolation, and is
@@ -83,6 +83,7 @@ class Engine;
 // writes do not change it; it may outlive the tick and move to other threads.
 struct ColumnSnapshot {
     using Blocks = std::array<gameplay::BlockState, 4096>; // y-major, then z, then x
+    contracts::DimensionId dimension{};
     contracts::ChunkPos pos;
     contracts::Generation generation;
     gameplay::ChunkLevel level{};
@@ -92,27 +93,29 @@ struct ColumnSnapshot {
 };
 
 // A consistent image of the whole world between ticks, for background
-// checkpoints. `state` is a canonical dump without its block list; the blocks
-// are `sections`, one list per entry of `state.chunks` (bottom to top, null
-// for an empty section), shared copy-on-write with the engine: the engine
-// copies a section before writing to it while a snapshot holds it. Taking a
-// snapshot costs time in the number of columns, entities and scheduled ticks,
-// not in the number of blocks. Release it on the thread that advances the
-// engine, between ticks.
+// checkpoints. `state` is a canonical dump without its block lists; the
+// blocks are `sections[level][chunk]`, one list per entry of each level's
+// `chunks` (from the level's lowest section up, null for an empty section),
+// shared copy-on-write with the engine: the engine copies a section before
+// writing to it while a snapshot holds it. Taking a snapshot costs time in
+// the number of columns, entities and scheduled ticks, not in the number of
+// blocks. Release it on the thread that advances the engine, between ticks.
 struct WorldSnapshot {
     gameplay::WorldDump state;
-    std::int32_t min_y{};
-    std::vector<std::vector<std::shared_ptr<const ColumnSnapshot::Blocks>>> sections;
+    std::vector<std::vector<std::vector<std::shared_ptr<const ColumnSnapshot::Blocks>>>> sections;
 };
 
 // Immutable query view of the state committed at the end of a tick. It
 // reports stale_view after the engine advances; it must not outlive the engine.
+// Positions are those of the named level.
 class WorldView {
 public:
     [[nodiscard]] contracts::Tick tick() const noexcept { return tick_; }
-    [[nodiscard]] contracts::Result<gameplay::BlockState> block(contracts::BlockPos pos) const;
-    [[nodiscard]] contracts::Result<std::optional<gameplay::BlockEntity>> block_entity(contracts::BlockPos pos) const;
-    [[nodiscard]] contracts::Result<std::optional<gameplay::Entity>> entity(contracts::EntityId id) const;
+    [[nodiscard]] contracts::Result<gameplay::BlockState> block(contracts::DimensionId level, contracts::BlockPos pos) const;
+    [[nodiscard]] contracts::Result<std::optional<gameplay::BlockEntity>> block_entity(contracts::DimensionId level,
+                                                                                       contracts::BlockPos pos) const;
+    // An entity of the named level; nullopt when it is in no level or another one.
+    [[nodiscard]] contracts::Result<std::optional<gameplay::Entity>> entity(contracts::DimensionId level, contracts::EntityId id) const;
     // A player's inventory; nullopt when the player holds nothing.
     [[nodiscard]] contracts::Result<std::optional<gameplay::PlayerInventory>> player(contracts::PlayerKey key) const;
 
@@ -151,9 +154,9 @@ public:
     [[nodiscard]] WorldView view() const noexcept;
     // Snapshot of a loaded column; nullopt when the column is not loaded.
     // Must not be called while advance() runs.
-    [[nodiscard]] std::optional<ColumnSnapshot> column(contracts::ChunkPos pos) const;
-    // Loaded columns and their levels, in coordinate order.
-    [[nodiscard]] std::vector<std::pair<contracts::ChunkPos, gameplay::ChunkLevel>> loaded_columns() const;
+    [[nodiscard]] std::optional<ColumnSnapshot> column(contracts::ChunkKey key) const;
+    // Loaded columns and their chunk levels, by level, then in coordinate order.
+    [[nodiscard]] std::vector<std::pair<contracts::ChunkKey, gameplay::ChunkLevel>> loaded_columns() const;
 
     struct Impl;
 

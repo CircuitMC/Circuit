@@ -11,10 +11,11 @@
 namespace circuit::storage {
 namespace {
 constexpr std::string_view manifest_file = "manifest";
-// Log segments: "CIRCWAL" and a format byte. 1: stacks carry data components;
-// 0 (read only): stacks without components.
+// Log segments: "CIRCWAL" and a format byte. 2: commands name their level;
+// 1 (read only): overworld commands, stacks with data components; 0 (read
+// only): stacks without components.
 constexpr std::string_view segment_prefix{"CIRCWAL", 7};
-constexpr char segment_format = 1;
+constexpr char segment_format = 2;
 constexpr std::size_t segment_magic_size = 8;
 constexpr std::size_t max_record = std::size_t{64} << 20;
 
@@ -163,7 +164,7 @@ std::expected<bool, std::string> WorldDirectory::read_segment(const std::string&
     const auto format = in.size() >= segment_magic_size ? std::to_integer<char>(in[segment_prefix.size()]) : char{-1};
     if (in.size() < segment_magic_size + 8 || !std::equal(segment_prefix.begin(), segment_prefix.end(),
                                                           reinterpret_cast<const char*>(in.data())) ||
-        (format != 0 && format != segment_format) || get(in, segment_magic_size, 8) != tick) {
+        format < 0 || format > segment_format || get(in, segment_magic_size, 8) != tick) {
         notes.push_back(std::format("{} has no valid header", name));
         damaged.insert(name);
         return false;
@@ -180,7 +181,7 @@ std::expected<bool, std::string> WorldDirectory::read_segment(const std::string&
         if (crc32_of(payload) != crc) break;
         // A record with a valid checksum is not a torn write: one that does not
         // decode or does not continue the history means the log is corrupt.
-        auto input = contracts::decode_tick_input(payload, limits, format >= 1);
+        auto input = contracts::decode_tick_input(payload, limits, format >= 1, format >= 2);
         if (!input) return std::unexpected(std::format("{}: undecodable record after tick {}: {}", name, tick, contracts::error_name(input.error())));
         if (input->tick != tick + 1)
             return std::unexpected(std::format("{}: record for tick {} after tick {}", name, input->tick, tick));

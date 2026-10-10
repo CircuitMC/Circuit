@@ -26,16 +26,17 @@ public:
           }()) {}
     void advance(const std::vector<Command>& commands) override { engine_.advance(commands); }
     const std::vector<contracts::TraceRecord>& trace() const override { return engine_.trace(); }
+    // Fixtures run in the overworld (the runner refuses other dimensions).
     BlockState block(BlockPos pos) const override {
-        const auto s = engine_.view().block(pos);
+        const auto s = engine_.view().block(contracts::DimensionId::overworld, pos);
         return s ? *s : BlockState::unloaded_sentinel();
     }
     std::optional<contracts::ItemStack> slot(BlockPos pos, std::uint8_t slot) const override {
-        const auto be = engine_.view().block_entity(pos);
+        const auto be = engine_.view().block_entity(contracts::DimensionId::overworld, pos);
         if (!be || !*be || slot >= (*be)->slots.size()) return std::nullopt;
         return (*be)->slots[slot];
     }
-    std::vector<gameplay::Entity> entities() const override { return engine_.dump().entities; }
+    std::vector<gameplay::Entity> entities() const override { return engine_.dump().overworld().entities; }
 
 private:
     runtime::Engine engine_;

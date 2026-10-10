@@ -72,7 +72,7 @@ void run_entity(RuleContext& ctx, EntityId id) {
     e->velocity = {clamp_speed(v.x), clamp_speed(v.y), clamp_speed(v.z)};
     e->on_ground = on_ground;
 
-    if (p.y < static_cast<std::int64_t>(ctx.bundle().world.min_y - 64) * fixed_one) {
+    if (p.y < static_cast<std::int64_t>(ctx.world().min_y - 64) * fixed_one) {
         ctx.record(TraceKind::entity_removed, block_of(p), id.value, static_cast<std::uint64_t>(RemovalReason::fell_out_of_world));
         ctx.remove_entity(id);
         return;

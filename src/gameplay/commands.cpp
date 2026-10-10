@@ -12,7 +12,7 @@ template <class... F>
 struct overloaded : F... { using F::operator()...; };
 
 Result<void> check_loaded(RuleContext& ctx, BlockPos pos) {
-    if (!in_world(ctx.bundle(), pos)) return std::unexpected(ErrorCode::out_of_bounds);
+    if (!in_world(ctx.world(), pos)) return std::unexpected(ErrorCode::out_of_bounds);
     if (!ctx.chunk_generation(contracts::chunk_of(pos))) return std::unexpected(ErrorCode::unloaded_chunk);
     return {};
 }
@@ -86,7 +86,7 @@ Plan plan(RuleContext& ctx, const contracts::InsertItem& c) {
 
 Plan plan(RuleContext& ctx, const contracts::SpawnItem& c) {
     // The full-width position is checked before it is narrowed to a block.
-    if (!contracts::fixed_within_border(c.position) || !ctx.bundle().world.contains_fixed_y(c.position.y))
+    if (!contracts::fixed_within_border(c.position) || !ctx.world().contains_fixed_y(c.position.y))
         return std::unexpected(ErrorCode::out_of_bounds);
     const auto cell = contracts::block_of(c.position);
     if (auto ok = check_loaded(ctx, cell); !ok) return std::unexpected(ok.error());
@@ -251,7 +251,7 @@ Plan plan(RuleContext& ctx, const contracts::PickUp& c) {
 
 Plan plan(RuleContext& ctx, const contracts::DropItem& c) {
     if (c.slot >= contracts::player_slots) return std::unexpected(ErrorCode::invalid_slot);
-    if (!contracts::fixed_within_border(c.position) || !ctx.bundle().world.contains_fixed_y(c.position.y))
+    if (!contracts::fixed_within_border(c.position) || !ctx.world().contains_fixed_y(c.position.y))
         return std::unexpected(ErrorCode::out_of_bounds);
     const auto cell = contracts::block_of(c.position);
     if (auto ok = check_loaded(ctx, cell); !ok) return std::unexpected(ok.error());

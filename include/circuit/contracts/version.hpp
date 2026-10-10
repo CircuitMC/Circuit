@@ -112,7 +112,14 @@ struct VersionBundle {
     std::string_view protocol_candidate;
     std::optional<RuleSet> rules; // Absent: listed candidate that cannot execute.
     VersionSchema schema;
-    WorldShape world;
+    WorldShape world; // the overworld
+    // The Nether and the End: their dimension types' build height in both
+    // target versions (minecraft.wiki "Dimension type").
+    WorldShape nether{0, 256};
+    WorldShape end{0, 256};
+    [[nodiscard]] constexpr const WorldShape& shape(DimensionId d) const noexcept {
+        return d == DimensionId::the_nether ? nether : d == DimensionId::the_end ? end : world;
+    }
     RuleLimits limits;
     std::string_view generator;   // Identity of the chunk generator.
     std::int32_t protocol;        // Play protocol number; 0: no play codec.

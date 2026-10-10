@@ -8,9 +8,12 @@ using contracts::block_of;
 using contracts::chunk_of;
 
 RegionContext::RegionContext(const contracts::VersionBundle& bundle, WorldStore& world, const RegionMap& regions,
-                             RegionId region, Phase phase, bool record_trace, bool unchecked, const gameplay::GameData* data)
+                             RegionId region, Phase phase, DimensionId level, bool record_trace, bool unchecked,
+                             const gameplay::GameData* data)
     : RuleContext(bundle, data), world_(world), regions_(regions), region_(region), phase_(phase),
-      record_trace_(record_trace), unchecked_(unchecked) {}
+      record_trace_(record_trace), unchecked_(unchecked) {
+    enter(level);
+}
 
 void RegionContext::begin_root(std::uint64_t root, ChunkPos home) {
     root_ = root;
@@ -34,24 +37,24 @@ void RegionContext::rollback() {
 
 Provisional RegionContext::stage(Counter counter, std::uint32_t seq, EntityId entity) {
     auto& entries = ledger[static_cast<std::size_t>(counter)];
-    entries.push_back({root_, seq, entity});
+    entries.push_back({root_, seq, entity, dimension()});
     return {true, static_cast<std::uint32_t>(entries.size() - 1)};
 }
 
 ChunkData* RegionContext::loaded_in_world(BlockPos pos) const {
-    if (!gameplay::in_world(bundle(), pos)) return nullptr;
-    return world_.find_loaded(chunk_of(pos));
+    if (!gameplay::in_world(world(), pos)) return nullptr;
+    return world_.find_loaded(key(chunk_of(pos)));
 }
 
 ChunkData& RegionContext::owned(ChunkPos c, ChunkData& data) {
-    if (!unchecked_ && region_ != all_regions && regions_.owner.at(c) != region_) throw ForeignAccess{c};
-    if (c != home_ && phase_ != Phase::commands) interactions.insert(std::minmax(home_, c));
+    if (!unchecked_ && region_ != all_regions && regions_.owner.at(key(c)) != region_) throw ForeignAccess{key(c)};
+    if (c != home_ && phase_ != Phase::commands) interactions.insert(std::minmax(key(home_), key(c)));
     return data;
 }
 
 ChunkData& RegionContext::writable(ChunkPos c, ChunkData& data) {
     owned(c, data);
-    if (!snapshots.contains(c)) snapshots.emplace(c, data);
+    if (!snapshots.contains(key(c))) snapshots.emplace(key(c), data);
     return data;
 }
 
@@ -82,7 +85,7 @@ void RegionContext::write_block(BlockPos pos, BlockState state) {
 
 std::optional<contracts::Generation> RegionContext::chunk_generation(ChunkPos chunk) {
     // Loading state and generations are fixed while a phase runs: no ownership needed.
-    if (const auto* data = world_.find_loaded(chunk)) return data->generation;
+    if (const auto* data = world_.find_loaded(key(chunk))) return data->generation;
     return std::nullopt;
 }
 
@@ -154,7 +157,7 @@ void RegionContext::create_block_entity(BlockPos pos, BlockType kind) {
     auto& chunk = writable(chunk_of(pos), *data);
     BlockEntity be{kind, 0, std::vector<contracts::ItemStack>(gameplay::container_size(kind)), 0};
     if (region_ == all_regions) {
-        be.order = world_.next_block_entity_order++; // Serial command phase.
+        be.order = world_.counters(dimension()).next_block_entity_order++; // Serial command phase.
     } else {
         // Creation order is level-wide: staged and assigned at commit in serial order.
         chunk.new_block_entities[pos] = stage(Counter::block_entity_order, creations_++);
@@ -173,7 +176,7 @@ void RegionContext::remove_block_entity(BlockPos pos) {
 std::vector<EntityId> RegionContext::entities_in_cell(BlockPos cell) {
     std::vector<EntityId> out;
     const auto c = chunk_of(cell);
-    auto* data = world_.find_loaded(c);
+    auto* data = world_.find_loaded(key(c));
     if (!data) return out;
     for (const auto& [id, e] : owned(c, *data).entities)
         if (block_of(e.position) == cell) out.push_back(id);
@@ -181,15 +184,18 @@ std::vector<EntityId> RegionContext::entities_in_cell(BlockPos cell) {
 }
 
 std::optional<ChunkPos> RegionContext::locate(EntityId id) const {
-    if (const auto it = entity_moves.find(id); it != entity_moves.end()) return it->second;
-    if (const auto it = world_.entity_index.find(id); it != world_.entity_index.end()) return it->second;
-    return std::nullopt;
+    std::optional<ChunkKey> at;
+    if (const auto it = entity_moves.find(id); it != entity_moves.end()) at = it->second;
+    else if (const auto it = world_.entity_index.find(id); it != world_.entity_index.end()) at = it->second;
+    // An entity of another level is not visible from this one.
+    if (!at || at->dimension != dimension()) return std::nullopt;
+    return at->pos;
 }
 
 const Entity* RegionContext::peek_entity(EntityId id) {
     const auto c = locate(id);
     if (!c) return nullptr;
-    auto* data = world_.find_loaded(*c);
+    auto* data = world_.find_loaded(key(*c));
     if (!data) return nullptr;
     const auto& map = owned(*c, *data).entities;
     const auto it = map.find(id);
@@ -199,7 +205,7 @@ const Entity* RegionContext::peek_entity(EntityId id) {
 Entity* RegionContext::entity(EntityId id) {
     const auto c = locate(id);
     if (!c) return nullptr;
-    auto* data = world_.find_loaded(*c);
+    auto* data = world_.find_loaded(key(*c));
     if (!data) return nullptr;
     if (!owned(*c, *data).entities.contains(id)) return nullptr;
     return &writable(*c, *data).entities.at(id);
@@ -207,7 +213,7 @@ Entity* RegionContext::entity(EntityId id) {
 
 EntityId RegionContext::spawn_entity(const Entity& prototype) {
     const auto c = chunk_of(block_of(prototype.position));
-    auto* data = world_.find_loaded(c);
+    auto* data = world_.find_loaded(key(c));
     if (!data) throw std::logic_error("runtime: entity spawned in an unloaded chunk");
     auto& chunk = writable(c, *data);
     EntityId id;
@@ -223,15 +229,15 @@ EntityId RegionContext::spawn_entity(const Entity& prototype) {
     auto e = prototype;
     e.id = id;
     chunk.entities[id] = e;
-    entity_moves[id] = c;
+    entity_moves[id] = key(c);
     return id;
 }
 
 void RegionContext::relocate_entity(EntityId id, contracts::FixedVec position) {
     const auto from = locate(id);
     const auto to = chunk_of(block_of(position));
-    auto* source = from ? world_.find_loaded(*from) : nullptr;
-    auto* target = world_.find_loaded(to);
+    auto* source = from ? world_.find_loaded(key(*from)) : nullptr;
+    auto* target = world_.find_loaded(key(to));
     if (!source || !target) throw std::logic_error("runtime: invalid entity relocation");
     if (*from == to) {
         writable(to, *target).entities.at(id).position = position;
@@ -243,13 +249,13 @@ void RegionContext::relocate_entity(EntityId id, contracts::FixedVec position) {
     node.mapped().position = position;
     dst.entities.insert(std::move(node));
     if (auto staged = src.new_entities.extract(id)) dst.new_entities.insert(std::move(staged));
-    entity_moves[id] = to;
+    entity_moves[id] = key(to);
 }
 
 void RegionContext::remove_entity(EntityId id) {
     const auto c = locate(id);
     if (!c) return;
-    if (auto* data = world_.find_loaded(*c)) {
+    if (auto* data = world_.find_loaded(key(*c))) {
         auto& chunk = writable(*c, *data);
         chunk.entities.erase(id);
         chunk.new_entities.erase(id); // Its creation stays in the ledger.
@@ -274,7 +280,9 @@ gameplay::PlayerInventory& RegionContext::player(contracts::PlayerKey player) {
 
 std::uint32_t RegionContext::record(TraceKind kind, BlockPos pos, std::uint64_t a, std::uint64_t b, std::uint64_t c) {
     const auto seq = seq_++;
-    if (record_trace_) trace.push_back({{world_.time, phase_, root_, seq}, kind, pos, a, b, c});
+    // The command phase precedes every level's phases (OrderKey).
+    const auto level = phase_ == Phase::commands ? std::uint8_t{0} : static_cast<std::uint8_t>(dimension());
+    if (record_trace_) trace.push_back({{world_.time, phase_, root_, seq, level}, kind, pos, a, b, c, dimension()});
     return seq;
 }
 

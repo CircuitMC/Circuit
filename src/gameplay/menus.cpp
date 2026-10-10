@@ -614,7 +614,7 @@ contracts::FixedVec death_drop_velocity(std::size_t n) {
 
 contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const contracts::PlayerDeath& c) {
     const auto cell = contracts::block_of(c.position);
-    const bool in_world = contracts::fixed_within_border(c.position) && ctx.bundle().world.contains_fixed_y(c.position.y)
+    const bool in_world = contracts::fixed_within_border(c.position) && ctx.world().contains_fixed_y(c.position.y)
                           && ctx.chunk_generation(contracts::chunk_of(cell)).has_value();
     return [&ctx, c, cell, in_world] {
         if (!ctx.peek_player(c.player)) return; // nothing to drop

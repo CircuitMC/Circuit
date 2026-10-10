@@ -41,14 +41,25 @@ constexpr std::string_view phase_name(Phase p) noexcept {
 
 enum class TickList : std::uint8_t { block, fluid };
 
-// Position of an observable action in the serial reference order:
-// tick, phase, root index within the phase, and action index within the root.
+// Position of an observable action in the serial reference order: tick,
+// level, phase, root index within the phase, and action index within the
+// root. The command phase runs once, before any level ticks; it counts as the
+// first level's (the overworld's). The other phases run level by level in
+// level order (DimensionId).
 struct OrderKey {
     Tick tick{};
     Phase phase{};
     std::uint64_t root{};
     std::uint32_t seq{};
-    auto operator<=>(const OrderKey&) const = default;
+    std::uint8_t level{}; // DimensionId of the level whose phase this is
+    bool operator==(const OrderKey&) const = default;
+    constexpr std::strong_ordering operator<=>(const OrderKey& o) const noexcept {
+        if (const auto c = tick <=> o.tick; c != 0) return c;
+        if (const auto c = level <=> o.level; c != 0) return c;
+        if (const auto c = phase <=> o.phase; c != 0) return c;
+        if (const auto c = root <=> o.root; c != 0) return c;
+        return seq <=> o.seq;
+    }
 };
 
 } // namespace circuit::contracts

@@ -28,7 +28,7 @@ Feature counts per implementation state, then the number of features with compar
 | V02 Block registry and state properties | C1, C5 | 7 | 5 / 5 | 2 / 2 | 0 / 0 | 0 / 0 | 0 / 0 | 3 / 3 |
 | V03 Item and entity components and registries | C1, C5, C6 | 6 | 0 / 1 | 2 / 3 | 0 / 0 | 2 / 2 | 2 / 0 | 2 / 4 |
 | V04 Data and resource-pack negotiation | C1, C9, C10 | 6 | 0 / 0 | 4 / 4 | 0 / 0 | 2 / 2 | 0 / 0 | 2 / 2 |
-| V05 Dimensions, tickets and chunk lifecycle | C2 | 8 | 0 / 0 | 4 / 4 | 0 / 0 | 4 / 4 | 0 / 0 | 0 / 0 |
+| V05 Dimensions, tickets and chunk lifecycle | C2 | 8 | 0 / 0 | 5 / 5 | 0 / 0 | 3 / 3 | 0 / 0 | 0 / 0 |
 | V06 Lighting and environmental state | C2, C7 | 7 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 | 0 / 0 | 0 / 0 |
 | V07 RNG and global event order | C0, C2, C4 | 7 | 4 / 4 | 2 / 2 | 0 / 0 | 1 / 1 | 0 / 0 | 4 / 4 |
 | V08 Terrain and biomes | C7 | 70 | 0 / 0 | 2 / 2 | 64 / 64 | 4 / 4 | 0 / 0 | 0 / 0 |
@@ -187,7 +187,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
 | The overworld dimension | C2 | partial, none | partial, none | Flat floor, plains |
-| The Nether, the End and custom dimensions with dimension-scoped state | C2 | missing, none | missing, none |  |
+| The Nether, the End and custom dimensions with dimension-scoped state | C2 | partial, documented | partial, documented | custom dimensions from data packs are not supported; level-specific rules (ultrawarm water and lava, the Nether's roof, the End's void and dragon fight) are not modeled; the Nether and the End are neither generated nor reachable by players; Every level keeps its own columns, scheduled ticks, block events, block entities, entities and per-level counters, and levels tick in the order overworld, Nether, End (minecraft.wiki "Tick"); entity ids are counted over all levels. Commands, tickets, traces, checkpoints, replays and logs name the level. Differential tests prove identical coordinates in two levels independent in the engine and the oracle |
 | Vanilla ticket types (player, forced, portal, spawn, post-teleport and others) | C2 | partial, none | partial, none | radius tickets with a load radius instead of ticket types |
 | Ticket level propagation and entity-ticking versus block-ticking chunks | C2 | missing, none | missing, none |  |
 | Unload and reload of chunks with pending ticks, block events and entities | C2 | partial, none | partial, none | pending ticks keep absolute due times while unloaded |

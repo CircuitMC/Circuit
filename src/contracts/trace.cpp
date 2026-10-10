@@ -33,8 +33,11 @@ std::string_view kind_name(TraceKind kind) {
 } // namespace
 
 std::string describe(const TraceRecord& r) {
-    return std::format("t={} {} root={} seq={} {} pos=({},{},{}) a={} b={} c={}", r.key.tick,
-        phase_name(r.key.phase), r.key.root, r.key.seq, kind_name(r.kind), r.pos.x, r.pos.y, r.pos.z,
+    // Overworld records keep their short form; other levels are named.
+    const auto level = r.key.level == 0 ? std::string{} : std::format(" level={}", dimension_name(static_cast<DimensionId>(r.key.level)));
+    const auto in = r.dimension == DimensionId::overworld ? std::string{} : std::format(" in {}", dimension_name(r.dimension));
+    return std::format("t={}{} {} root={} seq={} {} pos=({},{},{}){} a={} b={} c={}", r.key.tick, level,
+        phase_name(r.key.phase), r.key.root, r.key.seq, kind_name(r.kind), r.pos.x, r.pos.y, r.pos.z, in,
         r.a, r.b, r.c);
 }
 

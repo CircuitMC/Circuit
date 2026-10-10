@@ -77,8 +77,9 @@ struct World {
 // a lamp line with repeaters every fourth column and a stocked chest every
 // eighth.
 World synthetic(std::int32_t side) {
-    WorldDump d;
-    d.time = 100000;
+    WorldDump world;
+    world.time = 100000;
+    auto& d = world.level(circuit::contracts::DimensionId::overworld);
     for (std::int32_t cx = 0; cx < side; ++cx)
         for (std::int32_t cz = 0; cz < side; ++cz) {
             d.chunks.push_back({{cx - side / 2, cz - side / 2}, 0, ChunkLevel::unloaded});
@@ -99,13 +100,14 @@ World synthetic(std::int32_t side) {
                 d.block_entities.push_back({p, be});
             }
         }
-    canonicalize(d);
-    return {std::format("synthetic redstone server ({} columns)", side * side), std::move(d)};
+    canonicalize(world);
+    return {std::format("synthetic redstone server ({} columns)", side * side), std::move(world)};
 }
 
 // Worst case for palettes: random supported blocks filling 64 columns.
 World dense() {
-    WorldDump d;
+    WorldDump world;
+    auto& d = world.level(circuit::contracts::DimensionId::overworld);
     circuit::gameplay::Rng rng(7);
     const std::array<BlockState, 6> pool{blocks::stone(), blocks::glass(), blocks::obsidian(), blocks::redstone_block(), blocks::slime(), blocks::lamp()};
     for (std::int32_t cx = 0; cx < 8; ++cx)
@@ -116,8 +118,8 @@ World dense() {
                     for (std::int32_t z = 0; z < 16; ++z)
                         d.blocks.push_back({{cx * 16 + x, y, cz * 16 + z}, pool[rng.bounded(pool.size())].raw()});
         }
-    canonicalize(d);
-    return {"dense random blocks (64 columns, 64 layers)", std::move(d)};
+    canonicalize(world);
+    return {"dense random blocks (64 columns, 64 layers)", std::move(world)};
 }
 
 World scenario(const Scenario& s) {
@@ -133,12 +135,12 @@ void measure(const World& w, const Zstd* zstd, const Lz4* lz4) {
     std::size_t sections = 0;
     {
         std::set<std::pair<ChunkPos, std::int32_t>> s;
-        for (const auto& [p, raw] : w.state.blocks) s.insert({circuit::contracts::chunk_of(p), p.y >> 4});
+        for (const auto& [p, raw] : w.state.overworld().blocks) s.insert({circuit::contracts::chunk_of(p), p.y >> 4});
         sections = s.size();
     }
     std::cout << std::format("\n## {}\n\n{} columns, {} non-empty sections, {} blocks, {} block entities; body {:.1f} KiB "
                              "({:.1f} bytes per non-empty section)\n\n",
-                             w.name, w.state.chunks.size(), sections, w.state.blocks.size(), w.state.block_entities.size(),
+                             w.name, w.state.overworld().chunks.size(), sections, w.state.overworld().blocks.size(), w.state.overworld().block_entities.size(),
                              static_cast<double>(body.size()) / 1024.0, sections ? static_cast<double>(body.size()) / static_cast<double>(sections) : 0.0);
     std::cout << "| Codec | Size (KiB) | Ratio | Compress (ms) | Decompress (ms) |\n| --- | --- | --- | --- | --- |\n";
     const auto row = [&](std::string_view name, std::size_t size, double c_ms, double d_ms) {
@@ -188,10 +190,10 @@ void measure(const World& w, const Zstd* zstd, const Lz4* lz4) {
     circuit::storage::SectionCache cache;
     const auto cold_ms = best_ms([&] {
         circuit::storage::SectionCache fresh;
-        (void)circuit::storage::encode_checkpoint(from_snapshot, snap.sections, snap.min_y, &fresh);
+        (void)circuit::storage::encode_checkpoint(from_snapshot, snap.sections, bundle(), &fresh);
     });
-    (void)circuit::storage::encode_checkpoint(from_snapshot, snap.sections, snap.min_y, &cache);
-    const auto warm_ms = best_ms([&] { (void)circuit::storage::encode_checkpoint(from_snapshot, snap.sections, snap.min_y, &cache); });
+    (void)circuit::storage::encode_checkpoint(from_snapshot, snap.sections, bundle(), &cache);
+    const auto warm_ms = best_ms([&] { (void)circuit::storage::encode_checkpoint(from_snapshot, snap.sections, bundle(), &cache); });
     // Recovery through a world directory on the host file system.
     std::string templ = (std::filesystem::temp_directory_path() / "circuit-bench-XXXXXX").string();
     if (!::mkdtemp(templ.data())) throw std::runtime_error("temporary directory");
@@ -234,19 +236,19 @@ void changes(const Scenario& s, Tick interval, Tick total) {
             std::map<ChunkPos, std::size_t> before, after;
             const auto key = [](const auto& b) { return std::pair{b.first, b.second}; };
             std::set<std::pair<BlockPos, std::uint32_t>> a, b;
-            for (const auto& x : last.blocks) a.insert(key(x));
-            for (const auto& x : d.blocks) b.insert(key(x));
+            for (const auto& x : last.overworld().blocks) a.insert(key(x));
+            for (const auto& x : d.overworld().blocks) b.insert(key(x));
             std::set<ChunkPos> changed;
             for (const auto& x : a)
                 if (!b.contains(x)) changed.insert(circuit::contracts::chunk_of(x.first));
             for (const auto& x : b)
                 if (!a.contains(x)) changed.insert(circuit::contracts::chunk_of(x.first));
-            for (const auto& [p, be] : d.block_entities) {
-                const auto it = std::ranges::find(last.block_entities, p, [](const auto& e) { return e.first; });
-                if (it == last.block_entities.end() || !(it->second == be)) changed.insert(circuit::contracts::chunk_of(p));
+            for (const auto& [p, be] : d.overworld().block_entities) {
+                const auto it = std::ranges::find(last.overworld().block_entities, p, [](const auto& e) { return e.first; });
+                if (it == last.overworld().block_entities.end() || !(it->second == be)) changed.insert(circuit::contracts::chunk_of(p));
             }
             changed_sum += static_cast<double>(changed.size());
-            columns_sum += static_cast<double>(d.chunks.size());
+            columns_sum += static_cast<double>(d.overworld().chunks.size());
             ++intervals;
         }
         last = std::move(d);

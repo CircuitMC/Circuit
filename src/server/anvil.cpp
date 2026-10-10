@@ -443,7 +443,7 @@ public:
         if (fs::exists(source / "data")) note("saved data (maps, raids, scoreboards, world border) is not imported");
         note("light and heightmaps are not imported; Circuit has no lighting engine");
         // Containers that lost their data to unsupported content still need a block entity.
-        for (const auto& [pos, raw] : result_.state.blocks) {
+        for (const auto& [pos, raw] : result_.state.level(contracts::DimensionId::overworld).blocks) {
             const auto s = BlockState::decode(raw).value();
             if (gameplay::has_block_entity(s.type()) && !block_entities_.contains(pos)) {
                 block_entities_.emplace(pos, BlockEntity{s.type(), 0, std::vector<contracts::ItemStack>(gameplay::container_size(s.type())), 0});
@@ -529,7 +529,7 @@ private:
         }
         if (++report().chunks > options_.max_chunks) return std::unexpected(std::format("more than {} chunks", options_.max_chunks));
         imported_.insert(c.pos);
-        result_.state.chunks.push_back({c.pos, 0, gameplay::ChunkLevel::unloaded});
+        result_.state.level(contracts::DimensionId::overworld).chunks.push_back({c.pos, 0, gameplay::ChunkLevel::unloaded});
         if (const auto* sections = child(root, "sections", TagType::list))
             for (const auto& s : sections->items())
                 if (s.type() == TagType::compound)
@@ -598,7 +598,7 @@ private:
         for (std::size_t i = 0; i < 4096; ++i) {
             const auto s = *mapped[index[i]];
             if (s == gameplay::blocks::air()) continue;
-            result_.state.blocks.push_back({BlockPos{chunk.x * 16 + static_cast<std::int32_t>(i & 15),
+            result_.state.level(contracts::DimensionId::overworld).blocks.push_back({BlockPos{chunk.x * 16 + static_cast<std::int32_t>(i & 15),
                                                      static_cast<std::int32_t>(*y) * 16 + static_cast<std::int32_t>(i >> 8),
                                                      chunk.z * 16 + static_cast<std::int32_t>((i >> 4) & 15)},
                                             s.raw()});
@@ -609,7 +609,7 @@ private:
 
     std::optional<BlockState> block_at(BlockPos p) const {
         // Blocks of the current chunk were appended last; search from the end.
-        for (auto it = result_.state.blocks.rbegin(); it != result_.state.blocks.rend(); ++it) {
+        for (auto it = result_.state.level(contracts::DimensionId::overworld).blocks.rbegin(); it != result_.state.level(contracts::DimensionId::overworld).blocks.rend(); ++it) {
             if (contracts::chunk_of(it->first) != contracts::chunk_of(p)) break;
             if (it->first == p) return BlockState::decode(it->second).value();
         }
@@ -736,7 +736,7 @@ private:
                                   static_cast<std::int8_t>(std::clamp<std::int64_t>(integer(t, "p").value_or(0), -128, 127)),
                                   next_suborder_++}};
         if (!tick_keys_.insert({static_cast<int>(p.list), pos, *type}).second) return {}; // same block and position: one tick
-        result_.state.ticks.push_back(p);
+        result_.state.level(contracts::DimensionId::overworld).ticks.push_back(p);
         ++report().scheduled_ticks;
         return {};
     }
@@ -803,19 +803,21 @@ private:
     }
 
     void finish() {
+        // Everything imported is the overworld's.
         auto& s = result_.state;
+        auto& l = s.level(contracts::DimensionId::overworld);
         s.time = time_;
-        s.next_suborder = next_suborder_;
+        l.next_suborder = next_suborder_;
         std::uint64_t order = 0;
         for (auto& [pos, be] : block_entities_) {
             be.order = order++;
-            s.block_entities.push_back({pos, std::move(be)});
+            l.block_entities.push_back({pos, std::move(be)});
         }
-        s.next_block_entity_order = order;
+        l.next_block_entity_order = order;
         std::uint64_t id = 1;
         for (auto& e : entities_) {
             e.id = contracts::EntityId{id++};
-            s.entities.push_back(e);
+            l.entities.push_back(e);
         }
         report().entities = entities_.size();
         s.next_entity_id = id;
@@ -846,12 +848,17 @@ private:
 
 class Exporter {
 public:
+    // The overworld's state; other levels are refused in run().
     Exporter(const WorldDump& state, const contracts::VersionBundle& bundle, const ExportOptions& options)
-        : state_(state), bundle_(bundle), options_(options), content_(bundle, options.components) {
-        for (const auto& [p, raw] : state.blocks) blocks_.emplace(p, BlockState::decode(raw).value());
+        : world_(state), state_(state.overworld()), bundle_(bundle), options_(options), content_(bundle, options.components) {
+        for (const auto& [p, raw] : state_.blocks) blocks_.emplace(p, BlockState::decode(raw).value());
     }
 
     std::expected<ExportReport, std::string> run(const fs::path& target) {
+        for (const auto& l : world_.levels)
+            if (l.dimension != contracts::DimensionId::overworld)
+                return std::unexpected(std::format("the world has state in {}; Anvil export writes the overworld only yet",
+                                                   contracts::dimension_name(l.dimension)));
         if (!state_.block_events.empty())
             return std::unexpected("the state has pending block events, which the Anvil format cannot hold; export between ticks");
         std::error_code ec;
@@ -921,7 +928,7 @@ private:
         root.set("zPos", Tag::int_(pos.z));
         root.set("yPos", Tag::int_(min_section));
         root.set("Status", Tag::string("minecraft:full"));
-        root.set("LastUpdate", Tag::long_(static_cast<std::int64_t>(state_.time)));
+        root.set("LastUpdate", Tag::long_(static_cast<std::int64_t>(world_.time)));
         root.set("InhabitedTime", Tag::long_(0));
         root.set("isLightOn", Tag::byte(0));
         const NeighborLookup look = [this](BlockPos p) { return at(p); };
@@ -963,7 +970,7 @@ private:
                                                   : "minecraft:flowing_water")
                                            : content_.block_name(t->tick.block)));
             tag.set("p", Tag::int_(t->tick.priority));
-            tag.set("t", Tag::int_(static_cast<std::int32_t>(static_cast<std::int64_t>(t->tick.due) - static_cast<std::int64_t>(state_.time))));
+            tag.set("t", Tag::int_(static_cast<std::int32_t>(static_cast<std::int64_t>(t->tick.due) - static_cast<std::int64_t>(world_.time))));
             tag.set("x", Tag::int_(t->tick.pos.x));
             tag.set("y", Tag::int_(t->tick.pos.y));
             tag.set("z", Tag::int_(t->tick.pos.z));
@@ -1139,7 +1146,7 @@ private:
         version.set("Snapshot", Tag::boolean(false));
         data.set("Version", std::move(version));
         data.set("LevelName", Tag::string(options_.level_name));
-        data.set("Time", Tag::long_(static_cast<std::int64_t>(state_.time)));
+        data.set("Time", Tag::long_(static_cast<std::int64_t>(world_.time)));
         data.set("DayTime", Tag::long_(6000));
         data.set("GameType", Tag::int_(1));
         data.set("allowCommands", Tag::boolean(true));
@@ -1218,7 +1225,8 @@ private:
         return gen;
     }
 
-    const WorldDump& state_;
+    const WorldDump& world_;
+    const gameplay::LevelDump& state_;
     const contracts::VersionBundle& bundle_;
     ExportOptions options_;
     Content content_;

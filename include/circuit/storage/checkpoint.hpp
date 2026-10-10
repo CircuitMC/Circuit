@@ -71,16 +71,19 @@ private:
     std::unordered_map<const SectionBlocks*, Entry> entries_;
     std::vector<std::shared_ptr<const SectionBlocks>> dropped_;
     std::uint64_t round_{};
-    friend std::vector<std::byte> encode_checkpoint(const Checkpoint&, std::span<const ColumnSections>, std::int32_t, SectionCache*,
-                                                    const CheckpointOptions&);
+    friend std::vector<std::byte> encode_checkpoint(const Checkpoint&, std::span<const std::vector<ColumnSections>>,
+                                                    const contracts::VersionBundle&, SectionCache*, const CheckpointOptions&);
 };
 
-// Encodes a checkpoint whose blocks come from column sections (one entry per
-// column of `checkpoint.state.chunks`, whose block list must be empty), as an
-// engine snapshot provides them. The result is byte-identical to encoding the
-// equivalent dump. With a cache, unchanged sections are not encoded again.
-std::vector<std::byte> encode_checkpoint(const Checkpoint& checkpoint, std::span<const ColumnSections> columns, std::int32_t min_y,
-                                         SectionCache* cache, const CheckpointOptions& options = {});
+// Encodes a checkpoint whose blocks come from column sections (per level of
+// `checkpoint.state.levels`, one entry per column of its `chunks`, whose block
+// lists must be empty), as an engine snapshot provides them; each level's
+// sections start at its lowest section in `bundle`. The result is
+// byte-identical to encoding the equivalent dump. With a cache, unchanged
+// sections are not encoded again.
+std::vector<std::byte> encode_checkpoint(const Checkpoint& checkpoint, std::span<const std::vector<ColumnSections>> levels,
+                                         const contracts::VersionBundle& bundle, SectionCache* cache,
+                                         const CheckpointOptions& options = {});
 std::expected<Checkpoint, std::string> decode_checkpoint(std::span<const std::byte> bytes, const CheckpointLimits& limits = {});
 
 // Lowercase hexadecimal SHA-256.

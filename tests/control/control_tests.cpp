@@ -77,14 +77,17 @@ int main() {
 
     suite.run("dump digest", [] {
         circuit::gameplay::WorldDump a, b;
-        a.blocks.push_back({{1, 2, 3}, 4});
+        a.level(circuit::contracts::DimensionId::overworld).blocks.push_back({{1, 2, 3}, 4});
         b = a;
         require(digest(a) == digest(b), "equal dumps, equal digests");
-        b.blocks[0].second = 5;
+        b.levels[0].blocks[0].second = 5;
         require(digest(a) != digest(b), "state change changes the digest");
         b = a;
         b.time = 1;
         require(digest(a) != digest(b), "time is included");
+        b = a;
+        b.levels[0].dimension = circuit::contracts::DimensionId::the_nether;
+        require(digest(a) != digest(b), "the level is included");
     });
 
     return suite.finish();

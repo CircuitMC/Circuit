@@ -163,9 +163,16 @@ int run_simulation(const SimulateOptions& options) {
     const auto& s = engine.stats();
     std::cout << std::format("committed_ticks={} elapsed_ms={:.1f} mean_tick_ms={:.3f}\n", engine.time(), ms,
                              engine.time() ? ms / static_cast<double>(engine.time()) : 0.0);
+    std::size_t blocks = 0, block_entities = 0, entities = 0, ticks = 0, events = 0;
+    for (const auto& l : dump.levels) {
+        blocks += l.blocks.size();
+        block_entities += l.block_entities.size();
+        entities += l.entities.size();
+        ticks += l.ticks.size();
+        events += l.block_events.size();
+    }
     std::cout << std::format("digest={:#018x} blocks={} block_entities={} entities={} pending_ticks={} pending_events={}\n",
-                             digest(dump), dump.blocks.size(), dump.block_entities.size(), dump.entities.size(),
-                             dump.ticks.size(), dump.block_events.size());
+                             digest(dump), blocks, block_entities, entities, ticks, events);
     std::cout << std::format("loaded_chunks={} regions={} phases={} attempts={} conflict_aborts={} merges={} splits={} "
                              "max_parallel_tasks={}\n",
                              engine.loaded_chunks(), engine.region_count(), s.phases, s.attempts, s.conflict_aborts,

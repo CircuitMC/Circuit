@@ -133,6 +133,7 @@ struct Ticket {
     ChunkPos center;
     std::uint8_t radius{};      // ticking
     std::uint8_t load_radius{}; // loaded without ticking: max(radius + 1, load_radius)
+    contracts::DimensionId dimension{}; // the level whose chunks it loads
     [[nodiscard]] constexpr std::int32_t reach() const noexcept {
         return std::max<std::int32_t>(std::int32_t{radius} + 1, load_radius);
     }
@@ -141,23 +142,25 @@ struct Ticket {
 
 // Ticket bookkeeping and the load-level rule. Owned by one executor; changes
 // are applied to the active chunk set only at the command-phase boundary.
+// Ticket ids are unique over all levels; a ticket loads chunks of its level.
 class TicketSet {
 public:
-    contracts::Result<void> add(const contracts::AddTicket& command, const contracts::RuleLimits& limits);
+    contracts::Result<void> add(const contracts::AddTicket& command, contracts::DimensionId dimension,
+                                const contracts::RuleLimits& limits);
     contracts::Result<void> remove(std::uint32_t id);
-    [[nodiscard]] std::map<ChunkPos, ChunkLevel> levels() const;
+    [[nodiscard]] std::map<contracts::ChunkKey, ChunkLevel> levels() const;
     [[nodiscard]] std::vector<Ticket> list() const;
 
 private:
     std::map<std::uint32_t, Ticket> tickets_;
 };
 
-// Canonical, storage-independent view of all simulation state, used to compare
-// executors. Unloaded chunk contents are included: unloading must not lose them.
-struct WorldDump {
-    Tick time{};
+// One level's state in a WorldDump. Positions are the level's. The scheduled
+// tick sub-order and the block-entity order are per-level counters, as in the
+// target versions; entity ids are counted over all levels.
+struct LevelDump {
+    contracts::DimensionId dimension{};
     std::uint64_t next_suborder{};
-    std::uint64_t next_entity_id{};
     std::uint64_t next_block_entity_order{};
     struct Chunk {
         ChunkPos pos;
@@ -176,9 +179,25 @@ struct WorldDump {
     std::vector<Entity> entities;                               // ascending id
     std::vector<PendingTick> ticks;                             // by list, then drain order
     std::vector<BlockEvent> block_events;                       // queue order
-    std::vector<Ticket> tickets;                                // ascending id
-    std::vector<PlayerInventory> players;                       // ascending player, non-empty only
+    bool operator==(const LevelDump&) const = default;
+};
+
+// Canonical, storage-independent view of all simulation state, used to compare
+// executors. Unloaded chunk contents are included: unloading must not lose them.
+struct WorldDump {
+    using Chunk = LevelDump::Chunk;
+    using PendingTick = LevelDump::PendingTick;
+    Tick time{};
+    std::uint64_t next_entity_id{};
+    std::vector<LevelDump> levels;        // ascending dimension; a level is listed once it has a column
+    std::vector<Ticket> tickets;          // ascending id
+    std::vector<PlayerInventory> players; // ascending player, non-empty only
     bool operator==(const WorldDump&) const = default;
+    // A level's state; an empty one when the level has no column.
+    [[nodiscard]] const LevelDump& level(contracts::DimensionId dimension) const;
+    // The level's entry, added in order when absent.
+    LevelDump& level(contracts::DimensionId dimension);
+    [[nodiscard]] const LevelDump& overworld() const { return level(contracts::DimensionId::overworld); }
 };
 // Sorts the order-insensitive sections into canonical order.
 void canonicalize(WorldDump& dump);

@@ -5,6 +5,7 @@
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/game_data.hpp>
 #include <circuit/gameplay/world_types.hpp>
+#include <array>
 #include <deque>
 #include <map>
 #include <memory>
@@ -40,33 +41,38 @@ private:
         gameplay::ChunkLevel level{};
     };
     using TickKey = std::pair<contracts::BlockPos, gameplay::BlockType>;
+    // One level's state: plain global containers, as the serial order sees them.
+    struct Level {
+        std::map<contracts::ChunkPos, ChunkInfo> chunks;
+        std::map<contracts::BlockPos, gameplay::BlockState> blocks;
+        std::map<contracts::BlockPos, gameplay::BlockEntity> block_entities;
+        std::map<contracts::EntityId, gameplay::Entity> entities;
+        std::vector<gameplay::ScheduledTick> ticks[2];
+        std::set<TickKey> tick_index[2];
+        std::deque<gameplay::BlockEvent> events;
+        std::set<gameplay::BlockEvent> pending_events;
+        std::uint64_t next_suborder{};
+        std::uint64_t next_block_entity_order{};
+        [[nodiscard]] gameplay::ChunkLevel level(contracts::ChunkPos chunk) const;
+    };
 
-    [[nodiscard]] gameplay::ChunkLevel level(contracts::ChunkPos chunk) const;
     void apply_levels();
-    void run_tick_list(contracts::TickList list);
-    void run_random_ticks();
-    void run_block_events();
-    void run_entities();
-    void run_block_entities();
+    void run_tick_list(contracts::DimensionId level, contracts::TickList list);
+    void run_random_ticks(contracts::DimensionId level);
+    void run_block_events(contracts::DimensionId level);
+    void run_entities(contracts::DimensionId level);
+    void run_block_entities(contracts::DimensionId level);
+    Level& at(contracts::DimensionId level) { return levels_[static_cast<std::size_t>(level)]; }
 
     const contracts::VersionBundle& bundle_;
     std::uint64_t seed_;
     std::shared_ptr<const gameplay::GameData> data_;
     contracts::Tick time_{};
     bool failed_{};
-    std::map<contracts::ChunkPos, ChunkInfo> chunks_;
-    std::map<contracts::BlockPos, gameplay::BlockState> blocks_;
-    std::map<contracts::BlockPos, gameplay::BlockEntity> block_entities_;
-    std::map<contracts::EntityId, gameplay::Entity> entities_;
-    std::vector<gameplay::ScheduledTick> ticks_[2];
-    std::set<TickKey> tick_index_[2];
-    std::deque<gameplay::BlockEvent> events_;
-    std::set<gameplay::BlockEvent> pending_events_;
+    std::array<Level, contracts::dimension_count> levels_;
     gameplay::TicketSet tickets_;
     std::map<contracts::PlayerKey, gameplay::PlayerInventory> players_;
-    std::uint64_t next_suborder_{};
     std::uint64_t next_entity_id_{1};
-    std::uint64_t next_block_entity_order_{};
     std::vector<contracts::TraceRecord> trace_;
     std::unique_ptr<Context> ctx_;
 };

@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
     engine.advance(build);
     const auto view = engine.view();
     const server::NeighborLookup at = [&](contracts::BlockPos p) {
-        const auto s = view.block(p);
+        const auto s = view.block(contracts::DimensionId::overworld, p);
         return s ? *s : gameplay::blocks::air();
     };
     std::vector<runtime::ColumnSnapshot> columns;

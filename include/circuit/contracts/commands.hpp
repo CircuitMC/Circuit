@@ -170,9 +170,12 @@ using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, Remo
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.
+// A command acts in one level: its positions, tickets and entities are that
+// level's. Player inventories belong to no level.
 struct Command {
     std::uint64_t admission{};
     CommandBody body;
+    DimensionId dimension{};
     bool operator==(const Command&) const = default;
 };
 
@@ -184,11 +187,11 @@ public:
     // admissions stay strictly increasing across restarts.
     explicit CommandQueue(std::size_t capacity = 65536, std::uint64_t first_admission = 1)
         : capacity_(capacity), next_(first_admission) {}
-    Result<std::uint64_t> admit(CommandBody body) {
+    Result<std::uint64_t> admit(CommandBody body, DimensionId dimension = DimensionId::overworld) {
         if (pending_.size() >= capacity_) return std::unexpected(ErrorCode::capacity_exceeded);
         if (next_ == UINT64_MAX) return std::unexpected(ErrorCode::counter_overflow);
         const auto id = next_++;
-        pending_.emplace(id, std::move(body));
+        pending_.emplace(id, std::pair{std::move(body), dimension});
         return id;
     }
     bool cancel(std::uint64_t admission) { return pending_.erase(admission) == 1; }
@@ -197,7 +200,7 @@ public:
     std::vector<Command> drain() {
         std::vector<Command> out;
         out.reserve(pending_.size());
-        for (auto& [id, body] : pending_) out.push_back({id, std::move(body)});
+        for (auto& [id, entry] : pending_) out.push_back({id, std::move(entry.first), entry.second});
         pending_.clear();
         return out;
     }
@@ -205,7 +208,7 @@ public:
 private:
     std::size_t capacity_;
     std::uint64_t next_;
-    std::map<std::uint64_t, CommandBody> pending_;
+    std::map<std::uint64_t, std::pair<CommandBody, DimensionId>> pending_;
 };
 
 } // namespace circuit::contracts

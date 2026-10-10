@@ -30,7 +30,7 @@ struct Inputs {
 Inputs materialize(const Scenario& s) {
     Inputs in;
     Admissions admit;
-    for (Tick t = 1; t <= s.ticks; ++t) in.per_tick.push_back(admit(s.inputs(t)));
+    for (Tick t = 1; t <= s.ticks; ++t) in.per_tick.push_back(admitted(admit, s, t));
     return in;
 }
 
@@ -88,6 +88,56 @@ EngineOptions seeded(ExplorationOptions exploration, LayoutPolicy layout = Layou
     o.layout_seed = layout_seed;
     return o;
 }
+// Every command in one level.
+Scenario in_level(Scenario s, DimensionId level) {
+    auto inputs = s.inputs;
+    s.levels = [inputs, level](Tick t) { return std::vector<DimensionId>(inputs(t).size(), level); };
+    s.name += std::format("@{}", dimension_name(level));
+    return s;
+}
+
+// Scenarios in several levels, raised so that every position is inside the
+// Nether and the End (y from 0).
+std::vector<Scenario> level_scenarios() {
+    const auto drops = raised(drops_scenario(), 8);
+    return {in_levels(drops, DimensionId::overworld, drops, DimensionId::the_nether),
+            in_levels(raised(hopper_scenario(), 8), DimensionId::overworld, raised(clock_scenario(), 8), DimensionId::the_end),
+            in_levels(raised(piston_chain_scenario(), 8), DimensionId::the_nether, raised(comparator_chest_scenario(), 8),
+                      DimensionId::the_end)};
+}
+
+// A level's state with its entities' ids cleared and the entities in a
+// canonical order: entity ids are counted over all levels, so they depend
+// on what the other levels spawn.
+LevelDump without_entity_ids(LevelDump l) {
+    for (auto& e : l.entities) e.id = {};
+    std::ranges::sort(l.entities, [](const Entity& a, const Entity& b) {
+        return std::tie(a.position, a.velocity, a.stack, a.age, a.last_tick, a.pickup_delay, a.on_ground)
+             < std::tie(b.position, b.velocity, b.stack, b.age, b.last_tick, b.pickup_delay, b.on_ground);
+    });
+    return l;
+}
+
+// The records of one level that name no entity id, without their order keys.
+std::vector<std::tuple<TraceKind, BlockPos, std::uint64_t, std::uint64_t, std::uint64_t>> level_records(
+    const std::vector<std::vector<TraceRecord>>& traces, DimensionId level) {
+    std::vector<std::tuple<TraceKind, BlockPos, std::uint64_t, std::uint64_t, std::uint64_t>> out;
+    for (const auto& tick : traces)
+        for (const auto& r : tick) {
+            if (r.dimension != level) continue;
+            switch (r.kind) {
+            case TraceKind::block_changed: case TraceKind::tick_scheduled: case TraceKind::tick_executed:
+            case TraceKind::block_event_queued: case TraceKind::block_event_executed: case TraceKind::chunk_loaded:
+            case TraceKind::chunk_unloaded: case TraceKind::chunk_level_changed: case TraceKind::inventory_changed:
+            case TraceKind::signal_changed: case TraceKind::piston_blocked:
+                out.emplace_back(r.kind, r.pos, r.a, r.b, r.c);
+                break;
+            default: break;
+            }
+        }
+    return out;
+}
+
 } // namespace
 
 int main() {
@@ -109,8 +159,8 @@ int main() {
             }
             const auto& last = references[i].dumps.rbegin()->second;
             std::cout << std::format("  {}: {} trace records, {} block changes, {} blocks, {} entities\n",
-                                     scenarios[i].name, records, changes, last.blocks.size(), last.entities.size());
-            require(changes > 20 && !last.blocks.empty(), scenarios[i].name);
+                                     scenarios[i].name, records, changes, last.overworld().blocks.size(), last.overworld().entities.size());
+            require(changes > 20 && !last.overworld().blocks.empty(), scenarios[i].name);
         }
     });
 
@@ -362,9 +412,9 @@ int main() {
                 require(!first_divergence(engine.trace(), oracle.trace()) && first_difference(dump, oracle.dump()).empty(),
                         std::format("tick {} matches the oracle", t));
                 if (t == 2)
-                    require(dump.next_block_entity_order == 4 && dump.block_entities.size() == 3,
-                            std::format("order {} with {} block entities", dump.next_block_entity_order,
-                                        dump.block_entities.size()));
+                    require(dump.overworld().next_block_entity_order == 4 && dump.overworld().block_entities.size() == 3,
+                            std::format("order {} with {} block entities", dump.overworld().next_block_entity_order,
+                                        dump.overworld().block_entities.size()));
             }
         }
     });
@@ -448,7 +498,7 @@ int main() {
                 require(r.b == static_cast<std::uint64_t>(ErrorCode::out_of_bounds), "rejected as out of bounds");
         }
         const auto dump = engine.dump();
-        require(dump.entities.empty() && dump.tickets.size() == 1 && dump == oracle.dump(), "no effect on either executor");
+        require(dump.overworld().entities.empty() && dump.tickets.size() == 1 && dump == oracle.dump(), "no effect on either executor");
     });
 
     suite.run("query views and failure handling", [&] {
@@ -458,14 +508,17 @@ int main() {
         engine.advance(admit({place({1, 2, 3}, blocks::stone()), place({4, 0, 4}, blocks::chest()),
                               SpawnItem{at_block(8.5, 3, 8.5), {}, {items::stone, 1}}}));
         const auto view = engine.view();
-        require(view.tick() == 2 && view.block({1, 2, 3}).value() == blocks::stone(), "view reads committed state");
-        require(view.block({100, 0, 0}).error() == ErrorCode::unloaded_chunk, "unloaded");
-        require(view.block({0, 999, 0}).error() == ErrorCode::out_of_bounds, "height");
-        require(view.block_entity({4, 0, 4}).value().has_value(), "block entity copy");
-        require(!view.block_entity({1, 2, 3}).value().has_value(), "no block entity");
-        require(view.entity(EntityId{1}).value().has_value(), "entity copy");
+        constexpr auto ow = DimensionId::overworld, nether = DimensionId::the_nether;
+        require(view.tick() == 2 && view.block(ow, {1, 2, 3}).value() == blocks::stone(), "view reads committed state");
+        require(view.block(ow, {100, 0, 0}).error() == ErrorCode::unloaded_chunk, "unloaded");
+        require(view.block(ow, {0, 999, 0}).error() == ErrorCode::out_of_bounds, "height");
+        require(view.block(nether, {1, 2, 3}).error() == ErrorCode::unloaded_chunk, "the same position in another level");
+        require(view.block_entity(ow, {4, 0, 4}).value().has_value(), "block entity copy");
+        require(!view.block_entity(ow, {1, 2, 3}).value().has_value(), "no block entity");
+        require(view.entity(ow, EntityId{1}).value().has_value() && !view.entity(nether, EntityId{1}).value().has_value(),
+                "entity copy, in its level only");
         engine.advance({});
-        require(view.block({1, 2, 3}).error() == ErrorCode::stale_view, "view expires after a tick");
+        require(view.block(ow, {1, 2, 3}).error() == ErrorCode::stale_view, "view expires after a tick");
 
         bool rejected = false;
         try {
@@ -505,6 +558,72 @@ int main() {
             std::cout << std::format("  many_machines {} ticks, {} workers: {:.1f} ms, {} regions\n", s.ticks, w, ms,
                                      engine.region_count());
         }
+    });
+
+    suite.run("levels keep identical coordinates apart", [&] {
+        const auto all = level_scenarios();
+        for (const auto& s : all) {
+            const auto in = materialize(s);
+            const auto ref = run_oracle(s, in);
+            // The runtime matches the oracle, whatever the workers, region
+            // layout or schedule; regions never span two levels.
+            for (const auto& options : {pool(1), pool(4), pool(4, LayoutPolicy::perturbed, 3), pool(2, LayoutPolicy::single_region),
+                                        seeded({.seed = 9, .abort_probability = 0.05}, LayoutPolicy::perturbed, 5)}) {
+                const auto diff = compare(s, in, ref, options);
+                require(diff.empty(), diff);
+            }
+            const auto& last = ref.dumps.rbegin()->second;
+            require(last.levels.size() == 2, std::format("{}: two levels hold state", s.name));
+        }
+        // Each level of the two-level run is the one-level run of its
+        // scenario: columns, blocks, block entities, scheduled ticks, block
+        // events and the per-level counters exactly, and the same records.
+        const auto drops = raised(drops_scenario(), 8);
+        const auto both = in_levels(drops, DimensionId::overworld, drops, DimensionId::the_nether);
+        const auto both_ref = run_oracle(both, materialize(both));
+        for (const auto level : {DimensionId::overworld, DimensionId::the_nether}) {
+            const auto alone = in_level(drops, level);
+            const auto alone_ref = run_oracle(alone, materialize(alone));
+            for (const auto& [t, dump] : alone_ref.dumps) {
+                const auto a = without_entity_ids(both_ref.dumps.at(t).level(level));
+                const auto b = without_entity_ids(dump.level(level));
+                require(a == b, std::format("{} at {}: the level alone and beside the other agree", dimension_name(level), t));
+            }
+            require(level_records(both_ref.traces, level) == level_records(alone_ref.traces, level),
+                    std::format("{}: the same records", dimension_name(level)));
+        }
+        // The same machines at the same coordinates behave the same in both
+        // levels: these rules draw no random numbers.
+        for (const auto& [t, dump] : both_ref.dumps) {
+            auto nether = without_entity_ids(dump.level(DimensionId::the_nether));
+            nether.dimension = DimensionId::overworld;
+            require(nether == without_entity_ids(dump.level(DimensionId::overworld)), std::format("mirror at {}", t));
+        }
+        // Entity ids are counted over all levels: in each tick the overworld's
+        // spawns come first, then the Nether's.
+        const auto& last = both_ref.dumps.rbegin()->second;
+        require(!last.overworld().entities.empty() && last.next_entity_id > 2 * last.overworld().entities.size(), "ids shared");
+        // Random ticks draw from each level's own stream.
+        const auto wheat = raised(wheat_scenario(), 8);
+        const auto grown = in_levels(wheat, DimensionId::overworld, wheat, DimensionId::the_nether);
+        const auto grown_ref = run_oracle(grown, materialize(grown));
+        const auto& end = grown_ref.dumps.rbegin()->second;
+        require(end.overworld().blocks != end.level(DimensionId::the_nether).blocks, "wheat grows independently in each level");
+        const auto grown_diff = compare(grown, materialize(grown), grown_ref, pool(4));
+        require(grown_diff.empty(), grown_diff);
+    });
+
+    suite.run("commands in levels that do not exist are refused", [&] {
+        Engine engine(bundle(), 1, pool(1));
+        Oracle oracle(bundle(), 1);
+        const std::vector<Command> commands{{1, AddTicket{1, {0, 0}, 0}, static_cast<DimensionId>(7)},
+                                            {2, AddTicket{2, {0, 0}, 0}, DimensionId::the_end}};
+        engine.advance(commands);
+        oracle.advance(commands);
+        require(engine.trace() == oracle.trace() && engine.dump() == oracle.dump(), "both executors agree");
+        require(engine.trace()[0].kind == TraceKind::command_rejected && engine.trace()[1].kind == TraceKind::command_applied,
+                "an unknown level is refused");
+        require(engine.dump().levels.size() == 1 && engine.dump().levels[0].dimension == DimensionId::the_end, "only the End loaded");
     });
 
     return suite.finish();

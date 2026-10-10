@@ -24,7 +24,7 @@ void run_scheduled_tick(RuleContext& ctx, TickList list, const ScheduledTick& ti
 
 void run_random_ticks(RuleContext& ctx, ChunkPos chunk, std::int32_t section, Rng& stream) {
     const auto& bundle = ctx.bundle();
-    const auto base_y = bundle.world.min_y + section * 16;
+    const auto base_y = ctx.world().min_y + section * 16; // the level's sections
     for (std::uint32_t k = 0; k < bundle.limits.random_tick_speed; ++k) {
         const auto r = stream.bounded(4096);
         const BlockPos pos{chunk.x * 16 + static_cast<std::int32_t>(r & 15),

@@ -95,7 +95,7 @@ struct Extensions::Impl {
         }
         plugin::Result<std::string> block(plugin::Position p) const noexcept override {
             if (!allows(Permission::world_read)) return std::unexpected(Status::denied);
-            const auto s = impl_.game.simulation().view().block({p.x, p.y, p.z});
+            const auto s = impl_.game.simulation().view().block(contracts::DimensionId::overworld, {p.x, p.y, p.z}); // the server's world
             if (!s) return std::unexpected(s.error() == contracts::ErrorCode::unloaded_chunk ? Status::unavailable : Status::invalid);
             try {
                 return impl_.game.content_mapping().notation(*s);
@@ -105,7 +105,7 @@ struct Extensions::Impl {
         }
         plugin::Result<plugin::BlockEntityInfo> block_entity(plugin::Position p) const noexcept override {
             if (!allows(Permission::world_read)) return std::unexpected(Status::denied);
-            const auto be = impl_.game.simulation().view().block_entity({p.x, p.y, p.z});
+            const auto be = impl_.game.simulation().view().block_entity(contracts::DimensionId::overworld, {p.x, p.y, p.z});
             if (!be) return std::unexpected(be.error() == contracts::ErrorCode::unloaded_chunk ? Status::unavailable : Status::invalid);
             if (!*be) return std::unexpected(Status::invalid);
             try {
@@ -122,7 +122,7 @@ struct Extensions::Impl {
         plugin::Result<plugin::ChunkInfo> chunk(std::int32_t x, std::int32_t z) const noexcept override {
             if (!allows(Permission::world_read)) return std::unexpected(Status::denied);
             try {
-                const auto c = impl_.game.simulation().column({x, z});
+                const auto c = impl_.game.simulation().column({contracts::DimensionId::overworld, {x, z}});
                 if (!c) return plugin::ChunkInfo{};
                 return plugin::ChunkInfo{true, c->level == gameplay::ChunkLevel::ticking, c->block_entities.size(), c->entities.size()};
             } catch (...) {
@@ -132,7 +132,7 @@ struct Extensions::Impl {
         plugin::Result<std::vector<plugin::ItemEntity>> items(std::int32_t x, std::int32_t z) const noexcept override {
             if (!allows(Permission::world_read)) return std::unexpected(Status::denied);
             try {
-                const auto c = impl_.game.simulation().column({x, z});
+                const auto c = impl_.game.simulation().column({contracts::DimensionId::overworld, {x, z}});
                 std::vector<plugin::ItemEntity> out;
                 if (!c) return out;
                 for (const auto& e : c->entities) {
@@ -317,6 +317,7 @@ struct Extensions::Impl {
             return stack_of(mapping, {static_cast<std::uint16_t>(packed >> 8), static_cast<std::uint8_t>(packed & 0xFF)});
         };
         for (const auto& t : engine.trace()) {
+            if (t.dimension != contracts::DimensionId::overworld) continue; // extensions see the server's world
             const plugin::Position p{t.pos.x, t.pos.y, t.pos.z};
             if (t.kind == contracts::TraceKind::block_changed) r.blocks.push_back({p, notation(t.a), notation(t.b)});
             else if (t.kind == contracts::TraceKind::inventory_changed)

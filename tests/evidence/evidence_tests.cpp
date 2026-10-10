@@ -38,7 +38,7 @@ public:
         if (!be || slot >= be->slots.size()) return std::nullopt;
         return be->slots[slot];
     }
-    std::vector<circuit::gameplay::Entity> entities() const override { return dump_.entities; }
+    std::vector<circuit::gameplay::Entity> entities() const override { return dump_.overworld().entities; }
 
 private:
     Oracle oracle_;

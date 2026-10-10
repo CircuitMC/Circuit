@@ -341,7 +341,7 @@ struct JavaBridge::Impl {
             const auto p = pos();
             if (!p) return fail("malformed request");
             if (!allows(Permission::world_read)) return respond(*id, denied, "world.read is not granted");
-            const auto s = engine.view().block(*p);
+            const auto s = engine.view().block(contracts::DimensionId::overworld, *p); // the server's world
             if (!s) return respond(*id, s.error() == contracts::ErrorCode::unloaded_chunk ? unavailable : invalid, "no block there");
             return send(Out(response).i64(*id).u8(ok).utf(mapping.notation(*s)));
         }
@@ -351,7 +351,7 @@ struct JavaBridge::Impl {
             if (!allows(Permission::world_read)) return respond(*id, denied, "world.read is not granted");
             Out out(response);
             out.i64(*id).u8(ok);
-            const auto column = engine.column({*cx, *cz});
+            const auto column = engine.column({contracts::DimensionId::overworld, {*cx, *cz}});
             out.i32(column ? static_cast<std::int32_t>(column->entities.size()) : 0);
             if (column)
                 for (const auto& e : column->entities) {

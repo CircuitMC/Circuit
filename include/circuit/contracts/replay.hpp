@@ -34,8 +34,9 @@ struct ReplayLimits {
     std::size_t max_bundle_id = 64;
 };
 
-// Format version 5: magic, version, bundle id, rule-set id, block registry id,
-// seed and the ticks; item stacks carry their data components. Version 4
+// Format version 6: magic, version, bundle id, rule-set id, block registry id,
+// seed and the ticks; each command names its level, and item stacks carry
+// their data components. Version 5 commands are the overworld's. Version 4
 // records have stacks without components. Version 3 records also predate the
 // block registry; their block states are valid in circuit-blocks-1, the first
 // registry, which decoding assigns them. Older versions are rejected.
@@ -44,9 +45,11 @@ Result<ReplayLog> decode_replay(std::span<const std::byte> bytes, const ReplayLi
 
 // One tick's inputs in the same encoding, as a write-ahead log record body.
 // `components`: whether stacks carry data components (logs written before
-// format 5 have none).
+// format 5 have none); `levels`: whether commands name their level (logs
+// written before format 6 hold overworld commands only).
 std::vector<std::byte> encode_tick_input(const TickInput& input);
-Result<TickInput> decode_tick_input(std::span<const std::byte> bytes, const ReplayLimits& limits = {}, bool components = true);
+Result<TickInput> decode_tick_input(std::span<const std::byte> bytes, const ReplayLimits& limits = {}, bool components = true,
+                                    bool levels = true);
 
 struct VersionBundle;
 // A record replays only on a bundle with an executable rule set whose id

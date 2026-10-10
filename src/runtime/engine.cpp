@@ -38,16 +38,16 @@ struct Engine::Impl {
     void advance(const std::vector<Command>& commands);
     void command_phase(const std::vector<Command>& commands);
     void apply_levels(RegionContext& ctx);
-    void tick_phase(TickList list);
-    void random_phase();
-    void block_event_phase();
-    void entity_phase();
-    void block_entity_phase();
-    void run_phase(Phase phase, std::vector<RootItem> roots);
-    void commit(Phase phase, const std::vector<RegionContext*>& contexts);
+    void tick_phase(DimensionId level, TickList list);
+    void random_phase(DimensionId level);
+    void block_event_phase(DimensionId level);
+    void entity_phase(DimensionId level);
+    void block_entity_phase(DimensionId level);
+    void run_phase(Phase phase, DimensionId level, std::vector<RootItem> roots);
+    void commit(const std::vector<RegionContext*>& contexts);
     void maintain_layout();
     void split_pass();
-    RegionId region_for_new_chunk(ChunkPos c);
+    RegionId region_for_new_chunk(ChunkKey c);
     WorldDump dump() const;
     void restore(const WorldDump& state);
 
@@ -61,7 +61,7 @@ struct Engine::Impl {
     std::vector<TraceRecord> trace;
     bool failed{};
     std::uint64_t epoch{};
-    std::map<std::pair<ChunkPos, ChunkPos>, Tick> edges; // Last tick two columns interacted.
+    std::map<std::pair<ChunkKey, ChunkKey>, Tick> edges; // Last tick two columns interacted.
     gameplay::Rng layout_rng;
 };
 
@@ -70,9 +70,9 @@ class RegionTask final : public Task {
 public:
     enum class Outcome { running, done, conflict, injected, failed };
 
-    RegionTask(Engine::Impl& engine, RegionId region, Phase phase, std::vector<RootItem> roots)
+    RegionTask(Engine::Impl& engine, RegionId region, Phase phase, DimensionId level, std::vector<RootItem> roots)
         : region(region), phase(phase), roots(std::move(roots)), engine_(engine) {
-        ctx = std::make_unique<RegionContext>(engine.bundle, engine.world, engine.regions, region, phase,
+        ctx = std::make_unique<RegionContext>(engine.bundle, engine.world, engine.regions, region, phase, level,
                                               engine.options.record_trace, engine.options.unchecked_ownership_for_testing,
                                               engine.options.data.get());
         if (phase == Phase::block_events)
@@ -129,7 +129,7 @@ public:
     std::vector<RootItem> roots;
     std::unique_ptr<RegionContext> ctx;
     Outcome outcome{Outcome::running};
-    ChunkPos conflict_chunk{};
+    ChunkKey conflict_chunk{};
     std::exception_ptr error;
     std::uint64_t nanoseconds{}; // in step(), with EngineOptions::measure_tasks
 
@@ -141,7 +141,7 @@ private:
         case Phase::block_ticks: gameplay::run_scheduled_tick(*ctx, TickList::block, r.tick); break;
         case Phase::fluid_ticks: gameplay::run_scheduled_tick(*ctx, TickList::fluid, r.tick); break;
         case Phase::random_ticks: {
-            auto stream = gameplay::random_tick_stream(engine_.seed, engine_.world.time, r.home, r.section);
+            auto stream = gameplay::random_tick_stream(engine_.seed, engine_.world.time, ctx->dimension(), r.home, r.section);
             gameplay::run_random_ticks(*ctx, r.home, r.section, stream);
             break;
         }
@@ -180,12 +180,18 @@ void Engine::Impl::advance(const std::vector<Command>& commands) {
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start).count());
     };
     timed(Phase::commands, [&] { command_phase(commands); });
-    timed(Phase::block_ticks, [&] { tick_phase(TickList::block); });
-    timed(Phase::fluid_ticks, [&] { tick_phase(TickList::fluid); });
-    timed(Phase::random_ticks, [&] { random_phase(); });
-    timed(Phase::block_events, [&] { block_event_phase(); });
-    timed(Phase::entities, [&] { entity_phase(); });
-    timed(Phase::block_entities, [&] { block_entity_phase(); });
+    // Then each level, in level order, runs all its phases.
+    for (const auto level : contracts::level_order) {
+        bool any = false;
+        world.for_each_loaded(level, [&](ChunkPos, const ChunkData&) { any = true; });
+        if (!any) continue;
+        timed(Phase::block_ticks, [&] { tick_phase(level, TickList::block); });
+        timed(Phase::fluid_ticks, [&] { tick_phase(level, TickList::fluid); });
+        timed(Phase::random_ticks, [&] { random_phase(level); });
+        timed(Phase::block_events, [&] { block_event_phase(level); });
+        timed(Phase::entities, [&] { entity_phase(level); });
+        timed(Phase::block_entities, [&] { block_entity_phase(level); });
+    }
     maintain_layout();
     failed = false;
 }
@@ -193,12 +199,16 @@ void Engine::Impl::advance(const std::vector<Command>& commands) {
 void Engine::Impl::command_phase(const std::vector<Command>& commands) {
     ++stats.phases;
     // Commands run serially on the coordinator with access to every column.
-    RegionContext ctx(bundle, world, regions, all_regions, Phase::commands, options.record_trace, false, options.data.get());
+    RegionContext ctx(bundle, world, regions, all_regions, Phase::commands, DimensionId::overworld, options.record_trace, false,
+                      options.data.get());
     for (std::size_t i = 0; i < commands.size(); ++i) {
-        ctx.begin_root(i, {});
         const auto& c = commands[i];
+        ctx.use_level(c.dimension);
+        ctx.begin_root(i, {});
         contracts::Result<void> ticket_result;
-        if (const auto* add = std::get_if<contracts::AddTicket>(&c.body)) ticket_result = world.tickets.add(*add, bundle.limits);
+        if (!contracts::valid_dimension(static_cast<std::uint8_t>(c.dimension)))
+            ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
+        else if (const auto* add = std::get_if<contracts::AddTicket>(&c.body)) ticket_result = world.tickets.add(*add, c.dimension, bundle.limits);
         else if (const auto* rem = std::get_if<contracts::RemoveTicket>(&c.body)) ticket_result = world.tickets.remove(rem->ticket);
         else {
             gameplay::apply_command(ctx, c);
@@ -207,27 +217,30 @@ void Engine::Impl::command_phase(const std::vector<Command>& commands) {
         if (ticket_result) ctx.record(TraceKind::command_applied, {}, c.admission, 0, 0);
         else ctx.record(TraceKind::command_rejected, {}, c.admission, static_cast<std::uint64_t>(ticket_result.error()), 0);
     }
-    commit(Phase::commands, {&ctx});
+    commit({&ctx});
     // Chunk-level changes take effect at the end of the command phase.
-    RegionContext levels(bundle, world, regions, all_regions, Phase::commands, options.record_trace, false);
+    RegionContext levels(bundle, world, regions, all_regions, Phase::commands, DimensionId::overworld, options.record_trace, false);
     levels.begin_root(commands.size(), {});
     apply_levels(levels);
-    commit(Phase::commands, {&levels});
+    commit({&levels});
 }
 
-RegionId Engine::Impl::region_for_new_chunk(ChunkPos c) {
-    if (options.layout == LayoutPolicy::single_region && !regions.members.empty()) {
-        const auto id = regions.members.begin()->first;
-        regions.owner[c] = id;
-        regions.members[id].insert(c);
-        return id;
+RegionId Engine::Impl::region_for_new_chunk(ChunkKey c) {
+    if (options.layout == LayoutPolicy::single_region) {
+        // One region per level.
+        for (auto& [id, members] : regions.members)
+            if (!members.empty() && members.begin()->dimension == c.dimension) {
+                regions.owner[c] = id;
+                members.insert(c);
+                return id;
+            }
     }
     return regions.add_singleton(c);
 }
 
 void Engine::Impl::apply_levels(RegionContext& ctx) {
     const auto desired = world.tickets.levels();
-    std::set<ChunkPos> keys;
+    std::set<ChunkKey> keys;
     for (const auto& [c, data] : world.loaded) keys.insert(c);
     for (const auto& [c, level] : desired) keys.insert(c);
     for (const auto c : keys) {
@@ -236,7 +249,8 @@ void Engine::Impl::apply_levels(RegionContext& ctx) {
         const auto it = desired.find(c);
         const auto want = it == desired.end() ? ChunkLevel::unloaded : it->second;
         if (current == want) continue;
-        const auto origin = contracts::chunk_origin(c);
+        const auto origin = contracts::chunk_origin(c.pos);
+        ctx.use_level(c.dimension);
         if (!data) {
             std::unique_ptr<ChunkData> chunk;
             if (auto saved = world.saved.find(c); saved != world.saved.end()) {
@@ -247,8 +261,9 @@ void Engine::Impl::apply_levels(RegionContext& ctx) {
                 chunk->generation = *next;
             } else {
                 chunk = std::make_unique<ChunkData>();
-                chunk->pos = c;
-                chunk->sections.resize(static_cast<std::size_t>(bundle.world.sections()));
+                chunk->dimension = c.dimension;
+                chunk->pos = c.pos;
+                chunk->sections.resize(static_cast<std::size_t>(bundle.shape(c.dimension).sections()));
                 if (options.generator) {
                     auto& sections = chunk->sections;
                     options.generator(c, [&sections](std::size_t s) -> std::array<gameplay::BlockState, 4096>& {
@@ -277,40 +292,40 @@ void Engine::Impl::apply_levels(RegionContext& ctx) {
     }
 }
 
-void Engine::Impl::tick_phase(TickList list) {
+void Engine::Impl::tick_phase(DimensionId level, TickList list) {
     const auto l = static_cast<int>(list);
     std::vector<gameplay::ScheduledTick> due;
-    for (const auto& [c, data] : world.loaded) {
-        if (data->level != ChunkLevel::ticking) continue;
-        for (const auto& [key, e] : data->ticks[l])
+    world.for_each_loaded(level, [&](ChunkPos, const ChunkData& data) {
+        if (data.level != ChunkLevel::ticking) return;
+        for (const auto& [key, e] : data.ticks[l])
             if (e.due <= world.time) due.push_back({key.first, key.second, e.due, e.priority, e.suborder});
-    }
+    });
     std::ranges::sort(due, gameplay::tick_before);
     if (due.size() > bundle.limits.max_scheduled_ticks_per_list) due.resize(bundle.limits.max_scheduled_ticks_per_list);
     std::vector<RootItem> roots;
     roots.reserve(due.size());
     for (std::size_t i = 0; i < due.size(); ++i) {
         const auto c = contracts::chunk_of(due[i].pos);
-        world.loaded.at(c)->ticks[l].erase({due[i].pos, due[i].block});
+        world.loaded.at({level, c})->ticks[l].erase({due[i].pos, due[i].block});
         RootItem r;
         r.key = i;
         r.home = c;
         r.tick = due[i];
         roots.push_back(r);
     }
-    run_phase(list == TickList::block ? Phase::block_ticks : Phase::fluid_ticks, std::move(roots));
+    run_phase(list == TickList::block ? Phase::block_ticks : Phase::fluid_ticks, level, std::move(roots));
 }
 
-void Engine::Impl::random_phase() {
-    const auto sections = bundle.world.sections();
+void Engine::Impl::random_phase(DimensionId level) {
+    const auto sections = bundle.shape(level).sections();
     std::vector<RootItem> roots;
     std::uint64_t index = 0;
-    for (const auto& [c, data] : world.loaded) {
-        if (data->level != ChunkLevel::ticking) continue;
+    world.for_each_loaded(level, [&](ChunkPos c, const ChunkData& data) {
+        if (data.level != ChunkLevel::ticking) return;
         for (std::int32_t s = 0; s < sections; ++s) {
             // A section without randomly ticking blocks would draw positions
             // and change nothing; its stream is its own, so skipping it is exact.
-            const auto& section = data->sections[static_cast<std::size_t>(s)];
+            const auto& section = data.sections[static_cast<std::size_t>(s)];
             if (!section || section->random_ticking == 0) continue;
             RootItem r;
             r.key = index * static_cast<std::uint64_t>(sections) + static_cast<std::uint64_t>(s);
@@ -319,64 +334,64 @@ void Engine::Impl::random_phase() {
             roots.push_back(r);
         }
         ++index;
-    }
-    run_phase(Phase::random_ticks, std::move(roots));
+    });
+    run_phase(Phase::random_ticks, level, std::move(roots));
 }
 
-void Engine::Impl::block_event_phase() {
+void Engine::Impl::block_event_phase(DimensionId level) {
     std::vector<RootItem> roots;
-    for (const auto& [c, data] : world.loaded) {
-        if (data->level != ChunkLevel::ticking) continue;
-        for (const auto& e : data->events) {
+    world.for_each_loaded(level, [&](ChunkPos c, ChunkData& data) {
+        if (data.level != ChunkLevel::ticking) return;
+        for (const auto& e : data.events) {
             RootItem r;
             r.key = e.seq;
             r.home = c;
             r.event = e.event;
             roots.push_back(r);
         }
-        data->events.clear(); // Deferred events in non-ticking columns stay where they are.
-    }
+        data.events.clear(); // Deferred events in non-ticking columns stay where they are.
+    });
     std::ranges::sort(roots, {}, &RootItem::key);
-    run_phase(Phase::block_events, std::move(roots));
+    run_phase(Phase::block_events, level, std::move(roots));
 }
 
-void Engine::Impl::entity_phase() {
+void Engine::Impl::entity_phase(DimensionId level) {
     std::vector<RootItem> roots;
-    for (const auto& [c, data] : world.loaded) {
-        if (data->level != ChunkLevel::ticking) continue;
-        for (const auto& [id, e] : data->entities) {
+    world.for_each_loaded(level, [&](ChunkPos c, const ChunkData& data) {
+        if (data.level != ChunkLevel::ticking) return;
+        for (const auto& [id, e] : data.entities) {
             RootItem r;
             r.key = id.value;
             r.home = c;
             r.entity = id;
             roots.push_back(r);
         }
-    }
+    });
     std::ranges::sort(roots, {}, &RootItem::key);
-    run_phase(Phase::entities, std::move(roots));
+    run_phase(Phase::entities, level, std::move(roots));
 }
 
-void Engine::Impl::block_entity_phase() {
+void Engine::Impl::block_entity_phase(DimensionId level) {
     std::vector<RootItem> roots;
-    for (const auto& [c, data] : world.loaded) {
-        if (data->level != ChunkLevel::ticking) continue;
-        for (const auto& [pos, be] : data->block_entities) {
+    world.for_each_loaded(level, [&](ChunkPos c, const ChunkData& data) {
+        if (data.level != ChunkLevel::ticking) return;
+        for (const auto& [pos, be] : data.block_entities) {
             RootItem r;
             r.key = be.order;
             r.home = c;
             r.pos = pos;
             roots.push_back(r);
         }
-    }
+    });
     std::ranges::sort(roots, {}, &RootItem::key);
-    run_phase(Phase::block_entities, std::move(roots));
+    run_phase(Phase::block_entities, level, std::move(roots));
 }
 
-void Engine::Impl::run_phase(Phase phase, std::vector<RootItem> roots) {
+void Engine::Impl::run_phase(Phase phase, DimensionId level, std::vector<RootItem> roots) {
     ++stats.phases;
     if (roots.empty()) return;
     std::map<RegionId, std::vector<RootItem>> groups;
-    for (auto& r : roots) groups[regions.owner.at(r.home)].push_back(std::move(r));
+    for (auto& r : roots) groups[regions.owner.at({level, r.home})].push_back(std::move(r));
     std::map<RegionId, std::unique_ptr<RegionTask>> staged;
     std::vector<RegionId> to_run;
     for (const auto& [id, list] : groups) to_run.push_back(id);
@@ -385,7 +400,7 @@ void Engine::Impl::run_phase(Phase phase, std::vector<RootItem> roots) {
         std::vector<std::unique_ptr<RegionTask>> tasks;
         std::vector<Task*> pointers;
         for (const auto id : to_run) {
-            tasks.push_back(std::make_unique<RegionTask>(*this, id, phase, groups.at(id)));
+            tasks.push_back(std::make_unique<RegionTask>(*this, id, phase, level, groups.at(id)));
             pointers.push_back(tasks.back().get());
         }
         ++stats.attempts;
@@ -510,37 +525,48 @@ void Engine::Impl::run_phase(Phase phase, std::vector<RootItem> roots) {
         }
     }
     const auto commit_start = std::chrono::steady_clock::now();
-    commit(phase, contexts);
+    commit(contexts);
     stats.commit_nanoseconds += static_cast<std::uint64_t>(
         std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - commit_start).count());
 }
 
-void Engine::Impl::commit(Phase, const std::vector<RegionContext*>& contexts) {
+void Engine::Impl::commit(const std::vector<RegionContext*>& contexts) {
     // Level-wide counters are assigned in serial order: by root, then by action
     // within the root. Every staged creation consumes a value, including those
     // of objects removed again before commit, as in the serial order.
-    // values[counter][context][ledger index] holds the assigned value.
+    // values[counter][context][ledger index] holds the assigned value. Each
+    // creation draws from its level's counter, entity ids from the global one.
     std::array<std::vector<std::vector<std::uint64_t>>, counter_kinds> values;
-    const std::array<std::uint64_t*, counter_kinds> next{&world.next_suborder, &world.next_event_seq,
-                                                         &world.next_block_entity_order, &world.next_entity_id};
+    const auto next = [&](std::size_t k, DimensionId level) -> std::uint64_t& {
+        auto& c = world.counters(level);
+        switch (static_cast<Counter>(k)) {
+        case Counter::suborder: return c.next_suborder;
+        case Counter::event_seq: return c.next_event_seq;
+        case Counter::block_entity_order: return c.next_block_entity_order;
+        case Counter::entity_id: break;
+        }
+        return world.next_entity_id;
+    };
     for (std::size_t k = 0; k < counter_kinds; ++k) {
         struct Ref {
             std::uint64_t root;
             std::uint32_t seq;
             std::size_t context;
             std::size_t index;
+            DimensionId level;
         };
         std::vector<Ref> refs;
         values[k].resize(contexts.size());
         for (std::size_t i = 0; i < contexts.size(); ++i) {
             const auto& entries = contexts[i]->ledger[k];
             values[k][i].resize(entries.size());
-            for (std::size_t j = 0; j < entries.size(); ++j) refs.push_back({entries[j].root, entries[j].seq, i, j});
+            for (std::size_t j = 0; j < entries.size(); ++j) refs.push_back({entries[j].root, entries[j].seq, i, j, entries[j].level});
         }
         std::ranges::sort(refs, [](const Ref& a, const Ref& b) { return a.root != b.root ? a.root < b.root : a.seq < b.seq; });
         for (const auto& r : refs) {
-            if (*next[k] == UINT64_MAX) throw std::overflow_error("engine: level-wide counter exhausted");
-            values[k][r.context][r.index] = (*next[k])++;
+            auto& counter = next(k, r.level);
+            if (counter == UINT64_MAX) throw std::overflow_error("engine: level-wide counter exhausted");
+            values[k][r.context][r.index] = counter++;
         }
     }
     const auto value = [&](Counter c, std::size_t context, Provisional p) {
@@ -622,7 +648,7 @@ void Engine::Impl::maintain_layout() {
         const auto choice = layout_rng.bounded(4);
         if (choice == 0) {
             // Every column becomes its own region.
-            std::vector<ChunkPos> all;
+            std::vector<ChunkKey> all;
             for (const auto& [c, id] : regions.owner) all.push_back(c);
             std::ranges::sort(all);
             regions.owner.clear();
@@ -630,14 +656,17 @@ void Engine::Impl::maintain_layout() {
             for (const auto c : all) regions.add_singleton(c);
             stats.splits += all.size();
         } else if (choice == 1 && regions.members.size() > 1) {
-            // Merge random pairs, including distant ones.
-            std::vector<RegionId> ids;
-            for (const auto& [id, m] : regions.members) ids.push_back(id);
-            for (std::size_t i = 0; i + 1 < ids.size(); i += 2) {
-                const auto j = i + 1 + layout_rng.bounded(static_cast<std::uint32_t>(ids.size() - i - 1));
-                std::swap(ids[i + 1], ids[j]);
-                regions.absorb(ids[i], ids[i + 1]);
-                ++stats.merges;
+            // Merge random pairs of each level, including distant ones.
+            for (const auto level : contracts::level_order) {
+                std::vector<RegionId> ids;
+                for (const auto& [id, m] : regions.members)
+                    if (!m.empty() && m.begin()->dimension == level) ids.push_back(id);
+                for (std::size_t i = 0; i + 1 < ids.size(); i += 2) {
+                    const auto j = i + 1 + layout_rng.bounded(static_cast<std::uint32_t>(ids.size() - i - 1));
+                    std::swap(ids[i + 1], ids[j]);
+                    regions.absorb(ids[i], ids[i + 1]);
+                    ++stats.merges;
+                }
             }
         }
         break;
@@ -651,18 +680,18 @@ void Engine::Impl::split_pass() {
         if (m.size() > 1) ids.push_back(id);
     for (const auto id : ids) {
         const auto members = regions.members.at(id);
-        std::map<ChunkPos, std::vector<ChunkPos>> adjacency;
+        std::map<ChunkKey, std::vector<ChunkKey>> adjacency;
         for (const auto& [edge, last] : edges) {
             if (!members.contains(edge.first) || !members.contains(edge.second)) continue;
             adjacency[edge.first].push_back(edge.second);
             adjacency[edge.second].push_back(edge.first);
         }
-        std::set<ChunkPos> seen;
-        std::vector<std::vector<ChunkPos>> components;
+        std::set<ChunkKey> seen;
+        std::vector<std::vector<ChunkKey>> components;
         for (const auto start : members) {
             if (seen.contains(start)) continue;
-            std::vector<ChunkPos> component;
-            std::deque<ChunkPos> queue{start};
+            std::vector<ChunkKey> component;
+            std::deque<ChunkKey> queue{start};
             seen.insert(start);
             while (!queue.empty()) {
                 const auto c = queue.front();
@@ -685,76 +714,75 @@ void Engine::Impl::split_pass() {
     }
 }
 
-WorldDump Engine::Impl::dump() const {
-    WorldDump d;
+namespace {
+// Fills a dump from the store: every column of every level, loaded or saved.
+// `blocks` receives each column's sections (snapshots) or adds its blocks to
+// the dump itself (nullptr).
+void fill_dump(const WorldStore& world, const contracts::VersionBundle& bundle, WorldDump& d,
+               std::map<ChunkKey, std::vector<std::shared_ptr<const ColumnSnapshot::Blocks>>>* sections) {
     d.time = world.time;
-    d.next_suborder = world.next_suborder;
     d.next_entity_id = world.next_entity_id;
-    d.next_block_entity_order = world.next_block_entity_order;
-    std::vector<std::pair<std::uint64_t, BlockEvent>> events;
+    std::map<DimensionId, std::vector<std::pair<std::uint64_t, BlockEvent>>> events;
     const auto add = [&](const ChunkData& data, ChunkLevel level) {
-        d.chunks.push_back({data.pos, data.generation.value, level});
-        for (std::size_t s = 0; s < data.sections.size(); ++s) {
-            if (!data.sections[s]) continue;
-            for (std::uint32_t i = 0; i < 4096; ++i) {
-                const auto state = data.sections[s]->blocks[i];
-                if (state == gameplay::blocks::air()) continue;
-                d.blocks.push_back({BlockPos{data.pos.x * 16 + static_cast<std::int32_t>(i & 15),
-                                             bundle.world.min_y + static_cast<std::int32_t>(s) * 16 + static_cast<std::int32_t>((i >> 8) & 15),
-                                             data.pos.z * 16 + static_cast<std::int32_t>((i >> 4) & 15)},
-                                    state.raw()});
+        auto& l = d.level(data.dimension);
+        l.chunks.push_back({data.pos, data.generation.value, level});
+        if (sections) {
+            auto& list = (*sections)[{data.dimension, data.pos}];
+            list.reserve(data.sections.size());
+            for (const auto& section : data.sections)
+                list.push_back(section ? std::shared_ptr<const ColumnSnapshot::Blocks>(section, &section->blocks) : nullptr);
+        } else {
+            const auto min_y = bundle.shape(data.dimension).min_y;
+            for (std::size_t s = 0; s < data.sections.size(); ++s) {
+                if (!data.sections[s]) continue;
+                for (std::uint32_t i = 0; i < 4096; ++i) {
+                    const auto state = data.sections[s]->blocks[i];
+                    if (state == gameplay::blocks::air()) continue;
+                    l.blocks.push_back({BlockPos{data.pos.x * 16 + static_cast<std::int32_t>(i & 15),
+                                                 min_y + static_cast<std::int32_t>(s) * 16 + static_cast<std::int32_t>((i >> 8) & 15),
+                                                 data.pos.z * 16 + static_cast<std::int32_t>((i >> 4) & 15)},
+                                        state.raw()});
+                }
             }
         }
-        for (const auto& [pos, be] : data.block_entities) d.block_entities.push_back({pos, be});
-        for (const auto& [id, e] : data.entities) d.entities.push_back(e);
-        for (int l = 0; l < 2; ++l)
-            for (const auto& [k, e] : data.ticks[l])
-                d.ticks.push_back({static_cast<TickList>(l), {k.first, k.second, e.due, e.priority, e.suborder}});
-        for (const auto& e : data.events) events.push_back({e.seq, e.event});
+        for (const auto& [pos, be] : data.block_entities) l.block_entities.push_back({pos, be});
+        for (const auto& [id, e] : data.entities) l.entities.push_back(e);
+        for (int t = 0; t < 2; ++t)
+            for (const auto& [k, e] : data.ticks[t])
+                l.ticks.push_back({static_cast<TickList>(t), {k.first, k.second, e.due, e.priority, e.suborder}});
+        for (const auto& e : data.events) events[data.dimension].push_back({e.seq, e.event});
     };
     for (const auto& [c, data] : world.loaded) add(*data, data->level);
     for (const auto& [c, data] : world.saved) add(*data, ChunkLevel::unloaded);
-    std::ranges::sort(events, {}, [](const auto& p) { return p.first; });
-    for (const auto& [seq, e] : events) d.block_events.push_back(e);
+    for (auto& l : d.levels) {
+        l.next_suborder = world.counters(l.dimension).next_suborder;
+        l.next_block_entity_order = world.counters(l.dimension).next_block_entity_order;
+        auto& list = events[l.dimension];
+        std::ranges::sort(list, {}, [](const auto& p) { return p.first; });
+        for (const auto& [seq, e] : list) l.block_events.push_back(e);
+    }
     d.tickets = world.tickets.list();
     for (const auto& [key, inv] : world.players) d.players.push_back(inv);
     gameplay::canonicalize(d);
+}
+} // namespace
+
+WorldDump Engine::Impl::dump() const {
+    WorldDump d;
+    fill_dump(world, bundle, d, nullptr);
     return d;
 }
 
 WorldSnapshot Engine::snapshot() const {
-    const auto& world = impl_->world;
     WorldSnapshot snap;
-    auto& d = snap.state;
-    snap.min_y = impl_->bundle.world.min_y;
-    d.time = world.time;
-    d.next_suborder = world.next_suborder;
-    d.next_entity_id = world.next_entity_id;
-    d.next_block_entity_order = world.next_block_entity_order;
-    std::vector<std::pair<std::uint64_t, BlockEvent>> events;
-    std::map<ChunkPos, std::vector<std::shared_ptr<const ColumnSnapshot::Blocks>>> sections;
-    const auto add = [&](const ChunkData& data, ChunkLevel level) {
-        d.chunks.push_back({data.pos, data.generation.value, level});
-        auto& list = sections[data.pos];
-        list.reserve(data.sections.size());
-        for (const auto& section : data.sections)
-            list.push_back(section ? std::shared_ptr<const ColumnSnapshot::Blocks>(section, &section->blocks) : nullptr);
-        for (const auto& [pos, be] : data.block_entities) d.block_entities.push_back({pos, be});
-        for (const auto& [id, e] : data.entities) d.entities.push_back(e);
-        for (int l = 0; l < 2; ++l)
-            for (const auto& [k, e] : data.ticks[l])
-                d.ticks.push_back({static_cast<TickList>(l), {k.first, k.second, e.due, e.priority, e.suborder}});
-        for (const auto& e : data.events) events.push_back({e.seq, e.event});
-    };
-    for (const auto& [c, data] : world.loaded) add(*data, data->level);
-    for (const auto& [c, data] : world.saved) add(*data, ChunkLevel::unloaded);
-    std::ranges::sort(events, {}, [](const auto& p) { return p.first; });
-    for (const auto& [seq, e] : events) d.block_events.push_back(e);
-    d.tickets = world.tickets.list();
-    for (const auto& [key, inv] : world.players) d.players.push_back(inv);
-    gameplay::canonicalize(d);
-    snap.sections.reserve(d.chunks.size());
-    for (const auto& c : d.chunks) snap.sections.push_back(std::move(sections.at(c.pos)));
+    std::map<ChunkKey, std::vector<std::shared_ptr<const ColumnSnapshot::Blocks>>> sections;
+    fill_dump(impl_->world, impl_->bundle, snap.state, &sections);
+    snap.sections.reserve(snap.state.levels.size());
+    for (const auto& l : snap.state.levels) {
+        auto& per_level = snap.sections.emplace_back();
+        per_level.reserve(l.chunks.size());
+        for (const auto& c : l.chunks) per_level.push_back(std::move(sections.at({l.dimension, c.pos})));
+    }
     return snap;
 }
 
@@ -770,74 +798,88 @@ Engine::Engine(const contracts::VersionBundle& bundle, std::uint64_t seed, const
 void Engine::Impl::restore(const WorldDump& state) {
     const auto bad = [](std::string_view what) { throw std::invalid_argument(std::format("engine: invalid state: {}", what)); };
     world.time = state.time;
-    world.next_suborder = state.next_suborder;
     world.next_entity_id = state.next_entity_id;
-    world.next_block_entity_order = state.next_block_entity_order;
-    std::map<ChunkPos, ChunkData*> columns;
-    for (const auto& c : state.chunks) {
-        auto chunk = std::make_unique<ChunkData>();
-        chunk->pos = c.pos;
-        chunk->generation = contracts::Generation{c.generation};
-        chunk->level = c.level;
-        chunk->sections.resize(static_cast<std::size_t>(bundle.world.sections()));
-        auto* raw = chunk.get();
-        if (!columns.emplace(c.pos, raw).second) bad("duplicate column");
-        if (c.level == ChunkLevel::unloaded) {
-            world.saved.emplace(c.pos, std::move(chunk));
-        } else {
-            world.loaded.emplace(c.pos, std::move(chunk));
-            region_for_new_chunk(c.pos);
-        }
-    }
-    const auto column = [&](BlockPos p) -> ChunkData& {
-        if (!bundle.world.contains_y(p.y) || !contracts::within_border(p)) bad("position outside the world");
-        const auto it = columns.find(contracts::chunk_of(p));
-        if (it == columns.end()) bad("position in an unknown column");
-        return *it->second;
-    };
-    for (const auto& [pos, raw] : state.blocks) {
-        const auto s = gameplay::BlockState::decode(raw);
-        if (!s) bad("block state");
-        if (*s == gameplay::blocks::air()) continue;
-        auto& chunk = column(pos);
-        auto& section = chunk.sections[static_cast<std::size_t>((pos.y - bundle.world.min_y) >> 4)];
-        if (!section) section = std::make_shared<Section>();
-        section->blocks[contracts::section_local_index(pos)] = *s;
-        if (gameplay::reacts_to_random_ticks(s->type())) ++section->random_ticking;
-    }
-    for (const auto& [pos, be] : state.block_entities) {
-        auto& chunk = column(pos);
-        if (!chunk.block_entities.emplace(pos, be).second) bad("duplicate block entity");
-    }
-    // Entities may be above or below the world height (falling out of it),
-    // within the bounds the rules can reach; everything else is checked at
-    // full width so that ticking a restored state cannot overflow.
-    const std::int64_t lowest = (std::int64_t{bundle.world.min_y} - 65) * contracts::fixed_one;
-    const std::int64_t highest = (std::int64_t{bundle.world.min_y} + bundle.world.height + 4096) * contracts::fixed_one;
+    // Valid entity stacks; entities of every level are checked against the
+    // global id counter.
     const auto valid_speed = [](std::int64_t v) { return v >= -gameplay::max_entity_speed && v <= gameplay::max_entity_speed; };
-    for (const auto& e : state.entities) {
-        if (!contracts::fixed_within_border(e.position) || e.id.value == 0 || e.id.value >= world.next_entity_id) bad("entity");
-        if (e.position.y < lowest || e.position.y >= highest) bad("entity height");
-        if (!valid_speed(e.velocity.x) || !valid_speed(e.velocity.y) || !valid_speed(e.velocity.z)) bad("entity velocity");
-        if (!gameplay::items::valid(e.stack.item) || e.stack.count < 1 || e.stack.count > gameplay::items::max_stack(e.stack)
-            || e.stack.damage > gameplay::items::max_damage(e.stack) || e.pickup_delay > 32767)
-            bad("entity stack");
-        const auto it = columns.find(contracts::chunk_of(contracts::block_of(e.position)));
-        if (it == columns.end()) bad("entity in an unknown column");
-        auto& chunk = *it->second;
-        if (!chunk.entities.emplace(e.id, e).second) bad("duplicate entity id");
-        world.entity_index[e.id] = chunk.pos;
+    std::optional<DimensionId> previous;
+    for (const auto& l : state.levels) {
+        if (!contracts::valid_dimension(static_cast<std::uint8_t>(l.dimension))) bad("level");
+        if (previous && *previous >= l.dimension) bad("levels out of order");
+        previous = l.dimension;
+        const auto level = l.dimension;
+        const auto& shape = bundle.shape(level);
+        auto& counters = world.counters(level);
+        counters.next_suborder = l.next_suborder;
+        counters.next_block_entity_order = l.next_block_entity_order;
+        std::map<ChunkPos, ChunkData*> columns;
+        for (const auto& c : l.chunks) {
+            auto chunk = std::make_unique<ChunkData>();
+            chunk->dimension = level;
+            chunk->pos = c.pos;
+            chunk->generation = contracts::Generation{c.generation};
+            chunk->level = c.level;
+            chunk->sections.resize(static_cast<std::size_t>(shape.sections()));
+            auto* raw = chunk.get();
+            if (!columns.emplace(c.pos, raw).second) bad("duplicate column");
+            if (c.level == ChunkLevel::unloaded) {
+                world.saved.emplace(ChunkKey{level, c.pos}, std::move(chunk));
+            } else {
+                world.loaded.emplace(ChunkKey{level, c.pos}, std::move(chunk));
+                region_for_new_chunk({level, c.pos});
+            }
+        }
+        const auto column = [&](BlockPos p) -> ChunkData& {
+            if (!shape.contains_y(p.y) || !contracts::within_border(p)) bad("position outside the world");
+            const auto it = columns.find(contracts::chunk_of(p));
+            if (it == columns.end()) bad("position in an unknown column");
+            return *it->second;
+        };
+        for (const auto& [pos, raw] : l.blocks) {
+            const auto s = gameplay::BlockState::decode(raw);
+            if (!s) bad("block state");
+            if (*s == gameplay::blocks::air()) continue;
+            auto& chunk = column(pos);
+            auto& section = chunk.sections[static_cast<std::size_t>((pos.y - shape.min_y) >> 4)];
+            if (!section) section = std::make_shared<Section>();
+            section->blocks[contracts::section_local_index(pos)] = *s;
+            if (gameplay::reacts_to_random_ticks(s->type())) ++section->random_ticking;
+        }
+        for (const auto& [pos, be] : l.block_entities) {
+            auto& chunk = column(pos);
+            if (!chunk.block_entities.emplace(pos, be).second) bad("duplicate block entity");
+        }
+        // Entities may be above or below the world height (falling out of it),
+        // within the bounds the rules can reach; everything else is checked at
+        // full width so that ticking a restored state cannot overflow.
+        const std::int64_t lowest = (std::int64_t{shape.min_y} - 65) * contracts::fixed_one;
+        const std::int64_t highest = (std::int64_t{shape.min_y} + shape.height + 4096) * contracts::fixed_one;
+        for (const auto& e : l.entities) {
+            if (!contracts::fixed_within_border(e.position) || e.id.value == 0 || e.id.value >= world.next_entity_id) bad("entity");
+            if (e.position.y < lowest || e.position.y >= highest) bad("entity height");
+            if (!valid_speed(e.velocity.x) || !valid_speed(e.velocity.y) || !valid_speed(e.velocity.z)) bad("entity velocity");
+            if (!gameplay::items::valid(e.stack.item) || e.stack.count < 1 || e.stack.count > gameplay::items::max_stack(e.stack)
+                || e.stack.damage > gameplay::items::max_damage(e.stack) || e.pickup_delay > 32767)
+                bad("entity stack");
+            const auto it = columns.find(contracts::chunk_of(contracts::block_of(e.position)));
+            if (it == columns.end()) bad("entity in an unknown column");
+            auto& chunk = *it->second;
+            if (world.entity_index.contains(e.id) || !chunk.entities.emplace(e.id, e).second) bad("duplicate entity id");
+            world.entity_index[e.id] = {level, chunk.pos};
+        }
+        for (const auto& t : l.ticks) {
+            auto& chunk = column(t.tick.pos);
+            const TickEntry entry{t.tick.due, t.tick.priority, t.tick.suborder, {}};
+            if (!chunk.ticks[static_cast<int>(t.list)].emplace(TickKey{t.tick.pos, t.tick.block}, entry).second)
+                bad("duplicate scheduled tick");
+        }
+        // Block events keep their queue order; their internal sequence restarts.
+        for (const auto& e : l.block_events) column(e.pos).events.push_back({e, counters.next_event_seq++, {}});
     }
-    for (const auto& t : state.ticks) {
-        auto& chunk = column(t.tick.pos);
-        const TickEntry entry{t.tick.due, t.tick.priority, t.tick.suborder, {}};
-        if (!chunk.ticks[static_cast<int>(t.list)].emplace(TickKey{t.tick.pos, t.tick.block}, entry).second)
-            bad("duplicate scheduled tick");
-    }
-    // Block events keep their queue order; their internal sequence restarts.
-    for (const auto& e : state.block_events) column(e.pos).events.push_back({e, world.next_event_seq++, {}});
     for (const auto& t : state.tickets)
-        if (!world.tickets.add({t.id, t.center, t.radius, t.load_radius}, bundle.limits)) bad("ticket");
+        if (!contracts::valid_dimension(static_cast<std::uint8_t>(t.dimension))
+            || !world.tickets.add({t.id, t.center, t.radius, t.load_radius}, t.dimension, bundle.limits))
+            bad("ticket");
     const auto valid_stack = [](const contracts::ItemStack& s) {
         if (s.item == 0 && s.count == 0 && s.damage == 0 && s.components.empty()) return true;
         return gameplay::items::valid(s.item) && s.count >= 1 && s.count <= gameplay::items::max_stack(s)
@@ -860,10 +902,10 @@ std::size_t Engine::region_count() const noexcept { return impl_->regions.member
 std::size_t Engine::loaded_chunks() const noexcept { return impl_->world.loaded.size(); }
 WorldView Engine::view() const noexcept { return WorldView(this, impl_->epoch, impl_->world.time); }
 
-std::optional<ColumnSnapshot> Engine::column(ChunkPos pos) const {
-    const auto* data = impl_->world.find_loaded(pos);
+std::optional<ColumnSnapshot> Engine::column(ChunkKey key) const {
+    const auto* data = impl_->world.find_loaded(key);
     if (!data) return std::nullopt;
-    ColumnSnapshot s{pos, data->generation, data->level, {}, {}, {}};
+    ColumnSnapshot s{key.dimension, key.pos, data->generation, data->level, {}, {}, {}};
     s.sections.reserve(data->sections.size());
     for (const auto& section : data->sections)
         // Aliasing pointer: shares ownership of the section, so the engine copies
@@ -874,26 +916,27 @@ std::optional<ColumnSnapshot> Engine::column(ChunkPos pos) const {
     return s;
 }
 
-std::vector<std::pair<ChunkPos, gameplay::ChunkLevel>> Engine::loaded_columns() const {
-    std::vector<std::pair<ChunkPos, gameplay::ChunkLevel>> out;
+std::vector<std::pair<ChunkKey, gameplay::ChunkLevel>> Engine::loaded_columns() const {
+    std::vector<std::pair<ChunkKey, gameplay::ChunkLevel>> out;
     for (const auto& [c, data] : impl_->world.loaded) out.emplace_back(c, data->level);
     return out;
 }
 
-contracts::Result<gameplay::BlockState> WorldView::block(BlockPos pos) const {
+contracts::Result<gameplay::BlockState> WorldView::block(DimensionId level, BlockPos pos) const {
     const auto& impl = *engine_->impl_;
     if (impl.epoch != epoch_) return std::unexpected(contracts::ErrorCode::stale_view);
-    if (!gameplay::in_world(impl.bundle, pos)) return std::unexpected(contracts::ErrorCode::out_of_bounds);
-    const auto* data = impl.world.find_loaded(contracts::chunk_of(pos));
+    const auto& shape = impl.bundle.shape(level);
+    if (!gameplay::in_world(shape, pos)) return std::unexpected(contracts::ErrorCode::out_of_bounds);
+    const auto* data = impl.world.find_loaded({level, contracts::chunk_of(pos)});
     if (!data) return std::unexpected(contracts::ErrorCode::unloaded_chunk);
-    const auto& section = data->sections[static_cast<std::size_t>((pos.y - impl.bundle.world.min_y) >> 4)];
+    const auto& section = data->sections[static_cast<std::size_t>((pos.y - shape.min_y) >> 4)];
     return section ? section->blocks[contracts::section_local_index(pos)] : gameplay::blocks::air();
 }
 
-contracts::Result<std::optional<gameplay::BlockEntity>> WorldView::block_entity(BlockPos pos) const {
+contracts::Result<std::optional<gameplay::BlockEntity>> WorldView::block_entity(DimensionId level, BlockPos pos) const {
     const auto& impl = *engine_->impl_;
     if (impl.epoch != epoch_) return std::unexpected(contracts::ErrorCode::stale_view);
-    const auto* data = impl.world.find_loaded(contracts::chunk_of(pos));
+    const auto* data = impl.world.find_loaded({level, contracts::chunk_of(pos)});
     if (!data) return std::unexpected(contracts::ErrorCode::unloaded_chunk);
     const auto it = data->block_entities.find(pos);
     if (it == data->block_entities.end()) return std::optional<gameplay::BlockEntity>{};
@@ -908,11 +951,11 @@ contracts::Result<std::optional<gameplay::PlayerInventory>> WorldView::player(co
     return std::optional<gameplay::PlayerInventory>{it->second};
 }
 
-contracts::Result<std::optional<gameplay::Entity>> WorldView::entity(EntityId id) const {
+contracts::Result<std::optional<gameplay::Entity>> WorldView::entity(DimensionId level, EntityId id) const {
     const auto& impl = *engine_->impl_;
     if (impl.epoch != epoch_) return std::unexpected(contracts::ErrorCode::stale_view);
     const auto it = impl.world.entity_index.find(id);
-    if (it == impl.world.entity_index.end()) return std::optional<gameplay::Entity>{};
+    if (it == impl.world.entity_index.end() || it->second.dimension != level) return std::optional<gameplay::Entity>{};
     const auto* data = impl.world.find_loaded(it->second);
     if (!data) return std::unexpected(contracts::ErrorCode::unloaded_chunk);
     const auto e = data->entities.find(id);

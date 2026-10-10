@@ -14,18 +14,23 @@ using contracts::TraceRecord;
 
 // Thrown before an access to a column owned by another region touches it.
 struct ForeignAccess {
-    ChunkPos chunk;
+    ChunkKey chunk;
 };
 
 // Executes roots of one region in one phase. Writes go directly to owned
 // columns after a copy-on-first-write snapshot, so an aborted attempt can be
-// rolled back. Level-wide counters are staged and assigned at commit.
+// rolled back. Level-wide counters are staged and assigned at commit. A
+// region is of one level; the command phase's context (all regions) enters
+// the level of each command.
 class RegionContext final : public gameplay::RuleContext {
 public:
     RegionContext(const contracts::VersionBundle& bundle, WorldStore& world, const RegionMap& regions, RegionId region,
-                  Phase phase, bool record_trace, bool unchecked, const gameplay::GameData* data = nullptr);
+                  Phase phase, DimensionId level, bool record_trace, bool unchecked, const gameplay::GameData* data = nullptr);
 
     void begin_root(std::uint64_t root, ChunkPos home);
+    // Command phase: the level of the next roots, or of the chunk-level
+    // records that follow.
+    void use_level(DimensionId level) noexcept { enter(level); }
     void rollback();
     [[nodiscard]] Phase phase() const noexcept { return phase_; }
 
@@ -53,10 +58,10 @@ public:
     std::uint32_t record(TraceKind kind, BlockPos pos, std::uint64_t a, std::uint64_t b, std::uint64_t c) override;
 
     // Staged results, consumed by the engine's commit.
-    std::map<ChunkPos, ChunkData> snapshots;                // Pre-phase copies of written columns.
+    std::map<ChunkKey, ChunkData> snapshots;               // Pre-phase copies of written columns.
     std::vector<TraceRecord> trace;
-    std::unordered_map<EntityId, std::optional<ChunkPos>> entity_moves; // nullopt: removed
-    std::set<std::pair<ChunkPos, ChunkPos>> interactions;  // (root home, other column) accessed together
+    std::unordered_map<EntityId, std::optional<ChunkKey>> entity_moves; // nullopt: removed
+    std::set<std::pair<ChunkKey, ChunkKey>> interactions;  // (root home, other column) accessed together
 
     // Block-event phase: the region's FIFO. Local ids are positions in the
     // FIFO; `children[i]` lists ids appended while event i ran.
@@ -82,17 +87,20 @@ public:
         std::uint64_t root{};
         std::uint32_t seq{};
         EntityId entity{}; // Provisional id of a spawned entity.
+        DimensionId level{}; // whose per-level counter it consumes
     };
     std::array<std::vector<Creation>, counter_kinds> ledger;
 
 private:
     Provisional stage(Counter counter, std::uint32_t seq, EntityId entity = {});
     ChunkData* loaded_in_world(BlockPos pos) const;
+    [[nodiscard]] ChunkKey key(ChunkPos c) const noexcept { return {dimension(), c}; }
     ChunkData& owned(ChunkPos c, ChunkData& data);
     ChunkData& writable(ChunkPos c, ChunkData& data);
+    // The column of an entity of the current level.
     std::optional<ChunkPos> locate(EntityId id) const;
     [[nodiscard]] std::size_t section_of(std::int32_t y) const {
-        return static_cast<std::size_t>((y - bundle().world.min_y) >> 4);
+        return static_cast<std::size_t>((y - world().min_y) >> 4);
     }
 
     WorldStore& world_;
