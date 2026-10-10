@@ -8,8 +8,8 @@ using contracts::block_of;
 using contracts::chunk_of;
 
 RegionContext::RegionContext(const contracts::VersionBundle& bundle, WorldStore& world, const RegionMap& regions,
-                             RegionId region, Phase phase, bool record_trace, bool unchecked)
-    : RuleContext(bundle), world_(world), regions_(regions), region_(region), phase_(phase),
+                             RegionId region, Phase phase, bool record_trace, bool unchecked, const gameplay::GameData* data)
+    : RuleContext(bundle, data), world_(world), regions_(regions), region_(region), phase_(phase),
       record_trace_(record_trace), unchecked_(unchecked) {}
 
 void RegionContext::begin_root(std::uint64_t root, ChunkPos home) {

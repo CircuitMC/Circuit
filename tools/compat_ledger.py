@@ -377,6 +377,10 @@ def validate(ledger, manifests, family_ids, inputs):
         formats = m.get("pack_formats", {})
         if not packs or (int(packs.group(1)), int(packs.group(2))) != (formats.get("data"), formats.get("resource")):
             errors.append(f"{b}: pack formats differ from src/contracts/version.cpp")
+        jar = re.search(r'\.server_jar_sha1 = "([0-9a-f]{40})"', block.group(1))
+        servers = [r.get("sha1") for r in m.get("reference_artifacts", []) if r.get("kind") == "server"]
+        if not jar or [jar.group(1)] != servers:
+            errors.append(f"{b}: server jar SHA-1 differs from src/contracts/version.cpp")
         for key in ("bundle", "release", "protocol", "data_version", "pack_formats", "reference_artifacts", "public_data", "profiles", "sources"):
             if key not in m:
                 errors.append(f"{b}: manifest lacks {key}")

@@ -47,12 +47,22 @@ std::optional<registry::BlockInfo> other_info(BlockState s) noexcept {
     return b ? std::optional(registry::block(*b)) : std::nullopt;
 }
 
+// Data-pack tool and tier of a block without rules of its own, if any.
+const BlockTool* data_tool(BlockState s, const GameData* data) noexcept {
+    if (!data || !s.is(BlockType::other)) return nullptr;
+    const auto b = registry::block_of(s.registry_state());
+    if (!b) return nullptr;
+    const auto it = data->block_tools.find(*b);
+    return it == data->block_tools.end() ? nullptr : &it->second;
+}
+
 // The tool kind that is effective on a block (its mineable tag).
-Tool effective_tool(BlockState s) noexcept {
+Tool effective_tool(BlockState s, const GameData* data) noexcept {
     switch (s.type()) {
     case BlockType::other: {
         const auto info = other_info(s);
-        switch (info ? info->tool : registry::Tool::none) {
+        const auto* d = data_tool(s, data);
+        switch (d ? d->tool : info ? info->tool : registry::Tool::none) {
         case registry::Tool::pickaxe: return Tool::pickaxe;
         case registry::Tool::axe: return Tool::axe;
         case registry::Tool::shovel: return Tool::shovel;
@@ -69,9 +79,10 @@ Tool effective_tool(BlockState s) noexcept {
 }
 
 // Lowest tier a block needs for its drops; 0 when it drops with any tool.
-int required_tier(BlockState s) noexcept {
+int required_tier(BlockState s, const GameData* data) noexcept {
     switch (s.type()) {
     case BlockType::other: {
+        if (const auto* d = data_tool(s, data)) return d->tier;
         const auto info = other_info(s);
         return info ? info->tier : 0;
     }
@@ -102,22 +113,23 @@ float hardness(BlockState s) noexcept {
     }
 }
 
-bool harvests(BlockState s, contracts::ItemStack tool) noexcept {
-    const auto need = required_tier(s);
+bool harvests(BlockState s, const contracts::ItemStack& tool, const GameData* data) noexcept {
+    const auto need = required_tier(s, data);
     if (need == 0) return true;
     const auto t = tool.empty() ? ToolInfo{} : tool_of(tool.item);
-    return t.kind == effective_tool(s) && t.tier >= need;
+    return t.kind == effective_tool(s, data) && t.tier >= need;
 }
 
-float destroy_progress(BlockState s, contracts::ItemStack tool, bool on_ground, bool eyes_in_water) noexcept {
+float destroy_progress(BlockState s, const contracts::ItemStack& tool, bool on_ground, bool eyes_in_water,
+                       const GameData* data) noexcept {
     const float h = hardness(s);
     if (h < 0.0f) return 0.0f;
     if (h == 0.0f) return 1.0f;
     const auto t = tool.empty() ? ToolInfo{} : tool_of(tool.item);
-    float speed = t.kind != Tool::none && t.kind == effective_tool(s) ? t.speed : 1.0f;
+    float speed = t.kind != Tool::none && t.kind == effective_tool(s, data) ? t.speed : 1.0f;
     if (eyes_in_water) speed *= 0.2f; // the submerged mining speed
     if (!on_ground) speed /= 5.0f;
-    return speed / h / (harvests(s, tool) ? 30.0f : 100.0f);
+    return speed / h / (harvests(s, tool, data) ? 30.0f : 100.0f);
 }
 
 float fluid_height(BlockState s, BlockState above) noexcept {

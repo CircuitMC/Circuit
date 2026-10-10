@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Conversion between Anvil worlds and Circuit world directories.
+#include "server_data.hpp"
 #include "world_meta.hpp"
 #include <circuit/server/anvil.hpp>
 #include <circuit/server/server.hpp>
@@ -25,12 +26,18 @@ std::expected<anvil::ImportReport, std::string> import_anvil_world(const std::fi
     if (auto ok = world.acquire(); !ok) return std::unexpected(ok.error());
     if (fs.exists(config.world_directory / "manifest"))
         return std::unexpected(std::format("{} already holds a world", config.world_directory.string()));
-    auto imported = anvil::import_world(source, **bundle, options);
+    // Components may refer to what the configured data packs synchronize.
+    const auto data = load_server_data(**bundle, {config.vanilla_server_jar, config.data_packs});
+    if (!data) return std::unexpected("data packs: " + data.error());
+    auto with_data = options;
+    with_data.components = data->components;
+    auto imported = anvil::import_world(source, **bundle, with_data);
     if (!imported) return std::unexpected(imported.error());
     storage::Checkpoint c{std::string((*bundle)->id), std::string((*bundle)->rules->id), imported->report.seed,
                           std::move(imported->state), {}};
     auto meta = fresh_meta(config.floor_y);
     meta.spawn = imported->report.spawn;
+    meta.data = data->fingerprint();
     c.extras[std::string(meta_extra)] = encode_meta(meta);
     // The engine must accept the state before it becomes a world.
     try {
@@ -60,9 +67,17 @@ std::expected<anvil::ExportReport, std::string> export_anvil_world(const ServerC
         if (!loaded) return std::unexpected("invalid server data in the world");
         meta = *loaded;
     }
+    // The log replays under the data it was written with.
+    const auto data = load_server_data(**bundle, {config.vanilla_server_jar, config.data_packs});
+    if (!data) return std::unexpected("data packs: " + data.error());
+    if (!r.inputs.empty() && meta.data != data->fingerprint())
+        return std::unexpected(std::format("the world's log was written with data {}, not {}: configure the same data packs", meta.data,
+                                           data->fingerprint()));
     gameplay::WorldDump state;
     try {
-        runtime::Engine engine(**bundle, r.checkpoint.seed, r.checkpoint.state, world_engine_options(**bundle, meta.floor_y, 1));
+        auto engine_options = world_engine_options(**bundle, meta.floor_y, 1);
+        engine_options.data = data->game;
+        runtime::Engine engine(**bundle, r.checkpoint.seed, r.checkpoint.state, engine_options);
         for (const auto& input : r.inputs) engine.advance(input.commands);
         state = engine.dump();
     } catch (const std::exception& e) {
@@ -73,6 +88,7 @@ std::expected<anvil::ExportReport, std::string> export_anvil_world(const ServerC
     options.seed = r.checkpoint.seed;
     options.floor_y = meta.floor_y;
     options.spawn = meta.spawn;
+    options.components = data->components;
     auto report = anvil::export_world(state, **bundle, target, options);
     if (report)
         for (const auto& note : r.notes) report->notes.push_back("world directory: " + note);

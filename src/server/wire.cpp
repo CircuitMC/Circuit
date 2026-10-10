@@ -29,13 +29,14 @@ struct Wire::Ids {
         sb_chat_command_signed, sb_chat, sb_player_input, sb_player_abilities, sb_player_loaded, sb_client_command, sb_player_command;
 };
 
-Wire::Wire(std::int32_t protocol) : protocol_(protocol), ids_([&]() -> const protocol::PacketIds& {
+Wire::Wire(std::int32_t protocol) : Wire(protocol, server::component_context(protocol)) {}
+
+Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : protocol_(protocol), ids_([&]() -> const protocol::PacketIds& {
     const auto* ids = protocol::PacketIds::for_protocol(protocol);
     if (!ids) throw std::invalid_argument(std::format("server: no packet table for protocol {}", protocol));
     return *ids;
-}()), components_(protocol::ComponentCodec::for_protocol(protocol)) {
+}()), components_(protocol::ComponentCodec::for_protocol(protocol)), components_ctx_(std::move(components)) {
     if (!components_) throw std::invalid_argument(std::format("server: no component schema for protocol {}", protocol));
-    components_ctx_ = server::component_context(protocol);
     const auto cb = [&](State s, std::string_view n) { return ids_.id(s, Bound::clientbound, n); };
     const auto sb = [&](State s, std::string_view n) { return ids_.id(s, Bound::serverbound, n); };
     auto ids = std::make_shared<Ids>();
@@ -192,14 +193,14 @@ Bytes Wire::registry_data(std::string_view registry,
 }
 Bytes Wire::finish_configuration() const { return packet(id_->cfg_finish, Writer()); }
 
-Bytes Wire::update_tags(const std::vector<RegistryTags>& tags, const std::vector<RegistryEntries>& registries) const {
+Bytes Wire::update_tags(const std::vector<NumberedTags>& tags) const {
     Writer w;
     w.varint(static_cast<std::int32_t>(tags.size()));
     for (const auto& r : tags) {
         w.string(r.registry).varint(static_cast<std::int32_t>(r.tags.size()));
-        for (const auto& [name, entries] : r.tags) {
-            w.string(name).varint(static_cast<std::int32_t>(entries.size()));
-            for (const auto e : entries) w.varint(registry_index(registries, r.registry, e).value());
+        for (const auto& [name, ids] : r.tags) {
+            w.string(name).varint(static_cast<std::int32_t>(ids.size()));
+            for (const auto id : ids) w.varint(id);
         }
     }
     return packet(id_->cfg_update_tags, w);

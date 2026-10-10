@@ -158,7 +158,7 @@ struct ItemStack {
     std::uint16_t item{};
     std::uint8_t count{};
     std::uint16_t damage{}; // durability used, for items that have durability
-    ComponentPatch components; // every other data component (see components.hpp)
+    ComponentPatch components{}; // every other data component (see components.hpp)
     [[nodiscard]] bool empty() const noexcept { return item == 0 || count == 0; }
     // Stacks of the same item, damage and components merge (up to their limit).
     [[nodiscard]] bool same_kind(const ItemStack& o) const noexcept {

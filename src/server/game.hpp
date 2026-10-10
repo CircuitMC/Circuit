@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
 #include "registries.hpp"
+#include "server_data.hpp"
 #include "wire.hpp"
 #include "world_codec.hpp"
 #include <circuit/runtime/engine.hpp>
@@ -42,8 +43,7 @@ public:
     // in-memory world. Throws std::runtime_error when the world cannot be
     // opened or saved.
     Game(const ServerConfig& config, const contracts::VersionBundle& bundle, const Wire& wire,
-         const protocol::ContentTables& content, const evidence::ContentMapping& mapping,
-         const std::vector<RegistryEntries>& registries);
+         const protocol::ContentTables& content, const evidence::ContentMapping& mapping, const ServerData& data);
     ~Game();
     Game(const Game&) = delete;
     Game& operator=(const Game&) = delete;

@@ -73,7 +73,8 @@ public:
     RegionTask(Engine::Impl& engine, RegionId region, Phase phase, std::vector<RootItem> roots)
         : region(region), phase(phase), roots(std::move(roots)), engine_(engine) {
         ctx = std::make_unique<RegionContext>(engine.bundle, engine.world, engine.regions, region, phase,
-                                              engine.options.record_trace, engine.options.unchecked_ownership_for_testing);
+                                              engine.options.record_trace, engine.options.unchecked_ownership_for_testing,
+                                              engine.options.data.get());
         if (phase == Phase::block_events)
             for (const auto& r : this->roots) ctx->push_local(r.event);
         if (phase == Phase::block_ticks || phase == Phase::fluid_ticks)
@@ -192,7 +193,7 @@ void Engine::Impl::advance(const std::vector<Command>& commands) {
 void Engine::Impl::command_phase(const std::vector<Command>& commands) {
     ++stats.phases;
     // Commands run serially on the coordinator with access to every column.
-    RegionContext ctx(bundle, world, regions, all_regions, Phase::commands, options.record_trace, false);
+    RegionContext ctx(bundle, world, regions, all_regions, Phase::commands, options.record_trace, false, options.data.get());
     for (std::size_t i = 0; i < commands.size(); ++i) {
         ctx.begin_root(i, {});
         const auto& c = commands[i];

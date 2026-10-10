@@ -138,7 +138,7 @@ Two consistency checks guard these tables:
 
 The real client exercises the rest.
 
-Each version bundle names its registry set (`circuit-server --compatibility` prints it). Clients that report the vanilla data pack receive registry entry names only: 17 registries in 1.21.8 and 11 in 1.21.4, including trim materials and patterns, banner patterns, goat-horn instruments and jukebox songs, whose definitions refer to no tags. Clients that do not, such as protocol libraries, receive a documented minimal set with data: overworld, plains and the `chat` chat type.
+Each version bundle names its registry set (`circuit-server --compatibility` prints it). Clients that report the vanilla data pack receive registry entry names only: 17 registries in 1.21.8 and 11 in 1.21.4, including trim materials and patterns, banner patterns, goat-horn instruments and jukebox songs, whose definitions refer to no tags. With the official jar's data pack (`vanilla-server-jar`, see [data packs](DATA_PACKS.md)) they also receive the enchantments and every tag of the registries Circuit numbers. Clients that do not, such as protocol libraries, receive a documented minimal set with data: overworld, plains and the `chat` chat type.
 
 ## Not supported
 

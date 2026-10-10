@@ -23,7 +23,7 @@ struct ForeignAccess {
 class RegionContext final : public gameplay::RuleContext {
 public:
     RegionContext(const contracts::VersionBundle& bundle, WorldStore& world, const RegionMap& regions, RegionId region,
-                  Phase phase, bool record_trace, bool unchecked);
+                  Phase phase, bool record_trace, bool unchecked, const gameplay::GameData* data = nullptr);
 
     void begin_root(std::uint64_t root, ChunkPos home);
     void rollback();

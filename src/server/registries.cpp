@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "registries.hpp"
 #include <circuit/protocol/content.hpp>
+#include <memory>
 
 namespace circuit::server {
 namespace nbt = protocol::nbt;
@@ -180,6 +181,23 @@ const std::vector<RegistryEntries> registries_772{
 // - paintings: minecraft.wiki "Painting" revision 2884854. "Dennis" came only
 //   in 1.21.7;
 // - wolf variants: minecraft.wiki "Wolf" revision 2897968 (9 variants).
+// The enchantments of both releases, in id order: PrismarineJS minecraft-data
+// enchantments.json of 1.21.8 and 1.21.4 (commit 095709f3), which agree with
+// the official servers' registries. They are sent only with data-pack tags:
+// their definitions refer to item and enchantment tags the client must have.
+const RegistryEntries enchantments{"minecraft:enchantment",
+    {
+        "minecraft:aqua_affinity", "minecraft:bane_of_arthropods", "minecraft:binding_curse", "minecraft:blast_protection", "minecraft:breach",
+        "minecraft:channeling", "minecraft:density", "minecraft:depth_strider", "minecraft:efficiency", "minecraft:feather_falling",
+        "minecraft:fire_aspect", "minecraft:fire_protection", "minecraft:flame", "minecraft:fortune", "minecraft:frost_walker",
+        "minecraft:impaling", "minecraft:infinity", "minecraft:knockback", "minecraft:looting", "minecraft:loyalty",
+        "minecraft:luck_of_the_sea", "minecraft:lure", "minecraft:mending", "minecraft:multishot", "minecraft:piercing",
+        "minecraft:power", "minecraft:projectile_protection", "minecraft:protection", "minecraft:punch", "minecraft:quick_charge",
+        "minecraft:respiration", "minecraft:riptide", "minecraft:sharpness", "minecraft:silk_touch", "minecraft:smite",
+        "minecraft:soul_speed", "minecraft:sweeping_edge", "minecraft:swift_sneak", "minecraft:thorns", "minecraft:unbreaking",
+        "minecraft:vanishing_curse", "minecraft:wind_burst",
+    }};
+
 std::vector<RegistryEntries> make_769() {
     std::vector<RegistryEntries> out;
     for (const auto& r : registries_772) {
@@ -272,6 +290,8 @@ std::string_view set_of(std::int32_t protocol) noexcept {
 }
 } // namespace
 
+const RegistryEntries& enchantment_registry() noexcept { return enchantments; }
+
 const std::vector<RegistryEntries>* synced_registries(std::string_view set) noexcept {
     static const auto registries_769 = make_769();
     if (set == "java-1.21.8") return &registries_772;
@@ -308,15 +328,20 @@ const std::vector<RegistryTags>& synced_tags(std::string_view set) {
 }
 
 protocol::ComponentContext component_context(const contracts::VersionBundle& bundle) {
+    static const std::vector<RegistryEntries> none;
+    const auto* registries = synced_registries(bundle.schema.registries);
+    return component_context(bundle, registries ? *registries : none);
+}
+
+protocol::ComponentContext component_context(const contracts::VersionBundle& bundle, std::vector<RegistryEntries> registries) {
     protocol::ComponentContext ctx;
     if (const auto* tables = protocol::ContentTables::for_protocol(bundle.schema.component_schema)) {
         ctx.items = tables->item_count();
         ctx.blocks = tables->block_count();
     }
-    const auto* registries = synced_registries(bundle.schema.registries);
-    const auto find = [registries](std::string_view name) -> const RegistryEntries* {
-        if (!registries) return nullptr;
-        for (const auto& r : *registries)
+    const auto shared = std::make_shared<const std::vector<RegistryEntries>>(std::move(registries));
+    const auto find = [shared](std::string_view name) -> const RegistryEntries* {
+        for (const auto& r : *shared)
             if (r.registry.substr(r.registry.find(':') + 1) == name) return &r;
         return nullptr;
     };

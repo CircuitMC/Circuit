@@ -6,6 +6,8 @@
 #include "test_client.hpp"
 #include "../../src/server/collision_shapes.hpp"
 #include "../../src/server/game.hpp"
+#include "../../src/server/server_data.hpp"
+#include <circuit/gameplay/survival.hpp>
 #include "../../src/server/world_meta.hpp"
 #include <circuit/auth.hpp>
 #include <circuit/auth/crypto.hpp>
@@ -186,7 +188,7 @@ struct Recorder final : server::Peer {
 
 struct GameFixture {
     explicit GameFixture(ServerConfig c = offline_config()) : config(std::move(c)) {
-        game = std::make_unique<server::Game>(config, bundle, wire, content(), mapping, *server::synced_registries(772));
+        game = std::make_unique<server::Game>(config, bundle, wire, content(), mapping, data);
     }
     ~GameFixture() { game->shutdown("test finished"); }
     std::shared_ptr<Recorder> join(std::uint64_t id, std::string name, std::int32_t view = 0) {
@@ -209,7 +211,8 @@ struct GameFixture {
 
     const contracts::VersionBundle& bundle = **contracts::BundleRegistry::select_for_simulation("java-1.21.8");
     const evidence::ContentMapping& mapping = *evidence::ContentMapping::for_game_version("1.21.8");
-    server::Wire wire{772};
+    server::ServerData data = server::load_server_data(bundle, {}).value();
+    server::Wire wire{772, data.components};
     ServerConfig config;
     std::unique_ptr<server::Game> game;
 };
@@ -1584,6 +1587,95 @@ int main() {
         anvil_config.world_directory = dir / "anvil-target";
         const auto imported = server::import_anvil_world(dir / "nowhere", anvil_config);
         require(!imported, "no Anvil import for 1.21.4");
+        std::filesystem::remove_all(dir);
+    });
+
+    // A data pack directory: the 42 enchantments, a block tag that makes dirt
+    // need an iron pickaxe, and an enchantment tag.
+    const auto make_pack = [](const std::filesystem::path& root, std::string_view extra_tag) {
+        const auto file = [&](const std::filesystem::path& rel, std::string_view text) {
+            std::filesystem::create_directories((root / rel).parent_path());
+            std::ofstream(root / rel) << text;
+        };
+        file("pack.mcmeta", R"({"pack": {"pack_format": 81, "description": "test"}})");
+        for (const auto e : server::enchantment_registry().entries)
+            file(std::format("data/minecraft/enchantment/{}.json", e.substr(10)), "{}");
+        file("data/minecraft/tags/block/mineable/pickaxe.json", R"({"values": ["minecraft:dirt"]})");
+        file("data/minecraft/tags/block/needs_iron_tool.json", R"({"values": ["minecraft:dirt"]})");
+        file("data/minecraft/tags/enchantment/sharp.json", std::format(R"({{"values": ["minecraft:sharpness"{}]}})", extra_tag));
+    };
+
+    suite.run("data packs give registries, tags, tools and components", [&] {
+        const auto dir = temporary_directory();
+        make_pack(dir / "pack", "");
+        const auto& bundle = **contracts::BundleRegistry::find("java-1.21.8");
+        const auto d = server::load_server_data(bundle, {{}, {dir / "pack"}});
+        require(d.has_value(), d ? "" : d.error());
+        require(std::ranges::any_of(d->registries, [](const auto& r) { return r.registry == "minecraft:enchantment"; }),
+                "enchantments are synchronized with their tags");
+        const auto& content = *protocol::ContentTables::for_protocol(772);
+        const auto find_tag = [&](std::string_view registry, std::string_view name) -> std::vector<std::int32_t> {
+            for (const auto& r : d->tags)
+                if (r.registry == registry)
+                    for (const auto& [n, ids] : r.tags)
+                        if (n == name) return ids;
+            return {-1};
+        };
+        require(find_tag("minecraft:block", "minecraft:mineable/pickaxe") == std::vector<std::int32_t>{*content.block_id("minecraft:dirt")},
+                "block tags by block id");
+        const auto sharpness = server::registry_index(d->registries, "minecraft:enchantment", "minecraft:sharpness");
+        require(find_tag("minecraft:enchantment", "minecraft:sharp") == std::vector<std::int32_t>{*sharpness}, "enchantment tags by id");
+        // Enchantments are accepted only with the data.
+        const auto& codec = *protocol::ComponentCodec::for_protocol(772);
+        Writer w;
+        w.varint(1).varint(0).varint(*codec.type_id("enchantments")).varint(1).varint(*sharpness).varint(5);
+        protocol::Reader with(w.bytes()), without(w.bytes());
+        require(codec.read(with, d->components).has_value() && !codec.read(without, server::component_context(bundle)).has_value(),
+                "enchantment components");
+        // Dirt now needs an iron pickaxe for its drops.
+        const auto dirt = gameplay::registry::find_block("1.21.8", "minecraft:dirt").value();
+        const auto& tool = d->game->block_tools.at(dirt);
+        require(tool.tool == gameplay::registry::Tool::pickaxe && tool.tier == 3, "tool and tier from the tags");
+        const auto dirt_state = *evidence::ContentMapping::for_game_version("1.21.8")->block("minecraft:dirt");
+        const contracts::ItemStack iron{gameplay::items::iron_pickaxe, 1}, stone{gameplay::items::stone_pickaxe, 1};
+        require(gameplay::harvests(dirt_state, iron, d->game.get()) && !gameplay::harvests(dirt_state, stone, d->game.get()) &&
+                    gameplay::harvests(dirt_state, stone),
+                "harvesting follows the data");
+        // Packs must define the vanilla enchantments, no more and no fewer.
+        std::filesystem::remove(dir / "pack/data/minecraft/enchantment/mending.json");
+        const auto fewer = server::load_server_data(bundle, {{}, {dir / "pack"}});
+        require(!fewer && fewer.error().find("add or remove enchantments") != std::string::npos, "changed enchantments refused");
+        std::filesystem::remove_all(dir);
+    });
+
+    suite.run("a world's log replays only under the data it was written with", [&] {
+        const auto dir = temporary_directory();
+        make_pack(dir / "a", "");
+        make_pack(dir / "b", R"(, "minecraft:smite")");
+        auto config = offline_config();
+        config.world_directory = dir / "world";
+        config.data_packs = {dir / "a"};
+        { server::Server s(config); }
+        // Add a logged tick after the checkpoint, as a crash would leave it.
+        {
+            storage::PosixFilesystem fs;
+            storage::WorldDirectory world(fs, config.world_directory, "java-1.21.8", "circuit-reference-rules-v7");
+            auto r = world.recover().value().value();
+            require(world.checkpoint(r.checkpoint).has_value(), "checkpoint");
+            require(world.append({r.checkpoint.state.time + 1, {}}, true).has_value(), "logged tick");
+        }
+        config.data_packs = {dir / "b"};
+        bool refused = false;
+        try {
+            server::Server s(config);
+        } catch (const std::runtime_error& e) {
+            refused = std::string_view(e.what()).find("its log was written with data") != std::string_view::npos;
+        }
+        require(refused, "other data with a log is refused");
+        config.data_packs = {dir / "a"};
+        { server::Server s(config); } // replays its log and saves without one
+        config.data_packs = {dir / "b"};
+        { server::Server s(config); } // without a log the data may change
         std::filesystem::remove_all(dir);
     });
 

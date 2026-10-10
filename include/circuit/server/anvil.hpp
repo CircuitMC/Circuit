@@ -2,6 +2,8 @@
 #pragma once
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/world_types.hpp>
+#include <circuit/protocol/components.hpp>
+#include <optional>
 #include <cstdint>
 #include <expected>
 #include <filesystem>
@@ -35,6 +37,9 @@ struct ImportOptions {
     Unsupported unsupported{Unsupported::reject};
     std::size_t max_chunks{65536};
     std::size_t max_chunk_bytes{std::size_t{64} << 20}; // uncompressed NBT per chunk
+    // What item components may refer to: the registries the server will send
+    // (with data packs, enchantments too). Absent: the bundle's public set.
+    std::optional<protocol::ComponentContext> components{};
 };
 
 struct ImportReport {
@@ -66,6 +71,7 @@ struct ExportOptions {
     std::uint64_t seed{};
     std::int32_t floor_y{-61};          // the flat generator layer for chunks the game creates later
     contracts::BlockPos spawn{0, -61, 0}; // the block players stand on
+    std::optional<protocol::ComponentContext> components{}; // as for import
 };
 
 struct ExportReport {

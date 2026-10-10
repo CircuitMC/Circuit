@@ -97,6 +97,13 @@ class LedgerValidation(unittest.TestCase):
     def test_pack_formats_disagreeing_with_the_bundle(self):
         self.assert_rejected(lambda i: i["manifests"]["java-1.21.8"]["pack_formats"].update(data=80), "pack formats differ")
 
+    def test_server_jar_disagreeing_with_the_bundle(self):
+        def mutate(i):
+            for r in i["manifests"]["java-1.21.4"]["reference_artifacts"]:
+                if r["kind"] == "server":
+                    r["sha1"] = "0" * 40
+        self.assert_rejected(mutate, "server jar SHA-1 differs")
+
     def test_unclassified_resource(self):
         def mutate(i):
             i["families"]["classification"]["entity"] = [r for r in i["families"]["classification"]["entity"] if r[1] != ".*"]

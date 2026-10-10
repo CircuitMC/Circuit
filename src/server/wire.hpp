@@ -48,7 +48,7 @@ struct WireStack {
     std::int32_t item{};
     std::int32_t count{};
     std::int32_t damage{};
-    contracts::ComponentPatch components;
+    contracts::ComponentPatch components{};
     bool operator==(const WireStack&) const = default;
 };
 
@@ -87,8 +87,8 @@ struct CreativeSlot {
     std::int32_t count{};
     std::int32_t item{};
     std::int32_t damage{};
-    contracts::ComponentPatch components;
-    std::string refused; // why the stack's components were refused; empty when read
+    contracts::ComponentPatch components{};
+    std::string refused{}; // why the stack's components were refused; empty when read
 };
 struct ContainerClick {
     std::int32_t window{};
@@ -136,6 +136,8 @@ using Intent = std::variant<intent::Move, intent::ConfirmTeleport, intent::Dig, 
 class Wire {
 public:
     explicit Wire(std::int32_t protocol);
+    // With what item components may refer to (the registries the server sends).
+    Wire(std::int32_t protocol, protocol::ComponentContext components);
 
     [[nodiscard]] std::int32_t protocol() const noexcept { return protocol_; }
     [[nodiscard]] const protocol::PacketIds& ids() const noexcept { return ids_; }
@@ -164,7 +166,7 @@ public:
                         const std::vector<std::pair<std::string_view, protocol::nbt::Tag>>& entries) const;
     Bytes finish_configuration() const;
     // Update Tags (configuration): tag entries are numeric ids in `registries`.
-    Bytes update_tags(const std::vector<RegistryTags>& tags, const std::vector<RegistryEntries>& registries) const;
+    Bytes update_tags(const std::vector<NumberedTags>& tags) const;
 
     // Play.
     struct JoinGame {

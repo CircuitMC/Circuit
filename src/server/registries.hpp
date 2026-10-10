@@ -24,6 +24,12 @@ struct RegistryData {
     std::vector<std::pair<std::string_view, protocol::nbt::Tag>> entries;
 };
 
+// A registry's tags with their entries as registry ids, as update_tags sends them.
+struct NumberedTags {
+    std::string registry; // "minecraft:block"
+    std::vector<std::pair<std::string, std::vector<std::int32_t>>> tags;
+};
+
 // Tags a client needs bound for the registries it receives, as entry names.
 struct RegistryTags {
     std::string_view registry;
@@ -36,6 +42,12 @@ const std::vector<RegistryEntries>* synced_registries(std::string_view set) noex
 const std::vector<RegistryEntries>* synced_registries(std::int32_t protocol) noexcept;
 const std::vector<RegistryData>* registries_with_data(std::string_view set);
 const std::vector<RegistryData>* registries_with_data(std::int32_t protocol);
+// What item components may refer to when the server sends `registries`.
+protocol::ComponentContext component_context(const contracts::VersionBundle& bundle, std::vector<RegistryEntries> registries);
+
+// The enchantment registry, sent only when data packs provide the tags its
+// definitions refer to.
+const RegistryEntries& enchantment_registry() noexcept;
 // Tags sent with the registries (empty when the client's pack needs none).
 const std::vector<RegistryTags>& synced_tags(std::string_view set);
 const std::vector<RegistryTags>& synced_tags(std::int32_t protocol);

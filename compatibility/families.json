@@ -138,7 +138,7 @@
           "milestone": "C1",
           "impl": "partial",
           "evidence": "documented",
-          "note": "Hardness, effective tool and harvest tier of every block from public data; opacity from its light filtering"
+          "note": "Hardness, effective tool and harvest tier of every block from public data, the tool and tier from the block tags when the official data pack is loaded; opacity from its light filtering"
         }
       ]
     },
@@ -252,12 +252,13 @@
           "evidence": "compared",
           "note": "Each bundle names its registry set: 17 registries for 1.21.8 and 11 for 1.21.4 sent by name to clients with the vanilla pack, the same entries as the official servers; clients without the pack get a documented minimal set with data",
           "cases": [
-            "registries/official"
+            "registries/official",
+            "data/official_packs"
           ],
           "deviations": [
-            "enchantments are not sent until their tags can be (they need item and enchantment tags)",
             "1.21.8 dialogs and game-test registries are not sent",
-            "clients without the vanilla pack get only dimension types, plains and the chat type with data"
+            "clients without the vanilla pack get only dimension types, plains and the chat type with data",
+            "enchantments are sent only with the official jar's data pack"
           ]
         },
         {
@@ -265,15 +266,27 @@
           "name": "Tag synchronization and evaluation",
           "milestone": "C1",
           "impl": "partial",
-          "evidence": "none",
-          "note": "Biome tags 1.21.4 needs"
+          "evidence": "compared",
+          "note": "With the official jar's data pack: every tag of block, item, entity type, fluid and the synchronized registries, as many per registry as the official servers send; without it, the biome tags 1.21.4 needs",
+          "cases": [
+            "data/official_packs"
+          ],
+          "deviations": [
+            "tags of game events, points of interest and 1.21.8 dialogs are not loaded",
+            "tags are not reloaded while the server runs"
+          ]
         },
         {
           "id": "pack_stack",
           "name": "Data-pack stack, selection, ordering and reload",
           "milestone": "C9",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "none",
+          "note": "The official jar's built-in pack, then directories and archives in configured order; later files replace earlier ones, tag files merge; pack formats checked",
+          "deviations": [
+            "no pack selection, filters, overlays or /reload",
+            "the experimental packs inside the jar are not loaded"
+          ]
         },
         {
           "id": "experimental_profiles",
@@ -1860,8 +1873,12 @@
           "id": "data_driven_registries",
           "name": "Data-driven recipes, loot tables, enchantments, damage types and worldgen",
           "milestone": "C1",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "reference_only",
+          "cases": [
+            "data/official_packs"
+          ],
+          "note": "Enchantment definitions come from the official pack and are synchronized by name; loot tables and recipes are read but not used yet"
         },
         {
           "id": "advancements",

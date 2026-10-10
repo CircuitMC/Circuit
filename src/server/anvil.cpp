@@ -270,10 +270,10 @@ std::expected<void, std::string> write_region(const fs::path& file, const std::v
 
 class Content {
 public:
-    explicit Content(const contracts::VersionBundle& bundle)
+    Content(const contracts::VersionBundle& bundle, const std::optional<protocol::ComponentContext>& components)
         : tables_(protocol::ContentTables::for_protocol(772)),
           mapping_(evidence::ContentMapping::for_game_version(bundle.game_version)),
-          codec_(protocol::ComponentCodec::for_protocol(772)), ctx_(server::component_context(772)) {
+          codec_(protocol::ComponentCodec::for_protocol(772)), ctx_(components ? *components : server::component_context(772)) {
         if (bundle.game_version != "1.21.8" || !tables_ || !mapping_ || !codec_)
             throw std::invalid_argument(std::format("Anvil import and export support java-1.21.8 worlds only, not {}", bundle.id));
         palette_.emplace(*tables_, *mapping_);
@@ -424,7 +424,7 @@ private:
 class Importer {
 public:
     Importer(const contracts::VersionBundle& bundle, const ImportOptions& options)
-        : bundle_(bundle), options_(options), content_(bundle) {}
+        : bundle_(bundle), options_(options), content_(bundle, options.components) {}
 
     std::expected<ImportResult, std::string> run(const fs::path& source) {
         if (!fs::is_directory(source)) return std::unexpected(std::format("{} is not a world directory", source.string()));
@@ -847,7 +847,7 @@ private:
 class Exporter {
 public:
     Exporter(const WorldDump& state, const contracts::VersionBundle& bundle, const ExportOptions& options)
-        : state_(state), bundle_(bundle), options_(options), content_(bundle) {
+        : state_(state), bundle_(bundle), options_(options), content_(bundle, options.components) {
         for (const auto& [p, raw] : state.blocks) blocks_.emplace(p, BlockState::decode(raw).value());
     }
 

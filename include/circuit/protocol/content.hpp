@@ -41,6 +41,8 @@ public:
     // Same, from notation such as "minecraft:repeater[delay=2,facing=north]".
     [[nodiscard]] std::optional<std::int32_t> state_id(std::string_view notation) const;
     [[nodiscard]] std::optional<std::int32_t> default_state(std::string_view block) const;
+    // Block registry id ("minecraft:stone" -> 1), for tags.
+    [[nodiscard]] std::optional<std::int32_t> block_id(std::string_view block) const;
     [[nodiscard]] std::optional<BlockShape> shape(std::string_view block) const;
     [[nodiscard]] std::optional<BlockStateInfo> state(std::int32_t id) const;
     // Full notation of a state id, with every property.

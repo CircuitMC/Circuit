@@ -2,6 +2,7 @@
 #pragma once
 #include <circuit/contracts/trace.hpp>
 #include <circuit/contracts/version.hpp>
+#include <circuit/gameplay/game_data.hpp>
 #include <circuit/gameplay/world_types.hpp>
 #include <optional>
 #include <vector>
@@ -54,12 +55,14 @@ struct NeighborUpdater {
 // the block-entity and entity pointers documented below.
 class RuleContext {
 public:
-    explicit RuleContext(const contracts::VersionBundle& bundle) noexcept : bundle_(&bundle) {}
+    explicit RuleContext(const contracts::VersionBundle& bundle, const GameData* data = nullptr) noexcept : bundle_(&bundle), data_(data) {}
     virtual ~RuleContext() = default;
     RuleContext(const RuleContext&) = delete;
     RuleContext& operator=(const RuleContext&) = delete;
 
     [[nodiscard]] const contracts::VersionBundle& bundle() const noexcept { return *bundle_; }
+    // Data-pack data, or nullptr: the rules then use the public registry data.
+    [[nodiscard]] const GameData* data() const noexcept { return data_; }
     NeighborUpdater& updater() noexcept { return updater_; }
 
     [[nodiscard]] virtual Tick now() const = 0;
@@ -112,6 +115,7 @@ public:
 
 private:
     const contracts::VersionBundle* bundle_;
+    const GameData* data_;
     NeighborUpdater updater_;
 };
 

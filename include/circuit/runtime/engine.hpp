@@ -3,6 +3,7 @@
 #include <circuit/contracts/commands.hpp>
 #include <circuit/contracts/trace.hpp>
 #include <circuit/contracts/version.hpp>
+#include <circuit/gameplay/game_data.hpp>
 #include <circuit/gameplay/world_types.hpp>
 #include <circuit/runtime/job_runner.hpp>
 #include <array>
@@ -31,6 +32,9 @@ struct EngineOptions {
     unsigned workers{1};                  // used when `runner` is empty
     std::shared_ptr<JobRunner> runner;    // e.g. SeededRunner for schedule exploration
     bool record_trace{true};
+    // Data-pack data the rules use (block tools and tiers); null: the public
+    // registry data. Fixed for the engine's life.
+    std::shared_ptr<const gameplay::GameData> data;
     bool measure_tasks{false}; // time every task step (profiling; adds clock reads per root)
     // A phase attempt with at most this many roots runs on the calling thread
     // (only with the built-in pool runner). 0 always uses the pool.

@@ -111,6 +111,8 @@ A checkpoint file is `CIRCKPT\0`, a format version (6; versions 1–5 are still 
 
 Decoding checks every length, count and the digest. The engine's restoring constructor then checks the semantics: positions inside known columns, valid block states, and no duplicate ids. The server checks every item component of the checkpoint and the log as it checks a client's, and refuses a world with components of another protocol or outside the registries it synchronizes. A restored engine continues exactly like the one that produced the checkpoint.
 
+The server's metadata records the fingerprint of the [data packs](DATA_PACKS.md#the-worlds-data) the log was written with; a server with other data refuses to replay that log.
+
 Log segments start with `CIRCWAL` and a format byte: 1 for records whose stacks carry components, 0 (read only) for records written before.
 
 ## Anvil import and export
@@ -128,7 +130,7 @@ Import reads the source world and never writes to it. It creates a new world dir
 | --- | --- |
 | Blocks | Every block state of 1.21.8. The blocks with rules of their own are air, stone, glass, obsidian, redstone block, slime block, lever, redstone dust, repeater, comparator, redstone lamp, observer, pistons and their heads, moving pistons, hopper, chest, water and wheat; every other block keeps its state and is inert in the rules |
 | Block entities | Chests and hoppers with their items, custom name and components, the hopper transfer cooldown, comparator output signals and moving pistons. Block entities of blocks without rules of their own (signs, banners, furnaces and the rest) are kept as saved and written back unchanged |
-| Item components | The damage, and the components whose save form mirrors their network form: `custom_data`, `max_stack_size`, `max_damage`, `unbreakable`, `custom_name`, `item_name`, `item_model`, `lore`, `rarity`, `repair_cost`, `enchantment_glint_override`, `intangible_projectile`, `glider`, `tooltip_style`, `dyed_color`, `map_color`, `map_id`, `map_decorations`, `potion_duration_scale`, `recipes`, `ominous_bottle_amplifier`, `note_block_sound`, `provides_banner_patterns`, `lock`, `container_loot`, `debug_stick_state`, `entity_data`, `bucket_entity_data` and `block_entity_data`; those that name registry entries: `trim`, `banner_patterns` and `base_color`; a removed default (`!minecraft:name`) |
+| Item components | The damage, and the components whose save form mirrors their network form: `custom_data`, `max_stack_size`, `max_damage`, `unbreakable`, `custom_name`, `item_name`, `item_model`, `lore`, `rarity`, `repair_cost`, `enchantment_glint_override`, `intangible_projectile`, `glider`, `tooltip_style`, `dyed_color`, `map_color`, `map_id`, `map_decorations`, `potion_duration_scale`, `recipes`, `ominous_bottle_amplifier`, `note_block_sound`, `provides_banner_patterns`, `lock`, `container_loot`, `debug_stick_state`, `entity_data`, `bucket_entity_data` and `block_entity_data`; those that name registry entries: `trim`, `banner_patterns`, `base_color`, and, when the configured data packs synchronize enchantments, `enchantments` and `stored_enchantments`; a removed default (`!minecraft:name`) |
 | Entities | Item entities, with their pickup delay |
 | Scheduled ticks | Block and fluid ticks of blocks with rules of their own, with their delay and priority |
 | Level data | Time, seed, spawn point and level name |

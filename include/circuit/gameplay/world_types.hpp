@@ -39,11 +39,11 @@ struct BlockEntity {
     std::uint8_t motion{};
     // Data components of the block entity (a container's custom name), in
     // the item component form of the world's protocol.
-    contracts::ComponentPatch components;
+    contracts::ComponentPatch components{};
     // Kind `other`: the saved data of a block entity of a block without rules
     // of its own, kept as the target version saves it (network NBT, without
     // the position) and never interpreted.
-    contracts::Blob saved;
+    contracts::Blob saved{};
     bool operator==(const BlockEntity&) const = default;
 };
 

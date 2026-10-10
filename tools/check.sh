@@ -20,6 +20,7 @@ xmake run control_tests
 xmake run evidence_tests
 xmake run protocol_tests
 xmake run storage_tests
+xmake run data_tests
 xmake run anvil_tests
 xmake run server_tests
 xmake run extension_tests

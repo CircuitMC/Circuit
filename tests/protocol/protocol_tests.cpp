@@ -427,6 +427,44 @@ int main() {
             }
     });
 
+    suite.run("save forms name registry entries", [] {
+        const auto& codec = *ComponentCodec::for_protocol(772);
+        auto ctx = open_context(772);
+        const std::vector<std::string> enchantments{"minecraft:mending", "minecraft:sharpness"};
+        ctx.name_of = [&](std::string_view registry, std::uint32_t id) -> std::optional<std::string_view> {
+            if (registry == "enchantment" && id < enchantments.size()) return enchantments[id];
+            if (registry == "trim_material" && id == 0) return "minecraft:gold";
+            if (registry == "trim_pattern" && id == 0) return "minecraft:coast";
+            return std::nullopt;
+        };
+        ctx.id_of = [&](std::string_view registry, std::string_view name) -> std::optional<std::uint32_t> {
+            if (registry == "enchantment")
+                for (std::uint32_t i = 0; i < enchantments.size(); ++i)
+                    if (enchantments[i] == name) return i;
+            if ((registry == "trim_material" && name == "minecraft:gold") || (registry == "trim_pattern" && name == "minecraft:coast")) return 0;
+            return std::nullopt;
+        };
+        auto levels = nbt::Tag::compound();
+        levels.set("minecraft:sharpness", nbt::Tag::int_(5));
+        levels.set("minecraft:mending", nbt::Tag::int_(1));
+        const auto type = *codec.type_id("enchantments");
+        const auto value = codec.from_save(type, levels, ctx);
+        require(value.has_value(), value ? "" : value.error());
+        const auto back = codec.to_save(type, *value, ctx).value();
+        require(back.find("minecraft:sharpness")->integer() == 5 && back.find("minecraft:mending")->integer() == 1, "levels round-trip");
+        auto unknown = levels;
+        unknown.set("minecraft:nonsense", nbt::Tag::int_(1));
+        require(!codec.from_save(type, unknown, ctx).has_value(), "unknown enchantment");
+        auto none = ctx;
+        none.synced = [](std::string_view r) -> std::optional<std::uint32_t> { return r == "enchantment" ? std::nullopt : std::optional(64u); };
+        require(codec.from_save(type, levels, none).error().find("not synchronized") != std::string::npos, "without the registry");
+        auto trim = nbt::Tag::compound();
+        trim.set("material", nbt::Tag::string("minecraft:gold"));
+        trim.set("pattern", nbt::Tag::string("minecraft:coast"));
+        const auto t = codec.from_save(*codec.type_id("trim"), trim, ctx).value();
+        require(codec.to_save(*codec.type_id("trim"), t, ctx).value() == trim, "trim round-trips");
+    });
+
     suite.run("random input never escapes its bounds", [] {
         std::mt19937_64 rng(1234);
         for (int round = 0; round < 3000; ++round) {

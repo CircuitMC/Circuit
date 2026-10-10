@@ -302,7 +302,7 @@ bool Session::on_configuration(std::int32_t id, protocol::Reader& r) {
         }
         if (core) {
             for (const auto& registry : shared_.registries) queue(w.registry_data(registry.registry, registry.entries));
-            if (const auto& tags = synced_tags(w.protocol()); !tags.empty()) queue(w.update_tags(tags, shared_.registries));
+            if (!shared_.tags.empty()) queue(w.update_tags(shared_.tags));
         } else {
             // Clients without the vanilla pack (protocol libraries) receive the
             // documented minimal registries with their data.

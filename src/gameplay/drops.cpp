@@ -45,7 +45,7 @@ void drop_items(RuleContext& ctx, BlockPos pos, BlockState destroyed, ItemStack 
         spawn(ctx, pos, {items::wheat_seeds, 1});
         return;
     }
-    if (!harvests(destroyed, tool)) return;
+    if (!harvests(destroyed, tool, ctx.data())) return;
     if (const auto item = loot(destroyed)) spawn(ctx, pos, *item);
 }
 

@@ -95,6 +95,9 @@ struct VersionSchema {
     std::int32_t resource_pack_format{};
     // The synchronized registry set the server sends (server registries).
     std::string_view registries;
+    // SHA-1 of the official server jar, whose built-in data pack an operator
+    // may load (compatibility/versions/ records where it was verified).
+    std::string_view server_jar_sha1;
     std::span<const GameRule> game_rules;
     [[nodiscard]] const GameRule* game_rule(std::string_view name) const noexcept {
         for (const auto& r : game_rules)

@@ -473,10 +473,11 @@ std::optional<std::int32_t> dye_id(std::string_view name) {
 }
 
 // Components of protocol 772 whose save form names registry entries.
-enum class Named { none, trim, banner_patterns, base_color };
+enum class Named { none, trim, banner_patterns, base_color, enchantments };
 Named named_form(const ComponentSchema& s, std::uint16_t type) {
     if (s.protocol != 772) return Named::none;
     const std::string_view name = schema_string(s.components[type].name);
+    if (name == "enchantments" || name == "stored_enchantments") return Named::enchantments;
     if (name == "trim") return Named::trim;
     if (name == "banner_patterns") return Named::banner_patterns;
     if (name == "base_color") return Named::base_color;
@@ -556,6 +557,21 @@ std::expected<nbt::Tag, std::string> ComponentCodec::to_save(std::uint16_t type,
         const auto color = r.varint();
         if (!color || *color < 0 || *color >= static_cast<std::int32_t>(std::size(dye_colors))) return failed("invalid color");
         return done(nbt::Tag::string(std::string(dye_colors[*color])));
+    }
+    case Named::enchantments: {
+        // {"minecraft:sharpness": 3, ...}
+        const auto count = r.varint();
+        if (!count || *count < 0) return failed("invalid list");
+        auto levels = nbt::Tag::compound();
+        for (std::int32_t i = 0; i < *count; ++i) {
+            const auto id = r.varint();
+            const auto level = r.varint();
+            if (!id || !level) return failed("truncated");
+            const auto entry = ctx.name_of ? ctx.name_of("enchantment", static_cast<std::uint32_t>(*id)) : std::nullopt;
+            if (!entry) return failed(std::format("enchantment id {} has no name", *id));
+            levels.set(std::string(*entry), nbt::Tag::int_(*level));
+        }
+        return done(std::move(levels));
     }
     case Named::none: break;
     }
@@ -651,6 +667,19 @@ std::expected<Bytes, std::string> ComponentCodec::from_save(std::uint16_t type, 
         const auto c = value.type() == nbt::TagType::string ? dye_id(value.text()) : std::nullopt;
         if (!c) return bad();
         w.varint(*c);
+        return canonical_value(type, w.bytes(), ctx);
+    }
+    case Named::enchantments: {
+        if (!ctx.synced || !ctx.synced("enchantment"))
+            return std::unexpected(name + ": the enchantment registry is not synchronized without the official data pack");
+        if (value.type() != nbt::TagType::compound) return bad();
+        w.varint(static_cast<std::int32_t>(value.keys().size()));
+        for (std::size_t i = 0; i < value.keys().size(); ++i) {
+            const auto id = ctx.id_of ? ctx.id_of("enchantment", value.keys()[i]) : std::nullopt;
+            const auto level = whole(value.items()[i]);
+            if (!id || !level || *level < 1 || *level > 255) return bad();
+            w.varint(static_cast<std::int32_t>(*id)).varint(static_cast<std::int32_t>(*level));
+        }
         return canonical_value(type, w.bytes(), ctx);
     }
     case Named::none: break;

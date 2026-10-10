@@ -72,6 +72,12 @@ std::optional<std::int32_t> ContentTables::default_state(std::string_view block)
     return table_.blocks[it->second].default_state;
 }
 
+std::optional<std::int32_t> ContentTables::block_id(std::string_view block) const {
+    const auto it = index_->blocks.find(block);
+    if (it == index_->blocks.end()) return std::nullopt;
+    return static_cast<std::int32_t>(it->second);
+}
+
 std::optional<BlockShape> ContentTables::shape(std::string_view block) const {
     const auto it = index_->blocks.find(block);
     if (it == index_->blocks.end()) return std::nullopt;

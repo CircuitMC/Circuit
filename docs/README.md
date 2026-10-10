@@ -9,6 +9,7 @@
 | [Vanilla ledger](VANILLA_LEDGER.md) | Generated per-version status and evidence of every family, mechanic and enumerated resource |
 | [Network server](SERVER.md) | Running and configuring the server, identity, protocol data sources, limits and unsupported features |
 | [Persistence](PERSISTENCE.md) | World directories, the durability and recovery protocol, and Anvil import and export |
+| [Data packs](DATA_PACKS.md) | Loading the official jar's built-in pack and other data packs: precedence, tags, enchantments, block tools and the world's data fingerprint |
 | [Storage evaluation](STORAGE_EVALUATION.md) | Measured checkpoint sizes and costs, compression, background checkpoints and deltas |
 | [Performance](PERFORMANCE.md) | Tick-time percentiles, critical paths and coordination costs, and the optimizations made |
 | [Trace fixture format](TRACE_FORMAT.md) | circuit-trace v1 fixtures, content mapping, recording and evaluation |

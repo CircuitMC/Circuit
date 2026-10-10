@@ -17,7 +17,7 @@ struct Server::Impl {
     std::unique_ptr<Wire> wire;
     const protocol::ContentTables* content{};
     const evidence::ContentMapping* mapping{};
-    const std::vector<RegistryEntries>* registries{};
+    ServerData data;
     std::unique_ptr<Game> game;
     auth::offline_authenticator offline;
     std::optional<auth::RsaKeyPair> keys;
@@ -40,11 +40,18 @@ struct Server::Impl {
         // The play protocol, content and registries the bundle names.
         const std::int32_t protocol_number = bundle->protocol;
         content = protocol::ContentTables::for_protocol(protocol_number);
-        registries = synced_registries(bundle->schema.registries);
         mapping = evidence::ContentMapping::for_game_version(bundle->schema.content_release);
-        if (!content || !registries || !mapping)
-            throw std::invalid_argument(std::format("server: no play protocol for {}", config.game_version));
-        wire = std::make_unique<Wire>(protocol_number);
+        if (!content || !mapping) throw std::invalid_argument(std::format("server: no play protocol for {}", config.game_version));
+        // The data packs the operator configured, or the public tables alone.
+        auto loaded = load_server_data(*bundle, {config.vanilla_server_jar, config.data_packs});
+        if (!loaded) throw std::invalid_argument("server: data packs: " + loaded.error());
+        data = std::move(*loaded);
+        if (data.packs) log_info(std::format("data packs loaded ({}): {}", data.fingerprint(), [&] {
+            std::string names;
+            for (const auto& p : data.packs->packs()) names += (names.empty() ? "" : ", ") + p.name;
+            return names;
+        }()));
+        wire = std::make_unique<Wire>(protocol_number, data.components);
         if (config.view_distance < 2 || config.view_distance > 32) throw std::invalid_argument("server: view distance must be 2-32");
         if (config.simulation_distance < 1 || config.simulation_distance > static_cast<std::int32_t>(bundle->limits.max_ticket_radius))
             throw std::invalid_argument("server: simulation distance outside the ticket limit");
@@ -55,8 +62,8 @@ struct Server::Impl {
         acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
         acceptor.bind(endpoint);
         acceptor.listen();
-        game = std::make_unique<Game>(config, *bundle, *wire, *content, *mapping, *registries);
-        shared = std::make_unique<Shared>(config, *wire, *registries, *registries_with_data(bundle->schema.registries),
+        game = std::make_unique<Game>(config, *bundle, *wire, *content, *mapping, data);
+        shared = std::make_unique<Shared>(config, *wire, data.registries, data.tags, *registries_with_data(bundle->schema.registries),
                                           bundle->game_version, *game, offline);
         if (config.online_mode) {
             auto v = auth::SessionVerifier::create(config.session_server);
@@ -245,6 +252,8 @@ std::expected<ServerConfig, std::string> parse_config(std::string_view text) {
         else if (key == "world-directory") c.world_directory = value;
         else if (key == "autosave-ticks") ok = parse_number<std::uint32_t>(value, c.autosave_ticks, 20, 1728000);
         else if (key == "log-sync-ticks") ok = parse_number<std::uint32_t>(value, c.log_sync_ticks, 1, 1200);
+        else if (key == "vanilla-server-jar") c.vanilla_server_jar = value;
+        else if (key == "data-pack") c.data_packs.emplace_back(value);
         else if (key == "plugin") c.plugins.emplace_back(value);
         else if (key.starts_with("plugin-permissions.") && key.size() > 19) {
             ok = parse_permissions(value).has_value();

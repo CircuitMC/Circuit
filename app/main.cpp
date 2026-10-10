@@ -6,6 +6,7 @@
 #include "fixtures.hpp"
 #include "serve.hpp"
 #include <circuit/server/anvil.hpp>
+#include <circuit/server/data_report.hpp>
 #include "simulate.hpp"
 #include <asio/io_context.hpp>
 #include <asio/signal_set.hpp>
@@ -44,6 +45,7 @@ void usage() {
         "  --diff-fixtures <first> <second> [--tolerance <blocks>]\n"
         "  --profile-fixture <file> [--ticks N] [--workers 1..64]\n"
         "  --compatibility [--game-version java-1.21.8]\n"
+        "  --data-report [--game-version java-1.21.8] [--vanilla-jar <server.jar>] [--data-pack <dir or zip> ...]\n"
         "  --serve [--config <file>] [--world <dir>] [--port N] [--offline] [--workers 1..64]\n"
         "  --import-anvil <java-world> --world <dir> [--config <file>] [--substitute-unsupported]\n"
         "  --export-anvil <new-java-world> --world <dir> [--config <file>]\n"
@@ -57,7 +59,8 @@ int main(int argc, char** argv) {
     try {
         unsigned workers = 4, ticks = 20;
         bool demo = false, simulate = false, ticks_given = false, workers_given = false, compatibility = false, serve = false,
-             offline = false;
+             offline = false, data_report = false;
+        circuit::data::PackOptions packs;
         std::string config_path, world_directory, import_source, export_target, migrate_target;
         bool version_given = false;
         bool substitute = false;
@@ -106,6 +109,9 @@ int main(int argc, char** argv) {
             else if (arg == "--output") fixture_output = value();
             else if (arg == "--profile-fixture") profile = value();
             else if (arg == "--compatibility") compatibility = true;
+            else if (arg == "--data-report") data_report = true;
+            else if (arg == "--vanilla-jar") packs.vanilla_jar = value();
+            else if (arg == "--data-pack") packs.packs.emplace_back(value());
             else if (arg == "--serve") serve = true;
             else if (arg == "--config") config_path = value();
             else if (arg == "--port") port = static_cast<std::uint16_t>(number(value(), 0, 65535));
@@ -130,6 +136,17 @@ int main(int argc, char** argv) {
         if (!fixtures.empty()) return circuit::app::check_fixtures(fixtures, workers);
         if (!profile.empty()) return circuit::app::profile_fixture(profile, ticks_given ? ticks : 600, workers);
         if (compatibility) return circuit::app::print_compatibility(selected);
+        if (data_report) {
+            const auto bundle = circuit::contracts::BundleRegistry::select_for_simulation(selected);
+            if (!bundle) throw std::invalid_argument(selected + " has no executable rules");
+            const auto report = circuit::server::data_report(**bundle, packs);
+            if (!report) {
+                std::cerr << "circuit-server: data packs: " << report.error() << '\n';
+                return 1;
+            }
+            std::cout << *report;
+            return 0;
+        }
         if (!migrate_target.empty()) {
             if (world_directory.empty() || !version_given) throw std::invalid_argument("--migrate-world needs --world and --game-version");
             const auto tick = circuit::server::migrate_world(world_directory, migrate_target, selected);

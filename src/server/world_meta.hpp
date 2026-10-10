@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <optional>
 #include <span>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -17,6 +18,7 @@ struct WorldMeta {
     contracts::BlockPos spawn{};     // where new players appear (standing on this block's top)
     std::uint64_t next_admission{1}; // command admissions continue across restarts
     std::uint32_t next_ticket{1000};
+    std::string data{"none"};        // fingerprint of the data packs the log was written with
 };
 
 inline constexpr std::string_view meta_extra = "circuit:server";

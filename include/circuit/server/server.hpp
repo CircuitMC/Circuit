@@ -49,6 +49,11 @@ struct ServerConfig {
     // Input log records are synced every this many ticks: a crash loses at
     // most the inputs of the ticks since the last sync. 1 syncs every tick.
     std::uint32_t log_sync_ticks{20};
+    // Data packs: the built-in pack of the official server jar (checked
+    // against the bundle's SHA-1), then pack directories and .zip archives in
+    // order. None: the public tables only.
+    std::filesystem::path vanilla_server_jar;
+    std::vector<std::filesystem::path> data_packs;
     // Native modules (shared libraries), loaded at startup: mods during
     // registration, then plugins, each after its dependencies.
     std::vector<std::filesystem::path> plugins;

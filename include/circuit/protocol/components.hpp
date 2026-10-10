@@ -24,11 +24,11 @@ namespace circuit::protocol {
 struct ComponentContext {
     std::uint32_t items{};
     std::uint32_t blocks{};
-    std::function<std::optional<std::uint32_t>(std::string_view registry)> synced;
+    std::function<std::optional<std::uint32_t>(std::string_view registry)> synced{};
     // Entry names of the synchronized registries ("minecraft:gold"), for
     // save forms that name entries instead of numbering them.
-    std::function<std::optional<std::string_view>(std::string_view registry, std::uint32_t id)> name_of;
-    std::function<std::optional<std::uint32_t>(std::string_view registry, std::string_view name)> id_of;
+    std::function<std::optional<std::string_view>(std::string_view registry, std::uint32_t id)> name_of{};
+    std::function<std::optional<std::uint32_t>(std::string_view registry, std::string_view name)> id_of{};
 };
 
 // A stack's damage and its other components, as read from the wire.

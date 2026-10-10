@@ -223,6 +223,7 @@ struct Game::Impl final : GameServices {
     const Wire& wire;
     const protocol::ContentTables& content;
     const evidence::ContentMapping& mapping;
+    const ServerData& data;
     const std::vector<RegistryEntries>& registries;
     BlockPalette palette;
     std::unique_ptr<runtime::Engine> engine;
@@ -259,8 +260,8 @@ struct Game::Impl final : GameServices {
     std::uint64_t last_tick_ns{}, total_tick_ns{};
 
     Impl(const ServerConfig& c, const contracts::VersionBundle& b, const Wire& w, const protocol::ContentTables& t,
-         const evidence::ContentMapping& m, const std::vector<RegistryEntries>& r)
-        : config(c), bundle(b), wire(w), content(t), mapping(m), registries(r), palette(t, m) {
+         const evidence::ContentMapping& m, const ServerData& d)
+        : config(c), bundle(b), wire(w), content(t), mapping(m), data(d), registries(d.registries), palette(t, m) {
         dimension_type = registry_index(registries, "minecraft:dimension_type", "minecraft:overworld").value();
         biome = registry_index(registries, "minecraft:worldgen/biome", "minecraft:plains").value();
         item_entity_type = content.entity_type("minecraft:item").value();
@@ -273,7 +274,11 @@ struct Game::Impl final : GameServices {
         extensions->load();
     }
 
-    runtime::EngineOptions engine_options(std::int32_t floor_y) const { return world_engine_options(bundle, floor_y, config.workers); }
+    runtime::EngineOptions engine_options(std::int32_t floor_y) const {
+        auto o = world_engine_options(bundle, floor_y, config.workers);
+        o.data = data.game;
+        return o;
+    }
 
     // ---- persistence ------------------------------------------------------
 
@@ -281,6 +286,7 @@ struct Game::Impl final : GameServices {
     // (a checkpoint plus the logged inputs after it), or a new world.
     void open_world() {
         meta = fresh_meta(config.floor_y);
+        meta.data = data.fingerprint();
         seed = config.seed;
         if (config.world_directory.empty()) {
             engine = std::make_unique<runtime::Engine>(bundle, seed, engine_options(meta.floor_y));
@@ -309,6 +315,16 @@ struct Game::Impl final : GameServices {
                 auto players_data = decode_players(it->second);
                 if (!players_data) throw std::runtime_error(std::format("world {}: invalid player data", where));
                 saved = std::move(*players_data);
+            }
+            // The rules read the data packs: a log replays only under the
+            // data it was written with. Without a log the data may change.
+            if (meta.data != data.fingerprint()) {
+                if (!r.inputs.empty())
+                    throw std::runtime_error(std::format("world {}: its log was written with data {} and this server loads {}; start it "
+                                                         "with the same data packs so that the log replays as written",
+                                                         where, meta.data, data.fingerprint()));
+                log_info(std::format("the world's data changes from {} to {}", meta.data, data.fingerprint()));
+                meta.data = data.fingerprint();
             }
             seed = r.checkpoint.seed;
             if (seed != config.seed || meta.floor_y != config.floor_y)
@@ -1200,7 +1216,7 @@ struct Game::Impl final : GameServices {
                 continue;
             }
             const auto ticks = static_cast<float>(tick_count.load() - p.digging->start);
-            if (gameplay::destroy_progress(state, slot_of(p, main_hand(p)), p.on_ground, eyes_in_water(p)) * (ticks + 1.0f) >= 1.0f) {
+            if (gameplay::destroy_progress(state, slot_of(p, main_hand(p)), p.on_ground, eyes_in_water(p), data.game.get()) * (ticks + 1.0f) >= 1.0f) {
                 admit(contracts::PlayerBreak{key_of(p), p.digging->pos, true, main_hand(p)});
                 exhaust(p, 0.005f); // breaking a block
                 p.digging.reset();
@@ -1797,9 +1813,8 @@ struct Game::Impl final : GameServices {
 };
 
 Game::Game(const ServerConfig& config, const contracts::VersionBundle& bundle, const Wire& wire,
-           const protocol::ContentTables& content, const evidence::ContentMapping& mapping,
-           const std::vector<RegistryEntries>& registries)
-    : impl_(std::make_unique<Impl>(config, bundle, wire, content, mapping, registries)) {}
+           const protocol::ContentTables& content, const evidence::ContentMapping& mapping, const ServerData& data)
+    : impl_(std::make_unique<Impl>(config, bundle, wire, content, mapping, data)) {}
 Game::~Game() {
     if (impl_) impl_->stop_writer();
 }

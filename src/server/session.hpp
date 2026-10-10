@@ -20,6 +20,7 @@ struct Shared {
     const ServerConfig& config;
     const Wire& wire;
     const std::vector<RegistryEntries>& registries;
+    const std::vector<NumberedTags>& tags;
     const std::vector<RegistryData>& registries_with_data;
     std::string_view game_version; // e.g. "1.21.8"
     Game& game;
