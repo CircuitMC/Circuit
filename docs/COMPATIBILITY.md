@@ -49,7 +49,7 @@ Every block state of both versions is represented, with its official name and pr
 | `water` | `level` | — |
 | `wheat` | `age` | — |
 
-**Other blocks** keep every property and are inert: they are solid for items when they have a collision shape, conduct redstone power when opaque, support dust and diodes on faces their collision shape covers (or any face when opaque), cannot be moved by pistons, have no drops, break at their documented hardness with their documented tool, and do nothing else. Players collide with their exact collision shapes. A world may contain them, and the client shows them, but no machine that depends on their behavior works yet.
+**Other blocks** keep every property and are inert: they are solid for items when they have a collision shape, conduct redstone power when opaque, support dust and diodes on faces their collision shape covers (or any face when opaque), cannot be moved by pistons, break at their documented hardness with their documented tool, and do nothing else. With the official data pack they drop from their loot tables, except where a table draws random numbers (see [data packs](DATA_PACKS.md)). Players collide with their exact collision shapes. A world may contain them, and the client shows them, but no machine that depends on their behavior works yet.
 
 **Items.** The rule set knows every item of both versions (1,415), with its stack size and durability, from PrismarineJS minecraft-data (MIT) at the pinned commit. Any item can be held, stored in containers, moved through hoppers, thrown and picked up; items without rules are otherwise inert. Placing works for the blocks above, and a water bucket places water. Each version's protocol uses its own item ids for the same names.
 
@@ -90,7 +90,7 @@ Each mechanism of the rule set declares a compatibility tier:
 
 `circuit-server --compatibility` prints the table of the selected bundle, with each row's tier, evidence and gaps. [The simulation guide](SIMULATION.md#status) explains the rows and the evidence behind them. Both supported versions run the same rule set: the traces recorded on 1.21.4 are identical to those recorded on 1.21.8.
 
-Behavior the server adds on top of the rules, such as player placement, digging time and container windows, is checked against the official server with the client harnesses; [the server guide](SERVER.md#design) describes what is validated. Player inventories, survival use and the click modes of container windows are part of the rule set; their results were compared with the official servers of both versions in a 48-step window scenario.
+Behavior the server adds on top of the rules, such as player placement, digging time and container windows, is checked against the official server with the client harnesses; [the server guide](SERVER.md#design) describes what is validated. Player inventories, survival use and the click modes of container windows are part of the rule set; their results were compared with the official servers of both versions in a 48-step window scenario. With the official data pack, 2x2 crafting was compared in a 48-step scenario and block drops in 23 cases per version (see [data packs](DATA_PACKS.md)).
 
 Differential tests compare the parallel runtime with a sequential executor at several worker counts and region layouts. Grouped player-action regressions also compare dependent placements and uses across batch boundaries. These checks cover their scenarios; because the executors share gameplay rules, independent target-version evidence is required to establish vanilla behavior.
 

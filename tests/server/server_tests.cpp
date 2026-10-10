@@ -7,6 +7,9 @@
 #include "../../src/server/collision_shapes.hpp"
 #include "../../src/server/game.hpp"
 #include "../../src/server/server_data.hpp"
+#include <circuit/gameplay/items.hpp>
+#include <circuit/gameplay/loot.hpp>
+#include <circuit/gameplay/recipes.hpp>
 #include <circuit/gameplay/survival.hpp>
 #include "../../src/server/world_meta.hpp"
 #include <circuit/auth.hpp>
@@ -19,6 +22,8 @@
 #include <circuit/storage/world_directory.hpp>
 #include <cmath>
 #include <csignal>
+#include <cstdio>
+#include <cstdlib>
 #include <algorithm>
 #include <array>
 #include <filesystem>
@@ -29,6 +34,7 @@
 #include <regex>
 #include <set>
 #include <spawn.h>
+#include <sstream>
 #include <sys/wait.h>
 #include <thread>
 #include <tuple>
@@ -188,6 +194,10 @@ struct Recorder final : server::Peer {
 
 struct GameFixture {
     explicit GameFixture(ServerConfig c = offline_config()) : config(std::move(c)) {
+        game = std::make_unique<server::Game>(config, bundle, wire, content(), mapping, data);
+    }
+    // With the data a server loaded from data packs.
+    GameFixture(ServerConfig c, server::ServerData d) : data(std::move(d)), wire(772, data.components), config(std::move(c)) {
         game = std::make_unique<server::Game>(config, bundle, wire, content(), mapping, data);
     }
     ~GameFixture() { game->shutdown("test finished"); }
@@ -1646,6 +1656,220 @@ int main() {
         const auto fewer = server::load_server_data(bundle, {{}, {dir / "pack"}});
         require(!fewer && fewer.error().find("add or remove enchantments") != std::string::npos, "changed enchantments refused");
         std::filesystem::remove_all(dir);
+    });
+
+    suite.run("data packs give block loot tables and recipes", [&] {
+        const auto dir = temporary_directory();
+        make_pack(dir / "pack", "");
+        const auto file = [&](const std::filesystem::path& rel, std::string_view text) {
+            std::filesystem::create_directories((dir / "pack" / rel).parent_path());
+            std::ofstream(dir / "pack" / rel) << text;
+        };
+        const auto table = [&](std::string_view block, std::string_view pool) {
+            file(std::format("data/minecraft/loot_table/blocks/{}.json", block),
+                 std::format(R"({{"type": "minecraft:block", "pools": [{{"rolls": 1, "bonus_rolls": 0, {}}}]}})", pool));
+        };
+        table("bookshelf", R"("entries": [{"type": "minecraft:alternatives", "children": [
+            {"type": "minecraft:item", "name": "minecraft:bookshelf", "conditions": [{"condition": "minecraft:match_tool",
+              "predicate": {"predicates": {"minecraft:enchantments": [{"enchantments": "minecraft:silk_touch", "levels": {"min": 1}}]}}}]},
+            {"type": "minecraft:item", "name": "minecraft:book", "functions": [{"function": "minecraft:set_count", "count": 3, "add": false},
+              {"function": "minecraft:explosion_decay"}]}]}], "conditions": [{"condition": "minecraft:survives_explosion"}])");
+        table("coal_ore", R"("entries": [{"type": "minecraft:item", "name": "minecraft:coal", "functions": [{"function": "minecraft:apply_bonus",
+            "enchantment": "minecraft:fortune", "formula": "minecraft:ore_drops"}]}])");
+        table("oak_door", R"("entries": [{"type": "minecraft:item", "name": "minecraft:oak_door", "conditions": [{"condition":
+            "minecraft:block_state_property", "block": "minecraft:oak_door", "properties": {"half": "lower"}}]}])");
+        table("glowstone", R"("entries": [{"type": "minecraft:item", "name": "minecraft:glowstone_dust", "functions": [{"function":
+            "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 2, "max": 4}}]}])");
+        table("gravel", R"("entries": [{"type": "minecraft:item", "name": "minecraft:flint", "conditions": [{"condition": "minecraft:table_bonus",
+            "enchantment": "minecraft:fortune", "chances": [0.1, 0.14]}]}])");
+        table("clay", R"("entries": [{"type": "minecraft:dynamic", "name": "minecraft:contents"}])");
+        file("data/minecraft/tags/item/test_logs.json", R"({"values": ["minecraft:oak_log", "minecraft:birch_log"]})");
+        const auto recipe = [&](std::string_view name, std::string_view json) { file(std::format("data/test/recipe/{}.json", name), json); };
+        recipe("planks", R"({"type": "minecraft:crafting_shapeless", "ingredients": ["#minecraft:test_logs"], "result": {"id": "minecraft:oak_planks", "count": 4}})");
+        recipe("shears", R"({"type": "minecraft:crafting_shaped", "category": "equipment", "pattern": [" #", "# "], "key": {"#": "minecraft:iron_ingot"},
+            "result": {"id": "minecraft:shears"}})");
+        recipe("box", R"({"type": "minecraft:crafting_transmute", "input": "minecraft:shulker_box", "material": "minecraft:red_dye",
+            "result": {"id": "minecraft:red_shulker_box"}})");
+        recipe("repair", R"({"type": "minecraft:crafting_special_repairitem", "category": "equipment"})");
+        recipe("stew", R"({"type": "minecraft:crafting_shapeless", "ingredients": ["minecraft:bowl", ["minecraft:poppy", "minecraft:dandelion"]],
+            "result": {"id": "minecraft:suspicious_stew", "components": {"minecraft:suspicious_stew_effects": []}}})");
+        recipe("smelt", R"({"type": "minecraft:smelting", "category": "food", "ingredient": "minecraft:porkchop", "result": {"id": "minecraft:cooked_porkchop"},
+            "experience": 0.35, "cookingtime": 200})");
+        recipe("cut", R"({"type": "minecraft:stonecutting", "ingredient": "minecraft:stone", "result": {"id": "minecraft:stone_slab", "count": 2}})");
+        recipe("widths", R"({"type": "minecraft:crafting_shaped", "pattern": ["##", "#"], "key": {"#": "minecraft:stick"}, "result": {"id": "minecraft:ladder"}})");
+        recipe("unused", R"({"type": "minecraft:crafting_shaped", "pattern": ["#"], "key": {"#": "minecraft:stick", "X": "minecraft:coal"}, "result": {"id": "minecraft:torch"}})");
+        recipe("unknown_item", R"({"type": "minecraft:crafting_shapeless", "ingredients": ["minecraft:no_such_item"], "result": {"id": "minecraft:stick"}})");
+        recipe("unknown_tag", R"({"type": "minecraft:crafting_shapeless", "ingredients": ["#minecraft:no_such_tag"], "result": {"id": "minecraft:stick"}})");
+        recipe("unknown_type", R"({"type": "minecraft:crafting_magic", "result": {"id": "minecraft:stick"}})");
+        recipe("too_many", R"({"type": "minecraft:crafting_shapeless", "ingredients": ["minecraft:stick"], "result": {"id": "minecraft:shears", "count": 2}})");
+        recipe("air", R"({"type": "minecraft:crafting_shapeless", "ingredients": ["minecraft:air"], "result": {"id": "minecraft:stick"}})");
+        recipe("trim", R"({"type": "minecraft:smithing_trim", "template": "minecraft:coast_armor_trim_smithing_template",
+            "base": "#minecraft:test_logs", "addition": "minecraft:iron_ingot"})");
+        const auto& bundle = **contracts::BundleRegistry::find("java-1.21.8");
+        const auto d = server::load_server_data(bundle, {{}, {dir / "pack"}});
+        require(d.has_value(), d ? "" : d.error());
+        // Loot: three tables compile; the others name why not.
+        require(d->loot.blocks == 6 && d->game->block_loot.size() == 3, std::format("{} tables, {} used", d->loot.blocks, d->game->block_loot.size()));
+        require(d->loot.refused == std::map<std::string, std::size_t>{{"condition minecraft:table_bonus", 1}, {"entry minecraft:dynamic", 1},
+                                                                       {"random count", 1}},
+                "loot refusals by reason");
+        // Recipes: every type checked; crafting recipes compiled; invalid ones skipped with a reason.
+        std::vector<std::string> crafted;
+        for (const auto& r : d->game->crafting) crafted.push_back(r.id);
+        require(crafted == std::vector<std::string>{"test:box", "test:planks", "test:shears"}, "crafting recipes in id order");
+        require(d->recipes.not_crafted == std::map<std::string, std::size_t>{{"result components", 1}, {"special recipe", 1}}, "valid, not crafted");
+        require(d->recipes.invalid == std::map<std::string, std::size_t>{{"air", 1}, {"key symbol not in the pattern", 1}, {"no trim pattern", 1},
+                                                                         {"pattern rows of different widths", 1}, {"result count above the item's stack size", 1},
+                                                                         {"unknown item", 1}, {"unknown item tag", 1}, {"unknown type minecraft:crafting_magic", 1}},
+                "invalid recipes by reason");
+        std::size_t valid = 0;
+        for (const auto& [type, n] : d->recipes.valid) valid += n;
+        require(valid == 7, "seven valid recipes");
+        // The compiled shapeless recipe takes either log.
+        std::array<contracts::ItemStack, 4> grid{};
+        grid[3] = {gameplay::items::birch_log, 1};
+        const auto made = gameplay::recipes::match(d->game->crafting, {2, 2, grid});
+        require(made && made->result == contracts::ItemStack{gameplay::items::oak_planks, 4}, "planks from a tag");
+        require(server::describe(*d).find("crafting recipes the rules match: 3") != std::string::npos, "the data report counts them");
+        // 1.21.4 (data pack format 61): a transmute result is an item id.
+        const auto old = dir / "old";
+        std::filesystem::create_directories(old / "data/test/recipe");
+        std::ofstream(old / "pack.mcmeta") << R"({"pack": {"pack_format": 61, "description": "test"}})";
+        std::ofstream(old / "data/test/recipe/box.json")
+            << R"({"type": "minecraft:crafting_transmute", "input": "minecraft:shulker_box", "material": "minecraft:red_dye", "result": "minecraft:red_shulker_box"})";
+        std::ofstream(old / "data/test/recipe/box2.json")
+            << R"({"type": "minecraft:crafting_transmute", "input": "minecraft:shulker_box", "material": "minecraft:red_dye", "result": {"id": "minecraft:red_shulker_box"}})";
+        const auto d4 = server::load_server_data(**contracts::BundleRegistry::find("java-1.21.4"), {{}, {old}});
+        require(d4 && d4->game->crafting.size() == 1 && d4->recipes.invalid.contains("result is not an item id"), "1.21.4 transmute results");
+        std::filesystem::remove_all(dir);
+    });
+
+    suite.run("loot tables and recipes of the official packs agree with the official servers", [] {
+        // The operator's jars, when given (CIRCUIT_VANILLA_JAR_1_21_8, _1_21_4).
+        struct Expected {
+            const char* variable;
+            const char* bundle;
+            std::string_view release;
+            std::size_t loot_blocks, loot_used, recipes, crafted;
+        };
+        std::size_t checked = 0;
+        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 1007, 913, 1407, 984},
+                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 999, 905, 1370, 948}}) {
+            const char* jar = std::getenv(e.variable);
+            if (!jar || !*jar) continue;
+            const auto& bundle = **contracts::BundleRegistry::find(e.bundle);
+            auto d = server::load_server_data(bundle, {jar, {}});
+            require(d.has_value(), d ? "" : d.error());
+            std::size_t valid = 0;
+            for (const auto& [type, n] : d->recipes.valid) valid += n;
+            require(d->loot.blocks == e.loot_blocks && d->game->block_loot.size() == e.loot_used && valid == e.recipes &&
+                        d->recipes.invalid.empty() && d->game->crafting.size() == e.crafted,
+                    std::format("{}: {} tables, {} used; {} recipes, {} invalid, {} crafted", e.bundle, d->loot.blocks,
+                                d->game->block_loot.size(), valid, d->recipes.invalid.size(), d->game->crafting.size()));
+            // Block drops (tests/fixtures/loot): what the rules drop (drops.cpp)
+            // for each block and tool the official servers were shown.
+            const auto& mapping = *evidence::ContentMapping::for_game_version(e.release);
+            const auto& codec = *protocol::ComponentCodec::for_protocol(bundle.schema.component_schema);
+            std::ifstream drops_in(std::string(CIRCUIT_SOURCE_DIR) + "/tests/fixtures/loot/block-drops.tsv");
+            std::size_t cases = 0;
+            for (std::string line; std::getline(drops_in, line);) {
+                if (line.empty() || line[0] == '#') continue;
+                std::vector<std::string> f;
+                for (std::size_t i = 0;;) {
+                    const auto tab = line.find('\t', i);
+                    f.push_back(line.substr(i, tab == std::string::npos ? std::string::npos : tab - i));
+                    if (tab == std::string::npos) break;
+                    i = tab + 1;
+                }
+                if (f.size() != 6 || f[0] != e.release) continue;
+                const auto state = mapping.block(f[1]);
+                require(state.has_value(), f[1]);
+                contracts::ItemStack tool{};
+                if (f[2] != "-") tool = {gameplay::items::by_name(f[2]).value(), 1};
+                if (f[3] != "-") {
+                    const auto eq = f[3].find('=');
+                    const auto id = server::registry_index(d->registries, "minecraft:enchantment", f[3].substr(0, eq)).value();
+                    Writer w;
+                    w.varint(1).varint(id).varint(std::stoi(f[3].substr(eq + 1)));
+                    if (bundle.schema.component_schema == 769) w.boolean(true); // 1.21.4: shown in the tooltip
+                    tool.components = contracts::ComponentPatch::make(bundle.schema.component_schema,
+                                                                      {{*codec.type_id("enchantments"), w.take()}}, {}, {});
+                }
+                std::string got;
+                const auto block = gameplay::registry::block_of(state->registry_state());
+                const auto table = block ? d->game->block_loot.find(*block) : d->game->block_loot.end();
+                if (gameplay::harvests(*state, tool, d->game.get()) && table != d->game->block_loot.end()) {
+                    const gameplay::loot::BreakContext context{gameplay::registry::properties(state->registry_state()), tool,
+                                                               [&](std::uint32_t en) { return d->game->enchantment_level(tool, en); }};
+                    if (const auto made = gameplay::loot::drops(table->second, context))
+                        for (const auto& s : *made) got += std::format("{}{}*{}", got.empty() ? "" : " ", gameplay::items::info(s.item)->name, s.count);
+                }
+                if (got.empty()) got = "-";
+                // Tables that draw random numbers drop nothing yet.
+                require(got == (f[5] == "random" ? "-" : f[4]), std::format("{} {} {} {}: {} (official {})", f[0], f[1], f[2], f[3], got, f[4]));
+                ++cases;
+            }
+            require(cases == 23, std::format("{} drop cases", cases));
+            // Crafting in the own window (tests/fixtures/crafting), replayed on
+            // a 1.21.8 server; the 1.21.4 servers gave the same results.
+            if (e.release == "1.21.8") {
+                GameFixture f(offline_config(), std::move(*d));
+                f.join(1, "alice");
+                const contracts::PlayerKey key{1, 1};
+                const auto name = [](const contracts::ItemStack& s) {
+                    return std::format("{}*{}", gameplay::items::info(s.item)->name.substr(10), s.count);
+                };
+                const auto window = [&] {
+                    const auto inv = f.game->engine().view().player(key).value();
+                    const auto i = inv ? *inv : empty_inventory(key);
+                    std::string own;
+                    for (std::size_t n = 0; n < i.slots.size(); ++n)
+                        if (!i.slots[n].empty()) own += std::format("{}{}:{}", own.empty() ? "" : " ", n, name(i.slots[n]));
+                    return std::format("{}\t{}", own.empty() ? "-" : own, i.cursor.empty() ? "-" : name(i.cursor));
+                };
+                using I = server::Intent;
+                std::ifstream in(std::string(CIRCUIT_SOURCE_DIR) + "/tests/fixtures/crafting/own-window.tsv");
+                std::size_t steps = 0;
+                for (std::string line; std::getline(in, line);) {
+                    if (line.empty() || line[0] == '#') continue;
+                    std::vector<std::string> fields;
+                    for (std::size_t i = 0;;) {
+                        const auto tab = line.find('\t', i);
+                        fields.push_back(line.substr(i, tab == std::string::npos ? std::string::npos : tab - i));
+                        if (tab == std::string::npos) break;
+                        i = tab + 1;
+                    }
+                    std::istringstream args(fields.size() > 1 ? fields[1] : "");
+                    const auto& op = fields[0];
+                    if (op == "gamemode") {
+                        f.game->submit(1, I{server::intent::Command{"gamemode " + fields[1]}});
+                    } else if (op == "creative") {
+                        int slot = 0, count = 0;
+                        std::string item;
+                        args >> slot >> item >> count;
+                        f.game->submit(1, I{server::intent::CreativeSlot{static_cast<std::int16_t>(slot), count,
+                                                                          content().item_id("minecraft:" + item).value()}});
+                    } else if (op == "click") {
+                        int slot = 0, button = 0, mode = 0;
+                        args >> slot >> button >> mode;
+                        f.game->submit(1, window_click(0, static_cast<std::int16_t>(slot), static_cast<std::int8_t>(button), mode));
+                    } else if (op == "close") {
+                        f.game->submit(1, I{server::intent::ContainerClose{0}});
+                    } else if (op == "away") {
+                        f.game->submit(1, I{server::intent::Command{"tp 40.5 -60 40.5"}});
+                    }
+                    f.game->tick();
+                    if (op == "click" || op == "close" || op == "check") {
+                        require(fields.size() >= 4 && window() == fields[2] + "\t" + fields[3],
+                                std::format("{}: {} (official {}\t{})", fields.size() > 4 ? fields[4] : op, window(), fields[2], fields[3]));
+                        ++steps;
+                    }
+                }
+                require(steps == 48, std::format("{} crafting steps", steps));
+            }
+            ++checked;
+        }
+        if (checked == 0) std::puts("  (no official server jar given: the official loot and recipe checks did not run)");
     });
 
     suite.run("a world's log replays only under the data it was written with", [&] {

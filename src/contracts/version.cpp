@@ -112,14 +112,17 @@ constexpr std::array reference_v4_mechanisms{
         "Player windows and chest, double chest and hopper menus with every click mode, applied as commands. "
         "A 48-step client scenario (every click mode, double chests, hoppers, the own window, throws and "
         "pickups) gives the same windows, carried stacks and inventories as the official 1.21.8 and 1.21.4 "
-        "servers. Gaps: no crafting (the result slot stays empty); no harness traces of menus."},
+        "servers. With data packs the own window's 2x2 grid crafts: a 48-step scenario (results, every way "
+        "of taking them, shapes, remainders, transmuting) matches both official servers. Gaps: no crafting "
+        "table, special recipes or recipe book; no harness traces of menus."},
     MechanismEntry{"survival_actions", l0_exact, l2_declared_deviation, documented_behavior,
         "Placement uses up items; dig progress from hardness, tool speed and tier, ground and water; drops by "
         "tool (stone gives cobblestone), container contents and tool wear; pickup by box with the target "
         "version's slot order and pickup delays (10 for block drops, 40 for thrown items); a dead player's "
         "inventory drops in the target version's order. Gaps: thrown items have no random spread and death "
-        "drops spread in a fixed pattern; loot is limited to the modeled blocks; no crafting. Health, hunger "
-        "and movement are checked by the server, not by the rules."},
+        "drops spread in a fixed pattern; modeled blocks have fixed drops, and blocks without rules drop from "
+        "their data-pack loot tables only where these draw no random numbers. Health, hunger and movement "
+        "are checked by the server, not by the rules."},
 };
 
 constexpr RuleLimits vanilla_like_limits{

@@ -48,7 +48,7 @@ Feature counts per implementation state, then the number of features with compar
 | V22 Movement and player modes | C6 | 7 | 3 / 3 | 2 / 2 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
 | V23 Combat, attributes and effects | C6 | 219 | 1 / 1 | 6 / 6 | 91 / 91 | 118 / 121 | 3 / 0 | 6 / 6 |
 | V24 Food, equipment and item use | C5, C6 | 143 | 0 / 0 | 16 / 16 | 121 / 123 | 4 / 4 | 2 / 0 | 1 / 2 |
-| V25 Menus, recipes and production | C5 | 186 | 1 / 1 | 3 / 3 | 177 / 177 | 5 / 5 | 0 / 0 | 1 / 2 |
+| V25 Menus, recipes and production | C5 | 186 | 1 / 1 | 4 / 4 | 177 / 177 | 4 / 4 | 0 / 0 | 3 / 4 |
 | V26 Mob AI and navigation | C8 | 94 | 0 / 0 | 0 / 0 | 14 / 16 | 77 / 78 | 3 / 0 | 0 / 0 |
 | V27 Spawning and farms | C8 | 104 | 0 / 0 | 0 / 0 | 99 / 100 | 4 / 4 | 1 / 0 | 0 / 0 |
 | V28 Villages, raids and trading | C8 | 15 | 0 / 0 | 0 / 0 | 0 / 0 | 15 / 15 | 0 / 0 | 0 / 0 |
@@ -127,7 +127,7 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 10 |
+| black_box | passing | 12 |
 | official_trace | failing | 5 |
 | official_trace | passing | 30 |
 | official_trace | unsupported | 1 |
@@ -411,10 +411,10 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
 | Player window, chest, double-chest and hopper menus with every click mode | C5 | implemented, compared | implemented, compared | `client/windows` |
-| Crafting (2x2 and table) and the recipe book | C5 | missing, none | missing, none | the crafting grid holds items but makes nothing |
+| Crafting (2x2 and table) and the recipe book | C5 | partial, compared | partial, compared | `client/crafting`; special recipes (repairing, map and book cloning, fireworks, armor dye, banner copying, shield decoration, tipped arrows, decorated pots) and recipes whose results carry components (suspicious stew) make nothing; the crafting table's 3x3 grid is not modeled; the recipe book is not synchronized and recipe placement requests are ignored; the doLimitedCrafting rule is not applied; without the official data pack there are no recipes; The player's 2x2 grid crafts with the shaped, shapeless and transmute recipes of the loaded data packs: the result follows the grid, every click mode takes it, ingredients are used and remainders kept; 48 steps give the same windows as both official servers |
 | Furnaces, smokers, blast furnaces and campfires | C5 | missing, none | missing, none |  |
 | Brewing, enchanting, anvils, grindstones, stonecutters, smithing, looms, cartography, beacons, merchants, lecterns and mount inventories | C5 | missing, none | missing, none |  |
-| Loot tables for blocks, entities and containers | C5 | partial, documented | partial, documented | Fixed drops of the modeled blocks |
+| Loot tables for blocks, entities and containers | C5 | partial, compared | partial, compared | `data/block_drops`; drops appear at the block center without the random offset and motion; entity, container and archaeology tables are not used; modeled blocks ignore their tables, so silk touch does not change their drops; tables that copy components or name dynamic contents (shulker boxes, banners, decorated pots) are not used; tables with random parts (random counts, chances, fortune bonuses, weighted choices) drop nothing until random streams are modeled; Blocks without rules of their own drop from the deterministic subset of their loot tables (913 of 1,007 tables in 1.21.8, 905 of 999 in 1.21.4), with harvest tools and silk touch; modeled blocks keep fixed drops |
 
 ### V26 Mob AI and navigation
 
@@ -459,7 +459,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | --- | --- | --- | --- | --- |
 | Functions and macros | C9 | missing, none | missing, none |  |
 | Predicates and item modifiers | C9 | missing, none | missing, none |  |
-| Data-driven recipes, loot tables, enchantments, damage types and worldgen | C1 | partial, reference_only | partial, reference_only | `data/official_packs`; Enchantment definitions come from the official pack and are synchronized by name; loot tables and recipes are read but not used yet |
+| Data-driven recipes, loot tables, enchantments, damage types and worldgen | C1 | partial, reference_only | partial, reference_only | `client/crafting`, `data/block_drops`, `data/official_packs`; Enchantment definitions come from the official pack and are synchronized by name; every recipe is checked (1,407 in 1.21.8 and 1,370 in 1.21.4 are valid) and crafting recipes and block loot tables are used; worldgen and damage types are not read |
 | Advancements and criteria | C9 | missing, none | missing, none |  |
 | Data-driven game tests | C9 | not_applicable, none | missing, none |  |
 

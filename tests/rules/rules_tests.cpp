@@ -7,6 +7,10 @@
 #include "../support/scenario.hpp"
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/block_registry.hpp>
+#include <circuit/gameplay/game_data.hpp>
+#include <circuit/gameplay/items.hpp>
+#include <circuit/gameplay/loot.hpp>
+#include <circuit/gameplay/recipes.hpp>
 #include <circuit/gameplay/rules.hpp>
 #include <circuit/gameplay/survival.hpp>
 #include <cmath>
@@ -24,7 +28,9 @@ namespace {
 const VersionBundle& bundle() { return **BundleRegistry::select_for_simulation("java-1.21.8"); }
 
 struct Sim {
-    explicit Sim(const VersionBundle& b = bundle(), std::uint64_t seed = 7, std::uint8_t radius = 2) : oracle(b, seed) {
+    explicit Sim(const VersionBundle& b = bundle(), std::uint64_t seed = 7, std::uint8_t radius = 2,
+                 std::shared_ptr<const circuit::gameplay::GameData> data = {})
+        : oracle(b, seed, std::move(data)) {
         tick({ticket(1, {0, 0}, radius)});
     }
     void tick(std::vector<CommandBody> bodies = {}) {
@@ -1139,6 +1145,256 @@ int main() {
         bool refused = false;
         try { s.tick(); } catch (const std::logic_error&) { refused = true; }
         require(refused, "failed oracle refuses further ticks");
+    });
+
+    suite.run("loot tables decide what blocks without rules drop", [] {
+        namespace loot = circuit::gameplay::loot;
+        using circuit::contracts::PlayerBreak;
+        using circuit::contracts::SetPlayerSlot;
+        const auto block_of = [](std::string_view name) { return registry::find_block("1.21.8", name).value(); };
+        // Enchantment ids as a server numbers them; the test's tools carry
+        // them as names, which its enchantment reader looks for.
+        constexpr std::uint32_t silk_touch = 33, fortune = 13;
+        const auto silk = named(items::iron_pickaxe, 1, "silk"), lucky = named(items::iron_pickaxe, 1, "lucky");
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->enchantment_level = [silk, lucky](const ItemStack& s, std::uint32_t e) -> long {
+            if (e == silk_touch && s.components == silk.components) return 1;
+            if (e == fortune && s.components == lucky.components) return 2;
+            return 0;
+        };
+        using Entry = loot::Entry;
+        using Function = loot::Function;
+        // A bookshelf gives itself to silk touch, else three books.
+        loot::Condition with_silk{.kind = loot::Condition::Kind::tool};
+        with_silk.enchantments = {{silk_touch, 1, 255}};
+        const Entry self{.kind = Entry::Kind::item, .item = items::bookshelf, .conditions = {with_silk}};
+        const Entry books{.kind = Entry::Kind::item, .item = items::book, .functions = {{.kind = Function::Kind::set_count, .count = 3}}};
+        data->block_loot[block_of("minecraft:bookshelf")] = {{{{{.kind = Entry::Kind::alternatives, .children = {self, books}}}}}};
+        // Coal ore gives coal, which fortune multiplies; it needs a pickaxe.
+        const Entry coal{.kind = Entry::Kind::item, .item = items::coal, .functions = {{.kind = Function::Kind::ore_bonus, .enchantment = fortune}}};
+        data->block_loot[block_of("minecraft:coal_ore")] = {{{{coal}}}};
+        data->block_tools[block_of("minecraft:coal_ore")] = {registry::Tool::pickaxe, 1};
+        // A double slab gives two.
+        const loot::Condition is_double{.kind = loot::Condition::Kind::block_state, .properties = {{"type", "double", {}, {}}}};
+        const Entry slab{.kind = Entry::Kind::item, .item = items::oak_slab,
+                         .functions = {{.kind = Function::Kind::set_count, .count = 2, .conditions = {is_double}}}};
+        data->block_loot[block_of("minecraft:oak_slab")] = {{{{slab}}}};
+        // More than a stack splits.
+        const Entry balls{.kind = Entry::Kind::item, .item = items::clay_ball, .functions = {{.kind = Function::Kind::set_count, .count = 100}}};
+        data->block_loot[block_of("minecraft:clay")] = {{{{balls}}}};
+
+        const PlayerKey alex{9, 9};
+        const std::vector<std::pair<BlockPos, BlockState>> blocks{
+            {{0, 0, 0}, registry_block("minecraft:bookshelf")}, {{1, 0, 0}, registry_block("minecraft:bookshelf")},
+            {{2, 0, 0}, registry_block("minecraft:coal_ore")},  {{3, 0, 0}, registry_block("minecraft:coal_ore")},
+            {{4, 0, 0}, registry_block("minecraft:coal_ore")},  {{5, 0, 0}, registry_block("minecraft:oak_slab", {{"type", "double"}})},
+            {{6, 0, 0}, registry_block("minecraft:oak_slab")},  {{7, 0, 0}, registry_block("minecraft:clay")},
+            {{8, 0, 0}, registry_block("minecraft:dirt")}};
+        const auto run = [&](std::shared_ptr<const circuit::gameplay::GameData> d) {
+            Sim s(bundle(), 7, 2, std::move(d));
+            std::vector<CommandBody> setup;
+            for (const auto& [p, b] : blocks) setup.push_back(place(p, b));
+            setup.push_back(SetPlayerSlot{alex, 36, silk});
+            setup.push_back(SetPlayerSlot{alex, 37, {items::iron_pickaxe, 1}});
+            setup.push_back(SetPlayerSlot{alex, 38, lucky});
+            s.tick(setup);
+            std::vector<std::vector<ItemStack>> drops;
+            for (const auto& [p, slot] : std::vector<std::pair<BlockPos, std::uint8_t>>{
+                     {{0, 0, 0}, 39}, {{1, 0, 0}, 36}, {{2, 0, 0}, 39}, {{3, 0, 0}, 37}, {{4, 0, 0}, 38},
+                     {{5, 0, 0}, 39}, {{6, 0, 0}, 39}, {{7, 0, 0}, 39}, {{8, 0, 0}, 39}}) {
+                const auto before = s.oracle.dump().entities.size();
+                s.tick({PlayerBreak{alex, p, true, slot}});
+                require(s.at(p).is_air(), "broken");
+                const auto d = s.oracle.dump();
+                std::vector<ItemStack> out;
+                for (auto i = before; i < d.entities.size(); ++i) out.push_back(d.entities[i].stack);
+                drops.push_back(out);
+            }
+            return drops;
+        };
+        const auto drops = run(data);
+        const auto just = [](std::uint16_t item, std::uint8_t count) { return std::vector<ItemStack>{{item, count}}; };
+        require(drops[0] == just(items::book, 3), "a bookshelf by hand: three books");
+        require(drops[1] == just(items::bookshelf, 1), "with silk touch: the bookshelf");
+        require(drops[2].empty(), "coal ore by hand: nothing");
+        require(drops[3] == just(items::coal, 1), "with a pickaxe: coal");
+        require(drops[4].empty(), "with fortune: nothing yet (a random bonus)");
+        require(drops[5] == just(items::oak_slab, 2) && drops[6] == just(items::oak_slab, 1), "slabs: two when double");
+        require(drops[7] == (std::vector<ItemStack>{{items::clay_ball, 64}, {items::clay_ball, 36}}), "a hundred split by the stack size");
+        require(drops[8].empty(), "no table: nothing");
+        const auto without = run(nullptr);
+        require(std::ranges::all_of(without, [](const auto& d) { return d.empty(); }), "without data packs blocks without rules drop nothing");
+    });
+
+    suite.run("loot conditions, entries and functions", [] {
+        namespace loot = circuit::gameplay::loot;
+        using Entry = loot::Entry;
+        using Condition = loot::Condition;
+        using Function = loot::Function;
+        const auto item = [](std::uint16_t id, std::vector<Condition> c = {}) { return Entry{.kind = Entry::Kind::item, .item = id, .conditions = std::move(c)}; };
+        const auto table = [](std::vector<Entry> entries) { return loot::Table{{loot::Pool{std::move(entries)}}}; };
+        loot::BreakContext ctx{{{"age", "5"}, {"half", "lower"}}, {items::shears, 1}, {}};
+        const Condition age_3_to_6{.kind = Condition::Kind::block_state, .properties = {{"age", {}, 3, 6}}};
+        const Condition age_7{.kind = Condition::Kind::block_state, .properties = {{"age", "7", {}, {}}}};
+        const Condition shears{.kind = Condition::Kind::tool, .items = {items::shears}};
+        const Condition other_block{.kind = Condition::Kind::block_state, .other_block = true};
+        const auto one = [](std::uint16_t id) { return std::optional(std::vector<ItemStack>{{id, 1}}); };
+        require(loot::drops(table({item(items::wheat, {age_3_to_6})}), ctx) == one(items::wheat), "a property range");
+        require(loot::drops(table({item(items::wheat, {age_7})}), ctx)->empty(), "an exact property");
+        require(loot::drops(table({item(items::wheat, {other_block})}), ctx)->empty(), "a condition on another block");
+        require(loot::drops(table({item(items::vine, {shears})}), ctx) == one(items::vine), "a tool");
+        require(loot::drops(table({item(items::vine, {{.kind = Condition::Kind::inverted, .children = {shears}}})}), ctx)->empty(), "inverted");
+        require(loot::drops(table({item(items::vine, {{.kind = Condition::Kind::any_of, .children = {age_7, shears}}})}), ctx) == one(items::vine), "any of");
+        require(loot::drops(table({item(items::vine, {{.kind = Condition::Kind::all_of, .children = {age_7, shears}}})}), ctx)->empty(), "all of");
+        // Composites: a sequence stops at the first child that fails; two
+        // candidates are a weighted random choice.
+        const Entry sequence{.kind = Entry::Kind::sequence, .children = {item(items::wheat, {age_7}), item(items::vine)}};
+        require(loot::drops(table({sequence}), ctx)->empty(), "a sequence");
+        const Entry group{.kind = Entry::Kind::group, .children = {item(items::wheat), item(items::vine)}};
+        require(!loot::drops(table({group}), ctx).has_value(), "two candidates need a random choice");
+        require(loot::drops(table({Entry{.kind = Entry::Kind::empty}}), ctx)->empty(), "an empty entry");
+        // Counts: limits, and nothing for a count of zero.
+        Entry limited = item(items::wheat);
+        limited.functions = {{.kind = Function::Kind::set_count, .count = 9}, {.kind = Function::Kind::limit_count, .max = 4}};
+        require(loot::drops(table({limited}), ctx) == std::optional(std::vector<ItemStack>{{items::wheat, 4}}), "a limit");
+        Entry none = item(items::wheat);
+        none.functions = {{.kind = Function::Kind::set_count, .count = 0}};
+        require(loot::drops(table({none}), ctx)->empty(), "a count of zero");
+    });
+
+    suite.run("recipes match anywhere in the grid, mirrored, in any order", [] {
+        namespace recipes = circuit::gameplay::recipes;
+        using recipes::Ingredient;
+        using recipes::Recipe;
+        const Ingredient iron{{items::iron_ingot}}, stick{{items::stick}}, coal_or_charcoal{{items::charcoal, items::coal}};
+        const std::vector<Recipe> book{
+            {Recipe::Kind::shaped, "test:shears", 2, 2, {{}, iron, iron, {}}, {items::shears, 1}},
+            {Recipe::Kind::shaped, "test:torch", 1, 2, {coal_or_charcoal, stick}, {items::torch, 4}},
+            {Recipe::Kind::shapeless, "test:pair", 0, 0, {coal_or_charcoal, Ingredient{{items::coal}}}, {items::black_dye, 1}},
+        };
+        std::array<ItemStack, 9> g{};
+        const auto made = [&] {
+            const auto m = recipes::match(book, {3, 3, g});
+            return m ? m->recipe->id : std::string("none");
+        };
+        g[1] = g[3] = {items::iron_ingot, 1};
+        require(made() == "test:shears", "top left corner");
+        g = {};
+        g[5] = g[7] = {items::iron_ingot, 1};
+        require(made() == "test:shears", "bottom right corner");
+        g = {};
+        g[4] = g[8] = {items::iron_ingot, 1};
+        require(made() == "test:shears", "mirrored");
+        g[0] = {items::stick, 1};
+        require(made() == "none", "an extra item");
+        g = {};
+        g[2] = {items::charcoal, 1};
+        g[5] = {items::stick, 1};
+        require(made() == "test:torch", "a column at the right edge");
+        // Shapeless: the coal must take the coal ingredient, the charcoal the other.
+        g = {};
+        g[0] = {items::coal, 1};
+        g[8] = {items::charcoal, 1};
+        require(made() == "test:pair", "assignment by augmenting paths");
+        g[8] = {items::stick, 1};
+        require(made() == "none", "no assignment");
+        // Transmute: the result keeps the input's components; an input that
+        // is the result already makes nothing.
+        Ingredient boxes{{items::shulker_box, items::red_shulker_box}}, dye{{items::red_dye}};
+        std::ranges::sort(boxes.items); // ingredients list their items in ascending order
+        const std::vector<Recipe> transmute{{Recipe::Kind::transmute, "test:red_box", 0, 0, {boxes, dye}, {items::red_shulker_box, 1}}};
+        std::array<ItemStack, 4> small{};
+        small[0] = {items::red_dye, 1};
+        small[3] = named(items::shulker_box, 1, "Box");
+        const auto m = recipes::match(transmute, {2, 2, small});
+        require(m && m->result.item == items::red_shulker_box && m->result.components == small[3].components, "components kept");
+        small[3] = {items::red_shulker_box, 1};
+        require(!recipes::match(transmute, {2, 2, small}), "already the result");
+        require(recipes::remainder(items::honey_bottle) == ItemStack{items::glass_bottle, 1} &&
+                    recipes::remainder(items::milk_bucket) == ItemStack{items::bucket, 1} && recipes::remainder(items::coal).empty(),
+                "remainders");
+    });
+
+    suite.run("the crafting grid crafts with the data packs' recipes", [] {
+        namespace recipes = circuit::gameplay::recipes;
+        using circuit::contracts::CloseContainer;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::SetPlayerSlot;
+        using recipes::Ingredient;
+        using recipes::Recipe;
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        const Ingredient log{{items::oak_log}}, iron{{items::iron_ingot}}, honey{{items::honey_bottle}};
+        data->crafting = {
+            {Recipe::Kind::shapeless, "test:planks", 0, 0, {log}, {items::oak_planks, 4}},
+            {Recipe::Kind::shaped, "test:shears", 2, 2, {{}, iron, iron, {}}, {items::shears, 1}},
+            {Recipe::Kind::shapeless, "test:sugar", 0, 0, {honey}, {items::sugar, 3}},
+            {Recipe::Kind::transmute, "test:red_box", 0, 0, {Ingredient{{items::shulker_box}}, Ingredient{{items::red_dye}}}, {items::red_shulker_box, 1}},
+        };
+        const PlayerKey alex{4, 2};
+        Sim s(bundle(), 7, 2, data);
+        const auto click = [&](std::int16_t slot, std::uint8_t button, std::uint8_t mode) {
+            return ContainerClick{alex, std::nullopt, slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+        };
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            const auto it = std::ranges::find(d.players, alex, &PlayerInventory::player);
+            if (it != d.players.end()) return *it;
+            PlayerInventory none;
+            none.player = alex;
+            return none;
+        };
+        const auto slot = [&](std::size_t i) { return player().slots[i]; };
+        // Placing a log shows planks; taking them uses one log each time.
+        s.tick({SetPlayerSlot{alex, 9, {items::oak_log, 3}}});
+        s.tick({click(9, 0, 0)});
+        s.tick({click(1, 1, 0)});
+        require(slot(0) == ItemStack{items::oak_planks, 4} && slot(1) == ItemStack{items::oak_log, 1}, "the result follows the grid");
+        s.tick({click(1, 0, 0)});
+        s.tick({click(0, 0, 0)});
+        require(player().cursor == ItemStack{items::oak_planks, 4} && slot(1).count == 2 && slot(0).count == 4, "taken onto the cursor");
+        s.tick({click(0, 1, 0)});
+        require(player().cursor.count == 8 && slot(1).count == 1, "a right click takes the whole result too");
+        s.tick({click(20, 0, 0)});
+        s.tick({click(0, 0, 1)});
+        require(slot(20).count == 12 && slot(1).empty() && slot(0).empty(), "shift-click crafts into the inventory");
+        // Shapes: the pattern mirrored, and not another one.
+        s.tick({SetPlayerSlot{alex, 1, {items::iron_ingot, 1}}, SetPlayerSlot{alex, 4, {items::iron_ingot, 1}}});
+        require(slot(0) == ItemStack{items::shears, 1}, "mirrored shears");
+        s.tick({SetPlayerSlot{alex, 4, {}}, SetPlayerSlot{alex, 2, {items::iron_ingot, 1}}});
+        require(slot(0).empty(), "a row of iron is no recipe");
+        s.tick({SetPlayerSlot{alex, 2, {}}, SetPlayerSlot{alex, 4, {items::iron_ingot, 1}}});
+        s.tick({click(0, 2, 2)});
+        require(slot(38) == ItemStack{items::shears, 1} && slot(1).empty() && slot(4).empty(), "a number key crafts into the hotbar");
+        // A honey bottle leaves its bottle: in the inventory while honey is
+        // left, else in the grid.
+        s.tick({SetPlayerSlot{alex, 2, {items::honey_bottle, 2}}});
+        s.tick({click(0, 0, 0)});
+        require(player().cursor == ItemStack{items::sugar, 3} && slot(2) == ItemStack{items::honey_bottle, 1} &&
+                    slot(36) == ItemStack{items::glass_bottle, 1},
+                "the bottle goes into the inventory");
+        s.tick({click(0, 0, 0)});
+        require(player().cursor == ItemStack{items::sugar, 6} && slot(2) == ItemStack{items::glass_bottle, 1} && slot(0).empty(),
+                "the bottle stays in the grid");
+        s.tick({click(21, 0, 0), SetPlayerSlot{alex, 2, {}}});
+        // Transmuting keeps the box's name; throwing the result crafts.
+        s.tick({SetPlayerSlot{alex, 1, named(items::shulker_box, 1, "Box")}, SetPlayerSlot{alex, 4, {items::red_dye, 2}}});
+        require(slot(0) == named(items::red_shulker_box, 1, "Box"), "the name is kept");
+        const auto before = s.oracle.dump().entities.size();
+        s.tick({click(0, 0, 4)});
+        const auto d = s.oracle.dump();
+        require(d.entities.size() == before + 1 && d.entities.back().stack == named(items::red_shulker_box, 1, "Box") &&
+                    slot(1).empty() && slot(4) == ItemStack{items::red_dye, 1} && slot(0).empty(),
+                "thrown from the result");
+        // Closing the window returns the grid and clears the result.
+        s.tick({SetPlayerSlot{alex, 4, {}}, SetPlayerSlot{alex, 1, {items::oak_log, 1}}});
+        require(slot(0) == ItemStack{items::oak_planks, 4}, "planks again");
+        s.tick({CloseContainer{alex, at_block(0.5, 2, 0.5), {}}});
+        require(slot(0).empty() && slot(1).empty() && slot(4).empty(), "closed: the grid is empty");
+        // Without data packs crafting is not modeled.
+        Sim plain;
+        plain.tick({SetPlayerSlot{alex, 1, {items::oak_log, 1}}});
+        const auto p = plain.oracle.dump().players;
+        require(p.size() == 1 && p[0].slots[0].empty(), "no result without data");
     });
 
     return suite.finish();

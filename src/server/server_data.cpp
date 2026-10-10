@@ -130,6 +130,16 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
         auto game = std::make_shared<gameplay::GameData>();
         game->fingerprint = packs->fingerprint();
         game->block_tools = block_tools(*packs, bundle.schema.content_release);
+        out.loot = compile_block_loot(*packs, bundle, out.registries);
+        game->block_loot = std::move(out.loot.tables);
+        out.loot.tables.clear();
+        out.recipes = compile_recipes(*packs, bundle, out.registries);
+        game->crafting = std::move(out.recipes.crafting);
+        out.recipes.crafting.clear();
+        if (const auto* codec = protocol::ComponentCodec::for_protocol(bundle.schema.component_schema))
+            game->enchantment_level = [codec](const contracts::ItemStack& stack, std::uint32_t enchantment) {
+                return codec->enchantment_level(stack.components, enchantment);
+            };
         out.game = std::move(game);
         out.packs = std::move(*packs);
     } else {
@@ -174,6 +184,16 @@ std::string describe(const ServerData& data) {
     out += std::format("blocks without rules: {}; tool differs from the public data for {}, tier for {}\n",
                        data.game->block_tools.size(), tools, tiers);
     for (const auto& d : differences) out += "  " + d + "\n";
+    // Loot tables and recipes the rules use, and why not the others.
+    out += std::format("block loot tables of blocks without rules: {}; used: {}\n", data.loot.blocks, data.game->block_loot.size());
+    for (const auto& [reason, n] : data.loot.refused) out += std::format("  not used ({}): {}\n", reason, n);
+    std::size_t valid = 0;
+    for (const auto& [type, n] : data.recipes.valid) valid += n;
+    out += std::format("recipes: {} valid; crafting recipes the rules match: {}\n", valid, data.game->crafting.size());
+    for (const auto& [type, n] : data.recipes.valid) out += std::format("  {}: {}\n", type, n);
+    for (const auto& [reason, n] : data.recipes.not_crafted) out += std::format("  not crafted ({}): {}\n", reason, n);
+    for (const auto& [reason, n] : data.recipes.invalid) out += std::format("  invalid ({}): {}\n", reason, n);
+    for (const auto& id : data.recipes.invalid_ids) out += "  invalid: " + id + "\n";
     for (const auto& n : data.packs->notes()) out += "note: " + n + "\n";
     return out;
 }

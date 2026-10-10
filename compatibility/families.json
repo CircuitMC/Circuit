@@ -1660,11 +1660,18 @@
           "id": "crafting",
           "name": "Crafting (2x2 and table) and the recipe book",
           "milestone": "C5",
-          "impl": "missing",
-          "evidence": "none",
+          "impl": "partial",
+          "evidence": "compared",
           "deviations": [
-            "the crafting grid holds items but makes nothing"
-          ]
+            "the crafting table's 3x3 grid is not modeled",
+            "special recipes (repairing, map and book cloning, fireworks, armor dye, banner copying, shield decoration, tipped arrows, decorated pots) and recipes whose results carry components (suspicious stew) make nothing",
+            "the recipe book is not synchronized and recipe placement requests are ignored; the doLimitedCrafting rule is not applied",
+            "without the official data pack there are no recipes"
+          ],
+          "cases": [
+            "client/crafting"
+          ],
+          "note": "The player's 2x2 grid crafts with the shaped, shapeless and transmute recipes of the loaded data packs: the result follows the grid, every click mode takes it, ingredients are used and remainders kept; 48 steps give the same windows as both official servers"
         },
         {
           "id": "smelting",
@@ -1685,8 +1692,18 @@
           "name": "Loot tables for blocks, entities and containers",
           "milestone": "C5",
           "impl": "partial",
-          "evidence": "documented",
-          "note": "Fixed drops of the modeled blocks"
+          "evidence": "compared",
+          "note": "Blocks without rules of their own drop from the deterministic subset of their loot tables (913 of 1,007 tables in 1.21.8, 905 of 999 in 1.21.4), with harvest tools and silk touch; modeled blocks keep fixed drops",
+          "cases": [
+            "data/block_drops"
+          ],
+          "deviations": [
+            "tables with random parts (random counts, chances, fortune bonuses, weighted choices) drop nothing until random streams are modeled",
+            "tables that copy components or name dynamic contents (shulker boxes, banners, decorated pots) are not used",
+            "modeled blocks ignore their tables, so silk touch does not change their drops",
+            "drops appear at the block center without the random offset and motion",
+            "entity, container and archaeology tables are not used"
+          ]
         }
       ]
     },
@@ -1876,9 +1893,11 @@
           "impl": "partial",
           "evidence": "reference_only",
           "cases": [
-            "data/official_packs"
+            "data/official_packs",
+            "data/block_drops",
+            "client/crafting"
           ],
-          "note": "Enchantment definitions come from the official pack and are synchronized by name; loot tables and recipes are read but not used yet"
+          "note": "Enchantment definitions come from the official pack and are synchronized by name; every recipe is checked (1,407 in 1.21.8 and 1,370 in 1.21.4 are valid) and crafting recipes and block loot tables are used; worldgen and damage types are not read"
         },
         {
           "id": "advancements",

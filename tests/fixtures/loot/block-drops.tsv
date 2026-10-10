@@ -1,0 +1,51 @@
+# Block drops observed on the official servers (2026-10-10): each block set
+# with /setblock, then broken in survival by a protocol client with the tool
+# and enchantment given ("-": the hand, none), and the item entities that
+# appeared. Tab-separated: version, block state, tool, enchantment=level,
+# drops ("-": none), and whether the block's loot table draws random numbers.
+1.21.8	minecraft:dirt	-	-	minecraft:dirt*1	deterministic
+1.21.8	minecraft:grass_block	-	-	minecraft:dirt*1	deterministic
+1.21.8	minecraft:grass_block	minecraft:iron_shovel	minecraft:silk_touch=1	minecraft:grass_block*1	deterministic
+1.21.8	minecraft:oak_log	-	-	minecraft:oak_log*1	deterministic
+1.21.8	minecraft:bookshelf	-	-	minecraft:book*3	deterministic
+1.21.8	minecraft:clay	-	-	minecraft:clay_ball*4	deterministic
+1.21.8	minecraft:snow_block	-	-	-	deterministic
+1.21.8	minecraft:snow_block	minecraft:wooden_shovel	-	minecraft:snowball*4	deterministic
+1.21.8	minecraft:coal_ore	-	-	-	deterministic
+1.21.8	minecraft:coal_ore	minecraft:wooden_pickaxe	-	minecraft:coal*1	deterministic
+1.21.8	minecraft:iron_ore	minecraft:stone_pickaxe	-	minecraft:raw_iron*1	deterministic
+1.21.8	minecraft:diamond_ore	minecraft:stone_pickaxe	-	-	deterministic
+1.21.8	minecraft:diamond_ore	minecraft:iron_pickaxe	-	minecraft:diamond*1	deterministic
+1.21.8	minecraft:diamond_ore	minecraft:iron_pickaxe	minecraft:silk_touch=1	minecraft:diamond_ore*1	deterministic
+1.21.8	minecraft:ender_chest	minecraft:iron_pickaxe	-	minecraft:obsidian*8	deterministic
+1.21.8	minecraft:cobblestone	minecraft:wooden_pickaxe	-	minecraft:cobblestone*1	deterministic
+1.21.8	minecraft:oak_planks	-	-	minecraft:oak_planks*1	deterministic
+1.21.8	minecraft:glowstone	-	-	minecraft:glowstone_dust*4	random
+1.21.8	minecraft:diamond_ore	minecraft:iron_pickaxe	minecraft:fortune=2	minecraft:diamond*3	random
+1.21.8	minecraft:oak_slab[type=double]	-	-	minecraft:oak_slab*2	deterministic
+1.21.8	minecraft:oak_leaves[persistent=true]	minecraft:shears	-	minecraft:oak_leaves*1	random
+1.21.8	minecraft:gravel	-	-	minecraft:gravel*1	random
+1.21.8	minecraft:grass_block	minecraft:iron_shovel	-	minecraft:dirt*1	deterministic
+1.21.4	minecraft:dirt	-	-	minecraft:dirt*1	deterministic
+1.21.4	minecraft:grass_block	-	-	minecraft:dirt*1	deterministic
+1.21.4	minecraft:grass_block	minecraft:iron_shovel	minecraft:silk_touch=1	minecraft:grass_block*1	deterministic
+1.21.4	minecraft:oak_log	-	-	minecraft:oak_log*1	deterministic
+1.21.4	minecraft:bookshelf	-	-	minecraft:book*3	deterministic
+1.21.4	minecraft:clay	-	-	minecraft:clay_ball*4	deterministic
+1.21.4	minecraft:snow_block	-	-	-	deterministic
+1.21.4	minecraft:snow_block	minecraft:wooden_shovel	-	minecraft:snowball*4	deterministic
+1.21.4	minecraft:coal_ore	-	-	-	deterministic
+1.21.4	minecraft:coal_ore	minecraft:wooden_pickaxe	-	minecraft:coal*1	deterministic
+1.21.4	minecraft:iron_ore	minecraft:stone_pickaxe	-	minecraft:raw_iron*1	deterministic
+1.21.4	minecraft:diamond_ore	minecraft:stone_pickaxe	-	-	deterministic
+1.21.4	minecraft:diamond_ore	minecraft:iron_pickaxe	-	minecraft:diamond*1	deterministic
+1.21.4	minecraft:diamond_ore	minecraft:iron_pickaxe	minecraft:silk_touch=1	minecraft:diamond_ore*1	deterministic
+1.21.4	minecraft:ender_chest	minecraft:iron_pickaxe	-	minecraft:obsidian*8	deterministic
+1.21.4	minecraft:cobblestone	minecraft:wooden_pickaxe	-	minecraft:cobblestone*1	deterministic
+1.21.4	minecraft:oak_planks	-	-	minecraft:oak_planks*1	deterministic
+1.21.4	minecraft:glowstone	-	-	minecraft:glowstone_dust*4	random
+1.21.4	minecraft:diamond_ore	minecraft:iron_pickaxe	minecraft:fortune=2	minecraft:diamond*2	random
+1.21.4	minecraft:oak_slab[type=double]	-	-	minecraft:oak_slab*2	deterministic
+1.21.4	minecraft:oak_leaves[persistent=true]	minecraft:shears	-	minecraft:oak_leaves*1	random
+1.21.4	minecraft:gravel	-	-	minecraft:flint*1	random
+1.21.4	minecraft:grass_block	minecraft:iron_shovel	-	minecraft:dirt*1	deterministic

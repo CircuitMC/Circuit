@@ -744,4 +744,24 @@ std::expected<Bytes, std::string> ComponentCodec::canonical_value(std::uint16_t 
     return w.take();
 }
 
+long ComponentCodec::enchantment_level(const contracts::ComponentPatch& patch, std::uint32_t enchantment) const {
+    if (patch.empty() || patch.protocol() != protocol()) return 0;
+    const auto type = type_id("enchantments");
+    if (!type) return 0;
+    for (const auto& a : patch.added()) {
+        if (a.type != *type) continue;
+        // Canonical form: a count, then (enchantment id, level) pairs; 1.21.4
+        // adds the tooltip flag after them.
+        Reader r(a.value);
+        const auto count = r.varint();
+        for (std::int32_t i = 0; count && i < *count; ++i) {
+            const auto id = r.varint();
+            const auto level = r.varint();
+            if (!id || !level) return 0;
+            if (static_cast<std::uint32_t>(*id) == enchantment) return *level;
+        }
+    }
+    return 0;
+}
+
 } // namespace circuit::protocol

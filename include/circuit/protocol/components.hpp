@@ -74,6 +74,11 @@ public:
     [[nodiscard]] std::expected<Bytes, std::string> from_save(std::uint16_t type, const nbt::Tag& value,
                                                               const ComponentContext& ctx) const;
 
+    // The level of `enchantment` (an id of the synchronized enchantment
+    // registry) in the patch's enchantments component; 0 when absent. The
+    // patch is canonical for this protocol.
+    [[nodiscard]] long enchantment_level(const contracts::ComponentPatch& patch, std::uint32_t enchantment) const;
+
     explicit ComponentCodec(const void* schema) noexcept : schema_(schema) {}
 
 private:

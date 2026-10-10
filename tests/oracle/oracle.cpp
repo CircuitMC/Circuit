@@ -16,7 +16,7 @@ using contracts::TraceKind;
 
 class Oracle::Context final : public RuleContext {
 public:
-    explicit Context(Oracle& o) : RuleContext(o.bundle_), o_(o) {}
+    explicit Context(Oracle& o) : RuleContext(o.bundle_, o.data_.get()), o_(o) {}
 
     void begin_root(Phase phase, std::uint64_t root) {
         phase_ = phase;
@@ -127,8 +127,8 @@ private:
     std::uint32_t seq_{};
 };
 
-Oracle::Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed)
-    : bundle_(bundle), seed_(seed), ctx_(std::make_unique<Context>(*this)) {
+Oracle::Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed, std::shared_ptr<const gameplay::GameData> data)
+    : bundle_(bundle), seed_(seed), data_(std::move(data)), ctx_(std::make_unique<Context>(*this)) {
     if (!bundle.rules) throw std::invalid_argument("oracle: bundle has no executable rules");
 }
 Oracle::~Oracle() = default;

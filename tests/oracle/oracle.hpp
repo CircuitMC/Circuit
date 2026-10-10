@@ -3,6 +3,7 @@
 #include <circuit/contracts/commands.hpp>
 #include <circuit/contracts/trace.hpp>
 #include <circuit/contracts/version.hpp>
+#include <circuit/gameplay/game_data.hpp>
 #include <circuit/gameplay/world_types.hpp>
 #include <deque>
 #include <map>
@@ -19,7 +20,8 @@ namespace circuit::oracle {
 
 class Oracle {
 public:
-    Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed);
+    // `data`: game data from data packs, as an engine's options give it.
+    Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed, std::shared_ptr<const gameplay::GameData> data = {});
     ~Oracle();
     Oracle(const Oracle&) = delete;
     Oracle& operator=(const Oracle&) = delete;
@@ -49,6 +51,7 @@ private:
 
     const contracts::VersionBundle& bundle_;
     std::uint64_t seed_;
+    std::shared_ptr<const gameplay::GameData> data_;
     contracts::Tick time_{};
     bool failed_{};
     std::map<contracts::ChunkPos, ChunkInfo> chunks_;

@@ -238,6 +238,28 @@
       "location": "tests/data/data_tests.cpp with the operator's jars; external: client harness smoke with vanilla-server-jar",
       "status": "passing",
       "description": "The official jars' built-in packs load (SHA-1 and version.json checked); each registry Circuit numbers has as many tags as the official servers send; the unmodified clients of both versions join with the enchantment registry and every tag; enchanted items round-trip through Anvil and the official server"
+    },
+    {
+      "id": "client/crafting",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/craft-loot.js (craft); tests/fixtures/crafting/own-window.tsv, replayed by tests/server/server_tests.cpp with the operator's 1.21.8 jar",
+      "status": "passing",
+      "description": "48 steps in the own window: results following the grid, taking them by click, right click, shift-click (also with room for part of the result), number key and throwing, mirrored shapes, honey bottle remainders, transmuting a shulker box and refusing to transmute a box into itself; Circuit and both official servers give identical windows"
+    },
+    {
+      "id": "data/block_drops",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "tests/fixtures/loot/block-drops.tsv, checked by tests/server/server_tests.cpp with the operator's jars; external: circuit-clienttest/craft-loot.js (place, dig)",
+      "status": "passing",
+      "description": "23 blocks and tools per version broken on the official servers; Circuit drops the same items in the 19 cases whose tables are deterministic (on 1.21.8 also live, from the imported world), and nothing in the 4 that draw random numbers"
     }
   ]
 }

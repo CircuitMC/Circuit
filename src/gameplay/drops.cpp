@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
+#include <circuit/gameplay/game_data.hpp>
 #include <circuit/gameplay/survival.hpp>
 
 namespace circuit::gameplay::detail {
@@ -17,7 +18,7 @@ void spawn(RuleContext& ctx, BlockPos pos, ItemStack stack, std::uint16_t pickup
 }
 
 // The block's own item when a block breaks; nothing for glass, water and piston parts.
-std::optional<ItemStack> loot(BlockState s) {
+std::optional<ItemStack> own_item(BlockState s) {
     switch (s.type()) {
     case BlockType::stone: return ItemStack{items::cobblestone, 1};
     case BlockType::obsidian: return ItemStack{items::obsidian, 1};
@@ -36,6 +37,20 @@ std::optional<ItemStack> loot(BlockState s) {
     default: return std::nullopt;
     }
 }
+// Drops of a block without rules of its own: its loot table, when the data
+// packs have one the rules evaluate. A roll that needs a random number (the
+// table compiled, but the tool has fortune) drops nothing.
+void table_drops(RuleContext& ctx, BlockPos pos, BlockState s, const ItemStack& tool) {
+    const auto* data = ctx.data();
+    const auto block = data ? registry::block_of(s.registry_state()) : std::nullopt;
+    const auto table = block ? data->block_loot.find(*block) : decltype(data->block_loot.end()){};
+    if (!block || table == data->block_loot.end()) return;
+    const loot::BreakContext context{registry::properties(s.registry_state()), tool, [&](std::uint32_t enchantment) {
+                                         return data->enchantment_level ? data->enchantment_level(tool, enchantment) : 0L;
+                                     }};
+    if (const auto drops = loot::drops(table->second, context))
+        for (const auto& d : *drops) spawn(ctx, pos, d);
+}
 } // namespace
 
 // Fixed drops without random quantities or offsets (declared simplification).
@@ -46,7 +61,8 @@ void drop_items(RuleContext& ctx, BlockPos pos, BlockState destroyed, ItemStack 
         return;
     }
     if (!harvests(destroyed, tool, ctx.data())) return;
-    if (const auto item = loot(destroyed)) spawn(ctx, pos, *item);
+    if (destroyed.is(BlockType::other)) return table_drops(ctx, pos, destroyed, tool);
+    if (const auto item = own_item(destroyed)) spawn(ctx, pos, *item);
 }
 
 void drop_contents(RuleContext& ctx, BlockPos pos, const std::vector<ItemStack>& slots) {

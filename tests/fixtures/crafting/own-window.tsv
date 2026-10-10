@@ -1,0 +1,112 @@
+# Crafting in the player's own window, observed on the official 1.21.8 and
+# 1.21.4 servers with a protocol client (2026-10-10; both gave these
+# results). One step per line, tab-separated:
+#   gamemode <mode>
+#   creative <slot> <item> <count>   a creative player's slot
+#   click <slot> <button> <mode>     a click in the own window, then the expected window
+#   close                            the window closed, then the expected window
+#   check                            the expected window
+#   away                             the player leaves the thrown items behind
+# The expected window is the slots that hold something ("<slot>:<item>*<count>",
+# "-" for none) and the carried stack; a click line ends with its name.
+gamemode	creative
+creative	9 oak_log 3
+creative	10 honey_bottle 3
+creative	11 iron_ingot 2
+creative	12 shulker_box 1
+creative	13 red_dye 2
+creative	14 stick 1
+creative	15 coal 1
+gamemode	survival
+check		9:oak_log*3 10:honey_bottle*3 11:iron_ingot*2 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1	-
+click	9 0 0	10:honey_bottle*3 11:iron_ingot*2 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1	oak_log*3	pick up the logs
+click	1 1 0	0:oak_planks*4 1:oak_log*1 10:honey_bottle*3 11:iron_ingot*2 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1	oak_log*2	place one log in the grid
+click	1 0 0	0:oak_planks*4 1:oak_log*3 10:honey_bottle*3 11:iron_ingot*2 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1	-	place the other logs
+click	0 0 0	0:oak_planks*4 1:oak_log*2 10:honey_bottle*3 11:iron_ingot*2 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1	oak_planks*4	take the planks
+click	0 1 0	0:oak_planks*4 1:oak_log*1 10:honey_bottle*3 11:iron_ingot*2 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1	oak_planks*8	take more planks onto the cursor
+click	20 0 0	0:oak_planks*4 1:oak_log*1 10:honey_bottle*3 11:iron_ingot*2 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1 20:oak_planks*8	-	put the planks down
+click	0 0 1	10:honey_bottle*3 11:iron_ingot*2 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1 20:oak_planks*12	-	shift-click the result
+click	20 0 0	10:honey_bottle*3 11:iron_ingot*2 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1	oak_planks*12	pick up the planks
+click	1 1 0	0:oak_button*1 1:oak_planks*1 10:honey_bottle*3 11:iron_ingot*2 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1	oak_planks*11	plank in 1
+click	2 1 0	0:oak_pressure_plate*1 1:oak_planks*1 2:oak_planks*1 10:honey_bottle*3 11:iron_ingot*2 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1	oak_planks*10	plank in 2
+click	3 1 0	1:oak_planks*1 2:oak_planks*1 3:oak_planks*1 10:honey_bottle*3 11:iron_ingot*2 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1	oak_planks*9	plank in 3
+click	4 1 0	0:crafting_table*1 1:oak_planks*1 2:oak_planks*1 3:oak_planks*1 4:oak_planks*1 10:honey_bottle*3 11:iron_ingot*2 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1	oak_planks*8	plank in 4
+click	0 0 1	10:honey_bottle*3 11:iron_ingot*2 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1 44:crafting_table*1	oak_planks*8	shift-click the crafting table
+click	20 0 0	10:honey_bottle*3 11:iron_ingot*2 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1 20:oak_planks*8 44:crafting_table*1	-	put the planks back
+click	11 0 0	10:honey_bottle*3 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1 20:oak_planks*8 44:crafting_table*1	iron_ingot*2	pick up the iron
+click	2 1 0	0:iron_nugget*9 2:iron_ingot*1 10:honey_bottle*3 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1 20:oak_planks*8 44:crafting_table*1	iron_ingot*1	iron in 2
+click	3 1 0	0:shears*1 2:iron_ingot*1 3:iron_ingot*1 10:honey_bottle*3 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1 20:oak_planks*8 44:crafting_table*1	-	iron in 3
+click	2 0 0	0:iron_nugget*9 3:iron_ingot*1 10:honey_bottle*3 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1 20:oak_planks*8 44:crafting_table*1	iron_ingot*1	move iron 2 to 1
+click	1 0 0	1:iron_ingot*1 3:iron_ingot*1 10:honey_bottle*3 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1 20:oak_planks*8 44:crafting_table*1	-	into 1
+click	3 0 0	0:iron_nugget*9 1:iron_ingot*1 10:honey_bottle*3 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1 20:oak_planks*8 44:crafting_table*1	iron_ingot*1	move iron 3 to 4
+click	4 0 0	0:shears*1 1:iron_ingot*1 4:iron_ingot*1 10:honey_bottle*3 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1 20:oak_planks*8 44:crafting_table*1	-	into 4 (mirrored)
+click	0 0 0	10:honey_bottle*3 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1 20:oak_planks*8 44:crafting_table*1	shears*1	take the shears
+click	21 0 0	10:honey_bottle*3 12:shulker_box*1 13:red_dye*2 14:stick*1 15:coal*1 20:oak_planks*8 21:shears*1 44:crafting_table*1	-	put the shears down
+click	15 0 0	10:honey_bottle*3 12:shulker_box*1 13:red_dye*2 14:stick*1 20:oak_planks*8 21:shears*1 44:crafting_table*1	coal*1	pick up the coal
+click	2 0 0	2:coal*1 10:honey_bottle*3 12:shulker_box*1 13:red_dye*2 14:stick*1 20:oak_planks*8 21:shears*1 44:crafting_table*1	-	coal in 2
+click	14 0 0	2:coal*1 10:honey_bottle*3 12:shulker_box*1 13:red_dye*2 20:oak_planks*8 21:shears*1 44:crafting_table*1	stick*1	pick up the stick
+click	4 0 0	0:torch*4 2:coal*1 4:stick*1 10:honey_bottle*3 12:shulker_box*1 13:red_dye*2 20:oak_planks*8 21:shears*1 44:crafting_table*1	-	stick in 4
+click	0 2 2	10:honey_bottle*3 12:shulker_box*1 13:red_dye*2 20:oak_planks*8 21:shears*1 38:torch*4 44:crafting_table*1	-	torches to hotbar 2 by key
+click	10 0 0	12:shulker_box*1 13:red_dye*2 20:oak_planks*8 21:shears*1 38:torch*4 44:crafting_table*1	honey_bottle*3	pick up the honey
+click	1 0 0	0:sugar*3 1:honey_bottle*3 12:shulker_box*1 13:red_dye*2 20:oak_planks*8 21:shears*1 38:torch*4 44:crafting_table*1	-	honey in 1
+click	0 0 0	0:sugar*3 1:honey_bottle*2 12:shulker_box*1 13:red_dye*2 20:oak_planks*8 21:shears*1 36:glass_bottle*1 38:torch*4 44:crafting_table*1	sugar*3	take the sugar
+click	22 0 0	0:sugar*3 1:honey_bottle*2 12:shulker_box*1 13:red_dye*2 20:oak_planks*8 21:shears*1 22:sugar*3 36:glass_bottle*1 38:torch*4 44:crafting_table*1	-	put the sugar down
+click	0 0 1	1:glass_bottle*1 12:shulker_box*1 13:red_dye*2 20:oak_planks*8 21:shears*1 22:sugar*9 36:glass_bottle*2 38:torch*4 44:crafting_table*1	-	shift-click the sugar
+click	1 0 0	12:shulker_box*1 13:red_dye*2 20:oak_planks*8 21:shears*1 22:sugar*9 36:glass_bottle*2 38:torch*4 44:crafting_table*1	glass_bottle*1	pick up the bottle
+click	23 0 0	12:shulker_box*1 13:red_dye*2 20:oak_planks*8 21:shears*1 22:sugar*9 23:glass_bottle*1 36:glass_bottle*2 38:torch*4 44:crafting_table*1	-	put the bottle down
+click	12 0 0	13:red_dye*2 20:oak_planks*8 21:shears*1 22:sugar*9 23:glass_bottle*1 36:glass_bottle*2 38:torch*4 44:crafting_table*1	shulker_box*1	pick up the box
+click	1 0 0	1:shulker_box*1 13:red_dye*2 20:oak_planks*8 21:shears*1 22:sugar*9 23:glass_bottle*1 36:glass_bottle*2 38:torch*4 44:crafting_table*1	-	box in 1
+click	13 0 0	1:shulker_box*1 20:oak_planks*8 21:shears*1 22:sugar*9 23:glass_bottle*1 36:glass_bottle*2 38:torch*4 44:crafting_table*1	red_dye*2	pick up the dye
+click	4 0 0	0:red_shulker_box*1 1:shulker_box*1 4:red_dye*2 20:oak_planks*8 21:shears*1 22:sugar*9 23:glass_bottle*1 36:glass_bottle*2 38:torch*4 44:crafting_table*1	-	dye in 4
+click	0 0 0	4:red_dye*1 20:oak_planks*8 21:shears*1 22:sugar*9 23:glass_bottle*1 36:glass_bottle*2 38:torch*4 44:crafting_table*1	red_shulker_box*1	take the red box
+click	1 0 0	1:red_shulker_box*1 4:red_dye*1 20:oak_planks*8 21:shears*1 22:sugar*9 23:glass_bottle*1 36:glass_bottle*2 38:torch*4 44:crafting_table*1	-	red box in 1
+close		20:oak_planks*8 21:shears*1 22:sugar*9 23:glass_bottle*1 36:glass_bottle*2 37:red_shulker_box*1 38:torch*4 39:red_dye*1 44:crafting_table*1	-
+gamemode	creative
+creative	1 oak_log 3
+gamemode	survival
+check		0:oak_planks*4 1:oak_log*3 20:oak_planks*8 21:shears*1 22:sugar*9 23:glass_bottle*1 36:glass_bottle*2 37:red_shulker_box*1 38:torch*4 39:red_dye*1 44:crafting_table*1	-
+click	0 0 4	0:oak_planks*4 1:oak_log*2 20:oak_planks*8 21:shears*1 22:sugar*9 23:glass_bottle*1 36:glass_bottle*2 37:red_shulker_box*1 38:torch*4 39:red_dye*1 44:crafting_table*1	-	throw the result
+click	0 1 4	20:oak_planks*8 21:shears*1 22:sugar*9 23:glass_bottle*1 36:glass_bottle*2 37:red_shulker_box*1 38:torch*4 39:red_dye*1 44:crafting_table*1	-	throw the results
+away	
+gamemode	creative
+creative	9 stone 64
+creative	10 stone 64
+creative	11 stone 64
+creative	12 stone 64
+creative	13 stone 64
+creative	14 stone 64
+creative	15 stone 64
+creative	16 stone 64
+creative	17 stone 64
+creative	18 stone 64
+creative	19 stone 64
+creative	20 stone 64
+creative	21 stone 64
+creative	22 stone 64
+creative	23 stone 64
+creative	24 stone 64
+creative	25 stone 64
+creative	26 stone 64
+creative	27 stone 64
+creative	28 stone 64
+creative	29 stone 64
+creative	30 stone 64
+creative	31 stone 64
+creative	32 stone 64
+creative	33 stone 64
+creative	34 stone 64
+creative	35 stone 64
+creative	36 stone 64
+creative	37 stone 64
+creative	38 stone 64
+creative	39 stone 64
+creative	40 stone 64
+creative	41 stone 64
+creative	42 stone 64
+creative	43 stone 64
+creative	44 stone 64
+creative	44 oak_planks 62
+creative	1 oak_log 2
+gamemode	survival
+check		0:oak_planks*4 1:oak_log*2 9:stone*64 10:stone*64 11:stone*64 12:stone*64 13:stone*64 14:stone*64 15:stone*64 16:stone*64 17:stone*64 18:stone*64 19:stone*64 20:stone*64 21:stone*64 22:stone*64 23:stone*64 24:stone*64 25:stone*64 26:stone*64 27:stone*64 28:stone*64 29:stone*64 30:stone*64 31:stone*64 32:stone*64 33:stone*64 34:stone*64 35:stone*64 36:stone*64 37:stone*64 38:stone*64 39:stone*64 40:stone*64 41:stone*64 42:stone*64 43:stone*64 44:oak_planks*62	-
+click	0 0 1	0:oak_planks*4 1:oak_log*1 9:stone*64 10:stone*64 11:stone*64 12:stone*64 13:stone*64 14:stone*64 15:stone*64 16:stone*64 17:stone*64 18:stone*64 19:stone*64 20:stone*64 21:stone*64 22:stone*64 23:stone*64 24:stone*64 25:stone*64 26:stone*64 27:stone*64 28:stone*64 29:stone*64 30:stone*64 31:stone*64 32:stone*64 33:stone*64 34:stone*64 35:stone*64 36:stone*64 37:stone*64 38:stone*64 39:stone*64 40:stone*64 41:stone*64 42:stone*64 43:stone*64 44:oak_planks*64	-	shift-click with room for two

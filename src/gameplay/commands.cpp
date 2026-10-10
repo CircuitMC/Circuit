@@ -190,6 +190,7 @@ Plan plan(RuleContext& ctx, const contracts::SetPlayerSlot& c) {
         auto& inv = ctx.player(c.player);
         inv.slots[c.slot] = clear ? ItemStack{} : c.stack;
         detail::record_slot(ctx, inv, c.slot);
+        if (c.slot <= 4) detail::update_crafting(ctx, inv);
     };
 }
 

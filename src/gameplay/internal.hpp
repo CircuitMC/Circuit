@@ -84,6 +84,9 @@ bool player_has_room(const PlayerInventory& inv, ItemStack stack, std::uint8_t s
 contracts::Result<std::function<void()>> plan_click(RuleContext& ctx, const contracts::ContainerClick& c);
 contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const contracts::CloseContainer& c);
 contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const contracts::PlayerDeath& c);
+// Sets the crafting result (slot 0) from the player's 2x2 grid (slots 1-4)
+// and the data packs' recipes. Without data packs crafting is not modeled.
+void update_crafting(RuleContext& ctx, PlayerInventory& inv);
 
 // ---- dust (redstone.cpp) ----
 bool is_dot(BlockState s);
