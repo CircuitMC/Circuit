@@ -151,6 +151,11 @@ std::uint8_t light_emission(std::uint32_t state) noexcept {
     return data::light[state - 1] & 15;
 }
 
+bool motion_blocking(std::uint32_t state) noexcept {
+    if (state < 1 || state > data::state_count) return false;
+    return (data::light[state - 1] >> 6 & 1) != 0;
+}
+
 std::uint8_t light_dampening(std::uint32_t state) noexcept {
     if (state < 1 || state > data::state_count) return 15;
     static constexpr std::uint8_t values[4]{0, 1, 15, 15};

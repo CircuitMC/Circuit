@@ -14,10 +14,11 @@ Each version maps its states to internal ids and back. Per internal block the
 table keeps the data the rules use for blocks without rules of their own:
 hardness, opacity, the effective tool and the lowest tier that harvests the
 block. Per state it keeps the collision class (empty, partial, full cube),
-which faces the collision shape covers completely, and its light: emission,
+which faces the collision shape covers completely, its light: emission,
 dampening and, for states whose shape occludes light, the parts of each face
 the occlusion shape covers (light_of below; minecraft-data gives light per
-block and describes its default state, so the state rules are Circuit's).
+block and describes its default state, so the state rules are Circuit's), and
+whether it counts for the MOTION_BLOCKING heightmap (motion_blocking below).
 
 Usage:
   tools/compile_block_registry.py <data>/1.21.8 <data>/1.21.4 --commit <sha> \\
@@ -136,6 +137,32 @@ def light_of(name, p, block, boxes16, default):
     if p.get("waterlogged") == "true" and d == 0 and not name.endswith("copper_grate"):
         d = 1
     return e, d, occlusion
+
+
+# The MOTION_BLOCKING heightmap counts states that are solid or hold a fluid
+# (minecraft.wiki "Heightmap": the legacy solid property, not the collision
+# box). Circuit's rules, checked against a report of every state of both
+# official servers: a state is solid when its collision box's three sides add
+# up to at least 35/16 of a block or it is a full block tall, except for
+# families that are solid in every state or never solid.
+ALWAYS_SOLID = re.compile(r"(.*_(sign|banner|pressure_plate|fence_gate)|(?!resin_brick_wall).*_wall|dead_.*_coral(_wall)?(_fan)?|moving_piston|"
+                          r"sculk_vein|amethyst_cluster|.*_amethyst_bud|bell|cake|chain|conduit|dried_ghast|(soul_)?lantern|lightning_rod|"
+                          r"piston_head|pointed_dripstone|turtle_egg)$")
+NEVER_SOLID = re.compile(r"(.*_carpet|.*candle|.*_(head|skull)|flower_pot|potted_.*|ladder|lily_pad|(flowering_)?azalea|big_dripleaf|"
+                         r"chorus_(flower|plant)|cocoa|end_rod|heavy_core|scaffolding|snow|sea_pickle|pitcher_crop)$")
+FLUID_BLOCKS = {"water", "lava", "bubble_column", "kelp", "kelp_plant", "seagrass", "tall_seagrass"}
+
+
+def motion_blocking(name, p, boxes16):
+    if name in FLUID_BLOCKS or p.get("waterlogged") == "true":
+        return True
+    if ALWAYS_SOLID.match(name):
+        return True
+    if NEVER_SOLID.match(name) or not boxes16:
+        return False
+    lo = [min(b[k] for b in boxes16) for k in range(3)]
+    hi = [max(b[k + 3] for b in boxes16) for k in range(3)]
+    return sum(h - l for h, l in zip(hi, lo)) >= 35 or hi[1] - lo[1] >= 16
 
 
 def face_masks(boxes16):
@@ -270,7 +297,8 @@ def main():
         for combo, i in zip(combos, ids):
             boxes16 = [tuple(round(c * 16) for c in box) for box in shapes["shapes"][str(i)]]
             e, d, occlusion = light_of(b["name"], dict(zip(names, combo)), b, boxes16, default)
-            light_bytes.append(e | {0: 0, 1: 1, 15: 2}[d] << 4)
+            motion = 1 if motion_blocking(b["name"], dict(zip(names, combo)), boxes16) else 0
+            light_bytes.append(e | {0: 0, 1: 1, 15: 2}[d] << 4 | motion << 6)
             if occlusion is None:
                 occlusion_ids.append(0)
             else:
@@ -295,7 +323,8 @@ def main():
     for i in range(0, len(shape_bytes), 32):
         out.append("    " + ", ".join(str(c) for c in shape_bytes[i:i + 32]) + ",")
     out.append("};")
-    out += ["// Per internal state (from 1): bits 0-3 light emission, bits 4-5 dampening (0: 0, 1: 1, 2: 15).",
+    out += ["// Per internal state (from 1): bits 0-3 light emission, bits 4-5 dampening (0: 0, 1: 1, 2: 15),",
+            "// bit 6 counts for the MOTION_BLOCKING heightmap.",
             "const std::uint8_t light[] = {"]
     for i in range(0, len(light_bytes), 32):
         out.append("    " + ", ".join(str(c) for c in light_bytes[i:i + 32]) + ",")

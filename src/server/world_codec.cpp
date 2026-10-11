@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "world_codec.hpp"
 #include <circuit/gameplay/block_registry.hpp>
+#include <circuit/gameplay/light.hpp>
 #include <circuit/protocol/nbt.hpp>
 #include <algorithm>
 #include <bit>
@@ -147,7 +148,10 @@ Bytes encode_chunk(const runtime::ColumnSnapshot& column, const BlockPalette& pa
     const bool modern = protocol >= 770;
     const std::int32_t direct_bits = 15; // ceil(log2(state count)): 27946 states (1.21.8), 27866 (1.21.4)
     const std::int32_t ox = column.pos.x * 16, oz = column.pos.z * 16;
-    std::array<std::int32_t, 256> top{}; // highest occupied y index + 1 per column (x fastest)
+    // Per column (x fastest), the highest y index + 1 of a block that is not
+    // air (WORLD_SURFACE), of one that is solid or holds a fluid
+    // (MOTION_BLOCKING) and of such a block that is not leaves (MOTION_BLOCKING_NO_LEAVES).
+    std::array<std::int32_t, 256> top{}, motion_top{}, no_leaves_top{};
 
     protocol::Writer data;
     for (std::size_t s = 0; s < sections; ++s) {
@@ -177,7 +181,11 @@ Bytes encode_chunk(const runtime::ColumnSnapshot& column, const BlockPalette& pa
                 };
                 states[i] = display_state(palette, local, p, st);
                 const auto column_index = i & 255;
-                top[column_index] = std::max(top[column_index], static_cast<std::int32_t>(s * 16 + (i >> 8) + 1));
+                const auto height = static_cast<std::int32_t>(s * 16 + (i >> 8) + 1);
+                top[column_index] = std::max(top[column_index], height);
+                if (gameplay::motion_blocking(st)) motion_top[column_index] = std::max(motion_top[column_index], height);
+                if (modern && gameplay::motion_blocking_no_leaves(st))
+                    no_leaves_top[column_index] = std::max(no_leaves_top[column_index], height);
             }
         }
         encode_section(data, states, biome_id, direct_bits, !modern, non_air);
@@ -187,22 +195,27 @@ Bytes encode_chunk(const runtime::ColumnSnapshot& column, const BlockPalette& pa
     w.i32(column.pos.x).i32(column.pos.z);
     // Heightmaps: world surface and motion blocking, 9 bits for 385 heights.
     const unsigned height_bits = static_cast<unsigned>(std::bit_width(static_cast<unsigned>(shape.height)));
-    std::array<std::uint32_t, 256> heights{};
-    for (std::size_t i = 0; i < 256; ++i) heights[i] = static_cast<std::uint32_t>(top[i]);
-    const auto packed = pack_entries(heights, height_bits);
+    const auto pack = [&](const std::array<std::int32_t, 256>& tops) {
+        std::array<std::uint32_t, 256> heights{};
+        for (std::size_t i = 0; i < 256; ++i) heights[i] = static_cast<std::uint32_t>(tops[i]);
+        return pack_entries(heights, height_bits);
+    };
+    const auto surface = pack(top), motion = pack(motion_top);
     if (modern) {
-        // 1.21.5+: a list of (type, longs); 1 is WORLD_SURFACE, 4 MOTION_BLOCKING.
-        w.varint(2);
-        for (const std::int32_t type : {1, 4}) {
-            w.varint(type).varint(static_cast<std::int32_t>(packed.size()));
-            for (const auto v : packed) w.i64(v);
+        // 1.21.5+: a list of (type, longs); 1 is WORLD_SURFACE, 4
+        // MOTION_BLOCKING, 5 MOTION_BLOCKING_NO_LEAVES, all three sent by the
+        // official 1.21.8 server (1.21.4 sends the first two).
+        const auto no_leaves = pack(no_leaves_top);
+        w.varint(3);
+        for (const auto& [type, packed] : {std::pair{1, &surface}, std::pair{4, &motion}, std::pair{5, &no_leaves}}) {
+            w.varint(type).varint(static_cast<std::int32_t>(packed->size()));
+            for (const auto v : *packed) w.i64(v);
         }
     } else {
         // 1.21.4: a network NBT compound of long arrays named by heightmap.
         auto maps = protocol::nbt::Tag::compound();
-        std::vector<std::int64_t> longs(packed.begin(), packed.end());
-        maps.set("MOTION_BLOCKING", protocol::nbt::Tag::long_array(longs));
-        maps.set("WORLD_SURFACE", protocol::nbt::Tag::long_array(std::move(longs)));
+        maps.set("MOTION_BLOCKING", protocol::nbt::Tag::long_array(std::vector<std::int64_t>(motion.begin(), motion.end())));
+        maps.set("WORLD_SURFACE", protocol::nbt::Tag::long_array(std::vector<std::int64_t>(surface.begin(), surface.end())));
         protocol::nbt::write_network(w, maps);
     }
     w.prefixed_bytes(data.bytes());

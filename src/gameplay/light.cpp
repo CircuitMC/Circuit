@@ -20,8 +20,10 @@ LightInfo registry_light(std::uint32_t state) noexcept {
 // Modeled states through the registry states they stand for. Their light
 // depends only on the low 16 bits (type, facing, level, flag): wire sides and
 // diode delays do not change it, which building the table checks.
+// So does whether they count for the MOTION_BLOCKING heightmap.
 struct ModeledLight {
     std::vector<LightInfo> by_bits = std::vector<LightInfo>(1u << 16, LightInfo{0, 15, 0});
+    std::vector<bool> motion = std::vector<bool>(1u << 16);
 };
 const ModeledLight& modeled_light() {
     static const auto table = [] {
@@ -30,10 +32,13 @@ const ModeledLight& modeled_light() {
         for_each_modeled_state([&](BlockState s) {
             const auto state = registry_equivalent(s);
             const auto info = state ? registry_light(*state) : LightInfo{0, 15, 0};
+            const bool motion = state && registry::motion_blocking(*state);
             const auto bits = s.raw() & 0xFFFF;
-            if (seen[bits] && !(out.by_bits[bits] == info)) throw std::logic_error("light: modeled states differ beyond their low bits");
+            if (seen[bits] && (!(out.by_bits[bits] == info) || out.motion[bits] != motion))
+                throw std::logic_error("light: modeled states differ beyond their low bits");
             seen[bits] = true;
             out.by_bits[bits] = info;
+            out.motion[bits] = motion;
         });
         return out;
     }();
@@ -48,6 +53,27 @@ LightInfo light_info(BlockState s) noexcept {
     if (s.is(BlockType::other)) return registry_light(s.registry_state());
     if (s.is_unloaded()) return {0, 15, 0};
     return modeled_light().by_bits[s.raw() & 0xFFFF];
+}
+
+bool motion_blocking(BlockState s) noexcept {
+    if (s.is(BlockType::other)) return registry::motion_blocking(s.registry_state());
+    if (s.is_unloaded()) return false;
+    return modeled_light().motion[s.raw() & 0xFFFF];
+}
+
+bool motion_blocking_no_leaves(BlockState s) noexcept {
+    // Leaves are blocks without rules of their own, named "*_leaves".
+    static const auto leaves = [] {
+        std::vector<bool> out(registry::state_count() + 1);
+        for (std::uint32_t b = 0; b < registry::block_count(); ++b) {
+            const auto info = registry::block(b);
+            if (!info.name.ends_with("_leaves") && info.name.find("_leaves@") == std::string_view::npos) continue;
+            for (auto st = info.first_state; st < info.first_state + info.state_count; ++st) out[st] = true;
+        }
+        return out;
+    }();
+    if (s.is(BlockType::other) && s.registry_state() < leaves.size() && leaves[s.registry_state()]) return false;
+    return motion_blocking(s);
 }
 
 std::uint8_t light_passed(LightKind kind, std::uint8_t level, const LightInfo& from, const LightInfo& to, Direction side) noexcept {

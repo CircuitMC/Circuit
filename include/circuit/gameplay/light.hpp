@@ -32,6 +32,11 @@ struct LightInfo {
     bool operator==(const LightInfo&) const = default;
 };
 LightInfo light_info(BlockState s) noexcept;
+// Whether a state counts for the MOTION_BLOCKING heightmap clients get
+// (registry::motion_blocking), and for MOTION_BLOCKING_NO_LEAVES, which
+// leaves never count for (both official servers).
+bool motion_blocking(BlockState s) noexcept;
+bool motion_blocking_no_leaves(BlockState s) noexcept;
 
 enum class LightKind : std::uint8_t { block, sky };
 

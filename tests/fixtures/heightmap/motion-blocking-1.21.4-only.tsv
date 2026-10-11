@@ -1,0 +1,15 @@
+# The MOTION_BLOCKING heightmap of the block states only 1.21.4 has, reported by the official 1.21.4 server through the
+# external harness (circuit-harness-1.21.4 with its heightmap report, 2026-10-11), as in motion-blocking-1.21.8.tsv; the
+# states both versions have count the same in both.
+minecraft:creaking_heart[active=true,axis=x,natural=true]	1
+minecraft:creaking_heart[active=true,axis=x,natural=false]	1
+minecraft:creaking_heart[active=true,axis=y,natural=true]	1
+minecraft:creaking_heart[active=true,axis=y,natural=false]	1
+minecraft:creaking_heart[active=true,axis=z,natural=true]	1
+minecraft:creaking_heart[active=true,axis=z,natural=false]	1
+minecraft:creaking_heart[active=false,axis=x,natural=true]	1
+minecraft:creaking_heart[active=false,axis=x,natural=false]	1
+minecraft:creaking_heart[active=false,axis=y,natural=true]	1
+minecraft:creaking_heart[active=false,axis=y,natural=false]	1
+minecraft:creaking_heart[active=false,axis=z,natural=true]	1
+minecraft:creaking_heart[active=false,axis=z,natural=false]	1

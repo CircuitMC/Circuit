@@ -279,6 +279,48 @@ int main(int argc, char** argv) {
         require(evaluate_fixture(big, engine_executor(1)).outcome == Outcome::unsupported, "more than 256 chunks");
     });
 
+    suite.run("heightmap properties match both official servers", [&] {
+        // tests/fixtures/heightmap: which states count for MOTION_BLOCKING, by
+        // block when its states agree, as the official servers report them.
+        namespace registry = circuit::gameplay::registry;
+        std::size_t states = 0;
+        for (const auto& [file, release] : {std::pair{"motion-blocking-1.21.8.tsv", "1.21.8"}, std::pair{"motion-blocking-1.21.4-only.tsv", "1.21.4"}}) {
+            const auto* mapping = ContentMapping::for_game_version(release);
+            const auto check = [&](std::uint32_t internal, bool expected) {
+                const auto notation = registry::notation(internal);
+                const auto state = mapping->block(notation);
+                require(state.has_value(), notation);
+                require(circuit::gameplay::motion_blocking(*state) == expected, std::format("{} {}: {}", release, notation, !expected));
+                const bool leaves = notation.find("_leaves") != std::string::npos;
+                require(circuit::gameplay::motion_blocking_no_leaves(*state) == (expected && !leaves), std::format("{} {}: leaves", release, notation));
+                ++states;
+            };
+            std::istringstream lines(read_text(fixtures / "heightmap" / file));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto tab = line.find('\t');
+                require(tab != std::string::npos, line);
+                const auto name = line.substr(0, tab), value = line.substr(tab + 1);
+                if (name.find('[') != std::string::npos) {
+                    const auto state = mapping->block(name);
+                    require(state.has_value(), name);
+                    require(circuit::gameplay::motion_blocking(*state) == (value == "1"), std::format("{} {}", release, name));
+                    ++states;
+                    continue;
+                }
+                const auto block = registry::find_block(release, name);
+                require(block.has_value(), name);
+                const auto info = registry::block(*block);
+                for (auto s = info.first_state; s < info.first_state + info.state_count; ++s) {
+                    bool waterlogged = false;
+                    for (const auto& [key, v] : registry::properties(s)) waterlogged |= key == "waterlogged" && v == "true";
+                    check(s, value == "waterlogged" ? waterlogged : value == "1");
+                }
+            }
+        }
+        require(states == 27946 + 12, std::format("{} states", states));
+    });
+
     suite.run("light properties match both official servers", [&] {
         // tests/fixtures/light: every state's emission, dampening and
         // occlusion shape as the official servers report them.

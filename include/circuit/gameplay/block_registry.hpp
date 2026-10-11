@@ -74,6 +74,10 @@ bool face_covered(std::uint32_t state, contracts::Direction face) noexcept;
 std::uint8_t light_emission(std::uint32_t state) noexcept;
 std::uint8_t light_dampening(std::uint32_t state) noexcept;
 std::uint16_t light_shape(std::uint32_t state) noexcept;
+// Whether a state counts for the MOTION_BLOCKING heightmap: it is solid or
+// holds a fluid (rules of tools/compile_block_registry.py, checked against a
+// report of every state of both official servers).
+bool motion_blocking(std::uint32_t state) noexcept;
 // Whether light cannot pass from a cell with occlusion shape `from` to its
 // neighbor on `side` with shape `to`: the two shapes' faces between them
 // together cover the face completely.
