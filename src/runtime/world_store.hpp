@@ -109,6 +109,7 @@ struct WorldStore {
     Tick started{}; // see WorldDump::started
     std::map<std::string, std::int32_t> game_rules; // see WorldDump::game_rules
     std::int64_t day_time{};                        // see WorldDump::day_time
+    gameplay::Weather weather;                      // see WorldDump::weather
     std::uint64_t next_entity_id{1};
     std::array<LevelCounters, contracts::dimension_count> levels{};
     // Each level's light while the random-tick phase reads it (up to date for

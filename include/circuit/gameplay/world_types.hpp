@@ -7,6 +7,7 @@
 #include <circuit/contracts/time.hpp>
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/block.hpp>
+#include <circuit/gameplay/weather.hpp>
 #include <compare>
 #include <cstdint>
 #include <map>
@@ -312,6 +313,8 @@ struct WorldDump {
     // overworld has a daylight cycle. It advances by one each tick after the
     // commands while doDaylightCycle is on.
     std::int64_t day_time{};
+    // The world's weather (contracts::SetWeather), as the overworld's: only it has weather.
+    Weather weather;
     std::vector<LevelDump> levels;        // ascending dimension; listed with a column, a presence or an active tick
     std::vector<Ticket> tickets;          // ascending id
     std::vector<PlayerInventory> players; // ascending player, non-empty only

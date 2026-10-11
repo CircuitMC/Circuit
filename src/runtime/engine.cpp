@@ -69,6 +69,7 @@ struct Engine::Impl {
     std::uint64_t epoch{};
     std::map<std::pair<ChunkKey, ChunkKey>, Tick> edges; // Last tick two columns interacted.
     gameplay::Rng layout_rng;
+    gameplay::Rng weather_rng{0}; // this tick's weather stream
     // Light of each level, brought up to date when read: the loaded columns
     // as they were at the start of the tick, the sections the light was last
     // brought up to date with (copy-on-write: a written section is a new
@@ -233,6 +234,7 @@ void Engine::Impl::advance(const std::vector<Command>& commands) {
     failed = true; // Cleared only when the whole tick completes.
     ++epoch;
     ++world.time;
+    weather_rng = gameplay::weather_stream(seed, world.time);
     trace.clear();
     const auto timed = [this](contracts::Phase phase, auto&& run) {
         const auto start = std::chrono::steady_clock::now();
@@ -246,7 +248,9 @@ void Engine::Impl::advance(const std::vector<Command>& commands) {
     start.clear();
     for (const auto& [c, data] : world.loaded) start.emplace(c, data->sections);
     timed(Phase::commands, [&] { command_phase(commands); });
-    // The day time advances before the levels run (both official servers).
+    // The weather, then the day time, advance before the levels run (both
+    // official servers).
+    gameplay::advance_weather(world.weather, gameplay::game_rule_value(bundle, world.game_rules, "doWeatherCycle") != 0, weather_rng);
     if (gameplay::game_rule_value(bundle, world.game_rules, "doDaylightCycle") != 0) ++world.day_time;
     // Then each level, in level order, runs its phases: the scheduled ticks
     // of its loaded chunks, its chunk stage, and the rest where chunks are
@@ -361,12 +365,17 @@ void Engine::Impl::command_phase(const std::vector<Command>& commands) {
                 world.counters(c.dimension).presences[presence->player] = {presence->player, presence->position, presence->spectator};
         } else if (std::holds_alternative<contracts::LevelsStarted>(c.body)) {
             world.started = world.time - 1;
+            gameplay::restart_weather(world.weather);
         } else if (const auto* rule = std::get_if<contracts::SetGameRule>(&c.body)) {
             ticket_result = gameplay::check_game_rule(bundle, *rule);
             if (ticket_result) gameplay::set_game_rule(bundle, world.game_rules, *rule);
         } else if (const auto* day = std::get_if<contracts::SetDayTime>(&c.body)) {
             if (day->time < 0) ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
             else world.day_time = day->time;
+        } else if (const auto* weather = std::get_if<contracts::SetWeather>(&c.body)) {
+            if (static_cast<std::uint8_t>(weather->kind) >= contracts::weather_kind_count || weather->duration < 0)
+                ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
+            else gameplay::set_weather(world.weather, *weather, weather_rng);
         } else {
             gameplay::apply_command(ctx, c);
             continue;
@@ -913,6 +922,7 @@ void fill_dump(const WorldStore& world, const contracts::VersionBundle& bundle, 
     d.started = world.started;
     d.game_rules = world.game_rules;
     d.day_time = world.day_time;
+    d.weather = world.weather;
     std::map<DimensionId, std::vector<std::pair<std::uint64_t, BlockEvent>>> events;
     const auto add = [&](const ChunkData& data, ChunkLevel level) {
         auto& l = d.level(data.dimension);
@@ -1004,6 +1014,8 @@ void Engine::Impl::restore(const WorldDump& state) {
     world.game_rules = state.game_rules;
     if (state.day_time < 0) bad("day time");
     world.day_time = state.day_time;
+    if (!gameplay::valid_weather(state.weather)) bad("weather");
+    world.weather = state.weather;
     // Valid entity stacks; entities of every level are checked against the
     // global id counter.
     const auto valid_speed = [](std::int64_t v) { return v >= -gameplay::max_entity_speed && v <= gameplay::max_entity_speed; };
@@ -1111,6 +1123,7 @@ Engine::~Engine() = default;
 void Engine::advance(const std::vector<Command>& commands) { impl_->advance(commands); }
 contracts::Tick Engine::time() const noexcept { return impl_->world.time; }
 std::int64_t Engine::day_time() const noexcept { return impl_->world.day_time; }
+const gameplay::Weather& Engine::weather() const noexcept { return impl_->world.weather; }
 const std::vector<TraceRecord>& Engine::trace() const noexcept { return impl_->trace; }
 WorldDump Engine::dump() const { return impl_->dump(); }
 const EngineStats& Engine::stats() const noexcept { return impl_->stats; }

@@ -2,6 +2,7 @@
 #include <circuit/gameplay/world_types.hpp>
 #include <circuit/contracts/trace.hpp>
 #include <algorithm>
+#include <bit>
 #include <format>
 
 namespace circuit::gameplay {
@@ -227,6 +228,13 @@ std::string first_difference(const WorldDump& a, const WorldDump& b) {
         return "game rules: set only in the second";
     }
     if (a.day_time != b.day_time) return std::format("day time {} != {}", a.day_time, b.day_time);
+    if (a.weather != b.weather) {
+        const auto text = [](const Weather& w) {
+            return std::format("clear {} rain {}{} thunder {}{} levels {} {}", w.clear_time, w.raining ? "on " : "off ", w.rain_time,
+                               w.thundering ? "on " : "off ", w.thunder_time, w.rain_level, w.thunder_level);
+        };
+        return std::format("weather {} != {}", text(a.weather), text(b.weather));
+    }
     if (a.levels.size() != b.levels.size()) return std::format("levels: {} != {}", a.levels.size(), b.levels.size());
     for (std::size_t i = 0; i < a.levels.size(); ++i) {
         const auto& la = a.levels[i];
@@ -281,6 +289,13 @@ std::uint64_t digest(const WorldDump& d) {
         h.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(value)));
     }
     h.add(static_cast<std::uint64_t>(d.day_time));
+    const auto& w = d.weather;
+    h.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(w.clear_time)));
+    h.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(w.rain_time)));
+    h.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(w.thunder_time)));
+    h.add(static_cast<std::uint64_t>(w.raining) | static_cast<std::uint64_t>(w.thundering) << 1);
+    h.add(std::bit_cast<std::uint32_t>(w.rain_level));
+    h.add(std::bit_cast<std::uint32_t>(w.thunder_level));
     h.add(d.levels.size());
     for (const auto& l : d.levels) {
         h.add(static_cast<std::uint64_t>(l.dimension));

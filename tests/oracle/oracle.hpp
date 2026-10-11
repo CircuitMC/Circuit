@@ -85,6 +85,7 @@ private:
     contracts::Tick started_{};
     std::map<std::string, std::int32_t> game_rules_;
     std::int64_t day_time_{};
+    gameplay::Weather weather_;
     bool failed_{};
     std::array<Level, contracts::dimension_count> levels_;
     gameplay::TicketSet tickets_;

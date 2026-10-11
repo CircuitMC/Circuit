@@ -506,6 +506,11 @@ inline Scenario crop_light_scenario() {
         if (t == 5) c.push_back(SetDayTime{13000});
         if (t == 40) c.push_back(SetGameRule{"doDaylightCycle", 0});
         if (t == 90) c.push_back(SetGameRule{"doDaylightCycle", 1});
+        // Rain for 60 ticks, then clear for 40, which ends in a thunderstorm;
+        // then a default-length storm.
+        if (t == 10) c.push_back(SetWeather{WeatherKind::rain, 60});
+        if (t == 100) c.push_back(SetWeather{WeatherKind::clear, 40});
+        if (t == 200) c.push_back(SetWeather{WeatherKind::thunder, 0});
         if (t == 120) c.push_back(use_lever({12, 0, 11}));
         return c;
     }, 20};

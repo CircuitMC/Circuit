@@ -285,6 +285,23 @@ std::vector<std::string> error_contexts(Recorder& r, const server::Wire& wire) {
     return out;
 }
 
+// The weather game events a player got (1 rain starts, 2 rain ends, 7 rain
+// level, 8 thunder level) with their values.
+std::vector<std::pair<int, float>> weather_events(Recorder& r, const server::Wire& wire) {
+    const auto id = wire.ids().id(State::play, Bound::clientbound, "game_event");
+    std::vector<std::pair<int, float>> out;
+    std::lock_guard lock(r.mutex);
+    for (const auto& bytes : r.packets) {
+        auto p = protocol::open_packet(bytes);
+        if (!p || p->id != id) continue;
+        protocol::Reader in(p->fields);
+        const auto event = in.u8().value();
+        const auto value = in.f32().value();
+        if (event == 1 || event == 2 || event == 7 || event == 8) out.emplace_back(event, value);
+    }
+    return out;
+}
+
 // The set_time packets a player got: world age, day time, advancing.
 std::vector<std::tuple<std::int64_t, std::int64_t, bool>> time_packets(Recorder& r, const server::Wire& wire) {
     const auto id = wire.ids().id(State::play, Bound::clientbound, "set_time");
@@ -1075,6 +1092,49 @@ int main() {
             const auto age = static_cast<std::int64_t>(f.game->engine().time());
             auto peer = f.join(1, "Clock");
             require(time_packets(*peer, f.wire).front() == std::tuple{age, std::int64_t{25001}, false}, "sent on joining");
+        }
+        std::filesystem::remove_all(dir);
+    });
+
+    suite.run("the weather is set with /weather, sent as it changes and on joining, and persists", [] {
+        const auto dir = temporary_directory();
+        auto config = offline_config();
+        config.world_directory = dir / "world";
+        {
+            GameFixture f(config);
+            auto peer = f.join(1, "Rain");
+            using I = server::Intent;
+            for (const auto* command : {"weather rain 100", "weather rain 0", "weather snow", "weather thunder 1x"})
+                f.game->submit(1, I{server::intent::Command{command}});
+            f.game->tick();
+            const std::vector<std::string> expected{"commands.weather.set.rain", "argument.time.tick_count_too_low 1 0",
+                                                    "command.unknown.argument", "argument.time.invalid_unit"};
+            require(feedback(*peer, f.wire) == expected, "replies");
+            for (int i = 0; i < 19; ++i) f.game->tick();
+            // As both official servers sent them: a level each tick, and the
+            // start of rain with both levels once it passes 0.2.
+            const auto events = weather_events(*peer, f.wire);
+            require(events.size() == 23 && events[0] == std::pair{7, 0.01f} && events[19] == std::pair{7, 0.20000001788139343f}
+                        && events[20] == std::pair{1, 0.0f} && events[21] == std::pair{7, 0.20000001788139343f}
+                        && events[22] == std::pair{8, 0.0f},
+                    std::format("{} weather events", events.size()));
+            f.game->submit(1, I{server::intent::Command{"gamerule doWeatherCycle false"}});
+            f.game->submit(1, I{server::intent::Command{"weather thunder"}});
+            for (int i = 0; i < 40; ++i) f.game->tick();
+            // A newcomer sees the rain at once.
+            auto other = f.join(2, "Late");
+            const auto joined = weather_events(*other, f.wire);
+            require(joined.size() >= 3 && joined[0] == std::pair{1, 0.0f} && joined[1].first == 7 && joined[2].first == 8
+                        && joined[2].second > 0.3f && joined[2].second < 0.5f,
+                    "rain and its levels on joining");
+        }
+        {
+            // A start sets the levels to their flags, as when the official servers load a world.
+            GameFixture f(config);
+            f.game->tick();
+            const auto& w = f.game->engine().weather();
+            require(w.raining && w.thundering && w.rain_level == 1.0f && w.thunder_level == 1.0f && w.rain_time > 0,
+                    "the weather persists; its levels are its flags'");
         }
         std::filesystem::remove_all(dir);
     });

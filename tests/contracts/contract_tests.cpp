@@ -124,6 +124,10 @@ int main() {
             require(rules.admit(SetGameRule{bad, 0}).error() == ErrorCode::invalid_argument, std::format("rule name `{}` refused", bad));
         require(rules.admit(SetDayTime{0}).has_value() && rules.admit(SetDayTime{-1}).error() == ErrorCode::invalid_argument,
                 "day times are not negative");
+        require(rules.admit(SetWeather{WeatherKind::rain, 0}).has_value()
+                    && rules.admit(SetWeather{WeatherKind::rain, -1}).error() == ErrorCode::invalid_argument
+                    && rules.admit(SetWeather{static_cast<WeatherKind>(3), 1}).error() == ErrorCode::invalid_argument,
+                "weather kinds and durations");
     });
 
     suite.run("trace divergence", [] {
@@ -239,6 +243,12 @@ int main() {
             auto negative = encode_replay(day).value();
             negative[negative.size() - 1] = std::byte{0x80}; // the top byte of the little-endian time
             require(decode_replay(negative).error() == ErrorCode::malformed_record, "a negative day time is refused");
+            ReplayLog weather{"java-1.21.8", "circuit-reference-rules-v9", 1, {}, "circuit-blocks-1"};
+            weather.ticks.push_back({1, {{1, SetWeather{WeatherKind::thunder, 0}}, {2, SetWeather{WeatherKind::clear, 24000}}}});
+            require(decode_replay(encode_replay(weather).value()).value() == weather, "weather round-trips");
+            auto kind = encode_replay(weather).value();
+            kind[kind.size() - 5] = std::byte{3}; // the second command's kind
+            require(decode_replay(kind).error() == ErrorCode::malformed_record, "an unknown weather is refused");
         }
 
         auto version_one = *bytes;

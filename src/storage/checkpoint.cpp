@@ -17,6 +17,7 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 12: the world's weather;
 // 11: the world's day time;
 // 10: the world's game rules set by commands;
 // 9: columns carry the tick their pending ticks wait from (saved) and the
@@ -35,7 +36,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 11;
+constexpr std::uint32_t version = 12;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -167,6 +168,10 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
     w.varint(static_cast<std::int32_t>(s.game_rules.size()));
     for (const auto& [name, value] : s.game_rules) w.string(name, 64).i32(value);
     w.varlong(s.day_time);
+    const auto& weather = s.weather;
+    w.varint(weather.clear_time).varint(weather.rain_time).varint(weather.thunder_time);
+    w.u8(static_cast<std::uint8_t>(weather.raining) | static_cast<std::uint8_t>(weather.thundering) << 1);
+    w.i32(std::bit_cast<std::int32_t>(weather.rain_level)).i32(std::bit_cast<std::int32_t>(weather.thunder_level));
     w.varint(static_cast<std::int32_t>(s.levels.size()));
     for (std::size_t k = 0; k < s.levels.size(); ++k)
         encode_level(w, s.levels[k], [&](std::size_t i) { return blocks(k, i); });
@@ -395,6 +400,22 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
             }
         }
         if (b.version >= 11 && !b.get(b.r.varlong(), s.day_time)) return false;
+        if (b.version >= 12) {
+            auto& weather = s.weather;
+            std::uint8_t flags{};
+            std::int32_t rain{}, thunder{};
+            if (!b.get(b.r.varint(), weather.clear_time) || !b.get(b.r.varint(), weather.rain_time) || !b.get(b.r.varint(), weather.thunder_time)
+                || !b.get(b.r.u8(), flags) || !b.get(b.r.i32(), rain) || !b.get(b.r.i32(), thunder))
+                return false;
+            if (flags > 3) {
+                b.error = "invalid weather";
+                return false;
+            }
+            weather.raining = (flags & 1) != 0;
+            weather.thundering = (flags & 2) != 0;
+            weather.rain_level = std::bit_cast<float>(rain);
+            weather.thunder_level = std::bit_cast<float>(thunder);
+        }
         if (!b.count(levels, 4)) return false;
         for (std::size_t k = 0; k < levels; ++k) {
             std::uint8_t dimension{};

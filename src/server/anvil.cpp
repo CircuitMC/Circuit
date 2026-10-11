@@ -488,6 +488,20 @@ private:
         const auto day = integer(*level, "DayTime").value_or(0);
         if (day < 0) return std::unexpected("level.dat: negative day time");
         result_.state.day_time = day;
+        // The weather's flags and timers; its levels follow the flags, as when
+        // the official servers load a world.
+        auto& weather = result_.state.weather;
+        const auto timer = [&](std::string_view key, std::int32_t& out) {
+            const auto v = integer(*level, key).value_or(0);
+            if (v < 0 || v > INT32_MAX) return false;
+            out = static_cast<std::int32_t>(v);
+            return true;
+        };
+        if (!timer("clearWeatherTime", weather.clear_time) || !timer("rainTime", weather.rain_time) || !timer("thunderTime", weather.thunder_time))
+            return std::unexpected("level.dat: invalid weather time");
+        weather.raining = integer(*level, "raining").value_or(0) != 0;
+        weather.thundering = integer(*level, "thundering").value_or(0) != 0;
+        gameplay::restart_weather(weather);
         // Game rules are strings; the state keeps those away from their defaults.
         if (const auto* rules = child(*level, "GameRules", TagType::compound)) {
             std::size_t ignored = 0;
@@ -1178,6 +1192,11 @@ private:
         data.set("LevelName", Tag::string(options_.level_name));
         data.set("Time", Tag::long_(static_cast<std::int64_t>(world_.time)));
         data.set("DayTime", Tag::long_(world_.day_time));
+        data.set("clearWeatherTime", Tag::int_(world_.weather.clear_time));
+        data.set("rainTime", Tag::int_(world_.weather.rain_time));
+        data.set("thunderTime", Tag::int_(world_.weather.thunder_time));
+        data.set("raining", Tag::boolean(world_.weather.raining));
+        data.set("thundering", Tag::boolean(world_.weather.thundering));
         auto rules = Tag::compound();
         for (const auto& rule : bundle_.schema.game_rules) {
             if (rule.experimental) continue;

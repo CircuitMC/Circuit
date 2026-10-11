@@ -227,9 +227,20 @@ struct SetDayTime {
     bool operator==(const SetDayTime&) const = default;
 };
 
+// The world's weather is set as /weather sets it (gameplay/weather.hpp):
+// clear, rain or thunder for a duration in ticks, or the kind's default
+// duration, drawn by the rules, when it is 0.
+enum class WeatherKind : std::uint8_t { clear, rain, thunder };
+inline constexpr std::uint8_t weather_kind_count = 3;
+struct SetWeather {
+    WeatherKind kind{};
+    std::int32_t duration{};
+    bool operator==(const SetWeather&) const = default;
+};
+
 using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket,
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
-                                 PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime>;
+                                 PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.
@@ -258,6 +269,9 @@ public:
                      || !std::ranges::all_of(rule->name, [](char ch) { return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'); })))
             return std::unexpected(ErrorCode::invalid_argument);
         if (const auto* day = std::get_if<SetDayTime>(&body); day && day->time < 0) return std::unexpected(ErrorCode::invalid_argument);
+        if (const auto* weather = std::get_if<SetWeather>(&body);
+            weather && (static_cast<std::uint8_t>(weather->kind) >= weather_kind_count || weather->duration < 0))
+            return std::unexpected(ErrorCode::invalid_argument);
         if (next_ == UINT64_MAX) return std::unexpected(ErrorCode::counter_overflow);
         const auto id = next_++;
         pending_.emplace(id, std::pair{std::move(body), dimension});

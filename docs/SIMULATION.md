@@ -203,6 +203,12 @@ Every observable action produces a trace record keyed by (tick, level, phase, ro
   - **World state:** a `SetGameRule` command sets one of the version's rules, but not an experimental one. A boolean rule takes 0 or 1, spawnChunkRadius 0–32, and every other integer rule any value, as on the official servers; other values are refused. The state holds the rules away from their defaults; it is saved in checkpoints, and the commands are logged.
   - **Read by the rules:** randomTickSpeed is the number of random positions each section of a random-ticking chunk gets per tick; none at 0 or below. The server reads spawnChunkRadius for the spawn chunks and sets rules with `/gamerule` ([server guide](SERVER.md#survival-and-inventories)). The other rules are kept but change nothing yet.
 - **Day time** (minecraft.wiki "Daylight cycle"; both official servers): the world has one day time, in ticks (24,000 a day), as only the overworld has a daylight cycle. A new world starts at 0. A `SetDayTime` command sets it (never negative); after the commands of each tick it advances by one while doDaylightCycle is on, so a change in a tick shows one more at its end. It is saved in checkpoints. Nothing in the rules reads it yet.
+- **Weather** (minecraft.wiki "Weather" and "Commands/weather"; both official servers, compared with a protocol client and their saved level data): one weather for the world, the overworld's.
+  - **Flags and timers:** a rain flag and a thunder flag, each with a timer, and a clear timer. While the clear timer runs, both flags are off and their timers wait at 1; when it ends, both flags turn on, so a clear spell ends in a thunderstorm. Otherwise a timer counts down and toggles its flag when it reaches 0; a timer at 0 draws its flag's next duration: rain on 12,000–24,000 ticks, off 12,000–180,000; thunder on 3,600–15,600, off 12,000–180,000. Timers run only while doWeatherCycle is on.
+  - **Commands:** a `SetWeather` command is `/weather`: clear for a duration sets the clear timer and turns both flags off with their timers at 0; rain or thunder sets both timers to the duration and turns rain on, and thunder only for thunder. A duration of 0 draws the kind's default (clear 12,000–180,000, rain 12,000–24,000, thunder 3,600–15,600).
+  - **Levels:** after the timers, the rain and thunder levels move toward their flags by 0.01 a tick in single precision, within 0 and 1, whatever the game rule. Rain shows while the rain level is above 0.2. A start (`LevelsStarted`) sets the levels to their flags, as when the official servers load a world.
+  - **Order:** in each tick, after the commands, the weather, then the day time.
+  - **Randomness:** the official servers draw durations from the level's random sequence; Circuit draws them from its own stream for each tick, so durations differ while their ranges are the same. Everything else matched the official servers exactly, level values included. Lightning, snow and ice, filling cauldrons and other effects of rain are not modeled.
 
 ## Part I mechanism contracts
 
@@ -343,8 +349,9 @@ xmake run circuit-server --profile-fixture "$PWD/tests/fixtures/workloads/observ
 
 `--simulate` without `--replay` runs a built-in demonstration with machines that straddle chunk edges.
 
-- **Replay records:** records (format version 9) store the bundle, the rule-set id and the block registry id, whose encoding their block states use. Each command names its level. Item stacks carry their data components, which the simulator checks against the bundle's protocol. A record made under different reference rules or another block registry is refused with `rules_mismatch` instead of replaying with silently different behavior. Older records are still read:
-  - version 8: the same commands, without day times;
+- **Replay records:** records (format version 10) store the bundle, the rule-set id and the block registry id, whose encoding their block states use. Each command names its level. Item stacks carry their data components, which the simulator checks against the bundle's protocol. A record made under different reference rules or another block registry is refused with `rules_mismatch` instead of replaying with silently different behavior. Older records are still read:
+  - version 9: the same commands, without weather;
+  - version 8: also without day times;
   - version 7: also without game rules;
   - version 6: tickets are read as forced ones of level 31 over their radius;
   - version 5: also, every command is the overworld's;

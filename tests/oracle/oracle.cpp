@@ -192,6 +192,7 @@ void Oracle::advance(const std::vector<contracts::Command>& commands) {
     failed_ = true; // Cleared only when the whole tick completes.
     ++time_;
     trace_.clear();
+    auto weather_rng = weather_stream(seed_, time_);
     // Light during this tick follows the blocks as they are now, at its start.
     for (const auto level : contracts::level_order) {
         auto& lv = at(level);
@@ -223,12 +224,17 @@ void Oracle::advance(const std::vector<contracts::Command>& commands) {
             if (presence->present) at(c.dimension).presences[presence->player] = {presence->player, presence->position, presence->spectator};
         } else if (std::holds_alternative<contracts::LevelsStarted>(c.body)) {
             started_ = time_ - 1;
+            restart_weather(weather_);
         } else if (const auto* rule = std::get_if<contracts::SetGameRule>(&c.body)) {
             ticket_result = check_game_rule(bundle_, *rule);
             if (ticket_result) set_game_rule(bundle_, game_rules_, *rule);
         } else if (const auto* day = std::get_if<contracts::SetDayTime>(&c.body)) {
             if (day->time < 0) ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
             else day_time_ = day->time;
+        } else if (const auto* weather = std::get_if<contracts::SetWeather>(&c.body)) {
+            if (static_cast<std::uint8_t>(weather->kind) >= contracts::weather_kind_count || weather->duration < 0)
+                ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
+            else set_weather(weather_, *weather, weather_rng);
         } else {
             apply_command(*ctx_, c);
             continue;
@@ -236,6 +242,7 @@ void Oracle::advance(const std::vector<contracts::Command>& commands) {
         if (ticket_result) ctx_->record(TraceKind::command_applied, {}, c.admission, 0, 0);
         else ctx_->record(TraceKind::command_rejected, {}, c.admission, static_cast<std::uint64_t>(ticket_result.error()), 0);
     }
+    advance_weather(weather_, game_rule_value(bundle_, game_rules_, "doWeatherCycle") != 0, weather_rng);
     if (game_rule_value(bundle_, game_rules_, "doDaylightCycle") != 0) ++day_time_;
     // Each level runs its phases, in level order: the scheduled ticks of its
     // loaded chunks, then its chunk stage (tickets expire and chunk levels
@@ -406,6 +413,7 @@ WorldDump Oracle::dump() const {
     d.started = started_;
     d.game_rules = game_rules_;
     d.day_time = day_time_;
+    d.weather = weather_;
     for (const auto level : contracts::level_order) {
         const auto& lv = levels_[static_cast<std::size_t>(level)];
         if (lv.chunks.empty() && lv.presences.empty() && lv.last_active == 0) continue;

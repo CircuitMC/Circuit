@@ -6,12 +6,12 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
-// 9: day time (tag 20); 8: game rules (tag 19); 7: typed tickets (tag 16), player presences and levels started; 6: each
+// 10: weather (tag 21); 9: day time (tag 20); 8: game rules (tag 19); 7: typed tickets (tag 16), player presences and levels started; 6: each
 // command names its level; 5: stacks carry their data components; 4: the
 // block registry id; 3: stacks carry damage, player commands carry their
 // player. Commands of versions before 6 are the overworld's. Tickets of
 // versions before 7 (tags 5 and 9) read as forced squares.
-constexpr std::uint16_t format_version = 9;
+constexpr std::uint16_t format_version = 10;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -93,10 +93,11 @@ private:
 // 6 RemoveTicket, 7 PlayerUse, 8 PlayerBreak, 9 radius ticket (read only),
 // 10 SetPlayerSlot, 11 PickUp, 12 DropItem, 13 ContainerClick,
 // 14 CloseContainer, 15 PlayerDeath, 16 AddTicket, 17 PlayerPresence,
-// 18 LevelsStarted, 19 SetGameRule, 20 SetDayTime.
+// 18 LevelsStarted, 19 SetGameRule, 20 SetDayTime, 21 SetWeather.
 std::uint8_t tag_of(const CommandBody& body) {
     if (std::holds_alternative<SetGameRule>(body)) return 19;
     if (std::holds_alternative<SetDayTime>(body)) return 20;
+    if (std::holds_alternative<SetWeather>(body)) return 21;
     if (std::holds_alternative<AddTicket>(body)) return 16;
     if (std::holds_alternative<PlayerPresence>(body)) return 17;
     if (std::holds_alternative<LevelsStarted>(body)) return 18;
@@ -138,6 +139,9 @@ void encode_command(Writer& w, const Command& c) {
             w.put(body.value);
         } else if constexpr (std::is_same_v<T, SetDayTime>) {
             w.put(body.time);
+        } else if constexpr (std::is_same_v<T, SetWeather>) {
+            w.put(static_cast<std::uint8_t>(body.kind));
+            w.put(body.duration);
         } else if constexpr (std::is_same_v<T, AddTicket>) {
             w.put(body.ticket);
             w.put(body.center.x);
@@ -360,6 +364,14 @@ bool decode_command(Reader& r, Command& c) {
     case 20: {
         SetDayTime b;
         if (!r.get(b.time) || b.time < 0) return false;
+        c.body = b;
+        return true;
+    }
+    case 21: {
+        SetWeather b;
+        std::uint8_t kind{};
+        if (!r.get(kind) || kind >= weather_kind_count || !r.get(b.duration) || b.duration < 0) return false;
+        b.kind = static_cast<WeatherKind>(kind);
         c.body = b;
         return true;
     }

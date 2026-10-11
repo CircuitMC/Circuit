@@ -1111,6 +1111,54 @@ int main() {
         require(s.oracle.dump().day_time == 4294967319, "advancing again");
     });
 
+    suite.run("the weather follows its timers and its levels follow the flags", [] {
+        Sim s;
+        // What both official servers did after /weather rain 100.
+        s.tick({SetWeather{WeatherKind::rain, 100}});
+        auto w = s.oracle.dump().weather;
+        require(w.raining && !w.thundering && w.rain_time == 99 && w.thunder_time == 99 && w.rain_level == 0.01f, "rain for 100 ticks");
+        for (int i = 0; i < 18; ++i) s.tick();
+        require(!s.oracle.dump().weather.rain_visible(), "not seen after 19 ticks");
+        s.tick();
+        w = s.oracle.dump().weather;
+        require(w.rain_visible() && w.rain_level == 0.20000001788139343f, "seen after 20: a single-precision sum just above 0.2");
+        for (int i = 0; i < 79; ++i) s.tick();
+        w = s.oracle.dump().weather;
+        require(w.raining && w.rain_level == 0.9899993538856506f && w.thunder_level == 0.0f, "99 ticks of rising rain");
+        s.tick();
+        w = s.oracle.dump().weather;
+        require(!w.raining && w.thundering && w.rain_level < 0.99f && w.thunder_level == 0.01f, "the timers end: rain stops, thunder starts");
+        s.tick();
+        w = s.oracle.dump().weather;
+        require(w.rain_time >= circuit::gameplay::clear_min && w.rain_time <= circuit::gameplay::clear_max && w.thunder_time >= circuit::gameplay::thunder_min
+                    && w.thunder_time <= circuit::gameplay::thunder_max,
+                "then the flags' next durations are drawn");
+        // A clear spell ends in a thunderstorm; the levels fall while it lasts.
+        s.tick({SetWeather{WeatherKind::clear, 2}});
+        s.tick();
+        w = s.oracle.dump().weather;
+        require(!w.raining && !w.thundering && w.clear_time == 0 && w.rain_time == 1 && w.thunder_time == 1, "clear for two ticks");
+        s.tick();
+        w = s.oracle.dump().weather;
+        require(w.raining && w.thundering, "then a thunderstorm");
+        // Default durations, and timers that wait while doWeatherCycle is off.
+        s.tick({SetWeather{WeatherKind::thunder, 0}});
+        w = s.oracle.dump().weather;
+        require(w.rain_time == w.thunder_time && w.rain_time + 1 >= circuit::gameplay::thunder_min && w.rain_time + 1 <= circuit::gameplay::thunder_max,
+                "a default thunderstorm");
+        s.tick({SetGameRule{"doWeatherCycle", 0}, SetWeather{WeatherKind::clear, 5}});
+        for (int i = 0; i < 10; ++i) s.tick();
+        w = s.oracle.dump().weather;
+        require(w.clear_time == 5 && !w.raining && w.rain_level < 0.9f, "timers wait; levels still follow the flags");
+        // A start sets the levels to their flags.
+        s.tick({SetWeather{WeatherKind::rain, 50}});
+        s.tick({LevelsStarted{}});
+        w = s.oracle.dump().weather;
+        require(w.rain_level == 1.0f && w.thunder_level == 0.0f, "levels after a start");
+        s.tick({SetWeather{static_cast<WeatherKind>(3), 1}, SetWeather{WeatherKind::rain, -1}});
+        require(of_kind(s.last, TraceKind::command_rejected).size() == 2, "invalid weather is refused");
+    });
+
     suite.run("crops grow only in light 9 or more", [] {
         // 16x16 wheat sealed in stone (floor, walls and roof); with a
         // glowstone in the middle, light 15 - distance reaches the crops.
@@ -1183,6 +1231,7 @@ int main() {
         auto after = s.oracle.dump();
         after.time = before.time;
         after.day_time = before.day_time;
+        after.weather = before.weather;
         for (auto& l : after.levels) l.last_active = before.level(l.dimension).last_active;
         require(after == before, "no world mutation");
         // Valid endpoints: the lowest and highest positions inside the world height.

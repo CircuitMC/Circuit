@@ -257,6 +257,8 @@ struct Game::Impl final : GameServices {
     std::map<std::string, std::int32_t> rules;
     // A day time admitted for the coming tick.
     std::optional<std::int64_t> pending_day_time;
+    // The weather players last got.
+    gameplay::Weather sent_weather;
     std::int32_t next_entity_id{1};
     std::unordered_map<std::uint64_t, Tracked> tracked;
     std::int32_t dimension_type{};
@@ -284,6 +286,7 @@ struct Game::Impl final : GameServices {
         for (std::uint16_t i = 1; i <= gameplay::items::max_id; ++i)
             if (const auto id = content.item_id(mapping.item_name(i))) item_wire[i] = *id;
         open_world();
+        sent_weather = engine->weather();
         if (config.workers > 1) encode_pool = std::make_unique<asio::thread_pool>(config.workers - 1);
         extensions = std::make_unique<Extensions>(*this, config, bundle);
         extensions->load();
@@ -598,6 +601,12 @@ struct Game::Impl final : GameServices {
         peer.send(wire.empty_commands());
         peer.send(wire.spawn_position(wire_pos({meta.spawn.x, meta.spawn.y + 1, meta.spawn.z}), 0.0f));
         peer.send(time_packet());
+        // Rain, as both official servers report it on joining.
+        if (const auto& w = engine->weather(); w.rain_visible()) {
+            peer.send(wire.game_event(1, 0.0f));
+            peer.send(wire.game_event(7, w.rain_level));
+            peer.send(wire.game_event(8, w.thunder_level));
+        }
         // Everyone sees the newcomer; the newcomer sees everyone.
         std::vector<PlayerListEntry> all;
         for (const auto& [id, other] : players) all.push_back(entry(other));
@@ -1480,7 +1489,7 @@ struct Game::Impl final : GameServices {
             for (const auto& [name, usage] : extensions->commands()) extra += std::format(", /{}{}{}", name, usage.empty() ? "" : " ", usage);
             message(p, "Commands: /help, /players, /tp [<own name>] <x> <y> <z>, /gamemode <survival|creative|spectator>, "
                        "/forceload add|remove <x> <z> [<x> <z>], /forceload remove all, /forceload query [<x> <z>], /gamerule <rule> [<value>], "
-                       "/time set|add <time>, /time query daytime|gametime|day, /tps" + extra);
+                       "/time set|add <time>, /time query daytime|gametime|day, /weather clear|rain|thunder [<duration>], /tps" + extra);
         } else if (args[0] == "players") {
             std::string names;
             for (const auto& [id, o] : players) names += (names.empty() ? "" : ", ") + o.name;
@@ -1519,6 +1528,8 @@ struct Game::Impl final : GameServices {
             gamerule(p, c.text);
         } else if (args[0] == "time" && c.text.starts_with("time")) {
             time(p, c.text);
+        } else if (args[0] == "weather" && c.text.starts_with("weather")) {
+            weather(p, c.text);
         } else if (args[0] == "tps") {
             message(p, std::format("tick {}", engine->time()));
         } else if (const auto reply = extensions->command(p.name, args[0], std::span(args).subspan(1))) {
@@ -1578,6 +1589,32 @@ struct Game::Impl final : GameServices {
             add_start_ticket();
         }
         send_translation(p, "commands.gamerule.set", string_arguments({set.name, text(value)}));
+    }
+
+    // `/weather clear|rain|thunder [<duration>]`: a duration of at least one
+    // tick, or the kind's default drawn by the rules. The weather changes in
+    // the coming tick; its levels reach players as they change.
+    void weather(Player& p, std::string_view input) {
+        CommandReader r(input, std::string_view("weather").size());
+        if (r.done()) return syntax_error(p, input, r.incomplete());
+        if (auto e = r.child()) return syntax_error(p, input, *e);
+        const auto name = r.word();
+        contracts::WeatherKind kind{};
+        if (name == "clear") kind = contracts::WeatherKind::clear;
+        else if (name == "rain") kind = contracts::WeatherKind::rain;
+        else if (name == "thunder") kind = contracts::WeatherKind::thunder;
+        else return syntax_error(p, input, r.error("command.unknown.argument"));
+        r.skip(name.size());
+        std::int32_t duration = 0;
+        if (!r.done()) {
+            if (auto e = r.child()) return syntax_error(p, input, *e);
+            const auto ticks = r.time(1);
+            if (!ticks) return syntax_error(p, input, ticks.error());
+            duration = *ticks;
+            if (auto e = r.end()) return syntax_error(p, input, *e);
+        }
+        admit(contracts::SetWeather{kind, duration});
+        send_translation(p, std::format("commands.weather.set.{}", name), nbt::Tag::list(nbt::TagType::string));
     }
 
     // The day time with the commands of the coming tick applied.
@@ -1784,6 +1821,21 @@ struct Game::Impl final : GameServices {
     }
 
     // ---- publishing ---------------------------------------------------------
+
+    // The rain and thunder levels when they change, and the start or end of
+    // rain (a rain level above 0.2) with both levels, as both official
+    // servers send them in the tick.
+    void publish_weather() {
+        const auto& w = engine->weather();
+        if (w.rain_level != sent_weather.rain_level) broadcast(wire.game_event(7, w.rain_level));
+        if (w.thunder_level != sent_weather.thunder_level) broadcast(wire.game_event(8, w.thunder_level));
+        if (w.rain_visible() != sent_weather.rain_visible()) {
+            broadcast(wire.game_event(w.rain_visible() ? 1 : 2, 0.0f));
+            broadcast(wire.game_event(7, w.rain_level));
+            broadcast(wire.game_event(8, w.thunder_level));
+        }
+        sent_weather = w;
+    }
 
     void publish_blocks() {
         std::set<BlockPos> changed;
@@ -2169,6 +2221,7 @@ struct Game::Impl final : GameServices {
         }
         engine->advance(commands);
         pending_day_time.reset();
+        publish_weather();
         publish_blocks();
         publish_pickups(commands); // before the picked-up entities are removed
         publish_entities();

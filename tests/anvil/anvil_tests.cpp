@@ -158,6 +158,7 @@ struct Kept {
     Tick time{};
     std::int64_t day_time{};
     std::map<std::string, std::int32_t> game_rules;
+    std::tuple<std::int32_t, std::int32_t, std::int32_t, bool, bool> weather; // timers and flags; levels are not saved
     std::vector<ChunkPos> chunks;
     std::vector<std::pair<BlockPos, std::uint32_t>> blocks;
     std::vector<std::pair<BlockPos, BlockEntity>> block_entities;
@@ -167,7 +168,9 @@ struct Kept {
 };
 Kept kept(const WorldDump& world) {
     const auto& d = world.overworld();
-    Kept k{world.time, world.day_time, world.game_rules, {}, d.blocks, d.block_entities, {}, {}};
+    const auto& w = world.weather;
+    Kept k{world.time, world.day_time, world.game_rules, {w.clear_time, w.rain_time, w.thunder_time, w.raining, w.thundering},
+           {}, d.blocks, d.block_entities, {}, {}};
     for (const auto& c : d.chunks) k.chunks.push_back(c.pos);
     for (auto& [pos, be] : k.block_entities) {
         be.order = 0;
@@ -183,6 +186,7 @@ std::string describe(const Kept& a, const Kept& b) {
     if (a.time != b.time) return "time";
     if (a.day_time != b.day_time) return std::format("day time {} vs {}", a.day_time, b.day_time);
     if (a.game_rules != b.game_rules) return "game rules";
+    if (a.weather != b.weather) return "weather";
     if (a.chunks != b.chunks) return std::format("chunks {} vs {}", a.chunks.size(), b.chunks.size());
     if (a.blocks != b.blocks) {
         for (std::size_t i = 0; i < std::min(a.blocks.size(), b.blocks.size()); ++i)
@@ -220,6 +224,9 @@ int main() {
                 require(back.has_value(), std::format("{} at {}: import: {}", s.name, t, back ? "" : back.error()));
                 const auto diff = describe(kept(state), kept(back->state));
                 require(diff.empty(), std::format("{} at {}: {}", s.name, t, diff));
+                require(back->state.weather.rain_level == (state.weather.raining ? 1.0f : 0.0f)
+                            && back->state.weather.thunder_level == (state.weather.thundering ? 1.0f : 0.0f),
+                        "imported weather levels follow their flags");
                 // The imported state is one the engine accepts and continues.
                 Engine resumed(bundle(), s.seed, back->state);
                 resumed.advance({});
