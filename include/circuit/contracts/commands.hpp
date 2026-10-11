@@ -41,15 +41,39 @@ struct RemoveEntity {
     EntityId id;
     bool operator==(const RemoveEntity&) const = default;
 };
-// Tickets determine which chunks are loaded and ticking. Changes take effect
-// at the end of the command phase, never in the middle of a simulation phase.
-// Chunks within Chebyshev distance `radius` of the center tick; chunks within
-// max(radius + 1, load_radius) are loaded without ticking (a player's view).
+// Chunk tickets, as in the target versions (minecraft.wiki "Chunk", observed
+// on both official servers). A ticket gives the chunks of a square around
+// its center its level; every chunk further out takes one level more per
+// chunk of Chebyshev distance, and a chunk takes the lowest level of any
+// ticket. A chunk's load level decides whether it is loaded and its status:
+// 31 and lower entity ticking, 32 block ticking, 33 border, higher unloaded.
+// Its simulation level, from the tickets that simulate (all but a player's
+// loading ticket), decides what runs: at 32 and lower scheduled ticks, block
+// events and block entities, at 31 and lower entities too (random ticks:
+// RuleSet::random_ticks). Ticket ids are unique over all levels. Changes
+// take effect at the end of the command phase.
+enum class TicketType : std::uint8_t {
+    forced,            // /forceload, level 31; persists; keeps its level from idling
+    start,             // the spawn chunks: level 32 - spawnChunkRadius
+    player_loading,    // the chunks a player's view distance loads, level 31; does not simulate
+    player_simulation, // a player's simulation distance: level 31 - distance at the player's chunk; simulates
+                       // the chunks other tickets load, without loading any
+    post_teleport,     // after a teleport, level 32 (33 through an end portal), for 5 ticks
+    portal,            // where an entity arrives through a portal, level 30, for 300 ticks
+    ender_pearl,       // a thrown ender pearl's chunk, level 31, for 40 ticks while it flies
+    dragon,            // the dragon fight, level 24
+    unknown,           // a chunk needed for one tick, level 33
+};
+inline constexpr std::uint8_t ticket_type_count = 9;
+inline constexpr std::uint8_t unloaded_level = 34;      // and higher: not loaded
+
 struct AddTicket {
     std::uint32_t ticket{};
     ChunkPos center;
-    std::uint8_t radius{};
-    std::uint8_t load_radius{};
+    std::uint8_t radius{};       // the square of chunks within this distance takes the level
+    TicketType type{};
+    std::uint8_t level{31};
+    std::uint32_t lifetime{};    // ticks until it is removed; 0: until removed
     bool operator==(const AddTicket&) const = default;
 };
 struct RemoveTicket {
@@ -164,9 +188,28 @@ struct PlayerDeath {
     bool operator==(const PlayerDeath&) const = default;
 };
 
+// A player in the command's level: where they are and whether they are a
+// spectator, for the rules that depend on players (random ticks near players
+// in 1.21.4; whether a level is idle). `present = false` takes them out. A
+// player is in at most one level: presence in one removes it from the others.
+struct PlayerPresence {
+    PlayerKey player;
+    FixedVec position;
+    bool spectator{};
+    bool present{true};
+    bool operator==(const PlayerPresence&) const = default;
+};
+
+// The server started (or restarted): every level counts as active at this
+// tick, as the target versions' levels do when they are created
+// (contracts::idle_level_ticks).
+struct LevelsStarted {
+    bool operator==(const LevelsStarted&) const = default;
+};
+
 using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket,
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
-                                 PlayerDeath>;
+                                 PlayerDeath, PlayerPresence, LevelsStarted>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.

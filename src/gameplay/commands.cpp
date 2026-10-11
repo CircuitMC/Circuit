@@ -278,6 +278,8 @@ Plan plan(RuleContext& ctx, const contracts::CloseContainer& c) { return detail:
 
 Plan plan(RuleContext&, const contracts::AddTicket&) { return std::unexpected(ErrorCode::unknown_command); }
 Plan plan(RuleContext&, const contracts::RemoveTicket&) { return std::unexpected(ErrorCode::unknown_command); }
+Plan plan(RuleContext&, const contracts::PlayerPresence&) { return std::unexpected(ErrorCode::unknown_command); }
+Plan plan(RuleContext&, const contracts::LevelsStarted&) { return std::unexpected(ErrorCode::unknown_command); }
 } // namespace
 
 void apply_command(RuleContext& ctx, const contracts::Command& command) {

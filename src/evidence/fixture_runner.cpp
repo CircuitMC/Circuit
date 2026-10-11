@@ -230,7 +230,8 @@ std::string removal_reason(std::uint64_t reason) {
 
 std::string chunk_status(std::uint64_t level) {
     switch (static_cast<gameplay::ChunkLevel>(level)) {
-    case gameplay::ChunkLevel::ticking: return "entity_ticking"; // Circuit ticks entities wherever it ticks blocks
+    case gameplay::ChunkLevel::entity_ticking: return "entity_ticking";
+    case gameplay::ChunkLevel::block_ticking: return "block_ticking";
     case gameplay::ChunkLevel::border: return "border";
     case gameplay::ChunkLevel::unloaded: return "unloaded";
     }
@@ -288,7 +289,7 @@ public:
                 if (f.observe_chunks) {
                     const auto chunk = contracts::chunk_of(r.pos);
                     const auto status = r.kind == TraceKind::chunk_unloaded ? "unloaded"
-                                                                            : chunk_status(r.kind == TraceKind::chunk_loaded ? r.b : r.b);
+                                                                            : chunk_status(r.b);
                     chunks.push_back({tick, stage_of(r), chunk.x, chunk.z, status, seq++, 0});
                 }
                 break;

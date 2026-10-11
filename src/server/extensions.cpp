@@ -124,7 +124,7 @@ struct Extensions::Impl {
             try {
                 const auto c = impl_.game.simulation().column({contracts::DimensionId::overworld, {x, z}});
                 if (!c) return plugin::ChunkInfo{};
-                return plugin::ChunkInfo{true, c->level == gameplay::ChunkLevel::ticking, c->block_entities.size(), c->entities.size()};
+                return plugin::ChunkInfo{true, gameplay::block_ticking(c->levels.simulation), c->block_entities.size(), c->entities.size()};
             } catch (...) {
                 return std::unexpected(Status::unavailable);
             }

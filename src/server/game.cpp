@@ -40,7 +40,9 @@ constexpr double max_move_squared = 100.0; // per accepted movement packet
 constexpr double creative_reach = 6.0, survival_reach = 5.5;
 constexpr std::size_t chunks_per_tick = 32; // per player
 constexpr std::uint32_t spawn_ticket = 1;
-constexpr std::uint8_t spawn_radius = 2;
+// The spawn chunks: a start ticket of level 32 - spawnChunkRadius, none at
+// radius 0 (observed on both official servers). The game rule's default.
+constexpr std::uint8_t spawn_chunk_radius = 2;
 constexpr std::size_t inventory_slots = contracts::player_slots;
 constexpr std::uint8_t survival = 0, creative = 1, spectator = 3;
 
@@ -63,7 +65,8 @@ struct Player {
     std::int32_t view_distance{};
     ChunkPos center{};
     std::set<ChunkPos> sent;
-    std::uint32_t ticket{};
+    std::uint32_t ticket{}; // and ticket + 1: the loading and the simulation ticket
+    std::optional<std::pair<contracts::FixedVec, bool>> presence; // last sent (position, spectator)
     std::int32_t next_teleport{1};
     std::optional<std::int32_t> awaiting_teleport;
     std::int32_t held{}; // hotbar slot 0-8; the inventory itself is simulation state
@@ -303,7 +306,16 @@ struct Game::Impl final : GameServices {
         world = std::make_unique<storage::WorldDirectory>(*fs, config.world_directory, std::string(bundle.id),
                                                           std::string(bundle.rules->id));
         auto recovered = world->recover();
-        if (!recovered) throw std::runtime_error(std::format("world {}: {}", where, recovered.error()));
+        if (!recovered) {
+            // A world of an earlier rule set: --migrate-world carries it over.
+            const auto identity = storage::WorldDirectory::identity(*fs, config.world_directory);
+            const bool other_rules = identity && *identity && (*identity)->rules_id != bundle.rules->id;
+            throw std::runtime_error(std::format("world {}: {}{}", where, recovered.error(),
+                                                 other_rules ? std::format("; circuit-server --migrate-world <new directory> --world {} "
+                                                                           "--game-version {} copies it to {}",
+                                                                           where, bundle.id, bundle.rules->id)
+                                                             : std::string{}));
+        }
         if (!*recovered) {
             engine = std::make_unique<runtime::Engine>(bundle, seed, engine_options(meta.floor_y));
             log_info(std::format("creating a new world in {}", where));
@@ -364,12 +376,16 @@ struct Game::Impl final : GameServices {
             log_info(std::format("world {} recovered at tick {} (checkpoint at tick {} and {} logged ticks)", where, engine->time(),
                                  r.checkpoint.state.time, applied));
         }
-        // Players are not connected after a restart: their chunk tickets go.
+        // Players are not connected after a restart: their chunk tickets go,
+        // and so do the other tickets the target versions do not save. The
+        // start ticket is added again on the first tick. A world written
+        // before tickets had types keeps none.
         queue = contracts::CommandQueue(65536, meta.next_admission);
-        for (const auto& t : engine->dump().tickets) {
-            if (t.id == spawn_ticket) started = true;
-            else admit(contracts::RemoveTicket{t.id});
-        }
+        for (const auto& t : engine->dump().tickets)
+            if ((t.type != contracts::TicketType::forced && t.type != contracts::TicketType::portal) || t.id == spawn_ticket
+                || !meta.typed_tickets)
+                admit(contracts::RemoveTicket{t.id});
+        meta.typed_tickets = true;
         next_ticket = meta.next_ticket;
         // A checkpoint of the opened state starts a fresh log segment.
         if (auto ok = save(); !ok) throw std::runtime_error(std::format("world {}: cannot save: {}", where, ok.error()));
@@ -518,8 +534,8 @@ struct Game::Impl final : GameServices {
         return [this](BlockPos p) { return at(p); };
     }
 
-    void admit(contracts::CommandBody body) {
-        if (!queue.admit(std::move(body))) log_warn("game: command queue full; input dropped");
+    void admit(contracts::CommandBody body, contracts::DimensionId level = overworld) {
+        if (!queue.admit(std::move(body), level)) log_warn("game: command queue full; input dropped");
     }
 
     void broadcast(const Bytes& packet, std::uint64_t except = 0) {
@@ -556,8 +572,9 @@ struct Game::Impl final : GameServices {
         if (const auto it = saved.find(p.uuid); it != saved.end()) restore(p, it->second);
         p.view_distance = std::clamp(r.view_distance, 2, config.view_distance);
         p.center = chunk_at(p.pos);
-        p.ticket = next_ticket++;
-        admit(player_ticket(p, p.center));
+        p.ticket = next_ticket;
+        next_ticket += 2; // loading and simulation
+        add_tickets(p, p.center);
 
         Wire::JoinGame j{p.entity_id, config.max_players, p.view_distance, config.simulation_distance, dimension_type,
                          p.game_mode};
@@ -615,7 +632,8 @@ struct Game::Impl final : GameServices {
         const auto it = players.find(peer_id);
         if (it == players.end()) return;
         auto& p = it->second;
-        admit(contracts::RemoveTicket{p.ticket});
+        remove_tickets(p);
+        admit(contracts::PlayerPresence{key_of(p), {}, false, false}, overworld);
         saved[p.uuid] = snapshot(p);
         const auto info = wire.player_info_remove({p.uuid});
         const auto remove = wire.remove_entities({p.entity_id});
@@ -630,10 +648,37 @@ struct Game::Impl final : GameServices {
         log_info(std::format("{} left", name));
     }
 
-    // A player's chunks: those within the simulation distance tick, and those
-    // within the view distance are loaded to be sent, without ticking.
-    contracts::AddTicket player_ticket(const Player& p, ChunkPos center) const {
-        return {p.ticket, center, static_cast<std::uint8_t>(config.simulation_distance), static_cast<std::uint8_t>(p.view_distance)};
+    // A player's tickets: the view distance loads (level 31 over the square),
+    // and the simulation distance simulates (level 31 - distance at the
+    // player's chunk), as in the target versions.
+    void add_tickets(const Player& p, ChunkPos center) {
+        admit(contracts::AddTicket{p.ticket, center, static_cast<std::uint8_t>(p.view_distance), contracts::TicketType::player_loading,
+                                   31, 0},
+              overworld);
+        admit(contracts::AddTicket{p.ticket + 1, center, 0, contracts::TicketType::player_simulation,
+                                   static_cast<std::uint8_t>(31 - config.simulation_distance), 0},
+              overworld);
+    }
+    void remove_tickets(const Player& p) {
+        admit(contracts::RemoveTicket{p.ticket});
+        admit(contracts::RemoveTicket{p.ticket + 1});
+    }
+    void move_tickets(const Player& p, ChunkPos center) {
+        remove_tickets(p);
+        add_tickets(p, center);
+    }
+    // Where each player is, for the rules that depend on players: sent when
+    // the spectator flag changed, or the position when the rules use it
+    // (random ticks near players).
+    void send_presences() {
+        const bool positional = bundle.rules->random_ticks == contracts::RandomTickRange::block_ticking_near_player;
+        for (auto& [id, p] : players) {
+            const contracts::FixedVec at{fixed(p.pos.x), fixed(p.pos.y), fixed(p.pos.z)};
+            const auto now = std::pair{at, p.game_mode == spectator};
+            if (p.presence && p.presence->second == now.second && (!positional || p.presence->first == at)) continue;
+            p.presence = now;
+            admit(contracts::PlayerPresence{key_of(p), at, now.second, true}, overworld);
+        }
     }
 
     void teleport(Player& p, Vec3 to) {
@@ -875,8 +920,7 @@ struct Game::Impl final : GameServices {
         if (chunk.x != p.center.x || chunk.z != p.center.z) {
             p.center = chunk;
             p.peer->send(wire.chunk_center(chunk.x, chunk.z));
-            admit(contracts::RemoveTicket{p.ticket});
-            admit(player_ticket(p, chunk));
+            move_tickets(p, chunk);
         }
     }
 
@@ -1022,8 +1066,7 @@ struct Game::Impl final : GameServices {
         const auto chunk = chunk_at(to);
         p.center = chunk;
         p.peer->send(wire.chunk_center(chunk.x, chunk.z));
-        admit(contracts::RemoveTicket{p.ticket});
-        admit(player_ticket(p, chunk));
+        move_tickets(p, chunk);
         teleport(p, to);
         send_vitals(p);
         p.moved = true;
@@ -1447,8 +1490,7 @@ struct Game::Impl final : GameServices {
             p.fall_distance = 0.0;
             p.center = chunk;
             p.peer->send(wire.chunk_center(chunk.x, chunk.z));
-            admit(contracts::RemoveTicket{p.ticket});
-            admit(player_ticket(p, chunk));
+            move_tickets(p, chunk);
         } else if (args[0] == "gamemode" && args.size() == 2
                    && (args[1] == "survival" || args[1] == "creative" || args[1] == "spectator")) {
             p.game_mode = args[1] == "survival" ? survival : args[1] == "creative" ? creative : spectator;
@@ -1743,7 +1785,13 @@ struct Game::Impl final : GameServices {
     void tick() {
         healthy = false; // until the tick completes
         if (!started) {
-            admit(contracts::AddTicket{spawn_ticket, contracts::chunk_of(meta.spawn), spawn_radius});
+            // Every start counts as the levels' creation (idle rule), and the
+            // spawn chunks are loaded again.
+            admit(contracts::LevelsStarted{});
+            if (spawn_chunk_radius > 0)
+                admit(contracts::AddTicket{spawn_ticket, contracts::chunk_of(meta.spawn), 0, contracts::TicketType::start,
+                                           static_cast<std::uint8_t>(32 - spawn_chunk_radius), 0},
+                      overworld);
             started = true;
         }
         std::vector<Message> batch;
@@ -1766,6 +1814,7 @@ struct Game::Impl final : GameServices {
             // Player-driven inputs that follow from the world as last published.
             continue_digging();
             detect_pickups();
+            send_presences();
             advance();
         }
         publish_chunks();

@@ -47,6 +47,9 @@ struct LevelCounters {
     std::uint64_t next_suborder{};
     std::uint64_t next_event_seq{};
     std::uint64_t next_block_entity_order{};
+    // Players in the level, and the last tick it had players or forced chunks.
+    std::map<contracts::PlayerKey, gameplay::Presence> presences;
+    Tick last_active{};
 };
 
 // Staging metadata: an entry created in the current phase. `ledger` indexes the
@@ -75,7 +78,10 @@ struct ChunkData {
     DimensionId dimension{};
     ChunkPos pos;
     contracts::Generation generation;
-    ChunkLevel level{};
+    ChunkLevel level{};             // status, from levels.load
+    gameplay::ChunkLevels levels;   // load and simulation levels
+    [[nodiscard]] bool block_ticking() const noexcept { return gameplay::block_ticking(levels.simulation); }
+    [[nodiscard]] bool entity_ticking() const noexcept { return gameplay::entity_ticking(levels.simulation); }
     // Sections are shared copy-on-write between a chunk and its rollback snapshot.
     std::vector<std::shared_ptr<Section>> sections;
     std::map<BlockPos, BlockEntity> block_entities;
@@ -96,6 +102,7 @@ struct WorldStore {
     std::map<ChunkKey, std::unique_ptr<ChunkData>> saved; // Unloaded columns with all their state.
     std::unordered_map<EntityId, ChunkKey> entity_index;  // Updated at commit.
     Tick time{};
+    Tick started{}; // see WorldDump::started
     std::uint64_t next_entity_id{1};
     std::array<LevelCounters, contracts::dimension_count> levels{};
     gameplay::TicketSet tickets;

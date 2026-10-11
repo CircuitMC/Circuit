@@ -28,7 +28,7 @@ Feature counts per implementation state, then the number of features with compar
 | V02 Block registry and state properties | C1, C5 | 7 | 5 / 5 | 2 / 2 | 0 / 0 | 0 / 0 | 0 / 0 | 3 / 3 |
 | V03 Item and entity components and registries | C1, C5, C6 | 6 | 0 / 1 | 2 / 3 | 0 / 0 | 2 / 2 | 2 / 0 | 2 / 4 |
 | V04 Data and resource-pack negotiation | C1, C9, C10 | 6 | 0 / 0 | 4 / 4 | 0 / 0 | 2 / 2 | 0 / 0 | 2 / 2 |
-| V05 Dimensions, tickets and chunk lifecycle | C2 | 8 | 0 / 0 | 5 / 5 | 0 / 0 | 3 / 3 | 0 / 0 | 0 / 0 |
+| V05 Dimensions, tickets and chunk lifecycle | C2 | 8 | 0 / 0 | 6 / 6 | 0 / 0 | 2 / 2 | 0 / 0 | 0 / 0 |
 | V06 Lighting and environmental state | C2, C7 | 7 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 | 0 / 0 | 0 / 0 |
 | V07 RNG and global event order | C0, C2, C4 | 7 | 4 / 4 | 2 / 2 | 0 / 0 | 1 / 1 | 0 / 0 | 4 / 4 |
 | V08 Terrain and biomes | C7 | 70 | 0 / 0 | 2 / 2 | 64 / 64 | 4 / 4 | 0 / 0 | 0 / 0 |
@@ -128,6 +128,7 @@ Their counts are unknown, not zero.
 | Kind | Status | Cases |
 | --- | --- | ---: |
 | black_box | passing | 12 |
+| black_box | unsupported | 1 |
 | official_trace | failing | 5 |
 | official_trace | passing | 30 |
 | official_trace | unsupported | 1 |
@@ -188,8 +189,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | --- | --- | --- | --- | --- |
 | The overworld dimension | C2 | partial, none | partial, none | Flat floor, plains |
 | The Nether, the End and custom dimensions with dimension-scoped state | C2 | partial, documented | partial, documented | custom dimensions from data packs are not supported; level-specific rules (ultrawarm water and lava, the Nether's roof, the End's void and dragon fight) are not modeled; the Nether and the End are neither generated nor reachable by players; Every level keeps its own columns, scheduled ticks, block events, block entities, entities and per-level counters, and levels tick in the order overworld, Nether, End (minecraft.wiki "Tick"); entity ids are counted over all levels. Commands, tickets, traces, checkpoints, replays and logs name the level. Differential tests prove identical coordinates in two levels independent in the engine and the oracle |
-| Vanilla ticket types (player, forced, portal, spawn, post-teleport and others) | C2 | partial, none | partial, none | radius tickets with a load radius instead of ticket types |
-| Ticket level propagation and entity-ticking versus block-ticking chunks | C2 | missing, none | missing, none |  |
+| Vanilla ticket types (player, forced, portal, spawn, post-teleport and others) | C2 | partial, reference_only | partial, reference_only | `observation/chunk_levels`; only start and player tickets are created; forced, post-teleport, portal, ender pearl and dragon tickets have their types and levels but nothing creates them yet; spawnChunkRadius is fixed at 2; Typed tickets with a level, a square radius and a lifetime (minecraft.wiki "Chunk"). The server adds the start ticket (level 32 - spawnChunkRadius) and, per player, a loading ticket over the view distance (level 31) and a simulation ticket (level 31 - simulation distance), as observed on both official servers |
+| Ticket level propagation and entity-ticking versus block-ticking chunks | C2 | partial, reference_only | partial, reference_only | `observation/chunk_levels`; chunks with entities unload at once instead of after two ticks at border level; new chunks load at once; the official servers take 3 (1.21.4) or 4 (1.21.8) ticks; Load and simulation levels: 31 and lower entity ticking, 32 block ticking, 33 border. Scheduled ticks, block events and block entities run at simulation level 32 and lower, entities at 31 and lower; a level without players or forced chunks stops its entities and block entities after 300 ticks |
 | Unload and reload of chunks with pending ticks, block events and entities | C2 | partial, none | partial, none | pending ticks keep absolute due times while unloaded |
 | View distance and simulation distance | C2 | partial, none | partial, none |  |
 | Chunk generation stages and publication | C7 | missing, none | missing, none |  |
@@ -215,7 +216,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Block-entity tick order | C4 | implemented, compared | implemented, compared | `trace/hopper_competition`, `trace/piston_slime` |
 | Entity tick order | C3 | partial, reference_only | partial, reference_only | `trace/item_hopper_pickup`; ascending id; not compared with the target version |
 | The level random source and its draw order | C0 | missing, reference_only | missing, reference_only | `trace/item_drop_piston`, `trace/tnt_redstone_ignition`; per-section derived streams; Draw counts of the level random recorded per stage |
-| Random-tick chunk order and positions | C2 | partial, none | partial, none | chunks in coordinate order instead of the shuffled order |
+| Random-tick chunk order and positions | C2 | partial, reference_only | partial, reference_only | `observation/chunk_levels`; chunks in coordinate order instead of the shuffled order; Random ticks run at simulation level 31 and lower in 1.21.8, and at 32 and lower within 128 blocks of a non-spectator player in 1.21.4 |
 
 ### V08 Terrain and biomes
 

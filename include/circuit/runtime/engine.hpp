@@ -90,6 +90,7 @@ struct ColumnSnapshot {
     std::vector<std::shared_ptr<const Blocks>> sections; // bottom to top; nullptr: all air
     std::vector<std::pair<contracts::BlockPos, gameplay::BlockEntity>> block_entities;
     std::vector<gameplay::Entity> entities;
+    gameplay::ChunkLevels levels; // load and simulation levels
 };
 
 // A consistent image of the whole world between ticks, for background

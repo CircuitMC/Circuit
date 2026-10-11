@@ -2,7 +2,7 @@ circuit-trace 2
 title A piston pushes an item resting on stone
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v7
+harness circuit-reference-rules-v8
 mechanisms item_entity piston
 area -4 0 -2 3 2 2
 ticks 20

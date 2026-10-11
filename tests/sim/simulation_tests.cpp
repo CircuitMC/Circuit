@@ -613,6 +613,100 @@ int main() {
         require(grown_diff.empty(), grown_diff);
     });
 
+    suite.run("chunk levels decide what runs", [&] {
+        const auto& ref = references.back();
+        require(scenarios.back().name == "chunk_levels", "the chunk level scenario is last");
+        const auto at = [&](Tick t) -> const WorldDump& { return ref.dumps.at(t); };
+        using enum DimensionId;
+        const auto stored = [&](Tick t, std::int32_t x, DimensionId level = overworld) {
+            const auto* chest = block_entity_at(at(t), {x + 9, 1, 2}, level);
+            unsigned n = 0;
+            if (chest)
+                for (const auto& stack : chest->slots) n += stack.count;
+            return n;
+        };
+        // The items spawned at `tick` above a probe at x, by height.
+        const auto heights = [&](Tick t, std::int32_t x, DimensionId level = overworld) {
+            std::vector<std::int64_t> out;
+            for (const auto& e : at(t).level(level).entities)
+                if (e.position.x == (x + 12) * fixed_one + fixed_one / 2) out.push_back(e.position.y);
+            return out;
+        };
+        const auto lit = [&](Tick t, std::int32_t x) { return state_at(at(t), {x + 2, 0, 2}).flag(); };
+        const auto head = [&](Tick t, std::int32_t x) { return state_at(at(t), {x + 5, 1, 2}).is(BlockType::piston_head); };
+        // Tick 50: entity ticking (chunk 0) runs everything; block ticking
+        // (chunk 1) all but entities; border (chunk 2) and loaded without
+        // simulation (chunk 6) nothing.
+        require(!lit(50, 0) && !lit(50, 16) && lit(50, 32) && lit(50, 96), "scheduled ticks at simulation level 32 and lower");
+        require(head(50, 0) && head(50, 16) && !head(50, 32) && !head(50, 96), "block events at simulation level 32 and lower");
+        require(stored(50, 0) > 0 && stored(50, 16) == stored(50, 0) && stored(50, 32) == 0 && stored(50, 96) == 0,
+                "block entities at simulation level 32 and lower");
+        require(heights(50, 0) == std::vector<std::int64_t>{fixed_one} && heights(50, 16) == std::vector<std::int64_t>{4 * fixed_one}
+                    && heights(50, 32) == std::vector<std::int64_t>{4 * fixed_one} && heights(50, 96) == std::vector<std::int64_t>{4 * fixed_one},
+                "entities at simulation level 31 and lower");
+        // Ticks 60-79: the player's simulation ticket simulates chunk 6.
+        require(!lit(70, 96) && head(70, 96) && stored(80, 96) > 0 && heights(80, 96) == std::vector<std::int64_t>{fixed_one, fixed_one},
+                "a simulation ticket simulates the loaded chunks");
+        require(stored(90, 96) == stored(80, 96) && stored(80, 96) < stored(80, 0), "without it, chunk 6 stops");
+        // The post-teleport ticket loads chunk (-6,0) at tick 90 and expires at 95.
+        const auto chunk_record = [&](Tick t, TraceKind kind) {
+            return std::ranges::count_if(ref.traces[t - 1], [&](const TraceRecord& r) {
+                return r.kind == kind && r.pos == chunk_origin({-6, 0});
+            });
+        };
+        require(chunk_record(90, TraceKind::chunk_loaded) == 1 && chunk_record(95, TraceKind::chunk_unloaded) == 1,
+                "a ticket's lifetime");
+        // The Nether, without players or forced chunks: idle after tick 300
+        // until a player arrives at 400; awake again for 300 ticks after
+        // they leave at 420.
+        require(stored(300, 0, the_nether) > stored(290, 0, the_nether) && stored(390, 0, the_nether) == stored(300, 0, the_nether),
+                "an idle level stops its block entities");
+        require(heights(390, 0, the_nether).size() == 8
+                    && std::ranges::count(heights(390, 0, the_nether), 4 * fixed_one) == 2,
+                "and its entities");
+        require(stored(420, 0, the_nether) > stored(390, 0, the_nether) && stored(450, 0, the_nether) > stored(420, 0, the_nether)
+                    && std::ranges::count(heights(450, 0, the_nether), fixed_one) == 9,
+                "a player wakes it at once");
+        require(at(450).level(the_nether).last_active == 419 && at(450).overworld().last_active == 450 && at(450).started == 0,
+                "the last active ticks");
+    });
+
+    suite.run("random ticks run where each version runs them", [&] {
+        // A wheat field in chunk (0,0), with a player in the chunk, 120
+        // blocks away or 130 blocks away; and a spectator in the chunk.
+        const auto grown = [&](std::string_view version, std::optional<PlayerPresence> player) {
+            const auto& b = **BundleRegistry::select_for_simulation(version);
+            Engine engine(b, 5, pool(2));
+            Oracle oracle(b, 5);
+            Admissions admit;
+            std::vector<CommandBody> setup;
+            for (int x = 0; x < 16; ++x)
+                for (int z = 0; z < 16; ++z) setup.push_back(place({x, 0, z}, blocks::wheat()));
+            if (player) setup.push_back(*player);
+            for (Tick t = 1; t <= 200; ++t) {
+                const auto commands = admit(t == 1 ? std::vector<CommandBody>{ticket(1, {0, 0}, 0)}
+                                            : t == 2 ? setup
+                                                     : std::vector<CommandBody>{});
+                engine.advance(commands);
+                oracle.advance(commands);
+                require(engine.trace() == oracle.trace(), std::format("{} tick {}: both executors agree", version, t));
+            }
+            require(engine.dump() == oracle.dump() && oracle.dump().overworld().blocks.size() == 256, "both executors end alike");
+            unsigned ages = 0;
+            for (int x = 0; x < 16; ++x)
+                for (int z = 0; z < 16; ++z) ages += state_at(oracle.dump(), {x, 0, z}).level();
+            return ages;
+        };
+        const auto player = [](double x, bool spectator = false) {
+            return PlayerPresence{{1, 1}, at_block(x, 0.0, 8.5), spectator};
+        };
+        require(grown("java-1.21.8", std::nullopt) > 0, "1.21.8: without players");
+        require(grown("java-1.21.4", std::nullopt) == 0 && grown("java-1.21.4", player(8.5, true)) == 0,
+                "1.21.4: not without a player, nor for a spectator");
+        require(grown("java-1.21.4", player(8.5)) > 0 && grown("java-1.21.4", player(127.5)) > 0, "1.21.4: within 128 blocks");
+        require(grown("java-1.21.4", player(136.5)) == 0, "1.21.4: not 128 blocks from the chunk's center");
+    });
+
     suite.run("commands in levels that do not exist are refused", [&] {
         Engine engine(bundle(), 1, pool(1));
         Oracle oracle(bundle(), 1);

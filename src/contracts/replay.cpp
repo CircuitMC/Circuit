@@ -5,10 +5,12 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
-// 6: each command names its level; 5: stacks carry their data components;
-// 4: the block registry id; 3: stacks carry damage, player commands carry
-// their player. Commands of versions before 6 are the overworld's.
-constexpr std::uint16_t format_version = 6;
+// 7: typed tickets (tag 16), player presences and levels started; 6: each
+// command names its level; 5: stacks carry their data components; 4: the
+// block registry id; 3: stacks carry damage, player commands carry their
+// player. Commands of versions before 6 are the overworld's. Tickets of
+// versions before 7 (tags 5 and 9) read as forced squares.
+constexpr std::uint16_t format_version = 7;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -86,11 +88,15 @@ private:
 };
 
 // Record tags: 0 SetBlock, 1 UseBlock, 2 InsertItem, 3 SpawnItem,
-// 4 RemoveEntity, 5 AddTicket without a load radius (read only), 6 RemoveTicket,
-// 7 PlayerUse, 8 PlayerBreak, 9 AddTicket, 10 SetPlayerSlot, 11 PickUp,
-// 12 DropItem, 13 ContainerClick, 14 CloseContainer, 15 PlayerDeath.
+// 4 RemoveEntity, 5 radius ticket without a load radius (read only),
+// 6 RemoveTicket, 7 PlayerUse, 8 PlayerBreak, 9 radius ticket (read only),
+// 10 SetPlayerSlot, 11 PickUp, 12 DropItem, 13 ContainerClick,
+// 14 CloseContainer, 15 PlayerDeath, 16 AddTicket, 17 PlayerPresence,
+// 18 LevelsStarted.
 std::uint8_t tag_of(const CommandBody& body) {
-    if (std::holds_alternative<AddTicket>(body)) return 9;
+    if (std::holds_alternative<AddTicket>(body)) return 16;
+    if (std::holds_alternative<PlayerPresence>(body)) return 17;
+    if (std::holds_alternative<LevelsStarted>(body)) return 18;
     if (std::holds_alternative<SetPlayerSlot>(body)) return 10;
     if (std::holds_alternative<PickUp>(body)) return 11;
     if (std::holds_alternative<DropItem>(body)) return 12;
@@ -128,7 +134,9 @@ void encode_command(Writer& w, const Command& c) {
             w.put(body.center.x);
             w.put(body.center.z);
             w.put(body.radius);
-            w.put(body.load_radius);
+            w.put(static_cast<std::uint8_t>(body.type));
+            w.put(body.level);
+            w.put(body.lifetime);
         } else if constexpr (std::is_same_v<T, RemoveTicket>) {
             w.put(body.ticket);
         } else if constexpr (std::is_same_v<T, PlayerUse>) {
@@ -179,6 +187,11 @@ void encode_command(Writer& w, const Command& c) {
         } else if constexpr (std::is_same_v<T, PlayerDeath>) {
             w.player(body.player);
             w.vec(body.position);
+        } else if constexpr (std::is_same_v<T, PlayerPresence>) {
+            w.player(body.player);
+            w.vec(body.position);
+            w.put(static_cast<std::uint8_t>(body.spectator));
+            w.put(static_cast<std::uint8_t>(body.present));
         }
     }, c.body);
 }
@@ -220,7 +233,7 @@ bool decode_command(Reader& r, Command& c) {
     }
     case 4: { RemoveEntity b; if (!r.get(b.id.value)) return false; c.body = b; return true; }
     case 5: {
-        AddTicket b;
+        AddTicket b; // a forced square
         if (!r.get(b.ticket) || !r.get(b.center.x) || !r.get(b.center.z) || !r.get(b.radius)) return false;
         c.body = b;
         return true;
@@ -251,8 +264,9 @@ bool decode_command(Reader& r, Command& c) {
         return true;
     }
     case 9: {
-        AddTicket b;
-        if (!r.get(b.ticket) || !r.get(b.center.x) || !r.get(b.center.z) || !r.get(b.radius) || !r.get(b.load_radius)) return false;
+        AddTicket b; // a forced square; the load radius is not kept
+        std::uint8_t load_radius{};
+        if (!r.get(b.ticket) || !r.get(b.center.x) || !r.get(b.center.z) || !r.get(b.radius) || !r.get(load_radius)) return false;
         c.body = b;
         return true;
     }
@@ -306,6 +320,26 @@ bool decode_command(Reader& r, Command& c) {
         c.body = b;
         return true;
     }
+    case 16: {
+        AddTicket b;
+        std::uint8_t type{};
+        if (!r.get(b.ticket) || !r.get(b.center.x) || !r.get(b.center.z) || !r.get(b.radius) || !r.get(type) || !r.get(b.level)
+            || !r.get(b.lifetime) || type >= ticket_type_count)
+            return false;
+        b.type = static_cast<TicketType>(type);
+        c.body = b;
+        return true;
+    }
+    case 17: {
+        PlayerPresence b;
+        std::uint8_t spectator{}, present{};
+        if (!r.player(b.player) || !r.vec(b.position) || !r.get(spectator) || !r.get(present) || spectator > 1 || present > 1) return false;
+        b.spectator = spectator == 1;
+        b.present = present == 1;
+        c.body = b;
+        return true;
+    }
+    case 18: c.body = LevelsStarted{}; return true;
     default: return false;
     }
 }

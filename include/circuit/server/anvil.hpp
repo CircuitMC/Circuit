@@ -100,9 +100,11 @@ std::expected<anvil::ImportReport, std::string> import_anvil_world(const std::fi
 std::expected<anvil::ExportReport, std::string> export_anvil_world(const ServerConfig& config, const std::filesystem::path& target);
 
 // Copies the latest durable state of the world at `source` into a new world
-// directory at `target` that belongs to `bundle_id`. Allowed only when both
-// bundles run the same rule set, so that the state means the same; otherwise
-// the migration is refused. The source is only read. Returns the tick of the
+// directory at `target` that belongs to `bundle_id` and its rule set. Between
+// bundles of the same rule set, the logged ticks are replayed first. A world
+// of another rule set (an earlier release's) migrates only when its log holds
+// no tick after its last checkpoint: the state carries over and the new rules
+// apply from then on. The source is only read. Returns the tick of the
 // migrated state.
 std::expected<std::uint64_t, std::string> migrate_world(const std::filesystem::path& source, const std::filesystem::path& target,
                                                         std::string_view bundle_id);

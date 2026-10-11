@@ -125,7 +125,7 @@ void RegionContext::add_block_event(const BlockEvent& event, std::uint32_t seq) 
     auto* data = loaded_in_world(event.pos);
     if (!data) throw std::logic_error("runtime: block event at an unloaded position");
     const auto c = chunk_of(event.pos);
-    if (phase_ == Phase::block_events && data->level == ChunkLevel::ticking) {
+    if (phase_ == Phase::block_events && data->block_ticking()) {
         owned(c, *data);
         // Runs later in this phase; its global position is derived at commit.
         children.at(root_).push_back(next_local);

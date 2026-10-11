@@ -876,16 +876,17 @@ int main() {
     suite.run("ticket bounds are checked without overflow", [] {
         const auto& limits = bundle().limits;
         const std::int32_t limit = world_border / 16;
-        const auto accepted = [&](ChunkPos center, std::uint8_t radius) {
+        const auto accepted = [&](ChunkPos center, std::uint8_t radius, std::uint8_t level = 31) {
             TicketSet tickets;
-            return tickets.add({1, center, radius}, DimensionId::overworld, limits).has_value();
+            return tickets.add({1, center, radius, TicketType::forced, level}, DimensionId::overworld, 0, limits).has_value();
         };
         for (const auto extreme : {INT32_MIN, INT32_MAX})
             for (const std::uint8_t radius : {std::uint8_t{0}, limits.max_ticket_radius})
                 require(!accepted({extreme, 0}, radius) && !accepted({0, extreme}, radius), "extreme centers");
-        // A ticket of radius r reaches r + 1 chunks; every reached chunk stays inside the border.
+        // A level-31 ticket of radius r loads r + 2 chunks (levels 32 and 33
+        // beyond its square); every loaded chunk stays inside the border.
         for (const std::uint8_t radius : {std::uint8_t{0}, limits.max_ticket_radius}) {
-            const std::int32_t reach = radius + 1;
+            const std::int32_t reach = radius + 2;
             const std::int32_t low = -limit + reach, high = limit - 1 - reach;
             require(accepted({low, 0}, radius) && accepted({high, 0}, radius) && accepted({0, low}, radius)
                         && accepted({0, high}, radius),
@@ -894,27 +895,77 @@ int main() {
                         && !accepted({0, high + 1}, radius),
                     std::format("radius {} beyond the endpoints rejected", radius));
         }
-        // A load radius beyond radius + 1 reaches further, and is bounded the same way.
-        const auto loads = [&](ChunkPos center, std::uint8_t load) {
-            TicketSet tickets;
-            return tickets.add({1, center, 1, load}, DimensionId::overworld, limits).has_value();
-        };
+        // A lower level loads further, and is bounded the same way: radius 1
+        // at level 0 loads 34 chunks out.
         const std::int32_t far = limits.max_load_radius;
-        require(loads({-limit + far, 0}, limits.max_load_radius) && !loads({-limit + far - 1, 0}, limits.max_load_radius)
-                    && loads({0, limit - 1 - far}, limits.max_load_radius) && !loads({0, limit - far}, limits.max_load_radius),
-                "load radius endpoints");
+        require(accepted({-limit + far, 0}, 1, 0) && !accepted({-limit + far - 1, 0}, 1, 0)
+                    && accepted({0, limit - 1 - far}, 1, 0) && !accepted({0, limit - far}, 1, 0),
+                "low level endpoints");
         TicketSet tickets;
-        require(tickets.add({1, {0, 0}, static_cast<std::uint8_t>(limits.max_ticket_radius + 1)}, DimensionId::overworld, limits).error()
-                    == ErrorCode::out_of_bounds,
+        const auto add = [&](AddTicket t, Tick now = 0) { return tickets.add(t, DimensionId::overworld, now, limits); };
+        require(add({1, {0, 0}, static_cast<std::uint8_t>(limits.max_ticket_radius + 1)}).error() == ErrorCode::out_of_bounds,
                 "radius limit");
-        require(tickets.add({1, {0, 0}, 1, static_cast<std::uint8_t>(limits.max_load_radius + 1)}, DimensionId::overworld, limits).error()
-                    == ErrorCode::out_of_bounds,
-                "load radius limit");
-        require(tickets.add({2, {0, 0}, 2, 5}, DimensionId::overworld, limits).has_value(), "view ticket");
-        const auto l = tickets.levels();
-        require(l.size() == 121 && l.at({DimensionId::overworld, {2, 0}}) == ChunkLevel::ticking && l.at({DimensionId::overworld, {3, 0}}) == ChunkLevel::border
-                    && l.at({DimensionId::overworld, {5, 5}}) == ChunkLevel::border && !l.contains({DimensionId::overworld, {6, 0}}),
-                "ticking within the radius, loaded within the load radius");
+        require(add({1, {0, 0}, 2, TicketType::forced, 0}).error() == ErrorCode::out_of_bounds, "load radius limit");
+        require(add({1, {0, 0}, 0, TicketType::forced, 45}).error() == ErrorCode::invalid_argument, "level limit");
+        require(add({1, {0, 0}, 0, static_cast<TicketType>(ticket_type_count)}).error() == ErrorCode::invalid_argument,
+                "unknown type");
+        require(add({1, {0, 0}, 0, TicketType::portal, 30, 2}, UINT64_MAX - 1).error() == ErrorCode::invalid_argument,
+                "lifetime overflow");
+        require(tickets.list().empty(), "nothing added");
+        require(add({2, {0, 0}, 2}).has_value(), "forced ticket");
+        auto l = tickets.levels();
+        const auto at = [&](ChunkPos c) { return l.at({DimensionId::overworld, c}); };
+        require(l.size() == 81 && at({2, 0}) == ChunkLevels{31, 31} && at({3, 0}) == ChunkLevels{32, 32}
+                    && at({4, 4}) == ChunkLevels{33, 33} && !l.contains({DimensionId::overworld, {5, 0}}),
+                "level 31 in the square, one more per chunk beyond, loaded to 33");
+        require(status_of(31) == ChunkLevel::entity_ticking && status_of(0) == ChunkLevel::entity_ticking
+                    && status_of(32) == ChunkLevel::block_ticking && status_of(33) == ChunkLevel::border
+                    && status_of(34) == ChunkLevel::unloaded,
+                "statuses");
+        // A player's loading ticket loads without simulating; their simulation
+        // ticket simulates the chunks it loads, without loading more.
+        require(add({3, {20, 0}, 2, TicketType::player_loading, 31}).has_value()
+                    && add({4, {20, 0}, 0, TicketType::player_simulation, 30}).has_value(),
+                "player tickets");
+        l = tickets.levels();
+        require(at({20, 0}) == ChunkLevels{31, 31} && at({21, 0}) == ChunkLevels{31, 31} && at({22, 0}) == ChunkLevels{31, 32}
+                    && at({23, 0}) == ChunkLevels{32, 33} && at({24, 0}) == ChunkLevels{33, 34}
+                    && !l.contains({DimensionId::overworld, {25, 0}}),
+                "loading and simulation levels");
+        require(add({5, {-20, 0}, 0, TicketType::player_simulation, 27}).has_value()
+                    && !tickets.levels().contains({DimensionId::overworld, {-20, 0}}),
+                "a simulation ticket alone loads nothing");
+        // Lifetimes end at the command phase of the tick they reach.
+        require(add({6, {40, 0}, 0, TicketType::post_teleport, 32, 5}, 10).has_value(), "post-teleport ticket");
+        require(tickets.expire(14).empty() && tickets.expire(15) == std::vector<std::uint32_t>{6}, "expires after its lifetime");
+        require(tickets.keeps_active(DimensionId::overworld) && !tickets.keeps_active(DimensionId::the_nether),
+                "forced tickets keep their level active");
+    });
+
+    suite.run("idle levels and random tick ranges", [] {
+        // A level is awake while active, and for 300 ticks after it was last
+        // active or started.
+        require(level_awake(true, 1000, 0, 0) && level_awake(false, 300, 0, 0) && !level_awake(false, 301, 0, 0)
+                    && level_awake(false, 400, 100, 0) && !level_awake(false, 401, 100, 0) && level_awake(false, 900, 0, 600),
+                "idle after 300 ticks");
+        // 1.21.4: within 128 blocks (horizontally, exclusive) of a
+        // non-spectator player's position, from the chunk's center.
+        std::vector<Presence> presences{{PlayerKey{1, 1}, FixedVec{8 * fixed_one, 0, 8 * fixed_one}, false}};
+        const auto near = [&](ChunkPos c) { return player_near(presences, c); };
+        require(near({0, 0}) && near({7, 0}) && !near({8, 0}) && near({-7, 0}) && !near({-8, 0}) && near({5, 5}) && !near({6, 6}),
+                "128 blocks from the chunk center");
+        presences[0].position.x = 8 * fixed_one + 1;
+        require(near({8, 0}) && !near({-8, 0}), "measured in fixed point");
+        presences[0].spectator = true;
+        require(!near({0, 0}), "spectators do not count");
+        presences[0].spectator = false;
+        using enum RandomTickRange;
+        require(random_ticks_run(entity_ticking, 31, {100, 0}, presences) && !random_ticks_run(entity_ticking, 32, {0, 0}, presences),
+                "1.21.8: entity-ticking simulation");
+        require(random_ticks_run(block_ticking_near_player, 32, {0, 0}, presences)
+                    && !random_ticks_run(block_ticking_near_player, 31, {100, 0}, presences)
+                    && !random_ticks_run(block_ticking_near_player, 33, {0, 0}, presences),
+                "1.21.4: block-ticking simulation near a player");
     });
 
     suite.run("spawn positions are checked before narrowing", [] {
@@ -929,6 +980,7 @@ int main() {
                 "rejected as out of bounds");
         auto after = s.oracle.dump();
         after.time = before.time;
+        for (auto& l : after.levels) l.last_active = before.level(l.dimension).last_active;
         require(after == before, "no world mutation");
         // Valid endpoints: the lowest and highest positions inside the world height.
         const auto& world = bundle().world;
@@ -964,30 +1016,36 @@ int main() {
     });
 
     suite.run("tickets, generations and deferred ticks", [] {
-        Sim s(bundle(), 7, 0); // tick 1: chunk (0,0) ticking, ring border
+        // Tick 1: a forced ticket at chunk (0,0): entity ticking there, the
+        // ring around it block ticking, the next ring border.
+        Sim s(bundle(), 7, 0);
         // The levers come after the lamps: setting a block does not update the block itself.
-        s.tick({place({0, 0, 0}, blocks::stone()), place({16, 0, 0}, blocks::stone()), place({40, 0, 0}, blocks::stone()),
-                place({2, 0, 5}, blocks::lamp()), place({1, 0, 5}, blocks::lever(true)),
-                place({18, 0, 5}, blocks::lamp()), place({17, 0, 5}, blocks::lever(true))});
+        s.tick({place({0, 0, 0}, blocks::stone()), place({16, 0, 0}, blocks::stone()), place({32, 0, 0}, blocks::stone()),
+                place({56, 0, 0}, blocks::stone()), place({2, 0, 5}, blocks::lamp()), place({1, 0, 5}, blocks::lever(true)),
+                place({18, 0, 5}, blocks::lamp()), place({17, 0, 5}, blocks::lever(true)), place({34, 0, 5}, blocks::lamp()),
+                place({33, 0, 5}, blocks::lever(true))});
         const auto rejected = of_kind(s.last, TraceKind::command_rejected);
         require(rejected.size() == 1 && rejected[0].b == static_cast<std::uint64_t>(ErrorCode::unloaded_chunk), "unloaded write");
-        require(s.at({2, 0, 5}).flag() && s.at({18, 0, 5}).flag(), "lamps lit in ticking and border chunks");
-        s.tick({use_lever({1, 0, 5}), use_lever({17, 0, 5})}); // 3: lamp ticks due 7
+        require(s.at({2, 0, 5}).flag() && s.at({18, 0, 5}).flag() && s.at({34, 0, 5}).flag(), "lamps lit at every loaded level");
+        s.tick({use_lever({1, 0, 5}), use_lever({17, 0, 5}), use_lever({33, 0, 5})}); // 3: lamp ticks due 7
         s.tick({RemoveTicket{1}}); // 4
-        require(of_kind(s.last, TraceKind::chunk_unloaded).size() == 9, "nine chunks unloaded");
+        require(of_kind(s.last, TraceKind::chunk_unloaded).size() == 25, "25 chunks unloaded");
         s.until(9);
         auto d = s.oracle.dump();
-        require(d.overworld().ticks.size() == 2 && state_at(d, {2, 0, 5}).flag(), "pending ticks kept while unloaded");
-        s.tick({ticket(2, {0, 0}, 0)}); // 10: reload, overdue tick drains
+        require(d.overworld().ticks.size() == 3 && state_at(d, {2, 0, 5}).flag(), "pending ticks kept while unloaded");
+        s.tick({ticket(2, {0, 0}, 0)}); // 10: reload, overdue ticks drain where blocks tick
         d = s.oracle.dump();
-        require(!state_at(d, {2, 0, 5}).flag() && state_at(d, {18, 0, 5}).flag(), "ticking chunk drains; border waits");
-        require(d.overworld().chunks.size() == 9 && d.overworld().chunks[4].generation == 1, "reload increments generation");
+        require(!state_at(d, {2, 0, 5}).flag() && !state_at(d, {18, 0, 5}).flag() && state_at(d, {34, 0, 5}).flag(),
+                "entity- and block-ticking chunks drain; border waits");
+        require(d.overworld().chunks.size() == 25 && d.overworld().chunks[12].pos == ChunkPos{0, 0}
+                    && d.overworld().chunks[12].generation == 1,
+                "reload increments generation");
         s.tick({SetBlock{{3, 0, 0}, blocks::stone().raw(), Generation{0}}, SetBlock{{4, 0, 0}, blocks::stone().raw(), Generation{1}}});
         const auto r = of_kind(s.last, TraceKind::command_rejected);
         require(r.size() == 1 && r[0].b == static_cast<std::uint64_t>(ErrorCode::stale_generation), "stale generation");
         require(s.at({4, 0, 0}).is(BlockType::stone), "current generation accepted");
         s.tick({ticket(3, {1, 0}, 0)});
-        require(!s.at({18, 0, 5}).flag(), "border chunk tick drains once ticking");
+        require(!s.at({34, 0, 5}).flag(), "border chunk tick drains once block ticking");
     });
 
     suite.run("command validation", [] {
@@ -1000,7 +1058,7 @@ int main() {
                 insert({5, 5, 5}, 0, items::stone, 1), insert({0, 0, 0}, 5, items::stone, 1),
                 insert({0, 0, 0}, 1, 9999, 1), insert({0, 0, 0}, 0, items::wheat, 1), insert({0, 0, 0}, 0, items::stone, 5),
                 SpawnItem{at_block(0.5, 5, 0.5), {5000, 0, 0}, {items::stone, 1}}, RemoveEntity{{999}},
-                ticket(1, {0, 0}, 1), RemoveTicket{77}, ticket(9, {0, 0}, 9)});
+                ticket(1, {0, 0}, 1), RemoveTicket{77}, ticket(9, {0, 0}, 33)});
         const std::vector expected{ErrorCode::out_of_bounds, ErrorCode::unloaded_chunk, ErrorCode::invalid_block_state,
                                    ErrorCode::invalid_block_state, ErrorCode::invalid_block_state, ErrorCode::not_usable,
                                    ErrorCode::not_a_container, ErrorCode::invalid_slot, ErrorCode::invalid_argument,

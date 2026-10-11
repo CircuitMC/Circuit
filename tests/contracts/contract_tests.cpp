@@ -189,17 +189,35 @@ int main() {
             require(encoded && decode_replay(*encoded).error() == ErrorCode::malformed_record, "player use fields range-checked");
         }
 
-        // Records written before tickets had a load radius (tag 5) still decode.
+        // Radius tickets of earlier records (tag 9 with a load radius, tag 5
+        // without) read as forced squares; typed tickets round-trip.
         {
             ReplayLog one{"java-1.21.8", "circuit-reference-rules-v5", 1, {}, "circuit-blocks-1"};
-            one.ticks.push_back({1, {{1, AddTicket{9, {-3, 4}, 2, 0}}}});
-            auto legacy = encode_replay(one).value();
+            one.ticks.push_back({1, {{1, AddTicket{9, {-3, 4}, 2}}}});
+            const auto current = encode_replay(one).value();
             const std::size_t tag =
                 4 + 2 + 2 + one.bundle_id.size() + 2 + one.rules_id.size() + 2 + one.block_registry_id.size() + 8 + 4 + 8 + 4 + 8;
-            require(legacy[tag] == std::byte{9}, "tickets are written with tag 9");
-            legacy[tag] = std::byte{5};
-            legacy.pop_back(); // the load radius, the command's last field
-            require(decode_replay(legacy).value() == one, "a legacy ticket decodes with load radius 0");
+            require(current[tag] == std::byte{16}, "tickets are written with tag 16");
+            // tag, level byte, ticket, x, z, radius, then type, level and lifetime (6 bytes)
+            auto nine = current;
+            nine[tag] = std::byte{9};
+            nine.resize(nine.size() - 6);
+            nine.push_back(std::byte{7}); // a load radius, not kept
+            require(decode_replay(nine).value() == one, "a tag 9 ticket decodes as a forced square");
+            auto five = nine;
+            five[tag] = std::byte{5};
+            five.pop_back();
+            require(decode_replay(five).value() == one, "a tag 5 ticket decodes as a forced square");
+            ReplayLog typed{"java-1.21.8", "circuit-reference-rules-v5", 1, {}, "circuit-blocks-1"};
+            typed.ticks.push_back({1, {{1, AddTicket{3, {5, -6}, 10, TicketType::player_loading, 31, 0}},
+                                       {2, AddTicket{4, {5, -6}, 0, TicketType::post_teleport, 32, 5}},
+                                       {3, PlayerPresence{{1, 2}, {4096, -8192, 12}, true, true}},
+                                       {4, PlayerPresence{{1, 2}, {}, false, false}},
+                                       {5, LevelsStarted{}}}});
+            require(decode_replay(encode_replay(typed).value()).value() == typed, "typed tickets, presences and starts round-trip");
+            auto bad_type = encode_replay(one).value();
+            bad_type[bad_type.size() - 6] = std::byte{9};
+            require(decode_replay(bad_type).error() == ErrorCode::malformed_record, "an unknown ticket type is refused");
         }
 
         auto version_one = *bytes;

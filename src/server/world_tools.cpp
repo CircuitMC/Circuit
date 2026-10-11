@@ -103,9 +103,11 @@ std::expected<std::uint64_t, std::string> migrate_world(const std::filesystem::p
     if (!*identity) return std::unexpected(std::format("{} holds no saved world", source.string()));
     const auto to = contracts::BundleRegistry::select_for_simulation(bundle_id);
     if (!to) return std::unexpected(std::format("{} has no executable rules", bundle_id));
-    if ((*to)->rules->id != (*identity)->rules_id)
-        return std::unexpected(std::format("the world runs {} and {} runs {}: the state cannot be migrated", (*identity)->rules_id, bundle_id,
-                                           (*to)->rules->id));
+    // Another rule set: the state carries over and the new rules apply from
+    // its tick on, but a log written under the old rules cannot be replayed
+    // under the new ones (checked once the world is recovered).
+    const bool same_rules = (*to)->rules->id == (*identity)->rules_id;
+    const std::string target_rules(same_rules ? (*identity)->rules_id : std::string((*to)->rules->id));
     // Both directories are owned for the whole migration; a running server's
     // world is refused. The identity is read again under ownership.
     storage::WorldDirectory from(fs, source, (*identity)->bundle_id, (*identity)->rules_id);
@@ -113,12 +115,16 @@ std::expected<std::uint64_t, std::string> migrate_world(const std::filesystem::p
     if (const auto again = storage::WorldDirectory::identity(fs, source);
         !again || !*again || (*again)->bundle_id != (*identity)->bundle_id || (*again)->rules_id != (*identity)->rules_id)
         return std::unexpected(std::format("{} changed while it was opened", source.string()));
-    storage::WorldDirectory to_dir(fs, target, std::string(bundle_id), (*identity)->rules_id);
+    storage::WorldDirectory to_dir(fs, target, std::string(bundle_id), target_rules);
     if (auto ok = to_dir.acquire(); !ok) return std::unexpected(ok.error());
     if (fs.exists(target / "manifest")) return std::unexpected(std::format("{} already holds a world", target.string()));
     auto recovered = from.recover();
     if (!recovered) return std::unexpected(recovered.error());
     auto& r = **recovered;
+    if (!same_rules && !r.inputs.empty())
+        return std::unexpected(std::format("the world runs {} and {} runs {}; its log holds {} ticks after its last checkpoint, which only {} can "
+                                           "replay: open it with the release that wrote it and stop the server, which checkpoints it, then migrate",
+                                           (*identity)->rules_id, bundle_id, (*to)->rules->id, r.inputs.size(), (*identity)->rules_id));
     // Replay the logged inputs so the copy starts from the latest durable tick.
     const auto source_bundle = contracts::BundleRegistry::find((*identity)->bundle_id);
     if (!source_bundle) return std::unexpected(std::format("unknown bundle {}", (*identity)->bundle_id));
@@ -128,7 +134,7 @@ std::expected<std::uint64_t, std::string> migrate_world(const std::filesystem::p
         if (!loaded) return std::unexpected("invalid server data in the world");
         meta = *loaded;
     }
-    storage::Checkpoint c{std::string(bundle_id), (*identity)->rules_id, r.checkpoint.seed, {}, r.checkpoint.extras};
+    storage::Checkpoint c{std::string(bundle_id), target_rules, r.checkpoint.seed, {}, r.checkpoint.extras};
     try {
         runtime::Engine engine(**source_bundle, r.checkpoint.seed, r.checkpoint.state, world_engine_options(**source_bundle, meta.floor_y, 1));
         for (const auto& input : r.inputs) {
@@ -139,6 +145,10 @@ std::expected<std::uint64_t, std::string> migrate_world(const std::filesystem::p
     } catch (const std::exception& e) {
         return std::unexpected(std::format("the saved world cannot be replayed: {}", e.what()));
     }
+    // The tickets of a world written before tickets had types were spawn and
+    // player tickets; the server adds them again.
+    if (!meta.typed_tickets) c.state.tickets.clear();
+    meta.typed_tickets = true;
     c.extras[std::string(meta_extra)] = encode_meta(meta);
     if (auto ok = to_dir.checkpoint(c); !ok) return std::unexpected(ok.error());
     return c.state.time;

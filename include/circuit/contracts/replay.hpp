@@ -34,9 +34,10 @@ struct ReplayLimits {
     std::size_t max_bundle_id = 64;
 };
 
-// Format version 6: magic, version, bundle id, rule-set id, block registry id,
-// seed and the ticks; each command names its level, and item stacks carry
-// their data components. Version 5 commands are the overworld's. Version 4
+// Format version 7: magic, version, bundle id, rule-set id, block registry id,
+// seed and the ticks; each command names its level, tickets carry their type,
+// level and lifetime, and item stacks carry their data components. Version 6
+// tickets read as forced squares; version 5 commands are the overworld's. Version 4
 // records have stacks without components. Version 3 records also predate the
 // block registry; their block states are valid in circuit-blocks-1, the first
 // registry, which decoding assigns them. Older versions are rejected.

@@ -19,6 +19,10 @@ struct WorldMeta {
     std::uint64_t next_admission{1}; // command admissions continue across restarts
     std::uint32_t next_ticket{1000};
     std::string data{"none"};        // fingerprint of the data packs the log was written with
+    // False for a world written before tickets had types: its tickets were
+    // all spawn and player tickets, saved as forced ones. Opening or
+    // migrating it removes them.
+    bool typed_tickets{true};
 };
 
 inline constexpr std::string_view meta_extra = "circuit:server";

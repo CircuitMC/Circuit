@@ -2,7 +2,7 @@ circuit-trace 1
 title A lever updates around the block it is attached to
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v7
+harness circuit-reference-rules-v8
 mechanisms neighbor_updates piston redstone_lamp
 area -3 -1 -1 4 2 3
 ticks 14

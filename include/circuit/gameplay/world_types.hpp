@@ -126,34 +126,110 @@ constexpr bool tick_before(const ScheduledTick& a, const ScheduledTick& b) noexc
     return a.suborder < b.suborder;
 }
 
-enum class ChunkLevel : std::uint8_t { unloaded = 0, border = 1, ticking = 2 };
+// A loaded chunk's status, from its load level (contracts::AddTicket).
+enum class ChunkLevel : std::uint8_t { unloaded = 0, border = 1, block_ticking = 2, entity_ticking = 3 };
+constexpr ChunkLevel status_of(std::uint8_t load_level) noexcept {
+    return load_level <= 31 ? ChunkLevel::entity_ticking
+         : load_level == 32 ? ChunkLevel::block_ticking
+         : load_level == 33 ? ChunkLevel::border
+                            : ChunkLevel::unloaded;
+}
+// What a chunk's simulation level runs.
+constexpr bool block_ticking(std::uint8_t simulation_level) noexcept { return simulation_level <= 32; }
+constexpr bool entity_ticking(std::uint8_t simulation_level) noexcept { return simulation_level <= 31; }
 
 struct Ticket {
     std::uint32_t id{};
     ChunkPos center;
-    std::uint8_t radius{};      // ticking
-    std::uint8_t load_radius{}; // loaded without ticking: max(radius + 1, load_radius)
+    std::uint8_t radius{};
+    contracts::TicketType type{};
+    std::uint8_t level{31};
+    Tick expires{};                     // removed at this tick's command phase; 0: never
     contracts::DimensionId dimension{}; // the level whose chunks it loads
+    // A player's loading ticket loads without simulating; their simulation
+    // ticket simulates without loading.
+    [[nodiscard]] constexpr bool loads() const noexcept { return type != contracts::TicketType::player_simulation; }
+    [[nodiscard]] constexpr bool simulates() const noexcept { return type != contracts::TicketType::player_loading; }
+    // Chunks within this distance of the center take a level of 33 or lower.
     [[nodiscard]] constexpr std::int32_t reach() const noexcept {
-        return std::max<std::int32_t>(std::int32_t{radius} + 1, load_radius);
+        return std::int32_t{radius} + std::max(0, 33 - std::int32_t{level});
     }
     bool operator==(const Ticket&) const = default;
 };
 
-// Ticket bookkeeping and the load-level rule. Owned by one executor; changes
-// are applied to the active chunk set only at the command-phase boundary.
+// A loaded chunk's levels: its load level and its simulation level (34 and
+// higher: none). The simulation level is never below the load level: a chunk
+// runs only what both allow.
+struct ChunkLevels {
+    std::uint8_t load{contracts::unloaded_level};
+    std::uint8_t simulation{contracts::unloaded_level};
+    bool operator==(const ChunkLevels&) const = default;
+};
+
+// Ticket bookkeeping and the level rule. Owned by one executor; changes are
+// applied to the active chunk set only at the command-phase boundary.
 // Ticket ids are unique over all levels; a ticket loads chunks of its level.
 class TicketSet {
 public:
-    contracts::Result<void> add(const contracts::AddTicket& command, contracts::DimensionId dimension,
+    // `now`: the tick whose command phase adds it (for its lifetime).
+    contracts::Result<void> add(const contracts::AddTicket& command, contracts::DimensionId dimension, Tick now,
                                 const contracts::RuleLimits& limits);
     contracts::Result<void> remove(std::uint32_t id);
-    [[nodiscard]] std::map<contracts::ChunkKey, ChunkLevel> levels() const;
+    // Removes the tickets whose lifetime is over by `now`; returns their ids.
+    std::vector<std::uint32_t> expire(Tick now);
+    // Restores a ticket as listed.
+    contracts::Result<void> restore(const Ticket& ticket, const contracts::RuleLimits& limits);
+    // The levels of every chunk some ticket loads (load level 33 or lower).
+    [[nodiscard]] std::map<contracts::ChunkKey, ChunkLevels> levels() const;
+    // Whether a forced ticket keeps the level from idling.
+    [[nodiscard]] bool keeps_active(contracts::DimensionId dimension) const;
     [[nodiscard]] std::vector<Ticket> list() const;
 
 private:
     std::map<std::uint32_t, Ticket> tickets_;
 };
+
+// A player in a level (contracts::PlayerPresence).
+struct Presence {
+    contracts::PlayerKey player;
+    FixedVec position;
+    bool spectator{};
+    bool operator==(const Presence&) const = default;
+};
+
+// Whether a level ticks its entities and block entities at tick `now`: it has
+// players or forced chunks, or had them (or started) at most
+// contracts::idle_level_ticks ticks ago.
+constexpr bool level_awake(bool active, Tick now, Tick last_active, Tick started) noexcept {
+    return active || now - std::max(last_active, started) <= contracts::idle_level_ticks;
+}
+
+// Whether a non-spectator player is less than 128 blocks horizontally from
+// the chunk's center (x * 16 + 8, z * 16 + 8).
+template <class Presences>
+bool player_near(const Presences& presences, ChunkPos chunk) {
+    constexpr std::int64_t range = 128 * contracts::fixed_one;
+    const std::int64_t cx = (std::int64_t{chunk.x} * 16 + 8) * contracts::fixed_one;
+    const std::int64_t cz = (std::int64_t{chunk.z} * 16 + 8) * contracts::fixed_one;
+    for (const auto& entry : presences) {
+        const Presence& p = [&]() -> const Presence& {
+            if constexpr (requires { entry.second; }) return entry.second;
+            else return entry;
+        }();
+        if (p.spectator) continue;
+        const auto dx = p.position.x - cx, dz = p.position.z - cz;
+        if (dx <= -range || dx >= range || dz <= -range || dz >= range) continue;
+        if (dx * dx + dz * dz < range * range) return true;
+    }
+    return false;
+}
+
+// Whether a chunk's random ticks run (RuleSet::random_ticks).
+template <class Presences>
+bool random_ticks_run(contracts::RandomTickRange range, std::uint8_t simulation_level, ChunkPos chunk, const Presences& presences) {
+    if (range == contracts::RandomTickRange::entity_ticking) return entity_ticking(simulation_level);
+    return block_ticking(simulation_level) && player_near(presences, chunk);
+}
 
 // One level's state in a WorldDump. Positions are the level's. The scheduled
 // tick sub-order and the block-entity order are per-level counters, as in the
@@ -165,7 +241,9 @@ struct LevelDump {
     struct Chunk {
         ChunkPos pos;
         std::uint32_t generation{};
-        ChunkLevel level{};
+        ChunkLevel level{};                // from the load level
+        std::uint8_t load{contracts::unloaded_level};
+        std::uint8_t simulation{contracts::unloaded_level};
         bool operator==(const Chunk&) const = default;
     };
     struct PendingTick {
@@ -179,6 +257,9 @@ struct LevelDump {
     std::vector<Entity> entities;                               // ascending id
     std::vector<PendingTick> ticks;                             // by list, then drain order
     std::vector<BlockEvent> block_events;                       // queue order
+    std::vector<Presence> presences;                            // ascending player
+    // The last tick the level had players or forced chunks (contracts::idle_level_ticks).
+    Tick last_active{};
     bool operator==(const LevelDump&) const = default;
 };
 
@@ -189,7 +270,8 @@ struct WorldDump {
     using PendingTick = LevelDump::PendingTick;
     Tick time{};
     std::uint64_t next_entity_id{};
-    std::vector<LevelDump> levels;        // ascending dimension; a level is listed once it has a column
+    Tick started{}; // the last LevelsStarted command's tick, less one: levels count as active then
+    std::vector<LevelDump> levels;        // ascending dimension; listed with a column, a presence or an active tick
     std::vector<Ticket> tickets;          // ascending id
     std::vector<PlayerInventory> players; // ascending player, non-empty only
     bool operator==(const WorldDump&) const = default;

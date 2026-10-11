@@ -28,7 +28,7 @@ The configuration file holds `key=value` lines; `#` starts a comment. Unknown ke
 | `session-server` | `https://sessionserver.mojang.com` | Session service for online mode; plain `http` only on loopback |
 | `auth-timeout-ms` | `5000` | Deadline for one verification |
 | `max-players`, `max-connections` | `20`, `256` | Players in the game; open sockets of any kind |
-| `view-distance`, `simulation-distance` | `6`, `4` | Chunks loaded and sent around a player, without ticking; ticking radius of the player's chunk ticket |
+| `view-distance`, `simulation-distance` | `6`, `4` | Chunks loaded and sent around a player; chunks simulated around a player (at most 8) |
 | `compression-threshold` | `256` | Packets of at least this size are compressed; `-1` disables compression |
 | `network-threads`, `workers` | `2`, `4` | Asio threads for connections; engine worker threads |
 | `login-timeout`, `keep-alive-timeout` | `30`, `30` | Seconds |
@@ -73,7 +73,7 @@ A refused action is answered with the current state of the affected blocks, or, 
 
 **World delivery.**
 - **Chunks:** encoded from copy-on-write column snapshots: paletted block sections, plains biome, heightmaps and full sky light, with no lighting engine yet. At most 32 chunks per player per tick, nearest first.
-- **View and simulation:** a player's chunk ticket ticks the chunks within the simulation distance and loads, without ticking, those within the view distance the client asked for (at most `view-distance`). Every chunk of the view is sent, whether the view is wider or narrower than the simulation distance.
+- **View and simulation:** as in the target versions, each player has two chunk tickets. A loading ticket of level 31 over the view distance the client asked for (at most `view-distance`) loads those chunks, and two rings beyond them at levels 32 and 33, without simulating them. A simulation ticket of level 31 − `simulation-distance` at the player's chunk simulates what is loaded: entities within the simulation distance, blocks one chunk further. Every chunk of the view is sent, and chunks one beyond it stay shown while loaded. The spawn chunks keep a start ticket of level 30 (spawnChunkRadius 2). See [chunk levels](SIMULATION.md#reference-rules-v8).
 - **Block states:** every displayed property is rule state, including dust shapes, lever mounting and repeater locks, so clients see the state the rules hold.
 - **Updates and entities:** block changes in a tick become block updates for every player who has the chunk. Item entities are spawned, moved and removed from the engine trace.
 

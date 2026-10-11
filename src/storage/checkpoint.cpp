@@ -17,6 +17,10 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 8: tickets carry their type, level and expiry, columns their load and
+// simulation levels, and levels their players and last active tick (versions
+// before 8 read tickets as forced squares, ticking columns as level 31 and
+// border columns as level 33);
 // 7: the state is per level (each with its columns, block entities, entities,
 // scheduled ticks, block events and counters), and tickets name their level;
 // 6: stacks carry their data components; 5: the header names the block
@@ -26,7 +30,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 7;
+constexpr std::uint32_t version = 8;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -101,10 +105,15 @@ template <class Blocks>
 void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
     w.u8(static_cast<std::uint8_t>(l.dimension));
     w.varlong(static_cast<std::int64_t>(l.next_suborder)).varlong(static_cast<std::int64_t>(l.next_block_entity_order));
+    w.varlong(static_cast<std::int64_t>(l.last_active)).varint(static_cast<std::int32_t>(l.presences.size()));
+    for (const auto& p : l.presences)
+        w.i64(static_cast<std::int64_t>(p.player.hi)).i64(static_cast<std::int64_t>(p.player.lo)).i64(p.position.x).i64(p.position.y)
+            .i64(p.position.z).boolean(p.spectator);
     w.varint(static_cast<std::int32_t>(l.chunks.size()));
     for (std::size_t i = 0; i < l.chunks.size(); ++i) {
         const auto& ch = l.chunks[i];
         w.i32(ch.pos.x).i32(ch.pos.z).varint(static_cast<std::int32_t>(ch.generation)).u8(static_cast<std::uint8_t>(ch.level));
+        w.u8(ch.load).u8(ch.simulation);
         const auto sections = blocks(i);
         w.varint(static_cast<std::int32_t>(sections.size()));
         for (const auto& [sy, bytes] : sections) w.i32(sy).raw(bytes);
@@ -149,12 +158,14 @@ template <class Blocks>
 void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
     const auto& s = c.state;
     w.varlong(static_cast<std::int64_t>(s.time)).varlong(static_cast<std::int64_t>(s.next_entity_id));
+    w.varlong(static_cast<std::int64_t>(s.started));
     w.varint(static_cast<std::int32_t>(s.levels.size()));
     for (std::size_t k = 0; k < s.levels.size(); ++k)
         encode_level(w, s.levels[k], [&](std::size_t i) { return blocks(k, i); });
     w.varint(static_cast<std::int32_t>(s.tickets.size()));
     for (const auto& t : s.tickets)
-        w.i32(static_cast<std::int32_t>(t.id)).i32(t.center.x).i32(t.center.z).u8(t.radius).u8(t.load_radius).u8(static_cast<std::uint8_t>(t.dimension));
+        w.i32(static_cast<std::int32_t>(t.id)).i32(t.center.x).i32(t.center.z).u8(t.radius).u8(static_cast<std::uint8_t>(t.dimension))
+            .u8(static_cast<std::uint8_t>(t.type)).u8(t.level).varlong(static_cast<std::int64_t>(t.expires));
     w.varint(static_cast<std::int32_t>(s.players.size()));
     for (const auto& p : s.players) {
         w.i64(static_cast<std::int64_t>(p.player.hi)).i64(static_cast<std::int64_t>(p.player.lo));
@@ -219,17 +230,25 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
         std::int32_t generation{};
         std::uint8_t level{};
         std::size_t secs = 0;
-        if (!b.get(b.r.i32(), ch.pos.x) || !b.get(b.r.i32(), ch.pos.z) || !b.get(b.r.varint(), generation) || !b.get(b.r.u8(), level)
-            || !b.count(secs, 6))
+        if (!b.get(b.r.i32(), ch.pos.x) || !b.get(b.r.i32(), ch.pos.z) || !b.get(b.r.varint(), generation) || !b.get(b.r.u8(), level))
             return false;
+        if (b.version >= 8 && (!b.get(b.r.u8(), ch.load) || !b.get(b.r.u8(), ch.simulation))) return false;
+        if (!b.count(secs, 6)) return false;
         // Column and section positions stay within the coordinates block
         // positions can express; the engine checks them against the world.
-        if (level > 2 || generation < 0 || std::abs(ch.pos.x) > max_chunk || std::abs(ch.pos.z) > max_chunk) {
+        if (level > (b.version >= 8 ? 3 : 2) || generation < 0 || std::abs(ch.pos.x) > max_chunk || std::abs(ch.pos.z) > max_chunk) {
             b.error = "invalid column";
             return false;
         }
         ch.generation = static_cast<std::uint32_t>(generation);
-        ch.level = static_cast<gameplay::ChunkLevel>(level);
+        if (b.version >= 8) {
+            ch.level = static_cast<gameplay::ChunkLevel>(level);
+        } else {
+            // Before version 8: unloaded, loaded (border) or ticking.
+            ch.level = level == 2 ? gameplay::ChunkLevel::entity_ticking : level == 1 ? gameplay::ChunkLevel::border : gameplay::ChunkLevel::unloaded;
+            ch.load = ch.simulation = level == 2 ? 31 : level == 1 ? 33 : contracts::unloaded_level;
+            if (level == 1) ch.simulation = contracts::unloaded_level;
+        }
         s.chunks.push_back(ch);
         for (std::size_t k = 0; k < secs; ++k) {
             std::int32_t sy{};
@@ -352,7 +371,7 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
     auto& s = c.state;
     if (b.version >= 7) {
         std::size_t levels = 0;
-        if (!b.u64(s.time) || !b.u64(s.next_entity_id) || !b.count(levels, 4)) return false;
+        if (!b.u64(s.time) || !b.u64(s.next_entity_id) || (b.version >= 8 && !b.u64(s.started)) || !b.count(levels, 4)) return false;
         for (std::size_t k = 0; k < levels; ++k) {
             std::uint8_t dimension{};
             if (!b.get(b.r.u8(), dimension)) return false;
@@ -362,7 +381,22 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
             }
             auto& l = s.levels.emplace_back();
             l.dimension = static_cast<contracts::DimensionId>(dimension);
-            if (!b.u64(l.next_suborder) || !b.u64(l.next_block_entity_order) || !decode_level_lists(b, l)) return false;
+            if (!b.u64(l.next_suborder) || !b.u64(l.next_block_entity_order)) return false;
+            if (b.version >= 8) {
+                std::size_t presences = 0;
+                if (!b.u64(l.last_active) || !b.count(presences, 41)) return false;
+                for (std::size_t p = 0; p < presences; ++p) {
+                    gameplay::Presence presence;
+                    std::int64_t hi{}, lo{};
+                    if (!b.get(b.r.i64(), hi) || !b.get(b.r.i64(), lo) || !b.get(b.r.i64(), presence.position.x)
+                        || !b.get(b.r.i64(), presence.position.y) || !b.get(b.r.i64(), presence.position.z)
+                        || !b.get(b.r.boolean(), presence.spectator))
+                        return false;
+                    presence.player = {static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)};
+                    l.presences.push_back(presence);
+                }
+            }
+            if (!decode_level_lists(b, l)) return false;
         }
     } else {
         // Before version 7: the overworld alone, with the counters first.
@@ -377,7 +411,8 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
         gameplay::Ticket t;
         std::int32_t id{};
         if (!b.get(b.r.i32(), id) || !b.get(b.r.i32(), t.center.x) || !b.get(b.r.i32(), t.center.z) || !b.get(b.r.u8(), t.radius)) return false;
-        if (b.version >= 2 && !b.get(b.r.u8(), t.load_radius)) return false;
+        std::uint8_t load_radius{}; // before version 8; a forced square keeps none
+        if (b.version >= 2 && b.version < 8 && !b.get(b.r.u8(), load_radius)) return false;
         if (b.version >= 7) {
             std::uint8_t dimension{};
             if (!b.get(b.r.u8(), dimension)) return false;
@@ -386,6 +421,15 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
                 return false;
             }
             t.dimension = static_cast<contracts::DimensionId>(dimension);
+        }
+        if (b.version >= 8) {
+            std::uint8_t type{};
+            if (!b.get(b.r.u8(), type) || !b.get(b.r.u8(), t.level) || !b.u64(t.expires)) return false;
+            if (type >= contracts::ticket_type_count) {
+                b.error = "invalid ticket type";
+                return false;
+            }
+            t.type = static_cast<contracts::TicketType>(type);
         }
         t.id = static_cast<std::uint32_t>(id);
         s.tickets.push_back(t);

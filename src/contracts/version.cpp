@@ -7,7 +7,7 @@ namespace {
 using enum CompatibilityTier;
 using enum EvidenceSource;
 
-// Compatibility table for circuit-reference-rules-v7. Every row claims a tier.
+// Compatibility table for circuit-reference-rules-v8. Every row claims a tier.
 // A row claims L0 only when harness fixtures recorded on the target version
 // pass and no gap is known; "Not covered" names aspects no fixture exercises.
 // Every other row claims L2 and lists its gaps, which include behavior not yet
@@ -130,8 +130,9 @@ constexpr RuleLimits vanilla_like_limits{
     .max_scheduled_ticks_per_list = 65'536,
     .random_tick_speed = 3,
     .max_block_events_per_tick = 1'000'000,
-    .max_ticket_radius = 8,
-    .max_load_radius = 33, // a view distance of 32, plus one
+    .max_ticket_radius = 32, // a view distance of 32
+    .max_load_radius = 34,   // and the two levels beyond it that are loaded
+    .max_simulation_distance = 8,
 };
 
 // Game rules of each release, from minecraft.wiki "Game rule" (revision
@@ -258,12 +259,15 @@ constexpr std::array game_rules_1_21_4{
 // its own: the rules were checked against harness traces of 1.21.8, and the
 // same scenarios recorded on 1.21.4 are identical (evidence_tests compares
 // every pair). What differs is the bundles' own: content, component schema,
-// registries and game rules.
-constexpr RuleSet rules_1_21_8{"circuit-reference-rules-v7", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
-                               "circuit-blocks-1", "harness traces of 1.21.8 (tests/fixtures/harness)"};
-constexpr RuleSet rules_1_21_4{"circuit-reference-rules-v7", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
+// registries and game rules, and where random ticks run (RandomTickRange),
+// which the official servers showed differs.
+constexpr RuleSet rules_1_21_8{"circuit-reference-rules-v8", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
+                               "circuit-blocks-1", "harness traces of 1.21.8 (tests/fixtures/harness)", RandomTickRange::entity_ticking};
+constexpr RuleSet rules_1_21_4{"circuit-reference-rules-v8", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
                                "circuit-blocks-1",
-                               "harness traces of 1.21.4 (tests/fixtures/harness-1.21.4), each identical to its 1.21.8 recording"};
+                               "harness traces of 1.21.4 (tests/fixtures/harness-1.21.4), each identical to its 1.21.8 recording; "
+                               "random ticks run only near players (observed on the official 1.21.4 server)",
+                               RandomTickRange::block_ticking_near_player};
 
 constexpr std::array bundles{
     VersionBundle{

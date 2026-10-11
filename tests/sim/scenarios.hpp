@@ -408,6 +408,68 @@ inline Scenario registry_block_scenario() {
     }};
 }
 
+// Chunk levels and what each runs. In the overworld, a forced ticket at
+// chunk (0,0) makes it entity ticking, the ring around it block ticking and
+// the next ring border; a player's loading ticket at chunk (6,0) loads
+// without simulating, except while their simulation ticket is there (ticks
+// 60-79); a post-teleport ticket loads chunk (-6,0) for 5 ticks. Every
+// probed chunk holds a lamp switched off at tick 3 (a scheduled tick), a
+// piston powered at tick 3 (a block event), a hopper filling a chest (a
+// block entity) and a falling item (an entity). In the Nether, where no
+// chunk is forced, a start ticket keeps chunk (0,0) entity ticking: its
+// hopper and items stop after tick 300 (idle level) and resume while a
+// player is there (ticks 400-419).
+inline std::vector<std::pair<CommandBody, DimensionId>> chunk_level_commands(Tick t) {
+    using enum DimensionId;
+    std::vector<std::pair<CommandBody, DimensionId>> c;
+    const auto probe = [&](std::int32_t x, DimensionId level) {
+        if (t == 2) {
+            c.push_back({place({x + 2, 0, 2}, blocks::lamp()), level});
+            c.push_back({place({x + 1, 0, 2}, blocks::lever(true)), level});
+            c.push_back({place({x + 5, 0, 2}, blocks::piston(D::up)), level});
+            c.push_back({place({x + 8, 1, 2}, blocks::hopper(D::east)), level});
+            c.push_back({place({x + 9, 1, 2}, blocks::chest()), level});
+            c.push_back({insert({x + 8, 1, 2}, 0, items::stone, 64), level});
+            c.push_back({place({x + 12, 0, 2}, blocks::stone()), level});
+        }
+        if (t == 3) {
+            c.push_back({use_lever({x + 1, 0, 2}), level});
+            c.push_back({place({x + 4, 0, 2}, blocks::redstone_block()), level});
+        }
+        if (t % 50 == 2) c.push_back({SpawnItem{at_block(x + 12.5, 4.0, 2.5), {}, {items::stone, 1}}, level});
+    };
+    if (t == 1) {
+        c.push_back({ticket(1, {0, 0}, 0), overworld});
+        c.push_back({AddTicket{2, {6, 0}, 1, TicketType::player_loading, 31}, overworld});
+        c.push_back({AddTicket{10, {0, 0}, 0, TicketType::start, 31}, the_nether});
+    }
+    for (const auto cx : {0, 1, 2, 6}) probe(cx * 16, overworld);
+    probe(0, the_nether);
+    if (t == 60) {
+        c.push_back({AddTicket{3, {6, 0}, 0, TicketType::player_simulation, 29}, overworld});
+        c.push_back({PlayerPresence{{1, 1}, at_block(104.5, 0.0, 8.5)}, overworld});
+    }
+    if (t == 80) c.push_back({RemoveTicket{3}, overworld});
+    if (t == 90) c.push_back({AddTicket{4, {-6, 0}, 0, TicketType::post_teleport, 32, 5}, overworld});
+    if (t == 400) c.push_back({PlayerPresence{{1, 1}, at_block(8.5, 2.0, 8.5)}, the_nether});
+    if (t == 420) c.push_back({PlayerPresence{{1, 1}, {}, false, false}, the_nether});
+    return c;
+}
+inline Scenario chunk_levels_scenario() {
+    Scenario s{"chunk_levels", 61, 450, {}, 10, {}};
+    s.inputs = [](Tick t) {
+        std::vector<CommandBody> out;
+        for (auto& [c, level] : chunk_level_commands(t)) out.push_back(std::move(c));
+        return out;
+    };
+    s.levels = [](Tick t) {
+        std::vector<DimensionId> out;
+        for (const auto& [c, level] : chunk_level_commands(t)) out.push_back(level);
+        return out;
+    };
+    return s;
+}
+
 // The scenario with every position raised by `dy` blocks, so that levels
 // whose world starts at y = 0 (the Nether, the End) hold it too.
 inline Scenario raised(Scenario s, std::int32_t dy) {
@@ -469,7 +531,7 @@ inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
-            transient_head_scenario(), registry_block_scenario()};
+            transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario()};
 }
 
 } // namespace circuit::test

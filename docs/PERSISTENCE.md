@@ -93,7 +93,7 @@ An input that the engine cannot apply during replay ends the history before it. 
 
 Files from which recovery discarded data are not deleted: a damaged checkpoint, or a segment with a discarded tail. Once no manifest needs them, they are renamed to `damaged-<name>` and kept for diagnosis. Delete them when they are no longer needed.
 
-Players are not connected after a restart: their chunk tickets are removed in the first tick. Player inventories are simulation state: every change is a logged command, so recovery restores them like the world. Player positions, game modes, health and hunger are saved with each checkpoint and when a player leaves; a crash can lose those since the last checkpoint, but never logged world or inventory changes. A player who left dead joins respawned at the world spawn.
+Players are not connected after a restart: their chunk tickets are removed in the first tick, with every other ticket the target versions do not save (all but forced and portal tickets); the start ticket is added again. Every start counts as the levels' creation for the idle-level rule. Player inventories are simulation state: every change is a logged command, so recovery restores them like the world. Player positions, game modes, health and hunger are saved with each checkpoint and when a player leaves; a crash can lose those since the last checkpoint, but never logged world or inventory changes. A player who left dead joins respawned at the world spawn.
 
 ## Failure handling
 
@@ -101,15 +101,16 @@ The server fails closed on storage errors. If a log record cannot be written, th
 
 ## Checkpoint format
 
-A checkpoint file is `CIRCKPT\0`, a format version (7; versions 1–6 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+A checkpoint file is `CIRCKPT\0`, a format version (8; versions 1–7 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+- versions before 8 have untyped tickets: each is read as a forced ticket of level 31 over its radius (its load radius is dropped), and each ticking column as entity ticking, each border column as border without simulation;
 - versions before 7 hold the overworld alone, and their tickets are the overworld's;
 - versions 1–4 also predate the registry: their block states are a subset of `circuit-blocks-1` and are read as such;
 - versions before 6 have item stacks without components.
 
 The body holds:
-- the time and the entity id counter, counted over all levels;
-- per level (overworld, Nether, End; only those with columns): its counters, columns with palette-packed sections, block entities, entities (with their pickup delay), scheduled ticks and pending block events;
-- chunk tickets, each naming its level;
+- the time, the entity id counter, counted over all levels, and the tick the levels last started;
+- per level (overworld, Nether, End; only those with columns, players or an active tick): its counters, the last tick it had players or forced chunks, the players in it (position and whether a spectator), columns with their load and simulation levels and palette-packed sections, block entities, entities (with their pickup delay), scheduled ticks and pending block events;
+- chunk tickets: type, level, square radius, the tick their lifetime ends and their level (dimension);
 - player inventories: the 46 slots, the carried stack and a drag in progress; item stacks carry their damage and their other data components;
 - block entities' components (a container's name) and the saved data of block entities of blocks without rules of their own;
 - named extras, such as the server's metadata and player positions.
@@ -119,11 +120,12 @@ Decoding checks every length, count and the digest. The engine's restoring const
 The server's metadata records the fingerprint of the [data packs](DATA_PACKS.md#the-worlds-data) the log was written with; a server with other data refuses to replay that log.
 
 Log segments start with `CIRCWAL` and a format byte:
-- 2: commands name their level;
+- 3: tickets are typed, and commands include players' presence and server starts;
+- 2 (read only): commands name their level; tickets are read as forced ones;
 - 1 (read only): overworld commands whose stacks carry components;
 - 0 (read only): records written before stacks carried components.
 
-A world directory written by the previous release (version 6 checkpoints, format 1 segments) is kept as a test fixture (`tests/fixtures/storage/`). `storage_tests` recovers it and replays it to the same state, then writes a new checkpoint in the current format.
+A world directory written by an earlier release (version 6 checkpoints, format 1 segments, `circuit-reference-rules-v7`) is kept as a test fixture (`tests/fixtures/storage/`). `storage_tests` checks that other rules refuse it, and that under its own rules every record is read (tickets as forced ones, commands as the overworld's) and new records use the current formats. The server opens such a world only through `--migrate-world`, which needs a world stopped cleanly (no log after its last checkpoint). A world whose server metadata predates typed tickets (metadata version 3) keeps none of its tickets: they were all spawn and player tickets, and the server adds them again.
 
 ## Anvil import and export
 

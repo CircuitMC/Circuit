@@ -37,7 +37,7 @@ Descriptor data stays valid while the library is loaded. The module's destroy fu
 | Permission | Services |
 | --- | --- |
 | none | `log`, `tick_metrics`, `tick_status` (tick number, frozen state, recent tick times with p50/p95/p99), `permissions` |
-| `world.read` | `time`, `block` (state notation), `block_entity` (kind, slots, comparator signal), `chunk` (loaded, ticking, counts), `items` (item entities in a chunk) |
+| `world.read` | `time`, `block` (state notation), `block_entity` (kind, slots, comparator signal), `chunk` (loaded, ticking: whether its scheduled ticks run, counts), `items` (item entities in a chunk) |
 | `world.write` | `set_block`, `use_block` (each returns the admission number), `cancel` (withdraws this module's command before it is applied) |
 | `world.observe` | `subscribe`: tick reports from now on |
 | `commands` | `register_command` (a chat command with a handler object owned by the module), `tell` (a message to an online player) |

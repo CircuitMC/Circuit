@@ -55,8 +55,9 @@ struct RuleLimits {
     std::uint32_t max_scheduled_ticks_per_list{};  // version rule: excess stays scheduled
     std::uint32_t random_tick_speed{};             // version rule (default game rule value)
     std::uint32_t max_block_events_per_tick{};     // Circuit capacity: exceeding it fails the tick
-    std::uint8_t max_ticket_radius{};              // Circuit capacity: ticking radius
-    std::uint8_t max_load_radius{};                // Circuit capacity: loaded, non-ticking radius
+    std::uint8_t max_ticket_radius{};              // Circuit capacity: a ticket's square (a view distance)
+    std::uint8_t max_load_radius{};                // Circuit capacity: how far a ticket's chunks reach
+    std::uint8_t max_simulation_distance{};        // Circuit capacity: a player's simulation distance
 };
 
 enum class RngPolicy : std::uint8_t {
@@ -64,6 +65,21 @@ enum class RngPolicy : std::uint8_t {
     // Declared L1 relative to a level-wide stream; see the compatibility table.
     per_section_derived_stream,
 };
+
+// Which chunks random ticks run in (observed on both official servers,
+// 2026-10-11).
+enum class RandomTickRange : std::uint8_t {
+    // Simulation level 31 or lower, whoever is near (1.21.8).
+    entity_ticking,
+    // Simulation level 32 or lower, with a non-spectator player less than 128
+    // blocks horizontally from the chunk's center (1.21.4).
+    block_ticking_near_player,
+};
+
+// A level with neither players nor forced chunks stops ticking its entities
+// and block entities after this many ticks (both versions; minecraft.wiki
+// "Chunk", observed on both official servers).
+inline constexpr std::uint32_t idle_level_ticks = 300;
 
 struct RuleSet {
     std::string_view id;
@@ -75,6 +91,7 @@ struct RuleSet {
     // behavior matches the cases the rules were checked against, and the
     // differences the bundle handles itself.
     std::string_view basis;
+    RandomTickRange random_ticks{};
 };
 
 enum class GameRuleType : std::uint8_t { boolean, integer };

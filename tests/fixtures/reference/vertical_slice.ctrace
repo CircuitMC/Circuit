@@ -2,7 +2,7 @@ circuit-trace 1
 title Dust and repeater across a chunk edge
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v7
+harness circuit-reference-rules-v8
 mechanisms redstone_wire repeater redstone_lamp neighbor_updates scheduled_ticks
 area 12 -1 -1 21 0 1
 ticks 12

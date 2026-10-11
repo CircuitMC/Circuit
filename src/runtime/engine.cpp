@@ -43,6 +43,8 @@ struct Engine::Impl {
     void block_event_phase(DimensionId level);
     void entity_phase(DimensionId level);
     void block_entity_phase(DimensionId level);
+    // Whether the level ticks entities and block entities this tick (idle rule).
+    bool awake(DimensionId level);
     void run_phase(Phase phase, DimensionId level, std::vector<RootItem> roots);
     void commit(const std::vector<RegionContext*>& contexts);
     void maintain_layout();
@@ -185,12 +187,16 @@ void Engine::Impl::advance(const std::vector<Command>& commands) {
         bool any = false;
         world.for_each_loaded(level, [&](ChunkPos, const ChunkData&) { any = true; });
         if (!any) continue;
+        const bool level_awake = awake(level);
         timed(Phase::block_ticks, [&] { tick_phase(level, TickList::block); });
         timed(Phase::fluid_ticks, [&] { tick_phase(level, TickList::fluid); });
         timed(Phase::random_ticks, [&] { random_phase(level); });
         timed(Phase::block_events, [&] { block_event_phase(level); });
-        timed(Phase::entities, [&] { entity_phase(level); });
-        timed(Phase::block_entities, [&] { block_entity_phase(level); });
+        // An idle level ticks neither entities nor block entities.
+        if (level_awake) timed(Phase::entities, [&] { entity_phase(level); });
+        else ++stats.phases;
+        if (level_awake) timed(Phase::block_entities, [&] { block_entity_phase(level); });
+        else ++stats.phases;
     }
     maintain_layout();
     failed = false;
@@ -208,9 +214,17 @@ void Engine::Impl::command_phase(const std::vector<Command>& commands) {
         contracts::Result<void> ticket_result;
         if (!contracts::valid_dimension(static_cast<std::uint8_t>(c.dimension)))
             ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
-        else if (const auto* add = std::get_if<contracts::AddTicket>(&c.body)) ticket_result = world.tickets.add(*add, c.dimension, bundle.limits);
+        else if (const auto* add = std::get_if<contracts::AddTicket>(&c.body))
+            ticket_result = world.tickets.add(*add, c.dimension, world.time, bundle.limits);
         else if (const auto* rem = std::get_if<contracts::RemoveTicket>(&c.body)) ticket_result = world.tickets.remove(rem->ticket);
-        else {
+        else if (const auto* presence = std::get_if<contracts::PlayerPresence>(&c.body)) {
+            // A player is in at most one level.
+            for (auto& l : world.levels) l.presences.erase(presence->player);
+            if (presence->present)
+                world.counters(c.dimension).presences[presence->player] = {presence->player, presence->position, presence->spectator};
+        } else if (std::holds_alternative<contracts::LevelsStarted>(c.body)) {
+            world.started = world.time - 1;
+        } else {
             gameplay::apply_command(ctx, c);
             continue;
         }
@@ -218,7 +232,9 @@ void Engine::Impl::command_phase(const std::vector<Command>& commands) {
         else ctx.record(TraceKind::command_rejected, {}, c.admission, static_cast<std::uint64_t>(ticket_result.error()), 0);
     }
     commit({&ctx});
-    // Chunk-level changes take effect at the end of the command phase.
+    // Tickets whose lifetime is over go; then chunk-level changes take effect,
+    // at the end of the command phase.
+    world.tickets.expire(world.time);
     RegionContext levels(bundle, world, regions, all_regions, Phase::commands, DimensionId::overworld, options.record_trace, false);
     levels.begin_root(commands.size(), {});
     apply_levels(levels);
@@ -247,7 +263,9 @@ void Engine::Impl::apply_levels(RegionContext& ctx) {
         auto* data = world.find_loaded(c);
         const auto current = data ? data->level : ChunkLevel::unloaded;
         const auto it = desired.find(c);
-        const auto want = it == desired.end() ? ChunkLevel::unloaded : it->second;
+        const auto levels = it == desired.end() ? gameplay::ChunkLevels{} : it->second;
+        const auto want = gameplay::status_of(levels.load);
+        if (data) data->levels = levels; // the simulation level may change without the status
         if (current == want) continue;
         const auto origin = contracts::chunk_origin(c.pos);
         ctx.use_level(c.dimension);
@@ -275,12 +293,14 @@ void Engine::Impl::apply_levels(RegionContext& ctx) {
                 }
             }
             chunk->level = want;
+            chunk->levels = levels;
             ctx.record(TraceKind::chunk_loaded, origin, chunk->generation.value, static_cast<std::uint64_t>(want), 0);
             world.loaded.emplace(c, std::move(chunk));
             region_for_new_chunk(c);
         } else if (want == ChunkLevel::unloaded) {
             ctx.record(TraceKind::chunk_unloaded, origin, data->generation.value, 0, 0);
             data->level = ChunkLevel::unloaded;
+            data->levels = {};
             auto node = world.loaded.extract(c);
             world.saved.insert(std::move(node));
             regions.remove(c);
@@ -296,7 +316,7 @@ void Engine::Impl::tick_phase(DimensionId level, TickList list) {
     const auto l = static_cast<int>(list);
     std::vector<gameplay::ScheduledTick> due;
     world.for_each_loaded(level, [&](ChunkPos, const ChunkData& data) {
-        if (data.level != ChunkLevel::ticking) return;
+        if (!data.block_ticking()) return;
         for (const auto& [key, e] : data.ticks[l])
             if (e.due <= world.time) due.push_back({key.first, key.second, e.due, e.priority, e.suborder});
     });
@@ -320,8 +340,9 @@ void Engine::Impl::random_phase(DimensionId level) {
     const auto sections = bundle.shape(level).sections();
     std::vector<RootItem> roots;
     std::uint64_t index = 0;
+    const auto& presences = world.counters(level).presences;
     world.for_each_loaded(level, [&](ChunkPos c, const ChunkData& data) {
-        if (data.level != ChunkLevel::ticking) return;
+        if (!gameplay::random_ticks_run(bundle.rules->random_ticks, data.levels.simulation, c, presences)) return;
         for (std::int32_t s = 0; s < sections; ++s) {
             // A section without randomly ticking blocks would draw positions
             // and change nothing; its stream is its own, so skipping it is exact.
@@ -341,7 +362,7 @@ void Engine::Impl::random_phase(DimensionId level) {
 void Engine::Impl::block_event_phase(DimensionId level) {
     std::vector<RootItem> roots;
     world.for_each_loaded(level, [&](ChunkPos c, ChunkData& data) {
-        if (data.level != ChunkLevel::ticking) return;
+        if (!data.block_ticking()) return;
         for (const auto& e : data.events) {
             RootItem r;
             r.key = e.seq;
@@ -358,7 +379,7 @@ void Engine::Impl::block_event_phase(DimensionId level) {
 void Engine::Impl::entity_phase(DimensionId level) {
     std::vector<RootItem> roots;
     world.for_each_loaded(level, [&](ChunkPos c, const ChunkData& data) {
-        if (data.level != ChunkLevel::ticking) return;
+        if (!data.entity_ticking()) return;
         for (const auto& [id, e] : data.entities) {
             RootItem r;
             r.key = id.value;
@@ -374,7 +395,7 @@ void Engine::Impl::entity_phase(DimensionId level) {
 void Engine::Impl::block_entity_phase(DimensionId level) {
     std::vector<RootItem> roots;
     world.for_each_loaded(level, [&](ChunkPos c, const ChunkData& data) {
-        if (data.level != ChunkLevel::ticking) return;
+        if (!data.block_ticking()) return;
         for (const auto& [pos, be] : data.block_entities) {
             RootItem r;
             r.key = be.order;
@@ -385,6 +406,13 @@ void Engine::Impl::block_entity_phase(DimensionId level) {
     });
     std::ranges::sort(roots, {}, &RootItem::key);
     run_phase(Phase::block_entities, level, std::move(roots));
+}
+
+bool Engine::Impl::awake(DimensionId level) {
+    auto& state = world.counters(level);
+    const bool active = !state.presences.empty() || world.tickets.keeps_active(level);
+    if (active) state.last_active = world.time;
+    return gameplay::level_awake(active, world.time, state.last_active, world.started);
 }
 
 void Engine::Impl::run_phase(Phase phase, DimensionId level, std::vector<RootItem> roots) {
@@ -722,10 +750,11 @@ void fill_dump(const WorldStore& world, const contracts::VersionBundle& bundle, 
                std::map<ChunkKey, std::vector<std::shared_ptr<const ColumnSnapshot::Blocks>>>* sections) {
     d.time = world.time;
     d.next_entity_id = world.next_entity_id;
+    d.started = world.started;
     std::map<DimensionId, std::vector<std::pair<std::uint64_t, BlockEvent>>> events;
     const auto add = [&](const ChunkData& data, ChunkLevel level) {
         auto& l = d.level(data.dimension);
-        l.chunks.push_back({data.pos, data.generation.value, level});
+        l.chunks.push_back({data.pos, data.generation.value, level, data.levels.load, data.levels.simulation});
         if (sections) {
             auto& list = (*sections)[{data.dimension, data.pos}];
             list.reserve(data.sections.size());
@@ -754,6 +783,13 @@ void fill_dump(const WorldStore& world, const contracts::VersionBundle& bundle, 
     };
     for (const auto& [c, data] : world.loaded) add(*data, data->level);
     for (const auto& [c, data] : world.saved) add(*data, ChunkLevel::unloaded);
+    for (const auto level : contracts::level_order) {
+        const auto& state = world.counters(level);
+        if (state.presences.empty() && state.last_active == 0) continue;
+        auto& l = d.level(level);
+        for (const auto& [key, p] : state.presences) l.presences.push_back(p);
+        l.last_active = state.last_active;
+    }
     for (auto& l : d.levels) {
         l.next_suborder = world.counters(l.dimension).next_suborder;
         l.next_block_entity_order = world.counters(l.dimension).next_block_entity_order;
@@ -799,6 +835,7 @@ void Engine::Impl::restore(const WorldDump& state) {
     const auto bad = [](std::string_view what) { throw std::invalid_argument(std::format("engine: invalid state: {}", what)); };
     world.time = state.time;
     world.next_entity_id = state.next_entity_id;
+    world.started = state.started;
     // Valid entity stacks; entities of every level are checked against the
     // global id counter.
     const auto valid_speed = [](std::int64_t v) { return v >= -gameplay::max_entity_speed && v <= gameplay::max_entity_speed; };
@@ -812,6 +849,11 @@ void Engine::Impl::restore(const WorldDump& state) {
         auto& counters = world.counters(level);
         counters.next_suborder = l.next_suborder;
         counters.next_block_entity_order = l.next_block_entity_order;
+        counters.last_active = l.last_active;
+        for (const auto& p : l.presences) {
+            const bool elsewhere = std::ranges::any_of(world.levels, [&](const auto& other) { return other.presences.contains(p.player); });
+            if (elsewhere || !counters.presences.emplace(p.player, p).second) bad("a player in two levels");
+        }
         std::map<ChunkPos, ChunkData*> columns;
         for (const auto& c : l.chunks) {
             auto chunk = std::make_unique<ChunkData>();
@@ -819,6 +861,8 @@ void Engine::Impl::restore(const WorldDump& state) {
             chunk->pos = c.pos;
             chunk->generation = contracts::Generation{c.generation};
             chunk->level = c.level;
+            chunk->levels = {c.load, c.simulation};
+            if (c.level != gameplay::status_of(c.load)) bad("chunk status and load level disagree");
             chunk->sections.resize(static_cast<std::size_t>(shape.sections()));
             auto* raw = chunk.get();
             if (!columns.emplace(c.pos, raw).second) bad("duplicate column");
@@ -877,8 +921,7 @@ void Engine::Impl::restore(const WorldDump& state) {
         for (const auto& e : l.block_events) column(e.pos).events.push_back({e, counters.next_event_seq++, {}});
     }
     for (const auto& t : state.tickets)
-        if (!contracts::valid_dimension(static_cast<std::uint8_t>(t.dimension))
-            || !world.tickets.add({t.id, t.center, t.radius, t.load_radius}, t.dimension, bundle.limits))
+        if (!contracts::valid_dimension(static_cast<std::uint8_t>(t.dimension)) || !world.tickets.restore(t, bundle.limits))
             bad("ticket");
     const auto valid_stack = [](const contracts::ItemStack& s) {
         if (s.item == 0 && s.count == 0 && s.damage == 0 && s.components.empty()) return true;
@@ -905,7 +948,7 @@ WorldView Engine::view() const noexcept { return WorldView(this, impl_->epoch, i
 std::optional<ColumnSnapshot> Engine::column(ChunkKey key) const {
     const auto* data = impl_->world.find_loaded(key);
     if (!data) return std::nullopt;
-    ColumnSnapshot s{key.dimension, key.pos, data->generation, data->level, {}, {}, {}};
+    ColumnSnapshot s{key.dimension, key.pos, data->generation, data->level, {}, {}, {}, data->levels};
     s.sections.reserve(data->sections.size());
     for (const auto& section : data->sections)
         // Aliasing pointer: shares ownership of the section, so the engine copies

@@ -7,18 +7,36 @@
 namespace circuit::gameplay {
 using contracts::ErrorCode;
 
-contracts::Result<void> TicketSet::add(const contracts::AddTicket& command, contracts::DimensionId dimension,
-                                       const contracts::RuleLimits& limits) {
-    if (tickets_.contains(command.ticket)) return std::unexpected(ErrorCode::duplicate_ticket);
-    if (command.radius > limits.max_ticket_radius || command.load_radius > limits.max_load_radius)
-        return std::unexpected(ErrorCode::out_of_bounds);
-    // Widened first: the center is unvalidated input.
-    const std::int64_t reach = std::max<std::int64_t>(std::int64_t{command.radius} + 1, command.load_radius);
+namespace {
+// Every chunk a ticket loads must stay within the border, checked at full width.
+contracts::Result<void> check_reach(ChunkPos center, std::int64_t reach) {
     const std::int64_t limit = contracts::world_border / 16;
-    const std::int64_t x = command.center.x, z = command.center.z;
+    const std::int64_t x = center.x, z = center.z;
     if (x - reach < -limit || x + reach >= limit || z - reach < -limit || z + reach >= limit)
         return std::unexpected(ErrorCode::out_of_bounds);
-    tickets_.emplace(command.ticket, Ticket{command.ticket, command.center, command.radius, command.load_radius, dimension});
+    return {};
+}
+} // namespace
+
+contracts::Result<void> TicketSet::add(const contracts::AddTicket& command, contracts::DimensionId dimension, Tick now,
+                                       const contracts::RuleLimits& limits) {
+    if (tickets_.contains(command.ticket)) return std::unexpected(ErrorCode::duplicate_ticket);
+    if (static_cast<std::uint8_t>(command.type) >= contracts::ticket_type_count || command.level > 44
+        || (command.lifetime != 0 && now > UINT64_MAX - command.lifetime))
+        return std::unexpected(ErrorCode::invalid_argument);
+    Ticket t{command.ticket, command.center, command.radius, command.type, command.level,
+             command.lifetime == 0 ? Tick{0} : now + command.lifetime, dimension};
+    if (auto ok = restore(t, limits); !ok) return ok;
+    return {};
+}
+
+contracts::Result<void> TicketSet::restore(const Ticket& t, const contracts::RuleLimits& limits) {
+    if (tickets_.contains(t.id)) return std::unexpected(ErrorCode::duplicate_ticket);
+    if (static_cast<std::uint8_t>(t.type) >= contracts::ticket_type_count || t.level > 44)
+        return std::unexpected(ErrorCode::invalid_argument);
+    if (t.radius > limits.max_ticket_radius || t.reach() > limits.max_load_radius) return std::unexpected(ErrorCode::out_of_bounds);
+    if (auto ok = check_reach(t.center, t.reach()); !ok) return ok;
+    tickets_.emplace(t.id, t);
     return {};
 }
 
@@ -27,19 +45,44 @@ contracts::Result<void> TicketSet::remove(std::uint32_t id) {
     return {};
 }
 
-std::map<contracts::ChunkKey, ChunkLevel> TicketSet::levels() const {
-    std::map<contracts::ChunkKey, ChunkLevel> out;
+std::vector<std::uint32_t> TicketSet::expire(Tick now) {
+    std::vector<std::uint32_t> out;
+    for (auto it = tickets_.begin(); it != tickets_.end();) {
+        if (it->second.expires != 0 && it->second.expires <= now) {
+            out.push_back(it->first);
+            it = tickets_.erase(it);
+        } else {
+            ++it;
+        }
+    }
+    return out;
+}
+
+std::map<contracts::ChunkKey, ChunkLevels> TicketSet::levels() const {
+    std::map<contracts::ChunkKey, ChunkLevels> out;
     for (const auto& [id, t] : tickets_) {
-        const std::int32_t r = t.radius, reach = t.reach();
+        const std::int32_t reach = t.reach();
         for (std::int32_t dx = -reach; dx <= reach; ++dx)
             for (std::int32_t dz = -reach; dz <= reach; ++dz) {
                 const ChunkPos c{t.center.x + dx, t.center.z + dz};
-                const auto level = contracts::chebyshev_distance(c, t.center) <= r ? ChunkLevel::ticking : ChunkLevel::border;
+                const auto beyond = std::max(0, contracts::chebyshev_distance(c, t.center) - std::int32_t{t.radius});
+                const auto level = static_cast<std::uint8_t>(std::min<std::int32_t>(t.level + beyond, contracts::unloaded_level));
                 auto& slot = out[{t.dimension, c}];
-                slot = std::max(slot, level);
+                if (t.loads()) slot.load = std::min(slot.load, level);
+                if (t.simulates()) slot.simulation = std::min(slot.simulation, level);
             }
     }
+    // Simulation applies to the chunks that are loaded, and runs only what
+    // their load level allows as well.
+    std::erase_if(out, [](const auto& e) { return e.second.load >= contracts::unloaded_level; });
+    for (auto& [key, l] : out) l.simulation = std::max(l.simulation, l.load);
     return out;
+}
+
+bool TicketSet::keeps_active(contracts::DimensionId dimension) const {
+    return std::ranges::any_of(tickets_, [&](const auto& e) {
+        return e.second.dimension == dimension && e.second.type == contracts::TicketType::forced;
+    });
 }
 
 std::vector<Ticket> TicketSet::list() const {
@@ -66,7 +109,7 @@ LevelDump& WorldDump::level(contracts::DimensionId dimension) {
 }
 
 void canonicalize(WorldDump& d) {
-    std::erase_if(d.levels, [](const LevelDump& l) { return l.chunks.empty(); });
+    std::erase_if(d.levels, [](const LevelDump& l) { return l.chunks.empty() && l.presences.empty() && l.last_active == 0; });
     std::ranges::sort(d.levels, {}, &LevelDump::dimension);
     for (auto& l : d.levels) {
         std::ranges::sort(l.chunks, {}, &LevelDump::Chunk::pos);
@@ -77,6 +120,7 @@ void canonicalize(WorldDump& d) {
             if (a.list != b.list) return a.list < b.list;
             return tick_before(a.tick, b.tick);
         });
+        std::ranges::sort(l.presences, {}, &Presence::player);
     }
     std::ranges::sort(d.tickets, {}, &Ticket::id);
     std::erase_if(d.players, [](const PlayerInventory& p) { return p.empty(); });
@@ -87,7 +131,8 @@ namespace {
 std::string pos_text(BlockPos p) { return std::format("({},{},{})", p.x, p.y, p.z); }
 std::string chunk_text(ChunkPos c) { return std::format("[{},{}]", c.x, c.z); }
 std::string text(const LevelDump::Chunk& c) {
-    return std::format("chunk {} gen={} level={}", chunk_text(c.pos), c.generation, static_cast<int>(c.level));
+    return std::format("chunk {} gen={} status={} load={} simulation={}", chunk_text(c.pos), c.generation, static_cast<int>(c.level),
+                       c.load, c.simulation);
 }
 std::string text(const std::pair<BlockPos, std::uint32_t>& b) { return std::format("block {} state={:#x}", pos_text(b.first), b.second); }
 std::string text(const std::pair<BlockPos, BlockEntity>& b) {
@@ -110,8 +155,12 @@ std::string text(const BlockEvent& e) {
     return std::format("block_event {} block={} event={} param={}", pos_text(e.pos), static_cast<int>(e.block), e.event, e.param);
 }
 std::string text(const Ticket& t) {
-    return std::format("ticket {} {} center={} radius={} load_radius={}", t.id, contracts::dimension_name(t.dimension),
-                       chunk_text(t.center), t.radius, t.load_radius);
+    return std::format("ticket {} {} type={} center={} radius={} level={} expires={}", t.id, contracts::dimension_name(t.dimension),
+                       static_cast<int>(t.type), chunk_text(t.center), t.radius, t.level, t.expires);
+}
+std::string text(const Presence& p) {
+    return std::format("presence {:016x}{:016x} at ({},{},{}) spectator={}", p.player.hi, p.player.lo, p.position.x, p.position.y,
+                       p.position.z, p.spectator);
 }
 std::string text(const PlayerInventory& p) {
     std::string slots;
@@ -135,6 +184,7 @@ std::string compare(std::string_view name, const std::vector<T>& a, const std::v
 std::string first_difference(const WorldDump& a, const WorldDump& b) {
     if (a.time != b.time) return std::format("time {} != {}", a.time, b.time);
     if (a.next_entity_id != b.next_entity_id) return std::format("next_entity_id {} != {}", a.next_entity_id, b.next_entity_id);
+    if (a.started != b.started) return std::format("started {} != {}", a.started, b.started);
     if (a.levels.size() != b.levels.size()) return std::format("levels: {} != {}", a.levels.size(), b.levels.size());
     for (std::size_t i = 0; i < a.levels.size(); ++i) {
         const auto& la = a.levels[i];
@@ -146,12 +196,13 @@ std::string first_difference(const WorldDump& a, const WorldDump& b) {
             return std::format("{} next_suborder {} != {}", name, la.next_suborder, lb.next_suborder);
         if (la.next_block_entity_order != lb.next_block_entity_order)
             return std::format("{} next_block_entity_order {} != {}", name, la.next_block_entity_order, lb.next_block_entity_order);
+        if (la.last_active != lb.last_active) return std::format("{} last_active {} != {}", name, la.last_active, lb.last_active);
         // The overworld's differences keep their short form.
         const auto prefix = la.dimension == contracts::DimensionId::overworld ? std::string{} : std::string(name) + " ";
         for (auto s : {compare("chunks", la.chunks, lb.chunks), compare("blocks", la.blocks, lb.blocks),
                        compare("block_entities", la.block_entities, lb.block_entities),
                        compare("entities", la.entities, lb.entities), compare("ticks", la.ticks, lb.ticks),
-                       compare("block_events", la.block_events, lb.block_events)})
+                       compare("block_events", la.block_events, lb.block_events), compare("presences", la.presences, lb.presences)})
             if (!s.empty()) return prefix + s;
     }
     for (auto s : {compare("tickets", a.tickets, b.tickets), compare("players", a.players, b.players)})
@@ -181,12 +232,18 @@ std::uint64_t digest(const WorldDump& d) {
     Hasher h;
     h.add(d.time);
     h.add(d.next_entity_id);
+    h.add(d.started);
     h.add(d.levels.size());
     for (const auto& l : d.levels) {
         h.add(static_cast<std::uint64_t>(l.dimension));
         h.add(l.next_suborder);
         h.add(l.next_block_entity_order);
-        for (const auto& c : l.chunks) { h.add(contracts::pack_chunk(c.pos)); h.add(c.generation); h.add(static_cast<std::uint64_t>(c.level)); }
+        h.add(l.last_active);
+        for (const auto& c : l.chunks) {
+            h.add(contracts::pack_chunk(c.pos)); h.add(c.generation); h.add(static_cast<std::uint64_t>(c.level)); h.add(c.load); h.add(c.simulation);
+        }
+        h.add(l.presences.size());
+        for (const auto& p : l.presences) { h.add(p.player.hi); h.add(p.player.lo); h.add(p.position); h.add(p.spectator); }
         h.add(l.blocks.size());
         for (const auto& [p, s] : l.blocks) { h.add(p); h.add(s); }
         h.add(l.block_entities.size());
@@ -210,7 +267,8 @@ std::uint64_t digest(const WorldDump& d) {
         for (const auto& e : l.block_events) { h.add(e.pos); h.add(static_cast<std::uint64_t>(e.block)); h.add(e.event); h.add(e.param); }
     }
     for (const auto& t : d.tickets) {
-        h.add(t.id); h.add(static_cast<std::uint64_t>(t.dimension)); h.add(contracts::pack_chunk(t.center)); h.add(t.radius); h.add(t.load_radius);
+        h.add(t.id); h.add(static_cast<std::uint64_t>(t.dimension)); h.add(contracts::pack_chunk(t.center)); h.add(t.radius);
+        h.add(static_cast<std::uint64_t>(t.type)); h.add(t.level); h.add(t.expires);
     }
     h.add(d.players.size());
     for (const auto& p : d.players) {

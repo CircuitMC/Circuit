@@ -688,9 +688,12 @@ int main() {
             }
             return shown;
         };
+        // Loaded chunk -> {load level, simulation level}.
         const auto levels = [](const server::Game& game) {
-            std::map<contracts::ChunkPos, gameplay::ChunkLevel> out;
-            for (const auto& [c, l] : game.engine().loaded_columns()) out[c.pos] = l;
+            std::map<contracts::ChunkPos, std::pair<int, int>> out;
+            const auto dump = game.engine().dump();
+            for (const auto& c : dump.overworld().chunks)
+                if (c.level != gameplay::ChunkLevel::unloaded) out[c.pos] = {c.load, c.simulation};
             return out;
         };
         const auto square = [](contracts::ChunkPos center, std::int32_t r) {
@@ -699,53 +702,102 @@ int main() {
                 for (std::int32_t dz = -r; dz <= r; ++dz) out.insert({center.x + dx, center.z + dz});
             return out;
         };
-        const auto ticking_of = [](const std::map<contracts::ChunkPos, gameplay::ChunkLevel>& l) {
+        // The chunks whose simulation level is `level` or lower.
+        const auto simulated = [](const std::map<contracts::ChunkPos, std::pair<int, int>>& l, int level) {
             std::set<contracts::ChunkPos> out;
-            for (const auto& [c, level] : l)
-                if (level == gameplay::ChunkLevel::ticking) out.insert(c);
+            for (const auto& [c, v] : l)
+                if (v.second <= level) out.insert(c);
+            return out;
+        };
+        const auto keys = [](const std::map<contracts::ChunkPos, std::pair<int, int>>& l) {
+            std::set<contracts::ChunkPos> out;
+            for (const auto& [c, v] : l) out.insert(c);
             return out;
         };
         auto config = offline_config();
         config.view_distance = 6;
         config.simulation_distance = 4;
         {
-            // View above the simulation distance: 169 columns shown, 81 ticking.
+            // Without players, the start ticket (level 32 - spawnChunkRadius 2
+            // at the spawn chunk) loads and simulates the spawn chunks.
+            GameFixture f(config);
+            for (int i = 0; i < 3; ++i) f.game->tick();
+            const auto l = levels(*f.game);
+            require(keys(l) == square({0, 0}, 3) && simulated(l, 31) == square({0, 0}, 1) && simulated(l, 32) == square({0, 0}, 2)
+                        && l.at({0, 0}) == std::pair{30, 30} && l.at({3, 3}) == std::pair{33, 33},
+                    "the spawn chunks");
+        }
+        {
+            // View above the simulation distance: 169 columns shown, loaded
+            // two chunks further (levels 32 and 33); entities tick in 81,
+            // blocks in 121 (simulation level 31 - 4 at the player's chunk).
             GameFixture f(config);
             auto peer = f.join(1, "Viewer");
             for (int i = 0; i < 10; ++i) f.game->tick();
             require(sent_columns(*peer, f.wire) == square({0, 0}, 6), std::format("all 169 columns of view 6 shown, not {}", sent_columns(*peer, f.wire).size()));
             const auto l = levels(*f.game);
-            require(ticking_of(l) == square({0, 0}, 4), "ticking stays within the simulation distance");
-            require(l.size() == 169, std::format("the view is loaded and nothing beyond: {}", l.size()));
+            require(simulated(l, 31) == square({0, 0}, 4) && simulated(l, 32) == square({0, 0}, 5),
+                    "simulation stays within the simulation distance");
+            require(keys(l) == square({0, 0}, 8), std::format("the view and two rings are loaded, nothing beyond: {}", l.size()));
+            require(l.at({6, 0}) == std::pair{31, 33} && l.at({7, 0}) == std::pair{32, 34} && l.at({8, 8}) == std::pair{33, 34},
+                    "the loading ticket loads without simulating");
             // Movement: three chunks east, in steps the movement rules accept.
             f.game->submit(1, server::intent::ConfirmTeleport{1});
             for (int step = 1; step <= 6; ++step)
                 f.game->submit(1, server::intent::Move{server::Vec3{0.5 + 8.0 * step, -60.0, 0.5}, std::nullopt, true});
             for (int i = 0; i < 12; ++i) f.game->tick();
-            require(sent_columns(*peer, f.wire) == square({3, 0}, 6), "the view follows the player");
-            auto ticking = square({3, 0}, 4);
-            for (const auto c : square({0, 0}, 2)) ticking.insert(c); // the spawn area
-            require(ticking_of(levels(*f.game)) == ticking, "ticking follows the simulation distance");
+            // Columns one chunk beyond the view stay shown while they are loaded.
+            const auto sent = sent_columns(*peer, f.wire);
+            require(std::ranges::includes(sent, square({3, 0}, 6)) && std::ranges::includes(square({3, 0}, 7), sent),
+                    "the view follows the player");
+            const auto moved = levels(*f.game);
+            require(simulated(moved, 31) == square({3, 0}, 4) && simulated(moved, 32) == square({3, 0}, 5),
+                    "simulation follows the simulation distance");
             // A second player at spawn: the views overlap; each sees its own.
             auto other = f.join(2, "Other");
             for (int i = 0; i < 10; ++i) f.game->tick();
             require(sent_columns(*other, f.wire) == square({0, 0}, 6), "the second view is complete");
             f.game->leave(1);
             for (int i = 0; i < 4; ++i) f.game->tick();
-            auto after = levels(*f.game);
-            for (const auto c : square({0, 0}, 6)) require(after.contains(c), "the remaining view stays loaded");
-            require(ticking_of(after) == square({0, 0}, 4), "only the remaining player's area ticks");
-            require(!after.contains({9, 0}), "the departed player's view is unloaded");
+            const auto after = levels(*f.game);
+            require(keys(after) == square({0, 0}, 8), "the remaining view stays loaded, the departed player's unloads");
+            require(simulated(after, 31) == square({0, 0}, 4), "only the remaining player's area ticks");
         }
         {
-            // View below the simulation distance: the client sees 25 columns; 81 tick.
+            // View below the simulation distance: the client sees 25 columns.
+            // The simulation ticket simulates only what the view loads.
             GameFixture f(config);
             auto peer = f.join(1, "Near", 2);
             for (int i = 0; i < 10; ++i) f.game->tick();
             require(sent_columns(*peer, f.wire) == square({0, 0}, 2), "view 2 shows 25 columns");
             const auto l = levels(*f.game);
-            require(ticking_of(l) == square({0, 0}, 4) && l.size() == 121, "simulation distance 4 ticks, its border ring is loaded");
+            require(keys(l) == square({0, 0}, 4) && simulated(l, 31) == square({0, 0}, 2) && simulated(l, 32) == square({0, 0}, 3),
+                    "simulation distance 4 runs where view 2 loads");
         }
+    });
+
+    suite.run("players keep the overworld awake", [] {
+        GameFixture f;
+        for (int i = 0; i < 305; ++i) f.game->tick();
+        // Without players or forced chunks the overworld idles 300 ticks
+        // after the server started (tick 1).
+        auto d = f.game->engine().dump();
+        require(d.started == 0 && d.overworld().last_active == 0 && d.overworld().presences.empty(), "idle without players");
+        auto peer = f.join(1, "Present");
+        f.game->tick();
+        d = f.game->engine().dump();
+        require(d.overworld().presences.size() == 1 && !d.overworld().presences[0].spectator && d.overworld().last_active == d.time,
+                "a player makes it active");
+        // 1.21.8's rules do not use the position: moving logs nothing.
+        const auto at = d.overworld().presences[0].position;
+        f.game->submit(1, server::intent::ConfirmTeleport{1});
+        f.game->submit(1, server::intent::Move{server::Vec3{4.5, -60.0, 0.5}, std::nullopt, true});
+        f.game->tick();
+        require(f.game->engine().dump().overworld().presences[0].position == at, "the position is kept");
+        f.game->leave(1);
+        f.game->tick();
+        d = f.game->engine().dump();
+        require(d.overworld().presences.empty() && d.overworld().last_active == d.time - 1, "leaving ends it");
     });
 
     suite.run("survival players use up items, dig in time and pick up drops", [] {
@@ -1884,7 +1936,8 @@ int main() {
         // Add a logged tick after the checkpoint, as a crash would leave it.
         {
             storage::PosixFilesystem fs;
-            storage::WorldDirectory world(fs, config.world_directory, "java-1.21.8", "circuit-reference-rules-v7");
+            const auto& bundle = **contracts::BundleRegistry::select_for_simulation("java-1.21.8");
+            storage::WorldDirectory world(fs, config.world_directory, "java-1.21.8", std::string(bundle.rules->id));
             auto r = world.recover().value().value();
             require(world.checkpoint(r.checkpoint).has_value(), "checkpoint");
             require(world.append({r.checkpoint.state.time + 1, {}}, true).has_value(), "logged tick");

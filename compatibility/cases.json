@@ -260,6 +260,17 @@
       "location": "tests/fixtures/loot/block-drops.tsv, checked by tests/server/server_tests.cpp with the operator's jars; external: circuit-clienttest/craft-loot.js (place, dig)",
       "status": "passing",
       "description": "23 blocks and tools per version broken on the official servers; Circuit drops the same items in the 19 cases whose tables are deterministic (on 1.21.8 also live, from the imported world), and nothing in the 4 that draw random numbers"
+    },
+    {
+      "id": "observation/chunk_levels",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-harness/experiments/c22 (forced rings, spawn radius, idle level) and circuit-clienttest/ticking.js",
+      "status": "unsupported",
+      "description": "What each chunk level runs, the start ticket's level for each spawnChunkRadius, the idle-level rule and where random ticks run, observed on both official servers; Circuit cannot run the scripts yet (no /forceload, and the traces need chunk-loading delays)"
     }
   ]
 }

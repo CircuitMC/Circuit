@@ -39,6 +39,7 @@ private:
     struct ChunkInfo {
         contracts::Generation generation;
         gameplay::ChunkLevel level{};
+        gameplay::ChunkLevels levels;
     };
     using TickKey = std::pair<contracts::BlockPos, gameplay::BlockType>;
     // One level's state: plain global containers, as the serial order sees them.
@@ -53,7 +54,11 @@ private:
         std::set<gameplay::BlockEvent> pending_events;
         std::uint64_t next_suborder{};
         std::uint64_t next_block_entity_order{};
+        std::map<contracts::PlayerKey, gameplay::Presence> presences;
+        contracts::Tick last_active{};
         [[nodiscard]] gameplay::ChunkLevel level(contracts::ChunkPos chunk) const;
+        // The chunk's simulation level; none when unloaded.
+        [[nodiscard]] std::uint8_t simulation(contracts::ChunkPos chunk) const;
     };
 
     void apply_levels();
@@ -68,6 +73,7 @@ private:
     std::uint64_t seed_;
     std::shared_ptr<const gameplay::GameData> data_;
     contracts::Tick time_{};
+    contracts::Tick started_{};
     bool failed_{};
     std::array<Level, contracts::dimension_count> levels_;
     gameplay::TicketSet tickets_;

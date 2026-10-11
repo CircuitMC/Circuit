@@ -96,7 +96,7 @@ struct ItemEntity {
 
 struct ChunkInfo {
     bool loaded{};
-    bool ticking{};
+    bool ticking{}; // its scheduled ticks run (simulation level 32 or lower)
     std::size_t block_entities{}, entities{};
 };
 

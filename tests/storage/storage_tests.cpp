@@ -30,6 +30,8 @@ namespace {
 const VersionBundle& bundle() { return **BundleRegistry::select_for_simulation("java-1.21.8"); }
 const std::string bundle_id = "java-1.21.8";
 std::string rules_id() { return std::string(bundle().rules->id); }
+// The rules of the release before typed tickets.
+constexpr std::string_view previous_rules = "circuit-reference-rules-v7";
 
 // A scenario's inputs and the engine state after every tick.
 struct History {
@@ -59,6 +61,34 @@ Checkpoint checkpoint_at(const History& h, Tick t) {
     return c;
 }
 TickInput input_at(const History& h, Tick t) { return {t, h.inputs[t - 1]}; }
+
+// Whether a checkpoint written by the previous release (`legacy`) reads as
+// the state the current rules reach (`current`): the same blocks, entities
+// and pending work; the same tickets, now forced ones of level 31; its
+// ticking chunks at levels 31 and its border chunks at 33, not simulated.
+bool legacy_reads_as(const Checkpoint& legacy, const Checkpoint& current) {
+    if (legacy.bundle_id != current.bundle_id || legacy.rules_id != previous_rules || legacy.seed != current.seed
+        || legacy.extras != current.extras)
+        return false;
+    const auto& a = legacy.state;
+    const auto& b = current.state;
+    if (a.time != b.time || a.next_entity_id != b.next_entity_id || a.started != 0 || a.tickets != b.tickets || a.players != b.players)
+        return false;
+    const auto& la = a.overworld();
+    const auto& lb = b.overworld();
+    if (la.blocks != lb.blocks || la.block_entities != lb.block_entities || la.entities != lb.entities || la.ticks != lb.ticks
+        || la.block_events != lb.block_events || la.next_suborder != lb.next_suborder
+        || la.next_block_entity_order != lb.next_block_entity_order || !la.presences.empty() || la.last_active != 0)
+        return false;
+    std::map<ChunkPos, std::uint32_t> ticking_a, ticking_b;
+    for (const auto& c : la.chunks) {
+        if (c.load == 31 && c.simulation == 31 && c.level == ChunkLevel::entity_ticking) ticking_a[c.pos] = c.generation;
+        else if (c.load != 33 || c.simulation != 34 || c.level != ChunkLevel::border) return false;
+    }
+    for (const auto& c : lb.chunks)
+        if (c.load <= 31) ticking_b[c.pos] = c.generation;
+    return ticking_a == ticking_b;
+}
 
 // Checks that a recovery is a prefix of `h` and replays it on an engine.
 // Returns the tick it reaches.
@@ -254,7 +284,8 @@ int main() {
         // is refused.
         const auto c = checkpoint_at(histories[0], histories[0].ticks());
         const auto good = read_fixture("checkpoint-v6-clock.bin");
-        require(circuit::storage::decode_checkpoint(good).value() == c, "a version 6 checkpoint reads as the overworld's");
+        const auto legacy = circuit::storage::decode_checkpoint(good).value();
+        require(legacy_reads_as(legacy, c), "a version 6 checkpoint reads as the overworld's");
         const std::span<const std::byte> sealed(good.data(), good.size() - 32);
         circuit::protocol::Reader header(sealed);
         (void)header.raw(12);
@@ -273,35 +304,55 @@ int main() {
             for (std::size_t i = 0; i < 32; ++i) out.push_back(static_cast<std::byte>(std::stoi(hex.substr(2 * i, 2), nullptr, 16)));
             return out;
         };
-        require(circuit::storage::decode_checkpoint(reseal(5, "circuit-blocks-1")).value() == c, "version 5");
-        require(circuit::storage::decode_checkpoint(reseal(4, std::nullopt)).value() == c, "version 4 reads as circuit-blocks-1");
+        require(circuit::storage::decode_checkpoint(reseal(5, "circuit-blocks-1")).value() == legacy, "version 5");
+        require(circuit::storage::decode_checkpoint(reseal(4, std::nullopt)).value() == legacy, "version 4 reads as circuit-blocks-1");
         const auto other = circuit::storage::decode_checkpoint(reseal(6, "circuit-blocks-0"));
         require(!other && other.error().find("block registry circuit-blocks-0") != std::string::npos, "another registry is refused");
         // The current version writes the levels and reads back the same state.
-        require(circuit::storage::decode_checkpoint(circuit::storage::encode_checkpoint(c)).value() == c, "version 7 round trip");
+        require(circuit::storage::decode_checkpoint(circuit::storage::encode_checkpoint(c)).value() == c, "current version round trip");
+        require(circuit::storage::decode_checkpoint(circuit::storage::encode_checkpoint(legacy)).value() == legacy,
+                "a converted checkpoint round trip");
     });
 
-    suite.run("a world written by the previous release recovers as the overworld", [&] {
-        // The drops history's world directory as the previous release wrote it:
-        // version 6 checkpoints at ticks 0 and 25, and format 1 log segments
-        // whose commands name no level. Recovery replays it to the same state.
+    suite.run("a world written by the previous release keeps its rules", [&] {
+        // The drops history's world directory as the previous release wrote it
+        // under circuit-reference-rules-v7: version 6 checkpoints at ticks 0
+        // and 25, and format 1 log segments whose commands name no level.
+        // Under other rules it is refused (the server migrates it); under its
+        // own, the old formats are read and new records use the current ones.
         MemoryFilesystem fs;
         for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::path(CIRCUIT_SOURCE_DIR) / "tests/fixtures/storage")) {
             const auto name = entry.path().filename().string();
             if (!name.starts_with("world-")) continue;
             require(fs.write_file("/world/" + name.substr(6), read_fixture(name)).has_value(), "fixture copied");
         }
-        const auto r = recover(fs);
+        const auto refused = recover(fs);
+        require(!refused && refused.error().find(std::string(previous_rules)) != std::string::npos,
+                refused ? "recovered under other rules" : refused.error());
+        const auto own = [&] {
+            WorldDirectory dir(fs, "/world", bundle_id, std::string(previous_rules));
+            return dir.recover();
+        };
+        const auto r = own();
         require(r && *r, r ? "no world" : r.error());
-        require(check_recovery(histories[2], **r, "previous release") == histories[2].ticks(), "replayed to the end");
+        const auto& h = histories[2];
+        const auto base = (*r)->checkpoint.state.time;
+        require(base == 25 && legacy_reads_as((*r)->checkpoint, checkpoint_at(h, base)), "the last checkpoint");
+        require(base + (*r)->inputs.size() == h.ticks(), "the whole log is read");
+        for (std::size_t i = 0; i < (*r)->inputs.size(); ++i)
+            require((*r)->inputs[i] == input_at(h, base + 1 + i), std::format("input {} in the overworld, tickets forced", i));
         // The next checkpoint and log records use the current formats.
+        auto next = (*r)->checkpoint;
+        next.state.time = h.ticks();
         {
-            WorldDirectory dir(fs, "/world", bundle_id, rules_id());
-            require(dir.recover().has_value() && dir.checkpoint(checkpoint_at(histories[2], histories[2].ticks())).has_value(),
-                    "a new checkpoint");
+            WorldDirectory dir(fs, "/world", bundle_id, std::string(previous_rules));
+            require(dir.recover().has_value() && dir.checkpoint(next).has_value() && dir.append({h.ticks() + 1, input_at(h, 1).commands}, true).has_value(),
+                    "a new checkpoint and record");
         }
-        const auto again = recover(fs);
-        require(again && *again && check_recovery(histories[2], **again, "after migration") == histories[2].ticks(), "recovers again");
+        const auto again = own();
+        require(again && *again && (*again)->checkpoint == next && (*again)->inputs.size() == 1
+                    && (*again)->inputs[0].commands == input_at(h, 1).commands,
+                "recovers again");
     });
 
     suite.run("bodies with valid digests are decoded safely", [&] {
@@ -707,6 +758,27 @@ int main() {
         for (const auto& in : (*r)->inputs)
             for (const auto& c : in.commands) nether |= c.dimension == DimensionId::the_nether;
         require(nether, "log records name the Nether");
+    });
+
+    suite.run("typed tickets, presences and idle levels survive logs and recovery", [&] {
+        // tests/sim/scenarios.hpp: tickets of several types and lifetimes, a
+        // player's presence in each level, and a Nether that idles.
+        const auto h = record(chunk_levels_scenario(), 450);
+        const auto& last = h.dumps.back();
+        require(last.level(DimensionId::the_nether).last_active == 419 && h.dumps[100].overworld().presences.size() == 1
+                    && h.dumps[410].level(DimensionId::the_nether).presences.size() == 1 && h.dumps[410].overworld().presences.empty(),
+                "the state to keep");
+        MemoryFilesystem fs;
+        const auto o = run(fs, h, {.sync_every = 3, .checkpoint_every = 100});
+        require(o.durable == h.ticks(), "complete run");
+        const auto r = recover(fs);
+        require(r && *r && check_recovery(h, **r, "chunk levels") == h.ticks(), "recovered");
+        for (const Tick t : {Tick{65}, Tick{92}, Tick{405}}) {
+            Engine engine(bundle(), h.seed, h.dumps[t]);
+            require(engine.dump() == h.dumps[t], std::format("restored at {}", t));
+            for (Tick next = t + 1; next <= std::min<Tick>(t + 20, h.ticks()); ++next) engine.advance(h.inputs[next - 1]);
+            require(engine.dump() == h.dumps[std::min<Tick>(t + 20, h.ticks())], std::format("continued from {}", t));
+        }
     });
 
     return suite.finish();

@@ -4,7 +4,7 @@
 
 The Part I core runs headless: shared contracts, a set of reference rules, a sequential scheduling oracle, and a region-parallel runtime checked against the oracle. The oracle shares gameplay rules with the runtime; it checks scheduling equivalence, while external reference observations and hand-derived expectations check the rules themselves. The [network server](SERVER.md) and [persistence](PERSISTENCE.md) are built on it.
 
-The rules are **circuit-reference-rules-v7**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
+The rules are **circuit-reference-rules-v8**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
 
 Two version bundles run them: `java-1.21.8` and `java-1.21.4`. Each version has 30 traces recorded on the unmodified server:
 - 1.21.8 traces are in `tests/fixtures/harness/`;
@@ -74,12 +74,12 @@ Logical time advances by one per executed tick. Each tick runs these phases in o
 | Phase | Roots in serial order |
 | --- | --- |
 | commands | admitted commands by admission id, then one root applying chunk-level changes |
-| block ticks | scheduled block ticks due now in ticking chunks, by (due, priority, sub-order), at most 65,536 |
+| block ticks | scheduled block ticks due now in block-ticking chunks, by (due, priority, sub-order), at most 65,536 |
 | fluid ticks | scheduled fluid ticks, same order and limit |
-| random ticks | ticking chunks in coordinate order, then sections bottom to top |
-| block events | the level's FIFO, including events queued while it drains; events in non-ticking chunks stay queued in order |
-| entities | entities in ticking chunks, ascending id, at most once per tick |
-| block entities | block entities in ticking chunks, ascending creation order |
+| random ticks | chunks whose random ticks run (below) in coordinate order, then sections bottom to top |
+| block events | the level's FIFO, including events queued while it drains; events in chunks that do not block tick stay queued in order |
+| entities | entities in entity-ticking chunks, ascending id, at most once per tick, while the level is awake |
+| block entities | block entities in block-ticking chunks, ascending creation order, while the level is awake |
 
 Commands are external inputs applied between ticks, so they observe the previous tick's time. A delay that a command starts counts from that time.
 
@@ -102,7 +102,7 @@ Every slot change records `player_slot_changed`; a use that opens a container re
 
 Every observable action produces a trace record keyed by (tick, level, phase, root, sequence within the root); a record also names the level of its position. The command phase counts as the overworld's, ahead of every level. Two executions are equivalent only if their trace records are identical, including order. Their canonical state dumps, one part per level, must also be identical.
 
-## Reference rules v7
+## Reference rules v8
 
 - **Update queue:** neighbor updates and shape updates are queued entries.
   - **Entries:**
@@ -182,7 +182,14 @@ Every observable action produces a trace record keyed by (tick, level, phase, ro
     Taking the result crafts once: onto the cursor (left or right click, when all of it fits), into an empty hotbar slot or the off hand (number keys), thrown (`Q`, or `Ctrl+Q` again while the result stays the same item), or shift-clicked into the inventory from the end of the hotbar until the result changes item or nothing moves (what does not fit is thrown). Each crafting uses one item of every grid slot; buckets of milk, water and lava leave a bucket, honey bottles and dragon's breath a glass bottle, in the slot when it is empty, else in the inventory or thrown. Without data packs there are no recipes.
   - **Closing:** the carried stack and the crafting grid go back to the inventory, or are thrown when it is full; the result empties.
 - **Death drops:** in the target version's order (hotbar, main inventory, armor from the feet up, off hand), then the crafting grid and the carried stack, each with a 40-tick pickup delay. They spread in eight directions at 0.25 and then 0.125 blocks per tick, and 0.2 upwards; the target version picks each direction and speed at random.
-- **Chunk tickets:** a ticket of radius r makes chunks within Chebyshev distance r ticking and loads the chunks within max(r + 1, its load radius) at border level, without ticking. A player's load radius is their view distance. Changes apply at the end of the command phase. Unloading keeps all chunk state, including pending ticks. A reload increments the chunk generation, and commands can name the generation they expect.
+- **Chunk tickets and levels** (minecraft.wiki "Chunk", observed on both official servers):
+  - **Tickets:** a ticket has a type, a level, a square radius and an optional lifetime in ticks. The chunks of its square take its level; every chunk further out takes one level more per chunk of Chebyshev distance. A chunk takes the lowest level of any ticket.
+  - **Load level:** from every ticket but a player's simulation ticket. 31 and lower is entity ticking, 32 block ticking, 33 border; higher is not loaded.
+  - **Simulation level:** from every ticket but a player's loading ticket, and never lower than the load level. At 32 and lower scheduled ticks, block events and block entities run; at 31 and lower entities too.
+  - **Random ticks:** 1.21.8 runs them where the simulation level is 31 or lower. 1.21.4 runs them where it is 32 or lower and a non-spectator player stands less than 128 blocks horizontally from the chunk's center.
+  - **Idle levels:** a level with neither players nor forced chunks stops its entities and block entities 300 ticks after it last had them, or after the server started. They resume as soon as it has them again.
+  - **Server tickets:** the start ticket at the spawn chunk (level 32 − spawnChunkRadius, 2 by default); per player, a loading ticket over their view distance (level 31) and a simulation ticket at their chunk (level 31 − simulation distance). Only forced and portal tickets survive a restart.
+  - **Changes** apply at the end of the command phase; lifetimes end at the command phase they reach. Unloading keeps all chunk state, including pending ticks. A reload increments the chunk generation, and commands can name the generation they expect.
 
 ## Part I mechanism contracts
 
@@ -323,8 +330,9 @@ xmake run circuit-server --profile-fixture "$PWD/tests/fixtures/workloads/observ
 
 `--simulate` without `--replay` runs a built-in demonstration with machines that straddle chunk edges.
 
-- **Replay records:** records (format version 6) store the bundle, the rule-set id and the block registry id, whose encoding their block states use. Each command names its level. Item stacks carry their data components, which the simulator checks against the bundle's protocol. A record made under different reference rules or another block registry is refused with `rules_mismatch` instead of replaying with silently different behavior. Older records are still read:
-  - version 5: every command is the overworld's;
+- **Replay records:** records (format version 7) store the bundle, the rule-set id and the block registry id, whose encoding their block states use. Each command names its level. Item stacks carry their data components, which the simulator checks against the bundle's protocol. A record made under different reference rules or another block registry is refused with `rules_mismatch` instead of replaying with silently different behavior. Older records are still read:
+  - version 6: tickets are read as forced ones of level 31 over their radius;
+  - version 5: also, every command is the overworld's;
   - version 4: also, stacks have no components;
   - version 3: also, the record predates the registry and is read as `circuit-blocks-1`.
 - **Digest:** the output includes a 64-bit state digest. Equal digests across worker counts are a quick check, not proof.
@@ -339,7 +347,7 @@ Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked with `--check
   - simplified item physics without merging, and entity order without target-version trace observations;
   - per-section random streams and coordinate-ordered random-tick chunks;
   - wheat ignoring light and hydration;
-  - chunk tickets without vanilla ticket types or level propagation;
+  - chunk tickets: no `/forceload`, teleport, portal or ender pearl tickets yet, and chunks load at once (the target versions load new chunks a few ticks later and keep chunks with entities at border level for two ticks before unloading them);
   - container menus without the crafting table, special recipes and the recipe book; loot tables without their random parts, and fixed drops for the modeled blocks.
 - Blocks without rules of their own, among them TNT, honey blocks, rails and coral fans, are inert: solid when they have a collision shape, conductors when opaque, immovable by pistons, and drop only from deterministic loot tables. Primed TNT entities and explosions are not modeled. TNT duplication machines cannot run; piston trace coverage does not establish compatibility for them. See [technical machines](COMPATIBILITY.md#technical-machines).
 - There is no lighting, world generation or mob spawning, and players cannot reach the Nether or the End.
