@@ -53,7 +53,6 @@ struct WorldShape {
 struct RuleLimits {
     std::uint32_t max_chained_neighbor_updates{};  // version rule: truncation is behavior
     std::uint32_t max_scheduled_ticks_per_list{};  // version rule: excess stays scheduled
-    std::uint32_t random_tick_speed{};             // version rule (default game rule value)
     std::uint32_t max_block_events_per_tick{};     // Circuit capacity: exceeding it fails the tick
     std::uint8_t max_ticket_radius{};              // Circuit capacity: a ticket's square (a view distance)
     std::uint8_t max_load_radius{};                // Circuit capacity: how far a ticket's chunks reach

@@ -227,6 +227,63 @@ struct GameFixture {
     std::unique_ptr<server::Game> game;
 };
 
+// The system chat messages a player got, as tags.
+std::vector<protocol::nbt::Tag> chat_messages(Recorder& r, const server::Wire& wire) {
+    const auto chat = wire.ids().id(State::play, Bound::clientbound, "system_chat");
+    std::vector<protocol::nbt::Tag> out;
+    std::lock_guard lock(r.mutex);
+    for (const auto& bytes : r.packets) {
+        auto p = protocol::open_packet(bytes);
+        if (!p || p->id != chat) continue;
+        if (auto tag = protocol::nbt::read_network(p->fields)) out.push_back(std::move(*tag));
+    }
+    return out;
+}
+
+// The translated feedback a player got: the key and its arguments (strings,
+// numbers or text components). A command error is the first of an empty
+// text's parts.
+std::vector<std::string> feedback(Recorder& r, const server::Wire& wire) {
+    std::vector<std::string> out;
+    for (const auto& message : chat_messages(r, wire)) {
+        const auto* tag = &message;
+        if (!tag->find("translate")) {
+            const auto* extra = tag->find("extra");
+            if (!extra || extra->items().empty() || !extra->items()[0].find("translate")) continue;
+            tag = &extra->items()[0];
+        }
+        std::string text = tag->find("translate")->text();
+        if (const auto* with = tag->find("with"))
+            for (const auto& a : with->items())
+                text += " " + (a.type() == protocol::nbt::TagType::string ? a.text()
+                               : a.type() == protocol::nbt::TagType::int_ ? std::to_string(a.integer())
+                                                                         : a.find("text")->text());
+        out.push_back(std::move(text));
+    }
+    return out;
+}
+
+// The context lines of command errors a player got: the command clicking
+// suggests, then the text with the underlined part in brackets.
+std::vector<std::string> error_contexts(Recorder& r, const server::Wire& wire) {
+    std::vector<std::string> out;
+    for (const auto& message : chat_messages(r, wire)) {
+        const auto* extra = message.find("extra");
+        if (!extra || extra->items().empty()) continue;
+        const auto& context = extra->items()[0];
+        const auto* click = context.find(wire.protocol() >= 770 ? "click_event" : "clickEvent");
+        if (!click) continue;
+        std::string text = click->find(wire.protocol() >= 770 ? "command" : "value")->text() + " :: ";
+        for (const auto& part : context.find("extra")->items()) {
+            if (const auto* key = part.find("translate")) text += "<" + key->text() + ">";
+            else if (part.find("underlined")) text += "[" + part.find("text")->text() + "]";
+            else text += part.find("text")->text();
+        }
+        out.push_back(std::move(text));
+    }
+    return out;
+}
+
 gameplay::PlayerInventory empty_inventory(contracts::PlayerKey key) {
     gameplay::PlayerInventory inventory;
     inventory.player = key;
@@ -801,24 +858,6 @@ int main() {
     });
 
     suite.run("forceload marks chunks that stay loaded and persist", [] {
-        // The translated feedback of the system chat messages a player got:
-        // the key and its arguments.
-        const auto feedback = [](Recorder& r, const server::Wire& wire) {
-            const auto chat = wire.ids().id(State::play, Bound::clientbound, "system_chat");
-            std::vector<std::string> out;
-            std::lock_guard lock(r.mutex);
-            for (const auto& bytes : r.packets) {
-                auto p = protocol::open_packet(bytes);
-                if (!p || p->id != chat) continue;
-                const auto tag = protocol::nbt::read_network(p->fields);
-                if (!tag || !tag->find("translate")) continue;
-                std::string text = tag->find("translate")->text();
-                if (const auto* with = tag->find("with"))
-                    for (const auto& a : with->items()) text += " " + a.find("text")->text();
-                out.push_back(std::move(text));
-            }
-            return out;
-        };
         const auto forced = [](const server::Game& game) {
             std::set<contracts::ChunkPos> out;
             for (const auto& t : game.engine().dump().tickets)
@@ -872,6 +911,86 @@ int main() {
             f.game->tick();
             require(forced(*f.game).empty() && feedback(*peer, f.wire).back() == "commands.forceload.removed.all minecraft:overworld",
                     "remove all");
+        }
+        std::filesystem::remove_all(dir);
+    });
+
+    suite.run("game rules are set with /gamerule, move the spawn chunks and persist", [] {
+        const auto start = [](const server::Game& game) {
+            std::optional<std::uint8_t> level;
+            for (const auto& t : game.engine().dump().tickets)
+                if (t.type == contracts::TicketType::start) {
+                    require(!level, "one start ticket");
+                    level = t.level;
+                }
+            return level;
+        };
+        const auto dir = temporary_directory();
+        auto config = offline_config();
+        config.world_directory = dir / "world";
+        {
+            GameFixture f(config);
+            auto peer = f.join(1, "Ruler");
+            require(start(*f.game) == std::optional<std::uint8_t>{30}, "spawnChunkRadius 2: a start ticket of level 30");
+            using I = server::Intent;
+            // What both official servers answered to the same commands.
+            for (const auto* command : {"gamerule randomTickSpeed", "gamerule randomTickSpeed 7", "gamerule randomTickSpeed x",
+                                        "gamerule randomTickSpeed 1.5", "gamerule randomTickSpeed 5x", "gamerule keepInventory maybe",
+                                        "gamerule keepInventory 'true'", "gamerule keepInventory", "gamerule doDaylightCycle \"tru",
+                                        "gamerule spawnChunkRadius 33", "gamerule spawnChunkRadius -1", "gamerule noSuchRule",
+                                        "gamerule minecartMaxSpeed 4", "gamerule spawnChunkRadius 3 4", "gamerule",
+                                        "gamerule spawnChunkRadius 0"})
+                f.game->submit(1, I{server::intent::Command{command}});
+            f.game->tick();
+            f.game->tick();
+            const std::vector<std::string> expected{"commands.gamerule.query randomTickSpeed 3",
+                                                    "commands.gamerule.set randomTickSpeed 7",
+                                                    "parsing.int.expected",
+                                                    "parsing.int.invalid 1.5",
+                                                    "command.expected.separator",
+                                                    "parsing.bool.invalid maybe",
+                                                    "commands.gamerule.set keepInventory true",
+                                                    "commands.gamerule.query keepInventory true",
+                                                    "parsing.quote.expected.end",
+                                                    "argument.integer.big 32 33",
+                                                    "argument.integer.low 0 -1",
+                                                    "command.unknown.argument",
+                                                    "command.unknown.argument",
+                                                    "command.unknown.argument",
+                                                    "command.unknown.command",
+                                                    "commands.gamerule.set spawnChunkRadius 0"};
+            const auto got = feedback(*peer, f.wire);
+            require(got.size() == expected.size(), std::format("{} messages", got.size()));
+            for (std::size_t i = 0; i < expected.size(); ++i) require(got[i] == expected[i], got[i]);
+            const auto contexts = error_contexts(*peer, f.wire);
+            require(contexts.size() == 11, std::format("{} context lines", contexts.size()));
+            const std::vector<std::pair<std::size_t, std::string>> lines{
+                {0, "/gamerule randomTickSpeed x :: ...TickSpeed [x]<command.context.here>"},
+                {2, "/gamerule randomTickSpeed 5x :: ...ickSpeed 5[x]<command.context.here>"},
+                {4, "/gamerule doDaylightCycle \"tru :: ...Cycle \"tru<command.context.here>"},
+                {7, "/gamerule noSuchRule :: gamerule [noSuchRule]<command.context.here>"},
+                {9, "/gamerule spawnChunkRadius 3 4 :: ...kRadius 3 [4]<command.context.here>"},
+                {10, "/gamerule :: gamerule<command.context.here>"}};
+            for (const auto& [i, line] : lines) require(contexts[i] == line, contexts[i]);
+            const auto d = f.game->engine().dump();
+            require(d.game_rules == std::map<std::string, std::int32_t>{{"keepInventory", 1}, {"randomTickSpeed", 7}, {"spawnChunkRadius", 0}},
+                    "the rules are world state");
+            require(!start(*f.game), "spawnChunkRadius 0: no spawn chunks");
+            f.game->submit(1, I{server::intent::Command{"gamerule spawnChunkRadius 3"}});
+            f.game->tick();
+            require(start(*f.game) == std::optional<std::uint8_t>{29}, "spawnChunkRadius 3: level 29");
+        }
+        {
+            // After a restart the rules are the world's, and the spawn
+            // chunks follow theirs.
+            GameFixture f(config);
+            f.game->tick();
+            require(f.game->engine().dump().game_rules.at("randomTickSpeed") == 7 && start(*f.game) == std::optional<std::uint8_t>{29},
+                    "the rules persist");
+            auto peer = f.join(1, "Ruler");
+            f.game->submit(1, server::Intent{server::intent::Command{"gamerule spawnChunkRadius"}});
+            f.game->tick();
+            require(feedback(*peer, f.wire).back() == "commands.gamerule.query spawnChunkRadius 3", "queried after the restart");
         }
         std::filesystem::remove_all(dir);
     });

@@ -93,7 +93,13 @@ std::expected<std::vector<contracts::CommandBody>, std::string> forceload(const 
         w.push_back(command.substr(i, end - i));
         i = end + 1;
     }
-    const auto unsupported = std::format("command `{}`: only forceload add and remove are modeled", command);
+    const auto unsupported = std::format("command `{}`: only forceload add and remove and gamerule randomTickSpeed are modeled", command);
+    if (w.size() == 3 && w[0] == "gamerule" && w[1] == "randomTickSpeed") {
+        std::int32_t v{};
+        const auto [end, ec] = std::from_chars(w[2].data(), w[2].data() + w[2].size(), v);
+        if (ec != std::errc{} || end != w[2].data() + w[2].size()) return std::unexpected(unsupported);
+        return std::vector<contracts::CommandBody>{contracts::SetGameRule{w[1], v}};
+    }
     if (w.size() < 2 || w[0] != "forceload" || (w[1] != "add" && w[1] != "remove")) return std::unexpected(unsupported);
     std::vector<contracts::CommandBody> out;
     if (w[1] == "remove" && w.size() == 3 && w[2] == "all") {
@@ -142,13 +148,15 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
             return std::unexpected(report(Outcome::invalid, std::format("game rule {} does not exist in {}", name, f.game_version)));
         const auto expected = rule->type == contracts::GameRuleType::boolean ? std::string(rule->default_value ? "true" : "false")
                                                                              : std::to_string(rule->default_value);
+        // randomTickSpeed is world state the rules read; other rules are
+        // modeled only at their defaults.
+        if (name == "randomTickSpeed") continue;
         if (value != expected)
             return std::unexpected(report(Outcome::unsupported, std::format("game rule {}: the rules model only its default, {}", name, expected)));
     }
     if (f.dimension != "minecraft:overworld")
         return std::unexpected(report(Outcome::unsupported, std::format("dimension {}: the rules model the overworld only", f.dimension)));
     p.bundle = *found;
-    p.bundle.limits.random_tick_speed = f.random_tick_speed;
     if (f.neighbor_update_limit != 0) p.bundle.limits.max_chained_neighbor_updates = f.neighbor_update_limit;
     for (const auto& m : f.mechanisms) {
         const auto& table = p.bundle.rules->mechanisms;
@@ -164,6 +172,16 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
 
     std::uint64_t admission = 1;
     if (f.load_area) p.inputs[1].push_back({admission++, contracts::AddTicket{1, center, static_cast<std::uint8_t>(radius)}});
+    // Random ticks are off unless the fixture sets their speed.
+    p.inputs[1].push_back({admission++, contracts::SetGameRule{"randomTickSpeed", static_cast<std::int32_t>(f.random_tick_speed)}});
+    for (const auto& [name, value] : f.gamerules)
+        if (name == "randomTickSpeed") {
+            std::int32_t v{};
+            const auto [end, ec] = std::from_chars(value.data(), value.data() + value.size(), v);
+            if (ec != std::errc{} || end != value.data() + value.size())
+                return std::unexpected(report(Outcome::invalid, "game rule randomTickSpeed needs an integer"));
+            p.inputs[1].push_back({admission++, contracts::SetGameRule{name, v}});
+        }
     const auto fail_line = [](std::size_t line, const std::string& message) {
         return std::unexpected(report(Outcome::unsupported, std::format("line {}: {}", line, message)));
     };

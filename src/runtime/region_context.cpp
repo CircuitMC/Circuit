@@ -83,6 +83,11 @@ void RegionContext::write_block(BlockPos pos, BlockState state) {
     cell = state;
 }
 
+std::int32_t RegionContext::game_rule(std::string_view name) {
+    // Game rules change only in the command phase.
+    return gameplay::game_rule_value(bundle(), world_.game_rules, name);
+}
+
 std::uint8_t RegionContext::light(BlockPos pos) {
     const auto* field = world_.light[static_cast<std::size_t>(dimension())];
     if (!field) throw std::logic_error("runtime: light read outside the random-tick phase");

@@ -222,10 +222,12 @@ int main() {
         histories.push_back(record(s, 40));
 
     suite.run("checkpoints round-trip scenario states", [&] {
+        bool rules = false;
         for (const auto& s : all_scenarios()) {
             const auto h = record(s, s.ticks);
             for (const Tick t : {Tick{0}, h.ticks() / 2, h.ticks()}) {
                 const auto c = checkpoint_at(h, t);
+                rules |= !c.state.game_rules.empty();
                 const auto encoded = circuit::storage::encode_checkpoint(c);
                 const auto decoded = circuit::storage::decode_checkpoint(encoded);
                 require(decoded.has_value(), std::format("{} at {}: {}", s.name, t, decoded ? "" : decoded.error()));
@@ -233,6 +235,7 @@ int main() {
                 require(circuit::storage::encode_checkpoint(*decoded) == encoded, std::format("{} at {}: encoding is canonical", s.name, t));
             }
         }
+        require(rules, "a scenario sets a game rule");
     });
 
     suite.run("snapshots encode like dumps and stay fixed while the engine runs", [&] {

@@ -45,6 +45,7 @@ public:
         else lv().blocks[pos] = state;
     }
     std::uint8_t light(BlockPos pos) override { return o_.light(dimension(), pos); }
+    std::int32_t game_rule(std::string_view name) override { return game_rule_value(o_.bundle_, o_.game_rules_, name); }
     std::optional<contracts::Generation> chunk_generation(ChunkPos chunk) override {
         if (lv().level(chunk) == ChunkLevel::unloaded) return std::nullopt;
         return lv().chunks.at(chunk).generation;
@@ -222,6 +223,9 @@ void Oracle::advance(const std::vector<contracts::Command>& commands) {
             if (presence->present) at(c.dimension).presences[presence->player] = {presence->player, presence->position, presence->spectator};
         } else if (std::holds_alternative<contracts::LevelsStarted>(c.body)) {
             started_ = time_ - 1;
+        } else if (const auto* rule = std::get_if<contracts::SetGameRule>(&c.body)) {
+            ticket_result = check_game_rule(bundle_, *rule);
+            if (ticket_result) game_rules_[rule->name] = rule->value;
         } else {
             apply_command(*ctx_, c);
             continue;
@@ -396,6 +400,7 @@ WorldDump Oracle::dump() const {
     d.time = time_;
     d.next_entity_id = next_entity_id_;
     d.started = started_;
+    d.game_rules = game_rules_;
     for (const auto level : contracts::level_order) {
         const auto& lv = levels_[static_cast<std::size_t>(level)];
         if (lv.chunks.empty() && lv.presences.empty() && lv.last_active == 0) continue;

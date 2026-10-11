@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -106,6 +107,7 @@ struct WorldStore {
     std::unordered_map<EntityId, ChunkKey> entity_index;  // Updated at commit.
     Tick time{};
     Tick started{}; // see WorldDump::started
+    std::map<std::string, std::int32_t> game_rules; // see WorldDump::game_rules
     std::uint64_t next_entity_id{1};
     std::array<LevelCounters, contracts::dimension_count> levels{};
     // Each level's light while the random-tick phase reads it (up to date for

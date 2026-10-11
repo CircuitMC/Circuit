@@ -133,7 +133,6 @@ constexpr std::array reference_v4_mechanisms{
 constexpr RuleLimits vanilla_like_limits{
     .max_chained_neighbor_updates = 1'000'000,
     .max_scheduled_ticks_per_list = 65'536,
-    .random_tick_speed = 3,
     .max_block_events_per_tick = 1'000'000,
     .max_ticket_radius = 32, // a view distance of 32
     .max_load_radius = 34,   // and the two levels beyond it that are loaded

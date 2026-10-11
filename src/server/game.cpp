@@ -8,6 +8,7 @@
 #include <circuit/gameplay/survival.hpp>
 #include <circuit/storage/world_directory.hpp>
 #include <algorithm>
+#include <cctype>
 #include <charconv>
 #include <atomic>
 #include <asio/post.hpp>
@@ -41,9 +42,6 @@ constexpr double max_move_squared = 100.0; // per accepted movement packet
 constexpr double creative_reach = 6.0, survival_reach = 5.5;
 constexpr std::size_t chunks_per_tick = 32; // per player
 constexpr std::uint32_t spawn_ticket = 1;
-// The spawn chunks: a start ticket of level 32 - spawnChunkRadius, none at
-// radius 0 (observed on both official servers). The game rule's default.
-constexpr std::uint8_t spawn_chunk_radius = 2;
 constexpr std::size_t inventory_slots = contracts::player_slots;
 constexpr std::uint8_t survival = 0, creative = 1, spectator = 3;
 
@@ -254,6 +252,8 @@ struct Game::Impl final : GameServices {
     std::map<std::uint64_t, Player> players;
     std::uint32_t next_ticket{1000};
     std::map<ChunkPos, std::uint32_t> forced; // the overworld's force-loaded chunks and their tickets
+    // The world's game rules as set, including changes admitted this tick.
+    std::map<std::string, std::int32_t> rules;
     std::int32_t next_entity_id{1};
     std::unordered_map<std::uint64_t, Tracked> tracked;
     std::int32_t dimension_type{};
@@ -385,7 +385,9 @@ struct Game::Impl final : GameServices {
         // start ticket is added again on the first tick. A world written
         // before tickets had types keeps none.
         queue = contracts::CommandQueue(65536, meta.next_admission);
-        for (const auto& t : engine->dump().tickets) {
+        const auto opened = engine->dump();
+        rules = opened.game_rules;
+        for (const auto& t : opened.tickets) {
             if ((t.type != contracts::TicketType::forced && t.type != contracts::TicketType::portal) || t.id == spawn_ticket
                 || !meta.typed_tickets)
                 admit(contracts::RemoveTicket{t.id});
@@ -1474,7 +1476,7 @@ struct Game::Impl final : GameServices {
             std::string extra;
             for (const auto& [name, usage] : extensions->commands()) extra += std::format(", /{}{}{}", name, usage.empty() ? "" : " ", usage);
             message(p, "Commands: /help, /players, /tp [<own name>] <x> <y> <z>, /gamemode <survival|creative|spectator>, "
-                       "/forceload add|remove <x> <z> [<x> <z>], /forceload remove all, /forceload query [<x> <z>], /tps" + extra);
+                       "/forceload add|remove <x> <z> [<x> <z>], /forceload remove all, /forceload query [<x> <z>], /gamerule <rule> [<value>], /tps" + extra);
         } else if (args[0] == "players") {
             std::string names;
             for (const auto& [id, o] : players) names += (names.empty() ? "" : ", ") + o.name;
@@ -1509,6 +1511,8 @@ struct Game::Impl final : GameServices {
             broadcast(wire.player_info_add({entry(p)}));
         } else if (args[0] == "forceload") {
             forceload(p, std::span(args).subspan(1));
+        } else if (args[0] == "gamerule" && c.text.starts_with("gamerule")) {
+            gamerule(p, c.text);
         } else if (args[0] == "tps") {
             message(p, std::format("tick {}", engine->time()));
         } else if (const auto reply = extensions->command(p.name, args[0], std::span(args).subspan(1))) {
@@ -1516,6 +1520,169 @@ struct Game::Impl final : GameServices {
         } else {
             message(p, std::format("Unknown command: /{}", args[0]), "red");
         }
+    }
+
+    // The spawn chunks: a start ticket of level 32 - spawnChunkRadius at the
+    // spawn chunk, none at radius 0 (observed on both official servers).
+    void add_start_ticket() {
+        const auto radius = gameplay::game_rule_value(bundle, rules, "spawnChunkRadius");
+        if (radius > 0)
+            admit(contracts::AddTicket{spawn_ticket, contracts::chunk_of(meta.spawn), 0, contracts::TicketType::start,
+                                       static_cast<std::uint8_t>(32 - radius), 0},
+                  overworld);
+    }
+
+    // `/gamerule <rule> [<value>]`: queries or sets a game rule of the
+    // version. The input is read as both official servers read it: the rule's
+    // name, then for an integer rule the characters 0-9, '.' and '-' (only
+    // spawnChunkRadius is bounded, 0-32), for a boolean rule true or false,
+    // bare or quoted ("" or ''), then the end or a space before nothing else.
+    // A mistake is reported with the official key and context.
+    void gamerule(Player& p, std::string_view input) {
+        const auto size = input.size();
+        std::size_t at = std::string_view("gamerule").size();
+        if (at == size) return syntax_error(p, input, at, "command.unknown.command");
+        // A space is read only when something follows it.
+        if (size - at < 2) return syntax_error(p, input, at, "command.unknown.argument");
+        ++at;
+        const auto name = input.substr(at, std::min(input.find(' ', at), size) - at);
+        const auto* rule = bundle.schema.game_rule(name);
+        if (name.empty() || !rule || rule->experimental) return syntax_error(p, input, at, "command.unknown.argument");
+        at += name.size();
+        const bool boolean = rule->type == contracts::GameRuleType::boolean;
+        const auto text = [&](std::int32_t v) { return boolean ? std::string(v != 0 ? "true" : "false") : std::to_string(v); };
+        if (at == size)
+            return send_translation(p, "commands.gamerule.query",
+                                    strings({std::string(name), text(gameplay::game_rule_value(bundle, rules, name))}));
+        if (size - at < 2) return syntax_error(p, input, at, "command.unknown.argument");
+        ++at;
+        const auto start = at;
+        std::int32_t value{};
+        if (boolean) {
+            std::string word;
+            if (const char quote = input[at]; quote == '"' || quote == '\'') {
+                bool closed = false, escaped = false;
+                for (++at; at < size && !closed; ++at) {
+                    const char ch = input[at];
+                    if (escaped) {
+                        if (ch != quote && ch != '\\') return syntax_error(p, input, at, "parsing.quote.escape", strings({std::string(1, ch)}));
+                        word += ch;
+                        escaped = false;
+                    } else if (ch == '\\') {
+                        escaped = true;
+                    } else if (ch == quote) {
+                        closed = true;
+                    } else {
+                        word += ch;
+                    }
+                }
+                if (!closed) return syntax_error(p, input, size, "parsing.quote.expected.end");
+            } else {
+                const auto unquoted = [](char ch) {
+                    return std::isalnum(static_cast<unsigned char>(ch)) || ch == '_' || ch == '-' || ch == '.' || ch == '+';
+                };
+                while (at < size && unquoted(input[at])) word += input[at++];
+            }
+            if (word.empty()) return syntax_error(p, input, at, "parsing.bool.expected");
+            if (word != "true" && word != "false") return syntax_error(p, input, start, "parsing.bool.invalid", strings({word}));
+            value = word == "true" ? 1 : 0;
+        } else {
+            while (at < size && (std::isdigit(static_cast<unsigned char>(input[at])) || input[at] == '.' || input[at] == '-')) ++at;
+            const auto number = input.substr(start, at - start);
+            if (number.empty()) return syntax_error(p, input, start, "parsing.int.expected");
+            const auto [end, ec] = std::from_chars(number.data(), number.data() + number.size(), value);
+            if (ec != std::errc{} || end != number.data() + number.size())
+                return syntax_error(p, input, start, "parsing.int.invalid", strings({std::string(number)}));
+            const auto range = gameplay::game_rule_range(name);
+            const auto bounds = [&](std::int32_t limit) {
+                auto with = nbt::Tag::list(nbt::TagType::int_);
+                with.push(nbt::Tag::int_(limit));
+                with.push(nbt::Tag::int_(value));
+                return with;
+            };
+            if (value < range.min) return syntax_error(p, input, start, "argument.integer.low", bounds(range.min));
+            if (value > range.max) return syntax_error(p, input, start, "argument.integer.big", bounds(range.max));
+        }
+        if (at < size) {
+            if (input[at] != ' ') return syntax_error(p, input, at, "command.expected.separator");
+            return syntax_error(p, input, size - at < 2 ? at : at + 1, "command.unknown.argument");
+        }
+        const contracts::SetGameRule set{std::string(name), value};
+        if (!gameplay::check_game_rule(bundle, set)) return; // the reading above refuses every invalid value
+        admit(set);
+        const auto before = gameplay::game_rule_value(bundle, rules, name);
+        rules[set.name] = value;
+        // The spawn chunks follow their radius in the same tick.
+        if (name == "spawnChunkRadius" && value != before) {
+            if (before > 0) admit(contracts::RemoveTicket{spawn_ticket}, overworld);
+            add_start_ticket();
+        }
+        send_translation(p, "commands.gamerule.set", strings({set.name, text(value)}));
+    }
+
+    static nbt::Tag strings(std::vector<std::string> values) {
+        auto list = nbt::Tag::list(nbt::TagType::string);
+        for (auto& v : values) list.push(nbt::Tag::string(std::move(v)));
+        return list;
+    }
+
+    // A translated message whose arguments are plain strings or numbers.
+    static nbt::Tag translation(std::string_view key, nbt::Tag with) {
+        auto t = nbt::Tag::compound();
+        t.set("translate", nbt::Tag::string(std::string(key)));
+        if (!with.items().empty()) t.set("with", std::move(with));
+        return t;
+    }
+
+    void send_translation(Player& p, std::string_view key, nbt::Tag with) { p.peer->send(wire.system_chat(translation(key, std::move(with)))); }
+
+    // A command the parser refused, as both official servers report it: the
+    // error in red, then the input up to where reading stopped (its last ten
+    // characters, after "..." when there are more), the rest underlined and
+    // "<--[HERE]", suggesting the command again when clicked.
+    void syntax_error(Player& p, std::string_view input, std::size_t cursor, std::string_view key,
+                      nbt::Tag with = nbt::Tag::list(nbt::TagType::string)) {
+        const auto plain = [](std::string_view text) {
+            auto t = nbt::Tag::compound();
+            t.set("text", nbt::Tag::string(std::string(text)));
+            return t;
+        };
+        const auto wrapped = [&](nbt::Tag inner, std::string_view color) {
+            auto t = plain("");
+            t.set("color", nbt::Tag::string(std::string(color)));
+            auto extra = nbt::Tag::list(nbt::TagType::compound);
+            extra.push(std::move(inner));
+            t.set("extra", std::move(extra));
+            return t;
+        };
+        p.peer->send(wire.system_chat(wrapped(translation(key, std::move(with)), "red")));
+        auto parts = nbt::Tag::list(nbt::TagType::compound);
+        if (cursor > 10) parts.push(plain("..."));
+        parts.push(plain(input.substr(cursor > 10 ? cursor - 10 : 0, std::min<std::size_t>(cursor, 10))));
+        if (cursor < input.size()) {
+            auto rest = plain(input.substr(cursor));
+            rest.set("color", nbt::Tag::string("red"));
+            rest.set("underlined", nbt::Tag::boolean(true));
+            parts.push(std::move(rest));
+        }
+        auto here = translation("command.context.here", nbt::Tag::list(nbt::TagType::string));
+        here.set("color", nbt::Tag::string("red"));
+        here.set("italic", nbt::Tag::boolean(true));
+        parts.push(std::move(here));
+        auto context = plain("");
+        context.set("color", nbt::Tag::string("gray"));
+        context.set("extra", std::move(parts));
+        // Since 1.21.5 (protocol 770) click events are snake_case and name their command.
+        auto click = nbt::Tag::compound();
+        click.set("action", nbt::Tag::string("suggest_command"));
+        click.set(wire.protocol() >= 770 ? "command" : "value", nbt::Tag::string("/" + std::string(input)));
+        context.set(wire.protocol() >= 770 ? "click_event" : "clickEvent", std::move(click));
+        auto line = plain("");
+        line.set("color", nbt::Tag::string("red"));
+        auto extra = nbt::Tag::list(nbt::TagType::compound);
+        extra.push(std::move(context));
+        line.set("extra", std::move(extra));
+        p.peer->send(wire.system_chat(line));
     }
 
     // A translated message, as the target versions word their command
@@ -1918,10 +2085,7 @@ struct Game::Impl final : GameServices {
             // Every start counts as the levels' creation (idle rule), and the
             // spawn chunks are loaded again.
             admit(contracts::LevelsStarted{});
-            if (spawn_chunk_radius > 0)
-                admit(contracts::AddTicket{spawn_ticket, contracts::chunk_of(meta.spawn), 0, contracts::TicketType::start,
-                                           static_cast<std::uint8_t>(32 - spawn_chunk_radius), 0},
-                      overworld);
+            add_start_ticket();
             started = true;
         }
         std::vector<Message> batch;

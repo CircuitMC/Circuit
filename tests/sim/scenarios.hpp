@@ -496,8 +496,12 @@ inline Scenario crop_light_scenario() {
                 if (t == 3 && !wall && !(x == 4 && z == 4) && !(x == 12 && z == 12) && !(x == 12 && z == 11))
                     c.push_back(place({x, 0, z}, blocks::wheat()));
             }
-        // A lever beside the lamp, switched on at tick 120.
-        if (t == 3) c.push_back(place({12, 0, 11}, blocks::lever()));
+        // A lever beside the lamp, switched on at tick 120; random ticks ten
+        // times faster from tick 3 (a game rule).
+        if (t == 3) {
+            c.push_back(place({12, 0, 11}, blocks::lever()));
+            c.push_back(SetGameRule{"randomTickSpeed", 30});
+        }
         if (t == 120) c.push_back(use_lever({12, 0, 11}));
         return c;
     }, 20};

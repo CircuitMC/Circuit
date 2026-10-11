@@ -359,6 +359,9 @@ void Engine::Impl::command_phase(const std::vector<Command>& commands) {
                 world.counters(c.dimension).presences[presence->player] = {presence->player, presence->position, presence->spectator};
         } else if (std::holds_alternative<contracts::LevelsStarted>(c.body)) {
             world.started = world.time - 1;
+        } else if (const auto* rule = std::get_if<contracts::SetGameRule>(&c.body)) {
+            ticket_result = gameplay::check_game_rule(bundle, *rule);
+            if (ticket_result) world.game_rules[rule->name] = rule->value;
         } else {
             gameplay::apply_command(ctx, c);
             continue;
@@ -903,6 +906,7 @@ void fill_dump(const WorldStore& world, const contracts::VersionBundle& bundle, 
     d.time = world.time;
     d.next_entity_id = world.next_entity_id;
     d.started = world.started;
+    d.game_rules = world.game_rules;
     std::map<DimensionId, std::vector<std::pair<std::uint64_t, BlockEvent>>> events;
     const auto add = [&](const ChunkData& data, ChunkLevel level) {
         auto& l = d.level(data.dimension);
@@ -989,6 +993,9 @@ void Engine::Impl::restore(const WorldDump& state) {
     world.time = state.time;
     world.next_entity_id = state.next_entity_id;
     world.started = state.started;
+    for (const auto& [name, value] : state.game_rules)
+        if (!gameplay::check_game_rule(bundle, {name, value})) bad("game rule");
+    world.game_rules = state.game_rules;
     // Valid entity stacks; entities of every level are checked against the
     // global id counter.
     const auto valid_speed = [](std::int64_t v) { return v >= -gameplay::max_entity_speed && v <= gameplay::max_entity_speed; };

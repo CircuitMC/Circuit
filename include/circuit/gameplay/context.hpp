@@ -78,6 +78,8 @@ public:
     virtual BlockState block(BlockPos pos) = 0;
     // Raw write without reactions. Precondition: block(pos) is not the sentinel.
     virtual void write_block(BlockPos pos, BlockState state) = 0;
+    // A game rule's value (gameplay::game_rule_value).
+    virtual std::int32_t game_rule(std::string_view name) = 0;
     // The light at a position as the tick sees it: the most of its block
     // light and sky light, from the blocks at the end of the previous tick
     // (gameplay/light.hpp). Available in the random-tick phase.

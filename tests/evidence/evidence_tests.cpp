@@ -682,15 +682,19 @@ int main(int argc, char** argv) {
         require(evaluate_fixture(with_rule, engine_executor()).outcome == Outcome::unsupported, "unsupported");
         require(!parse_fixture(std::string(header) + "gamerule tntExplodes false\n"), "game rules need version 2");
         require(!parse_fixture(std::string(header2) + "gamerule a true\ngamerule a false\n"), "duplicate game rule");
-        // A rule at its default changes nothing; a rule the version lacks
-        // makes the scenario invalid there.
+        // A rule at its default changes nothing; randomTickSpeed is world
+        // state at any value; another rule away from its default is not
+        // modeled; a rule the version lacks makes the scenario invalid there.
         auto text = read_text(fixtures / "reference" / "item_drop_piston.ctrace");
         text.insert(text.find("entities observed"), "gamerule tntExplodes true\ngamerule randomTickSpeed 3\n");
         require(evaluate_fixture(parse(text), engine_executor()).outcome == Outcome::passed, "rules at their defaults");
+        auto faster = text;
+        faster.replace(faster.find("randomTickSpeed 3"), 17, "randomTickSpeed 5");
+        require(evaluate_fixture(parse(faster), engine_executor()).outcome == Outcome::passed, "randomTickSpeed at another value");
         auto changed = text;
-        changed.replace(changed.find("randomTickSpeed 3"), 17, "randomTickSpeed 5");
+        changed.replace(changed.find("tntExplodes true"), 16, "tntExplodes false");
         const auto r = evaluate_fixture(parse(changed), engine_executor());
-        require(r.outcome == Outcome::unsupported && r.detail.find("randomTickSpeed") != std::string::npos, r.detail);
+        require(r.outcome == Outcome::unsupported && r.detail.find("tntExplodes") != std::string::npos, r.detail);
         auto old = text;
         old.replace(old.find("game-version 1.21.8"), 19, "game-version 1.21.4");
         const auto o = evaluate_fixture(parse(old), engine_executor());

@@ -39,6 +39,7 @@ public:
     BlockState block(BlockPos pos) override;
     void write_block(BlockPos pos, BlockState state) override;
     std::uint8_t light(BlockPos pos) override;
+    std::int32_t game_rule(std::string_view name) override;
     std::optional<contracts::Generation> chunk_generation(ChunkPos chunk) override;
     bool has_tick(TickList list, BlockPos pos, BlockType block) override;
     void add_tick(TickList list, BlockPos pos, BlockType block, Tick due, std::int8_t priority, std::uint32_t seq) override;

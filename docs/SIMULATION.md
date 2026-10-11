@@ -199,6 +199,9 @@ Every observable action produces a trace record keyed by (tick, level, phase, ro
   - **Spreading:** light passes to a neighbor one level lower, or lower by the neighbor's dampening when that is more, unless the faces of the two cells' occlusion shapes between them together cover the face. Block light starts at emitters; sky light starts above the world, and level 15 passes straight down undiminished into cells that dampen nothing.
   - **Timing:** light follows the blocks as they were at the end of the previous tick: a change made in one tick shows in the next. The engine keeps those blocks and brings the light up to date when it is read, following changes incrementally (columns that load and unload, cells that change); the result does not depend on when it is read.
   - **Rules that read it:** in the random-tick phase, a rule reads the most of a cell's block and sky light. Wheat grows only with light 9 or more at its own cell (minecraft.wiki "Wheat Crops").
+- **Game rules** (minecraft.wiki "Game rule"; both official servers):
+  - **World state:** a `SetGameRule` command sets one of the version's rules, but not an experimental one. A boolean rule takes 0 or 1, spawnChunkRadius 0–32, and every other integer rule any value, as on the official servers; other values are refused. Set rules are saved in checkpoints and logged with the other commands; a rule never set has the version's default.
+  - **Read by the rules:** randomTickSpeed is the number of random positions each section of a random-ticking chunk gets per tick; none at 0 or below. The server reads spawnChunkRadius for the spawn chunks and sets rules with `/gamerule` ([server guide](SERVER.md#survival-and-inventories)). The other rules are kept but change nothing yet.
 
 ## Part I mechanism contracts
 
@@ -339,7 +342,8 @@ xmake run circuit-server --profile-fixture "$PWD/tests/fixtures/workloads/observ
 
 `--simulate` without `--replay` runs a built-in demonstration with machines that straddle chunk edges.
 
-- **Replay records:** records (format version 7) store the bundle, the rule-set id and the block registry id, whose encoding their block states use. Each command names its level. Item stacks carry their data components, which the simulator checks against the bundle's protocol. A record made under different reference rules or another block registry is refused with `rules_mismatch` instead of replaying with silently different behavior. Older records are still read:
+- **Replay records:** records (format version 8) store the bundle, the rule-set id and the block registry id, whose encoding their block states use. Each command names its level. Item stacks carry their data components, which the simulator checks against the bundle's protocol. A record made under different reference rules or another block registry is refused with `rules_mismatch` instead of replaying with silently different behavior. Older records are still read:
+  - version 7: the same commands, without game rules;
   - version 6: tickets are read as forced ones of level 31 over their radius;
   - version 5: also, every command is the overworld's;
   - version 4: also, stacks have no components;

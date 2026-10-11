@@ -226,6 +226,20 @@ bool player_near(const Presences& presences, ChunkPos chunk) {
     return false;
 }
 
+// Game rules (contracts::SetGameRule). A value is valid for a rule the
+// version has outside its experiments: a boolean is 0 or 1, and
+// spawnChunkRadius lies in 0-32 (both official servers refuse other values;
+// the other integer rules take any value).
+contracts::Result<void> check_game_rule(const contracts::VersionBundle& bundle, const contracts::SetGameRule& rule);
+// The values an integer rule takes.
+struct GameRuleRange {
+    std::int32_t min{INT32_MIN}, max{INT32_MAX};
+};
+GameRuleRange game_rule_range(std::string_view name) noexcept;
+// A rule's value: as set, else the version's default (0 for a rule it lacks).
+std::int32_t game_rule_value(const contracts::VersionBundle& bundle, const std::map<std::string, std::int32_t>& set,
+                             std::string_view name);
+
 // Chunks that drop out of the loaded set and come back (both official
 // servers): a dropped chunk's pending ticks keep their remaining delay,
 // counted from the tick after it dropped (`saved_at`); reloaded at `now`, a
@@ -290,6 +304,9 @@ struct WorldDump {
     Tick time{};
     std::uint64_t next_entity_id{};
     Tick started{}; // the last LevelsStarted command's tick, less one: levels count as active then
+    // Game rules set by commands (contracts::SetGameRule); the others keep
+    // the bundle's defaults.
+    std::map<std::string, std::int32_t> game_rules;
     std::vector<LevelDump> levels;        // ascending dimension; listed with a column, a presence or an active tick
     std::vector<Ticket> tickets;          // ascending id
     std::vector<PlayerInventory> players; // ascending player, non-empty only

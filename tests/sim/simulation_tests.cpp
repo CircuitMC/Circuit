@@ -425,8 +425,7 @@ int main() {
         // slime, hoppers, chests and stone around the chunk corner at (0, 0),
         // under seeded interleavings and perturbed layouts, compared with the
         // oracle after every tick.
-        auto b = bundle();
-        b.limits.random_tick_speed = 0;
+        const auto& b = bundle();
         constexpr unsigned seeds = 64;
         for (unsigned seed = 1; seed <= seeds; ++seed) {
             circuit::gameplay::Rng rng(seed);
@@ -435,7 +434,10 @@ int main() {
             Admissions admit;
             for (Tick t = 1; t <= 60; ++t) {
                 std::vector<CommandBody> bodies;
-                if (t == 1) bodies.push_back(ticket(1, {0, 0}, 1));
+                if (t == 1) {
+                    bodies.push_back(ticket(1, {0, 0}, 1));
+                    bodies.push_back(SetGameRule{"randomTickSpeed", 0});
+                }
                 for (unsigned j = 0; t > 1 && j < (t == 2 ? 150u : 8u); ++j) {
                     const BlockPos p{static_cast<std::int32_t>(rng.bounded(14)) - 7, static_cast<std::int32_t>(rng.bounded(3)),
                                      static_cast<std::int32_t>(rng.bounded(14)) - 7};

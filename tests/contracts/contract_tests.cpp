@@ -118,6 +118,10 @@ int main() {
         const auto drained = q.drain();
         require(drained.size() == 1 && drained[0].admission == *b && q.size() == 0, "drain in admission order");
         require(!q.cancel(*b), "drained commands cannot be cancelled");
+        CommandQueue rules(8);
+        require(rules.admit(SetGameRule{"randomTickSpeed", 3}).has_value(), "a game rule is admitted");
+        for (const auto* bad : {"", "random_tick_speed", "rule1", "aVeryLongGameRuleNameThatGoesOnAndOnPastTheSixtyFourCharacterLimit"})
+            require(rules.admit(SetGameRule{bad, 0}).error() == ErrorCode::invalid_argument, std::format("rule name `{}` refused", bad));
     });
 
     suite.run("trace divergence", [] {
@@ -218,6 +222,15 @@ int main() {
             auto bad_type = encode_replay(one).value();
             bad_type[bad_type.size() - 6] = std::byte{9};
             require(decode_replay(bad_type).error() == ErrorCode::malformed_record, "an unknown ticket type is refused");
+            ReplayLog rules{"java-1.21.8", "circuit-reference-rules-v9", 1, {}, "circuit-blocks-1"};
+            rules.ticks.push_back({1, {{1, SetGameRule{"randomTickSpeed", -7}}, {2, SetGameRule{"keepInventory", 1}}}});
+            require(decode_replay(encode_replay(rules).value()).value() == rules, "game rules round-trip");
+            auto digit = encode_replay(rules).value();
+            const std::string_view keep = "keepInventory";
+            const auto at = std::ranges::search(digit, keep, {}, {}, [](char ch) { return static_cast<std::byte>(ch); });
+            require(!at.empty(), "the rule name is written");
+            at.front() = std::byte{'1'};
+            require(decode_replay(digit).error() == ErrorCode::malformed_record, "a rule name of letters only");
         }
 
         auto version_one = *bytes;

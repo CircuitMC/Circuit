@@ -83,6 +83,7 @@ private:
     std::shared_ptr<const gameplay::GameData> data_;
     contracts::Tick time_{};
     contracts::Tick started_{};
+    std::map<std::string, std::int32_t> game_rules_;
     bool failed_{};
     std::array<Level, contracts::dimension_count> levels_;
     gameplay::TicketSet tickets_;

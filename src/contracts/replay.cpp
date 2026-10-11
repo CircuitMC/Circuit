@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include <circuit/contracts/replay.hpp>
 #include <circuit/contracts/version.hpp>
+#include <algorithm>
 
 namespace circuit::contracts {
 namespace {
@@ -10,7 +11,7 @@ constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
 // block registry id; 3: stacks carry damage, player commands carry their
 // player. Commands of versions before 6 are the overworld's. Tickets of
 // versions before 7 (tags 5 and 9) read as forced squares.
-constexpr std::uint16_t format_version = 7;
+constexpr std::uint16_t format_version = 8;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -92,8 +93,9 @@ private:
 // 6 RemoveTicket, 7 PlayerUse, 8 PlayerBreak, 9 radius ticket (read only),
 // 10 SetPlayerSlot, 11 PickUp, 12 DropItem, 13 ContainerClick,
 // 14 CloseContainer, 15 PlayerDeath, 16 AddTicket, 17 PlayerPresence,
-// 18 LevelsStarted.
+// 18 LevelsStarted, 19 SetGameRule.
 std::uint8_t tag_of(const CommandBody& body) {
+    if (std::holds_alternative<SetGameRule>(body)) return 19;
     if (std::holds_alternative<AddTicket>(body)) return 16;
     if (std::holds_alternative<PlayerPresence>(body)) return 17;
     if (std::holds_alternative<LevelsStarted>(body)) return 18;
@@ -129,6 +131,10 @@ void encode_command(Writer& w, const Command& c) {
             w.stack(body.stack);
         } else if constexpr (std::is_same_v<T, RemoveEntity>) {
             w.put(body.id.value);
+        } else if constexpr (std::is_same_v<T, SetGameRule>) {
+            w.put(static_cast<std::uint8_t>(body.name.size()));
+            for (const char ch : body.name) w.put(static_cast<std::uint8_t>(ch));
+            w.put(body.value);
         } else if constexpr (std::is_same_v<T, AddTicket>) {
             w.put(body.ticket);
             w.put(body.center.x);
@@ -340,6 +346,14 @@ bool decode_command(Reader& r, Command& c) {
         return true;
     }
     case 18: c.body = LevelsStarted{}; return true;
+    case 19: {
+        SetGameRule b;
+        std::uint8_t length{};
+        if (!r.get(length) || length == 0 || length > max_game_rule_name || !r.bytes(length, b.name) || !r.get(b.value)) return false;
+        if (!std::ranges::all_of(b.name, [](char ch) { return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'); })) return false;
+        c.body = b;
+        return true;
+    }
     default: return false;
     }
 }

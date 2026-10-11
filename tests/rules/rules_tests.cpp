@@ -1069,13 +1069,38 @@ int main() {
         require(true, "every check passed");
     });
 
+    suite.run("game rules are world state", [] {
+        Sim s;
+        s.tick({SetGameRule{"randomTickSpeed", -5}, SetGameRule{"doDaylightCycle", 0}, SetGameRule{"spawnChunkRadius", 32},
+                SetGameRule{"spawnChunkRadius", 33}, SetGameRule{"doDaylightCycle", 2}, SetGameRule{"noSuchRule", 1},
+                SetGameRule{"minecartMaxSpeed", 8}});
+        const auto rejected = of_kind(s.last, TraceKind::command_rejected);
+        require(rejected.size() == 4 && rejected[0].b == static_cast<std::uint64_t>(ErrorCode::out_of_bounds)
+                    && rejected[1].b == static_cast<std::uint64_t>(ErrorCode::invalid_argument)
+                    && rejected[2].b == static_cast<std::uint64_t>(ErrorCode::invalid_argument)
+                    && rejected[3].b == static_cast<std::uint64_t>(ErrorCode::invalid_argument),
+                "bounds, booleans, unknown and experimental rules");
+        const auto d = s.oracle.dump();
+        require(d.game_rules == std::map<std::string, std::int32_t>{{"doDaylightCycle", 0}, {"randomTickSpeed", -5}, {"spawnChunkRadius", 32}},
+                "the rules set");
+        // No random ticks at speed 0 or less.
+        std::vector<CommandBody> crops;
+        for (int x = 0; x < 16; ++x)
+            for (int z = 0; z < 16; ++z) crops.push_back(place({x, 0, z}, blocks::wheat()));
+        s.tick(crops);
+        s.until(200);
+        bool grown = false;
+        for (int x = 0; x < 16; ++x)
+            for (int z = 0; z < 16; ++z) grown |= s.at({x, 0, z}).level() > 0;
+        require(!grown, "randomTickSpeed -5 ticks nothing");
+    });
+
     suite.run("crops grow only in light 9 or more", [] {
         // 16x16 wheat sealed in stone (floor, walls and roof); with a
         // glowstone in the middle, light 15 - distance reaches the crops.
-        auto fast = bundle();
-        fast.limits.random_tick_speed = 200;
         for (const bool lit : {false, true}) {
-            Sim s(fast, 5, 1);
+            Sim s(bundle(), 5, 1);
+            s.tick({SetGameRule{"randomTickSpeed", 200}});
             std::vector<CommandBody> box, crops;
             for (int x = -1; x <= 16; ++x)
                 for (int z = -1; z <= 16; ++z) {

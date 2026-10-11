@@ -45,6 +45,28 @@ contracts::Result<void> TicketSet::remove(std::uint32_t id) {
     return {};
 }
 
+contracts::Result<void> check_game_rule(const contracts::VersionBundle& bundle, const contracts::SetGameRule& rule) {
+    const auto* known = bundle.schema.game_rule(rule.name);
+    if (!known || known->experimental) return std::unexpected(ErrorCode::invalid_argument);
+    if (known->type == contracts::GameRuleType::boolean && rule.value != 0 && rule.value != 1)
+        return std::unexpected(ErrorCode::invalid_argument);
+    const auto range = game_rule_range(rule.name);
+    if (rule.value < range.min || rule.value > range.max) return std::unexpected(ErrorCode::out_of_bounds);
+    return {};
+}
+
+GameRuleRange game_rule_range(std::string_view name) noexcept {
+    if (name == "spawnChunkRadius") return {0, 32};
+    return {};
+}
+
+std::int32_t game_rule_value(const contracts::VersionBundle& bundle, const std::map<std::string, std::int32_t>& set,
+                             std::string_view name) {
+    if (const auto it = set.find(std::string(name)); it != set.end()) return it->second;
+    const auto* known = bundle.schema.game_rule(name);
+    return known ? known->default_value : 0;
+}
+
 std::vector<std::uint32_t> TicketSet::expire(Tick now, contracts::DimensionId dimension) {
     std::vector<std::uint32_t> out;
     for (auto it = tickets_.begin(); it != tickets_.end();) {
@@ -192,6 +214,12 @@ std::string first_difference(const WorldDump& a, const WorldDump& b) {
     if (a.time != b.time) return std::format("time {} != {}", a.time, b.time);
     if (a.next_entity_id != b.next_entity_id) return std::format("next_entity_id {} != {}", a.next_entity_id, b.next_entity_id);
     if (a.started != b.started) return std::format("started {} != {}", a.started, b.started);
+    if (a.game_rules != b.game_rules) {
+        for (const auto& [name, value] : a.game_rules)
+            if (!b.game_rules.contains(name) || b.game_rules.at(name) != value)
+                return std::format("game rule {}: {} != {}", name, value, b.game_rules.contains(name) ? std::to_string(b.game_rules.at(name)) : "unset");
+        return "game rules: set only in the second";
+    }
     if (a.levels.size() != b.levels.size()) return std::format("levels: {} != {}", a.levels.size(), b.levels.size());
     for (std::size_t i = 0; i < a.levels.size(); ++i) {
         const auto& la = a.levels[i];
@@ -240,6 +268,11 @@ std::uint64_t digest(const WorldDump& d) {
     h.add(d.time);
     h.add(d.next_entity_id);
     h.add(d.started);
+    h.add(d.game_rules.size());
+    for (const auto& [name, value] : d.game_rules) {
+        for (const char ch : name) h.add(static_cast<std::uint64_t>(static_cast<unsigned char>(ch)));
+        h.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(value)));
+    }
     h.add(d.levels.size());
     for (const auto& l : d.levels) {
         h.add(static_cast<std::uint64_t>(l.dimension));

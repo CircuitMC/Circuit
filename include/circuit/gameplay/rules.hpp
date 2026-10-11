@@ -14,7 +14,7 @@ namespace circuit::gameplay {
 void apply_command(RuleContext& ctx, const contracts::Command& command);
 
 void run_scheduled_tick(RuleContext& ctx, TickList list, const ScheduledTick& tick);
-// Performs random_tick_speed random ticks in one section using `stream`.
+// Performs randomTickSpeed random ticks in one section using `stream`.
 void run_random_ticks(RuleContext& ctx, ChunkPos chunk, std::int32_t section, Rng& stream);
 void run_block_event(RuleContext& ctx, const BlockEvent& event);
 void run_entity(RuleContext& ctx, EntityId id);

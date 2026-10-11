@@ -2,9 +2,11 @@
 #pragma once
 #include <circuit/contracts/errors.hpp>
 #include <circuit/contracts/ids.hpp>
+#include <algorithm>
 #include <cstdint>
 #include <map>
 #include <optional>
+#include <string>
 #include <variant>
 #include <vector>
 
@@ -207,9 +209,19 @@ struct LevelsStarted {
     bool operator==(const LevelsStarted&) const = default;
 };
 
+// A game rule of the world takes a value. The bundle's schema names the
+// rules and their types; a boolean is 0 or 1. Game rules belong to the
+// world, not to a level.
+inline constexpr std::size_t max_game_rule_name = 64;
+struct SetGameRule {
+    std::string name;
+    std::int32_t value{};
+    bool operator==(const SetGameRule&) const = default;
+};
+
 using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket,
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
-                                 PlayerDeath, PlayerPresence, LevelsStarted>;
+                                 PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.
@@ -232,6 +244,11 @@ public:
         : capacity_(capacity), next_(first_admission) {}
     Result<std::uint64_t> admit(CommandBody body, DimensionId dimension = DimensionId::overworld) {
         if (pending_.size() >= capacity_) return std::unexpected(ErrorCode::capacity_exceeded);
+        // Records store a game rule's name in at most 64 letters.
+        if (const auto* rule = std::get_if<SetGameRule>(&body);
+            rule && (rule->name.empty() || rule->name.size() > max_game_rule_name
+                     || !std::ranges::all_of(rule->name, [](char ch) { return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'); })))
+            return std::unexpected(ErrorCode::invalid_argument);
         if (next_ == UINT64_MAX) return std::unexpected(ErrorCode::counter_overflow);
         const auto id = next_++;
         pending_.emplace(id, std::pair{std::move(body), dimension});

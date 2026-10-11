@@ -344,10 +344,9 @@
             "trace/unload_reload",
             "observation/chunk_levels"
           ],
-          "note": "Typed tickets with a level, a square radius and a lifetime (minecraft.wiki \"Chunk\"). The server adds the start ticket (level 32 - spawnChunkRadius) and, per player, a loading ticket over the view distance (level 31) and a simulation ticket (level 31 - simulation distance), as observed on both official servers; /forceload adds forced tickets (level 31), which persist",
+          "note": "Typed tickets with a level, a square radius and a lifetime (minecraft.wiki \"Chunk\"). The server adds the start ticket (level 32 - spawnChunkRadius, none at 0; it follows /gamerule) and, per player, a loading ticket over the view distance (level 31) and a simulation ticket (level 31 - simulation distance), as observed on both official servers; /forceload adds forced tickets (level 31), which persist",
           "deviations": [
-            "post-teleport, portal, ender pearl and dragon tickets have their types and levels but nothing creates them yet",
-            "spawnChunkRadius is fixed at 2 until game rules are world state"
+            "post-teleport, portal, ender pearl and dragon tickets have their types and levels but nothing creates them yet"
           ]
         },
         {
@@ -2005,12 +2004,16 @@
           "id": "gamerules",
           "name": "Game rules",
           "milestone": "C9",
-          "impl": "data_only",
-          "evidence": "reference_only",
+          "impl": "partial",
+          "evidence": "compared",
           "cases": [
-            "registries/official"
+            "registries/official",
+            "observation/gamerule_command"
           ],
-          "note": "Each bundle lists its game rules with their types and defaults (55 for 1.21.8, 52 for 1.21.4, and the experimental minecartMaxSpeed); scenarios may name a rule at its default; no rule has behavior and /gamerule does not exist"
+          "note": "Each bundle lists its game rules with their types and defaults (55 for 1.21.8, 52 for 1.21.4, and the experimental minecartMaxSpeed). Rules are world state: a logged command sets them within the official bounds, checkpoints keep them, and /gamerule queries and sets them with the official replies",
+          "deviations": [
+            "only randomTickSpeed (random ticks) and spawnChunkRadius (the spawn chunks) have behavior; the other rules are kept but change nothing"
+          ]
         },
         {
           "id": "scoreboard_and_teams",
