@@ -3,6 +3,7 @@
 #include "world_codec.hpp"
 #include <algorithm>
 #include <bit>
+#include <charconv>
 #include <circuit/evidence/content.hpp>
 #include <circuit/protocol/content.hpp>
 #include <circuit/protocol/framing.hpp>
@@ -484,6 +485,35 @@ private:
         if (time < 0) return std::unexpected("level.dat: negative time");
         time_ = static_cast<std::uint64_t>(time);
         report().time = time_;
+        const auto day = integer(*level, "DayTime").value_or(0);
+        if (day < 0) return std::unexpected("level.dat: negative day time");
+        result_.state.day_time = day;
+        // Game rules are strings; the state keeps those away from their defaults.
+        if (const auto* rules = child(*level, "GameRules", TagType::compound)) {
+            std::size_t ignored = 0;
+            for (std::size_t i = 0; i < rules->keys().size(); ++i) {
+                const auto& name = rules->keys()[i];
+                const auto* rule = bundle_.schema.game_rule(name);
+                if (!rule || rule->experimental || rules->items()[i].type() != TagType::string) {
+                    ++ignored;
+                    continue;
+                }
+                const auto& value = rules->items()[i].text();
+                std::int32_t v{};
+                bool valid = true;
+                if (rule->type == contracts::GameRuleType::boolean) {
+                    valid = value == "true" || value == "false";
+                    v = value == "true" ? 1 : 0;
+                } else {
+                    const auto [end, ec] = std::from_chars(value.data(), value.data() + value.size(), v);
+                    valid = ec == std::errc{} && end == value.data() + value.size();
+                }
+                if (!valid || !gameplay::check_game_rule(bundle_, {name, v}))
+                    return std::unexpected(std::format("level.dat: game rule {} has the invalid value {}", name, value));
+                if (v != rule->default_value) result_.state.game_rules[name] = v;
+            }
+            if (ignored > 0) note(std::format("{} game rules the version does not have were ignored", ignored));
+        }
         if (const auto* gen = child(*level, "WorldGenSettings", TagType::compound)) report().seed = static_cast<std::uint64_t>(integer(*gen, "seed").value_or(0));
         // SpawnY is where players' feet are; Circuit keeps the block below.
         report().spawn = {static_cast<std::int32_t>(integer(*level, "SpawnX").value_or(0)),
@@ -1147,7 +1177,15 @@ private:
         data.set("Version", std::move(version));
         data.set("LevelName", Tag::string(options_.level_name));
         data.set("Time", Tag::long_(static_cast<std::int64_t>(world_.time)));
-        data.set("DayTime", Tag::long_(6000));
+        data.set("DayTime", Tag::long_(world_.day_time));
+        auto rules = Tag::compound();
+        for (const auto& rule : bundle_.schema.game_rules) {
+            if (rule.experimental) continue;
+            const auto v = gameplay::game_rule_value(bundle_, world_.game_rules, rule.name);
+            rules.set(std::string(rule.name),
+                      Tag::string(rule.type == contracts::GameRuleType::boolean ? (v != 0 ? "true" : "false") : std::to_string(v)));
+        }
+        data.set("GameRules", std::move(rules));
         data.set("GameType", Tag::int_(1));
         data.set("allowCommands", Tag::boolean(true));
         data.set("hardcore", Tag::boolean(false));

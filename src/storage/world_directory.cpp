@@ -11,14 +11,15 @@
 namespace circuit::storage {
 namespace {
 constexpr std::string_view manifest_file = "manifest";
-// Log segments: "CIRCWAL" and a format byte. 4: game rule changes; 3 (read
-// only): typed tickets, presences; 2 (read only): commands name their level;
-// 1 (read only): overworld commands, stacks with data components; 0 (read
-// only): stacks without components. The record encoding of formats 2 to 4 is
-// the same; a format 2 record holds no command of tags 16-19, a format 3
-// record none of tag 19.
+// Log segments: "CIRCWAL" and a format byte. 5: day time; 4 (read only): game
+// rule changes; 3 (read only): typed tickets, presences; 2 (read only):
+// commands name their level; 1 (read only): overworld commands, stacks with
+// data components; 0 (read only): stacks without components. The record
+// encoding of formats 2 to 5 is the same; a format 2 record holds no command
+// of tags 16-20, a format 3 record none of tags 19-20, a format 4 record none
+// of tag 20.
 constexpr std::string_view segment_prefix{"CIRCWAL", 7};
-constexpr char segment_format = 4;
+constexpr char segment_format = 5;
 constexpr std::size_t segment_magic_size = 8;
 constexpr std::size_t max_record = std::size_t{64} << 20;
 

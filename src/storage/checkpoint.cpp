@@ -17,6 +17,7 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 11: the world's day time;
 // 10: the world's game rules set by commands;
 // 9: columns carry the tick their pending ticks wait from (saved) and the
 // tick they run again after a reload (versions before 9: saved columns wait
@@ -34,7 +35,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 10;
+constexpr std::uint32_t version = 11;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -165,6 +166,7 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
     w.varlong(static_cast<std::int64_t>(s.started));
     w.varint(static_cast<std::int32_t>(s.game_rules.size()));
     for (const auto& [name, value] : s.game_rules) w.string(name, 64).i32(value);
+    w.varlong(s.day_time);
     w.varint(static_cast<std::int32_t>(s.levels.size()));
     for (std::size_t k = 0; k < s.levels.size(); ++k)
         encode_level(w, s.levels[k], [&](std::size_t i) { return blocks(k, i); });
@@ -392,6 +394,7 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
                 }
             }
         }
+        if (b.version >= 11 && !b.get(b.r.varlong(), s.day_time)) return false;
         if (!b.count(levels, 4)) return false;
         for (std::size_t k = 0; k < levels; ++k) {
             std::uint8_t dimension{};

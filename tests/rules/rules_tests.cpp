@@ -1095,6 +1095,22 @@ int main() {
         require(!grown, "randomTickSpeed -5 ticks nothing");
     });
 
+    suite.run("the day time advances after the commands while doDaylightCycle is on", [] {
+        Sim s;
+        s.tick({});
+        require(s.oracle.dump().day_time == static_cast<std::int64_t>(s.oracle.time()), "a new world's day starts with it");
+        s.tick({SetDayTime{1000}});
+        require(s.oracle.dump().day_time == 1001, "set, then advanced in the same tick");
+        s.tick({SetGameRule{"doDaylightCycle", 0}, SetDayTime{-1}});
+        require(of_kind(s.last, TraceKind::command_rejected).size() == 1 && s.oracle.dump().day_time == 1001,
+                "stopped in the tick the rule changes; a negative time is refused");
+        s.tick({SetDayTime{4294967318}});
+        s.until(s.oracle.dump().time + 20);
+        require(s.oracle.dump().day_time == 4294967318, "frozen");
+        s.tick({SetGameRule{"doDaylightCycle", 1}});
+        require(s.oracle.dump().day_time == 4294967319, "advancing again");
+    });
+
     suite.run("crops grow only in light 9 or more", [] {
         // 16x16 wheat sealed in stone (floor, walls and roof); with a
         // glowstone in the middle, light 15 - distance reaches the crops.
@@ -1166,6 +1182,7 @@ int main() {
                 "rejected as out of bounds");
         auto after = s.oracle.dump();
         after.time = before.time;
+        after.day_time = before.day_time;
         for (auto& l : after.levels) l.last_active = before.level(l.dimension).last_active;
         require(after == before, "no world mutation");
         // Valid endpoints: the lowest and highest positions inside the world height.

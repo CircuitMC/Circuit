@@ -156,6 +156,8 @@ fs::path hand_made_world(const fs::path& dir, std::vector<std::pair<ChunkPos, Ta
 // A hopper's last tick only matters within a tick and is not saved.
 struct Kept {
     Tick time{};
+    std::int64_t day_time{};
+    std::map<std::string, std::int32_t> game_rules;
     std::vector<ChunkPos> chunks;
     std::vector<std::pair<BlockPos, std::uint32_t>> blocks;
     std::vector<std::pair<BlockPos, BlockEntity>> block_entities;
@@ -165,7 +167,7 @@ struct Kept {
 };
 Kept kept(const WorldDump& world) {
     const auto& d = world.overworld();
-    Kept k{world.time, {}, d.blocks, d.block_entities, {}, {}};
+    Kept k{world.time, world.day_time, world.game_rules, {}, d.blocks, d.block_entities, {}, {}};
     for (const auto& c : d.chunks) k.chunks.push_back(c.pos);
     for (auto& [pos, be] : k.block_entities) {
         be.order = 0;
@@ -179,6 +181,8 @@ Kept kept(const WorldDump& world) {
 }
 std::string describe(const Kept& a, const Kept& b) {
     if (a.time != b.time) return "time";
+    if (a.day_time != b.day_time) return std::format("day time {} vs {}", a.day_time, b.day_time);
+    if (a.game_rules != b.game_rules) return "game rules";
     if (a.chunks != b.chunks) return std::format("chunks {} vs {}", a.chunks.size(), b.chunks.size());
     if (a.blocks != b.blocks) {
         for (std::size_t i = 0; i < std::min(a.blocks.size(), b.blocks.size()); ++i)
@@ -432,6 +436,33 @@ int main() {
         };
         expect_error(hand_made_world(root / "old", {{{0, 0}, good}}, level_dat(4189)), "DataVersion 4189", "older world");
         expect_error(root / "missing", "not a world directory", "missing directory");
+        // Day time and game rules: kept when valid, rules the version lacks ignored.
+        const auto with_rules = [](std::vector<std::pair<std::string, std::string>> rules, std::int64_t day) {
+            auto level = level_dat();
+            auto data = *level.find("Data");
+            data.set("DayTime", Tag::long_(day));
+            auto tag = Tag::compound();
+            for (auto& [name, value] : rules) tag.set(name, Tag::string(value));
+            data.set("GameRules", std::move(tag));
+            level.set("Data", std::move(data));
+            return level;
+        };
+        {
+            const auto dir = hand_made_world(root / "rules", {{{0, 0}, good}},
+                                             with_rules({{"doDaylightCycle", "false"}, {"randomTickSpeed", "3"}, {"spawnChunkRadius", "5"},
+                                                         {"someModRule", "x"}, {"minecartMaxSpeed", "8"}},
+                                                        4294967318));
+            const auto r = anvil::import_world(dir, bundle());
+            require(r && r->state.day_time == 4294967318
+                        && r->state.game_rules == std::map<std::string, std::int32_t>{{"doDaylightCycle", 0}, {"spawnChunkRadius", 5}}
+                        && std::ranges::any_of(r->report.notes, [](const std::string& n) { return n.starts_with("2 game rules"); }),
+                    "day time and game rules imported");
+        }
+        expect_error(hand_made_world(root / "rule-bounds", {{{0, 0}, good}}, with_rules({{"spawnChunkRadius", "33"}}, 0)),
+                     "game rule spawnChunkRadius has the invalid value 33", "a rule out of bounds");
+        expect_error(hand_made_world(root / "rule-bool", {{{0, 0}, good}}, with_rules({{"keepInventory", "1"}}, 0)),
+                     "game rule keepInventory has the invalid value 1", "a boolean rule");
+        expect_error(hand_made_world(root / "day", {{{0, 0}, good}}, with_rules({}, -1)), "negative day time", "a negative day time");
         {
             auto bad = good;
             bad.set("xPos", Tag::int_(5));

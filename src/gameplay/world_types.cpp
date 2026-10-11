@@ -60,6 +60,12 @@ GameRuleRange game_rule_range(std::string_view name) noexcept {
     return {};
 }
 
+void set_game_rule(const contracts::VersionBundle& bundle, std::map<std::string, std::int32_t>& set, const contracts::SetGameRule& rule) {
+    const auto* known = bundle.schema.game_rule(rule.name);
+    if (known && known->default_value == rule.value) set.erase(rule.name);
+    else set[rule.name] = rule.value;
+}
+
 std::int32_t game_rule_value(const contracts::VersionBundle& bundle, const std::map<std::string, std::int32_t>& set,
                              std::string_view name) {
     if (const auto it = set.find(std::string(name)); it != set.end()) return it->second;
@@ -220,6 +226,7 @@ std::string first_difference(const WorldDump& a, const WorldDump& b) {
                 return std::format("game rule {}: {} != {}", name, value, b.game_rules.contains(name) ? std::to_string(b.game_rules.at(name)) : "unset");
         return "game rules: set only in the second";
     }
+    if (a.day_time != b.day_time) return std::format("day time {} != {}", a.day_time, b.day_time);
     if (a.levels.size() != b.levels.size()) return std::format("levels: {} != {}", a.levels.size(), b.levels.size());
     for (std::size_t i = 0; i < a.levels.size(); ++i) {
         const auto& la = a.levels[i];
@@ -273,6 +280,7 @@ std::uint64_t digest(const WorldDump& d) {
         for (const char ch : name) h.add(static_cast<std::uint64_t>(static_cast<unsigned char>(ch)));
         h.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(value)));
     }
+    h.add(static_cast<std::uint64_t>(d.day_time));
     h.add(d.levels.size());
     for (const auto& l : d.levels) {
         h.add(static_cast<std::uint64_t>(l.dimension));

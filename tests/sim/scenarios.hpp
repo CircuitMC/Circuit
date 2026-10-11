@@ -502,6 +502,10 @@ inline Scenario crop_light_scenario() {
             c.push_back(place({12, 0, 11}, blocks::lever()));
             c.push_back(SetGameRule{"randomTickSpeed", 30});
         }
+        // The day time: set, frozen for a while, then advancing again.
+        if (t == 5) c.push_back(SetDayTime{13000});
+        if (t == 40) c.push_back(SetGameRule{"doDaylightCycle", 0});
+        if (t == 90) c.push_back(SetGameRule{"doDaylightCycle", 1});
         if (t == 120) c.push_back(use_lever({12, 0, 11}));
         return c;
     }, 20};

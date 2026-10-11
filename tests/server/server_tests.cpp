@@ -5,6 +5,7 @@
 #include "../support/check.hpp"
 #include "test_client.hpp"
 #include "../../src/server/collision_shapes.hpp"
+#include "../../src/server/command_reader.hpp"
 #include "../../src/server/game.hpp"
 #include "../../src/server/server_data.hpp"
 #include <circuit/gameplay/items.hpp>
@@ -280,6 +281,22 @@ std::vector<std::string> error_contexts(Recorder& r, const server::Wire& wire) {
             else text += part.find("text")->text();
         }
         out.push_back(std::move(text));
+    }
+    return out;
+}
+
+// The set_time packets a player got: world age, day time, advancing.
+std::vector<std::tuple<std::int64_t, std::int64_t, bool>> time_packets(Recorder& r, const server::Wire& wire) {
+    const auto id = wire.ids().id(State::play, Bound::clientbound, "set_time");
+    std::vector<std::tuple<std::int64_t, std::int64_t, bool>> out;
+    std::lock_guard lock(r.mutex);
+    for (const auto& bytes : r.packets) {
+        auto p = protocol::open_packet(bytes);
+        if (!p || p->id != id) continue;
+        protocol::Reader in(p->fields);
+        const auto age = in.i64().value();
+        const auto day = in.i64().value();
+        out.emplace_back(age, day, in.boolean().value());
     }
     return out;
 }
@@ -991,6 +1008,73 @@ int main() {
             f.game->submit(1, server::Intent{server::intent::Command{"gamerule spawnChunkRadius"}});
             f.game->tick();
             require(feedback(*peer, f.wire).back() == "commands.gamerule.query spawnChunkRadius 3", "queried after the restart");
+        }
+        std::filesystem::remove_all(dir);
+    });
+
+    suite.run("the command reader reads arguments as the official parser", [] {
+        using server::CommandReader;
+        const auto ticks = [](std::string_view text) {
+            CommandReader r(text, 0);
+            const auto t = r.time();
+            return t ? std::format("{} at {}", *t, r.cursor()) : std::format("{} at {}", t.error().key, t.error().cursor);
+        };
+        // What both official servers made of /time set <text>.
+        for (const auto& [text, expected] : std::vector<std::pair<std::string_view, std::string>>{
+                 {"1.5", "2 at 3"}, {"2.5", "3 at 3"}, {"0.4t", "0 at 4"}, {"-0.4", "0 at 4"}, {".5d", "12000 at 3"},
+                 {"0.5s", "10 at 4"}, {"0.0001d", "2 at 7"}, {"16777217", "16777216 at 8"}, {"99999999999", "2147483647 at 11"},
+                 {"100000d", "2147483647 at 7"}, {"-99999999999", "argument.time.tick_count_too_low at 12"},
+                 {"-5", "argument.time.tick_count_too_low at 2"}, {"1e3", "argument.time.invalid_unit at 3"},
+                 {"5dd", "argument.time.invalid_unit at 3"}, {"abc", "parsing.float.expected at 0"},
+                 {"1.2.3", "parsing.float.invalid at 0"}, {"\"5\"", "parsing.float.expected at 0"}, {"5\"", "5 at 1"}})
+            require(ticks(text) == expected, std::format("{}: {}", text, ticks(text)));
+        CommandReader quoted("'a\\qb'", 0);
+        const auto escape = quoted.boolean();
+        require(!escape && escape.error().key == "parsing.quote.escape" && escape.error().cursor == 3, "an invalid escape");
+        CommandReader spaced("x ", 1);
+        require(spaced.end()->key == "command.unknown.argument" && spaced.end()->cursor == 1, "a trailing space");
+    });
+
+    suite.run("the day time advances, is set with /time, sent to players and persists", [] {
+        const auto dir = temporary_directory();
+        auto config = offline_config();
+        config.world_directory = dir / "world";
+        {
+            GameFixture f(config);
+            auto peer = f.join(1, "Clock");
+            for (int i = 0; i < 45; ++i) f.game->tick();
+            // On joining, then before every tick whose number is a multiple of 20.
+            auto packets = time_packets(*peer, f.wire);
+            require(packets.size() == 3, std::format("{} set_time packets", packets.size()));
+            for (const auto& [age, day, advancing] : packets)
+                require(day == age && advancing, std::format("a new world's day time is its age: {} {}", age, day));
+            require(std::get<0>(packets[1]) == 19 && std::get<0>(packets[2]) == 39, "periodic at ages 19 and 39");
+            using I = server::Intent;
+            const auto age = static_cast<std::int64_t>(f.game->engine().time());
+            for (const auto* command : {"time set 1000", "time add 1d", "time query daytime", "time query day", "time set 2x"})
+                f.game->submit(1, I{server::intent::Command{command}});
+            f.game->tick();
+            packets = time_packets(*peer, f.wire);
+            require(packets.size() == 5 && packets[3] == std::tuple{age, std::int64_t{1000}, true}
+                        && packets[4] == std::tuple{age, std::int64_t{25000}, true},
+                    "each change is sent at once");
+            const std::vector<std::string> expected{"commands.time.set 1000", "commands.time.set 1000", "commands.time.query 1000",
+                                                    "commands.time.query 1", "argument.time.invalid_unit"};
+            const auto got = feedback(*peer, f.wire);
+            require(got == expected, std::format("{} messages: {}", got.size(), got.empty() ? "" : got.back()));
+            require(f.game->engine().day_time() == 25001, "set, then advanced in the tick");
+            f.game->submit(1, I{server::intent::Command{"gamerule doDaylightCycle false"}});
+            for (int i = 0; i < 20; ++i) f.game->tick();
+            require(f.game->engine().day_time() == 25001, "frozen");
+            require(!std::get<2>(time_packets(*peer, f.wire).back()), "sent as not advancing");
+        }
+        {
+            GameFixture f(config);
+            f.game->tick();
+            require(f.game->engine().day_time() == 25001, "the day time persists");
+            const auto age = static_cast<std::int64_t>(f.game->engine().time());
+            auto peer = f.join(1, "Clock");
+            require(time_packets(*peer, f.wire).front() == std::tuple{age, std::int64_t{25001}, false}, "sent on joining");
         }
         std::filesystem::remove_all(dir);
     });

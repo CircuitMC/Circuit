@@ -225,7 +225,10 @@ void Oracle::advance(const std::vector<contracts::Command>& commands) {
             started_ = time_ - 1;
         } else if (const auto* rule = std::get_if<contracts::SetGameRule>(&c.body)) {
             ticket_result = check_game_rule(bundle_, *rule);
-            if (ticket_result) game_rules_[rule->name] = rule->value;
+            if (ticket_result) set_game_rule(bundle_, game_rules_, *rule);
+        } else if (const auto* day = std::get_if<contracts::SetDayTime>(&c.body)) {
+            if (day->time < 0) ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
+            else day_time_ = day->time;
         } else {
             apply_command(*ctx_, c);
             continue;
@@ -233,6 +236,7 @@ void Oracle::advance(const std::vector<contracts::Command>& commands) {
         if (ticket_result) ctx_->record(TraceKind::command_applied, {}, c.admission, 0, 0);
         else ctx_->record(TraceKind::command_rejected, {}, c.admission, static_cast<std::uint64_t>(ticket_result.error()), 0);
     }
+    if (game_rule_value(bundle_, game_rules_, "doDaylightCycle") != 0) ++day_time_;
     // Each level runs its phases, in level order: the scheduled ticks of its
     // loaded chunks, then its chunk stage (tickets expire and chunk levels
     // change), then the rest where chunks are loaded.
@@ -401,6 +405,7 @@ WorldDump Oracle::dump() const {
     d.next_entity_id = next_entity_id_;
     d.started = started_;
     d.game_rules = game_rules_;
+    d.day_time = day_time_;
     for (const auto level : contracts::level_order) {
         const auto& lv = levels_[static_cast<std::size_t>(level)];
         if (lv.chunks.empty() && lv.presences.empty() && lv.last_active == 0) continue;

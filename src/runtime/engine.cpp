@@ -246,6 +246,8 @@ void Engine::Impl::advance(const std::vector<Command>& commands) {
     start.clear();
     for (const auto& [c, data] : world.loaded) start.emplace(c, data->sections);
     timed(Phase::commands, [&] { command_phase(commands); });
+    // The day time advances before the levels run (both official servers).
+    if (gameplay::game_rule_value(bundle, world.game_rules, "doDaylightCycle") != 0) ++world.day_time;
     // Then each level, in level order, runs its phases: the scheduled ticks
     // of its loaded chunks, its chunk stage, and the rest where chunks are
     // loaded.
@@ -361,7 +363,10 @@ void Engine::Impl::command_phase(const std::vector<Command>& commands) {
             world.started = world.time - 1;
         } else if (const auto* rule = std::get_if<contracts::SetGameRule>(&c.body)) {
             ticket_result = gameplay::check_game_rule(bundle, *rule);
-            if (ticket_result) world.game_rules[rule->name] = rule->value;
+            if (ticket_result) gameplay::set_game_rule(bundle, world.game_rules, *rule);
+        } else if (const auto* day = std::get_if<contracts::SetDayTime>(&c.body)) {
+            if (day->time < 0) ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
+            else world.day_time = day->time;
         } else {
             gameplay::apply_command(ctx, c);
             continue;
@@ -907,6 +912,7 @@ void fill_dump(const WorldStore& world, const contracts::VersionBundle& bundle, 
     d.next_entity_id = world.next_entity_id;
     d.started = world.started;
     d.game_rules = world.game_rules;
+    d.day_time = world.day_time;
     std::map<DimensionId, std::vector<std::pair<std::uint64_t, BlockEvent>>> events;
     const auto add = [&](const ChunkData& data, ChunkLevel level) {
         auto& l = d.level(data.dimension);
@@ -996,6 +1002,8 @@ void Engine::Impl::restore(const WorldDump& state) {
     for (const auto& [name, value] : state.game_rules)
         if (!gameplay::check_game_rule(bundle, {name, value})) bad("game rule");
     world.game_rules = state.game_rules;
+    if (state.day_time < 0) bad("day time");
+    world.day_time = state.day_time;
     // Valid entity stacks; entities of every level are checked against the
     // global id counter.
     const auto valid_speed = [](std::int64_t v) { return v >= -gameplay::max_entity_speed && v <= gameplay::max_entity_speed; };
@@ -1102,6 +1110,7 @@ void Engine::Impl::restore(const WorldDump& state) {
 Engine::~Engine() = default;
 void Engine::advance(const std::vector<Command>& commands) { impl_->advance(commands); }
 contracts::Tick Engine::time() const noexcept { return impl_->world.time; }
+std::int64_t Engine::day_time() const noexcept { return impl_->world.day_time; }
 const std::vector<TraceRecord>& Engine::trace() const noexcept { return impl_->trace; }
 WorldDump Engine::dump() const { return impl_->dump(); }
 const EngineStats& Engine::stats() const noexcept { return impl_->stats; }

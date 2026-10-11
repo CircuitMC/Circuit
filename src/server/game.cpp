@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "game.hpp"
+#include "command_reader.hpp"
 #include "extensions.hpp"
 #include "log.hpp"
 #include "movement.hpp"
@@ -254,6 +255,8 @@ struct Game::Impl final : GameServices {
     std::map<ChunkPos, std::uint32_t> forced; // the overworld's force-loaded chunks and their tickets
     // The world's game rules as set, including changes admitted this tick.
     std::map<std::string, std::int32_t> rules;
+    // A day time admitted for the coming tick.
+    std::optional<std::int64_t> pending_day_time;
     std::int32_t next_entity_id{1};
     std::unordered_map<std::uint64_t, Tracked> tracked;
     std::int32_t dimension_type{};
@@ -594,7 +597,7 @@ struct Game::Impl final : GameServices {
         send_vitals(p);
         peer.send(wire.empty_commands());
         peer.send(wire.spawn_position(wire_pos({meta.spawn.x, meta.spawn.y + 1, meta.spawn.z}), 0.0f));
-        peer.send(wire.set_time(static_cast<std::int64_t>(engine->time()), 6000, false));
+        peer.send(time_packet());
         // Everyone sees the newcomer; the newcomer sees everyone.
         std::vector<PlayerListEntry> all;
         for (const auto& [id, other] : players) all.push_back(entry(other));
@@ -1476,7 +1479,8 @@ struct Game::Impl final : GameServices {
             std::string extra;
             for (const auto& [name, usage] : extensions->commands()) extra += std::format(", /{}{}{}", name, usage.empty() ? "" : " ", usage);
             message(p, "Commands: /help, /players, /tp [<own name>] <x> <y> <z>, /gamemode <survival|creative|spectator>, "
-                       "/forceload add|remove <x> <z> [<x> <z>], /forceload remove all, /forceload query [<x> <z>], /gamerule <rule> [<value>], /tps" + extra);
+                       "/forceload add|remove <x> <z> [<x> <z>], /forceload remove all, /forceload query [<x> <z>], /gamerule <rule> [<value>], "
+                       "/time set|add <time>, /time query daytime|gametime|day, /tps" + extra);
         } else if (args[0] == "players") {
             std::string names;
             for (const auto& [id, o] : players) names += (names.empty() ? "" : ", ") + o.name;
@@ -1513,6 +1517,8 @@ struct Game::Impl final : GameServices {
             forceload(p, std::span(args).subspan(1));
         } else if (args[0] == "gamerule" && c.text.starts_with("gamerule")) {
             gamerule(p, c.text);
+        } else if (args[0] == "time" && c.text.starts_with("time")) {
+            time(p, c.text);
         } else if (args[0] == "tps") {
             message(p, std::format("tick {}", engine->time()));
         } else if (const auto reply = extensions->command(p.name, args[0], std::span(args).subspan(1))) {
@@ -1533,97 +1539,96 @@ struct Game::Impl final : GameServices {
     }
 
     // `/gamerule <rule> [<value>]`: queries or sets a game rule of the
-    // version. The input is read as both official servers read it: the rule's
-    // name, then for an integer rule the characters 0-9, '.' and '-' (only
-    // spawnChunkRadius is bounded, 0-32), for a boolean rule true or false,
-    // bare or quoted ("" or ''), then the end or a space before nothing else.
-    // A mistake is reported with the official key and context.
+    // version: an integer (only spawnChunkRadius is bounded, 0-32) or a
+    // boolean, read as both official servers read them (command_reader.hpp).
     void gamerule(Player& p, std::string_view input) {
-        const auto size = input.size();
-        std::size_t at = std::string_view("gamerule").size();
-        if (at == size) return syntax_error(p, input, at, "command.unknown.command");
-        // A space is read only when something follows it.
-        if (size - at < 2) return syntax_error(p, input, at, "command.unknown.argument");
-        ++at;
-        const auto name = input.substr(at, std::min(input.find(' ', at), size) - at);
+        CommandReader r(input, std::string_view("gamerule").size());
+        if (r.done()) return syntax_error(p, input, r.incomplete());
+        if (auto e = r.child()) return syntax_error(p, input, *e);
+        const auto name = r.word();
         const auto* rule = bundle.schema.game_rule(name);
-        if (name.empty() || !rule || rule->experimental) return syntax_error(p, input, at, "command.unknown.argument");
-        at += name.size();
+        if (name.empty() || !rule || rule->experimental) return syntax_error(p, input, r.error("command.unknown.argument"));
+        r.skip(name.size());
         const bool boolean = rule->type == contracts::GameRuleType::boolean;
         const auto text = [&](std::int32_t v) { return boolean ? std::string(v != 0 ? "true" : "false") : std::to_string(v); };
-        if (at == size)
+        if (r.done())
             return send_translation(p, "commands.gamerule.query",
-                                    strings({std::string(name), text(gameplay::game_rule_value(bundle, rules, name))}));
-        if (size - at < 2) return syntax_error(p, input, at, "command.unknown.argument");
-        ++at;
-        const auto start = at;
+                                    string_arguments({std::string(name), text(gameplay::game_rule_value(bundle, rules, name))}));
+        if (auto e = r.child()) return syntax_error(p, input, *e);
         std::int32_t value{};
         if (boolean) {
-            std::string word;
-            if (const char quote = input[at]; quote == '"' || quote == '\'') {
-                bool closed = false, escaped = false;
-                for (++at; at < size && !closed; ++at) {
-                    const char ch = input[at];
-                    if (escaped) {
-                        if (ch != quote && ch != '\\') return syntax_error(p, input, at, "parsing.quote.escape", strings({std::string(1, ch)}));
-                        word += ch;
-                        escaped = false;
-                    } else if (ch == '\\') {
-                        escaped = true;
-                    } else if (ch == quote) {
-                        closed = true;
-                    } else {
-                        word += ch;
-                    }
-                }
-                if (!closed) return syntax_error(p, input, size, "parsing.quote.expected.end");
-            } else {
-                const auto unquoted = [](char ch) {
-                    return std::isalnum(static_cast<unsigned char>(ch)) || ch == '_' || ch == '-' || ch == '.' || ch == '+';
-                };
-                while (at < size && unquoted(input[at])) word += input[at++];
-            }
-            if (word.empty()) return syntax_error(p, input, at, "parsing.bool.expected");
-            if (word != "true" && word != "false") return syntax_error(p, input, start, "parsing.bool.invalid", strings({word}));
-            value = word == "true" ? 1 : 0;
+            const auto b = r.boolean();
+            if (!b) return syntax_error(p, input, b.error());
+            value = *b ? 1 : 0;
         } else {
-            while (at < size && (std::isdigit(static_cast<unsigned char>(input[at])) || input[at] == '.' || input[at] == '-')) ++at;
-            const auto number = input.substr(start, at - start);
-            if (number.empty()) return syntax_error(p, input, start, "parsing.int.expected");
-            const auto [end, ec] = std::from_chars(number.data(), number.data() + number.size(), value);
-            if (ec != std::errc{} || end != number.data() + number.size())
-                return syntax_error(p, input, start, "parsing.int.invalid", strings({std::string(number)}));
             const auto range = gameplay::game_rule_range(name);
-            const auto bounds = [&](std::int32_t limit) {
-                auto with = nbt::Tag::list(nbt::TagType::int_);
-                with.push(nbt::Tag::int_(limit));
-                with.push(nbt::Tag::int_(value));
-                return with;
-            };
-            if (value < range.min) return syntax_error(p, input, start, "argument.integer.low", bounds(range.min));
-            if (value > range.max) return syntax_error(p, input, start, "argument.integer.big", bounds(range.max));
+            const auto v = r.integer(range.min, range.max);
+            if (!v) return syntax_error(p, input, v.error());
+            value = *v;
         }
-        if (at < size) {
-            if (input[at] != ' ') return syntax_error(p, input, at, "command.expected.separator");
-            return syntax_error(p, input, size - at < 2 ? at : at + 1, "command.unknown.argument");
-        }
+        if (auto e = r.end()) return syntax_error(p, input, *e);
         const contracts::SetGameRule set{std::string(name), value};
         if (!gameplay::check_game_rule(bundle, set)) return; // the reading above refuses every invalid value
         admit(set);
         const auto before = gameplay::game_rule_value(bundle, rules, name);
-        rules[set.name] = value;
+        gameplay::set_game_rule(bundle, rules, set);
         // The spawn chunks follow their radius in the same tick.
         if (name == "spawnChunkRadius" && value != before) {
             if (before > 0) admit(contracts::RemoveTicket{spawn_ticket}, overworld);
             add_start_ticket();
         }
-        send_translation(p, "commands.gamerule.set", strings({set.name, text(value)}));
+        send_translation(p, "commands.gamerule.set", string_arguments({set.name, text(value)}));
     }
 
-    static nbt::Tag strings(std::vector<std::string> values) {
-        auto list = nbt::Tag::list(nbt::TagType::string);
-        for (auto& v : values) list.push(nbt::Tag::string(std::move(v)));
-        return list;
+    // The day time with the commands of the coming tick applied.
+    std::int64_t day_time() const { return pending_day_time.value_or(engine->day_time()); }
+    bool daylight_cycle() const { return gameplay::game_rule_value(bundle, rules, "doDaylightCycle") != 0; }
+    Bytes time_packet() const { return wire.set_time(static_cast<std::int64_t>(engine->time()), day_time(), daylight_cycle()); }
+
+    // `/time set <time>|day|noon|night|midnight`, `/time add <time>` and
+    // `/time query daytime|gametime|day`, as both official servers answer
+    // them. A change applies before the coming tick advances the day and is
+    // sent to every player at once.
+    void time(Player& p, std::string_view input) {
+        CommandReader r(input, std::string_view("time").size());
+        if (r.done()) return syntax_error(p, input, r.incomplete());
+        if (auto e = r.child()) return syntax_error(p, input, *e);
+        const auto action = r.word();
+        if (action != "set" && action != "add" && action != "query") return syntax_error(p, input, r.error("command.unknown.argument"));
+        r.skip(action.size());
+        if (r.done()) return syntax_error(p, input, r.incomplete());
+        if (auto e = r.child()) return syntax_error(p, input, *e);
+        constexpr std::int64_t day = 24000, int_max = INT32_MAX;
+        if (action == "query") {
+            const auto what = r.word();
+            std::int64_t value{};
+            if (what == "daytime") value = day_time() % day;
+            else if (what == "gametime") value = static_cast<std::int64_t>(engine->time() % int_max);
+            else if (what == "day") value = day_time() / day % int_max;
+            else return syntax_error(p, input, r.error("command.unknown.argument"));
+            r.skip(what.size());
+            if (auto e = r.end()) return syntax_error(p, input, *e);
+            return send_translation(p, "commands.time.query", int_arguments({static_cast<std::int32_t>(value)}));
+        }
+        std::int64_t value{};
+        std::int32_t reply{};
+        static constexpr std::pair<std::string_view, std::int32_t> markers[]{{"day", 1000}, {"noon", 6000}, {"night", 13000}, {"midnight", 18000}};
+        const auto marker = std::ranges::find(markers, r.word(), &std::pair<std::string_view, std::int32_t>::first);
+        if (action == "set" && marker != std::end(markers)) {
+            r.skip(marker->first.size());
+            value = reply = marker->second;
+        } else {
+            const auto ticks = r.time();
+            if (!ticks) return syntax_error(p, input, ticks.error());
+            // Setting replies with the time set, adding with the new time of day.
+            value = action == "set" ? *ticks : day_time() + *ticks;
+            reply = action == "set" ? *ticks : static_cast<std::int32_t>(value % day);
+        }
+        if (auto e = r.end()) return syntax_error(p, input, *e);
+        admit(contracts::SetDayTime{value});
+        pending_day_time = value;
+        broadcast(time_packet());
+        send_translation(p, "commands.time.set", int_arguments({reply}));
     }
 
     // A translated message whose arguments are plain strings or numbers.
@@ -1640,8 +1645,8 @@ struct Game::Impl final : GameServices {
     // error in red, then the input up to where reading stopped (its last ten
     // characters, after "..." when there are more), the rest underlined and
     // "<--[HERE]", suggesting the command again when clicked.
-    void syntax_error(Player& p, std::string_view input, std::size_t cursor, std::string_view key,
-                      nbt::Tag with = nbt::Tag::list(nbt::TagType::string)) {
+    void syntax_error(Player& p, std::string_view input, CommandError error) {
+        const auto cursor = error.cursor;
         const auto plain = [](std::string_view text) {
             auto t = nbt::Tag::compound();
             t.set("text", nbt::Tag::string(std::string(text)));
@@ -1655,7 +1660,7 @@ struct Game::Impl final : GameServices {
             t.set("extra", std::move(extra));
             return t;
         };
-        p.peer->send(wire.system_chat(wrapped(translation(key, std::move(with)), "red")));
+        p.peer->send(wire.system_chat(wrapped(translation(error.key, std::move(error.with)), "red")));
         auto parts = nbt::Tag::list(nbt::TagType::compound);
         if (cursor > 10) parts.push(plain("..."));
         parts.push(plain(input.substr(cursor > 10 ? cursor - 10 : 0, std::min<std::size_t>(cursor, 10))));
@@ -2118,6 +2123,10 @@ struct Game::Impl final : GameServices {
             continue_digging();
             detect_pickups();
             send_presences();
+            // Every 20 ticks the time goes to every player, as on both
+            // official servers: before a tick whose number is a multiple of
+            // 20, after the commands that come with it.
+            if ((engine->time() + 1) % 20 == 0) broadcast(time_packet());
             advance();
         }
         publish_light();
@@ -2159,6 +2168,7 @@ struct Game::Impl final : GameServices {
             }
         }
         engine->advance(commands);
+        pending_day_time.reset();
         publish_blocks();
         publish_pickups(commands); // before the picked-up entities are removed
         publish_entities();

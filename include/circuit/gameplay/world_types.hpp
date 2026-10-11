@@ -236,6 +236,8 @@ struct GameRuleRange {
     std::int32_t min{INT32_MIN}, max{INT32_MAX};
 };
 GameRuleRange game_rule_range(std::string_view name) noexcept;
+// Applies a valid rule to the rules away from their defaults.
+void set_game_rule(const contracts::VersionBundle& bundle, std::map<std::string, std::int32_t>& set, const contracts::SetGameRule& rule);
 // A rule's value: as set, else the version's default (0 for a rule it lacks).
 std::int32_t game_rule_value(const contracts::VersionBundle& bundle, const std::map<std::string, std::int32_t>& set,
                              std::string_view name);
@@ -304,9 +306,12 @@ struct WorldDump {
     Tick time{};
     std::uint64_t next_entity_id{};
     Tick started{}; // the last LevelsStarted command's tick, less one: levels count as active then
-    // Game rules set by commands (contracts::SetGameRule); the others keep
-    // the bundle's defaults.
+    // Game rules away from the bundle's defaults (contracts::SetGameRule).
     std::map<std::string, std::int32_t> game_rules;
+    // The day time (contracts::SetDayTime): the world's, as only the
+    // overworld has a daylight cycle. It advances by one each tick after the
+    // commands while doDaylightCycle is on.
+    std::int64_t day_time{};
     std::vector<LevelDump> levels;        // ascending dimension; listed with a column, a presence or an active tick
     std::vector<Ticket> tickets;          // ascending id
     std::vector<PlayerInventory> players; // ascending player, non-empty only

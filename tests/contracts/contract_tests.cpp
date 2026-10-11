@@ -122,6 +122,8 @@ int main() {
         require(rules.admit(SetGameRule{"randomTickSpeed", 3}).has_value(), "a game rule is admitted");
         for (const auto* bad : {"", "random_tick_speed", "rule1", "aVeryLongGameRuleNameThatGoesOnAndOnPastTheSixtyFourCharacterLimit"})
             require(rules.admit(SetGameRule{bad, 0}).error() == ErrorCode::invalid_argument, std::format("rule name `{}` refused", bad));
+        require(rules.admit(SetDayTime{0}).has_value() && rules.admit(SetDayTime{-1}).error() == ErrorCode::invalid_argument,
+                "day times are not negative");
     });
 
     suite.run("trace divergence", [] {
@@ -231,6 +233,12 @@ int main() {
             require(!at.empty(), "the rule name is written");
             at.front() = std::byte{'1'};
             require(decode_replay(digit).error() == ErrorCode::malformed_record, "a rule name of letters only");
+            ReplayLog day{"java-1.21.8", "circuit-reference-rules-v9", 1, {}, "circuit-blocks-1"};
+            day.ticks.push_back({1, {{1, SetDayTime{4294967318}}}});
+            require(decode_replay(encode_replay(day).value()).value() == day, "day times round-trip");
+            auto negative = encode_replay(day).value();
+            negative[negative.size() - 1] = std::byte{0x80}; // the top byte of the little-endian time
+            require(decode_replay(negative).error() == ErrorCode::malformed_record, "a negative day time is refused");
         }
 
         auto version_one = *bytes;

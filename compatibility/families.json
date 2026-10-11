@@ -450,8 +450,14 @@
           "name": "Day-night cycle and time advancement",
           "milestone": "C2",
           "impl": "partial",
-          "evidence": "none",
-          "note": "World age is sent; daylight stays fixed"
+          "evidence": "compared",
+          "cases": [
+            "observation/time_command"
+          ],
+          "note": "The world's day time advances after each tick's commands while doDaylightCycle is on, persists and goes through Anvil import and export; /time sets and queries it with the official parser and replies; set_time goes to players on joining, every 20 ticks and on changes, as on both official servers",
+          "deviations": [
+            "sleeping, daylight detectors and other behavior that depends on the time of day are not modeled"
+          ]
         },
         {
           "id": "weather",

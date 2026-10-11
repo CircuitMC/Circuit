@@ -101,7 +101,8 @@ The server fails closed on storage errors. If a log record cannot be written, th
 
 ## Checkpoint format
 
-A checkpoint file is `CIRCKPT\0`, a format version (10; versions 1–9 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+A checkpoint file is `CIRCKPT\0`, a format version (11; versions 1–10 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+- versions before 11 have no day time: it is 0;
 - versions before 10 have no game rules: every rule has its default;
 - versions before 9 do not record when saved columns dropped: their pending ticks wait from the checkpoint's tick;
 - versions before 8 have untyped tickets: each is read as a forced ticket of level 31 over its radius (its load radius is dropped), and each ticking column as entity ticking, each border column as border without simulation;
@@ -110,7 +111,7 @@ A checkpoint file is `CIRCKPT\0`, a format version (10; versions 1–9 are still
 - versions before 6 have item stacks without components.
 
 The body holds:
-- the time, the entity id counter, counted over all levels, the tick the levels last started, and the game rules that were set (name and value);
+- the time, the entity id counter, counted over all levels, the tick the levels last started, the game rules away from their defaults (name and value) and the day time;
 - per level (overworld, Nether, End; only those with columns, players or an active tick): its counters, the last tick it had players or forced chunks, the players in it (position and whether a spectator), columns with their load and simulation levels, the tick a saved column dropped and the tick a reloaded column resumes, palette-packed sections, block entities, entities (with their pickup delay), scheduled ticks and pending block events;
 - chunk tickets: type, level, square radius, the tick their lifetime ends and their level (dimension);
 - player inventories: the 46 slots, the carried stack and a drag in progress; item stacks carry their damage and their other data components;
@@ -124,7 +125,8 @@ Decoding checks every length, count and the digest. The engine's restoring const
 The server's metadata records the fingerprint of the [data packs](DATA_PACKS.md#the-worlds-data) the log was written with; a server with other data refuses to replay that log.
 
 Log segments start with `CIRCWAL` and a format byte:
-- 4: commands include game rule changes;
+- 5: commands include day times;
+- 4 (read only): commands include game rule changes;
 - 3 (read only): tickets are typed, and commands include players' presence and server starts;
 - 2 (read only): commands name their level; tickets are read as forced ones;
 - 1 (read only): overworld commands whose stacks carry components;
@@ -150,7 +152,7 @@ Import reads the source world and never writes to it. It creates a new world dir
 | Item components | The damage, and the components whose save form mirrors their network form: `custom_data`, `max_stack_size`, `max_damage`, `unbreakable`, `custom_name`, `item_name`, `item_model`, `lore`, `rarity`, `repair_cost`, `enchantment_glint_override`, `intangible_projectile`, `glider`, `tooltip_style`, `dyed_color`, `map_color`, `map_id`, `map_decorations`, `potion_duration_scale`, `recipes`, `ominous_bottle_amplifier`, `note_block_sound`, `provides_banner_patterns`, `lock`, `container_loot`, `debug_stick_state`, `entity_data`, `bucket_entity_data` and `block_entity_data`; those that name registry entries: `trim`, `banner_patterns`, `base_color`, and, when the configured data packs synchronize enchantments, `enchantments` and `stored_enchantments`; a removed default (`!minecraft:name`) |
 | Entities | Item entities, with their pickup delay |
 | Scheduled ticks | Block and fluid ticks of blocks with rules of their own, with their delay and priority |
-| Level data | Time, seed, spawn point and level name |
+| Level data | Time, day time, game rules (rules the version lacks, or has only with experiments, are ignored with a note; invalid values are refused), seed, spawn point and level name. An exported world holds every rule of the version; the official 1.21.8 server read the day time and rules of one |
 
 Every block property round-trips unchanged, including dust shapes, lever mounting, repeater locks, cave air and properties the rules only store, such as a chest's `waterlogged`.
 

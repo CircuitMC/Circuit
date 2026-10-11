@@ -281,6 +281,7 @@ Plan plan(RuleContext&, const contracts::RemoveTicket&) { return std::unexpected
 Plan plan(RuleContext&, const contracts::PlayerPresence&) { return std::unexpected(ErrorCode::unknown_command); }
 Plan plan(RuleContext&, const contracts::LevelsStarted&) { return std::unexpected(ErrorCode::unknown_command); }
 Plan plan(RuleContext&, const contracts::SetGameRule&) { return std::unexpected(ErrorCode::unknown_command); }
+Plan plan(RuleContext&, const contracts::SetDayTime&) { return std::unexpected(ErrorCode::unknown_command); }
 } // namespace
 
 void apply_command(RuleContext& ctx, const contracts::Command& command) {
