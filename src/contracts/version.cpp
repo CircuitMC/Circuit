@@ -7,7 +7,7 @@ namespace {
 using enum CompatibilityTier;
 using enum EvidenceSource;
 
-// Compatibility table for circuit-reference-rules-v9. Every row claims a tier.
+// Compatibility table for circuit-reference-rules-v10. Every row claims a tier.
 // A row claims L0 only when harness fixtures recorded on the target version
 // pass and no gap is known; "Not covered" names aspects no fixture exercises.
 // Every other row claims L2 and lists its gaps, which include behavior not yet
@@ -102,6 +102,22 @@ constexpr std::array reference_v4_mechanisms{
         "Block light and sky light from each state's emission, dampening and occlusion shape, following the "
         "blocks as they stood at the end of the previous tick (light_spread, sky_light, light_shapes, "
         "light_timing). Not covered: columns at the edge of the loaded area."},
+    MechanismEntry{"game_rules", l0_exact, l2_declared_deviation, controlled_experiment,
+        "The version's game rules are world state, set by a logged command within the bounds both official "
+        "servers enforce (booleans 0 or 1, spawnChunkRadius 0-32, other integers unbounded); random ticks "
+        "read randomTickSpeed. /gamerule gave the official replies for 45 commands on both versions. Gaps: the "
+        "other rules are kept but change nothing; compared through a protocol client, not harness traces."},
+    MechanismEntry{"day_time", l0_exact, l2_declared_deviation, controlled_experiment,
+        "The world's day time advances by one after each tick's commands while doDaylightCycle is on; a "
+        "logged command sets it. 59 /time commands gave the official replies and set_time packets on both "
+        "versions. Gaps: nothing reads the time of day yet (daylight detectors, sleeping, mobs); compared "
+        "through a protocol client, not harness traces."},
+    MechanismEntry{"weather", l1_region_equivalent, l2_declared_deviation, controlled_experiment,
+        "Rain and thunder flags with their timers and the clear timer, advanced after the commands while "
+        "doWeatherCycle is on, and levels following the flags by 0.01 a tick in single precision; /weather as "
+        "a logged command. 16 /weather commands gave 1,348 identical replies and events on both versions. "
+        "Gaps: durations come from Circuit's own stream, not the level's random sequence; no lightning, snow, "
+        "ice or other effects of rain; compared through a protocol client, not harness traces."},
     MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, documented_behavior,
         "Entities tick in ascending id order once per tick. Gap: not compared with the target version "
         "(circuit-trace v1 has no entity observations)."},
@@ -265,9 +281,9 @@ constexpr std::array game_rules_1_21_4{
 // every pair). What differs is the bundles' own: content, component schema,
 // registries and game rules, and where random ticks run (RandomTickRange),
 // which the official servers showed differs.
-constexpr RuleSet rules_1_21_8{"circuit-reference-rules-v9", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
+constexpr RuleSet rules_1_21_8{"circuit-reference-rules-v10", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
                                "circuit-blocks-1", "harness traces of 1.21.8 (tests/fixtures/harness)", RandomTickRange::entity_ticking};
-constexpr RuleSet rules_1_21_4{"circuit-reference-rules-v9", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
+constexpr RuleSet rules_1_21_4{"circuit-reference-rules-v10", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
                                "circuit-blocks-1",
                                "harness traces of 1.21.4 (tests/fixtures/harness-1.21.4), each identical to its 1.21.8 recording; "
                                "random ticks run only near players (observed on the official 1.21.4 server)",

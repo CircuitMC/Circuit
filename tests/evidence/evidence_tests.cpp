@@ -475,7 +475,7 @@ int main(int argc, char** argv) {
         require(text == write_fixture(*by_oracle), "engine and oracle record identical fixtures");
         const auto recorded = parse(text);
         require(recorded.source == circuit::contracts::EvidenceSource::circuit_reference
-                    && recorded.harness == "circuit-reference-rules-v9", "provenance");
+                    && recorded.harness == "circuit-reference-rules-v10", "provenance");
         require(!recorded.recorded_changes.empty(), "changes recorded");
         for (const auto& exec : {engine_executor(1), engine_executor(8), oracle_executor()}) {
             const auto r = evaluate_fixture(recorded, exec);

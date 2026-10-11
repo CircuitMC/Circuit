@@ -10,7 +10,7 @@ Circuit/
   app/                      Application startup and composition
   include/circuit/          Module interfaces and runtime contracts
   src/contracts/            Version bundles, compatibility table, trace and replay records
-  src/gameplay/             Reference rules (circuit-reference-rules-v9)
+  src/gameplay/             Reference rules (circuit-reference-rules-v10)
   src/runtime/              Region-parallel engine, job runners, executor, synthetic kernel
   src/evidence/             circuit-trace fixture format, content mapping, recording and evaluation
   src/protocol/             Wire codec: data types, NBT, framing, packet and content tables

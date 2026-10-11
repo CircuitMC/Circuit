@@ -2,7 +2,7 @@ circuit-trace 1
 title Strongly powered blocks power dust and components
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v9
+harness circuit-reference-rules-v10
 mechanisms redstone_wire repeater observer redstone_lamp neighbor_updates
 area -2 -1 -1 6 2 8
 ticks 14

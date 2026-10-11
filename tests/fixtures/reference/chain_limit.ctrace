@@ -2,7 +2,7 @@ circuit-trace 1
 title Neighbor update chain limit
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v9
+harness circuit-reference-rules-v10
 mechanisms neighbor_chain_limit neighbor_updates redstone_wire
 area -1 -1 -1 11 1 1
 ticks 6

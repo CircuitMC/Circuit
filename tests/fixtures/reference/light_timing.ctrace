@@ -2,7 +2,7 @@ circuit-trace 2
 title When light follows block changes
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v9
+harness circuit-reference-rules-v10
 mechanisms light redstone_lamp
 area 0 0 0 31 15 31
 ticks 12

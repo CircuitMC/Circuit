@@ -2,7 +2,7 @@ circuit-trace 1
 title Observers moved by pistons
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v9
+harness circuit-reference-rules-v10
 mechanisms observer piston
 area -2 -1 -1 4 0 9
 ticks 20

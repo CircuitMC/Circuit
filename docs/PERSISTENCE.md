@@ -51,7 +51,7 @@ A world directory records its bundle and rule set, and a server of another bundl
 xmake run circuit-server --migrate-world "$PWD/worlds/main-1.21.4" --world "$PWD/worlds/main" --game-version java-1.21.4
 ```
 
-The migration owns both directories while it runs. It reads the latest durable state, replays its log, and writes a new world directory for the target bundle; the source is only read. It is refused when the two bundles run different rule sets, because the saved state would not mean the same.
+The migration owns both directories while it runs. It reads the latest durable state, replays its log, and writes a new world directory for the target bundle; the source is only read. The same command moves a world to a newer rule set of the same version (a server refuses a world of another rule set and names this command). Between rule sets it needs a world stopped cleanly, with no log after its last checkpoint: the log could only be replayed by the rules that wrote it. The state carries over, and the new rules apply from its tick on.
 
 ## Durability protocol
 
@@ -134,7 +134,7 @@ Log segments start with `CIRCWAL` and a format byte:
 - 1 (read only): overworld commands whose stacks carry components;
 - 0 (read only): records written before stacks carried components.
 
-A world directory written by an earlier release (version 6 checkpoints, format 1 segments, `circuit-reference-rules-v7`) is kept as a test fixture (`tests/fixtures/storage/`). `storage_tests` checks that other rules refuse it, and that under its own rules every record is read (tickets as forced ones, commands as the overworld's) and new records use the current formats. The server opens such a world only through `--migrate-world`, which needs a world stopped cleanly (no log after its last checkpoint). A world whose server metadata predates typed tickets (metadata version 3) keeps none of its tickets: they were all spawn and player tickets, and the server adds them again.
+A world directory written by an earlier release (version 6 checkpoints, format 1 segments, `circuit-reference-rules-v7`) is kept as a test fixture (`tests/fixtures/storage/`). `storage_tests` checks that other rules refuse it, and that under its own rules every record is read (tickets as forced ones, commands as the overworld's) and new records use the current formats. The server opens such a world only through `--migrate-world`, which needs a world stopped cleanly (no log after its last checkpoint). A world whose server metadata predates typed tickets (metadata version 3) keeps none of its tickets: they were all spawn and player tickets, and the server adds them again. A world written and stopped by the last `circuit-reference-rules-v9` server (game rules, day time, weather and a forced chunk set) is kept as a second fixture: `server_tests` checks that it is refused, migrates with `--migrate-world`, and opens under `circuit-reference-rules-v10` with its state.
 
 ## Anvil import and export
 

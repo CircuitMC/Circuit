@@ -2365,5 +2365,41 @@ int main() {
         std::filesystem::remove_all(dir);
     });
 
+    suite.run("a world of the previous rule set is refused and migrates", [] {
+        // tests/fixtures/storage/v9world-*: a world the last circuit-reference-rules-v9
+        // server wrote and stopped cleanly, after randomTickSpeed 5, doDaylightCycle
+        // false, /time set 6000, doWeatherCycle false, /weather thunder 100000 and
+        // /forceload add 40 40.
+        const auto dir = temporary_directory();
+        auto config = offline_config();
+        config.world_directory = dir / "v9";
+        std::filesystem::create_directories(config.world_directory);
+        for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::path(CIRCUIT_SOURCE_DIR) / "tests/fixtures/storage")) {
+            const auto name = entry.path().filename().string();
+            if (name.starts_with("v9world-")) std::filesystem::copy_file(entry.path(), config.world_directory / name.substr(8));
+        }
+        std::string error;
+        try {
+            server::Server s(config);
+        } catch (const std::runtime_error& e) {
+            error = e.what();
+        }
+        require(error.find("circuit-reference-rules-v9") != std::string::npos && error.find("--migrate-world") != std::string::npos, error);
+        const auto tick = server::migrate_world(config.world_directory, dir / "v10", "java-1.21.8");
+        require(tick == 311, std::format("migration: {}", tick ? std::to_string(*tick) : tick.error()));
+        config.world_directory = dir / "v10";
+        GameFixture f(config);
+        f.game->tick();
+        const auto d = f.game->engine().dump();
+        require(d.game_rules == std::map<std::string, std::int32_t>{{"doDaylightCycle", 0}, {"doWeatherCycle", 0}, {"randomTickSpeed", 5}},
+                "game rules carried over");
+        require(d.day_time == 6000 && d.weather.raining && d.weather.thundering && d.weather.rain_time > 99000
+                    && d.weather.rain_level == 1.0f && d.weather.thunder_level == 1.0f,
+                "day time and weather carried over; the start sets the levels");
+        require(std::ranges::any_of(d.tickets, [](const auto& t) { return t.type == contracts::TicketType::forced && t.center == contracts::ChunkPos{2, 2}; }),
+                "the forced chunk carried over");
+        std::filesystem::remove_all(dir);
+    });
+
     return suite.finish();
 }

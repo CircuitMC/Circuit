@@ -2,7 +2,7 @@ circuit-trace 1
 title Water breaks dust and components in its way
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v9
+harness circuit-reference-rules-v10
 mechanisms water support
 area -2 -1 -2 9 2 2
 ticks 30

@@ -4,13 +4,13 @@
 
 The Part I core runs headless: shared contracts, a set of reference rules, a sequential scheduling oracle, and a region-parallel runtime checked against the oracle. The oracle shares gameplay rules with the runtime; it checks scheduling equivalence, while external reference observations and hand-derived expectations check the rules themselves. The [network server](SERVER.md) and [persistence](PERSISTENCE.md) are built on it.
 
-The rules are **circuit-reference-rules-v9**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
+The rules are **circuit-reference-rules-v10**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
 
-Two version bundles run them: `java-1.21.8` and `java-1.21.4`. Each version has 30 traces recorded on the unmodified server:
+Two version bundles run them: `java-1.21.8` and `java-1.21.4`. Each version has 36 traces recorded on the unmodified server:
 - 1.21.8 traces are in `tests/fixtures/harness/`;
 - 1.21.4 traces are in `tests/fixtures/harness-1.21.4/`.
 
-The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 60 pass on both the parallel runtime and the oracle.
+The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 72 pass on both the parallel runtime and the oracle.
 
 The compatibility table is part of the version bundle (`src/contracts/version.cpp`). `circuit-server --compatibility` prints it. Each row states a target tier, a claimed tier, the evidence source, and its limitations:
 
@@ -37,6 +37,9 @@ The tiers are defined in the architecture: L0 exact, L1 region-equivalent, L2 de
 | `hopper` | L0 | hopper_chain, hopper_competition, double_chest, hopper_chained |
 | `water` | L0 | water_channel, water_drop, water_washes |
 | `light` | L0 | light_spread, sky_light, light_shapes, light_timing; every state's emission, dampening and occlusion shape (tests/fixtures/light) |
+| `game_rules` | L2 | 45 `/gamerule` commands give the official replies on both versions. The other rules change nothing yet; compared through a protocol client, not traces. |
+| `day_time` | L2 | 59 `/time` commands give the official replies and `set_time` packets on both versions. Nothing reads the time of day yet; compared through a protocol client, not traces. |
+| `weather` | L2 | 16 `/weather` commands give 1,348 identical replies and events on both versions. Durations come from Circuit's own stream; no lightning, snow or other effects of rain. |
 | `piston` | L2 | Harness traces pass. Gaps are listed in the table: drop offsets and item pushing. |
 | `chunk_tickets` | L2 | ring_blocks, unload_reload. New chunks load at once and dropped chunks unload at once, where the official servers take a varying number of ticks. |
 | `random_ticks`, `wheat`, `item_entity`, `entity_order` | L2 | Documented behavior only. These are not compared with the target version; circuit-trace v1 has no entity observations. |
@@ -105,7 +108,9 @@ Every slot change records `player_slot_changed`; a use that opens a container re
 
 Every observable action produces a trace record keyed by (tick, level, phase, root, sequence within the root); a record also names the level of its position. The command phase counts as the overworld's, ahead of every level. Two executions are equivalent only if their trace records are identical, including order. Their canonical state dumps, one part per level, must also be identical.
 
-## Reference rules v9
+## Reference rules v10
+
+v10 is v9 with what C2.3 and C2.4 added to the rules: crops that need light, game rules as world state, the day time and the weather. Worlds of v9 move to v10 with `--migrate-world` ([persistence](PERSISTENCE.md#migrating-between-versions)).
 
 - **Update queue:** neighbor updates and shape updates are queued entries.
   - **Entries:**
