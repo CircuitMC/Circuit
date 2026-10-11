@@ -3,14 +3,17 @@
 // on both the runtime engine and the independent oracle.
 #include "../oracle/oracle.hpp"
 #include "../support/check.hpp"
+#include "../support/light_reference.hpp"
 #include "../support/scenario.hpp"
 #include <circuit/evidence/content.hpp>
 #include <circuit/evidence/fixture_runner.hpp>
 #include <circuit/gameplay/block_registry.hpp>
+#include <circuit/gameplay/light.hpp>
 #include <filesystem>
 #include <format>
 #include <fstream>
 #include <iterator>
+#include <map>
 #include <set>
 #include <sstream>
 
@@ -26,10 +29,13 @@ namespace fs = std::filesystem;
 namespace {
 class OracleExecutor final : public FixtureExecutor {
 public:
-    OracleExecutor(const circuit::contracts::VersionBundle& bundle, std::uint64_t seed) : oracle_(bundle, seed) {}
+    OracleExecutor(const circuit::contracts::VersionBundle& bundle, std::uint64_t seed) : oracle_(bundle, seed), shape_(bundle.world) {}
     void advance(const std::vector<circuit::contracts::Command>& commands) override {
+        before_ = std::move(dump_);
         oracle_.advance(commands);
         dump_ = oracle_.dump();
+        light_.clear();
+        world_.reset();
     }
     const std::vector<circuit::contracts::TraceRecord>& trace() const override { return oracle_.trace(); }
     circuit::gameplay::BlockState block(BlockPos pos) const override { return circuit::test::state_at(dump_, pos); }
@@ -39,10 +45,37 @@ public:
         return be->slots[slot];
     }
     std::vector<circuit::gameplay::Entity> entities() const override { return dump_.overworld().entities; }
+    // Light during a tick follows the blocks at the end of the one before: it
+    // is computed from scratch from that dump.
+    std::optional<std::pair<std::uint8_t, std::uint8_t>> light(BlockPos pos) const override {
+        if (!world_) {
+            world_.emplace(before_, circuit::contracts::DimensionId::overworld);
+            top_ = std::min(shape_.min_y + shape_.height - 1, std::max(world_->highest(), shape_.min_y) + 16);
+        }
+        const auto chunk = circuit::contracts::chunk_of(pos);
+        if (!world_->loaded(chunk)) return std::pair<std::uint8_t, std::uint8_t>{0, 0};
+        if (pos.y > top_) return std::pair<std::uint8_t, std::uint8_t>{0, 15};
+        // A column's light depends only on cells within 15 blocks: the
+        // loaded columns around it.
+        auto it = light_.find(chunk);
+        if (it == light_.end()) {
+            std::set<circuit::contracts::ChunkPos> around;
+            for (int dx = -1; dx <= 1; ++dx)
+                for (int dz = -1; dz <= 1; ++dz)
+                    if (world_->loaded({chunk.x + dx, chunk.z + dz})) around.insert({chunk.x + dx, chunk.z + dz});
+            it = light_.try_emplace(chunk, *world_, around, shape_.min_y, top_).first;
+        }
+        using circuit::gameplay::LightKind;
+        return std::pair{it->second.get(LightKind::block, pos), it->second.get(LightKind::sky, pos)};
+    }
 
 private:
     Oracle oracle_;
-    circuit::gameplay::WorldDump dump_;
+    circuit::contracts::WorldShape shape_;
+    circuit::gameplay::WorldDump dump_, before_;
+    mutable std::optional<circuit::test::DumpLightWorld> world_;
+    mutable std::int32_t top_{};
+    mutable std::map<circuit::contracts::ChunkPos, circuit::test::ReferenceLight> light_;
 };
 
 ExecutorFactory oracle_executor() {
@@ -244,6 +277,64 @@ int main(int argc, char** argv) {
         require(evaluate_fixture(other, engine_executor(1)).outcome == Outcome::unsupported, "other commands");
         const auto big = parse(head + "at 1 command forceload add 0 0 300 300\n");
         require(evaluate_fixture(big, engine_executor(1)).outcome == Outcome::unsupported, "more than 256 chunks");
+    });
+
+    suite.run("light properties match both official servers", [&] {
+        // tests/fixtures/light: every state's emission, dampening and
+        // occlusion shape as the official servers report them.
+        namespace registry = circuit::gameplay::registry;
+        std::size_t states = 0;
+        for (const auto& [file, release] : {std::pair{"states-1.21.8.tsv", "1.21.8"}, std::pair{"states-1.21.4-only.tsv", "1.21.4"}}) {
+            const auto* mapping = ContentMapping::for_game_version(release);
+            std::istringstream lines(read_text(fixtures / "light" / file));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                std::vector<std::string> f;
+                for (std::size_t i = 0; i <= line.size();) {
+                    const auto tab = std::min(line.find('\t', i), line.size());
+                    f.push_back(line.substr(i, tab - i));
+                    i = tab + 1;
+                }
+                require(f.size() == 4, line);
+                const auto state = mapping->block(f[0]);
+                require(state.has_value(), std::format("{}: {}", f[0], state ? "" : state.error()));
+                const auto info = circuit::gameplay::light_info(*state);
+                require(info.emission == std::stoi(f[1]) && info.dampening == std::stoi(f[2]),
+                        std::format("{} {}: emission {} dampening {}", release, f[0], info.emission, info.dampening));
+                if (f[3] == "-") {
+                    require(info.shape == 0, std::format("{} {}: occludes by shape", release, f[0]));
+                } else {
+                    // The faces the reported boxes touch, against the registry's.
+                    std::vector<std::array<int, 6>> boxes;
+                    for (std::size_t i = 0; i <= f[3].size();) {
+                        const auto semi = std::min(f[3].find(';', i), f[3].size());
+                        std::array<int, 6> b{};
+                        std::istringstream in(f[3].substr(i, semi - i));
+                        for (auto& v : b) {
+                            in >> v;
+                            in.ignore(1);
+                        }
+                        boxes.push_back(b);
+                        i = semi + 1;
+                    }
+                    constexpr std::array<std::pair<int, int>, 6> faces{{{1, 0}, {1, 1}, {2, 0}, {2, 1}, {0, 0}, {0, 1}}};
+                    for (std::size_t d = 0; d < 6; ++d) {
+                        const auto [axis, side] = faces[d];
+                        const int u = axis == 0 ? 1 : 0, v = axis == 2 ? 1 : 2;
+                        std::array<std::uint64_t, 4> want{};
+                        for (const auto& b : boxes)
+                            if ((side == 0 && b[static_cast<std::size_t>(axis)] == 0) || (side == 1 && b[static_cast<std::size_t>(axis) + 3] == 16))
+                                for (int a = b[static_cast<std::size_t>(u)]; a < b[static_cast<std::size_t>(u) + 3]; ++a)
+                                    for (int c = b[static_cast<std::size_t>(v)]; c < b[static_cast<std::size_t>(v) + 3]; ++c)
+                                        want[static_cast<std::size_t>((a * 16 + c) / 64)] |= std::uint64_t{1} << ((a * 16 + c) % 64);
+                        require(info.shape != 0 && registry::light_face(info.shape, static_cast<circuit::contracts::Direction>(d)) == want,
+                                std::format("{} {}: face {}", release, f[0], d));
+                    }
+                }
+                ++states;
+            }
+        }
+        require(states == 27958, std::format("{} states", states));
     });
 
     suite.run("canonical text round trip", [&] {

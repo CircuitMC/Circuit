@@ -59,6 +59,7 @@ struct EngineStats {
     // Wall-clock nanoseconds spent per phase (indexed by contracts::Phase),
     // including coordination and commit.
     std::array<std::uint64_t, 8> phase_nanoseconds{};
+    std::uint64_t light_nanoseconds{}; // the light phase at the start of each tick
     std::uint64_t phases{};
     std::uint64_t attempts{};
     std::uint64_t tasks{};
@@ -156,6 +157,10 @@ public:
     // Snapshot of a loaded column; nullopt when the column is not loaded.
     // Must not be called while advance() runs.
     [[nodiscard]] std::optional<ColumnSnapshot> column(contracts::ChunkKey key) const;
+    // Block light and sky light at a position, as they stand during the
+    // current tick: computed from the blocks at the end of the previous one.
+    // 0 and 0 where no column is loaded.
+    [[nodiscard]] std::pair<std::uint8_t, std::uint8_t> light(contracts::DimensionId level, contracts::BlockPos pos) const;
     // Loaded columns and their chunk levels, by level, then in coordinate order.
     [[nodiscard]] std::vector<std::pair<contracts::ChunkKey, gameplay::ChunkLevel>> loaded_columns() const;
 

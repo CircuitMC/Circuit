@@ -256,58 +256,7 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
     return BlockState::registered(*state);
 }
 
-std::string ContentMapping::notation(BlockState s) const {
-    const auto b = [](bool v) { return v ? "true" : "false"; };
-    switch (s.type()) {
-    case BlockType::air: return s.level() == 1 ? "minecraft:cave_air" : s.level() == 2 ? "minecraft:void_air" : "minecraft:air";
-    case BlockType::stone: return "minecraft:stone";
-    case BlockType::glass: return "minecraft:glass";
-    case BlockType::obsidian: return "minecraft:obsidian";
-    case BlockType::redstone_block: return "minecraft:redstone_block";
-    case BlockType::slime_block: return "minecraft:slime_block";
-    case BlockType::lever: {
-        constexpr std::array<std::string_view, 3> faces{"floor", "wall", "ceiling"};
-        return std::format("minecraft:lever[face={},facing={},powered={}]", faces[s.level() % 3], direction_name(s.facing()),
-                           b(s.flag()));
-    }
-    case BlockType::redstone_wire: {
-        constexpr std::array<std::string_view, 3> sides{"none", "side", "up"};
-        const auto side = [&](Direction d) { return sides[static_cast<std::size_t>(s.wire_side(d)) % 3]; };
-        return std::format("minecraft:redstone_wire[east={},north={},power={},south={},west={}]", side(Direction::east),
-                           side(Direction::north), s.level(), side(Direction::south), side(Direction::west));
-    }
-    case BlockType::repeater:
-        return std::format("minecraft:repeater[delay={},facing={},locked={},powered={}]", s.delay(),
-                           direction_name(contracts::opposite(s.facing())), b(gameplay::repeater_locked(s)), b(s.flag()));
-    case BlockType::redstone_lamp: return std::format("minecraft:redstone_lamp[lit={}]", b(s.flag()));
-    case BlockType::observer:
-        return std::format("minecraft:observer[facing={},powered={}]", direction_name(s.facing()), b(s.flag()));
-    case BlockType::piston:
-    case BlockType::sticky_piston:
-        return std::format("minecraft:{}[extended={},facing={}]", s.is(BlockType::piston) ? "piston" : "sticky_piston",
-                           b(s.flag()), direction_name(s.facing()));
-    case BlockType::piston_head:
-        return std::format("minecraft:piston_head[facing={},short={},type={}]", direction_name(s.facing()), b(s.level() == 1),
-                           s.flag() ? "sticky" : "normal");
-    case BlockType::moving_piston:
-        return std::format("minecraft:moving_piston[facing={},type={}]", direction_name(s.facing()), s.flag() ? "sticky" : "normal");
-    case BlockType::hopper:
-        return std::format("minecraft:hopper[enabled={},facing={}]", b(s.flag()), direction_name(s.facing()));
-    case BlockType::chest: {
-        static constexpr std::string_view types[]{"single", "left", "right"};
-        return std::format("minecraft:chest[facing={},type={},waterlogged={}]", direction_name(s.facing()), types[s.level() % 3],
-                           b(s.flag()));
-    }
-    case BlockType::comparator:
-        return std::format("minecraft:comparator[facing={},mode={},powered={}]", direction_name(contracts::opposite(s.facing())),
-                           s.level() == 1 ? "subtract" : "compare", b(s.flag()));
-    case BlockType::water:
-        return std::format("minecraft:water[level={}]", s.flag() ? 8 + s.level() : s.level());
-    case BlockType::wheat: return std::format("minecraft:wheat[age={}]", s.level());
-    case BlockType::other: return gameplay::registry::notation(s.registry_state());
-    default: return std::format("circuit:unrepresentable[raw={}]", s.raw());
-    }
-}
+std::string ContentMapping::notation(BlockState s) const { return gameplay::block_notation(s); }
 
 std::expected<std::uint16_t, std::string> ContentMapping::item(std::string_view id) const {
     if (const auto item = gameplay::items::by_name(id)) return *item;

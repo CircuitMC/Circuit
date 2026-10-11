@@ -118,6 +118,7 @@ A file that starts with `circuit-trace 2` may use everything version 1 allows, p
 | `entity <t> <handle> <x> <y> <z> <vx> <vy> <vz> [key=value ...]` | A live entity at the end of tick `t` |
 | `entity-order <t> <stage> <handle> ...` | The order in which entities ticked in that stage |
 | `chunk <t> <stage> <cx> <cz> <status>` | A chunk reached `entity_ticking`, `block_ticking`, `border` or `unloaded` |
+| `light <t> <x> <y> <z> <block> <sky>` | Block light and sky light at a position at the end of tick `t` (`?` in a skeleton) |
 | `draws <t> <stage> <stream> <count>` | Draws from a random stream in that stage |
 
 Coordinates and velocities are decimal doubles, written as the shortest text that reads back as the same value; recorders may write any decimal form, such as Java's `1.0E-4`. An `entity` line's position is where the entity stands; velocities are in blocks per tick.

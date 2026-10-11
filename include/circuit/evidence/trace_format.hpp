@@ -123,6 +123,13 @@ struct BlockProbe {
     std::size_t line{};
     bool operator==(const BlockProbe&) const = default;
 };
+struct LightProbe {             // v2: block light and sky light at the end of a tick
+    Tick tick{};
+    BlockPos pos;
+    std::optional<std::pair<std::uint8_t, std::uint8_t>> levels; // block, sky; nullopt: `?`
+    std::size_t line{};
+    bool operator==(const LightProbe&) const = default;
+};
 struct SlotProbe {
     Tick tick{};
     BlockPos pos;
@@ -163,6 +170,7 @@ struct Fixture {
     std::vector<Action> actions;
     std::vector<Change> recorded_changes;
     std::vector<BlockProbe> block_probes;
+    std::vector<LightProbe> light_probes;
     std::vector<SlotProbe> slot_probes;
     std::vector<EntityEvent> entity_events;
     std::vector<EntityProbe> entity_probes;

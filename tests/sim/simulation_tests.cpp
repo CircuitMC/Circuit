@@ -4,6 +4,7 @@
 // exploration, injected aborts and replay.
 #include "../oracle/oracle.hpp"
 #include "../support/check.hpp"
+#include "../support/light_reference.hpp"
 #include "scenarios.hpp"
 #include <circuit/contracts/replay.hpp>
 #include <circuit/gameplay/rng.hpp>
@@ -553,10 +554,15 @@ int main() {
             options.record_trace = false;
             Engine engine(bundle(), s.seed, options);
             const auto start = std::chrono::steady_clock::now();
-            for (Tick t = 1; t <= s.ticks; ++t) engine.advance(in.per_tick[t - 1]);
+            std::uint64_t first_light = 0;
+            for (Tick t = 1; t <= s.ticks; ++t) {
+                engine.advance(in.per_tick[t - 1]);
+                if (t == 2) first_light = engine.stats().light_nanoseconds;
+            }
             const auto ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
-            std::cout << std::format("  many_machines {} ticks, {} workers: {:.1f} ms, {} regions\n", s.ticks, w, ms,
-                                     engine.region_count());
+            if (std::getenv("CIRCUIT_LIGHT_SPLIT")) std::cout << std::format("  light of ticks 1-2: {:.1f} ms\n", static_cast<double>(first_light) / 1e6);
+            std::cout << std::format("  many_machines {} ticks, {} workers: {:.1f} ms (light {:.1f} ms), {} regions\n", s.ticks, w, ms,
+                                     static_cast<double>(engine.stats().light_nanoseconds) / 1e6, engine.region_count());
         }
     });
 
@@ -720,6 +726,50 @@ int main() {
                 "1.21.4: not without a player, nor for a spectator");
         require(grown("java-1.21.4", player(8.5)) > 0 && grown("java-1.21.4", player(127.5)) > 0, "1.21.4: within 128 blocks");
         require(grown("java-1.21.4", player(136.5)) == 0, "1.21.4: not 128 blocks from the chunk's center");
+    });
+
+    suite.run("light follows the blocks of the previous tick", [&] {
+        // The engine's incremental light against light computed from scratch
+        // from the previous tick's blocks, in columns sampled from scenarios
+        // with lamps switching, pistons moving and chunks dropping and
+        // returning. A column's light depends only on the columns around it.
+        for (const auto& s : {chunk_levels_scenario(), many_machines_scenario(), piston_pulse_scenario()}) {
+            const auto in = materialize(s);
+            Engine engine(bundle(), s.seed, pool(4));
+            std::size_t compared = 0;
+            // Light is read at these ticks only, so that changes in between
+            // are followed together.
+            for (Tick t = 1; t <= std::min<Tick>(s.ticks, 66); ++t) {
+                const bool check = t == 2 || t == 3 || t == 17 || t == 31 || t == 32 || t == 45 || t == 66;
+                std::optional<WorldDump> before;
+                if (check) before = engine.dump();
+                engine.advance(in.per_tick[t - 1]);
+                if (!check) continue;
+                const DumpLightWorld world(*before, DimensionId::overworld);
+                const auto& shape = bundle().world;
+                const auto top = std::min(shape.min_y + shape.height - 1, std::max(world.highest(), shape.min_y) + 16);
+                std::size_t k = 0;
+                for (const auto c : world.columns()) {
+                    if (k++ % 23 != t % 23) continue;
+                    std::set<ChunkPos> around;
+                    for (int dx = -1; dx <= 1; ++dx)
+                        for (int dz = -1; dz <= 1; ++dz)
+                            if (world.loaded({c.x + dx, c.z + dz})) around.insert({c.x + dx, c.z + dz});
+                    const ReferenceLight reference(world, around, shape.min_y, top);
+                    for (auto y = shape.min_y; y <= top; ++y)
+                        for (int i = 0; i < 256; ++i) {
+                            const BlockPos p{c.x * 16 + (i & 15), y, c.z * 16 + (i >> 4)};
+                            const auto [block, sky] = engine.light(DimensionId::overworld, p);
+                            if (block != reference.get(LightKind::block, p) || sky != reference.get(LightKind::sky, p))
+                                throw std::runtime_error(std::format("{} tick {}: light at ({},{},{}) {}/{} instead of {}/{}", s.name, t, p.x, p.y,
+                                                                     p.z, block, sky, reference.get(LightKind::block, p),
+                                                                     reference.get(LightKind::sky, p)));
+                        }
+                    ++compared;
+                }
+            }
+            require(compared > 5, std::format("{}: {} columns compared", s.name, compared));
+        }
     });
 
     suite.run("commands in levels that do not exist are refused", [&] {

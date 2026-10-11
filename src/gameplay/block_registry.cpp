@@ -146,6 +146,39 @@ bool face_covered(std::uint32_t state, contracts::Direction face) noexcept {
     return (data::shapes[state - 1] >> (2 + static_cast<unsigned>(face))) & 1;
 }
 
+std::uint8_t light_emission(std::uint32_t state) noexcept {
+    if (state < 1 || state > data::state_count) return 0;
+    return data::light[state - 1] & 15;
+}
+
+std::uint8_t light_dampening(std::uint32_t state) noexcept {
+    if (state < 1 || state > data::state_count) return 15;
+    static constexpr std::uint8_t values[4]{0, 1, 15, 15};
+    return values[(data::light[state - 1] >> 4) & 3];
+}
+
+std::uint16_t light_shape(std::uint32_t state) noexcept {
+    if (state < 1 || state > data::state_count) return 0;
+    return data::light_shape[state - 1];
+}
+
+bool light_occluded(std::uint16_t from, std::uint16_t to, contracts::Direction side) noexcept {
+    if (from > data::light_shape_count || to > data::light_shape_count) return true;
+    const auto face = static_cast<std::size_t>(side);
+    const auto back = static_cast<std::size_t>(contracts::opposite(side));
+    for (std::size_t k = 0; k < 4; ++k)
+        if ((data::light_faces[from].faces[face][k] | data::light_faces[to].faces[back][k]) != ~std::uint64_t{0}) return false;
+    return true;
+}
+
+std::uint32_t light_shape_count() noexcept { return data::light_shape_count; }
+
+std::array<std::uint64_t, 4> light_face(std::uint16_t shape, contracts::Direction face) noexcept {
+    if (shape > data::light_shape_count) return {};
+    const auto& f = data::light_faces[shape].faces[static_cast<std::size_t>(face)];
+    return {f[0], f[1], f[2], f[3]};
+}
+
 std::uint32_t wire_state_count(std::string_view release) noexcept {
     const auto* v = version(release);
     return v ? v->state_count : 0;

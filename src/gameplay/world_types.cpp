@@ -93,7 +93,13 @@ std::vector<Ticket> TicketSet::list() const {
 }
 
 const LevelDump& WorldDump::level(contracts::DimensionId dimension) const {
-    static const LevelDump empty_overworld{}, empty_nether{contracts::DimensionId::the_nether}, empty_end{contracts::DimensionId::the_end};
+    static const auto empty = [](contracts::DimensionId d) {
+        LevelDump l;
+        l.dimension = d;
+        return l;
+    };
+    static const LevelDump empty_overworld = empty(contracts::DimensionId::overworld),
+                           empty_nether = empty(contracts::DimensionId::the_nether), empty_end = empty(contracts::DimensionId::the_end);
     for (const auto& l : levels)
         if (l.dimension == dimension) return l;
     return dimension == contracts::DimensionId::the_nether ? empty_nether

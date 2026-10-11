@@ -29,7 +29,7 @@ Feature counts per implementation state, then the number of features with compar
 | V03 Item and entity components and registries | C1, C5, C6 | 6 | 0 / 1 | 2 / 3 | 0 / 0 | 2 / 2 | 2 / 0 | 2 / 4 |
 | V04 Data and resource-pack negotiation | C1, C9, C10 | 6 | 0 / 0 | 4 / 4 | 0 / 0 | 2 / 2 | 0 / 0 | 2 / 2 |
 | V05 Dimensions, tickets and chunk lifecycle | C2 | 8 | 0 / 0 | 6 / 6 | 0 / 0 | 2 / 2 | 0 / 0 | 3 / 3 |
-| V06 Lighting and environmental state | C2, C7 | 7 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 | 0 / 0 | 0 / 0 |
+| V06 Lighting and environmental state | C2, C7 | 7 | 0 / 0 | 4 / 4 | 0 / 0 | 3 / 3 | 0 / 0 | 2 / 2 |
 | V07 RNG and global event order | C0, C2, C4 | 7 | 4 / 4 | 2 / 2 | 0 / 0 | 1 / 1 | 0 / 0 | 4 / 4 |
 | V08 Terrain and biomes | C7 | 70 | 0 / 0 | 2 / 2 | 64 / 64 | 4 / 4 | 0 / 0 | 0 / 0 |
 | V09 Structures and decoration | C7, C5 | 6 | 0 / 0 | 0 / 0 | 0 / 0 | 6 / 6 | 0 / 0 | 0 / 0 |
@@ -127,10 +127,10 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 12 |
+| black_box | passing | 13 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 5 |
-| official_trace | passing | 32 |
+| official_trace | passing | 36 |
 | official_trace | unsupported | 1 |
 | planned | planned | 8 |
 | real_client | passing | 2 |
@@ -199,8 +199,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Sky light propagation | C2 | missing, none | missing, none | everything is sent fully lit |
-| Block light emission and propagation | C2 | missing, none | missing, none |  |
+| Sky light propagation | C2 | partial, compared | partial, compared | `light/official_states`, `trace/light_shapes`, `trace/light_timing`, `trace/sky_light`; clients still receive full sky light (C2.3b); Sky light from above the world, undiminished straight down through cells that dampen nothing, otherwise spreading like block light; computed from the blocks at the end of the previous tick |
+| Block light emission and propagation | C2 | partial, compared | partial, compared | `light/official_states`, `trace/light_shapes`, `trace/light_spread`, `trace/light_timing`; clients still receive no block light (C2.3b); light at the edge of the loaded area is not compared; Emission, dampening and occlusion shape of every state of both versions match the official servers; light spreads one level per block, more through dampening blocks, never through faces that occlusion shapes close together |
 | Heightmaps | C2 | partial, none | partial, none | Sent for the flat world |
 | Day-night cycle and time advancement | C2 | partial, none | partial, none | World age is sent; daylight stays fixed |
 | Rain, thunder, snow and their effects | C2 | missing, none | missing, none |  |

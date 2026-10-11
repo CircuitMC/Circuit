@@ -1,0 +1,16 @@
+# Light of every block state, reported by the official 1.21.4 server through the external harness
+# (circuit-harness 0.4.0, 2026-10-11): notation, emission, dampening, and the occlusion shape's boxes in
+# sixteenths for states whose shape occludes light ('-' otherwise). Sky light passes straight down exactly
+# where the dampening is 0. Only the 12 states 1.21.8 does not have; the others are as in states-1.21.8.tsv.
+minecraft:creaking_heart[active=true,axis=x,natural=true]	0	15	-
+minecraft:creaking_heart[active=true,axis=x,natural=false]	0	15	-
+minecraft:creaking_heart[active=true,axis=y,natural=true]	0	15	-
+minecraft:creaking_heart[active=true,axis=y,natural=false]	0	15	-
+minecraft:creaking_heart[active=true,axis=z,natural=true]	0	15	-
+minecraft:creaking_heart[active=true,axis=z,natural=false]	0	15	-
+minecraft:creaking_heart[active=false,axis=x,natural=true]	0	15	-
+minecraft:creaking_heart[active=false,axis=x,natural=false]	0	15	-
+minecraft:creaking_heart[active=false,axis=y,natural=true]	0	15	-
+minecraft:creaking_heart[active=false,axis=y,natural=false]	0	15	-
+minecraft:creaking_heart[active=false,axis=z,natural=true]	0	15	-
+minecraft:creaking_heart[active=false,axis=z,natural=false]	0	15	-

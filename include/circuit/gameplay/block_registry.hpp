@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
 #include <circuit/contracts/ids.hpp>
+#include <array>
 #include <cstdint>
 #include <optional>
 #include <span>
@@ -65,6 +66,22 @@ std::optional<std::uint32_t> state_of(std::uint32_t block, std::span<const Prope
 Collision collision(std::uint32_t state) noexcept;
 // Whether the collision shape covers the whole face on that side of the cell.
 bool face_covered(std::uint32_t state, contracts::Direction face) noexcept;
+
+// Light, by the rules of tools/compile_block_registry.py (checked against a
+// report of every state of both official servers): the light a state emits,
+// how much it dampens light passing into it (0, 1 or 15), and for states
+// whose shape occludes light, their occlusion shape (0: none).
+std::uint8_t light_emission(std::uint32_t state) noexcept;
+std::uint8_t light_dampening(std::uint32_t state) noexcept;
+std::uint16_t light_shape(std::uint32_t state) noexcept;
+// Whether light cannot pass from a cell with occlusion shape `from` to its
+// neighbor on `side` with shape `to`: the two shapes' faces between them
+// together cover the face completely.
+bool light_occluded(std::uint16_t from, std::uint16_t to, contracts::Direction side) noexcept;
+std::uint32_t light_shape_count() noexcept;
+// The 16x16 cells of one face an occlusion shape covers: bit u * 16 + v of
+// the face's two other axes, in x, y, z order.
+std::array<std::uint64_t, 4> light_face(std::uint16_t shape, contracts::Direction face) noexcept;
 
 // Wire state ids of a release: 0 to wire_state_count(release) - 1.
 std::uint32_t wire_state_count(std::string_view release) noexcept;

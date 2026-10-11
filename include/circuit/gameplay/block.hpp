@@ -5,6 +5,7 @@
 #include <circuit/gameplay/items.hpp>
 #include <cstdint>
 #include <optional>
+#include <string>
 
 // Block states of the reference rules. Blocks with rules of their own have a
 // BlockType and a packed state; every other block state of the registry
@@ -241,6 +242,11 @@ constexpr bool destroyed_by_piston(BlockType t) noexcept {
 
 // Number of internal registry states (block_registry.hpp), for iteration.
 std::uint32_t registry_state_count() noexcept;
+// The target versions' notation of a state ("minecraft:name[key=value,...]"
+// with every property, in key order), and the internal registry state it
+// names; nullopt for a state no version has.
+std::string block_notation(BlockState s);
+std::optional<std::uint32_t> registry_equivalent(BlockState s);
 
 template <class F>
 void for_each_modeled_state(F&& f) {

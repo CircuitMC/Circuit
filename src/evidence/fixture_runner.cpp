@@ -38,6 +38,9 @@ public:
         return (*be)->slots[slot];
     }
     std::vector<gameplay::Entity> entities() const override { return engine_.dump().overworld().entities; }
+    std::optional<std::pair<std::uint8_t, std::uint8_t>> light(BlockPos pos) const override {
+        return engine_.light(contracts::DimensionId::overworld, pos);
+    }
 
 private:
     runtime::Engine engine_;
@@ -598,6 +601,15 @@ FixtureReport evaluate_fixture(const Fixture& f, const ExecutorFactory& factory)
                 else ++events;
             }
         }
+        for (const auto& probe : f.light_probes) {
+            if (probe.tick != t) continue;
+            const auto observed = exec->light(probe.pos);
+            if (!observed) return report(Outcome::unsupported, "the executor does not compute light");
+            if (*observed != *probe.levels)
+                return report(Outcome::failed, std::format("tick {} light probe (line {}): expected {} {}, observed {} {}", t, probe.line,
+                                                           probe.levels->first, probe.levels->second, observed->first, observed->second));
+            ++probes;
+        }
         for (const auto& [probe, state] : p.blocks) {
             if (probe->tick != t) continue;
             const auto observed = exec->block(probe->pos);
@@ -698,6 +710,11 @@ std::expected<Fixture, std::string> record_fixture(const Fixture& skeleton, cons
         }
         for (auto& probe : out.block_probes)
             if (probe.tick == t) probe.state.value = p.mapping->notation(exec->block(probe.pos));
+        for (auto& probe : out.light_probes)
+            if (probe.tick == t) {
+                probe.levels = exec->light(probe.pos);
+                if (!probe.levels) return report(Outcome::unsupported, "the executor does not compute light");
+            }
         for (auto& probe : out.slot_probes) {
             if (probe.tick != t) continue;
             const auto s = exec->slot(probe.pos, probe.slot);

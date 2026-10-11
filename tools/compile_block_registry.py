@@ -13,14 +13,18 @@ the committed table.
 Each version maps its states to internal ids and back. Per internal block the
 table keeps the data the rules use for blocks without rules of their own:
 hardness, opacity, the effective tool and the lowest tier that harvests the
-block. Per state it keeps the collision class (empty, partial, full cube) and
-which faces the collision shape covers completely.
+block. Per state it keeps the collision class (empty, partial, full cube),
+which faces the collision shape covers completely, and its light: emission,
+dampening and, for states whose shape occludes light, the parts of each face
+the occlusion shape covers (light_of below; minecraft-data gives light per
+block and describes its default state, so the state rules are Circuit's).
 
 Usage:
   tools/compile_block_registry.py <data>/1.21.8 <data>/1.21.4 --commit <sha> \\
       --source src/gameplay/block_registry_data.cpp [--previous src/gameplay/block_registry_data.cpp]
 """
 import argparse
+import itertools
 import json
 import os
 import re
@@ -66,6 +70,87 @@ def face_covered(shape, axis, side):
             if not any(r[0] <= cu <= r[2] and r[1] <= cv <= r[3] for r in rects):
                 return False
     return True
+
+
+OXIDATION = {"": 15, "exposed_": 12, "weathered_": 8, "oxidized_": 4}
+FACE_NAMES = ("down", "up", "north", "south", "west", "east")
+# Blocks whose shape occludes light, besides slabs and stairs (minecraft.wiki
+# "Light", directional opacity). Their occlusion shape is their collision
+# shape, except snow, whose layers occlude by their height.
+SHAPE_BLOCKS = {"farmland", "dirt_path", "daylight_detector", "lectern", "enchanting_table", "end_portal_frame", "stonecutter",
+                "piston", "sticky_piston", "piston_head", "sculk_sensor", "calibrated_sculk_sensor", "sculk_shrieker", "snow"}
+
+
+def light_of(name, p, block, boxes16, default):
+    """(emission, dampening 0/1/15, occlusion boxes in sixteenths or None) of one state."""
+    e = block.get("emitLight", 0)
+    d = block.get("filterLight", 0)
+    lit = p.get("lit") == "true"
+    faces = any(p.get(f) == "true" for f in FACE_NAMES)
+    if name in ("furnace", "smoker", "blast_furnace"):
+        e = 13 if lit else 0
+    elif name == "redstone_lamp":
+        e = 15 if lit else 0
+    elif name in ("redstone_ore", "deepslate_redstone_ore"):
+        e = 9 if lit else 0
+    elif name in ("redstone_torch", "redstone_wall_torch"):
+        e = 7 if lit else 0
+    elif name in ("campfire", "soul_campfire"):
+        e = (15 if name == "campfire" else 10) if lit else 0
+    elif name.endswith("candle"):
+        e = 3 * int(p["candles"]) if lit else 0
+    elif name.endswith("candle_cake"):
+        e = 3 if lit else 0
+    elif name.endswith("copper_bulb"):
+        e = OXIDATION[name.removeprefix("waxed_").removesuffix("copper_bulb")] if lit else 0
+    elif name == "light":
+        e = int(p["level"])
+    elif name == "sea_pickle":
+        e = 3 + 3 * int(p["pickles"]) if p["waterlogged"] == "true" else 0
+    elif name == "respawn_anchor":
+        e = 15 * int(p["charges"]) // 4
+    elif name in ("cave_vines", "cave_vines_plant"):
+        e = 14 if p["berries"] == "true" else 0
+    elif name == "glow_lichen":
+        e = 7 if faces else 0
+    elif name == "vault":
+        e = 6 if p["vault_state"] == "inactive" else 12
+    elif name == "trial_spawner":
+        e = {"waiting_for_players": 4, "active": 8, "waiting_for_reward_ejection": 8, "ejecting_reward": 8}.get(p["trial_spawner_state"], 0)
+    # minecraft-data's filterLight describes the default state: a block that
+    # is waterlogged by default filters light only through its water.
+    if default.get("waterlogged") == "true" and d == 1 and p.get("waterlogged") == "false":
+        d = 0
+    if name in ("sculk_vein", "resin_clump") and p.get("waterlogged") == "false" and faces:
+        d = 0
+    occlusion = None
+    if (name.endswith("_slab") and p.get("type") != "double") or name.endswith("_stairs") or name in SHAPE_BLOCKS:
+        if not (name in ("piston", "sticky_piston") and p["extended"] == "false"):
+            occlusion = [(0, 0, 0, 16, 2 * int(p["layers"]), 16)] if name == "snow" else boxes16
+            if name in ("piston", "sticky_piston"):
+                d = 0
+    if name.endswith("_slab") and p.get("type") == "double":
+        d = 15
+    if name == "snow" and p["layers"] == "8":
+        d = 15
+    if p.get("waterlogged") == "true" and d == 0 and not name.endswith("copper_grate"):
+        d = 1
+    return e, d, occlusion
+
+
+def face_masks(boxes16):
+    """Per face (FACES order), the 16x16 cells the boxes touching that face cover, as 256-bit integers."""
+    masks = []
+    for axis, side in FACES:
+        u, v = [a for a in range(3) if a != axis]
+        mask = 0
+        for box in boxes16:
+            if (side == 0 and box[axis] == 0) or (side == 1 and box[axis + 3] == 16):
+                for a in range(box[u], box[u + 3]):
+                    for b in range(box[v], box[v + 3]):
+                        mask |= 1 << (a * 16 + b)
+        masks.append(mask)
+    return tuple(masks)
 
 
 def shape_byte(shape):
@@ -160,6 +245,9 @@ def main():
     properties = []  # (name, first value, count)
     values = []
     shape_bytes = []
+    light_bytes = []
+    occlusion_ids = []
+    occlusion_shapes = {}  # face masks -> id (from 1)
     first_state = 1
     for name, sch, b, shapes, items in internal:
         count = 1
@@ -176,6 +264,17 @@ def main():
         if len(ids) != count:
             sys.exit(f"{name}: {len(ids)} shapes for {count} states")
         shape_bytes.extend(shape_byte(shapes["shapes"][str(i)]) for i in ids)
+        combos = list(itertools.product(*[vals for _, vals in sch])) or [()]
+        names = [pname for pname, _ in sch]
+        default = dict(zip(names, combos[b["defaultState"] - b["minStateId"]]))
+        for combo, i in zip(combos, ids):
+            boxes16 = [tuple(round(c * 16) for c in box) for box in shapes["shapes"][str(i)]]
+            e, d, occlusion = light_of(b["name"], dict(zip(names, combo)), b, boxes16, default)
+            light_bytes.append(e | {0: 0, 1: 1, 15: 2}[d] << 4)
+            if occlusion is None:
+                occlusion_ids.append(0)
+            else:
+                occlusion_ids.append(occlusion_shapes.setdefault(face_masks(occlusion), len(occlusion_shapes) + 1))
         hardness = b.get("hardness")
         hardness = -1.0 if hardness is None or hardness < 0 else float(hardness)
         opaque = 1 if b.get("filterLight", 0) == 15 and not b.get("transparent", False) else 0
@@ -196,7 +295,23 @@ def main():
     for i in range(0, len(shape_bytes), 32):
         out.append("    " + ", ".join(str(c) for c in shape_bytes[i:i + 32]) + ",")
     out.append("};")
-    out.append("")
+    out += ["// Per internal state (from 1): bits 0-3 light emission, bits 4-5 dampening (0: 0, 1: 1, 2: 15).",
+            "const std::uint8_t light[] = {"]
+    for i in range(0, len(light_bytes), 32):
+        out.append("    " + ", ".join(str(c) for c in light_bytes[i:i + 32]) + ",")
+    out += ["};", "// Per internal state (from 1): its light occlusion shape (light_faces), 0 when its shape does not occlude light.",
+            "const std::uint16_t light_shape[] = {"]
+    for i in range(0, len(occlusion_ids), 32):
+        out.append("    " + ", ".join(str(c) for c in occlusion_ids[i:i + 32]) + ",")
+    out += ["};", "// Light occlusion shapes from 1: per face (down, up, north, south, west, east), the 16x16 cells the shape",
+            "// covers, as four words (bit u * 16 + v of the face's two other axes in x, y, z order).",
+            "const LightFaces light_faces[] = {", "    {},"]
+    for masks, _ in sorted(occlusion_shapes.items(), key=lambda kv: kv[1]):
+        words = []
+        for m in masks:
+            words.append("{" + ", ".join(f"0x{(m >> (64 * k)) & (2**64 - 1):x}ull" for k in range(4)) + "}")
+        out.append("    {{" + ", ".join(words) + "}},")
+    out += ["};", f"const std::uint32_t light_shape_count = {len(occlusion_shapes)};", ""]
 
     # Per version: each of its blocks in its registry order, as (first wire
     # state id, internal block). Within a block, states are in the same order

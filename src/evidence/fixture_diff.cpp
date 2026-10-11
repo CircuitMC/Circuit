@@ -88,6 +88,14 @@ std::vector<Item> observations(const Fixture& f, Tick t) {
     std::ranges::stable_sort(blocks, {}, [](const BlockProbe* p) { return p->pos; });
     for (const auto* p : blocks)
         out.push_back({std::format("block ({},{},{}) {}", p->pos.x, p->pos.y, p->pos.z, normalized_state(p->state.value.value_or("?"))), {}, p->line});
+    std::vector<const LightProbe*> lights;
+    for (const auto& p : f.light_probes)
+        if (p.tick == t) lights.push_back(&p);
+    std::ranges::stable_sort(lights, {}, [](const LightProbe* p) { return p->pos; });
+    for (const auto* p : lights)
+        out.push_back({p->levels ? std::format("light ({},{},{}) {} {}", p->pos.x, p->pos.y, p->pos.z, p->levels->first, p->levels->second)
+                                 : std::format("light ({},{},{}) ?", p->pos.x, p->pos.y, p->pos.z),
+                       {}, p->line});
     std::vector<const SlotProbe*> slots;
     for (const auto& p : f.slot_probes)
         if (p.tick == t) slots.push_back(&p);

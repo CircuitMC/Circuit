@@ -116,6 +116,8 @@ The body holds:
 - block entities' components (a container's name) and the saved data of block entities of blocks without rules of their own;
 - named extras, such as the server's metadata and player positions.
 
+Light is not saved: it is a function of the blocks, and the engine computes it again after a restart.
+
 Decoding checks every length, count and the digest. The engine's restoring constructor then checks the semantics: positions inside known columns, valid block states, and no duplicate ids. The server checks every item component of the checkpoint and the log as it checks a client's, and refuses a world with components of another protocol or outside the registries it synchronizes. A restored engine continues exactly like the one that produced the checkpoint.
 
 The server's metadata records the fingerprint of the [data packs](DATA_PACKS.md#the-worlds-data) the log was written with; a server with other data refuses to replay that log.

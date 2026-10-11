@@ -4,11 +4,13 @@
 // oracle; vanilla compatibility is not established by these values.
 #include "../oracle/oracle.hpp"
 #include "../support/check.hpp"
+#include "../support/light_reference.hpp"
 #include "../support/scenario.hpp"
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/block_registry.hpp>
 #include <circuit/gameplay/game_data.hpp>
 #include <circuit/gameplay/items.hpp>
+#include <circuit/gameplay/light.hpp>
 #include <circuit/gameplay/loot.hpp>
 #include <circuit/gameplay/recipes.hpp>
 #include <circuit/gameplay/rules.hpp>
@@ -942,6 +944,129 @@ int main() {
                 "expires after its lifetime, in its level");
         require(tickets.keeps_active(DimensionId::overworld) && !tickets.keeps_active(DimensionId::the_nether),
                 "forced tickets keep their level active");
+    });
+
+    suite.run("light properties of states", [] {
+        // The registry's light table (tools/compile_block_registry.py), as
+        // modeled states and registry states see it.
+        const auto info = [](BlockState s) { return light_info(s); };
+        require(info(blocks::lamp().with_flag(true)) == LightInfo{15, 15, 0} && info(blocks::lamp()) == LightInfo{0, 15, 0},
+                "a lit lamp emits 15");
+        require(info(blocks::glass()) == LightInfo{0, 0, 0} && info(blocks::stone()).dampening == 15
+                    && info(blocks::water_source()).dampening == 1 && info(blocks::air()) == LightInfo{},
+                "glass, stone, water, air");
+        require(info(registry_block("torch")).emission == 14 && info(registry_block("glowstone")) == LightInfo{15, 15, 0},
+                "torch and glowstone");
+        require(info(registry_block("sea_pickle", {{"pickles", "3"}, {"waterlogged", "true"}})) == LightInfo{12, 1, 0}
+                    && info(registry_block("sea_pickle", {{"pickles", "3"}, {"waterlogged", "false"}})) == LightInfo{0, 0, 0},
+                "sea pickles shine in water");
+        require(info(registry_block("respawn_anchor", {{"charges", "2"}})).emission == 7
+                    && info(registry_block("candle", {{"candles", "4"}, {"lit", "true"}, {"waterlogged", "false"}})).emission == 12,
+                "anchors and candles");
+        const auto bottom = info(registry_block("oak_slab", {{"type", "bottom"}, {"waterlogged", "false"}}));
+        const auto top = info(registry_block("oak_slab", {{"type", "top"}, {"waterlogged", "false"}}));
+        require(bottom.shape != 0 && top.shape != 0 && bottom.dampening == 0
+                    && info(registry_block("oak_slab", {{"type", "double"}, {"waterlogged", "false"}})).dampening == 15,
+                "slabs occlude by shape");
+        // Light from above into a bottom slab, and between a bottom and a top slab side by side.
+        require(light_passed(LightKind::block, 10, {}, bottom, D::down) == 9 && light_passed(LightKind::block, 10, {}, bottom, D::up) == 0,
+                "a bottom slab lets light in from above, not from below");
+        require(light_passed(LightKind::block, 10, bottom, top, D::east) == 0 && light_passed(LightKind::block, 10, bottom, bottom, D::east) == 9,
+                "a bottom and a top slab close the gap between them");
+        require(light_passed(LightKind::sky, 15, {}, info(blocks::glass()), D::down) == 15
+                    && light_passed(LightKind::sky, 15, {}, info(blocks::water_source()), D::down) == 14
+                    && light_passed(LightKind::sky, 15, {}, {}, D::east) == 14,
+                "sky light passes straight down undiminished only through cells that dampen nothing");
+    });
+
+    suite.run("light fields follow changes to the values computed from scratch", [] {
+        // A small world of 3x3 columns, 48 high, with random blocks.
+        struct World final : LightWorld {
+            std::map<BlockPos, BlockState> cells;
+            std::set<ChunkPos> columns;
+            std::map<BlockPos, BlockState> before; // changes not followed yet
+            BlockState block(BlockPos p) const override {
+                if (!columns.contains(chunk_of(p))) return BlockState::unloaded_sentinel();
+                if (const auto it = before.find(p); it != before.end()) return it->second;
+                const auto it = cells.find(p);
+                return it == cells.end() ? blocks::air() : it->second;
+            }
+            bool loaded(ChunkPos c) const override { return columns.contains(c); }
+        } world;
+        const std::vector<BlockState> palette{
+            blocks::stone(), blocks::glass(), blocks::water_source(), blocks::lamp().with_flag(true), registry_block("glowstone"),
+            registry_block("torch"), registry_block("oak_leaves", {{"distance", "7"}, {"persistent", "true"}, {"waterlogged", "false"}}),
+            registry_block("oak_slab", {{"type", "bottom"}, {"waterlogged", "false"}}),
+            registry_block("oak_slab", {{"type", "top"}, {"waterlogged", "false"}}),
+            registry_block("oak_stairs", {{"facing", "east"}, {"half", "bottom"}, {"shape", "straight"}, {"waterlogged", "false"}}),
+            registry_block("snow", {{"layers", "3"}}), registry_block("sea_pickle", {{"pickles", "2"}, {"waterlogged", "true"}}),
+            registry_block("ice"), registry_block("farmland", {{"moisture", "0"}})};
+        std::mt19937 rng(17);
+        const auto random_pos = [&] {
+            return BlockPos{static_cast<std::int32_t>(rng() % 48) - 16, static_cast<std::int32_t>(rng() % 40),
+                            static_cast<std::int32_t>(rng() % 48) - 16};
+        };
+        const auto random_state = [&] { return rng() % 3 == 0 ? blocks::air() : palette[rng() % palette.size()]; };
+        for (int i = 0; i < 2500; ++i) world.cells[random_pos()] = random_state();
+        // A roof with holes, so that sky light spreads underneath.
+        for (int x = -16; x < 32; ++x)
+            for (int z = -16; z < 32; ++z)
+                if ((x + 2 * z) % 7 != 0) world.cells[{x, 42, z}] = blocks::stone();
+        LightField field(0, 48);
+        const auto check = [&](std::string_view label) {
+            const ReferenceLight reference(world, world.columns, 0, 47);
+            for (const auto c : world.columns)
+                for (std::int32_t y = 0; y < 48; ++y)
+                    for (int i = 0; i < 256; ++i) {
+                        const BlockPos p{c.x * 16 + (i & 15), y, c.z * 16 + (i >> 4)};
+                        for (const auto kind : {LightKind::block, LightKind::sky})
+                            if (field.get(kind, p) != reference.get(kind, p))
+                                throw std::runtime_error(std::format("{}: {} light at ({},{},{}): {} instead of {}", label,
+                                                                     kind == LightKind::block ? "block" : "sky", p.x, p.y, p.z,
+                                                                     field.get(kind, p), reference.get(kind, p)));
+                    }
+        };
+        std::vector<ChunkPos> order;
+        for (int x = -1; x <= 1; ++x)
+            for (int z = -1; z <= 1; ++z) order.push_back({x, z});
+        std::ranges::shuffle(order, rng);
+        for (const auto c : order) {
+            world.columns.insert(c);
+            field.load(c, world);
+            check("columns loaded one by one");
+        }
+        for (int step = 0; step < 300; ++step) {
+            const auto p = random_pos();
+            const auto old = world.block(p);
+            world.cells[p] = random_state();
+            field.change(p, old, world);
+            if (step % 60 == 59) check(std::format("after {} changes", step + 1));
+        }
+        // Several changes made before the field follows them one by one, as
+        // the engine's light phase does.
+        for (int batch = 0; batch < 4; ++batch) {
+            std::map<BlockPos, BlockState> before;
+            for (int k = 0; k < 25; ++k) {
+                const auto p = random_pos();
+                before.emplace(p, world.block(p));
+                world.cells[p] = random_state();
+            }
+            world.before = before;
+            while (!world.before.empty()) {
+                const auto node = world.before.extract(world.before.begin());
+                field.change(node.key(), node.mapped(), world);
+            }
+            check(std::format("batch {}", batch));
+        }
+        for (const auto c : {ChunkPos{0, 0}, ChunkPos{1, -1}}) {
+            world.columns.erase(c);
+            field.unload(c, world);
+            check("a column unloaded");
+        }
+        world.columns.insert({0, 0});
+        field.load({0, 0}, world);
+        check("loaded again");
+        require(true, "every check passed");
     });
 
     suite.run("idle levels and random tick ranges", [] {

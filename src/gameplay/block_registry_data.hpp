@@ -29,6 +29,10 @@ struct VersionBlock {
     std::uint32_t first_wire;
     std::uint16_t block;
 };
+// A light occlusion shape: per face, the 16x16 cells it covers.
+struct LightFaces {
+    std::uint64_t faces[6][4];
+};
 struct VersionTable {
     const char* release;
     const VersionBlock* blocks;
@@ -43,6 +47,10 @@ extern const std::uint32_t state_count;
 extern const PropertyData properties[];
 extern const char* const values[];
 extern const std::uint8_t shapes[];
+extern const std::uint8_t light[];
+extern const std::uint16_t light_shape[];
+extern const LightFaces light_faces[];
+extern const std::uint32_t light_shape_count;
 extern const VersionTable versions[];
 extern const std::size_t version_count;
 

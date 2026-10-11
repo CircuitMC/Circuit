@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "region_context.hpp"
+#include <circuit/gameplay/light.hpp>
 #include <circuit/gameplay/rng.hpp>
 #include <circuit/gameplay/rules.hpp>
 #include <circuit/runtime/engine.hpp>
@@ -7,6 +8,7 @@
 #include <chrono>
 #include <deque>
 #include <stdexcept>
+#include <unordered_map>
 
 namespace circuit::runtime {
 using namespace detail;
@@ -36,6 +38,7 @@ struct Engine::Impl {
     Impl(const contracts::VersionBundle& b, std::uint64_t s, EngineOptions o);
 
     void advance(const std::vector<Command>& commands);
+    void light_phase(DimensionId level);
     void command_phase(const std::vector<Command>& commands);
     void chunk_phase(DimensionId level);
     void apply_levels(RegionContext& ctx, DimensionId level);
@@ -66,7 +69,62 @@ struct Engine::Impl {
     std::uint64_t epoch{};
     std::map<std::pair<ChunkKey, ChunkKey>, Tick> edges; // Last tick two columns interacted.
     gameplay::Rng layout_rng;
+    // Light of each level, brought up to date when read: the loaded columns
+    // as they were at the start of the tick, the sections the light was last
+    // brought up to date with (copy-on-write: a written section is a new
+    // one), and the tick it was.
+    using Sections = std::map<ChunkKey, std::vector<std::shared_ptr<Section>>>;
+    Sections start;
+    std::array<std::optional<gameplay::LightField>, contracts::dimension_count> light;
+    Sections lit;
+    std::array<Tick, contracts::dimension_count> lit_time{};
+    void update_light(DimensionId level);
 };
+
+namespace {
+// The blocks a level's light is computed from: its columns as they were at
+// the start of the tick, with the states some cells had before changes the
+// light has not followed yet.
+class LightBlocks final : public gameplay::LightWorld {
+public:
+    LightBlocks(const Engine::Impl::Sections& start, DimensionId level, std::int32_t min_y) : start_(start), level_(level), min_y_(min_y) {}
+    struct PosHash {
+        std::size_t operator()(BlockPos p) const noexcept {
+            return std::hash<std::uint64_t>{}(static_cast<std::uint64_t>(static_cast<std::uint32_t>(p.x)) * 0x9E3779B97F4A7C15ull
+                                              ^ static_cast<std::uint64_t>(static_cast<std::uint32_t>(p.z)) << 20 ^ static_cast<std::uint32_t>(p.y));
+        }
+    };
+    std::unordered_map<BlockPos, gameplay::BlockState, PosHash> before;
+    gameplay::BlockState block(BlockPos pos) const override {
+        if (!before.empty())
+            if (const auto it = before.find(pos); it != before.end()) return it->second;
+        const auto* sections = column(contracts::chunk_of(pos));
+        if (!sections) return gameplay::BlockState::unloaded_sentinel();
+        const auto s = static_cast<std::size_t>((pos.y - min_y_) >> 4);
+        if (s >= sections->size() || !(*sections)[s]) return gameplay::blocks::air();
+        return (*sections)[s]->blocks[contracts::section_local_index(pos)];
+    }
+    bool loaded(ChunkPos chunk) const override { return column(chunk) != nullptr; }
+    bool empty(ChunkPos chunk, std::int32_t section) const override {
+        const auto* sections = column(chunk);
+        return sections && static_cast<std::size_t>(section) < sections->size() && !(*sections)[static_cast<std::size_t>(section)];
+    }
+
+private:
+    const std::vector<std::shared_ptr<Section>>* column(ChunkPos chunk) const {
+        if (cached_ && chunk == cached_chunk_) return cached_;
+        const auto it = start_.find({level_, chunk});
+        if (it == start_.end()) return nullptr;
+        cached_chunk_ = chunk;
+        return cached_ = &it->second;
+    }
+    const Engine::Impl::Sections& start_;
+    DimensionId level_;
+    std::int32_t min_y_;
+    mutable const std::vector<std::shared_ptr<Section>>* cached_{};
+    mutable ChunkPos cached_chunk_;
+};
+} // namespace
 
 namespace {
 class RegionTask final : public Task {
@@ -182,6 +240,11 @@ void Engine::Impl::advance(const std::vector<Command>& commands) {
         stats.phase_nanoseconds[static_cast<std::size_t>(phase)] += static_cast<std::uint64_t>(
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start).count());
     };
+    // Light follows the blocks as they were at the end of the previous tick,
+    // as on the official servers: they are kept, and the light catches up
+    // with them when read.
+    start.clear();
+    for (const auto& [c, data] : world.loaded) start.emplace(c, data->sections);
     timed(Phase::commands, [&] { command_phase(commands); });
     // Then each level, in level order, runs its phases: the scheduled ticks
     // of its loaded chunks, its chunk stage, and the rest where chunks are
@@ -209,6 +272,69 @@ void Engine::Impl::advance(const std::vector<Command>& commands) {
     }
     maintain_layout();
     failed = false;
+}
+
+void Engine::Impl::update_light(DimensionId level) {
+    auto& when = lit_time[static_cast<std::size_t>(level)];
+    if (when == world.time) return;
+    const auto clock = std::chrono::steady_clock::now();
+    light_phase(level);
+    when = world.time;
+    stats.light_nanoseconds += static_cast<std::uint64_t>(
+        std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - clock).count());
+}
+
+void Engine::Impl::light_phase(DimensionId level) {
+    auto& field = light[static_cast<std::size_t>(level)];
+    LightBlocks blocks(start, level, bundle.shape(level).min_y);
+    const auto columns = [&](auto&& f) {
+        for (auto it = start.lower_bound({level, {INT32_MIN, INT32_MIN}}); it != start.end() && it->first.dimension == level; ++it)
+            f(it->first.pos, it->second);
+    };
+    if (!field) {
+        bool any = false;
+        columns([&](ChunkPos, const auto&) { any = true; });
+        if (!any) return;
+        field.emplace(bundle.shape(level).min_y, bundle.shape(level).height);
+    }
+    // Columns that left.
+    for (const auto c : field->columns())
+        if (!blocks.loaded(c)) {
+            field->unload(c, blocks);
+            lit.erase({level, c});
+        }
+    // Cells that changed in columns the light already follows, with their
+    // states before, followed one by one.
+    const auto min_y = bundle.shape(level).min_y;
+    columns([&](ChunkPos c, const std::vector<std::shared_ptr<Section>>& sections) {
+        const auto it = lit.find({level, c});
+        if (it == lit.end()) return;
+        for (std::size_t s = 0; s < sections.size(); ++s) {
+            const auto& now = sections[s];
+            const auto& then = it->second[s];
+            if (now == then) continue;
+            for (std::uint32_t i = 0; i < 4096; ++i) {
+                const auto a = then ? then->blocks[i] : gameplay::blocks::air();
+                const auto b = now ? now->blocks[i] : gameplay::blocks::air();
+                if (a == b) continue;
+                const BlockPos p{c.x * 16 + static_cast<std::int32_t>(i & 15), min_y + static_cast<std::int32_t>(s) * 16 + static_cast<std::int32_t>(i >> 8),
+                                 c.z * 16 + static_cast<std::int32_t>((i >> 4) & 15)};
+                blocks.before.emplace(p, a);
+            }
+        }
+    });
+    // In position order, so that the work does not depend on hashing.
+    std::vector<std::pair<BlockPos, gameplay::BlockState>> changes(blocks.before.begin(), blocks.before.end());
+    std::ranges::sort(changes, {}, &std::pair<BlockPos, gameplay::BlockState>::first);
+    for (const auto& [p, state] : changes) {
+        blocks.before.erase(p);
+        field->change(p, state, blocks);
+    }
+    // Columns that joined.
+    columns([&](ChunkPos c, const auto&) {
+        if (!field->has(c)) field->load(c, blocks);
+    });
+    columns([&](ChunkPos c, const std::vector<std::shared_ptr<Section>>& sections) { lit[{level, c}] = sections; });
 }
 
 void Engine::Impl::command_phase(const std::vector<Command>& commands) {
@@ -982,6 +1108,13 @@ std::optional<ColumnSnapshot> Engine::column(ChunkKey key) const {
     for (const auto& [p, be] : data->block_entities) s.block_entities.emplace_back(p, be);
     for (const auto& [id, e] : data->entities) s.entities.push_back(e);
     return s;
+}
+
+std::pair<std::uint8_t, std::uint8_t> Engine::light(DimensionId level, BlockPos pos) const {
+    impl_->update_light(level);
+    const auto& field = impl_->light[static_cast<std::size_t>(level)];
+    if (!field) return {0, 0};
+    return {field->get(gameplay::LightKind::block, pos), field->get(gameplay::LightKind::sky, pos)};
 }
 
 std::vector<std::pair<ChunkKey, gameplay::ChunkLevel>> Engine::loaded_columns() const {

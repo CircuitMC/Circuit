@@ -140,6 +140,7 @@ private:
         if (t[0] == "at") return action(t);
         if (t[0] == "change") return change(t);
         if (t[0] == "block") return block(t);
+        if (t[0] == "light" && f_.format >= 2) return light(t);
         if (t[0] == "slot") return slot(t);
         if (f_.format >= 2) {
             if (t[0] == "entity-added" || t[0] == "entity-removed" || t[0] == "entity-changed") return entity_event(t);
@@ -508,6 +509,25 @@ private:
         return {};
     }
 
+    Status light(const std::vector<std::string_view>& t) {
+        if (t.size() != 6 && t.size() != 7) return fail(line_, "light probe needs tick, position and two levels (or `?`)");
+        LightProbe p;
+        p.line = line_;
+        if (auto ok = tick_of(t[1], 0, p.tick); !ok) return ok;
+        if (auto ok = pos_of(t, 2, p.pos); !ok) return ok;
+        if (t.size() == 6) {
+            if (t[5] != "?") return fail(line_, "light probe needs two levels (or `?`)");
+        } else {
+            unsigned block{}, sky{};
+            if (!number(t[5], block) || !number(t[6], sky) || block > 15 || sky > 15) return fail(line_, "light levels are 0-15");
+            p.levels = std::pair{static_cast<std::uint8_t>(block), static_cast<std::uint8_t>(sky)};
+        }
+        if (std::ranges::any_of(f_.light_probes, [&](const LightProbe& o) { return o.tick == p.tick && o.pos == p.pos; }))
+            return fail(line_, "duplicate light probe");
+        f_.light_probes.push_back(std::move(p));
+        return {};
+    }
+
     Status slot(const std::vector<std::string_view>& t) {
         SlotProbe p;
         p.line = line_;
@@ -577,6 +597,8 @@ std::expected<StateSpec, std::string> parse_state(std::string_view text) {
 bool Fixture::is_skeleton() const noexcept {
     for (const auto& p : block_probes)
         if (!p.state.recorded()) return true;
+    for (const auto& p : light_probes)
+        if (!p.levels) return true;
     for (const auto& p : slot_probes)
         if (!p.item.recorded()) return true;
     return false;
@@ -677,6 +699,11 @@ std::string write_fixture(const Fixture& f) {
     std::ranges::stable_sort(blocks, [](const BlockProbe& a, const BlockProbe& b) { return std::tie(a.tick, a.pos) < std::tie(b.tick, b.pos); });
     for (const auto& p : blocks)
         body[p.tick].push_back(std::format("block {} {} {}", p.tick, pos_text(p.pos), p.state.value.value_or("?")));
+    auto lights = f.light_probes;
+    std::ranges::stable_sort(lights, [](const LightProbe& a, const LightProbe& b) { return std::tie(a.tick, a.pos) < std::tie(b.tick, b.pos); });
+    for (const auto& p : lights)
+        body[p.tick].push_back(p.levels ? std::format("light {} {} {} {}", p.tick, pos_text(p.pos), p.levels->first, p.levels->second)
+                                        : std::format("light {} {} ?", p.tick, pos_text(p.pos)));
     auto slots = f.slot_probes;
     std::ranges::stable_sort(slots, [](const SlotProbe& a, const SlotProbe& b) {
         return std::tie(a.tick, a.pos, a.slot) < std::tie(b.tick, b.pos, b.slot);

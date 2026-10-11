@@ -1,0 +1,124 @@
+circuit-trace 2
+title When light follows block changes
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms light redstone_lamp
+area 0 0 0 31 15 31
+ticks 12
+changes ordered
+
+at 0 set 8 4 8 minecraft:stone
+at 1 set 21 5 20 minecraft:stone
+at 2 set 8 5 8 minecraft:torch
+at 2 set 20 6 20 minecraft:redstone_lamp[lit=false]
+at 2 set 21 6 20 minecraft:lever[face=floor,facing=east,powered=false]
+at 4 set 8 5 8 minecraft:air
+at 4 use 21 6 20
+at 6 set 8 8 8 minecraft:stone
+at 7 use 21 6 20
+at 8 set 8 8 8 minecraft:air
+light 0 8 4 9 ?
+light 0 8 5 8 ?
+light 0 8 7 8 ?
+light 0 9 5 8 ?
+light 0 12 5 8 ?
+light 0 20 6 21 ?
+light 0 20 6 25 ?
+light 0 22 6 20 ?
+light 1 8 4 9 ?
+light 1 8 5 8 ?
+light 1 8 7 8 ?
+light 1 9 5 8 ?
+light 1 12 5 8 ?
+light 1 20 6 21 ?
+light 1 20 6 25 ?
+light 1 22 6 20 ?
+light 2 8 4 9 ?
+light 2 8 5 8 ?
+light 2 8 7 8 ?
+light 2 9 5 8 ?
+light 2 12 5 8 ?
+light 2 20 6 21 ?
+light 2 20 6 25 ?
+light 2 22 6 20 ?
+light 3 8 4 9 ?
+light 3 8 5 8 ?
+light 3 8 7 8 ?
+light 3 9 5 8 ?
+light 3 12 5 8 ?
+light 3 20 6 21 ?
+light 3 20 6 25 ?
+light 3 22 6 20 ?
+light 4 8 4 9 ?
+light 4 8 5 8 ?
+light 4 8 7 8 ?
+light 4 9 5 8 ?
+light 4 12 5 8 ?
+light 4 20 6 21 ?
+light 4 20 6 25 ?
+light 4 22 6 20 ?
+light 5 8 4 9 ?
+light 5 8 5 8 ?
+light 5 8 7 8 ?
+light 5 9 5 8 ?
+light 5 12 5 8 ?
+light 5 20 6 21 ?
+light 5 20 6 25 ?
+light 5 22 6 20 ?
+light 6 8 4 9 ?
+light 6 8 5 8 ?
+light 6 8 7 8 ?
+light 6 9 5 8 ?
+light 6 12 5 8 ?
+light 6 20 6 21 ?
+light 6 20 6 25 ?
+light 6 22 6 20 ?
+light 7 8 4 9 ?
+light 7 8 5 8 ?
+light 7 8 7 8 ?
+light 7 9 5 8 ?
+light 7 12 5 8 ?
+light 7 20 6 21 ?
+light 7 20 6 25 ?
+light 7 22 6 20 ?
+light 8 8 4 9 ?
+light 8 8 5 8 ?
+light 8 8 7 8 ?
+light 8 9 5 8 ?
+light 8 12 5 8 ?
+light 8 20 6 21 ?
+light 8 20 6 25 ?
+light 8 22 6 20 ?
+light 9 8 4 9 ?
+light 9 8 5 8 ?
+light 9 8 7 8 ?
+light 9 9 5 8 ?
+light 9 12 5 8 ?
+light 9 20 6 21 ?
+light 9 20 6 25 ?
+light 9 22 6 20 ?
+light 10 8 4 9 ?
+light 10 8 5 8 ?
+light 10 8 7 8 ?
+light 10 9 5 8 ?
+light 10 12 5 8 ?
+light 10 20 6 21 ?
+light 10 20 6 25 ?
+light 10 22 6 20 ?
+light 11 8 4 9 ?
+light 11 8 5 8 ?
+light 11 8 7 8 ?
+light 11 9 5 8 ?
+light 11 12 5 8 ?
+light 11 20 6 21 ?
+light 11 20 6 25 ?
+light 11 22 6 20 ?
+light 12 8 4 9 ?
+light 12 8 5 8 ?
+light 12 8 7 8 ?
+light 12 9 5 8 ?
+light 12 12 5 8 ?
+light 12 20 6 21 ?
+light 12 20 6 25 ?
+light 12 22 6 20 ?

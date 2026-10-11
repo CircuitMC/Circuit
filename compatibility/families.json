@@ -409,18 +409,36 @@
           "id": "sky_light",
           "name": "Sky light propagation",
           "milestone": "C2",
-          "impl": "missing",
-          "evidence": "none",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/sky_light",
+            "trace/light_shapes",
+            "trace/light_timing",
+            "light/official_states"
+          ],
+          "note": "Sky light from above the world, undiminished straight down through cells that dampen nothing, otherwise spreading like block light; computed from the blocks at the end of the previous tick",
           "deviations": [
-            "everything is sent fully lit"
+            "clients still receive full sky light (C2.3b)"
           ]
         },
         {
           "id": "block_light",
           "name": "Block light emission and propagation",
           "milestone": "C2",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/light_spread",
+            "trace/light_shapes",
+            "trace/light_timing",
+            "light/official_states"
+          ],
+          "note": "Emission, dampening and occlusion shape of every state of both versions match the official servers; light spreads one level per block, more through dampening blocks, never through faces that occlusion shapes close together",
+          "deviations": [
+            "clients still receive no block light (C2.3b)",
+            "light at the edge of the loaded area is not compared"
+          ]
         },
         {
           "id": "heightmaps",

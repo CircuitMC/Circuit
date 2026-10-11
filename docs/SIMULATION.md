@@ -36,8 +36,10 @@ The tiers are defined in the architecture: L0 exact, L1 region-equivalent, L2 de
 | `block_entity_order` | L0 | piston_slime, piston_observed, hopper_competition |
 | `hopper` | L0 | hopper_chain, hopper_competition, double_chest, hopper_chained |
 | `water` | L0 | water_channel, water_drop, water_washes |
+| `light` | L0 | light_spread, sky_light, light_shapes, light_timing; every state's emission, dampening and occlusion shape (tests/fixtures/light) |
 | `piston` | L2 | Harness traces pass. Gaps are listed in the table: drop offsets and item pushing. |
-| `random_ticks`, `wheat`, `item_entity`, `chunk_tickets`, `entity_order` | L2 | Documented behavior only. These are not compared with the target version; circuit-trace v1 has no entity observations. |
+| `chunk_tickets` | L2 | ring_blocks, unload_reload. New chunks load at once and dropped chunks unload at once, where the official servers take a varying number of ticks. |
+| `random_ticks`, `wheat`, `item_entity`, `entity_order` | L2 | Documented behavior only. These are not compared with the target version; circuit-trace v1 has no entity observations. |
 | `container_menus` | L2 | A 48-step client scenario gives the same windows as the official servers of both versions, and so does a 48-step crafting scenario in the own window (with data packs). The crafting table, special recipes and the recipe book are not modeled, and no harness traces of menus exist. |
 | `survival_actions` | L2 | Documented hardness, tools and pickup rules; block loot tables and 2x2 crafting from data packs, compared with the official servers. Thrown items have no random spread, death drops spread in a fixed pattern, and loot tables with random parts drop nothing. |
 
@@ -192,6 +194,10 @@ Every observable action produces a trace record keyed by (tick, level, phase, ro
   - **Server tickets:** the start ticket at the spawn chunk (level 32 − spawnChunkRadius, 2 by default); per player, a loading ticket over their view distance (level 31) and a simulation ticket at their chunk (level 31 − simulation distance). Only forced and portal tickets survive a restart.
   - **Changes** apply in the level's chunk stage, after its scheduled ticks, as on the official servers: a chunk that a command drops still runs that tick's scheduled ticks. Lifetimes end at the chunk stage they reach.
   - **Unload and reload** (both official servers): unloading keeps all chunk state. A dropped chunk's pending ticks keep the delay they had left, counted from the tick after it dropped; after a reload they wait out that delay, and the chunk's scheduled ticks and block entities run again two ticks after the reload, its pending block events at once. A reload increments the chunk generation, and commands can name the generation they expect.
+- **Light** (minecraft.wiki "Light"; both official servers, compared with light probes):
+  - **Per state:** an emission (0–15), a dampening (0, 1 or 15) and, for slabs, stairs, snow, farmland, dirt paths, pistons and a few others, an occlusion shape. The block registry holds them for every state of both versions, from minecraft-data with Circuit's own state rules (lit blocks, candles, sea pickles, waterlogged states and so on); a report of every state from both official servers matches it exactly.
+  - **Spreading:** light passes to a neighbor one level lower, or lower by the neighbor's dampening when that is more, unless the faces of the two cells' occlusion shapes between them together cover the face. Block light starts at emitters; sky light starts above the world, and level 15 passes straight down undiminished into cells that dampen nothing.
+  - **Timing:** light follows the blocks as they were at the end of the previous tick: a change made in one tick shows in the next. The engine keeps those blocks and brings the light up to date when it is read, following changes incrementally (columns that load and unload, cells that change); the result does not depend on when it is read.
 
 ## Part I mechanism contracts
 
@@ -352,7 +358,7 @@ Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked with `--check
   - chunk tickets: no teleport, portal or ender pearl tickets yet; new chunks load at once (the official servers take 2 to 4 ticks, varying between runs); dropped chunks unload at once and reloads happen in the chunk stage (the official servers may keep a dropped chunk at border for a tick or two, and restore a cached chunk during the command, which moves restored ticks by a tick between runs);
   - container menus without the crafting table, special recipes and the recipe book; loot tables without their random parts, and fixed drops for the modeled blocks.
 - Blocks without rules of their own, among them TNT, honey blocks, rails and coral fans, are inert: solid when they have a collision shape, conductors when opaque, immovable by pistons, and drop only from deterministic loot tables. Primed TNT entities and explosions are not modeled. TNT duplication machines cannot run; piston trace coverage does not establish compatibility for them. See [technical machines](COMPATIBILITY.md#technical-machines).
-- There is no lighting, world generation or mob spawning, and players cannot reach the Nether or the End.
+- Light is computed but not yet sent to clients or read by rules (crops ignore it). There is no world generation or mob spawning, and players cannot reach the Nether or the End.
 - Snapshots copy whole column data on first write, and commit is serial. On the measured workloads, coordination overhead outweighs parallel gains.
 - Commands validate their inputs at full width before converting them; for example, a spawn position is checked against the world border and height in fixed-point units before it is narrowed to a block. Out-of-range input is rejected with no effect.
 - A capacity failure, such as exceeding 1,000,000 block events in one tick, fails the tick and leaves the engine unusable. Nothing is silently dropped. The neighbor-update chain limit is the exception: it drops updates as the target version does, and records it.

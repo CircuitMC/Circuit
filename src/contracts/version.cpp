@@ -92,11 +92,15 @@ constexpr std::array reference_v4_mechanisms{
         "Fixed-point gravity, drag and axis collision; despawns after 6000 ticks; pushed by moving blocks. Ids "
         "of entities spawned outside the command phase are assigned in serial order. Gaps: no merging; cannot "
         "enter unloaded chunks; physics not compared with the target version."},
-    MechanismEntry{"chunk_tickets", l0_exact, l2_declared_deviation, documented_behavior,
-        "A ticket of radius r makes chunks within Chebyshev distance r ticking and loads the chunks within "
-        "max(r + 1, its load radius) without ticking (border level); players' load radii are their view distances. "
-        "Gaps: no ticket types or level propagation; unloaded chunks keep pending ticks with absolute due "
-        "times."},
+    MechanismEntry{"chunk_tickets", l0_exact, l2_declared_deviation, harness_trace,
+        "Typed tickets with a level, a square and a lifetime; load and simulation levels decide each chunk's "
+        "status and what runs; changes take effect in each level's chunk stage after its scheduled ticks; "
+        "dropped chunks keep their pending ticks' remaining delay and resume two ticks after a reload "
+        "(ring_blocks, unload_reload). Gaps: new chunks load at once, dropped chunks unload at once."},
+    MechanismEntry{"light", l0_exact, l0_exact, harness_trace,
+        "Block light and sky light from each state's emission, dampening and occlusion shape, following the "
+        "blocks as they stood at the end of the previous tick (light_spread, sky_light, light_shapes, "
+        "light_timing). Not covered: columns at the edge of the loaded area."},
     MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, documented_behavior,
         "Entities tick in ascending id order once per tick. Gap: not compared with the target version "
         "(circuit-trace v1 has no entity observations)."},
