@@ -73,9 +73,10 @@ When the command is applied:
 A refused action is answered with the current state of the affected blocks, or, for a command refused when applied, restored by the client when the action is acknowledged. Every block action is acknowledged with its sequence number.
 
 **World delivery.**
-- **Chunks:** encoded from copy-on-write column snapshots: paletted block sections, plains biome, heightmaps and full sky light: the engine computes light (see [light](SIMULATION.md#reference-rules-v9)), but clients do not receive it yet. At most 32 chunks per player per tick, nearest first.
+- **Chunks:** encoded from copy-on-write column snapshots: paletted block sections, plains biome, heightmaps and each section's block and sky light (see [light](SIMULATION.md#reference-rules-v9)); sections that are dark are marked empty, and the section above the world has full sky light. At most 32 chunks per player per tick, nearest first.
 - **View and simulation:** as in the target versions, each player has two chunk tickets. A loading ticket of level 31 over the view distance the client asked for (at most `view-distance`) loads those chunks, and two rings beyond them at levels 32 and 33, without simulating them. A simulation ticket of level 31 − `simulation-distance` at the player's chunk simulates what is loaded: entities within the simulation distance, blocks one chunk further. Every chunk of the view is sent, and chunks one beyond it stay shown while loaded. The spawn chunks keep a start ticket of level 30 (spawnChunkRadius 2). See [chunk levels](SIMULATION.md#reference-rules-v9).
 - **Block states:** every displayed property is rule state, including dust shapes, lever mounting and repeater locks, so clients see the state the rules hold.
+- **Light updates:** light follows the blocks of the previous tick, as on the official servers; each tick, the sections whose light changed are sent as light updates to every player who has the chunk. The unmodified clients of both versions hold the same light as with the official servers (14 positions around a lit lamp and an overhang, also after joining again).
 - **Updates and entities:** block changes in a tick become block updates for every player who has the chunk. Item entities are spawned, moved and removed from the engine trace.
 
 ## Survival and inventories
@@ -149,7 +150,7 @@ Each version bundle names its registry set (`circuit-server --compatibility` pri
 - Item use other than placement (eating, buckets of other fluids, tools on blocks) and item cooldowns.
 - Respawning picks the exact world spawn; the target version picks a random position around it. Death drops spread in a fixed pattern instead of at random.
 - Swimming and crawling poses, climbing, elytra flight and vehicles: their movement is checked like walking.
-- Lighting: clients see everything fully lit by sky light, although the engine computes light. World generation is a flat floor.
+- World generation is a flat floor.
 - Saving is limited to what [persistence](PERSISTENCE.md) describes. Checkpoints are written in the background; the game thread takes a snapshot and syncs the start of a new log segment.
 - Signed chat: chat is relayed as system messages. Commands are `/help`, `/players`, `/tp`, `/gamemode survival|creative|spectator`, `/forceload` and `/tps`, with no command-tree suggestions and no permission levels.
 - Display gaps: block entity data is not sent to clients, so moving pistons are not animated. Other blocks and entities are out of scope.

@@ -38,6 +38,7 @@ public:
     Tick now() const override { return phase_ == Phase::commands ? world_.time - 1 : world_.time; }
     BlockState block(BlockPos pos) override;
     void write_block(BlockPos pos, BlockState state) override;
+    std::uint8_t light(BlockPos pos) override;
     std::optional<contracts::Generation> chunk_generation(ChunkPos chunk) override;
     bool has_tick(TickList list, BlockPos pos, BlockType block) override;
     void add_tick(TickList list, BlockPos pos, BlockType block, Tick due, std::int8_t priority, std::uint32_t seq) override;

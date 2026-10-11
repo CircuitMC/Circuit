@@ -1728,6 +1728,30 @@ struct Game::Impl final : GameServices {
         }
     }
 
+    // Light that changed in chunks players have, as light updates; light
+    // follows the blocks of the previous tick, as on the official servers.
+    void publish_light() {
+        if (players.empty()) return;
+        std::map<ChunkPos, std::vector<std::int32_t>> changed;
+        for (const auto& [c, s] : engine->light_changes(overworld)) changed[c].push_back(s);
+        const auto shape = WorldShape{bundle.world.min_y, bundle.world.height};
+        for (auto& [c, sections] : changed) {
+            std::optional<Bytes> packet;
+            for (auto& [id, p] : players) {
+                if (!p.sent.contains(c)) continue;
+                if (!packet) {
+                    const auto light = engine->column_light({overworld, c});
+                    if (!light) break;
+                    std::ranges::sort(sections);
+                    protocol::Writer w;
+                    write_light(w, &*light, shape, sections);
+                    packet = wire.light_update(c.x, c.z, w.take());
+                }
+                p.peer->send(*packet);
+            }
+        }
+    }
+
     void publish_chunks() {
         const auto shape = WorldShape{bundle.world.min_y, bundle.world.height};
         std::map<ChunkPos, ChunkLevel> loaded;
@@ -1757,7 +1781,7 @@ struct Game::Impl final : GameServices {
             });
             if (wanted.size() > chunks_per_tick) wanted.resize(chunks_per_tick);
             for (const auto c : wanted)
-                if (auto column = engine->column({overworld, c})) jobs.push_back({id, std::move(*column), {}});
+                if (auto column = engine->column({overworld, c})) jobs.push_back({id, std::move(*column), {}, engine->column_light({overworld, c})});
         }
         encode_chunks(jobs, look_up, shape);
         // Packets go out per player in the order chosen above.
@@ -1781,11 +1805,14 @@ struct Game::Impl final : GameServices {
         std::uint64_t player;
         runtime::ColumnSnapshot column;
         Bytes fields;
+        std::optional<ColumnLight> light;
     };
     // Chunk packets are encoded in parallel: the engine does not run meanwhile,
     // so the encoders only read its published state.
     void encode_chunks(std::vector<ChunkJob>& jobs, const NeighborLookup& look_up, WorldShape shape) {
-        const auto encode = [&](ChunkJob& job) { job.fields = encode_chunk(job.column, palette, look_up, shape, biome, wire.protocol()); };
+        const auto encode = [&](ChunkJob& job) {
+            job.fields = encode_chunk(job.column, palette, look_up, shape, biome, wire.protocol(), job.light ? &*job.light : nullptr);
+        };
         if (jobs.size() < 4 || !encode_pool) {
             for (auto& job : jobs) encode(job);
             return;
@@ -1929,6 +1956,7 @@ struct Game::Impl final : GameServices {
             send_presences();
             advance();
         }
+        publish_light();
         publish_chunks();
         publish_players();
         for (auto& [id, p] : players) {

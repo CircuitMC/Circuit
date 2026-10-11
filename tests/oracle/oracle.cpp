@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "oracle.hpp"
+#include "../support/light_reference.hpp"
 #include <circuit/gameplay/rules.hpp>
 #include <algorithm>
 #include <stdexcept>
@@ -37,10 +38,13 @@ public:
         return it == lv().blocks.end() ? blocks::air() : it->second;
     }
     void write_block(BlockPos pos, BlockState state) override {
-        if (block(pos).is_unloaded()) throw std::logic_error("oracle: write to unloaded position");
+        const auto before = block(pos);
+        if (before.is_unloaded()) throw std::logic_error("oracle: write to unloaded position");
+        if (!(gameplay::light_info(before) == gameplay::light_info(state))) ++lv().light_version;
         if (state.is_air()) lv().blocks.erase(pos);
         else lv().blocks[pos] = state;
     }
+    std::uint8_t light(BlockPos pos) override { return o_.light(dimension(), pos); }
     std::optional<contracts::Generation> chunk_generation(ChunkPos chunk) override {
         if (lv().level(chunk) == ChunkLevel::unloaded) return std::nullopt;
         return lv().chunks.at(chunk).generation;
@@ -137,7 +141,34 @@ Oracle::Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed, std::
     : bundle_(bundle), seed_(seed), data_(std::move(data)), ctx_(std::make_unique<Context>(*this)) {
     if (!bundle.rules) throw std::invalid_argument("oracle: bundle has no executable rules");
 }
+// The blocks of a level at the start of a tick, kept while nothing light
+// depends on changes, and light computed from scratch around the columns read.
+struct Oracle::LightSnapshot {
+    std::uint64_t version{};
+    std::map<BlockPos, BlockState> blocks;
+    std::set<ChunkPos> loaded;
+    std::int32_t top{};
+    std::map<ChunkPos, test::ReferenceLight> around;
+};
+
 Oracle::~Oracle() = default;
+
+std::uint8_t Oracle::light(DimensionId level, BlockPos pos) {
+    auto& snap = light_[static_cast<std::size_t>(level)];
+    const auto chunk = contracts::chunk_of(pos);
+    if (!snap || !snap->loaded.contains(chunk)) return 0;
+    if (pos.y > snap->top) return 15;
+    auto it = snap->around.find(chunk);
+    if (it == snap->around.end()) {
+        std::set<ChunkPos> columns;
+        for (int dx = -1; dx <= 1; ++dx)
+            for (int dz = -1; dz <= 1; ++dz)
+                if (snap->loaded.contains({chunk.x + dx, chunk.z + dz})) columns.insert({chunk.x + dx, chunk.z + dz});
+        const test::MapLightWorld world(snap->blocks, snap->loaded);
+        it = snap->around.try_emplace(chunk, world, columns, bundle_.shape(level).min_y, snap->top).first;
+    }
+    return std::max(it->second.get(gameplay::LightKind::block, pos), it->second.get(gameplay::LightKind::sky, pos));
+}
 
 ChunkLevel Oracle::Level::level(ChunkPos chunk) const {
     const auto it = chunks.find(chunk);
@@ -160,6 +191,22 @@ void Oracle::advance(const std::vector<contracts::Command>& commands) {
     failed_ = true; // Cleared only when the whole tick completes.
     ++time_;
     trace_.clear();
+    // Light during this tick follows the blocks as they are now, at its start.
+    for (const auto level : contracts::level_order) {
+        auto& lv = at(level);
+        auto& snap = light_[static_cast<std::size_t>(level)];
+        if (snap && snap->version == lv.light_version) continue;
+        if (!snap) snap = std::make_unique<LightSnapshot>();
+        snap->version = lv.light_version;
+        snap->blocks = lv.blocks;
+        snap->loaded.clear();
+        for (const auto& [c, info] : lv.chunks)
+            if (info.level != ChunkLevel::unloaded) snap->loaded.insert(c);
+        std::int32_t highest = bundle_.shape(level).min_y;
+        for (const auto& [p, s] : snap->blocks) highest = std::max(highest, p.y);
+        snap->top = std::min(bundle_.shape(level).min_y + bundle_.shape(level).height - 1, highest + 16);
+        snap->around.clear();
+    }
 
     for (std::size_t i = 0; i < commands.size(); ++i) {
         const auto& c = commands[i];
@@ -241,12 +288,14 @@ void Oracle::apply_levels(DimensionId level) {
                 resumes = time_ + reload_resume;
             }
             lv.chunks[c] = {generation, want, levels, 0, resumes};
+            ++lv.light_version;
             ctx_->record(TraceKind::chunk_loaded, origin, generation.value, static_cast<std::uint64_t>(want), 0);
         } else if (want == ChunkLevel::unloaded) {
             ctx_->record(TraceKind::chunk_unloaded, origin, lv.chunks[c].generation.value, 0, 0);
             lv.chunks[c].level = ChunkLevel::unloaded;
             lv.chunks[c].saved_at = time_ + 1;
             lv.chunks[c].resumes = 0;
+            ++lv.light_version;
         } else {
             ctx_->record(TraceKind::chunk_level_changed, origin, static_cast<std::uint64_t>(current),
                          static_cast<std::uint64_t>(want), 0);

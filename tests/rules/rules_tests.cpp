@@ -1069,6 +1069,40 @@ int main() {
         require(true, "every check passed");
     });
 
+    suite.run("crops grow only in light 9 or more", [] {
+        // 16x16 wheat sealed in stone (floor, walls and roof); with a
+        // glowstone in the middle, light 15 - distance reaches the crops.
+        auto fast = bundle();
+        fast.limits.random_tick_speed = 200;
+        for (const bool lit : {false, true}) {
+            Sim s(fast, 5, 1);
+            std::vector<CommandBody> box, crops;
+            for (int x = -1; x <= 16; ++x)
+                for (int z = -1; z <= 16; ++z) {
+                    box.push_back(place({x, -1, z}, blocks::stone()));
+                    box.push_back(place({x, 1, z}, blocks::stone()));
+                    if (x == -1 || x == 16 || z == -1 || z == 16) box.push_back(place({x, 0, z}, blocks::stone()));
+                    else if (lit && x == 8 && z == 8) box.push_back(place({x, 0, z}, registry_block("glowstone")));
+                    else crops.push_back(place({x, 0, z}, blocks::wheat()));
+                }
+            // Light follows the previous tick's blocks: the crops come a tick
+            // after the box closes.
+            s.tick(box);
+            s.tick(crops);
+            s.until(80);
+            unsigned grown = 0, far = 0;
+            for (int x = 0; x < 16; ++x)
+                for (int z = 0; z < 16; ++z) {
+                    const auto w = s.at({x, 0, z});
+                    if (!w.is(BlockType::wheat) || w.level() == 0) continue;
+                    ++grown;
+                    if (std::abs(x - 8) + std::abs(z - 8) > 6) ++far;
+                }
+            require(lit ? grown > 20 : grown == 0, std::format("{}: {} crops grew", lit ? "lit" : "dark", grown));
+            require(far == 0, std::format("{} crops grew with light below 9", far));
+        }
+    });
+
     suite.run("idle levels and random tick ranges", [] {
         // A level is awake while active, and for 300 ticks after it was last
         // active or started.

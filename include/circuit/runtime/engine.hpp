@@ -161,6 +161,14 @@ public:
     // current tick: computed from the blocks at the end of the previous one.
     // 0 and 0 where no column is loaded.
     [[nodiscard]] std::pair<std::uint8_t, std::uint8_t> light(contracts::DimensionId level, contracts::BlockPos pos) const;
+    // The light of a column's sections, from the lowest, as the protocol packs
+    // it (gameplay::LightField::section); nullopt when the column is not loaded.
+    struct SectionLight {
+        std::array<std::uint8_t, 2048> block{}, sky{};
+    };
+    [[nodiscard]] std::optional<std::vector<SectionLight>> column_light(contracts::ChunkKey key) const;
+    // The sections of a level whose light changed since the last call.
+    [[nodiscard]] std::vector<std::pair<contracts::ChunkPos, std::int32_t>> light_changes(contracts::DimensionId level);
     // Loaded columns and their chunk levels, by level, then in coordinate order.
     [[nodiscard]] std::vector<std::pair<contracts::ChunkKey, gameplay::ChunkLevel>> loaded_columns() const;
 

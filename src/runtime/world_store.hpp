@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
 #include <circuit/contracts/version.hpp>
+#include <circuit/gameplay/light.hpp>
 #include <circuit/gameplay/world_types.hpp>
 #include <array>
 #include <map>
@@ -107,6 +108,9 @@ struct WorldStore {
     Tick started{}; // see WorldDump::started
     std::uint64_t next_entity_id{1};
     std::array<LevelCounters, contracts::dimension_count> levels{};
+    // Each level's light while the random-tick phase reads it (up to date for
+    // the tick); null otherwise.
+    std::array<const gameplay::LightField*, contracts::dimension_count> light{};
     gameplay::TicketSet tickets;
     std::map<contracts::PlayerKey, gameplay::PlayerInventory> players; // changed in the command phase only
 

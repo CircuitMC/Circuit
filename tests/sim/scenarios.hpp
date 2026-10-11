@@ -476,6 +476,33 @@ inline Scenario chunk_levels_scenario() {
     return s;
 }
 
+// Wheat in a stone box lit by a glowstone in its middle: only the crops
+// within light 9 grow (light follows the previous tick's blocks, so the
+// crops come a tick after the box). A lamp switched on later lights more.
+inline Scenario crop_light_scenario() {
+    return {"crop_light", 71, 240, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        for (int x = -1; x <= 16; ++x)
+            for (int z = -1; z <= 16; ++z) {
+                const bool wall = x == -1 || x == 16 || z == -1 || z == 16;
+                if (t == 2) {
+                    c.push_back(place({x, -1, z}, blocks::stone()));
+                    c.push_back(place({x, 1, z}, blocks::stone()));
+                    if (wall) c.push_back(place({x, 0, z}, blocks::stone()));
+                    if (x == 4 && z == 4) c.push_back(place({x, 0, z}, registry_block("glowstone")));
+                    if (x == 12 && z == 12) c.push_back(place({x, 0, z}, blocks::lamp()));
+                }
+                if (t == 3 && !wall && !(x == 4 && z == 4) && !(x == 12 && z == 12) && !(x == 12 && z == 11))
+                    c.push_back(place({x, 0, z}, blocks::wheat()));
+            }
+        // A lever beside the lamp, switched on at tick 120.
+        if (t == 3) c.push_back(place({12, 0, 11}, blocks::lever()));
+        if (t == 120) c.push_back(use_lever({12, 0, 11}));
+        return c;
+    }, 20};
+}
+
 // The scenario with every position raised by `dy` blocks, so that levels
 // whose world starts at y = 0 (the Nether, the End) hold it too.
 inline Scenario raised(Scenario s, std::int32_t dy) {
@@ -537,7 +564,7 @@ inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
-            transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario()};
+            transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario()};
 }
 
 } // namespace circuit::test

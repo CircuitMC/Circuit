@@ -502,7 +502,13 @@ void Engine::Impl::random_phase(DimensionId level) {
         }
         ++index;
     });
+    // Rules that read light see it as of the start of the tick.
+    if (!roots.empty()) {
+        update_light(level);
+        world.light[static_cast<std::size_t>(level)] = light[static_cast<std::size_t>(level)] ? &*light[static_cast<std::size_t>(level)] : nullptr;
+    }
     run_phase(Phase::random_ticks, level, std::move(roots));
+    world.light[static_cast<std::size_t>(level)] = nullptr;
 }
 
 void Engine::Impl::block_event_phase(DimensionId level) {
@@ -1115,6 +1121,25 @@ std::pair<std::uint8_t, std::uint8_t> Engine::light(DimensionId level, BlockPos 
     const auto& field = impl_->light[static_cast<std::size_t>(level)];
     if (!field) return {0, 0};
     return {field->get(gameplay::LightKind::block, pos), field->get(gameplay::LightKind::sky, pos)};
+}
+
+std::optional<std::vector<Engine::SectionLight>> Engine::column_light(ChunkKey key) const {
+    impl_->update_light(key.dimension);
+    const auto& field = impl_->light[static_cast<std::size_t>(key.dimension)];
+    if (!field || !field->has(key.pos)) return std::nullopt;
+    std::vector<SectionLight> out(static_cast<std::size_t>(impl_->bundle.shape(key.dimension).height / 16));
+    for (std::size_t s = 0; s < out.size(); ++s) {
+        field->section(gameplay::LightKind::block, key.pos, static_cast<std::int32_t>(s), out[s].block);
+        field->section(gameplay::LightKind::sky, key.pos, static_cast<std::int32_t>(s), out[s].sky);
+    }
+    return out;
+}
+
+std::vector<std::pair<ChunkPos, std::int32_t>> Engine::light_changes(DimensionId level) {
+    impl_->update_light(level);
+    auto& field = impl_->light[static_cast<std::size_t>(level)];
+    if (!field) return {};
+    return field->take_changed();
 }
 
 std::vector<std::pair<ChunkKey, gameplay::ChunkLevel>> Engine::loaded_columns() const {

@@ -57,9 +57,18 @@ public:
     ~LightField();
 
     // Light at a position; 0 outside the field's columns and the world height.
+    // Reads (get, has, section) may run on several threads at once while the
+    // field does not change.
     [[nodiscard]] std::uint8_t get(LightKind kind, contracts::BlockPos pos) const noexcept;
     [[nodiscard]] bool has(contracts::ChunkPos chunk) const noexcept;
     [[nodiscard]] std::vector<contracts::ChunkPos> columns() const;
+
+    // One section's light (from the lowest, 0) as the protocol packs it: two
+    // cells per byte, the even index in the low half, cells in y, z, x
+    // order. False when the column is not in the field.
+    bool section(LightKind kind, contracts::ChunkPos chunk, std::int32_t index, std::array<std::uint8_t, 2048>& out) const;
+    // The sections whose light changed since the last call, in no order.
+    std::vector<std::pair<contracts::ChunkPos, std::int32_t>> take_changed();
 
     // A column joins the field: `world` reports it loaded.
     void load(contracts::ChunkPos chunk, const LightWorld& world);

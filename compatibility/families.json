@@ -415,12 +415,10 @@
             "trace/sky_light",
             "trace/light_shapes",
             "trace/light_timing",
-            "light/official_states"
+            "light/official_states",
+            "realclient/light"
           ],
-          "note": "Sky light from above the world, undiminished straight down through cells that dampen nothing, otherwise spreading like block light; computed from the blocks at the end of the previous tick",
-          "deviations": [
-            "clients still receive full sky light (C2.3b)"
-          ]
+          "note": "Sky light from above the world, undiminished straight down through cells that dampen nothing, otherwise spreading like block light; computed from the blocks at the end of the previous tick"
         },
         {
           "id": "block_light",
@@ -432,11 +430,11 @@
             "trace/light_spread",
             "trace/light_shapes",
             "trace/light_timing",
-            "light/official_states"
+            "light/official_states",
+            "realclient/light"
           ],
           "note": "Emission, dampening and occlusion shape of every state of both versions match the official servers; light spreads one level per block, more through dampening blocks, never through faces that occlusion shapes close together",
           "deviations": [
-            "clients still receive no block light (C2.3b)",
             "light at the edge of the loaded area is not compared"
           ]
         },
@@ -821,9 +819,11 @@
           "name": "Wheat growth",
           "milestone": "C5",
           "impl": "partial",
-          "evidence": "none",
+          "evidence": "documented",
+          "note": "Grows only with light 9 or more at its own cell (minecraft.wiki \"Wheat Crops\"), light as the tick sees it",
           "deviations": [
-            "ignores light, farmland and hydration"
+            "grows with probability 1/3 per random tick, ignoring farmland, hydration and neighboring crops",
+            "does not break in darkness and can be placed anywhere"
           ]
         },
         {

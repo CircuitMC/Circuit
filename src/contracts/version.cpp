@@ -87,7 +87,8 @@ constexpr std::array reference_v4_mechanisms{
         "level-wide stream. Gaps: chunks run in coordinate order instead of a "
         "shuffled order; not compared with the target version."},
     MechanismEntry{"wheat", l0_exact, l2_declared_deviation, documented_behavior,
-        "Gap: grows with probability 1/3 per random tick, ignoring light, hydration and support."},
+        "Grows only with light 9 or more at its own cell. Gap: grows with probability 1/3 per random tick, ignoring "
+        "hydration and support."},
     MechanismEntry{"item_entity", l0_exact, l2_declared_deviation, documented_behavior,
         "Fixed-point gravity, drag and axis collision; despawns after 6000 ticks; pushed by moving blocks. Ids "
         "of entities spawned outside the command phase are assigned in serial order. Gaps: no merging; cannot "

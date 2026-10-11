@@ -1491,6 +1491,41 @@ int main() {
         c.send(State::play, "use_item_on",
                Writer().varint(0).position({1, -60, 1}).varint(1).f32(0.5f).f32(0.5f).f32(0.5f).boolean(false).boolean(false).varint(3));
         require(update({2, -60, 1}) == tables.state_id("minecraft:redstone_lamp[lit=true]"), "the lamp lights on 1.21.4");
+        // The next tick's light update carries the lamp's block light.
+        const auto block_light_at = [&](protocol::WirePosition at) -> std::optional<int> {
+            const auto want = c.id(State::play, Bound::clientbound, "light_update");
+            const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+            while (std::chrono::steady_clock::now() < deadline) {
+                auto p = c.next(std::chrono::milliseconds(500));
+                if (!p || p->id != want) continue;
+                auto r = p->reader();
+                const auto x = r.varint().value(), z = r.varint().value();
+                if (x != (at.x >> 4) || z != (at.z >> 4)) continue;
+                std::array<std::vector<std::uint64_t>, 4> masks;
+                for (auto& m : masks) {
+                    const auto n = r.varint().value();
+                    for (int i = 0; i < n; ++i) m.push_back(static_cast<std::uint64_t>(r.i64().value()));
+                }
+                const auto has = [](const std::vector<std::uint64_t>& m, int i) {
+                    return static_cast<std::size_t>(i / 64) < m.size() && ((m[static_cast<std::size_t>(i / 64)] >> (i % 64)) & 1);
+                };
+                const int index = ((at.y + 64) >> 4) + 1; // light sections start one below the world
+                std::array<std::vector<Bytes>, 2> arrays;
+                for (auto& a : arrays) {
+                    const auto n = r.varint().value();
+                    for (int i = 0; i < n; ++i) a.push_back(r.prefixed_bytes(2048).value());
+                }
+                if (!has(masks[1], index)) continue;
+                int k = 0;
+                for (int i = 0; i < index; ++i) k += has(masks[1], i) ? 1 : 0;
+                const auto& nibbles = arrays[1].at(static_cast<std::size_t>(k));
+                const int cell = ((at.y + 64) & 15) << 8 | (at.z & 15) << 4 | (at.x & 15);
+                const auto byte = static_cast<std::uint8_t>(nibbles.at(static_cast<std::size_t>(cell / 2)));
+                return cell % 2 == 0 ? byte & 15 : byte >> 4;
+            }
+            return std::nullopt;
+        };
+        require(block_light_at({2, -60, 1}) == 15, "the lit lamp's light reaches the client");
         s.stop();
     });
 

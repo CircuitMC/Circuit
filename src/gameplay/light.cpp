@@ -60,6 +60,7 @@ std::uint8_t light_passed(LightKind kind, std::uint8_t level, const LightInfo& f
 
 struct LightField::Impl {
     struct Section {
+        bool changed{};
         std::uint8_t uniform[2]{0, 0};
         std::unique_ptr<std::array<std::uint8_t, 4096>> cells[2];
         [[nodiscard]] std::uint8_t get(LightKind k, std::size_t i) const noexcept {
@@ -83,6 +84,7 @@ struct LightField::Impl {
     std::int32_t min_y;
     std::int32_t height;
     std::unordered_map<std::uint64_t, Column> columns;
+    std::vector<std::pair<std::uint64_t, std::int32_t>> changed; // sections marked `changed`
 
     static std::uint64_t key(ChunkPos c) noexcept { return contracts::pack_chunk(c); }
     [[nodiscard]] std::int32_t top() const noexcept { return min_y + height - 1; }
@@ -109,14 +111,31 @@ struct LightField::Impl {
         auto* c = column(contracts::chunk_of(p));
         return c ? &c->sections[static_cast<std::size_t>((p.y - min_y) >> 4)] : nullptr;
     }
-    const Section* section(BlockPos p) const noexcept { return const_cast<Impl*>(this)->section(p); }
 
-    [[nodiscard]] std::uint8_t get(LightKind k, BlockPos p) const noexcept {
+    [[nodiscard]] std::uint8_t get(LightKind k, BlockPos p) noexcept {
         const auto* s = section(p);
         return s ? s->get(k, index(p)) : 0;
     }
+    // Reads that may run on several threads at once: no lookup cache.
+    [[nodiscard]] const Column* find(ChunkPos c) const noexcept {
+        const auto it = columns.find(key(c));
+        return it == columns.end() ? nullptr : &it->second;
+    }
+    [[nodiscard]] std::uint8_t read(LightKind k, BlockPos p) const noexcept {
+        if (!in_height(p.y)) return 0;
+        const auto* c = find(contracts::chunk_of(p));
+        return c ? c->sections[static_cast<std::size_t>((p.y - min_y) >> 4)].get(k, index(p)) : 0;
+    }
     void set(LightKind k, BlockPos p, std::uint8_t v) {
-        if (auto* s = section(p)) s->set(k, index(p), v);
+        auto* s = section(p);
+        if (!s) return;
+        const auto i = index(p);
+        if (s->get(k, i) == v) return;
+        s->set(k, i, v);
+        if (!s->changed) {
+            s->changed = true;
+            changed.emplace_back(key(contracts::chunk_of(p)), (p.y - min_y) >> 4);
+        }
     }
     // Whether the section of `chunk` at height `y` and the same sections of
     // its four neighbors hold one level each (or are absent), each within
@@ -227,13 +246,35 @@ LightField::LightField(LightField&&) noexcept = default;
 LightField& LightField::operator=(LightField&&) noexcept = default;
 LightField::~LightField() = default;
 
-std::uint8_t LightField::get(LightKind kind, BlockPos pos) const noexcept { return impl_->get(kind, pos); }
-bool LightField::has(ChunkPos chunk) const noexcept { return impl_->columns.contains(Impl::key(chunk)); }
+std::uint8_t LightField::get(LightKind kind, BlockPos pos) const noexcept { return impl_->read(kind, pos); }
+bool LightField::has(ChunkPos chunk) const noexcept { return impl_->find(chunk) != nullptr; }
 std::vector<ChunkPos> LightField::columns() const {
     std::vector<ChunkPos> out;
     for (const auto& [k, c] : impl_->columns)
         out.push_back({static_cast<std::int32_t>(static_cast<std::uint32_t>(k >> 32)), static_cast<std::int32_t>(static_cast<std::uint32_t>(k))});
     std::ranges::sort(out);
+    return out;
+}
+
+bool LightField::section(LightKind kind, ChunkPos chunk, std::int32_t index, std::array<std::uint8_t, 2048>& out) const {
+    const auto* column = impl_->find(chunk);
+    if (!column || index < 0 || static_cast<std::size_t>(index) >= column->sections.size()) return false;
+    const auto& s = column->sections[static_cast<std::size_t>(index)];
+    for (std::size_t i = 0; i < 2048; ++i)
+        out[i] = static_cast<std::uint8_t>(s.get(kind, 2 * i) | s.get(kind, 2 * i + 1) << 4);
+    return true;
+}
+
+std::vector<std::pair<ChunkPos, std::int32_t>> LightField::take_changed() {
+    std::vector<std::pair<ChunkPos, std::int32_t>> out;
+    for (const auto& [k, s] : impl_->changed) {
+        const ChunkPos c{static_cast<std::int32_t>(static_cast<std::uint32_t>(k >> 32)), static_cast<std::int32_t>(static_cast<std::uint32_t>(k))};
+        auto* column = impl_->column(c);
+        if (!column) continue; // unloaded since
+        column->sections[static_cast<std::size_t>(s)].changed = false;
+        out.emplace_back(c, s);
+    }
+    impl_->changed.clear();
     return out;
 }
 

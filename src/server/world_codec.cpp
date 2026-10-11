@@ -95,8 +95,54 @@ void encode_section(protocol::Writer& w, const std::array<std::int32_t, 4096>& s
     if (length_prefixed) w.varint(0);
 }
 
+void write_light(protocol::Writer& w, const ColumnLight* light, WorldShape shape, std::span<const std::int32_t> sections) {
+    const auto count = shape.height / 16;
+    const auto words = static_cast<std::size_t>((count + 2 + 63) / 64);
+    std::vector<std::uint64_t> sky_mask(words), block_mask(words), sky_empty(words), block_empty(words);
+    std::vector<const std::array<std::uint8_t, 2048>*> sky_arrays, block_arrays;
+    static const std::array<std::uint8_t, 2048> full = [] {
+        std::array<std::uint8_t, 2048> a;
+        a.fill(0xFF);
+        return a;
+    }();
+    const auto bit = [](std::vector<std::uint64_t>& mask, std::int32_t index) {
+        mask[static_cast<std::size_t>(index / 64)] |= std::uint64_t{1} << (index % 64);
+    };
+    const auto dark = [](const std::array<std::uint8_t, 2048>& a) {
+        return std::ranges::all_of(a, [](std::uint8_t v) { return v == 0; });
+    };
+    for (const auto s : sections) {
+        const auto index = s + 1; // the light sections start one below the world
+        if (s < 0) {
+            bit(sky_empty, index);
+            bit(block_empty, index);
+        } else if (s >= count || !light) {
+            bit(sky_mask, index);
+            sky_arrays.push_back(&full);
+            bit(block_empty, index);
+        } else {
+            const auto& l = (*light)[static_cast<std::size_t>(s)];
+            if (dark(l.sky)) bit(sky_empty, index);
+            else {
+                bit(sky_mask, index);
+                sky_arrays.push_back(&l.sky);
+            }
+            if (dark(l.block)) bit(block_empty, index);
+            else {
+                bit(block_mask, index);
+                block_arrays.push_back(&l.block);
+            }
+        }
+    }
+    w.bitset(sky_mask).bitset(block_mask).bitset(sky_empty).bitset(block_empty);
+    for (const auto* arrays : {&sky_arrays, &block_arrays}) {
+        w.varint(static_cast<std::int32_t>(arrays->size()));
+        for (const auto* a : *arrays) w.prefixed_bytes(std::as_bytes(std::span(*a)));
+    }
+}
+
 Bytes encode_chunk(const runtime::ColumnSnapshot& column, const BlockPalette& palette, const NeighborLookup& at,
-                   WorldShape shape, std::int32_t biome_id, std::int32_t protocol) {
+                   WorldShape shape, std::int32_t biome_id, std::int32_t protocol, const ColumnLight* light) {
     const auto sections = static_cast<std::size_t>(shape.height / 16);
     const bool modern = protocol >= 770;
     const std::int32_t direct_bits = 15; // ceil(log2(state count)): 27946 states (1.21.8), 27866 (1.21.4)
@@ -161,15 +207,9 @@ Bytes encode_chunk(const runtime::ColumnSnapshot& column, const BlockPalette& pa
     }
     w.prefixed_bytes(data.bytes());
     w.varint(0); // block entities: the client creates them from block states
-    // Light: sky light 15 everywhere, no block light, for every section plus one below and above.
-    const auto light_sections = sections + 2;
-    const std::uint64_t all = light_sections >= 64 ? ~0ULL : ((1ULL << light_sections) - 1);
-    const std::array<std::uint64_t, 1> mask{all}, none{0};
-    w.bitset(mask).bitset(none).bitset(none).bitset(mask);
-    w.varint(static_cast<std::int32_t>(light_sections));
-    const Bytes full(2048, std::byte{0xFF});
-    for (std::size_t i = 0; i < light_sections; ++i) w.prefixed_bytes(full);
-    w.varint(0);
+    std::vector<std::int32_t> all;
+    for (std::int32_t s = -1; s <= static_cast<std::int32_t>(sections); ++s) all.push_back(s);
+    write_light(w, light, shape, all);
     return w.take();
 }
 

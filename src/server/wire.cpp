@@ -18,7 +18,7 @@ struct Wire::Ids {
     std::int32_t cfg_custom_payload, cfg_disconnect, cfg_finish, cfg_keep_alive, cfg_registry_data, cfg_features,
         cfg_known_packs, cfg_update_tags;
     std::int32_t login, set_health, game_event, player_abilities, set_held_slot, spawn_position, set_time, chunk_center,
-        chunk_batch_start, chunk_batch_finished, level_chunk, forget_chunk, block_update, block_changed_ack,
+        chunk_batch_start, chunk_batch_finished, level_chunk, light_update, forget_chunk, block_update, block_changed_ack,
         player_position, keep_alive, system_chat, player_info_update, player_info_remove, add_entity,
         set_entity_data, remove_entities, entity_position_sync, rotate_head, container_set_content, disconnect, take_item_entity,
         open_screen, container_close, container_set_slot, set_cursor_item, respawn, combat_kill, damage_event, sb_container_click, sb_container_close,
@@ -65,6 +65,7 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->chunk_batch_start = cb(State::play, "chunk_batch_start");
     ids->chunk_batch_finished = cb(State::play, "chunk_batch_finished");
     ids->level_chunk = cb(State::play, "level_chunk_with_light");
+    ids->light_update = cb(State::play, "light_update");
     ids->forget_chunk = cb(State::play, "forget_level_chunk");
     ids->block_update = cb(State::play, "block_update");
     ids->block_changed_ack = cb(State::play, "block_changed_ack");
@@ -263,6 +264,9 @@ Bytes Wire::chunk_center(std::int32_t x, std::int32_t z) const { return packet(i
 Bytes Wire::chunk_batch_start() const { return packet(id_->chunk_batch_start, Writer()); }
 Bytes Wire::chunk_batch_finished(std::int32_t count) const { return packet(id_->chunk_batch_finished, Writer().varint(count)); }
 Bytes Wire::chunk(Bytes fields) const { return packet(id_->level_chunk, Writer().raw(fields)); }
+Bytes Wire::light_update(std::int32_t x, std::int32_t z, Bytes light) const {
+    return packet(id_->light_update, Writer().varint(x).varint(z).raw(light));
+}
 Bytes Wire::forget_chunk(std::int32_t x, std::int32_t z) const { return packet(id_->forget_chunk, Writer().i32(z).i32(x)); }
 Bytes Wire::block_update(WirePosition pos, std::int32_t state) const {
     return packet(id_->block_update, Writer().position(pos).varint(state));

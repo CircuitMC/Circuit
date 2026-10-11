@@ -81,6 +81,23 @@ private:
     std::array<std::unordered_map<std::uint64_t, std::vector<std::uint8_t>>, 2> levels_;
 };
 
+// Blocks in a map (absent: air) over a set of loaded columns, for light.
+class MapLightWorld final : public gameplay::LightWorld {
+public:
+    MapLightWorld(const std::map<contracts::BlockPos, gameplay::BlockState>& blocks, const std::set<contracts::ChunkPos>& loaded)
+        : blocks_(blocks), loaded_(loaded) {}
+    gameplay::BlockState block(contracts::BlockPos p) const override {
+        if (!loaded_.contains(contracts::chunk_of(p))) return gameplay::BlockState::unloaded_sentinel();
+        const auto it = blocks_.find(p);
+        return it == blocks_.end() ? gameplay::blocks::air() : it->second;
+    }
+    bool loaded(contracts::ChunkPos c) const override { return loaded_.contains(c); }
+
+private:
+    const std::map<contracts::BlockPos, gameplay::BlockState>& blocks_;
+    const std::set<contracts::ChunkPos>& loaded_;
+};
+
 // The blocks of one level of a dump, for light.
 class DumpLightWorld final : public gameplay::LightWorld {
 public:

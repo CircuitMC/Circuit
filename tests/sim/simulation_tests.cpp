@@ -620,8 +620,9 @@ int main() {
     });
 
     suite.run("chunk levels decide what runs", [&] {
-        const auto& ref = references.back();
-        require(scenarios.back().name == "chunk_levels", "the chunk level scenario is last");
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the chunk level scenario");
+        const auto& ref = references[index];
         const auto at = [&](Tick t) -> const WorldDump& { return ref.dumps.at(t); };
         using enum DimensionId;
         const auto stored = [&](Tick t, std::int32_t x, DimensionId level = overworld) {
@@ -726,6 +727,29 @@ int main() {
                 "1.21.4: not without a player, nor for a spectator");
         require(grown("java-1.21.4", player(8.5)) > 0 && grown("java-1.21.4", player(127.5)) > 0, "1.21.4: within 128 blocks");
         require(grown("java-1.21.4", player(136.5)) == 0, "1.21.4: not 128 blocks from the chunk's center");
+    });
+
+    suite.run("light decides where crops grow", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("crop_light"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the crop scenario");
+        const auto& ref = references[index];
+        // Crops grown by tick `t`, by their distance from the glowstone at
+        // (4,0,4) and from the lamp at (12,0,12).
+        const auto grown = [&](Tick t, auto&& where) {
+            unsigned n = 0;
+            for (int x = 0; x < 16; ++x)
+                for (int z = 0; z < 16; ++z) {
+                    const auto w = state_at(ref.dumps.at(t), {x, 0, z});
+                    if (w.is(BlockType::wheat) && w.level() > 0 && where(x, z)) ++n;
+                }
+            return n;
+        };
+        const auto near_glowstone = [](int x, int z) { return std::abs(x - 4) + std::abs(z - 4) <= 6; };
+        const auto near_lamp = [](int x, int z) { return std::abs(x - 12) + std::abs(z - 12) <= 6; };
+        const auto anywhere = [](int, int) { return true; };
+        require(grown(120, near_glowstone) > 0 && grown(120, anywhere) == grown(120, near_glowstone), "only crops in light 9 or more grew");
+        require(grown(240, near_lamp) > 0 && grown(240, [&](int x, int z) { return !near_glowstone(x, z) && !near_lamp(x, z); }) == 0,
+                "the lit lamp lets the crops around it grow");
     });
 
     suite.run("light follows the blocks of the previous tick", [&] {

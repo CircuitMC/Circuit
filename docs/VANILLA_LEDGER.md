@@ -55,7 +55,7 @@ Feature counts per implementation state, then the number of features with compar
 | V29 Bosses and progression | C8 | 11 | 0 / 0 | 0 / 0 | 4 / 4 | 7 / 7 | 0 / 0 | 0 / 0 |
 | V30 Data-pack execution | C1, C5, C9 | 8 | 0 / 0 | 1 / 1 | 0 / 0 | 6 / 7 | 1 / 0 | 0 / 0 |
 | V31 Commands and administration | C9 | 117 | 0 / 0 | 6 / 6 | 17 / 21 | 85 / 90 | 9 / 0 | 0 / 0 |
-| V32 Client-visible world state | C10 | 287 | 5 / 5 | 47 / 47 | 0 / 0 | 228 / 234 | 7 / 1 | 6 / 6 |
+| V32 Client-visible world state | C10 | 287 | 5 / 5 | 48 / 48 | 0 / 0 | 227 / 233 | 7 / 1 | 6 / 6 |
 | V33 Communication and connection lifecycle | C10 | 85 | 17 / 17 | 19 / 19 | 0 / 0 | 41 / 49 | 8 / 0 | 0 / 0 |
 | V34 Save compatibility | C11 | 6 | 1 / 1 | 0 / 1 | 0 / 0 | 4 / 3 | 1 / 1 | 0 / 1 |
 | V35 Version-specific gameplay and optional profiles | C12 | 6 | 0 / 0 | 0 / 0 | 1 / 3 | 3 / 3 | 2 / 0 | 0 / 0 |
@@ -77,7 +77,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 | biome | minecraft-data pc/1.21.4/biomes.json / minecraft-data pc/1.21.8/biomes.json | 65 / 65 | 0 / 0 | 1 / 1 | 64 / 64 | 0 / 0 |
 | particle | minecraft-data pc/1.21.4/particles.json / minecraft-data pc/1.21.8/particles.json | 112 / 114 | 0 / 0 | 0 / 0 | 0 / 0 | 112 / 114 |
 | command | approximate: minecraft-data pc/1.20.5/commands.json / approximate: minecraft-data pc/1.21.6/commands.json | 83 / 88 | 0 / 0 | 4 / 4 | 0 / 0 | 79 / 84 |
-| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 20 / 20 | 62 / 62 | 0 / 0 | 152 / 162 |
+| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 20 / 20 | 63 / 63 | 0 / 0 | 151 / 161 |
 | block_state | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 27866 / 27946 | — | — | — | — |
 | sound_event | minecraft-data pc/1.21.4/sounds.json / minecraft-data pc/1.21.8/sounds.json | 1651 / 1728 | — | — | — | — |
 | recipe | minecraft-data pc/1.21.4/recipes.json / minecraft-data pc/1.21.8/recipes.json | 1557 / 1607 | — | — | — | — |
@@ -127,7 +127,7 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 13 |
+| black_box | passing | 14 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 5 |
 | official_trace | passing | 36 |
@@ -199,8 +199,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Sky light propagation | C2 | partial, compared | partial, compared | `light/official_states`, `trace/light_shapes`, `trace/light_timing`, `trace/sky_light`; clients still receive full sky light (C2.3b); Sky light from above the world, undiminished straight down through cells that dampen nothing, otherwise spreading like block light; computed from the blocks at the end of the previous tick |
-| Block light emission and propagation | C2 | partial, compared | partial, compared | `light/official_states`, `trace/light_shapes`, `trace/light_spread`, `trace/light_timing`; clients still receive no block light (C2.3b); light at the edge of the loaded area is not compared; Emission, dampening and occlusion shape of every state of both versions match the official servers; light spreads one level per block, more through dampening blocks, never through faces that occlusion shapes close together |
+| Sky light propagation | C2 | partial, compared | partial, compared | `light/official_states`, `realclient/light`, `trace/light_shapes`, `trace/light_timing`, `trace/sky_light`; Sky light from above the world, undiminished straight down through cells that dampen nothing, otherwise spreading like block light; computed from the blocks at the end of the previous tick |
+| Block light emission and propagation | C2 | partial, compared | partial, compared | `light/official_states`, `realclient/light`, `trace/light_shapes`, `trace/light_spread`, `trace/light_timing`; light at the edge of the loaded area is not compared; Emission, dampening and occlusion shape of every state of both versions match the official servers; light spreads one level per block, more through dampening blocks, never through faces that occlusion shapes close together |
 | Heightmaps | C2 | partial, none | partial, none | Sent for the flat world |
 | Day-night cycle and time advancement | C2 | partial, none | partial, none | World age is sent; daylight stays fixed |
 | Rain, thunder, snow and their effects | C2 | missing, none | missing, none |  |
@@ -271,7 +271,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Wheat growth | C5 | partial, none | partial, none | ignores light, farmland and hydration |
+| Wheat growth | C5 | partial, documented | partial, documented | does not break in darkness and can be placed anywhere; grows with probability 1/3 per random tick, ignoring farmland, hydration and neighboring crops; Grows only with light 9 or more at its own cell (minecraft.wiki "Wheat Crops"), light as the tick sees it |
 | Farmland, hydration and trampling | C5 | missing, none | missing, none |  |
 | Other crops and plants: carrots, potatoes, beetroots, stems, sugar cane, cactus, bamboo, kelp, cocoa, berries, nether wart, chorus | C5 | missing, none | missing, none |  |
 | Saplings, trees and leaf decay | C5 | missing, none | missing, none |  |

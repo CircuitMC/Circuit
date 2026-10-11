@@ -282,6 +282,17 @@
       "location": "tests/fixtures/light/, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness light report",
       "status": "passing",
       "description": "Emission, dampening and light occlusion shape of every block state, reported by both official servers (27,946 states of 1.21.8, 27,866 of 1.21.4, identical where both have them); Circuit's table matches every one"
+    },
+    {
+      "id": "realclient/light",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-client-harness/scripts/light-build.txt and light-check.txt",
+      "status": "passing",
+      "description": "The unmodified client builds a lit lamp and a stone overhang with a glass pane, then joins again so that its light comes from the server's chunk data; the light it holds at 14 positions is identical with the official server and with Circuit, in both runs, on both versions"
     }
   ]
 }

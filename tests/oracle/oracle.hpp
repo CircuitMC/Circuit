@@ -58,6 +58,7 @@ private:
         std::uint64_t next_block_entity_order{};
         std::map<contracts::PlayerKey, gameplay::Presence> presences;
         contracts::Tick last_active{};
+        std::uint64_t light_version{}; // changes whenever something light depends on changes
         [[nodiscard]] gameplay::ChunkLevel level(contracts::ChunkPos chunk) const;
         // The chunk's simulation level; none when unloaded.
         [[nodiscard]] std::uint8_t simulation(contracts::ChunkPos chunk) const;
@@ -66,6 +67,10 @@ private:
     };
 
     void apply_levels(contracts::DimensionId level);
+    // Light as a tick sees it (gameplay::RuleContext::light), computed from
+    // scratch from the blocks at the start of the tick.
+    std::uint8_t light(contracts::DimensionId level, contracts::BlockPos pos);
+    struct LightSnapshot;
     void run_tick_list(contracts::DimensionId level, contracts::TickList list);
     void run_random_ticks(contracts::DimensionId level);
     void run_block_events(contracts::DimensionId level);
@@ -84,6 +89,7 @@ private:
     std::map<contracts::PlayerKey, gameplay::PlayerInventory> players_;
     std::uint64_t next_entity_id_{1};
     std::vector<contracts::TraceRecord> trace_;
+    std::array<std::unique_ptr<LightSnapshot>, contracts::dimension_count> light_;
     std::unique_ptr<Context> ctx_;
 };
 

@@ -198,6 +198,7 @@ Every observable action produces a trace record keyed by (tick, level, phase, ro
   - **Per state:** an emission (0–15), a dampening (0, 1 or 15) and, for slabs, stairs, snow, farmland, dirt paths, pistons and a few others, an occlusion shape. The block registry holds them for every state of both versions, from minecraft-data with Circuit's own state rules (lit blocks, candles, sea pickles, waterlogged states and so on); a report of every state from both official servers matches it exactly.
   - **Spreading:** light passes to a neighbor one level lower, or lower by the neighbor's dampening when that is more, unless the faces of the two cells' occlusion shapes between them together cover the face. Block light starts at emitters; sky light starts above the world, and level 15 passes straight down undiminished into cells that dampen nothing.
   - **Timing:** light follows the blocks as they were at the end of the previous tick: a change made in one tick shows in the next. The engine keeps those blocks and brings the light up to date when it is read, following changes incrementally (columns that load and unload, cells that change); the result does not depend on when it is read.
+  - **Rules that read it:** in the random-tick phase, a rule reads the most of a cell's block and sky light. Wheat grows only with light 9 or more at its own cell (minecraft.wiki "Wheat Crops").
 
 ## Part I mechanism contracts
 
@@ -354,11 +355,11 @@ Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked with `--check
   - piston drops without random offsets and simplified item pushing;
   - simplified item physics without merging, and entity order without target-version trace observations;
   - per-section random streams and coordinate-ordered random-tick chunks;
-  - wheat ignoring light and hydration;
+  - wheat ignoring hydration and neighboring crops;
   - chunk tickets: no teleport, portal or ender pearl tickets yet; new chunks load at once (the official servers take 2 to 4 ticks, varying between runs); dropped chunks unload at once and reloads happen in the chunk stage (the official servers may keep a dropped chunk at border for a tick or two, and restore a cached chunk during the command, which moves restored ticks by a tick between runs);
   - container menus without the crafting table, special recipes and the recipe book; loot tables without their random parts, and fixed drops for the modeled blocks.
 - Blocks without rules of their own, among them TNT, honey blocks, rails and coral fans, are inert: solid when they have a collision shape, conductors when opaque, immovable by pistons, and drop only from deterministic loot tables. Primed TNT entities and explosions are not modeled. TNT duplication machines cannot run; piston trace coverage does not establish compatibility for them. See [technical machines](COMPATIBILITY.md#technical-machines).
-- Light is computed but not yet sent to clients or read by rules (crops ignore it). There is no world generation or mob spawning, and players cannot reach the Nether or the End.
+- Light at the edge of the loaded area is not compared with the target versions. There is no world generation or mob spawning, and players cannot reach the Nether or the End.
 - Snapshots copy whole column data on first write, and commit is serial. On the measured workloads, coordination overhead outweighs parallel gains.
 - Commands validate their inputs at full width before converting them; for example, a spawn position is checked against the world border and height in fixed-point units before it is narrowed to a block. Out-of-range input is rejected with no effect.
 - A capacity failure, such as exceeding 1,000,000 block events in one tick, fails the tick and leaves the engine unusable. Nothing is silently dropped. The neighbor-update chain limit is the exception: it drops updates as the target version does, and records it.

@@ -83,6 +83,12 @@ void RegionContext::write_block(BlockPos pos, BlockState state) {
     cell = state;
 }
 
+std::uint8_t RegionContext::light(BlockPos pos) {
+    const auto* field = world_.light[static_cast<std::size_t>(dimension())];
+    if (!field) throw std::logic_error("runtime: light read outside the random-tick phase");
+    return std::max(field->get(gameplay::LightKind::block, pos), field->get(gameplay::LightKind::sky, pos));
+}
+
 std::optional<contracts::Generation> RegionContext::chunk_generation(ChunkPos chunk) {
     // Loading state and generations are fixed while a phase runs: no ownership needed.
     if (const auto* data = world_.find_loaded(key(chunk))) return data->generation;

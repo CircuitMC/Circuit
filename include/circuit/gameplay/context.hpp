@@ -78,6 +78,10 @@ public:
     virtual BlockState block(BlockPos pos) = 0;
     // Raw write without reactions. Precondition: block(pos) is not the sentinel.
     virtual void write_block(BlockPos pos, BlockState state) = 0;
+    // The light at a position as the tick sees it: the most of its block
+    // light and sky light, from the blocks at the end of the previous tick
+    // (gameplay/light.hpp). Available in the random-tick phase.
+    virtual std::uint8_t light(BlockPos pos) = 0;
     // Generation of a loaded chunk; nullopt when unloaded. Loading state is
     // fixed for the duration of a phase.
     virtual std::optional<contracts::Generation> chunk_generation(ChunkPos chunk) = 0;

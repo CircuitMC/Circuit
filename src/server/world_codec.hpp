@@ -42,14 +42,23 @@ struct WorldShape {
     std::int32_t height;
 };
 
+// A column's light, per section from the lowest (runtime::Engine::column_light).
+using ColumnLight = std::vector<runtime::Engine::SectionLight>;
+
+// Light data as chunk packets and light updates carry it, for the sections
+// `sections` (from the lowest; -1 and the count are the ones below and above
+// the world): each section's sky and block light, or a mark that it is all
+// dark. Below the world nothing is lit; above it, sky light is full. Without
+// a column's light (not computed), every section has full sky light.
+void write_light(protocol::Writer& w, const ColumnLight* light, WorldShape shape, std::span<const std::int32_t> sections);
+
 // Fields of a level_chunk_with_light packet after its id: coordinates,
-// heightmaps, section data, block entities and light. The world is lit fully
-// by sky light; Circuit has no lighting engine yet. Protocol 772 (1.21.5+)
+// heightmaps, section data, block entities and light. Protocol 772 (1.21.5+)
 // sends heightmaps as a typed list and implies data array lengths; protocol
 // 769 (1.21.4) sends heightmaps as NBT and prefixes data arrays with their
 // length.
 Bytes encode_chunk(const runtime::ColumnSnapshot& column, const BlockPalette& palette, const NeighborLookup& at,
-                   WorldShape shape, std::int32_t biome_id, std::int32_t protocol);
+                   WorldShape shape, std::int32_t biome_id, std::int32_t protocol, const ColumnLight* light = nullptr);
 
 // Section data of one 16x16x16 section as sent in chunk packets (block count,
 // block states, biomes), exposed for tests. The block count excludes every
