@@ -29,6 +29,7 @@ The configuration file holds `key=value` lines; `#` starts a comment. Unknown ke
 | `auth-timeout-ms` | `5000` | Deadline for one verification |
 | `max-players`, `max-connections` | `20`, `256` | Players in the game; open sockets of any kind |
 | `view-distance`, `simulation-distance` | `6`, `4` | Chunks loaded and sent around a player; chunks simulated around a player (at most 8) |
+| `pause-when-empty-seconds` | `60` | Seconds without players after which the world stops ticking until a player joins; `0` or less never pauses |
 | `compression-threshold` | `256` | Packets of at least this size are compressed; `-1` disables compression |
 | `network-threads`, `workers` | `2`, `4` | Asio threads for connections; engine worker threads |
 | `login-timeout`, `keep-alive-timeout` | `30`, `30` | Seconds |
@@ -73,13 +74,13 @@ A refused action is answered with the current state of the affected blocks, or, 
 
 **World delivery.**
 - **Chunks:** encoded from copy-on-write column snapshots: paletted block sections, plains biome, heightmaps and full sky light, with no lighting engine yet. At most 32 chunks per player per tick, nearest first.
-- **View and simulation:** as in the target versions, each player has two chunk tickets. A loading ticket of level 31 over the view distance the client asked for (at most `view-distance`) loads those chunks, and two rings beyond them at levels 32 and 33, without simulating them. A simulation ticket of level 31 − `simulation-distance` at the player's chunk simulates what is loaded: entities within the simulation distance, blocks one chunk further. Every chunk of the view is sent, and chunks one beyond it stay shown while loaded. The spawn chunks keep a start ticket of level 30 (spawnChunkRadius 2). See [chunk levels](SIMULATION.md#reference-rules-v8).
+- **View and simulation:** as in the target versions, each player has two chunk tickets. A loading ticket of level 31 over the view distance the client asked for (at most `view-distance`) loads those chunks, and two rings beyond them at levels 32 and 33, without simulating them. A simulation ticket of level 31 − `simulation-distance` at the player's chunk simulates what is loaded: entities within the simulation distance, blocks one chunk further. Every chunk of the view is sent, and chunks one beyond it stay shown while loaded. The spawn chunks keep a start ticket of level 30 (spawnChunkRadius 2). See [chunk levels](SIMULATION.md#reference-rules-v9).
 - **Block states:** every displayed property is rule state, including dust shapes, lever mounting and repeater locks, so clients see the state the rules hold.
 - **Updates and entities:** block changes in a tick become block updates for every player who has the chunk. Item entities are spawned, moved and removed from the engine trace.
 
 ## Survival and inventories
 
-`/gamemode survival|creative|spectator` switches modes. Inventories belong to the simulation: every change is a command the rules apply (see [the simulation guide](SIMULATION.md#tick-structure)), so it is logged, replayed and checked for item conservation like the world.
+`/forceload add <x> <z> [<x> <z>]`, `/forceload remove <x> <z> [<x> <z>]`, `/forceload remove all` and `/forceload query [<x> <z>]` mark chunks of the overworld as force-loaded, as in the target versions: block coordinates (`~` for the player's own) name the chunks, at most 256 per command, and feedback uses the official translation keys. Each marked chunk is a forced ticket of level 31 that persists in the world. `/gamemode survival|creative|spectator` switches modes. Inventories belong to the simulation: every change is a command the rules apply (see [the simulation guide](SIMULATION.md#tick-structure)), so it is logged, replayed and checked for item conservation like the world.
 
 - **Placement:** uses up the item; a water bucket leaves an empty bucket.
 - **Digging:** the server follows the target version's destroy progress for the block, the held tool, the ground and water. A finish is accepted once the progress since the start reaches 70 % (network delay); one that comes too early completes when the progress reaches the whole block. A finish for another block, or without a start, is refused.
@@ -150,7 +151,7 @@ Each version bundle names its registry set (`circuit-server --compatibility` pri
 - Swimming and crawling poses, climbing, elytra flight and vehicles: their movement is checked like walking.
 - Lighting: everything is fully lit by sky light. World generation is a flat floor.
 - Saving is limited to what [persistence](PERSISTENCE.md) describes. Checkpoints are written in the background; the game thread takes a snapshot and syncs the start of a new log segment.
-- Signed chat: chat is relayed as system messages. Commands are `/help`, `/players`, `/tp`, `/gamemode survival|creative|spectator` and `/tps`, with no command-tree suggestions.
+- Signed chat: chat is relayed as system messages. Commands are `/help`, `/players`, `/tp`, `/gamemode survival|creative|spectator`, `/forceload` and `/tps`, with no command-tree suggestions and no permission levels.
 - Display gaps: block entity data is not sent to clients, so moving pistons are not animated. Other blocks and entities are out of scope.
 - **Other versions:** 1.21.8 and 1.21.4 only. Anvil import and export are defined for 1.21.8 worlds only. A world directory belongs to one bundle; `--migrate-world` copies it to another bundle when both run the same rules.
 

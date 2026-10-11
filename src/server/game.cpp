@@ -8,6 +8,7 @@
 #include <circuit/gameplay/survival.hpp>
 #include <circuit/storage/world_directory.hpp>
 #include <algorithm>
+#include <charconv>
 #include <atomic>
 #include <asio/post.hpp>
 #include <asio/thread_pool.hpp>
@@ -252,6 +253,7 @@ struct Game::Impl final : GameServices {
 
     std::map<std::uint64_t, Player> players;
     std::uint32_t next_ticket{1000};
+    std::map<ChunkPos, std::uint32_t> forced; // the overworld's force-loaded chunks and their tickets
     std::int32_t next_entity_id{1};
     std::unordered_map<std::uint64_t, Tracked> tracked;
     std::int32_t dimension_type{};
@@ -260,9 +262,11 @@ struct Game::Impl final : GameServices {
     std::unordered_map<std::uint16_t, std::int32_t> item_wire; // reference item -> wire item id
     bool started{false};
 
-    // Tick control (freeze and step) and timing of recent ticks.
+    // Tick control (freeze and step, pause when empty) and timing of recent ticks.
     bool frozen{false};
     std::uint64_t pending_steps{};
+    std::uint64_t empty_ticks{};
+    bool paused{false};
     std::array<double, 1200> durations{}; // milliseconds, ring buffer
     std::size_t durations_seen{};
     std::uint64_t last_tick_ns{}, total_tick_ns{};
@@ -381,10 +385,13 @@ struct Game::Impl final : GameServices {
         // start ticket is added again on the first tick. A world written
         // before tickets had types keeps none.
         queue = contracts::CommandQueue(65536, meta.next_admission);
-        for (const auto& t : engine->dump().tickets)
+        for (const auto& t : engine->dump().tickets) {
             if ((t.type != contracts::TicketType::forced && t.type != contracts::TicketType::portal) || t.id == spawn_ticket
                 || !meta.typed_tickets)
                 admit(contracts::RemoveTicket{t.id});
+            else if (t.type == contracts::TicketType::forced && t.dimension == overworld && t.radius == 0)
+                forced[t.center] = t.id;
+        }
         meta.typed_tickets = true;
         next_ticket = meta.next_ticket;
         // A checkpoint of the opened state starts a fresh log segment.
@@ -1466,7 +1473,8 @@ struct Game::Impl final : GameServices {
         if (args[0] == "help") {
             std::string extra;
             for (const auto& [name, usage] : extensions->commands()) extra += std::format(", /{}{}{}", name, usage.empty() ? "" : " ", usage);
-            message(p, "Commands: /help, /players, /tp [<own name>] <x> <y> <z>, /gamemode <survival|creative|spectator>, /tps" + extra);
+            message(p, "Commands: /help, /players, /tp [<own name>] <x> <y> <z>, /gamemode <survival|creative|spectator>, "
+                       "/forceload add|remove <x> <z> [<x> <z>], /forceload remove all, /forceload query [<x> <z>], /tps" + extra);
         } else if (args[0] == "players") {
             std::string names;
             for (const auto& [id, o] : players) names += (names.empty() ? "" : ", ") + o.name;
@@ -1499,6 +1507,8 @@ struct Game::Impl final : GameServices {
             // Spectators fly permanently; creative players may fly and build instantly.
             p.peer->send(wire.player_abilities(abilities(p.game_mode), 0.05f, 0.1f));
             broadcast(wire.player_info_add({entry(p)}));
+        } else if (args[0] == "forceload") {
+            forceload(p, std::span(args).subspan(1));
         } else if (args[0] == "tps") {
             message(p, std::format("tick {}", engine->time()));
         } else if (const auto reply = extensions->command(p.name, args[0], std::span(args).subspan(1))) {
@@ -1506,6 +1516,99 @@ struct Game::Impl final : GameServices {
         } else {
             message(p, std::format("Unknown command: /{}", args[0]), "red");
         }
+    }
+
+    // A translated message, as the target versions word their command
+    // feedback (failures in red).
+    void feedback(Player& p, std::string_view key, std::vector<std::string> args, bool failure = false) {
+        auto with = nbt::Tag::list(nbt::TagType::compound);
+        for (auto& a : args) {
+            auto part = nbt::Tag::compound();
+            part.set("text", nbt::Tag::string(std::move(a)));
+            with.push(std::move(part));
+        }
+        auto text = nbt::Tag::compound();
+        text.set("translate", nbt::Tag::string(std::string(key)));
+        if (!args.empty()) text.set("with", std::move(with));
+        if (failure) text.set("color", nbt::Tag::string("red"));
+        p.peer->send(wire.system_chat(text));
+    }
+
+    // `/forceload` as in the target versions: block columns name chunks;
+    // each force-loaded chunk is a forced ticket of level 31 that persists.
+    void forceload(Player& p, std::span<const std::string> a) {
+        static constexpr std::string_view level = "minecraft:overworld";
+        const auto column = [&](std::string_view text, double own) -> std::optional<std::int32_t> {
+            double base = 0.0;
+            if (!text.empty() && text.front() == '~') {
+                base = own;
+                text.remove_prefix(1);
+                if (text.empty()) return static_cast<std::int32_t>(std::floor(base));
+            }
+            std::int64_t v{};
+            const auto [end, ec] = std::from_chars(text.data(), text.data() + text.size(), v);
+            if (ec != std::errc{} || end != text.data() + text.size()) return std::nullopt;
+            const double block = std::floor(base) + static_cast<double>(v);
+            if (block <= -3.0e7 || block >= 3.0e7) return std::nullopt;
+            return static_cast<std::int32_t>(block);
+        };
+        const auto chunk = [&](std::span<const std::string> xz) -> std::optional<ChunkPos> {
+            const auto x = column(xz[0], p.pos.x), z = column(xz[1], p.pos.z);
+            if (!x || !z) return std::nullopt;
+            return contracts::chunk_of({*x, 0, *z});
+        };
+        const auto name = [](ChunkPos c) { return std::format("[{}, {}]", c.x, c.z); };
+        const auto usage = [&] {
+            message(p, "Usage: /forceload add|remove <x> <z> [<x> <z>], /forceload remove all, /forceload query [<x> <z>]", "red");
+        };
+        if (a.empty()) return usage();
+        if (a[0] == "query") {
+            if (a.size() == 1) {
+                if (forced.empty()) return feedback(p, "commands.forceload.added.none", {std::string(level)});
+                std::string list;
+                for (const auto& [c, id] : forced) list += (list.empty() ? "" : ", ") + name(c);
+                if (forced.size() == 1) return feedback(p, "commands.forceload.list.single", {std::string(level), list});
+                return feedback(p, "commands.forceload.list.multiple", {std::to_string(forced.size()), std::string(level), list});
+            }
+            if (a.size() != 3) return usage();
+            const auto c = chunk(a.subspan(1, 2));
+            if (!c) return usage();
+            if (forced.contains(*c)) return feedback(p, "commands.forceload.query.success", {name(*c), std::string(level)});
+            return feedback(p, "commands.forceload.query.failure", {name(*c), std::string(level)}, true);
+        }
+        const bool add = a[0] == "add";
+        if (!add && a[0] != "remove") return usage();
+        if (!add && a.size() == 2 && a[1] == "all") {
+            for (const auto& [c, id] : forced) admit(contracts::RemoveTicket{id}, overworld);
+            forced.clear();
+            return feedback(p, "commands.forceload.removed.all", {std::string(level)});
+        }
+        if (a.size() != 3 && a.size() != 5) return usage();
+        const auto from = chunk(a.subspan(1, 2));
+        const auto to = a.size() == 5 ? chunk(a.subspan(3, 2)) : from;
+        if (!from || !to) return usage();
+        const ChunkPos lo{std::min(from->x, to->x), std::min(from->z, to->z)}, hi{std::max(from->x, to->x), std::max(from->z, to->z)};
+        const std::int64_t count = (std::int64_t{hi.x} - lo.x + 1) * (std::int64_t{hi.z} - lo.z + 1);
+        if (count > 256) return feedback(p, "commands.forceload.toobig", {"256", std::to_string(count)}, true);
+        std::size_t changed = 0;
+        ChunkPos first{};
+        for (auto x = lo.x; x <= hi.x; ++x)
+            for (auto z = lo.z; z <= hi.z; ++z) {
+                const ChunkPos c{x, z};
+                if (add == forced.contains(c)) continue;
+                if (changed++ == 0) first = c;
+                if (add) {
+                    forced[c] = next_ticket;
+                    admit(contracts::AddTicket{next_ticket++, c, 0, contracts::TicketType::forced, 31, 0}, overworld);
+                } else {
+                    admit(contracts::RemoveTicket{forced.at(c)}, overworld);
+                    forced.erase(c);
+                }
+            }
+        const std::string verb = add ? "added" : "removed";
+        if (changed == 0) return feedback(p, std::format("commands.forceload.{}.failure", verb), {}, true);
+        if (changed == 1) return feedback(p, std::format("commands.forceload.{}.single", verb), {name(first), std::string(level)});
+        feedback(p, std::format("commands.forceload.{}.multiple", verb), {std::to_string(changed), std::string(level), name(lo), name(hi)});
     }
 
     // ---- publishing ---------------------------------------------------------
@@ -1807,8 +1910,17 @@ struct Game::Impl final : GameServices {
             }
         }
         if (extensions) extensions->before_tick();
-        // While frozen, players move and chunks are sent, but the world waits.
-        const bool run = !frozen || pending_steps > 0;
+        // An empty server pauses after `pause-when-empty-seconds`, as the
+        // target versions do, and resumes when a player joins.
+        empty_ticks = players.empty() ? empty_ticks + 1 : 0;
+        const bool pause = config.pause_when_empty_seconds > 0
+                        && empty_ticks > static_cast<std::uint64_t>(config.pause_when_empty_seconds) * 20;
+        if (pause != paused) {
+            paused = pause;
+            log_info(paused ? std::format("Server empty for {} seconds, pausing", config.pause_when_empty_seconds) : "Resuming");
+        }
+        // While frozen or paused, players move and chunks are sent, but the world waits.
+        const bool run = (!frozen || pending_steps > 0) && !paused;
         update_vitals(run);
         if (run) {
             // Player-driven inputs that follow from the world as last published.

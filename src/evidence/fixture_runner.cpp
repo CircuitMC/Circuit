@@ -3,6 +3,7 @@
 #include <circuit/evidence/fixture_runner.hpp>
 #include <circuit/runtime/engine.hpp>
 #include <algorithm>
+#include <charconv>
 #include <cmath>
 #include <format>
 #include <map>
@@ -76,6 +77,52 @@ std::optional<std::int64_t> exact_fixed(double v) {
 double to_double(std::int64_t fixed) { return static_cast<double>(fixed) / static_cast<double>(contracts::fixed_one); }
 Vec3d to_vec(contracts::FixedVec v) { return {to_double(v.x), to_double(v.y), to_double(v.z)}; }
 
+// The commands of a `forceload add|remove <x> <z> [<x2> <z2>]` or
+// `forceload remove all` action: one forced ticket (level 31, radius 0) per
+// chunk of the block coordinates' rectangle, as the target versions'
+// command marks chunks. Chunks already in the wanted state are left alone.
+std::expected<std::vector<contracts::CommandBody>, std::string> forceload(const std::string& command,
+                                                                        std::map<contracts::ChunkPos, std::uint32_t>& forced,
+                                                                        std::uint32_t& next_ticket) {
+    std::vector<std::string> w;
+    for (std::size_t i = 0; i <= command.size();) {
+        const auto end = std::min(command.find(' ', i), command.size());
+        w.push_back(command.substr(i, end - i));
+        i = end + 1;
+    }
+    const auto unsupported = std::format("command `{}`: only forceload add and remove are modeled", command);
+    if (w.size() < 2 || w[0] != "forceload" || (w[1] != "add" && w[1] != "remove")) return std::unexpected(unsupported);
+    std::vector<contracts::CommandBody> out;
+    if (w[1] == "remove" && w.size() == 3 && w[2] == "all") {
+        for (const auto& [chunk, id] : forced) out.push_back(contracts::RemoveTicket{id});
+        forced.clear();
+        return out;
+    }
+    if (w.size() != 4 && w.size() != 6) return std::unexpected(unsupported);
+    std::int32_t v[4]{};
+    for (std::size_t i = 2; i < w.size(); ++i) {
+        const auto& s = w[i];
+        const auto [end, ec] = std::from_chars(s.data(), s.data() + s.size(), v[i - 2]);
+        if (ec != std::errc{} || end != s.data() + s.size()) return std::unexpected(std::format("command `{}`: invalid coordinate", command));
+    }
+    if (w.size() == 4) v[2] = v[0], v[3] = v[1];
+    const auto a = contracts::chunk_of({v[0], 0, v[1]}), b = contracts::chunk_of({v[2], 0, v[3]});
+    const std::int64_t count = (std::int64_t{std::max(a.x, b.x)} - std::min(a.x, b.x) + 1) * (std::int64_t{std::max(a.z, b.z)} - std::min(a.z, b.z) + 1);
+    if (count > 256) return std::unexpected(std::format("command `{}`: more than 256 chunks", command));
+    for (auto x = std::min(a.x, b.x); x <= std::max(a.x, b.x); ++x)
+        for (auto z = std::min(a.z, b.z); z <= std::max(a.z, b.z); ++z) {
+            const contracts::ChunkPos chunk{x, z};
+            if (w[1] == "add" && !forced.contains(chunk)) {
+                forced[chunk] = next_ticket;
+                out.push_back(contracts::AddTicket{next_ticket++, chunk, 0, contracts::TicketType::forced, 31});
+            } else if (w[1] == "remove" && forced.contains(chunk)) {
+                out.push_back(contracts::RemoveTicket{forced.at(chunk)});
+                forced.erase(chunk);
+            }
+        }
+    return out;
+}
+
 std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_observations) {
     Prepared p;
     const contracts::VersionBundle* found = nullptr;
@@ -113,13 +160,26 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
     if (radius > p.bundle.limits.max_ticket_radius) return std::unexpected(report(Outcome::unsupported, "area too large to load"));
 
     std::uint64_t admission = 1;
-    p.inputs[1].push_back({admission++, contracts::AddTicket{1, center, static_cast<std::uint8_t>(radius)}});
+    if (f.load_area) p.inputs[1].push_back({admission++, contracts::AddTicket{1, center, static_cast<std::uint8_t>(radius)}});
     const auto fail_line = [](std::size_t line, const std::string& message) {
         return std::unexpected(report(Outcome::unsupported, std::format("line {}: {}", line, message)));
     };
+    // Force-loaded chunks of `forceload` commands, by chunk: their ticket ids.
+    std::map<contracts::ChunkPos, std::uint32_t> forced;
+    std::uint32_t next_ticket = 2;
     for (const auto& a : f.actions) {
+        if (a.kind == Action::Kind::command) {
+            auto bodies = forceload(a.command, forced, next_ticket);
+            if (!bodies) return fail_line(a.line, bodies.error());
+            for (auto& body : *bodies) {
+                p.action_lines[admission] = a.line;
+                p.inputs[a.tick + 2].push_back({admission++, std::move(body)});
+            }
+            continue;
+        }
         contracts::CommandBody body;
         switch (a.kind) {
+        case Action::Kind::command: break;
         case Action::Kind::set: {
             const auto s = p.mapping->block(a.state);
             if (!s) return fail_line(a.line, s.error());
@@ -288,9 +348,11 @@ public:
             case TraceKind::chunk_loaded: case TraceKind::chunk_level_changed: case TraceKind::chunk_unloaded:
                 if (f.observe_chunks) {
                     const auto chunk = contracts::chunk_of(r.pos);
-                    const auto status = r.kind == TraceKind::chunk_unloaded ? "unloaded"
-                                                                            : chunk_status(r.b);
-                    chunks.push_back({tick, stage_of(r), chunk.x, chunk.z, status, seq++, 0});
+                    if (const auto& w = f.observe_window; w && (chunk.x < (*w)[0] || chunk.z < (*w)[1] || chunk.x > (*w)[2] || chunk.z > (*w)[3]))
+                        break;
+                    const auto status = r.kind == TraceKind::chunk_unloaded ? "unloaded" : chunk_status(r.b);
+                    // The target versions report every status change in their own stage.
+                    chunks.push_back({tick, "chunks", chunk.x, chunk.z, status, seq++, 0});
                 }
                 break;
             default: break;
@@ -442,6 +504,8 @@ FixtureReport evaluate_fixture(const Fixture& f, const ExecutorFactory& factory)
     // events form one ordered stream; otherwise changes are compared on
     // their own as in v1.
     const bool merged = v2 && f.changes == ChangeMode::ordered;
+    using ChunkKey2 = std::pair<std::int32_t, std::int32_t>;
+    std::map<ChunkKey2, std::string> expected_chunk_status, observed_chunk_status; // statuses so far
     const auto observe = [&](Tick t) -> std::optional<FixtureReport> {
         std::vector<MappedChange> observed_changes;
         std::vector<EntityEvent> observed_entities;
@@ -478,11 +542,45 @@ FixtureReport evaluate_fixture(const Fixture& f, const ExecutorFactory& factory)
                     for (const auto& c : it->second) expected.push_back({c.seq, c});
             for (const auto& e : f.entity_events)
                 if (e.tick == t) expected.push_back({e.seq, e});
-            for (const auto& c : f.chunk_events)
-                if (c.tick == t) expected.push_back({c.seq, c});
             for (const auto& c : observed_changes) observed.push_back({c.seq, c});
             for (const auto& e : observed_entities) observed.push_back({e.seq, e});
-            for (const auto& c : observed_chunks) observed.push_back({c.seq, c});
+            // Chunk statuses: the target versions report a tick's changes in
+            // the order of their chunk maps and may pass a chunk through
+            // several statuses within the tick, while nothing runs in
+            // between. What is compared is each chunk whose status at the
+            // end of the tick differs from its status before it.
+            const auto changed = [](std::map<ChunkKey2, std::string>& now, const std::vector<std::pair<ChunkKey2, std::string>>& events) {
+                std::map<ChunkKey2, std::string> before, out;
+                for (const auto& [chunk, status] : events) {
+                    if (!before.contains(chunk)) before[chunk] = now.contains(chunk) ? now[chunk] : "unloaded";
+                    now[chunk] = status;
+                }
+                for (const auto& [chunk, was] : before)
+                    if (now[chunk] != was) out[chunk] = now[chunk];
+                return out;
+            };
+            std::vector<std::pair<ChunkKey2, std::string>> expected_events, observed_events;
+            std::map<ChunkKey2, std::size_t> lines;
+            for (const auto& c : f.chunk_events)
+                if (c.tick == t) {
+                    expected_events.push_back({{c.x, c.z}, c.status});
+                    lines[{c.x, c.z}] = c.line;
+                }
+            for (const auto& c : observed_chunks) observed_events.push_back({{c.x, c.z}, c.status});
+            const auto expected_chunks = changed(expected_chunk_status, expected_events);
+            const auto observed_chunk_changes = changed(observed_chunk_status, observed_events);
+            for (const auto& [chunk, status] : expected_chunks) {
+                const auto it = observed_chunk_changes.find(chunk);
+                if (it == observed_chunk_changes.end() || it->second != status)
+                    return report(Outcome::failed, std::format("tick {} chunk ({}, {}) (line {}): expected {}, observed {}", t, chunk.first,
+                                                               chunk.second, lines[chunk], status,
+                                                               it == observed_chunk_changes.end() ? "no change" : it->second));
+                ++events;
+            }
+            for (const auto& [chunk, status] : observed_chunk_changes)
+                if (!expected_chunks.contains(chunk))
+                    return report(Outcome::failed, std::format("tick {} chunk ({}, {}): expected no change, observed {}", t, chunk.first,
+                                                               chunk.second, status));
             std::ranges::stable_sort(expected, {}, &std::pair<std::size_t, StreamEvent>::first);
             std::ranges::stable_sort(observed, {}, &std::pair<std::size_t, StreamEvent>::first);
             const auto n = std::min(expected.size(), observed.size());

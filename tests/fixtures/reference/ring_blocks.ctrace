@@ -1,0 +1,415 @@
+circuit-trace 2
+title Rings around a force-loaded chunk: scheduled ticks, block events and block entities
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v9
+mechanisms chunk_tickets redstone_lamp piston hopper
+area 320 0 0 367 10 15
+ticks 70
+changes ordered
+load none
+observe 17 -3 23 3
+
+at 1 command forceload add 320 0
+
+at 35 set 321 0 1 minecraft:stone
+at 35 set 321 0 2 minecraft:stone
+at 35 set 321 0 3 minecraft:stone
+at 35 set 321 0 4 minecraft:stone
+at 35 set 322 0 1 minecraft:stone
+at 35 set 322 0 2 minecraft:stone
+at 35 set 322 0 3 minecraft:stone
+at 35 set 322 0 4 minecraft:stone
+at 35 set 323 0 1 minecraft:stone
+at 35 set 323 0 2 minecraft:stone
+at 35 set 323 0 3 minecraft:stone
+at 35 set 323 0 4 minecraft:stone
+at 35 set 324 0 1 minecraft:stone
+at 35 set 324 0 2 minecraft:stone
+at 35 set 324 0 3 minecraft:stone
+at 35 set 324 0 4 minecraft:stone
+at 35 set 325 0 1 minecraft:stone
+at 35 set 325 0 2 minecraft:stone
+at 35 set 325 0 3 minecraft:stone
+at 35 set 325 0 4 minecraft:stone
+at 35 set 326 0 1 minecraft:stone
+at 35 set 326 0 2 minecraft:stone
+at 35 set 326 0 3 minecraft:stone
+at 35 set 326 0 4 minecraft:stone
+at 35 set 327 0 1 minecraft:stone
+at 35 set 327 0 2 minecraft:stone
+at 35 set 327 0 3 minecraft:stone
+at 35 set 327 0 4 minecraft:stone
+at 35 set 328 0 1 minecraft:stone
+at 35 set 328 0 2 minecraft:stone
+at 35 set 328 0 3 minecraft:stone
+at 35 set 328 0 4 minecraft:stone
+at 35 set 329 0 1 minecraft:stone
+at 35 set 329 0 2 minecraft:stone
+at 35 set 329 0 3 minecraft:stone
+at 35 set 329 0 4 minecraft:stone
+at 35 set 330 0 1 minecraft:stone
+at 35 set 330 0 2 minecraft:stone
+at 35 set 330 0 3 minecraft:stone
+at 35 set 330 0 4 minecraft:stone
+at 35 set 331 0 1 minecraft:stone
+at 35 set 331 0 2 minecraft:stone
+at 35 set 331 0 3 minecraft:stone
+at 35 set 331 0 4 minecraft:stone
+at 35 set 332 0 1 minecraft:stone
+at 35 set 332 0 2 minecraft:stone
+at 35 set 332 0 3 minecraft:stone
+at 35 set 332 0 4 minecraft:stone
+at 35 set 333 0 1 minecraft:stone
+at 35 set 333 0 2 minecraft:stone
+at 35 set 333 0 3 minecraft:stone
+at 35 set 333 0 4 minecraft:stone
+at 35 set 334 0 1 minecraft:stone
+at 35 set 334 0 2 minecraft:stone
+at 35 set 334 0 3 minecraft:stone
+at 35 set 334 0 4 minecraft:stone
+at 35 set 337 0 1 minecraft:stone
+at 35 set 337 0 2 minecraft:stone
+at 35 set 337 0 3 minecraft:stone
+at 35 set 337 0 4 minecraft:stone
+at 35 set 338 0 1 minecraft:stone
+at 35 set 338 0 2 minecraft:stone
+at 35 set 338 0 3 minecraft:stone
+at 35 set 338 0 4 minecraft:stone
+at 35 set 339 0 1 minecraft:stone
+at 35 set 339 0 2 minecraft:stone
+at 35 set 339 0 3 minecraft:stone
+at 35 set 339 0 4 minecraft:stone
+at 35 set 340 0 1 minecraft:stone
+at 35 set 340 0 2 minecraft:stone
+at 35 set 340 0 3 minecraft:stone
+at 35 set 340 0 4 minecraft:stone
+at 35 set 341 0 1 minecraft:stone
+at 35 set 341 0 2 minecraft:stone
+at 35 set 341 0 3 minecraft:stone
+at 35 set 341 0 4 minecraft:stone
+at 35 set 342 0 1 minecraft:stone
+at 35 set 342 0 2 minecraft:stone
+at 35 set 342 0 3 minecraft:stone
+at 35 set 342 0 4 minecraft:stone
+at 35 set 343 0 1 minecraft:stone
+at 35 set 343 0 2 minecraft:stone
+at 35 set 343 0 3 minecraft:stone
+at 35 set 343 0 4 minecraft:stone
+at 35 set 344 0 1 minecraft:stone
+at 35 set 344 0 2 minecraft:stone
+at 35 set 344 0 3 minecraft:stone
+at 35 set 344 0 4 minecraft:stone
+at 35 set 345 0 1 minecraft:stone
+at 35 set 345 0 2 minecraft:stone
+at 35 set 345 0 3 minecraft:stone
+at 35 set 345 0 4 minecraft:stone
+at 35 set 346 0 1 minecraft:stone
+at 35 set 346 0 2 minecraft:stone
+at 35 set 346 0 3 minecraft:stone
+at 35 set 346 0 4 minecraft:stone
+at 35 set 347 0 1 minecraft:stone
+at 35 set 347 0 2 minecraft:stone
+at 35 set 347 0 3 minecraft:stone
+at 35 set 347 0 4 minecraft:stone
+at 35 set 348 0 1 minecraft:stone
+at 35 set 348 0 2 minecraft:stone
+at 35 set 348 0 3 minecraft:stone
+at 35 set 348 0 4 minecraft:stone
+at 35 set 349 0 1 minecraft:stone
+at 35 set 349 0 2 minecraft:stone
+at 35 set 349 0 3 minecraft:stone
+at 35 set 349 0 4 minecraft:stone
+at 35 set 350 0 1 minecraft:stone
+at 35 set 350 0 2 minecraft:stone
+at 35 set 350 0 3 minecraft:stone
+at 35 set 350 0 4 minecraft:stone
+at 35 set 353 0 1 minecraft:stone
+at 35 set 353 0 2 minecraft:stone
+at 35 set 353 0 3 minecraft:stone
+at 35 set 353 0 4 minecraft:stone
+at 35 set 354 0 1 minecraft:stone
+at 35 set 354 0 2 minecraft:stone
+at 35 set 354 0 3 minecraft:stone
+at 35 set 354 0 4 minecraft:stone
+at 35 set 355 0 1 minecraft:stone
+at 35 set 355 0 2 minecraft:stone
+at 35 set 355 0 3 minecraft:stone
+at 35 set 355 0 4 minecraft:stone
+at 35 set 356 0 1 minecraft:stone
+at 35 set 356 0 2 minecraft:stone
+at 35 set 356 0 3 minecraft:stone
+at 35 set 356 0 4 minecraft:stone
+at 35 set 357 0 1 minecraft:stone
+at 35 set 357 0 2 minecraft:stone
+at 35 set 357 0 3 minecraft:stone
+at 35 set 357 0 4 minecraft:stone
+at 35 set 358 0 1 minecraft:stone
+at 35 set 358 0 2 minecraft:stone
+at 35 set 358 0 3 minecraft:stone
+at 35 set 358 0 4 minecraft:stone
+at 35 set 359 0 1 minecraft:stone
+at 35 set 359 0 2 minecraft:stone
+at 35 set 359 0 3 minecraft:stone
+at 35 set 359 0 4 minecraft:stone
+at 35 set 360 0 1 minecraft:stone
+at 35 set 360 0 2 minecraft:stone
+at 35 set 360 0 3 minecraft:stone
+at 35 set 360 0 4 minecraft:stone
+at 35 set 361 0 1 minecraft:stone
+at 35 set 361 0 2 minecraft:stone
+at 35 set 361 0 3 minecraft:stone
+at 35 set 361 0 4 minecraft:stone
+at 35 set 362 0 1 minecraft:stone
+at 35 set 362 0 2 minecraft:stone
+at 35 set 362 0 3 minecraft:stone
+at 35 set 362 0 4 minecraft:stone
+at 35 set 363 0 1 minecraft:stone
+at 35 set 363 0 2 minecraft:stone
+at 35 set 363 0 3 minecraft:stone
+at 35 set 363 0 4 minecraft:stone
+at 35 set 364 0 1 minecraft:stone
+at 35 set 364 0 2 minecraft:stone
+at 35 set 364 0 3 minecraft:stone
+at 35 set 364 0 4 minecraft:stone
+at 35 set 365 0 1 minecraft:stone
+at 35 set 365 0 2 minecraft:stone
+at 35 set 365 0 3 minecraft:stone
+at 35 set 365 0 4 minecraft:stone
+at 35 set 366 0 1 minecraft:stone
+at 35 set 366 0 2 minecraft:stone
+at 35 set 366 0 3 minecraft:stone
+at 35 set 366 0 4 minecraft:stone
+change 35 commands 321 0 1 minecraft:air minecraft:stone
+change 35 commands 321 0 2 minecraft:air minecraft:stone
+change 35 commands 321 0 3 minecraft:air minecraft:stone
+change 35 commands 321 0 4 minecraft:air minecraft:stone
+change 35 commands 322 0 1 minecraft:air minecraft:stone
+change 35 commands 322 0 2 minecraft:air minecraft:stone
+change 35 commands 322 0 3 minecraft:air minecraft:stone
+change 35 commands 322 0 4 minecraft:air minecraft:stone
+change 35 commands 323 0 1 minecraft:air minecraft:stone
+change 35 commands 323 0 2 minecraft:air minecraft:stone
+change 35 commands 323 0 3 minecraft:air minecraft:stone
+change 35 commands 323 0 4 minecraft:air minecraft:stone
+change 35 commands 324 0 1 minecraft:air minecraft:stone
+change 35 commands 324 0 2 minecraft:air minecraft:stone
+change 35 commands 324 0 3 minecraft:air minecraft:stone
+change 35 commands 324 0 4 minecraft:air minecraft:stone
+change 35 commands 325 0 1 minecraft:air minecraft:stone
+change 35 commands 325 0 2 minecraft:air minecraft:stone
+change 35 commands 325 0 3 minecraft:air minecraft:stone
+change 35 commands 325 0 4 minecraft:air minecraft:stone
+change 35 commands 326 0 1 minecraft:air minecraft:stone
+change 35 commands 326 0 2 minecraft:air minecraft:stone
+change 35 commands 326 0 3 minecraft:air minecraft:stone
+change 35 commands 326 0 4 minecraft:air minecraft:stone
+change 35 commands 327 0 1 minecraft:air minecraft:stone
+change 35 commands 327 0 2 minecraft:air minecraft:stone
+change 35 commands 327 0 3 minecraft:air minecraft:stone
+change 35 commands 327 0 4 minecraft:air minecraft:stone
+change 35 commands 328 0 1 minecraft:air minecraft:stone
+change 35 commands 328 0 2 minecraft:air minecraft:stone
+change 35 commands 328 0 3 minecraft:air minecraft:stone
+change 35 commands 328 0 4 minecraft:air minecraft:stone
+change 35 commands 329 0 1 minecraft:air minecraft:stone
+change 35 commands 329 0 2 minecraft:air minecraft:stone
+change 35 commands 329 0 3 minecraft:air minecraft:stone
+change 35 commands 329 0 4 minecraft:air minecraft:stone
+change 35 commands 330 0 1 minecraft:air minecraft:stone
+change 35 commands 330 0 2 minecraft:air minecraft:stone
+change 35 commands 330 0 3 minecraft:air minecraft:stone
+change 35 commands 330 0 4 minecraft:air minecraft:stone
+change 35 commands 331 0 1 minecraft:air minecraft:stone
+change 35 commands 331 0 2 minecraft:air minecraft:stone
+change 35 commands 331 0 3 minecraft:air minecraft:stone
+change 35 commands 331 0 4 minecraft:air minecraft:stone
+change 35 commands 332 0 1 minecraft:air minecraft:stone
+change 35 commands 332 0 2 minecraft:air minecraft:stone
+change 35 commands 332 0 3 minecraft:air minecraft:stone
+change 35 commands 332 0 4 minecraft:air minecraft:stone
+change 35 commands 333 0 1 minecraft:air minecraft:stone
+change 35 commands 333 0 2 minecraft:air minecraft:stone
+change 35 commands 333 0 3 minecraft:air minecraft:stone
+change 35 commands 333 0 4 minecraft:air minecraft:stone
+change 35 commands 334 0 1 minecraft:air minecraft:stone
+change 35 commands 334 0 2 minecraft:air minecraft:stone
+change 35 commands 334 0 3 minecraft:air minecraft:stone
+change 35 commands 334 0 4 minecraft:air minecraft:stone
+change 35 commands 337 0 1 minecraft:air minecraft:stone
+change 35 commands 337 0 2 minecraft:air minecraft:stone
+change 35 commands 337 0 3 minecraft:air minecraft:stone
+change 35 commands 337 0 4 minecraft:air minecraft:stone
+change 35 commands 338 0 1 minecraft:air minecraft:stone
+change 35 commands 338 0 2 minecraft:air minecraft:stone
+change 35 commands 338 0 3 minecraft:air minecraft:stone
+change 35 commands 338 0 4 minecraft:air minecraft:stone
+change 35 commands 339 0 1 minecraft:air minecraft:stone
+change 35 commands 339 0 2 minecraft:air minecraft:stone
+change 35 commands 339 0 3 minecraft:air minecraft:stone
+change 35 commands 339 0 4 minecraft:air minecraft:stone
+change 35 commands 340 0 1 minecraft:air minecraft:stone
+change 35 commands 340 0 2 minecraft:air minecraft:stone
+change 35 commands 340 0 3 minecraft:air minecraft:stone
+change 35 commands 340 0 4 minecraft:air minecraft:stone
+change 35 commands 341 0 1 minecraft:air minecraft:stone
+change 35 commands 341 0 2 minecraft:air minecraft:stone
+change 35 commands 341 0 3 minecraft:air minecraft:stone
+change 35 commands 341 0 4 minecraft:air minecraft:stone
+change 35 commands 342 0 1 minecraft:air minecraft:stone
+change 35 commands 342 0 2 minecraft:air minecraft:stone
+change 35 commands 342 0 3 minecraft:air minecraft:stone
+change 35 commands 342 0 4 minecraft:air minecraft:stone
+change 35 commands 343 0 1 minecraft:air minecraft:stone
+change 35 commands 343 0 2 minecraft:air minecraft:stone
+change 35 commands 343 0 3 minecraft:air minecraft:stone
+change 35 commands 343 0 4 minecraft:air minecraft:stone
+change 35 commands 344 0 1 minecraft:air minecraft:stone
+change 35 commands 344 0 2 minecraft:air minecraft:stone
+change 35 commands 344 0 3 minecraft:air minecraft:stone
+change 35 commands 344 0 4 minecraft:air minecraft:stone
+change 35 commands 345 0 1 minecraft:air minecraft:stone
+change 35 commands 345 0 2 minecraft:air minecraft:stone
+change 35 commands 345 0 3 minecraft:air minecraft:stone
+change 35 commands 345 0 4 minecraft:air minecraft:stone
+change 35 commands 346 0 1 minecraft:air minecraft:stone
+change 35 commands 346 0 2 minecraft:air minecraft:stone
+change 35 commands 346 0 3 minecraft:air minecraft:stone
+change 35 commands 346 0 4 minecraft:air minecraft:stone
+change 35 commands 347 0 1 minecraft:air minecraft:stone
+change 35 commands 347 0 2 minecraft:air minecraft:stone
+change 35 commands 347 0 3 minecraft:air minecraft:stone
+change 35 commands 347 0 4 minecraft:air minecraft:stone
+change 35 commands 348 0 1 minecraft:air minecraft:stone
+change 35 commands 348 0 2 minecraft:air minecraft:stone
+change 35 commands 348 0 3 minecraft:air minecraft:stone
+change 35 commands 348 0 4 minecraft:air minecraft:stone
+change 35 commands 349 0 1 minecraft:air minecraft:stone
+change 35 commands 349 0 2 minecraft:air minecraft:stone
+change 35 commands 349 0 3 minecraft:air minecraft:stone
+change 35 commands 349 0 4 minecraft:air minecraft:stone
+change 35 commands 350 0 1 minecraft:air minecraft:stone
+change 35 commands 350 0 2 minecraft:air minecraft:stone
+change 35 commands 350 0 3 minecraft:air minecraft:stone
+change 35 commands 350 0 4 minecraft:air minecraft:stone
+change 35 commands 353 0 1 minecraft:air minecraft:stone
+change 35 commands 353 0 2 minecraft:air minecraft:stone
+change 35 commands 353 0 3 minecraft:air minecraft:stone
+change 35 commands 353 0 4 minecraft:air minecraft:stone
+change 35 commands 354 0 1 minecraft:air minecraft:stone
+change 35 commands 354 0 2 minecraft:air minecraft:stone
+change 35 commands 354 0 3 minecraft:air minecraft:stone
+change 35 commands 354 0 4 minecraft:air minecraft:stone
+change 35 commands 355 0 1 minecraft:air minecraft:stone
+change 35 commands 355 0 2 minecraft:air minecraft:stone
+change 35 commands 355 0 3 minecraft:air minecraft:stone
+change 35 commands 355 0 4 minecraft:air minecraft:stone
+change 35 commands 356 0 1 minecraft:air minecraft:stone
+change 35 commands 356 0 2 minecraft:air minecraft:stone
+change 35 commands 356 0 3 minecraft:air minecraft:stone
+change 35 commands 356 0 4 minecraft:air minecraft:stone
+change 35 commands 357 0 1 minecraft:air minecraft:stone
+change 35 commands 357 0 2 minecraft:air minecraft:stone
+change 35 commands 357 0 3 minecraft:air minecraft:stone
+change 35 commands 357 0 4 minecraft:air minecraft:stone
+change 35 commands 358 0 1 minecraft:air minecraft:stone
+change 35 commands 358 0 2 minecraft:air minecraft:stone
+change 35 commands 358 0 3 minecraft:air minecraft:stone
+change 35 commands 358 0 4 minecraft:air minecraft:stone
+change 35 commands 359 0 1 minecraft:air minecraft:stone
+change 35 commands 359 0 2 minecraft:air minecraft:stone
+change 35 commands 359 0 3 minecraft:air minecraft:stone
+change 35 commands 359 0 4 minecraft:air minecraft:stone
+change 35 commands 360 0 1 minecraft:air minecraft:stone
+change 35 commands 360 0 2 minecraft:air minecraft:stone
+change 35 commands 360 0 3 minecraft:air minecraft:stone
+change 35 commands 360 0 4 minecraft:air minecraft:stone
+change 35 commands 361 0 1 minecraft:air minecraft:stone
+change 35 commands 361 0 2 minecraft:air minecraft:stone
+change 35 commands 361 0 3 minecraft:air minecraft:stone
+change 35 commands 361 0 4 minecraft:air minecraft:stone
+change 35 commands 362 0 1 minecraft:air minecraft:stone
+change 35 commands 362 0 2 minecraft:air minecraft:stone
+change 35 commands 362 0 3 minecraft:air minecraft:stone
+change 35 commands 362 0 4 minecraft:air minecraft:stone
+change 35 commands 363 0 1 minecraft:air minecraft:stone
+change 35 commands 363 0 2 minecraft:air minecraft:stone
+change 35 commands 363 0 3 minecraft:air minecraft:stone
+change 35 commands 363 0 4 minecraft:air minecraft:stone
+change 35 commands 364 0 1 minecraft:air minecraft:stone
+change 35 commands 364 0 2 minecraft:air minecraft:stone
+change 35 commands 364 0 3 minecraft:air minecraft:stone
+change 35 commands 364 0 4 minecraft:air minecraft:stone
+change 35 commands 365 0 1 minecraft:air minecraft:stone
+change 35 commands 365 0 2 minecraft:air minecraft:stone
+change 35 commands 365 0 3 minecraft:air minecraft:stone
+change 35 commands 365 0 4 minecraft:air minecraft:stone
+change 35 commands 366 0 1 minecraft:air minecraft:stone
+change 35 commands 366 0 2 minecraft:air minecraft:stone
+change 35 commands 366 0 3 minecraft:air minecraft:stone
+change 35 commands 366 0 4 minecraft:air minecraft:stone
+
+at 36 set 322 1 2 minecraft:redstone_lamp[lit=false]
+at 36 set 325 1 2 minecraft:piston[extended=false,facing=up]
+at 36 set 328 1 2 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 36 set 328 2 2 minecraft:hopper[enabled=true,facing=down]
+at 36 set 338 1 2 minecraft:redstone_lamp[lit=false]
+at 36 set 341 1 2 minecraft:piston[extended=false,facing=up]
+at 36 set 344 1 2 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 36 set 344 2 2 minecraft:hopper[enabled=true,facing=down]
+at 36 set 354 1 2 minecraft:redstone_lamp[lit=false]
+at 36 set 357 1 2 minecraft:piston[extended=false,facing=up]
+at 36 set 360 1 2 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 36 set 360 2 2 minecraft:hopper[enabled=true,facing=down]
+change 36 commands 322 1 2 minecraft:air minecraft:redstone_lamp[lit=false]
+change 36 commands 325 1 2 minecraft:air minecraft:piston[extended=false,facing=up]
+change 36 commands 328 1 2 minecraft:air minecraft:chest[facing=north,type=single,waterlogged=false]
+change 36 commands 328 2 2 minecraft:air minecraft:hopper[enabled=true,facing=down]
+change 36 commands 338 1 2 minecraft:air minecraft:redstone_lamp[lit=false]
+change 36 commands 341 1 2 minecraft:air minecraft:piston[extended=false,facing=up]
+change 36 commands 344 1 2 minecraft:air minecraft:chest[facing=north,type=single,waterlogged=false]
+change 36 commands 344 2 2 minecraft:air minecraft:hopper[enabled=true,facing=down]
+change 36 commands 354 1 2 minecraft:air minecraft:redstone_lamp[lit=false]
+change 36 commands 357 1 2 minecraft:air minecraft:piston[extended=false,facing=up]
+change 36 commands 360 1 2 minecraft:air minecraft:chest[facing=north,type=single,waterlogged=false]
+change 36 commands 360 2 2 minecraft:air minecraft:hopper[enabled=true,facing=down]
+
+at 40 set 321 1 2 minecraft:redstone_block
+at 40 set 324 1 2 minecraft:redstone_block
+at 40 insert 328 2 2 0 minecraft:redstone 5
+at 40 set 337 1 2 minecraft:redstone_block
+at 40 set 340 1 2 minecraft:redstone_block
+at 40 insert 344 2 2 0 minecraft:redstone 5
+at 40 set 353 1 2 minecraft:redstone_block
+at 40 set 356 1 2 minecraft:redstone_block
+at 40 insert 360 2 2 0 minecraft:redstone 5
+change 40 commands 321 1 2 minecraft:air minecraft:redstone_block
+change 40 commands 322 1 2 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+change 40 commands 324 1 2 minecraft:air minecraft:redstone_block
+change 40 commands 337 1 2 minecraft:air minecraft:redstone_block
+change 40 commands 338 1 2 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+change 40 commands 340 1 2 minecraft:air minecraft:redstone_block
+change 40 commands 353 1 2 minecraft:air minecraft:redstone_block
+change 40 commands 354 1 2 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+change 40 commands 356 1 2 minecraft:air minecraft:redstone_block
+change 40 block_events 325 2 2 minecraft:air minecraft:moving_piston[facing=up,type=normal]
+change 40 block_events 325 1 2 minecraft:piston[extended=false,facing=up] minecraft:piston[extended=true,facing=up]
+change 40 block_events 341 2 2 minecraft:air minecraft:moving_piston[facing=up,type=normal]
+change 40 block_events 341 1 2 minecraft:piston[extended=false,facing=up] minecraft:piston[extended=true,facing=up]
+
+change 42 block_entities 325 2 2 minecraft:moving_piston[facing=up,type=normal] minecraft:piston_head[facing=up,short=false,type=normal]
+change 42 block_entities 341 2 2 minecraft:moving_piston[facing=up,type=normal] minecraft:piston_head[facing=up,short=false,type=normal]
+
+at 60 set 321 1 2 minecraft:air
+at 60 set 337 1 2 minecraft:air
+at 60 set 353 1 2 minecraft:air
+change 60 commands 321 1 2 minecraft:redstone_block minecraft:air
+change 60 commands 337 1 2 minecraft:redstone_block minecraft:air
+change 60 commands 353 1 2 minecraft:redstone_block minecraft:air
+
+change 63 block_ticks 322 1 2 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+change 63 block_ticks 338 1 2 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+
+slot 70 328 1 2 0 minecraft:redstone 4
+slot 70 344 1 2 0 minecraft:redstone 4
+slot 70 360 1 2 0 empty 0

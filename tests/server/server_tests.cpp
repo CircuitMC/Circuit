@@ -800,6 +800,93 @@ int main() {
         require(d.overworld().presences.empty() && d.overworld().last_active == d.time - 1, "leaving ends it");
     });
 
+    suite.run("forceload marks chunks that stay loaded and persist", [] {
+        // The translated feedback of the system chat messages a player got:
+        // the key and its arguments.
+        const auto feedback = [](Recorder& r, const server::Wire& wire) {
+            const auto chat = wire.ids().id(State::play, Bound::clientbound, "system_chat");
+            std::vector<std::string> out;
+            std::lock_guard lock(r.mutex);
+            for (const auto& bytes : r.packets) {
+                auto p = protocol::open_packet(bytes);
+                if (!p || p->id != chat) continue;
+                const auto tag = protocol::nbt::read_network(p->fields);
+                if (!tag || !tag->find("translate")) continue;
+                std::string text = tag->find("translate")->text();
+                if (const auto* with = tag->find("with"))
+                    for (const auto& a : with->items()) text += " " + a.find("text")->text();
+                out.push_back(std::move(text));
+            }
+            return out;
+        };
+        const auto forced = [](const server::Game& game) {
+            std::set<contracts::ChunkPos> out;
+            for (const auto& t : game.engine().dump().tickets)
+                if (t.type == contracts::TicketType::forced) out.insert(t.center);
+            return out;
+        };
+        const auto dir = temporary_directory();
+        auto config = offline_config();
+        config.world_directory = dir / "world";
+        {
+            GameFixture f(config);
+            auto peer = f.join(1, "Loader");
+            using I = server::Intent;
+            for (const auto* command : {"forceload add 320 0", "forceload add 320 0", "forceload add -20 -20 20 20",
+                                        "forceload query 330 5", "forceload query 400 0", "forceload remove 0 0",
+                                        "forceload add 0 0 300 300", "forceload query"})
+                f.game->submit(1, I{server::intent::Command{command}});
+            f.game->tick();
+            f.game->tick();
+            const std::vector<std::string> expected{
+                "commands.forceload.added.single [20, 0] minecraft:overworld",
+                "commands.forceload.added.failure",
+                "commands.forceload.added.multiple 16 minecraft:overworld [-2, -2] [1, 1]",
+                "commands.forceload.query.success [20, 0] minecraft:overworld",
+                "commands.forceload.query.failure [25, 0] minecraft:overworld",
+                "commands.forceload.removed.single [0, 0] minecraft:overworld",
+                "commands.forceload.toobig 256 361",
+                "commands.forceload.list.multiple 16 minecraft:overworld [-2, -2], [-2, -1], [-2, 0], [-2, 1], [-1, -2], [-1, -1], "
+                "[-1, 0], [-1, 1], [0, -2], [0, -1], [0, 1], [1, -2], [1, -1], [1, 0], [1, 1], [20, 0]"};
+            const auto got = feedback(*peer, f.wire);
+            require(got.size() == expected.size(), std::format("{} messages", got.size()));
+            for (std::size_t i = 0; i < expected.size(); ++i) require(got[i] == expected[i], got[i]);
+            require(forced(*f.game).size() == 16 && forced(*f.game).contains({20, 0}), "the forced tickets");
+            const auto d = f.game->engine().dump();
+            const auto at = [&](contracts::ChunkPos c) {
+                for (const auto& col : d.overworld().chunks)
+                    if (col.pos == c) return std::pair<int, int>{col.load, col.simulation};
+                return std::pair<int, int>{34, 34};
+            };
+            require(at({20, 0}) == std::pair{31, 31} && at({21, 0}) == std::pair{32, 32} && at({22, 0}) == std::pair{33, 33},
+                    "a forced chunk and its rings");
+        }
+        {
+            // After a restart the forced chunks are still loaded, and can be removed.
+            GameFixture f(config);
+            f.game->tick();
+            require(forced(*f.game).size() == 16, "forced chunks persist");
+            auto peer = f.join(1, "Loader");
+            f.game->submit(1, server::Intent{server::intent::Command{"forceload remove all"}});
+            f.game->tick();
+            f.game->tick();
+            require(forced(*f.game).empty() && feedback(*peer, f.wire).back() == "commands.forceload.removed.all minecraft:overworld",
+                    "remove all");
+        }
+        std::filesystem::remove_all(dir);
+    });
+
+    suite.run("an empty server pauses", [] {
+        auto config = offline_config();
+        config.pause_when_empty_seconds = 2;
+        GameFixture f(config);
+        for (int i = 0; i < 60; ++i) f.game->tick();
+        require(f.game->engine().time() == 40, std::format("paused after 40 ticks without players, at {}", f.game->engine().time()));
+        f.join(1, "Waker");
+        f.game->tick();
+        require(f.game->engine().time() == 42, "a player resumes it");
+    });
+
     suite.run("survival players use up items, dig in time and pick up drops", [] {
         using I = server::Intent;
         GameFixture f;

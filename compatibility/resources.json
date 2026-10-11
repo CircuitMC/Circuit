@@ -469,6 +469,15 @@
         "deviations": [
           "lists Circuit's commands"
         ]
+      },
+      "forceload": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "add, remove, remove all and query with the official feedback keys; at most 256 chunks",
+        "deviations": [
+          "no permissions; the overworld only",
+          "query lists chunks in coordinate order"
+        ]
       }
     },
     "packet": {

@@ -211,6 +211,41 @@ int main(int argc, char** argv) {
         require(parse_fixture(std::string(header) + "# " + std::string(5000, 'c') + "\n").error().message == "line too long", "length");
     });
 
+    suite.run("scenarios that load their own chunks", [&] {
+        const std::string head = "circuit-trace 2\ntitle Loading\ngame-version 1.21.8\nsource circuit_reference\nharness -\n"
+                                 "mechanisms chunk_tickets\narea 0 0 0 15 3 15\nticks 5\nchunks observed\nload none\nobserve -2 -2 2 2\n";
+        const auto f = parse(head + "at 1 command forceload add 0 0\nat 3 command forceload remove all\n");
+        require(!f.load_area && f.observe_window == std::array<std::int32_t, 4>{-2, -2, 2, 2} && f.actions.size() == 2
+                    && f.actions[0].kind == Action::Kind::command && f.actions[0].command == "forceload add 0 0",
+                "headers and commands");
+        require(write_fixture(parse(write_fixture(f))) == write_fixture(f), "canonical text");
+        for (const auto* bad : {"load some\n", "observe 2 0 1 0\n", "observe 0 0 64 0\n"}) {
+            const auto r = circuit::evidence::parse_fixture("circuit-trace 2\ntitle Loading\ngame-version 1.21.8\nsource circuit_reference\n"
+                                                            "harness -\nmechanisms chunk_tickets\narea 0 0 0 15 3 15\nticks 5\n" + std::string(bad));
+            require(!r, std::format("refused: {}", bad));
+        }
+        require(!circuit::evidence::parse_fixture("circuit-trace 1\ntitle Loading\ngame-version 1.21.8\nsource circuit_reference\n"
+                                                  "harness -\nmechanisms chunk_tickets\narea 0 0 0 15 3 15\nticks 5\n"
+                                                  "at 1 command forceload add 0 0\n"),
+                "commands need version 2");
+        // Circuit records the chunks it loads: the forced chunk and its two
+        // rings, all within the observed window.
+        auto recorded = record_fixture(f, engine_executor(1));
+        require(recorded.has_value(), recorded ? std::string() : recorded.error());
+        std::map<std::pair<std::int32_t, std::int32_t>, std::string> status;
+        for (const auto& c : recorded->chunk_events)
+            if (c.tick == 1) status[{c.x, c.z}] = c.status;
+        require(status.size() == 25 && status.at({0, 0}) == "entity_ticking" && status.at({1, 1}) == "block_ticking"
+                    && status.at({2, -2}) == "border",
+                std::format("{} chunks at tick 1", status.size()));
+        require(evaluate_fixture(*recorded, engine_executor(2)).outcome == Outcome::passed, "its own recording passes");
+        // Other commands are not modeled.
+        const auto other = parse(head + "at 1 command gamerule spawnChunkRadius 3\n");
+        require(evaluate_fixture(other, engine_executor(1)).outcome == Outcome::unsupported, "other commands");
+        const auto big = parse(head + "at 1 command forceload add 0 0 300 300\n");
+        require(evaluate_fixture(big, engine_executor(1)).outcome == Outcome::unsupported, "more than 256 chunks");
+    });
+
     suite.run("canonical text round trip", [&] {
         const auto f = parse(read_text(fixtures / "documented" / "lamp_timing.ctrace"));
         const auto text = write_fixture(f);
@@ -307,7 +342,7 @@ int main(int argc, char** argv) {
         require(text == write_fixture(*by_oracle), "engine and oracle record identical fixtures");
         const auto recorded = parse(text);
         require(recorded.source == circuit::contracts::EvidenceSource::circuit_reference
-                    && recorded.harness == "circuit-reference-rules-v8", "provenance");
+                    && recorded.harness == "circuit-reference-rules-v9", "provenance");
         require(!recorded.recorded_changes.empty(), "changes recorded");
         for (const auto& exec : {engine_executor(1), engine_executor(8), oracle_executor()}) {
             const auto r = evaluate_fixture(recorded, exec);

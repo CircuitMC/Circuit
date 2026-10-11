@@ -40,6 +40,8 @@ private:
         contracts::Generation generation;
         gameplay::ChunkLevel level{};
         gameplay::ChunkLevels levels;
+        contracts::Tick saved_at{}; // unloaded: the tick from which its pending ticks wait
+        contracts::Tick resumes{};  // loaded: scheduled ticks and block entities run from this tick
     };
     using TickKey = std::pair<contracts::BlockPos, gameplay::BlockType>;
     // One level's state: plain global containers, as the serial order sees them.
@@ -59,9 +61,11 @@ private:
         [[nodiscard]] gameplay::ChunkLevel level(contracts::ChunkPos chunk) const;
         // The chunk's simulation level; none when unloaded.
         [[nodiscard]] std::uint8_t simulation(contracts::ChunkPos chunk) const;
+        // Whether a reloaded chunk runs its scheduled ticks and block entities again.
+        [[nodiscard]] bool resumed(contracts::ChunkPos chunk, contracts::Tick now) const;
     };
 
-    void apply_levels();
+    void apply_levels(contracts::DimensionId level);
     void run_tick_list(contracts::DimensionId level, contracts::TickList list);
     void run_random_ticks(contracts::DimensionId level);
     void run_block_events(contracts::DimensionId level);

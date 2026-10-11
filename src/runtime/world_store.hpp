@@ -80,6 +80,8 @@ struct ChunkData {
     contracts::Generation generation;
     ChunkLevel level{};             // status, from levels.load
     gameplay::ChunkLevels levels;   // load and simulation levels
+    Tick saved_at{};                // saved: the tick from which its pending ticks wait (gameplay::reload_shift)
+    Tick resumes{};                 // loaded: its scheduled ticks and block entities run from this tick
     [[nodiscard]] bool block_ticking() const noexcept { return gameplay::block_ticking(levels.simulation); }
     [[nodiscard]] bool entity_ticking() const noexcept { return gameplay::entity_ticking(levels.simulation); }
     // Sections are shared copy-on-write between a chunk and its rollback snapshot.

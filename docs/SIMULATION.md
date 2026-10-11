@@ -4,7 +4,7 @@
 
 The Part I core runs headless: shared contracts, a set of reference rules, a sequential scheduling oracle, and a region-parallel runtime checked against the oracle. The oracle shares gameplay rules with the runtime; it checks scheduling equivalence, while external reference observations and hand-derived expectations check the rules themselves. The [network server](SERVER.md) and [persistence](PERSISTENCE.md) are built on it.
 
-The rules are **circuit-reference-rules-v8**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
+The rules are **circuit-reference-rules-v9**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
 
 Two version bundles run them: `java-1.21.8` and `java-1.21.4`. Each version has 30 traces recorded on the unmodified server:
 - 1.21.8 traces are in `tests/fixtures/harness/`;
@@ -66,16 +66,17 @@ Logical time advances by one per executed tick. Each tick runs these phases in o
 **Levels.** A world has levels: the overworld, the Nether and the End.
 - **Own state:** each level keeps its own columns, scheduled ticks, block events, block entities and entities. Positions mean nothing outside their level, and rules never reach into another level.
 - **Commands and tickets:** every command, and every ticket, names its level.
-- **Order:** the command phase runs once, for all levels. Then each level with loaded columns runs the phases below, the overworld first, then the Nether, then the End (minecraft.wiki "Tick").
+- **Order:** the command phase runs once, for all levels. Then each level runs the phases below, the overworld first, then the Nether, then the End (minecraft.wiki "Tick"): its scheduled ticks where columns are loaded, its chunk stage, and the rest where columns are loaded after it.
 - **Counters:** tick sub-orders, block-event positions and block-entity creation order count per level; entity ids count over all levels.
 - **Random streams:** random ticks in another level draw from streams that include the level.
 - **Not yet reachable:** only the overworld is generated and reachable by players. The other levels exist for the engine, its tests and the formats; they have no rules of their own yet (C7).
 
 | Phase | Roots in serial order |
 | --- | --- |
-| commands | admitted commands by admission id, then one root applying chunk-level changes |
+| commands | admitted commands by admission id |
 | block ticks | scheduled block ticks due now in block-ticking chunks, by (due, priority, sub-order), at most 65,536 |
 | fluid ticks | scheduled fluid ticks, same order and limit |
+| chunks | the level's tickets whose lifetime is over go, then one root applies its chunk-level changes |
 | random ticks | chunks whose random ticks run (below) in coordinate order, then sections bottom to top |
 | block events | the level's FIFO, including events queued while it drains; events in chunks that do not block tick stay queued in order |
 | entities | entities in entity-ticking chunks, ascending id, at most once per tick, while the level is awake |
@@ -102,7 +103,7 @@ Every slot change records `player_slot_changed`; a use that opens a container re
 
 Every observable action produces a trace record keyed by (tick, level, phase, root, sequence within the root); a record also names the level of its position. The command phase counts as the overworld's, ahead of every level. Two executions are equivalent only if their trace records are identical, including order. Their canonical state dumps, one part per level, must also be identical.
 
-## Reference rules v8
+## Reference rules v9
 
 - **Update queue:** neighbor updates and shape updates are queued entries.
   - **Entries:**
@@ -189,7 +190,8 @@ Every observable action produces a trace record keyed by (tick, level, phase, ro
   - **Random ticks:** 1.21.8 runs them where the simulation level is 31 or lower. 1.21.4 runs them where it is 32 or lower and a non-spectator player stands less than 128 blocks horizontally from the chunk's center.
   - **Idle levels:** a level with neither players nor forced chunks stops its entities and block entities 300 ticks after it last had them, or after the server started. They resume as soon as it has them again.
   - **Server tickets:** the start ticket at the spawn chunk (level 32 − spawnChunkRadius, 2 by default); per player, a loading ticket over their view distance (level 31) and a simulation ticket at their chunk (level 31 − simulation distance). Only forced and portal tickets survive a restart.
-  - **Changes** apply at the end of the command phase; lifetimes end at the command phase they reach. Unloading keeps all chunk state, including pending ticks. A reload increments the chunk generation, and commands can name the generation they expect.
+  - **Changes** apply in the level's chunk stage, after its scheduled ticks, as on the official servers: a chunk that a command drops still runs that tick's scheduled ticks. Lifetimes end at the chunk stage they reach.
+  - **Unload and reload** (both official servers): unloading keeps all chunk state. A dropped chunk's pending ticks keep the delay they had left, counted from the tick after it dropped; after a reload they wait out that delay, and the chunk's scheduled ticks and block entities run again two ticks after the reload, its pending block events at once. A reload increments the chunk generation, and commands can name the generation they expect.
 
 ## Part I mechanism contracts
 
@@ -347,7 +349,7 @@ Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked with `--check
   - simplified item physics without merging, and entity order without target-version trace observations;
   - per-section random streams and coordinate-ordered random-tick chunks;
   - wheat ignoring light and hydration;
-  - chunk tickets: no `/forceload`, teleport, portal or ender pearl tickets yet, and chunks load at once (the target versions load new chunks a few ticks later and keep chunks with entities at border level for two ticks before unloading them);
+  - chunk tickets: no teleport, portal or ender pearl tickets yet; new chunks load at once (the official servers take 2 to 4 ticks, varying between runs); dropped chunks unload at once and reloads happen in the chunk stage (the official servers may keep a dropped chunk at border for a tick or two, and restore a cached chunk during the command, which moves restored ticks by a tick between runs);
   - container menus without the crafting table, special recipes and the recipe book; loot tables without their random parts, and fixed drops for the modeled blocks.
 - Blocks without rules of their own, among them TNT, honey blocks, rails and coral fans, are inert: solid when they have a collision shape, conductors when opaque, immovable by pistons, and drop only from deterministic loot tables. Primed TNT entities and explosions are not modeled. TNT duplication machines cannot run; piston trace coverage does not establish compatibility for them. See [technical machines](COMPATIBILITY.md#technical-machines).
 - There is no lighting, world generation or mob spawning, and players cannot reach the Nether or the End.

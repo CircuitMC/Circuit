@@ -149,6 +149,11 @@ std::uint8_t Oracle::Level::simulation(ChunkPos chunk) const {
     return it == chunks.end() || it->second.level == ChunkLevel::unloaded ? contracts::unloaded_level : it->second.levels.simulation;
 }
 
+bool Oracle::Level::resumed(ChunkPos chunk, Tick now) const {
+    const auto it = chunks.find(chunk);
+    return it != chunks.end() && now >= it->second.resumes;
+}
+
 void Oracle::advance(const std::vector<contracts::Command>& commands) {
     if (failed_) throw std::logic_error("oracle: previous tick failed");
     if (time_ == UINT64_MAX) throw std::overflow_error("oracle: time exhausted");
@@ -177,21 +182,26 @@ void Oracle::advance(const std::vector<contracts::Command>& commands) {
         if (ticket_result) ctx_->record(TraceKind::command_applied, {}, c.admission, 0, 0);
         else ctx_->record(TraceKind::command_rejected, {}, c.admission, static_cast<std::uint64_t>(ticket_result.error()), 0);
     }
-    ctx_->begin_root(Phase::commands, commands.size());
-    tickets_.expire(time_);
-    apply_levels();
-
-    // Each level with loaded chunks runs all its phases, in level order.
+    // Each level runs its phases, in level order: the scheduled ticks of its
+    // loaded chunks, then its chunk stage (tickets expire and chunk levels
+    // change), then the rest where chunks are loaded.
+    const auto loaded = [&](DimensionId level) {
+        return std::ranges::any_of(at(level).chunks, [](const auto& c) { return c.second.level != ChunkLevel::unloaded; });
+    };
     for (const auto level : contracts::level_order) {
-        const auto& lv = at(level);
-        if (std::ranges::none_of(lv.chunks, [](const auto& c) { return c.second.level != ChunkLevel::unloaded; })) continue;
         ctx_->use_level(level);
+        if (loaded(level)) {
+            run_tick_list(level, TickList::block);
+            run_tick_list(level, TickList::fluid);
+        }
+        ctx_->begin_root(Phase::chunks, 0);
+        tickets_.expire(time_, level);
+        apply_levels(level);
+        if (!loaded(level)) continue;
         // Idle: no players and no forced chunks for too long.
         const bool active = !at(level).presences.empty() || tickets_.keeps_active(level);
         if (active) at(level).last_active = time_;
         const bool awake = level_awake(active, time_, at(level).last_active, started_);
-        run_tick_list(level, TickList::block);
-        run_tick_list(level, TickList::fluid);
         run_random_ticks(level);
         run_block_events(level);
         if (awake) run_entities(level);
@@ -200,12 +210,11 @@ void Oracle::advance(const std::vector<contracts::Command>& commands) {
     failed_ = false;
 }
 
-void Oracle::apply_levels() {
-    const auto desired = tickets_.levels();
+void Oracle::apply_levels(DimensionId level) {
+    const auto desired = tickets_.levels(level);
     std::set<contracts::ChunkKey> keys;
-    for (const auto level : contracts::level_order)
-        for (const auto& [c, info] : at(level).chunks)
-            if (info.level != ChunkLevel::unloaded) keys.insert({level, c});
+    for (const auto& [c, info] : at(level).chunks)
+        if (info.level != ChunkLevel::unloaded) keys.insert({level, c});
     for (const auto& [c, l] : desired) keys.insert(c);
     for (const auto& key : keys) {
         auto& lv = at(key.dimension);
@@ -220,16 +229,24 @@ void Oracle::apply_levels() {
         const auto origin = contracts::chunk_origin(c);
         if (current == ChunkLevel::unloaded) {
             contracts::Generation generation{};
+            Tick resumes{};
             if (const auto known = lv.chunks.find(c); known != lv.chunks.end()) {
                 const auto next = known->second.generation.next();
                 if (!next) throw std::overflow_error("oracle: chunk generation exhausted");
                 generation = *next;
+                // A reload: its pending ticks wait out their remaining delay.
+                for (auto& list : lv.ticks)
+                    for (auto& t : list)
+                        if (contracts::chunk_of(t.pos) == c) t.due = reload_shift(t.due, known->second.saved_at, time_);
+                resumes = time_ + reload_resume;
             }
-            lv.chunks[c] = {generation, want, levels};
+            lv.chunks[c] = {generation, want, levels, 0, resumes};
             ctx_->record(TraceKind::chunk_loaded, origin, generation.value, static_cast<std::uint64_t>(want), 0);
         } else if (want == ChunkLevel::unloaded) {
             ctx_->record(TraceKind::chunk_unloaded, origin, lv.chunks[c].generation.value, 0, 0);
             lv.chunks[c].level = ChunkLevel::unloaded;
+            lv.chunks[c].saved_at = time_ + 1;
+            lv.chunks[c].resumes = 0;
         } else {
             ctx_->record(TraceKind::chunk_level_changed, origin, static_cast<std::uint64_t>(current),
                          static_cast<std::uint64_t>(want), 0);
@@ -244,7 +261,8 @@ void Oracle::run_tick_list(DimensionId level, TickList list) {
     std::vector<ScheduledTick> due;
     std::vector<ScheduledTick> rest;
     for (const auto& t : lv.ticks[l]) {
-        if (t.due <= time_ && block_ticking(lv.simulation(contracts::chunk_of(t.pos)))) due.push_back(t);
+        if (t.due <= time_ && block_ticking(lv.simulation(contracts::chunk_of(t.pos))) && lv.resumed(contracts::chunk_of(t.pos), time_))
+            due.push_back(t);
         else rest.push_back(t);
     }
     std::ranges::sort(due, tick_before);
@@ -315,7 +333,8 @@ void Oracle::run_block_entities(DimensionId level) {
     auto& lv = at(level);
     std::vector<std::pair<std::uint64_t, BlockPos>> order;
     for (const auto& [pos, be] : lv.block_entities)
-        if (block_ticking(lv.simulation(contracts::chunk_of(pos)))) order.push_back({be.order, pos});
+        if (block_ticking(lv.simulation(contracts::chunk_of(pos))) && lv.resumed(contracts::chunk_of(pos), time_))
+            order.push_back({be.order, pos});
     std::ranges::sort(order);
     for (const auto& [o, pos] : order) {
         ctx_->begin_root(Phase::block_entities, o);
@@ -339,7 +358,8 @@ WorldDump Oracle::dump() const {
         for (const auto& [c, info] : lv.chunks)
             l.chunks.push_back({c, info.generation.value, info.level,
                                 info.level == ChunkLevel::unloaded ? contracts::unloaded_level : info.levels.load,
-                                info.level == ChunkLevel::unloaded ? contracts::unloaded_level : info.levels.simulation});
+                                info.level == ChunkLevel::unloaded ? contracts::unloaded_level : info.levels.simulation,
+                                info.level == ChunkLevel::unloaded ? info.saved_at : 0, info.resumes > time_ ? info.resumes : 0});
         for (const auto& [p, s] : lv.blocks) l.blocks.push_back({p, s.raw()});
         for (const auto& [p, be] : lv.block_entities) l.block_entities.push_back({p, be});
         for (const auto& [id, e] : lv.entities) l.entities.push_back(e);

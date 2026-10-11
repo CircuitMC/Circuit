@@ -14,16 +14,17 @@ using Tick = std::uint64_t;
 // roots with a phase-specific total order; immediate reactions run inside
 // their root. The executor must reproduce this order independently of threads.
 enum class Phase : std::uint8_t {
-    commands,       // admitted external inputs, then chunk-level changes; observes the previous tick's time
+    commands,       // admitted external inputs; observes the previous tick's time
     block_ticks,    // scheduled block ticks: (due, priority, sub-order)
     fluid_ticks,    // scheduled fluid ticks: (due, priority, sub-order)
+    chunks,         // ticket expiry and chunk-level changes of the level
     random_ticks,   // per ticking chunk and section
     block_events,   // level-wide FIFO, drained including events added while draining
     entities,       // ascending entity id
     block_entities, // ascending block-entity creation order
 };
-inline constexpr std::array<Phase, 7> phase_order{
-    Phase::commands, Phase::block_ticks, Phase::fluid_ticks, Phase::random_ticks,
+inline constexpr std::array<Phase, 8> phase_order{
+    Phase::commands, Phase::block_ticks, Phase::fluid_ticks, Phase::chunks, Phase::random_ticks,
     Phase::block_events, Phase::entities, Phase::block_entities};
 
 constexpr std::string_view phase_name(Phase p) noexcept {
@@ -31,6 +32,7 @@ constexpr std::string_view phase_name(Phase p) noexcept {
     case Phase::commands: return "commands";
     case Phase::block_ticks: return "block_ticks";
     case Phase::fluid_ticks: return "fluid_ticks";
+    case Phase::chunks: return "chunks";
     case Phase::random_ticks: return "random_ticks";
     case Phase::block_events: return "block_events";
     case Phase::entities: return "entities";

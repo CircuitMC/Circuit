@@ -937,7 +937,9 @@ int main() {
                 "a simulation ticket alone loads nothing");
         // Lifetimes end at the command phase of the tick they reach.
         require(add({6, {40, 0}, 0, TicketType::post_teleport, 32, 5}, 10).has_value(), "post-teleport ticket");
-        require(tickets.expire(14).empty() && tickets.expire(15) == std::vector<std::uint32_t>{6}, "expires after its lifetime");
+        require(tickets.expire(14, DimensionId::overworld).empty() && tickets.expire(15, DimensionId::the_nether).empty()
+                    && tickets.expire(15, DimensionId::overworld) == std::vector<std::uint32_t>{6},
+                "expires after its lifetime, in its level");
         require(tickets.keeps_active(DimensionId::overworld) && !tickets.keeps_active(DimensionId::the_nether),
                 "forced tickets keep their level active");
     });
@@ -1033,7 +1035,15 @@ int main() {
         s.until(9);
         auto d = s.oracle.dump();
         require(d.overworld().ticks.size() == 3 && state_at(d, {2, 0, 5}).flag(), "pending ticks kept while unloaded");
-        s.tick({ticket(2, {0, 0}, 0)}); // 10: reload, overdue ticks drain where blocks tick
+        // 10: reload. The pending ticks keep the delay they had left when the
+        // chunks dropped (they wait from tick 5), and run again from tick 12.
+        s.tick({ticket(2, {0, 0}, 0)});
+        d = s.oracle.dump();
+        require(state_at(d, {2, 0, 5}).flag() && state_at(d, {18, 0, 5}).flag() && d.overworld().chunks[12].resumes == 12,
+                "reloaded ticks wait");
+        s.tick(); // 11
+        require(s.at({2, 0, 5}).flag(), "still waiting");
+        s.tick(); // 12
         d = s.oracle.dump();
         require(!state_at(d, {2, 0, 5}).flag() && !state_at(d, {18, 0, 5}).flag() && state_at(d, {34, 0, 5}).flag(),
                 "entity- and block-ticking chunks drain; border waits");
@@ -1044,7 +1054,11 @@ int main() {
         const auto r = of_kind(s.last, TraceKind::command_rejected);
         require(r.size() == 1 && r[0].b == static_cast<std::uint64_t>(ErrorCode::stale_generation), "stale generation");
         require(s.at({4, 0, 0}).is(BlockType::stone), "current generation accepted");
-        s.tick({ticket(3, {1, 0}, 0)});
+        // A ticket takes effect in the chunk stage, after the tick's scheduled
+        // ticks: the border chunk's overdue tick runs in the next tick.
+        s.tick({ticket(3, {1, 0}, 0)}); // 14
+        require(s.at({34, 0, 5}).flag(), "not before the chunk stage");
+        s.tick();
         require(!s.at({34, 0, 5}).flag(), "border chunk tick drains once block ticking");
     });
 

@@ -224,6 +224,7 @@ std::expected<ServerConfig, std::string> parse_config(std::string_view text) {
         else if (key == "max-connections") ok = parse_number<std::size_t>(value, c.max_connections, 1, 100000);
         else if (key == "view-distance") ok = parse_number<std::int32_t>(value, c.view_distance, 2, 32);
         else if (key == "simulation-distance") ok = parse_number<std::int32_t>(value, c.simulation_distance, 1, 32);
+        else if (key == "pause-when-empty-seconds") ok = parse_number<std::int32_t>(value, c.pause_when_empty_seconds, INT32_MIN, INT32_MAX);
         else if (key == "compression-threshold") ok = parse_number<std::int32_t>(value, c.compression_threshold, -1, 1 << 20);
         else if (key == "online-mode") {
             if (value == "true") c.online_mode = true;

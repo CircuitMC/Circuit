@@ -21,7 +21,10 @@ struct ServerConfig {
     std::int32_t max_players{20};
     std::size_t max_connections{256}; // open sockets, including status pings and logins in progress
     std::int32_t view_distance{6};       // chunks sent around each player
-    std::int32_t simulation_distance{4}; // ticking radius of each player's ticket
+    std::int32_t simulation_distance{4}; // chunks simulated around each player
+    // Ticking stops after this many seconds without players, and resumes
+    // when one joins; 0 or less never pauses.
+    std::int32_t pause_when_empty_seconds{60};
     std::int32_t compression_threshold{256}; // negative disables compression
     // When true, logins require session verification; without a working
     // verifier they are refused (default deny). When false, identities are

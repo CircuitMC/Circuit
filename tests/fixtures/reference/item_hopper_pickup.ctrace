@@ -2,7 +2,7 @@ circuit-trace 2
 title Items falling onto a hopper and onto stone
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v8
+harness circuit-reference-rules-v9
 mechanisms item_entity hopper
 area -2 0 -2 2 3 2
 ticks 30

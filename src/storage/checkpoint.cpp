@@ -17,6 +17,9 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 9: columns carry the tick their pending ticks wait from (saved) and the
+// tick they run again after a reload (versions before 9: saved columns wait
+// from the checkpoint's tick);
 // 8: tickets carry their type, level and expiry, columns their load and
 // simulation levels, and levels their players and last active tick (versions
 // before 8 read tickets as forced squares, ticking columns as level 31 and
@@ -30,7 +33,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 8;
+constexpr std::uint32_t version = 9;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -113,7 +116,7 @@ void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
     for (std::size_t i = 0; i < l.chunks.size(); ++i) {
         const auto& ch = l.chunks[i];
         w.i32(ch.pos.x).i32(ch.pos.z).varint(static_cast<std::int32_t>(ch.generation)).u8(static_cast<std::uint8_t>(ch.level));
-        w.u8(ch.load).u8(ch.simulation);
+        w.u8(ch.load).u8(ch.simulation).varlong(static_cast<std::int64_t>(ch.saved_at)).varlong(static_cast<std::int64_t>(ch.resumes));
         const auto sections = blocks(i);
         w.varint(static_cast<std::int32_t>(sections.size()));
         for (const auto& [sy, bytes] : sections) w.i32(sy).raw(bytes);
@@ -233,6 +236,7 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
         if (!b.get(b.r.i32(), ch.pos.x) || !b.get(b.r.i32(), ch.pos.z) || !b.get(b.r.varint(), generation) || !b.get(b.r.u8(), level))
             return false;
         if (b.version >= 8 && (!b.get(b.r.u8(), ch.load) || !b.get(b.r.u8(), ch.simulation))) return false;
+        if (b.version >= 9 && (!b.u64(ch.saved_at) || !b.u64(ch.resumes))) return false;
         if (!b.count(secs, 6)) return false;
         // Column and section positions stay within the coordinates block
         // positions can express; the engine checks them against the world.
@@ -405,6 +409,10 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
             || !decode_level_lists(b, l))
             return false;
     }
+    if (b.version < 9 && s.time < UINT64_MAX)
+        for (auto& l : s.levels)
+            for (auto& ch : l.chunks)
+                if (ch.level == gameplay::ChunkLevel::unloaded) ch.saved_at = s.time + 1;
     std::size_t n = 0;
     if (!b.count(n, 13)) return false;
     for (std::size_t i = 0; i < n; ++i) {

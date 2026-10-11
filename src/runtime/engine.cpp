@@ -37,7 +37,8 @@ struct Engine::Impl {
 
     void advance(const std::vector<Command>& commands);
     void command_phase(const std::vector<Command>& commands);
-    void apply_levels(RegionContext& ctx);
+    void chunk_phase(DimensionId level);
+    void apply_levels(RegionContext& ctx, DimensionId level);
     void tick_phase(DimensionId level, TickList list);
     void random_phase(DimensionId level);
     void block_event_phase(DimensionId level);
@@ -182,14 +183,22 @@ void Engine::Impl::advance(const std::vector<Command>& commands) {
             std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now() - start).count());
     };
     timed(Phase::commands, [&] { command_phase(commands); });
-    // Then each level, in level order, runs all its phases.
-    for (const auto level : contracts::level_order) {
+    // Then each level, in level order, runs its phases: the scheduled ticks
+    // of its loaded chunks, its chunk stage, and the rest where chunks are
+    // loaded.
+    const auto loaded = [&](DimensionId level) {
         bool any = false;
         world.for_each_loaded(level, [&](ChunkPos, const ChunkData&) { any = true; });
-        if (!any) continue;
+        return any;
+    };
+    for (const auto level : contracts::level_order) {
+        if (loaded(level)) {
+            timed(Phase::block_ticks, [&] { tick_phase(level, TickList::block); });
+            timed(Phase::fluid_ticks, [&] { tick_phase(level, TickList::fluid); });
+        }
+        timed(Phase::chunks, [&] { chunk_phase(level); });
+        if (!loaded(level)) continue;
         const bool level_awake = awake(level);
-        timed(Phase::block_ticks, [&] { tick_phase(level, TickList::block); });
-        timed(Phase::fluid_ticks, [&] { tick_phase(level, TickList::fluid); });
         timed(Phase::random_ticks, [&] { random_phase(level); });
         timed(Phase::block_events, [&] { block_event_phase(level); });
         // An idle level ticks neither entities nor block entities.
@@ -232,13 +241,17 @@ void Engine::Impl::command_phase(const std::vector<Command>& commands) {
         else ctx.record(TraceKind::command_rejected, {}, c.admission, static_cast<std::uint64_t>(ticket_result.error()), 0);
     }
     commit({&ctx});
-    // Tickets whose lifetime is over go; then chunk-level changes take effect,
-    // at the end of the command phase.
-    world.tickets.expire(world.time);
-    RegionContext levels(bundle, world, regions, all_regions, Phase::commands, DimensionId::overworld, options.record_trace, false);
-    levels.begin_root(commands.size(), {});
-    apply_levels(levels);
-    commit({&levels});
+}
+
+// The level's chunk stage: tickets whose lifetime is over go, then chunk
+// levels change, as in the target versions after the scheduled ticks.
+void Engine::Impl::chunk_phase(DimensionId level) {
+    ++stats.phases;
+    world.tickets.expire(world.time, level);
+    RegionContext ctx(bundle, world, regions, all_regions, Phase::chunks, level, options.record_trace, false);
+    ctx.begin_root(0, {});
+    apply_levels(ctx, level);
+    commit({&ctx});
 }
 
 RegionId Engine::Impl::region_for_new_chunk(ChunkKey c) {
@@ -254,11 +267,11 @@ RegionId Engine::Impl::region_for_new_chunk(ChunkKey c) {
     return regions.add_singleton(c);
 }
 
-void Engine::Impl::apply_levels(RegionContext& ctx) {
-    const auto desired = world.tickets.levels();
+void Engine::Impl::apply_levels(RegionContext& ctx, DimensionId level) {
+    const auto desired = world.tickets.levels(level);
     std::set<ChunkKey> keys;
-    for (const auto& [c, data] : world.loaded) keys.insert(c);
-    for (const auto& [c, level] : desired) keys.insert(c);
+    world.for_each_loaded(level, [&](ChunkPos c, const ChunkData&) { keys.insert({level, c}); });
+    for (const auto& [c, levels] : desired) keys.insert(c);
     for (const auto c : keys) {
         auto* data = world.find_loaded(c);
         const auto current = data ? data->level : ChunkLevel::unloaded;
@@ -277,6 +290,11 @@ void Engine::Impl::apply_levels(RegionContext& ctx) {
                 const auto next = chunk->generation.next();
                 if (!next) throw std::overflow_error("engine: chunk generation exhausted");
                 chunk->generation = *next;
+                // A reload: its pending ticks wait out their remaining delay.
+                for (auto& list : chunk->ticks)
+                    for (auto& [key, t] : list) t.due = gameplay::reload_shift(t.due, chunk->saved_at, world.time);
+                chunk->saved_at = 0;
+                chunk->resumes = world.time + gameplay::reload_resume;
             } else {
                 chunk = std::make_unique<ChunkData>();
                 chunk->dimension = c.dimension;
@@ -301,6 +319,8 @@ void Engine::Impl::apply_levels(RegionContext& ctx) {
             ctx.record(TraceKind::chunk_unloaded, origin, data->generation.value, 0, 0);
             data->level = ChunkLevel::unloaded;
             data->levels = {};
+            data->saved_at = world.time + 1;
+            data->resumes = 0;
             auto node = world.loaded.extract(c);
             world.saved.insert(std::move(node));
             regions.remove(c);
@@ -316,7 +336,7 @@ void Engine::Impl::tick_phase(DimensionId level, TickList list) {
     const auto l = static_cast<int>(list);
     std::vector<gameplay::ScheduledTick> due;
     world.for_each_loaded(level, [&](ChunkPos, const ChunkData& data) {
-        if (!data.block_ticking()) return;
+        if (!data.block_ticking() || world.time < data.resumes) return;
         for (const auto& [key, e] : data.ticks[l])
             if (e.due <= world.time) due.push_back({key.first, key.second, e.due, e.priority, e.suborder});
     });
@@ -395,7 +415,7 @@ void Engine::Impl::entity_phase(DimensionId level) {
 void Engine::Impl::block_entity_phase(DimensionId level) {
     std::vector<RootItem> roots;
     world.for_each_loaded(level, [&](ChunkPos c, const ChunkData& data) {
-        if (!data.block_ticking()) return;
+        if (!data.block_ticking() || world.time < data.resumes) return;
         for (const auto& [pos, be] : data.block_entities) {
             RootItem r;
             r.key = be.order;
@@ -754,7 +774,8 @@ void fill_dump(const WorldStore& world, const contracts::VersionBundle& bundle, 
     std::map<DimensionId, std::vector<std::pair<std::uint64_t, BlockEvent>>> events;
     const auto add = [&](const ChunkData& data, ChunkLevel level) {
         auto& l = d.level(data.dimension);
-        l.chunks.push_back({data.pos, data.generation.value, level, data.levels.load, data.levels.simulation});
+        l.chunks.push_back({data.pos, data.generation.value, level, data.levels.load, data.levels.simulation,
+                            level == ChunkLevel::unloaded ? data.saved_at : 0, data.resumes > world.time ? data.resumes : 0});
         if (sections) {
             auto& list = (*sections)[{data.dimension, data.pos}];
             list.reserve(data.sections.size());
@@ -862,6 +883,10 @@ void Engine::Impl::restore(const WorldDump& state) {
             chunk->generation = contracts::Generation{c.generation};
             chunk->level = c.level;
             chunk->levels = {c.load, c.simulation};
+            chunk->saved_at = c.saved_at;
+            chunk->resumes = c.resumes;
+            if ((c.level == ChunkLevel::unloaded && c.resumes != 0) || (c.level != ChunkLevel::unloaded && c.saved_at != 0))
+                bad("chunk reload ticks");
             if (c.level != gameplay::status_of(c.load)) bad("chunk status and load level disagree");
             chunk->sections.resize(static_cast<std::size_t>(shape.sections()));
             auto* raw = chunk.get();

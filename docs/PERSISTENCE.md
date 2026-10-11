@@ -101,7 +101,8 @@ The server fails closed on storage errors. If a log record cannot be written, th
 
 ## Checkpoint format
 
-A checkpoint file is `CIRCKPT\0`, a format version (8; versions 1–7 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+A checkpoint file is `CIRCKPT\0`, a format version (9; versions 1–8 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+- versions before 9 do not record when saved columns dropped: their pending ticks wait from the checkpoint's tick;
 - versions before 8 have untyped tickets: each is read as a forced ticket of level 31 over its radius (its load radius is dropped), and each ticking column as entity ticking, each border column as border without simulation;
 - versions before 7 hold the overworld alone, and their tickets are the overworld's;
 - versions 1–4 also predate the registry: their block states are a subset of `circuit-blocks-1` and are read as such;
@@ -109,7 +110,7 @@ A checkpoint file is `CIRCKPT\0`, a format version (8; versions 1–7 are still 
 
 The body holds:
 - the time, the entity id counter, counted over all levels, and the tick the levels last started;
-- per level (overworld, Nether, End; only those with columns, players or an active tick): its counters, the last tick it had players or forced chunks, the players in it (position and whether a spectator), columns with their load and simulation levels and palette-packed sections, block entities, entities (with their pickup delay), scheduled ticks and pending block events;
+- per level (overworld, Nether, End; only those with columns, players or an active tick): its counters, the last tick it had players or forced chunks, the players in it (position and whether a spectator), columns with their load and simulation levels, the tick a saved column dropped and the tick a reloaded column resumes, palette-packed sections, block entities, entities (with their pickup delay), scheduled ticks and pending block events;
 - chunk tickets: type, level, square radius, the tick their lifetime ends and their level (dimension);
 - player inventories: the 46 slots, the carried stack and a drag in progress; item stacks carry their damage and their other data components;
 - block entities' components (a container's name) and the saved data of block entities of blocks without rules of their own;

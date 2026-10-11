@@ -45,10 +45,10 @@ contracts::Result<void> TicketSet::remove(std::uint32_t id) {
     return {};
 }
 
-std::vector<std::uint32_t> TicketSet::expire(Tick now) {
+std::vector<std::uint32_t> TicketSet::expire(Tick now, contracts::DimensionId dimension) {
     std::vector<std::uint32_t> out;
     for (auto it = tickets_.begin(); it != tickets_.end();) {
-        if (it->second.expires != 0 && it->second.expires <= now) {
+        if (it->second.dimension == dimension && it->second.expires != 0 && it->second.expires <= now) {
             out.push_back(it->first);
             it = tickets_.erase(it);
         } else {
@@ -58,9 +58,10 @@ std::vector<std::uint32_t> TicketSet::expire(Tick now) {
     return out;
 }
 
-std::map<contracts::ChunkKey, ChunkLevels> TicketSet::levels() const {
+std::map<contracts::ChunkKey, ChunkLevels> TicketSet::levels(std::optional<contracts::DimensionId> only) const {
     std::map<contracts::ChunkKey, ChunkLevels> out;
     for (const auto& [id, t] : tickets_) {
+        if (only && t.dimension != *only) continue;
         const std::int32_t reach = t.reach();
         for (std::int32_t dx = -reach; dx <= reach; ++dx)
             for (std::int32_t dz = -reach; dz <= reach; ++dz) {
@@ -131,8 +132,8 @@ namespace {
 std::string pos_text(BlockPos p) { return std::format("({},{},{})", p.x, p.y, p.z); }
 std::string chunk_text(ChunkPos c) { return std::format("[{},{}]", c.x, c.z); }
 std::string text(const LevelDump::Chunk& c) {
-    return std::format("chunk {} gen={} status={} load={} simulation={}", chunk_text(c.pos), c.generation, static_cast<int>(c.level),
-                       c.load, c.simulation);
+    return std::format("chunk {} gen={} status={} load={} simulation={} saved_at={} resumes={}", chunk_text(c.pos), c.generation,
+                       static_cast<int>(c.level), c.load, c.simulation, c.saved_at, c.resumes);
 }
 std::string text(const std::pair<BlockPos, std::uint32_t>& b) { return std::format("block {} state={:#x}", pos_text(b.first), b.second); }
 std::string text(const std::pair<BlockPos, BlockEntity>& b) {
@@ -240,7 +241,7 @@ std::uint64_t digest(const WorldDump& d) {
         h.add(l.next_block_entity_order);
         h.add(l.last_active);
         for (const auto& c : l.chunks) {
-            h.add(contracts::pack_chunk(c.pos)); h.add(c.generation); h.add(static_cast<std::uint64_t>(c.level)); h.add(c.load); h.add(c.simulation);
+            h.add(contracts::pack_chunk(c.pos)); h.add(c.generation); h.add(static_cast<std::uint64_t>(c.level)); h.add(c.load); h.add(c.simulation); h.add(c.saved_at); h.add(c.resumes);
         }
         h.add(l.presences.size());
         for (const auto& p : l.presences) { h.add(p.player.hi); h.add(p.player.lo); h.add(p.position); h.add(p.spectator); }

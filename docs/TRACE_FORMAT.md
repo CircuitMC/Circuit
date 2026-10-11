@@ -99,6 +99,8 @@ A file that starts with `circuit-trace 2` may use everything version 1 allows, p
 | `chunks` | `observed` records chunk status lines; default `none` |
 | `rng` | `observed` records draws from the target version's random streams; default `none` |
 | `tolerance` | Allowed difference of entity positions and velocities, 0–1 blocks; default 0 (exact). A tolerance turns a comparison into a declared approximation and belongs in the fixture's review |
+| `load` | `area` (default) force-loads the area as described under Semantics; `none` loads nothing, so that the actions load what the scenario needs |
+| `observe <cx0> <cz0> <cx1> <cz1>` | The chunks whose status lines are recorded, inclusive, at most 64 by 64; default every chunk |
 | `gamerule <name> <value>` | A game rule set before the scenario starts; repeatable, one line per rule. Circuit knows each version's game rules but models only their defaults: a rule at its default is accepted, another value makes the fixture unsupported, and a rule the version lacks makes it invalid. A harness whose version lacks the rule refuses the skeleton |
 
 **Stages.** Every event line names the stage it happened in: `commands`, `block_ticks`, `fluid_ticks`, `random_ticks`, `block_events`, `entities` and `block_entities` (Circuit's phases), `players`, `chunks`, `spawning` and `other` (stages only the target version has), or `-` (unknown). Actions run in the `commands` stage. Comparison includes the stage: an event in a different stage is a different event.
@@ -108,6 +110,7 @@ A file that starts with `circuit-trace 2` may use everything version 1 allows, p
 | Line | Meaning |
 | --- | --- |
 | `at <t> spawn-item <x> <y> <z> <vx> <vy> <vz> <item> <count>` | Add an item entity at the start of tick `t`, with a pickup delay of 0 |
+| `at <t> command <words>` | Run a server command (without the slash) at the start of tick `t`. Circuit models `forceload add|remove <x> <z> [<x> <z>]` and `forceload remove all` (one forced ticket of level 31 per chunk, at most 256); any other command makes the fixture unsupported |
 | `change <t> <stage> <x> <y> <z> <old> <new>` | A block changed (v2 form of the v1 line) |
 | `entity-added <t> <stage> <handle> <type> <x> <y> <z> <vx> <vy> <vz> [key=value ...]` | An entity was added, at this position and velocity |
 | `entity-removed <t> <stage> <handle> <reason>` | An entity was removed: `killed`, `discarded`, `unloaded_to_chunk`, `unloaded_with_player` or `changed_dimension` |
@@ -123,7 +126,9 @@ Coordinates and velocities are decimal doubles, written as the shortest text tha
 
 Item entities carry these properties: `item` and `count` (and `damage` when nonzero) when added and changed; `item`, `count`, `damage`, `age`, `pickup-delay` and `on-ground` at the end of each tick. Other entity types will define their properties when Circuit models them.
 
-**Event order.** Within a tick, block changes, entity events and chunk events form one stream in the order they happened. With `changes ordered` the whole stream is compared in order. With `changes unordered` or `none`, changes are compared as in version 1 and the entity and chunk events form the ordered stream. `entity` probes are compared by handle, `entity-order` lines as sequences, and `draws` lines exactly.
+**Event order.** Within a tick, block changes and entity events form one stream in the order they happened. With `changes ordered` the whole stream is compared in order. With `changes unordered` or `none`, changes are compared as in version 1 and the entity events form the ordered stream. `entity` probes are compared by handle, `entity-order` lines as sequences, and `draws` lines exactly.
+
+**Chunk statuses.** The official servers report a tick's chunk changes in the order of their chunk maps, which varies between runs, and may pass a chunk through several statuses within one tick while nothing runs in between. Chunk lines are therefore compared per tick by their effect: the set of chunks whose status at the end of the tick differs from their status before it, with that status. The official servers also load new chunks 2 to 4 ticks after their ticket, varying between runs, so fixtures that compare exactly observe chunks only where the timing repeats; the scenarios `ring_blocks` and `unload_reload` record no chunk lines.
 
 **Comparison with Circuit.** Circuit observes its item entities and chunks from its own trace records: entity spawns with their exact position and velocity, removals (despawning, falling out of the world and pickup are `discarded`, a removal command is `killed`), stack changes, and chunk statuses from each chunk's load level. Positions in a `spawn-item` action must be whole multiples of 1/4096 block, because Circuit stores positions in those units; other positions make the fixture unsupported rather than being rounded. Circuit does not observe the target version's random streams, so a `draws` line with a nonzero count fails. These failures are the point: a version-2 trace that shows a difference stays a visible failing case, not a passing one.
 

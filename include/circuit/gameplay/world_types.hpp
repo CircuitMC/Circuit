@@ -10,6 +10,7 @@
 #include <compare>
 #include <cstdint>
 #include <map>
+#include <optional>
 #include <span>
 #include <string>
 #include <vector>
@@ -175,12 +176,13 @@ public:
     contracts::Result<void> add(const contracts::AddTicket& command, contracts::DimensionId dimension, Tick now,
                                 const contracts::RuleLimits& limits);
     contracts::Result<void> remove(std::uint32_t id);
-    // Removes the tickets whose lifetime is over by `now`; returns their ids.
-    std::vector<std::uint32_t> expire(Tick now);
+    // Removes the level's tickets whose lifetime is over by `now`; returns their ids.
+    std::vector<std::uint32_t> expire(Tick now, contracts::DimensionId dimension);
     // Restores a ticket as listed.
     contracts::Result<void> restore(const Ticket& ticket, const contracts::RuleLimits& limits);
-    // The levels of every chunk some ticket loads (load level 33 or lower).
-    [[nodiscard]] std::map<contracts::ChunkKey, ChunkLevels> levels() const;
+    // The levels of every chunk some ticket loads (load level 33 or lower),
+    // in every level or in one.
+    [[nodiscard]] std::map<contracts::ChunkKey, ChunkLevels> levels(std::optional<contracts::DimensionId> only = std::nullopt) const;
     // Whether a forced ticket keeps the level from idling.
     [[nodiscard]] bool keeps_active(contracts::DimensionId dimension) const;
     [[nodiscard]] std::vector<Ticket> list() const;
@@ -224,6 +226,18 @@ bool player_near(const Presences& presences, ChunkPos chunk) {
     return false;
 }
 
+// Chunks that drop out of the loaded set and come back (both official
+// servers): a dropped chunk's pending ticks keep their remaining delay,
+// counted from the tick after it dropped (`saved_at`); reloaded at `now`, a
+// tick due at `due` is due at now + (due - saved_at), overdue ones at once.
+// Its scheduled ticks and block entities run again from now + reload_resume;
+// its block events at once.
+inline constexpr Tick reload_resume = 2;
+constexpr Tick reload_shift(Tick due, Tick saved_at, Tick now) noexcept {
+    if (due >= saved_at) return now + (due - saved_at);
+    return now - std::min(now, saved_at - due);
+}
+
 // Whether a chunk's random ticks run (RuleSet::random_ticks).
 template <class Presences>
 bool random_ticks_run(contracts::RandomTickRange range, std::uint8_t simulation_level, ChunkPos chunk, const Presences& presences) {
@@ -244,6 +258,11 @@ struct LevelDump {
         ChunkLevel level{};                // from the load level
         std::uint8_t load{contracts::unloaded_level};
         std::uint8_t simulation{contracts::unloaded_level};
+        // Saved: the tick from which its pending ticks wait (reload_shift).
+        // Loaded: the tick its scheduled ticks and block entities run again
+        // after a reload, while still ahead; else 0.
+        Tick saved_at{};
+        Tick resumes{};
         bool operator==(const Chunk&) const = default;
     };
     struct PendingTick {

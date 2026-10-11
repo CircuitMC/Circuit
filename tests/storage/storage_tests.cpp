@@ -773,7 +773,7 @@ int main() {
         require(o.durable == h.ticks(), "complete run");
         const auto r = recover(fs);
         require(r && *r && check_recovery(h, **r, "chunk levels") == h.ticks(), "recovered");
-        for (const Tick t : {Tick{65}, Tick{92}, Tick{405}}) {
+        for (const Tick t : {Tick{20}, Tick{31}, Tick{65}, Tick{92}, Tick{405}}) {
             Engine engine(bundle(), h.seed, h.dumps[t]);
             require(engine.dump() == h.dumps[t], std::format("restored at {}", t));
             for (Tick next = t + 1; next <= std::min<Tick>(t + 20, h.ticks()); ++next) engine.advance(h.inputs[next - 1]);

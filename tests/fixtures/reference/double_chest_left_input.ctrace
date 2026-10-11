@@ -2,7 +2,7 @@ circuit-trace 1
 title Hopper above the left half of a double chest fills the right half first
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v8
+harness circuit-reference-rules-v9
 mechanisms double_chest hopper
 area 14 -1 -1 18 1 2
 ticks 10

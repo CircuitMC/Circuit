@@ -648,6 +648,21 @@ int main() {
         require(!lit(70, 96) && head(70, 96) && stored(80, 96) > 0 && heights(80, 96) == std::vector<std::int64_t>{fixed_one, fixed_one},
                 "a simulation ticket simulates the loaded chunks");
         require(stored(90, 96) == stored(80, 96) && stored(80, 96) < stored(80, 0), "without it, chunk 6 stops");
+        // Chunk (-12,0) dropped at tick 4 with its lamp's tick due at 7: back
+        // at 30, the tick is due at 32 and the chunk runs ticks and block
+        // entities again from 32; its block event ran before it dropped.
+        const auto lamp_off = [&](Tick t) {
+            for (const auto& r : ref.traces[t - 1])
+                if (r.kind == TraceKind::block_changed && r.pos == BlockPos{-190, 0, 2} && r.dimension == overworld) return true;
+            return false;
+        };
+        Tick off = 0;
+        for (Tick t = 1; t <= 60; ++t)
+            if (lamp_off(t)) off = t;
+        require(off == 32, std::format("a dropped chunk's tick waits out its delay, off at {}", off));
+        require(state_at(at(10), {-187, 1, 2}).is(BlockType::moving_piston) && !head(30, -192) && head(40, -192),
+                "its moving piston waits");
+        require(stored(30, -192) == stored(10, -192) && stored(40, -192) > stored(30, -192), "its hopper waits too");
         // The post-teleport ticket loads chunk (-6,0) at tick 90 and expires at 95.
         const auto chunk_record = [&](Tick t, TraceKind kind) {
             return std::ranges::count_if(ref.traces[t - 1], [&](const TraceRecord& r) {

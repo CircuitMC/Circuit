@@ -38,7 +38,7 @@ using Vec3d = std::array<double, 3>;
 using Properties = std::vector<std::pair<std::string, std::string>>;
 
 struct Action {
-    enum class Kind : std::uint8_t { set, use, insert, spawn_item };
+    enum class Kind : std::uint8_t { set, use, insert, spawn_item, command };
     Tick tick{};
     Kind kind{};
     BlockPos pos;                // set, use, insert; the block of `position` for spawn_item
@@ -47,6 +47,7 @@ struct Action {
     std::string item;            // insert, spawn_item
     std::uint8_t count{};        // insert, spawn_item
     Vec3d position{}, velocity{};// spawn_item (v2)
+    std::string command;         // command (v2): a server command without the slash, words separated by one space
     std::size_t line{};
     bool operator==(const Action&) const = default;
 };
@@ -153,6 +154,12 @@ struct Fixture {
     double tolerance{};
     // v2: game rules set before the scenario starts, by name, in file order.
     std::vector<std::pair<std::string, std::string>> gamerules;
+    // v2: whether the area's chunks are force-loaded for the run (`load
+    // area`, the default) or nothing is (`load none`: the actions load what
+    // they need), and the chunks whose statuses are observed (`observe x0 z0
+    // x1 z1`, inclusive chunk coordinates; all when absent).
+    bool load_area{true};
+    std::optional<std::array<std::int32_t, 4>> observe_window;
     std::vector<Action> actions;
     std::vector<Change> recorded_changes;
     std::vector<BlockProbe> block_probes;

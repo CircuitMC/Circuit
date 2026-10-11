@@ -113,8 +113,9 @@ private:
         if (t.empty() || t[0].front() == '#') return {};
         static const std::set<std::string_view> header_keys{"title", "game-version", "source", "harness", "mechanisms",
                                                             "area", "ticks", "random-tick-speed", "neighbor-update-limit",
-                                                            "changes", "dimension", "entities", "chunks", "rng", "tolerance"};
-        static const std::set<std::string_view> v2_keys{"dimension", "entities", "chunks", "rng", "tolerance"};
+                                                            "changes", "dimension", "entities", "chunks", "rng", "tolerance",
+                                                            "load", "observe"};
+        static const std::set<std::string_view> v2_keys{"dimension", "entities", "chunks", "rng", "tolerance", "load", "observe"};
         if (t[0] == "gamerule") {
             if (f_.format < 2) return fail(line_, "`gamerule` needs circuit-trace 2");
             if (header_done_) return fail(line_, "header key after the body started");
@@ -187,6 +188,20 @@ private:
                 return fail(line_, "area outside the world border");
             return {};
         }
+        if (key == "observe") {
+            if (t.size() != 5) return fail(line_, "observe needs four chunk coordinates");
+            std::array<std::int32_t, 4> v{};
+            for (std::size_t i = 0; i < 4; ++i)
+                if (!number(t[1 + i], v[i])) return fail(line_, "invalid chunk coordinate");
+            constexpr std::int32_t limit = contracts::world_border / 16;
+            if (v[0] > v[2] || v[1] > v[3]) return fail(line_, "observed chunks: minimum exceeds maximum");
+            if (std::ranges::any_of(v, [](std::int32_t c) { return c < -limit || c >= limit; }))
+                return fail(line_, "observed chunks outside the world border");
+            if (static_cast<std::int64_t>(v[2]) - v[0] >= 64 || static_cast<std::int64_t>(v[3]) - v[1] >= 64)
+                return fail(line_, "at most 64 by 64 observed chunks");
+            f_.observe_window = v;
+            return {};
+        }
         if (t.size() != 2) return fail(line_, std::format("`{}` takes one value", key));
         const auto value = t[1];
         if (key == "game-version") {
@@ -222,6 +237,9 @@ private:
             (key == "entities" ? f_.observe_entities : key == "chunks" ? f_.observe_chunks : f_.observe_rng) = value == "observed";
         } else if (key == "tolerance") {
             if (!decimal(value, f_.tolerance) || f_.tolerance < 0.0 || f_.tolerance > 1.0) return fail(line_, "invalid tolerance");
+        } else if (key == "load") {
+            if (value != "area" && value != "none") return fail(line_, "load must be area or none");
+            f_.load_area = value == "area";
         }
         return {};
     }
@@ -295,6 +313,20 @@ private:
     Status action(const std::vector<std::string_view>& t) {
         Action a;
         a.line = line_;
+        if (t.size() >= 4 && t[2] == "command") {
+            if (f_.format < 2) return fail(line_, "command needs circuit-trace 2");
+            if (auto ok = tick_of(t[1], 0, a.tick); !ok) return ok;
+            if (!f_.actions.empty() && a.tick < f_.actions.back().tick) return fail(line_, "actions must be in tick order");
+            a.kind = Action::Kind::command;
+            for (std::size_t i = 3; i < t.size(); ++i) {
+                for (char c : t[i])
+                    if (!property_char(c) && c != '=') return fail(line_, "invalid command character");
+                a.command += (i > 3 ? " " : "") + std::string(t[i]);
+            }
+            if (a.command.size() > 256) return fail(line_, "command too long");
+            f_.actions.push_back(std::move(a));
+            return {};
+        }
         if (t.size() < 6) return fail(line_, "incomplete action");
         if (auto ok = tick_of(t[1], 0, a.tick); !ok) return ok;
         if (!f_.actions.empty() && a.tick < f_.actions.back().tick) return fail(line_, "actions must be in tick order");
@@ -585,6 +617,11 @@ std::string write_fixture(const Fixture& f) {
         if (f.observe_chunks) out += "chunks observed\n";
         if (f.observe_rng) out += "rng observed\n";
         if (f.tolerance != 0.0) out += std::format("tolerance {}\n", format_double(f.tolerance));
+        if (!f.load_area) out += "load none\n";
+        if (f.observe_window) {
+            const auto& w = *f.observe_window;
+            out += std::format("observe {} {} {} {}\n", w[0], w[1], w[2], w[3]);
+        }
         for (const auto& [name, value] : f.gamerules) out += std::format("gamerule {} {}\n", name, value);
     }
     std::map<Tick, std::vector<std::string>> body;
@@ -598,6 +635,7 @@ std::string write_fixture(const Fixture& f) {
         case Action::Kind::spawn_item:
             body[a.tick].push_back(std::format("at {} spawn-item {} {} {} {}", a.tick, vec_text(a.position), vec_text(a.velocity), a.item, a.count));
             break;
+        case Action::Kind::command: body[a.tick].push_back(std::format("at {} command {}", a.tick, a.command)); break;
         }
     }
     if (f.format < 2) {

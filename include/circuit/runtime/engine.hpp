@@ -58,7 +58,7 @@ struct EngineOptions {
 struct EngineStats {
     // Wall-clock nanoseconds spent per phase (indexed by contracts::Phase),
     // including coordination and commit.
-    std::array<std::uint64_t, 7> phase_nanoseconds{};
+    std::array<std::uint64_t, 8> phase_nanoseconds{};
     std::uint64_t phases{};
     std::uint64_t attempts{};
     std::uint64_t tasks{};

@@ -270,7 +270,7 @@
       ],
       "location": "external: circuit-harness/experiments/c22 (forced rings, spawn radius, idle level) and circuit-clienttest/ticking.js",
       "status": "unsupported",
-      "description": "What each chunk level runs, the start ticket's level for each spawnChunkRadius, the idle-level rule and where random ticks run, observed on both official servers; Circuit cannot run the scripts yet (no /forceload, and the traces need chunk-loading delays)"
+      "description": "What each chunk level runs, the start ticket's level for each spawnChunkRadius, the idle-level rule and where random ticks run, observed on both official servers. Circuit does not compare these recordings: they observe chunk-loading timing that varies between runs, random ticks and spawnChunkRadius changes; trace/ring_blocks and trace/unload_reload compare the repeatable part"
     }
   ]
 }

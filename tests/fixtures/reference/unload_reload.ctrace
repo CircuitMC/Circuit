@@ -1,0 +1,164 @@
+circuit-trace 2
+title Pending ticks and block events across unload and reload
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v9
+mechanisms chunk_tickets redstone_lamp repeater piston
+area 320 0 0 367 10 15
+ticks 130
+changes ordered
+load none
+observe 17 -3 23 3
+
+at 1 command forceload add 320 0
+
+at 35 set 321 0 1 minecraft:stone
+at 35 set 321 0 2 minecraft:stone
+at 35 set 321 0 3 minecraft:stone
+at 35 set 321 0 4 minecraft:stone
+at 35 set 322 0 1 minecraft:stone
+at 35 set 322 0 2 minecraft:stone
+at 35 set 322 0 3 minecraft:stone
+at 35 set 322 0 4 minecraft:stone
+at 35 set 323 0 1 minecraft:stone
+at 35 set 323 0 2 minecraft:stone
+at 35 set 323 0 3 minecraft:stone
+at 35 set 323 0 4 minecraft:stone
+at 35 set 324 0 1 minecraft:stone
+at 35 set 324 0 2 minecraft:stone
+at 35 set 324 0 3 minecraft:stone
+at 35 set 324 0 4 minecraft:stone
+at 35 set 325 0 1 minecraft:stone
+at 35 set 325 0 2 minecraft:stone
+at 35 set 325 0 3 minecraft:stone
+at 35 set 325 0 4 minecraft:stone
+at 35 set 326 0 1 minecraft:stone
+at 35 set 326 0 2 minecraft:stone
+at 35 set 326 0 3 minecraft:stone
+at 35 set 326 0 4 minecraft:stone
+at 35 set 327 0 1 minecraft:stone
+at 35 set 327 0 2 minecraft:stone
+at 35 set 327 0 3 minecraft:stone
+at 35 set 327 0 4 minecraft:stone
+at 35 set 328 0 1 minecraft:stone
+at 35 set 328 0 2 minecraft:stone
+at 35 set 328 0 3 minecraft:stone
+at 35 set 328 0 4 minecraft:stone
+at 35 set 329 0 1 minecraft:stone
+at 35 set 329 0 2 minecraft:stone
+at 35 set 329 0 3 minecraft:stone
+at 35 set 329 0 4 minecraft:stone
+at 35 set 330 0 1 minecraft:stone
+at 35 set 330 0 2 minecraft:stone
+at 35 set 330 0 3 minecraft:stone
+at 35 set 330 0 4 minecraft:stone
+at 35 set 331 0 1 minecraft:stone
+at 35 set 331 0 2 minecraft:stone
+at 35 set 331 0 3 minecraft:stone
+at 35 set 331 0 4 minecraft:stone
+at 35 set 332 0 1 minecraft:stone
+at 35 set 332 0 2 minecraft:stone
+at 35 set 332 0 3 minecraft:stone
+at 35 set 332 0 4 minecraft:stone
+at 35 set 333 0 1 minecraft:stone
+at 35 set 333 0 2 minecraft:stone
+at 35 set 333 0 3 minecraft:stone
+at 35 set 333 0 4 minecraft:stone
+at 35 set 334 0 1 minecraft:stone
+at 35 set 334 0 2 minecraft:stone
+at 35 set 334 0 3 minecraft:stone
+at 35 set 334 0 4 minecraft:stone
+change 35 commands 321 0 1 minecraft:air minecraft:stone
+change 35 commands 321 0 2 minecraft:air minecraft:stone
+change 35 commands 321 0 3 minecraft:air minecraft:stone
+change 35 commands 321 0 4 minecraft:air minecraft:stone
+change 35 commands 322 0 1 minecraft:air minecraft:stone
+change 35 commands 322 0 2 minecraft:air minecraft:stone
+change 35 commands 322 0 3 minecraft:air minecraft:stone
+change 35 commands 322 0 4 minecraft:air minecraft:stone
+change 35 commands 323 0 1 minecraft:air minecraft:stone
+change 35 commands 323 0 2 minecraft:air minecraft:stone
+change 35 commands 323 0 3 minecraft:air minecraft:stone
+change 35 commands 323 0 4 minecraft:air minecraft:stone
+change 35 commands 324 0 1 minecraft:air minecraft:stone
+change 35 commands 324 0 2 minecraft:air minecraft:stone
+change 35 commands 324 0 3 minecraft:air minecraft:stone
+change 35 commands 324 0 4 minecraft:air minecraft:stone
+change 35 commands 325 0 1 minecraft:air minecraft:stone
+change 35 commands 325 0 2 minecraft:air minecraft:stone
+change 35 commands 325 0 3 minecraft:air minecraft:stone
+change 35 commands 325 0 4 minecraft:air minecraft:stone
+change 35 commands 326 0 1 minecraft:air minecraft:stone
+change 35 commands 326 0 2 minecraft:air minecraft:stone
+change 35 commands 326 0 3 minecraft:air minecraft:stone
+change 35 commands 326 0 4 minecraft:air minecraft:stone
+change 35 commands 327 0 1 minecraft:air minecraft:stone
+change 35 commands 327 0 2 minecraft:air minecraft:stone
+change 35 commands 327 0 3 minecraft:air minecraft:stone
+change 35 commands 327 0 4 minecraft:air minecraft:stone
+change 35 commands 328 0 1 minecraft:air minecraft:stone
+change 35 commands 328 0 2 minecraft:air minecraft:stone
+change 35 commands 328 0 3 minecraft:air minecraft:stone
+change 35 commands 328 0 4 minecraft:air minecraft:stone
+change 35 commands 329 0 1 minecraft:air minecraft:stone
+change 35 commands 329 0 2 minecraft:air minecraft:stone
+change 35 commands 329 0 3 minecraft:air minecraft:stone
+change 35 commands 329 0 4 minecraft:air minecraft:stone
+change 35 commands 330 0 1 minecraft:air minecraft:stone
+change 35 commands 330 0 2 minecraft:air minecraft:stone
+change 35 commands 330 0 3 minecraft:air minecraft:stone
+change 35 commands 330 0 4 minecraft:air minecraft:stone
+change 35 commands 331 0 1 minecraft:air minecraft:stone
+change 35 commands 331 0 2 minecraft:air minecraft:stone
+change 35 commands 331 0 3 minecraft:air minecraft:stone
+change 35 commands 331 0 4 minecraft:air minecraft:stone
+change 35 commands 332 0 1 minecraft:air minecraft:stone
+change 35 commands 332 0 2 minecraft:air minecraft:stone
+change 35 commands 332 0 3 minecraft:air minecraft:stone
+change 35 commands 332 0 4 minecraft:air minecraft:stone
+change 35 commands 333 0 1 minecraft:air minecraft:stone
+change 35 commands 333 0 2 minecraft:air minecraft:stone
+change 35 commands 333 0 3 minecraft:air minecraft:stone
+change 35 commands 333 0 4 minecraft:air minecraft:stone
+change 35 commands 334 0 1 minecraft:air minecraft:stone
+change 35 commands 334 0 2 minecraft:air minecraft:stone
+change 35 commands 334 0 3 minecraft:air minecraft:stone
+change 35 commands 334 0 4 minecraft:air minecraft:stone
+
+at 36 set 322 1 2 minecraft:redstone_lamp[lit=false]
+at 36 set 325 1 2 minecraft:piston[extended=false,facing=up]
+at 36 set 329 1 2 minecraft:repeater[delay=4,facing=west,locked=false,powered=false]
+at 36 set 330 1 2 minecraft:redstone_lamp[lit=false]
+change 36 commands 322 1 2 minecraft:air minecraft:redstone_lamp[lit=false]
+change 36 commands 325 1 2 minecraft:air minecraft:piston[extended=false,facing=up]
+change 36 commands 329 1 2 minecraft:air minecraft:repeater[delay=4,facing=west,locked=false,powered=false]
+change 36 commands 330 1 2 minecraft:air minecraft:redstone_lamp[lit=false]
+
+at 40 set 321 1 2 minecraft:redstone_block
+at 40 spawn-item 363.5 6 2.5 0 0 0 minecraft:stone 1
+change 40 commands 321 1 2 minecraft:air minecraft:redstone_block
+change 40 commands 322 1 2 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+
+at 50 set 321 1 2 minecraft:air
+at 50 set 328 1 2 minecraft:redstone_block
+change 50 commands 321 1 2 minecraft:redstone_block minecraft:air
+change 50 commands 328 1 2 minecraft:air minecraft:redstone_block
+
+at 51 set 324 1 2 minecraft:redstone_block
+at 51 command forceload remove 320 0
+change 51 commands 324 1 2 minecraft:air minecraft:redstone_block
+
+at 80 command forceload add 320 0
+change 80 block_events 325 2 2 minecraft:air minecraft:moving_piston[facing=up,type=normal]
+change 80 block_events 325 1 2 minecraft:piston[extended=false,facing=up] minecraft:piston[extended=true,facing=up]
+
+change 82 block_ticks 322 1 2 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+
+change 84 block_entities 325 2 2 minecraft:moving_piston[facing=up,type=normal] minecraft:piston_head[facing=up,short=false,type=normal]
+
+change 85 block_ticks 329 1 2 minecraft:repeater[delay=4,facing=west,locked=false,powered=false] minecraft:repeater[delay=4,facing=west,locked=false,powered=true]
+change 85 block_ticks 330 1 2 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+
+block 130 322 1 2 minecraft:redstone_lamp[lit=false]
+block 130 325 2 2 minecraft:piston_head[facing=up,short=false,type=normal]
+block 130 330 1 2 minecraft:redstone_lamp[lit=true]

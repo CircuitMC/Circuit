@@ -338,14 +338,16 @@
           "name": "Vanilla ticket types (player, forced, portal, spawn, post-teleport and others)",
           "milestone": "C2",
           "impl": "partial",
-          "evidence": "reference_only",
+          "evidence": "compared",
           "cases": [
+            "trace/ring_blocks",
+            "trace/unload_reload",
             "observation/chunk_levels"
           ],
-          "note": "Typed tickets with a level, a square radius and a lifetime (minecraft.wiki \"Chunk\"). The server adds the start ticket (level 32 - spawnChunkRadius) and, per player, a loading ticket over the view distance (level 31) and a simulation ticket (level 31 - simulation distance), as observed on both official servers",
+          "note": "Typed tickets with a level, a square radius and a lifetime (minecraft.wiki \"Chunk\"). The server adds the start ticket (level 32 - spawnChunkRadius) and, per player, a loading ticket over the view distance (level 31) and a simulation ticket (level 31 - simulation distance), as observed on both official servers; /forceload adds forced tickets (level 31), which persist",
           "deviations": [
-            "only start and player tickets are created; forced, post-teleport, portal, ender pearl and dragon tickets have their types and levels but nothing creates them yet",
-            "spawnChunkRadius is fixed at 2"
+            "post-teleport, portal, ender pearl and dragon tickets have their types and levels but nothing creates them yet",
+            "spawnChunkRadius is fixed at 2 until game rules are world state"
           ]
         },
         {
@@ -353,14 +355,15 @@
           "name": "Ticket level propagation and entity-ticking versus block-ticking chunks",
           "milestone": "C2",
           "impl": "partial",
-          "evidence": "reference_only",
+          "evidence": "compared",
           "cases": [
+            "trace/ring_blocks",
             "observation/chunk_levels"
           ],
-          "note": "Load and simulation levels: 31 and lower entity ticking, 32 block ticking, 33 border. Scheduled ticks, block events and block entities run at simulation level 32 and lower, entities at 31 and lower; a level without players or forced chunks stops its entities and block entities after 300 ticks",
+          "note": "Load and simulation levels: 31 and lower entity ticking, 32 block ticking, 33 border. Scheduled ticks, block events and block entities run at simulation level 32 and lower, entities at 31 and lower; a level without players or forced chunks stops its entities and block entities after 300 ticks. Ticket changes take effect in each level's chunk stage, after its scheduled ticks",
           "deviations": [
-            "new chunks load at once; the official servers take 3 (1.21.4) or 4 (1.21.8) ticks",
-            "chunks with entities unload at once instead of after two ticks at border level"
+            "new chunks load at once; the official servers take 2 to 4 ticks, varying between runs",
+            "entity ticking per ring is observed but not compared, because item physics differ (V07, C3)"
           ]
         },
         {
@@ -368,9 +371,14 @@
           "name": "Unload and reload of chunks with pending ticks, block events and entities",
           "milestone": "C2",
           "impl": "partial",
-          "evidence": "none",
+          "evidence": "compared",
+          "cases": [
+            "trace/unload_reload"
+          ],
+          "note": "A dropped chunk's pending ticks keep their remaining delay, counted from the tick after it dropped; after a reload its scheduled ticks and block entities run again two ticks later and its block events at once (both official servers)",
           "deviations": [
-            "pending ticks keep absolute due times while unloaded"
+            "the official servers may keep a dropped chunk at border for one or two ticks and restore a cached chunk during the command or in the chunk stage, which moves restored ticks by a tick between runs; Circuit drops chunks at once and restores them in the chunk stage",
+            "entities of unloaded chunks are not reported as unloaded"
           ]
         },
         {

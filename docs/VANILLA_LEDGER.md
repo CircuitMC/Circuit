@@ -28,7 +28,7 @@ Feature counts per implementation state, then the number of features with compar
 | V02 Block registry and state properties | C1, C5 | 7 | 5 / 5 | 2 / 2 | 0 / 0 | 0 / 0 | 0 / 0 | 3 / 3 |
 | V03 Item and entity components and registries | C1, C5, C6 | 6 | 0 / 1 | 2 / 3 | 0 / 0 | 2 / 2 | 2 / 0 | 2 / 4 |
 | V04 Data and resource-pack negotiation | C1, C9, C10 | 6 | 0 / 0 | 4 / 4 | 0 / 0 | 2 / 2 | 0 / 0 | 2 / 2 |
-| V05 Dimensions, tickets and chunk lifecycle | C2 | 8 | 0 / 0 | 6 / 6 | 0 / 0 | 2 / 2 | 0 / 0 | 0 / 0 |
+| V05 Dimensions, tickets and chunk lifecycle | C2 | 8 | 0 / 0 | 6 / 6 | 0 / 0 | 2 / 2 | 0 / 0 | 3 / 3 |
 | V06 Lighting and environmental state | C2, C7 | 7 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 | 0 / 0 | 0 / 0 |
 | V07 RNG and global event order | C0, C2, C4 | 7 | 4 / 4 | 2 / 2 | 0 / 0 | 1 / 1 | 0 / 0 | 4 / 4 |
 | V08 Terrain and biomes | C7 | 70 | 0 / 0 | 2 / 2 | 64 / 64 | 4 / 4 | 0 / 0 | 0 / 0 |
@@ -54,7 +54,7 @@ Feature counts per implementation state, then the number of features with compar
 | V28 Villages, raids and trading | C8 | 15 | 0 / 0 | 0 / 0 | 0 / 0 | 15 / 15 | 0 / 0 | 0 / 0 |
 | V29 Bosses and progression | C8 | 11 | 0 / 0 | 0 / 0 | 4 / 4 | 7 / 7 | 0 / 0 | 0 / 0 |
 | V30 Data-pack execution | C1, C5, C9 | 8 | 0 / 0 | 1 / 1 | 0 / 0 | 6 / 7 | 1 / 0 | 0 / 0 |
-| V31 Commands and administration | C9 | 117 | 0 / 0 | 5 / 5 | 17 / 21 | 86 / 91 | 9 / 0 | 0 / 0 |
+| V31 Commands and administration | C9 | 117 | 0 / 0 | 6 / 6 | 17 / 21 | 85 / 90 | 9 / 0 | 0 / 0 |
 | V32 Client-visible world state | C10 | 287 | 5 / 5 | 47 / 47 | 0 / 0 | 228 / 234 | 7 / 1 | 6 / 6 |
 | V33 Communication and connection lifecycle | C10 | 85 | 17 / 17 | 19 / 19 | 0 / 0 | 41 / 49 | 8 / 0 | 0 / 0 |
 | V34 Save compatibility | C11 | 6 | 1 / 1 | 0 / 1 | 0 / 0 | 4 / 3 | 1 / 1 | 0 / 1 |
@@ -76,7 +76,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 | damage_type | src/server/registries.cpp (minecraft.wiki "Damage type") / src/server/registries.cpp (minecraft.wiki "Damage type") | 49 / 49 | 0 / 0 | 3 / 3 | 46 / 46 | 0 / 0 |
 | biome | minecraft-data pc/1.21.4/biomes.json / minecraft-data pc/1.21.8/biomes.json | 65 / 65 | 0 / 0 | 1 / 1 | 64 / 64 | 0 / 0 |
 | particle | minecraft-data pc/1.21.4/particles.json / minecraft-data pc/1.21.8/particles.json | 112 / 114 | 0 / 0 | 0 / 0 | 0 / 0 | 112 / 114 |
-| command | approximate: minecraft-data pc/1.20.5/commands.json / approximate: minecraft-data pc/1.21.6/commands.json | 83 / 88 | 0 / 0 | 3 / 3 | 0 / 0 | 80 / 85 |
+| command | approximate: minecraft-data pc/1.20.5/commands.json / approximate: minecraft-data pc/1.21.6/commands.json | 83 / 88 | 0 / 0 | 4 / 4 | 0 / 0 | 79 / 84 |
 | packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 20 / 20 | 62 / 62 | 0 / 0 | 152 / 162 |
 | block_state | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 27866 / 27946 | — | — | — | — |
 | sound_event | minecraft-data pc/1.21.4/sounds.json / minecraft-data pc/1.21.8/sounds.json | 1651 / 1728 | — | — | — | — |
@@ -130,7 +130,7 @@ Their counts are unknown, not zero.
 | black_box | passing | 12 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 5 |
-| official_trace | passing | 30 |
+| official_trace | passing | 32 |
 | official_trace | unsupported | 1 |
 | planned | planned | 8 |
 | real_client | passing | 2 |
@@ -189,9 +189,9 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | --- | --- | --- | --- | --- |
 | The overworld dimension | C2 | partial, none | partial, none | Flat floor, plains |
 | The Nether, the End and custom dimensions with dimension-scoped state | C2 | partial, documented | partial, documented | custom dimensions from data packs are not supported; level-specific rules (ultrawarm water and lava, the Nether's roof, the End's void and dragon fight) are not modeled; the Nether and the End are neither generated nor reachable by players; Every level keeps its own columns, scheduled ticks, block events, block entities, entities and per-level counters, and levels tick in the order overworld, Nether, End (minecraft.wiki "Tick"); entity ids are counted over all levels. Commands, tickets, traces, checkpoints, replays and logs name the level. Differential tests prove identical coordinates in two levels independent in the engine and the oracle |
-| Vanilla ticket types (player, forced, portal, spawn, post-teleport and others) | C2 | partial, reference_only | partial, reference_only | `observation/chunk_levels`; only start and player tickets are created; forced, post-teleport, portal, ender pearl and dragon tickets have their types and levels but nothing creates them yet; spawnChunkRadius is fixed at 2; Typed tickets with a level, a square radius and a lifetime (minecraft.wiki "Chunk"). The server adds the start ticket (level 32 - spawnChunkRadius) and, per player, a loading ticket over the view distance (level 31) and a simulation ticket (level 31 - simulation distance), as observed on both official servers |
-| Ticket level propagation and entity-ticking versus block-ticking chunks | C2 | partial, reference_only | partial, reference_only | `observation/chunk_levels`; chunks with entities unload at once instead of after two ticks at border level; new chunks load at once; the official servers take 3 (1.21.4) or 4 (1.21.8) ticks; Load and simulation levels: 31 and lower entity ticking, 32 block ticking, 33 border. Scheduled ticks, block events and block entities run at simulation level 32 and lower, entities at 31 and lower; a level without players or forced chunks stops its entities and block entities after 300 ticks |
-| Unload and reload of chunks with pending ticks, block events and entities | C2 | partial, none | partial, none | pending ticks keep absolute due times while unloaded |
+| Vanilla ticket types (player, forced, portal, spawn, post-teleport and others) | C2 | partial, compared | partial, compared | `observation/chunk_levels`, `trace/ring_blocks`, `trace/unload_reload`; post-teleport, portal, ender pearl and dragon tickets have their types and levels but nothing creates them yet; spawnChunkRadius is fixed at 2 until game rules are world state; Typed tickets with a level, a square radius and a lifetime (minecraft.wiki "Chunk"). The server adds the start ticket (level 32 - spawnChunkRadius) and, per player, a loading ticket over the view distance (level 31) and a simulation ticket (level 31 - simulation distance), as observed on both official servers; /forceload adds forced tickets (level 31), which persist |
+| Ticket level propagation and entity-ticking versus block-ticking chunks | C2 | partial, compared | partial, compared | `observation/chunk_levels`, `trace/ring_blocks`; entity ticking per ring is observed but not compared, because item physics differ (V07, C3); new chunks load at once; the official servers take 2 to 4 ticks, varying between runs; Load and simulation levels: 31 and lower entity ticking, 32 block ticking, 33 border. Scheduled ticks, block events and block entities run at simulation level 32 and lower, entities at 31 and lower; a level without players or forced chunks stops its entities and block entities after 300 ticks. Ticket changes take effect in each level's chunk stage, after its scheduled ticks |
+| Unload and reload of chunks with pending ticks, block events and entities | C2 | partial, compared | partial, compared | `trace/unload_reload`; entities of unloaded chunks are not reported as unloaded; the official servers may keep a dropped chunk at border for one or two ticks and restore a cached chunk during the command or in the chunk stage, which moves restored ticks by a tick between runs; Circuit drops chunks at once and restores them in the chunk stage; A dropped chunk's pending ticks keep their remaining delay, counted from the tick after it dropped; after a reload its scheduled ticks and block entities run again two ticks later and its block events at once (both official servers) |
 | View distance and simulation distance | C2 | partial, none | partial, none |  |
 | Chunk generation stages and publication | C7 | missing, none | missing, none |  |
 

@@ -412,7 +412,8 @@ inline Scenario registry_block_scenario() {
 // chunk (0,0) makes it entity ticking, the ring around it block ticking and
 // the next ring border; a player's loading ticket at chunk (6,0) loads
 // without simulating, except while their simulation ticket is there (ticks
-// 60-79); a post-teleport ticket loads chunk (-6,0) for 5 ticks. Every
+// 60-79); a post-teleport ticket loads chunk (-6,0) for 5 ticks; forced
+// chunk (-12,0) drops with pending work at tick 4 and returns at 30. Every
 // probed chunk holds a lamp switched off at tick 3 (a scheduled tick), a
 // piston powered at tick 3 (a block event), a hopper filling a chest (a
 // block entity) and a falling item (an entity). In the Nether, where no
@@ -442,8 +443,13 @@ inline std::vector<std::pair<CommandBody, DimensionId>> chunk_level_commands(Tic
         c.push_back({ticket(1, {0, 0}, 0), overworld});
         c.push_back({AddTicket{2, {6, 0}, 1, TicketType::player_loading, 31}, overworld});
         c.push_back({AddTicket{10, {0, 0}, 0, TicketType::start, 31}, the_nether});
+        c.push_back({ticket(5, {-12, 0}, 0), overworld});
     }
-    for (const auto cx : {0, 1, 2, 6}) probe(cx * 16, overworld);
+    for (const auto cx : {0, 1, 2, 6, -12}) probe(cx * 16, overworld);
+    // Chunk (-12,0) drops at tick 4, with its lamp's tick pending, and comes
+    // back at tick 30.
+    if (t == 4) c.push_back({RemoveTicket{5}, overworld});
+    if (t == 30) c.push_back({ticket(6, {-12, 0}, 0), overworld});
     probe(0, the_nether);
     if (t == 60) {
         c.push_back({AddTicket{3, {6, 0}, 0, TicketType::player_simulation, 29}, overworld});
