@@ -1,0 +1,409 @@
+circuit-trace 2
+title Primed TNT keeps its fuse while its chunk unloads and reloads
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.8.0+mc1.21.4
+mechanisms tnt chunk_tickets
+area 328 0 -1 343 3 2
+ticks 88
+changes ordered
+entities observed
+rng observed
+chunks none
+load none
+
+at 1 command forceload add 328 0
+
+at 10 set 328 0 -1 minecraft:stone
+change 10 commands 328 0 -1 minecraft:air minecraft:stone
+at 10 set 328 0 0 minecraft:stone
+change 10 commands 328 0 0 minecraft:air minecraft:stone
+at 10 set 328 0 1 minecraft:stone
+change 10 commands 328 0 1 minecraft:air minecraft:stone
+at 10 set 328 0 2 minecraft:stone
+change 10 commands 328 0 2 minecraft:air minecraft:stone
+at 10 set 329 0 -1 minecraft:stone
+change 10 commands 329 0 -1 minecraft:air minecraft:stone
+at 10 set 329 0 0 minecraft:stone
+change 10 commands 329 0 0 minecraft:air minecraft:stone
+at 10 set 329 0 1 minecraft:stone
+change 10 commands 329 0 1 minecraft:air minecraft:stone
+at 10 set 329 0 2 minecraft:stone
+change 10 commands 329 0 2 minecraft:air minecraft:stone
+at 10 set 330 0 -1 minecraft:stone
+change 10 commands 330 0 -1 minecraft:air minecraft:stone
+at 10 set 330 0 0 minecraft:stone
+change 10 commands 330 0 0 minecraft:air minecraft:stone
+at 10 set 330 0 1 minecraft:stone
+change 10 commands 330 0 1 minecraft:air minecraft:stone
+at 10 set 330 0 2 minecraft:stone
+change 10 commands 330 0 2 minecraft:air minecraft:stone
+at 10 set 331 0 -1 minecraft:stone
+change 10 commands 331 0 -1 minecraft:air minecraft:stone
+at 10 set 331 0 0 minecraft:stone
+change 10 commands 331 0 0 minecraft:air minecraft:stone
+at 10 set 331 0 1 minecraft:stone
+change 10 commands 331 0 1 minecraft:air minecraft:stone
+at 10 set 331 0 2 minecraft:stone
+change 10 commands 331 0 2 minecraft:air minecraft:stone
+at 10 set 332 0 -1 minecraft:stone
+change 10 commands 332 0 -1 minecraft:air minecraft:stone
+at 10 set 332 0 0 minecraft:stone
+change 10 commands 332 0 0 minecraft:air minecraft:stone
+at 10 set 332 0 1 minecraft:stone
+change 10 commands 332 0 1 minecraft:air minecraft:stone
+at 10 set 332 0 2 minecraft:stone
+change 10 commands 332 0 2 minecraft:air minecraft:stone
+at 10 set 333 0 -1 minecraft:stone
+change 10 commands 333 0 -1 minecraft:air minecraft:stone
+at 10 set 333 0 0 minecraft:stone
+change 10 commands 333 0 0 minecraft:air minecraft:stone
+at 10 set 333 0 1 minecraft:stone
+change 10 commands 333 0 1 minecraft:air minecraft:stone
+at 10 set 333 0 2 minecraft:stone
+change 10 commands 333 0 2 minecraft:air minecraft:stone
+at 10 set 334 0 -1 minecraft:stone
+change 10 commands 334 0 -1 minecraft:air minecraft:stone
+at 10 set 334 0 0 minecraft:stone
+change 10 commands 334 0 0 minecraft:air minecraft:stone
+at 10 set 334 0 1 minecraft:stone
+change 10 commands 334 0 1 minecraft:air minecraft:stone
+at 10 set 334 0 2 minecraft:stone
+change 10 commands 334 0 2 minecraft:air minecraft:stone
+at 10 set 335 0 -1 minecraft:stone
+change 10 commands 335 0 -1 minecraft:air minecraft:stone
+at 10 set 335 0 0 minecraft:stone
+change 10 commands 335 0 0 minecraft:air minecraft:stone
+at 10 set 335 0 1 minecraft:stone
+change 10 commands 335 0 1 minecraft:air minecraft:stone
+at 10 set 335 0 2 minecraft:stone
+change 10 commands 335 0 2 minecraft:air minecraft:stone
+at 10 set 336 0 -1 minecraft:stone
+change 10 commands 336 0 -1 minecraft:air minecraft:stone
+at 10 set 336 0 0 minecraft:stone
+change 10 commands 336 0 0 minecraft:air minecraft:stone
+at 10 set 336 0 1 minecraft:stone
+change 10 commands 336 0 1 minecraft:air minecraft:stone
+at 10 set 336 0 2 minecraft:stone
+change 10 commands 336 0 2 minecraft:air minecraft:stone
+at 10 set 337 0 -1 minecraft:stone
+change 10 commands 337 0 -1 minecraft:air minecraft:stone
+at 10 set 337 0 0 minecraft:stone
+change 10 commands 337 0 0 minecraft:air minecraft:stone
+at 10 set 337 0 1 minecraft:stone
+change 10 commands 337 0 1 minecraft:air minecraft:stone
+at 10 set 337 0 2 minecraft:stone
+change 10 commands 337 0 2 minecraft:air minecraft:stone
+at 10 set 338 0 -1 minecraft:stone
+change 10 commands 338 0 -1 minecraft:air minecraft:stone
+at 10 set 338 0 0 minecraft:stone
+change 10 commands 338 0 0 minecraft:air minecraft:stone
+at 10 set 338 0 1 minecraft:stone
+change 10 commands 338 0 1 minecraft:air minecraft:stone
+at 10 set 338 0 2 minecraft:stone
+change 10 commands 338 0 2 minecraft:air minecraft:stone
+at 10 set 339 0 -1 minecraft:stone
+change 10 commands 339 0 -1 minecraft:air minecraft:stone
+at 10 set 339 0 0 minecraft:stone
+change 10 commands 339 0 0 minecraft:air minecraft:stone
+at 10 set 339 0 1 minecraft:stone
+change 10 commands 339 0 1 minecraft:air minecraft:stone
+at 10 set 339 0 2 minecraft:stone
+change 10 commands 339 0 2 minecraft:air minecraft:stone
+at 10 set 340 0 -1 minecraft:stone
+change 10 commands 340 0 -1 minecraft:air minecraft:stone
+at 10 set 340 0 0 minecraft:stone
+change 10 commands 340 0 0 minecraft:air minecraft:stone
+at 10 set 340 0 1 minecraft:stone
+change 10 commands 340 0 1 minecraft:air minecraft:stone
+at 10 set 340 0 2 minecraft:stone
+change 10 commands 340 0 2 minecraft:air minecraft:stone
+at 10 set 341 0 -1 minecraft:stone
+change 10 commands 341 0 -1 minecraft:air minecraft:stone
+at 10 set 341 0 0 minecraft:stone
+change 10 commands 341 0 0 minecraft:air minecraft:stone
+at 10 set 341 0 1 minecraft:stone
+change 10 commands 341 0 1 minecraft:air minecraft:stone
+at 10 set 341 0 2 minecraft:stone
+change 10 commands 341 0 2 minecraft:air minecraft:stone
+at 10 set 342 0 -1 minecraft:stone
+change 10 commands 342 0 -1 minecraft:air minecraft:stone
+at 10 set 342 0 0 minecraft:stone
+change 10 commands 342 0 0 minecraft:air minecraft:stone
+at 10 set 342 0 1 minecraft:stone
+change 10 commands 342 0 1 minecraft:air minecraft:stone
+at 10 set 342 0 2 minecraft:stone
+change 10 commands 342 0 2 minecraft:air minecraft:stone
+at 10 set 343 0 -1 minecraft:stone
+change 10 commands 343 0 -1 minecraft:air minecraft:stone
+at 10 set 343 0 0 minecraft:stone
+change 10 commands 343 0 0 minecraft:air minecraft:stone
+at 10 set 343 0 1 minecraft:stone
+change 10 commands 343 0 1 minecraft:air minecraft:stone
+at 10 set 343 0 2 minecraft:stone
+change 10 commands 343 0 2 minecraft:air minecraft:stone
+at 10 set 332 1 0 minecraft:tnt[unstable=false]
+change 10 commands 332 1 0 minecraft:air minecraft:tnt[unstable=false]
+at 10 set 334 1 2 minecraft:repeater[delay=4,facing=west,locked=false,powered=false]
+change 10 commands 334 1 2 minecraft:air minecraft:repeater[delay=4,facing=west,locked=false,powered=false]
+at 10 set 335 1 2 minecraft:tnt[unstable=false]
+change 10 commands 335 1 2 minecraft:air minecraft:tnt[unstable=false]
+
+at 12 set 333 1 0 minecraft:redstone_block
+change 12 commands 333 1 0 minecraft:air minecraft:redstone_block
+entity-added 12 commands e1 minecraft:tnt 332.5 1.0 0.5 0.019857169889349057 0.20000000298023224 0.002385959761925832 fuse=80
+change 12 commands 332 1 0 minecraft:tnt[unstable=false] minecraft:air
+draws 12 commands level 2
+entity-order 12 entities e1
+entity 12 e1 332.50999999046326 1.1600000029802322 0.5023859597619258 0 0.1568000029206276 0.0023382405666873152 fuse=79 on-ground=false
+
+at 13 set 333 1 0 minecraft:air
+change 13 commands 333 1 0 minecraft:redstone_block minecraft:air
+entity-order 13 entities e1
+entity 13 e1 332.50999999046326 1.2768000059008597 0.5047242003286131 0 0.11446400286221503 0.002291475755353569 fuse=78 on-ground=false
+
+entity-order 14 entities e1
+entity 14 e1 332.50999999046326 1.3512640087630747 0.5070156760839667 0 0.07297472280497072 0.0022456462402464976 fuse=77 on-ground=false
+
+entity-order 15 entities e1
+entity 15 e1 332.50999999046326 1.3842387315680456 0.5092613223242132 0 0.03231522834887131 0.0022007333154415677 fuse=76 on-ground=false
+
+entity-order 16 entities e1
+entity 16 e1 332.50999999046326 1.3765539599169168 0.5114620556396547 0 -0.0075310762181061185 0.0021567186491327365 fuse=75 on-ground=false
+
+entity-order 17 entities e1
+entity 17 e1 332.50999999046326 1.3290228836988107 0.5136187742887874 0 -0.046580454693744 0.0021135842761500815 fuse=74 on-ground=false
+
+entity-order 18 entities e1
+entity 18 e1 332.50999999046326 1.2424424290050666 0.5157323585649375 0 -0.08484884559986913 0.00207131259062708 fuse=73 on-ground=false
+
+entity-order 19 entities e1
+entity 19 e1 332.50999999046326 1.1175935834051975 0.5178036711555646 0 -0.12235186868787176 0.0020298863388145383 fuse=72 on-ground=false
+
+entity-order 20 entities e1
+entity 20 e1 332.50999999046326 1.0 0.5198335574943791 0 0 0.0013925020284267732 fuse=71 on-ground=true
+
+entity-order 21 entities e1
+entity 21 e1 332.50999999046326 1.0 0.5212260595228059 0 0 9.552563915007663E-4 fuse=70 on-ground=true
+
+entity-order 22 entities e1
+entity 22 e1 332.50999999046326 1.0 0.5221813159143066 0 0 6.553058845695257E-4 fuse=69 on-ground=true
+
+entity-order 23 entities e1
+entity 23 e1 332.50999999046326 1.0 0.5228366217988761 0 0 4.495398368146946E-4 fuse=68 on-ground=true
+
+entity-order 24 entities e1
+entity 24 e1 332.50999999046326 1.0 0.5232861616356909 0 0 3.083843280548805E-4 fuse=67 on-ground=true
+
+entity-order 25 entities e1
+entity 25 e1 332.50999999046326 1.0 0.5232861616356909 0 0 2.1155164904564802E-4 fuse=66 on-ground=true
+
+entity-order 26 entities e1
+entity 26 e1 332.50999999046326 1.0 0.5232861616356909 0 0 1.4512443124531453E-4 fuse=65 on-ground=true
+
+entity-order 27 entities e1
+entity 27 e1 332.50999999046326 1.0 0.5232861616356909 0 0 9.955535983428576E-5 fuse=64 on-ground=true
+
+entity-order 28 entities e1
+entity 28 e1 332.50999999046326 1.0 0.5232861616356909 0 0 6.829497684632003E-5 fuse=63 on-ground=true
+
+at 29 set 333 1 2 minecraft:redstone_block
+change 29 commands 333 1 2 minecraft:air minecraft:redstone_block
+entity-order 29 entities e1
+entity 29 e1 332.50999999046326 1.0 0.5232861616356909 0 0 4.6850354116575534E-5 fuse=62 on-ground=true
+
+at 30 command forceload remove 328 0
+entity-removed 30 other e1 unloaded_to_chunk
+
+at 40 command forceload add 328 0
+
+entity-loaded 41 other e1 minecraft:tnt 332.50999999046326 1.0 0.5232861616356909 0 0 4.6850354116575534E-5 fuse=62
+entity 41 e1 332.50999999046326 1.0 0.5232861616356909 0 0 4.6850354116575534E-5 fuse=62 on-ground=true
+
+entity-order 42 entities e1
+entity 42 e1 332.50999999046326 1.0 0.5232861616356909 0 0 3.2139342923970814E-5 fuse=61 on-ground=true
+
+entity-order 43 entities e1
+entity 43 e1 332.50999999046326 1.0 0.5232861616356909 0 0 2.2047589245843973E-5 fuse=60 on-ground=true
+
+entity-order 44 entities e1
+entity 44 e1 332.50999999046326 1.0 0.5232861616356909 0 0 1.5124646222648963E-5 fuse=59 on-ground=true
+
+entity-order 45 entities e1
+entity 45 e1 332.50999999046326 1.0 0.5232861616356909 0 0 1.0375507308737189E-5 fuse=58 on-ground=true
+
+change 46 block_ticks 334 1 2 minecraft:repeater[delay=4,facing=west,locked=false,powered=false] minecraft:repeater[delay=4,facing=west,locked=false,powered=true]
+entity-added 46 block_ticks e3 minecraft:tnt 335.5 1.0 2.5 -0.019964653821068924 0.20000000298023224 -0.0011885275785096675 fuse=80
+change 46 block_ticks 335 1 2 minecraft:tnt[unstable=false] minecraft:air
+draws 46 block_ticks level 2
+entity-order 46 entities e1 e3
+entity 46 e1 332.50999999046326 1.0 0.5232861616356909 0 0 7.117598013793711E-6 fuse=57 on-ground=true
+entity 46 e3 335.4800353461789 1.1600000029802322 2.4988114724214903 -0.019565360744647545 0.1568000029206276 -0.001164757026939474 fuse=79 on-ground=false
+
+entity-order 47 entities e1 e3
+entity 47 e1 332.50999999046326 1.0 0.5232861616356909 0 0 4.882672237462486E-6 fuse=56 on-ground=true
+entity 47 e3 335.46046998543426 1.2768000059008597 2.4976467153945507 -0.019174053529754594 0.11446400286221503 -0.0011414618864006845 fuse=78 on-ground=false
+
+entity-order 48 entities e1 e3
+entity 48 e1 332.50999999046326 1.0 0.5232861616356909 0 0 3.3495131548992647E-6 fuse=55 on-ground=true
+entity 48 e3 335.4412959319045 1.3512640087630747 2.49650525350815 -0.0187905724591595 0.07297472280497072 -0.0011186326486726707 fuse=77 on-ground=false
+
+entity-order 49 entities e1 e3
+entity 49 e1 332.50999999046326 1.0 0.5232861616356909 0 0 2.2977660242608953E-6 fuse=54 on-ground=true
+entity 49 e3 335.4225053594453 1.3842387315680456 2.4953866208594775 -0.01841476100997631 0.03231522834887131 -0.0010962599956992173 fuse=76 on-ground=false
+
+entity-order 50 entities e1 e3
+entity 50 e1 332.50999999046326 1.0 0.5232861616356909 0 0 1.5762674926429741E-6 fuse=53 on-ground=true
+entity 50 e3 335.40409059843535 1.3765539599169168 2.4942903608637783 -0.018046465789776783 -0.0075310762181061185 -0.001074334795785233 fuse=75 on-ground=false
+
+entity-order 51 entities e1 e3
+entity 51 e1 332.50999999046326 1.0 0.5232861616356909 0 0 1.0813194999530802E-6 fuse=52 on-ground=true
+entity 51 e3 335.38604413264557 1.3290228836988107 2.493216026067993 -0.01768553647398125 -0.046580454693744 -0.0010528480998695283 fuse=74 on-ground=false
+
+entity-order 52 entities e1 e3
+entity 52 e1 332.50999999046326 1.0 0.5232861616356909 0 0 7.41785176967813E-7 fuse=51 on-ground=true
+entity 52 e3 335.36835859617156 1.2424424290050666 2.4921631779681235 -0.017331825744501622 -0.08484884559986913 -0.0010317911378721378 fuse=73 on-ground=false
+
+entity-order 53 entities e1 e3
+entity 53 e1 332.50999999046326 1.0 0.5232861616356909 0 0 5.088646313999197E-7 fuse=50 on-ground=true
+entity 53 e3 335.35102677042704 1.125 2.491131386830251 -0.01188963246072811 0 -7.078087205802864E-4 fuse=72 on-ground=true
+
+entity-order 54 entities e1 e3
+entity 54 e1 332.50999999046326 1.0 0.5232861616356909 0 0 3.4908113714034483E-7 fuse=49 on-ground=true
+entity 54 e3 335.3391371379663 1.125 2.490423578109671 -0.008156287868059484 0 -4.855567823180765E-4 fuse=71 on-ground=true
+
+entity-order 55 entities e1 e3
+entity 55 e1 332.50999999046326 1.0 0.5232861616356909 0 0 2.3946966007827654E-7 fuse=48 on-ground=true
+entity 55 e3 335.33098085009823 1.125 2.489938021327353 -0.005595213477488805 0 -3.3309195267020047E-4 fuse=70 on-ground=true
+
+entity-order 56 entities e1 e3
+entity 56 e1 332.50999999046326 1.0 0.5232861616356909 0 0 1.642761868136977E-7 fuse=47 on-ground=true
+entity 56 e3 335.32538563662075 1.125 2.489604929374683 -0.0038383164455573202 0 -2.2850107953175752E-4 fuse=69 on-ground=true
+
+entity-order 57 entities e1 e3
+entity 57 e1 332.50999999046326 1.0 0.5232861616356909 0 0 1.1269346415419661E-7 fuse=46 on-ground=true
+entity 57 e3 335.32154732017517 1.125 2.4893764282951514 -0.0026330850816523215 0 -1.5675174055878566E-4 fuse=68 on-ground=true
+
+entity-order 58 entities e1 e3
+entity 58 e1 332.50999999046326 1.0 0.5232861616356909 0 0 7.730771640977887E-8 fuse=45 on-ground=true
+entity 58 e3 335.31891423509353 1.125 2.4892196765545926 -0.0018062963660134923 0 -1.0753169402332694E-4 fuse=67 on-ground=true
+
+entity-order 59 entities e1 e3
+entity 59 e1 332.50999999046326 1.0 0.5232861616356909 0 0 5.30330934571083E-8 fuse=44 on-ground=true
+entity 59 e3 335.31710793872753 1.125 2.4891121448605693 -0.0012391193070852556 0 -7.376674210000227E-5 fuse=66 on-ground=true
+
+entity-order 60 entities e1 e3
+entity 60 e1 332.50999999046326 1.0 0.5232861616356909 0 0 3.638070211157629E-8 fuse=43 on-ground=true
+entity 60 e3 335.3158688194205 1.125 2.4890383781184693 -8.500358446604853E-4 0 -5.060398508060156E-5 fuse=65 on-ground=true
+
+entity-order 61 entities e1 e3
+entity 61 e1 332.50999999046326 1.0 0.5232861616356909 0 0 2.4957161648541332E-8 fuse=42 on-ground=true
+entity 61 e3 335.3150187835758 1.125 2.488987774133389 -5.831245894370929E-4 0 -3.4714333765292666E-5 fuse=64 on-ground=true
+
+entity-order 62 entities e1 e3
+entity 62 e1 332.50999999046326 1.0 0.5232861616356909 0 0 1.7120612890899355E-8 fuse=41 on-ground=true
+entity 62 e3 335.3144356589864 1.125 2.4889530597996234 -4.0002346835384567E-4 0 -2.381403296299077E-5 fuse=63 on-ground=true
+
+entity-order 63 entities e1 e3
+entity 63 e1 332.50999999046326 1.0 0.5232861616356909 0 0 1.1744740443156956E-8 fuse=40 on-ground=true
+entity 63 e3 335.31403563551805 1.125 2.4889292457666605 -2.744160992907381E-4 0 -1.6336426612611666E-5 fuse=62 on-ground=true
+
+entity-order 64 entities e1 e3
+entity 64 e1 332.50999999046326 1.0 0.5232861616356909 0 0 8.056891944005672E-9 fuse=39 on-ground=true
+entity 64 e3 335.31403563551805 1.125 2.4889292457666605 -1.8824944411344633E-4 0 -1.1206788656251603E-5 fuse=61 on-ground=true
+
+entity-order 65 entities e1 e3
+entity 65 e1 332.50999999046326 1.0 0.5232861616356909 0 0 5.52702787358789E-9 fuse=38 on-ground=true
+entity 65 e3 335.31403563551805 1.125 2.4889292457666605 -1.2913911866182417E-4 0 -7.6878570181886E-6 fuse=60 on-ground=true
+
+entity-order 66 entities e1 e3
+entity 66 e1 332.50999999046326 1.0 0.5232861616356909 0 0 3.791541121281292E-9 fuse=37 on-ground=true
+entity 66 e3 335.31403563551805 1.125 2.4889292457666605 -8.858943540201138E-5 0 -5.273869914477379E-6 fuse=59 on-ground=true
+
+entity-order 67 entities e1 e3
+entity 67 e1 332.50999999046326 1.0 0.5232861616356909 0 0 2.6009972091989664E-9 fuse=36 on-ground=true
+entity 67 e3 335.31403563551805 1.125 2.4889292457666605 -6.0772352685779805E-5 0 -3.6178747613314816E-6 fuse=58 on-ground=true
+
+entity-order 68 entities e1 e3
+entity 68 e1 332.50999999046326 1.0 0.5232861616356909 0 0 1.7842840855104909E-9 fuse=35 on-ground=true
+entity 68 e3 335.31403563551805 1.125 2.4889292457666605 -4.1689833942444946E-5 0 -2.481862086273396E-6 fuse=57 on-ground=true
+
+entity-order 69 entities e1 e3
+entity 69 e1 332.50999999046326 1.0 0.5232861616356909 0 0 1.2240188826601966E-9 fuse=34 on-ground=true
+entity 69 e3 335.31403563551805 1.125 2.4889292457666605 -2.8599226084517232E-5 0 -1.7025573911835496E-6 fuse=56 on-ground=true
+
+entity-order 70 entities e1 e3
+entity 70 e1 332.50999999046326 1.0 0.5232861616356909 0 0 8.396769535048947E-10 fuse=33 on-ground=true
+entity 70 e3 335.31403563551805 1.125 2.4889292457666605 -1.9619069093978822E-5 0 -1.1679543703519148E-6 fuse=55 on-ground=true
+
+entity-order 71 entities e1 e3
+entity 71 e1 332.50999999046326 1.0 0.5232861616356909 0 0 5.760183901043577E-10 fuse=32 on-ground=true
+entity 71 e3 335.31403563551805 1.125 2.4889292457666605 -1.345868139846947E-5 0 -8.012166980614136E-7 fuse=54 on-ground=true
+
+entity-order 72 entities e1 e3
+entity 72 e1 332.50999999046326 1.0 0.5232861616356909 0 0 3.9514861561158933E-10 fuse=31 on-ground=true
+entity 72 e3 335.31403563551805 1.125 2.4889292457666605 -9.232655439350056E-6 0 -5.496346548701297E-7 fuse=53 on-ground=true
+
+entity-order 73 entities e1 e3
+entity 73 e1 332.50999999046326 1.0 0.5232861616356909 0 0 2.7107195030955024E-10 fuse=30 on-ground=true
+entity 73 e3 335.31403563551805 1.125 2.4889292457666605 -6.333601631394138E-6 0 -3.7704937324090894E-7 fuse=52 on-ground=true
+
+entity-order 74 entities e1 e3
+entity 74 e1 332.50999999046326 1.0 0.5232861616356909 0 0 1.8595535791235144E-10 fuse=29 on-ground=true
+entity 74 e3 335.31403563551805 1.125 2.4889292457666605 -4.344850719136378E-6 0 -2.586558700432635E-7 fuse=51 on-ground=true
+
+entity-order 75 entities e1 e3
+entity 75 e1 332.50999999046326 1.0 0.5232861616356909 0 0 1.2756537552787307E-10 fuse=28 on-ground=true
+entity 75 e3 335.31403563551805 1.125 2.4889292457666605 -2.9805675933275552E-6 0 -1.7743792684967873E-7 fuse=50 on-ground=true
+
+entity-order 76 entities e1 e3
+entity 76 e1 332.50999999046326 1.0 0.5232861616356909 0 0 8.75098476121209E-11 fuse=27 on-ground=true
+entity 76 e3 335.31403563551805 1.125 2.4889292457666605 -2.044669369022703E-6 0 -1.217224178188796E-7 fuse=49 on-ground=true
+
+entity-order 77 entities e1 e3
+entity 77 e1 332.50999999046326 1.0 0.5232861616356909 0 0 6.003175546191494E-11 fuse=26 on-ground=true
+entity 77 e3 335.31403563551805 1.125 2.4889292457666605 -1.4026431871495741E-6 0 -8.35015786237514E-8 fuse=48 on-ground=true
+
+entity-order 78 entities e1 e3
+entity 78 e1 332.50999999046326 1.0 0.5232861616356909 0 0 4.1181784246873646E-11 fuse=25 on-ground=true
+entity 78 e3 335.31403563551805 1.125 2.4889292457666605 -9.622132263846078E-7 0 -5.7282082935893456E-8 fuse=47 on-ground=true
+
+entity-order 79 entities e1 e3
+entity 79 e1 332.50999999046326 1.0 0.5232861616356909 0 0 2.8250703993355318E-11 fuse=24 on-ground=true
+entity 79 e3 335.31403563551805 1.125 2.4889292457666605 -6.600782732998409E-7 0 -3.9295508894022906E-8 fuse=46 on-ground=true
+
+entity-order 80 entities e1 e3
+entity 80 e1 332.50999999046326 1.0 0.5232861616356909 0 0 1.9379982939441747E-11 fuse=23 on-ground=true
+entity 80 e3 335.31403563551805 1.125 2.4889292457666605 -4.5281369548369075E-7 0 -2.695671910129971E-8 fuse=45 on-ground=true
+
+entity-order 81 entities e1 e3
+entity 81 e1 332.50999999046326 1.0 0.5232861616356909 0 0 1.3294668296457037E-11 fuse=22 on-ground=true
+entity 81 e3 335.31403563551805 1.125 2.4889292457666605 -3.106301951018118E-7 0 -1.8492309303491598E-8 fuse=44 on-ground=true
+
+entity-order 82 entities e1 e3
+entity 82 e1 332.50999999046326 1.0 0.5232861616356909 0 0 9.120142451369527E-12 fuse=21 on-ground=true
+entity 82 e3 335.31403563551805 1.125 2.4889292457666605 -2.130923138398429E-7 0 -1.2685724182195235E-8 fuse=43 on-ground=true
+
+entity-order 83 entities e1 e3
+entity 83 e1 332.50999999046326 1.0 0.5232861616356909 0 0 6.256417721639494E-12 fuse=20 on-ground=true
+entity 83 e3 335.31403563551805 1.125 2.4889292457666605 -1.4618132729413222E-7 0 -8.702406788985931E-9 fuse=42 on-ground=true
+
+entity-order 84 entities e1 e3
+entity 84 e1 332.50999999046326 1.0 0.5232861616356909 0 0 4.291902557044693E-12 fuse=19 on-ground=true
+entity 84 e3 335.31403563551805 1.125 2.4889292457666605 -1.002803905237747E-7 0 -5.969851057244349E-9 fuse=41 on-ground=true
+
+entity-order 85 entities e1 e3
+entity 85 e1 332.50999999046326 1.0 0.5232861616356909 0 0 2.9442451541326587E-12 fuse=18 on-ground=true
+entity 85 e3 335.31403563551805 1.125 2.4889292457666605 -6.879234789930944E-8 0 -4.095317825269623E-9 fuse=40 on-ground=true
+
+entity-order 86 entities e1 e3
+entity 86 e1 332.50999999046326 1.0 0.5232861616356909 0 0 2.019752175735004E-12 fuse=17 on-ground=true
+entity 86 e3 335.31403563551805 1.125 2.4889292457666605 -4.719155065892627E-8 0 -2.8093880281349613E-9 fuse=39 on-ground=true
+
+entity-order 87 entities e1 e3
+entity 87 e1 332.50999999046326 1.0 0.5232861616356909 0 0 1.3855499925542126E-12 fuse=16 on-ground=true
+entity 87 e3 335.31403563551805 1.125 2.4889292457666605 -3.237340375202342E-8 0 -1.9272401873005832E-9 fuse=38 on-ground=true
+
+entity-order 88 entities e1 e3
+entity 88 e1 332.50999999046326 1.0 0.5232861616356909 0 0 9.504872948921898E-13 fuse=15 on-ground=true
+entity 88 e3 335.31403563551805 1.125 2.4889292457666605 -2.220815497388806E-8 0 -1.3220867684882E-9 fuse=37 on-ground=true

@@ -429,12 +429,14 @@ private:
             e.kind = loaded ? EntityEvent::Kind::loaded : EntityEvent::Kind::added;
             if (t.size() < 11) return fail(line_, std::format("{} needs handle, type, position and velocity", t[0]));
             if (loaded) {
-                // An entity its chunk saved comes back under its handle.
+                // An entity its chunk saved comes back under its handle, and
+                // uses up the next number.
                 if (auto ok = known_handle(e.handle, false); !ok) return ok;
                 if (!unloaded_.erase(e.handle)) return fail(line_, std::format("entity `{}` was not unloaded", e.handle));
-            } else if (e.handle != std::format("e{}", handles_.size() + 1)) {
-                return fail(line_, std::format("the next entity is e{}", handles_.size() + 1));
+            } else if (e.handle != std::format("e{}", numbered_ + 1)) {
+                return fail(line_, std::format("the next entity is e{}", numbered_ + 1));
             }
+            ++numbered_;
             if (!valid_id(t[4])) return fail(line_, "invalid entity type");
             e.type = std::string(t[4]);
             if (auto ok = vec_of(t, 5, e.position); !ok) return ok;
@@ -589,6 +591,7 @@ private:
     std::size_t seq_{};
     Tick last_event_tick_{};
     std::map<std::string, bool> handles_; // handle -> removed
+    std::size_t numbered_{};              // entities added or loaded so far
     std::set<std::string> unloaded_;      // handles removed with their chunk, which may be loaded again
 };
 } // namespace

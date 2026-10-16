@@ -1325,6 +1325,42 @@ int main() {
                 "broke into its item");
     });
 
+    suite.run("redstone primes TNT, whose fuse runs out; tntExplodes off leaves it", [] {
+        const auto tnt = registry_block("tnt");
+        const auto primed = [](const Sim& s) {
+            std::vector<circuit::gameplay::Entity> out;
+            const auto d = s.oracle.dump();
+            for (const auto& e : d.overworld().entities)
+                if (e.kind == circuit::gameplay::EntityKind::primed_tnt) out.push_back(e);
+            return out;
+        };
+        Sim s;
+        // Placed beside a redstone block: the entity first, then the block goes.
+        s.tick(with_floor(floor(0, 4, 0, 0), {place({1, 0, 0}, blocks::redstone_block()), place({0, 0, 0}, tnt), place({4, 0, 0}, tnt)}));
+        const auto spawned = of_kind(s.last, TraceKind::entity_spawned);
+        require(spawned.size() == 1 && spawned[0].b == 80 && spawned[0].c == static_cast<std::uint64_t>(circuit::gameplay::EntityKind::primed_tnt),
+                "primed with a fuse of 80");
+        require(s.at({0, 0, 0}).is_air() && s.at({4, 0, 0}) == tnt, "the powered block went, the other stays");
+        auto p = primed(s);
+        require(p.size() == 1 && p[0].fuse == 79 && p[0].position.y > 0.0, "launched upwards and counting");
+        // An unpowered update leaves TNT alone; a lever beside it primes it.
+        s.tick({place({4, 0, 1}, blocks::stone())});
+        require(s.at({4, 0, 0}) == tnt, "no signal");
+        s.tick({place({3, 0, 0}, blocks::lever(true, D::north, blocks::LeverFace::floor))});
+        require(s.at({4, 0, 0}).is_air() && primed(s).size() == 2, "the lever primes it");
+        // The fuse runs out: the entity is removed as exploded.
+        while (primed(s).size() == 2) s.tick();
+        const auto removed = of_kind(s.last, TraceKind::entity_removed);
+        require(removed.size() == 1 && removed[0].b == static_cast<std::uint64_t>(circuit::gameplay::RemovalReason::exploded), "exploded");
+        // With tntExplodes off (1.21.8) redstone does not prime TNT.
+        s.tick({SetGameRule{"tntExplodes", 0}, place({8, -1, 0}, blocks::stone()), place({8, 0, 0}, tnt), place({9, 0, 0}, blocks::redstone_block())});
+        require(s.at({8, 0, 0}) == tnt && primed(s).size() == 1, "not primed with the rule off");
+        // 1.21.4 has no such rule: TNT is always primed.
+        Sim old(**BundleRegistry::select_for_simulation("java-1.21.4"));
+        old.tick({place({0, -1, 0}, blocks::stone()), place({0, 0, 0}, tnt), place({1, 0, 0}, blocks::redstone_block())});
+        require(old.at({0, 0, 0}).is_air() && primed(old).size() == 1, "1.21.4 primes it");
+    });
+
     suite.run("entities leave with their chunk and come back under new ids", [] {
         Sim s(bundle(), 7, 0); // tick 1: chunk (0,0) entity ticking
         s.tick({place({4, -1, 4}, blocks::stone()), SpawnItem{at_block(4.5, 0.0, 4.5), {}, {items::stone, 3}}}); // 2

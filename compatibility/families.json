@@ -1203,40 +1203,57 @@
           "id": "tnt_block",
           "name": "TNT placement and breaking",
           "milestone": "C3",
-          "impl": "missing",
-          "evidence": "reference_only",
+          "impl": "partial",
+          "evidence": "compared",
           "cases_planned": [
             "TNT-01"
           ],
           "cases": [
-            "trace/tnt_redstone_ignition"
+            "trace/tnt_ignition"
+          ],
+          "note": "TNT placed by commands, pistons and players becomes primed TNT where redstone reaches it; broken, it drops itself by its loot table",
+          "deviations": [
+            "unstable TNT is not primed when broken"
           ]
         },
         {
           "id": "ignition",
           "name": "Ignition by redstone, fire, flint and steel, fire charges, burning projectiles and explosions",
           "milestone": "C3",
-          "impl": "missing",
-          "evidence": "reference_only",
+          "impl": "partial",
+          "evidence": "compared",
           "cases_planned": [
             "TNT-01"
           ],
           "cases": [
-            "trace/tnt_redstone_ignition"
+            "trace/tnt_ignition",
+            "trace/tnt_explodes_disabled"
+          ],
+          "note": "Redstone: a signal from any neighbor when TNT is placed, moved in by a piston or updated (blocks, levers, diodes, observers, dust, strongly powered blocks)",
+          "deviations": [
+            "fire, flint and steel, fire charges, burning projectiles, dispensers and explosions do not ignite TNT yet"
           ]
         },
         {
           "id": "primed_tnt",
           "name": "Primed TNT entities: fuse, motion, collision and removal",
           "milestone": "C3",
-          "impl": "missing",
-          "evidence": "reference_only",
+          "impl": "partial",
+          "evidence": "compared",
           "cases_planned": [
             "TNT-02",
             "TNT-03"
           ],
           "cases": [
-            "trace/tnt_redstone_ignition"
+            "trace/tnt_ignition",
+            "trace/tnt_motion",
+            "trace/tnt_water_current",
+            "trace/tnt_reload"
+          ],
+          "note": "Creation before the block goes, launch from the level random, the 80-tick fuse, gravity, collision, ground friction, currents after the move, chunk edges; removed when the fuse runs out",
+          "deviations": [
+            "the explosion changes nothing yet (C3.5)",
+            "lava, bubble columns, portals and entity pushing do not move primed TNT"
           ]
         },
         {
@@ -1256,10 +1273,18 @@
           "id": "tnt_persistence",
           "name": "Live fuses across save, reload and unload",
           "milestone": "C3",
-          "impl": "missing",
-          "evidence": "none",
+          "impl": "partial",
+          "evidence": "compared",
           "cases_planned": [
             "TNT-05"
+          ],
+          "cases": [
+            "trace/tnt_reload",
+            "trace/tnt_reload_pending"
+          ],
+          "note": "Fuse, position and motion kept by checkpoints, Anvil and unloading chunks",
+          "deviations": [
+            "after an unload the official servers run a pending tick of the chunk one tick later than Circuit in trace/tnt_reload_pending (their unload timing varies; Circuit unloads dropped chunks at once)"
           ]
         },
         {
@@ -1268,11 +1293,11 @@
           "milestone": "C3",
           "impl": {
             "java-1.21.4": "not_applicable",
-            "java-1.21.8": "missing"
+            "java-1.21.8": "implemented"
           },
           "evidence": {
             "java-1.21.4": "none",
-            "java-1.21.8": "reference_only"
+            "java-1.21.8": "compared"
           },
           "absent_reason": {
             "java-1.21.4": "introduced in 1.21.5"
@@ -1283,7 +1308,7 @@
           "cases": [
             "trace/tnt_explodes_disabled"
           ],
-          "note": "With the rule off, 1.21.8 does not prime TNT at all; the 1.21.4 harness refuses the skeleton"
+          "note": "With the rule off, 1.21.8 does not prime TNT at all; the 1.21.4 harness refuses the skeleton, and 1.21.4 always primes TNT"
         },
         {
           "id": "other_explosions",

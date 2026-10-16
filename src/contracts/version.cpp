@@ -134,6 +134,13 @@ constexpr std::array reference_v4_mechanisms{
         "powder becomes concrete when it falls into water (falling_drop, falling_column, falling_onto). Gaps: "
         "concrete powder beside water, anvils, pointed dripstone, scaffolding and suspicious blocks; falling "
         "blocks hurt nothing."},
+    MechanismEntry{"tnt", l0_exact, l2_declared_deviation, harness_trace,
+        "TNT with a redstone signal from a neighbor when it is placed, moved in by a piston or updated becomes "
+        "primed TNT (the entity first, launched from the level random, then the block goes), unless the 1.21.8 "
+        "rule tntExplodes is off; primed TNT falls, slides with 30% friction on any ground, is pushed by currents "
+        "after its move and explodes when its 80-tick fuse runs out; it keeps its fuse with an unloading chunk "
+        "(tnt_ignition, tnt_motion, tnt_water_current, tnt_reload, tnt_explodes_disabled). Gaps: the explosion "
+        "changes nothing yet (C3.5); fire, players, projectiles and dispensers do not ignite TNT."},
     MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, harness_trace,
         "Entities tick in ascending id order once per tick; one merged away before its turn does not tick "
         "(item_hopper_pickup, item_water_current, item_merge, item_merge_moving). Gap: compared for item "

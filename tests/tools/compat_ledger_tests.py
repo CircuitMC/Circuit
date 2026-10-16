@@ -62,8 +62,8 @@ class LedgerValidation(unittest.TestCase):
         self.assert_rejected(lambda i: self.mechanic(i, "V28", "poi").update(impl="partial", evidence="compared"), "needs a case")
 
     def test_compared_evidence_needs_a_passing_case(self):
-        # The TNT trace is unsupported by Circuit: it cannot back a compared claim.
-        self.assert_rejected(lambda i: self.mechanic(i, "V17", "tnt_block").update(impl="partial", evidence="compared"),
+        # The explosion trace fails in Circuit: it cannot back a compared claim.
+        self.assert_rejected(lambda i: self.mechanic(i, "V17", "explosions").update(impl="partial", evidence="compared"),
                              "needs a passing case")
 
     def test_mismatch_needs_a_failing_case(self):
@@ -71,7 +71,7 @@ class LedgerValidation(unittest.TestCase):
 
     def test_compared_evidence_needs_an_implementation(self):
         def mutate(i):
-            m = self.mechanic(i, "V17", "tnt_block")
+            m = self.mechanic(i, "V17", "explosions")
             m.update(evidence="compared", cases=["trace/vertical_slice"])
         self.assert_rejected(mutate, "compared evidence needs an implementation")
 

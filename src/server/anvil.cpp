@@ -5,6 +5,7 @@
 #include <bit>
 #include <charconv>
 #include <circuit/evidence/content.hpp>
+#include <circuit/gameplay/block_registry.hpp>
 #include <circuit/protocol/content.hpp>
 #include <circuit/protocol/framing.hpp>
 #include <circuit/protocol/nbt.hpp>
@@ -797,7 +798,8 @@ private:
             if (e.type() != TagType::compound) continue;
             const auto id = text(e, "id").value_or("");
             const bool falling = id == "minecraft:falling_block";
-            if (id != "minecraft:item" && !falling) {
+            const bool tnt = id == "minecraft:tnt";
+            if (id != "minecraft:item" && !falling && !tnt) {
                 unsupported("entity " + id);
                 continue;
             }
@@ -805,12 +807,29 @@ private:
             const auto motion = numbers(e, "Motion", 3).value_or(std::vector<double>{0, 0, 0});
             const auto* item = child(e, "Item", TagType::compound);
             const auto* state = child(e, "BlockState", TagType::compound);
-            if (!pos || (falling ? !state : !item) || !std::isfinite((*pos)[0]) || !std::isfinite((*pos)[1]) || !std::isfinite((*pos)[2])) {
-                unsupported(falling ? "malformed falling block" : "malformed item entity");
+            if (!pos || (falling && !state) || (!falling && !tnt && !item) || !std::isfinite((*pos)[0]) || !std::isfinite((*pos)[1])
+                || !std::isfinite((*pos)[2])) {
+                unsupported(falling ? "malformed falling block" : tnt ? "malformed primed TNT" : "malformed item entity");
                 continue;
             }
             gameplay::Entity out;
-            if (falling) {
+            if (tnt) {
+                // Primed TNT that looks like another block, or explodes with
+                // another power, is not modeled; its owner only blames
+                // damage on someone.
+                const auto* shown = child(e, "block_state", TagType::compound);
+                if (shown && text(*shown, "Name") != "minecraft:tnt") {
+                    unsupported("primed TNT shown as " + text(*shown, "Name").value_or("?"));
+                    continue;
+                }
+                if (const auto power = real(e, "explosion_power"); power && *power != 4.0) {
+                    unsupported(std::format("primed TNT of explosion power {}", *power));
+                    continue;
+                }
+                out.kind = gameplay::EntityKind::primed_tnt;
+                // A short in the format, 80 when absent.
+                out.fuse = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "fuse").value_or(80), -32768, 32767));
+            } else if (falling) {
                 const auto carried = content_.block(notation_of(*state));
                 if (!carried || carried->is_air()) {
                     unsupported("falling block " + text(*state, "Name").value_or("?"));
@@ -1159,7 +1178,8 @@ private:
             };
             auto t = Tag::compound();
             const bool falling = e->kind == gameplay::EntityKind::falling_block;
-            t.set("id", Tag::string(falling ? "minecraft:falling_block" : "minecraft:item"));
+            const bool tnt = e->kind == gameplay::EntityKind::primed_tnt;
+            t.set("id", Tag::string(std::string(gameplay::entity_kind_name(e->kind))));
             t.set("Pos", doubles({e->position.x, e->position.y, e->position.z}));
             t.set("Motion", doubles({e->velocity.x, e->velocity.y, e->velocity.z}));
             auto rotation = Tag::list(TagType::float_);
@@ -1168,6 +1188,20 @@ private:
             t.set("Rotation", std::move(rotation));
             t.set("OnGround", Tag::boolean(e->on_ground));
             const auto hi = std::uint64_t{0x43697263756974ULL}, lo = e->id.value;
+            if (tnt) {
+                // As the target versions save TNT primed by redstone.
+                t.set("fuse", Tag::short_(static_cast<std::int16_t>(std::clamp(e->fuse, -32768, 32767))));
+                if (const auto block = gameplay::registry::find_block(bundle_.schema.content_release, "tnt"))
+                    t.set("block_state", state_tag(content_.info(BlockState::registered(gameplay::registry::block(*block).default_state))));
+                t.set("explosion_power", Tag::float_(4.0f));
+                t.set("Air", Tag::short_(300));
+                t.set("Fire", Tag::short_(-1));
+                t.set("UUID", Tag::int_array({static_cast<std::int32_t>(hi >> 32), static_cast<std::int32_t>(hi & 0xFFFFFFFF),
+                                              static_cast<std::int32_t>(lo >> 32), static_cast<std::int32_t>(lo & 0xFFFFFFFF)}));
+                list.push(std::move(t));
+                ++report_.entities;
+                continue;
+            }
             if (falling) {
                 // As the target versions save a falling block of sand or gravel.
                 t.set("BlockState", state_tag(content_.info(e->carried)));

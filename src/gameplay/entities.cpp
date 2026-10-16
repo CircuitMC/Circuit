@@ -119,13 +119,9 @@ Vec3 current(RuleContext& ctx, BlockPos p, BlockState water) {
     return normalized(flow);
 }
 
-// What the water an entity's box touches does to it: whether it is in water,
-// how deep its bottom is, and the push of the currents (0.014 a time).
-struct InWater {
-    bool inside{};
-    double depth{};
-    Vec3 push{};
-};
+} // namespace
+
+namespace detail {
 InWater water_at(RuleContext& ctx, const physics::Aabb& entity) {
     const auto box = entity.deflate(0.001);
     const auto cell = [](double v) { return static_cast<std::int32_t>(std::floor(v)); };
@@ -156,24 +152,26 @@ InWater water_at(RuleContext& ctx, const physics::Aabb& entity) {
     return out;
 }
 
-// Moves an entity's box by its velocity against the blocks around it; the
-// velocity loses the components that collided, and the vertical one too
-// when it hit something. A move that a collision shortened to a squared
-// length below 1e-7 is not made (both official servers leave such items in
-// place, while longer moves, from 1.8e-7, are made). Returns whether it
-// landed (hit something while falling).
-bool move(RuleContext& ctx, Vec3& position, Vec3& velocity, double width, double height) {
+bool move_entity(RuleContext& ctx, Vec3& position, Vec3& velocity, double width, double height) {
     const auto box = physics::box_at(position, width, height);
     const auto done = physics::collide(box, velocity, shapes(ctx));
     const double made = done.x * done.x + done.y * done.y + done.z * done.z;
     const double wanted = velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z;
     if (made > 1.0e-7 || wanted - made < 1.0e-7) position = {position.x + done.x, position.y + done.y, position.z + done.z};
     const bool landed = done.y != velocity.y && velocity.y < 0.0;
-    if (done.x != velocity.x) velocity.x = 0.0;
-    if (done.z != velocity.z) velocity.z = 0.0;
+    // A horizontal component stops only when the collision shortened it by
+    // 1e-5 or more (both official servers keep primed TNT's last 5e-8 of
+    // speed while a shorter move is dropped).
+    constexpr double horizontal = 1.0e-5f;
+    if (std::abs(done.x - velocity.x) >= horizontal) velocity.x = 0.0;
+    if (std::abs(done.z - velocity.z) >= horizontal) velocity.z = 0.0;
     if (done.y != velocity.y) velocity.y = 0.0;
     return landed;
 }
+} // namespace detail
+
+namespace {
+using detail::water_at;
 
 // Items that may merge: not of the ages and pickup delays meaning "never".
 bool mergeable(const Entity& e) {
@@ -261,7 +259,7 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
     }
     const bool moves = !(e.on_ground && v.x * v.x + v.z * v.z <= 1.0e-5 && (ticks + id.value) % 4 != 0);
     if (moves) {
-        e.on_ground = move(ctx, p, v, item_size, item_size);
+        e.on_ground = detail::move_entity(ctx, p, v, item_size, item_size);
         float f = 0.98f;
         if (e.on_ground) f = slipperiness(ctx.block(contracts::block_of(Vec3{p.x, p.y - 0.5000001, p.z}))) * 0.98f;
         v = {v.x * static_cast<double>(f), v.y * 0.98, v.z * static_cast<double>(f)};
@@ -296,7 +294,7 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
 
 namespace detail {
 physics::Aabb entity_box(const Entity& e) {
-    const double size = e.kind == EntityKind::falling_block ? static_cast<double>(0.98f) : item_size;
+    const double size = e.kind == EntityKind::item ? item_size : static_cast<double>(0.98f);
     return physics::box_at(e.position, size, size);
 }
 
@@ -322,6 +320,7 @@ void run_entity(RuleContext& ctx, EntityId id) {
     switch (e->kind) {
     case EntityKind::item: run_item(ctx, id, *e); break;
     case EntityKind::falling_block: detail::run_falling_block(ctx, id, *e); break;
+    case EntityKind::primed_tnt: detail::run_primed_tnt(ctx, id, *e); break;
     }
 }
 

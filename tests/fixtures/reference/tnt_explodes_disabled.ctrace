@@ -1,8 +1,8 @@
 circuit-trace 2
 title Redstone ignites TNT with the tntExplodes game rule off
 game-version 1.21.8
-source harness_trace
-harness circuit-harness:0.5.0+mc1.21.8
+source circuit_reference
+harness circuit-reference-rules-v10
 mechanisms neighbor_updates
 area -4 0 -4 4 4 4
 ticks 90

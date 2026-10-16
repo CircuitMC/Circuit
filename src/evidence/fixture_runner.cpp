@@ -141,9 +141,9 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
             return std::unexpected(report(Outcome::invalid, std::format("game rule {} does not exist in {}", name, f.game_version)));
         const auto expected = rule->type == contracts::GameRuleType::boolean ? std::string(rule->default_value ? "true" : "false")
                                                                              : std::to_string(rule->default_value);
-        // randomTickSpeed is world state the rules read; other rules are
-        // modeled only at their defaults.
-        if (name == "randomTickSpeed") continue;
+        // randomTickSpeed and tntExplodes are world state the rules read;
+        // other rules are modeled only at their defaults.
+        if (name == "randomTickSpeed" || name == "tntExplodes") continue;
         if (value != expected)
             return std::unexpected(report(Outcome::unsupported, std::format("game rule {}: the rules model only its default, {}", name, expected)));
     }
@@ -174,6 +174,9 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
             if (ec != std::errc{} || end != value.data() + value.size())
                 return std::unexpected(report(Outcome::invalid, "game rule randomTickSpeed needs an integer"));
             p.inputs[1].push_back({admission++, contracts::SetGameRule{name, v}});
+        } else if (name == "tntExplodes") {
+            if (value != "true" && value != "false") return std::unexpected(report(Outcome::invalid, "game rule tntExplodes needs true or false"));
+            p.inputs[1].push_back({admission++, contracts::SetGameRule{name, value == "true" ? 1 : 0}});
         }
     const auto fail_line = [](std::size_t line, const std::string& message) {
         return std::unexpected(report(Outcome::unsupported, std::format("line {}: {}", line, message)));
@@ -299,7 +302,8 @@ std::string removal_reason(std::uint64_t reason) {
     case gameplay::RemovalReason::despawned:
     case gameplay::RemovalReason::fell_out_of_world:
     case gameplay::RemovalReason::picked_up:
-    case gameplay::RemovalReason::merged: return "discarded";
+    case gameplay::RemovalReason::merged:
+    case gameplay::RemovalReason::exploded: return "discarded";
     case gameplay::RemovalReason::command: return "killed";
     case gameplay::RemovalReason::unloaded: return "unloaded_to_chunk";
     }
@@ -344,10 +348,13 @@ public:
                 }
                 break;
             case TraceKind::entity_loaded:
-                // Back with its chunk under a new id (a), keeping its handle (b's).
+                // Back with its chunk under a new id (a), keeping its handle
+                // (b's); the harness still uses up a handle number for it
+                // (tnt_reload: the next new entity is e3, not e2).
                 spawned_ = r.a;
                 loading_ = true;
                 if (const auto it = handles_.find(r.b); f.observe_entities && it != handles_.end()) {
+                    ++count_;
                     handles_[r.a] = it->second;
                     stacks_[r.a] = static_cast<std::uint64_t>(r.c);
                     kinds_[r.a] = kinds_.at(r.b);
@@ -409,6 +416,8 @@ public:
             Properties props;
             if (e.kind == gameplay::EntityKind::falling_block) {
                 props.emplace_back("time", std::to_string(e.fall_time));
+            } else if (e.kind == gameplay::EntityKind::primed_tnt) {
+                props.emplace_back("fuse", std::to_string(e.fuse));
             } else {
                 props = stack_properties(contracts::pack_stack(e.stack));
                 props.emplace_back("age", std::to_string(e.age));
@@ -445,10 +454,12 @@ public:
     }
 
 private:
-    // What an entity is when it appears: an item's stack, a falling block's state.
+    // What an entity is when it appears: an item's stack, a falling block's
+    // state, primed TNT's fuse.
     Properties payload_properties(gameplay::EntityKind kind, std::uint64_t payload) const {
         if (kind == gameplay::EntityKind::falling_block)
             return {{"block", mapping_.notation(gameplay::BlockState::decode(static_cast<std::uint32_t>(payload)).value())}};
+        if (kind == gameplay::EntityKind::primed_tnt) return {{"fuse", std::to_string(static_cast<std::int32_t>(payload))}};
         return stack_properties(payload);
     }
     Properties stack_properties(std::uint64_t packed) const {

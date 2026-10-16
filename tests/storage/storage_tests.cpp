@@ -345,12 +345,21 @@ int main() {
         falling.carried = registry_block("red_sand");
         falling.fall_time = 42;
         never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(falling);
+        // Primed TNT, with its fuse.
+        circuit::gameplay::Entity primed;
+        primed.id = circuit::contracts::EntityId{never.state.next_entity_id++};
+        primed.kind = circuit::gameplay::EntityKind::primed_tnt;
+        primed.position = {4.5, 1.0, 4.5};
+        primed.velocity = {0.01, 0.2, -0.01};
+        primed.fuse = 37;
+        never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(primed);
         // And one waiting to come back with its reloaded chunk.
         auto returning = item;
         returning.id = circuit::contracts::EntityId{never.state.next_entity_id++};
         returning.returns = never.state.time + 1;
         never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(returning);
-        require(circuit::storage::decode_checkpoint(circuit::storage::encode_checkpoint(never)).value() == never, "ages and tick counts round trip");
+        require(circuit::storage::decode_checkpoint(circuit::storage::encode_checkpoint(never)).value() == never,
+                "ages, tick counts, falling blocks and fuses round trip");
         require(circuit::storage::decode_checkpoint(circuit::storage::encode_checkpoint(legacy)).value() == legacy,
                 "a converted checkpoint round trip");
     });

@@ -163,7 +163,7 @@ struct Kept {
     std::vector<std::pair<BlockPos, std::uint32_t>> blocks;
     std::vector<std::pair<BlockPos, BlockEntity>> block_entities;
     std::multiset<std::tuple<int, BlockPos, int, Tick, int>> ticks;
-    std::multiset<std::tuple<Vec3, Vec3, std::uint16_t, int, std::uint32_t, bool, int, std::uint32_t, std::uint32_t>> entities;
+    std::multiset<std::tuple<Vec3, Vec3, std::uint16_t, int, std::uint32_t, bool, int, std::uint32_t, std::uint32_t, std::int32_t>> entities;
     bool operator==(const Kept&) const = default;
 };
 Kept kept(const WorldDump& world) {
@@ -180,7 +180,7 @@ Kept kept(const WorldDump& world) {
         k.ticks.insert({static_cast<int>(t.list), t.tick.pos, static_cast<int>(t.tick.block), t.tick.due, t.tick.priority});
     for (const auto& e : d.entities)
         k.entities.insert({e.position, e.velocity, e.stack.item, e.stack.count, static_cast<std::uint32_t>(std::min(e.age, 6000)), e.on_ground,
-                           static_cast<int>(e.kind), e.carried.raw(), e.fall_time});
+                           static_cast<int>(e.kind), e.carried.raw(), e.fall_time, e.fuse});
     return k;
 }
 std::string describe(const Kept& a, const Kept& b) {
@@ -264,6 +264,39 @@ int main() {
         resumed.advance(again({ticket(1, {0, 0}, 1)}));
         for (int i = 0; i < 20; ++i) resumed.advance({});
         require(state_at(resumed.dump(), {3, 0, 3}) == registry_block("gravel"), "landed");
+    });
+
+    suite.run("primed TNT round-trips through Anvil with its fuse", [&] {
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine.advance(admit({place({3, 0, 3}, registry_block("tnt")), place({4, 0, 3}, blocks::redstone_block())}));
+        for (int i = 0; i < 10; ++i) engine.advance({});
+        const auto state = engine.dump();
+        const auto primed = std::ranges::find_if(state.overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::primed_tnt; });
+        // Primed in the tick of the placement, which counts too.
+        require(primed != state.overworld().entities.end() && primed->fuse == 69,
+                std::format("primed, eleven ticks into its fuse: {}", primed == state.overworld().entities.end() ? -1 : primed->fuse));
+        const auto target = root / "tnt";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "tnt", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        const auto diff = describe(kept(state), kept(back->state));
+        require(diff.empty(), diff);
+        // Its fuse runs on once its chunk is loaded again: it ticks from two
+        // ticks after the load and explodes 69 ticks later.
+        Engine resumed(bundle(), 5, back->state);
+        Admissions again;
+        resumed.advance(again({ticket(1, {0, 0}, 1)}));
+        const auto count = [&] {
+            return std::ranges::count_if(resumed.dump().overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::primed_tnt; });
+        };
+        int ticks = 1;
+        while (count() == 1 && ticks < 100) {
+            resumed.advance({});
+            ++ticks;
+        }
+        require(ticks == 71, std::format("exploded after {} ticks", ticks));
     });
 
     suite.run("unsupported content is rejected or substituted by policy", [&] {

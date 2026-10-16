@@ -258,7 +258,7 @@ struct Game::Impl final : GameServices {
     std::unordered_map<std::uint64_t, Tracked> tracked;
     std::int32_t dimension_type{};
     std::int32_t biome{};
-    std::int32_t item_entity_type{}, falling_block_type{}, player_entity_type{};
+    std::int32_t item_entity_type{}, falling_block_type{}, tnt_entity_type{}, player_entity_type{};
     std::unordered_map<std::uint16_t, std::int32_t> item_wire; // reference item -> wire item id
     bool started{false};
 
@@ -278,6 +278,7 @@ struct Game::Impl final : GameServices {
         biome = registry_index(registries, "minecraft:worldgen/biome", "minecraft:plains").value();
         item_entity_type = content.entity_type("minecraft:item").value();
         falling_block_type = content.entity_type("minecraft:falling_block").value();
+        tnt_entity_type = content.entity_type("minecraft:tnt").value();
         player_entity_type = content.entity_type("minecraft:player").value();
         for (std::uint16_t i = 1; i <= gameplay::items::max_id; ++i)
             if (const auto id = content.item_id(mapping.item_name(i))) item_wire[i] = *id;
@@ -1878,6 +1879,14 @@ struct Game::Impl final : GameServices {
             // The spawn data of a falling block is its block state.
             p.peer->send(wire.spawn_entity(t.protocol_id, entity_uuid(engine_id), falling_block_type, t.last, 0, 0, 0,
                                            palette.wire(e.carried), e.velocity));
+            return;
+        }
+        if (e.kind == gameplay::EntityKind::primed_tnt) {
+            // Clients count the fuse down themselves from the value they get
+            // (the official servers send it only when it is not 80, and again
+            // each tick).
+            p.peer->send(wire.spawn_entity(t.protocol_id, entity_uuid(engine_id), tnt_entity_type, t.last, 0, 0, 0, 0, e.velocity));
+            p.peer->send(wire.tnt_metadata(t.protocol_id, e.fuse));
             return;
         }
         p.peer->send(wire.spawn_entity(t.protocol_id, entity_uuid(engine_id), item_entity_type, t.last, 0, 0, 0, 0, e.velocity));

@@ -837,28 +837,33 @@ int main(int argc, char** argv) {
         auto other = circuit;
         other.actions.back().tick += 1;
         require(first_difference(circuit, other) == std::optional<std::string>("different scenarios: actions"), "scenario");
-        // Game rules are part of the scenario; Circuit models their defaults only.
-        const auto with_rule = parse(read_text(fixtures / "open" / "tnt_explodes_disabled.ctrace"));
+        // Game rules are part of the scenario; Circuit models the ones its
+        // rules read (randomTickSpeed, tntExplodes) and the others' defaults.
+        const auto with_rule = parse(read_text(fixtures / "harness" / "tnt_explodes_disabled.ctrace"));
         require(with_rule.gamerules == std::vector<std::pair<std::string, std::string>>{{"tntExplodes", "false"}}, "game rule read");
         require(write_fixture(parse(write_fixture(with_rule))) == write_fixture(with_rule), "game rules round-trip");
         require(first_difference(with_rule, parse(read_text(fixtures / "open" / "tnt_redstone_ignition.ctrace")))
                     == std::optional<std::string>("different scenarios: observation headers"), "a game rule changes the scenario");
-        require(evaluate_fixture(with_rule, engine_executor()).outcome == Outcome::unsupported, "unsupported");
+        require(evaluate_fixture(with_rule, engine_executor()).outcome == Outcome::passed, "tntExplodes is modeled");
         require(!parse_fixture(std::string(header) + "gamerule tntExplodes false\n"), "game rules need version 2");
         require(!parse_fixture(std::string(header2) + "gamerule a true\ngamerule a false\n"), "duplicate game rule");
-        // A rule at its default changes nothing; randomTickSpeed is world
-        // state at any value; another rule away from its default is not
-        // modeled; a rule the version lacks makes the scenario invalid there.
+        // A rule at its default changes nothing; randomTickSpeed and
+        // tntExplodes are world state at any value; another rule away from
+        // its default is not modeled; a rule the version lacks makes the
+        // scenario invalid there.
         auto text = read_text(fixtures / "reference" / "item_drop_piston.ctrace");
         text.insert(text.find("entities observed"), "gamerule tntExplodes true\ngamerule randomTickSpeed 3\n");
         require(evaluate_fixture(parse(text), engine_executor()).outcome == Outcome::passed, "rules at their defaults");
         auto faster = text;
         faster.replace(faster.find("randomTickSpeed 3"), 17, "randomTickSpeed 5");
         require(evaluate_fixture(parse(faster), engine_executor()).outcome == Outcome::passed, "randomTickSpeed at another value");
+        auto off = text;
+        off.replace(off.find("tntExplodes true"), 16, "tntExplodes false");
+        require(evaluate_fixture(parse(off), engine_executor()).outcome == Outcome::passed, "tntExplodes off");
         auto changed = text;
-        changed.replace(changed.find("tntExplodes true"), 16, "tntExplodes false");
+        changed.replace(changed.find("tntExplodes true"), 16, "mobGriefing false");
         const auto r = evaluate_fixture(parse(changed), engine_executor());
-        require(r.outcome == Outcome::unsupported && r.detail.find("tntExplodes") != std::string::npos, r.detail);
+        require(r.outcome == Outcome::unsupported && r.detail.find("mobGriefing") != std::string::npos, r.detail);
         auto old = text;
         old.replace(old.find("game-version 1.21.8"), 19, "game-version 1.21.4");
         const auto o = evaluate_fixture(parse(old), engine_executor());

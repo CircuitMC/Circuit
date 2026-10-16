@@ -1,2 +1,1 @@
 # Open skeletons the reference harness refused on this version, with its reason.
-tnt_explodes_disabled.ctrace game rule tntExplodes does not exist in this version

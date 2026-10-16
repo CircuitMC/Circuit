@@ -325,6 +325,13 @@ Bytes Wire::item_metadata(std::int32_t id, const WireStack& stack) const {
     w.u8(0xFF);
     return packet(id_->set_entity_data, w);
 }
+Bytes Wire::tnt_metadata(std::int32_t id, std::int32_t fuse) const {
+    Writer w;
+    w.varint(id);
+    w.u8(8).varint(1).varint(fuse); // index 8 (primed TNT: fuse), type VarInt
+    w.u8(0xFF);
+    return packet(id_->set_entity_data, w);
+}
 Bytes Wire::remove_entities(const std::vector<std::int32_t>& ids) const {
     Writer w;
     w.varint(static_cast<std::int32_t>(ids.size()));

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
 #include <circuit/gameplay/items.hpp>
-#include <circuit/gameplay/physics.hpp>
 #include <array>
 #include <string>
 #include <string_view>
@@ -92,15 +91,6 @@ void drop(RuleContext& ctx, const Entity& e) {
     spawn_dropped(ctx, contracts::block_of(e.position), e.position, Vec3{vx, 0.2, vz}, stack, drop_delay);
 }
 
-physics::ShapeAt shapes(RuleContext& ctx) {
-    static constexpr registry::Box full_cube{0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
-    return [&ctx](contracts::BlockPos p) -> std::span<const registry::Box> {
-        if (!ctx.world().contains_y(p.y)) return {};
-        const auto s = ctx.block(p);
-        if (s.is_unloaded()) return {&full_cube, 1};
-        return physics::collision_boxes(s, ctx.bundle().schema.content_release);
-    };
-}
 } // namespace
 
 
@@ -134,15 +124,7 @@ void run_falling_block(RuleContext& ctx, EntityId id, Entity& e) {
     auto v = e.velocity;
     auto p = e.position;
     v.y -= gravity;
-    const auto box = physics::box_at(p, size, size);
-    const auto done = physics::collide(box, v, shapes(ctx));
-    const double made = done.x * done.x + done.y * done.y + done.z * done.z;
-    const double wanted = v.x * v.x + v.y * v.y + v.z * v.z;
-    if (made > 1.0e-7 || wanted - made < 1.0e-7) p = {p.x + done.x, p.y + done.y, p.z + done.z};
-    e.on_ground = done.y != v.y && v.y < 0.0;
-    if (done.x != v.x) v.x = 0.0;
-    if (done.z != v.z) v.z = 0.0;
-    if (done.y != v.y) v.y = 0.0;
+    e.on_ground = move_entity(ctx, p, v, size, size);
     const auto cell = contracts::block_of(p);
     const auto here = ctx.block(cell);
     const bool in_water = gravity_of(e.carried) == Gravity::concrete_powder && here.is(BlockType::water);

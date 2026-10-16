@@ -40,7 +40,7 @@ Feature counts per implementation state, then the number of features with compar
 | V14 Redstone sources and signal consumers | C4 | 138 | 5 / 5 | 15 / 15 | 112 / 112 | 6 / 6 | 0 / 0 | 15 / 17 |
 | V15 Pistons and moving structures | C3, C4 | 16 | 1 / 1 | 12 / 12 | 2 / 2 | 1 / 1 | 0 / 0 | 7 / 7 |
 | V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 4 / 4 | 52 / 52 | 3 / 3 | 0 / 0 | 6 / 6 |
-| V17 TNT and explosions | C3, C4 | 11 | 0 / 0 | 0 / 0 | 2 / 2 | 8 / 9 | 1 / 0 | 0 / 0 |
+| V17 TNT and explosions | C3, C4 | 11 | 0 / 1 | 6 / 6 | 1 / 1 | 3 / 3 | 1 / 0 | 6 / 7 |
 | V18 Technical machines and vanilla quirks | C4, C7 | 6 | 0 / 0 | 1 / 1 | 0 / 0 | 5 / 5 | 0 / 0 | 1 / 1 |
 | V19 General entity lifecycle | C3 | 17 | 0 / 0 | 4 / 4 | 0 / 0 | 13 / 13 | 0 / 0 | 3 / 3 |
 | V20 Item entities and experience | C3, C6 | 7 | 2 / 2 | 3 / 3 | 0 / 0 | 2 / 2 | 0 / 0 | 4 / 4 |
@@ -67,9 +67,9 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 3 / 3 | 38 / 38 | 1054 / 1064 | 0 / 0 |
+| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 3 / 3 | 39 / 39 | 1053 / 1063 | 0 / 0 |
 | item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 30 / 30 | 1354 / 1385 | 0 / 0 |
-| entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 3 / 3 | 0 / 0 | 146 / 148 |
+| entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 4 / 4 | 0 / 0 | 145 / 147 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
 | enchantment | approximate: minecraft-data pc/1.21.1/enchantments.json / minecraft-data pc/1.21.8/enchantments.json | 42 / 42 | 0 / 0 | 0 / 0 | 0 / 0 | 42 / 42 |
 | attribute | approximate: minecraft-data pc/1.21.3/attributes.json / minecraft-data pc/1.21.8/attributes.json | 32 / 35 | 0 / 0 | 0 / 0 | 0 / 0 | 32 / 35 |
@@ -94,7 +94,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 - **packet:** only in 1.21.4 (1): play/clientbound/add_experience_orb; only in 1.21.8 (11): configuration/clientbound/clear_dialog, configuration/clientbound/show_dialog, configuration/serverbound/custom_click_action, play/clientbound/clear_dialog, play/clientbound/show_dialog, play/clientbound/test_instance_block_status, play/clientbound/waypoint, play/serverbound/change_game_mode, play/serverbound/custom_click_action, play/serverbound/set_test_block, play/serverbound/test_instance_block_action.
 - **V03.component_schema_1_21_5** Component and entity-data schema changes of 1.21.5: 1.21.4 not_applicable (introduced in 1.21.5), 1.21.8 partial.
 - **V03.hashed_stack_predictions** Hashed item stacks in container clicks (1.21.5 and later): 1.21.4 not_applicable (1.21.4 sends whole stacks), 1.21.8 implemented.
-- **V17.gamerule_tnt_explodes** The tntExplodes game rule: 1.21.4 not_applicable (introduced in 1.21.5), 1.21.8 missing.
+- **V17.gamerule_tnt_explodes** The tntExplodes game rule: 1.21.4 not_applicable (introduced in 1.21.5), 1.21.8 implemented.
 - **V21.happy_ghast_harness** Happy Ghast harnesses and leash changes: 1.21.4 not_applicable (introduced in 1.21.6), 1.21.8 missing.
 - **V30.game_tests** Data-driven game tests: 1.21.4 not_applicable (introduced in 1.21.5), 1.21.8 missing.
 - **V33.dialogs** Server dialogs: 1.21.4 not_applicable (introduced in 1.21.6), 1.21.8 missing.
@@ -129,9 +129,8 @@ Their counts are unknown, not zero.
 | --- | --- | ---: |
 | black_box | passing | 21 |
 | black_box | unsupported | 1 |
-| official_trace | failing | 3 |
-| official_trace | passing | 57 |
-| official_trace | unsupported | 1 |
+| official_trace | failing | 4 |
+| official_trace | passing | 62 |
 | planned | planned | 8 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
@@ -322,12 +321,12 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| TNT placement and breaking | C3 | missing, reference_only | missing, reference_only | `TNT-01`, `trace/tnt_redstone_ignition` |
-| Ignition by redstone, fire, flint and steel, fire charges, burning projectiles and explosions | C3 | missing, reference_only | missing, reference_only | `TNT-01`, `trace/tnt_redstone_ignition` |
-| Primed TNT entities: fuse, motion, collision and removal | C3 | missing, reference_only | missing, reference_only | `TNT-02`, `TNT-03`, `trace/tnt_redstone_ignition` |
+| TNT placement and breaking | C3 | partial, compared | partial, compared | `TNT-01`, `trace/tnt_ignition`; unstable TNT is not primed when broken; TNT placed by commands, pistons and players becomes primed TNT where redstone reaches it; broken, it drops itself by its loot table |
+| Ignition by redstone, fire, flint and steel, fire charges, burning projectiles and explosions | C3 | partial, compared | partial, compared | `TNT-01`, `trace/tnt_explodes_disabled`, `trace/tnt_ignition`; fire, flint and steel, fire charges, burning projectiles, dispensers and explosions do not ignite TNT yet; Redstone: a signal from any neighbor when TNT is placed, moved in by a piston or updated (blocks, levers, diodes, observers, dust, strongly powered blocks) |
+| Primed TNT entities: fuse, motion, collision and removal | C3 | partial, compared | partial, compared | `TNT-02`, `TNT-03`, `trace/tnt_ignition`, `trace/tnt_motion`, `trace/tnt_reload`, `trace/tnt_water_current`; lava, bubble columns, portals and entity pushing do not move primed TNT; the explosion changes nothing yet (C3.5); Creation before the block goes, launch from the level random, the 80-tick fuse, gravity, collision, ground friction, currents after the move, chunk edges; removed when the fuse runs out |
 | Explosions: affected blocks, resistance, fluids, drops, chain reactions, damage and knockback | C3 | missing, reference_only | missing, reference_only | `TNT-04`, `trace/tnt_redstone_ignition` |
-| Live fuses across save, reload and unload | C3 | missing, none | missing, none | `TNT-05` |
-| The tntExplodes game rule | C3 | not_applicable, none | missing, reference_only | `TNT-06`, `trace/tnt_explodes_disabled`; With the rule off, 1.21.8 does not prime TNT at all; the 1.21.4 harness refuses the skeleton |
+| Live fuses across save, reload and unload | C3 | partial, compared | partial, compared | `TNT-05`, `trace/tnt_reload`, `trace/tnt_reload_pending`; after an unload the official servers run a pending tick of the chunk one tick later than Circuit in trace/tnt_reload_pending (their unload timing varies; Circuit unloads dropped chunks at once); Fuse, position and motion kept by checkpoints, Anvil and unloading chunks |
+| The tntExplodes game rule | C3 | not_applicable, none | implemented, compared | `TNT-06`, `trace/tnt_explodes_disabled`; With the rule off, 1.21.8 does not prime TNT at all; the 1.21.4 harness refuses the skeleton, and 1.21.4 always primes TNT |
 | Creeper, bed, respawn anchor, end crystal, wither and wind charge explosions | C8 | missing, none | missing, none |  |
 
 ### V18 Technical machines and vanilla quirks

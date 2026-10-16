@@ -221,6 +221,8 @@ void on_placed(RuleContext& ctx, BlockPos pos, BlockState state, BlockState prev
         break;
     case BlockType::other:
         if (falls(state)) schedule_fall(ctx, pos);
+        // TNT placed or moved in where redstone reaches it is primed.
+        else if (is_tnt(state) && !is_tnt(previous)) check_tnt(ctx, pos);
         break;
     default: break;
     }
@@ -262,6 +264,9 @@ void on_neighbor_changed(RuleContext& ctx, BlockPos target, [[maybe_unused]] Blo
     case BlockType::piston: case BlockType::sticky_piston: check_piston(ctx, target); break;
     case BlockType::hopper: check_hopper(ctx, target); break;
     case BlockType::water: schedule(ctx, TickList::fluid, target, BlockType::water, 5, 0); break;
+    case BlockType::other:
+        if (is_tnt(s)) check_tnt(ctx, target);
+        break;
     default: break;
     }
 }

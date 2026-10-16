@@ -215,15 +215,19 @@ inline bool is_solid(BlockState s) noexcept {
         return false;
     }
 }
+// Registry blocks a piston may move: TNT (observed); the others are immovable
+// until their push behavior is modeled.
+bool other_movable(BlockState s) noexcept;
 // Whether a piston may move this state. Air is handled by the structure resolver.
-// Blocks without rules of their own are immovable until their push behavior is modeled.
-constexpr bool is_movable(BlockState s) noexcept {
+inline bool is_movable(BlockState s) noexcept {
     switch (s.type()) {
     case BlockType::stone: case BlockType::glass: case BlockType::redstone_block: case BlockType::redstone_lamp:
     case BlockType::observer: case BlockType::slime_block:
         return true;
     case BlockType::piston: case BlockType::sticky_piston:
         return !s.flag();
+    case BlockType::other:
+        return other_movable(s);
     default:
         return false;
     }

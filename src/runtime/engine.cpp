@@ -1145,11 +1145,16 @@ void Engine::Impl::restore(const WorldDump& state) {
                     || e.stack.damage > gameplay::items::max_damage(e.stack) || e.pickup_delay > gameplay::item_pickup_never)
                     bad("entity stack");
                 if (!gameplay::valid_item_age(e.age)) bad("entity age");
-                if (e.carried != gameplay::BlockState{} || e.fall_time != 0) bad("item with a block");
-            } else {
+                if (e.carried != gameplay::BlockState{} || e.fall_time != 0 || e.fuse != 0) bad("item with a block");
+            } else if (e.kind == gameplay::EntityKind::falling_block) {
                 // A falling block carries a block state and nothing else.
                 if (!gameplay::BlockState::decode(e.carried.raw()) || e.carried.is_air() || e.carried.is_unloaded()) bad("falling block state");
-                if (!e.stack.empty() || e.age != 0 || e.pickup_delay != 0) bad("falling block with an item");
+                if (!e.stack.empty() || e.age != 0 || e.pickup_delay != 0 || e.fuse != 0) bad("falling block with an item");
+            } else {
+                // Primed TNT has a fuse (saved as a short) and nothing else.
+                if (e.fuse < -32768 || e.fuse > 32767) bad("primed TNT fuse");
+                if (!e.stack.empty() || e.age != 0 || e.pickup_delay != 0 || e.carried != gameplay::BlockState{} || e.fall_time != 0)
+                    bad("primed TNT with an item or a block");
             }
             const auto it = columns.find(contracts::chunk_of(contracts::block_of(e.position)));
             if (it == columns.end()) bad("entity in an unknown column");

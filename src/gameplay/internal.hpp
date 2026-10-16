@@ -161,7 +161,32 @@ void schedule_fall(RuleContext& ctx, BlockPos pos);
 void tick_falling_block(RuleContext& ctx, BlockPos pos, BlockState s);
 void run_falling_block(RuleContext& ctx, EntityId id, Entity& e);
 
-// The box of an entity (items: 0.25 wide and tall; falling blocks 0.98).
+// Primed TNT (tnt.cpp): whether a block is TNT, what a TNT block does when
+// placed or updated (redstone ignites it), and the entity's tick.
+bool is_tnt(BlockState s);
+// The state a placed TNT item becomes (not lit).
+std::optional<BlockState> tnt_block(RuleContext& ctx);
+void check_tnt(RuleContext& ctx, BlockPos pos);
+void run_primed_tnt(RuleContext& ctx, EntityId id, Entity& e);
+
+// What the water an entity's box touches does to it: whether it is in water,
+// how deep its bottom is, and the push of the currents (0.014 a time).
+struct InWater {
+    bool inside{};
+    double depth{};
+    contracts::Vec3 push{};
+};
+InWater water_at(RuleContext& ctx, const physics::Aabb& entity);
+// Moves an entity's box by its velocity against the blocks around it; the
+// velocity loses the components that collided, and the vertical one too
+// when it hit something. A move that a collision shortened to a squared
+// length below 1e-7 is not made (both official servers leave such entities
+// in place, while longer moves, from 1.8e-7, are made). Returns whether it
+// landed (hit something while falling).
+bool move_entity(RuleContext& ctx, contracts::Vec3& position, contracts::Vec3& velocity, double width, double height);
+
+// The box of an entity (items: 0.25 wide and tall; falling blocks and
+// primed TNT 0.98).
 [[nodiscard]] physics::Aabb entity_box(const Entity& e);
 // Ids of entities whose box intersects `area` (faces that only touch do
 // not), ascending.

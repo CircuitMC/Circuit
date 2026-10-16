@@ -1562,6 +1562,35 @@ int main() {
         s.stop();
     });
 
+    suite.run("TNT placed beside power is primed and shown to players", [] {
+        server::Server s(offline_config());
+        s.start();
+        TestClient c(s.port());
+        c.join("Igniter");
+        confirm_spawn(c);
+        use_item_on(c, "minecraft:redstone_block", {2, -61, 1}, 1);
+        require(block_update(c, {2, -60, 1}) == content().state_id("minecraft:redstone_block"), "redstone block placed");
+        use_item_on(c, "minecraft:tnt", {3, -61, 1}, 2);
+        auto spawn = c.until(State::play, "add_entity");
+        require(spawn.has_value(), "primed TNT spawned");
+        auto r = spawn->reader();
+        const auto id = r.varint().value();
+        (void)r.uuid().value();
+        require(r.varint().value() == content().entity_type("minecraft:tnt").value(), "entity type");
+        const auto x = r.f64().value(), y = r.f64().value(), z = r.f64().value();
+        // Entities are shown as they stand after the tick: launched from the
+        // block's bottom center by at most 0.02 sideways and 0.16 up.
+        require(std::abs(x - 3.5) < 0.03 && y > -60.0 && y < -59.8 && std::abs(z - 1.5) < 0.03,
+                std::format("from the block's bottom center: {} {} {}", x, y, z));
+        auto data = c.until(State::play, "set_entity_data");
+        require(data.has_value(), "entity data");
+        auto d = data->reader();
+        require(d.varint().value() == id && d.u8().value() == 8 && d.varint().value() == 1 && d.varint().value() == 79
+                    && d.u8().value() == 0xFF,
+                "the fuse (index 8, a VarInt) is 79 after the first tick");
+        s.stop();
+    });
+
     suite.run("too many packets", [] {
         server::Server s(offline_config());
         s.start();

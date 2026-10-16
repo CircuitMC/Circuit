@@ -73,8 +73,8 @@ inline constexpr double max_entity_speed = 64.0;
 
 // The kinds of entities the rules model (their registry names in
 // entity_kind_name).
-enum class EntityKind : std::uint8_t { item = 1, falling_block = 2 };
-inline constexpr std::uint8_t entity_kind_count = 3; // kinds are 1 to entity_kind_count - 1
+enum class EntityKind : std::uint8_t { item = 1, falling_block = 2, primed_tnt = 3 };
+inline constexpr std::uint8_t entity_kind_count = 4; // kinds are 1 to entity_kind_count - 1
 std::string_view entity_kind_name(EntityKind kind) noexcept;
 
 // Item ages and pickup delays the target versions treat as "never": an item
@@ -102,21 +102,27 @@ struct Entity {
     // Falling blocks: the block it carries and the ticks it has fallen.
     BlockState carried{};
     std::uint32_t fall_time{};
+    // Primed TNT: the ticks until it explodes.
+    std::int32_t fuse{};
     // Saved with a chunk that loaded again: the tick it comes back, under a
     // new id (0: it is in the level).
     Tick returns{};
     bool operator==(const Entity&) const = default;
 };
 // What a spawn or load record says about the entity: an item's stack
-// (packed), a falling block's state (raw).
+// (packed), a falling block's state (raw), primed TNT's fuse.
 [[nodiscard]] inline std::uint64_t entity_payload(const Entity& e) noexcept {
-    return e.kind == EntityKind::falling_block ? e.carried.raw() : contracts::pack_stack(e.stack);
+    switch (e.kind) {
+    case EntityKind::falling_block: return e.carried.raw();
+    case EntityKind::primed_tnt: return static_cast<std::uint32_t>(e.fuse);
+    default: return contracts::pack_stack(e.stack);
+    }
 }
 // A valid item age: -32768 or 0 to 32767, as the target versions save it.
 [[nodiscard]] constexpr bool valid_item_age(std::int64_t age) noexcept { return age >= item_age_never && age <= 32767; }
 
 // `unloaded`: saved with its chunk, which may load it again (entity_loaded).
-enum class RemovalReason : std::uint8_t { despawned = 1, fell_out_of_world = 2, picked_up = 3, command = 4, merged = 5, unloaded = 6 };
+enum class RemovalReason : std::uint8_t { despawned = 1, fell_out_of_world = 2, picked_up = 3, command = 4, merged = 5, unloaded = 6, exploded = 7 };
 
 // A player's inventory in the simulation: the slots of the player's own window
 // (see contracts::player_slots) and the stack carried by the cursor. Only

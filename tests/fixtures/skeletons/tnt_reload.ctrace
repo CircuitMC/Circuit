@@ -1,0 +1,86 @@
+circuit-trace 2
+title Primed TNT keeps its fuse and motion while its chunk unloads and reloads
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms tnt chunk_tickets
+area 328 0 -1 343 5 2
+ticks 88
+changes ordered
+entities observed
+rng observed
+chunks none
+load none
+
+at 1 command forceload add 328 0
+at 10 set 328 0 -1 minecraft:stone
+at 10 set 328 0 0 minecraft:stone
+at 10 set 328 0 1 minecraft:stone
+at 10 set 328 0 2 minecraft:stone
+at 10 set 329 0 -1 minecraft:stone
+at 10 set 329 0 0 minecraft:stone
+at 10 set 329 0 1 minecraft:stone
+at 10 set 329 0 2 minecraft:stone
+at 10 set 330 0 -1 minecraft:stone
+at 10 set 330 0 0 minecraft:stone
+at 10 set 330 0 1 minecraft:stone
+at 10 set 330 0 2 minecraft:stone
+at 10 set 331 0 -1 minecraft:stone
+at 10 set 331 0 0 minecraft:stone
+at 10 set 331 0 1 minecraft:stone
+at 10 set 331 0 2 minecraft:stone
+at 10 set 332 0 -1 minecraft:stone
+at 10 set 332 0 0 minecraft:stone
+at 10 set 332 0 1 minecraft:stone
+at 10 set 332 0 2 minecraft:stone
+at 10 set 333 0 -1 minecraft:stone
+at 10 set 333 0 0 minecraft:stone
+at 10 set 333 0 1 minecraft:stone
+at 10 set 333 0 2 minecraft:stone
+at 10 set 334 0 -1 minecraft:stone
+at 10 set 334 0 0 minecraft:stone
+at 10 set 334 0 1 minecraft:stone
+at 10 set 334 0 2 minecraft:stone
+at 10 set 335 0 -1 minecraft:stone
+at 10 set 335 0 0 minecraft:stone
+at 10 set 335 0 1 minecraft:stone
+at 10 set 335 0 2 minecraft:stone
+at 10 set 336 0 -1 minecraft:stone
+at 10 set 336 0 0 minecraft:stone
+at 10 set 336 0 1 minecraft:stone
+at 10 set 336 0 2 minecraft:stone
+at 10 set 337 0 -1 minecraft:stone
+at 10 set 337 0 0 minecraft:stone
+at 10 set 337 0 1 minecraft:stone
+at 10 set 337 0 2 minecraft:stone
+at 10 set 338 0 -1 minecraft:stone
+at 10 set 338 0 0 minecraft:stone
+at 10 set 338 0 1 minecraft:stone
+at 10 set 338 0 2 minecraft:stone
+at 10 set 339 0 -1 minecraft:stone
+at 10 set 339 0 0 minecraft:stone
+at 10 set 339 0 1 minecraft:stone
+at 10 set 339 0 2 minecraft:stone
+at 10 set 340 0 -1 minecraft:stone
+at 10 set 340 0 0 minecraft:stone
+at 10 set 340 0 1 minecraft:stone
+at 10 set 340 0 2 minecraft:stone
+at 10 set 341 0 -1 minecraft:stone
+at 10 set 341 0 0 minecraft:stone
+at 10 set 341 0 1 minecraft:stone
+at 10 set 341 0 2 minecraft:stone
+at 10 set 342 0 -1 minecraft:stone
+at 10 set 342 0 0 minecraft:stone
+at 10 set 342 0 1 minecraft:stone
+at 10 set 342 0 2 minecraft:stone
+at 10 set 343 0 -1 minecraft:stone
+at 10 set 343 0 0 minecraft:stone
+at 10 set 343 0 1 minecraft:stone
+at 10 set 343 0 2 minecraft:stone
+at 10 set 332 1 0 minecraft:tnt[unstable=false]
+at 10 set 334 4 1 minecraft:tnt[unstable=false]
+at 12 set 333 1 0 minecraft:redstone_block
+at 13 set 333 1 0 minecraft:air
+at 26 set 334 5 1 minecraft:redstone_block
+at 30 command forceload remove 328 0
+at 40 command forceload add 328 0

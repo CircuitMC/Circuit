@@ -147,6 +147,7 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
         }
     }
     auto state = held.empty() ? std::nullopt : detail::placed_by(held.item, c.face, c.horizontal, c.look);
+    if (!state && held.item == items::tnt) state = detail::tnt_block(ctx);
     if (!state) return std::unexpected(ErrorCode::not_usable);
     const bool replace = replaceable(clicked);
     const auto target = replace ? c.pos : c.pos.relative(c.face);

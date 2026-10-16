@@ -620,11 +620,57 @@ inline Scenario falling_scenario() {
     }, 5};
 }
 
+// TNT primed on both sides of the x=16 chunk edge: by one dust line (both
+// ends in the same tick), by a piston pushing TNT under a redstone block
+// across the edge, by a repeater's block tick, and above water it falls into.
+// The fuses run out (the explosion is only a removal for now).
+inline Scenario tnt_scenario() {
+    return {"primed_tnt", 97, 260, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        const auto tnt = registry_block("tnt");
+        const auto dust = blocks::wire();
+        if (t == 2) {
+            for (int x = 8; x <= 24; ++x)
+                for (int z = -3; z <= 6; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            c.push_back(place({10, 0, 3}, blocks::water_source()));
+            c.push_back(place({18, 0, 5}, blocks::repeater(Direction::east)));
+        }
+        const auto phase = t % 100;
+        if (phase == 5) {
+            c.push_back(place({14, 0, 0}, tnt));
+            c.push_back(place({15, 0, 0}, dust));
+            c.push_back(place({16, 0, 0}, dust));
+            c.push_back(place({17, 0, 0}, tnt));
+            c.push_back(place({14, 0, -2}, blocks::piston(Direction::east)));
+            c.push_back(place({15, 0, -2}, tnt));
+            c.push_back(place({16, 1, -2}, blocks::redstone_block()));
+            c.push_back(place({12, 2, 3}, tnt));
+            c.push_back(place({19, 0, 5}, tnt));
+        }
+        if (phase == 10) {
+            // Above the dust: it powers the line without changing its shape.
+            c.push_back(place({15, 1, 0}, blocks::redstone_block()));
+            c.push_back(place({13, 0, -2}, blocks::redstone_block()));
+            c.push_back(place({12, 3, 3}, blocks::redstone_block()));
+            c.push_back(place({17, 0, 5}, blocks::redstone_block()));
+        }
+        if (phase == 95) {
+            // Clear the sources and the piston for the next round.
+            for (const BlockPos p : {BlockPos{15, 1, 0}, BlockPos{13, 0, -2}, BlockPos{12, 3, 3}, BlockPos{17, 0, 5},
+                                     BlockPos{14, 0, -2}, BlockPos{16, 1, -2}})
+                c.push_back(place(p, blocks::air()));
+        }
+        return c;
+    }, 5};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
-            transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario()};
+            transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
+            tnt_scenario()};
 }
 
 } // namespace circuit::test
