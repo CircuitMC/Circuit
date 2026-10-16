@@ -163,6 +163,13 @@ void canonicalize(WorldDump& d) {
     std::ranges::sort(d.players, {}, &PlayerInventory::player);
 }
 
+std::string_view entity_kind_name(EntityKind kind) noexcept {
+    switch (kind) {
+    case EntityKind::item: return "minecraft:item";
+    }
+    return "?";
+}
+
 namespace {
 std::string pos_text(BlockPos p) { return std::format("({},{},{})", p.x, p.y, p.z); }
 std::string chunk_text(ChunkPos c) { return std::format("[{},{}]", c.x, c.z); }
@@ -179,9 +186,9 @@ std::string text(const std::pair<BlockPos, BlockEntity>& b) {
                        b.second.signal, b.second.moving, b.second.progress, b.second.motion, slots);
 }
 std::string text(const Entity& e) {
-    return std::format("entity {} pos=({},{},{}) vel=({},{},{}) stack={}x{}/{} age={} last_tick={} ground={} pickup_delay={}", e.id.value,
-                       e.position.x, e.position.y, e.position.z, e.velocity.x, e.velocity.y, e.velocity.z, e.stack.item,
-                       e.stack.count, e.stack.damage, e.age, e.last_tick, e.on_ground, e.pickup_delay);
+    return std::format("entity {} {} pos=({},{},{}) vel=({},{},{}) stack={}x{}/{} age={} last_tick={} ground={} pickup_delay={}", e.id.value,
+                       entity_kind_name(e.kind), e.position.x, e.position.y, e.position.z, e.velocity.x, e.velocity.y, e.velocity.z,
+                       e.stack.item, e.stack.count, e.stack.damage, e.age, e.last_tick, e.on_ground, e.pickup_delay);
 }
 std::string text(const LevelDump::PendingTick& t) {
     return std::format("tick list={} {} block={} due={} priority={} suborder={}", static_cast<int>(t.list),
@@ -247,6 +254,7 @@ std::string first_difference(const WorldDump& a, const WorldDump& b) {
         if (la.next_block_entity_order != lb.next_block_entity_order)
             return std::format("{} next_block_entity_order {} != {}", name, la.next_block_entity_order, lb.next_block_entity_order);
         if (la.last_active != lb.last_active) return std::format("{} last_active {} != {}", name, la.last_active, lb.last_active);
+        if (la.random != lb.random) return std::format("{} level random {:#x} != {:#x}", name, la.random, lb.random);
         // The overworld's differences keep their short form.
         const auto prefix = la.dimension == contracts::DimensionId::overworld ? std::string{} : std::string(name) + " ";
         for (auto s : {compare("chunks", la.chunks, lb.chunks), compare("blocks", la.blocks, lb.blocks),
@@ -270,7 +278,7 @@ public:
         h_ ^= h_ >> 31;
     }
     void add(BlockPos p) { add(static_cast<std::uint32_t>(p.x)); add(static_cast<std::uint32_t>(p.y)); add(static_cast<std::uint32_t>(p.z)); }
-    void add(FixedVec v) { add(static_cast<std::uint64_t>(v.x)); add(static_cast<std::uint64_t>(v.y)); add(static_cast<std::uint64_t>(v.z)); }
+    void add(Vec3 v) { add(std::bit_cast<std::uint64_t>(v.x)); add(std::bit_cast<std::uint64_t>(v.y)); add(std::bit_cast<std::uint64_t>(v.z)); }
     [[nodiscard]] std::uint64_t value() const { return h_; }
 
 private:
@@ -302,6 +310,7 @@ std::uint64_t digest(const WorldDump& d) {
         h.add(l.next_suborder);
         h.add(l.next_block_entity_order);
         h.add(l.last_active);
+        h.add(l.random);
         for (const auto& c : l.chunks) {
             h.add(contracts::pack_chunk(c.pos)); h.add(c.generation); h.add(static_cast<std::uint64_t>(c.level)); h.add(c.load); h.add(c.simulation); h.add(c.saved_at); h.add(c.resumes);
         }
@@ -318,7 +327,8 @@ std::uint64_t digest(const WorldDump& d) {
         }
         h.add(l.entities.size());
         for (const auto& e : l.entities) {
-            h.add(e.id.value); h.add(e.position); h.add(e.velocity); h.add(contracts::pack_stack(e.stack)); h.add(e.stack.components.hash());
+            h.add(e.id.value); h.add(static_cast<std::uint64_t>(e.kind)); h.add(e.position); h.add(e.velocity); h.add(contracts::pack_stack(e.stack));
+            h.add(e.stack.components.hash());
             h.add(e.age); h.add(e.last_tick); h.add(e.on_ground); h.add(e.pickup_delay);
         }
         h.add(l.ticks.size());

@@ -4,6 +4,7 @@
 #include <circuit/contracts/trace.hpp>
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/game_data.hpp>
+#include <circuit/gameplay/level_random.hpp>
 #include <circuit/gameplay/world_types.hpp>
 #include <array>
 #include <deque>
@@ -22,7 +23,9 @@ namespace circuit::oracle {
 class Oracle {
 public:
     // `data`: game data from data packs, as an engine's options give it.
-    Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed, std::shared_ptr<const gameplay::GameData> data = {});
+    // `level_random_seed`: as EngineOptions::level_random_seed.
+    Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed, std::shared_ptr<const gameplay::GameData> data = {},
+           std::optional<std::int64_t> level_random_seed = {});
     ~Oracle();
     Oracle(const Oracle&) = delete;
     Oracle& operator=(const Oracle&) = delete;
@@ -58,6 +61,7 @@ private:
         std::uint64_t next_block_entity_order{};
         std::map<contracts::PlayerKey, gameplay::Presence> presences;
         contracts::Tick last_active{};
+        gameplay::LevelRandom random;
         std::uint64_t light_version{}; // changes whenever something light depends on changes
         [[nodiscard]] gameplay::ChunkLevel level(contracts::ChunkPos chunk) const;
         // The chunk's simulation level; none when unloaded.

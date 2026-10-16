@@ -124,17 +124,17 @@ void tick_observer(RuleContext& ctx, BlockPos pos, BlockState state);
 bool piston_powered(RuleContext& ctx, BlockPos pos, Direction facing);
 void check_piston(RuleContext& ctx, BlockPos pos);
 void run_piston_event(RuleContext& ctx, const BlockEvent& event, BlockState state);
-// Spawns the items a destroyed block drops, at the block center without
-// velocity: what `tool` harvests (nothing for blocks that need a tool when
-// none is given).
+// Spawns the items a destroyed block drops, around the block center with
+// random offsets and velocities from the level random: what `tool` harvests
+// (nothing for blocks that need a tool when none is given).
 void drop_items(RuleContext& ctx, BlockPos pos, BlockState destroyed, ItemStack tool = {});
 // Spawns a removed container's contents, one entity per slot.
 void drop_contents(RuleContext& ctx, BlockPos pos, const std::vector<ItemStack>& slots);
-// Records a spawned entity: entity_spawned, then entity_spawn_state with its
-// exact position and velocity.
+// Records a spawned entity: entity_spawned (b: its stack, c: its kind), then
+// entity_spawn_position and entity_spawn_velocity with their exact values.
 void record_spawn(RuleContext& ctx, EntityId id, const Entity& e);
 // Spawns an item a player dropped.
-void spawn_dropped(RuleContext& ctx, BlockPos cell, contracts::FixedVec position, contracts::FixedVec velocity, ItemStack stack,
+void spawn_dropped(RuleContext& ctx, BlockPos cell, contracts::Vec3 position, contracts::Vec3 velocity, ItemStack stack,
                    std::uint16_t pickup_delay);
 // Whether a piston head still has its base (or the moving piston taking its place).
 bool head_has_base(RuleContext& ctx, BlockPos pos, BlockState head);

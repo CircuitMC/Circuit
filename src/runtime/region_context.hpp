@@ -53,7 +53,7 @@ public:
     const Entity* peek_entity(EntityId id) override;
     Entity* entity(EntityId id) override;
     EntityId spawn_entity(const Entity& prototype) override;
-    void relocate_entity(EntityId id, contracts::FixedVec position) override;
+    void relocate_entity(EntityId id, contracts::Vec3 position) override;
     void remove_entity(EntityId id) override;
     const gameplay::PlayerInventory* peek_player(contracts::PlayerKey player) override;
     gameplay::PlayerInventory& player(contracts::PlayerKey player) override;
@@ -93,6 +93,9 @@ public:
     };
     std::array<std::vector<Creation>, counter_kinds> ledger;
 
+protected:
+    gameplay::LevelRandom& level_random() override;
+
 private:
     Provisional stage(Counter counter, std::uint32_t seq, EntityId entity = {});
     ChunkData* loaded_in_world(BlockPos pos) const;
@@ -116,6 +119,8 @@ private:
     std::uint32_t creations_{}; // Block entities and entities created in the current root.
     std::uint32_t provisional_entities_{};
     ChunkPos home_{};
+    // Each level's random sequence before this attempt first drew from it.
+    std::array<std::optional<gameplay::LevelRandom>, contracts::dimension_count> random_snapshots_;
 };
 
 } // namespace circuit::runtime::detail

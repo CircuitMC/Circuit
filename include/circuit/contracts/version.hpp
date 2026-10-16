@@ -44,9 +44,9 @@ struct WorldShape {
     [[nodiscard]] constexpr bool contains_y(std::int32_t y) const noexcept {
         return y >= min_y && y < min_y + height;
     }
-    // Full-width check of a fixed-point entity coordinate.
-    [[nodiscard]] constexpr bool contains_fixed_y(std::int64_t y) const noexcept {
-        return y >= std::int64_t{min_y} * fixed_one && y < (std::int64_t{min_y} + height) * fixed_one;
+    // Whether an entity's height lies within the world.
+    [[nodiscard]] constexpr bool contains_position_y(double y) const noexcept {
+        return y >= min_y && y < static_cast<double>(min_y) + height;
     }
 };
 

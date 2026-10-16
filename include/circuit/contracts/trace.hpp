@@ -2,6 +2,7 @@
 #pragma once
 #include <circuit/contracts/ids.hpp>
 #include <circuit/contracts/time.hpp>
+#include <bit>
 #include <cstdint>
 #include <optional>
 #include <span>
@@ -33,8 +34,10 @@ enum class TraceKind : std::uint8_t {
     signal_changed = 18,     // pos, a = old output signal, b = new output signal (block-entity state)
     player_slot_changed = 19,// a = player key high half, b = low half, c = slot << 48 | new stack (slot 46: the cursor)
     container_opened = 20,   // pos = the container, a = player key high half, b = low half
-    entity_spawn_state = 21, // right after entity_spawned: pos = block of the position, a = entity id,
-                             // b = pack_offsets(position), c = pack_velocity(velocity)
+    entity_spawn_position = 21, // right after entity_spawned: pos = block of the position, a, b, c = the
+                                // bits of x, y and z (double_bits)
+    entity_spawn_velocity = 22, // right after entity_spawn_position: a, b, c = the bits of the velocity
+    level_random_draw = 23,     // a = the raw draws (next(bits) calls) one use of the level random made
 };
 
 struct TraceRecord {
@@ -49,30 +52,9 @@ struct TraceRecord {
 constexpr std::uint64_t pack_chunk(ChunkPos c) noexcept {
     return (static_cast<std::uint64_t>(static_cast<std::uint32_t>(c.x)) << 32) | static_cast<std::uint32_t>(c.z);
 }
-// An entity's position within its block, 12 bits per axis: x << 24 | y << 12 | z.
-constexpr std::uint64_t pack_offsets(FixedVec p) noexcept {
-    const auto f = [](std::int64_t v) { return static_cast<std::uint64_t>(v & (fixed_one - 1)); };
-    return f(p.x) << 24 | f(p.y) << 12 | f(p.z);
-}
-constexpr FixedVec unpack_position(BlockPos block, std::uint64_t offsets) noexcept {
-    const auto f = [&](std::int32_t b, int shift) {
-        return static_cast<std::int64_t>(b) * fixed_one + static_cast<std::int64_t>((offsets >> shift) & (fixed_one - 1));
-    };
-    return {f(block.x, 24), f(block.y, 12), f(block.z, 0)};
-}
-// A velocity below one block per tick on each axis, 13-bit two's complement
-// per axis: x << 26 | y << 13 | z.
-constexpr std::uint64_t pack_velocity(FixedVec v) noexcept {
-    const auto f = [](std::int64_t c) { return static_cast<std::uint64_t>(c) & 0x1FFF; };
-    return f(v.x) << 26 | f(v.y) << 13 | f(v.z);
-}
-constexpr FixedVec unpack_velocity(std::uint64_t packed) noexcept {
-    const auto f = [&](int shift) {
-        const auto raw = static_cast<std::int64_t>((packed >> shift) & 0x1FFF);
-        return raw >= 0x1000 ? raw - 0x2000 : raw;
-    };
-    return {f(26), f(13), f(0)};
-}
+// A double's bits, for trace payloads.
+inline std::uint64_t double_bits(double v) noexcept { return std::bit_cast<std::uint64_t>(v); }
+inline double bits_double(std::uint64_t v) noexcept { return std::bit_cast<double>(v); }
 // Count, item and damage of a stack, and bits 40-47 of its components' hash
 // as a fingerprint (the full patch is state, not trace).
 inline std::uint64_t pack_stack(const ItemStack& s) noexcept {

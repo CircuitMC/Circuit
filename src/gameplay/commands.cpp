@@ -85,16 +85,18 @@ Plan plan(RuleContext& ctx, const contracts::InsertItem& c) {
 }
 
 Plan plan(RuleContext& ctx, const contracts::SpawnItem& c) {
-    // The full-width position is checked before it is narrowed to a block.
-    if (!contracts::fixed_within_border(c.position) || !ctx.world().contains_fixed_y(c.position.y))
+    // The position is checked before it is narrowed to a block.
+    if (!contracts::within_border(c.position) || !ctx.world().contains_position_y(c.position.y))
         return std::unexpected(ErrorCode::out_of_bounds);
     const auto cell = contracts::block_of(c.position);
     if (auto ok = check_loaded(ctx, cell); !ok) return std::unexpected(ok.error());
     if (!valid_stack(c.stack)) return std::unexpected(ErrorCode::invalid_argument);
-    for (auto v : {c.velocity.x, c.velocity.y, c.velocity.z})
-        if (v <= -contracts::fixed_one || v >= contracts::fixed_one) return std::unexpected(ErrorCode::invalid_argument);
+    if (!valid_velocity(c.velocity)) return std::unexpected(ErrorCode::invalid_argument);
     return [&ctx, c] {
-        const Entity e{{}, c.position, c.velocity, c.stack, 0, 0, false};
+        Entity e;
+        e.position = c.position;
+        e.velocity = c.velocity;
+        e.stack = c.stack;
         detail::record_spawn(ctx, ctx.spawn_entity(e), e);
     };
 }
@@ -251,12 +253,11 @@ Plan plan(RuleContext& ctx, const contracts::PickUp& c) {
 
 Plan plan(RuleContext& ctx, const contracts::DropItem& c) {
     if (c.slot >= contracts::player_slots) return std::unexpected(ErrorCode::invalid_slot);
-    if (!contracts::fixed_within_border(c.position) || !ctx.world().contains_fixed_y(c.position.y))
+    if (!contracts::within_border(c.position) || !ctx.world().contains_position_y(c.position.y))
         return std::unexpected(ErrorCode::out_of_bounds);
     const auto cell = contracts::block_of(c.position);
     if (auto ok = check_loaded(ctx, cell); !ok) return std::unexpected(ok.error());
-    for (auto v : {c.velocity.x, c.velocity.y, c.velocity.z})
-        if (v < -max_entity_speed || v > max_entity_speed) return std::unexpected(ErrorCode::invalid_argument);
+    if (!valid_velocity(c.velocity)) return std::unexpected(ErrorCode::invalid_argument);
     const auto* inv = ctx.peek_player(c.player);
     if (!inv || inv->slots[c.slot].empty()) return std::unexpected(ErrorCode::not_usable);
     return [&ctx, c, cell] {

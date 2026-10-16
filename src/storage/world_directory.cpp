@@ -11,16 +11,17 @@
 namespace circuit::storage {
 namespace {
 constexpr std::string_view manifest_file = "manifest";
-// Log segments: "CIRCWAL" and a format byte. 6: weather; 5 (read only): day
-// time; 4 (read only): game rule changes; 3 (read only): typed tickets,
-// presences; 2 (read only): commands name their level; 1 (read only):
-// overworld commands, stacks with data components; 0 (read only): stacks
-// without components. The record encoding of formats 2 to 6 is the same; a
-// format 2 record holds no command of tags 16-21, a format 3 record none of
-// tags 19-21, a format 4 record none of tags 20-21, a format 5 record none of
-// tag 21.
+// Log segments: "CIRCWAL" and a format byte. 7: positions and velocities
+// are doubles; 6 (read only): weather; 5 (read only): day time; 4 (read
+// only): game rule changes; 3 (read only): typed tickets, presences; 2 (read
+// only): commands name their level; 1 (read only): overworld commands, stacks
+// with data components; 0 (read only): stacks without components. The record
+// encoding of formats 2 to 6 is the same; a format 2 record holds no command
+// of tags 16-21, a format 3 record none of tags 19-21, a format 4 record none
+// of tags 20-21, a format 5 record none of tag 21. Format 7 writes positions
+// and velocities as doubles instead of 1/4096 block units.
 constexpr std::string_view segment_prefix{"CIRCWAL", 7};
-constexpr char segment_format = 6;
+constexpr char segment_format = 7;
 constexpr std::size_t segment_magic_size = 8;
 constexpr std::size_t max_record = std::size_t{64} << 20;
 
@@ -186,7 +187,7 @@ std::expected<bool, std::string> WorldDirectory::read_segment(const std::string&
         if (crc32_of(payload) != crc) break;
         // A record with a valid checksum is not a torn write: one that does not
         // decode or does not continue the history means the log is corrupt.
-        auto input = contracts::decode_tick_input(payload, limits, format >= 1, format >= 2);
+        auto input = contracts::decode_tick_input(payload, limits, format >= 1, format >= 2, format >= 7);
         if (!input) return std::unexpected(std::format("{}: undecodable record after tick {}: {}", name, tick, contracts::error_name(input.error())));
         if (input->tick != tick + 1)
             return std::unexpected(std::format("{}: record for tick {} after tick {}", name, input->tick, tick));

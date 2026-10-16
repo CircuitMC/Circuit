@@ -22,7 +22,7 @@ namespace circuit::gameplay {
 using contracts::BlockPos;
 using contracts::ChunkPos;
 using contracts::EntityId;
-using contracts::FixedVec;
+using contracts::Vec3;
 using contracts::ItemStack;
 using contracts::Tick;
 using contracts::TickList;
@@ -63,19 +63,30 @@ struct Motion {
     }
 };
 
-// Item entities move less than one block per tick on each axis, so they never
-// skip a cell; restored states are checked against this bound.
-inline constexpr std::int64_t max_entity_speed = contracts::fixed_one - 1;
+// Circuit capacity: the fastest an entity may move, in blocks per tick on
+// each axis; commands and restored states are checked against it.
+inline constexpr double max_entity_speed = 64.0;
+[[nodiscard]] inline bool valid_velocity(contracts::Vec3 v) noexcept {
+    return contracts::finite(v) && std::abs(v.x) <= max_entity_speed && std::abs(v.y) <= max_entity_speed && std::abs(v.z) <= max_entity_speed;
+}
+
+// The kinds of entities the rules model (their registry names in
+// entity_kind_name).
+enum class EntityKind : std::uint8_t { item = 1 };
+inline constexpr std::uint8_t entity_kind_count = 2; // kinds are 1 to entity_kind_count - 1
+std::string_view entity_kind_name(EntityKind kind) noexcept;
 
 struct Entity {
     EntityId id;
-    FixedVec position;
-    FixedVec velocity;
-    ItemStack stack;
+    EntityKind kind{EntityKind::item};
+    Vec3 position;
+    Vec3 velocity;
     std::uint32_t age{};
     Tick last_tick{}; // Logical tick of the last basic advancement; prevents double ticking.
-    std::uint16_t pickup_delay{}; // ticks until players may pick it up
     bool on_ground{};
+    // Items: the stack and the ticks until players may pick it up.
+    ItemStack stack;
+    std::uint16_t pickup_delay{};
     bool operator==(const Entity&) const = default;
 };
 
@@ -195,7 +206,7 @@ private:
 // A player in a level (contracts::PlayerPresence).
 struct Presence {
     contracts::PlayerKey player;
-    FixedVec position;
+    Vec3 position;
     bool spectator{};
     bool operator==(const Presence&) const = default;
 };
@@ -211,9 +222,9 @@ constexpr bool level_awake(bool active, Tick now, Tick last_active, Tick started
 // the chunk's center (x * 16 + 8, z * 16 + 8).
 template <class Presences>
 bool player_near(const Presences& presences, ChunkPos chunk) {
-    constexpr std::int64_t range = 128 * contracts::fixed_one;
-    const std::int64_t cx = (std::int64_t{chunk.x} * 16 + 8) * contracts::fixed_one;
-    const std::int64_t cz = (std::int64_t{chunk.z} * 16 + 8) * contracts::fixed_one;
+    constexpr double range = 128.0;
+    const double cx = static_cast<double>(chunk.x) * 16.0 + 8.0;
+    const double cz = static_cast<double>(chunk.z) * 16.0 + 8.0;
     for (const auto& entry : presences) {
         const Presence& p = [&]() -> const Presence& {
             if constexpr (requires { entry.second; }) return entry.second;
@@ -296,6 +307,8 @@ struct LevelDump {
     std::vector<Presence> presences;                            // ascending player
     // The last tick the level had players or forced chunks (contracts::idle_level_ticks).
     Tick last_active{};
+    // The state of the level's random sequence (LevelRandom::state).
+    std::uint64_t random{};
     bool operator==(const LevelDump&) const = default;
 };
 

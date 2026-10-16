@@ -66,7 +66,7 @@ struct Player {
     ChunkPos center{};
     std::set<ChunkPos> sent;
     std::uint32_t ticket{}; // and ticket + 1: the loading and the simulation ticket
-    std::optional<std::pair<contracts::FixedVec, bool>> presence; // last sent (position, spectator)
+    std::optional<std::pair<contracts::Vec3, bool>> presence; // last sent (position, spectator)
     std::int32_t next_teleport{1};
     std::optional<std::int32_t> awaiting_teleport;
     std::int32_t held{}; // hotbar slot 0-8; the inventory itself is simulation state
@@ -192,16 +192,11 @@ struct Message {
     std::optional<Intent> intent;
 };
 
-bool finite(Vec3 v) { return std::isfinite(v.x) && std::isfinite(v.y) && std::isfinite(v.z); }
 ChunkPos chunk_at(Vec3 v) {
     return {static_cast<std::int32_t>(std::floor(v.x)) >> 4, static_cast<std::int32_t>(std::floor(v.z)) >> 4};
 }
 WirePosition wire_pos(BlockPos p) { return {p.x, p.y, p.z}; }
 BlockPos block_pos(WirePosition p) { return {p.x, p.y, p.z}; }
-Vec3 entity_vec(contracts::FixedVec v) {
-    return {static_cast<double>(v.x) / contracts::fixed_one, static_cast<double>(v.y) / contracts::fixed_one,
-            static_cast<double>(v.z) / contracts::fixed_one};
-}
 Uuid entity_uuid(std::uint64_t id) { return Uuid{0x43697263756974ULL /* "Circuit" */, id}; }
 std::int32_t chebyshev(ChunkPos a, ChunkPos b) { return std::max(std::abs(a.x - b.x), std::abs(a.z - b.z)); }
 
@@ -694,7 +689,7 @@ struct Game::Impl final : GameServices {
     void send_presences() {
         const bool positional = bundle.rules->random_ticks == contracts::RandomTickRange::block_ticking_near_player;
         for (auto& [id, p] : players) {
-            const contracts::FixedVec at{fixed(p.pos.x), fixed(p.pos.y), fixed(p.pos.z)};
+            const auto at = p.pos;
             const auto now = std::pair{at, p.game_mode == spectator};
             if (p.presence && p.presence->second == now.second && (!positional || p.presence->first == at)) continue;
             p.presence = now;
@@ -809,13 +804,11 @@ struct Game::Impl final : GameServices {
     // Where items a player throws appear, and how fast: at eye height less
     // 0.3, 0.3 blocks per tick along the look and 0.1 up (the target version
     // adds a small random spread).
-    std::pair<contracts::FixedVec, contracts::FixedVec> throw_from(const Player& p) const {
+    std::pair<contracts::Vec3, contracts::Vec3> throw_from(const Player& p) const {
         constexpr double rad = 3.14159265358979323846 / 180.0;
         const double yaw = p.yaw * rad, pitch = p.pitch * rad;
-        const auto fixed = [](double d) { return static_cast<std::int64_t>(std::llround(d * contracts::fixed_one)); };
-        return {{fixed(p.pos.x), fixed(p.pos.y + (p.sneaking ? 1.27 : 1.62) - 0.3), fixed(p.pos.z)},
-                {fixed(-std::sin(yaw) * std::cos(pitch) * 0.3), fixed(-std::sin(pitch) * 0.3 + 0.1),
-                 fixed(std::cos(yaw) * std::cos(pitch) * 0.3)}};
+        return {{p.pos.x, p.pos.y + (p.sneaking ? 1.27 : 1.62) - 0.3, p.pos.z},
+                {-std::sin(yaw) * std::cos(pitch) * 0.3, -std::sin(pitch) * 0.3 + 0.1, std::cos(yaw) * std::cos(pitch) * 0.3}};
     }
 
     void open_window(Player& p, BlockPos pos) {
@@ -1040,7 +1033,7 @@ struct Game::Impl final : GameServices {
         p.floating = false;
         p.fall_distance = 0.0;
         if (p.window) close_window(p, true);
-        admit(contracts::PlayerDeath{key_of(p), contracts::FixedVec{fixed(p.pos.x), fixed(p.pos.y + 1.32), fixed(p.pos.z)}});
+        admit(contracts::PlayerDeath{key_of(p), contracts::Vec3{p.pos.x, p.pos.y + 1.32, p.pos.z}});
         const auto key = harm == Harm::void_ ? "death.attack.outOfWorld"
                          : harm == Harm::starve ? "death.attack.starve"
                          : fall_distance > 5.0 ? "death.fell.accident.generic" : "death.attack.fall";
@@ -1059,7 +1052,6 @@ struct Game::Impl final : GameServices {
             if (const auto o = players.find(viewer); o != players.end()) o->second.peer->send(remove);
         p.seen_by.clear();
     }
-    static std::int64_t fixed(double v) { return static_cast<std::int64_t>(std::llround(v * contracts::fixed_one)); }
 
     // Respawning at the world spawn with full health and hunger.
     void respawn(Player& p) {
@@ -1319,7 +1311,7 @@ struct Game::Impl final : GameServices {
                 if (taken.contains(entity_id)) continue;
                 const auto e = view.entity(overworld, EntityId{entity_id});
                 if (!e || !*e || (*e)->pickup_delay > 0) continue;
-                const auto pos = entity_vec((*e)->position);
+                const auto pos = (*e)->position;
                 // The item's box is 0.25 wide and high.
                 const bool x = pos.x + 0.125 > p.pos.x - 1.3 && pos.x - 0.125 < p.pos.x + 1.3;
                 const bool z = pos.z + 0.125 > p.pos.z - 1.3 && pos.z - 0.125 < p.pos.z + 1.3;
@@ -1879,10 +1871,10 @@ struct Game::Impl final : GameServices {
         auto& t = it->second;
         if (fresh) {
             t.protocol_id = next_entity_id++;
-            t.last = entity_vec(e.position);
+            t.last = e.position;
         }
         if (!t.viewers.insert(p.peer->id()).second) return;
-        p.peer->send(wire.spawn_entity(t.protocol_id, entity_uuid(engine_id), item_entity_type, t.last, 0, 0, 0, 0, entity_vec(e.velocity)));
+        p.peer->send(wire.spawn_entity(t.protocol_id, entity_uuid(engine_id), item_entity_type, t.last, 0, 0, 0, 0, e.velocity));
         p.peer->send(wire.item_metadata(t.protocol_id, wire_stack(e.stack)));
     }
 
@@ -1924,7 +1916,7 @@ struct Game::Impl final : GameServices {
         for (auto& [id, t] : tracked) {
             const auto e = view.entity(overworld, EntityId{id});
             if (!e || !*e) continue;
-            const auto now = entity_vec((*e)->position);
+            const auto now = (*e)->position;
             if (now.x == t.last.x && now.y == t.last.y && now.z == t.last.z) continue;
             t.last = now;
             const auto packet = wire.entity_position(t.protocol_id, now, 0, 0, (*e)->on_ground);

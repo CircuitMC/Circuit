@@ -4,8 +4,10 @@
 #include <circuit/contracts/replay.hpp>
 #include <circuit/contracts/trace.hpp>
 #include <circuit/contracts/version.hpp>
+#include <cmath>
 #include <cstdint>
 #include <format>
+#include <limits>
 #include <set>
 
 using namespace circuit::contracts;
@@ -20,24 +22,21 @@ int main() {
         require(chunk_of({15, 0, 16}) == ChunkPos{0, 1}, "positive boundary");
         require(section_local_index({-1, -1, -1}) == 4095, "negative local index wraps to 15");
         require(section_local_index({16, 17, 18}) == (1u << 8 | 2u << 4 | 0u), "local index layout");
-        require(floor_block(-1) == -1 && floor_block(-4096) == -1 && floor_block(-4097) == -2, "fixed floor");
-        require(floor_block(4095) == 0 && floor_block(4096) == 1, "fixed floor positive");
-        require(block_of({-1, 4096 * 3, 0}) == BlockPos{-1, 3, 0}, "block_of");
-        require(!within_border({world_border, 0, 0}) && within_border({-world_border, 0, 0}), "border");
-        // Entity positions are checked at full width before narrowing.
-        require(fixed_within_border({-fixed_border, 0, fixed_border - 1}) && !fixed_within_border({fixed_border, 0, 0})
-                    && !fixed_within_border({-fixed_border - 1, 0, 0}) && !fixed_within_border({0, 0, fixed_border})
-                    && !fixed_within_border({0, 0, -fixed_border - 1}),
-                "fixed border endpoints");
-        require(!fixed_within_border({INT64_MIN, 0, 0}) && !fixed_within_border({INT64_MAX, 0, 0})
-                    && !fixed_within_border({0, 0, INT64_MIN}) && !fixed_within_border({0, 0, INT64_MAX})
-                    && !fixed_within_border({std::int64_t{1} << 44, 0, 0}),
-                "extreme and aliasing x/z");
+        require(block_of(Vec3{-0.5, 3.0, -1e-9}) == BlockPos{-1, 3, -1} && block_of(Vec3{0.999, -64.0, 15.5}) == BlockPos{0, -64, 15},
+                "block_of floors");
+        require(!within_border(BlockPos{world_border, 0, 0}) && within_border(BlockPos{-world_border, 0, 0}), "border");
+        // Entity positions are checked before narrowing to a block.
+        const double border = world_border;
+        require(within_border(Vec3{-border, 0, std::nextafter(border, 0.0)}) && !within_border(Vec3{border, 0, 0})
+                    && !within_border(Vec3{std::nextafter(-border, -1e9), 0, 0}) && !within_border(Vec3{0, 0, border}),
+                "border endpoints");
+        require(!within_border(Vec3{std::numeric_limits<double>::infinity(), 0, 0}) && !within_border(Vec3{0, 0, std::nan("")})
+                    && !within_border(Vec3{0, std::numeric_limits<double>::quiet_NaN(), 0}) && !within_border(Vec3{1e300, 0, 0}),
+                "infinite, NaN and huge coordinates");
         const WorldShape shape{-64, 384};
-        require(shape.contains_fixed_y(-64 * fixed_one) && shape.contains_fixed_y(320 * fixed_one - 1)
-                    && !shape.contains_fixed_y(-64 * fixed_one - 1) && !shape.contains_fixed_y(320 * fixed_one)
-                    && !shape.contains_fixed_y(INT64_MIN) && !shape.contains_fixed_y(INT64_MAX),
-                "fixed height endpoints");
+        require(shape.contains_position_y(-64.0) && shape.contains_position_y(std::nextafter(320.0, 0.0))
+                    && !shape.contains_position_y(std::nextafter(-64.0, -100.0)) && !shape.contains_position_y(320.0),
+                "height endpoints");
     });
 
     suite.run("directions", [] {

@@ -1197,8 +1197,8 @@ int main() {
         auto drops = f.game->engine().dump().overworld().entities;
         require(drops.size() == 1 && drops[0].stack.item == gameplay::items::cobblestone, "stone drops cobblestone");
         // The drop waits 10 ticks, then the player, whose pickup box reaches 1.3 blocks
-        // sideways, takes it.
-        f.game->submit(1, I{server::intent::Command{"tp 2.5 -60 1.5"}});
+        // sideways, takes it (it lands within half a block of its cell's center).
+        f.game->submit(1, I{server::intent::Command{"tp 3.5 -60 1.5"}});
         for (int i = 0; i < 14; ++i) f.game->tick();
         require(f.game->engine().dump().overworld().entities.empty(), "picked up");
         bool cobblestone = false;

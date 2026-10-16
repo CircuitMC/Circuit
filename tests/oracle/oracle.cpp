@@ -91,7 +91,7 @@ public:
         lv().entities[id] = e;
         return id;
     }
-    void relocate_entity(EntityId id, contracts::FixedVec position) override {
+    void relocate_entity(EntityId id, contracts::Vec3 position) override {
         if (lv().level(contracts::chunk_of(contracts::block_of(position))) == ChunkLevel::unloaded)
             throw std::logic_error("oracle: relocation into an unloaded chunk");
         lv().entities.at(id).position = position;
@@ -118,6 +118,9 @@ public:
         return seq;
     }
 
+protected:
+    gameplay::LevelRandom& level_random() override { return lv().random; }
+
 private:
     Level& lv() { return o_.at(dimension()); }
     BlockEntity* find_block_entity(BlockPos pos) {
@@ -138,9 +141,11 @@ private:
     std::uint32_t seq_{};
 };
 
-Oracle::Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed, std::shared_ptr<const gameplay::GameData> data)
+Oracle::Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed, std::shared_ptr<const gameplay::GameData> data,
+               std::optional<std::int64_t> level_random_seed)
     : bundle_(bundle), seed_(seed), data_(std::move(data)), ctx_(std::make_unique<Context>(*this)) {
     if (!bundle.rules) throw std::invalid_argument("oracle: bundle has no executable rules");
+    for (const auto level : contracts::level_order) at(level).random = gameplay::initial_level_random(seed, level, level_random_seed);
 }
 // The blocks of a level at the start of a tick, kept while nothing light
 // depends on changes, and light computed from scratch around the columns read.
@@ -421,6 +426,7 @@ WorldDump Oracle::dump() const {
         l.next_suborder = lv.next_suborder;
         l.next_block_entity_order = lv.next_block_entity_order;
         l.last_active = lv.last_active;
+        l.random = lv.random.state();
         for (const auto& [key, p] : lv.presences) l.presences.push_back(p);
         for (const auto& [c, info] : lv.chunks)
             l.chunks.push_back({c, info.generation.value, info.level,

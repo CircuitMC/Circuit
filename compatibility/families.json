@@ -560,28 +560,30 @@
           "name": "Entity tick order",
           "milestone": "C3",
           "impl": "partial",
-          "evidence": "reference_only",
+          "evidence": "compared",
           "deviations": [
-            "ascending id; not compared with the target version"
+            "ascending id, compared with the target versions for item entities only"
           ],
           "cases": [
-            "trace/item_hopper_pickup"
+            "trace/item_hopper_pickup",
+            "trace/item_water_current"
           ]
         },
         {
           "id": "level_random",
           "name": "The level random source and its draw order",
-          "milestone": "C0",
-          "impl": "missing",
-          "evidence": "reference_only",
+          "milestone": "C3",
+          "impl": "partial",
+          "evidence": "compared",
           "deviations": [
-            "per-section derived streams"
+            "only block drops and piston sounds draw from it; random ticks and weather durations use Circuit's own derived streams, and other draws of the target versions are not made yet"
           ],
           "cases": [
+            "trace/piston_draws",
             "trace/item_drop_piston",
             "trace/tnt_redstone_ignition"
           ],
-          "note": "Draw counts of the level random recorded per stage"
+          "note": "Each level's java.util.Random-compatible sequence, its state saved with the world; fixtures seed it with 0 as the harness does and compare raw draw counts per stage"
         },
         {
           "id": "random_tick_order",
@@ -1078,7 +1080,7 @@
             "trace/item_drop_piston"
           ],
           "deviations": [
-            "drops without random offsets, after the block instead of before"
+            "moving blocks push items a tick early (trace/item_drop_piston)"
           ]
         },
         {
@@ -1086,7 +1088,7 @@
           "name": "Moving blocks pushing entities and players",
           "milestone": "C3",
           "impl": "partial",
-          "evidence": "reference_only",
+          "evidence": "mismatch",
           "deviations": [
             "item entities only"
           ],
@@ -1398,16 +1400,17 @@
           "name": "Item entity motion and collision",
           "milestone": "C3",
           "impl": "partial",
-          "evidence": "mismatch",
+          "evidence": "compared",
           "deviations": [
-            "fixed-point motion; not compared with the target version",
-            "no water currents or buoyancy"
+            "no water currents or buoyancy",
+            "moving blocks push items differently (trace/item_piston_push)"
           ],
           "cases": [
             "trace/item_hopper_pickup",
-            "trace/item_piston_push",
-            "trace/item_water_current"
-          ]
+            "trace/item_water_current",
+            "trace/item_piston_push"
+          ],
+          "note": "Double-precision gravity, drag, collision with every state's collision boxes, bouncing and the resting rule, identical with both official servers in the passing traces"
         },
         {
           "id": "merging",
@@ -1779,7 +1782,7 @@
             "tables with random parts (random counts, chances, fortune bonuses, weighted choices) drop nothing until random streams are modeled",
             "tables that copy components or name dynamic contents (shulker boxes, banners, decorated pots) are not used",
             "modeled blocks ignore their tables, so silk touch does not change their drops",
-            "drops appear at the block center without the random offset and motion",
+            "a broken container's contents drop whole at its center, without the random split and scatter",
             "entity, container and archaeology tables are not used"
           ]
         }

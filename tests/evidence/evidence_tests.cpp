@@ -29,7 +29,9 @@ namespace fs = std::filesystem;
 namespace {
 class OracleExecutor final : public FixtureExecutor {
 public:
-    OracleExecutor(const circuit::contracts::VersionBundle& bundle, std::uint64_t seed) : oracle_(bundle, seed), shape_(bundle.world) {}
+    // The overworld's level random starts from 0, as the reference harness seeds it.
+    OracleExecutor(const circuit::contracts::VersionBundle& bundle, std::uint64_t seed)
+        : oracle_(bundle, seed, {}, std::int64_t{0}), shape_(bundle.world) {}
     void advance(const std::vector<circuit::contracts::Command>& commands) override {
         before_ = std::move(dump_);
         oracle_.advance(commands);
@@ -530,18 +532,20 @@ int main(int argc, char** argv) {
         std::ranges::reverse(two->handles);
         r = evaluate_fixture(order, engine_executor());
         require(r.outcome == Outcome::failed && r.detail.find("entity order") != std::string::npos, r.detail);
-        // Circuit does not observe the target version's random streams: such observations fail.
+        // Draws from the level random are counted per stage: these items draw nothing.
         auto rng = recorded;
         rng.observe_rng = true;
         rng.rng.push_back({1, "random_ticks", "level", 3, 0});
         r = evaluate_fixture(rng, engine_executor());
-        require(r.outcome == Outcome::failed && r.detail.find("no draws") != std::string::npos, r.detail);
-        // Positions Circuit cannot represent exactly are unsupported, not rounded.
+        require(r.outcome == Outcome::failed && r.detail.find("expected 3 draws from `level` in random_ticks, observed 0") != std::string::npos,
+                r.detail);
+        // Any position is exact: doubles as the target versions keep them.
         auto odd = skeleton;
         odd.actions[2].position[0] = 1.1;
-        require(evaluate_fixture(*record_fixture(skeleton, engine_executor()), engine_executor()).outcome == Outcome::passed, "baseline");
-        r = evaluate_fixture(odd, engine_executor());
-        require(r.outcome == Outcome::unsupported && r.detail.find("1/4096") != std::string::npos, r.detail);
+        const auto odd_recorded = record_fixture(odd, engine_executor());
+        require(odd_recorded && evaluate_fixture(*odd_recorded, engine_executor()).outcome == Outcome::passed
+                    && odd_recorded->entity_events[0].position[0] == 1.1,
+                "positions are exact");
     });
 
     suite.run("mismatches name the fixture line", [] {
@@ -678,7 +682,7 @@ int main(int argc, char** argv) {
                 ++traces;
             }
             require(expected.empty(), std::format("{}: EXPECTED.txt lists missing traces", directory));
-            require(traces >= 5, std::format("{} open traces for {}", traces, version));
+            (void)traces; // traces leave as they pass; EXPECTED.txt lists each one left
             // Every open skeleton has a trace on each version, or the harness refused it there.
             std::set<std::string> refused;
             if (fs::exists(fixtures / directory / "NOT_APPLICABLE.txt")) {
@@ -702,7 +706,8 @@ int main(int argc, char** argv) {
         require(!first_difference(official, parse(read_text(fixtures / "open-1.21.4" / "item_drop_piston.ctrace"))).has_value(),
                 "provenance is not compared: both versions recorded the same");
         const auto d = first_difference(official, circuit);
-        require(d && d->starts_with("tick 1 event 1 (line 22 / line 22)") && d->find("entity-added block_events e1") != std::string::npos, *d);
+        // The drop matches; the moving block pushes it a tick early (C4.1).
+        require(d && d->starts_with("tick 1 observation 2 (line 28 / line 28)") && d->find("entity e1") != std::string::npos, *d);
         // Property order in block states does not matter; values do.
         auto dust = parse(read_text(fixtures / "reference" / "item_drop_piston.ctrace"));
         for (auto& c : dust.recorded_changes)

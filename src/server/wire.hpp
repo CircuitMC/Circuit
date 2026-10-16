@@ -23,9 +23,7 @@ using protocol::Bytes;
 using protocol::Uuid;
 using protocol::WirePosition;
 
-struct Vec3 {
-    double x{}, y{}, z{};
-};
+using Vec3 = contracts::Vec3;
 
 struct ProfileProperty {
     std::string name, value;

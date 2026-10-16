@@ -1,8 +1,6 @@
 # Official traces Circuit does not match yet: file, outcome and the location of the first mismatch.
 # evidence_tests fails when an outcome changes; a trace that passes moves to the harness directory.
-item_drop_piston.ctrace FAIL tick 1 event 1 (line 22)
-item_hopper_pickup.ctrace FAIL tick 1 entity probe (line 20)
-item_piston_push.ctrace FAIL tick 3 entity probe (line 27)
-item_water_current.ctrace FAIL tick 30 entity probe (line 30)
+item_drop_piston.ctrace FAIL tick 1 entity probe (line 28)
+item_piston_push.ctrace FAIL tick 6 entity probe (line 40)
 tnt_redstone_ignition.ctrace FAIL tick 1
 tnt_explodes_disabled.ctrace UNSUPPORTED game rule tntExplodes

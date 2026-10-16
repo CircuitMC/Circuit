@@ -26,6 +26,8 @@ void RegionContext::begin_root(std::uint64_t root, ChunkPos home) {
 void RegionContext::rollback() {
     for (auto& [c, snapshot] : snapshots) *world_.loaded.at(c) = std::move(snapshot);
     snapshots.clear();
+    for (std::size_t level = 0; level < random_snapshots_.size(); ++level)
+        if (random_snapshots_[level]) world_.levels[level].random = *std::exchange(random_snapshots_[level], std::nullopt);
     trace.clear();
     entity_moves.clear();
     interactions.clear();
@@ -244,7 +246,18 @@ EntityId RegionContext::spawn_entity(const Entity& prototype) {
     return id;
 }
 
-void RegionContext::relocate_entity(EntityId id, contracts::FixedVec position) {
+gameplay::LevelRandom& RegionContext::level_random() {
+    // The level's pseudo column: drawing needs to own it.
+    const auto k = random_key(dimension());
+    if (!unchecked_ && region_ != all_regions && regions_.owner.at(k) != region_) throw ForeignAccess{k};
+    if (phase_ != Phase::commands) interactions.insert(std::minmax(key(home_), k));
+    auto& random = world_.counters(dimension()).random;
+    auto& snapshot = random_snapshots_[static_cast<std::size_t>(dimension())];
+    if (!snapshot) snapshot = random;
+    return random;
+}
+
+void RegionContext::relocate_entity(EntityId id, contracts::Vec3 position) {
     const auto from = locate(id);
     const auto to = chunk_of(block_of(position));
     auto* source = from ? world_.find_loaded(key(*from)) : nullptr;

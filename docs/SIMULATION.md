@@ -6,11 +6,11 @@ The Part I core runs headless: shared contracts, a set of reference rules, a seq
 
 The rules are **circuit-reference-rules-v10**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
 
-Two version bundles run them: `java-1.21.8` and `java-1.21.4`. Each version has 36 traces recorded on the unmodified server:
+Two version bundles run them: `java-1.21.8` and `java-1.21.4`. Each version has 39 traces recorded on the unmodified server:
 - 1.21.8 traces are in `tests/fixtures/harness/`;
 - 1.21.4 traces are in `tests/fixtures/harness-1.21.4/`.
 
-The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 72 pass on both the parallel runtime and the oracle.
+The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 78 pass on both the parallel runtime and the oracle.
 
 The compatibility table is part of the version bundle (`src/contracts/version.cpp`). `circuit-server --compatibility` prints it. Each row states a target tier, a claimed tier, the evidence source, and its limitations:
 
@@ -40,9 +40,10 @@ The tiers are defined in the architecture: L0 exact, L1 region-equivalent, L2 de
 | `game_rules` | L2 | 45 `/gamerule` commands give the official replies on both versions. The other rules change nothing yet; compared through a protocol client, not traces. |
 | `day_time` | L2 | 59 `/time` commands give the official replies and `set_time` packets on both versions. Nothing reads the time of day yet; compared through a protocol client, not traces. |
 | `weather` | L2 | 16 `/weather` commands give 1,348 identical replies and events on both versions. Durations come from Circuit's own stream; no lightning, snow or other effects of rain. |
-| `piston` | L2 | Harness traces pass. Gaps are listed in the table: drop offsets and item pushing. |
+| `piston` | L2 | Harness traces pass, including the level-random draws of piston sounds (piston_draws). Gap listed in the table: item pushing. |
 | `chunk_tickets` | L2 | ring_blocks, unload_reload. New chunks load at once and dropped chunks unload at once, where the official servers take a varying number of ticks. |
-| `random_ticks`, `wheat`, `item_entity`, `entity_order` | L2 | Documented behavior only. These are not compared with the target version; circuit-trace v1 has no entity observations. |
+| `item_entity`, `entity_order` | L2 | item_hopper_pickup, item_water_current: positions, velocities and the order of two items match both official servers exactly. No merging, water currents or buoyancy; moving blocks push items differently (item_piston_push, item_drop_piston stay open). |
+| `random_ticks`, `wheat` | L2 | Documented behavior only; not compared with the target version. |
 | `container_menus` | L2 | A 48-step client scenario gives the same windows as the official servers of both versions, and so does a 48-step crafting scenario in the own window (with data packs). The crafting table, special recipes and the recipe book are not modeled, and no harness traces of menus exist. |
 | `survival_actions` | L2 | Documented hardness, tools and pickup rules; block loot tables and 2x2 crafting from data packs, compared with the official servers. Thrown items have no random spread, death drops spread in a fixed pattern, and loot tables with random parts drop nothing. |
 
@@ -73,7 +74,7 @@ Logical time advances by one per executed tick. Each tick runs these phases in o
 - **Commands and tickets:** every command, and every ticket, names its level.
 - **Order:** the command phase runs once, for all levels. Then each level runs the phases below, the overworld first, then the Nether, then the End (minecraft.wiki "Tick"): its scheduled ticks where columns are loaded, its chunk stage, and the rest where columns are loaded after it.
 - **Counters:** tick sub-orders, block-event positions and block-entity creation order count per level; entity ids count over all levels.
-- **Random streams:** random ticks in another level draw from streams that include the level.
+- **Random streams:** random ticks in another level draw from streams that include the level. Each level also has its own level random (below).
 - **Not yet reachable:** only the overworld is generated and reachable by players. The other levels exist for the engine, its tests and the formats; they have no rules of their own yet (C7).
 
 | Phase | Roots in serial order |
@@ -157,7 +158,8 @@ v10 is v9 with what C2.3 and C2.4 added to the rules: crops that need light, gam
     3. the head becomes air;
     4. a sticky piston drops its block or pulls.
   - **Moving blocks:** moving pistons finish in the block-entity phase two ticks after the event. They block movement and do not conduct power. A sticky piston that retracts before its push finished leaves the block behind.
-  - **Destroyed blocks:** dust, levers, repeaters, comparators, water and wheat in a push line are destroyed. They drop fixed items at the block center without velocity. Fully grown wheat drops wheat and seeds, younger wheat seeds only, and water nothing.
+  - **Destroyed blocks:** dust, levers, repeaters, comparators, water and wheat in a push line are destroyed. They drop fixed items, placed and launched like every block drop (below), before the block changes. Fully grown wheat drops wheat and seeds, younger wheat seeds only, and water nothing.
+  - **Sounds:** after a piston extends, and after it retracts, it draws one number from the level random for its sound's pitch, as both official servers do.
   - **Pushing:** on each of its two steps, a moving block pushes item entities in its cell half a block along its motion. A retracting base pushes nothing.
 - **Hoppers and chests:** push before pull, an 8-tick cooldown, disabled while powered, and pickup of item entities in the cell above. Competing hoppers act in block-entity creation order. A hopper that receives an item into an empty inventory from another hopper waits 8 game ticks, or 7 when it already ticked in that tick, so the item moves on 8 ticks later either way.
 - **Double chests:** two halves with the same facing pair as left and right; a left half pairs clockwise of its facing. A half claims a single chest at its partner position and becomes single when its partner disappears; pairing changes are quiet. Hoppers and comparators see one 54-slot container with the right half's slots first, even across a chunk edge.
@@ -171,13 +173,21 @@ v10 is v9 with what C2.3 and C2.4 added to the rules: crops that need light, gam
   - **New sources:** a cell between two sources becomes a source when it stands on solid ground or a source.
   - **Washing away:** water replaces dust, levers, repeaters, comparators and wheat, which drop their items.
 - **Wheat:** grows on random ticks. Random-tick positions and rule draws use a stream derived from (seed, tick, chunk, section) instead of a level-wide stream.
-- **Item entities:** fixed-point gravity, drag and collision, migration between chunks, despawn after 6000 ticks. They are spawned by commands and by destroyed blocks, and pushed by moving blocks.
+- **Level random:** each level has a random sequence that behaves like `java.util.Random` (the 48-bit generator and the methods its API documentation specifies), as the target versions' level random does. The rules draw from it where both official servers do, in the same order: block drops and piston sounds. Its state is world state: saved, replayed and part of the digest. A new world seeds it from the world seed and the level; fixtures seed it with 0, as the reference harness does, and compare the number of draws per stage with the official recording. Under the region-parallel engine, a draw needs the level's random sequence, which serializes drawing roots of one level like any other shared state.
+- **Item entities:** positions and velocities are doubles; each tick, as both official servers do it (checked against their traces):
+  - the pickup delay counts down and the age up; at 6000 the item despawns;
+  - gravity takes 0.04 from the vertical velocity;
+  - the item moves its 0.25-block box against the collision boxes of every block state (registry data, per version), vertical axis first, then the horizontal axis with the larger movement; an item on the ground with a horizontal speed whose square is at most 1e-5 moves only when its age plus its id is a multiple of 4;
+  - collided components stop; the velocity is damped by 0.98 (horizontally, on the ground, by the slipperiness of the block below times 0.98, in single precision) and an item that lands bounces at half its speed;
+  - unloaded cells are solid and cells above or below the world empty; an item more than 64 blocks below the world is removed.
+  Items move between chunks with their entities' chunk. They are spawned by commands, by broken and destroyed blocks, by players and on death, and pushed by moving blocks.
+- **Block drops:** each item a block drops appears within 0.25 blocks of the block's center on each axis, lowered by 0.125, and moves 0.2 up and up to 0.1 to each side, all drawn from the level random (x, y, z, then the two horizontal speeds), as both official servers do. A broken container's contents drop whole at its center, still, in slot order (the target versions split and scatter them at random).
 - **Items:** every item of both versions, 1,415 in all, with its stack size and durability, compiled from PrismarineJS minecraft-data (MIT) at the pinned commit by `tools/compile_item_registry.py`. Items without rules are inert: they can be stored, moved, thrown and picked up. Stacks keep their data components (see [compatibility](COMPATIBILITY.md#content)); stacks merge only when their item, damage and components are equal. A `max_stack_size` component sets the stack's limit, and `max_damage` its durability. Container slots hold up to 99 items, the stack's own limit (usually 64 or less) applying first; a comparator reads a container's fullness against those limits.
-- **Other blocks:** every block state of both versions exists, from the block registry `circuit-blocks-1` (compiled from PrismarineJS minecraft-data, MIT, at the pinned commit by `tools/compile_block_registry.py`). Blocks without rules of their own keep all their properties and are inert: solid for item entities when they have a collision shape, conductors when opaque, sturdy on faces their collision shape covers (every face when opaque), immovable by pistons, and water does not flow into them. Their hardness, effective tool and harvest tier come from the same data, or, when the server loads data packs, their tool and tier from the block tags (see [data packs](DATA_PACKS.md)). With data packs they drop what their loot tables give, when a table draws no random numbers; otherwise they drop nothing. An engine's data is fixed for its life.
+- **Other blocks:** every block state of both versions exists, from the block registry `circuit-blocks-1` (compiled from PrismarineJS minecraft-data, MIT, at the pinned commit by `tools/compile_block_registry.py`). Blocks without rules of their own keep all their properties and are inert: entities collide with their collision boxes, conductors when opaque, sturdy on faces their collision shape covers (every face when opaque), immovable by pistons, and water does not flow into them. Their hardness, effective tool and harvest tier come from the same data, or, when the server loads data packs, their tool and tier from the block tags (see [data packs](DATA_PACKS.md)). With data packs they drop what their loot tables give, when a table draws no random numbers; otherwise they drop nothing. An engine's data is fixed for its life.
 - **Player inventories:** each player (profile UUID) has the 46 slots of the player window (crafting result and grid, armor, main inventory, hotbar, off hand), a carried stack and a drag in progress.
   - **Survival use:** placing a block uses one item. A tool wears by one for each block with nonzero hardness it breaks, and breaks at its durability.
   - **Breaking:** a block drops what the tool harvests: stone drops cobblestone, and stone, obsidian, redstone blocks, observers and hoppers need a pickaxe of the required tier (obsidian a diamond one). Breaking a container drops its contents; breaking a piston head removes its base too.
-  - **Loot tables:** a block without rules of its own drops from its loot table (`gameplay/loot.hpp`), when the tool harvests it. Pools roll once; entries are items, alternatives, groups, sequences or empty; conditions test survival of an explosion (always, for a player's break), block state properties, the tool's item and enchantment levels, and their combinations; functions set and limit counts. A roll with more than one candidate, or a fortune bonus at a level above zero, would need a random number and drops nothing. Stacks above the item's limit split. The drops appear at the block center.
+  - **Loot tables:** a block without rules of its own drops from its loot table (`gameplay/loot.hpp`), when the tool harvests it. Pools roll once; entries are items, alternatives, groups, sequences or empty; conditions test survival of an explosion (always, for a player's break), block state properties, the tool's item and enchantment levels, and their combinations; functions set and limit counts. A roll with more than one candidate, or a fortune bonus at a level above zero, would need a random number and drops nothing. Stacks above the item's limit split. The drops are placed like every block drop.
   - **Dig time:** per tick, a block gains the tool's speed divided by its hardness and by 30, or by 100 when the tool does not harvest it, five times less off the ground. Pickaxes, axes, shovels and hoes have the speeds wood 2, stone 4, iron 6, diamond 8, netherite 9, gold 12; swords and shears are not modeled tools.
   - **Pickup:** an item entity whose pickup delay has run out joins the inventory: first the selected hotbar slot and the off hand when they hold the same item with room, then the first slot with room, then the first empty slot. Block drops wait 10 ticks, thrown items 40.
 - **Container menus:** a chest (27 slots), a double chest (54, the right half first) or a hopper (5), followed by the main inventory and the hotbar; or the player's own window.
@@ -235,7 +245,8 @@ The table lists what is specific to each mechanism.
 | Hoppers and (double) chests | Hopper, its source and target containers, the cell above; both chest halves, possibly across a chunk edge | Block-entity creation order; each transfer is atomic within one root | hopper_chain, hopper_competition, double_chest, double_chest_left_input | `hoppers_and_items`, `comparators_and_double_chests` | A transfer that reaches another region merges first; nothing is published partially |
 | Water | Water block, its four sides and below | Fluid ticks | water_channel | `water_corner` | Merge on cross-region reach |
 | Random ticks and wheat | One section | Chunk coordinate order, sections bottom to top; per-section derived stream | Documented behavior; rules tests | `wheat_observers`, injected aborts | A retried attempt redraws the same values; no shared stream |
-| Item entities | Entity cell and its collision neighbors; migration between columns | Ascending id; ids of spawned entities staged at commit | Documented behavior; rules tests | `drops_and_pushes`, `hoppers_and_items` | Crossing into another region merges; provisional ids are rewritten at commit |
+| Item entities | Entity cell and its collision neighbors; migration between columns | Ascending id; ids of spawned entities staged at commit | item_hopper_pickup, item_water_current; rules tests | `drops_and_pushes`, `hoppers_and_items` | Crossing into another region merges; provisional ids are rewritten at commit |
+| Level random | The level's random sequence | The order its draws are made in | piston_draws, item_drop_piston (draws) | `drops_and_pushes`, `pistons` | Drawing needs the sequence, which belongs to one region: roots that draw in one level merge their regions, and rollback restores it |
 | Player inventories and menus | The player's inventory, the open container's halves, item entities thrown or picked up | Admission order; the command phase runs serially | Rules tests (every click mode, random clicks conserving items); server tests; a 48-step window scenario compared with the official 1.21.8 and 1.21.4 servers | Command phase only | Not parallel: the command phase runs on the coordinator |
 
 ### Coverage of the Part I cases
@@ -255,7 +266,7 @@ The table lists what is specific to each mechanism.
 ### Coverage limits
 
 - **Not modeled:** generation and rules of the Nether and the End (their levels keep separate state but are not reachable), lighting, world generation (chunks start empty), mobs and mob spawning, crafting outside the player's grid, and analog comparator sources other than containers.
-- **Not compared with the target version:** random-tick outcomes, wheat growth, item-entity physics and entity order. The circuit-trace format has no entity observations yet.
+- **Not compared with the target version:** random-tick outcomes and wheat growth. Item-entity physics and entity order are compared in two traces only.
 - **L2 behavior:** every row claimed L2 is Circuit's own definition. The gaps listed in the compatibility table apply.
 
 ## Region-parallel runtime
@@ -354,8 +365,9 @@ xmake run circuit-server --profile-fixture "$PWD/tests/fixtures/workloads/observ
 
 `--simulate` without `--replay` runs a built-in demonstration with machines that straddle chunk edges.
 
-- **Replay records:** records (format version 10) store the bundle, the rule-set id and the block registry id, whose encoding their block states use. Each command names its level. Item stacks carry their data components, which the simulator checks against the bundle's protocol. A record made under different reference rules or another block registry is refused with `rules_mismatch` instead of replaying with silently different behavior. Older records are still read:
-  - version 9: the same commands, without weather;
+- **Replay records:** records (format version 11) store the bundle, the rule-set id and the block registry id, whose encoding their block states use. Each command names its level. Item stacks carry their data components, which the simulator checks against the bundle's protocol. A record made under different reference rules or another block registry is refused with `rules_mismatch` instead of replaying with silently different behavior. Older records are still read:
+  - version 10: the same commands, with positions and velocities in 1/4096-block units, read exactly as doubles;
+  - version 9: also without weather;
   - version 8: also without day times;
   - version 7: also without game rules;
   - version 6: tickets are read as forced ones of level 31 over their radius;
@@ -370,8 +382,8 @@ Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked with `--check
 ## Limitations
 
 - Rows claimed L2 differ from the target version as listed in the compatibility table. The main gaps are:
-  - piston drops without random offsets and simplified item pushing;
-  - simplified item physics without merging, and entity order without target-version trace observations;
+  - simplified item pushing by moving blocks;
+  - item physics without merging, water currents or buoyancy, and container contents dropped whole at the center;
   - per-section random streams and coordinate-ordered random-tick chunks;
   - wheat ignoring hydration and neighboring crops;
   - chunk tickets: no teleport, portal or ender pearl tickets yet; new chunks load at once (the official servers take 2 to 4 ticks, varying between runs); dropped chunks unload at once and reloads happen in the chunk stage (the official servers may keep a dropped chunk at border for a tick or two, and restore a cached chunk during the command, which moves restored ticks by a tick between runs);
@@ -379,5 +391,5 @@ Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked with `--check
 - Blocks without rules of their own, among them TNT, honey blocks, rails and coral fans, are inert: solid when they have a collision shape, conductors when opaque, immovable by pistons, and drop only from deterministic loot tables. Primed TNT entities and explosions are not modeled. TNT duplication machines cannot run; piston trace coverage does not establish compatibility for them. See [technical machines](COMPATIBILITY.md#technical-machines).
 - Light at the edge of the loaded area is not compared with the target versions. There is no world generation or mob spawning, and players cannot reach the Nether or the End.
 - Snapshots copy whole column data on first write, and commit is serial. On the measured workloads, coordination overhead outweighs parallel gains.
-- Commands validate their inputs at full width before converting them; for example, a spawn position is checked against the world border and height in fixed-point units before it is narrowed to a block. Out-of-range input is rejected with no effect.
+- Commands validate their inputs before using them; for example, a spawn position must be finite and inside the world border and the world's height, and a velocity at most 64 blocks per tick on each axis (a Circuit capacity). Out-of-range input is rejected with no effect.
 - A capacity failure, such as exceeding 1,000,000 block events in one tick, fails the tick and leaves the engine unusable. Nothing is silently dropped. The neighbor-update chain limit is the exception: it drops updates as the target version does, and records it.

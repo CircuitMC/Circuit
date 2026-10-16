@@ -2,16 +2,18 @@
 #include <circuit/contracts/replay.hpp>
 #include <circuit/contracts/version.hpp>
 #include <algorithm>
+#include <bit>
 
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
+// 11: positions and velocities are doubles (before: 1/4096 block units);
 // 10: weather (tag 21); 9: day time (tag 20); 8: game rules (tag 19); 7: typed tickets (tag 16), player presences and levels started; 6: each
 // command names its level; 5: stacks carry their data components; 4: the
 // block registry id; 3: stacks carry damage, player commands carry their
 // player. Commands of versions before 6 are the overworld's. Tickets of
 // versions before 7 (tags 5 and 9) read as forced squares.
-constexpr std::uint16_t format_version = 10;
+constexpr std::uint16_t format_version = 11;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -28,7 +30,11 @@ public:
         }
     }
     void pos(BlockPos p) { put(p.x); put(p.y); put(p.z); }
-    void vec(FixedVec v) { put(v.x); put(v.y); put(v.z); }
+    void vec(Vec3 v) {
+        put(std::bit_cast<std::uint64_t>(v.x));
+        put(std::bit_cast<std::uint64_t>(v.y));
+        put(std::bit_cast<std::uint64_t>(v.z));
+    }
     void stack(const ItemStack& s) {
         put(s.item);
         put(s.count);
@@ -57,7 +63,20 @@ public:
         return true;
     }
     bool pos(BlockPos& p) { return get(p.x) && get(p.y) && get(p.z); }
-    bool vec(FixedVec& v) { return get(v.x) && get(v.y) && get(v.z); }
+    // Doubles (format 11 and later), or 1/4096 block units, converted exactly.
+    bool vec(Vec3& v) {
+        if (doubles_) {
+            std::uint64_t x{}, y{}, z{};
+            if (!get(x) || !get(y) || !get(z)) return false;
+            v = {std::bit_cast<double>(x), std::bit_cast<double>(y), std::bit_cast<double>(z)};
+            return finite(v);
+        }
+        std::int64_t x{}, y{}, z{};
+        if (!get(x) || !get(y) || !get(z)) return false;
+        v = {static_cast<double>(x) / 4096.0, static_cast<double>(y) / 4096.0, static_cast<double>(z) / 4096.0};
+        return true;
+    }
+    void doubles(bool on) noexcept { doubles_ = on; }
     bool stack(ItemStack& s) {
         if (!get(s.item) || !get(s.count) || !get(s.damage)) return false;
         if (!components_) return true;
@@ -85,6 +104,7 @@ private:
     std::span<const std::byte> in_;
     std::size_t at_{};
     bool components_{};
+    bool doubles_{true};
     bool levels_{};
 };
 
@@ -432,6 +452,7 @@ Result<ReplayLog> decode_replay(std::span<const std::byte> bytes, const ReplayLi
     if (!r.get(version) || version < oldest_version || version > format_version) return std::unexpected(ErrorCode::malformed_record);
     r.components(version >= 5);
     r.levels(version >= 6);
+    r.doubles(version >= 11);
     ReplayLog log;
     std::vector<std::string*> ids{&log.bundle_id, &log.rules_id};
     if (version >= 4) ids.push_back(&log.block_registry_id);
@@ -467,8 +488,10 @@ std::vector<std::byte> encode_tick_input(const TickInput& input) {
     return std::move(w.out);
 }
 
-Result<TickInput> decode_tick_input(std::span<const std::byte> bytes, const ReplayLimits& limits, bool components, bool levels) {
+Result<TickInput> decode_tick_input(std::span<const std::byte> bytes, const ReplayLimits& limits, bool components, bool levels,
+                                    bool doubles) {
     Reader r(bytes, components, levels);
+    r.doubles(doubles);
     TickInput t;
     std::uint32_t count{};
     if (!r.get(t.tick) || !r.get(count)) return std::unexpected(ErrorCode::malformed_record);

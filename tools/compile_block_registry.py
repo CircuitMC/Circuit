@@ -19,6 +19,8 @@ dampening and, for states whose shape occludes light, the parts of each face
 the occlusion shape covers (light_of below; minecraft-data gives light per
 block and describes its default state, so the state rules are Circuit's), and
 whether it counts for the MOTION_BLOCKING heightmap (motion_blocking below).
+Its collision shape (the boxes of blockCollisionShapes.json) is kept too, for
+entity movement; a release whose shape of a state differs gets an override.
 
 Usage:
   tools/compile_block_registry.py <data>/1.21.8 <data>/1.21.4 --commit <sha> \\
@@ -272,6 +274,23 @@ def main():
     properties = []  # (name, first value, count)
     values = []
     shape_bytes = []
+    collision_box_list = []  # distinct boxes
+    collision_box_index = {}
+    collision_shape_list = []  # distinct shapes as (first box, count)
+    collision_shape_index = {}
+    collision_ids = []  # per internal state
+    collision_overrides = []  # (release, internal state, shape)
+
+    def intern_collision(shape):
+        key = tuple(tuple(float(c) for c in box) for box in shape)
+        if key not in collision_shape_index:
+            first = len(collision_box_list)
+            collision_box_list.extend(key)
+            collision_shape_index[key] = len(collision_shape_list)
+            collision_shape_list.append((first, len(key)))
+        return collision_shape_index[key]
+
+    intern_collision([])  # shape 0: no collision
     light_bytes = []
     occlusion_ids = []
     occlusion_shapes = {}  # face masks -> id (from 1)
@@ -291,6 +310,19 @@ def main():
         if len(ids) != count:
             sys.exit(f"{name}: {len(ids)} shapes for {count} states")
         shape_bytes.extend(shape_byte(shapes["shapes"][str(i)]) for i in ids)
+        own = [intern_collision(shapes["shapes"][str(i)]) for i in ids]
+        collision_ids.extend(own)
+        # Other releases with the same schema may give a state another shape.
+        for release, other_blocks, other_shapes, _ in versions:
+            other = next((ob for ob in other_blocks if ob["name"] == b["name"] and schema(ob) == sch), None)
+            if other is None or other_shapes is shapes:
+                continue
+            other_ids = other_shapes["blocks"].get(b["name"], 0)
+            other_ids = other_ids if isinstance(other_ids, list) else [other_ids] * count
+            for offset, (mine, theirs) in enumerate(zip(own, other_ids)):
+                shape = intern_collision(other_shapes["shapes"][str(theirs)])
+                if shape != mine:
+                    collision_overrides.append((release, first_state + offset, shape))
         combos = list(itertools.product(*[vals for _, vals in sch])) or [()]
         names = [pname for pname, _ in sch]
         default = dict(zip(names, combos[b["defaultState"] - b["minStateId"]]))
@@ -341,6 +373,21 @@ def main():
             words.append("{" + ", ".join(f"0x{(m >> (64 * k)) & (2**64 - 1):x}ull" for k in range(4)) + "}")
         out.append("    {{" + ", ".join(words) + "}},")
     out += ["};", f"const std::uint32_t light_shape_count = {len(occlusion_shapes)};", ""]
+    out += ["// Collision shapes (minecraft-data blockCollisionShapes.json): distinct boxes, shapes as (first box, count),",
+            "// each internal state's shape, and the states a release gives another shape.",
+            "const CollisionBox collision_boxes[] = {"]
+    for box in collision_box_list or [(0.0,) * 6]:
+        out.append("    {" + ", ".join(repr(v) for v in box) + "},")
+    out += ["};", "const CollisionShape collision_shapes[] = {"]
+    for first, count in collision_shape_list:
+        out.append(f"    {{{first}, {count}}},")
+    out += ["};", "const std::uint16_t collision_shape[] = {"]
+    for i in range(0, len(collision_ids), 32):
+        out.append("    " + ", ".join(str(c) for c in collision_ids[i:i + 32]) + ",")
+    out += ["};", "const CollisionOverride collision_overrides[] = {"]
+    for release, state, shape in collision_overrides or [("", 0, 0)]:
+        out.append(f'    {{"{release}", {state}, {shape}}},')
+    out += ["};", f"const std::size_t collision_override_count = {len(collision_overrides)};", ""]
 
     # Per version: each of its blocks in its registry order, as (first wire
     # state id, internal block). Within a block, states are in the same order

@@ -355,8 +355,7 @@ struct JavaBridge::Impl {
             out.i32(column ? static_cast<std::int32_t>(column->entities.size()) : 0);
             if (column)
                 for (const auto& e : column->entities) {
-                    const auto real = [](std::int64_t v) { return static_cast<double>(v) / contracts::fixed_one; };
-                    out.i64(static_cast<std::int64_t>(e.id.value)).f64(real(e.position.x)).f64(real(e.position.y)).f64(real(e.position.z));
+                    out.i64(static_cast<std::int64_t>(e.id.value)).f64(e.position.x).f64(e.position.y).f64(e.position.z);
                     out.utf(mapping.item_name(e.stack.item)).i32(e.stack.count);
                 }
             if (out.size() > max_frame) return respond(*id, unavailable, "too many items");

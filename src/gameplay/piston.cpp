@@ -109,11 +109,12 @@ public:
         if (has_block_entity(ctx_.block(p).type())) ctx_.remove_block_entity(p);
         write(p, blocks::air());
     }
-    // A block destroyed by the move: removed, and its drops spawned.
+    // A block destroyed by the move: its drops spawned, then removed (the
+    // order of both official servers' traces).
     void destroy(BlockPos p) {
         const auto s = ctx_.block(p);
-        clear(p);
         drop_items(ctx_, p, s);
+        clear(p);
     }
     // Places a moving piston that turns into `carried` after the move.
     void moving(BlockPos p, BlockState carried, Motion motion, bool sticky_type) {
@@ -245,20 +246,28 @@ void check_piston(RuleContext& ctx, BlockPos pos) {
     else if (!powered && s.flag()) queue_block_event(ctx, {pos, s.type(), piston_event::retract, param});
 }
 
+// A piston that extends or retracts plays its sound at a pitch drawn from
+// the level random: one draw each time, after the move (both official
+// servers' traces).
 void run_piston_event(RuleContext& ctx, const BlockEvent& event, BlockState s) {
     const bool powered = piston_powered(ctx, event.pos, s.facing());
     if (event.event == piston_event::extend) {
         if (s.flag() || !powered) return;
         // A blocked piston waits for the next neighbor update.
-        if (!extend(ctx, event.pos, s)) ctx.record(TraceKind::piston_blocked, event.pos);
+        if (!extend(ctx, event.pos, s)) {
+            ctx.record(TraceKind::piston_blocked, event.pos);
+            return;
+        }
+        (void)ctx.random_float();
     } else if (event.event == piston_event::retract) {
         if (!s.flag() || powered) return;
         retract(ctx, event.pos, s);
+        (void)ctx.random_float();
     }
 }
 
 namespace {
-constexpr std::int64_t push_step = contracts::fixed_one / 2;
+constexpr double push_step = 0.5;
 
 // Moves item entities in the moving block's cell half a block along the
 // motion. A retracting base does not move, so it pushes nothing.
@@ -272,6 +281,7 @@ void push_entities(RuleContext& ctx, BlockPos pos, Motion motion) {
         next.x += o.dx * push_step;
         next.y += o.dy * push_step;
         next.z += o.dz * push_step;
+        if (!contracts::within_border(next) || !ctx.world().contains_position_y(next.y)) continue;
         const auto cell = contracts::block_of(next);
         if (!ctx.chunk_generation(contracts::chunk_of(cell))) continue;
         if (cell != pos && is_solid(ctx.block(cell))) continue;

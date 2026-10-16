@@ -142,14 +142,14 @@
         "impl": "partial",
         "evidence": "compared",
         "deviations": [
-          "drop offsets, entity pushing, honey"
+          "entity pushing, honey"
         ]
       },
       "sticky_piston": {
         "impl": "partial",
         "evidence": "compared",
         "deviations": [
-          "drop offsets, entity pushing, honey"
+          "entity pushing, honey"
         ]
       },
       "piston_head": {
@@ -394,7 +394,7 @@
         "impl": "partial",
         "evidence": "mismatch",
         "deviations": [
-          "fixed-point motion, no merging, not compared"
+          "no merging, no water currents; moving blocks push items differently"
         ],
         "cases": [
           "trace/item_hopper_pickup",

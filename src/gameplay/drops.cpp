@@ -8,11 +8,21 @@ namespace {
 // Items dropped by blocks wait 10 ticks before players can pick them up.
 constexpr std::uint16_t block_drop_delay = 10;
 
+// A block's drop, as both official servers place it: within 0.25 of the
+// block's center on each axis (lowered by half an item's height), moving 0.2
+// up and up to 0.1 sideways, all drawn from the level random in that order
+// (checked against their traces).
 void spawn(RuleContext& ctx, BlockPos pos, ItemStack stack, std::uint16_t pickup_delay = block_drop_delay) {
-    const contracts::FixedVec center{pos.x * contracts::fixed_one + contracts::fixed_one / 2,
-                                     pos.y * contracts::fixed_one + contracts::fixed_one / 2,
-                                     pos.z * contracts::fixed_one + contracts::fixed_one / 2};
-    Entity e{{}, center, {}, stack, 0, 0, false};
+    const auto offset = [&] { return -0.25 + ctx.random_double() * 0.5; };
+    const double x = static_cast<double>(pos.x) + 0.5 + offset();
+    const double y = static_cast<double>(pos.y) + 0.5 + offset() - 0.125;
+    const double z = static_cast<double>(pos.z) + 0.5 + offset();
+    const double vx = ctx.random_double() * 0.2 - 0.1;
+    const double vz = ctx.random_double() * 0.2 - 0.1;
+    Entity e;
+    e.position = {x, y, z};
+    e.velocity = {vx, 0.2, vz};
+    e.stack = stack;
     e.pickup_delay = pickup_delay;
     record_spawn(ctx, ctx.spawn_entity(e), e);
 }
@@ -53,7 +63,7 @@ void table_drops(RuleContext& ctx, BlockPos pos, BlockState s, const ItemStack& 
 }
 } // namespace
 
-// Fixed drops without random quantities or offsets (declared simplification).
+// Drops without random quantities.
 void drop_items(RuleContext& ctx, BlockPos pos, BlockState destroyed, ItemStack tool) {
     if (destroyed.is(BlockType::wheat)) {
         if (destroyed.level() >= 7) spawn(ctx, pos, {items::wheat, 1});
@@ -66,23 +76,36 @@ void drop_items(RuleContext& ctx, BlockPos pos, BlockState destroyed, ItemStack 
 }
 
 void drop_contents(RuleContext& ctx, BlockPos pos, const std::vector<ItemStack>& slots) {
-    // Each slot's stack drops whole, at the block center, in slot order.
-    for (const auto& s : slots)
-        if (!s.empty()) spawn(ctx, pos, s);
+    // Each slot's stack drops whole, at the block center, still, in slot
+    // order (the target versions split stacks and scatter them at random).
+    for (const auto& s : slots) {
+        if (s.empty()) continue;
+        Entity e;
+        e.position = {static_cast<double>(pos.x) + 0.5, static_cast<double>(pos.y) + 0.5, static_cast<double>(pos.z) + 0.5};
+        e.stack = s;
+        e.pickup_delay = block_drop_delay;
+        record_spawn(ctx, ctx.spawn_entity(e), e);
+    }
 }
 
-void spawn_dropped(RuleContext& ctx, BlockPos cell, contracts::FixedVec position, contracts::FixedVec velocity, ItemStack stack,
+void spawn_dropped(RuleContext& ctx, BlockPos cell, contracts::Vec3 position, contracts::Vec3 velocity, ItemStack stack,
                    std::uint16_t pickup_delay) {
     (void)cell;
-    Entity e{{}, position, velocity, stack, 0, 0, false};
+    Entity e;
+    e.position = position;
+    e.velocity = velocity;
+    e.stack = stack;
     e.pickup_delay = pickup_delay;
     record_spawn(ctx, ctx.spawn_entity(e), e);
 }
 
 void record_spawn(RuleContext& ctx, EntityId id, const Entity& e) {
     const auto cell = contracts::block_of(e.position);
-    ctx.record(TraceKind::entity_spawned, cell, id.value, contracts::pack_stack(e.stack));
-    ctx.record(TraceKind::entity_spawn_state, cell, id.value, contracts::pack_offsets(e.position), contracts::pack_velocity(e.velocity));
+    ctx.record(TraceKind::entity_spawned, cell, id.value, contracts::pack_stack(e.stack), static_cast<std::uint64_t>(e.kind));
+    ctx.record(TraceKind::entity_spawn_position, cell, contracts::double_bits(e.position.x), contracts::double_bits(e.position.y),
+               contracts::double_bits(e.position.z));
+    ctx.record(TraceKind::entity_spawn_velocity, cell, contracts::double_bits(e.velocity.x), contracts::double_bits(e.velocity.y),
+               contracts::double_bits(e.velocity.z));
 }
 
 } // namespace circuit::gameplay::detail

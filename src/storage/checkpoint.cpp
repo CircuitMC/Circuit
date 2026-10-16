@@ -2,6 +2,7 @@
 #include <bit>
 #include <cstdlib>
 #include <circuit/gameplay/block_registry.hpp>
+#include <circuit/gameplay/level_random.hpp>
 #include <circuit/protocol/codec.hpp>
 #include <circuit/protocol/framing.hpp>
 #include <circuit/storage/checkpoint.hpp>
@@ -17,6 +18,8 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 13: entities have a kind, positions and velocities are doubles (before:
+// 1/4096 block units), and levels carry their random sequence's state;
 // 12: the world's weather;
 // 11: the world's day time;
 // 10: the world's game rules set by commands;
@@ -36,7 +39,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 12;
+constexpr std::uint32_t version = 13;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -111,10 +114,11 @@ template <class Blocks>
 void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
     w.u8(static_cast<std::uint8_t>(l.dimension));
     w.varlong(static_cast<std::int64_t>(l.next_suborder)).varlong(static_cast<std::int64_t>(l.next_block_entity_order));
-    w.varlong(static_cast<std::int64_t>(l.last_active)).varint(static_cast<std::int32_t>(l.presences.size()));
+    w.varlong(static_cast<std::int64_t>(l.last_active)).varlong(static_cast<std::int64_t>(l.random));
+    w.varint(static_cast<std::int32_t>(l.presences.size()));
     for (const auto& p : l.presences)
-        w.i64(static_cast<std::int64_t>(p.player.hi)).i64(static_cast<std::int64_t>(p.player.lo)).i64(p.position.x).i64(p.position.y)
-            .i64(p.position.z).boolean(p.spectator);
+        w.i64(static_cast<std::int64_t>(p.player.hi)).i64(static_cast<std::int64_t>(p.player.lo)).f64(p.position.x).f64(p.position.y)
+            .f64(p.position.z).boolean(p.spectator);
     w.varint(static_cast<std::int32_t>(l.chunks.size()));
     for (std::size_t i = 0; i < l.chunks.size(); ++i) {
         const auto& ch = l.chunks[i];
@@ -137,8 +141,8 @@ void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
     }
     w.varint(static_cast<std::int32_t>(l.entities.size()));
     for (const auto& e : l.entities) {
-        w.varlong(static_cast<std::int64_t>(e.id.value));
-        w.i64(e.position.x).i64(e.position.y).i64(e.position.z).i64(e.velocity.x).i64(e.velocity.y).i64(e.velocity.z);
+        w.varlong(static_cast<std::int64_t>(e.id.value)).u8(static_cast<std::uint8_t>(e.kind));
+        w.f64(e.position.x).f64(e.position.y).f64(e.position.z).f64(e.velocity.x).f64(e.velocity.y).f64(e.velocity.z);
         stack(w, e.stack);
         w.varint(static_cast<std::int32_t>(e.age)).varlong(static_cast<std::int64_t>(e.last_tick));
         w.boolean(e.on_ground);
@@ -224,6 +228,14 @@ struct BodyReader {
         std::int64_t v{};
         if (!get(r.varlong(), v)) return false;
         out = static_cast<std::uint64_t>(v);
+        return true;
+    }
+    bool vec(contracts::Vec3& v) { return get(r.f64(), v.x) && get(r.f64(), v.y) && get(r.f64(), v.z); }
+    // Before version 13: 1/4096 block units, converted exactly.
+    bool fixed_vec(contracts::Vec3& v) {
+        std::int64_t x{}, y{}, z{};
+        if (!get(r.i64(), x) || !get(r.i64(), y) || !get(r.i64(), z)) return false;
+        v = {static_cast<double>(x) / 4096.0, static_cast<double>(y) / 4096.0, static_cast<double>(z) / 4096.0};
         return true;
     }
     bool count(std::size_t& out, std::size_t min_bytes) {
@@ -346,11 +358,15 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
     for (std::size_t i = 0; i < n; ++i) {
         gameplay::Entity e;
         std::int32_t age{};
-        if (!b.u64(e.id.value) || !b.get(b.r.i64(), e.position.x) || !b.get(b.r.i64(), e.position.y) || !b.get(b.r.i64(), e.position.z)
-            || !b.get(b.r.i64(), e.velocity.x) || !b.get(b.r.i64(), e.velocity.y) || !b.get(b.r.i64(), e.velocity.z)
-            || !b.stack(e.stack) || !b.get(b.r.varint(), age) || !b.u64(e.last_tick)
-            || !b.get(b.r.boolean(), e.on_ground))
+        if (!b.u64(e.id.value)) return false;
+        if (b.version >= 13) {
+            std::uint8_t kind{};
+            if (!b.get(b.r.u8(), kind) || !b.vec(e.position) || !b.vec(e.velocity)) return false;
+            e.kind = static_cast<gameplay::EntityKind>(kind);
+        } else if (!b.fixed_vec(e.position) || !b.fixed_vec(e.velocity)) {
             return false;
+        }
+        if (!b.stack(e.stack) || !b.get(b.r.varint(), age) || !b.u64(e.last_tick) || !b.get(b.r.boolean(), e.on_ground)) return false;
         if (b.version >= 4 && !b.get(b.r.u16(), e.pickup_delay)) return false;
         e.age = static_cast<std::uint32_t>(age);
         s.entities.push_back(e);
@@ -429,12 +445,14 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
             if (!b.u64(l.next_suborder) || !b.u64(l.next_block_entity_order)) return false;
             if (b.version >= 8) {
                 std::size_t presences = 0;
-                if (!b.u64(l.last_active) || !b.count(presences, 41)) return false;
+                if (!b.u64(l.last_active)) return false;
+                if (b.version >= 13 && !b.u64(l.random)) return false;
+                if (!b.count(presences, 41)) return false;
                 for (std::size_t p = 0; p < presences; ++p) {
                     gameplay::Presence presence;
                     std::int64_t hi{}, lo{};
-                    if (!b.get(b.r.i64(), hi) || !b.get(b.r.i64(), lo) || !b.get(b.r.i64(), presence.position.x)
-                        || !b.get(b.r.i64(), presence.position.y) || !b.get(b.r.i64(), presence.position.z)
+                    if (!b.get(b.r.i64(), hi) || !b.get(b.r.i64(), lo)
+                        || !(b.version >= 13 ? b.vec(presence.position) : b.fixed_vec(presence.position))
                         || !b.get(b.r.boolean(), presence.spectator))
                         return false;
                     presence.player = {static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)};
@@ -646,6 +664,8 @@ std::expected<Checkpoint, std::string> decode_checkpoint(std::span<const std::by
     if (!body) return std::unexpected("checkpoint body does not inflate");
     BodyReader b{Reader(*body), {}, *v};
     if (!decode_body(b, c)) return std::unexpected("checkpoint body: " + b.error);
+    if (*v < 13) // no level random saved: each level's starts as in a new world
+        for (auto& l : c.state.levels) l.random = gameplay::initial_level_random(c.seed, l.dimension, {}).state();
     if (c.state.time != static_cast<std::uint64_t>(*tick)) return std::unexpected("checkpoint tick mismatch");
     return c;
 }

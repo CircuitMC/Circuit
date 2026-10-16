@@ -4,6 +4,7 @@
 #include <array>
 #include <compare>
 #include <cstddef>
+#include <cmath>
 #include <cstdint>
 #include <functional>
 #include <optional>
@@ -163,26 +164,23 @@ struct Handle {
 struct ChunkTag {};
 using ChunkHandle = Handle<ChunkTag, ChunkPos>;
 
-// Fixed-point entity coordinates: one block is 4096 units. Integer arithmetic
-// keeps entity motion identical across schedules, threads and compilers.
-inline constexpr std::int64_t fixed_one = 4096;
-struct FixedVec {
-    std::int64_t x{}, y{}, z{};
-    auto operator<=>(const FixedVec&) const = default;
+// Entity positions and velocities, in blocks, as doubles: the target versions
+// keep them so, and their results are compared bit for bit. Rules compute
+// them in a fixed order of IEEE double operations without contraction, so
+// results are identical across schedules and threads.
+struct Vec3 {
+    double x{}, y{}, z{};
+    auto operator<=>(const Vec3&) const = default;
 };
-// Precondition: the block coordinate fits in 32 bits. Untrusted positions are
-// checked at full width (fixed_within_border, WorldShape::contains_fixed_y) first;
-// narrowing an unchecked value would alias distant positions.
-constexpr std::int32_t floor_block(std::int64_t fixed) noexcept {
-    const auto q = fixed / fixed_one;
-    return static_cast<std::int32_t>((fixed % fixed_one != 0 && fixed < 0) ? q - 1 : q);
+[[nodiscard]] inline bool finite(Vec3 v) noexcept { return std::isfinite(v.x) && std::isfinite(v.y) && std::isfinite(v.z); }
+// Untrusted positions are checked here first (and against the world height);
+// the block of an unchecked value may not fit in 32 bits.
+[[nodiscard]] inline bool within_border(Vec3 v) noexcept {
+    return finite(v) && v.x >= -world_border && v.x < world_border && v.z >= -world_border && v.z < world_border;
 }
-constexpr BlockPos block_of(FixedVec v) noexcept {
-    return {floor_block(v.x), floor_block(v.y), floor_block(v.z)};
-}
-inline constexpr std::int64_t fixed_border = std::int64_t{world_border} * fixed_one;
-constexpr bool fixed_within_border(FixedVec v) noexcept {
-    return v.x >= -fixed_border && v.x < fixed_border && v.z >= -fixed_border && v.z < fixed_border;
+// Precondition: within_border and a height within 32 bits.
+[[nodiscard]] inline BlockPos block_of(Vec3 v) noexcept {
+    return {static_cast<std::int32_t>(std::floor(v.x)), static_cast<std::int32_t>(std::floor(v.y)), static_cast<std::int32_t>(std::floor(v.z))};
 }
 
 struct ItemStack {

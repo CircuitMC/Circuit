@@ -212,7 +212,7 @@ private:
     bool own_{};
 };
 
-void throw_item(RuleContext& ctx, const contracts::FixedVec& position, const contracts::FixedVec& velocity, ItemStack stack) {
+void throw_item(RuleContext& ctx, const contracts::Vec3& position, const contracts::Vec3& velocity, ItemStack stack) {
     if (stack.empty()) return;
     spawn_dropped(ctx, contracts::block_of(position), position, velocity, stack, 40);
 }
@@ -601,20 +601,20 @@ contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const cont
 // target version picks each direction and speed at random): eight directions
 // at 0.25 and then 0.125 blocks per tick, and 0.2 upwards.
 namespace {
-contracts::FixedVec death_drop_velocity(std::size_t n) {
-    constexpr std::int64_t diagonal = 724; // 0.25 / sqrt(2) in 1/4096 blocks
-    constexpr std::array<std::pair<std::int64_t, std::int64_t>, 8> directions{
-        {{0, 1024}, {diagonal, diagonal}, {1024, 0}, {diagonal, -diagonal}, {0, -1024}, {-diagonal, -diagonal}, {-1024, 0},
+contracts::Vec3 death_drop_velocity(std::size_t n) {
+    constexpr double diagonal = 724.0 / 4096.0; // about 0.25 / sqrt(2)
+    constexpr std::array<std::pair<double, double>, 8> directions{
+        {{0.0, 0.25}, {diagonal, diagonal}, {0.25, 0.0}, {diagonal, -diagonal}, {0.0, -0.25}, {-diagonal, -diagonal}, {-0.25, 0.0},
          {-diagonal, diagonal}}};
     const auto [x, z] = directions[n % 8];
-    const auto shift = (n / 8) % 2;
-    return {x >> shift, 819, z >> shift};
+    const double scale = (n / 8) % 2 == 0 ? 1.0 : 0.5;
+    return {x * scale, 819.0 / 4096.0, z * scale};
 }
 } // namespace
 
 contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const contracts::PlayerDeath& c) {
     const auto cell = contracts::block_of(c.position);
-    const bool in_world = contracts::fixed_within_border(c.position) && ctx.world().contains_fixed_y(c.position.y)
+    const bool in_world = contracts::within_border(c.position) && ctx.world().contains_position_y(c.position.y)
                           && ctx.chunk_generation(contracts::chunk_of(cell)).has_value();
     return [&ctx, c, cell, in_world] {
         if (!ctx.peek_player(c.player)) return; // nothing to drop

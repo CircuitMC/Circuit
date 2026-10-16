@@ -48,10 +48,11 @@ Result<ReplayLog> decode_replay(std::span<const std::byte> bytes, const ReplayLi
 // One tick's inputs in the same encoding, as a write-ahead log record body.
 // `components`: whether stacks carry data components (logs written before
 // format 5 have none); `levels`: whether commands name their level (logs
-// written before format 6 hold overworld commands only).
+// written before format 6 hold overworld commands only); `doubles`: whether
+// positions are doubles (before format 11 they are 1/4096 block units).
 std::vector<std::byte> encode_tick_input(const TickInput& input);
 Result<TickInput> decode_tick_input(std::span<const std::byte> bytes, const ReplayLimits& limits = {}, bool components = true,
-                                    bool levels = true);
+                                    bool levels = true, bool doubles = true);
 
 struct VersionBundle;
 // A record replays only on a bundle with an executable rule set whose id

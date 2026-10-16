@@ -2,6 +2,7 @@
 #pragma once
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/light.hpp>
+#include <circuit/gameplay/level_random.hpp>
 #include <circuit/gameplay/world_types.hpp>
 #include <array>
 #include <map>
@@ -52,7 +53,13 @@ struct LevelCounters {
     // Players in the level, and the last tick it had players or forced chunks.
     std::map<contracts::PlayerKey, gameplay::Presence> presences;
     Tick last_active{};
+    gameplay::LevelRandom random; // see LevelDump::random
 };
+
+// The pseudo column that stands for a level's random sequence in the region
+// map: the region that owns it may draw, so roots that draw run in one
+// region, in root order. No real column has its position (outside the border).
+inline ChunkKey random_key(DimensionId level) noexcept { return {level, {INT32_MIN, INT32_MIN}}; }
 
 // Staging metadata: an entry created in the current phase. `ledger` indexes the
 // creation in its region context's ledger for the entry's counter; commit

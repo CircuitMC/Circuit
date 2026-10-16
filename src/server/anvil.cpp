@@ -820,14 +820,10 @@ private:
                 unsupported("item entity outside the world");
                 continue;
             }
-            const auto fixed = [](double v) { return static_cast<std::int64_t>(std::llround(v * contracts::fixed_one)); };
             gameplay::Entity out;
-            out.position = {fixed((*pos)[0]), fixed((*pos)[1]), fixed((*pos)[2])};
-            // The rules move items less than a block per tick on each axis.
-            const auto speed = [&](double v) {
-                const auto f = std::isfinite(v) ? fixed(std::clamp(v, -10.0, 10.0)) : 0;
-                return std::clamp(f, -gameplay::max_entity_speed, gameplay::max_entity_speed);
-            };
+            out.position = {(*pos)[0], (*pos)[1], (*pos)[2]};
+            // Within the rules' speed limit (motion the target versions keep is far below it).
+            const auto speed = [&](double v) { return std::isfinite(v) ? std::clamp(v, -gameplay::max_entity_speed, gameplay::max_entity_speed) : 0.0; };
             out.velocity = {speed(motion[0]), speed(motion[1]), speed(motion[2])};
             const auto block = contracts::block_of(out.position);
             if (!imported_.contains(contracts::chunk_of(block))) {
@@ -871,7 +867,7 @@ private:
         if (approximated_ > 0)
             note(std::format("{} moving-piston progress or item-age values were rounded to Circuit's model", approximated_));
         note("block entity creation order and the order of entity ids follow chunk position, not the source world's history");
-        note(std::format("positions and motion are stored in 1/{} block steps", contracts::fixed_one));
+
     }
 
     const contracts::VersionBundle& bundle_;
@@ -1143,7 +1139,6 @@ private:
         root.set("Position", Tag::int_array({pos.x, pos.z}));
         auto list = Tag::list(TagType::compound);
         for (const auto* e : entities) {
-            const auto real = [](std::int64_t v) { return static_cast<double>(v) / contracts::fixed_one; };
             const auto doubles = [](std::initializer_list<double> v) {
                 auto l = Tag::list(TagType::double_);
                 for (const auto d : v) l.push(Tag::double_(d));
@@ -1151,8 +1146,8 @@ private:
             };
             auto t = Tag::compound();
             t.set("id", Tag::string("minecraft:item"));
-            t.set("Pos", doubles({real(e->position.x), real(e->position.y), real(e->position.z)}));
-            t.set("Motion", doubles({real(e->velocity.x), real(e->velocity.y), real(e->velocity.z)}));
+            t.set("Pos", doubles({e->position.x, e->position.y, e->position.z}));
+            t.set("Motion", doubles({e->velocity.x, e->velocity.y, e->velocity.z}));
             auto rotation = Tag::list(TagType::float_);
             rotation.push(Tag::float_(0.0f));
             rotation.push(Tag::float_(0.0f));

@@ -35,10 +35,7 @@ inline CommandBody ticket(std::uint32_t id, ChunkPos center, std::uint8_t radius
 inline CommandBody insert(BlockPos p, std::uint8_t slot, std::uint16_t item, std::uint8_t count) {
     return InsertItem{p, slot, {item, count}};
 }
-inline FixedVec at_block(double x, double y, double z) {
-    return {static_cast<std::int64_t>(x * fixed_one), static_cast<std::int64_t>(y * fixed_one),
-            static_cast<std::int64_t>(z * fixed_one)};
-}
+inline Vec3 at_block(double x, double y, double z) { return {x, y, z}; }
 
 inline void append(std::vector<CommandBody>& to, std::vector<CommandBody> from) {
     for (auto& c : from) to.push_back(std::move(c));

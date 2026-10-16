@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
+#include <circuit/gameplay/block_registry.hpp>
 #include <cstddef>
 #include <cstdint>
 
@@ -33,6 +34,17 @@ struct VersionBlock {
 struct LightFaces {
     std::uint64_t faces[6][4];
 };
+using CollisionBox = registry::Box;
+struct CollisionShape {
+    std::uint32_t first_box;
+    std::uint16_t box_count;
+};
+// A state whose collision shape in one release differs from its own.
+struct CollisionOverride {
+    const char* release;
+    std::uint32_t state;
+    std::uint16_t shape;
+};
 struct VersionTable {
     const char* release;
     const VersionBlock* blocks;
@@ -51,6 +63,11 @@ extern const std::uint8_t light[];
 extern const std::uint16_t light_shape[];
 extern const LightFaces light_faces[];
 extern const std::uint32_t light_shape_count;
+extern const CollisionBox collision_boxes[];
+extern const CollisionShape collision_shapes[];
+extern const std::uint16_t collision_shape[];
+extern const CollisionOverride collision_overrides[];
+extern const std::size_t collision_override_count;
 extern const VersionTable versions[];
 extern const std::size_t version_count;
 

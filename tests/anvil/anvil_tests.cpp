@@ -163,7 +163,7 @@ struct Kept {
     std::vector<std::pair<BlockPos, std::uint32_t>> blocks;
     std::vector<std::pair<BlockPos, BlockEntity>> block_entities;
     std::multiset<std::tuple<int, BlockPos, int, Tick, int>> ticks;
-    std::multiset<std::tuple<FixedVec, FixedVec, std::uint16_t, int, std::uint32_t, bool>> entities;
+    std::multiset<std::tuple<Vec3, Vec3, std::uint16_t, int, std::uint32_t, bool>> entities;
     bool operator==(const Kept&) const = default;
 };
 Kept kept(const WorldDump& world) {
@@ -429,7 +429,7 @@ int main() {
         const auto* sign_be = block_entity_at(r->state, {3, 0, 0});
         require(sign_be && sign_be->kind == BlockType::other && !sign_be->saved.empty(), "the sign keeps its saved data");
         require(r->state.overworld().entities.size() == 1 && r->state.overworld().entities[0].stack == ItemStack{items::wheat, 3} &&
-                    r->state.overworld().entities[0].position == FixedVec{4 * 4096 + 2048, 4096 + 1024, 4 * 4096 + 2048} &&
+                    r->state.overworld().entities[0].position == Vec3{4.5, 1.25, 4.5} &&
                     r->state.overworld().entities[0].age == 20,
                 "item entity");
         require(r->state.overworld().block_entities.size() == 3, "the sign's block entity is kept");

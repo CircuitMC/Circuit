@@ -110,8 +110,8 @@ inline Scenario hopper_scenario() {
             return b;
         }
         std::vector<CommandBody> c;
-        if (t < 60 && t % 7 == 3) c.push_back(SpawnItem{at_block(15.0, 1.0, 31.5), {4000, 0, 0}, {items::redstone, 3}});
-        if (t < 80 && t % 9 == 4) c.push_back(SpawnItem{at_block(0.5, 6.0, 40.5), {0, 200, 0}, {items::wheat, 1}});
+        if (t < 60 && t % 7 == 3) c.push_back(SpawnItem{at_block(15.0, 1.0, 31.5), {4000.0 / 4096.0, 0, 0}, {items::redstone, 3}});
+        if (t < 80 && t % 9 == 4) c.push_back(SpawnItem{at_block(0.5, 6.0, 40.5), {0, 200.0 / 4096.0, 0}, {items::wheat, 1}});
         if (t == 50) c.push_back(place({14, 0, 20}, blocks::lever(true)));
         if (t == 70) c.push_back(use_lever({14, 0, 20}));
         return c;
@@ -521,7 +521,7 @@ inline Scenario crop_light_scenario() {
 inline Scenario raised(Scenario s, std::int32_t dy) {
     const auto lift = [dy](CommandBody& b) {
         const auto up = [dy](BlockPos& p) { p.y += dy; };
-        const auto up_fixed = [dy](FixedVec& v) { v.y += std::int64_t{dy} * fixed_one; };
+        const auto up_fixed = [dy](Vec3& v) { v.y += dy; };
         std::visit([&](auto& c) {
             using T = std::decay_t<decltype(c)>;
             if constexpr (std::is_same_v<T, SetBlock> || std::is_same_v<T, UseBlock> || std::is_same_v<T, InsertItem>) up(c.pos);

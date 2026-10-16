@@ -2,7 +2,7 @@ circuit-trace 2
 title Redstone ignites TNT, which explodes after its fuse
 game-version 1.21.4
 source harness_trace
-harness circuit-harness:0.2.0+mc1.21.4
+harness circuit-harness:0.5.0+mc1.21.4
 mechanisms neighbor_updates
 area -4 0 -4 4 4 4
 ticks 90

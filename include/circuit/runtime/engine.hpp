@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <optional>
 #include <vector>
 
 // Region-parallel simulation engine. Loaded chunk columns are partitioned
@@ -49,6 +50,9 @@ struct EngineOptions {
     // checkpoints depend on it. Empty: new columns are air.
     std::function<void(contracts::ChunkKey, const std::function<std::array<gameplay::BlockState, 4096>&(std::size_t)>&)>
         generator;
+    // The seed of every level's random sequence in a new world (the reference
+    // harness seeds the overworld's with 0); empty: derived from the world seed.
+    std::optional<std::int64_t> level_random_seed;
     // Deliberately unsafe test mode that skips ownership checks. It exists to
     // show that differential exploration detects missing isolation, and is
     // only accepted with a non-concurrent runner.

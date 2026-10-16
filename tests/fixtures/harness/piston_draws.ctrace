@@ -1,0 +1,46 @@
+circuit-trace 2
+title Pistons draw from the level random when they extend and retract
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.5.0+mc1.21.8
+mechanisms piston
+area -4 0 -2 4 2 2
+ticks 12
+changes ordered
+entities observed
+rng observed
+
+at 0 set -2 0 0 minecraft:piston[extended=false,facing=east]
+at 0 set 2 0 0 minecraft:sticky_piston[extended=false,facing=east]
+at 0 set 3 0 0 minecraft:stone
+
+at 1 set -3 0 0 minecraft:redstone_block
+change 1 commands -3 0 0 minecraft:air minecraft:redstone_block
+at 1 set 1 0 0 minecraft:redstone_block
+change 1 commands 1 0 0 minecraft:air minecraft:redstone_block
+change 1 block_events -1 0 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 1 block_events -2 0 0 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
+change 1 block_events 4 0 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 1 block_events 3 0 0 minecraft:stone minecraft:moving_piston[facing=east,type=sticky]
+change 1 block_events 2 0 0 minecraft:sticky_piston[extended=false,facing=east] minecraft:sticky_piston[extended=true,facing=east]
+draws 1 block_events level 2
+
+change 3 block_entities -1 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+change 3 block_entities 4 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 3 block_entities 3 0 0 minecraft:moving_piston[facing=east,type=sticky] minecraft:piston_head[facing=east,short=false,type=sticky]
+
+at 6 set -3 0 0 minecraft:air
+change 6 commands -3 0 0 minecraft:redstone_block minecraft:air
+at 6 set 1 0 0 minecraft:air
+change 6 commands 1 0 0 minecraft:redstone_block minecraft:air
+change 6 block_events -2 0 0 minecraft:piston[extended=true,facing=east] minecraft:moving_piston[facing=east,type=normal]
+change 6 block_events -1 0 0 minecraft:piston_head[facing=east,short=false,type=normal] minecraft:air
+change 6 block_events 2 0 0 minecraft:sticky_piston[extended=true,facing=east] minecraft:moving_piston[facing=east,type=sticky]
+change 6 block_events 3 0 0 minecraft:piston_head[facing=east,short=false,type=sticky] minecraft:air
+change 6 block_events 3 0 0 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 6 block_events 4 0 0 minecraft:stone minecraft:air
+draws 6 block_events level 2
+
+change 8 block_entities -2 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:piston[extended=false,facing=east]
+change 8 block_entities 2 0 0 minecraft:moving_piston[facing=east,type=sticky] minecraft:sticky_piston[extended=false,facing=east]
+change 8 block_entities 3 0 0 minecraft:moving_piston[facing=east,type=normal] minecraft:stone

@@ -23,6 +23,7 @@ public:
         : engine_(bundle, seed, [workers] {
               runtime::EngineOptions o;
               o.workers = workers;
+              o.level_random_seed = 0; // as the reference harness seeds the overworld's
               return o;
           }()) {}
     void advance(const std::vector<Command>& commands) override { engine_.advance(commands); }
@@ -70,15 +71,7 @@ struct Prepared {
 
 FixtureReport report(Outcome outcome, std::string detail) { return {outcome, std::move(detail), 0, 0, 0}; }
 
-// A double that is a whole number of fixed-point steps, as Circuit's
-// positions and velocities are.
-std::optional<std::int64_t> exact_fixed(double v) {
-    const double scaled = v * static_cast<double>(contracts::fixed_one);
-    if (!std::isfinite(scaled) || std::floor(scaled) != scaled || std::abs(scaled) > 9.0e15) return std::nullopt;
-    return static_cast<std::int64_t>(scaled);
-}
-double to_double(std::int64_t fixed) { return static_cast<double>(fixed) / static_cast<double>(contracts::fixed_one); }
-Vec3d to_vec(contracts::FixedVec v) { return {to_double(v.x), to_double(v.y), to_double(v.z)}; }
+Vec3d to_vec(contracts::Vec3 v) { return {v.x, v.y, v.z}; }
 
 // The commands of a `forceload add|remove <x> <z> [<x2> <z2>]` or
 // `forceload remove all` action: one forced ticket (level 31, radius 0) per
@@ -217,14 +210,8 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
         case Action::Kind::spawn_item: {
             const auto item = p.mapping->item(a.item);
             if (!item) return fail_line(a.line, item.error());
-            contracts::FixedVec position, velocity;
-            for (int k = 0; k < 3; ++k) {
-                const auto pk = exact_fixed(a.position[static_cast<std::size_t>(k)]);
-                const auto vk = exact_fixed(a.velocity[static_cast<std::size_t>(k)]);
-                if (!pk || !vk) return fail_line(a.line, "the position or velocity is not a multiple of 1/4096 block");
-                (k == 0 ? position.x : k == 1 ? position.y : position.z) = *pk;
-                (k == 0 ? velocity.x : k == 1 ? velocity.y : velocity.z) = *vk;
-            }
+            const contracts::Vec3 position{a.position[0], a.position[1], a.position[2]};
+            const contracts::Vec3 velocity{a.velocity[0], a.velocity[1], a.velocity[2]};
             body = contracts::SpawnItem{position, velocity, {*item, a.count}};
             break;
         }
@@ -282,6 +269,14 @@ std::optional<FixtureReport> execute(const Fixture& f, const Prepared& p, Fixtur
 
 std::string stage_of(const contracts::TraceRecord& r) { return std::string(contracts::phase_name(r.key.phase)); }
 
+// Raw draws from the level random in one tick's trace, per stage.
+std::map<std::string, std::uint64_t> level_draws(const std::vector<contracts::TraceRecord>& trace) {
+    std::map<std::string, std::uint64_t> out;
+    for (const auto& r : trace)
+        if (r.kind == TraceKind::level_random_draw && r.a != 0) out[stage_of(r)] += r.a;
+    return out;
+}
+
 std::vector<MappedChange> area_changes(const Fixture& f, const std::vector<contracts::TraceRecord>& trace) {
     std::vector<MappedChange> out;
     for (const auto& r : trace)
@@ -338,18 +333,24 @@ public:
                                        BlockState::decode(static_cast<std::uint32_t>(r.b)).value(), stage_of(r), 0, seq++});
                 break;
             case TraceKind::entity_spawned:
+                spawned_ = r.a;
                 if (f.observe_entities && f.contains(r.pos)) {
                     handles_[r.a] = std::format("e{}", ++count_);
                     stacks_[r.a] = static_cast<std::uint64_t>(r.b);
+                    kinds_[r.a] = static_cast<gameplay::EntityKind>(r.c);
                 }
                 break;
-            case TraceKind::entity_spawn_state:
-                if (const auto it = handles_.find(r.a); f.observe_entities && it != handles_.end() && !added_.contains(r.a)) {
-                    added_.insert(r.a);
-                    const auto stack = stacks_[r.a];
-                    entities.push_back({tick, stage_of(r), EntityEvent::Kind::added, it->second, "minecraft:item",
-                                        to_vec(contracts::unpack_position(r.pos, r.b)), to_vec(contracts::unpack_velocity(r.c)),
-                                        stack_properties(stack), "", seq++, 0});
+            case TraceKind::entity_spawn_position:
+                spawn_position_ = {contracts::bits_double(r.a), contracts::bits_double(r.b), contracts::bits_double(r.c)};
+                break;
+            case TraceKind::entity_spawn_velocity:
+                // The spawn records follow their entity_spawned record.
+                if (const auto it = handles_.find(spawned_); f.observe_entities && it != handles_.end() && !added_.contains(spawned_)) {
+                    added_.insert(spawned_);
+                    const contracts::Vec3 velocity{contracts::bits_double(r.a), contracts::bits_double(r.b), contracts::bits_double(r.c)};
+                    entities.push_back({tick, stage_of(r), EntityEvent::Kind::added, it->second,
+                                        std::string(gameplay::entity_kind_name(kinds_.at(spawned_))), to_vec(spawn_position_),
+                                        to_vec(velocity), stack_properties(stacks_.at(spawned_)), "", seq++, 0});
                 }
                 break;
             case TraceKind::entity_removed:
@@ -406,8 +407,9 @@ public:
         std::vector<std::uint64_t> ids;
         for (const auto& e : live)
             if (handles_.contains(e.id.value) && e.last_tick == circuit_tick) ids.push_back(e.id.value);
+        // Removed in or after the entity phase: it ticked first.
         for (const auto& [id, key] : removed_)
-            if (key.tick == circuit_tick && key.phase == contracts::Phase::entities) ids.push_back(id);
+            if (key.tick == circuit_tick && key.phase >= contracts::Phase::entities) ids.push_back(id);
         if (ids.empty()) return std::nullopt;
         std::ranges::sort(ids);
         EntityOrder o{tick, "entities", {}, 0};
@@ -427,6 +429,9 @@ private:
     const ContentMapping& mapping_;
     std::map<std::uint64_t, std::string> handles_;
     std::map<std::uint64_t, std::uint64_t> stacks_;
+    std::map<std::uint64_t, gameplay::EntityKind> kinds_;
+    std::uint64_t spawned_{};         // the entity of the last entity_spawned record
+    contracts::Vec3 spawn_position_{}; // from the entity_spawn_position record after it
     std::set<std::uint64_t> added_;
     std::map<std::uint64_t, contracts::OrderKey> removed_;
     std::size_t count_{};
@@ -687,13 +692,23 @@ FixtureReport evaluate_fixture(const Fixture& f, const ExecutorFactory& factory)
             }
             events += expected_orders.size();
         }
-        if (v2 && f.observe_rng)
-            for (const auto& r : f.rng)
-                if (r.tick == t && r.draws != 0)
-                    return report(Outcome::failed,
-                                  std::format("tick {} rng (line {}): expected {} draws from `{}` in {}; Circuit observes no draws "
-                                              "from the target version's random streams",
-                                              t, r.line, r.draws, r.stream, r.stage));
+        if (v2 && f.observe_rng) {
+            // Draws from the level random, per stage, against the recording.
+            auto observed_draws = level_draws(exec->trace());
+            for (const auto& r : f.rng) {
+                if (r.tick != t) continue;
+                const auto it = observed_draws.find(r.stage);
+                const std::uint64_t got = it == observed_draws.end() ? 0 : it->second;
+                if (r.stream != "level" || got != r.draws)
+                    return report(Outcome::failed, std::format("tick {} rng (line {}): expected {} draws from `{}` in {}, observed {}", t, r.line,
+                                                               r.draws, r.stream, r.stage, got));
+                observed_draws.erase(r.stage);
+                ++events;
+            }
+            if (!observed_draws.empty())
+                return report(Outcome::failed, std::format("tick {} rng: expected no draws in {}, observed {}", t, observed_draws.begin()->first,
+                                                           observed_draws.begin()->second));
+        }
         return std::nullopt;
     };
     if (auto r = execute(f, p, *exec, observe)) return *r;
@@ -745,6 +760,8 @@ std::expected<Fixture, std::string> record_fixture(const Fixture& skeleton, cons
             for (auto& probe : tracker.probes(t, live)) out.entity_probes.push_back(std::move(probe));
             if (auto order = tracker.order(t, t + 2, live)) out.entity_orders.push_back(std::move(*order));
         }
+        if (out.format >= 2 && out.observe_rng)
+            for (const auto& [stage, draws] : level_draws(exec->trace())) out.rng.push_back({t, stage, "level", draws, 0});
         return std::nullopt;
     };
     if (auto r = execute(skeleton, p, *exec, observe)) return std::unexpected(r->detail);

@@ -41,6 +41,12 @@ struct BlockInfo {
     std::uint8_t tier; // lowest tier of `tool` that harvests the block; 0 for any tool
 };
 
+// A box of a collision shape, in block coordinates (0 to 1; fences, walls
+// and piston heads reach beyond their cell).
+struct Box {
+    double min_x, min_y, min_z, max_x, max_y, max_z;
+};
+
 std::string_view id() noexcept;
 // Internal states are 1 to state_count().
 std::uint32_t state_count() noexcept;
@@ -86,6 +92,11 @@ std::uint32_t light_shape_count() noexcept;
 // The 16x16 cells of one face an occlusion shape covers: bit u * 16 + v of
 // the face's two other axes, in x, y, z order.
 std::array<std::uint64_t, 4> light_face(std::uint16_t shape, contracts::Direction face) noexcept;
+
+// A state's collision shape in a release (minecraft-data's
+// blockCollisionShapes.json; the releases agree on every state they share
+// but one).
+std::span<const Box> collision_boxes(std::uint32_t state, std::string_view release) noexcept;
 
 // Wire state ids of a release: 0 to wire_state_count(release) - 1.
 std::uint32_t wire_state_count(std::string_view release) noexcept;

@@ -6,6 +6,8 @@
 #include "../support/check.hpp"
 #include "../support/light_reference.hpp"
 #include "scenarios.hpp"
+#include <cmath>
+#include <limits>
 #include <circuit/contracts/replay.hpp>
 #include <circuit/gameplay/rng.hpp>
 #include <circuit/runtime/engine.hpp>
@@ -39,9 +41,9 @@ struct Reference {
     std::vector<std::vector<TraceRecord>> traces;
     std::map<Tick, WorldDump> dumps;
 };
-Reference run_oracle(const Scenario& s, const Inputs& in, const VersionBundle& b = bundle()) {
+Reference run_oracle(const Scenario& s, const Inputs& in, const VersionBundle& b = bundle(), std::optional<std::int64_t> level_random_seed = {}) {
     Reference ref;
-    Oracle oracle(b, s.seed);
+    Oracle oracle(b, s.seed, {}, level_random_seed);
     for (Tick t = 1; t <= s.ticks; ++t) {
         oracle.advance(in.per_tick[t - 1]);
         ref.traces.push_back(oracle.trace());
@@ -110,8 +112,17 @@ std::vector<Scenario> level_scenarios() {
 // A level's state with its entities' ids cleared and the entities in a
 // canonical order: entity ids are counted over all levels, so they depend
 // on what the other levels spawn.
+// A level's state without its entities' ids and motion. Ids count over all
+// levels, as in the target versions, and a resting item moves only when its
+// age plus its id is a multiple of 4: a level's items move in other ticks
+// when another level spawns entities too.
 LevelDump without_entity_ids(LevelDump l) {
-    for (auto& e : l.entities) e.id = {};
+    for (auto& e : l.entities) {
+        e.id = {};
+        e.position = {};
+        e.velocity = {};
+        e.on_ground = false;
+    }
     std::ranges::sort(l.entities, [](const Entity& a, const Entity& b) {
         return std::tie(a.position, a.velocity, a.stack, a.age, a.last_tick, a.pickup_delay, a.on_ground)
              < std::tie(b.position, b.velocity, b.stack, b.age, b.last_tick, b.pickup_delay, b.on_ground);
@@ -474,16 +485,15 @@ int main() {
     });
 
     suite.run("out-of-range inputs are rejected on both executors", [&] {
-        const std::int64_t top = (std::int64_t{bundle().world.min_y} + bundle().world.height) * fixed_one;
-        const auto spawn = [](std::int64_t x, std::int64_t y, std::int64_t z) -> CommandBody {
-            return SpawnItem{{x, y, z}, {}, {items::stone, 1}};
-        };
+        const double top = static_cast<double>(bundle().world.min_y + bundle().world.height);
+        const double border = world_border, huge = 1e300, nan = std::nan("");
+        const auto spawn = [](double x, double y, double z) -> CommandBody { return SpawnItem{{x, y, z}, {}, {items::stone, 1}}; };
         const std::vector<CommandBody> invalid{
-            spawn(std::int64_t{1} << 44, fixed_one, 0), // would alias block (0, 1, 0)
-            spawn(0, INT64_MIN, 0), spawn(0, INT64_MAX, 0), spawn(INT64_MIN, 0, 0), spawn(INT64_MAX, 0, 0),
-            spawn(0, 0, INT64_MIN), spawn(0, 0, INT64_MAX), spawn(fixed_border, 0, 0), spawn(-fixed_border - 1, 0, 0),
-            spawn(0, 0, fixed_border), spawn(0, 0, -fixed_border - 1), spawn(0, top, 0),
-            spawn(0, std::int64_t{bundle().world.min_y} * fixed_one - 1, 0),
+            spawn(4294967296.0, 1.0, 0.0), // would alias block (0, 1, 0)
+            spawn(0, -huge, 0), spawn(0, huge, 0), spawn(-huge, 0, 0), spawn(huge, 0, 0), spawn(0, 0, -huge), spawn(0, 0, huge),
+            spawn(nan, 0, 0), spawn(0, nan, 0), spawn(0, 0, std::numeric_limits<double>::infinity()), spawn(border, 0, 0),
+            spawn(std::nextafter(-border, -huge), 0, 0), spawn(0, 0, border), spawn(0, 0, std::nextafter(-border, -huge)), spawn(0, top, 0),
+            spawn(0, std::nextafter(static_cast<double>(bundle().world.min_y), -huge), 0),
             ticket(2, {INT32_MIN, 0}, 0), ticket(3, {INT32_MAX, 0}, 0), ticket(4, {0, INT32_MIN}, 8),
             ticket(5, {0, INT32_MAX}, 8)};
         Engine engine(bundle(), 1, pool(4));
@@ -600,12 +610,23 @@ int main() {
             require(level_records(both_ref.traces, level) == level_records(alone_ref.traces, level),
                     std::format("{}: the same records", dimension_name(level)));
         }
-        // The same machines at the same coordinates behave the same in both
-        // levels: these rules draw no random numbers.
-        for (const auto& [t, dump] : both_ref.dumps) {
-            auto nether = without_entity_ids(dump.level(DimensionId::the_nether));
+        // Each level draws from its own random sequence, which places the
+        // drops: the two sequences differ.
+        for (const auto& [t, dump] : both_ref.dumps)
+            require(dump.overworld().random != dump.level(DimensionId::the_nether).random, std::format("separate random sequences at {}", t));
+        // Started from the same seed, the same machines at the same
+        // coordinates behave the same in both levels. Items that fall off
+        // the machines leave each level at its own depth, so only those
+        // still above the floor are compared.
+        const auto on_floor = [](LevelDump l) {
+            std::erase_if(l.entities, [](const Entity& e) { return e.position.y < 8.0; });
+            return without_entity_ids(std::move(l));
+        };
+        const auto same_seed = run_oracle(both, materialize(both), bundle(), 0);
+        for (const auto& [t, dump] : same_seed.dumps) {
+            auto nether = on_floor(dump.level(DimensionId::the_nether));
             nether.dimension = DimensionId::overworld;
-            require(nether == without_entity_ids(dump.level(DimensionId::overworld)), std::format("mirror at {}", t));
+            require(nether == on_floor(dump.level(DimensionId::overworld)), std::format("mirror at {}", t));
         }
         // Entity ids are counted over all levels: in each tick the overworld's
         // spawns come first, then the Nether's.
@@ -636,9 +657,9 @@ int main() {
         };
         // The items spawned at `tick` above a probe at x, by height.
         const auto heights = [&](Tick t, std::int32_t x, DimensionId level = overworld) {
-            std::vector<std::int64_t> out;
+            std::vector<double> out;
             for (const auto& e : at(t).level(level).entities)
-                if (e.position.x == (x + 12) * fixed_one + fixed_one / 2) out.push_back(e.position.y);
+                if (e.position.x == x + 12.5) out.push_back(e.position.y);
             return out;
         };
         const auto lit = [&](Tick t, std::int32_t x) { return state_at(at(t), {x + 2, 0, 2}).flag(); };
@@ -650,11 +671,11 @@ int main() {
         require(head(50, 0) && head(50, 16) && !head(50, 32) && !head(50, 96), "block events at simulation level 32 and lower");
         require(stored(50, 0) > 0 && stored(50, 16) == stored(50, 0) && stored(50, 32) == 0 && stored(50, 96) == 0,
                 "block entities at simulation level 32 and lower");
-        require(heights(50, 0) == std::vector<std::int64_t>{fixed_one} && heights(50, 16) == std::vector<std::int64_t>{4 * fixed_one}
-                    && heights(50, 32) == std::vector<std::int64_t>{4 * fixed_one} && heights(50, 96) == std::vector<std::int64_t>{4 * fixed_one},
+        require(heights(50, 0) == std::vector<double>{1.0} && heights(50, 16) == std::vector<double>{4.0}
+                    && heights(50, 32) == std::vector<double>{4.0} && heights(50, 96) == std::vector<double>{4.0},
                 "entities at simulation level 31 and lower");
         // Ticks 60-79: the player's simulation ticket simulates chunk 6.
-        require(!lit(70, 96) && head(70, 96) && stored(80, 96) > 0 && heights(80, 96) == std::vector<std::int64_t>{fixed_one, fixed_one},
+        require(!lit(70, 96) && head(70, 96) && stored(80, 96) > 0 && heights(80, 96) == std::vector<double>{1.0, 1.0},
                 "a simulation ticket simulates the loaded chunks");
         require(stored(90, 96) == stored(80, 96) && stored(80, 96) < stored(80, 0), "without it, chunk 6 stops");
         // Chunk (-12,0) dropped at tick 4 with its lamp's tick due at 7: back
@@ -686,10 +707,10 @@ int main() {
         require(stored(300, 0, the_nether) > stored(290, 0, the_nether) && stored(390, 0, the_nether) == stored(300, 0, the_nether),
                 "an idle level stops its block entities");
         require(heights(390, 0, the_nether).size() == 8
-                    && std::ranges::count(heights(390, 0, the_nether), 4 * fixed_one) == 2,
+                    && std::ranges::count(heights(390, 0, the_nether), 4.0) == 2,
                 "and its entities");
         require(stored(420, 0, the_nether) > stored(390, 0, the_nether) && stored(450, 0, the_nether) > stored(420, 0, the_nether)
-                    && std::ranges::count(heights(450, 0, the_nether), fixed_one) == 9,
+                    && std::ranges::count(heights(450, 0, the_nether), 1.0) == 9,
                 "a player wakes it at once");
         require(at(450).level(the_nether).last_active == 419 && at(450).overworld().last_active == 450 && at(450).started == 0,
                 "the last active ticks");

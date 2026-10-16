@@ -3,8 +3,10 @@
 #include <circuit/contracts/trace.hpp>
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/game_data.hpp>
+#include <circuit/gameplay/level_random.hpp>
 #include <circuit/gameplay/world_types.hpp>
 #include <optional>
+#include <type_traits>
 #include <vector>
 
 namespace circuit::gameplay {
@@ -114,7 +116,7 @@ public:
     // roots in parallel stage the assignment and give out ids in serial order.
     virtual EntityId spawn_entity(const Entity& prototype) = 0;
     // Precondition: the destination chunk is loaded.
-    virtual void relocate_entity(EntityId id, FixedVec position) = 0;
+    virtual void relocate_entity(EntityId id, Vec3 position) = 0;
     virtual void remove_entity(EntityId id) = 0;
 
     // Player inventories, in the command phase only (other phases throw). The
@@ -127,7 +129,18 @@ public:
     virtual std::uint32_t record(TraceKind kind, BlockPos pos, std::uint64_t a = 0, std::uint64_t b = 0,
                                  std::uint64_t c = 0) = 0;
 
+    // The level's random sequence (LevelRandom), where the target versions
+    // draw from theirs. Each use records its raw draws (level_random_draw).
+    // Uses are serial: the region-parallel runtime runs the roots that use
+    // the sequence in one region, in root order.
+    double random_double() { return draw([](LevelRandom& r) { return r.next_double(); }); }
+    float random_float() { return draw([](LevelRandom& r) { return r.next_float(); }); }
+    std::int32_t random_int(std::int32_t bound) { return draw([&](LevelRandom& r) { return r.next_int(bound); }); }
+    bool random_boolean() { return draw([](LevelRandom& r) { return r.next_boolean(); }); }
+
 protected:
+    // The current level's random sequence.
+    virtual LevelRandom& level_random() = 0;
     // Executors switch the level between roots, never within one.
     void enter(contracts::DimensionId dimension) noexcept {
         dimension_ = dimension;
@@ -135,6 +148,15 @@ protected:
     }
 
 private:
+    template <class F>
+    std::invoke_result_t<F, LevelRandom&> draw(F&& f) {
+        auto& random = level_random();
+        const auto before = random.draws();
+        const auto value = f(random);
+        record(TraceKind::level_random_draw, {}, random.draws() - before);
+        return value;
+    }
+
     const contracts::VersionBundle* bundle_;
     const GameData* data_;
     const contracts::WorldShape* shape_;

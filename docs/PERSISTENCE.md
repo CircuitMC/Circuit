@@ -101,7 +101,8 @@ The server fails closed on storage errors. If a log record cannot be written, th
 
 ## Checkpoint format
 
-A checkpoint file is `CIRCKPT\0`, a format version (12; versions 1–11 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+A checkpoint file is `CIRCKPT\0`, a format version (13; versions 1–12 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+- versions before 13 store entity positions and velocities in 1/4096-block units, which are read exactly as doubles, and no level random: each level's is seeded as for a new world, from the seed and the level; their entities are items;
 - versions before 12 have no weather: clear, with every timer at 0;
 - versions before 11 have no day time: it is 0;
 - versions before 10 have no game rules: every rule has its default;
@@ -113,7 +114,7 @@ A checkpoint file is `CIRCKPT\0`, a format version (12; versions 1–11 are stil
 
 The body holds:
 - the time, the entity id counter, counted over all levels, the tick the levels last started, the game rules away from their defaults (name and value), the day time, and the weather (timers, flags and levels);
-- per level (overworld, Nether, End; only those with columns, players or an active tick): its counters, the last tick it had players or forced chunks, the players in it (position and whether a spectator), columns with their load and simulation levels, the tick a saved column dropped and the tick a reloaded column resumes, palette-packed sections, block entities, entities (with their pickup delay), scheduled ticks and pending block events;
+- per level (overworld, Nether, End; only those with columns, players or an active tick): its counters, the last tick it had players or forced chunks, the state of its level random, the players in it (position and whether a spectator), columns with their load and simulation levels, the tick a saved column dropped and the tick a reloaded column resumes, palette-packed sections, block entities, entities (their kind, position and velocity as doubles, and an item's stack, age and pickup delay), scheduled ticks and pending block events;
 - chunk tickets: type, level, square radius, the tick their lifetime ends and their level (dimension);
 - player inventories: the 46 slots, the carried stack and a drag in progress; item stacks carry their damage and their other data components;
 - block entities' components (a container's name) and the saved data of block entities of blocks without rules of their own;
@@ -126,7 +127,8 @@ Decoding checks every length, count and the digest. The engine's restoring const
 The server's metadata records the fingerprint of the [data packs](DATA_PACKS.md#the-worlds-data) the log was written with; a server with other data refuses to replay that log.
 
 Log segments start with `CIRCWAL` and a format byte:
-- 6: commands include the weather;
+- 7: positions and velocities in commands are doubles;
+- 6 (read only): commands include the weather;
 - 5 (read only): commands include day times;
 - 4 (read only): commands include game rule changes;
 - 3 (read only): tickets are typed, and commands include players' presence and server starts;
@@ -179,7 +181,7 @@ The report lists every replacement. Substitution changes behavior: for example, 
 - player data, maps, raids, scoreboards and the world border;
 - the order of creation of block entities and entities in the source world. Circuit orders them by chunk position.
 
-Positions and motion are stored in 1/4096-block steps. Item ages that never expire age normally. Export writes the following and leaves light and heightmaps to the game:
+Positions and motion are kept as the doubles they are; motion is limited to 64 blocks per tick on each axis. Item ages that never expire age normally. Export writes the following and leaves light and heightmaps to the game:
 - `level.dat`, with a superflat generator that matches the server's floor height;
 - region files, written with zlib compression, and entity region files;
 - `minecraft:plains` as the biome of every section.

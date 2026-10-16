@@ -4,6 +4,9 @@
 #include "../sim/scenarios.hpp"
 #include "../support/check.hpp"
 #include "memory_fs.hpp"
+#include <cmath>
+#include <limits>
+#include <circuit/gameplay/level_random.hpp>
 #include <circuit/gameplay/rng.hpp>
 #include <circuit/protocol/framing.hpp>
 #include <circuit/runtime/engine.hpp>
@@ -76,10 +79,20 @@ bool legacy_reads_as(const Checkpoint& legacy, const Checkpoint& current) {
         return false;
     const auto& la = a.overworld();
     const auto& lb = b.overworld();
-    if (la.blocks != lb.blocks || la.block_entities != lb.block_entities || la.entities != lb.entities || la.ticks != lb.ticks
+    // Entities: the same ones; their motion followed the rules of the release
+    // that wrote the world (1/4096 block units, read exactly).
+    const auto same_entity = [](const circuit::gameplay::Entity& x, const circuit::gameplay::Entity& y) {
+        const auto whole = [](double v) { return v * 4096.0 == std::floor(v * 4096.0); };
+        return x.id == y.id && x.kind == y.kind && x.stack == y.stack && x.age == y.age && x.pickup_delay == y.pickup_delay
+               && whole(x.position.x) && whole(x.position.y) && whole(x.position.z) && whole(x.velocity.x) && whole(x.velocity.y);
+    };
+    if (la.entities.size() != lb.entities.size() || !std::ranges::equal(la.entities, lb.entities, same_entity)) return false;
+    if (la.blocks != lb.blocks || la.block_entities != lb.block_entities || la.ticks != lb.ticks
         || la.block_events != lb.block_events || la.next_suborder != lb.next_suborder
         || la.next_block_entity_order != lb.next_block_entity_order || !la.presences.empty() || la.last_active != 0)
         return false;
+    // No level random was saved: it starts as in a new world.
+    if (la.random != circuit::gameplay::initial_level_random(legacy.seed, la.dimension, {}).state()) return false;
     std::map<ChunkPos, std::uint32_t> ticking_a, ticking_b;
     for (const auto& c : la.chunks) {
         if (c.load == 31 && c.simulation == 31 && c.level == ChunkLevel::entity_ticking) ticking_a[c.pos] = c.generation;
@@ -431,9 +444,10 @@ int main() {
             }
             throw std::runtime_error(std::format("a restored entity with a bad {} was accepted", what));
         };
-        refused([](circuit::gameplay::Entity& e) { e.velocity.x = INT64_MIN / 2; }, "velocity");
-        refused([](circuit::gameplay::Entity& e) { e.velocity.y = circuit::contracts::fixed_one; }, "velocity");
-        refused([](circuit::gameplay::Entity& e) { e.position.y = INT64_MAX - 5; }, "height");
+        refused([](circuit::gameplay::Entity& e) { e.velocity.x = -1e9; }, "velocity");
+        refused([](circuit::gameplay::Entity& e) { e.velocity.y = std::nan(""); }, "velocity");
+        refused([](circuit::gameplay::Entity& e) { e.position.y = 1e18; }, "height");
+        refused([](circuit::gameplay::Entity& e) { e.kind = static_cast<circuit::gameplay::EntityKind>(0); }, "kind");
         refused([](circuit::gameplay::Entity& e) { e.stack.count = 0; }, "stack");
         refused([](circuit::gameplay::Entity& e) { e.stack.item = 9999; }, "stack");
         Engine fine(bundle(), h.seed, h.dumps[t]);

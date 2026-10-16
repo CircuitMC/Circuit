@@ -226,6 +226,13 @@ Engine::Impl::Impl(const contracts::VersionBundle& b, std::uint64_t s, EngineOpt
     if (options.unchecked_ownership_for_testing && runner->concurrent())
         throw std::invalid_argument("engine: unchecked ownership requires a non-concurrent runner");
     if (options.split_interval == 0) throw std::invalid_argument("engine: split interval must be positive");
+    // Each level's random sequence: seeded from the world seed, or as the
+    // options say; a restored state replaces it. Its pseudo column joins the
+    // region map.
+    for (const auto level : contracts::level_order) {
+        world.counters(level).random = gameplay::initial_level_random(seed, level, options.level_random_seed);
+        region_for_new_chunk(random_key(level));
+    }
 }
 
 void Engine::Impl::advance(const std::vector<Command>& commands) {
@@ -819,7 +826,8 @@ void Engine::Impl::commit(const std::vector<RegionContext*>& contexts) {
         for (const auto& edge : ctx->interactions) edges[edge] = world.time;
         for (auto record : ctx->trace) {
             switch (record.kind) {
-            case TraceKind::entity_spawned: case TraceKind::entity_spawn_state: case TraceKind::entity_removed:
+            // (entity_spawn_position and entity_spawn_velocity carry no id.)
+            case TraceKind::entity_spawned: case TraceKind::entity_removed:
             case TraceKind::entity_changed_chunk: case TraceKind::entity_stack_changed:
                 record.a = real(record.a);
                 break;
@@ -966,6 +974,7 @@ void fill_dump(const WorldStore& world, const contracts::VersionBundle& bundle, 
     for (auto& l : d.levels) {
         l.next_suborder = world.counters(l.dimension).next_suborder;
         l.next_block_entity_order = world.counters(l.dimension).next_block_entity_order;
+        l.random = world.counters(l.dimension).random.state();
         auto& list = events[l.dimension];
         std::ranges::sort(list, {}, [](const auto& p) { return p.first; });
         for (const auto& [seq, e] : list) l.block_events.push_back(e);
@@ -1018,7 +1027,6 @@ void Engine::Impl::restore(const WorldDump& state) {
     world.weather = state.weather;
     // Valid entity stacks; entities of every level are checked against the
     // global id counter.
-    const auto valid_speed = [](std::int64_t v) { return v >= -gameplay::max_entity_speed && v <= gameplay::max_entity_speed; };
     std::optional<DimensionId> previous;
     for (const auto& l : state.levels) {
         if (!contracts::valid_dimension(static_cast<std::uint8_t>(l.dimension))) bad("level");
@@ -1030,6 +1038,8 @@ void Engine::Impl::restore(const WorldDump& state) {
         counters.next_suborder = l.next_suborder;
         counters.next_block_entity_order = l.next_block_entity_order;
         counters.last_active = l.last_active;
+        if (l.random > gameplay::LevelRandom::mask) bad("level random");
+        counters.random = gameplay::LevelRandom::from_state(l.random);
         for (const auto& p : l.presences) {
             const bool elsewhere = std::ranges::any_of(world.levels, [&](const auto& other) { return other.presences.contains(p.player); });
             if (elsewhere || !counters.presences.emplace(p.player, p).second) bad("a player in two levels");
@@ -1080,12 +1090,13 @@ void Engine::Impl::restore(const WorldDump& state) {
         // Entities may be above or below the world height (falling out of it),
         // within the bounds the rules can reach; everything else is checked at
         // full width so that ticking a restored state cannot overflow.
-        const std::int64_t lowest = (std::int64_t{shape.min_y} - 65) * contracts::fixed_one;
-        const std::int64_t highest = (std::int64_t{shape.min_y} + shape.height + 4096) * contracts::fixed_one;
+        const double lowest = static_cast<double>(shape.min_y) - 65.0;
+        const double highest = static_cast<double>(shape.min_y) + shape.height + 4096.0;
         for (const auto& e : l.entities) {
-            if (!contracts::fixed_within_border(e.position) || e.id.value == 0 || e.id.value >= world.next_entity_id) bad("entity");
+            if (!contracts::within_border(e.position) || e.id.value == 0 || e.id.value >= world.next_entity_id) bad("entity");
+            if (static_cast<std::uint8_t>(e.kind) == 0 || static_cast<std::uint8_t>(e.kind) >= gameplay::entity_kind_count) bad("entity kind");
             if (e.position.y < lowest || e.position.y >= highest) bad("entity height");
-            if (!valid_speed(e.velocity.x) || !valid_speed(e.velocity.y) || !valid_speed(e.velocity.z)) bad("entity velocity");
+            if (!gameplay::valid_velocity(e.velocity)) bad("entity velocity");
             if (!gameplay::items::valid(e.stack.item) || e.stack.count < 1 || e.stack.count > gameplay::items::max_stack(e.stack)
                 || e.stack.damage > gameplay::items::max_damage(e.stack) || e.pickup_delay > 32767)
                 bad("entity stack");

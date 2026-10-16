@@ -151,6 +151,15 @@ std::uint8_t light_emission(std::uint32_t state) noexcept {
     return data::light[state - 1] & 15;
 }
 
+std::span<const Box> collision_boxes(std::uint32_t state, std::string_view release) noexcept {
+    if (state < 1 || state > data::state_count) return {};
+    auto shape = data::collision_shape[state - 1];
+    for (std::size_t i = 0; i < data::collision_override_count; ++i)
+        if (data::collision_overrides[i].state == state && release == data::collision_overrides[i].release) shape = data::collision_overrides[i].shape;
+    const auto& s = data::collision_shapes[shape];
+    return {data::collision_boxes + s.first_box, s.box_count};
+}
+
 bool motion_blocking(std::uint32_t state) noexcept {
     if (state < 1 || state > data::state_count) return false;
     return (data::light[state - 1] >> 6 & 1) != 0;

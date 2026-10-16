@@ -16,6 +16,7 @@
 #include <circuit/gameplay/rules.hpp>
 #include <circuit/gameplay/survival.hpp>
 #include <cmath>
+#include <limits>
 #include <format>
 #include <map>
 #include <random>
@@ -128,7 +129,7 @@ int main() {
             const auto d = s.oracle.dump();
             require(d.overworld().entities.size() == 2, "both items rest");
             for (const auto& e : d.overworld().entities)
-                require(e.position.y == (e.stack.item == items::redstone ? fixed_one : 0), std::format("item rests at {}", e.position.y));
+                require(e.position.y == (e.stack.item == items::redstone ? 1.0 : 0.0), std::format("item rests at {}", e.position.y));
         }
         // Breaking follows the block's hardness, tool and tier.
         using circuit::gameplay::destroy_progress;
@@ -426,9 +427,15 @@ int main() {
         require(d.overworld().entities[0].stack == ItemStack{items::redstone, 1} && d.overworld().entities[1].stack == ItemStack{items::comparator, 1}
                     && d.overworld().entities[2].stack == ItemStack{items::wheat, 1} && d.overworld().entities[3].stack == ItemStack{items::wheat_seeds, 1},
                 "drops in event order");
-        // Spawned at the dust's center inside the arriving block, then lifted onto it by the entity tick.
-        require(d.overworld().entities[0].position == FixedVec{2 * fixed_one + 2048, fixed_one, 2048} && d.overworld().entities[0].on_ground,
+        // Each drop within 0.25 of its block's center (lowered by 0.125), moving 0.2 up, from the level random.
+        const auto positions = of_kind(s.last, TraceKind::entity_spawn_position);
+        const auto velocities = of_kind(s.last, TraceKind::entity_spawn_velocity);
+        require(positions.size() == 4 && velocities.size() == 4, "spawn positions and velocities");
+        const auto x = bits_double(positions[0].a), y = bits_double(positions[0].b), z = bits_double(positions[0].c);
+        require(x >= 2.25 && x <= 2.75 && y >= 0.125 && y <= 0.625 && z >= 0.25 && z <= 0.75 && bits_double(velocities[0].b) == 0.2
+                    && std::abs(bits_double(velocities[0].a)) <= 0.1 && std::abs(bits_double(velocities[0].c)) <= 0.1,
                 "drop position");
+        require(of_kind(s.last, TraceKind::level_random_draw).size() >= 4 * 5, "five draws per drop");
         const auto spawned = of_kind(s.last, TraceKind::entity_spawned);
         require(spawned.size() == 4 && spawned[0].key.phase == Phase::block_events && spawned[0].a == 1 && spawned[3].a == 4,
                 "spawn records carry serial ids");
@@ -445,12 +452,12 @@ int main() {
         s.tick(build); // 2
         s.tick({place({13, 0, 1}, blocks::redstone_block())}); // 3: stone starts moving into cell 15
         const auto d = s.oracle.dump();
-        require(d.overworld().entities.size() == 1 && d.overworld().entities[0].position.x == 16 * fixed_one, "pushed half a block, out of the cell");
+        require(d.overworld().entities.size() == 1 && d.overworld().entities[0].position.x == 16.0, "pushed half a block, out of the cell");
         const auto crossed = of_kind(s.last, TraceKind::entity_changed_chunk);
         require(crossed.size() == 1 && crossed[0].key.phase == Phase::block_entities && crossed[0].c == pack_chunk({1, 0}),
                 "pushed into chunk 1");
         s.until(5);
-        require(entity_in(s.oracle.dump(), EntityId{1})->position.x == 16 * fixed_one && s.at({15, 0, 0}).is(BlockType::stone),
+        require(entity_in(s.oracle.dump(), EntityId{1})->position.x == 16.0 && s.at({15, 0, 0}).is(BlockType::stone),
                 "pushed once; block arrived");
     });
 
@@ -543,17 +550,16 @@ int main() {
     suite.run("hopper picks up a falling item", [] {
         Sim s;
         s.tick({place({0, 0, 0}, blocks::hopper(D::down)),
-                SpawnItem{{2048, 14336, 2048}, {}, {items::redstone, 5}}}); // tick 2, item at y=3.5
-        // Independent expectation of the documented motion rule.
-        std::int64_t y = 14336, vy = 0;
+                SpawnItem{{0.5, 3.5, 0.5}, {}, {items::redstone, 5}}}); // tick 2
+        // Independent expectation of the documented motion rule: gravity
+        // 0.04, then the move, then drag 0.98; picked up in the cell above.
+        double y = 3.5, vy = 0.0;
         Tick pickup = 0;
         for (Tick t = 2; t < 100 && !pickup; ++t) {
-            vy = std::max<std::int64_t>(vy - 160, -4095);
-            auto ny = y + vy;
-            if (floor_block(ny) == 0) { ny = fixed_one; vy = 0; }
-            y = ny;
-            vy = vy * 98 / 100;
-            if (floor_block(y) == 1) pickup = t;
+            vy -= 0.04;
+            y += vy;
+            vy *= 0.98;
+            if (std::floor(y) == 1.0) pickup = t;
         }
         require(pickup > 2, "expectation computed");
         s.until(pickup - 1);
@@ -866,7 +872,7 @@ int main() {
             require(d.overworld().entities[i].pickup_delay > 30, "with the thrown pickup delay");
         }
         // They spread in different directions.
-        std::set<std::pair<std::int64_t, std::int64_t>> directions;
+        std::set<std::pair<double, double>> directions;
         for (const auto& e : d.overworld().entities) directions.insert({e.velocity.x, e.velocity.z});
         require(directions.size() == expected.size(), "spread");
         // Below the world nothing can drop: the items are lost, as in the void.
@@ -1200,12 +1206,12 @@ int main() {
                 "idle after 300 ticks");
         // 1.21.4: within 128 blocks (horizontally, exclusive) of a
         // non-spectator player's position, from the chunk's center.
-        std::vector<Presence> presences{{PlayerKey{1, 1}, FixedVec{8 * fixed_one, 0, 8 * fixed_one}, false}};
+        std::vector<Presence> presences{{PlayerKey{1, 1}, Vec3{8.0, 0.0, 8.0}, false}};
         const auto near = [&](ChunkPos c) { return player_near(presences, c); };
         require(near({0, 0}) && near({7, 0}) && !near({8, 0}) && near({-7, 0}) && !near({-8, 0}) && near({5, 5}) && !near({6, 6}),
                 "128 blocks from the chunk center");
-        presences[0].position.x = 8 * fixed_one + 1;
-        require(near({8, 0}) && !near({-8, 0}), "measured in fixed point");
+        presences[0].position.x = 8.25;
+        require(near({8, 0}) && !near({-8, 0}), "measured exactly");
         presences[0].spectator = true;
         require(!near({0, 0}), "spectators do not count");
         presences[0].spectator = false;
@@ -1221,12 +1227,12 @@ int main() {
     suite.run("spawn positions are checked before narrowing", [] {
         Sim s;
         const auto before = s.oracle.dump();
-        // 2^44 fixed units is 2^32 blocks: narrowing first would alias block (0, 1, 0).
-        s.tick({SpawnItem{{std::int64_t{1} << 44, fixed_one, 0}, {}, {items::stone, 1}},
-                SpawnItem{{0, INT64_MIN, 0}, {}, {items::stone, 1}}});
+        // 2^32 blocks: narrowing first would alias block (0, 1, 0); also NaN and infinite positions.
+        s.tick({SpawnItem{{4294967296.0, 1.0, 0.0}, {}, {items::stone, 1}}, SpawnItem{{0.0, -1e300, 0.0}, {}, {items::stone, 1}},
+                SpawnItem{{std::nan(""), 1.0, 0.0}, {}, {items::stone, 1}},
+                SpawnItem{{0.0, std::numeric_limits<double>::infinity(), 0.0}, {}, {items::stone, 1}}});
         const auto rejected = of_kind(s.last, TraceKind::command_rejected);
-        require(rejected.size() == 2 && rejected[0].b == static_cast<std::uint64_t>(ErrorCode::out_of_bounds)
-                    && rejected[1].b == static_cast<std::uint64_t>(ErrorCode::out_of_bounds),
+        require(rejected.size() == 4 && std::ranges::all_of(rejected, [](const auto& r) { return r.b == static_cast<std::uint64_t>(ErrorCode::out_of_bounds); }),
                 "rejected as out of bounds");
         auto after = s.oracle.dump();
         after.time = before.time;
@@ -1236,10 +1242,9 @@ int main() {
         require(after == before, "no world mutation");
         // Valid endpoints: the lowest and highest positions inside the world height.
         const auto& world = bundle().world;
-        s.tick({SpawnItem{{fixed_one / 2, std::int64_t{world.min_y} * fixed_one, fixed_one / 2}, {}, {items::stone, 1}},
-                SpawnItem{{fixed_one / 2, (std::int64_t{world.min_y} + world.height) * fixed_one - 1, fixed_one / 2}, {},
-                          {items::stone, 1}},
-                SpawnItem{{fixed_border - 1, 0, 0}, {}, {items::stone, 1}}});
+        s.tick({SpawnItem{{0.5, static_cast<double>(world.min_y), 0.5}, {}, {items::stone, 1}},
+                SpawnItem{{0.5, std::nextafter(static_cast<double>(world.min_y + world.height), 0.0), 0.5}, {}, {items::stone, 1}},
+                SpawnItem{{std::nextafter(static_cast<double>(world_border), 0.0), 0.0, 0.0}, {}, {items::stone, 1}}});
         require(of_kind(s.last, TraceKind::entity_spawned).size() == 2, "height endpoints accepted");
         const auto last = of_kind(s.last, TraceKind::command_rejected);
         require(last.size() == 1 && last[0].b == static_cast<std::uint64_t>(ErrorCode::unloaded_chunk),
@@ -1250,7 +1255,7 @@ int main() {
         Sim s;
         std::vector<CommandBody> build;
         for (int x = 10; x <= 20; ++x) build.push_back(place({x, 0, 0}, blocks::stone()));
-        build.push_back(SpawnItem{at_block(15.5, 1.0, 0.5), {1200, 0, 0}, {items::stone, 1}});
+        build.push_back(SpawnItem{at_block(15.5, 1.0, 0.5), {1200.0 / 4096.0, 0, 0}, {items::stone, 1}});
         build.push_back(SpawnItem{at_block(5.5, 10.0, 5.5), {}, {items::wheat, 2}});
         s.tick(build); // tick 2
         std::vector<TraceRecord> moved;

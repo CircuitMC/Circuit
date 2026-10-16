@@ -30,7 +30,7 @@ Feature counts per implementation state, then the number of features with compar
 | V04 Data and resource-pack negotiation | C1, C9, C10 | 6 | 0 / 0 | 4 / 4 | 0 / 0 | 2 / 2 | 0 / 0 | 2 / 2 |
 | V05 Dimensions, tickets and chunk lifecycle | C2 | 8 | 0 / 0 | 6 / 6 | 0 / 0 | 2 / 2 | 0 / 0 | 3 / 3 |
 | V06 Lighting and environmental state | C2, C3, C7 | 7 | 0 / 0 | 5 / 5 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
-| V07 RNG and global event order | C0, C2, C4 | 7 | 4 / 4 | 2 / 2 | 0 / 0 | 1 / 1 | 0 / 0 | 4 / 4 |
+| V07 RNG and global event order | C0, C2, C4 | 7 | 4 / 4 | 3 / 3 | 0 / 0 | 0 / 0 | 0 / 0 | 6 / 6 |
 | V08 Terrain and biomes | C7 | 70 | 0 / 0 | 2 / 2 | 64 / 64 | 4 / 4 | 0 / 0 | 0 / 0 |
 | V09 Structures and decoration | C7, C5 | 6 | 0 / 0 | 0 / 0 | 0 / 0 | 6 / 6 | 0 / 0 | 0 / 0 |
 | V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 1 / 1 | 39 / 39 | 3 / 3 | 0 / 0 | 1 / 1 |
@@ -43,7 +43,7 @@ Feature counts per implementation state, then the number of features with compar
 | V17 TNT and explosions | C3, C4 | 11 | 0 / 0 | 0 / 0 | 2 / 2 | 8 / 9 | 1 / 0 | 0 / 0 |
 | V18 Technical machines and vanilla quirks | C4, C7 | 6 | 0 / 0 | 1 / 1 | 0 / 0 | 5 / 5 | 0 / 0 | 1 / 1 |
 | V19 General entity lifecycle | C3 | 17 | 0 / 0 | 4 / 4 | 0 / 0 | 13 / 13 | 0 / 0 | 0 / 0 |
-| V20 Item entities and experience | C3, C6 | 7 | 0 / 0 | 4 / 4 | 0 / 0 | 3 / 3 | 0 / 0 | 1 / 1 |
+| V20 Item entities and experience | C3, C6 | 7 | 0 / 0 | 4 / 4 | 0 / 0 | 3 / 3 | 0 / 0 | 2 / 2 |
 | V21 Projectiles, vehicles and mounts | C3, C6 | 109 | 0 / 0 | 0 / 0 | 39 / 57 | 49 / 51 | 21 / 1 | 0 / 0 |
 | V22 Movement and player modes | C6 | 7 | 3 / 3 | 2 / 2 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
 | V23 Combat, attributes and effects | C6 | 219 | 1 / 1 | 6 / 6 | 91 / 91 | 118 / 121 | 3 / 0 | 6 / 6 |
@@ -129,8 +129,8 @@ Their counts are unknown, not zero.
 | --- | --- | ---: |
 | black_box | passing | 19 |
 | black_box | unsupported | 1 |
-| official_trace | failing | 5 |
-| official_trace | passing | 36 |
+| official_trace | failing | 3 |
+| official_trace | passing | 39 |
 | official_trace | unsupported | 1 |
 | planned | planned | 8 |
 | real_client | passing | 2 |
@@ -214,8 +214,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Block-event FIFO | C4 | implemented, compared | implemented, compared | `trace/piston_timing` |
 | Neighbor and shape update order and the chain limit | C4 | implemented, compared | implemented, compared | `trace/chain_limit`, `trace/vertical_slice` |
 | Block-entity tick order | C4 | implemented, compared | implemented, compared | `trace/hopper_competition`, `trace/piston_slime` |
-| Entity tick order | C3 | partial, reference_only | partial, reference_only | `trace/item_hopper_pickup`; ascending id; not compared with the target version |
-| The level random source and its draw order | C0 | missing, reference_only | missing, reference_only | `trace/item_drop_piston`, `trace/tnt_redstone_ignition`; per-section derived streams; Draw counts of the level random recorded per stage |
+| Entity tick order | C3 | partial, compared | partial, compared | `trace/item_hopper_pickup`, `trace/item_water_current`; ascending id, compared with the target versions for item entities only |
+| The level random source and its draw order | C3 | partial, compared | partial, compared | `trace/item_drop_piston`, `trace/piston_draws`, `trace/tnt_redstone_ignition`; only block drops and piston sounds draw from it; random ticks and weather durations use Circuit's own derived streams, and other draws of the target versions are not made yet; Each level's java.util.Random-compatible sequence, its state saved with the world; fixtures seed it with 0 as the harness does and compare raw draw counts per stage |
 | Random-tick chunk order and positions | C2 | partial, reference_only | partial, reference_only | `observation/chunk_levels`; chunks in coordinate order instead of the shuffled order; Random ticks run at simulation level 31 and lower in 1.21.8, and at 32 and lower within 128 blocks of a non-spectator player in 1.21.4 |
 
 ### V08 Terrain and biomes
@@ -303,8 +303,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Pushing, pulling and quasi-connectivity | C4 | partial, compared | partial, compared | `trace/piston_observed`, `trace/piston_timing`, `trace/quasi_connectivity` |
 | Slime block structures | C4 | implemented, compared | implemented, compared | `trace/piston_slime` |
 | Honey blocks and slime-honey separation | C4 | missing, none | missing, none |  |
-| Blocks destroyed by pistons and their drops | C4 | partial, mismatch | partial, mismatch | `trace/item_drop_piston`, `trace/piston_destroys`; drops without random offsets, after the block instead of before |
-| Moving blocks pushing entities and players | C3 | partial, reference_only | partial, reference_only | `trace/item_piston_push`; item entities only |
+| Blocks destroyed by pistons and their drops | C4 | partial, mismatch | partial, mismatch | `trace/item_drop_piston`, `trace/piston_destroys`; moving blocks push items a tick early (trace/item_drop_piston) |
+| Moving blocks pushing entities and players | C3 | partial, mismatch | partial, mismatch | `trace/item_piston_push`; item entities only |
 | Push reactions of every block (immovable, destroy, block entities) | C4 | partial, none | partial, none | Modeled blocks only |
 
 ### V16 Automation and storage blocks
@@ -355,7 +355,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Item entity motion and collision | C3 | partial, mismatch | partial, mismatch | `trace/item_hopper_pickup`, `trace/item_piston_push`, `trace/item_water_current`; fixed-point motion; not compared with the target version; no water currents or buoyancy |
+| Item entity motion and collision | C3 | partial, compared | partial, compared | `trace/item_hopper_pickup`, `trace/item_piston_push`, `trace/item_water_current`; moving blocks push items differently (trace/item_piston_push); no water currents or buoyancy; Double-precision gravity, drag, collision with every state's collision boxes, bouncing and the resting rule, identical with both official servers in the passing traces |
 | Item merging | C3 | missing, reference_only | missing, reference_only | `trace/tnt_redstone_ignition`; The official explosion drops nine cobblestone as one stack |
 | Pickup by players and hoppers, pickup delays | C3 | partial, compared | partial, compared | `client/vitals`, `client/windows` |
 | Despawning | C3 | partial, documented | partial, documented |  |
@@ -415,7 +415,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Crafting (2x2 and table) and the recipe book | C5 | partial, compared | partial, compared | `client/crafting`; special recipes (repairing, map and book cloning, fireworks, armor dye, banner copying, shield decoration, tipped arrows, decorated pots) and recipes whose results carry components (suspicious stew) make nothing; the crafting table's 3x3 grid is not modeled; the recipe book is not synchronized and recipe placement requests are ignored; the doLimitedCrafting rule is not applied; without the official data pack there are no recipes; The player's 2x2 grid crafts with the shaped, shapeless and transmute recipes of the loaded data packs: the result follows the grid, every click mode takes it, ingredients are used and remainders kept; 48 steps give the same windows as both official servers |
 | Furnaces, smokers, blast furnaces and campfires | C5 | missing, none | missing, none |  |
 | Brewing, enchanting, anvils, grindstones, stonecutters, smithing, looms, cartography, beacons, merchants, lecterns and mount inventories | C5 | missing, none | missing, none |  |
-| Loot tables for blocks, entities and containers | C5 | partial, compared | partial, compared | `data/block_drops`; drops appear at the block center without the random offset and motion; entity, container and archaeology tables are not used; modeled blocks ignore their tables, so silk touch does not change their drops; tables that copy components or name dynamic contents (shulker boxes, banners, decorated pots) are not used; tables with random parts (random counts, chances, fortune bonuses, weighted choices) drop nothing until random streams are modeled; Blocks without rules of their own drop from the deterministic subset of their loot tables (913 of 1,007 tables in 1.21.8, 905 of 999 in 1.21.4), with harvest tools and silk touch; modeled blocks keep fixed drops |
+| Loot tables for blocks, entities and containers | C5 | partial, compared | partial, compared | `data/block_drops`; a broken container's contents drop whole at its center, without the random split and scatter; entity, container and archaeology tables are not used; modeled blocks ignore their tables, so silk touch does not change their drops; tables that copy components or name dynamic contents (shulker boxes, banners, decorated pots) are not used; tables with random parts (random counts, chances, fortune bonuses, weighted choices) drop nothing until random streams are modeled; Blocks without rules of their own drop from the deterministic subset of their loot tables (913 of 1,007 tables in 1.21.8, 905 of 999 in 1.21.4), with harvest tools and silk touch; modeled blocks keep fixed drops |
 
 ### V26 Mob AI and navigation
 

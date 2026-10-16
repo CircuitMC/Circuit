@@ -136,8 +136,7 @@ struct Extensions::Impl {
                 std::vector<plugin::ItemEntity> out;
                 if (!c) return out;
                 for (const auto& e : c->entities) {
-                    const auto real = [](std::int64_t v) { return static_cast<double>(v) / contracts::fixed_one; };
-                    out.push_back({e.id.value, real(e.position.x), real(e.position.y), real(e.position.z), stack_of(impl_.game.content_mapping(), e.stack)});
+                    out.push_back({e.id.value, e.position.x, e.position.y, e.position.z, stack_of(impl_.game.content_mapping(), e.stack)});
                 }
                 return out;
             } catch (...) {

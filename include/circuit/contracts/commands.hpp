@@ -34,8 +34,8 @@ struct InsertItem {
     bool operator==(const InsertItem&) const = default;
 };
 struct SpawnItem {
-    FixedVec position;
-    FixedVec velocity;
+    Vec3 position;
+    Vec3 velocity;
     ItemStack stack;
     bool operator==(const SpawnItem&) const = default;
 };
@@ -150,8 +150,8 @@ struct DropItem {
     PlayerKey player;
     std::uint8_t slot{};
     bool whole_stack{};
-    FixedVec position;
-    FixedVec velocity;
+    Vec3 position;
+    Vec3 velocity;
     bool operator==(const DropItem&) const = default;
 };
 
@@ -168,16 +168,16 @@ struct ContainerClick {
     std::uint8_t button{};
     std::uint8_t mode{};
     bool creative{};
-    FixedVec drop_position;
-    FixedVec drop_velocity;
+    Vec3 drop_position;
+    Vec3 drop_velocity;
     bool operator==(const ContainerClick&) const = default;
 };
 // A player closes their window: the carried stack and the crafting grid go
 // back into the inventory; what does not fit drops.
 struct CloseContainer {
     PlayerKey player;
-    FixedVec drop_position;
-    FixedVec drop_velocity;
+    Vec3 drop_position;
+    Vec3 drop_velocity;
     bool operator==(const CloseContainer&) const = default;
 };
 
@@ -186,7 +186,7 @@ struct CloseContainer {
 // entity can exist, such as below the world, are lost.
 struct PlayerDeath {
     PlayerKey player;
-    FixedVec position;
+    Vec3 position;
     bool operator==(const PlayerDeath&) const = default;
 };
 
@@ -196,7 +196,7 @@ struct PlayerDeath {
 // player is in at most one level: presence in one removes it from the others.
 struct PlayerPresence {
     PlayerKey player;
-    FixedVec position;
+    Vec3 position;
     bool spectator{};
     bool present{true};
     bool operator==(const PlayerPresence&) const = default;
