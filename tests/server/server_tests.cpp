@@ -1588,6 +1588,15 @@ int main() {
         require(d.varint().value() == id && d.u8().value() == 8 && d.varint().value() == 1 && d.varint().value() == 79
                     && d.u8().value() == 0xFF,
                 "the fuse (index 8, a VarInt) is 79 after the first tick");
+        // 79 ticks later it explodes: players nearby get the explosion, a
+        // sixteenth of the TNT's height above its feet.
+        auto boom = c.until(State::play, "explode", std::chrono::milliseconds(15000));
+        require(boom.has_value(), "explosion sent");
+        auto e = boom->reader();
+        const auto ex = e.f64().value(), ey = e.f64().value(), ez = e.f64().value();
+        require(std::abs(ex - 3.5) < 0.3 && std::abs(ey - (-60.0 + static_cast<double>(0.98f * 0.0625f))) < 1e-9 && std::abs(ez - 1.5) < 0.3,
+                std::format("explosion center {} {} {}", ex, ey, ez));
+        require(!e.boolean().value() && e.varint().value() == 21 && e.varint().value() == 616, "no knockback, explosion_emitter, the explode sound");
         s.stop();
     });
 

@@ -40,6 +40,7 @@ enum class TraceKind : std::uint8_t {
     level_random_draw = 23,     // a = the raw draws (next(bits) calls) one use of the level random made
     entity_loaded = 24,         // an entity its chunk saved is back: a = its new id, b = its id before, c = as entity_spawned's b;
                                 // entity_spawn_position and entity_spawn_velocity follow
+    explosion = 25,             // an explosion at pos's cell: a, b, c = the bits of its center (double_bits)
 };
 
 struct TraceRecord {

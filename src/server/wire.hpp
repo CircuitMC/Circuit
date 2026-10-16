@@ -206,6 +206,7 @@ public:
     Bytes take_item_entity(std::int32_t collected, std::int32_t collector, std::int32_t count) const;
     Bytes item_metadata(std::int32_t id, const WireStack& stack) const;
     Bytes tnt_metadata(std::int32_t id, std::int32_t fuse) const;
+    Bytes explosion(Vec3 center) const;
     Bytes remove_entities(const std::vector<std::int32_t>& ids) const;
     Bytes entity_position(std::int32_t id, Vec3 pos, float yaw, float pitch, bool on_ground) const;
     Bytes head_rotation(std::int32_t id, float head_yaw) const;

@@ -1,0 +1,610 @@
+circuit-trace 2
+title TNT explodes inside stone with glass, a chest and dust: drops merge, the chest scatters
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.8.0+mc1.21.8
+mechanisms tnt
+area -6 0 -6 6 6 6
+ticks 95
+changes ordered
+entities observed
+rng observed
+
+at 0 set -6 0 -6 minecraft:obsidian
+at 0 set -6 0 -5 minecraft:obsidian
+at 0 set -6 0 -4 minecraft:obsidian
+at 0 set -6 0 -3 minecraft:obsidian
+at 0 set -6 0 -2 minecraft:obsidian
+at 0 set -6 0 -1 minecraft:obsidian
+at 0 set -6 0 0 minecraft:obsidian
+at 0 set -6 0 1 minecraft:obsidian
+at 0 set -6 0 2 minecraft:obsidian
+at 0 set -6 0 3 minecraft:obsidian
+at 0 set -6 0 4 minecraft:obsidian
+at 0 set -6 0 5 minecraft:obsidian
+at 0 set -6 0 6 minecraft:obsidian
+at 0 set -5 0 -6 minecraft:obsidian
+at 0 set -5 0 -5 minecraft:obsidian
+at 0 set -5 0 -4 minecraft:obsidian
+at 0 set -5 0 -3 minecraft:obsidian
+at 0 set -5 0 -2 minecraft:obsidian
+at 0 set -5 0 -1 minecraft:obsidian
+at 0 set -5 0 0 minecraft:obsidian
+at 0 set -5 0 1 minecraft:obsidian
+at 0 set -5 0 2 minecraft:obsidian
+at 0 set -5 0 3 minecraft:obsidian
+at 0 set -5 0 4 minecraft:obsidian
+at 0 set -5 0 5 minecraft:obsidian
+at 0 set -5 0 6 minecraft:obsidian
+at 0 set -4 0 -6 minecraft:obsidian
+at 0 set -4 0 -5 minecraft:obsidian
+at 0 set -4 0 -4 minecraft:obsidian
+at 0 set -4 0 -3 minecraft:obsidian
+at 0 set -4 0 -2 minecraft:obsidian
+at 0 set -4 0 -1 minecraft:obsidian
+at 0 set -4 0 0 minecraft:obsidian
+at 0 set -4 0 1 minecraft:obsidian
+at 0 set -4 0 2 minecraft:obsidian
+at 0 set -4 0 3 minecraft:obsidian
+at 0 set -4 0 4 minecraft:obsidian
+at 0 set -4 0 5 minecraft:obsidian
+at 0 set -4 0 6 minecraft:obsidian
+at 0 set -3 0 -6 minecraft:obsidian
+at 0 set -3 0 -5 minecraft:obsidian
+at 0 set -3 0 -4 minecraft:obsidian
+at 0 set -3 0 -3 minecraft:obsidian
+at 0 set -3 0 -2 minecraft:obsidian
+at 0 set -3 0 -1 minecraft:obsidian
+at 0 set -3 0 0 minecraft:obsidian
+at 0 set -3 0 1 minecraft:obsidian
+at 0 set -3 0 2 minecraft:obsidian
+at 0 set -3 0 3 minecraft:obsidian
+at 0 set -3 0 4 minecraft:obsidian
+at 0 set -3 0 5 minecraft:obsidian
+at 0 set -3 0 6 minecraft:obsidian
+at 0 set -2 0 -6 minecraft:obsidian
+at 0 set -2 0 -5 minecraft:obsidian
+at 0 set -2 0 -4 minecraft:obsidian
+at 0 set -2 0 -3 minecraft:obsidian
+at 0 set -2 0 -2 minecraft:obsidian
+at 0 set -2 0 -1 minecraft:obsidian
+at 0 set -2 0 0 minecraft:obsidian
+at 0 set -2 0 1 minecraft:obsidian
+at 0 set -2 0 2 minecraft:obsidian
+at 0 set -2 0 3 minecraft:obsidian
+at 0 set -2 0 4 minecraft:obsidian
+at 0 set -2 0 5 minecraft:obsidian
+at 0 set -2 0 6 minecraft:obsidian
+at 0 set -1 0 -6 minecraft:obsidian
+at 0 set -1 0 -5 minecraft:obsidian
+at 0 set -1 0 -4 minecraft:obsidian
+at 0 set -1 0 -3 minecraft:obsidian
+at 0 set -1 0 -2 minecraft:obsidian
+at 0 set -1 0 -1 minecraft:obsidian
+at 0 set -1 0 0 minecraft:obsidian
+at 0 set -1 0 1 minecraft:obsidian
+at 0 set -1 0 2 minecraft:obsidian
+at 0 set -1 0 3 minecraft:obsidian
+at 0 set -1 0 4 minecraft:obsidian
+at 0 set -1 0 5 minecraft:obsidian
+at 0 set -1 0 6 minecraft:obsidian
+at 0 set 0 0 -6 minecraft:obsidian
+at 0 set 0 0 -5 minecraft:obsidian
+at 0 set 0 0 -4 minecraft:obsidian
+at 0 set 0 0 -3 minecraft:obsidian
+at 0 set 0 0 -2 minecraft:obsidian
+at 0 set 0 0 -1 minecraft:obsidian
+at 0 set 0 0 0 minecraft:obsidian
+at 0 set 0 0 1 minecraft:obsidian
+at 0 set 0 0 2 minecraft:obsidian
+at 0 set 0 0 3 minecraft:obsidian
+at 0 set 0 0 4 minecraft:obsidian
+at 0 set 0 0 5 minecraft:obsidian
+at 0 set 0 0 6 minecraft:obsidian
+at 0 set 1 0 -6 minecraft:obsidian
+at 0 set 1 0 -5 minecraft:obsidian
+at 0 set 1 0 -4 minecraft:obsidian
+at 0 set 1 0 -3 minecraft:obsidian
+at 0 set 1 0 -2 minecraft:obsidian
+at 0 set 1 0 -1 minecraft:obsidian
+at 0 set 1 0 0 minecraft:obsidian
+at 0 set 1 0 1 minecraft:obsidian
+at 0 set 1 0 2 minecraft:obsidian
+at 0 set 1 0 3 minecraft:obsidian
+at 0 set 1 0 4 minecraft:obsidian
+at 0 set 1 0 5 minecraft:obsidian
+at 0 set 1 0 6 minecraft:obsidian
+at 0 set 2 0 -6 minecraft:obsidian
+at 0 set 2 0 -5 minecraft:obsidian
+at 0 set 2 0 -4 minecraft:obsidian
+at 0 set 2 0 -3 minecraft:obsidian
+at 0 set 2 0 -2 minecraft:obsidian
+at 0 set 2 0 -1 minecraft:obsidian
+at 0 set 2 0 0 minecraft:obsidian
+at 0 set 2 0 1 minecraft:obsidian
+at 0 set 2 0 2 minecraft:obsidian
+at 0 set 2 0 3 minecraft:obsidian
+at 0 set 2 0 4 minecraft:obsidian
+at 0 set 2 0 5 minecraft:obsidian
+at 0 set 2 0 6 minecraft:obsidian
+at 0 set 3 0 -6 minecraft:obsidian
+at 0 set 3 0 -5 minecraft:obsidian
+at 0 set 3 0 -4 minecraft:obsidian
+at 0 set 3 0 -3 minecraft:obsidian
+at 0 set 3 0 -2 minecraft:obsidian
+at 0 set 3 0 -1 minecraft:obsidian
+at 0 set 3 0 0 minecraft:obsidian
+at 0 set 3 0 1 minecraft:obsidian
+at 0 set 3 0 2 minecraft:obsidian
+at 0 set 3 0 3 minecraft:obsidian
+at 0 set 3 0 4 minecraft:obsidian
+at 0 set 3 0 5 minecraft:obsidian
+at 0 set 3 0 6 minecraft:obsidian
+at 0 set 4 0 -6 minecraft:obsidian
+at 0 set 4 0 -5 minecraft:obsidian
+at 0 set 4 0 -4 minecraft:obsidian
+at 0 set 4 0 -3 minecraft:obsidian
+at 0 set 4 0 -2 minecraft:obsidian
+at 0 set 4 0 -1 minecraft:obsidian
+at 0 set 4 0 0 minecraft:obsidian
+at 0 set 4 0 1 minecraft:obsidian
+at 0 set 4 0 2 minecraft:obsidian
+at 0 set 4 0 3 minecraft:obsidian
+at 0 set 4 0 4 minecraft:obsidian
+at 0 set 4 0 5 minecraft:obsidian
+at 0 set 4 0 6 minecraft:obsidian
+at 0 set 5 0 -6 minecraft:obsidian
+at 0 set 5 0 -5 minecraft:obsidian
+at 0 set 5 0 -4 minecraft:obsidian
+at 0 set 5 0 -3 minecraft:obsidian
+at 0 set 5 0 -2 minecraft:obsidian
+at 0 set 5 0 -1 minecraft:obsidian
+at 0 set 5 0 0 minecraft:obsidian
+at 0 set 5 0 1 minecraft:obsidian
+at 0 set 5 0 2 minecraft:obsidian
+at 0 set 5 0 3 minecraft:obsidian
+at 0 set 5 0 4 minecraft:obsidian
+at 0 set 5 0 5 minecraft:obsidian
+at 0 set 5 0 6 minecraft:obsidian
+at 0 set 6 0 -6 minecraft:obsidian
+at 0 set 6 0 -5 minecraft:obsidian
+at 0 set 6 0 -4 minecraft:obsidian
+at 0 set 6 0 -3 minecraft:obsidian
+at 0 set 6 0 -2 minecraft:obsidian
+at 0 set 6 0 -1 minecraft:obsidian
+at 0 set 6 0 0 minecraft:obsidian
+at 0 set 6 0 1 minecraft:obsidian
+at 0 set 6 0 2 minecraft:obsidian
+at 0 set 6 0 3 minecraft:obsidian
+at 0 set 6 0 4 minecraft:obsidian
+at 0 set 6 0 5 minecraft:obsidian
+at 0 set 6 0 6 minecraft:obsidian
+at 0 set -2 1 -2 minecraft:stone
+at 0 set -2 1 -1 minecraft:stone
+at 0 set -2 1 0 minecraft:stone
+at 0 set -2 1 1 minecraft:stone
+at 0 set -2 1 2 minecraft:glass
+at 0 set -2 2 -2 minecraft:stone
+at 0 set -2 2 -1 minecraft:stone
+at 0 set -2 2 0 minecraft:stone
+at 0 set -2 2 1 minecraft:stone
+at 0 set -2 2 2 minecraft:stone
+at 0 set -2 3 -2 minecraft:stone
+at 0 set -2 3 -1 minecraft:stone
+at 0 set -2 3 0 minecraft:stone
+at 0 set -2 3 1 minecraft:stone
+at 0 set -2 3 2 minecraft:stone
+at 0 set -1 1 -2 minecraft:stone
+at 0 set -1 1 -1 minecraft:stone
+at 0 set -1 1 0 minecraft:stone
+at 0 set -1 1 1 minecraft:stone
+at 0 set -1 1 2 minecraft:stone
+at 0 set -1 2 -2 minecraft:stone
+at 0 set -1 2 -1 minecraft:stone
+at 0 set -1 2 0 minecraft:stone
+at 0 set -1 2 1 minecraft:stone
+at 0 set -1 2 2 minecraft:stone
+at 0 set -1 3 -2 minecraft:stone
+at 0 set -1 3 -1 minecraft:stone
+at 0 set -1 3 0 minecraft:stone
+at 0 set -1 3 1 minecraft:stone
+at 0 set -1 3 2 minecraft:stone
+at 0 set 0 1 -2 minecraft:stone
+at 0 set 0 1 -1 minecraft:stone
+at 0 set 0 1 0 minecraft:stone
+at 0 set 0 1 1 minecraft:stone
+at 0 set 0 1 2 minecraft:stone
+at 0 set 0 2 -2 minecraft:stone
+at 0 set 0 2 -1 minecraft:stone
+at 0 set 0 2 1 minecraft:stone
+at 0 set 0 2 2 minecraft:stone
+at 0 set 0 3 -2 minecraft:stone
+at 0 set 0 3 -1 minecraft:stone
+at 0 set 0 3 0 minecraft:stone
+at 0 set 0 3 1 minecraft:stone
+at 0 set 0 3 2 minecraft:stone
+at 0 set 1 1 -2 minecraft:stone
+at 0 set 1 1 -1 minecraft:stone
+at 0 set 1 1 0 minecraft:stone
+at 0 set 1 1 1 minecraft:stone
+at 0 set 1 1 2 minecraft:stone
+at 0 set 1 2 -2 minecraft:stone
+at 0 set 1 2 -1 minecraft:stone
+at 0 set 1 2 0 minecraft:stone
+at 0 set 1 2 1 minecraft:stone
+at 0 set 1 2 2 minecraft:stone
+at 0 set 1 3 -2 minecraft:stone
+at 0 set 1 3 -1 minecraft:stone
+at 0 set 1 3 0 minecraft:stone
+at 0 set 1 3 1 minecraft:stone
+at 0 set 1 3 2 minecraft:stone
+at 0 set 2 1 -2 minecraft:stone
+at 0 set 2 1 -1 minecraft:stone
+at 0 set 2 1 0 minecraft:stone
+at 0 set 2 1 1 minecraft:stone
+at 0 set 2 1 2 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 0 set 2 2 -2 minecraft:stone
+at 0 set 2 2 -1 minecraft:stone
+at 0 set 2 2 0 minecraft:stone
+at 0 set 2 2 1 minecraft:stone
+at 0 set 2 2 2 minecraft:stone
+at 0 set 2 3 -2 minecraft:stone
+at 0 set 2 3 -1 minecraft:stone
+at 0 set 2 3 0 minecraft:stone
+at 0 set 2 3 1 minecraft:stone
+at 0 set 2 3 2 minecraft:stone
+at 0 set 0 2 0 minecraft:tnt[unstable=false]
+at 0 set -2 4 -2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 insert 2 1 2 0 minecraft:stone 30
+at 0 insert 2 1 2 5 minecraft:stick 7
+
+at 1 set 0 3 0 minecraft:redstone_block
+change 1 commands 0 3 0 minecraft:stone minecraft:redstone_block
+entity-added 1 commands e1 minecraft:tnt 0.5 2.0 0.5 0.019857169889349057 0.20000000298023224 0.002385959761925832 fuse=80
+change 1 commands 0 2 0 minecraft:tnt[unstable=false] minecraft:air
+draws 1 commands level 2
+entity-order 1 entities e1
+entity 1 e1 0.5099999904632568 2.0199999809265137 0.5023859597619258 0 0 0.0023382405666873152 fuse=79 on-ground=false
+
+entity-order 2 entities e1
+entity 2 e1 0.5099999904632568 2.0 0.5047242003286131 0 0 0.0016040330287474982 fuse=78 on-ground=true
+
+entity-order 3 entities e1
+entity 3 e1 0.5099999904632568 2.0 0.5063282333573605 0 0 0.0011003666577207836 fuse=77 on-ground=true
+
+entity-order 4 entities e1
+entity 4 e1 0.5099999904632568 2.0 0.5074286000150813 0 0 7.548515271964576E-4 fuse=76 on-ground=true
+
+entity-order 5 entities e1
+entity 5 e1 0.5099999904632568 2.0 0.5081834515422777 0 0 5.178281476567699E-4 fuse=75 on-ground=true
+
+entity-order 6 entities e1
+entity 6 e1 0.5099999904632568 2.0 0.5087012796899345 0 0 3.552301092925441E-4 fuse=74 on-ground=true
+
+entity-order 7 entities e1
+entity 7 e1 0.5099999904632568 2.0 0.509056509799227 0 0 2.436878549746852E-4 fuse=73 on-ground=true
+
+entity-order 8 entities e1
+entity 8 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.6716986851263404E-4 fuse=72 on-ground=true
+
+entity-order 9 entities e1
+entity 9 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.1467852979966694E-4 fuse=71 on-ground=true
+
+entity-order 10 entities e1
+entity 10 e1 0.5099999904632568 2.0 0.509056509799227 0 0 7.86694714425715E-5 fuse=70 on-ground=true
+
+entity-order 11 entities e1
+entity 11 e1 0.5099999904632568 2.0 0.509056509799227 0 0 5.396725740960404E-5 fuse=69 on-ground=true
+
+entity-order 12 entities e1
+entity 12 e1 0.5099999904632568 2.0 0.509056509799227 0 0 3.7021538582988365E-5 fuse=68 on-ground=true
+
+entity-order 13 entities e1
+entity 13 e1 0.5099999904632568 2.0 0.509056509799227 0 0 2.5396775467930018E-5 fuse=67 on-ground=true
+
+entity-order 14 entities e1
+entity 14 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.742218797099999E-5 fuse=66 on-ground=true
+
+entity-order 15 entities e1
+entity 15 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.1951620948105993E-5 fuse=65 on-ground=true
+
+entity-order 16 entities e1
+entity 16 e1 0.5099999904632568 2.0 0.509056509799227 0 0 8.198811970400711E-6 fuse=64 on-ground=true
+
+entity-order 17 entities e1
+entity 17 e1 0.5099999904632568 2.0 0.509056509799227 0 0 5.624385011694887E-6 fuse=63 on-ground=true
+
+entity-order 18 entities e1
+entity 18 e1 0.5099999904632568 2.0 0.509056509799227 0 0 3.858328118022692E-6 fuse=62 on-ground=true
+
+entity-order 19 entities e1
+entity 19 e1 0.5099999904632568 2.0 0.509056509799227 0 0 2.6468130889635663E-6 fuse=61 on-ground=true
+
+entity-order 20 entities e1
+entity 20 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.8157137790290064E-6 fuse=60 on-ground=true
+
+entity-order 21 entities e1
+entity 21 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.2455796524138983E-6 fuse=59 on-ground=true
+
+entity-order 22 entities e1
+entity 22 e1 0.5099999904632568 2.0 0.509056509799227 0 0 8.544676415559342E-7 fuse=58 on-ground=true
+
+entity-order 23 entities e1
+entity 23 e1 0.5099999904632568 2.0 0.509056509799227 0 0 5.861648021073707E-7 fuse=57 on-ground=true
+
+entity-order 24 entities e1
+entity 24 e1 0.5099999904632568 2.0 0.509056509799227 0 0 4.021090542456563E-7 fuse=56 on-ground=true
+
+entity-order 25 entities e1
+entity 25 e1 0.5099999904632568 2.0 0.509056509799227 0 0 2.758468112125202E-7 fuse=55 on-ground=true
+
+entity-order 26 entities e1
+entity 26 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.8923091249178885E-7 fuse=54 on-ground=true
+
+entity-order 27 entities e1
+entity 27 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.2981240596936715E-7 fuse=53 on-ground=true
+
+entity-order 28 entities e1
+entity 28 e1 0.5099999904632568 2.0 0.509056509799227 0 0 8.905131049498587E-8 fuse=52 on-ground=true
+
+entity-order 29 entities e1
+entity 29 e1 0.5099999904632568 2.0 0.509056509799227 0 0 6.108919899956029E-8 fuse=51 on-ground=true
+
+entity-order 30 entities e1
+entity 30 e1 0.5099999904632568 2.0 0.509056509799227 0 0 4.190719051369835E-8 fuse=50 on-ground=true
+
+entity-order 31 entities e1
+entity 31 e1 0.5099999904632568 2.0 0.509056509799227 0 0 2.8748332692397068E-8 fuse=49 on-ground=true
+
+entity-order 32 entities e1
+entity 32 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.9721356226984388E-8 fuse=48 on-ground=true
+
+entity-order 33 entities e1
+entity 33 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.3528850371711288E-8 fuse=47 on-ground=true
+
+entity-order 34 entities e1
+entity 34 e1 0.5099999904632568 2.0 0.509056509799227 0 0 9.280791354993943E-9 fuse=46 on-ground=true
+
+entity-order 35 entities e1
+entity 35 e1 0.5099999904632568 2.0 0.509056509799227 0 0 6.3666228695258454E-9 fuse=45 on-ground=true
+
+entity-order 36 entities e1
+entity 36 e1 0.5099999904632568 2.0 0.509056509799227 0 0 4.3675032884947294E-9 fuse=44 on-ground=true
+
+entity-order 37 entities e1
+entity 37 e1 0.5099999904632568 2.0 0.509056509799227 0 0 2.996107255907384E-9 fuse=43 on-ground=true
+
+entity-order 38 entities e1
+entity 38 e1 0.5099999904632568 2.0 0.509056509799227 0 0 2.055329577552465E-9 fuse=42 on-ground=true
+
+entity-order 39 entities e1
+entity 39 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.4099560902009912E-9 fuse=41 on-ground=true
+
+entity-order 40 entities e1
+entity 40 e1 0.5099999904632568 2.0 0.509056509799227 0 0 9.672298778778798E-10 fuse=40 on-ground=true
+
+entity-order 41 entities e1
+entity 41 e1 0.5099999904632568 2.0 0.509056509799227 0 0 6.635196962242254E-10 fuse=39 on-ground=true
+
+entity-order 42 entities e1
+entity 42 e1 0.5099999904632568 2.0 0.509056509799227 0 0 4.5517451160981855E-10 fuse=38 on-ground=true
+
+entity-order 43 entities e1
+entity 43 e1 0.5099999904632568 2.0 0.509056509799227 0 0 3.1224971496433554E-10 fuse=37 on-ground=true
+
+entity-order 44 entities e1
+entity 44 e1 0.5099999904632568 2.0 0.509056509799227 0 0 2.1420330446553416E-10 fuse=36 on-ground=true
+
+entity-order 45 entities e1
+entity 45 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.4694346686335644E-10 fuse=35 on-ground=true
+
+entity-order 46 entities e1
+entity 46 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.008032182682625E-10 fuse=34 on-ground=true
+
+entity-order 47 entities e1
+entity 47 e1 0.5099999904632568 2.0 0.509056509799227 0 0 6.915100773202807E-11 fuse=33 on-ground=true
+
+entity-order 48 entities e1
+entity 48 e1 0.5099999904632568 2.0 0.509056509799227 0 0 4.7437591304171254E-11 fuse=32 on-ground=true
+
+entity-order 49 entities e1
+entity 49 e1 0.5099999904632568 2.0 0.509056509799227 0 0 3.254218763466148E-11 fuse=31 on-ground=true
+
+entity-order 50 entities e1
+entity 50 e1 0.5099999904632568 2.0 0.509056509799227 0 0 2.2323940717377772E-11 fuse=30 on-ground=true
+
+entity-order 51 entities e1
+entity 51 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.531422333212115E-11 fuse=29 on-ground=true
+
+entity-order 52 entities e1
+entity 52 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.0505557205835108E-11 fuse=28 on-ground=true
+
+entity-order 53 entities e1
+entity 53 e1 0.5099999904632568 2.0 0.509056509799227 0 0 7.206812243202884E-12 fuse=27 on-ground=true
+
+entity-order 54 entities e1
+entity 54 e1 0.5099999904632568 2.0 0.509056509799227 0 0 4.943873198837178E-12 fuse=26 on-ground=true
+
+entity-order 55 entities e1
+entity 55 e1 0.5099999904632568 2.0 0.509056509799227 0 0 3.391497014402304E-12 fuse=25 on-ground=true
+
+entity-order 56 entities e1
+entity 56 e1 0.5099999904632568 2.0 0.509056509799227 0 0 2.32656695187998E-12 fuse=24 on-ground=true
+
+entity-order 57 entities e1
+entity 57 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.596024928989666E-12 fuse=23 on-ground=true
+
+entity-order 58 entities e1
+entity 58 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.0948731012869108E-12 fuse=22 on-ground=true
+
+entity-order 59 entities e1
+entity 59 e1 0.5099999904632568 2.0 0.509056509799227 0 0 7.510829474828208E-13 fuse=21 on-ground=true
+
+entity-order 60 entities e1
+entity 60 e1 0.5099999904632568 2.0 0.509056509799227 0 0 5.15242901973215E-13 fuse=20 on-ground=true
+
+entity-order 61 entities e1
+entity 61 e1 0.5099999904632568 2.0 0.509056509799227 0 0 3.5345663075362546E-13 fuse=19 on-ground=true
+
+entity-order 62 entities e1
+entity 62 e1 0.5099999904632568 2.0 0.509056509799227 0 0 2.4247124869698706E-13 fuse=18 on-ground=true
+
+entity-order 63 entities e1
+entity 63 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.663352766061331E-13 fuse=17 on-ground=true
+
+entity-order 64 entities e1
+entity 64 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.1410599975180731E-13 fuse=16 on-ground=true
+
+entity-order 65 entities e1
+entity 65 e1 0.5099999904632568 2.0 0.509056509799227 0 0 7.827671582973982E-14 fuse=15 on-ground=true
+
+entity-order 66 entities e1
+entity 66 e1 0.5099999904632568 2.0 0.509056509799227 0 0 5.369782705920151E-14 fuse=14 on-ground=true
+
+entity-order 67 entities e1
+entity 67 e1 0.5099999904632568 2.0 0.509056509799227 0 0 3.683670936261224E-14 fuse=13 on-ground=true
+
+entity-order 68 entities e1
+entity 68 e1 0.5099999904632568 2.0 0.509056509799227 0 0 2.526998262275199E-14 fuse=12 on-ground=true
+
+entity-order 69 entities e1
+entity 69 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.7335208079207864E-14 fuse=11 on-ground=true
+
+entity-order 70 entities e1
+entity 70 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.1891952742336592E-14 fuse=10 on-ground=true
+
+entity-order 71 entities e1
+entity 71 e1 0.5099999904632568 2.0 0.509056509799227 0 0 8.157879581242902E-15 fuse=9 on-ground=true
+
+entity-order 72 entities e1
+entity 72 e1 0.5099999904632568 2.0 0.509056509799227 0 0 5.5963053927326304E-15 fuse=8 on-ground=true
+
+entity-order 73 entities e1
+entity 73 e1 0.5099999904632568 2.0 0.509056509799227 0 0 3.839065499414584E-15 fuse=7 on-ground=true
+
+entity-order 74 entities e1
+entity 74 e1 0.5099999904632568 2.0 0.509056509799227 0 0 2.6335989325984043E-15 fuse=6 on-ground=true
+
+entity-order 75 entities e1
+entity 75 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.806648867762505E-15 fuse=5 on-ground=true
+
+entity-order 76 entities e1
+entity 76 e1 0.5099999904632568 2.0 0.509056509799227 0 0 1.2393611232850784E-15 fuse=4 on-ground=true
+
+entity-order 77 entities e1
+entity 77 e1 0.5099999904632568 2.0 0.509056509799227 0 0 8.502017305735637E-16 fuse=3 on-ground=true
+
+entity-order 78 entities e1
+entity 78 e1 0.5099999904632568 2.0 0.509056509799227 0 0 5.832383871734646E-16 fuse=2 on-ground=true
+
+entity-order 79 entities e1
+entity 79 e1 0.5099999904632568 2.0 0.509056509799227 0 0 4.001015336009967E-16 fuse=1 on-ground=true
+
+entity-removed 80 entities e1 discarded
+change 80 entities 1 3 -1 minecraft:stone minecraft:air
+change 80 entities 0 2 1 minecraft:stone minecraft:air
+change 80 entities 1 1 1 minecraft:stone minecraft:air
+change 80 entities -1 2 0 minecraft:stone minecraft:air
+change 80 entities 1 2 1 minecraft:stone minecraft:air
+change 80 entities -1 3 0 minecraft:stone minecraft:air
+change 80 entities 0 3 1 minecraft:stone minecraft:air
+change 80 entities -1 1 -1 minecraft:stone minecraft:air
+change 80 entities -1 2 -1 minecraft:stone minecraft:air
+change 80 entities 1 1 -1 minecraft:stone minecraft:air
+change 80 entities 1 2 -1 minecraft:stone minecraft:air
+change 80 entities 0 3 0 minecraft:redstone_block minecraft:air
+change 80 entities -1 1 1 minecraft:stone minecraft:air
+change 80 entities 0 1 0 minecraft:stone minecraft:air
+change 80 entities 1 1 0 minecraft:stone minecraft:air
+change 80 entities -1 3 -1 minecraft:stone minecraft:air
+change 80 entities 1 2 0 minecraft:stone minecraft:air
+change 80 entities 0 1 -1 minecraft:stone minecraft:air
+change 80 entities 0 3 -1 minecraft:stone minecraft:air
+change 80 entities -1 2 1 minecraft:stone minecraft:air
+change 80 entities 0 1 1 minecraft:stone minecraft:air
+change 80 entities 0 2 -1 minecraft:stone minecraft:air
+change 80 entities 1 3 0 minecraft:stone minecraft:air
+change 80 entities -1 1 0 minecraft:stone minecraft:air
+entity-added 80 entities e2 minecraft:item 1.483456105407951 3.204142956956481 -0.5467803979995858 -0.012259387204876446 0.2 -0.08561646403401264 item=minecraft:cobblestone count=16
+entity-added 80 entities e3 minecraft:item 0.37041984292041424 3.474438234213119 0.6495911688559199 -0.04042805413884747 0.2 0.05892968668329898 item=minecraft:redstone_block count=1
+entity-added 80 entities e4 minecraft:item 0.3860902384475311 1.2821523654040194 -0.2756339642772027 0.09084825443276401 0.2 -0.05768781795147846 item=minecraft:cobblestone count=7
+draws 80 entities level 1406
+entity-order 80 entities e1
+entity 80 e2 1.483456105407951 3.204142956956481 -0.5467803979995858 -0.012259387204876446 0.2 -0.08561646403401264 item=minecraft:cobblestone count=16 age=0 pickup-delay=10 on-ground=false
+entity 80 e3 0.37041984292041424 3.474438234213119 0.6495911688559199 -0.04042805413884747 0.2 0.05892968668329898 item=minecraft:redstone_block count=1 age=0 pickup-delay=10 on-ground=false
+entity 80 e4 0.3860902384475311 1.2821523654040194 -0.2756339642772027 0.09084825443276401 0.2 -0.05768781795147846 item=minecraft:cobblestone count=7 age=0 pickup-delay=10 on-ground=false
+
+entity-order 81 entities e2 e3 e4
+entity 81 e2 1.4711967182030745 3.3641429569564814 -0.6323968620335985 -0.012014199694608171 0.1568 -0.08390413638633684 item=minecraft:cobblestone count=16 age=1 pickup-delay=9 on-ground=false
+entity 81 e3 0.32999178878156676 3.634438234213119 0.708520855539219 -0.03961949382717446 0.1568 0.05775109407362757 item=minecraft:redstone_block count=1 age=1 pickup-delay=9 on-ground=false
+entity 81 e4 0.4769384928802951 1.4421523654040194 -0.3333217822286812 0.08903129107690166 0.1568 -0.056534062692756695 item=minecraft:cobblestone count=7 age=1 pickup-delay=9 on-ground=false
+
+entity-order 82 entities e2 e3 e4
+entity 82 e2 1.4591825185084664 3.4809429569564814 -0.7163009984199353 -0.011773915929868681 0.11446399999999998 -0.0822260552589545 item=minecraft:cobblestone count=16 age=2 pickup-delay=8 on-ground=false
+entity 82 e3 0.2903722949543923 3.751238234213119 0.7662719496128465 -0.03882710470631284 0.11446399999999998 0.056596073293669724 item=minecraft:redstone_block count=1 age=2 pickup-delay=8 on-ground=false
+entity 82 e4 0.5659697839571968 1.5589523654040194 -0.3898558449214379 0.08725066695350074 0.11446399999999998 -0.05540338251720323 item=minecraft:cobblestone count=7 age=2 pickup-delay=8 on-ground=false
+
+entity-order 83 entities e2 e3 e4
+entity 83 e2 1.4474086025785977 3.5554069569564812 -0.7985270536788899 -0.011538437835840932 0.07297471999999998 -0.08058153572211295 item=minecraft:cobblestone count=16 age=3 pickup-delay=7 on-ground=false
+entity 83 e3 0.2515451902480795 3.825702234213119 0.8228680229065162 -0.038050563352754835 0.07297471999999998 0.05546415290728076 item=minecraft:redstone_block count=1 age=3 pickup-delay=7 on-ground=false
+entity 83 e4 0.6532204509106975 1.6334163654040195 -0.4452592274386411 0.08550565527860512 0.07297471999999998 -0.05429531592359483 item=minecraft:cobblestone count=7 age=3 pickup-delay=7 on-ground=false
+
+entity-order 84 entities e2 e3 e4
+entity 84 e2 1.4358701647427567 3.588381676956481 -0.875 -0.01130766929920235 0.032315225599999976 0 item=minecraft:cobblestone count=16 age=4 pickup-delay=6 on-ground=false
+entity 84 e3 0.21349462689532464 3.8586769542131187 0.878332175813797 -0.037289552811456635 0.032315225599999976 0.05435487090702991 item=minecraft:redstone_block count=1 age=4 pickup-delay=6 on-ground=false
+entity 84 e4 0.7387261061893026 1.6663910854040194 -0.4995545433622359 0.08379554380392397 0.032315225599999976 -0.053209410640723896 item=minecraft:cobblestone count=7 age=4 pickup-delay=6 on-ground=false
+
+entity-order 85 entities e2 e3 e4
+entity 85 e2 1.4245624954435545 3.580696902556481 -0.875 -0.01108151612889498 -0.007531078912000024 0 item=minecraft:cobblestone count=16 age=5 pickup-delay=5 on-ground=false
+entity 85 e3 0.176205074083868 3.850992179813119 0.9326870467208269 -0.03654376246646928 -0.007531078912000024 0.0532677745256262 item=minecraft:redstone_block count=1 age=5 pickup-delay=5 on-ground=false
+entity 85 e4 0.8225216499932265 1.6587063110040194 -0.5527639540029599 0.08211963452611865 -0.007531078912000024 -0.052145223442798386 item=minecraft:cobblestone count=7 age=5 pickup-delay=5 on-ground=false
+
+entity-order 86 entities e2 e3 e4
+entity 86 e2 1.4134809793146594 3.5331658236444814 -0.875 -0.010859886017680226 -0.04658045733376002 0 item=minecraft:cobblestone count=16 age=6 pickup-delay=4 on-ground=false
+entity 86 e3 0.13966131161739873 3.803461100901119 0.9859548212464531 -0.03581288791415685 -0.04658045733376002 0.05220242005111585 item=minecraft:redstone_block count=1 age=6 pickup-delay=4 on-ground=false
+entity 86 e4 0.9046412845193452 1.6111752320920194 -0.6049091774457582 0.080477243401904 -0.04658045733376002 -0.05110231996853362 item=minecraft:cobblestone count=7 age=6 pickup-delay=4 on-ground=false
+
+entity-order 87 entities e2 e3 e4
+entity 87 e2 1.4026210932969791 3.4465853663107215 -0.875 -0.010642688504462509 -0.08484884818708481 0 item=minecraft:cobblestone count=16 age=7 pickup-delay=3 on-ground=false
+entity 87 e3 0.125 3.716880643567359 1.0381572412975688 0 -0.08484884818708481 0.05115837264577568 item=minecraft:redstone_block count=1 age=7 pickup-delay=3 on-ground=false
+entity 87 e4 0.9851185279212492 1.5245947747582593 -0.6560114974142919 0.07886770006884752 -0.08484884818708481 -0.05008027454386235 item=minecraft:cobblestone count=7 age=7 pickup-delay=3 on-ground=false
+
+entity-order 88 entities e2 e3 e4
+entity 88 e2 1.3919784047925166 3.321736518123637 -0.875 -0.010429834937366433 -0.12235187122334311 0 item=minecraft:cobblestone count=16 age=8 pickup-delay=2 on-ground=false
+entity 88 e3 0.125 3.5920317953802745 1.0893156139433444 0 -0.12235187122334311 0.05013520616862868 item=minecraft:redstone_block count=1 age=8 pickup-delay=2 on-ground=false
+entity 88 e4 1.0639862279900967 1.3997459265711745 -0.7060917719581542 0.07729034757175257 -0.12235187122334311 -0.049078670008190536 item=minecraft:cobblestone count=7 age=8 pickup-delay=2 on-ground=false
+
+entity-order 89 entities e2 e3 e4
+entity 89 e2 1.3815485698551502 3.159384646900294 -0.875 -0.010221238437552418 -0.15910483379887624 0 item=minecraft:cobblestone count=16 age=9 pickup-delay=1 on-ground=false
+entity 89 e3 0.125 3.4296799241569316 1.139450820111973 0 -0.15910483379887624 0.04913250300150928 item=minecraft:redstone_block count=1 age=9 pickup-delay=1 on-ground=false
+entity 89 e4 1.1412765755618492 1.2373940553478313 -0.7551704419663448 0.07574454209451391 -0.15910483379887624 -0.04809709754412807 item=minecraft:cobblestone count=7 age=9 pickup-delay=1 on-ground=false
+
+entity-order 90 entities e2 e3 e4
+entity 90 e2 1.3713273314175978 2.9602798131014176 -0.875 -0.010016813863756021 -0.1951227371228987 0 item=minecraft:cobblestone count=16 age=10 pickup-delay=0 on-ground=false
+entity 90 e3 0.125 3.2305750903580552 1.1885833231134824 0 -0.1951227371228987 0.04814985387860722 item=minecraft:redstone_block count=1 age=10 pickup-delay=0 on-ground=false
+entity 90 e4 1.2170211176563632 1.038289221548955 -0.8032675395104728 0.07422965269733611 -0.1951227371228987 -0.04713515651062484 item=minecraft:cobblestone count=7 age=10 pickup-delay=0 on-ground=false
+
+entity-order 91 entities e2 e3 e4
+entity 91 e2 1.3613105175538418 2.725157075978519 -0.875 -0.009816477777536463 -0.23042028238044074 0 item=minecraft:cobblestone count=16 age=11 pickup-delay=0 on-ground=false
+entity 91 e3 0.125 2.9954523532351565 1.2367331769920895 0 -0.23042028238044074 0.047186857719420654 item=minecraft:redstone_block count=1 age=11 pickup-delay=0 on-ground=false
+entity 91 e4 1.2912507703536993 1.0 -0.8504026960210976 0.043647040175070255 0 -0.02771547481524587 item=minecraft:cobblestone count=7 age=11 pickup-delay=0 on-ground=true
+
+entity-order 92 entities e2 e3 e4
+entity 92 e2 1.3514940397763053 2.454736793598078 -0.875 -0.009620148409220187 -0.26501187673283194 0 item=minecraft:cobblestone count=16 age=12 pickup-delay=0 on-ground=false
+entity 92 e3 0.125 2.7250320708547155 1.28392003471151 0 -0.26501187673283194 0.04624312146505013 item=minecraft:redstone_block count=1 age=12 pickup-delay=0 on-ground=false
+entity 92 e4 1.3348978105287694 1.0 -0.875 0.025664462203695105 0 0 item=minecraft:cobblestone count=7 age=12 pickup-delay=0 on-ground=true
+
+entity-order 93 entities e2 e3 e4
+entity 93 e2 1.3418738913670851 2.149724916865246 -0.875 -0.009427745624525552 -0.29891163919817526 0 item=minecraft:cobblestone count=16 age=13 pickup-delay=0 on-ground=false
+entity 93 e3 0.125 2.4200201941218835 1.3301631561765601 0 -0.29891163919817526 0.04531825991776667 item=minecraft:redstone_block count=1 age=13 pickup-delay=0 on-ground=false
+entity 93 e4 1.3605622727324644 1.0 -0.875 0.015090705293256106 0 0 item=minecraft:cobblestone count=7 age=13 pickup-delay=0 on-ground=true
+
+entity-order 94 entities e2 e3 e4
+entity 94 e2 1.3324461457425596 1.8108132776670707 -0.875 -0.009239190891855018 -0.33213340641421174 0 item=minecraft:cobblestone count=16 age=14 pickup-delay=0 on-ground=false
+entity 94 e3 0.125 2.0811085549237083 1.3754814160943267 0 -0.33213340641421174 0.044411895583788545 item=minecraft:redstone_block count=1 age=14 pickup-delay=0 on-ground=false
+entity 94 e4 1.3756529780257205 1.0 -0.875 0.00887333560471491 0 0 item=minecraft:cobblestone count=7 age=14 pickup-delay=0 on-ground=true
+
+entity-order 95 entities e2 e3 e4
+entity 95 e2 1.3232069548507046 1.438679871252859 -0.875 -0.0090544072502415 -0.36469073828592746 0 item=minecraft:cobblestone count=16 age=15 pickup-delay=0 on-ground=false
+entity 95 e3 0.125 1.7089751485094966 1.4198933116781152 0 -0.36469073828592746 0.04352365851920246 item=minecraft:redstone_block count=1 age=15 pickup-delay=0 on-ground=false
+entity 95 e4 1.3845263136304353 1.0 -0.875 0.005217521860233248 0 0 item=minecraft:cobblestone count=7 age=15 pickup-delay=0 on-ground=true

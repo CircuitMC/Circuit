@@ -25,6 +25,8 @@ bool set_block(RuleContext& ctx, BlockPos pos, BlockState state);
 // Whether a block can be replaced, by a falling block that lands in it (and
 // so falls into it): air, water, grass, snow and others (falling.cpp).
 bool block_replaceable(BlockState s);
+// A block's blast resistance (its water's, 100, when waterlogged).
+float blast_resistance(BlockState s);
 std::uint8_t received_power(RuleContext& ctx, BlockPos pos);
 
 // Positions outside the level's height or the border are never loaded.

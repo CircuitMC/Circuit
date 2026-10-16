@@ -1,24 +1,64 @@
 circuit-trace 2
-title Redstone ignites TNT, which explodes after its fuse
-game-version 1.21.4
+title TNT primed on obsidian explodes without breaking anything
+game-version 1.21.8
 source harness_trace
-harness circuit-harness:0.5.0+mc1.21.4
-mechanisms neighbor_updates
+harness circuit-harness:0.8.0+mc1.21.8
+mechanisms tnt
 area -4 0 -4 4 4 4
 ticks 90
 changes ordered
 entities observed
 rng observed
 
-at 0 set -1 0 -1 minecraft:stone
-at 0 set -1 0 0 minecraft:stone
-at 0 set -1 0 1 minecraft:stone
-at 0 set 0 0 -1 minecraft:stone
-at 0 set 0 0 0 minecraft:stone
-at 0 set 0 0 1 minecraft:stone
-at 0 set 1 0 -1 minecraft:stone
-at 0 set 1 0 0 minecraft:stone
-at 0 set 1 0 1 minecraft:stone
+at 0 set -3 0 -3 minecraft:obsidian
+at 0 set -3 0 -2 minecraft:obsidian
+at 0 set -3 0 -1 minecraft:obsidian
+at 0 set -3 0 0 minecraft:obsidian
+at 0 set -3 0 1 minecraft:obsidian
+at 0 set -3 0 2 minecraft:obsidian
+at 0 set -3 0 3 minecraft:obsidian
+at 0 set -2 0 -3 minecraft:obsidian
+at 0 set -2 0 -2 minecraft:obsidian
+at 0 set -2 0 -1 minecraft:obsidian
+at 0 set -2 0 0 minecraft:obsidian
+at 0 set -2 0 1 minecraft:obsidian
+at 0 set -2 0 2 minecraft:obsidian
+at 0 set -2 0 3 minecraft:obsidian
+at 0 set -1 0 -3 minecraft:obsidian
+at 0 set -1 0 -2 minecraft:obsidian
+at 0 set -1 0 -1 minecraft:obsidian
+at 0 set -1 0 0 minecraft:obsidian
+at 0 set -1 0 1 minecraft:obsidian
+at 0 set -1 0 2 minecraft:obsidian
+at 0 set -1 0 3 minecraft:obsidian
+at 0 set 0 0 -3 minecraft:obsidian
+at 0 set 0 0 -2 minecraft:obsidian
+at 0 set 0 0 -1 minecraft:obsidian
+at 0 set 0 0 0 minecraft:obsidian
+at 0 set 0 0 1 minecraft:obsidian
+at 0 set 0 0 2 minecraft:obsidian
+at 0 set 0 0 3 minecraft:obsidian
+at 0 set 1 0 -3 minecraft:obsidian
+at 0 set 1 0 -2 minecraft:obsidian
+at 0 set 1 0 -1 minecraft:obsidian
+at 0 set 1 0 0 minecraft:obsidian
+at 0 set 1 0 1 minecraft:obsidian
+at 0 set 1 0 2 minecraft:obsidian
+at 0 set 1 0 3 minecraft:obsidian
+at 0 set 2 0 -3 minecraft:obsidian
+at 0 set 2 0 -2 minecraft:obsidian
+at 0 set 2 0 -1 minecraft:obsidian
+at 0 set 2 0 0 minecraft:obsidian
+at 0 set 2 0 1 minecraft:obsidian
+at 0 set 2 0 2 minecraft:obsidian
+at 0 set 2 0 3 minecraft:obsidian
+at 0 set 3 0 -3 minecraft:obsidian
+at 0 set 3 0 -2 minecraft:obsidian
+at 0 set 3 0 -1 minecraft:obsidian
+at 0 set 3 0 0 minecraft:obsidian
+at 0 set 3 0 1 minecraft:obsidian
+at 0 set 3 0 2 minecraft:obsidian
+at 0 set 3 0 3 minecraft:obsidian
 at 0 set 0 1 0 minecraft:tnt[unstable=false]
 
 at 1 set 1 1 0 minecraft:redstone_block
@@ -29,6 +69,8 @@ draws 1 commands level 2
 entity-order 1 entities e1
 entity 1 e1 0.5099999904632568 1.1600000029802322 0.5023859597619258 0 0.1568000029206276 0.0023382405666873152 fuse=79 on-ground=false
 
+at 2 set 1 1 0 minecraft:air
+change 2 commands 1 1 0 minecraft:redstone_block minecraft:air
 entity-order 2 entities e1
 entity 2 e1 0.5099999904632568 1.2768000059008597 0.5047242003286131 0 0.11446400286221503 0.002291475755353569 fuse=78 on-ground=false
 
@@ -264,59 +306,5 @@ entity-order 79 entities e1
 entity 79 e1 0.5099999904632568 1.0 0.5232861616356909 0 0 4.85829560327751E-15 fuse=1 on-ground=true
 
 entity-removed 80 entities e1 discarded
-change 80 entities -1 0 0 minecraft:stone minecraft:air
-change 80 entities 0 0 -1 minecraft:stone minecraft:air
-change 80 entities 0 0 0 minecraft:stone minecraft:air
-change 80 entities -1 0 -1 minecraft:stone minecraft:air
-change 80 entities -1 0 1 minecraft:stone minecraft:air
-change 80 entities 1 0 0 minecraft:stone minecraft:air
-change 80 entities 1 0 1 minecraft:stone minecraft:air
-change 80 entities 1 0 -1 minecraft:stone minecraft:air
-change 80 entities 0 0 1 minecraft:stone minecraft:air
-change 80 entities 1 1 0 minecraft:redstone_block minecraft:air
-entity-added 80 entities e2 minecraft:item -0.6951213414982309 0.4479864268982173 0.616408529132644 -0.04275931472113259 0.2 -0.06972741700130183 item=minecraft:cobblestone count=9
-entity-added 80 entities e3 minecraft:item 1.6043825375821934 1.1805215473642483 0.657705226118501 0.02831736023906578 0.2 -0.036669143194884596 item=minecraft:redstone_block count=1
-draws 80 entities level 1878
+draws 80 entities level 1924
 entity-order 80 entities e1
-entity 80 e2 -0.6951213414982309 0.4479864268982173 0.616408529132644 -0.04275931472113259 0.2 -0.06972741700130183 item=minecraft:cobblestone count=9 age=0 pickup-delay=10 on-ground=false
-entity 80 e3 1.6043825375821934 1.1805215473642483 0.657705226118501 0.02831736023906578 0.2 -0.036669143194884596 item=minecraft:redstone_block count=1 age=0 pickup-delay=10 on-ground=false
-
-entity-order 81 entities e2 e3
-entity 81 e2 -0.7378806562193635 0.6079864268982174 0.5466811121313422 -0.041904129242279146 0.1568 -0.06833286999122073 item=minecraft:cobblestone count=9 age=1 pickup-delay=9 on-ground=false
-entity 81 e3 1.6326998978212592 1.3405215473642482 0.6210360829236165 0.027751013574395248 0.1568 -0.03593576103039531 item=minecraft:redstone_block count=1 age=1 pickup-delay=9 on-ground=false
-
-entity-order 82 entities e2 e3
-entity 82 e2 -0.7797847854616426 0.7247864268982174 0.47834824214012145 -0.0410660474566914 0.11446399999999998 -0.06696621389474239 item=minecraft:cobblestone count=9 age=2 pickup-delay=8 on-ground=false
-entity 82 e3 1.6604509113956545 1.4573215473642482 0.5851003218932211 0.027195993832215923 0.11446399999999998 -0.03521704649520765 item=minecraft:redstone_block count=1 age=2 pickup-delay=8 on-ground=false
-
-entity-order 83 entities e2 e3
-entity 83 e2 -0.820850832918334 0.7992504268982173 0.41138202824537906 -0.04024472729083027 0.07297471999999998 -0.06562689089412671 item=minecraft:cobblestone count=9 age=3 pickup-delay=7 on-ground=false
-entity 83 e3 1.6876469052278704 1.5317855473642483 0.5498832753980135 0.026652074474294022 0.07297471999999998 -0.03451270623701535 item=minecraft:redstone_block count=1 age=3 pickup-delay=7 on-ground=false
-
-entity-order 84 entities e2 e3
-entity 84 e2 -0.8610955602091643 0.8322251468982174 0.34575513735125235 -0.03943983351262092 0.032315225599999976 -0.06431435432797779 item=minecraft:cobblestone count=9 age=4 pickup-delay=6 on-ground=false
-entity 84 e3 1.7142989797021644 1.5647602673642482 0.5153705691609982 0.02611903349315612 0.032315225599999976 -0.03382245277055267 item=minecraft:redstone_block count=1 age=4 pickup-delay=6 on-ground=false
-
-entity-order 85 entities e2 e3
-entity 85 e2 -0.9005353937217853 0.8245403724982173 0.2814407830232746 -0.03865103759462363 -0.007531078912000024 -0.06302806846811719 item=minecraft:cobblestone count=9 age=5 pickup-delay=5 on-ground=false
-entity 85 e3 1.7404180131953204 1.5570754929642483 0.48154811639044554 0.025596653321474025 -0.007531078912000024 -0.03314600436025371 item=minecraft:redstone_block count=1 age=5 pickup-delay=5 on-ground=false
-
-entity-order 86 entities e2 e3
-entity 86 e2 -0.9391864313164089 0.7770092935862173 0.21841271455515737 -0.03787801757994119 -0.04658045733376002 -0.06176750830091985 item=minecraft:cobblestone count=9 age=6 pickup-delay=4 on-ground=false
-entity 86 e3 1.7660146665167944 1.5095444140522483 0.4484021120301918 0.02508472074326196 -0.04658045733376002 -0.032483084905258496 item=minecraft:redstone_block count=1 age=6 pickup-delay=4 on-ground=false
-
-entity-order 87 entities e2 e3
-entity 87 e2 -0.97706444889635 0.6904288362524573 0.15664520625423753 -0.03712045795080822 -0.08484884818708481 -0.06053215931302318 item=minecraft:cobblestone count=9 age=7 pickup-delay=3 on-ground=false
-entity 87 e3 1.7910993872600565 1.4229639567184882 0.41591902712493334 0.0245830268068498 -0.08484884818708481 -0.031833423826719 item=minecraft:redstone_block count=1 age=7 pickup-delay=3 on-ground=false
-
-entity-order 88 entities e2 e3
-entity 88 e2 -1.0141849068471582 0.5655799880653725 0.09611304694121435 -0.0363780494998086 -0.12235187122334311 -0.059321517281322025 item=minecraft:cobblestone count=9 age=8 pickup-delay=2 on-ground=false
-entity 88 e3 1.8156824140669063 1.2981151085314033 0.38408560329821434 0.024091366739596828 -0.12235187122334311 -0.031196755957358994 item=minecraft:redstone_block count=1 age=8 pickup-delay=2 on-ground=false
-
-entity-order 89 entities e2 e3
-entity 89 e2 -1.0505629563469667 0.40322811684202936 0.036791529659892325 -0.03565048920366866 -0.15910483379887624 -0.058135088067163734 item=minecraft:cobblestone count=9 age=9 pickup-delay=1 on-ground=false
-entity 89 e3 1.8397737808065031 1.1357632373080602 0.35288884734085535 0.023609539864311246 -0.15910483379887624 -0.030572821433242713 item=minecraft:redstone_block count=1 age=9 pickup-delay=1 on-ground=false
-
-entity-order 90 entities e2 e3
-entity 90 e2 -1.0862134455506354 0.2041232830431531 -0.02134355840727141 -0.034937480099574404 -0.1951227371228987 -0.056972387414659265 item=minecraft:cobblestone count=9 age=10 pickup-delay=0 on-ground=false
-entity 90 e3 1.8633833206708144 0.936658403509184 0.32231602590761266 0.023137349517341258 -0.1951227371228987 -0.02996136558770815 item=minecraft:redstone_block count=1 age=10 pickup-delay=0 on-ground=false

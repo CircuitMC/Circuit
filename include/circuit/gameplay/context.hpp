@@ -7,6 +7,7 @@
 #include <circuit/gameplay/world_types.hpp>
 #include <optional>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace circuit::gameplay {
@@ -140,6 +141,11 @@ public:
     float random_float() { return draw([](LevelRandom& r) { return r.next_float(); }); }
     std::int32_t random_int(std::int32_t bound) { return draw([&](LevelRandom& r) { return r.next_int(bound); }); }
     bool random_boolean() { return draw([](LevelRandom& r) { return r.next_boolean(); }); }
+    // Several draws recorded as one use (an explosion's rays, its shuffle).
+    template <class F>
+    std::invoke_result_t<F, LevelRandom&> random_draws(F&& f) {
+        return draw(std::forward<F>(f));
+    }
 
 protected:
     // The current level's random sequence.

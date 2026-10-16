@@ -1,0 +1,333 @@
+circuit-trace 2
+title An explosion at a chunk corner destroys items in eight sections
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.8.0+mc1.21.8
+mechanisms tnt
+area -5 -6 -5 5 5 5
+ticks 82
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 -1 0 minecraft:obsidian
+at 0 set 0 0 0 minecraft:tnt[unstable=false]
+
+at 1 set 1 0 0 minecraft:redstone_block
+change 1 commands 1 0 0 minecraft:air minecraft:redstone_block
+entity-added 1 commands e1 minecraft:tnt 0.5 0 0.5 0.019857169889349057 0.20000000298023224 0.002385959761925832 fuse=80
+change 1 commands 0 0 0 minecraft:tnt[unstable=false] minecraft:air
+draws 1 commands level 2
+entity-order 1 entities e1
+entity 1 e1 0.5099999904632568 0.16000000298023223 0.5023859597619258 0 0.1568000029206276 0.0023382405666873152 fuse=79 on-ground=false
+
+entity-order 2 entities e1
+entity 2 e1 0.5099999904632568 0.27680000590085985 0.5047242003286131 0 0.11446400286221503 0.002291475755353569 fuse=78 on-ground=false
+
+entity-order 3 entities e1
+entity 3 e1 0.5099999904632568 0.35126400876307484 0.5070156760839667 0 0.07297472280497072 0.0022456462402464976 fuse=77 on-ground=false
+
+entity-order 4 entities e1
+entity 4 e1 0.5099999904632568 0.38423873156804556 0.5092613223242132 0 0.03231522834887131 0.0022007333154415677 fuse=76 on-ground=false
+
+entity-order 5 entities e1
+entity 5 e1 0.5099999904632568 0.37655395991691687 0.5114620556396547 0 -0.0075310762181061185 0.0021567186491327365 fuse=75 on-ground=false
+
+entity-order 6 entities e1
+entity 6 e1 0.5099999904632568 0.3290228836988107 0.5136187742887874 0 -0.046580454693744 0.0021135842761500815 fuse=74 on-ground=false
+
+entity-order 7 entities e1
+entity 7 e1 0.5099999904632568 0.2424424290050667 0.5157323585649375 0 -0.08484884559986913 0.00207131259062708 fuse=73 on-ground=false
+
+entity-order 8 entities e1
+entity 8 e1 0.5099999904632568 0.11759358340519757 0.5178036711555646 0 -0.12235186868787176 0.0020298863388145383 fuse=72 on-ground=false
+
+entity-order 9 entities e1
+entity 9 e1 0.5099999904632568 0 0.5198335574943791 0 0 0.0013925020284267732 fuse=71 on-ground=true
+
+entity-order 10 entities e1
+entity 10 e1 0.5099999904632568 0 0.5212260595228059 0 0 9.552563915007663E-4 fuse=70 on-ground=true
+
+entity-order 11 entities e1
+entity 11 e1 0.5099999904632568 0 0.5221813159143066 0 0 6.553058845695257E-4 fuse=69 on-ground=true
+
+entity-order 12 entities e1
+entity 12 e1 0.5099999904632568 0 0.5228366217988761 0 0 4.495398368146946E-4 fuse=68 on-ground=true
+
+entity-order 13 entities e1
+entity 13 e1 0.5099999904632568 0 0.5232861616356909 0 0 3.083843280548805E-4 fuse=67 on-ground=true
+
+entity-order 14 entities e1
+entity 14 e1 0.5099999904632568 0 0.5232861616356909 0 0 2.1155164904564802E-4 fuse=66 on-ground=true
+
+entity-order 15 entities e1
+entity 15 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.4512443124531453E-4 fuse=65 on-ground=true
+
+entity-order 16 entities e1
+entity 16 e1 0.5099999904632568 0 0.5232861616356909 0 0 9.955535983428576E-5 fuse=64 on-ground=true
+
+entity-order 17 entities e1
+entity 17 e1 0.5099999904632568 0 0.5232861616356909 0 0 6.829497684632003E-5 fuse=63 on-ground=true
+
+entity-order 18 entities e1
+entity 18 e1 0.5099999904632568 0 0.5232861616356909 0 0 4.6850354116575534E-5 fuse=62 on-ground=true
+
+entity-order 19 entities e1
+entity 19 e1 0.5099999904632568 0 0.5232861616356909 0 0 3.2139342923970814E-5 fuse=61 on-ground=true
+
+entity-order 20 entities e1
+entity 20 e1 0.5099999904632568 0 0.5232861616356909 0 0 2.2047589245843973E-5 fuse=60 on-ground=true
+
+entity-order 21 entities e1
+entity 21 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.5124646222648963E-5 fuse=59 on-ground=true
+
+entity-order 22 entities e1
+entity 22 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.0375507308737189E-5 fuse=58 on-ground=true
+
+entity-order 23 entities e1
+entity 23 e1 0.5099999904632568 0 0.5232861616356909 0 0 7.117598013793711E-6 fuse=57 on-ground=true
+
+entity-order 24 entities e1
+entity 24 e1 0.5099999904632568 0 0.5232861616356909 0 0 4.882672237462486E-6 fuse=56 on-ground=true
+
+entity-order 25 entities e1
+entity 25 e1 0.5099999904632568 0 0.5232861616356909 0 0 3.3495131548992647E-6 fuse=55 on-ground=true
+
+entity-order 26 entities e1
+entity 26 e1 0.5099999904632568 0 0.5232861616356909 0 0 2.2977660242608953E-6 fuse=54 on-ground=true
+
+entity-order 27 entities e1
+entity 27 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.5762674926429741E-6 fuse=53 on-ground=true
+
+entity-order 28 entities e1
+entity 28 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.0813194999530802E-6 fuse=52 on-ground=true
+
+entity-order 29 entities e1
+entity 29 e1 0.5099999904632568 0 0.5232861616356909 0 0 7.41785176967813E-7 fuse=51 on-ground=true
+
+entity-order 30 entities e1
+entity 30 e1 0.5099999904632568 0 0.5232861616356909 0 0 5.088646313999197E-7 fuse=50 on-ground=true
+
+entity-order 31 entities e1
+entity 31 e1 0.5099999904632568 0 0.5232861616356909 0 0 3.4908113714034483E-7 fuse=49 on-ground=true
+
+entity-order 32 entities e1
+entity 32 e1 0.5099999904632568 0 0.5232861616356909 0 0 2.3946966007827654E-7 fuse=48 on-ground=true
+
+entity-order 33 entities e1
+entity 33 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.642761868136977E-7 fuse=47 on-ground=true
+
+entity-order 34 entities e1
+entity 34 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.1269346415419661E-7 fuse=46 on-ground=true
+
+entity-order 35 entities e1
+entity 35 e1 0.5099999904632568 0 0.5232861616356909 0 0 7.730771640977887E-8 fuse=45 on-ground=true
+
+entity-order 36 entities e1
+entity 36 e1 0.5099999904632568 0 0.5232861616356909 0 0 5.30330934571083E-8 fuse=44 on-ground=true
+
+entity-order 37 entities e1
+entity 37 e1 0.5099999904632568 0 0.5232861616356909 0 0 3.638070211157629E-8 fuse=43 on-ground=true
+
+entity-order 38 entities e1
+entity 38 e1 0.5099999904632568 0 0.5232861616356909 0 0 2.4957161648541332E-8 fuse=42 on-ground=true
+
+entity-order 39 entities e1
+entity 39 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.7120612890899355E-8 fuse=41 on-ground=true
+
+entity-order 40 entities e1
+entity 40 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.1744740443156956E-8 fuse=40 on-ground=true
+
+entity-order 41 entities e1
+entity 41 e1 0.5099999904632568 0 0.5232861616356909 0 0 8.056891944005672E-9 fuse=39 on-ground=true
+
+entity-order 42 entities e1
+entity 42 e1 0.5099999904632568 0 0.5232861616356909 0 0 5.52702787358789E-9 fuse=38 on-ground=true
+
+entity-order 43 entities e1
+entity 43 e1 0.5099999904632568 0 0.5232861616356909 0 0 3.791541121281292E-9 fuse=37 on-ground=true
+
+entity-order 44 entities e1
+entity 44 e1 0.5099999904632568 0 0.5232861616356909 0 0 2.6009972091989664E-9 fuse=36 on-ground=true
+
+entity-order 45 entities e1
+entity 45 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.7842840855104909E-9 fuse=35 on-ground=true
+
+entity-order 46 entities e1
+entity 46 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.2240188826601966E-9 fuse=34 on-ground=true
+
+entity-order 47 entities e1
+entity 47 e1 0.5099999904632568 0 0.5232861616356909 0 0 8.396769535048947E-10 fuse=33 on-ground=true
+
+entity-order 48 entities e1
+entity 48 e1 0.5099999904632568 0 0.5232861616356909 0 0 5.760183901043577E-10 fuse=32 on-ground=true
+
+entity-order 49 entities e1
+entity 49 e1 0.5099999904632568 0 0.5232861616356909 0 0 3.9514861561158933E-10 fuse=31 on-ground=true
+
+entity-order 50 entities e1
+entity 50 e1 0.5099999904632568 0 0.5232861616356909 0 0 2.7107195030955024E-10 fuse=30 on-ground=true
+
+entity-order 51 entities e1
+entity 51 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.8595535791235144E-10 fuse=29 on-ground=true
+
+entity-order 52 entities e1
+entity 52 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.2756537552787307E-10 fuse=28 on-ground=true
+
+entity-order 53 entities e1
+entity 53 e1 0.5099999904632568 0 0.5232861616356909 0 0 8.75098476121209E-11 fuse=27 on-ground=true
+
+entity-order 54 entities e1
+entity 54 e1 0.5099999904632568 0 0.5232861616356909 0 0 6.003175546191494E-11 fuse=26 on-ground=true
+
+entity-order 55 entities e1
+entity 55 e1 0.5099999904632568 0 0.5232861616356909 0 0 4.1181784246873646E-11 fuse=25 on-ground=true
+
+entity-order 56 entities e1
+entity 56 e1 0.5099999904632568 0 0.5232861616356909 0 0 2.8250703993355318E-11 fuse=24 on-ground=true
+
+entity-order 57 entities e1
+entity 57 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.9379982939441747E-11 fuse=23 on-ground=true
+
+entity-order 58 entities e1
+entity 58 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.3294668296457037E-11 fuse=22 on-ground=true
+
+entity-order 59 entities e1
+entity 59 e1 0.5099999904632568 0 0.5232861616356909 0 0 9.120142451369527E-12 fuse=21 on-ground=true
+
+entity-order 60 entities e1
+entity 60 e1 0.5099999904632568 0 0.5232861616356909 0 0 6.256417721639494E-12 fuse=20 on-ground=true
+
+entity-order 61 entities e1
+entity 61 e1 0.5099999904632568 0 0.5232861616356909 0 0 4.291902557044693E-12 fuse=19 on-ground=true
+
+entity-order 62 entities e1
+entity 62 e1 0.5099999904632568 0 0.5232861616356909 0 0 2.9442451541326587E-12 fuse=18 on-ground=true
+
+entity-order 63 entities e1
+entity 63 e1 0.5099999904632568 0 0.5232861616356909 0 0 2.019752175735004E-12 fuse=17 on-ground=true
+
+entity-order 64 entities e1
+entity 64 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.3855499925542126E-12 fuse=16 on-ground=true
+
+entity-order 65 entities e1
+entity 65 e1 0.5099999904632568 0 0.5232861616356909 0 0 9.504872948921898E-13 fuse=15 on-ground=true
+
+entity-order 66 entities e1
+entity 66 e1 0.5099999904632568 0 0.5232861616356909 0 0 6.520342842960422E-13 fuse=14 on-ground=true
+
+entity-order 67 entities e1
+entity 67 e1 0.5099999904632568 0 0.5232861616356909 0 0 4.472955190270849E-13 fuse=13 on-ground=true
+
+entity-order 68 entities e1
+entity 68 e1 0.5099999904632568 0 0.5232861616356909 0 0 3.068447260525802E-13 fuse=12 on-ground=true
+
+entity-order 69 entities e1
+entity 69 e1 0.5099999904632568 0 0.5232861616356909 0 0 2.1049548207206998E-13 fuse=11 on-ground=true
+
+entity-order 70 entities e1
+entity 70 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.4439990070143998E-13 fuse=10 on-ground=true
+
+entity-order 71 entities e1
+entity 71 e1 0.5099999904632568 0 0.5232861616356909 0 0 9.905833188118782E-14 fuse=9 on-ground=true
+
+entity-order 72 entities e1
+entity 72 e1 0.5099999904632568 0 0.5232861616356909 0 0 6.795401567049484E-14 fuse=8 on-ground=true
+
+entity-order 73 entities e1
+entity 73 e1 0.5099999904632568 0 0.5232861616356909 0 0 4.6616454749959456E-14 fuse=7 on-ground=true
+
+entity-order 74 entities e1
+entity 74 e1 0.5099999904632568 0 0.5232861616356909 0 0 3.197888795847218E-14 fuse=6 on-ground=true
+
+entity-order 75 entities e1
+entity 75 e1 0.5099999904632568 0 0.5232861616356909 0 0 2.1937517139511917E-14 fuse=5 on-ground=true
+
+entity-order 76 entities e1
+entity 76 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.5049136757705172E-14 fuse=4 on-ground=true
+
+entity-order 77 entities e1
+entity 77 e1 0.5099999904632568 0 0.5232861616356909 0 0 1.0323707815785749E-14 fuse=3 on-ground=true
+
+entity-order 78 entities e1
+entity 78 e1 0.5099999904632568 0 0.5232861616356909 0 0 7.082063561629023E-15 fuse=2 on-ground=true
+
+entity-order 79 entities e1
+entity 79 e1 0.5099999904632568 0 0.5232861616356909 0 0 4.85829560327751E-15 fuse=1 on-ground=true
+
+at 80 spawn-item 3.5 3 3.5 0 0 0 minecraft:stone 1
+entity-added 80 commands e2 minecraft:item 3.5 3.0 3.5 0 0 0 item=minecraft:stone count=1
+at 80 spawn-item -3.5 -3 -3.5 0 0 0 minecraft:stone 2
+entity-added 80 commands e3 minecraft:item -3.5 -3.0 -3.5 0 0 0 item=minecraft:stone count=2
+at 80 spawn-item 3.5 -3 -3.5 0 0 0 minecraft:stone 3
+entity-added 80 commands e4 minecraft:item 3.5 -3.0 -3.5 0 0 0 item=minecraft:stone count=3
+at 80 spawn-item -3.5 3 3.5 0 0 0 minecraft:stone 4
+entity-added 80 commands e5 minecraft:item -3.5 3.0 3.5 0 0 0 item=minecraft:stone count=4
+at 80 spawn-item 3.5 3 -3.5 0 0 0 minecraft:stone 5
+entity-added 80 commands e6 minecraft:item 3.5 3.0 -3.5 0 0 0 item=minecraft:stone count=5
+at 80 spawn-item -3.5 -3 3.5 0 0 0 minecraft:stone 6
+entity-added 80 commands e7 minecraft:item -3.5 -3.0 3.5 0 0 0 item=minecraft:stone count=6
+at 80 spawn-item 3.5 -3 3.5 0 0 0 minecraft:stone 7
+entity-added 80 commands e8 minecraft:item 3.5 -3.0 3.5 0 0 0 item=minecraft:stone count=7
+at 80 spawn-item -3.5 3 -3.5 0 0 0 minecraft:stone 8
+entity-added 80 commands e9 minecraft:item -3.5 3.0 -3.5 0 0 0 item=minecraft:stone count=8
+at 80 spawn-item 2.5 3 2.5 0 0 0 minecraft:stone 9
+entity-added 80 commands e10 minecraft:item 2.5 3.0 2.5 0 0 0 item=minecraft:stone count=9
+at 80 spawn-item -2.5 -3 -2.5 0 0 0 minecraft:stone 10
+entity-added 80 commands e11 minecraft:item -2.5 -3.0 -2.5 0 0 0 item=minecraft:stone count=10
+at 80 spawn-item 2.5 -3 -2.5 0 0 0 minecraft:stone 11
+entity-added 80 commands e12 minecraft:item 2.5 -3.0 -2.5 0 0 0 item=minecraft:stone count=11
+at 80 spawn-item -2.5 3 2.5 0 0 0 minecraft:stone 12
+entity-added 80 commands e13 minecraft:item -2.5 3.0 2.5 0 0 0 item=minecraft:stone count=12
+at 80 spawn-item 2.5 3 -2.5 0 0 0 minecraft:stone 13
+entity-added 80 commands e14 minecraft:item 2.5 3.0 -2.5 0 0 0 item=minecraft:stone count=13
+at 80 spawn-item -2.5 -3 2.5 0 0 0 minecraft:stone 14
+entity-added 80 commands e15 minecraft:item -2.5 -3.0 2.5 0 0 0 item=minecraft:stone count=14
+at 80 spawn-item 2.5 -3 2.5 0 0 0 minecraft:stone 15
+entity-added 80 commands e16 minecraft:item 2.5 -3.0 2.5 0 0 0 item=minecraft:stone count=15
+at 80 spawn-item -2.5 3 -2.5 0 0 0 minecraft:stone 16
+entity-added 80 commands e17 minecraft:item -2.5 3.0 -2.5 0 0 0 item=minecraft:stone count=16
+entity-removed 80 entities e1 discarded
+entity-removed 80 entities e5 discarded
+entity-removed 80 entities e13 discarded
+entity-removed 80 entities e9 discarded
+entity-removed 80 entities e17 discarded
+entity-removed 80 entities e2 discarded
+entity-removed 80 entities e10 discarded
+entity-removed 80 entities e6 discarded
+entity-removed 80 entities e14 discarded
+change 80 entities 1 0 0 minecraft:redstone_block minecraft:air
+entity-added 80 entities e18 minecraft:item 1.6313292626054372 0.44916720109698227 0.42758488549934276 0.04279497452269049 0.2 0.08295980900905761 item=minecraft:redstone_block count=1
+draws 80 entities level 1991
+entity-order 80 entities e1 e3 e4 e7 e8 e11 e12 e15 e16
+entity 80 e3 -3.5 -3.04 -3.5 0 -0.0392 0 item=minecraft:stone count=2 age=1 pickup-delay=0 on-ground=false
+entity 80 e4 3.5 -3.04 -3.5 0 -0.0392 0 item=minecraft:stone count=3 age=1 pickup-delay=0 on-ground=false
+entity 80 e7 -3.5 -3.04 3.5 0 -0.0392 0 item=minecraft:stone count=6 age=1 pickup-delay=0 on-ground=false
+entity 80 e8 3.5 -3.04 3.5 0 -0.0392 0 item=minecraft:stone count=7 age=1 pickup-delay=0 on-ground=false
+entity 80 e11 -2.5 -3.04 -2.5 0 -0.0392 0 item=minecraft:stone count=10 age=1 pickup-delay=0 on-ground=false
+entity 80 e12 2.5 -3.04 -2.5 0 -0.0392 0 item=minecraft:stone count=11 age=1 pickup-delay=0 on-ground=false
+entity 80 e15 -2.5 -3.04 2.5 0 -0.0392 0 item=minecraft:stone count=14 age=1 pickup-delay=0 on-ground=false
+entity 80 e16 2.5 -3.04 2.5 0 -0.0392 0 item=minecraft:stone count=15 age=1 pickup-delay=0 on-ground=false
+entity 80 e18 1.6313292626054372 0.44916720109698227 0.42758488549934276 0.04279497452269049 0.2 0.08295980900905761 item=minecraft:redstone_block count=1 age=0 pickup-delay=10 on-ground=false
+
+entity-order 81 entities e3 e4 e7 e8 e11 e12 e15 e16 e18
+entity 81 e3 -3.5 -3.1192 -3.5 0 -0.07761599999999999 0 item=minecraft:stone count=2 age=2 pickup-delay=0 on-ground=false
+entity 81 e4 3.5 -3.1192 -3.5 0 -0.07761599999999999 0 item=minecraft:stone count=3 age=2 pickup-delay=0 on-ground=false
+entity 81 e7 -3.5 -3.1192 3.5 0 -0.07761599999999999 0 item=minecraft:stone count=6 age=2 pickup-delay=0 on-ground=false
+entity 81 e8 3.5 -3.1192 3.5 0 -0.07761599999999999 0 item=minecraft:stone count=7 age=2 pickup-delay=0 on-ground=false
+entity 81 e11 -2.5 -3.1192 -2.5 0 -0.07761599999999999 0 item=minecraft:stone count=10 age=2 pickup-delay=0 on-ground=false
+entity 81 e12 2.5 -3.1192 -2.5 0 -0.07761599999999999 0 item=minecraft:stone count=11 age=2 pickup-delay=0 on-ground=false
+entity 81 e15 -2.5 -3.1192 2.5 0 -0.07761599999999999 0 item=minecraft:stone count=14 age=2 pickup-delay=0 on-ground=false
+entity 81 e16 2.5 -3.1192 2.5 0 -0.07761599999999999 0 item=minecraft:stone count=15 age=2 pickup-delay=0 on-ground=false
+entity 81 e18 1.6741242371281277 0.6091672010969823 0.5105446945084003 0.04193907584848604 0.1568 0.08130061441120924 item=minecraft:redstone_block count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 82 entities e3 e4 e7 e8 e11 e12 e15 e16 e18
+entity 82 e3 -3.5 -3.236816 -3.5 0 -0.11526368 0 item=minecraft:stone count=2 age=3 pickup-delay=0 on-ground=false
+entity 82 e4 3.5 -3.236816 -3.5 0 -0.11526368 0 item=minecraft:stone count=3 age=3 pickup-delay=0 on-ground=false
+entity 82 e7 -3.5 -3.236816 3.5 0 -0.11526368 0 item=minecraft:stone count=6 age=3 pickup-delay=0 on-ground=false
+entity 82 e8 3.5 -3.236816 3.5 0 -0.11526368 0 item=minecraft:stone count=7 age=3 pickup-delay=0 on-ground=false
+entity 82 e11 -2.5 -3.236816 -2.5 0 -0.11526368 0 item=minecraft:stone count=10 age=3 pickup-delay=0 on-ground=false
+entity 82 e12 2.5 -3.236816 -2.5 0 -0.11526368 0 item=minecraft:stone count=11 age=3 pickup-delay=0 on-ground=false
+entity 82 e15 -2.5 -3.236816 2.5 0 -0.11526368 0 item=minecraft:stone count=14 age=3 pickup-delay=0 on-ground=false
+entity 82 e16 2.5 -3.236816 2.5 0 -0.11526368 0 item=minecraft:stone count=15 age=3 pickup-delay=0 on-ground=false
+entity 82 e18 1.7160633129766139 0.7259672010969823 0.5918453089196096 0.04110029513144071 0.11446399999999998 0.07967460367367121 item=minecraft:redstone_block count=1 age=2 pickup-delay=8 on-ground=false

@@ -16,7 +16,7 @@ bool all(const std::vector<Condition>& cs, const BreakContext& ctx) {
 
 bool test(const Condition& c, const BreakContext& ctx) {
     switch (c.kind) {
-    case Condition::Kind::survives_explosion: return true; // a player's break is no explosion
+    case Condition::Kind::survives_explosion: return true; // a player's break, or TNT (no drop decay)
     case Condition::Kind::block_state:
         if (c.other_block) return false;
         for (const auto& p : c.properties) {
@@ -54,7 +54,7 @@ void apply(const std::vector<Function>& fs, long& count, const BreakContext& ctx
             if (f.min) count = std::max(count, *f.min);
             if (f.max) count = std::min(count, *f.max);
             break;
-        case Function::Kind::explosion_decay: break; // no explosion
+        case Function::Kind::explosion_decay: break; // no explosion, or TNT's (no drop decay)
         case Function::Kind::ore_bonus: {
             const long level = ctx.tool.empty() || !ctx.enchantment_level ? 0 : ctx.enchantment_level(f.enchantment);
             if (level > 0) throw Unresolved{}; // fortune multiplies by a random factor

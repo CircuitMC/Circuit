@@ -13,7 +13,7 @@ the committed table.
 Each version maps its states to internal ids and back. Per internal block the
 table keeps the data the rules use for blocks without rules of their own:
 hardness, opacity, the effective tool and the lowest tier that harvests the
-block. Per state it keeps the collision class (empty, partial, full cube),
+block, and every block's blast resistance. Per state it keeps the collision class (empty, partial, full cube),
 which faces the collision shape covers completely, its light: emission,
 dampening and, for states whose shape occludes light, the parts of each face
 the occlusion shape covers (light_of below; minecraft-data gives light per
@@ -268,7 +268,7 @@ def main():
         f'const char* const registry_id = "{REGISTRY_ID}";',
         "",
         "// name, first property, property count, first internal state, state count, default state offset,",
-        "// hardness (negative: unbreakable), opaque, effective tool, harvest tier",
+        "// hardness (negative: unbreakable), opaque, effective tool, harvest tier, blast resistance",
         "const BlockData blocks[] = {",
     ]
     properties = []  # (name, first value, count)
@@ -339,8 +339,13 @@ def main():
         hardness = -1.0 if hardness is None or hardness < 0 else float(hardness)
         opaque = 1 if b.get("filterLight", 0) == 15 and not b.get("transparent", False) else 0
         tool = tool_of(b.get("material"))
+        resistance = float(b["resistance"])
+        for release, other_blocks, _, _ in versions:
+            other = next((ob for ob in other_blocks if ob["name"] == b["name"] and schema(ob) == sch), None)
+            if other is not None and float(other["resistance"]) != resistance:
+                sys.exit(f"{name}: blast resistance differs in {release}")
         out.append(f'    {{"{name}", {first_prop}, {len(sch)}, {first_state}, {count}, {b["defaultState"] - b["minStateId"]}, '
-                   f'{hardness!r}f, {opaque}, {tool}, {tier_of(b, tool, items)}}},')
+                   f'{hardness!r}f, {opaque}, {tool}, {tier_of(b, tool, items)}, {resistance!r}f}},')
         first_state += count
     out += ["};", f"const std::uint32_t block_count = {len(internal)};", f"const std::uint32_t state_count = {first_state - 1};", ""]
     out.append("const PropertyData properties[] = {")

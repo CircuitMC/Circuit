@@ -849,6 +849,10 @@ private:
                 // saved: it starts again at 0, as when the target versions load it.
                 out.age = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "Age").value_or(0), gameplay::item_age_never, 32767));
                 out.pickup_delay = static_cast<std::uint16_t>(std::clamp<std::int64_t>(integer(e, "PickupDelay").value_or(0), 0, 32767));
+                // A short; an item with none left is gone.
+                const auto health = integer(e, "Health").value_or(gameplay::item_health);
+                if (health <= 0) continue;
+                out.health = static_cast<std::int32_t>(std::min<std::int64_t>(health, 32767));
             }
             if (e.find("Passengers")) unsupported("entity passengers");
             // Checked before conversion: inside the border, and no further below or
@@ -1220,7 +1224,7 @@ private:
                 continue;
             }
             t.set("Age", Tag::short_(static_cast<std::int16_t>(std::min(e->age, gameplay::item_despawn_age))));
-            t.set("Health", Tag::short_(5));
+            t.set("Health", Tag::short_(static_cast<std::int16_t>(e->health)));
             t.set("PickupDelay", Tag::short_(static_cast<std::int16_t>(e->pickup_delay)));
             t.set("Air", Tag::short_(300));
             t.set("Fire", Tag::short_(-1));

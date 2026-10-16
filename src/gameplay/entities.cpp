@@ -5,6 +5,7 @@
 #include <circuit/gameplay/survival.hpp>
 #include <algorithm>
 #include <cmath>
+#include <tuple>
 
 // Item entities, as both official servers run them (checked against their
 // traces of falling, sliding, resting and merging items; minecraft.wiki
@@ -296,6 +297,19 @@ namespace detail {
 physics::Aabb entity_box(const Entity& e) {
     const double size = e.kind == EntityKind::item ? item_size : static_cast<double>(0.98f);
     return physics::box_at(e.position, size, size);
+}
+
+std::vector<EntityId> entities_in_section_order(RuleContext& ctx, std::vector<EntityId> ids) {
+    // Sections by chunk x (ascending), then chunk z and section y as the
+    // target versions key them: in 22 and 20 bits, so that negative ones
+    // come after positive ones (tnt_items, tnt_entity_order).
+    const auto key = [&](EntityId id) {
+        const auto& p = ctx.peek_entity(id)->position;
+        const auto c = contracts::block_of(p);
+        return std::tuple{c.x >> 4, static_cast<std::uint32_t>(c.z >> 4) & 0x3FFFFFU, static_cast<std::uint32_t>(c.y >> 4) & 0xFFFFFU, id.value};
+    };
+    std::ranges::sort(ids, {}, key);
+    return ids;
 }
 
 std::vector<EntityId> entities_intersecting(RuleContext& ctx, const physics::Aabb& area) {

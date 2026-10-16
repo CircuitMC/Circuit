@@ -2,5 +2,4 @@
 # evidence_tests fails when an outcome changes; a trace that passes moves to the harness directory.
 item_drop_piston.ctrace FAIL tick 1 entity probe (line 28)
 item_piston_push.ctrace FAIL tick 6 entity probe (line 40)
-tnt_redstone_ignition.ctrace FAIL tick 80
 tnt_reload_pending.ctrace FAIL tick 45

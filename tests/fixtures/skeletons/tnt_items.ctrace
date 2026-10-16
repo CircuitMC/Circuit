@@ -1,0 +1,114 @@
+circuit-trace 2
+title A TNT explosion pushes and destroys items
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms tnt
+area -10 0 -3 10 4 3
+ticks 100
+changes ordered
+entities observed
+rng observed
+
+at 0 set -9 0 -2 minecraft:obsidian
+at 0 set -9 0 -1 minecraft:obsidian
+at 0 set -9 0 0 minecraft:obsidian
+at 0 set -9 0 1 minecraft:obsidian
+at 0 set -9 0 2 minecraft:obsidian
+at 0 set -8 0 -2 minecraft:obsidian
+at 0 set -8 0 -1 minecraft:obsidian
+at 0 set -8 0 0 minecraft:obsidian
+at 0 set -8 0 1 minecraft:obsidian
+at 0 set -8 0 2 minecraft:obsidian
+at 0 set -7 0 -2 minecraft:obsidian
+at 0 set -7 0 -1 minecraft:obsidian
+at 0 set -7 0 0 minecraft:obsidian
+at 0 set -7 0 1 minecraft:obsidian
+at 0 set -7 0 2 minecraft:obsidian
+at 0 set -6 0 -2 minecraft:obsidian
+at 0 set -6 0 -1 minecraft:obsidian
+at 0 set -6 0 0 minecraft:obsidian
+at 0 set -6 0 1 minecraft:obsidian
+at 0 set -6 0 2 minecraft:obsidian
+at 0 set -5 0 -2 minecraft:obsidian
+at 0 set -5 0 -1 minecraft:obsidian
+at 0 set -5 0 0 minecraft:obsidian
+at 0 set -5 0 1 minecraft:obsidian
+at 0 set -5 0 2 minecraft:obsidian
+at 0 set -4 0 -2 minecraft:obsidian
+at 0 set -4 0 -1 minecraft:obsidian
+at 0 set -4 0 0 minecraft:obsidian
+at 0 set -4 0 1 minecraft:obsidian
+at 0 set -4 0 2 minecraft:obsidian
+at 0 set -3 0 -2 minecraft:obsidian
+at 0 set -3 0 -1 minecraft:obsidian
+at 0 set -3 0 0 minecraft:obsidian
+at 0 set -3 0 1 minecraft:obsidian
+at 0 set -3 0 2 minecraft:obsidian
+at 0 set -2 0 -2 minecraft:obsidian
+at 0 set -2 0 -1 minecraft:obsidian
+at 0 set -2 0 0 minecraft:obsidian
+at 0 set -2 0 1 minecraft:obsidian
+at 0 set -2 0 2 minecraft:obsidian
+at 0 set -1 0 -2 minecraft:obsidian
+at 0 set -1 0 -1 minecraft:obsidian
+at 0 set -1 0 0 minecraft:obsidian
+at 0 set -1 0 1 minecraft:obsidian
+at 0 set -1 0 2 minecraft:obsidian
+at 0 set 0 0 -2 minecraft:obsidian
+at 0 set 0 0 -1 minecraft:obsidian
+at 0 set 0 0 0 minecraft:obsidian
+at 0 set 0 0 1 minecraft:obsidian
+at 0 set 0 0 2 minecraft:obsidian
+at 0 set 1 0 -2 minecraft:obsidian
+at 0 set 1 0 -1 minecraft:obsidian
+at 0 set 1 0 0 minecraft:obsidian
+at 0 set 1 0 1 minecraft:obsidian
+at 0 set 1 0 2 minecraft:obsidian
+at 0 set 2 0 -2 minecraft:obsidian
+at 0 set 2 0 -1 minecraft:obsidian
+at 0 set 2 0 0 minecraft:obsidian
+at 0 set 2 0 1 minecraft:obsidian
+at 0 set 2 0 2 minecraft:obsidian
+at 0 set 3 0 -2 minecraft:obsidian
+at 0 set 3 0 -1 minecraft:obsidian
+at 0 set 3 0 0 minecraft:obsidian
+at 0 set 3 0 1 minecraft:obsidian
+at 0 set 3 0 2 minecraft:obsidian
+at 0 set 4 0 -2 minecraft:obsidian
+at 0 set 4 0 -1 minecraft:obsidian
+at 0 set 4 0 0 minecraft:obsidian
+at 0 set 4 0 1 minecraft:obsidian
+at 0 set 4 0 2 minecraft:obsidian
+at 0 set 5 0 -2 minecraft:obsidian
+at 0 set 5 0 -1 minecraft:obsidian
+at 0 set 5 0 0 minecraft:obsidian
+at 0 set 5 0 1 minecraft:obsidian
+at 0 set 5 0 2 minecraft:obsidian
+at 0 set 6 0 -2 minecraft:obsidian
+at 0 set 6 0 -1 minecraft:obsidian
+at 0 set 6 0 0 minecraft:obsidian
+at 0 set 6 0 1 minecraft:obsidian
+at 0 set 6 0 2 minecraft:obsidian
+at 0 set 7 0 -2 minecraft:obsidian
+at 0 set 7 0 -1 minecraft:obsidian
+at 0 set 7 0 0 minecraft:obsidian
+at 0 set 7 0 1 minecraft:obsidian
+at 0 set 7 0 2 minecraft:obsidian
+at 0 set 8 0 -2 minecraft:obsidian
+at 0 set 8 0 -1 minecraft:obsidian
+at 0 set 8 0 0 minecraft:obsidian
+at 0 set 8 0 1 minecraft:obsidian
+at 0 set 8 0 2 minecraft:obsidian
+at 0 set 9 0 -2 minecraft:obsidian
+at 0 set 9 0 -1 minecraft:obsidian
+at 0 set 9 0 0 minecraft:obsidian
+at 0 set 9 0 1 minecraft:obsidian
+at 0 set 9 0 2 minecraft:obsidian
+at 0 set 0 1 0 minecraft:tnt[unstable=false]
+at 1 set 0 1 1 minecraft:redstone_block
+at 2 set 0 1 1 minecraft:air
+at 70 spawn-item 3.5 1 0.5 0 0 0 minecraft:stone 1
+at 70 spawn-item -5.5 1 0.5 0 0 0 minecraft:stone 1
+at 70 spawn-item 7.5 1 0.5 0 0 0 minecraft:stone 1
+at 70 spawn-item 0.5 1 -1.5 0 0 0 minecraft:stone 1

@@ -19,6 +19,7 @@ struct BlockData {
     std::uint8_t opaque;
     std::uint8_t tool;
     std::uint8_t tier;
+    float resistance;
 };
 struct PropertyData {
     const char* name;

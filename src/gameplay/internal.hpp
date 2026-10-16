@@ -132,6 +132,11 @@ void run_piston_event(RuleContext& ctx, const BlockEvent& event, BlockState stat
 // random offsets and velocities from the level random: what `tool` harvests
 // (nothing for blocks that need a tool when none is given).
 void drop_items(RuleContext& ctx, BlockPos pos, BlockState destroyed, ItemStack tool = {});
+// The stacks a block drops without random quantities: what `tool` harvests,
+// or, when it `exploded`, what it drops without a tool.
+std::vector<ItemStack> block_drops(RuleContext& ctx, BlockState destroyed, const ItemStack& tool, bool exploded);
+// Spawns one stack as a block drop at `pos` (drawing its offset and velocity).
+void pop_resource(RuleContext& ctx, BlockPos pos, ItemStack stack);
 // Scatters a removed container's contents around its cell, as both target
 // versions do, drawing from the level random for every slot, empty or not.
 void drop_contents(RuleContext& ctx, BlockPos pos, const std::vector<ItemStack>& slots);
@@ -167,7 +172,16 @@ bool is_tnt(BlockState s);
 // The state a placed TNT item becomes (not lit).
 std::optional<BlockState> tnt_block(RuleContext& ctx);
 void check_tnt(RuleContext& ctx, BlockPos pos);
+// TNT an explosion reached (its block already gone): primed TNT with a fuse
+// of 10 to 29 ticks.
+void prime_by_explosion(RuleContext& ctx, BlockPos pos);
 void run_primed_tnt(RuleContext& ctx, EntityId id, Entity& e);
+
+// Explosions (explosion.cpp): one of `power` centered at `center`.
+void explode(RuleContext& ctx, contracts::Vec3 center, float power);
+// `ids` in the order the target versions find entities in an area: by
+// chunk section, then by when each entered its section.
+std::vector<EntityId> entities_in_section_order(RuleContext& ctx, std::vector<EntityId> ids);
 
 // What the water an entity's box touches does to it: whether it is in water,
 // how deep its bottom is, and the push of the currents (0.014 a time).

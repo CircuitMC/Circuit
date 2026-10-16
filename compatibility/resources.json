@@ -196,13 +196,14 @@
       "tnt": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Primed where redstone reaches it when placed, moved in by a piston or updated, unless tntExplodes is off; pistons move it",
+        "note": "Primed where redstone reaches it when placed, moved in by a piston or updated, unless tntExplodes is off; pistons move it; explosions prime it with a short fuse",
         "cases": [
           "trace/tnt_ignition",
-          "trace/tnt_explodes_disabled"
+          "trace/tnt_explodes_disabled",
+          "trace/tnt_chain_edge"
         ],
         "deviations": [
-          "fire, players, projectiles, dispensers and explosions do not ignite it yet"
+          "fire, players, projectiles and dispensers do not ignite it yet"
         ]
       },
       "sand": {
@@ -591,15 +592,15 @@
       "tnt": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Primed TNT: launch, fuse, motion, currents, chunk edges, unload and reload; spawned to clients with its fuse",
+        "note": "Primed TNT: launch, fuse, motion, currents, chunk edges, unload and reload, its explosion; spawned to clients with its fuse",
         "cases": [
           "trace/tnt_ignition",
           "trace/tnt_motion",
           "trace/tnt_water_current",
-          "trace/tnt_reload"
-        ],
-        "deviations": [
-          "the explosion changes nothing yet (C3.5)"
+          "trace/tnt_reload",
+          "trace/tnt_redstone_ignition",
+          "trace/tnt_knockback",
+          "trace/tnt_chain_edge"
         ]
       },
       "falling_block": {

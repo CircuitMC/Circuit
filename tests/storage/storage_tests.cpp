@@ -335,6 +335,7 @@ int main() {
         item.stack = {circuit::gameplay::items::stone, 1};
         item.age = circuit::gameplay::item_age_never;
         item.tick_count = 4000000000U;
+        item.health = 3; // hurt by an explosion
         never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(item);
         // A falling block, with its block and fall time.
         circuit::gameplay::Entity falling;

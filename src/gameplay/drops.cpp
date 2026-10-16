@@ -51,29 +51,38 @@ std::optional<ItemStack> own_item(BlockState s) {
 // Drops of a block without rules of its own: its loot table, when the data
 // packs have one the rules evaluate. A roll that needs a random number (the
 // table compiled, but the tool has fortune) drops nothing.
-void table_drops(RuleContext& ctx, BlockPos pos, BlockState s, const ItemStack& tool) {
+std::vector<ItemStack> table_drops(RuleContext& ctx, BlockState s, const ItemStack& tool) {
     const auto* data = ctx.data();
     const auto block = data ? registry::block_of(s.registry_state()) : std::nullopt;
     const auto table = block ? data->block_loot.find(*block) : decltype(data->block_loot.end()){};
-    if (!block || table == data->block_loot.end()) return;
+    if (!block || table == data->block_loot.end()) return {};
     const loot::BreakContext context{registry::properties(s.registry_state()), tool, [&](std::uint32_t enchantment) {
                                          return data->enchantment_level ? data->enchantment_level(tool, enchantment) : 0L;
                                      }};
-    if (const auto drops = loot::drops(table->second, context))
-        for (const auto& d : *drops) spawn(ctx, pos, d);
+    auto drops = loot::drops(table->second, context);
+    return drops ? std::move(*drops) : std::vector<ItemStack>{};
 }
 } // namespace
 
+std::vector<ItemStack> block_drops(RuleContext& ctx, BlockState destroyed, const ItemStack& tool, bool exploded) {
+    if (destroyed.is(BlockType::wheat)) {
+        std::vector<ItemStack> out;
+        if (destroyed.level() >= 7) out.push_back({items::wheat, 1});
+        out.push_back({items::wheat_seeds, 1});
+        return out;
+    }
+    // An explosion needs no tool (stone gives cobblestone).
+    if (!exploded && !harvests(destroyed, tool, ctx.data())) return {};
+    if (destroyed.is(BlockType::other)) return table_drops(ctx, destroyed, tool);
+    if (const auto item = own_item(destroyed)) return {*item};
+    return {};
+}
+
+void pop_resource(RuleContext& ctx, BlockPos pos, ItemStack stack) { spawn(ctx, pos, std::move(stack)); }
+
 // Drops without random quantities.
 void drop_items(RuleContext& ctx, BlockPos pos, BlockState destroyed, ItemStack tool) {
-    if (destroyed.is(BlockType::wheat)) {
-        if (destroyed.level() >= 7) spawn(ctx, pos, {items::wheat, 1});
-        spawn(ctx, pos, {items::wheat_seeds, 1});
-        return;
-    }
-    if (!harvests(destroyed, tool, ctx.data())) return;
-    if (destroyed.is(BlockType::other)) return table_drops(ctx, pos, destroyed, tool);
-    if (const auto item = own_item(destroyed)) spawn(ctx, pos, *item);
+    for (auto& d : block_drops(ctx, destroyed, tool, false)) spawn(ctx, pos, std::move(d));
 }
 
 void drop_contents(RuleContext& ctx, BlockPos pos, const std::vector<ItemStack>& slots) {

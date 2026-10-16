@@ -1227,11 +1227,13 @@
           ],
           "cases": [
             "trace/tnt_ignition",
-            "trace/tnt_explodes_disabled"
+            "trace/tnt_explodes_disabled",
+            "trace/tnt_chain_edge",
+            "trace/tnt_power"
           ],
-          "note": "Redstone: a signal from any neighbor when TNT is placed, moved in by a piston or updated (blocks, levers, diodes, observers, dust, strongly powered blocks)",
+          "note": "Redstone: a signal from any neighbor when TNT is placed, moved in by a piston or updated (blocks, levers, diodes, observers, dust, strongly powered blocks); explosions prime TNT with a fuse of 10 to 29 ticks",
           "deviations": [
-            "fire, flint and steel, fire charges, burning projectiles, dispensers and explosions do not ignite TNT yet"
+            "fire, flint and steel, fire charges, burning projectiles and dispensers do not ignite TNT yet"
           ]
         },
         {
@@ -1248,11 +1250,13 @@
             "trace/tnt_ignition",
             "trace/tnt_motion",
             "trace/tnt_water_current",
-            "trace/tnt_reload"
+            "trace/tnt_reload",
+            "trace/tnt_redstone_ignition",
+            "trace/tnt_void",
+            "trace/tnt_knockback"
           ],
-          "note": "Creation before the block goes, launch from the level random, the 80-tick fuse, gravity, collision, ground friction, currents after the move, chunk edges; removed when the fuse runs out",
+          "note": "Creation before the block goes, launch from the level random, the fuse, gravity, collision, ground friction, currents after the move, chunk edges, falling below the world without being removed; it explodes when the fuse runs out and is pushed by other explosions",
           "deviations": [
-            "the explosion changes nothing yet (C3.5)",
             "lava, bubble columns, portals and entity pushing do not move primed TNT"
           ]
         },
@@ -1260,13 +1264,29 @@
           "id": "explosions",
           "name": "Explosions: affected blocks, resistance, fluids, drops, chain reactions, damage and knockback",
           "milestone": "C3",
-          "impl": "missing",
-          "evidence": "reference_only",
+          "impl": "partial",
+          "evidence": "compared",
           "cases_planned": [
             "TNT-04"
           ],
           "cases": [
-            "trace/tnt_redstone_ignition"
+            "trace/tnt_redstone_ignition",
+            "trace/tnt_obsidian",
+            "trace/tnt_drops",
+            "trace/tnt_void",
+            "trace/tnt_entity_order",
+            "trace/tnt_knockback",
+            "trace/tnt_items",
+            "trace/tnt_chain_edge",
+            "trace/tnt_water",
+            "trace/tnt_power",
+            "collision/resistance"
+          ],
+          "note": "TNT's explosion: rays with single-precision intensity and blast resistance (waterlogged blocks resist as water), the reached cells in hash-set order shuffled by the level random, entities hurt and pushed first by distance and exposure (items destroyed or left with less health; nether stars immune; primed TNT pushed from its feet), then blocks cleared with drops merged into stacks of 16, TNT primed with a 10-29 tick fuse, nothing out of the world's height",
+          "deviations": [
+            "entities of one chunk section are hurt in id order, not the order they entered the section",
+            "explosions do not hurt or push players yet",
+            "a hash-set bucket of eight or more cells (Java turns it into a tree) is ordered as a list"
           ]
         },
         {

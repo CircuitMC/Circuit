@@ -22,7 +22,7 @@ struct Wire::Ids {
         player_position, keep_alive, system_chat, player_info_update, player_info_remove, add_entity,
         set_entity_data, remove_entities, entity_position_sync, rotate_head, container_set_content, disconnect, take_item_entity,
         open_screen, container_close, container_set_slot, set_cursor_item, respawn, combat_kill, damage_event, sb_container_click, sb_container_close,
-        commands;
+        commands, explode;
     // Serverbound play.
     std::int32_t sb_accept_teleportation, sb_move_pos, sb_move_pos_rot, sb_move_rot, sb_move_status,
         sb_player_action, sb_use_item_on, sb_use_item, sb_set_carried_item, sb_set_creative_slot, sb_chat_command,
@@ -92,6 +92,7 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->sb_container_close = sb(State::play, "container_close");
     ids->disconnect = cb(State::play, "disconnect");
     ids->commands = cb(State::play, "commands");
+    ids->explode = cb(State::play, "explode");
     ids->sb_accept_teleportation = sb(State::play, "accept_teleportation");
     ids->sb_move_pos = sb(State::play, "move_player_pos");
     ids->sb_move_pos_rot = sb(State::play, "move_player_pos_rot");
@@ -331,6 +332,15 @@ Bytes Wire::tnt_metadata(std::int32_t id, std::int32_t fuse) const {
     w.u8(8).varint(1).varint(fuse); // index 8 (primed TNT: fuse), type VarInt
     w.u8(0xFF);
     return packet(id_->set_entity_data, w);
+}
+Bytes Wire::explosion(Vec3 center) const {
+    // The explosion_emitter particle (21 on both protocols) and the sound
+    // entity.generic.explode by its registry id plus one (PrismarineJS
+    // minecraft-data, MIT: 602 on 769, 615 on 772); no player knockback.
+    const std::int32_t sound = protocol_ == 769 ? 602 : 615;
+    Writer w;
+    w.f64(center.x).f64(center.y).f64(center.z).boolean(false).varint(21).varint(sound + 1);
+    return packet(id_->explode, w);
 }
 Bytes Wire::remove_entities(const std::vector<std::int32_t>& ids) const {
     Writer w;

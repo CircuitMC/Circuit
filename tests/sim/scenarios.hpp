@@ -623,7 +623,7 @@ inline Scenario falling_scenario() {
 // TNT primed on both sides of the x=16 chunk edge: by one dust line (both
 // ends in the same tick), by a piston pushing TNT under a redstone block
 // across the edge, by a repeater's block tick, and above water it falls into.
-// The fuses run out (the explosion is only a removal for now).
+// The fuses run out and the TNT explodes, breaking what is around it.
 inline Scenario tnt_scenario() {
     return {"primed_tnt", 97, 260, [](Tick t) -> std::vector<CommandBody> {
         if (t == 1) return {ticket(1, {0, 0}, 1)};

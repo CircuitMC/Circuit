@@ -1361,6 +1361,55 @@ int main() {
         require(old.at({0, 0, 0}).is_air() && primed(old).size() == 1, "1.21.4 primes it");
     });
 
+    suite.run("explosions break blocks by resistance, merge their drops, prime TNT and hurt items", [] {
+        const auto tnt = registry_block("tnt");
+        // A stone box around TNT, with obsidian on one side, more TNT and an
+        // item inside.
+        Sim s;
+        std::vector<CommandBody> build;
+        for (int x = -3; x <= 3; ++x)
+            for (int y = -1; y <= 2; ++y)
+                for (int z = -3; z <= 3; ++z)
+                    if (std::abs(x) == 3 || std::abs(z) == 3 || y == -1 || y == 2) build.push_back(place({x, y, z}, blocks::stone()));
+        build.push_back(place({0, 0, 3}, blocks::obsidian()));
+        build.push_back(place({-2, 0, 0}, tnt));
+        build.push_back(place({0, 0, 0}, tnt));
+        build.push_back(place({1, 0, 0}, blocks::redstone_block()));
+        s.tick(build);
+        s.tick({SpawnItem{at_block(1.5, 0.0, 2.5), {}, {items::stone, 1}}});
+        const auto tick = [&] {
+            s.tick();
+            return !of_kind(s.last, TraceKind::explosion).empty();
+        };
+        bool exploded = false;
+        for (int i = 0; i < 100 && !exploded; ++i) exploded = tick();
+        require(exploded, "the fuse ran out");
+        require(s.at({0, -1, 0}).is_air() && s.at({1, 0, 0}).is_air(), "stone and the redstone block next to it are gone");
+        require(s.at({0, 0, 3}) == blocks::obsidian(), "obsidian resists");
+        const auto d = s.oracle.dump();
+        int cobblestone = 0, stacks = 0, primed = 0;
+        for (const auto& e : d.overworld().entities) {
+            if (e.kind == circuit::gameplay::EntityKind::item && e.stack.item == items::cobblestone) {
+                cobblestone += e.stack.count;
+                ++stacks;
+                require(e.stack.count <= 16, "drops merge into stacks of at most 16");
+            }
+            if (e.kind == circuit::gameplay::EntityKind::primed_tnt) {
+                ++primed;
+                require(e.fuse >= 9 && e.fuse <= 28, std::format("an explosion's fuse: {}", e.fuse));
+            }
+            require(!(e.kind == circuit::gameplay::EntityKind::item && e.stack.item == items::stone), "the item in the open is destroyed");
+        }
+        require(cobblestone > 16 && stacks == (cobblestone + 15) / 16, std::format("{} cobblestone in {} stacks", cobblestone, stacks));
+        require(primed == 1 && s.at({-2, 0, 0}).is_air(), "the other TNT is primed");
+        // Waterlogged blocks resist as water does.
+        require(circuit::gameplay::blast_resistance(blocks::water_source()) == 100.0f
+                    && circuit::gameplay::blast_resistance(registry_block("oak_slab", {{"type", "bottom"}, {"waterlogged", "true"}})) == 100.0f
+                    && circuit::gameplay::blast_resistance(registry_block("oak_slab", {{"type", "bottom"}, {"waterlogged", "false"}})) == 3.0f
+                    && circuit::gameplay::blast_resistance(blocks::obsidian()) == 1200.0f,
+                "resistances");
+    });
+
     suite.run("entities leave with their chunk and come back under new ids", [] {
         Sim s(bundle(), 7, 0); // tick 1: chunk (0,0) entity ticking
         s.tick({place({4, -1, 4}, blocks::stone()), SpawnItem{at_block(4.5, 0.0, 4.5), {}, {items::stone, 3}}}); // 2

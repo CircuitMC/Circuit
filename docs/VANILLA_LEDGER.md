@@ -40,7 +40,7 @@ Feature counts per implementation state, then the number of features with compar
 | V14 Redstone sources and signal consumers | C4 | 138 | 5 / 5 | 15 / 15 | 112 / 112 | 6 / 6 | 0 / 0 | 15 / 17 |
 | V15 Pistons and moving structures | C3, C4 | 16 | 1 / 1 | 12 / 12 | 2 / 2 | 1 / 1 | 0 / 0 | 7 / 7 |
 | V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 4 / 4 | 52 / 52 | 3 / 3 | 0 / 0 | 6 / 6 |
-| V17 TNT and explosions | C3, C4 | 11 | 0 / 1 | 6 / 6 | 1 / 1 | 3 / 3 | 1 / 0 | 6 / 7 |
+| V17 TNT and explosions | C3, C4 | 11 | 0 / 1 | 7 / 7 | 1 / 1 | 2 / 2 | 1 / 0 | 7 / 8 |
 | V18 Technical machines and vanilla quirks | C4, C7 | 6 | 0 / 0 | 1 / 1 | 0 / 0 | 5 / 5 | 0 / 0 | 1 / 1 |
 | V19 General entity lifecycle | C3 | 17 | 0 / 0 | 4 / 4 | 0 / 0 | 13 / 13 | 0 / 0 | 3 / 3 |
 | V20 Item entities and experience | C3, C6 | 7 | 2 / 2 | 3 / 3 | 0 / 0 | 2 / 2 | 0 / 0 | 4 / 4 |
@@ -55,7 +55,7 @@ Feature counts per implementation state, then the number of features with compar
 | V29 Bosses and progression | C8 | 11 | 0 / 0 | 0 / 0 | 4 / 4 | 7 / 7 | 0 / 0 | 0 / 0 |
 | V30 Data-pack execution | C1, C5, C9 | 8 | 0 / 0 | 1 / 1 | 0 / 0 | 6 / 7 | 1 / 0 | 0 / 0 |
 | V31 Commands and administration | C9 | 117 | 0 / 0 | 7 / 7 | 16 / 20 | 85 / 90 | 9 / 0 | 1 / 1 |
-| V32 Client-visible world state | C10 | 287 | 5 / 5 | 48 / 48 | 0 / 0 | 227 / 233 | 7 / 1 | 6 / 6 |
+| V32 Client-visible world state | C10 | 287 | 5 / 5 | 49 / 49 | 0 / 0 | 226 / 232 | 7 / 1 | 6 / 6 |
 | V33 Communication and connection lifecycle | C10 | 85 | 17 / 17 | 19 / 19 | 0 / 0 | 41 / 49 | 8 / 0 | 0 / 0 |
 | V34 Save compatibility | C11 | 6 | 1 / 1 | 0 / 1 | 0 / 0 | 4 / 3 | 1 / 1 | 0 / 1 |
 | V35 Version-specific gameplay and optional profiles | C12 | 6 | 0 / 0 | 0 / 0 | 1 / 3 | 3 / 3 | 2 / 0 | 0 / 0 |
@@ -77,7 +77,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 | biome | minecraft-data pc/1.21.4/biomes.json / minecraft-data pc/1.21.8/biomes.json | 65 / 65 | 0 / 0 | 1 / 1 | 64 / 64 | 0 / 0 |
 | particle | minecraft-data pc/1.21.4/particles.json / minecraft-data pc/1.21.8/particles.json | 112 / 114 | 0 / 0 | 0 / 0 | 0 / 0 | 112 / 114 |
 | command | approximate: minecraft-data pc/1.20.5/commands.json / approximate: minecraft-data pc/1.21.6/commands.json | 83 / 88 | 0 / 0 | 4 / 4 | 0 / 0 | 79 / 84 |
-| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 20 / 20 | 63 / 63 | 0 / 0 | 151 / 161 |
+| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 20 / 20 | 64 / 64 | 0 / 0 | 150 / 160 |
 | block_state | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 27866 / 27946 | — | — | — | — |
 | sound_event | minecraft-data pc/1.21.4/sounds.json / minecraft-data pc/1.21.8/sounds.json | 1651 / 1728 | — | — | — | — |
 | recipe | minecraft-data pc/1.21.4/recipes.json / minecraft-data pc/1.21.8/recipes.json | 1557 / 1607 | — | — | — | — |
@@ -127,10 +127,10 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 21 |
+| black_box | passing | 22 |
 | black_box | unsupported | 1 |
-| official_trace | failing | 4 |
-| official_trace | passing | 62 |
+| official_trace | failing | 3 |
+| official_trace | passing | 72 |
 | planned | planned | 8 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
@@ -322,9 +322,9 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
 | TNT placement and breaking | C3 | partial, compared | partial, compared | `TNT-01`, `trace/tnt_ignition`; unstable TNT is not primed when broken; TNT placed by commands, pistons and players becomes primed TNT where redstone reaches it; broken, it drops itself by its loot table |
-| Ignition by redstone, fire, flint and steel, fire charges, burning projectiles and explosions | C3 | partial, compared | partial, compared | `TNT-01`, `trace/tnt_explodes_disabled`, `trace/tnt_ignition`; fire, flint and steel, fire charges, burning projectiles, dispensers and explosions do not ignite TNT yet; Redstone: a signal from any neighbor when TNT is placed, moved in by a piston or updated (blocks, levers, diodes, observers, dust, strongly powered blocks) |
-| Primed TNT entities: fuse, motion, collision and removal | C3 | partial, compared | partial, compared | `TNT-02`, `TNT-03`, `trace/tnt_ignition`, `trace/tnt_motion`, `trace/tnt_reload`, `trace/tnt_water_current`; lava, bubble columns, portals and entity pushing do not move primed TNT; the explosion changes nothing yet (C3.5); Creation before the block goes, launch from the level random, the 80-tick fuse, gravity, collision, ground friction, currents after the move, chunk edges; removed when the fuse runs out |
-| Explosions: affected blocks, resistance, fluids, drops, chain reactions, damage and knockback | C3 | missing, reference_only | missing, reference_only | `TNT-04`, `trace/tnt_redstone_ignition` |
+| Ignition by redstone, fire, flint and steel, fire charges, burning projectiles and explosions | C3 | partial, compared | partial, compared | `TNT-01`, `trace/tnt_chain_edge`, `trace/tnt_explodes_disabled`, `trace/tnt_ignition`, `trace/tnt_power`; fire, flint and steel, fire charges, burning projectiles and dispensers do not ignite TNT yet; Redstone: a signal from any neighbor when TNT is placed, moved in by a piston or updated (blocks, levers, diodes, observers, dust, strongly powered blocks); explosions prime TNT with a fuse of 10 to 29 ticks |
+| Primed TNT entities: fuse, motion, collision and removal | C3 | partial, compared | partial, compared | `TNT-02`, `TNT-03`, `trace/tnt_ignition`, `trace/tnt_knockback`, `trace/tnt_motion`, `trace/tnt_redstone_ignition`, `trace/tnt_reload`, `trace/tnt_void`, `trace/tnt_water_current`; lava, bubble columns, portals and entity pushing do not move primed TNT; Creation before the block goes, launch from the level random, the fuse, gravity, collision, ground friction, currents after the move, chunk edges, falling below the world without being removed; it explodes when the fuse runs out and is pushed by other explosions |
+| Explosions: affected blocks, resistance, fluids, drops, chain reactions, damage and knockback | C3 | partial, compared | partial, compared | `TNT-04`, `collision/resistance`, `trace/tnt_chain_edge`, `trace/tnt_drops`, `trace/tnt_entity_order`, `trace/tnt_items`, `trace/tnt_knockback`, `trace/tnt_obsidian`, `trace/tnt_power`, `trace/tnt_redstone_ignition`, `trace/tnt_void`, `trace/tnt_water`; a hash-set bucket of eight or more cells (Java turns it into a tree) is ordered as a list; entities of one chunk section are hurt in id order, not the order they entered the section; explosions do not hurt or push players yet; TNT's explosion: rays with single-precision intensity and blast resistance (waterlogged blocks resist as water), the reached cells in hash-set order shuffled by the level random, entities hurt and pushed first by distance and exposure (items destroyed or left with less health; nether stars immune; primed TNT pushed from its feet), then blocks cleared with drops merged into stacks of 16, TNT primed with a 10-29 tick fuse, nothing out of the world's height |
 | Live fuses across save, reload and unload | C3 | partial, compared | partial, compared | `TNT-05`, `trace/tnt_reload`, `trace/tnt_reload_pending`; after an unload the official servers run a pending tick of the chunk one tick later than Circuit in trace/tnt_reload_pending (their unload timing varies; Circuit unloads dropped chunks at once); Fuse, position and motion kept by checkpoints, Anvil and unloading chunks |
 | The tntExplodes game rule | C3 | not_applicable, none | implemented, compared | `TNT-06`, `trace/tnt_explodes_disabled`; With the rule off, 1.21.8 does not prime TNT at all; the 1.21.4 harness refuses the skeleton, and 1.21.4 always primes TNT |
 | Creeper, bed, respawn anchor, end crystal, wither and wind charge explosions | C8 | missing, none | missing, none |  |

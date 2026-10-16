@@ -39,6 +39,7 @@ struct BlockInfo {
     bool opaque;    // blocks all light and renders as a solid cube
     Tool tool;
     std::uint8_t tier; // lowest tier of `tool` that harvests the block; 0 for any tool
+    float resistance;  // blast resistance
 };
 
 // A box of a collision shape, in block coordinates (0 to 1; fences, walls

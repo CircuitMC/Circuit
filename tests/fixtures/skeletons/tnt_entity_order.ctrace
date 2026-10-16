@@ -1,0 +1,31 @@
+circuit-trace 2
+title An explosion at a chunk corner destroys items in eight sections
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms tnt
+area -5 -6 -5 5 5 5
+ticks 82
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 -1 0 minecraft:obsidian
+at 0 set 0 0 0 minecraft:tnt[unstable=false]
+at 1 set 1 0 0 minecraft:redstone_block
+at 80 spawn-item 3.5 3 3.5 0 0 0 minecraft:stone 1
+at 80 spawn-item -3.5 -3 -3.5 0 0 0 minecraft:stone 2
+at 80 spawn-item 3.5 -3 -3.5 0 0 0 minecraft:stone 3
+at 80 spawn-item -3.5 3 3.5 0 0 0 minecraft:stone 4
+at 80 spawn-item 3.5 3 -3.5 0 0 0 minecraft:stone 5
+at 80 spawn-item -3.5 -3 3.5 0 0 0 minecraft:stone 6
+at 80 spawn-item 3.5 -3 3.5 0 0 0 minecraft:stone 7
+at 80 spawn-item -3.5 3 -3.5 0 0 0 minecraft:stone 8
+at 80 spawn-item 2.5 3 2.5 0 0 0 minecraft:stone 9
+at 80 spawn-item -2.5 -3 -2.5 0 0 0 minecraft:stone 10
+at 80 spawn-item 2.5 -3 -2.5 0 0 0 minecraft:stone 11
+at 80 spawn-item -2.5 3 2.5 0 0 0 minecraft:stone 12
+at 80 spawn-item 2.5 3 -2.5 0 0 0 minecraft:stone 13
+at 80 spawn-item -2.5 -3 2.5 0 0 0 minecraft:stone 14
+at 80 spawn-item 2.5 -3 2.5 0 0 0 minecraft:stone 15
+at 80 spawn-item -2.5 3 -2.5 0 0 0 minecraft:stone 16

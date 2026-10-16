@@ -643,20 +643,23 @@ int main() {
                 "powder in water became concrete; gravel landed on the hopper");
     });
 
-    suite.run("TNT is primed across chunk edges and its fuses run out", [&] {
+    suite.run("TNT is primed and explodes across chunk edges", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("primed_tnt"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the TNT scenario");
         const auto& ref = references[index];
-        std::size_t primed = 0, exploded = 0;
+        std::size_t primed = 0, explosions = 0, destroyed = 0;
         for (const auto& trace : ref.traces)
             for (const auto& r : trace) {
                 if (r.kind == TraceKind::entity_spawned && r.c == static_cast<std::uint64_t>(circuit::gameplay::EntityKind::primed_tnt)) ++primed;
+                if (r.kind == TraceKind::explosion) ++explosions;
                 if (r.kind == TraceKind::entity_removed && r.b == static_cast<std::uint64_t>(circuit::gameplay::RemovalReason::exploded))
-                    ++exploded;
+                    ++destroyed;
             }
-        // Five per round over three rounds; the last round's fuses are still
-        // burning at the end.
-        require(primed == 15 && exploded == 10, std::format("{} primed, {} exploded", primed, exploded));
+        // Explosions break the dust line, the piston and the floor around
+        // them and destroy the items they drop; what later rounds can still
+        // prime by redstone, and what explosions prime, decide the counts.
+        require(primed == 14 && explosions == 13 && destroyed == 34,
+                std::format("{} primed, {} explosions, {} entities exploded or destroyed", primed, explosions, destroyed));
     });
 
     suite.run("chunk levels decide what runs", [&] {

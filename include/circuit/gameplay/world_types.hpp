@@ -83,6 +83,8 @@ std::string_view entity_kind_name(EntityKind kind) noexcept;
 inline constexpr std::int32_t item_age_never = -32768;
 inline constexpr std::uint16_t item_pickup_never = 32767;
 inline constexpr std::int32_t item_despawn_age = 6000;
+// Items have 5 health (saved as a short); explosions take it away in whole points.
+inline constexpr std::int32_t item_health = 5;
 
 struct Entity {
     EntityId id;
@@ -99,6 +101,7 @@ struct Entity {
     ItemStack stack;
     std::int32_t age{};
     std::uint16_t pickup_delay{};
+    std::int32_t health{item_health};
     // Falling blocks: the block it carries and the ticks it has fallen.
     BlockState carried{};
     std::uint32_t fall_time{};

@@ -59,22 +59,22 @@ Every block state of both versions is represented, with its official name and pr
 
 **Block entities.** Containers keep their custom name (the window title) and components. The block entities of blocks without rules of their own (signs, banners, furnaces and the rest) keep their saved data through checkpoints and Anvil interchange, but nothing interprets it and clients do not receive it: a sign shows no text.
 
-**Not represented:** mobs and other entities beyond items and players, biomes other than plains, lighting (everything is lit by the sky), and world generation beyond a flat floor.
+**Not represented:** mobs and other entities beyond items, falling blocks, primed TNT and players, biomes other than plains, lighting (everything is lit by the sky), and world generation beyond a flat floor.
 
 ### Technical machines
 
-Block and item registration do not provide behavior. TNT, rails, coral fans and honey blocks exist as inert blocks, and their items cannot be placed by the current rules. Common building blocks such as cobblestone, dirt, sand and oak logs are inert too. Survival inventories and container screens therefore do not constitute complete vanilla survival support.
+Block and item registration do not provide behavior. Rails, coral fans and honey blocks exist as inert blocks, and their items cannot be placed by the current rules. Common building blocks such as cobblestone, dirt and oak logs are inert too; sand, gravel and concrete powder fall, and TNT is primed and explodes (below). Survival inventories and container screens therefore do not constitute complete vanilla survival support.
 
 | Mechanism or machine | Current support |
 | --- | --- |
 | Piston quasi-connectivity and activation after an update | Recorded target-version scenarios pass; this does not cover every BUD layout. |
 | Sticky-piston block dropping on a short pulse | The one-game-tick pulse scenario passes recorded traces for both versions. |
 | Slime structures, the 12-block push limit and observers watching piston writes | Implemented with rule, trace and cross-chunk simulation checks. Pistons remain L2 because item pushing, drops and some update ordering have gaps. |
-| TNT ignition, fuse, motion and explosions | Not implemented; a TNT block is inert and a TNT item cannot be placed. |
-| TNT duplication machines | Not supported. Primed TNT and explosion behavior are absent; common machine components such as rails, minecarts and coral fans are absent too. No TNT-duplication reference fixture exists. |
+| TNT ignition, fuse, motion and explosions | Redstone and explosions prime TNT (placed by commands, players or pistons); primed TNT's motion and fuse and its explosions (blocks, drops, chain reactions, item damage and knockback) match recorded traces of both versions. Fire, flint and steel, projectiles and dispensers do not ignite TNT, and explosions do not hurt players. |
+| TNT duplication machines | Not supported. Primed TNT and explosions exist, but common machine components such as rails, minecarts and coral fans are absent, and TNT duplication itself is not modeled. No TNT-duplication reference fixture exists. |
 | Honey-based flying machines | Not supported; honey-block behavior is absent. Slime and piston tests do not establish compatibility for complete flying-machine designs. |
 | Dispensers, droppers, redstone torches and buttons | Not implemented. Existing wire, lever and diode support does not cover machines requiring these components. |
-| Portal chunk loaders, sand duplication and bedrock-breaking machines | No compatibility claim. Dimensions/portals, falling-block entities and the required block/interaction coverage are absent. |
+| Portal chunk loaders, sand duplication and bedrock-breaking machines | No compatibility claim. Dimensions/portals and the required block/interaction coverage are absent; falling blocks exist but are not duplicated. |
 
 Importing an unsupported machine with substitution does not preserve its mechanism. Default Anvil import rejects unrepresentable content; explicit substitution can replace blocks or discard entities and reports those losses.
 

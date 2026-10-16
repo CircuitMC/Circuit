@@ -1903,6 +1903,17 @@ struct Game::Impl final : GameServices {
             case contracts::TraceKind::entity_stack_changed: case contracts::TraceKind::entity_loaded:
                 touched.insert(r.a);
                 break;
+            case contracts::TraceKind::explosion: {
+                // Players within 64 blocks of it see and hear it, as on the
+                // official servers.
+                const contracts::Vec3 center{contracts::bits_double(r.a), contracts::bits_double(r.b), contracts::bits_double(r.c)};
+                const auto packet = wire.explosion(center);
+                for (auto& [pid, p] : players) {
+                    const double dx = p.pos.x - center.x, dy = p.pos.y - center.y, dz = p.pos.z - center.z;
+                    if (dx * dx + dy * dy + dz * dz < 4096.0) p.peer->send(packet);
+                }
+                break;
+            }
             case contracts::TraceKind::entity_removed:
                 if (const auto it = tracked.find(r.a); it != tracked.end()) {
                     const auto packet = wire.remove_entities({it->second.protocol_id});

@@ -163,7 +163,7 @@ struct Kept {
     std::vector<std::pair<BlockPos, std::uint32_t>> blocks;
     std::vector<std::pair<BlockPos, BlockEntity>> block_entities;
     std::multiset<std::tuple<int, BlockPos, int, Tick, int>> ticks;
-    std::multiset<std::tuple<Vec3, Vec3, std::uint16_t, int, std::uint32_t, bool, int, std::uint32_t, std::uint32_t, std::int32_t>> entities;
+    std::multiset<std::tuple<Vec3, Vec3, std::uint16_t, int, std::uint32_t, bool, int, std::uint32_t, std::uint32_t, std::int32_t, std::int32_t>> entities;
     bool operator==(const Kept&) const = default;
 };
 Kept kept(const WorldDump& world) {
@@ -180,7 +180,7 @@ Kept kept(const WorldDump& world) {
         k.ticks.insert({static_cast<int>(t.list), t.tick.pos, static_cast<int>(t.tick.block), t.tick.due, t.tick.priority});
     for (const auto& e : d.entities)
         k.entities.insert({e.position, e.velocity, e.stack.item, e.stack.count, static_cast<std::uint32_t>(std::min(e.age, 6000)), e.on_ground,
-                           static_cast<int>(e.kind), e.carried.raw(), e.fall_time, e.fuse});
+                           static_cast<int>(e.kind), e.carried.raw(), e.fall_time, e.fuse, e.health});
     return k;
 }
 std::string describe(const Kept& a, const Kept& b) {

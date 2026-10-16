@@ -440,6 +440,35 @@ int main(int argc, char** argv) {
         require(states == 27946 + 27866 && replaceable > 0, std::format("{} states, {} replaceable", states, replaceable));
     });
 
+    suite.run("blast resistance matches both official servers", [&] {
+        // tests/fixtures/collision/resistance-*.txt: every block's
+        // resistance as the official block report gives it.
+        namespace registry = circuit::gameplay::registry;
+        std::size_t blocks = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            std::istringstream lines(read_text(fixtures / "collision" / std::format("resistance-{}.txt", release)));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto space = line.find(' ');
+                const auto name = line.substr(std::string("minecraft:").size(), space - std::string("minecraft:").size());
+                const auto expected = std::stof(line.substr(space + 1));
+                const auto block = registry::find_block(release, name);
+                require(block.has_value(), std::format("{} {}: in the registry", release, name));
+                require(registry::block(*block).resistance == expected,
+                        std::format("{} {}: {} != {}", release, name, registry::block(*block).resistance, expected));
+                // The rules' resistance of its default state: the block's, or
+                // its water's (100) when that state is waterlogged.
+                const auto internal = registry::block(*block).default_state;
+                bool waterlogged = false;
+                for (const auto& [key, value] : registry::properties(internal)) waterlogged |= key == "waterlogged" && value == "true";
+                const auto rules = circuit::gameplay::blast_resistance(circuit::gameplay::BlockState::registered(internal));
+                require(rules == (waterlogged ? std::max(expected, 100.0f) : expected), std::format("{} {}: the rules' resistance {}", release, name, rules));
+                ++blocks;
+            }
+        }
+        require(blocks == 1105 + 1095, std::format("{} blocks", blocks));
+    });
+
     suite.run("light properties match both official servers", [&] {
         // tests/fixtures/light: every state's emission, dampening and
         // occlusion shape as the official servers report them.
@@ -842,7 +871,7 @@ int main(int argc, char** argv) {
         const auto with_rule = parse(read_text(fixtures / "harness" / "tnt_explodes_disabled.ctrace"));
         require(with_rule.gamerules == std::vector<std::pair<std::string, std::string>>{{"tntExplodes", "false"}}, "game rule read");
         require(write_fixture(parse(write_fixture(with_rule))) == write_fixture(with_rule), "game rules round-trip");
-        require(first_difference(with_rule, parse(read_text(fixtures / "open" / "tnt_redstone_ignition.ctrace")))
+        require(first_difference(with_rule, parse(read_text(fixtures / "harness" / "tnt_redstone_ignition.ctrace")))
                     == std::optional<std::string>("different scenarios: observation headers"), "a game rule changes the scenario");
         require(evaluate_fixture(with_rule, engine_executor()).outcome == Outcome::passed, "tntExplodes is modeled");
         require(!parse_fixture(std::string(header) + "gamerule tntExplodes false\n"), "game rules need version 2");
