@@ -58,6 +58,10 @@ std::vector<Item> events(const Fixture& f, Tick t) {
         case EntityEvent::Kind::removed:
             out.push_back({e.seq, {std::format("entity-removed {} {} {}", e.stage, e.handle, e.reason), {}, e.line}});
             break;
+        case EntityEvent::Kind::loaded:
+            out.push_back({e.seq, {std::format("entity-loaded {} {} {}{}", e.stage, e.handle, e.type, sorted_properties(e.properties)),
+                                   numbers(e.position, e.velocity), e.line}});
+            break;
         case EntityEvent::Kind::changed:
             out.push_back({e.seq, {std::format("entity-changed {} {}{}", e.stage, e.handle, sorted_properties(e.properties)), {}, e.line}});
             break;

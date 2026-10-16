@@ -97,6 +97,9 @@ struct ChunkData {
     std::vector<std::shared_ptr<Section>> sections;
     std::map<BlockPos, BlockEntity> block_entities;
     std::map<EntityId, Entity> entities;
+    // Entities saved with the column that come back after a reload
+    // (Entity::returns), by the ids they had.
+    std::map<EntityId, Entity> returning;
     std::map<TickKey, TickEntry> ticks[2];
     std::vector<EventEntry> events; // Pending block events at this column; deferred while not ticking.
     // Block entities created in this phase; their creation order is assigned at commit.

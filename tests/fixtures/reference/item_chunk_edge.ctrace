@@ -159,29 +159,11 @@ entity 48 e1 336.6574365802871 1 0.5 0.7353656981646197 0 0 item=minecraft:stone
 entity 49 e1 336.6574365802871 1 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
 
 at 50 command forceload remove 328 0
-entity 50 e1 336.6574365802871 1 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
-
-entity 51 e1 336.6574365802871 1 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
-
-entity 52 e1 336.6574365802871 1 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
-
-entity 53 e1 336.6574365802871 1 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
-
-entity 54 e1 336.6574365802871 1 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
-
-entity 55 e1 336.6574365802871 1 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
-
-entity 56 e1 336.6574365802871 1 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
-
-entity 57 e1 336.6574365802871 1 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
-
-entity 58 e1 336.6574365802871 1 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
-
-entity 59 e1 336.6574365802871 1 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+entity-removed 50 other e1 unloaded_to_chunk
 
 at 60 command forceload add 328 0
-entity 60 e1 336.6574365802871 1 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
 
+entity-loaded 61 other e1 minecraft:item 336.6574365802871 1 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1
 entity 61 e1 336.6574365802871 1 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
 
 entity 62 e1 336.6574365802871 1 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true

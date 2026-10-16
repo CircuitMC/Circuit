@@ -66,14 +66,14 @@ struct Change {
 // v2 observations. Entities are named by handles e1, e2, ... in the order
 // they were added; stages are the names in `trace_stages`.
 struct EntityEvent {
-    enum class Kind : std::uint8_t { added, removed, changed };
+    enum class Kind : std::uint8_t { added, removed, changed, loaded };
     Tick tick{};
     std::string stage;
     Kind kind{};
     std::string handle;
-    std::string type;            // added
-    Vec3d position{}, velocity{};// added: at the moment of addition
-    Properties properties;       // added, changed
+    std::string type;            // added, loaded
+    Vec3d position{}, velocity{};// added, loaded: at that moment
+    Properties properties;       // added, changed, loaded
     std::string reason;          // removed
     std::size_t seq{};
     std::size_t line{};

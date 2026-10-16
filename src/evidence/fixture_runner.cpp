@@ -301,6 +301,7 @@ std::string removal_reason(std::uint64_t reason) {
     case gameplay::RemovalReason::picked_up:
     case gameplay::RemovalReason::merged: return "discarded";
     case gameplay::RemovalReason::command: return "killed";
+    case gameplay::RemovalReason::unloaded: return "unloaded_to_chunk";
     }
     return "discarded";
 }
@@ -335,10 +336,21 @@ public:
                 break;
             case TraceKind::entity_spawned:
                 spawned_ = r.a;
+                loading_ = false;
                 if (f.observe_entities && f.contains(r.pos)) {
                     handles_[r.a] = std::format("e{}", ++count_);
                     stacks_[r.a] = static_cast<std::uint64_t>(r.b);
                     kinds_[r.a] = static_cast<gameplay::EntityKind>(r.c);
+                }
+                break;
+            case TraceKind::entity_loaded:
+                // Back with its chunk under a new id (a), keeping its handle (b's).
+                spawned_ = r.a;
+                loading_ = true;
+                if (const auto it = handles_.find(r.b); f.observe_entities && it != handles_.end()) {
+                    handles_[r.a] = it->second;
+                    stacks_[r.a] = static_cast<std::uint64_t>(r.c);
+                    kinds_[r.a] = kinds_.at(r.b);
                 }
                 break;
             case TraceKind::entity_spawn_position:
@@ -349,14 +361,18 @@ public:
                 if (const auto it = handles_.find(spawned_); f.observe_entities && it != handles_.end() && !added_.contains(spawned_)) {
                     added_.insert(spawned_);
                     const contracts::Vec3 velocity{contracts::bits_double(r.a), contracts::bits_double(r.b), contracts::bits_double(r.c)};
-                    entities.push_back({tick, stage_of(r), EntityEvent::Kind::added, it->second,
+                    // The target versions load entities with their chunks
+                    // outside the stages the harness instruments.
+                    entities.push_back({tick, loading_ ? "other" : stage_of(r), loading_ ? EntityEvent::Kind::loaded : EntityEvent::Kind::added, it->second,
                                         std::string(gameplay::entity_kind_name(kinds_.at(spawned_))), to_vec(spawn_position_),
                                         to_vec(velocity), stack_properties(stacks_.at(spawned_)), "", seq++, 0});
                 }
                 break;
             case TraceKind::entity_removed:
                 if (const auto it = handles_.find(r.a); f.observe_entities && it != handles_.end()) {
-                    entities.push_back({tick, stage_of(r), EntityEvent::Kind::removed, it->second, "", {}, {}, {}, removal_reason(r.b), seq++, 0});
+                    // Entities leave with their chunk outside the instrumented stages, as they come back.
+                    const auto stage = r.b == static_cast<std::uint64_t>(gameplay::RemovalReason::unloaded) ? std::string("other") : stage_of(r);
+                    entities.push_back({tick, stage, EntityEvent::Kind::removed, it->second, "", {}, {}, {}, removal_reason(r.b), seq++, 0});
                     removed_[r.a] = r.key;
                 }
                 break;
@@ -388,7 +404,8 @@ public:
         std::vector<std::pair<std::size_t, EntityProbe>> out;
         for (const auto& e : live) {
             const auto it = handles_.find(e.id.value);
-            if (it == handles_.end()) continue;
+            // Entities that left the level with their chunk are still stored, under the ids they had.
+            if (it == handles_.end() || removed_.contains(e.id.value)) continue;
             Properties props = stack_properties(contracts::pack_stack(e.stack));
             props.emplace_back("age", std::to_string(e.age));
             props.emplace_back("pickup-delay", std::to_string(e.pickup_delay));
@@ -407,7 +424,7 @@ public:
     std::optional<EntityOrder> order(Tick tick, Tick circuit_tick, const std::vector<gameplay::Entity>& live) const {
         std::vector<std::uint64_t> ids;
         for (const auto& e : live)
-            if (handles_.contains(e.id.value) && e.last_tick == circuit_tick) ids.push_back(e.id.value);
+            if (handles_.contains(e.id.value) && !removed_.contains(e.id.value) && e.last_tick == circuit_tick) ids.push_back(e.id.value);
         // Removed after the entity phase, or in it by its own root (the
         // entity's id) or a later one: it ticked first. Removed by an earlier
         // entity's root (merged into it), it did not tick.
@@ -435,7 +452,8 @@ private:
     std::map<std::uint64_t, std::string> handles_;
     std::map<std::uint64_t, std::uint64_t> stacks_;
     std::map<std::uint64_t, gameplay::EntityKind> kinds_;
-    std::uint64_t spawned_{};         // the entity of the last entity_spawned record
+    std::uint64_t spawned_{};         // the entity of the last entity_spawned or entity_loaded record
+    bool loading_{};                  // whether that record was entity_loaded
     contracts::Vec3 spawn_position_{}; // from the entity_spawn_position record after it
     std::set<std::uint64_t> added_;
     std::map<std::uint64_t, contracts::OrderKey> removed_;
@@ -465,6 +483,9 @@ std::string event_text(const EntityEvent& e) {
                            properties_text(e.properties));
     case EntityEvent::Kind::removed: return std::format("{} {} removed ({})", e.stage, e.handle, e.reason);
     case EntityEvent::Kind::changed: return std::format("{} {} changed{}", e.stage, e.handle, properties_text(e.properties));
+    case EntityEvent::Kind::loaded:
+        return std::format("{} {} loaded {} at {} moving {}{}", e.stage, e.handle, e.type, vec_text(e.position), vec_text(e.velocity),
+                           properties_text(e.properties));
     }
     return "";
 }
@@ -472,6 +493,7 @@ bool same_event(const EntityEvent& a, const EntityEvent& b, double tolerance) {
     if (a.kind != b.kind || a.stage != b.stage || a.handle != b.handle) return false;
     switch (a.kind) {
     case EntityEvent::Kind::added:
+    case EntityEvent::Kind::loaded:
         return a.type == b.type && close(a.position, b.position, tolerance) && close(a.velocity, b.velocity, tolerance)
             && same_properties(a.properties, b.properties);
     case EntityEvent::Kind::removed: return a.reason == b.reason;

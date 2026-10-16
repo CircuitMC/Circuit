@@ -394,7 +394,7 @@
         "impl": "partial",
         "evidence": "mismatch",
         "deviations": [
-          "moving blocks push items differently; unloading chunks do not report their entities"
+          "moving blocks push items differently; reloaded entities come back in coordinate order"
         ],
         "cases": [
           "trace/item_chest_scatter",

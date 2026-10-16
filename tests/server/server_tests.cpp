@@ -1806,7 +1806,10 @@ int main() {
             use_item_on(c, "minecraft:stone", {0, -61, 2}, 1);
             require(block_update(c, {0, -60, 2}) == content().state_id("minecraft:stone"), "stone placed");
             c.send(State::play, "move_player_pos", Writer().f64(3.5).f64(-60.0).f64(4.5).u8(1));
-            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+            // A player's packets are handled in order: once a later command
+            // is answered, the move has been taken.
+            c.send(State::play, "chat_command", Writer().string("time query gametime"));
+            require(c.until(State::play, "system_chat").has_value(), "the command after the move answered");
             s.stop();
         }
         require(block_at(recovered_state(config.world_directory), {0, -60, 2}) == stone.raw(), "stone on disk");

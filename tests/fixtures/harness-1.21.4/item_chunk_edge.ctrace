@@ -2,7 +2,7 @@ circuit-trace 2
 title An item slides across a chunk edge into a chunk without entity ticking
 game-version 1.21.4
 source harness_trace
-harness circuit-harness:0.6.0+mc1.21.4
+harness circuit-harness:0.7.0+mc1.21.4
 mechanisms item_entity chunk_tickets
 area 328 0 -1 360 2 1
 ticks 90
@@ -163,3 +163,64 @@ at 50 command forceload remove 328 0
 entity-removed 50 other e1 unloaded_to_chunk
 
 at 60 command forceload add 328 0
+
+entity-loaded 61 other e1 minecraft:item 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1
+entity 61 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 62 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 63 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 64 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 65 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 66 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 67 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 68 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 69 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 70 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 71 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 72 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 73 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 74 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 75 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 76 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 77 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 78 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 79 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 80 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 81 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 82 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 83 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 84 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 85 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 86 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 87 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 88 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 89 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity 90 e1 336.6574365802871 1.0 0.5 0.7353656981646197 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true

@@ -1292,6 +1292,34 @@ int main() {
                 "never ages, never picked up; the tick count still runs");
     });
 
+    suite.run("entities leave with their chunk and come back under new ids", [] {
+        Sim s(bundle(), 7, 0); // tick 1: chunk (0,0) entity ticking
+        s.tick({place({4, -1, 4}, blocks::stone()), SpawnItem{at_block(4.5, 0.0, 4.5), {}, {items::stone, 3}}}); // 2
+        s.until(5);
+        const auto before = s.oracle.dump().overworld().entities.at(0);
+        require(before.age == 4 && before.tick_count == 4, "ticking");
+        s.tick({RemoveTicket{1}}); // 6: the chunk unloads, its item leaves with it
+        const auto removed = of_kind(s.last, TraceKind::entity_removed);
+        require(removed.size() == 1 && removed[0].a == before.id.value
+                    && removed[0].b == static_cast<std::uint64_t>(circuit::gameplay::RemovalReason::unloaded),
+                "removed as unloaded");
+        require(s.oracle.dump().overworld().entities.size() == 1, "kept with the chunk");
+        s.until(9);
+        s.tick({ticket(2, {0, 0}, 0)}); // 10: reload
+        auto d = s.oracle.dump();
+        require(of_kind(s.last, TraceKind::entity_loaded).empty() && d.overworld().entities.at(0).returns == 11, "back in the next tick");
+        s.tick(); // 11
+        const auto loaded = of_kind(s.last, TraceKind::entity_loaded);
+        d = s.oracle.dump();
+        const auto& back = d.overworld().entities.at(0);
+        require(loaded.size() == 1 && loaded[0].b == before.id.value && loaded[0].a == back.id.value && back.id.value > before.id.value
+                    && back.returns == 0 && back.tick_count == 0 && back.age == 4 && back.stack == before.stack,
+                "under a new id, with its tick count starting again");
+        s.tick(); // 12: the chunk's entities tick again two ticks after the reload
+        d = s.oracle.dump();
+        require(d.overworld().entities.at(0).tick_count == 1 && d.overworld().entities.at(0).age == 5, "ticking again");
+    });
+
     suite.run("entities migrate once per tick and fall out of the world", [] {
         Sim s;
         std::vector<CommandBody> build;

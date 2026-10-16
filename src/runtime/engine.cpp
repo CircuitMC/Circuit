@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <chrono>
 #include <deque>
+#include <set>
 #include <stdexcept>
 #include <unordered_map>
 
@@ -445,6 +446,13 @@ void Engine::Impl::apply_levels(RegionContext& ctx, DimensionId level) {
                     for (auto& [key, t] : list) t.due = gameplay::reload_shift(t.due, chunk->saved_at, world.time);
                 chunk->saved_at = 0;
                 chunk->resumes = world.time + gameplay::reload_resume;
+                // Its entities come back in the next tick (gameplay::entity_return).
+                for (auto& [id, e] : chunk->entities) {
+                    e.returns = world.time + gameplay::entity_return;
+                    chunk->returning.insert_or_assign(id, std::move(e));
+                }
+                chunk->entities.clear();
+                for (auto& [id, e] : chunk->returning) e.returns = world.time + gameplay::entity_return;
             } else {
                 chunk = std::make_unique<ChunkData>();
                 chunk->dimension = c.dimension;
@@ -467,6 +475,12 @@ void Engine::Impl::apply_levels(RegionContext& ctx, DimensionId level) {
             region_for_new_chunk(c);
         } else if (want == ChunkLevel::unloaded) {
             ctx.record(TraceKind::chunk_unloaded, origin, data->generation.value, 0, 0);
+            // Its entities leave the level with it (saved, not removed).
+            for (const auto& [id, e] : data->entities) {
+                ctx.record(TraceKind::entity_removed, contracts::block_of(e.position), id.value,
+                           static_cast<std::uint64_t>(gameplay::RemovalReason::unloaded), 0);
+                world.entity_index.erase(id);
+            }
             data->level = ChunkLevel::unloaded;
             data->levels = {};
             data->saved_at = world.time + 1;
@@ -478,6 +492,33 @@ void Engine::Impl::apply_levels(RegionContext& ctx, DimensionId level) {
             ctx.record(TraceKind::chunk_level_changed, origin, static_cast<std::uint64_t>(current),
                        static_cast<std::uint64_t>(want), 0);
             data->level = want;
+        }
+    }
+    // Entities a reload brought back return now, column by column, in the
+    // order of their old ids, under new ids and with their tick counts
+    // starting again (gameplay::entity_return).
+    for (auto it = world.loaded.lower_bound({level, {INT32_MIN, INT32_MIN}}); it != world.loaded.end() && it->first.dimension == level; ++it) {
+        auto& data = *it->second;
+        for (auto e = data.returning.begin(); e != data.returning.end();) {
+            if (e->second.returns > world.time) {
+                ++e;
+                continue;
+            }
+            auto entity = std::move(e->second);
+            const auto old = e->first;
+            e = data.returning.erase(e);
+            entity.id = EntityId{world.next_entity_id++};
+            entity.returns = 0;
+            entity.tick_count = 0;
+            const auto cell = contracts::block_of(entity.position);
+            ctx.use_level(level);
+            ctx.record(TraceKind::entity_loaded, cell, entity.id.value, old.value, contracts::pack_stack(entity.stack));
+            ctx.record(TraceKind::entity_spawn_position, cell, contracts::double_bits(entity.position.x), contracts::double_bits(entity.position.y),
+                       contracts::double_bits(entity.position.z));
+            ctx.record(TraceKind::entity_spawn_velocity, cell, contracts::double_bits(entity.velocity.x), contracts::double_bits(entity.velocity.y),
+                       contracts::double_bits(entity.velocity.z));
+            world.entity_index[entity.id] = it->first;
+            data.entities.emplace(entity.id, std::move(entity));
         }
     }
 }
@@ -555,7 +596,7 @@ void Engine::Impl::block_event_phase(DimensionId level) {
 void Engine::Impl::entity_phase(DimensionId level) {
     std::vector<RootItem> roots;
     world.for_each_loaded(level, [&](ChunkPos c, const ChunkData& data) {
-        if (!data.entity_ticking()) return;
+        if (!data.entity_ticking() || world.time < data.resumes) return;
         for (const auto& [id, e] : data.entities) {
             RootItem r;
             r.key = id.value;
@@ -957,6 +998,7 @@ void fill_dump(const WorldStore& world, const contracts::VersionBundle& bundle, 
         }
         for (const auto& [pos, be] : data.block_entities) l.block_entities.push_back({pos, be});
         for (const auto& [id, e] : data.entities) l.entities.push_back(e);
+        for (const auto& [id, e] : data.returning) l.entities.push_back(e);
         for (int t = 0; t < 2; ++t)
             for (const auto& [k, e] : data.ticks[t])
                 l.ticks.push_back({static_cast<TickList>(t), {k.first, k.second, e.due, e.priority, e.suborder}});
@@ -1028,6 +1070,7 @@ void Engine::Impl::restore(const WorldDump& state) {
     // Valid entity stacks; entities of every level are checked against the
     // global id counter.
     std::optional<DimensionId> previous;
+    std::set<EntityId> entity_ids; // over all levels, present or returning
     for (const auto& l : state.levels) {
         if (!contracts::valid_dimension(static_cast<std::uint8_t>(l.dimension))) bad("level");
         if (previous && *previous >= l.dimension) bad("levels out of order");
@@ -1104,7 +1147,14 @@ void Engine::Impl::restore(const WorldDump& state) {
             const auto it = columns.find(contracts::chunk_of(contracts::block_of(e.position)));
             if (it == columns.end()) bad("entity in an unknown column");
             auto& chunk = *it->second;
-            if (world.entity_index.contains(e.id) || !chunk.entities.emplace(e.id, e).second) bad("duplicate entity id");
+            if (!entity_ids.insert(e.id).second) bad("duplicate entity id");
+            if (e.returns != 0) {
+                // Saved with its column and not back yet.
+                if (e.returns <= state.time) bad("entity return");
+                chunk.returning.emplace(e.id, e);
+                continue;
+            }
+            chunk.entities.emplace(e.id, e);
             world.entity_index[e.id] = {level, chunk.pos};
         }
         for (const auto& t : l.ticks) {

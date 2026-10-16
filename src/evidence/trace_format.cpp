@@ -143,7 +143,8 @@ private:
         if (t[0] == "light" && f_.format >= 2) return light(t);
         if (t[0] == "slot") return slot(t);
         if (f_.format >= 2) {
-            if (t[0] == "entity-added" || t[0] == "entity-removed" || t[0] == "entity-changed") return entity_event(t);
+            if (t[0] == "entity-added" || t[0] == "entity-removed" || t[0] == "entity-changed" || t[0] == "entity-loaded")
+                return entity_event(t);
             if (t[0] == "entity") return entity_probe(t);
             if (t[0] == "entity-order") return entity_order(t);
             if (t[0] == "chunk") return chunk_event(t);
@@ -423,11 +424,17 @@ private:
         if (auto ok = event_tick(t[1], e.tick); !ok) return ok;
         if (auto ok = stage_of(t[2], e.stage); !ok) return ok;
         e.handle = std::string(t[3]);
-        if (t[0] == "entity-added") {
-            e.kind = EntityEvent::Kind::added;
-            if (t.size() < 11) return fail(line_, "entity-added needs handle, type, position and velocity");
-            if (e.handle != std::format("e{}", handles_.size() + 1))
+        if (t[0] == "entity-added" || t[0] == "entity-loaded") {
+            const bool loaded = t[0] == "entity-loaded";
+            e.kind = loaded ? EntityEvent::Kind::loaded : EntityEvent::Kind::added;
+            if (t.size() < 11) return fail(line_, std::format("{} needs handle, type, position and velocity", t[0]));
+            if (loaded) {
+                // An entity its chunk saved comes back under its handle.
+                if (auto ok = known_handle(e.handle, false); !ok) return ok;
+                if (!unloaded_.erase(e.handle)) return fail(line_, std::format("entity `{}` was not unloaded", e.handle));
+            } else if (e.handle != std::format("e{}", handles_.size() + 1)) {
                 return fail(line_, std::format("the next entity is e{}", handles_.size() + 1));
+            }
             if (!valid_id(t[4])) return fail(line_, "invalid entity type");
             e.type = std::string(t[4]);
             if (auto ok = vec_of(t, 5, e.position); !ok) return ok;
@@ -442,6 +449,7 @@ private:
                 if (!key_char(c)) return fail(line_, "invalid removal reason");
             e.reason = std::string(t[4]);
             handles_[e.handle] = true;
+            if (e.reason == "unloaded_to_chunk" || e.reason == "unloaded_with_player") unloaded_.insert(e.handle);
         } else {
             e.kind = EntityEvent::Kind::changed;
             if (auto ok = known_handle(e.handle, true); !ok) return ok;
@@ -581,6 +589,7 @@ private:
     std::size_t seq_{};
     Tick last_event_tick_{};
     std::map<std::string, bool> handles_; // handle -> removed
+    std::set<std::string> unloaded_;      // handles removed with their chunk, which may be loaded again
 };
 } // namespace
 
@@ -697,6 +706,10 @@ std::string write_fixture(const Fixture& f) {
                                    vec_text(e.velocity), properties_text(e.properties));
                 break;
             case EntityEvent::Kind::removed: text = std::format("entity-removed {} {} {} {}", e.tick, e.stage, e.handle, e.reason); break;
+            case EntityEvent::Kind::loaded:
+                text = std::format("entity-loaded {} {} {} {} {} {}{}", e.tick, e.stage, e.handle, e.type, vec_text(e.position),
+                                   vec_text(e.velocity), properties_text(e.properties));
+                break;
             case EntityEvent::Kind::changed:
                 text = std::format("entity-changed {} {} {}{}", e.tick, e.stage, e.handle, properties_text(e.properties));
                 break;

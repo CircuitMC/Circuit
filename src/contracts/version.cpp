@@ -97,10 +97,11 @@ constexpr std::array reference_v4_mechanisms{
         "reach and results; block drops and container scatter placed and launched with level-random draws; "
         "despawns at age 6000; pushed by moving blocks (item_hopper_pickup, item_water_current, item_merge, "
         "item_merge_moving, item_merge_crossing, item_merge_vertical, item_merge_timers, item_chest_scatter, "
-        "item_water_still, item_water_channel, item_water_ice_corner, item_water_falling, item_water_fall). Ids "
-        "of entities spawned outside the command phase are assigned in serial order. Gaps: moving blocks push "
-        "items differently; entities of unloading chunks are not reported unloaded and keep their tick count; "
-        "lava, bubble columns and waterlogged blocks do not move items."},
+        "item_water_still, item_water_channel, item_water_ice_corner, item_water_falling, item_water_fall); "
+        "entities leave with an unloading chunk and come back a tick after it reloads, under new ids "
+        "(item_chunk_edge). Ids of entities spawned outside the command phase are assigned in serial order. Gaps: "
+        "moving blocks push items differently; reloaded entities come back in coordinate order, not the target "
+        "versions' chunk-map order; lava, bubble columns and waterlogged blocks do not move items."},
     MechanismEntry{"chunk_tickets", l0_exact, l2_declared_deviation, harness_trace,
         "Typed tickets with a level, a square and a lifetime; load and simulation levels decide each chunk's "
         "status and what runs; changes take effect in each level's chunk stage after its scheduled ticks; "

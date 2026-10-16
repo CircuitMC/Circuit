@@ -29,6 +29,7 @@ std::string_view kind_name(TraceKind kind) {
     case TraceKind::entity_spawn_position: return "entity_spawn_position";
     case TraceKind::entity_spawn_velocity: return "entity_spawn_velocity";
     case TraceKind::level_random_draw: return "level_random_draw";
+    case TraceKind::entity_loaded: return "entity_loaded";
     }
     return "unknown";
 }

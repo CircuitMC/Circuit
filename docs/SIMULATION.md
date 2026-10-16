@@ -6,11 +6,11 @@ The Part I core runs headless: shared contracts, a set of reference rules, a seq
 
 The rules are **circuit-reference-rules-v10**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
 
-Two version bundles run them: `java-1.21.8` and `java-1.21.4`. Each version has 52 traces recorded on the unmodified server:
+Two version bundles run them: `java-1.21.8` and `java-1.21.4`. Each version has 53 traces recorded on the unmodified server:
 - 1.21.8 traces are in `tests/fixtures/harness/`;
 - 1.21.4 traces are in `tests/fixtures/harness-1.21.4/`.
 
-The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 104 pass on both the parallel runtime and the oracle.
+The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 106 pass on both the parallel runtime and the oracle.
 
 The compatibility table is part of the version bundle (`src/contracts/version.cpp`). `circuit-server --compatibility` prints it. Each row states a target tier, a claimed tier, the evidence source, and its limitations:
 
@@ -42,7 +42,7 @@ The tiers are defined in the architecture: L0 exact, L1 region-equivalent, L2 de
 | `weather` | L2 | 16 `/weather` commands give 1,348 identical replies and events on both versions. Durations come from Circuit's own stream; no lightning, snow or other effects of rain. |
 | `piston` | L2 | Harness traces pass, including the level-random draws of piston sounds (piston_draws). Gap listed in the table: item pushing. |
 | `chunk_tickets` | L2 | ring_blocks, unload_reload. New chunks load at once and dropped chunks unload at once, where the official servers take a varying number of ticks. |
-| `item_entity`, `entity_order` | L2 | item_hopper_pickup, item_water_current, item_merge, item_merge_moving, item_merge_crossing, item_merge_vertical, item_merge_timers, item_hopper_area, item_hopper_inside, item_chest_scatter, item_water_still, item_water_channel, item_water_ice_corner, item_water_falling, item_water_fall: positions, velocities, merges, ages, pickup delays, collection by hoppers, a removed chest's scatter, currents and floating, and the order of the items match both official servers exactly. Entities in unloading chunks are not reported unloaded (item_chunk_edge); moving blocks push items differently (item_piston_push, item_drop_piston). |
+| `item_entity`, `entity_order` | L2 | item_hopper_pickup, item_water_current, item_merge, item_merge_moving, item_merge_crossing, item_merge_vertical, item_merge_timers, item_hopper_area, item_hopper_inside, item_chest_scatter, item_water_still, item_water_channel, item_water_ice_corner, item_water_falling, item_water_fall, item_chunk_edge: positions, velocities, merges, ages, pickup delays, collection by hoppers, a removed chest's scatter, currents and floating, leaving and coming back with a chunk, and the order of the items match both official servers exactly. Moving blocks push items differently (item_piston_push, item_drop_piston). |
 | `random_ticks`, `wheat` | L2 | Documented behavior only; not compared with the target version. |
 | `container_menus` | L2 | A 48-step client scenario gives the same windows as the official servers of both versions, and so does a 48-step crafting scenario in the own window (with data packs). The crafting table, special recipes and the recipe book are not modeled, and no harness traces of menus exist. |
 | `survival_actions` | L2 | Documented hardness, tools and pickup rules; block loot tables and 2x2 crafting from data packs, compared with the official servers. Thrown items have no random spread, death drops spread in a fixed pattern, and loot tables with random parts drop nothing. |
@@ -212,6 +212,7 @@ v10 is v9 with what C2.3 and C2.4 added to the rules: crops that need light, gam
   - **Server tickets:** the start ticket at the spawn chunk (level 32 − spawnChunkRadius, 2 by default); per player, a loading ticket over their view distance (level 31) and a simulation ticket at their chunk (level 31 − simulation distance). Only forced and portal tickets survive a restart.
   - **Changes** apply in the level's chunk stage, after its scheduled ticks, as on the official servers: a chunk that a command drops still runs that tick's scheduled ticks. Lifetimes end at the chunk stage they reach.
   - **Unload and reload** (both official servers): unloading keeps all chunk state. A dropped chunk's pending ticks keep the delay they had left, counted from the tick after it dropped; after a reload they wait out that delay, and the chunk's scheduled ticks and block entities run again two ticks after the reload, its pending block events at once. A reload increments the chunk generation, and commands can name the generation they expect.
+  - **Entities with their chunk:** the entities of a chunk that unloads leave the level (removed as unloaded) and are kept with it; after a reload they come back in the chunk stage of the next tick, column by column in coordinate order and by their old ids, under new ids from the shared counter and with their tick counts starting again, and they tick again two ticks after the reload. The official servers load them back in the order of their chunk maps, which varies; a reloaded entity's new id changes when it moves at rest (item_chunk_edge passes; three entities in three chunks came back in different orders on the two versions).
 - **Light** (minecraft.wiki "Light"; both official servers, compared with light probes):
   - **Per state:** an emission (0–15), a dampening (0, 1 or 15) and, for slabs, stairs, snow, farmland, dirt paths, pistons and a few others, an occlusion shape. The block registry holds them for every state of both versions, from minecraft-data with Circuit's own state rules (lit blocks, candles, sea pickles, waterlogged states and so on); a report of every state from both official servers matches it exactly.
   - **Spreading:** light passes to a neighbor one level lower, or lower by the neighbor's dampening when that is more, unless the faces of the two cells' occlusion shapes between them together cover the face. Block light starts at emitters; sky light starts above the world, and level 15 passes straight down undiminished into cells that dampen nothing.
@@ -387,7 +388,7 @@ Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked with `--check
 
 - Rows claimed L2 differ from the target version as listed in the compatibility table. The main gaps are:
   - simplified item pushing by moving blocks;
-  - items are not moved by lava, bubble columns or waterlogged blocks; entities of unloading chunks are kept without being reported unloaded, and keep their tick count across unloading and restarts (the target versions reload them with a new count);
+  - items are not moved by lava, bubble columns or waterlogged blocks; entities come back with their chunks in coordinate order, not in the order of the official chunk maps; recovery after a restart continues the simulation exactly, so entities keep their ids and tick counts, where an official server loads them with new ones; entity UUIDs are not world state (the server derives them from entity ids; C11);
   - per-section random streams and coordinate-ordered random-tick chunks;
   - wheat ignoring hydration and neighboring crops;
   - chunk tickets: no teleport, portal or ender pearl tickets yet; new chunks load at once (the official servers take 2 to 4 ticks, varying between runs); dropped chunks unload at once and reloads happen in the chunk stage (the official servers may keep a dropped chunk at border for a tick or two, and restore a cached chunk during the command, which moves restored ticks by a tick between runs);

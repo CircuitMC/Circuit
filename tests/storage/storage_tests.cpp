@@ -336,6 +336,11 @@ int main() {
         item.age = circuit::gameplay::item_age_never;
         item.tick_count = 4000000000U;
         never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(item);
+        // And one waiting to come back with its reloaded chunk.
+        auto returning = item;
+        returning.id = circuit::contracts::EntityId{never.state.next_entity_id++};
+        returning.returns = never.state.time + 1;
+        never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(returning);
         require(circuit::storage::decode_checkpoint(circuit::storage::encode_checkpoint(never)).value() == never, "ages and tick counts round trip");
         require(circuit::storage::decode_checkpoint(circuit::storage::encode_checkpoint(legacy)).value() == legacy,
                 "a converted checkpoint round trip");

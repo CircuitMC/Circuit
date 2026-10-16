@@ -42,7 +42,7 @@ Feature counts per implementation state, then the number of features with compar
 | V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 4 / 4 | 52 / 52 | 3 / 3 | 0 / 0 | 6 / 6 |
 | V17 TNT and explosions | C3, C4 | 11 | 0 / 0 | 0 / 0 | 2 / 2 | 8 / 9 | 1 / 0 | 0 / 0 |
 | V18 Technical machines and vanilla quirks | C4, C7 | 6 | 0 / 0 | 1 / 1 | 0 / 0 | 5 / 5 | 0 / 0 | 1 / 1 |
-| V19 General entity lifecycle | C3 | 17 | 0 / 0 | 4 / 4 | 0 / 0 | 13 / 13 | 0 / 0 | 0 / 0 |
+| V19 General entity lifecycle | C3 | 17 | 0 / 0 | 4 / 4 | 0 / 0 | 13 / 13 | 0 / 0 | 3 / 3 |
 | V20 Item entities and experience | C3, C6 | 7 | 2 / 2 | 3 / 3 | 0 / 0 | 2 / 2 | 0 / 0 | 4 / 4 |
 | V21 Projectiles, vehicles and mounts | C3, C6 | 109 | 0 / 0 | 0 / 0 | 39 / 57 | 49 / 51 | 21 / 1 | 0 / 0 |
 | V22 Movement and player modes | C6 | 7 | 3 / 3 | 2 / 2 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
@@ -129,8 +129,8 @@ Their counts are unknown, not zero.
 | --- | --- | ---: |
 | black_box | passing | 19 |
 | black_box | unsupported | 1 |
-| official_trace | failing | 4 |
-| official_trace | passing | 52 |
+| official_trace | failing | 3 |
+| official_trace | passing | 53 |
 | official_trace | unsupported | 1 |
 | planned | planned | 8 |
 | real_client | passing | 2 |
@@ -345,17 +345,17 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Typed entities with UUIDs, attributes and components | C3 | partial, none | partial, none | the engine models item entities only |
+| Typed entities with UUIDs, attributes and components | C3 | partial, compared | partial, compared | `trace/item_chunk_edge`, `trace/item_merge`; entity UUIDs are derived from ids by the server, not world state (C11); the engine models item entities only (more kinds follow in C3.3 and C3.4); Explicit kind, double-precision state, tick count, signed age |
 | Entity tracking ranges, metadata and visibility for clients | C10 | partial, none | partial, none | Items and players |
 | Passengers and leashes | C3 | missing, none | missing, none |  |
-| Entity persistence across save and reload | C3 | partial, none | partial, none | Item entities |
-| Entity sections, migration between chunks and unloaded chunks | C3 | partial, none | partial, none | items cannot enter unloaded chunks |
+| Entity persistence across save and reload | C3 | partial, compared | partial, compared | `trace/item_chunk_edge`; recovery after a restart keeps ids and tick counts, where an official server loads entities with new ones; Item entities saved with their chunk come back a tick after it reloads, under new ids with new tick counts; checkpoints keep entities waiting to come back |
+| Entity sections, migration between chunks and unloaded chunks | C3 | partial, compared | partial, compared | `trace/item_chunk_edge`; entities of a reloaded chunk come back in coordinate order, not the official chunk-map order; Items stop ticking in chunks that are not entity ticking and collide with unloaded cells as with full blocks |
 
 ### V20 Item entities and experience
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Item entity motion and collision | C3 | partial, compared | partial, compared | `trace/item_chest_scatter`, `trace/item_chunk_edge`, `trace/item_hopper_pickup`, `trace/item_merge_crossing`, `trace/item_piston_push`, `trace/item_water_channel`, `trace/item_water_current`, `trace/item_water_fall`, `trace/item_water_falling`, `trace/item_water_ice_corner`, `trace/item_water_still`; entities of unloading chunks are not reported unloaded and keep their tick count (trace/item_chunk_edge); moving blocks push items differently (trace/item_piston_push); Double-precision gravity, drag, collision with every state's collision boxes, bouncing, the resting rule, currents and buoyancy in water, identical with both official servers in the passing traces |
+| Item entity motion and collision | C3 | partial, compared | partial, compared | `trace/item_chest_scatter`, `trace/item_chunk_edge`, `trace/item_hopper_pickup`, `trace/item_merge_crossing`, `trace/item_piston_push`, `trace/item_water_channel`, `trace/item_water_current`, `trace/item_water_fall`, `trace/item_water_falling`, `trace/item_water_ice_corner`, `trace/item_water_still`; entities of a reloaded chunk come back in coordinate order, not the official chunk-map order; moving blocks push items differently (trace/item_piston_push); Double-precision gravity, drag, collision with every state's collision boxes, bouncing, the resting rule, currents and buoyancy in water, identical with both official servers in the passing traces |
 | Item merging | C3 | implemented, compared | implemented, compared | `trace/item_merge`, `trace/item_merge_crossing`, `trace/item_merge_moving`, `trace/item_merge_timers`, `trace/item_merge_vertical`; Every 40 ticks of the item's own count, or every 2 after a move into another block; reach half a block sideways; stacks of one kind within their limit; the smaller joins the larger (equal: the other survives); younger age and longer pickup delay kept |
 | Pickup by players and hoppers, pickup delays | C3 | partial, compared | partial, compared | `client/vitals`, `client/windows`, `trace/item_hopper_area`, `trace/item_hopper_inside`, `trace/item_hopper_pickup`, `trace/item_merge_timers` |
 | Despawning | C3 | implemented, compared | implemented, compared | `trace/item_merge_timers`; Age 6000, -32768 never; the age goes up after the item's move and merges |

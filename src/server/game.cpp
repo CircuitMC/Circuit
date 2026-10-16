@@ -1885,7 +1885,7 @@ struct Game::Impl final : GameServices {
             if (r.dimension != overworld) continue;
             switch (r.kind) {
             case contracts::TraceKind::entity_spawned: case contracts::TraceKind::entity_changed_chunk:
-            case contracts::TraceKind::entity_stack_changed:
+            case contracts::TraceKind::entity_stack_changed: case contracts::TraceKind::entity_loaded:
                 touched.insert(r.a);
                 break;
             case contracts::TraceKind::entity_removed:

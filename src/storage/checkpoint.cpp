@@ -19,6 +19,7 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 15: entities saved with a column that loaded again record when they come back;
 // 14: entities count their ticks, and an item's age may be -32768 (never);
 // 13: entities have a kind, positions and velocities are doubles (before:
 // 1/4096 block units), and levels carry their random sequence's state;
@@ -41,7 +42,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 14;
+constexpr std::uint32_t version = 15;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -149,6 +150,7 @@ void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
         w.varint(e.age).varlong(static_cast<std::int64_t>(e.last_tick));
         w.boolean(e.on_ground);
         w.u16(e.pickup_delay);
+        w.varlong(static_cast<std::int64_t>(e.returns));
     }
     w.varint(static_cast<std::int32_t>(l.ticks.size()));
     for (const auto& t : l.ticks) {
@@ -371,6 +373,7 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
         }
         if (!b.stack(e.stack) || !b.get(b.r.varint(), age) || !b.u64(e.last_tick) || !b.get(b.r.boolean(), e.on_ground)) return false;
         if (b.version >= 4 && !b.get(b.r.u16(), e.pickup_delay)) return false;
+        if (b.version >= 15 && !b.u64(e.returns)) return false;
         e.age = age;
         // Before version 14 nothing reset an item's age, which counted every
         // tick since it was spawned.

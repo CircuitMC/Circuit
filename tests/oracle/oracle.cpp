@@ -78,7 +78,7 @@ public:
         std::vector<EntityId> out;
         if (lv().level(contracts::chunk_of(cell)) == ChunkLevel::unloaded) return out;
         for (const auto& [id, e] : lv().entities)
-            if (contracts::block_of(e.position) == cell) out.push_back(id);
+            if (e.returns == 0 && contracts::block_of(e.position) == cell) out.push_back(id);
         return out;
     }
     std::vector<EntityId> entities_in_cells(BlockPos low, BlockPos high) override {
@@ -86,7 +86,7 @@ public:
         for (const auto& [id, e] : lv().entities) {
             const auto p = contracts::block_of(e.position);
             if (p.x >= low.x && p.x <= high.x && p.y >= low.y && p.y <= high.y && p.z >= low.z && p.z <= high.z
-                && lv().level(contracts::chunk_of(p)) != ChunkLevel::unloaded)
+                && lv().level(contracts::chunk_of(p)) != ChunkLevel::unloaded && e.returns == 0)
                 out.push_back(id);
         }
         std::ranges::sort(out);
@@ -141,7 +141,7 @@ private:
     }
     Entity* find_entity(EntityId id) {
         const auto it = lv().entities.find(id);
-        if (it == lv().entities.end()) return nullptr;
+        if (it == lv().entities.end() || it->second.returns != 0) return nullptr;
         if (lv().level(contracts::chunk_of(contracts::block_of(it->second.position))) == ChunkLevel::unloaded) return nullptr;
         return &it->second;
     }
@@ -317,12 +317,19 @@ void Oracle::apply_levels(DimensionId level) {
                     for (auto& t : list)
                         if (contracts::chunk_of(t.pos) == c) t.due = reload_shift(t.due, known->second.saved_at, time_);
                 resumes = time_ + reload_resume;
+                // Its entities come back in the next tick.
+                for (auto& [id, e] : lv.entities)
+                    if (contracts::chunk_of(contracts::block_of(e.position)) == c) e.returns = time_ + gameplay::entity_return;
             }
             lv.chunks[c] = {generation, want, levels, 0, resumes};
             ++lv.light_version;
             ctx_->record(TraceKind::chunk_loaded, origin, generation.value, static_cast<std::uint64_t>(want), 0);
         } else if (want == ChunkLevel::unloaded) {
             ctx_->record(TraceKind::chunk_unloaded, origin, lv.chunks[c].generation.value, 0, 0);
+            for (const auto& [id, e] : lv.entities)
+                if (e.returns == 0 && contracts::chunk_of(contracts::block_of(e.position)) == c)
+                    ctx_->record(TraceKind::entity_removed, contracts::block_of(e.position), id.value,
+                                 static_cast<std::uint64_t>(gameplay::RemovalReason::unloaded), 0);
             lv.chunks[c].level = ChunkLevel::unloaded;
             lv.chunks[c].saved_at = time_ + 1;
             lv.chunks[c].resumes = 0;
@@ -332,6 +339,31 @@ void Oracle::apply_levels(DimensionId level) {
                          static_cast<std::uint64_t>(want), 0);
             lv.chunks[c].level = want;
         }
+    }
+    // Entities a reload brought back return now, by column and old id, under
+    // new ids and with their tick counts starting again.
+    auto& lv = at(level);
+    std::vector<std::pair<ChunkPos, EntityId>> back;
+    for (const auto& [id, e] : lv.entities) {
+        const auto chunk = contracts::chunk_of(contracts::block_of(e.position));
+        if (e.returns != 0 && e.returns <= time_ && lv.level(chunk) != ChunkLevel::unloaded) back.emplace_back(chunk, id);
+    }
+    std::ranges::sort(back);
+    for (const auto& [chunk, old] : back) {
+        auto node = lv.entities.extract(old);
+        auto& e = node.mapped();
+        e.id = EntityId{next_entity_id_++};
+        e.returns = 0;
+        e.tick_count = 0;
+        const auto cell = contracts::block_of(e.position);
+        ctx_->use_level(level);
+        ctx_->record(TraceKind::entity_loaded, cell, e.id.value, old.value, contracts::pack_stack(e.stack));
+        ctx_->record(TraceKind::entity_spawn_position, cell, contracts::double_bits(e.position.x), contracts::double_bits(e.position.y),
+                     contracts::double_bits(e.position.z));
+        ctx_->record(TraceKind::entity_spawn_velocity, cell, contracts::double_bits(e.velocity.x), contracts::double_bits(e.velocity.y),
+                     contracts::double_bits(e.velocity.z));
+        node.key() = e.id;
+        lv.entities.insert(std::move(node));
     }
 }
 
@@ -401,8 +433,10 @@ void Oracle::run_block_events(DimensionId level) {
 void Oracle::run_entities(DimensionId level) {
     auto& lv = at(level);
     std::vector<EntityId> ids;
-    for (const auto& [id, e] : lv.entities)
-        if (entity_ticking(lv.simulation(contracts::chunk_of(contracts::block_of(e.position))))) ids.push_back(id);
+    for (const auto& [id, e] : lv.entities) {
+        const auto chunk = contracts::chunk_of(contracts::block_of(e.position));
+        if (e.returns == 0 && entity_ticking(lv.simulation(chunk)) && lv.resumed(chunk, time_)) ids.push_back(id);
+    }
     for (const auto id : ids) {
         ctx_->begin_root(Phase::entities, id.value);
         run_entity(*ctx_, id);

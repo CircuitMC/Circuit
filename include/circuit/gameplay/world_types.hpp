@@ -98,12 +98,16 @@ struct Entity {
     ItemStack stack;
     std::int32_t age{};
     std::uint16_t pickup_delay{};
+    // Saved with a chunk that loaded again: the tick it comes back, under a
+    // new id (0: it is in the level).
+    Tick returns{};
     bool operator==(const Entity&) const = default;
 };
 // A valid item age: -32768 or 0 to 32767, as the target versions save it.
 [[nodiscard]] constexpr bool valid_item_age(std::int64_t age) noexcept { return age >= item_age_never && age <= 32767; }
 
-enum class RemovalReason : std::uint8_t { despawned = 1, fell_out_of_world = 2, picked_up = 3, command = 4, merged = 5 };
+// `unloaded`: saved with its chunk, which may load it again (entity_loaded).
+enum class RemovalReason : std::uint8_t { despawned = 1, fell_out_of_world = 2, picked_up = 3, command = 4, merged = 5, unloaded = 6 };
 
 // A player's inventory in the simulation: the slots of the player's own window
 // (see contracts::player_slots) and the stack carried by the cursor. Only
@@ -272,8 +276,12 @@ std::int32_t game_rule_value(const contracts::VersionBundle& bundle, const std::
 // counted from the tick after it dropped (`saved_at`); reloaded at `now`, a
 // tick due at `due` is due at now + (due - saved_at), overdue ones at once.
 // Its scheduled ticks and block entities run again from now + reload_resume;
-// its block events at once.
+// its block events at once. Its entities left the level when it dropped
+// (removed as unloaded) and come back in the chunk stage of now +
+// entity_return, under new ids, with their tick counts starting again; they
+// tick from now + reload_resume too.
 inline constexpr Tick reload_resume = 2;
+inline constexpr Tick entity_return = 1;
 constexpr Tick reload_shift(Tick due, Tick saved_at, Tick now) noexcept {
     if (due >= saved_at) return now + (due - saved_at);
     return now - std::min(now, saved_at - due);
