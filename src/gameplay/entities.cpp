@@ -2,6 +2,7 @@
 #include "internal.hpp"
 #include <circuit/gameplay/items.hpp>
 #include <circuit/gameplay/physics.hpp>
+#include <circuit/gameplay/survival.hpp>
 #include <algorithm>
 #include <cmath>
 
@@ -9,7 +10,9 @@
 // traces of falling, sliding, resting and merging items; minecraft.wiki
 // "Item (entity)" and "Entity"). Each tick:
 // - the tick count goes up, and the pickup delay down;
-// - gravity takes 0.04 from the vertical velocity;
+// - currents push it (also after the move), and in water it floats up
+//   instead of falling; otherwise gravity takes 0.04 from the vertical
+//   velocity;
 // - the item moves, unless it rests on the ground with a horizontal velocity
 //   whose square is at most 1e-5, in which case it moves only when its tick
 //   count plus its id is a multiple of 4; an item that moves inside a hopper
@@ -51,6 +54,106 @@ float slipperiness(BlockState s) {
     if (name == "blue_ice") return 0.989f;
     if (name == "slime_block") return 0.8f;
     return 0.6f;
+}
+
+// ---- water ---------------------------------------------------------------
+//
+// Fitted to both official servers' traces of items in still water, in
+// channels of flowing water, on ice under flowing water, around a corner
+// and in falling water, every value exact. minecraft.wiki "Water": a cell
+// holds level/9 of water (a source or falling water 8/9, a full block under
+// more water), and its current is the sum of the flows to and from its four
+// neighbors; falling water flows down.
+
+// The water a cell holds, in ninths of a block, ignoring water above.
+float own_height(BlockState s) {
+    if (!s.is(BlockType::water)) return 0.0f;
+    const int amount = s.flag() || s.level() == 0 ? 8 : 8 - s.level();
+    return static_cast<float>(amount) / 9.0f;
+}
+
+Vec3 normalized(Vec3 v) {
+    const double length = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    return length < 1.0e-4 ? Vec3{} : Vec3{v.x / length, v.y / length, v.z / length};
+}
+
+// The direction of a water cell's current: toward neighbors with less water,
+// and toward water below an open neighbor; falling water beside a whole face
+// also flows down.
+Vec3 current(RuleContext& ctx, BlockPos p, BlockState water) {
+    const double own = own_height(water);
+    double dx = 0.0, dz = 0.0;
+    for (const auto dir : {Direction::north, Direction::south, Direction::west, Direction::east}) {
+        const auto n = p.relative(dir);
+        const auto there = ctx.block(n);
+        if (there.is_unloaded() || !detail::holds_water(there)) continue;
+        const double g = own_height(there);
+        double h = 0.0;
+        if (g == 0.0) {
+            const auto below = ctx.block(n.relative(Direction::down));
+            if (!below.is_unloaded() && detail::holds_water(below)) {
+                const double g2 = own_height(below);
+                if (g2 > 0.0) h = own - (g2 - static_cast<double>(8.0f / 9.0f));
+            }
+        } else {
+            h = own - g;
+        }
+        if (h != 0.0) {
+            const auto o = contracts::offset(dir);
+            dx += o.dx * h;
+            dz += o.dz * h;
+        }
+    }
+    Vec3 flow{dx, 0.0, dz};
+    if (water.flag()) {
+        for (const auto dir : {Direction::north, Direction::south, Direction::west, Direction::east}) {
+            const auto n = p.relative(dir);
+            const auto side = contracts::opposite(dir);
+            if (detail::face_sturdy(ctx.block(n), side) || detail::face_sturdy(ctx.block(n.relative(Direction::up)), side)) {
+                const auto across = normalized(flow);
+                flow = {across.x, -6.0, across.z};
+                break;
+            }
+        }
+    }
+    return normalized(flow);
+}
+
+// What the water an entity's box touches does to it: whether it is in water,
+// how deep its bottom is, and the push of the currents (0.014 a time).
+struct InWater {
+    bool inside{};
+    double depth{};
+    Vec3 push{};
+};
+InWater water_at(RuleContext& ctx, const physics::Aabb& entity) {
+    const auto box = entity.deflate(0.001);
+    const auto cell = [](double v) { return static_cast<std::int32_t>(std::floor(v)); };
+    InWater out;
+    Vec3 sum{};
+    int count = 0;
+    for (auto x = cell(box.min_x); x <= cell(box.max_x); ++x)
+        for (auto y = cell(box.min_y); y <= cell(box.max_y); ++y)
+            for (auto z = cell(box.min_z); z <= cell(box.max_z); ++z) {
+                const contracts::BlockPos p{x, y, z};
+                if (!ctx.world().contains_y(p.y)) continue;
+                const auto s = ctx.block(p);
+                if (!s.is(BlockType::water)) continue;
+                const double top = static_cast<double>(y) + static_cast<double>(fluid_height(s, ctx.block(p.relative(Direction::up))));
+                if (top < box.min_y) continue;
+                out.inside = true;
+                out.depth = std::max(out.depth, top - box.min_y);
+                auto flow = current(ctx, p, s);
+                if (out.depth < 0.4) flow = {flow.x * out.depth, flow.y * out.depth, flow.z * out.depth};
+                sum = {sum.x + flow.x, sum.y + flow.y, sum.z + flow.z};
+                ++count;
+            }
+    if (std::sqrt(sum.x * sum.x + sum.y * sum.y + sum.z * sum.z) > 0.0) {
+        sum = {sum.x / count, sum.y / count, sum.z / count};
+        const double length = std::sqrt(sum.x * sum.x + sum.y * sum.y + sum.z * sum.z);
+        out.push = {sum.x / length * 0.014, sum.y / length * 0.014, sum.z / length * 0.014};
+    }
+    return out;
 }
 
 // Moves an entity's box by its velocity against the blocks around it; the
@@ -142,7 +245,20 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
     const auto start = e.position;
     auto v = e.velocity;
     auto p = e.position;
-    v.y -= gravity;
+    // Currents push before the move and after it. An item more than 0.1 deep
+    // floats up by 0.0005 a tick (while slower than 0.06) and loses 1% of its
+    // horizontal speed, instead of falling.
+    if (const auto water = water_at(ctx, detail::entity_box(e)); water.inside) {
+        v = {v.x + water.push.x, v.y + water.push.y, v.z + water.push.z};
+        if (water.depth > 0.1) {
+            constexpr double drag = 0.99f, rise = 0.0005f;
+            v = {v.x * drag, v.y + (v.y < 0.06 ? rise : 0.0), v.z * drag};
+        } else {
+            v.y -= gravity;
+        }
+    } else {
+        v.y -= gravity;
+    }
     const bool moves = !(e.on_ground && v.x * v.x + v.z * v.z <= 1.0e-5 && (ticks + id.value) % 4 != 0);
     if (moves) {
         e.on_ground = move(ctx, p, v, item_size, item_size);
@@ -151,6 +267,8 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
         v = {v.x * static_cast<double>(f), v.y * 0.98, v.z * static_cast<double>(f)};
         if (e.on_ground && v.y < 0.0) v.y *= -0.5;
     }
+    if (const auto water = water_at(ctx, physics::box_at(p, item_size, item_size)); water.inside)
+        v = {v.x + water.push.x, v.y + water.push.y, v.z + water.push.z};
     e.velocity = v;
     if (p.y < static_cast<double>(ctx.world().min_y - 64)) {
         ctx.record(TraceKind::entity_removed, contracts::block_of(p), id.value, static_cast<std::uint64_t>(RemovalReason::fell_out_of_world));

@@ -21,7 +21,6 @@ bool washed_away(BlockType t) {
     return t == BlockType::redstone_wire || t == BlockType::lever || t == BlockType::repeater || t == BlockType::comparator
         || t == BlockType::wheat;
 }
-bool holds_water(BlockState s) { return s.is_air() || s.is(BlockType::water) || washed_away(s.type()); }
 // Water may flow into the block: it holds water and is no source.
 bool passable(BlockState s) { return holds_water(s) && !is_source(s); }
 // Only cells without water take new flowing water from a side; flowing water
@@ -106,6 +105,8 @@ void spread(RuleContext& ctx, BlockPos pos, BlockState s) {
     if (is_source(s) || !is_hole(ctx, pos)) spread_to_sides(ctx, pos, s);
 }
 } // namespace
+
+bool holds_water(BlockState s) { return s.is_air() || s.is(BlockType::water) || washed_away(s.type()); }
 
 void tick_water(RuleContext& ctx, BlockPos pos, BlockState s) {
     auto current = s;

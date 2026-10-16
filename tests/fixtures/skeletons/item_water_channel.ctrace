@@ -1,0 +1,56 @@
+circuit-trace 2
+title Items carried along a channel of flowing water
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms item_entity water
+area -2 0 -2 12 3 2
+ticks 110
+changes ordered
+entities observed
+
+at 0 set -1 0 0 minecraft:stone
+at 0 set -1 1 -1 minecraft:stone
+at 0 set -1 1 1 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 1 -1 minecraft:stone
+at 0 set 0 1 1 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 1 -1 minecraft:stone
+at 0 set 1 1 1 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 1 -1 minecraft:stone
+at 0 set 2 1 1 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 1 -1 minecraft:stone
+at 0 set 3 1 1 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 1 -1 minecraft:stone
+at 0 set 4 1 1 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 1 -1 minecraft:stone
+at 0 set 5 1 1 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 1 -1 minecraft:stone
+at 0 set 6 1 1 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 1 -1 minecraft:stone
+at 0 set 7 1 1 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 1 -1 minecraft:stone
+at 0 set 8 1 1 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 1 -1 minecraft:stone
+at 0 set 9 1 1 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 1 -1 minecraft:stone
+at 0 set 10 1 1 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 1 -1 minecraft:stone
+at 0 set 11 1 1 minecraft:stone
+at 0 set -1 1 0 minecraft:stone
+at 0 set 11 1 0 minecraft:stone
+at 1 set 0 1 0 minecraft:water[level=0]
+at 50 spawn-item 0.5 1.2 0.5 0 0 0 minecraft:stone 1
+at 50 spawn-item 3.5 1.2 0.5 0 0 0 minecraft:stone 1
+at 50 spawn-item 6.3 1.5 0.5 0 0 0 minecraft:redstone 1

@@ -1,0 +1,62 @@
+circuit-trace 2
+title Items on ice under flowing water, and around a corner
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms item_entity water
+area -2 0 -2 9 3 8
+ticks 120
+changes ordered
+entities observed
+
+at 0 set -1 0 0 minecraft:stone
+at 0 set -1 1 -1 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 1 -1 minecraft:stone
+at 0 set 1 0 0 minecraft:ice
+at 0 set 1 1 -1 minecraft:stone
+at 0 set 2 0 0 minecraft:ice
+at 0 set 2 1 -1 minecraft:stone
+at 0 set 3 0 0 minecraft:ice
+at 0 set 3 1 -1 minecraft:stone
+at 0 set 4 0 0 minecraft:ice
+at 0 set 4 1 -1 minecraft:stone
+at 0 set 5 0 0 minecraft:ice
+at 0 set 5 1 -1 minecraft:stone
+at 0 set 6 0 0 minecraft:ice
+at 0 set 6 1 -1 minecraft:stone
+at 0 set 7 0 0 minecraft:ice
+at 0 set 7 1 -1 minecraft:stone
+at 0 set -1 1 0 minecraft:stone
+at 0 set -1 1 1 minecraft:stone
+at 0 set 0 1 1 minecraft:stone
+at 0 set 1 1 1 minecraft:stone
+at 0 set 2 1 1 minecraft:stone
+at 0 set 3 1 1 minecraft:stone
+at 0 set 4 1 1 minecraft:stone
+at 0 set 5 1 1 minecraft:stone
+at 0 set 6 1 1 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 6 1 2 minecraft:stone
+at 0 set 8 1 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 6 1 3 minecraft:stone
+at 0 set 8 1 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 6 1 4 minecraft:stone
+at 0 set 8 1 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 6 1 5 minecraft:stone
+at 0 set 8 1 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 6 1 6 minecraft:stone
+at 0 set 8 1 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 6 1 7 minecraft:stone
+at 0 set 8 1 6 minecraft:stone
+at 0 set 8 1 0 minecraft:stone
+at 0 set 8 1 -1 minecraft:stone
+at 0 set 7 1 7 minecraft:stone
+at 1 set 0 1 0 minecraft:water[level=0]
+at 50 spawn-item 1.5 1.2 0.5 0 0 0 minecraft:stone 1
+at 50 spawn-item 6.5 1.2 0.5 0 0 0 minecraft:stone 1

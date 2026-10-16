@@ -28,6 +28,9 @@ struct Server::Impl {
     asio::io_context io;
     std::optional<asio::executor_work_guard<asio::io_context::executor_type>> work;
     asio::ip::tcp::acceptor acceptor{io};
+    // Accepting and closing the acceptor run on this strand: the network
+    // threads would otherwise re-arm an accept while another closes it.
+    asio::strand<asio::io_context::executor_type> accept_strand{asio::make_strand(io)};
     std::vector<std::thread> network;
     std::thread game_thread;
     std::atomic<bool> game_running{false};
@@ -77,7 +80,7 @@ struct Server::Impl {
     }
 
     void accept() {
-        acceptor.async_accept(asio::make_strand(io), [this](const asio::error_code& ec, asio::ip::tcp::socket socket) {
+        acceptor.async_accept(asio::make_strand(io), asio::bind_executor(accept_strand, [this](const asio::error_code& ec, asio::ip::tcp::socket socket) {
             if (ec) return; // the acceptor was closed
             if (shared->stopping) return;
             std::size_t open = 0;
@@ -95,7 +98,7 @@ struct Server::Impl {
             socket.set_option(asio::ip::tcp::no_delay(true), nodelay);
             std::make_shared<Session>(std::move(socket), *shared)->start();
             accept();
-        });
+        }));
     }
 
     void run_game() {
@@ -143,7 +146,7 @@ void Server::stop() {
     if (!i.started) return;
     i.started = false;
     i.shared->stopping = true;
-    asio::post(i.io, [&i] {
+    asio::post(i.accept_strand, [&i] {
         asio::error_code ec;
         i.acceptor.close(ec);
     });

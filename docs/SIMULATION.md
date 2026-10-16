@@ -6,11 +6,11 @@ The Part I core runs headless: shared contracts, a set of reference rules, a seq
 
 The rules are **circuit-reference-rules-v10**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
 
-Two version bundles run them: `java-1.21.8` and `java-1.21.4`. Each version has 47 traces recorded on the unmodified server:
+Two version bundles run them: `java-1.21.8` and `java-1.21.4`. Each version has 52 traces recorded on the unmodified server:
 - 1.21.8 traces are in `tests/fixtures/harness/`;
 - 1.21.4 traces are in `tests/fixtures/harness-1.21.4/`.
 
-The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 94 pass on both the parallel runtime and the oracle.
+The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 104 pass on both the parallel runtime and the oracle.
 
 The compatibility table is part of the version bundle (`src/contracts/version.cpp`). `circuit-server --compatibility` prints it. Each row states a target tier, a claimed tier, the evidence source, and its limitations:
 
@@ -42,7 +42,7 @@ The tiers are defined in the architecture: L0 exact, L1 region-equivalent, L2 de
 | `weather` | L2 | 16 `/weather` commands give 1,348 identical replies and events on both versions. Durations come from Circuit's own stream; no lightning, snow or other effects of rain. |
 | `piston` | L2 | Harness traces pass, including the level-random draws of piston sounds (piston_draws). Gap listed in the table: item pushing. |
 | `chunk_tickets` | L2 | ring_blocks, unload_reload. New chunks load at once and dropped chunks unload at once, where the official servers take a varying number of ticks. |
-| `item_entity`, `entity_order` | L2 | item_hopper_pickup, item_water_current, item_merge, item_merge_moving, item_merge_crossing, item_merge_vertical, item_merge_timers, item_hopper_area, item_hopper_inside, item_chest_scatter: positions, velocities, merges, ages, pickup delays, collection by hoppers, a removed chest's scatter and the order of the items match both official servers exactly. No water currents or buoyancy (item_water_fall); entities in unloading chunks are not reported unloaded (item_chunk_edge); moving blocks push items differently (item_piston_push, item_drop_piston). |
+| `item_entity`, `entity_order` | L2 | item_hopper_pickup, item_water_current, item_merge, item_merge_moving, item_merge_crossing, item_merge_vertical, item_merge_timers, item_hopper_area, item_hopper_inside, item_chest_scatter, item_water_still, item_water_channel, item_water_ice_corner, item_water_falling, item_water_fall: positions, velocities, merges, ages, pickup delays, collection by hoppers, a removed chest's scatter, currents and floating, and the order of the items match both official servers exactly. Entities in unloading chunks are not reported unloaded (item_chunk_edge); moving blocks push items differently (item_piston_push, item_drop_piston). |
 | `random_ticks`, `wheat` | L2 | Documented behavior only; not compared with the target version. |
 | `container_menus` | L2 | A 48-step client scenario gives the same windows as the official servers of both versions, and so does a 48-step crafting scenario in the own window (with data packs). The crafting table, special recipes and the recipe book are not modeled, and no harness traces of menus exist. |
 | `survival_actions` | L2 | Documented hardness, tools and pickup rules; block loot tables and 2x2 crafting from data packs, compared with the official servers. Thrown items have no random spread, death drops spread in a fixed pattern, and loot tables with random parts drop nothing. |
@@ -176,7 +176,8 @@ v10 is v9 with what C2.3 and C2.4 added to the rules: crops that need light, gam
 - **Level random:** each level has a random sequence that behaves like `java.util.Random` (the 48-bit generator and the methods its API documentation specifies), as the target versions' level random does. The rules draw from it where both official servers do, in the same order: block drops, the scatter of removed containers and piston sounds. Its state is world state: saved, replayed and part of the digest. A new world seeds it from the world seed and the level; fixtures seed it with 0, as the reference harness does, and compare the number of draws per stage with the official recording. Under the region-parallel engine, a draw needs the level's random sequence, which serializes drawing roots of one level like any other shared state.
 - **Item entities:** positions and velocities are doubles; each tick, as both official servers do it (checked against their traces):
   - the tick count goes up (it is never reset), and the pickup delay down unless it is 32767 (never);
-  - gravity takes 0.04 from the vertical velocity;
+  - water the item's box reaches (less 0.001 on each side) pushes it, before the move and again after it, by 0.014 along the mean direction of the currents of those cells; each cell's current points toward neighbors holding less water (a cell holds level/9 of a block, a full block under more water) and toward water below an open neighbor, and falling water beside a whole face also flows down; cells reaching less than 0.4 above the item's bottom weigh by that depth (minecraft.wiki "Water"; fitted to the official traces);
+  - an item more than 0.1 deep loses 1% of its horizontal speed and rises by 0.0005 a tick while slower than 0.06 (single-precision factors); otherwise gravity takes 0.04 from the vertical velocity;
   - the item moves its 0.25-block box against the collision boxes of every block state (registry data, per version), vertical axis first, then the horizontal axis with the larger movement; an item on the ground with a horizontal speed whose square is at most 1e-5 moves only when its tick count plus its id is a multiple of 4; a move that a collision shortened to a squared length below 1e-7 is not made;
   - collided components stop; the velocity is damped by 0.98 (horizontally, on the ground, by the slipperiness of the block below times 0.98, in single precision) and an item that lands bounces at half its speed;
   - when its tick count is a multiple of 40, or even after a move into another block, the item merges with items whose boxes come within half a block of its own sideways (none above or below), in id order: the stacks must be of the same kind and fit in one stack; it takes in a smaller stack and joins an equal or larger one, and the result keeps the younger age and the longer pickup delay. Items of age -32768 or pickup delay 32767 never merge;
@@ -386,7 +387,7 @@ Fixtures in [circuit-trace format](TRACE_FORMAT.md) can be checked with `--check
 
 - Rows claimed L2 differ from the target version as listed in the compatibility table. The main gaps are:
   - simplified item pushing by moving blocks;
-  - item physics without water currents or buoyancy; entities of unloading chunks are kept without being reported unloaded, and keep their tick count across unloading and restarts (the target versions reload them with a new count);
+  - items are not moved by lava, bubble columns or waterlogged blocks; entities of unloading chunks are kept without being reported unloaded, and keep their tick count across unloading and restarts (the target versions reload them with a new count);
   - per-section random streams and coordinate-ordered random-tick chunks;
   - wheat ignoring hydration and neighboring crops;
   - chunk tickets: no teleport, portal or ender pearl tickets yet; new chunks load at once (the official servers take 2 to 4 ticks, varying between runs); dropped chunks unload at once and reloads happen in the chunk stage (the official servers may keep a dropped chunk at border for a tick or two, and restore a cached chunk during the command, which moves restored ticks by a tick between runs);

@@ -51,6 +51,9 @@ void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from);
 bool is_conductor(BlockState s) noexcept;
 // Whether the face of `s` toward `face` is whole: dust rests on it and levers hang on it.
 bool face_sturdy(BlockState s, Direction face) noexcept;
+// Whether water can stand in the block: air, water and the blocks flowing
+// water washes away.
+bool holds_water(BlockState s);
 bool supports_dust(BlockState below) noexcept;
 bool supports_diode(BlockState below) noexcept;
 // Direction from a lever to the block it hangs on.

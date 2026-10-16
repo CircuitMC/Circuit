@@ -129,8 +129,8 @@ Their counts are unknown, not zero.
 | --- | --- | ---: |
 | black_box | passing | 19 |
 | black_box | unsupported | 1 |
-| official_trace | failing | 5 |
-| official_trace | passing | 47 |
+| official_trace | failing | 4 |
+| official_trace | passing | 52 |
 | official_trace | unsupported | 1 |
 | planned | planned | 8 |
 | real_client | passing | 2 |
@@ -355,7 +355,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Item entity motion and collision | C3 | partial, compared | partial, compared | `trace/item_chest_scatter`, `trace/item_chunk_edge`, `trace/item_hopper_pickup`, `trace/item_merge_crossing`, `trace/item_piston_push`, `trace/item_water_current`, `trace/item_water_fall`; entities of unloading chunks are not reported unloaded and keep their tick count (trace/item_chunk_edge); moving blocks push items differently (trace/item_piston_push); no water currents or buoyancy (trace/item_water_fall); Double-precision gravity, drag, collision with every state's collision boxes, bouncing and the resting rule, identical with both official servers in the passing traces |
+| Item entity motion and collision | C3 | partial, compared | partial, compared | `trace/item_chest_scatter`, `trace/item_chunk_edge`, `trace/item_hopper_pickup`, `trace/item_merge_crossing`, `trace/item_piston_push`, `trace/item_water_channel`, `trace/item_water_current`, `trace/item_water_fall`, `trace/item_water_falling`, `trace/item_water_ice_corner`, `trace/item_water_still`; entities of unloading chunks are not reported unloaded and keep their tick count (trace/item_chunk_edge); moving blocks push items differently (trace/item_piston_push); Double-precision gravity, drag, collision with every state's collision boxes, bouncing, the resting rule, currents and buoyancy in water, identical with both official servers in the passing traces |
 | Item merging | C3 | implemented, compared | implemented, compared | `trace/item_merge`, `trace/item_merge_crossing`, `trace/item_merge_moving`, `trace/item_merge_timers`, `trace/item_merge_vertical`; Every 40 ticks of the item's own count, or every 2 after a move into another block; reach half a block sideways; stacks of one kind within their limit; the smaller joins the larger (equal: the other survives); younger age and longer pickup delay kept |
 | Pickup by players and hoppers, pickup delays | C3 | partial, compared | partial, compared | `client/vitals`, `client/windows`, `trace/item_hopper_area`, `trace/item_hopper_inside`, `trace/item_hopper_pickup`, `trace/item_merge_timers` |
 | Despawning | C3 | implemented, compared | implemented, compared | `trace/item_merge_timers`; Age 6000, -32768 never; the age goes up after the item's move and merges |
