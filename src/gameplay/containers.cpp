@@ -99,33 +99,56 @@ bool transfer_one(RuleContext& ctx, const Inventory& from, const Inventory& to, 
     return false;
 }
 
-bool pick_up(RuleContext& ctx, const Inventory& self, BlockPos cell) {
-    for (const auto id : ctx.entities_in_cell(cell)) {
-        auto* e = ctx.entity(id);
-        if (!e || e->stack.empty()) continue;
-        const auto before = e->stack;
-        bool moved = false;
-        while (!e->stack.empty()) {
-            const auto target = self.insert_slot(e->stack);
-            if (!target) break;
-            auto& slot = self.entities[target->first]->slots[target->second];
-            const auto slot_before = slot;
-            add_one(slot, e->stack);
-            take_one(e->stack);
-            ctx.record(TraceKind::inventory_changed, self.parts[target->first], target->second, pack_stack(slot_before),
-                       pack_stack(slot));
-            moved = true;
-        }
-        if (!moved) continue;
-        const auto where = contracts::block_of(e->position);
-        if (e->stack.empty()) {
-            ctx.record(TraceKind::entity_removed, where, id.value, static_cast<std::uint64_t>(RemovalReason::picked_up));
-            ctx.remove_entity(id);
-        } else {
-            ctx.record(TraceKind::entity_stack_changed, where, id.value, pack_stack(before), pack_stack(e->stack));
-        }
-        self.changed(ctx);
-        return true;
+// Moves what fits of an item entity into a container, one item at a time.
+// Returns whether anything moved.
+bool take_entity(RuleContext& ctx, const Inventory& self, EntityId id) {
+    auto* e = ctx.entity(id);
+    if (!e || e->stack.empty()) return false;
+    const auto before = e->stack;
+    bool moved = false;
+    while (!e->stack.empty()) {
+        const auto target = self.insert_slot(e->stack);
+        if (!target) break;
+        auto& slot = self.entities[target->first]->slots[target->second];
+        const auto slot_before = slot;
+        add_one(slot, e->stack);
+        take_one(e->stack);
+        ctx.record(TraceKind::inventory_changed, self.parts[target->first], target->second, pack_stack(slot_before), pack_stack(slot));
+        moved = true;
+    }
+    if (!moved) return false;
+    const auto where = contracts::block_of(e->position);
+    if (e->stack.empty()) {
+        ctx.record(TraceKind::entity_removed, where, id.value, static_cast<std::uint64_t>(RemovalReason::picked_up));
+        ctx.remove_entity(id);
+    } else {
+        ctx.record(TraceKind::entity_stack_changed, where, id.value, pack_stack(before), pack_stack(e->stack));
+    }
+    self.changed(ctx);
+    return true;
+}
+
+// The space a hopper collects items from: the cell above it and its bowl,
+// whose floor is 11/16 up (both official servers: items overlapping the cell
+// above by 0.025 are taken, 0.005 beside it not; items rest in the bowl at
+// 11/16).
+constexpr double bowl_floor = 11.0 / 16.0, bowl_wall = 2.0 / 16.0;
+bool reaches_hopper(BlockPos pos, const physics::Aabb& box) {
+    const double x = pos.x, y = pos.y, z = pos.z;
+    const physics::Aabb above{x, y + 1.0, z, x + 1.0, y + 2.0, z + 1.0};
+    const physics::Aabb bowl{x + bowl_wall, y + bowl_floor, z + bowl_wall, x + 1.0 - bowl_wall, y + 1.0, z + 1.0 - bowl_wall};
+    return box.intersects(above) || box.intersects(bowl);
+}
+
+// A hopper collecting the first item entity, by id, that reaches it and of
+// which something fits.
+bool pick_up(RuleContext& ctx, const Inventory& self, BlockPos pos) {
+    const double x = pos.x, y = pos.y, z = pos.z;
+    const physics::Aabb area{x, y + bowl_floor, z, x + 1.0, y + 2.0, z + 1.0};
+    for (const auto id : entities_intersecting(ctx, area)) {
+        const auto* e = ctx.peek_entity(id);
+        if (e->kind != EntityKind::item || !reaches_hopper(pos, entity_box(*e))) continue;
+        if (take_entity(ctx, self, id)) return true;
     }
     return false;
 }
@@ -250,9 +273,22 @@ void tick_hopper(RuleContext& ctx, BlockPos pos) {
         if (const auto source = Inventory::open(ctx, above_pos); source.valid())
             moved = transfer_one(ctx, source, self) || moved;
     } else if (!above.is_unloaded() && !is_solid(above)) {
-        moved = pick_up(ctx, self, above_pos) || moved;
+        moved = pick_up(ctx, self, pos) || moved;
     }
     if (moved) self_entity->cooldown = hopper_cooldown;
+}
+
+bool hopper_takes_item(RuleContext& ctx, BlockPos pos, EntityId item) {
+    const auto s = ctx.block(pos);
+    if (!s.is(BlockType::hopper) || !s.flag()) return false;
+    auto* self_entity = ctx.block_entity(pos);
+    if (!self_entity || self_entity->cooldown > 0) return false;
+    const auto* e = ctx.peek_entity(item);
+    if (!e || e->kind != EntityKind::item || !reaches_hopper(pos, entity_box(*e))) return false;
+    const auto self = Inventory::open(ctx, pos);
+    if (!self.valid() || !take_entity(ctx, self, item)) return false;
+    self_entity->cooldown = hopper_cooldown;
+    return ctx.peek_entity(item) == nullptr;
 }
 
 } // namespace circuit::gameplay::detail

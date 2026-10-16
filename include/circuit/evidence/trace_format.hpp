@@ -47,6 +47,8 @@ struct Action {
     std::string item;            // insert, spawn_item
     std::uint8_t count{};        // insert, spawn_item
     Vec3d position{}, velocity{};// spawn_item (v2)
+    std::uint16_t pickup_delay{}; // spawn_item: optional `pickup-delay=<n>`, 0 to 32767
+    std::int32_t age{};           // spawn_item: optional `age=<n>`, -32768 to 32767
     std::string command;         // command (v2): a server command without the slash, words separated by one space
     std::size_t line{};
     bool operator==(const Action&) const = default;

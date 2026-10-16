@@ -92,11 +92,14 @@ Plan plan(RuleContext& ctx, const contracts::SpawnItem& c) {
     if (auto ok = check_loaded(ctx, cell); !ok) return std::unexpected(ok.error());
     if (!valid_stack(c.stack)) return std::unexpected(ErrorCode::invalid_argument);
     if (!valid_velocity(c.velocity)) return std::unexpected(ErrorCode::invalid_argument);
+    if (c.pickup_delay > item_pickup_never || !valid_item_age(c.age)) return std::unexpected(ErrorCode::invalid_argument);
     return [&ctx, c] {
         Entity e;
         e.position = c.position;
         e.velocity = c.velocity;
         e.stack = c.stack;
+        e.pickup_delay = c.pickup_delay;
+        e.age = c.age;
         detail::record_spawn(ctx, ctx.spawn_entity(e), e);
     };
 }

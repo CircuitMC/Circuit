@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
+#include <algorithm>
 #include <circuit/gameplay/game_data.hpp>
 #include <circuit/gameplay/survival.hpp>
 
@@ -76,15 +77,40 @@ void drop_items(RuleContext& ctx, BlockPos pos, BlockState destroyed, ItemStack 
 }
 
 void drop_contents(RuleContext& ctx, BlockPos pos, const std::vector<ItemStack>& slots) {
-    // Each slot's stack drops whole, at the block center, still, in slot
-    // order (the target versions split stacks and scatter them at random).
-    for (const auto& s : slots) {
-        if (s.empty()) continue;
-        Entity e;
-        e.position = {static_cast<double>(pos.x) + 0.5, static_cast<double>(pos.y) + 0.5, static_cast<double>(pos.z) + 0.5};
-        e.stack = s;
-        e.pickup_delay = block_drop_delay;
-        record_spawn(ctx, ctx.spawn_entity(e), e);
+    // As both official servers scatter a removed chest (fitted to their
+    // traces, every value exact): each slot, empty or not, draws a point in
+    // the cell, 0.125 to 0.875 across and 0 to 0.75 up; its stack leaves in
+    // parts of 10 to 30 items. Each part draws the velocity every new item
+    // draws (as a block drop's), then gets a velocity around (0, 0.2, 0) that
+    // differs from it by the difference of two draws times a spread on each
+    // axis. The spread is the only double that gives every recorded velocity
+    // exactly. Parts can be picked up at once.
+    constexpr double spread = 0.11485000171139836;
+    const auto triangle = [&](double mode) {
+        const double a = ctx.random_double();
+        const double b = ctx.random_double();
+        return mode + spread * (a - b);
+    };
+    for (const auto& slot : slots) {
+        const double x = static_cast<double>(pos.x) + ctx.random_double() * 0.75 + 0.125;
+        const double y = static_cast<double>(pos.y) + ctx.random_double() * 0.75;
+        const double z = static_cast<double>(pos.z) + ctx.random_double() * 0.75 + 0.125;
+        auto rest = slot;
+        while (!rest.empty()) {
+            const auto part = static_cast<std::uint8_t>(std::min<std::int32_t>(rest.count, ctx.random_int(21) + 10));
+            Entity e;
+            e.position = {x, y, z};
+            e.stack = rest;
+            e.stack.count = part;
+            rest.count = static_cast<std::uint8_t>(rest.count - part);
+            (void)ctx.random_double(); // the new item's own velocity, replaced below
+            (void)ctx.random_double();
+            const double vx = triangle(0.0);
+            const double vy = triangle(0.2);
+            const double vz = triangle(0.0);
+            e.velocity = {vx, vy, vz};
+            record_spawn(ctx, ctx.spawn_entity(e), e);
+        }
     }
 }
 

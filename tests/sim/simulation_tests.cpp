@@ -109,24 +109,13 @@ std::vector<Scenario> level_scenarios() {
                       DimensionId::the_end)};
 }
 
-// A level's state with its entities' ids cleared and the entities in a
-// canonical order: entity ids are counted over all levels, so they depend
-// on what the other levels spawn.
-// A level's state without its entities' ids and motion. Ids count over all
-// levels, as in the target versions, and a resting item moves only when its
-// age plus its id is a multiple of 4: a level's items move in other ticks
-// when another level spawns entities too.
-LevelDump without_entity_ids(LevelDump l) {
-    for (auto& e : l.entities) {
-        e.id = {};
-        e.position = {};
-        e.velocity = {};
-        e.on_ground = false;
-    }
-    std::ranges::sort(l.entities, [](const Entity& a, const Entity& b) {
-        return std::tie(a.position, a.velocity, a.stack, a.age, a.last_tick, a.pickup_delay, a.on_ground)
-             < std::tie(b.position, b.velocity, b.stack, b.age, b.last_tick, b.pickup_delay, b.on_ground);
-    });
+// A level's state without its entities. Entity ids count over all levels,
+// as in the target versions, and a resting item moves only when its tick
+// count plus its id is a multiple of 4: beside another level that spawns
+// entities, a level's items move, and so merge, at other times. Where they
+// spawn, and with which velocity, is in the records (level_records).
+LevelDump without_entities(LevelDump l) {
+    l.entities.clear();
     return l;
 }
 
@@ -603,8 +592,8 @@ int main() {
             const auto alone = in_level(drops, level);
             const auto alone_ref = run_oracle(alone, materialize(alone));
             for (const auto& [t, dump] : alone_ref.dumps) {
-                const auto a = without_entity_ids(both_ref.dumps.at(t).level(level));
-                const auto b = without_entity_ids(dump.level(level));
+                const auto a = without_entities(both_ref.dumps.at(t).level(level));
+                const auto b = without_entities(dump.level(level));
                 require(a == b, std::format("{} at {}: the level alone and beside the other agree", dimension_name(level), t));
             }
             require(level_records(both_ref.traces, level) == level_records(alone_ref.traces, level),
@@ -615,19 +604,16 @@ int main() {
         for (const auto& [t, dump] : both_ref.dumps)
             require(dump.overworld().random != dump.level(DimensionId::the_nether).random, std::format("separate random sequences at {}", t));
         // Started from the same seed, the same machines at the same
-        // coordinates behave the same in both levels. Items that fall off
-        // the machines leave each level at its own depth, so only those
-        // still above the floor are compared.
-        const auto on_floor = [](LevelDump l) {
-            std::erase_if(l.entities, [](const Entity& e) { return e.position.y < 8.0; });
-            return without_entity_ids(std::move(l));
-        };
+        // coordinates behave the same in both levels, and spawn the same
+        // items at the same places with the same velocities.
         const auto same_seed = run_oracle(both, materialize(both), bundle(), 0);
         for (const auto& [t, dump] : same_seed.dumps) {
-            auto nether = on_floor(dump.level(DimensionId::the_nether));
+            auto nether = without_entities(dump.level(DimensionId::the_nether));
             nether.dimension = DimensionId::overworld;
-            require(nether == on_floor(dump.level(DimensionId::overworld)), std::format("mirror at {}", t));
+            require(nether == without_entities(dump.level(DimensionId::overworld)), std::format("mirror at {}", t));
         }
+        require(level_records(same_seed.traces, DimensionId::overworld) == level_records(same_seed.traces, DimensionId::the_nether),
+                "mirrored records");
         // Entity ids are counted over all levels: in each tick the overworld's
         // spawns come first, then the Nether's.
         const auto& last = both_ref.dumps.rbegin()->second;
@@ -674,8 +660,15 @@ int main() {
         require(heights(50, 0) == std::vector<double>{1.0} && heights(50, 16) == std::vector<double>{4.0}
                     && heights(50, 32) == std::vector<double>{4.0} && heights(50, 96) == std::vector<double>{4.0},
                 "entities at simulation level 31 and lower");
-        // Ticks 60-79: the player's simulation ticket simulates chunk 6.
-        require(!lit(70, 96) && head(70, 96) && stored(80, 96) > 0 && heights(80, 96) == std::vector<double>{1.0, 1.0},
+        // Ticks 60-79: the player's simulation ticket simulates chunk 6; its
+        // two items fall and, landed in one place, merge.
+        const auto count = [&](Tick t, std::int32_t x) {
+            unsigned n = 0;
+            for (const auto& e : at(t).overworld().entities)
+                if (e.position.x == x + 12.5) n += e.stack.count;
+            return n;
+        };
+        require(!lit(70, 96) && head(70, 96) && stored(80, 96) > 0 && heights(80, 96) == std::vector<double>{1.0} && count(80, 96) == 2,
                 "a simulation ticket simulates the loaded chunks");
         require(stored(90, 96) == stored(80, 96) && stored(80, 96) < stored(80, 0), "without it, chunk 6 stops");
         // Chunk (-12,0) dropped at tick 4 with its lamp's tick due at 7: back
@@ -706,11 +699,16 @@ int main() {
         // they leave at 420.
         require(stored(300, 0, the_nether) > stored(290, 0, the_nether) && stored(390, 0, the_nether) == stored(300, 0, the_nether),
                 "an idle level stops its block entities");
-        require(heights(390, 0, the_nether).size() == 8
-                    && std::ranges::count(heights(390, 0, the_nether), 4.0) == 2,
-                "and its entities");
+        // Items there, by height, counting each item of a merged stack.
+        const auto items_at = [&](Tick t, double height) {
+            unsigned n = 0;
+            for (const auto& e : at(t).level(the_nether).entities)
+                if (e.position.x == 12.5 && e.position.y == height) n += e.stack.count;
+            return n;
+        };
+        require(items_at(390, 1.0) + items_at(390, 4.0) == 8 && items_at(390, 4.0) == 2, "and its entities");
         require(stored(420, 0, the_nether) > stored(390, 0, the_nether) && stored(450, 0, the_nether) > stored(420, 0, the_nether)
-                    && std::ranges::count(heights(450, 0, the_nether), 1.0) == 9,
+                    && items_at(450, 1.0) == 9,
                 "a player wakes it at once");
         require(at(450).level(the_nether).last_active == 419 && at(450).overworld().last_active == 450 && at(450).started == 0,
                 "the last active ticks");

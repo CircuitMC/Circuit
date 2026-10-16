@@ -1,0 +1,56 @@
+circuit-trace 2
+title The age and pickup delay of merged items, and despawning
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms item_entity
+area -6 0 -3 6 3 3
+ticks 50
+changes ordered
+entities observed
+
+at 0 set -5 0 -2 minecraft:stone
+at 0 set -5 0 0 minecraft:stone
+at 0 set -5 0 2 minecraft:stone
+at 0 set -4 0 -2 minecraft:stone
+at 0 set -4 0 0 minecraft:stone
+at 0 set -4 0 2 minecraft:stone
+at 0 set -3 0 -2 minecraft:stone
+at 0 set -3 0 0 minecraft:stone
+at 0 set -3 0 2 minecraft:stone
+at 0 set -2 0 -2 minecraft:stone
+at 0 set -2 0 0 minecraft:stone
+at 0 set -2 0 2 minecraft:stone
+at 0 set -1 0 -2 minecraft:stone
+at 0 set -1 0 0 minecraft:stone
+at 0 set -1 0 2 minecraft:stone
+at 0 set 0 0 -2 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 1 0 -2 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 2 0 -2 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 3 0 -2 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 4 0 -2 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 5 0 -2 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 1 spawn-item -4.5 1 -1.5 0 0 0 minecraft:stone 3 pickup-delay=40 age=100
+at 1 spawn-item -4.2 1 -1.5 0 0 0 minecraft:stone 5 pickup-delay=5 age=10
+at 1 spawn-item -0.5 1 -1.5 0 0 0 minecraft:stone 6 age=3000
+at 1 spawn-item -0.2 1 -1.5 0 0 0 minecraft:stone 2 pickup-delay=100
+at 1 spawn-item 3.5 1 -1.5 0 0 0 minecraft:stone 1 pickup-delay=32767
+at 1 spawn-item 3.8 1 -1.5 0 0 0 minecraft:stone 1
+at 1 spawn-item -4.5 1 0.5 0 0 0 minecraft:stone 1 age=-32768
+at 1 spawn-item -4.2 1 0.5 0 0 0 minecraft:stone 1
+at 1 spawn-item -0.5 1 0.5 0 0 0 minecraft:stone 1 age=5995
+at 1 spawn-item 3.5 1 0.5 0 0 0 minecraft:stone 1 age=5999
+at 1 spawn-item -4.5 1 2.5 0 0 0 minecraft:stone 4 pickup-delay=20 age=200
+at 1 spawn-item -4.2 1 2.5 0 0 0 minecraft:stone 4 pickup-delay=60 age=50

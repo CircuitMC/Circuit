@@ -1098,8 +1098,9 @@ void Engine::Impl::restore(const WorldDump& state) {
             if (e.position.y < lowest || e.position.y >= highest) bad("entity height");
             if (!gameplay::valid_velocity(e.velocity)) bad("entity velocity");
             if (!gameplay::items::valid(e.stack.item) || e.stack.count < 1 || e.stack.count > gameplay::items::max_stack(e.stack)
-                || e.stack.damage > gameplay::items::max_damage(e.stack) || e.pickup_delay > 32767)
+                || e.stack.damage > gameplay::items::max_damage(e.stack) || e.pickup_delay > gameplay::item_pickup_never)
                 bad("entity stack");
+            if (!gameplay::valid_item_age(e.age)) bad("entity age");
             const auto it = columns.find(contracts::chunk_of(contracts::block_of(e.position)));
             if (it == columns.end()) bad("entity in an unknown column");
             auto& chunk = *it->second;

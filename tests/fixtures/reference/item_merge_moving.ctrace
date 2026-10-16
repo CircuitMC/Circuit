@@ -1,0 +1,1036 @@
+circuit-trace 2
+title Moving and equal items merging, the stack limit and unstackable items
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v10
+mechanisms item_entity
+area -6 0 -2 6 3 2
+ticks 90
+changes ordered
+entities observed
+rng observed
+
+at 0 set -5 0 0 minecraft:ice
+at 0 set -5 0 -1 minecraft:stone
+at 0 set -5 0 -2 minecraft:stone
+at 0 set -4 0 0 minecraft:ice
+at 0 set -4 0 -1 minecraft:stone
+at 0 set -4 0 -2 minecraft:stone
+at 0 set -3 0 0 minecraft:ice
+at 0 set -3 0 -1 minecraft:stone
+at 0 set -3 0 -2 minecraft:stone
+at 0 set -2 0 0 minecraft:ice
+at 0 set -2 0 -1 minecraft:stone
+at 0 set -2 0 -2 minecraft:stone
+at 0 set -1 0 0 minecraft:ice
+at 0 set -1 0 -1 minecraft:stone
+at 0 set -1 0 -2 minecraft:stone
+at 0 set 0 0 0 minecraft:ice
+at 0 set 0 0 -1 minecraft:stone
+at 0 set 0 0 -2 minecraft:stone
+at 0 set 1 0 0 minecraft:ice
+at 0 set 1 0 -1 minecraft:stone
+at 0 set 1 0 -2 minecraft:stone
+at 0 set 2 0 0 minecraft:ice
+at 0 set 2 0 -1 minecraft:stone
+at 0 set 2 0 -2 minecraft:stone
+at 0 set 3 0 0 minecraft:ice
+at 0 set 3 0 -1 minecraft:stone
+at 0 set 3 0 -2 minecraft:stone
+at 0 set 4 0 0 minecraft:ice
+at 0 set 4 0 -1 minecraft:stone
+at 0 set 4 0 -2 minecraft:stone
+at 0 set 5 0 0 minecraft:ice
+at 0 set 5 0 -1 minecraft:stone
+at 0 set 5 0 -2 minecraft:stone
+
+at 1 spawn-item -4.5 1 0.5 0.25 0 0 minecraft:stone 3
+at 1 spawn-item 0.5 1 0.5 0 0 0 minecraft:stone 5
+at 1 spawn-item 4.5 1 0.5 -0.05 0 0 minecraft:redstone 7
+at 1 spawn-item -3.5 1 -0.5 0 0 0 minecraft:stone 8
+at 1 spawn-item -3.3 1 -0.5 0 0 0 minecraft:stone 8
+at 1 spawn-item 2.5 1 -0.5 0 0 0 minecraft:stone 60
+at 1 spawn-item 2.8 1 -0.5 0 0 0 minecraft:stone 4
+at 1 spawn-item -0.5 1 -1.5 0 0 0 minecraft:diamond_sword 1
+at 1 spawn-item -0.3 1 -1.5 0 0 0 minecraft:diamond_sword 1
+entity-added 1 commands e1 minecraft:item -4.5 1 0.5 0.25 0 0 item=minecraft:stone count=3
+entity-added 1 commands e2 minecraft:item 0.5 1 0.5 0 0 0 item=minecraft:stone count=5
+entity-added 1 commands e3 minecraft:item 4.5 1 0.5 -0.05 0 0 item=minecraft:redstone count=7
+entity-added 1 commands e4 minecraft:item -3.5 1 -0.5 0 0 0 item=minecraft:stone count=8
+entity-added 1 commands e5 minecraft:item -3.3 1 -0.5 0 0 0 item=minecraft:stone count=8
+entity-added 1 commands e6 minecraft:item 2.5 1 -0.5 0 0 0 item=minecraft:stone count=60
+entity-added 1 commands e7 minecraft:item 2.8 1 -0.5 0 0 0 item=minecraft:stone count=4
+entity-added 1 commands e8 minecraft:item -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1
+entity-added 1 commands e9 minecraft:item -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1
+entity-order 1 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 1 e1 -4.25 1 0.5 0.24010001122951508 0 0 item=minecraft:stone count=3 age=1 pickup-delay=0 on-ground=true
+entity 1 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=5 age=1 pickup-delay=0 on-ground=true
+entity 1 e3 4.45 1 0.5 -0.04802000224590302 0 0 item=minecraft:redstone count=7 age=1 pickup-delay=0 on-ground=true
+entity 1 e4 -3.5 1 -0.5 0 0 0 item=minecraft:stone count=8 age=1 pickup-delay=0 on-ground=true
+entity 1 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=8 age=1 pickup-delay=0 on-ground=true
+entity 1 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=60 age=1 pickup-delay=0 on-ground=true
+entity 1 e7 2.8 1 -0.5 0 0 0 item=minecraft:stone count=4 age=1 pickup-delay=0 on-ground=true
+entity 1 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=1 pickup-delay=0 on-ground=true
+entity 1 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=1 pickup-delay=0 on-ground=true
+
+entity-order 2 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 2 e1 -4.009899988770485 1 0.5 0.23059206156965306 0 0 item=minecraft:stone count=3 age=2 pickup-delay=0 on-ground=true
+entity 2 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=5 age=2 pickup-delay=0 on-ground=true
+entity 2 e3 4.401979997754097 1 0.5 -0.046118412313930615 0 0 item=minecraft:redstone count=7 age=2 pickup-delay=0 on-ground=true
+entity 2 e4 -3.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=2 pickup-delay=0 on-ground=true
+entity 2 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=2 pickup-delay=0 on-ground=true
+entity 2 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=60 age=2 pickup-delay=0 on-ground=true
+entity 2 e7 2.8 1 -0.5 0 -0.04 0 item=minecraft:stone count=4 age=2 pickup-delay=0 on-ground=true
+entity 2 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=2 pickup-delay=0 on-ground=true
+entity 2 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=2 pickup-delay=0 on-ground=true
+
+entity-order 3 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 3 e1 -3.779307927200832 1 0.5 0.22146062628924293 0 0 item=minecraft:stone count=3 age=3 pickup-delay=0 on-ground=true
+entity 3 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=5 age=3 pickup-delay=0 on-ground=true
+entity 3 e3 4.3558615854401666 1 0.5 -0.04429212525784859 0 0 item=minecraft:redstone count=7 age=3 pickup-delay=0 on-ground=true
+entity 3 e4 -3.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=3 pickup-delay=0 on-ground=true
+entity 3 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=8 age=3 pickup-delay=0 on-ground=true
+entity 3 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=60 age=3 pickup-delay=0 on-ground=true
+entity 3 e7 2.8 1 -0.5 0 -0.08 0 item=minecraft:stone count=4 age=3 pickup-delay=0 on-ground=true
+entity 3 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=3 pickup-delay=0 on-ground=true
+entity 3 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=3 pickup-delay=0 on-ground=true
+
+entity-order 4 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 4 e1 -3.5578473009115887 1 0.5 0.21269079543577069 0 0 item=minecraft:stone count=3 age=4 pickup-delay=0 on-ground=true
+entity 4 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=5 age=4 pickup-delay=0 on-ground=true
+entity 4 e3 4.311569460182318 1 0.5 -0.04253815908715414 0 0 item=minecraft:redstone count=7 age=4 pickup-delay=0 on-ground=true
+entity 4 e4 -3.5 1 -0.5 0 0 0 item=minecraft:stone count=8 age=4 pickup-delay=0 on-ground=true
+entity 4 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=4 pickup-delay=0 on-ground=true
+entity 4 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=60 age=4 pickup-delay=0 on-ground=true
+entity 4 e7 2.8 1 -0.5 0 -0.12 0 item=minecraft:stone count=4 age=4 pickup-delay=0 on-ground=true
+entity 4 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=4 pickup-delay=0 on-ground=true
+entity 4 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=4 pickup-delay=0 on-ground=true
+
+at 5 spawn-item 3.5 1 -1.5 0 0 0 minecraft:redstone 2
+entity-added 5 commands e10 minecraft:item 3.5 1 -1.5 0 0 0 item=minecraft:redstone count=2
+entity-order 5 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10
+entity 5 e1 -3.345156505475818 1 0.5 0.20426824949017214 0 0 item=minecraft:stone count=3 age=5 pickup-delay=0 on-ground=true
+entity 5 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=5 age=5 pickup-delay=0 on-ground=true
+entity 5 e3 4.269031301095163 1 0.5 -0.04085364989803443 0 0 item=minecraft:redstone count=7 age=5 pickup-delay=0 on-ground=true
+entity 5 e4 -3.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=5 pickup-delay=0 on-ground=true
+entity 5 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=5 pickup-delay=0 on-ground=true
+entity 5 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=60 age=5 pickup-delay=0 on-ground=true
+entity 5 e7 2.8 1 -0.5 0 0 0 item=minecraft:stone count=4 age=5 pickup-delay=0 on-ground=true
+entity 5 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=5 pickup-delay=0 on-ground=true
+entity 5 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=5 pickup-delay=0 on-ground=true
+entity 5 e10 3.5 1 -1.5 0 0 0 item=minecraft:redstone count=2 age=1 pickup-delay=0 on-ground=true
+
+at 6 spawn-item 3.7 1 -1.5 0 0 0 minecraft:redstone 3
+entity-added 6 commands e11 minecraft:item 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=3
+entity-order 6 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 6 e1 -3.140888255985646 1 0.5 0.19617923598569487 0 0 item=minecraft:stone count=3 age=6 pickup-delay=0 on-ground=true
+entity 6 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=5 age=6 pickup-delay=0 on-ground=true
+entity 6 e3 4.228177651197129 1 0.5 -0.039235847197138976 0 0 item=minecraft:redstone count=7 age=6 pickup-delay=0 on-ground=true
+entity 6 e4 -3.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=6 pickup-delay=0 on-ground=true
+entity 6 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=6 pickup-delay=0 on-ground=true
+entity 6 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=60 age=6 pickup-delay=0 on-ground=true
+entity 6 e7 2.8 1 -0.5 0 -0.04 0 item=minecraft:stone count=4 age=6 pickup-delay=0 on-ground=true
+entity 6 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=6 pickup-delay=0 on-ground=true
+entity 6 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=6 pickup-delay=0 on-ground=true
+entity 6 e10 3.5 1 -1.5 0 0 0 item=minecraft:redstone count=2 age=2 pickup-delay=0 on-ground=true
+entity 6 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=3 age=1 pickup-delay=0 on-ground=true
+
+entity-order 7 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 7 e1 -2.944709019999951 1 0.5 0.1884105470526521 0 0 item=minecraft:stone count=3 age=7 pickup-delay=0 on-ground=true
+entity 7 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=5 age=7 pickup-delay=0 on-ground=true
+entity 7 e3 4.18894180399999 1 0.5 -0.03768210941053042 0 0 item=minecraft:redstone count=7 age=7 pickup-delay=0 on-ground=true
+entity 7 e4 -3.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=7 pickup-delay=0 on-ground=true
+entity 7 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=8 age=7 pickup-delay=0 on-ground=true
+entity 7 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=60 age=7 pickup-delay=0 on-ground=true
+entity 7 e7 2.8 1 -0.5 0 -0.08 0 item=minecraft:stone count=4 age=7 pickup-delay=0 on-ground=true
+entity 7 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=7 pickup-delay=0 on-ground=true
+entity 7 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=7 pickup-delay=0 on-ground=true
+entity 7 e10 3.5 1 -1.5 0 -0.04 0 item=minecraft:redstone count=2 age=3 pickup-delay=0 on-ground=true
+entity 7 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=3 age=2 pickup-delay=0 on-ground=true
+
+entity-order 8 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 8 e1 -2.756298472947299 1 0.5 0.18094949785240338 0 0 item=minecraft:stone count=3 age=8 pickup-delay=0 on-ground=true
+entity 8 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=5 age=8 pickup-delay=0 on-ground=true
+entity 8 e3 4.151259694589459 1 0.5 -0.03618989957048068 0 0 item=minecraft:redstone count=7 age=8 pickup-delay=0 on-ground=true
+entity 8 e4 -3.5 1 -0.5 0 0 0 item=minecraft:stone count=8 age=8 pickup-delay=0 on-ground=true
+entity 8 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=8 pickup-delay=0 on-ground=true
+entity 8 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=60 age=8 pickup-delay=0 on-ground=true
+entity 8 e7 2.8 1 -0.5 0 -0.12 0 item=minecraft:stone count=4 age=8 pickup-delay=0 on-ground=true
+entity 8 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=8 pickup-delay=0 on-ground=true
+entity 8 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=8 pickup-delay=0 on-ground=true
+entity 8 e10 3.5 1 -1.5 0 -0.08 0 item=minecraft:redstone count=2 age=4 pickup-delay=0 on-ground=true
+entity 8 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=3 age=3 pickup-delay=0 on-ground=true
+
+entity-order 9 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 9 e1 -2.5753489750948955 1 0.5 0.17378390586534867 0 0 item=minecraft:stone count=3 age=9 pickup-delay=0 on-ground=true
+entity 9 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=5 age=9 pickup-delay=0 on-ground=true
+entity 9 e3 4.115069795018979 1 0.5 -0.03475678117306974 0 0 item=minecraft:redstone count=7 age=9 pickup-delay=0 on-ground=true
+entity 9 e4 -3.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=9 pickup-delay=0 on-ground=true
+entity 9 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=9 pickup-delay=0 on-ground=true
+entity 9 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=60 age=9 pickup-delay=0 on-ground=true
+entity 9 e7 2.8 1 -0.5 0 0 0 item=minecraft:stone count=4 age=9 pickup-delay=0 on-ground=true
+entity 9 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=9 pickup-delay=0 on-ground=true
+entity 9 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=9 pickup-delay=0 on-ground=true
+entity 9 e10 3.5 1 -1.5 0 -0.12 0 item=minecraft:redstone count=2 age=5 pickup-delay=0 on-ground=true
+entity 9 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=3 age=4 pickup-delay=0 on-ground=true
+
+entity-order 10 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 10 e1 -2.4015650692295467 1 0.5 0.16690207099911683 0 0 item=minecraft:stone count=3 age=10 pickup-delay=0 on-ground=true
+entity 10 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=5 age=10 pickup-delay=0 on-ground=true
+entity 10 e3 4.080313013845909 1 0.5 -0.03338041419982337 0 0 item=minecraft:redstone count=7 age=10 pickup-delay=0 on-ground=true
+entity 10 e4 -3.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=10 pickup-delay=0 on-ground=true
+entity 10 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=10 pickup-delay=0 on-ground=true
+entity 10 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=60 age=10 pickup-delay=0 on-ground=true
+entity 10 e7 2.8 1 -0.5 0 -0.04 0 item=minecraft:stone count=4 age=10 pickup-delay=0 on-ground=true
+entity 10 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=10 pickup-delay=0 on-ground=true
+entity 10 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=10 pickup-delay=0 on-ground=true
+entity 10 e10 3.5 1 -1.5 0 0 0 item=minecraft:redstone count=2 age=6 pickup-delay=0 on-ground=true
+entity 10 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=3 age=5 pickup-delay=0 on-ground=true
+
+entity-order 11 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 11 e1 -2.23466299823043 1 0.5 0.16029275648446908 0 0 item=minecraft:stone count=3 age=11 pickup-delay=0 on-ground=true
+entity 11 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=5 age=11 pickup-delay=0 on-ground=true
+entity 11 e3 4.046932599646086 1 0.5 -0.03205855129689382 0 0 item=minecraft:redstone count=7 age=11 pickup-delay=0 on-ground=true
+entity 11 e4 -3.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=11 pickup-delay=0 on-ground=true
+entity 11 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=8 age=11 pickup-delay=0 on-ground=true
+entity 11 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=60 age=11 pickup-delay=0 on-ground=true
+entity 11 e7 2.8 1 -0.5 0 -0.08 0 item=minecraft:stone count=4 age=11 pickup-delay=0 on-ground=true
+entity 11 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=11 pickup-delay=0 on-ground=true
+entity 11 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=11 pickup-delay=0 on-ground=true
+entity 11 e10 3.5 1 -1.5 0 -0.04 0 item=minecraft:redstone count=2 age=7 pickup-delay=0 on-ground=true
+entity 11 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=3 age=6 pickup-delay=0 on-ground=true
+
+entity-order 12 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 12 e1 -2.074370241745961 1 0.5 0.1539451705277238 0 0 item=minecraft:stone count=3 age=12 pickup-delay=0 on-ground=true
+entity 12 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=5 age=12 pickup-delay=0 on-ground=true
+entity 12 e3 4.014874048349192 1 0.5 -0.030789034105544764 0 0 item=minecraft:redstone count=7 age=12 pickup-delay=0 on-ground=true
+entity 12 e4 -3.5 1 -0.5 0 0 0 item=minecraft:stone count=8 age=12 pickup-delay=0 on-ground=true
+entity 12 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=12 pickup-delay=0 on-ground=true
+entity 12 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=60 age=12 pickup-delay=0 on-ground=true
+entity 12 e7 2.8 1 -0.5 0 -0.12 0 item=minecraft:stone count=4 age=12 pickup-delay=0 on-ground=true
+entity 12 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=12 pickup-delay=0 on-ground=true
+entity 12 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=12 pickup-delay=0 on-ground=true
+entity 12 e10 3.5 1 -1.5 0 -0.08 0 item=minecraft:redstone count=2 age=8 pickup-delay=0 on-ground=true
+entity 12 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=3 age=7 pickup-delay=0 on-ground=true
+
+entity-order 13 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 13 e1 -1.9204250712182374 1 0.5 0.14784894868974438 0 0 item=minecraft:stone count=3 age=13 pickup-delay=0 on-ground=true
+entity 13 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=5 age=13 pickup-delay=0 on-ground=true
+entity 13 e3 3.9840850142436475 1 0.5 -0.02956978973794888 0 0 item=minecraft:redstone count=7 age=13 pickup-delay=0 on-ground=true
+entity 13 e4 -3.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=13 pickup-delay=0 on-ground=true
+entity 13 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=13 pickup-delay=0 on-ground=true
+entity 13 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=60 age=13 pickup-delay=0 on-ground=true
+entity 13 e7 2.8 1 -0.5 0 0 0 item=minecraft:stone count=4 age=13 pickup-delay=0 on-ground=true
+entity 13 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=13 pickup-delay=0 on-ground=true
+entity 13 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=13 pickup-delay=0 on-ground=true
+entity 13 e10 3.5 1 -1.5 0 -0.12 0 item=minecraft:redstone count=2 age=9 pickup-delay=0 on-ground=true
+entity 13 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=3 age=8 pickup-delay=0 on-ground=true
+
+entity-order 14 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 14 e1 -1.772576122528493 1 0.5 0.1419941369627185 0 0 item=minecraft:stone count=3 age=14 pickup-delay=0 on-ground=true
+entity 14 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=5 age=14 pickup-delay=0 on-ground=true
+entity 14 e3 3.9545152245056987 1 0.5 -0.028398827392543704 0 0 item=minecraft:redstone count=7 age=14 pickup-delay=0 on-ground=true
+entity 14 e4 -3.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=14 pickup-delay=0 on-ground=true
+entity 14 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=14 pickup-delay=0 on-ground=true
+entity 14 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=60 age=14 pickup-delay=0 on-ground=true
+entity 14 e7 2.8 1 -0.5 0 -0.04 0 item=minecraft:stone count=4 age=14 pickup-delay=0 on-ground=true
+entity 14 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=14 pickup-delay=0 on-ground=true
+entity 14 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=14 pickup-delay=0 on-ground=true
+entity 14 e10 3.5 1 -1.5 0 0 0 item=minecraft:redstone count=2 age=10 pickup-delay=0 on-ground=true
+entity 14 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=3 age=9 pickup-delay=0 on-ground=true
+
+entity-order 15 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 15 e1 -1.6305819855657746 1 0.5 0.13637117551709607 0 0 item=minecraft:stone count=3 age=15 pickup-delay=0 on-ground=true
+entity 15 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=5 age=15 pickup-delay=0 on-ground=true
+entity 15 e3 3.926116397113155 1 0.5 -0.027274235103419215 0 0 item=minecraft:redstone count=7 age=15 pickup-delay=0 on-ground=true
+entity 15 e4 -3.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=15 pickup-delay=0 on-ground=true
+entity 15 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=8 age=15 pickup-delay=0 on-ground=true
+entity 15 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=60 age=15 pickup-delay=0 on-ground=true
+entity 15 e7 2.8 1 -0.5 0 -0.08 0 item=minecraft:stone count=4 age=15 pickup-delay=0 on-ground=true
+entity 15 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=15 pickup-delay=0 on-ground=true
+entity 15 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=15 pickup-delay=0 on-ground=true
+entity 15 e10 3.5 1 -1.5 0 -0.04 0 item=minecraft:redstone count=2 age=11 pickup-delay=0 on-ground=true
+entity 15 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=3 age=10 pickup-delay=0 on-ground=true
+
+entity-order 16 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 16 e1 -1.4942108100486786 1 0.5 0.13097088309214774 0 0 item=minecraft:stone count=3 age=16 pickup-delay=0 on-ground=true
+entity 16 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=5 age=16 pickup-delay=0 on-ground=true
+entity 16 e3 3.898842162009736 1 0.5 -0.02619417661842955 0 0 item=minecraft:redstone count=7 age=16 pickup-delay=0 on-ground=true
+entity 16 e4 -3.5 1 -0.5 0 0 0 item=minecraft:stone count=8 age=16 pickup-delay=0 on-ground=true
+entity 16 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=16 pickup-delay=0 on-ground=true
+entity 16 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=60 age=16 pickup-delay=0 on-ground=true
+entity 16 e7 2.8 1 -0.5 0 -0.12 0 item=minecraft:stone count=4 age=16 pickup-delay=0 on-ground=true
+entity 16 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=16 pickup-delay=0 on-ground=true
+entity 16 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=16 pickup-delay=0 on-ground=true
+entity 16 e10 3.5 1 -1.5 0 -0.08 0 item=minecraft:redstone count=2 age=12 pickup-delay=0 on-ground=true
+entity 16 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=3 age=11 pickup-delay=0 on-ground=true
+
+entity-order 17 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 17 e1 -1.363239926956531 1 0.5 0.12578444200465672 0 0 item=minecraft:stone count=3 age=17 pickup-delay=0 on-ground=true
+entity 17 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=5 age=17 pickup-delay=0 on-ground=true
+entity 17 e3 3.8726479853913065 1 0.5 -0.025156888400931346 0 0 item=minecraft:redstone count=7 age=17 pickup-delay=0 on-ground=true
+entity 17 e4 -3.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=17 pickup-delay=0 on-ground=true
+entity 17 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=17 pickup-delay=0 on-ground=true
+entity 17 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=60 age=17 pickup-delay=0 on-ground=true
+entity 17 e7 2.8 1 -0.5 0 0 0 item=minecraft:stone count=4 age=17 pickup-delay=0 on-ground=true
+entity 17 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=17 pickup-delay=0 on-ground=true
+entity 17 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=17 pickup-delay=0 on-ground=true
+entity 17 e10 3.5 1 -1.5 0 -0.12 0 item=minecraft:redstone count=2 age=13 pickup-delay=0 on-ground=true
+entity 17 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=3 age=12 pickup-delay=0 on-ground=true
+
+entity-order 18 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 18 e1 -1.2374554849518742 1 0.5 0.12080338375126547 0 0 item=minecraft:stone count=3 age=18 pickup-delay=0 on-ground=true
+entity 18 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=5 age=18 pickup-delay=0 on-ground=true
+entity 18 e3 3.847491096990375 1 0.5 -0.024160676750253095 0 0 item=minecraft:redstone count=7 age=18 pickup-delay=0 on-ground=true
+entity 18 e4 -3.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=18 pickup-delay=0 on-ground=true
+entity 18 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=18 pickup-delay=0 on-ground=true
+entity 18 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=60 age=18 pickup-delay=0 on-ground=true
+entity 18 e7 2.8 1 -0.5 0 -0.04 0 item=minecraft:stone count=4 age=18 pickup-delay=0 on-ground=true
+entity 18 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=18 pickup-delay=0 on-ground=true
+entity 18 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=18 pickup-delay=0 on-ground=true
+entity 18 e10 3.5 1 -1.5 0 0 0 item=minecraft:redstone count=2 age=14 pickup-delay=0 on-ground=true
+entity 18 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=3 age=13 pickup-delay=0 on-ground=true
+
+entity-order 19 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 19 e1 -1.1166521012006088 1 0.5 0.11601957518096903 0 0 item=minecraft:stone count=3 age=19 pickup-delay=0 on-ground=true
+entity 19 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=5 age=19 pickup-delay=0 on-ground=true
+entity 19 e3 3.823330420240122 1 0.5 -0.023203915036193807 0 0 item=minecraft:redstone count=7 age=19 pickup-delay=0 on-ground=true
+entity 19 e4 -3.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=19 pickup-delay=0 on-ground=true
+entity 19 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=8 age=19 pickup-delay=0 on-ground=true
+entity 19 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=60 age=19 pickup-delay=0 on-ground=true
+entity 19 e7 2.8 1 -0.5 0 -0.08 0 item=minecraft:stone count=4 age=19 pickup-delay=0 on-ground=true
+entity 19 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=19 pickup-delay=0 on-ground=true
+entity 19 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=19 pickup-delay=0 on-ground=true
+entity 19 e10 3.5 1 -1.5 0 -0.04 0 item=minecraft:redstone count=2 age=15 pickup-delay=0 on-ground=true
+entity 19 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=3 age=14 pickup-delay=0 on-ground=true
+
+entity-order 20 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 20 e1 -1.0006325260196398 1 0.5 0.11142520521517693 0 0 item=minecraft:stone count=3 age=20 pickup-delay=0 on-ground=true
+entity 20 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=5 age=20 pickup-delay=0 on-ground=true
+entity 20 e3 3.800126505203928 1 0.5 -0.022285041043035386 0 0 item=minecraft:redstone count=7 age=20 pickup-delay=0 on-ground=true
+entity 20 e4 -3.5 1 -0.5 0 0 0 item=minecraft:stone count=8 age=20 pickup-delay=0 on-ground=true
+entity 20 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=20 pickup-delay=0 on-ground=true
+entity 20 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=60 age=20 pickup-delay=0 on-ground=true
+entity 20 e7 2.8 1 -0.5 0 -0.12 0 item=minecraft:stone count=4 age=20 pickup-delay=0 on-ground=true
+entity 20 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=20 pickup-delay=0 on-ground=true
+entity 20 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=20 pickup-delay=0 on-ground=true
+entity 20 e10 3.5 1 -1.5 0 -0.08 0 item=minecraft:redstone count=2 age=16 pickup-delay=0 on-ground=true
+entity 20 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=3 age=15 pickup-delay=0 on-ground=true
+
+entity-order 21 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 21 e1 -0.8892073208044629 1 0.5 0.10701277209366002 0 0 item=minecraft:stone count=3 age=21 pickup-delay=0 on-ground=true
+entity 21 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=5 age=21 pickup-delay=0 on-ground=true
+entity 21 e3 3.777841464160893 1 0.5 -0.021402554418732 0 0 item=minecraft:redstone count=7 age=21 pickup-delay=0 on-ground=true
+entity 21 e4 -3.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=21 pickup-delay=0 on-ground=true
+entity 21 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=21 pickup-delay=0 on-ground=true
+entity 21 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=60 age=21 pickup-delay=0 on-ground=true
+entity 21 e7 2.8 1 -0.5 0 0 0 item=minecraft:stone count=4 age=21 pickup-delay=0 on-ground=true
+entity 21 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=21 pickup-delay=0 on-ground=true
+entity 21 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=21 pickup-delay=0 on-ground=true
+entity 21 e10 3.5 1 -1.5 0 -0.12 0 item=minecraft:redstone count=2 age=17 pickup-delay=0 on-ground=true
+entity 21 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=3 age=16 pickup-delay=0 on-ground=true
+
+entity-order 22 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 22 e1 -0.7821945487108029 1 0.5 0.10277507112555723 0 0 item=minecraft:stone count=3 age=22 pickup-delay=0 on-ground=true
+entity 22 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=5 age=22 pickup-delay=0 on-ground=true
+entity 22 e3 3.756438909742161 1 0.5 -0.020555014225111443 0 0 item=minecraft:redstone count=7 age=22 pickup-delay=0 on-ground=true
+entity 22 e4 -3.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=22 pickup-delay=0 on-ground=true
+entity 22 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=22 pickup-delay=0 on-ground=true
+entity 22 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=60 age=22 pickup-delay=0 on-ground=true
+entity 22 e7 2.8 1 -0.5 0 -0.04 0 item=minecraft:stone count=4 age=22 pickup-delay=0 on-ground=true
+entity 22 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=22 pickup-delay=0 on-ground=true
+entity 22 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=22 pickup-delay=0 on-ground=true
+entity 22 e10 3.5 1 -1.5 0 0 0 item=minecraft:redstone count=2 age=18 pickup-delay=0 on-ground=true
+entity 22 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=3 age=17 pickup-delay=0 on-ground=true
+
+entity-order 23 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 23 e1 -0.6794194775852456 1 0.5 0.098705182925442 0 0 item=minecraft:stone count=3 age=23 pickup-delay=0 on-ground=true
+entity 23 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=5 age=23 pickup-delay=0 on-ground=true
+entity 23 e3 3.7358838955170492 1 0.5 -0.019741036585088398 0 0 item=minecraft:redstone count=7 age=23 pickup-delay=0 on-ground=true
+entity 23 e4 -3.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=23 pickup-delay=0 on-ground=true
+entity 23 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=8 age=23 pickup-delay=0 on-ground=true
+entity 23 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=60 age=23 pickup-delay=0 on-ground=true
+entity 23 e7 2.8 1 -0.5 0 -0.08 0 item=minecraft:stone count=4 age=23 pickup-delay=0 on-ground=true
+entity 23 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=23 pickup-delay=0 on-ground=true
+entity 23 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=23 pickup-delay=0 on-ground=true
+entity 23 e10 3.5 1 -1.5 0 -0.04 0 item=minecraft:redstone count=2 age=19 pickup-delay=0 on-ground=true
+entity 23 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=3 age=18 pickup-delay=0 on-ground=true
+
+entity-order 24 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 24 e1 -0.5807142946598036 1 0.5 0.09479646211523986 0 0 item=minecraft:stone count=3 age=24 pickup-delay=0 on-ground=true
+entity 24 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=5 age=24 pickup-delay=0 on-ground=true
+entity 24 e3 3.7161428589319607 1 0.5 -0.01895929242304797 0 0 item=minecraft:redstone count=7 age=24 pickup-delay=0 on-ground=true
+entity 24 e4 -3.5 1 -0.5 0 0 0 item=minecraft:stone count=8 age=24 pickup-delay=0 on-ground=true
+entity 24 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=24 pickup-delay=0 on-ground=true
+entity 24 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=60 age=24 pickup-delay=0 on-ground=true
+entity 24 e7 2.8 1 -0.5 0 -0.12 0 item=minecraft:stone count=4 age=24 pickup-delay=0 on-ground=true
+entity 24 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=24 pickup-delay=0 on-ground=true
+entity 24 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=24 pickup-delay=0 on-ground=true
+entity 24 e10 3.5 1 -1.5 0 -0.08 0 item=minecraft:redstone count=2 age=20 pickup-delay=0 on-ground=true
+entity 24 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=3 age=19 pickup-delay=0 on-ground=true
+
+entity-order 25 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 25 e1 -0.4859178325445638 1 0.5 0.09104252647354956 0 0 item=minecraft:stone count=3 age=25 pickup-delay=0 on-ground=true
+entity 25 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=5 age=25 pickup-delay=0 on-ground=true
+entity 25 e3 3.6971835665089126 1 0.5 -0.018208505294709913 0 0 item=minecraft:redstone count=7 age=25 pickup-delay=0 on-ground=true
+entity 25 e4 -3.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=25 pickup-delay=0 on-ground=true
+entity 25 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=25 pickup-delay=0 on-ground=true
+entity 25 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=60 age=25 pickup-delay=0 on-ground=true
+entity 25 e7 2.8 1 -0.5 0 0 0 item=minecraft:stone count=4 age=25 pickup-delay=0 on-ground=true
+entity 25 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=25 pickup-delay=0 on-ground=true
+entity 25 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=25 pickup-delay=0 on-ground=true
+entity 25 e10 3.5 1 -1.5 0 -0.12 0 item=minecraft:redstone count=2 age=21 pickup-delay=0 on-ground=true
+entity 25 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=3 age=20 pickup-delay=0 on-ground=true
+
+entity-order 26 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 26 e1 -0.39487530607101423 1 0.5 0.0874372465146507 0 0 item=minecraft:stone count=3 age=26 pickup-delay=0 on-ground=true
+entity 26 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=5 age=26 pickup-delay=0 on-ground=true
+entity 26 e3 3.6789750612142025 1 0.5 -0.017487449302930138 0 0 item=minecraft:redstone count=7 age=26 pickup-delay=0 on-ground=true
+entity 26 e4 -3.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=26 pickup-delay=0 on-ground=true
+entity 26 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=26 pickup-delay=0 on-ground=true
+entity 26 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=60 age=26 pickup-delay=0 on-ground=true
+entity 26 e7 2.8 1 -0.5 0 -0.04 0 item=minecraft:stone count=4 age=26 pickup-delay=0 on-ground=true
+entity 26 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=26 pickup-delay=0 on-ground=true
+entity 26 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=26 pickup-delay=0 on-ground=true
+entity 26 e10 3.5 1 -1.5 0 0 0 item=minecraft:redstone count=2 age=22 pickup-delay=0 on-ground=true
+entity 26 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=3 age=21 pickup-delay=0 on-ground=true
+
+entity-order 27 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 27 e1 -0.30743805955636355 1 0.5 0.08397473548018204 0 0 item=minecraft:stone count=3 age=27 pickup-delay=0 on-ground=true
+entity 27 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=5 age=27 pickup-delay=0 on-ground=true
+entity 27 e3 3.6614876119112725 1 0.5 -0.016794947096036406 0 0 item=minecraft:redstone count=7 age=27 pickup-delay=0 on-ground=true
+entity 27 e4 -3.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=27 pickup-delay=0 on-ground=true
+entity 27 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=8 age=27 pickup-delay=0 on-ground=true
+entity 27 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=60 age=27 pickup-delay=0 on-ground=true
+entity 27 e7 2.8 1 -0.5 0 -0.08 0 item=minecraft:stone count=4 age=27 pickup-delay=0 on-ground=true
+entity 27 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=27 pickup-delay=0 on-ground=true
+entity 27 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=27 pickup-delay=0 on-ground=true
+entity 27 e10 3.5 1 -1.5 0 -0.04 0 item=minecraft:redstone count=2 age=23 pickup-delay=0 on-ground=true
+entity 27 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=3 age=22 pickup-delay=0 on-ground=true
+
+entity-order 28 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 28 e1 -0.22346332407618152 1 0.5 0.08064933972714906 0 0 item=minecraft:stone count=3 age=28 pickup-delay=0 on-ground=true
+entity 28 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=5 age=28 pickup-delay=0 on-ground=true
+entity 28 e3 3.6446926648152362 1 0.5 -0.01612986794542981 0 0 item=minecraft:redstone count=7 age=28 pickup-delay=0 on-ground=true
+entity 28 e4 -3.5 1 -0.5 0 0 0 item=minecraft:stone count=8 age=28 pickup-delay=0 on-ground=true
+entity 28 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=28 pickup-delay=0 on-ground=true
+entity 28 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=60 age=28 pickup-delay=0 on-ground=true
+entity 28 e7 2.8 1 -0.5 0 -0.12 0 item=minecraft:stone count=4 age=28 pickup-delay=0 on-ground=true
+entity 28 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=28 pickup-delay=0 on-ground=true
+entity 28 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=28 pickup-delay=0 on-ground=true
+entity 28 e10 3.5 1 -1.5 0 -0.08 0 item=minecraft:redstone count=2 age=24 pickup-delay=0 on-ground=true
+entity 28 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=3 age=23 pickup-delay=0 on-ground=true
+
+entity-order 29 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 29 e1 -0.14281398434903247 1 0.5 0.07745562949656587 0 0 item=minecraft:stone count=3 age=29 pickup-delay=0 on-ground=true
+entity 29 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=5 age=29 pickup-delay=0 on-ground=true
+entity 29 e3 3.628562796869806 1 0.5 -0.01549112589931317 0 0 item=minecraft:redstone count=7 age=29 pickup-delay=0 on-ground=true
+entity 29 e4 -3.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=29 pickup-delay=0 on-ground=true
+entity 29 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=29 pickup-delay=0 on-ground=true
+entity 29 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=60 age=29 pickup-delay=0 on-ground=true
+entity 29 e7 2.8 1 -0.5 0 0 0 item=minecraft:stone count=4 age=29 pickup-delay=0 on-ground=true
+entity 29 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=29 pickup-delay=0 on-ground=true
+entity 29 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=29 pickup-delay=0 on-ground=true
+entity 29 e10 3.5 1 -1.5 0 -0.12 0 item=minecraft:redstone count=2 age=25 pickup-delay=0 on-ground=true
+entity 29 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=3 age=24 pickup-delay=0 on-ground=true
+
+entity-order 30 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 30 e1 -0.0653583548524666 1 0.5 0.0743883900476585 0 0 item=minecraft:stone count=3 age=30 pickup-delay=0 on-ground=true
+entity 30 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=5 age=30 pickup-delay=0 on-ground=true
+entity 30 e3 3.613071670970493 1 0.5 -0.014877678009531697 0 0 item=minecraft:redstone count=7 age=30 pickup-delay=0 on-ground=true
+entity 30 e4 -3.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=30 pickup-delay=0 on-ground=true
+entity 30 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=30 pickup-delay=0 on-ground=true
+entity 30 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=60 age=30 pickup-delay=0 on-ground=true
+entity 30 e7 2.8 1 -0.5 0 -0.04 0 item=minecraft:stone count=4 age=30 pickup-delay=0 on-ground=true
+entity 30 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=30 pickup-delay=0 on-ground=true
+entity 30 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=30 pickup-delay=0 on-ground=true
+entity 30 e10 3.5 1 -1.5 0 0 0 item=minecraft:redstone count=2 age=26 pickup-delay=0 on-ground=true
+entity 30 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=3 age=25 pickup-delay=0 on-ground=true
+
+entity-order 31 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 31 e1 0.009030035195191896 1 0.5 0.07144261314315341 0 0 item=minecraft:stone count=3 age=31 pickup-delay=0 on-ground=true
+entity 31 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=5 age=31 pickup-delay=0 on-ground=true
+entity 31 e3 3.598193992960961 1 0.5 -0.01428852262863068 0 0 item=minecraft:redstone count=7 age=31 pickup-delay=0 on-ground=true
+entity 31 e4 -3.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=31 pickup-delay=0 on-ground=true
+entity 31 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=8 age=31 pickup-delay=0 on-ground=true
+entity 31 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=60 age=31 pickup-delay=0 on-ground=true
+entity 31 e7 2.8 1 -0.5 0 -0.08 0 item=minecraft:stone count=4 age=31 pickup-delay=0 on-ground=true
+entity 31 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=31 pickup-delay=0 on-ground=true
+entity 31 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=31 pickup-delay=0 on-ground=true
+entity 31 e10 3.5 1 -1.5 0 -0.04 0 item=minecraft:redstone count=2 age=27 pickup-delay=0 on-ground=true
+entity 31 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=3 age=26 pickup-delay=0 on-ground=true
+
+entity-order 32 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 32 e1 0.0804726483383453 1 0.5 0.06861348887174813 0 0 item=minecraft:stone count=3 age=32 pickup-delay=0 on-ground=true
+entity 32 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=5 age=32 pickup-delay=0 on-ground=true
+entity 32 e3 3.5839054703323305 1 0.5 -0.013722697774349627 0 0 item=minecraft:redstone count=7 age=32 pickup-delay=0 on-ground=true
+entity 32 e4 -3.5 1 -0.5 0 0 0 item=minecraft:stone count=8 age=32 pickup-delay=0 on-ground=true
+entity 32 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=32 pickup-delay=0 on-ground=true
+entity 32 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=60 age=32 pickup-delay=0 on-ground=true
+entity 32 e7 2.8 1 -0.5 0 -0.12 0 item=minecraft:stone count=4 age=32 pickup-delay=0 on-ground=true
+entity 32 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=32 pickup-delay=0 on-ground=true
+entity 32 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=32 pickup-delay=0 on-ground=true
+entity 32 e10 3.5 1 -1.5 0 -0.08 0 item=minecraft:redstone count=2 age=28 pickup-delay=0 on-ground=true
+entity 32 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=3 age=27 pickup-delay=0 on-ground=true
+
+entity-order 33 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 33 e1 0.14908613721009345 1 0.5 0.06589639779441174 0 0 item=minecraft:stone count=3 age=33 pickup-delay=0 on-ground=true
+entity 33 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=5 age=33 pickup-delay=0 on-ground=true
+entity 33 e3 3.570182772557981 1 0.5 -0.013179279558882347 0 0 item=minecraft:redstone count=7 age=33 pickup-delay=0 on-ground=true
+entity 33 e4 -3.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=33 pickup-delay=0 on-ground=true
+entity 33 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=33 pickup-delay=0 on-ground=true
+entity 33 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=60 age=33 pickup-delay=0 on-ground=true
+entity 33 e7 2.8 1 -0.5 0 0 0 item=minecraft:stone count=4 age=33 pickup-delay=0 on-ground=true
+entity 33 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=33 pickup-delay=0 on-ground=true
+entity 33 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=33 pickup-delay=0 on-ground=true
+entity 33 e10 3.5 1 -1.5 0 -0.12 0 item=minecraft:redstone count=2 age=29 pickup-delay=0 on-ground=true
+entity 33 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=3 age=28 pickup-delay=0 on-ground=true
+
+entity-order 34 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 34 e1 0.2149825350045052 1 0.5 0.06328690340169141 0 0 item=minecraft:stone count=3 age=34 pickup-delay=0 on-ground=true
+entity 34 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=5 age=34 pickup-delay=0 on-ground=true
+entity 34 e3 3.557003492999099 1 0.5 -0.01265738068033828 0 0 item=minecraft:redstone count=7 age=34 pickup-delay=0 on-ground=true
+entity 34 e4 -3.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=34 pickup-delay=0 on-ground=true
+entity 34 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=34 pickup-delay=0 on-ground=true
+entity 34 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=60 age=34 pickup-delay=0 on-ground=true
+entity 34 e7 2.8 1 -0.5 0 -0.04 0 item=minecraft:stone count=4 age=34 pickup-delay=0 on-ground=true
+entity 34 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=34 pickup-delay=0 on-ground=true
+entity 34 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=34 pickup-delay=0 on-ground=true
+entity 34 e10 3.5 1 -1.5 0 0 0 item=minecraft:redstone count=2 age=30 pickup-delay=0 on-ground=true
+entity 34 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=3 age=29 pickup-delay=0 on-ground=true
+
+entity-order 35 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 35 e1 0.2782694384061966 1 0.5 0.06078074486970937 0 0 item=minecraft:stone count=3 age=35 pickup-delay=0 on-ground=true
+entity 35 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=5 age=35 pickup-delay=0 on-ground=true
+entity 35 e3 3.5443461123187605 1 0.5 -0.012156148973941872 0 0 item=minecraft:redstone count=7 age=35 pickup-delay=0 on-ground=true
+entity 35 e4 -3.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=35 pickup-delay=0 on-ground=true
+entity 35 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=8 age=35 pickup-delay=0 on-ground=true
+entity 35 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=60 age=35 pickup-delay=0 on-ground=true
+entity 35 e7 2.8 1 -0.5 0 -0.08 0 item=minecraft:stone count=4 age=35 pickup-delay=0 on-ground=true
+entity 35 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=35 pickup-delay=0 on-ground=true
+entity 35 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=35 pickup-delay=0 on-ground=true
+entity 35 e10 3.5 1 -1.5 0 -0.04 0 item=minecraft:redstone count=2 age=31 pickup-delay=0 on-ground=true
+entity 35 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=3 age=30 pickup-delay=0 on-ground=true
+
+entity-order 36 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 36 e1 0.33905018327590597 1 0.5 0.058373830103022044 0 0 item=minecraft:stone count=3 age=36 pickup-delay=0 on-ground=true
+entity 36 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=5 age=36 pickup-delay=0 on-ground=true
+entity 36 e3 3.532189963344819 1 0.5 -0.011674766020604407 0 0 item=minecraft:redstone count=7 age=36 pickup-delay=0 on-ground=true
+entity 36 e4 -3.5 1 -0.5 0 0 0 item=minecraft:stone count=8 age=36 pickup-delay=0 on-ground=true
+entity 36 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=36 pickup-delay=0 on-ground=true
+entity 36 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=60 age=36 pickup-delay=0 on-ground=true
+entity 36 e7 2.8 1 -0.5 0 -0.12 0 item=minecraft:stone count=4 age=36 pickup-delay=0 on-ground=true
+entity 36 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=36 pickup-delay=0 on-ground=true
+entity 36 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=36 pickup-delay=0 on-ground=true
+entity 36 e10 3.5 1 -1.5 0 -0.08 0 item=minecraft:redstone count=2 age=32 pickup-delay=0 on-ground=true
+entity 36 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=3 age=31 pickup-delay=0 on-ground=true
+
+entity-order 37 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 37 e1 0.397424013378928 1 0.5 0.05606222905298159 0 0 item=minecraft:stone count=3 age=37 pickup-delay=0 on-ground=true
+entity 37 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=5 age=37 pickup-delay=0 on-ground=true
+entity 37 e3 3.5205151973242144 1 0.5 -0.011212445810596315 0 0 item=minecraft:redstone count=7 age=37 pickup-delay=0 on-ground=true
+entity 37 e4 -3.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=8 age=37 pickup-delay=0 on-ground=true
+entity 37 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=37 pickup-delay=0 on-ground=true
+entity 37 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=60 age=37 pickup-delay=0 on-ground=true
+entity 37 e7 2.8 1 -0.5 0 0 0 item=minecraft:stone count=4 age=37 pickup-delay=0 on-ground=true
+entity 37 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=37 pickup-delay=0 on-ground=true
+entity 37 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=37 pickup-delay=0 on-ground=true
+entity 37 e10 3.5 1 -1.5 0 -0.12 0 item=minecraft:redstone count=2 age=33 pickup-delay=0 on-ground=true
+entity 37 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=3 age=32 pickup-delay=0 on-ground=true
+
+entity-order 38 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 38 e1 0.4534862424319096 1 0.5 0.0538421673006901 0 0 item=minecraft:stone count=3 age=38 pickup-delay=0 on-ground=true
+entity 38 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=5 age=38 pickup-delay=0 on-ground=true
+entity 38 e3 3.509302751513618 1 0.5 -0.010768433460138019 0 0 item=minecraft:redstone count=7 age=38 pickup-delay=0 on-ground=true
+entity 38 e4 -3.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=8 age=38 pickup-delay=0 on-ground=true
+entity 38 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=38 pickup-delay=0 on-ground=true
+entity 38 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=60 age=38 pickup-delay=0 on-ground=true
+entity 38 e7 2.8 1 -0.5 0 -0.04 0 item=minecraft:stone count=4 age=38 pickup-delay=0 on-ground=true
+entity 38 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=38 pickup-delay=0 on-ground=true
+entity 38 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=38 pickup-delay=0 on-ground=true
+entity 38 e10 3.5 1 -1.5 0 0 0 item=minecraft:redstone count=2 age=34 pickup-delay=0 on-ground=true
+entity 38 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=3 age=33 pickup-delay=0 on-ground=true
+
+entity-order 39 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 39 e1 0.5073284097325997 1 0.5 0.05171001989406849 0 0 item=minecraft:stone count=3 age=39 pickup-delay=0 on-ground=true
+entity 39 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=5 age=39 pickup-delay=0 on-ground=true
+entity 39 e3 3.49853431805348 1 0.5 -0.010342003978813697 0 0 item=minecraft:redstone count=7 age=39 pickup-delay=0 on-ground=true
+entity 39 e4 -3.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=8 age=39 pickup-delay=0 on-ground=true
+entity 39 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=8 age=39 pickup-delay=0 on-ground=true
+entity 39 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=60 age=39 pickup-delay=0 on-ground=true
+entity 39 e7 2.8 1 -0.5 0 -0.08 0 item=minecraft:stone count=4 age=39 pickup-delay=0 on-ground=true
+entity 39 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=39 pickup-delay=0 on-ground=true
+entity 39 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=39 pickup-delay=0 on-ground=true
+entity 39 e10 3.5 1 -1.5 0 -0.04 0 item=minecraft:redstone count=2 age=35 pickup-delay=0 on-ground=true
+entity 39 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=3 age=34 pickup-delay=0 on-ground=true
+
+entity-changed 40 entities e2 count=8
+entity-removed 40 entities e1 discarded
+entity-changed 40 entities e5 count=16
+entity-removed 40 entities e4 discarded
+entity-changed 40 entities e6 count=64
+entity-removed 40 entities e7 discarded
+entity-order 40 entities e1 e2 e3 e4 e5 e6 e8 e9 e10 e11
+entity 40 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=8 age=40 pickup-delay=0 on-ground=true
+entity 40 e3 3.488192314074666 1 0.5 -0.009932461085795433 0 0 item=minecraft:redstone count=7 age=40 pickup-delay=0 on-ground=true
+entity 40 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=16 age=40 pickup-delay=0 on-ground=true
+entity 40 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=64 age=40 pickup-delay=0 on-ground=true
+entity 40 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=40 pickup-delay=0 on-ground=true
+entity 40 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=40 pickup-delay=0 on-ground=true
+entity 40 e10 3.5 1 -1.5 0 -0.08 0 item=minecraft:redstone count=2 age=36 pickup-delay=0 on-ground=true
+entity 40 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=3 age=35 pickup-delay=0 on-ground=true
+
+entity-order 41 entities e2 e3 e5 e6 e8 e9 e10 e11
+entity 41 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=8 age=41 pickup-delay=0 on-ground=true
+entity 41 e3 3.4782598529888706 1 0.5 -0.00953913607294482 0 0 item=minecraft:redstone count=7 age=41 pickup-delay=0 on-ground=true
+entity 41 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=16 age=41 pickup-delay=0 on-ground=true
+entity 41 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=64 age=41 pickup-delay=0 on-ground=true
+entity 41 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=41 pickup-delay=0 on-ground=true
+entity 41 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=41 pickup-delay=0 on-ground=true
+entity 41 e10 3.5 1 -1.5 0 -0.12 0 item=minecraft:redstone count=2 age=37 pickup-delay=0 on-ground=true
+entity 41 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=3 age=36 pickup-delay=0 on-ground=true
+
+entity-order 42 entities e2 e3 e5 e6 e8 e9 e10 e11
+entity 42 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=8 age=42 pickup-delay=0 on-ground=true
+entity 42 e3 3.468720716915926 1 0.5 -0.009161386712935695 0 0 item=minecraft:redstone count=7 age=42 pickup-delay=0 on-ground=true
+entity 42 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=16 age=42 pickup-delay=0 on-ground=true
+entity 42 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=64 age=42 pickup-delay=0 on-ground=true
+entity 42 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=42 pickup-delay=0 on-ground=true
+entity 42 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=42 pickup-delay=0 on-ground=true
+entity 42 e10 3.5 1 -1.5 0 0 0 item=minecraft:redstone count=2 age=38 pickup-delay=0 on-ground=true
+entity 42 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=3 age=37 pickup-delay=0 on-ground=true
+
+entity-order 43 entities e2 e3 e5 e6 e8 e9 e10 e11
+entity 43 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=8 age=43 pickup-delay=0 on-ground=true
+entity 43 e3 3.4595593302029903 1 0.5 -0.008798596210615163 0 0 item=minecraft:redstone count=7 age=43 pickup-delay=0 on-ground=true
+entity 43 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=16 age=43 pickup-delay=0 on-ground=true
+entity 43 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=64 age=43 pickup-delay=0 on-ground=true
+entity 43 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=43 pickup-delay=0 on-ground=true
+entity 43 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=43 pickup-delay=0 on-ground=true
+entity 43 e10 3.5 1 -1.5 0 -0.04 0 item=minecraft:redstone count=2 age=39 pickup-delay=0 on-ground=true
+entity 43 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=3 age=38 pickup-delay=0 on-ground=true
+
+entity-changed 44 entities e11 count=5
+entity-removed 44 entities e10 discarded
+entity-order 44 entities e2 e3 e5 e6 e8 e9 e10 e11
+entity 44 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=8 age=44 pickup-delay=0 on-ground=true
+entity 44 e3 3.450760733992375 1 0.5 -0.008450172195890678 0 0 item=minecraft:redstone count=7 age=44 pickup-delay=0 on-ground=true
+entity 44 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=16 age=44 pickup-delay=0 on-ground=true
+entity 44 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=64 age=44 pickup-delay=0 on-ground=true
+entity 44 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=44 pickup-delay=0 on-ground=true
+entity 44 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=44 pickup-delay=0 on-ground=true
+entity 44 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=5 age=39 pickup-delay=0 on-ground=true
+
+entity-order 45 entities e2 e3 e5 e6 e8 e9 e11
+entity 45 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=8 age=45 pickup-delay=0 on-ground=true
+entity 45 e3 3.4423105617964844 1 0.5 -0.00811554575649875 0 0 item=minecraft:redstone count=7 age=45 pickup-delay=0 on-ground=true
+entity 45 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=16 age=45 pickup-delay=0 on-ground=true
+entity 45 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=64 age=45 pickup-delay=0 on-ground=true
+entity 45 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=45 pickup-delay=0 on-ground=true
+entity 45 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=45 pickup-delay=0 on-ground=true
+entity 45 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=5 age=40 pickup-delay=0 on-ground=true
+
+entity-order 46 entities e2 e3 e5 e6 e8 e9 e11
+entity 46 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=8 age=46 pickup-delay=0 on-ground=true
+entity 46 e3 3.4341950160399857 1 0.5 -0.007794170509075974 0 0 item=minecraft:redstone count=7 age=46 pickup-delay=0 on-ground=true
+entity 46 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=16 age=46 pickup-delay=0 on-ground=true
+entity 46 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=64 age=46 pickup-delay=0 on-ground=true
+entity 46 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=46 pickup-delay=0 on-ground=true
+entity 46 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=46 pickup-delay=0 on-ground=true
+entity 46 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=5 age=41 pickup-delay=0 on-ground=true
+
+entity-order 47 entities e2 e3 e5 e6 e8 e9 e11
+entity 47 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=8 age=47 pickup-delay=0 on-ground=true
+entity 47 e3 3.42640084553091 1 0.5 -0.007485521707015586 0 0 item=minecraft:redstone count=7 age=47 pickup-delay=0 on-ground=true
+entity 47 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=16 age=47 pickup-delay=0 on-ground=true
+entity 47 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=64 age=47 pickup-delay=0 on-ground=true
+entity 47 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=47 pickup-delay=0 on-ground=true
+entity 47 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=47 pickup-delay=0 on-ground=true
+entity 47 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=5 age=42 pickup-delay=0 on-ground=true
+
+entity-order 48 entities e2 e3 e5 e6 e8 e9 e11
+entity 48 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=8 age=48 pickup-delay=0 on-ground=true
+entity 48 e3 3.418915323823894 1 0.5 -0.007189095383652884 0 0 item=minecraft:redstone count=7 age=48 pickup-delay=0 on-ground=true
+entity 48 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=16 age=48 pickup-delay=0 on-ground=true
+entity 48 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=64 age=48 pickup-delay=0 on-ground=true
+entity 48 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=48 pickup-delay=0 on-ground=true
+entity 48 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=48 pickup-delay=0 on-ground=true
+entity 48 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=5 age=43 pickup-delay=0 on-ground=true
+
+entity-order 49 entities e2 e3 e5 e6 e8 e9 e11
+entity 49 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=8 age=49 pickup-delay=0 on-ground=true
+entity 49 e3 3.411726228440241 1 0.5 -0.00690440752938045 0 0 item=minecraft:redstone count=7 age=49 pickup-delay=0 on-ground=true
+entity 49 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=16 age=49 pickup-delay=0 on-ground=true
+entity 49 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=64 age=49 pickup-delay=0 on-ground=true
+entity 49 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=49 pickup-delay=0 on-ground=true
+entity 49 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=49 pickup-delay=0 on-ground=true
+entity 49 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=5 age=44 pickup-delay=0 on-ground=true
+
+entity-order 50 entities e2 e3 e5 e6 e8 e9 e11
+entity 50 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=8 age=50 pickup-delay=0 on-ground=true
+entity 50 e3 3.4048218209108607 1 0.5 -0.006630993301349577 0 0 item=minecraft:redstone count=7 age=50 pickup-delay=0 on-ground=true
+entity 50 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=16 age=50 pickup-delay=0 on-ground=true
+entity 50 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=64 age=50 pickup-delay=0 on-ground=true
+entity 50 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=50 pickup-delay=0 on-ground=true
+entity 50 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=50 pickup-delay=0 on-ground=true
+entity 50 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=5 age=45 pickup-delay=0 on-ground=true
+
+entity-order 51 entities e2 e3 e5 e6 e8 e9 e11
+entity 51 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=8 age=51 pickup-delay=0 on-ground=true
+entity 51 e3 3.398190827609511 1 0.5 -0.0063684062644674905 0 0 item=minecraft:redstone count=7 age=51 pickup-delay=0 on-ground=true
+entity 51 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=16 age=51 pickup-delay=0 on-ground=true
+entity 51 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=64 age=51 pickup-delay=0 on-ground=true
+entity 51 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=51 pickup-delay=0 on-ground=true
+entity 51 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=51 pickup-delay=0 on-ground=true
+entity 51 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=5 age=46 pickup-delay=0 on-ground=true
+
+entity-order 52 entities e2 e3 e5 e6 e8 e9 e11
+entity 52 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=8 age=52 pickup-delay=0 on-ground=true
+entity 52 e3 3.3918224213450436 1 0.5 -0.006116217662451034 0 0 item=minecraft:redstone count=7 age=52 pickup-delay=0 on-ground=true
+entity 52 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=16 age=52 pickup-delay=0 on-ground=true
+entity 52 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=64 age=52 pickup-delay=0 on-ground=true
+entity 52 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=52 pickup-delay=0 on-ground=true
+entity 52 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=52 pickup-delay=0 on-ground=true
+entity 52 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=5 age=47 pickup-delay=0 on-ground=true
+
+entity-order 53 entities e2 e3 e5 e6 e8 e9 e11
+entity 53 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=8 age=53 pickup-delay=0 on-ground=true
+entity 53 e3 3.3857062036825925 1 0.5 -0.005874015717746607 0 0 item=minecraft:redstone count=7 age=53 pickup-delay=0 on-ground=true
+entity 53 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=16 age=53 pickup-delay=0 on-ground=true
+entity 53 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=64 age=53 pickup-delay=0 on-ground=true
+entity 53 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=53 pickup-delay=0 on-ground=true
+entity 53 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=53 pickup-delay=0 on-ground=true
+entity 53 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=5 age=48 pickup-delay=0 on-ground=true
+
+entity-order 54 entities e2 e3 e5 e6 e8 e9 e11
+entity 54 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=8 age=54 pickup-delay=0 on-ground=true
+entity 54 e3 3.379832187964846 1 0.5 -0.005641404959173233 0 0 item=minecraft:redstone count=7 age=54 pickup-delay=0 on-ground=true
+entity 54 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=16 age=54 pickup-delay=0 on-ground=true
+entity 54 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=64 age=54 pickup-delay=0 on-ground=true
+entity 54 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=54 pickup-delay=0 on-ground=true
+entity 54 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=54 pickup-delay=0 on-ground=true
+entity 54 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=5 age=49 pickup-delay=0 on-ground=true
+
+entity-order 55 entities e2 e3 e5 e6 e8 e9 e11
+entity 55 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=8 age=55 pickup-delay=0 on-ground=true
+entity 55 e3 3.3741907830056728 1 0.5 -0.005418005576190941 0 0 item=minecraft:redstone count=7 age=55 pickup-delay=0 on-ground=true
+entity 55 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=16 age=55 pickup-delay=0 on-ground=true
+entity 55 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=64 age=55 pickup-delay=0 on-ground=true
+entity 55 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=55 pickup-delay=0 on-ground=true
+entity 55 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=55 pickup-delay=0 on-ground=true
+entity 55 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=5 age=50 pickup-delay=0 on-ground=true
+
+entity-order 56 entities e2 e3 e5 e6 e8 e9 e11
+entity 56 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=8 age=56 pickup-delay=0 on-ground=true
+entity 56 e3 3.368772777429482 1 0.5 -0.005203452798740081 0 0 item=minecraft:redstone count=7 age=56 pickup-delay=0 on-ground=true
+entity 56 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=16 age=56 pickup-delay=0 on-ground=true
+entity 56 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=64 age=56 pickup-delay=0 on-ground=true
+entity 56 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=56 pickup-delay=0 on-ground=true
+entity 56 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=56 pickup-delay=0 on-ground=true
+entity 56 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=5 age=51 pickup-delay=0 on-ground=true
+
+entity-order 57 entities e2 e3 e5 e6 e8 e9 e11
+entity 57 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=8 age=57 pickup-delay=0 on-ground=true
+entity 57 e3 3.363569324630742 1 0.5 -0.004997396301638981 0 0 item=minecraft:redstone count=7 age=57 pickup-delay=0 on-ground=true
+entity 57 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=16 age=57 pickup-delay=0 on-ground=true
+entity 57 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=64 age=57 pickup-delay=0 on-ground=true
+entity 57 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=57 pickup-delay=0 on-ground=true
+entity 57 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=57 pickup-delay=0 on-ground=true
+entity 57 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=5 age=52 pickup-delay=0 on-ground=true
+
+entity-order 58 entities e2 e3 e5 e6 e8 e9 e11
+entity 58 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=8 age=58 pickup-delay=0 on-ground=true
+entity 58 e3 3.358571928329103 1 0.5 -0.004799499632567425 0 0 item=minecraft:redstone count=7 age=58 pickup-delay=0 on-ground=true
+entity 58 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=16 age=58 pickup-delay=0 on-ground=true
+entity 58 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=64 age=58 pickup-delay=0 on-ground=true
+entity 58 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=58 pickup-delay=0 on-ground=true
+entity 58 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=58 pickup-delay=0 on-ground=true
+entity 58 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=5 age=53 pickup-delay=0 on-ground=true
+
+entity-order 59 entities e2 e3 e5 e6 e8 e9 e11
+entity 59 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=8 age=59 pickup-delay=0 on-ground=true
+entity 59 e3 3.3537724286965354 1 0.5 -0.004609439662701969 0 0 item=minecraft:redstone count=7 age=59 pickup-delay=0 on-ground=true
+entity 59 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=16 age=59 pickup-delay=0 on-ground=true
+entity 59 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=64 age=59 pickup-delay=0 on-ground=true
+entity 59 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=59 pickup-delay=0 on-ground=true
+entity 59 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=59 pickup-delay=0 on-ground=true
+entity 59 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=5 age=54 pickup-delay=0 on-ground=true
+
+entity-order 60 entities e2 e3 e5 e6 e8 e9 e11
+entity 60 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=8 age=60 pickup-delay=0 on-ground=true
+entity 60 e3 3.3491629890338332 1 0.5 -0.00442690605910606 0 0 item=minecraft:redstone count=7 age=60 pickup-delay=0 on-ground=true
+entity 60 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=16 age=60 pickup-delay=0 on-ground=true
+entity 60 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=64 age=60 pickup-delay=0 on-ground=true
+entity 60 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=60 pickup-delay=0 on-ground=true
+entity 60 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=60 pickup-delay=0 on-ground=true
+entity 60 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=5 age=55 pickup-delay=0 on-ground=true
+
+entity-order 61 entities e2 e3 e5 e6 e8 e9 e11
+entity 61 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=8 age=61 pickup-delay=0 on-ground=true
+entity 61 e3 3.3447360829747272 1 0.5 -0.004251600778013493 0 0 item=minecraft:redstone count=7 age=61 pickup-delay=0 on-ground=true
+entity 61 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=16 age=61 pickup-delay=0 on-ground=true
+entity 61 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=64 age=61 pickup-delay=0 on-ground=true
+entity 61 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=61 pickup-delay=0 on-ground=true
+entity 61 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=61 pickup-delay=0 on-ground=true
+entity 61 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=5 age=56 pickup-delay=0 on-ground=true
+
+entity-order 62 entities e2 e3 e5 e6 e8 e9 e11
+entity 62 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=8 age=62 pickup-delay=0 on-ground=true
+entity 62 e3 3.3404844821967137 1 0.5 -0.004083237578177819 0 0 item=minecraft:redstone count=7 age=62 pickup-delay=0 on-ground=true
+entity 62 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=16 age=62 pickup-delay=0 on-ground=true
+entity 62 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=64 age=62 pickup-delay=0 on-ground=true
+entity 62 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=62 pickup-delay=0 on-ground=true
+entity 62 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=62 pickup-delay=0 on-ground=true
+entity 62 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=5 age=57 pickup-delay=0 on-ground=true
+
+entity-order 63 entities e2 e3 e5 e6 e8 e9 e11
+entity 63 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=8 age=63 pickup-delay=0 on-ground=true
+entity 63 e3 3.336401244618536 1 0.5 -0.003921541553493089 0 0 item=minecraft:redstone count=7 age=63 pickup-delay=0 on-ground=true
+entity 63 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=16 age=63 pickup-delay=0 on-ground=true
+entity 63 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=64 age=63 pickup-delay=0 on-ground=true
+entity 63 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=63 pickup-delay=0 on-ground=true
+entity 63 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=63 pickup-delay=0 on-ground=true
+entity 63 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=5 age=58 pickup-delay=0 on-ground=true
+
+entity-order 64 entities e2 e3 e5 e6 e8 e9 e11
+entity 64 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=8 age=64 pickup-delay=0 on-ground=true
+entity 64 e3 3.332479703065043 1 0.5 -0.0037662486841228025 0 0 item=minecraft:redstone count=7 age=64 pickup-delay=0 on-ground=true
+entity 64 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=16 age=64 pickup-delay=0 on-ground=true
+entity 64 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=64 age=64 pickup-delay=0 on-ground=true
+entity 64 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=64 pickup-delay=0 on-ground=true
+entity 64 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=64 pickup-delay=0 on-ground=true
+entity 64 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=5 age=59 pickup-delay=0 on-ground=true
+
+entity-order 65 entities e2 e3 e5 e6 e8 e9 e11
+entity 65 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=8 age=65 pickup-delay=0 on-ground=true
+entity 65 e3 3.32871345438092 1 0.5 -0.003617105405404125 0 0 item=minecraft:redstone count=7 age=65 pickup-delay=0 on-ground=true
+entity 65 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=16 age=65 pickup-delay=0 on-ground=true
+entity 65 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=64 age=65 pickup-delay=0 on-ground=true
+entity 65 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=65 pickup-delay=0 on-ground=true
+entity 65 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=65 pickup-delay=0 on-ground=true
+entity 65 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=5 age=60 pickup-delay=0 on-ground=true
+
+entity-order 66 entities e2 e3 e5 e6 e8 e9 e11
+entity 66 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=8 age=66 pickup-delay=0 on-ground=true
+entity 66 e3 3.325096348975516 1 0.5 -0.0034738681938234805 0 0 item=minecraft:redstone count=7 age=66 pickup-delay=0 on-ground=true
+entity 66 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=16 age=66 pickup-delay=0 on-ground=true
+entity 66 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=64 age=66 pickup-delay=0 on-ground=true
+entity 66 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=66 pickup-delay=0 on-ground=true
+entity 66 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=66 pickup-delay=0 on-ground=true
+entity 66 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=5 age=61 pickup-delay=0 on-ground=true
+
+entity-order 67 entities e2 e3 e5 e6 e8 e9 e11
+entity 67 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=8 age=67 pickup-delay=0 on-ground=true
+entity 67 e3 3.3216224807816923 1 0.5 -0.0033363031693874915 0 0 item=minecraft:redstone count=7 age=67 pickup-delay=0 on-ground=true
+entity 67 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=16 age=67 pickup-delay=0 on-ground=true
+entity 67 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=64 age=67 pickup-delay=0 on-ground=true
+entity 67 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=67 pickup-delay=0 on-ground=true
+entity 67 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=67 pickup-delay=0 on-ground=true
+entity 67 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=5 age=62 pickup-delay=0 on-ground=true
+
+entity-order 68 entities e2 e3 e5 e6 e8 e9 e11
+entity 68 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=8 age=68 pickup-delay=0 on-ground=true
+entity 68 e3 3.318286177612305 1 0.5 -0.0032041857137400137 0 0 item=minecraft:redstone count=7 age=68 pickup-delay=0 on-ground=true
+entity 68 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=16 age=68 pickup-delay=0 on-ground=true
+entity 68 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=64 age=68 pickup-delay=0 on-ground=true
+entity 68 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=68 pickup-delay=0 on-ground=true
+entity 68 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=68 pickup-delay=0 on-ground=true
+entity 68 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=5 age=63 pickup-delay=0 on-ground=true
+
+entity-order 69 entities e2 e3 e5 e6 e8 e9 e11
+entity 69 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=8 age=69 pickup-delay=0 on-ground=true
+entity 69 e3 3.315081991898565 1 0.5 -0.0030773001034017163 0 0 item=minecraft:redstone count=7 age=69 pickup-delay=0 on-ground=true
+entity 69 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=16 age=69 pickup-delay=0 on-ground=true
+entity 69 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=64 age=69 pickup-delay=0 on-ground=true
+entity 69 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=69 pickup-delay=0 on-ground=true
+entity 69 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=69 pickup-delay=0 on-ground=true
+entity 69 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=5 age=64 pickup-delay=0 on-ground=true
+
+entity-order 70 entities e2 e3 e5 e6 e8 e9 e11
+entity 70 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=8 age=70 pickup-delay=0 on-ground=true
+entity 70 e3 3.315081991898565 1 0.5 -0.0030773001034017163 -0.04 0 item=minecraft:redstone count=7 age=70 pickup-delay=0 on-ground=true
+entity 70 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=16 age=70 pickup-delay=0 on-ground=true
+entity 70 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=64 age=70 pickup-delay=0 on-ground=true
+entity 70 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=70 pickup-delay=0 on-ground=true
+entity 70 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=70 pickup-delay=0 on-ground=true
+entity 70 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=5 age=65 pickup-delay=0 on-ground=true
+
+entity-order 71 entities e2 e3 e5 e6 e8 e9 e11
+entity 71 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=8 age=71 pickup-delay=0 on-ground=true
+entity 71 e3 3.315081991898565 1 0.5 -0.0030773001034017163 -0.08 0 item=minecraft:redstone count=7 age=71 pickup-delay=0 on-ground=true
+entity 71 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=16 age=71 pickup-delay=0 on-ground=true
+entity 71 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=64 age=71 pickup-delay=0 on-ground=true
+entity 71 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=71 pickup-delay=0 on-ground=true
+entity 71 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=71 pickup-delay=0 on-ground=true
+entity 71 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=5 age=66 pickup-delay=0 on-ground=true
+
+entity-order 72 entities e2 e3 e5 e6 e8 e9 e11
+entity 72 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=8 age=72 pickup-delay=0 on-ground=true
+entity 72 e3 3.315081991898565 1 0.5 -0.0030773001034017163 -0.12 0 item=minecraft:redstone count=7 age=72 pickup-delay=0 on-ground=true
+entity 72 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=16 age=72 pickup-delay=0 on-ground=true
+entity 72 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=64 age=72 pickup-delay=0 on-ground=true
+entity 72 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=72 pickup-delay=0 on-ground=true
+entity 72 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=72 pickup-delay=0 on-ground=true
+entity 72 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=5 age=67 pickup-delay=0 on-ground=true
+
+entity-order 73 entities e2 e3 e5 e6 e8 e9 e11
+entity 73 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=8 age=73 pickup-delay=0 on-ground=true
+entity 73 e3 3.312004691795163 1 0.5 -0.00295543915753336 0 0 item=minecraft:redstone count=7 age=73 pickup-delay=0 on-ground=true
+entity 73 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=16 age=73 pickup-delay=0 on-ground=true
+entity 73 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=64 age=73 pickup-delay=0 on-ground=true
+entity 73 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=73 pickup-delay=0 on-ground=true
+entity 73 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=73 pickup-delay=0 on-ground=true
+entity 73 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=5 age=68 pickup-delay=0 on-ground=true
+
+entity-order 74 entities e2 e3 e5 e6 e8 e9 e11
+entity 74 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=8 age=74 pickup-delay=0 on-ground=true
+entity 74 e3 3.312004691795163 1 0.5 -0.00295543915753336 -0.04 0 item=minecraft:redstone count=7 age=74 pickup-delay=0 on-ground=true
+entity 74 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=16 age=74 pickup-delay=0 on-ground=true
+entity 74 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=64 age=74 pickup-delay=0 on-ground=true
+entity 74 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=74 pickup-delay=0 on-ground=true
+entity 74 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=74 pickup-delay=0 on-ground=true
+entity 74 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=5 age=69 pickup-delay=0 on-ground=true
+
+entity-order 75 entities e2 e3 e5 e6 e8 e9 e11
+entity 75 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=8 age=75 pickup-delay=0 on-ground=true
+entity 75 e3 3.312004691795163 1 0.5 -0.00295543915753336 -0.08 0 item=minecraft:redstone count=7 age=75 pickup-delay=0 on-ground=true
+entity 75 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=16 age=75 pickup-delay=0 on-ground=true
+entity 75 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=64 age=75 pickup-delay=0 on-ground=true
+entity 75 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=75 pickup-delay=0 on-ground=true
+entity 75 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=75 pickup-delay=0 on-ground=true
+entity 75 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=5 age=70 pickup-delay=0 on-ground=true
+
+entity-order 76 entities e2 e3 e5 e6 e8 e9 e11
+entity 76 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=8 age=76 pickup-delay=0 on-ground=true
+entity 76 e3 3.312004691795163 1 0.5 -0.00295543915753336 -0.12 0 item=minecraft:redstone count=7 age=76 pickup-delay=0 on-ground=true
+entity 76 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=16 age=76 pickup-delay=0 on-ground=true
+entity 76 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=64 age=76 pickup-delay=0 on-ground=true
+entity 76 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=76 pickup-delay=0 on-ground=true
+entity 76 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=76 pickup-delay=0 on-ground=true
+entity 76 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=5 age=71 pickup-delay=0 on-ground=true
+
+entity-order 77 entities e2 e3 e5 e6 e8 e9 e11
+entity 77 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=8 age=77 pickup-delay=0 on-ground=true
+entity 77 e3 3.3090492526376294 1 0.5 -0.002838403899647633 0 0 item=minecraft:redstone count=7 age=77 pickup-delay=0 on-ground=true
+entity 77 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=16 age=77 pickup-delay=0 on-ground=true
+entity 77 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=64 age=77 pickup-delay=0 on-ground=true
+entity 77 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=77 pickup-delay=0 on-ground=true
+entity 77 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=77 pickup-delay=0 on-ground=true
+entity 77 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=5 age=72 pickup-delay=0 on-ground=true
+
+entity-order 78 entities e2 e3 e5 e6 e8 e9 e11
+entity 78 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=8 age=78 pickup-delay=0 on-ground=true
+entity 78 e3 3.3090492526376294 1 0.5 -0.002838403899647633 -0.04 0 item=minecraft:redstone count=7 age=78 pickup-delay=0 on-ground=true
+entity 78 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=16 age=78 pickup-delay=0 on-ground=true
+entity 78 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=64 age=78 pickup-delay=0 on-ground=true
+entity 78 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=78 pickup-delay=0 on-ground=true
+entity 78 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=78 pickup-delay=0 on-ground=true
+entity 78 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=5 age=73 pickup-delay=0 on-ground=true
+
+entity-order 79 entities e2 e3 e5 e6 e8 e9 e11
+entity 79 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=8 age=79 pickup-delay=0 on-ground=true
+entity 79 e3 3.3090492526376294 1 0.5 -0.002838403899647633 -0.08 0 item=minecraft:redstone count=7 age=79 pickup-delay=0 on-ground=true
+entity 79 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=16 age=79 pickup-delay=0 on-ground=true
+entity 79 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=64 age=79 pickup-delay=0 on-ground=true
+entity 79 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=79 pickup-delay=0 on-ground=true
+entity 79 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=79 pickup-delay=0 on-ground=true
+entity 79 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=5 age=74 pickup-delay=0 on-ground=true
+
+entity-order 80 entities e2 e3 e5 e6 e8 e9 e11
+entity 80 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=8 age=80 pickup-delay=0 on-ground=true
+entity 80 e3 3.3090492526376294 1 0.5 -0.002838403899647633 -0.12 0 item=minecraft:redstone count=7 age=80 pickup-delay=0 on-ground=true
+entity 80 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=16 age=80 pickup-delay=0 on-ground=true
+entity 80 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=64 age=80 pickup-delay=0 on-ground=true
+entity 80 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=80 pickup-delay=0 on-ground=true
+entity 80 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=80 pickup-delay=0 on-ground=true
+entity 80 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=5 age=75 pickup-delay=0 on-ground=true
+
+entity-order 81 entities e2 e3 e5 e6 e8 e9 e11
+entity 81 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=8 age=81 pickup-delay=0 on-ground=true
+entity 81 e3 3.3062108487379818 1 0.5 -0.0027260032327171843 0 0 item=minecraft:redstone count=7 age=81 pickup-delay=0 on-ground=true
+entity 81 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=16 age=81 pickup-delay=0 on-ground=true
+entity 81 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=64 age=81 pickup-delay=0 on-ground=true
+entity 81 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=81 pickup-delay=0 on-ground=true
+entity 81 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=81 pickup-delay=0 on-ground=true
+entity 81 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=5 age=76 pickup-delay=0 on-ground=true
+
+entity-order 82 entities e2 e3 e5 e6 e8 e9 e11
+entity 82 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=8 age=82 pickup-delay=0 on-ground=true
+entity 82 e3 3.3062108487379818 1 0.5 -0.0027260032327171843 -0.04 0 item=minecraft:redstone count=7 age=82 pickup-delay=0 on-ground=true
+entity 82 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=16 age=82 pickup-delay=0 on-ground=true
+entity 82 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=64 age=82 pickup-delay=0 on-ground=true
+entity 82 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=82 pickup-delay=0 on-ground=true
+entity 82 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=82 pickup-delay=0 on-ground=true
+entity 82 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=5 age=77 pickup-delay=0 on-ground=true
+
+entity-order 83 entities e2 e3 e5 e6 e8 e9 e11
+entity 83 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=8 age=83 pickup-delay=0 on-ground=true
+entity 83 e3 3.3062108487379818 1 0.5 -0.0027260032327171843 -0.08 0 item=minecraft:redstone count=7 age=83 pickup-delay=0 on-ground=true
+entity 83 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=16 age=83 pickup-delay=0 on-ground=true
+entity 83 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=64 age=83 pickup-delay=0 on-ground=true
+entity 83 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=83 pickup-delay=0 on-ground=true
+entity 83 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=83 pickup-delay=0 on-ground=true
+entity 83 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=5 age=78 pickup-delay=0 on-ground=true
+
+entity-order 84 entities e2 e3 e5 e6 e8 e9 e11
+entity 84 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=8 age=84 pickup-delay=0 on-ground=true
+entity 84 e3 3.3062108487379818 1 0.5 -0.0027260032327171843 -0.12 0 item=minecraft:redstone count=7 age=84 pickup-delay=0 on-ground=true
+entity 84 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=16 age=84 pickup-delay=0 on-ground=true
+entity 84 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=64 age=84 pickup-delay=0 on-ground=true
+entity 84 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=84 pickup-delay=0 on-ground=true
+entity 84 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=84 pickup-delay=0 on-ground=true
+entity 84 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=5 age=79 pickup-delay=0 on-ground=true
+
+entity-order 85 entities e2 e3 e5 e6 e8 e9 e11
+entity 85 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=8 age=85 pickup-delay=0 on-ground=true
+entity 85 e3 3.3034848455052646 1 0.5 -0.0026180536271483614 0 0 item=minecraft:redstone count=7 age=85 pickup-delay=0 on-ground=true
+entity 85 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=16 age=85 pickup-delay=0 on-ground=true
+entity 85 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=64 age=85 pickup-delay=0 on-ground=true
+entity 85 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=85 pickup-delay=0 on-ground=true
+entity 85 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=85 pickup-delay=0 on-ground=true
+entity 85 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=5 age=80 pickup-delay=0 on-ground=true
+
+entity-order 86 entities e2 e3 e5 e6 e8 e9 e11
+entity 86 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=8 age=86 pickup-delay=0 on-ground=true
+entity 86 e3 3.3034848455052646 1 0.5 -0.0026180536271483614 -0.04 0 item=minecraft:redstone count=7 age=86 pickup-delay=0 on-ground=true
+entity 86 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=16 age=86 pickup-delay=0 on-ground=true
+entity 86 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=64 age=86 pickup-delay=0 on-ground=true
+entity 86 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=86 pickup-delay=0 on-ground=true
+entity 86 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=86 pickup-delay=0 on-ground=true
+entity 86 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=5 age=81 pickup-delay=0 on-ground=true
+
+entity-order 87 entities e2 e3 e5 e6 e8 e9 e11
+entity 87 e2 0.5 1 0.5 0 -0.04 0 item=minecraft:stone count=8 age=87 pickup-delay=0 on-ground=true
+entity 87 e3 3.3034848455052646 1 0.5 -0.0026180536271483614 -0.08 0 item=minecraft:redstone count=7 age=87 pickup-delay=0 on-ground=true
+entity 87 e5 -3.3 1 -0.5 0 0 0 item=minecraft:stone count=16 age=87 pickup-delay=0 on-ground=true
+entity 87 e6 2.5 1 -0.5 0 -0.04 0 item=minecraft:stone count=64 age=87 pickup-delay=0 on-ground=true
+entity 87 e8 -0.5 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=87 pickup-delay=0 on-ground=true
+entity 87 e9 -0.3 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=87 pickup-delay=0 on-ground=true
+entity 87 e11 3.7 1 -1.5 0 -0.04 0 item=minecraft:redstone count=5 age=82 pickup-delay=0 on-ground=true
+
+entity-order 88 entities e2 e3 e5 e6 e8 e9 e11
+entity 88 e2 0.5 1 0.5 0 -0.08 0 item=minecraft:stone count=8 age=88 pickup-delay=0 on-ground=true
+entity 88 e3 3.3034848455052646 1 0.5 -0.0026180536271483614 -0.12 0 item=minecraft:redstone count=7 age=88 pickup-delay=0 on-ground=true
+entity 88 e5 -3.3 1 -0.5 0 -0.04 0 item=minecraft:stone count=16 age=88 pickup-delay=0 on-ground=true
+entity 88 e6 2.5 1 -0.5 0 -0.08 0 item=minecraft:stone count=64 age=88 pickup-delay=0 on-ground=true
+entity 88 e8 -0.5 1 -1.5 0 0 0 item=minecraft:diamond_sword count=1 age=88 pickup-delay=0 on-ground=true
+entity 88 e9 -0.3 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=88 pickup-delay=0 on-ground=true
+entity 88 e11 3.7 1 -1.5 0 -0.08 0 item=minecraft:redstone count=5 age=83 pickup-delay=0 on-ground=true
+
+entity-order 89 entities e2 e3 e5 e6 e8 e9 e11
+entity 89 e2 0.5 1 0.5 0 -0.12 0 item=minecraft:stone count=8 age=89 pickup-delay=0 on-ground=true
+entity 89 e3 3.300866791878116 1 0.5 -0.002514378821111177 0 0 item=minecraft:redstone count=7 age=89 pickup-delay=0 on-ground=true
+entity 89 e5 -3.3 1 -0.5 0 -0.08 0 item=minecraft:stone count=16 age=89 pickup-delay=0 on-ground=true
+entity 89 e6 2.5 1 -0.5 0 -0.12 0 item=minecraft:stone count=64 age=89 pickup-delay=0 on-ground=true
+entity 89 e8 -0.5 1 -1.5 0 -0.04 0 item=minecraft:diamond_sword count=1 age=89 pickup-delay=0 on-ground=true
+entity 89 e9 -0.3 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=89 pickup-delay=0 on-ground=true
+entity 89 e11 3.7 1 -1.5 0 -0.12 0 item=minecraft:redstone count=5 age=84 pickup-delay=0 on-ground=true
+
+entity-order 90 entities e2 e3 e5 e6 e8 e9 e11
+entity 90 e2 0.5 1 0.5 0 0 0 item=minecraft:stone count=8 age=90 pickup-delay=0 on-ground=true
+entity 90 e3 3.300866791878116 1 0.5 -0.002514378821111177 -0.04 0 item=minecraft:redstone count=7 age=90 pickup-delay=0 on-ground=true
+entity 90 e5 -3.3 1 -0.5 0 -0.12 0 item=minecraft:stone count=16 age=90 pickup-delay=0 on-ground=true
+entity 90 e6 2.5 1 -0.5 0 0 0 item=minecraft:stone count=64 age=90 pickup-delay=0 on-ground=true
+entity 90 e8 -0.5 1 -1.5 0 -0.08 0 item=minecraft:diamond_sword count=1 age=90 pickup-delay=0 on-ground=true
+entity 90 e9 -0.3 1 -1.5 0 -0.12 0 item=minecraft:diamond_sword count=1 age=90 pickup-delay=0 on-ground=true
+entity 90 e11 3.7 1 -1.5 0 0 0 item=minecraft:redstone count=5 age=85 pickup-delay=0 on-ground=true

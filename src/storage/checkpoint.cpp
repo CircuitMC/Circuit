@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
+#include <algorithm>
 #include <bit>
 #include <cstdlib>
 #include <circuit/gameplay/block_registry.hpp>
@@ -18,6 +19,7 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 14: entities count their ticks, and an item's age may be -32768 (never);
 // 13: entities have a kind, positions and velocities are doubles (before:
 // 1/4096 block units), and levels carry their random sequence's state;
 // 12: the world's weather;
@@ -39,7 +41,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 13;
+constexpr std::uint32_t version = 14;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -141,10 +143,10 @@ void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
     }
     w.varint(static_cast<std::int32_t>(l.entities.size()));
     for (const auto& e : l.entities) {
-        w.varlong(static_cast<std::int64_t>(e.id.value)).u8(static_cast<std::uint8_t>(e.kind));
+        w.varlong(static_cast<std::int64_t>(e.id.value)).u8(static_cast<std::uint8_t>(e.kind)).varlong(static_cast<std::int64_t>(e.tick_count));
         w.f64(e.position.x).f64(e.position.y).f64(e.position.z).f64(e.velocity.x).f64(e.velocity.y).f64(e.velocity.z);
         stack(w, e.stack);
-        w.varint(static_cast<std::int32_t>(e.age)).varlong(static_cast<std::int64_t>(e.last_tick));
+        w.varint(e.age).varlong(static_cast<std::int64_t>(e.last_tick));
         w.boolean(e.on_ground);
         w.u16(e.pickup_delay);
     }
@@ -359,16 +361,25 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
         gameplay::Entity e;
         std::int32_t age{};
         if (!b.u64(e.id.value)) return false;
+        std::uint64_t ticks{};
         if (b.version >= 13) {
             std::uint8_t kind{};
-            if (!b.get(b.r.u8(), kind) || !b.vec(e.position) || !b.vec(e.velocity)) return false;
+            if (!b.get(b.r.u8(), kind) || (b.version >= 14 && !b.u64(ticks)) || !b.vec(e.position) || !b.vec(e.velocity)) return false;
             e.kind = static_cast<gameplay::EntityKind>(kind);
         } else if (!b.fixed_vec(e.position) || !b.fixed_vec(e.velocity)) {
             return false;
         }
         if (!b.stack(e.stack) || !b.get(b.r.varint(), age) || !b.u64(e.last_tick) || !b.get(b.r.boolean(), e.on_ground)) return false;
         if (b.version >= 4 && !b.get(b.r.u16(), e.pickup_delay)) return false;
-        e.age = static_cast<std::uint32_t>(age);
+        e.age = age;
+        // Before version 14 nothing reset an item's age, which counted every
+        // tick since it was spawned.
+        if (b.version < 14) ticks = static_cast<std::uint32_t>(std::max(age, 0));
+        if (ticks > UINT32_MAX) {
+            b.error = "entity tick count out of range";
+            return false;
+        }
+        e.tick_count = static_cast<std::uint32_t>(ticks);
         s.entities.push_back(e);
     }
     if (!b.count(n, 17)) return false;

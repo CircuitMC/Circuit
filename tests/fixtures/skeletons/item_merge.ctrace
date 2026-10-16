@@ -1,0 +1,26 @@
+circuit-trace 2
+title Items merging on stone
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms item_entity
+area -4 0 -2 4 3 2
+ticks 100
+changes ordered
+entities observed
+rng observed
+
+at 0 set -3 0 0 minecraft:stone
+at 0 set -2 0 0 minecraft:stone
+at 0 set -1 0 0 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 1 spawn-item -2.5 1 0.5 0 0 0 minecraft:stone 10
+at 1 spawn-item -2.2 1 0.5 0 0 0 minecraft:stone 20
+at 1 spawn-item 0.5 1 0.5 0 0 0 minecraft:redstone 40
+at 1 spawn-item 0.8 1 0.5 0 0 0 minecraft:redstone 40
+at 1 spawn-item 2.4 1 0.5 0 0 0 minecraft:stone 1
+at 1 spawn-item 2.6 1 0.5 0 0 0 minecraft:cobblestone 1
+at 30 spawn-item -1.5 2 0.5 0 0 0 minecraft:stone 5

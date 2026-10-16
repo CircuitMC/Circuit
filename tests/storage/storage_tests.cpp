@@ -327,6 +327,16 @@ int main() {
         require(!other && other.error().find("block registry circuit-blocks-0") != std::string::npos, "another registry is refused");
         // The current version writes the levels and reads back the same state.
         require(circuit::storage::decode_checkpoint(circuit::storage::encode_checkpoint(c)).value() == c, "current version round trip");
+        // An item that never ages, with a large tick count.
+        auto never = c;
+        circuit::gameplay::Entity item;
+        item.id = circuit::contracts::EntityId{never.state.next_entity_id++};
+        item.position = {0.5, 1.0, 0.5};
+        item.stack = {circuit::gameplay::items::stone, 1};
+        item.age = circuit::gameplay::item_age_never;
+        item.tick_count = 4000000000U;
+        never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(item);
+        require(circuit::storage::decode_checkpoint(circuit::storage::encode_checkpoint(never)).value() == never, "ages and tick counts round trip");
         require(circuit::storage::decode_checkpoint(circuit::storage::encode_checkpoint(legacy)).value() == legacy,
                 "a converted checkpoint round trip");
     });

@@ -64,8 +64,10 @@ constexpr std::array reference_v4_mechanisms{
     MechanismEntry{"hopper", l0_exact, l0_exact, harness_trace,
         "Push then pull, 8-tick cooldown, disabled while powered, item pickup, competition in block-entity order; "
         "a hopper receiving into an empty inventory from another hopper waits 8 game ticks, or 7 when it "
-        "already ticked in that tick (hopper_chain, hopper_competition, double_chest, hopper_chained). Not "
-        "covered: pickup of item entities that a trace cannot observe (circuit-trace v1)."},
+        "already ticked in that tick (hopper_chain, hopper_competition, double_chest, hopper_chained); items "
+        "collected from the cell above and the bowl, and taken when they move inside the hopper "
+        "(item_hopper_pickup, item_hopper_area, item_hopper_inside). Not covered: blocks above other than "
+        "air, stone and containers."},
     MechanismEntry{"double_chest", l0_exact, l0_exact, harness_trace,
         "A left half pairs clockwise of its facing; a half claims a same-facing single chest; pairing changes "
         "are shape-only; hoppers and comparators see the right half's slots first (double_chest, "
@@ -91,10 +93,13 @@ constexpr std::array reference_v4_mechanisms{
         "hydration and support."},
     MechanismEntry{"item_entity", l0_exact, l2_declared_deviation, harness_trace,
         "Double-precision gravity, drag, bouncing and collision with every state's collision boxes; items at "
-        "rest move every fourth tick; block drops placed and launched with level-random draws; despawns after "
-        "6000 ticks; pushed by moving blocks (item_hopper_pickup, item_water_current). Ids of entities spawned "
-        "outside the command phase are assigned in serial order. Gaps: no merging, water currents or "
-        "buoyancy; moving blocks push items differently; container contents drop whole at the center."},
+        "rest move every fourth tick; merging with the target versions' timing, reach and results; block drops "
+        "and container scatter placed and launched with level-random draws; despawns at age 6000; pushed by "
+        "moving blocks (item_hopper_pickup, item_water_current, item_merge, item_merge_moving, "
+        "item_merge_crossing, item_merge_vertical, item_merge_timers, item_chest_scatter). Ids of entities "
+        "spawned outside the command phase are assigned in serial order. Gaps: no water currents or buoyancy; "
+        "moving blocks push items differently; entities of unloading chunks are not reported unloaded and keep "
+        "their tick count."},
     MechanismEntry{"chunk_tickets", l0_exact, l2_declared_deviation, harness_trace,
         "Typed tickets with a level, a square and a lifetime; load and simulation levels decide each chunk's "
         "status and what runs; changes take effect in each level's chunk stage after its scheduled ticks; "
@@ -121,8 +126,9 @@ constexpr std::array reference_v4_mechanisms{
         "Gaps: durations come from Circuit's own stream, not the level's random sequence; no lightning, snow, "
         "ice or other effects of rain; compared through a protocol client, not harness traces."},
     MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, harness_trace,
-        "Entities tick in ascending id order once per tick (item_hopper_pickup, item_water_current). Gap: "
-        "compared for item entities only."},
+        "Entities tick in ascending id order once per tick; one merged away before its turn does not tick "
+        "(item_hopper_pickup, item_water_current, item_merge, item_merge_moving). Gap: compared for item "
+        "entities only."},
     MechanismEntry{"block_entity_order", l0_exact, l0_exact, harness_trace,
         "Block entities tick in creation order; moving pistons finish in creation order (piston_slime, "
         "piston_observed) and competing hoppers act in placement order (hopper_competition). Not covered: "

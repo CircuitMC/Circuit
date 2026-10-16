@@ -186,9 +186,10 @@ std::string text(const std::pair<BlockPos, BlockEntity>& b) {
                        b.second.signal, b.second.moving, b.second.progress, b.second.motion, slots);
 }
 std::string text(const Entity& e) {
-    return std::format("entity {} {} pos=({},{},{}) vel=({},{},{}) stack={}x{}/{} age={} last_tick={} ground={} pickup_delay={}", e.id.value,
-                       entity_kind_name(e.kind), e.position.x, e.position.y, e.position.z, e.velocity.x, e.velocity.y, e.velocity.z,
-                       e.stack.item, e.stack.count, e.stack.damage, e.age, e.last_tick, e.on_ground, e.pickup_delay);
+    return std::format("entity {} {} pos=({},{},{}) vel=({},{},{}) ticks={} stack={}x{}/{} age={} last_tick={} ground={} pickup_delay={}",
+                       e.id.value, entity_kind_name(e.kind), e.position.x, e.position.y, e.position.z, e.velocity.x, e.velocity.y,
+                       e.velocity.z, e.tick_count, e.stack.item, e.stack.count, e.stack.damage, e.age, e.last_tick, e.on_ground,
+                       e.pickup_delay);
 }
 std::string text(const LevelDump::PendingTick& t) {
     return std::format("tick list={} {} block={} due={} priority={} suborder={}", static_cast<int>(t.list),
@@ -329,7 +330,7 @@ std::uint64_t digest(const WorldDump& d) {
         for (const auto& e : l.entities) {
             h.add(e.id.value); h.add(static_cast<std::uint64_t>(e.kind)); h.add(e.position); h.add(e.velocity); h.add(contracts::pack_stack(e.stack));
             h.add(e.stack.components.hash());
-            h.add(e.age); h.add(e.last_tick); h.add(e.on_ground); h.add(e.pickup_delay);
+            h.add(e.tick_count); h.add(static_cast<std::uint32_t>(e.age)); h.add(e.last_tick); h.add(e.on_ground); h.add(e.pickup_delay);
         }
         h.add(l.ticks.size());
         for (const auto& t : l.ticks) {

@@ -566,6 +566,8 @@
           ],
           "cases": [
             "trace/item_hopper_pickup",
+            "trace/item_merge",
+            "trace/item_merge_moving",
             "trace/item_water_current"
           ]
         },
@@ -576,11 +578,12 @@
           "impl": "partial",
           "evidence": "compared",
           "deviations": [
-            "only block drops and piston sounds draw from it; random ticks and weather durations use Circuit's own derived streams, and other draws of the target versions are not made yet"
+            "only block drops, container scatter and piston sounds draw from it; random ticks and weather durations use Circuit's own derived streams, and other draws of the target versions are not made yet"
           ],
           "cases": [
-            "trace/piston_draws",
+            "trace/item_chest_scatter",
             "trace/item_drop_piston",
+            "trace/piston_draws",
             "trace/tnt_redstone_ignition"
           ],
           "note": "Each level's java.util.Random-compatible sequence, its state saved with the world; fixtures seed it with 0 as the harness does and compare raw draw counts per stage"
@@ -1402,13 +1405,18 @@
           "impl": "partial",
           "evidence": "compared",
           "deviations": [
-            "no water currents or buoyancy",
-            "moving blocks push items differently (trace/item_piston_push)"
+            "no water currents or buoyancy (trace/item_water_fall)",
+            "moving blocks push items differently (trace/item_piston_push)",
+            "entities of unloading chunks are not reported unloaded and keep their tick count (trace/item_chunk_edge)"
           ],
           "cases": [
+            "trace/item_chest_scatter",
+            "trace/item_chunk_edge",
             "trace/item_hopper_pickup",
+            "trace/item_merge_crossing",
+            "trace/item_piston_push",
             "trace/item_water_current",
-            "trace/item_piston_push"
+            "trace/item_water_fall"
           ],
           "note": "Double-precision gravity, drag, collision with every state's collision boxes, bouncing and the resting rule, identical with both official servers in the passing traces"
         },
@@ -1416,12 +1424,16 @@
           "id": "merging",
           "name": "Item merging",
           "milestone": "C3",
-          "impl": "missing",
-          "evidence": "reference_only",
+          "impl": "implemented",
+          "evidence": "compared",
           "cases": [
-            "trace/tnt_redstone_ignition"
+            "trace/item_merge",
+            "trace/item_merge_moving",
+            "trace/item_merge_crossing",
+            "trace/item_merge_vertical",
+            "trace/item_merge_timers"
           ],
-          "note": "The official explosion drops nine cobblestone as one stack"
+          "note": "Every 40 ticks of the item's own count, or every 2 after a move into another block; reach half a block sideways; stacks of one kind within their limit; the smaller joins the larger (equal: the other survives); younger age and longer pickup delay kept"
         },
         {
           "id": "pickup",
@@ -1430,16 +1442,24 @@
           "impl": "partial",
           "evidence": "compared",
           "cases": [
+            "client/vitals",
             "client/windows",
-            "client/vitals"
+            "trace/item_hopper_area",
+            "trace/item_hopper_inside",
+            "trace/item_hopper_pickup",
+            "trace/item_merge_timers"
           ]
         },
         {
           "id": "despawn",
           "name": "Despawning",
           "milestone": "C3",
-          "impl": "partial",
-          "evidence": "documented"
+          "impl": "implemented",
+          "evidence": "compared",
+          "cases": [
+            "trace/item_merge_timers"
+          ],
+          "note": "Age 6000, -32768 never; the age goes up after the item's move and merges"
         },
         {
           "id": "experience_orbs",
@@ -1782,7 +1802,6 @@
             "tables with random parts (random counts, chances, fortune bonuses, weighted choices) drop nothing until random streams are modeled",
             "tables that copy components or name dynamic contents (shulker boxes, banners, decorated pots) are not used",
             "modeled blocks ignore their tables, so silk touch does not change their drops",
-            "a broken container's contents drop whole at its center, without the random split and scatter",
             "entity, container and archaeology tables are not used"
           ]
         }

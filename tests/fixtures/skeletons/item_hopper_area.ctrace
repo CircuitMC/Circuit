@@ -1,0 +1,28 @@
+circuit-trace 2
+title Which items a hopper picks up
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms item_entity hopper
+area -7 0 -2 7 3 2
+ticks 40
+changes ordered
+entities observed
+
+at 0 set -5 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set -4 0 0 minecraft:stone
+at 0 set -6 0 0 minecraft:stone
+at 0 set 0 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 0 0 minecraft:stone
+at 0 set -1 0 0 minecraft:stone
+at 0 set 5 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 4 0 0 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 1 spawn-item -3.95 1 0.5 0 0 0 minecraft:stone 1
+at 1 spawn-item 1.1 1 0.5 0 0 0 minecraft:stone 1
+at 1 spawn-item -0.2 1 0.5 0 0 0 minecraft:stone 1
+at 1 spawn-item 5.5 2.2 0.5 0 0 0 minecraft:stone 1
+at 1 spawn-item 6.13 1 0.5 0 0 0 minecraft:stone 1
+slot 40 -5 0 0 0 ?
+slot 40 0 0 0 0 ?
+slot 40 5 0 0 0 ?

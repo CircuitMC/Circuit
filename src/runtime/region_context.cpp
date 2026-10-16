@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "region_context.hpp"
 #include <circuit/gameplay/rules.hpp>
+#include <algorithm>
 #include <stdexcept>
 
 namespace circuit::runtime::detail {
@@ -193,6 +194,23 @@ std::vector<EntityId> RegionContext::entities_in_cell(BlockPos cell) {
     if (!data) return out;
     for (const auto& [id, e] : owned(c, *data).entities)
         if (block_of(e.position) == cell) out.push_back(id);
+    return out;
+}
+
+std::vector<EntityId> RegionContext::entities_in_cells(BlockPos low, BlockPos high) {
+    std::vector<EntityId> out;
+    const auto first = chunk_of(low), last = chunk_of(high);
+    for (auto cx = first.x; cx <= last.x; ++cx)
+        for (auto cz = first.z; cz <= last.z; ++cz) {
+            const ChunkPos c{cx, cz};
+            auto* data = world_.find_loaded(key(c));
+            if (!data) continue;
+            for (const auto& [id, e] : owned(c, *data).entities) {
+                const auto p = block_of(e.position);
+                if (p.x >= low.x && p.x <= high.x && p.y >= low.y && p.y <= high.y && p.z >= low.z && p.z <= high.z) out.push_back(id);
+            }
+        }
+    std::ranges::sort(out);
     return out;
 }
 

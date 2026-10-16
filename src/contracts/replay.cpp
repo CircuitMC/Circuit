@@ -7,13 +7,14 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
+// 12: spawned items may carry a pickup delay and an age (tag 22);
 // 11: positions and velocities are doubles (before: 1/4096 block units);
 // 10: weather (tag 21); 9: day time (tag 20); 8: game rules (tag 19); 7: typed tickets (tag 16), player presences and levels started; 6: each
 // command names its level; 5: stacks carry their data components; 4: the
 // block registry id; 3: stacks carry damage, player commands carry their
 // player. Commands of versions before 6 are the overworld's. Tickets of
 // versions before 7 (tags 5 and 9) read as forced squares.
-constexpr std::uint16_t format_version = 11;
+constexpr std::uint16_t format_version = 12;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -113,8 +114,10 @@ private:
 // 6 RemoveTicket, 7 PlayerUse, 8 PlayerBreak, 9 radius ticket (read only),
 // 10 SetPlayerSlot, 11 PickUp, 12 DropItem, 13 ContainerClick,
 // 14 CloseContainer, 15 PlayerDeath, 16 AddTicket, 17 PlayerPresence,
-// 18 LevelsStarted, 19 SetGameRule, 20 SetDayTime, 21 SetWeather.
+// 18 LevelsStarted, 19 SetGameRule, 20 SetDayTime, 21 SetWeather,
+// 22 SpawnItem with a pickup delay or an age (tag 3 has neither).
 std::uint8_t tag_of(const CommandBody& body) {
+    if (const auto* spawn = std::get_if<SpawnItem>(&body); spawn && (spawn->pickup_delay != 0 || spawn->age != 0)) return 22;
     if (std::holds_alternative<SetGameRule>(body)) return 19;
     if (std::holds_alternative<SetDayTime>(body)) return 20;
     if (std::holds_alternative<SetWeather>(body)) return 21;
@@ -151,6 +154,10 @@ void encode_command(Writer& w, const Command& c) {
             w.vec(body.position);
             w.vec(body.velocity);
             w.stack(body.stack);
+            if (body.pickup_delay != 0 || body.age != 0) {
+                w.put(body.pickup_delay);
+                w.put(body.age);
+            }
         } else if constexpr (std::is_same_v<T, RemoveEntity>) {
             w.put(body.id.value);
         } else if constexpr (std::is_same_v<T, SetGameRule>) {
@@ -384,6 +391,13 @@ bool decode_command(Reader& r, Command& c) {
     case 20: {
         SetDayTime b;
         if (!r.get(b.time) || b.time < 0) return false;
+        c.body = b;
+        return true;
+    }
+    case 22: {
+        SpawnItem b;
+        if (!r.vec(b.position) || !r.vec(b.velocity) || !r.stack(b.stack) || !r.get(b.pickup_delay) || !r.get(b.age)) return false;
+        if (b.pickup_delay == 0 && b.age == 0) return false; // written as tag 3
         c.body = b;
         return true;
     }

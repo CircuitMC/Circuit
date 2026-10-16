@@ -108,6 +108,9 @@ public:
 
     // Ids of entities whose block position equals `cell`, ascending.
     virtual std::vector<EntityId> entities_in_cell(BlockPos cell) = 0;
+    // Ids of entities whose block position lies in the cells from `low` to
+    // `high` (inclusive), ascending; nothing from columns not loaded.
+    virtual std::vector<EntityId> entities_in_cells(BlockPos low, BlockPos high) = 0;
     virtual const Entity* peek_entity(EntityId id) = 0;
     // Pointer stays valid until the current root finishes or the entity moves
     // between chunks or is removed.

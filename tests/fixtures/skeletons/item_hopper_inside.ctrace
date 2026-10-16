@@ -1,0 +1,27 @@
+circuit-trace 2
+title Items inside a hopper's bowl: cooldown, a powered hopper and an open one
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms item_entity hopper
+area -2 0 -2 8 3 2
+ticks 30
+changes ordered
+entities observed
+
+at 0 set 0 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 0 1 0 minecraft:stone
+at 0 set 4 0 0 minecraft:redstone_block
+at 0 set 3 0 0 minecraft:hopper[enabled=false,facing=down]
+at 0 set 3 1 0 minecraft:stone
+at 0 set 6 0 0 minecraft:hopper[enabled=true,facing=down]
+at 1 spawn-item 0.5 0.7 0.5 0 0 0 minecraft:redstone 1
+at 1 spawn-item 3.5 0.7 0.5 0 0 0 minecraft:redstone 1
+at 1 spawn-item 6.5 0.7 0.5 0 0 0 minecraft:redstone 1
+at 3 spawn-item 0.5 0.7 0.5 0 0 0 minecraft:stone 1
+at 3 spawn-item 6.5 0.7 0.5 0 0 0 minecraft:stone 1
+slot 30 0 0 0 0 ?
+slot 30 0 0 0 1 ?
+slot 30 3 0 0 0 ?
+slot 30 6 0 0 0 ?
+slot 30 6 0 0 1 ?

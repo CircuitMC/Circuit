@@ -76,21 +76,34 @@ enum class EntityKind : std::uint8_t { item = 1 };
 inline constexpr std::uint8_t entity_kind_count = 2; // kinds are 1 to entity_kind_count - 1
 std::string_view entity_kind_name(EntityKind kind) noexcept;
 
+// Item ages and pickup delays the target versions treat as "never": an item
+// of age -32768 never ages, despawns or merges; one with the pickup delay
+// 32767 is never picked up and never merges. Items despawn at age 6000.
+inline constexpr std::int32_t item_age_never = -32768;
+inline constexpr std::uint16_t item_pickup_never = 32767;
+inline constexpr std::int32_t item_despawn_age = 6000;
+
 struct Entity {
     EntityId id;
     EntityKind kind{EntityKind::item};
     Vec3 position;
     Vec3 velocity;
-    std::uint32_t age{};
+    // Ticks the entity has run since it was spawned or loaded; some behavior
+    // follows it, and it is never reset.
+    std::uint32_t tick_count{};
     Tick last_tick{}; // Logical tick of the last basic advancement; prevents double ticking.
     bool on_ground{};
-    // Items: the stack and the ticks until players may pick it up.
+    // Items: the stack, its age (a merge keeps the younger one's) and the
+    // ticks until players may pick it up.
     ItemStack stack;
+    std::int32_t age{};
     std::uint16_t pickup_delay{};
     bool operator==(const Entity&) const = default;
 };
+// A valid item age: -32768 or 0 to 32767, as the target versions save it.
+[[nodiscard]] constexpr bool valid_item_age(std::int64_t age) noexcept { return age >= item_age_never && age <= 32767; }
 
-enum class RemovalReason : std::uint8_t { despawned = 1, fell_out_of_world = 2, picked_up = 3, command = 4 };
+enum class RemovalReason : std::uint8_t { despawned = 1, fell_out_of_world = 2, picked_up = 3, command = 4, merged = 5 };
 
 // A player's inventory in the simulation: the slots of the player's own window
 // (see contracts::player_slots) and the stack carried by the cursor. Only

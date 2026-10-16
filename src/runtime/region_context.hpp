@@ -50,6 +50,7 @@ public:
     void create_block_entity(BlockPos pos, BlockType kind) override;
     void remove_block_entity(BlockPos pos) override;
     std::vector<EntityId> entities_in_cell(BlockPos cell) override;
+    std::vector<EntityId> entities_in_cells(BlockPos low, BlockPos high) override;
     const Entity* peek_entity(EntityId id) override;
     Entity* entity(EntityId id) override;
     EntityId spawn_entity(const Entity& prototype) override;

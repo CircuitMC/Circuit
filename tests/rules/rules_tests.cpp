@@ -6,6 +6,7 @@
 #include "../support/check.hpp"
 #include "../support/light_reference.hpp"
 #include "../support/scenario.hpp"
+#include <circuit/gameplay/level_random.hpp>
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/block_registry.hpp>
 #include <circuit/gameplay/game_data.hpp>
@@ -710,20 +711,38 @@ int main() {
         s.tick({place({0, 0, 0}, blocks::chest()), place({2, 0, 0}, blocks::stone()), place({4, 0, 0}, blocks::obsidian()),
                 insert({0, 0, 0}, 0, items::iron_ingot, 5), insert({0, 0, 0}, 3, items::redstone, 64),
                 circuit::contracts::SetPlayerSlot{alex, 36, {items::stone_pickaxe, 1, 130}}});
-        // Creative breaking drops the chest's contents, not the chest.
+        // Creative breaking drops the chest's contents, not the chest: each
+        // slot in order, in parts of 10 to 30 items that can be picked up at
+        // once, drawing from the level random for all 27 slots.
+        const auto before = s.oracle.dump().overworld().random;
         s.tick({circuit::contracts::PlayerBreak{alex, {0, 0, 0}, false, 36}});
         auto d = s.oracle.dump();
-        require(d.overworld().entities.size() == 2 && d.overworld().entities[0].stack == ItemStack{items::iron_ingot, 5, 0}
-                    && d.overworld().entities[1].stack == ItemStack{items::redstone, 64, 0},
-                "contents drop in slot order");
+        const auto& drops = d.overworld().entities;
+        require(drops.size() >= 4 && drops[0].stack == ItemStack{items::iron_ingot, 5, 0}, "the first slot's stack first, in one part");
+        unsigned redstone = 0;
+        for (std::size_t i = 1; i < drops.size(); ++i) {
+            require(drops[i].stack.item == items::redstone && drops[i].stack.count <= 30 && (drops[i].stack.count >= 10 || i + 1 == drops.size()),
+                    "then the redstone, in parts of 10 to 30");
+            redstone += drops[i].stack.count;
+        }
+        require(redstone == 64, "nothing lost");
+        require(std::ranges::all_of(drops, [](const auto& e) { return e.pickup_delay == 0 && e.velocity.y > 0.0; }), "launched, at once collectable");
+        auto replay = circuit::gameplay::LevelRandom::from_state(before);
+        for (int slot = 0; slot < 27 * 3; ++slot) (void)replay.next_double();          // a point in the cell for each slot
+        for (std::size_t part = 0; part < drops.size(); ++part) {                   // per part: its size, the default velocity,
+            (void)replay.next_int(21);                                              // the velocity around (0, 0.2, 0)
+            for (int i = 0; i < 8; ++i) (void)replay.next_double();
+        }
+        require(replay.state() == d.overworld().random, "all draws accounted for");
+        const auto scattered = drops.size();
         // Survival with a stone pickaxe: stone gives cobblestone, obsidian nothing; the
         // pickaxe (131 uses) breaks on its last use.
         s.tick({circuit::contracts::PlayerBreak{alex, {2, 0, 0}, true, 36}});
         d = s.oracle.dump();
-        require(d.overworld().entities.size() == 3 && d.overworld().entities[2].stack.item == items::cobblestone, "cobblestone");
+        require(d.overworld().entities.size() == scattered + 1 && d.overworld().entities.back().stack.item == items::cobblestone, "cobblestone");
         require(d.players.empty(), "the pickaxe broke");
         s.tick({circuit::contracts::PlayerBreak{alex, {4, 0, 0}, true, 36}});
-        require(s.oracle.dump().overworld().entities.size() == 3 && s.at({4, 0, 0}).is_air(), "obsidian by hand drops nothing");
+        require(s.oracle.dump().overworld().entities.size() == scattered + 1 && s.at({4, 0, 0}).is_air(), "obsidian by hand drops nothing");
     });
 
     suite.run("container clicks follow the target version's menus", [] {
@@ -1249,6 +1268,28 @@ int main() {
         const auto last = of_kind(s.last, TraceKind::command_rejected);
         require(last.size() == 1 && last[0].b == static_cast<std::uint64_t>(ErrorCode::unloaded_chunk),
                 "inside the border but unloaded");
+    });
+
+    suite.run("spawned items take a pickup delay and an age", [] {
+        Sim s;
+        // Out of range: a pickup delay above 32767, ages outside -32768..32767.
+        s.tick({SpawnItem{at_block(15.5, 1.0, 0.5), {}, {items::stone, 1}, 32768, 0}, SpawnItem{at_block(15.5, 1.0, 0.5), {}, {items::stone, 1}, 0, -32769},
+                SpawnItem{at_block(15.5, 1.0, 0.5), {}, {items::stone, 1}, 0, 32768}});
+        const auto rejected = of_kind(s.last, TraceKind::command_rejected);
+        require(rejected.size() == 3 && std::ranges::all_of(rejected, [](const auto& r) { return r.b == static_cast<std::uint64_t>(ErrorCode::invalid_argument); }),
+                "rejected");
+        // 32767 never counts down and -32768 never ages; age 5995 despawns in its fifth tick.
+        s.tick({SpawnItem{at_block(15.5, 1.0, 0.5), {}, {items::stone, 1}, 32767, -32768}, SpawnItem{at_block(15.5, 1.0, 4.5), {}, {items::stone, 1}, 7, 5995}});
+        for (int t = 2; t <= 5; ++t) {
+            require(of_kind(s.last, TraceKind::entity_removed).empty(), std::format("not yet at tick {}", t - 1));
+            s.tick({});
+        }
+        const auto removed = of_kind(s.last, TraceKind::entity_removed);
+        require(removed.size() == 1 && removed[0].b == static_cast<std::uint64_t>(circuit::gameplay::RemovalReason::despawned), "despawned");
+        const auto d = s.oracle.dump();
+        require(d.overworld().entities.size() == 1 && d.overworld().entities[0].age == -32768 && d.overworld().entities[0].pickup_delay == 32767
+                    && d.overworld().entities[0].tick_count == 5,
+                "never ages, never picked up; the tick count still runs");
     });
 
     suite.run("entities migrate once per tick and fall out of the world", [] {

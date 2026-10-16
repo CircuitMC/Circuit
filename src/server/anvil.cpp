@@ -831,9 +831,9 @@ private:
                 continue;
             }
             out.stack = std::move(*stack);
-            const auto age = integer(e, "Age").value_or(0);
-            if (age < 0) ++approximated_; // never-despawning items age normally in Circuit
-            out.age = static_cast<std::uint32_t>(std::max<std::int64_t>(age, 0));
+            // A short in the format; -32768 never ages. The tick count is not
+            // saved: it starts again at 0, as when the target versions load it.
+            out.age = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "Age").value_or(0), gameplay::item_age_never, 32767));
             out.on_ground = integer(e, "OnGround").value_or(0) != 0;
             out.pickup_delay = static_cast<std::uint16_t>(std::clamp<std::int64_t>(integer(e, "PickupDelay").value_or(0), 0, 32767));
             out.last_tick = time_;
@@ -865,7 +865,7 @@ private:
         if (proto_chunks_ > 0) note(std::format("{} chunks with incomplete generation were skipped", proto_chunks_));
         if (post_processing_ > 0) note(std::format("{} chunks had pending post-processing updates, which are dropped", post_processing_));
         if (approximated_ > 0)
-            note(std::format("{} moving-piston progress or item-age values were rounded to Circuit's model", approximated_));
+            note(std::format("{} moving-piston progress values were rounded to Circuit's model", approximated_));
         note("block entity creation order and the order of entity ids follow chunk position, not the source world's history");
 
     }
@@ -1153,7 +1153,7 @@ private:
             rotation.push(Tag::float_(0.0f));
             t.set("Rotation", std::move(rotation));
             t.set("OnGround", Tag::boolean(e->on_ground));
-            t.set("Age", Tag::short_(static_cast<std::int16_t>(std::min<std::uint32_t>(e->age, 6000))));
+            t.set("Age", Tag::short_(static_cast<std::int16_t>(std::min(e->age, gameplay::item_despawn_age))));
             t.set("Health", Tag::short_(5));
             t.set("PickupDelay", Tag::short_(static_cast<std::int16_t>(e->pickup_delay)));
             t.set("Air", Tag::short_(300));

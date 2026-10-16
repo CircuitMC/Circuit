@@ -1,0 +1,28 @@
+circuit-trace 2
+title Items in still and flowing water
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms item_entity water
+area -5 0 -3 5 4 3
+ticks 100
+changes ordered
+entities observed
+
+at 0 set -4 0 0 minecraft:stone
+at 0 set -3 0 0 minecraft:stone
+at 0 set -2 0 0 minecraft:stone
+at 0 set -1 0 0 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set -4 1 0 minecraft:water[level=0]
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 1 1 minecraft:stone
+at 0 set 4 1 -1 minecraft:stone
+at 0 set 4 0 -1 minecraft:stone
+at 41 spawn-item -3.5 3 0.5 0 0 0 minecraft:stone 1
+at 41 spawn-item -1.5 1.5 0.5 0 0 0 minecraft:stone 1
+at 41 spawn-item 0.5 2.5 0.5 0.1 0 0 minecraft:redstone 1

@@ -37,6 +37,8 @@ struct SpawnItem {
     Vec3 position;
     Vec3 velocity;
     ItemStack stack;
+    std::uint16_t pickup_delay{}; // 0 to 32767 (never picked up)
+    std::int32_t age{};           // -32768 (never ages) or 0 to 32767
     bool operator==(const SpawnItem&) const = default;
 };
 struct RemoveEntity {

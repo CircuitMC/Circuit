@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
+#include <circuit/gameplay/physics.hpp>
 #include <circuit/gameplay/rules.hpp>
 #include <array>
 #include <functional>
@@ -128,7 +129,8 @@ void run_piston_event(RuleContext& ctx, const BlockEvent& event, BlockState stat
 // random offsets and velocities from the level random: what `tool` harvests
 // (nothing for blocks that need a tool when none is given).
 void drop_items(RuleContext& ctx, BlockPos pos, BlockState destroyed, ItemStack tool = {});
-// Spawns a removed container's contents, one entity per slot.
+// Scatters a removed container's contents around its cell, as both target
+// versions do, drawing from the level random for every slot, empty or not.
 void drop_contents(RuleContext& ctx, BlockPos pos, const std::vector<ItemStack>& slots);
 // Records a spawned entity: entity_spawned (b: its stack, c: its kind), then
 // entity_spawn_position and entity_spawn_velocity with their exact values.
@@ -143,6 +145,16 @@ void tick_moving_piston(RuleContext& ctx, BlockPos pos);
 
 void check_hopper(RuleContext& ctx, BlockPos pos);
 void tick_hopper(RuleContext& ctx, BlockPos pos);
+// An item that moved inside a hopper's cell: the hopper takes what it can of
+// it when it is enabled, not cooling down, and the item reaches the space it
+// collects from. Returns whether the item was taken whole (it is removed).
+bool hopper_takes_item(RuleContext& ctx, BlockPos hopper, EntityId item);
+
+// The box of an entity (items: 0.25 wide and tall).
+[[nodiscard]] physics::Aabb entity_box(const Entity& e);
+// Ids of entities whose box intersects `area` (faces that only touch do
+// not), ascending.
+std::vector<EntityId> entities_intersecting(RuleContext& ctx, const physics::Aabb& area);
 
 // Positions of the container at `pos` in combined slot order (right chest half
 // first); empty if `pos` holds no container.

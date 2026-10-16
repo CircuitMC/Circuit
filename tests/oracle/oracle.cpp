@@ -81,6 +81,17 @@ public:
             if (contracts::block_of(e.position) == cell) out.push_back(id);
         return out;
     }
+    std::vector<EntityId> entities_in_cells(BlockPos low, BlockPos high) override {
+        std::vector<EntityId> out;
+        for (const auto& [id, e] : lv().entities) {
+            const auto p = contracts::block_of(e.position);
+            if (p.x >= low.x && p.x <= high.x && p.y >= low.y && p.y <= high.y && p.z >= low.z && p.z <= high.z
+                && lv().level(contracts::chunk_of(p)) != ChunkLevel::unloaded)
+                out.push_back(id);
+        }
+        std::ranges::sort(out);
+        return out;
+    }
     const Entity* peek_entity(EntityId id) override { return find_entity(id); }
     Entity* entity(EntityId id) override { return find_entity(id); }
     EntityId spawn_entity(const Entity& prototype) override {

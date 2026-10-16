@@ -333,7 +333,7 @@ private:
         if (!f_.actions.empty() && a.tick < f_.actions.back().tick) return fail(line_, "actions must be in tick order");
         if (t[2] == "spawn-item") {
             if (f_.format < 2) return fail(line_, "spawn-item needs circuit-trace 2");
-            if (t.size() != 11) return fail(line_, "spawn-item needs position, velocity, item and count");
+            if (t.size() < 11 || t.size() > 13) return fail(line_, "spawn-item needs position, velocity, item and count");
             a.kind = Action::Kind::spawn_item;
             if (auto ok = vec_of(t, 3, a.position); !ok) return ok;
             if (auto ok = vec_of(t, 6, a.velocity); !ok) return ok;
@@ -344,6 +344,25 @@ private:
             unsigned count{};
             if (!number(t[10], count) || count < 1 || count > contracts::max_stack_size) return fail(line_, "invalid count");
             a.count = static_cast<std::uint8_t>(count);
+            // Optional, in this order: pickup-delay=<n> (0 to 32767), age=<n> (-32768 to 32767).
+            std::size_t at = 11;
+            if (at < t.size() && t[at].starts_with("pickup-delay=")) {
+                const auto value = t[at].substr(13);
+                unsigned delay{};
+                if (!number(value, delay) || delay > 32767) return fail(line_, "invalid pickup delay");
+                a.pickup_delay = static_cast<std::uint16_t>(delay);
+                ++at;
+            }
+            if (at < t.size() && t[at].starts_with("age=")) {
+                auto value = t[at].substr(4);
+                const bool negative = value.starts_with('-');
+                if (negative) value = value.substr(1);
+                unsigned age{};
+                if (!number(value, age) || age > (negative ? 32768U : 32767U)) return fail(line_, "invalid age");
+                a.age = negative ? -static_cast<std::int32_t>(age) : static_cast<std::int32_t>(age);
+                ++at;
+            }
+            if (at != t.size()) return fail(line_, "unknown spawn-item key (pickup-delay=, then age=)");
             f_.actions.push_back(std::move(a));
             return {};
         }
@@ -655,7 +674,9 @@ std::string write_fixture(const Fixture& f) {
             body[a.tick].push_back(std::format("at {} insert {} {} {} {}", a.tick, pos_text(a.pos), a.slot, a.item, a.count));
             break;
         case Action::Kind::spawn_item:
-            body[a.tick].push_back(std::format("at {} spawn-item {} {} {} {}", a.tick, vec_text(a.position), vec_text(a.velocity), a.item, a.count));
+            body[a.tick].push_back(std::format("at {} spawn-item {} {} {} {}{}{}", a.tick, vec_text(a.position), vec_text(a.velocity), a.item,
+                                               a.count, a.pickup_delay != 0 ? std::format(" pickup-delay={}", a.pickup_delay) : "",
+                                               a.age != 0 ? std::format(" age={}", a.age) : ""));
             break;
         case Action::Kind::command: body[a.tick].push_back(std::format("at {} command {}", a.tick, a.command)); break;
         }

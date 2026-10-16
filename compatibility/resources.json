@@ -394,13 +394,15 @@
         "impl": "partial",
         "evidence": "mismatch",
         "deviations": [
-          "no merging, no water currents; moving blocks push items differently"
+          "no water currents; moving blocks push items differently; unloading chunks do not report their entities"
         ],
         "cases": [
+          "trace/item_chest_scatter",
+          "trace/item_drop_piston",
           "trace/item_hopper_pickup",
+          "trace/item_merge",
           "trace/item_piston_push",
-          "trace/item_water_current",
-          "trace/item_drop_piston"
+          "trace/item_water_current"
         ]
       },
       "player": {

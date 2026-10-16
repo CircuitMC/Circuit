@@ -212,7 +212,7 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
             if (!item) return fail_line(a.line, item.error());
             const contracts::Vec3 position{a.position[0], a.position[1], a.position[2]};
             const contracts::Vec3 velocity{a.velocity[0], a.velocity[1], a.velocity[2]};
-            body = contracts::SpawnItem{position, velocity, {*item, a.count}};
+            body = contracts::SpawnItem{position, velocity, {*item, a.count}, a.pickup_delay, a.age};
             break;
         }
         }
@@ -298,7 +298,8 @@ std::string removal_reason(std::uint64_t reason) {
     switch (static_cast<gameplay::RemovalReason>(reason)) {
     case gameplay::RemovalReason::despawned:
     case gameplay::RemovalReason::fell_out_of_world:
-    case gameplay::RemovalReason::picked_up: return "discarded";
+    case gameplay::RemovalReason::picked_up:
+    case gameplay::RemovalReason::merged: return "discarded";
     case gameplay::RemovalReason::command: return "killed";
     }
     return "discarded";
@@ -402,14 +403,18 @@ public:
 
     // The observed entities that ticked in the entity phase of Circuit tick
     // `circuit_tick`, in Circuit's order (ascending id), including those
-    // removed during their own tick.
+    // removed during their own tick or later.
     std::optional<EntityOrder> order(Tick tick, Tick circuit_tick, const std::vector<gameplay::Entity>& live) const {
         std::vector<std::uint64_t> ids;
         for (const auto& e : live)
             if (handles_.contains(e.id.value) && e.last_tick == circuit_tick) ids.push_back(e.id.value);
-        // Removed in or after the entity phase: it ticked first.
+        // Removed after the entity phase, or in it by its own root (the
+        // entity's id) or a later one: it ticked first. Removed by an earlier
+        // entity's root (merged into it), it did not tick.
         for (const auto& [id, key] : removed_)
-            if (key.tick == circuit_tick && key.phase >= contracts::Phase::entities) ids.push_back(id);
+            if (key.tick == circuit_tick
+                && (key.phase > contracts::Phase::entities || (key.phase == contracts::Phase::entities && key.root >= id)))
+                ids.push_back(id);
         if (ids.empty()) return std::nullopt;
         std::ranges::sort(ids);
         EntityOrder o{tick, "entities", {}, 0};
