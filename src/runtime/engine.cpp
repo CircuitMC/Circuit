@@ -512,7 +512,7 @@ void Engine::Impl::apply_levels(RegionContext& ctx, DimensionId level) {
             entity.tick_count = 0;
             const auto cell = contracts::block_of(entity.position);
             ctx.use_level(level);
-            ctx.record(TraceKind::entity_loaded, cell, entity.id.value, old.value, contracts::pack_stack(entity.stack));
+            ctx.record(TraceKind::entity_loaded, cell, entity.id.value, old.value, gameplay::entity_payload(entity));
             ctx.record(TraceKind::entity_spawn_position, cell, contracts::double_bits(entity.position.x), contracts::double_bits(entity.position.y),
                        contracts::double_bits(entity.position.z));
             ctx.record(TraceKind::entity_spawn_velocity, cell, contracts::double_bits(entity.velocity.x), contracts::double_bits(entity.velocity.y),
@@ -1140,10 +1140,17 @@ void Engine::Impl::restore(const WorldDump& state) {
             if (static_cast<std::uint8_t>(e.kind) == 0 || static_cast<std::uint8_t>(e.kind) >= gameplay::entity_kind_count) bad("entity kind");
             if (e.position.y < lowest || e.position.y >= highest) bad("entity height");
             if (!gameplay::valid_velocity(e.velocity)) bad("entity velocity");
-            if (!gameplay::items::valid(e.stack.item) || e.stack.count < 1 || e.stack.count > gameplay::items::max_stack(e.stack)
-                || e.stack.damage > gameplay::items::max_damage(e.stack) || e.pickup_delay > gameplay::item_pickup_never)
-                bad("entity stack");
-            if (!gameplay::valid_item_age(e.age)) bad("entity age");
+            if (e.kind == gameplay::EntityKind::item) {
+                if (!gameplay::items::valid(e.stack.item) || e.stack.count < 1 || e.stack.count > gameplay::items::max_stack(e.stack)
+                    || e.stack.damage > gameplay::items::max_damage(e.stack) || e.pickup_delay > gameplay::item_pickup_never)
+                    bad("entity stack");
+                if (!gameplay::valid_item_age(e.age)) bad("entity age");
+                if (e.carried != gameplay::BlockState{} || e.fall_time != 0) bad("item with a block");
+            } else {
+                // A falling block carries a block state and nothing else.
+                if (!gameplay::BlockState::decode(e.carried.raw()) || e.carried.is_air() || e.carried.is_unloaded()) bad("falling block state");
+                if (!e.stack.empty() || e.age != 0 || e.pickup_delay != 0) bad("falling block with an item");
+            }
             const auto it = columns.find(contracts::chunk_of(contracts::block_of(e.position)));
             if (it == columns.end()) bad("entity in an unknown column");
             auto& chunk = *it->second;

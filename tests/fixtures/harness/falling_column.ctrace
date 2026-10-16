@@ -1,0 +1,76 @@
+circuit-trace 2
+title A column of sand and gravel loses its support
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.8.0+mc1.21.8
+mechanisms falling_block
+area -3 0 -2 3 6 2
+ticks 40
+changes ordered
+entities observed
+rng observed
+
+at 0 set -2 0 0 minecraft:stone
+at 0 set -1 0 0 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 0 1 0 minecraft:stone
+at 0 set 0 2 0 minecraft:sand
+at 0 set 0 3 0 minecraft:sand
+at 0 set 0 4 0 minecraft:gravel
+
+at 5 set 0 1 0 minecraft:air
+change 5 commands 0 1 0 minecraft:stone minecraft:air
+
+change 6 block_ticks 0 2 0 minecraft:sand minecraft:air
+entity-added 6 block_ticks e1 minecraft:falling_block 0.5 2.0 0.5 0 0 0 block=minecraft:sand
+entity-order 6 entities e1
+entity 6 e1 0.5 1.96 0.5 0 -0.0392 0 time=1 on-ground=false
+
+entity-order 7 entities e1
+entity 7 e1 0.5 1.8808 0.5 0 -0.07761599999999999 0 time=2 on-ground=false
+
+change 8 block_ticks 0 3 0 minecraft:sand minecraft:air
+entity-added 8 block_ticks e2 minecraft:falling_block 0.5 3.0 0.5 0 0 0 block=minecraft:sand
+entity-order 8 entities e1 e2
+entity 8 e1 0.5 1.763184 0.5 0 -0.11526368 0 time=3 on-ground=false
+entity 8 e2 0.5 2.96 0.5 0 -0.0392 0 time=1 on-ground=false
+
+entity-order 9 entities e1 e2
+entity 9 e1 0.5 1.60792032 0.5 0 -0.15215840639999997 0 time=4 on-ground=false
+entity 9 e2 0.5 2.8808 0.5 0 -0.07761599999999999 0 time=2 on-ground=false
+
+change 10 block_ticks 0 4 0 minecraft:gravel minecraft:air
+entity-added 10 block_ticks e3 minecraft:falling_block 0.5 4.0 0.5 0 0 0 block=minecraft:gravel
+entity-order 10 entities e1 e2 e3
+entity 10 e1 0.5 1.4157619136000001 0.5 0 -0.18831523827199997 0 time=5 on-ground=false
+entity 10 e2 0.5 2.763184 0.5 0 -0.11526368 0 time=3 on-ground=false
+entity 10 e3 0.5 3.96 0.5 0 -0.0392 0 time=1 on-ground=false
+
+entity-order 11 entities e1 e2 e3
+entity 11 e1 0.5 1.1874466753280002 0.5 0 -0.22374893350655997 0 time=6 on-ground=false
+entity 11 e2 0.5 2.60792032 0.5 0 -0.15215840639999997 0 time=4 on-ground=false
+entity 11 e3 0.5 3.8808 0.5 0 -0.07761599999999999 0 time=2 on-ground=false
+
+change 12 entities 0 1 0 minecraft:air minecraft:sand
+entity-removed 12 entities e1 discarded
+entity-order 12 entities e1 e2 e3
+entity 12 e2 0.5 2.4157619136 0.5 0 -0.18831523827199997 0 time=5 on-ground=false
+entity 12 e3 0.5 3.763184 0.5 0 -0.11526368 0 time=3 on-ground=false
+
+entity-order 13 entities e2 e3
+entity 13 e2 0.5 2.1874466753279997 0.5 0 -0.22374893350655997 0 time=6 on-ground=false
+entity 13 e3 0.5 3.60792032 0.5 0 -0.15215840639999997 0 time=4 on-ground=false
+
+change 14 entities 0 2 0 minecraft:air minecraft:sand
+entity-removed 14 entities e2 discarded
+entity-order 14 entities e2 e3
+entity 14 e3 0.5 3.4157619136 0.5 0 -0.18831523827199997 0 time=5 on-ground=false
+
+entity-order 15 entities e3
+entity 15 e3 0.5 3.1874466753279997 0.5 0 -0.22374893350655997 0 time=6 on-ground=false
+
+change 16 entities 0 3 0 minecraft:air minecraft:gravel
+entity-removed 16 entities e3 discarded
+entity-order 16 entities e3

@@ -357,7 +357,7 @@ void Oracle::apply_levels(DimensionId level) {
         e.tick_count = 0;
         const auto cell = contracts::block_of(e.position);
         ctx_->use_level(level);
-        ctx_->record(TraceKind::entity_loaded, cell, e.id.value, old.value, contracts::pack_stack(e.stack));
+        ctx_->record(TraceKind::entity_loaded, cell, e.id.value, old.value, gameplay::entity_payload(e));
         ctx_->record(TraceKind::entity_spawn_position, cell, contracts::double_bits(e.position.x), contracts::double_bits(e.position.y),
                      contracts::double_bits(e.position.z));
         ctx_->record(TraceKind::entity_spawn_velocity, cell, contracts::double_bits(e.velocity.x), contracts::double_bits(e.velocity.y),

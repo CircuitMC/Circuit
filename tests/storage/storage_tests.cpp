@@ -336,6 +336,15 @@ int main() {
         item.age = circuit::gameplay::item_age_never;
         item.tick_count = 4000000000U;
         never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(item);
+        // A falling block, with its block and fall time.
+        circuit::gameplay::Entity falling;
+        falling.id = circuit::contracts::EntityId{never.state.next_entity_id++};
+        falling.kind = circuit::gameplay::EntityKind::falling_block;
+        falling.position = {2.5, 4.0, 2.5};
+        falling.velocity = {0.0, -0.5, 0.0};
+        falling.carried = registry_block("red_sand");
+        falling.fall_time = 42;
+        never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(falling);
         // And one waiting to come back with its reloaded chunk.
         auto returning = item;
         returning.id = circuit::contracts::EntityId{never.state.next_entity_id++};

@@ -127,6 +127,13 @@ constexpr std::array reference_v4_mechanisms{
         "a logged command. 16 /weather commands gave 1,348 identical replies and events on both versions. "
         "Gaps: durations come from Circuit's own stream, not the level's random sequence; no lightning, snow, "
         "ice or other effects of rain; compared through a protocol client, not harness traces."},
+    MechanismEntry{"falling_block", l0_exact, l2_declared_deviation, harness_trace,
+        "Sand, red sand, gravel and concrete powders fall two ticks after they are placed or a neighbor changes, "
+        "when the block below can be replaced; the falling block moves like an item in the air and becomes its "
+        "block where it lands if that cell can be replaced and the one below cannot, or drops its item; concrete "
+        "powder becomes concrete when it falls into water (falling_drop, falling_column, falling_onto). Gaps: "
+        "concrete powder beside water, anvils, pointed dripstone, scaffolding and suspicious blocks; falling "
+        "blocks hurt nothing."},
     MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, harness_trace,
         "Entities tick in ascending id order once per tick; one merged away before its turn does not tick "
         "(item_hopper_pickup, item_water_current, item_merge, item_merge_moving). Gap: compared for item "

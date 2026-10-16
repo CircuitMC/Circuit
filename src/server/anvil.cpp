@@ -796,46 +796,59 @@ private:
         for (const auto& e : list->items()) {
             if (e.type() != TagType::compound) continue;
             const auto id = text(e, "id").value_or("");
-            if (id != "minecraft:item") {
+            const bool falling = id == "minecraft:falling_block";
+            if (id != "minecraft:item" && !falling) {
                 unsupported("entity " + id);
                 continue;
             }
             const auto pos = numbers(e, "Pos", 3);
             const auto motion = numbers(e, "Motion", 3).value_or(std::vector<double>{0, 0, 0});
             const auto* item = child(e, "Item", TagType::compound);
-            if (!pos || !item || !std::isfinite((*pos)[0]) || !std::isfinite((*pos)[1]) || !std::isfinite((*pos)[2])) {
-                unsupported("malformed item entity");
-                continue;
-            }
-            auto stack = content_.stack(*item);
-            if (!stack) {
-                unsupported(stack.error());
-                continue;
-            }
-            if (e.find("Passengers")) unsupported("entity passengers");
-            // Checked before conversion: inside the border, and no further below or
-            // above the world than the rules let items fall or fly.
-            if (std::abs((*pos)[0]) >= contracts::world_border || std::abs((*pos)[2]) >= contracts::world_border
-                || (*pos)[1] < bundle_.world.min_y - 64.0 || (*pos)[1] >= bundle_.world.min_y + bundle_.world.height + 4096.0) {
-                unsupported("item entity outside the world");
+            const auto* state = child(e, "BlockState", TagType::compound);
+            if (!pos || (falling ? !state : !item) || !std::isfinite((*pos)[0]) || !std::isfinite((*pos)[1]) || !std::isfinite((*pos)[2])) {
+                unsupported(falling ? "malformed falling block" : "malformed item entity");
                 continue;
             }
             gameplay::Entity out;
+            if (falling) {
+                const auto carried = content_.block(notation_of(*state));
+                if (!carried || carried->is_air()) {
+                    unsupported("falling block " + text(*state, "Name").value_or("?"));
+                    continue;
+                }
+                out.kind = gameplay::EntityKind::falling_block;
+                out.carried = *carried;
+                out.fall_time = static_cast<std::uint32_t>(std::clamp<std::int64_t>(integer(e, "Time").value_or(0), 0, INT32_MAX));
+            } else {
+                auto stack = content_.stack(*item);
+                if (!stack) {
+                    unsupported(stack.error());
+                    continue;
+                }
+                out.stack = std::move(*stack);
+                // A short in the format; -32768 never ages. The tick count is not
+                // saved: it starts again at 0, as when the target versions load it.
+                out.age = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "Age").value_or(0), gameplay::item_age_never, 32767));
+                out.pickup_delay = static_cast<std::uint16_t>(std::clamp<std::int64_t>(integer(e, "PickupDelay").value_or(0), 0, 32767));
+            }
+            if (e.find("Passengers")) unsupported("entity passengers");
+            // Checked before conversion: inside the border, and no further below or
+            // above the world than the rules let entities fall or fly.
+            if (std::abs((*pos)[0]) >= contracts::world_border || std::abs((*pos)[2]) >= contracts::world_border
+                || (*pos)[1] < bundle_.world.min_y - 64.0 || (*pos)[1] >= bundle_.world.min_y + bundle_.world.height + 4096.0) {
+                unsupported("entity outside the world");
+                continue;
+            }
             out.position = {(*pos)[0], (*pos)[1], (*pos)[2]};
             // Within the rules' speed limit (motion the target versions keep is far below it).
             const auto speed = [&](double v) { return std::isfinite(v) ? std::clamp(v, -gameplay::max_entity_speed, gameplay::max_entity_speed) : 0.0; };
             out.velocity = {speed(motion[0]), speed(motion[1]), speed(motion[2])};
             const auto block = contracts::block_of(out.position);
             if (!imported_.contains(contracts::chunk_of(block))) {
-                unsupported("item entity outside the imported chunks");
+                unsupported("entity outside the imported chunks");
                 continue;
             }
-            out.stack = std::move(*stack);
-            // A short in the format; -32768 never ages. The tick count is not
-            // saved: it starts again at 0, as when the target versions load it.
-            out.age = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "Age").value_or(0), gameplay::item_age_never, 32767));
             out.on_ground = integer(e, "OnGround").value_or(0) != 0;
-            out.pickup_delay = static_cast<std::uint16_t>(std::clamp<std::int64_t>(integer(e, "PickupDelay").value_or(0), 0, 32767));
             out.last_tick = time_;
             entities_.push_back(out);
         }
@@ -1145,7 +1158,8 @@ private:
                 return l;
             };
             auto t = Tag::compound();
-            t.set("id", Tag::string("minecraft:item"));
+            const bool falling = e->kind == gameplay::EntityKind::falling_block;
+            t.set("id", Tag::string(falling ? "minecraft:falling_block" : "minecraft:item"));
             t.set("Pos", doubles({e->position.x, e->position.y, e->position.z}));
             t.set("Motion", doubles({e->velocity.x, e->velocity.y, e->velocity.z}));
             auto rotation = Tag::list(TagType::float_);
@@ -1153,13 +1167,30 @@ private:
             rotation.push(Tag::float_(0.0f));
             t.set("Rotation", std::move(rotation));
             t.set("OnGround", Tag::boolean(e->on_ground));
+            const auto hi = std::uint64_t{0x43697263756974ULL}, lo = e->id.value;
+            if (falling) {
+                // As the target versions save a falling block of sand or gravel.
+                t.set("BlockState", state_tag(content_.info(e->carried)));
+                t.set("Time", Tag::int_(static_cast<std::int32_t>(std::min<std::uint32_t>(e->fall_time, INT32_MAX))));
+                t.set("DropItem", Tag::boolean(true));
+                t.set("HurtEntities", Tag::boolean(false));
+                t.set("FallHurtMax", Tag::int_(40));
+                t.set("FallHurtAmount", Tag::float_(0.0f));
+                t.set("CancelDrop", Tag::boolean(false));
+                t.set("Air", Tag::short_(300));
+                t.set("Fire", Tag::short_(-1));
+                t.set("UUID", Tag::int_array({static_cast<std::int32_t>(hi >> 32), static_cast<std::int32_t>(hi & 0xFFFFFFFF),
+                                              static_cast<std::int32_t>(lo >> 32), static_cast<std::int32_t>(lo & 0xFFFFFFFF)}));
+                list.push(std::move(t));
+                ++report_.entities;
+                continue;
+            }
             t.set("Age", Tag::short_(static_cast<std::int16_t>(std::min(e->age, gameplay::item_despawn_age))));
             t.set("Health", Tag::short_(5));
             t.set("PickupDelay", Tag::short_(static_cast<std::int16_t>(e->pickup_delay)));
             t.set("Air", Tag::short_(300));
             t.set("Fire", Tag::short_(-1));
             // A UUID derived from the Circuit entity id ("Circuit" in the high bits).
-            const auto hi = std::uint64_t{0x43697263756974ULL}, lo = e->id.value;
             t.set("UUID", Tag::int_array({static_cast<std::int32_t>(hi >> 32), static_cast<std::int32_t>(hi & 0xFFFFFFFF),
                                           static_cast<std::int32_t>(lo >> 32), static_cast<std::int32_t>(lo & 0xFFFFFFFF)}));
             auto item = Tag::compound();

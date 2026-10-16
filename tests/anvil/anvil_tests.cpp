@@ -163,7 +163,7 @@ struct Kept {
     std::vector<std::pair<BlockPos, std::uint32_t>> blocks;
     std::vector<std::pair<BlockPos, BlockEntity>> block_entities;
     std::multiset<std::tuple<int, BlockPos, int, Tick, int>> ticks;
-    std::multiset<std::tuple<Vec3, Vec3, std::uint16_t, int, std::uint32_t, bool>> entities;
+    std::multiset<std::tuple<Vec3, Vec3, std::uint16_t, int, std::uint32_t, bool, int, std::uint32_t, std::uint32_t>> entities;
     bool operator==(const Kept&) const = default;
 };
 Kept kept(const WorldDump& world) {
@@ -179,7 +179,8 @@ Kept kept(const WorldDump& world) {
     for (const auto& t : d.ticks)
         k.ticks.insert({static_cast<int>(t.list), t.tick.pos, static_cast<int>(t.tick.block), t.tick.due, t.tick.priority});
     for (const auto& e : d.entities)
-        k.entities.insert({e.position, e.velocity, e.stack.item, e.stack.count, std::min<std::uint32_t>(e.age, 6000), e.on_ground});
+        k.entities.insert({e.position, e.velocity, e.stack.item, e.stack.count, static_cast<std::uint32_t>(std::min(e.age, 6000)), e.on_ground,
+                           static_cast<int>(e.kind), e.carried.raw(), e.fall_time});
     return k;
 }
 std::string describe(const Kept& a, const Kept& b) {
@@ -240,6 +241,29 @@ int main() {
         std::cout << std::format("  {} states exported and imported ({} with scheduled ticks, {} with item entities, {} with moving pistons)\n",
                                  exported, with_ticks, with_entities, with_moving);
         require(with_ticks > 0 && with_entities > 0 && with_moving > 0, "the states cover ticks, entities and moving pistons");
+    });
+
+    suite.run("falling blocks round-trip through Anvil", [&] {
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine.advance(admit({place({3, -1, 3}, blocks::stone()), place({3, 6, 3}, registry_block("gravel"))}));
+        for (int i = 0; i < 4; ++i) engine.advance({});
+        const auto state = engine.dump();
+        require(std::ranges::count_if(state.overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::falling_block; }) == 1,
+                "gravel in the air");
+        const auto target = root / "falling";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "falling", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        const auto diff = describe(kept(state), kept(back->state));
+        require(diff.empty(), diff);
+        // It falls on and lands after the import, once its chunk is loaded.
+        Engine resumed(bundle(), 5, back->state);
+        Admissions again;
+        resumed.advance(again({ticket(1, {0, 0}, 1)}));
+        for (int i = 0; i < 20; ++i) resumed.advance({});
+        require(state_at(resumed.dump(), {3, 0, 3}) == registry_block("gravel"), "landed");
     });
 
     suite.run("unsupported content is rejected or substituted by policy", [&] {

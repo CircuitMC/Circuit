@@ -258,7 +258,7 @@ struct Game::Impl final : GameServices {
     std::unordered_map<std::uint64_t, Tracked> tracked;
     std::int32_t dimension_type{};
     std::int32_t biome{};
-    std::int32_t item_entity_type{}, player_entity_type{};
+    std::int32_t item_entity_type{}, falling_block_type{}, player_entity_type{};
     std::unordered_map<std::uint16_t, std::int32_t> item_wire; // reference item -> wire item id
     bool started{false};
 
@@ -277,6 +277,7 @@ struct Game::Impl final : GameServices {
         dimension_type = registry_index(registries, "minecraft:dimension_type", "minecraft:overworld").value();
         biome = registry_index(registries, "minecraft:worldgen/biome", "minecraft:plains").value();
         item_entity_type = content.entity_type("minecraft:item").value();
+        falling_block_type = content.entity_type("minecraft:falling_block").value();
         player_entity_type = content.entity_type("minecraft:player").value();
         for (std::uint16_t i = 1; i <= gameplay::items::max_id; ++i)
             if (const auto id = content.item_id(mapping.item_name(i))) item_wire[i] = *id;
@@ -1309,7 +1310,7 @@ struct Game::Impl final : GameServices {
             for (const auto& [entity_id, t] : tracked) {
                 if (taken.contains(entity_id)) continue;
                 const auto e = view.entity(overworld, EntityId{entity_id});
-                if (!e || !*e || (*e)->pickup_delay > 0) continue;
+                if (!e || !*e || (*e)->kind != gameplay::EntityKind::item || (*e)->pickup_delay > 0) continue;
                 const auto pos = (*e)->position;
                 // The item's box is 0.25 wide and high.
                 const bool x = pos.x + 0.125 > p.pos.x - 1.3 && pos.x - 0.125 < p.pos.x + 1.3;
@@ -1873,6 +1874,12 @@ struct Game::Impl final : GameServices {
             t.last = e.position;
         }
         if (!t.viewers.insert(p.peer->id()).second) return;
+        if (e.kind == gameplay::EntityKind::falling_block) {
+            // The spawn data of a falling block is its block state.
+            p.peer->send(wire.spawn_entity(t.protocol_id, entity_uuid(engine_id), falling_block_type, t.last, 0, 0, 0,
+                                           palette.wire(e.carried), e.velocity));
+            return;
+        }
         p.peer->send(wire.spawn_entity(t.protocol_id, entity_uuid(engine_id), item_entity_type, t.last, 0, 0, 0, 0, e.velocity));
         p.peer->send(wire.item_metadata(t.protocol_id, wire_stack(e.stack)));
     }
@@ -1904,7 +1911,7 @@ struct Game::Impl final : GameServices {
             const auto c = contracts::chunk_of(contracts::block_of((*e)->position));
             for (auto& [pid, p] : players)
                 if (p.sent.contains(c)) show_entity(p, id, **e);
-            if (const auto it = tracked.find(id); it != tracked.end()) {
+            if (const auto it = tracked.find(id); it != tracked.end() && (*e)->kind == gameplay::EntityKind::item) {
                 // Stack changes are sent again to everyone who sees the entity.
                 const auto meta = wire.item_metadata(it->second.protocol_id, wire_stack((*e)->stack));
                 for (const auto viewer : it->second.viewers)

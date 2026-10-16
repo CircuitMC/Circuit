@@ -230,7 +230,7 @@ Plan plan(RuleContext& ctx, const contracts::PlayerBreak& c) {
 Plan plan(RuleContext& ctx, const contracts::PickUp& c) {
     if (c.selected < contracts::hotbar_first || c.selected >= contracts::offhand_slot) return std::unexpected(ErrorCode::invalid_slot);
     const auto* e = ctx.peek_entity(c.entity);
-    if (!e || e->stack.empty()) return std::unexpected(ErrorCode::unknown_entity);
+    if (!e || e->kind != EntityKind::item || e->stack.empty()) return std::unexpected(ErrorCode::unknown_entity);
     if (e->pickup_delay > 0) return std::unexpected(ErrorCode::not_usable);
     // Nothing happens when the inventory has no room for any of it.
     if (const auto* inv = ctx.peek_player(c.player); inv && !c.creative) {

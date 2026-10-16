@@ -1292,6 +1292,39 @@ int main() {
                 "never ages, never picked up; the tick count still runs");
     });
 
+    suite.run("falling blocks land, break on what they cannot replace, and leave the world", [] {
+        Sim s;
+        const auto sand = registry_block("sand");
+        // Sand above two snow layers (a block that can be replaced, but only
+        // with a single layer) breaks into its item; above air it lands.
+        s.tick({place({0, -1, 0}, blocks::stone()), place({2, -1, 0}, blocks::stone()),
+                place({0, 0, 0}, registry_block("snow", {{"layers", "2"}})), place({0, 4, 0}, sand), place({2, 4, 0}, sand)});
+        s.until(20);
+        auto d = s.oracle.dump();
+        require(s.at({2, 0, 0}) == sand && s.at({2, 4, 0}).is_air(), "landed on stone");
+        require(s.at({0, 0, 0}) == registry_block("snow", {{"layers", "2"}}), "the snow stays");
+        require(std::ranges::count_if(d.overworld().entities, [](const auto& e) {
+                    return e.kind == circuit::gameplay::EntityKind::item && e.stack.item == items::by_name("minecraft:sand");
+                }) == 1,
+                "broke into one sand item");
+        // Sand at the bottom of the world falls out of it: after 100 ticks
+        // below its height it breaks too, and its item falls further.
+        const auto bottom = bundle().world.min_y;
+        s.tick({place({4, bottom, 0}, sand)});
+        s.until(s.oracle.time() + 2);
+        const auto falling = [&] {
+            return std::ranges::count_if(s.oracle.dump().overworld().entities,
+                                         [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::falling_block; });
+        };
+        require(falling() == 1, "falling");
+        for (int i = 0; i < 101 && falling() == 1; ++i) s.tick();
+        require(falling() == 0, "gone after 100 ticks");
+        const auto removed = of_kind(s.last, TraceKind::entity_removed);
+        const auto spawned = of_kind(s.last, TraceKind::entity_spawned);
+        require(removed.size() == 1 && spawned.size() == 1 && spawned[0].c == static_cast<std::uint64_t>(circuit::gameplay::EntityKind::item),
+                "broke into its item");
+    });
+
     suite.run("entities leave with their chunk and come back under new ids", [] {
         Sim s(bundle(), 7, 0); // tick 1: chunk (0,0) entity ticking
         s.tick({place({4, -1, 4}, blocks::stone()), SpawnItem{at_block(4.5, 0.0, 4.5), {}, {items::stone, 3}}}); // 2

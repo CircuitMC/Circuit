@@ -365,7 +365,7 @@ public:
                     // outside the stages the harness instruments.
                     entities.push_back({tick, loading_ ? "other" : stage_of(r), loading_ ? EntityEvent::Kind::loaded : EntityEvent::Kind::added, it->second,
                                         std::string(gameplay::entity_kind_name(kinds_.at(spawned_))), to_vec(spawn_position_),
-                                        to_vec(velocity), stack_properties(stacks_.at(spawned_)), "", seq++, 0});
+                                        to_vec(velocity), payload_properties(kinds_.at(spawned_), stacks_.at(spawned_)), "", seq++, 0});
                 }
                 break;
             case TraceKind::entity_removed:
@@ -406,9 +406,14 @@ public:
             const auto it = handles_.find(e.id.value);
             // Entities that left the level with their chunk are still stored, under the ids they had.
             if (it == handles_.end() || removed_.contains(e.id.value)) continue;
-            Properties props = stack_properties(contracts::pack_stack(e.stack));
-            props.emplace_back("age", std::to_string(e.age));
-            props.emplace_back("pickup-delay", std::to_string(e.pickup_delay));
+            Properties props;
+            if (e.kind == gameplay::EntityKind::falling_block) {
+                props.emplace_back("time", std::to_string(e.fall_time));
+            } else {
+                props = stack_properties(contracts::pack_stack(e.stack));
+                props.emplace_back("age", std::to_string(e.age));
+                props.emplace_back("pickup-delay", std::to_string(e.pickup_delay));
+            }
             props.emplace_back("on-ground", e.on_ground ? "true" : "false");
             out.push_back({number(it->second), {tick, it->second, to_vec(e.position), to_vec(e.velocity), std::move(props), 0}});
         }
@@ -440,6 +445,12 @@ public:
     }
 
 private:
+    // What an entity is when it appears: an item's stack, a falling block's state.
+    Properties payload_properties(gameplay::EntityKind kind, std::uint64_t payload) const {
+        if (kind == gameplay::EntityKind::falling_block)
+            return {{"block", mapping_.notation(gameplay::BlockState::decode(static_cast<std::uint32_t>(payload)).value())}};
+        return stack_properties(payload);
+    }
     Properties stack_properties(std::uint64_t packed) const {
         const auto item = static_cast<std::uint16_t>((packed >> 8) & 0xFFFF);
         Properties props{{"item", mapping_.item_name(item)}, {"count", std::to_string(packed & 0xFF)}};

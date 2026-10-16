@@ -295,7 +295,10 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
 } // namespace
 
 namespace detail {
-physics::Aabb entity_box(const Entity& e) { return physics::box_at(e.position, item_size, item_size); }
+physics::Aabb entity_box(const Entity& e) {
+    const double size = e.kind == EntityKind::falling_block ? static_cast<double>(0.98f) : item_size;
+    return physics::box_at(e.position, size, size);
+}
 
 std::vector<EntityId> entities_intersecting(RuleContext& ctx, const physics::Aabb& area) {
     // An entity's box reaches less than a block beyond the cell of its
@@ -318,6 +321,7 @@ void run_entity(RuleContext& ctx, EntityId id) {
     e->last_tick = now;
     switch (e->kind) {
     case EntityKind::item: run_item(ctx, id, *e); break;
+    case EntityKind::falling_block: detail::run_falling_block(ctx, id, *e); break;
     }
 }
 

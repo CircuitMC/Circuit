@@ -1,0 +1,22 @@
+circuit-trace 2
+title A column of sand and gravel loses its support
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms falling_block
+area -3 0 -2 3 6 2
+ticks 40
+changes ordered
+entities observed
+rng observed
+
+at 0 set -2 0 0 minecraft:stone
+at 0 set -1 0 0 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 0 1 0 minecraft:stone
+at 0 set 0 2 0 minecraft:sand
+at 0 set 0 3 0 minecraft:sand
+at 0 set 0 4 0 minecraft:gravel
+at 5 set 0 1 0 minecraft:air

@@ -183,6 +183,9 @@ void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
         // A head without its base disappears.
         if (*d == contracts::opposite(s.facing()) && !head_has_base(ctx, target, s)) set_block(ctx, target, blocks::air());
         break;
+    case BlockType::other:
+        if (falls(s)) schedule_fall(ctx, target);
+        break;
     default: break;
     }
 }
@@ -215,6 +218,9 @@ void on_placed(RuleContext& ctx, BlockPos pos, BlockState state, BlockState prev
         // An observer moved by a piston fires at its new position (observed in
         // target-version traces); other placements do not.
         if (moved_in) schedule(ctx, TickList::block, pos, BlockType::observer, 2, 0);
+        break;
+    case BlockType::other:
+        if (falls(state)) schedule_fall(ctx, pos);
         break;
     default: break;
     }

@@ -1,0 +1,13 @@
+circuit-trace 2
+title Sand at the bottom of the world falls out of it
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms falling_block
+area -2 -64 -2 2 -60 2
+ticks 130
+changes ordered
+entities observed
+rng observed
+
+at 1 set 0 -64 0 minecraft:sand

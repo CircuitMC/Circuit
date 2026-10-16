@@ -1,0 +1,25 @@
+circuit-trace 2
+title Sand and gravel placed in the air fall and land
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms falling_block
+area -5 0 -2 5 7 2
+ticks 40
+changes ordered
+entities observed
+rng observed
+
+at 0 set -4 0 0 minecraft:stone
+at 0 set -3 0 0 minecraft:stone
+at 0 set -2 0 0 minecraft:stone
+at 0 set -1 0 0 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 1 set 0 6 0 minecraft:sand
+at 1 set 2 4 0 minecraft:gravel
+at 1 set -2 2 0 minecraft:red_sand
+at 3 set 4 1 0 minecraft:sand

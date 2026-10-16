@@ -127,7 +127,7 @@ void spawn_dropped(RuleContext& ctx, BlockPos cell, contracts::Vec3 position, co
 
 void record_spawn(RuleContext& ctx, EntityId id, const Entity& e) {
     const auto cell = contracts::block_of(e.position);
-    ctx.record(TraceKind::entity_spawned, cell, id.value, contracts::pack_stack(e.stack), static_cast<std::uint64_t>(e.kind));
+    ctx.record(TraceKind::entity_spawned, cell, id.value, entity_payload(e), static_cast<std::uint64_t>(e.kind));
     ctx.record(TraceKind::entity_spawn_position, cell, contracts::double_bits(e.position.x), contracts::double_bits(e.position.y),
                contracts::double_bits(e.position.z));
     ctx.record(TraceKind::entity_spawn_velocity, cell, contracts::double_bits(e.velocity.x), contracts::double_bits(e.velocity.y),

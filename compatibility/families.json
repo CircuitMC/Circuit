@@ -840,8 +840,21 @@
           "id": "gravity_blocks",
           "name": "Falling blocks: sand, gravel, concrete powder, anvils, dripstone, scaffolding",
           "milestone": "C3",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/falling_drop",
+            "trace/falling_column",
+            "trace/falling_onto",
+            "trace/falling_void",
+            "collision/replaceable"
+          ],
+          "note": "Sand, red sand, gravel and the concrete powders: when they fall, the falling block's motion, landing, breaking into items, concrete powder in water, and the 100- and 600-tick limits",
+          "deviations": [
+            "concrete powder placed beside water or reached by flowing water does not become concrete",
+            "anvils, pointed dripstone, scaffolding and suspicious sand and gravel do not fall",
+            "falling blocks hurt nothing"
+          ]
         }
       ]
     },

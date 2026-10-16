@@ -1,0 +1,320 @@
+circuit-trace 2
+title Sand at the bottom of the world falls out of it
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v10
+mechanisms falling_block
+area -2 -64 -2 2 -60 2
+ticks 130
+changes ordered
+entities observed
+rng observed
+
+at 1 set 0 -64 0 minecraft:sand
+change 1 commands 0 -64 0 minecraft:air minecraft:sand
+
+change 2 block_ticks 0 -64 0 minecraft:sand minecraft:air
+entity-added 2 block_ticks e1 minecraft:falling_block 0.5 -64 0.5 0 0 0 block=minecraft:sand
+entity-order 2 entities e1
+entity 2 e1 0.5 -64.04 0.5 0 -0.0392 0 time=1 on-ground=false
+
+entity-order 3 entities e1
+entity 3 e1 0.5 -64.1192 0.5 0 -0.07761599999999999 0 time=2 on-ground=false
+
+entity-order 4 entities e1
+entity 4 e1 0.5 -64.236816 0.5 0 -0.11526368 0 time=3 on-ground=false
+
+entity-order 5 entities e1
+entity 5 e1 0.5 -64.39207968000001 0.5 0 -0.15215840639999997 0 time=4 on-ground=false
+
+entity-order 6 entities e1
+entity 6 e1 0.5 -64.5842380864 0.5 0 -0.18831523827199997 0 time=5 on-ground=false
+
+entity-order 7 entities e1
+entity 7 e1 0.5 -64.81255332467201 0.5 0 -0.22374893350655997 0 time=6 on-ground=false
+
+entity-order 8 entities e1
+entity 8 e1 0.5 -65.07630225817857 0.5 0 -0.25847395483642877 0 time=7 on-ground=false
+
+entity-order 9 entities e1
+entity 9 e1 0.5 -65.374776213015 0.5 0 -0.2925044757397002 0 time=8 on-ground=false
+
+entity-order 10 entities e1
+entity 10 e1 0.5 -65.7072806887547 0.5 0 -0.32585438622490615 0 time=9 on-ground=false
+
+entity-order 11 entities e1
+entity 11 e1 0.5 -66.0731350749796 0.5 0 -0.358537298500408 0 time=10 on-ground=false
+
+entity-order 12 entities e1
+entity 12 e1 0.5 -66.47167237348002 0.5 0 -0.3905665525303998 0 time=11 on-ground=false
+
+entity-order 13 entities e1
+entity 13 e1 0.5 -66.90223892601041 0.5 0 -0.42195522147979175 0 time=12 on-ground=false
+
+entity-order 14 entities e1
+entity 14 e1 0.5 -67.36419414749021 0.5 0 -0.4527161170501959 0 time=13 on-ground=false
+
+entity-order 15 entities e1
+entity 15 e1 0.5 -67.8569102645404 0.5 0 -0.48286179470919194 0 time=14 on-ground=false
+
+entity-order 16 entities e1
+entity 16 e1 0.5 -68.37977205924959 0.5 0 -0.512404558815008 0 time=15 on-ground=false
+
+entity-order 17 entities e1
+entity 17 e1 0.5 -68.9321766180646 0.5 0 -0.5413564676387079 0 time=16 on-ground=false
+
+entity-order 18 entities e1
+entity 18 e1 0.5 -69.51353308570332 0.5 0 -0.5697293382859338 0 time=17 on-ground=false
+
+entity-order 19 entities e1
+entity 19 e1 0.5 -70.12326242398925 0.5 0 -0.5975347515202151 0 time=18 on-ground=false
+
+entity-order 20 entities e1
+entity 20 e1 0.5 -70.76079717550947 0.5 0 -0.6247840564898108 0 time=19 on-ground=false
+
+entity-order 21 entities e1
+entity 21 e1 0.5 -71.42558123199927 0.5 0 -0.6514883753600147 0 time=20 on-ground=false
+
+entity-order 22 entities e1
+entity 22 e1 0.5 -72.11706960735928 0.5 0 -0.6776586078528144 0 time=21 on-ground=false
+
+entity-order 23 entities e1
+entity 23 e1 0.5 -72.8347282152121 0.5 0 -0.7033054356957581 0 time=22 on-ground=false
+
+entity-order 24 entities e1
+entity 24 e1 0.5 -73.57803365090786 0.5 0 -0.728439326981843 0 time=23 on-ground=false
+
+entity-order 25 entities e1
+entity 25 e1 0.5 -74.3464729778897 0.5 0 -0.7530705404422061 0 time=24 on-ground=false
+
+entity-order 26 entities e1
+entity 26 e1 0.5 -75.1395435183319 0.5 0 -0.777209129633362 0 time=25 on-ground=false
+
+entity-order 27 entities e1
+entity 27 e1 0.5 -75.95675264796527 0.5 0 -0.8008649470406948 0 time=26 on-ground=false
+
+entity-order 28 entities e1
+entity 28 e1 0.5 -76.79761759500597 0.5 0 -0.8240476480998808 0 time=27 on-ground=false
+
+entity-order 29 entities e1
+entity 29 e1 0.5 -77.66166524310586 0.5 0 -0.8467666951378833 0 time=28 on-ground=false
+
+entity-order 30 entities e1
+entity 30 e1 0.5 -78.54843193824374 0.5 0 -0.8690313612351256 0 time=29 on-ground=false
+
+entity-order 31 entities e1
+entity 31 e1 0.5 -79.45746329947886 0.5 0 -0.8908507340104231 0 time=30 on-ground=false
+
+entity-order 32 entities e1
+entity 32 e1 0.5 -80.38831403348928 0.5 0 -0.9122337193302147 0 time=31 on-ground=false
+
+entity-order 33 entities e1
+entity 33 e1 0.5 -81.34054775281949 0.5 0 -0.9331890449436104 0 time=32 on-ground=false
+
+entity-order 34 entities e1
+entity 34 e1 0.5 -82.3137367977631 0.5 0 -0.9537252640447382 0 time=33 on-ground=false
+
+entity-order 35 entities e1
+entity 35 e1 0.5 -83.30746206180784 0.5 0 -0.9738507587638435 0 time=34 on-ground=false
+
+entity-order 36 entities e1
+entity 36 e1 0.5 -84.32131282057168 0.5 0 -0.9935737435885665 0 time=35 on-ground=false
+
+entity-order 37 entities e1
+entity 37 e1 0.5 -85.35488656416024 0.5 0 -1.0129022687167952 0 time=36 on-ground=false
+
+entity-order 38 entities e1
+entity 38 e1 0.5 -86.40778883287703 0.5 0 -1.0318442233424594 0 time=37 on-ground=false
+
+entity-order 39 entities e1
+entity 39 e1 0.5 -87.47963305621948 0.5 0 -1.0504073388756103 0 time=38 on-ground=false
+
+entity-order 40 entities e1
+entity 40 e1 0.5 -88.57004039509509 0.5 0 -1.0685991920980982 0 time=39 on-ground=false
+
+entity-order 41 entities e1
+entity 41 e1 0.5 -89.67863958719319 0.5 0 -1.0864272082561361 0 time=40 on-ground=false
+
+entity-order 42 entities e1
+entity 42 e1 0.5 -90.80506679544932 0.5 0 -1.1038986640910133 0 time=41 on-ground=false
+
+entity-order 43 entities e1
+entity 43 e1 0.5 -91.94896545954033 0.5 0 -1.121020690809193 0 time=42 on-ground=false
+
+entity-order 44 entities e1
+entity 44 e1 0.5 -93.10998615034953 0.5 0 -1.1378002769930093 0 time=43 on-ground=false
+
+entity-order 45 entities e1
+entity 45 e1 0.5 -94.28778642734254 0.5 0 -1.1542442714531491 0 time=44 on-ground=false
+
+entity-order 46 entities e1
+entity 46 e1 0.5 -95.48203069879568 0.5 0 -1.1703593860240862 0 time=45 on-ground=false
+
+entity-order 47 entities e1
+entity 47 e1 0.5 -96.69239008481976 0.5 0 -1.1861521983036045 0 time=46 on-ground=false
+
+entity-order 48 entities e1
+entity 48 e1 0.5 -97.91854228312337 0.5 0 -1.2016291543375324 0 time=47 on-ground=false
+
+entity-order 49 entities e1
+entity 49 e1 0.5 -99.1601714374609 0.5 0 -1.2167965712507818 0 time=48 on-ground=false
+
+entity-order 50 entities e1
+entity 50 e1 0.5 -100.41696800871169 0.5 0 -1.2316606398257661 0 time=49 on-ground=false
+
+entity-order 51 entities e1
+entity 51 e1 0.5 -101.68862864853746 0.5 0 -1.2462274270292508 0 time=50 on-ground=false
+
+entity-order 52 entities e1
+entity 52 e1 0.5 -102.9748560755667 0.5 0 -1.2605028784886658 0 time=51 on-ground=false
+
+entity-order 53 entities e1
+entity 53 e1 0.5 -104.27535895405538 0.5 0 -1.2744928209188926 0 time=52 on-ground=false
+
+entity-order 54 entities e1
+entity 54 e1 0.5 -105.58985177497426 0.5 0 -1.2882029645005149 0 time=53 on-ground=false
+
+entity-order 55 entities e1
+entity 55 e1 0.5 -106.91805473947478 0.5 0 -1.3016389052105046 0 time=54 on-ground=false
+
+entity-order 56 entities e1
+entity 56 e1 0.5 -108.25969364468529 0.5 0 -1.3148061271062945 0 time=55 on-ground=false
+
+entity-order 57 entities e1
+entity 57 e1 0.5 -109.61449977179159 0.5 0 -1.3277100045641685 0 time=56 on-ground=false
+
+entity-order 58 entities e1
+entity 58 e1 0.5 -110.98220977635576 0.5 0 -1.3403558044728852 0 time=57 on-ground=false
+
+entity-order 59 entities e1
+entity 59 e1 0.5 -112.36256558082864 0.5 0 -1.3527486883834274 0 time=58 on-ground=false
+
+entity-order 60 entities e1
+entity 60 e1 0.5 -113.75531426921206 0.5 0 -1.364893714615759 0 time=59 on-ground=false
+
+entity-order 61 entities e1
+entity 61 e1 0.5 -115.16020798382782 0.5 0 -1.3767958403234437 0 time=60 on-ground=false
+
+entity-order 62 entities e1
+entity 62 e1 0.5 -116.57700382415126 0.5 0 -1.3884599235169748 0 time=61 on-ground=false
+
+entity-order 63 entities e1
+entity 63 e1 0.5 -118.00546374766823 0.5 0 -1.3998907250466353 0 time=62 on-ground=false
+
+entity-order 64 entities e1
+entity 64 e1 0.5 -119.44535447271487 0.5 0 -1.4110929105457026 0 time=63 on-ground=false
+
+entity-order 65 entities e1
+entity 65 e1 0.5 -120.89644738326056 0.5 0 -1.4220710523347886 0 time=64 on-ground=false
+
+entity-order 66 entities e1
+entity 66 e1 0.5 -122.35851843559536 0.5 0 -1.4328296312880928 0 time=65 on-ground=false
+
+entity-order 67 entities e1
+entity 67 e1 0.5 -123.83134806688345 0.5 0 -1.443373038662331 0 time=66 on-ground=false
+
+entity-order 68 entities e1
+entity 68 e1 0.5 -125.31472110554579 0.5 0 -1.4537055778890844 0 time=67 on-ground=false
+
+entity-order 69 entities e1
+entity 69 e1 0.5 -126.80842668343487 0.5 0 -1.4638314663313028 0 time=68 on-ground=false
+
+entity-order 70 entities e1
+entity 70 e1 0.5 -128.31225814976617 0.5 0 -1.4737548370046767 0 time=69 on-ground=false
+
+entity-order 71 entities e1
+entity 71 e1 0.5 -129.82601298677085 0.5 0 -1.4834797402645832 0 time=70 on-ground=false
+
+entity-order 72 entities e1
+entity 72 e1 0.5 -131.34949272703543 0.5 0 -1.4930101454592914 0 time=71 on-ground=false
+
+entity-order 73 entities e1
+entity 73 e1 0.5 -132.8825028724947 0.5 0 -1.5023499425501057 0 time=72 on-ground=false
+
+entity-order 74 entities e1
+entity 74 e1 0.5 -134.42485281504483 0.5 0 -1.5115029436991037 0 time=73 on-ground=false
+
+entity-order 75 entities e1
+entity 75 e1 0.5 -135.97635575874392 0.5 0 -1.5204728848251217 0 time=74 on-ground=false
+
+entity-order 76 entities e1
+entity 76 e1 0.5 -137.53682864356904 0.5 0 -1.5292634271286192 0 time=75 on-ground=false
+
+entity-order 77 entities e1
+entity 77 e1 0.5 -139.10609207069766 0.5 0 -1.5378781585860468 0 time=76 on-ground=false
+
+entity-order 78 entities e1
+entity 78 e1 0.5 -140.68397022928372 0.5 0 -1.546320595414326 0 time=77 on-ground=false
+
+entity-order 79 entities e1
+entity 79 e1 0.5 -142.27029082469804 0.5 0 -1.5545941835060395 0 time=78 on-ground=false
+
+entity-order 80 entities e1
+entity 80 e1 0.5 -143.86488500820408 0.5 0 -1.5627022998359188 0 time=79 on-ground=false
+
+entity-order 81 entities e1
+entity 81 e1 0.5 -145.46758730804 0.5 0 -1.5706482538392004 0 time=80 on-ground=false
+
+entity-order 82 entities e1
+entity 82 e1 0.5 -147.0782355618792 0.5 0 -1.5784352887624165 0 time=81 on-ground=false
+
+entity-order 83 entities e1
+entity 83 e1 0.5 -148.69667085064162 0.5 0 -1.586066582987168 0 time=82 on-ground=false
+
+entity-order 84 entities e1
+entity 84 e1 0.5 -150.3227374336288 0.5 0 -1.5935452513274246 0 time=83 on-ground=false
+
+entity-order 85 entities e1
+entity 85 e1 0.5 -151.95628268495622 0.5 0 -1.600874346300876 0 time=84 on-ground=false
+
+entity-order 86 entities e1
+entity 86 e1 0.5 -153.5971570312571 0.5 0 -1.6080568593748585 0 time=85 on-ground=false
+
+entity-order 87 entities e1
+entity 87 e1 0.5 -155.24521389063196 0.5 0 -1.6150957221873614 0 time=86 on-ground=false
+
+entity-order 88 entities e1
+entity 88 e1 0.5 -156.9003096128193 0.5 0 -1.6219938077436142 0 time=87 on-ground=false
+
+entity-order 89 entities e1
+entity 89 e1 0.5 -158.56230342056293 0.5 0 -1.628753931588742 0 time=88 on-ground=false
+
+entity-order 90 entities e1
+entity 90 e1 0.5 -160.23105735215168 0.5 0 -1.6353788529569673 0 time=89 on-ground=false
+
+entity-order 91 entities e1
+entity 91 e1 0.5 -161.90643620510863 0.5 0 -1.641871275897828 0 time=90 on-ground=false
+
+entity-order 92 entities e1
+entity 92 e1 0.5 -163.58830748100647 0.5 0 -1.6482338503798715 0 time=91 on-ground=false
+
+entity-order 93 entities e1
+entity 93 e1 0.5 -165.27654133138634 0.5 0 -1.654469173372274 0 time=92 on-ground=false
+
+entity-order 94 entities e1
+entity 94 e1 0.5 -166.97101050475862 0.5 0 -1.6605797899048287 0 time=93 on-ground=false
+
+entity-order 95 entities e1
+entity 95 e1 0.5 -168.67159029466345 0.5 0 -1.666568194106732 0 time=94 on-ground=false
+
+entity-order 96 entities e1
+entity 96 e1 0.5 -170.37815848877017 0.5 0 -1.6724368302245973 0 time=95 on-ground=false
+
+entity-order 97 entities e1
+entity 97 e1 0.5 -172.09059531899476 0.5 0 -1.6781880936201055 0 time=96 on-ground=false
+
+entity-order 98 entities e1
+entity 98 e1 0.5 -173.80878341261487 0.5 0 -1.6838243317477033 0 time=97 on-ground=false
+
+entity-order 99 entities e1
+entity 99 e1 0.5 -175.53260774436256 0.5 0 -1.6893478451127493 0 time=98 on-ground=false
+
+entity-order 100 entities e1
+entity 100 e1 0.5 -177.26195558947532 0.5 0 -1.6947608882104943 0 time=99 on-ground=false
+
+entity-order 101 entities e1
+entity 101 e1 0.5 -178.99671647768582 0.5 0 -1.7000656704462844 0 time=100 on-ground=false
+
+entity-removed 102 entities e1 discarded
+draws 102 entities level 4
+entity-order 102 entities e1

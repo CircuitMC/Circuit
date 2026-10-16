@@ -628,6 +628,21 @@ int main() {
         require(grown_diff.empty(), grown_diff);
     });
 
+    suite.run("blocks fall across chunk edges", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("falling_blocks"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the falling block scenario");
+        const auto& ref = references[index];
+        std::size_t falling = 0, items = 0;
+        for (const auto& trace : ref.traces)
+            for (const auto& r : trace)
+                if (r.kind == TraceKind::entity_spawned)
+                    ++(r.c == static_cast<std::uint64_t>(circuit::gameplay::EntityKind::falling_block) ? falling : items);
+        require(falling >= 30 && items >= 4, std::format("{} falling blocks, {} dropped items", falling, items));
+        const auto& end = ref.dumps.rbegin()->second;
+        require(state_at(end, {12, 0, 6}) == registry_block("white_concrete") && state_at(end, {20, 1, 6}) == registry_block("gravel"),
+                "powder in water became concrete; gravel landed on the hopper");
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");

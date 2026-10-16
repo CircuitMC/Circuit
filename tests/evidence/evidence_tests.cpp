@@ -9,6 +9,7 @@
 #include <circuit/evidence/fixture_runner.hpp>
 #include <circuit/gameplay/block_registry.hpp>
 #include <circuit/gameplay/physics.hpp>
+#include <circuit/gameplay/rules.hpp>
 #include <circuit/gameplay/light.hpp>
 #include <array>
 #include <charconv>
@@ -412,6 +413,31 @@ int main(int argc, char** argv) {
             }
         }
         require(states == 27946 + 27866, std::format("{} states", states));
+    });
+
+    suite.run("replaceable blocks match both official servers", [&] {
+        // tests/fixtures/collision/replaceable-*.txt: the blocks whose states
+        // a falling block lands in (and falls into), by release.
+        namespace registry = circuit::gameplay::registry;
+        std::size_t states = 0, replaceable = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            std::set<std::string> blocks;
+            std::istringstream lines(read_text(fixtures / "collision" / std::format("replaceable-{}.txt", release)));
+            for (std::string line; std::getline(lines, line);)
+                if (!line.empty() && line.front() != '#') blocks.insert(line);
+            const auto* mapping = ContentMapping::for_game_version(release);
+            for (std::uint32_t wire = 0; wire < registry::wire_state_count(release); ++wire) {
+                const auto internal = registry::from_wire(release, static_cast<std::int32_t>(wire)).value();
+                const auto notation = registry::notation(internal);
+                const auto name = notation.substr(0, notation.find('['));
+                const auto state = mapping->block(notation).value();
+                const bool expected = blocks.contains(name);
+                require(circuit::gameplay::block_replaceable(state) == expected, std::format("{} {}: replaceable {}", release, notation, expected));
+                ++states;
+                replaceable += expected ? 1 : 0;
+            }
+        }
+        require(states == 27946 + 27866 && replaceable > 0, std::format("{} states, {} replaceable", states, replaceable));
     });
 
     suite.run("light properties match both official servers", [&] {

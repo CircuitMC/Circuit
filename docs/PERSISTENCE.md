@@ -101,7 +101,8 @@ The server fails closed on storage errors. If a log record cannot be written, th
 
 ## Checkpoint format
 
-A checkpoint file is `CIRCKPT\0`, a format version (15; versions 1–14 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+A checkpoint file is `CIRCKPT\0`, a format version (16; versions 1–15 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+- versions before 16 have no falling blocks;
 - versions before 15 have no entities waiting to come back with a reloaded chunk;
 - versions before 14 have no entity tick counts: an item's is its age, which nothing reset before;
 - versions before 13 store entity positions and velocities in 1/4096-block units, which are read exactly as doubles, and no level random: each level's is seeded as for a new world, from the seed and the level; their entities are items;
@@ -116,7 +117,7 @@ A checkpoint file is `CIRCKPT\0`, a format version (15; versions 1–14 are stil
 
 The body holds:
 - the time, the entity id counter, counted over all levels, the tick the levels last started, the game rules away from their defaults (name and value), the day time, and the weather (timers, flags and levels);
-- per level (overworld, Nether, End; only those with columns, players or an active tick): its counters, the last tick it had players or forced chunks, the state of its level random, the players in it (position and whether a spectator), columns with their load and simulation levels, the tick a saved column dropped and the tick a reloaded column resumes, palette-packed sections, block entities, entities (their kind, tick count, position and velocity as doubles, an item's stack, age and pickup delay, and for an entity of a reloaded chunk the tick it comes back), scheduled ticks and pending block events;
+- per level (overworld, Nether, End; only those with columns, players or an active tick): its counters, the last tick it had players or forced chunks, the state of its level random, the players in it (position and whether a spectator), columns with their load and simulation levels, the tick a saved column dropped and the tick a reloaded column resumes, palette-packed sections, block entities, entities (their kind, tick count, position and velocity as doubles, an item's stack, age and pickup delay, a falling block's state and fall time, and for an entity of a reloaded chunk the tick it comes back), scheduled ticks and pending block events;
 - chunk tickets: type, level, square radius, the tick their lifetime ends and their level (dimension);
 - player inventories: the 46 slots, the carried stack and a drag in progress; item stacks carry their damage and their other data components;
 - block entities' components (a container's name) and the saved data of block entities of blocks without rules of their own;
@@ -157,7 +158,7 @@ Import reads the source world and never writes to it. It creates a new world dir
 | Blocks | Every block state of 1.21.8. The blocks with rules of their own are air, stone, glass, obsidian, redstone block, slime block, lever, redstone dust, repeater, comparator, redstone lamp, observer, pistons and their heads, moving pistons, hopper, chest, water and wheat; every other block keeps its state and is inert in the rules |
 | Block entities | Chests and hoppers with their items, custom name and components, the hopper transfer cooldown, comparator output signals and moving pistons. Block entities of blocks without rules of their own (signs, banners, furnaces and the rest) are kept as saved and written back unchanged |
 | Item components | The damage, and the components whose save form mirrors their network form: `custom_data`, `max_stack_size`, `max_damage`, `unbreakable`, `custom_name`, `item_name`, `item_model`, `lore`, `rarity`, `repair_cost`, `enchantment_glint_override`, `intangible_projectile`, `glider`, `tooltip_style`, `dyed_color`, `map_color`, `map_id`, `map_decorations`, `potion_duration_scale`, `recipes`, `ominous_bottle_amplifier`, `note_block_sound`, `provides_banner_patterns`, `lock`, `container_loot`, `debug_stick_state`, `entity_data`, `bucket_entity_data` and `block_entity_data`; those that name registry entries: `trim`, `banner_patterns`, `base_color`, and, when the configured data packs synchronize enchantments, `enchantments` and `stored_enchantments`; a removed default (`!minecraft:name`) |
-| Entities | Item entities, with their pickup delay |
+| Entities | Item entities, with their age and pickup delay; falling blocks, with their block state and time |
 | Scheduled ticks | Block and fluid ticks of blocks with rules of their own, with their delay and priority |
 | Level data | Time, day time, weather (flags and timers; the levels follow the flags, as when the official servers load a world), game rules (rules the version lacks, or has only with experiments, are ignored with a note; invalid values are refused), seed, spawn point and level name. An exported world holds every rule of the version; the official 1.21.8 server read the day time and rules of one |
 
@@ -209,7 +210,7 @@ Block data sections come from the Chest (3135926), Hopper (3131269), Redstone Co
 | Check | What it covers |
 | --- | --- |
 | `storage_tests` | Includes crash-injection checks: <ul><li>checkpoint round trips of every scenario state, rejection of every flipped byte and truncation, and fuzzed bodies with valid digests;</li><li>the world directory: recovery, previous-checkpoint fallback, torn and damaged log tails;</li><li>a crash at every file operation of three logging policies, with and without torn unsynced data, each recovered and continued;</li><li>a failure at every operation, including short writes.</li></ul> |
-| `anvil_tests` | <ul><li>export and import of 54 scenario states, with scheduled ticks, item entities and moving pistons;</li><li>both policies on hand-made worlds;</li><li>malformed and damaged region files;</li><li>the world tools.</li></ul> |
+| `anvil_tests` | <ul><li>export and import of the scenario states, with scheduled ticks, item entities and moving pistons, and a falling block in the air;</li><li>both policies on hand-made worlds;</li><li>malformed and damaged region files;</li><li>the world tools.</li></ul> |
 | `server_tests` | <ul><li>a world saved and restored with a player's position;</li><li>the real server binary killed with `SIGKILL` while a player acts, recovered with every synced change;</li><li>a world of other rules refused.</li></ul> |
 | `simulation_tests` | Engines restored from a dump continue exactly, for every scenario at four split points |
 

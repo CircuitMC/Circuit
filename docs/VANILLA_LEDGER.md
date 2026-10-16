@@ -35,7 +35,7 @@ Feature counts per implementation state, then the number of features with compar
 | V09 Structures and decoration | C7, C5 | 6 | 0 / 0 | 0 / 0 | 0 / 0 | 6 / 6 | 0 / 0 | 0 / 0 |
 | V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 1 / 1 | 39 / 39 | 3 / 3 | 0 / 0 | 1 / 1 |
 | V11 Common building blocks | C5 | 1344 | 0 / 0 | 6 / 6 | 1335 / 1335 | 3 / 3 | 0 / 0 | 3 / 3 |
-| V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 3 / 3 | 73 / 73 | 6 / 6 | 0 / 0 | 2 / 2 |
+| V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 24 / 24 | 54 / 54 | 4 / 4 | 0 / 0 | 8 / 8 |
 | V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 2 / 2 | 298 / 312 | 6 / 6 | 14 / 0 | 0 / 0 |
 | V14 Redstone sources and signal consumers | C4 | 138 | 5 / 5 | 15 / 15 | 112 / 112 | 6 / 6 | 0 / 0 | 15 / 17 |
 | V15 Pistons and moving structures | C3, C4 | 16 | 1 / 1 | 12 / 12 | 2 / 2 | 1 / 1 | 0 / 0 | 7 / 7 |
@@ -67,9 +67,9 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 3 / 3 | 19 / 19 | 1073 / 1083 | 0 / 0 |
+| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 3 / 3 | 38 / 38 | 1054 / 1064 | 0 / 0 |
 | item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 30 / 30 | 1354 / 1385 | 0 / 0 |
-| entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 2 / 2 | 0 / 0 | 147 / 149 |
+| entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 3 / 3 | 0 / 0 | 146 / 148 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
 | enchantment | approximate: minecraft-data pc/1.21.1/enchantments.json / minecraft-data pc/1.21.8/enchantments.json | 42 / 42 | 0 / 0 | 0 / 0 | 0 / 0 | 42 / 42 |
 | attribute | approximate: minecraft-data pc/1.21.3/attributes.json / minecraft-data pc/1.21.8/attributes.json | 32 / 35 | 0 / 0 | 0 / 0 | 0 / 0 | 32 / 35 |
@@ -127,10 +127,10 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 20 |
+| black_box | passing | 21 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 3 |
-| official_trace | passing | 53 |
+| official_trace | passing | 57 |
 | official_trace | unsupported | 1 |
 | planned | planned | 8 |
 | real_client | passing | 2 |
@@ -265,7 +265,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Filling and emptying buckets | C5 | partial, none | partial, none | Placing water from a bucket |
 | Fire spread, burning and extinguishing | C5 | missing, none | missing, none |  |
 | Snow, ice, freezing and melting | C5 | missing, none | missing, none |  |
-| Falling blocks: sand, gravel, concrete powder, anvils, dripstone, scaffolding | C3 | missing, none | missing, none |  |
+| Falling blocks: sand, gravel, concrete powder, anvils, dripstone, scaffolding | C3 | partial, compared | partial, compared | `collision/replaceable`, `trace/falling_column`, `trace/falling_drop`, `trace/falling_onto`, `trace/falling_void`; anvils, pointed dripstone, scaffolding and suspicious sand and gravel do not fall; concrete powder placed beside water or reached by flowing water does not become concrete; falling blocks hurt nothing; Sand, red sand, gravel and the concrete powders: when they fall, the falling block's motion, landing, breaking into items, concrete powder in water, and the 100- and 600-tick limits |
 
 ### V13 Crops, growth and ecology
 

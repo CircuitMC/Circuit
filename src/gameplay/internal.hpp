@@ -153,7 +153,15 @@ void tick_hopper(RuleContext& ctx, BlockPos pos);
 // collects from. Returns whether the item was taken whole (it is removed).
 bool hopper_takes_item(RuleContext& ctx, BlockPos hopper, EntityId item);
 
-// The box of an entity (items: 0.25 wide and tall).
+// Falling blocks (falling.cpp): whether a block can be replaced by one that
+// lands (and so falls into it), whether a block falls, the check two ticks
+// after it is placed or changes, the block tick, and the entity's tick.
+bool falls(BlockState s);
+void schedule_fall(RuleContext& ctx, BlockPos pos);
+void tick_falling_block(RuleContext& ctx, BlockPos pos, BlockState s);
+void run_falling_block(RuleContext& ctx, EntityId id, Entity& e);
+
+// The box of an entity (items: 0.25 wide and tall; falling blocks 0.98).
 [[nodiscard]] physics::Aabb entity_box(const Entity& e);
 // Ids of entities whose box intersects `area` (faces that only touch do
 // not), ascending.

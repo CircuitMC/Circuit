@@ -5,6 +5,7 @@
 #include <circuit/contracts/commands.hpp>
 #include <circuit/contracts/ids.hpp>
 #include <circuit/contracts/time.hpp>
+#include <circuit/contracts/trace.hpp>
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/block.hpp>
 #include <circuit/gameplay/weather.hpp>
@@ -72,8 +73,8 @@ inline constexpr double max_entity_speed = 64.0;
 
 // The kinds of entities the rules model (their registry names in
 // entity_kind_name).
-enum class EntityKind : std::uint8_t { item = 1 };
-inline constexpr std::uint8_t entity_kind_count = 2; // kinds are 1 to entity_kind_count - 1
+enum class EntityKind : std::uint8_t { item = 1, falling_block = 2 };
+inline constexpr std::uint8_t entity_kind_count = 3; // kinds are 1 to entity_kind_count - 1
 std::string_view entity_kind_name(EntityKind kind) noexcept;
 
 // Item ages and pickup delays the target versions treat as "never": an item
@@ -98,11 +99,19 @@ struct Entity {
     ItemStack stack;
     std::int32_t age{};
     std::uint16_t pickup_delay{};
+    // Falling blocks: the block it carries and the ticks it has fallen.
+    BlockState carried{};
+    std::uint32_t fall_time{};
     // Saved with a chunk that loaded again: the tick it comes back, under a
     // new id (0: it is in the level).
     Tick returns{};
     bool operator==(const Entity&) const = default;
 };
+// What a spawn or load record says about the entity: an item's stack
+// (packed), a falling block's state (raw).
+[[nodiscard]] inline std::uint64_t entity_payload(const Entity& e) noexcept {
+    return e.kind == EntityKind::falling_block ? e.carried.raw() : contracts::pack_stack(e.stack);
+}
 // A valid item age: -32768 or 0 to 32767, as the target versions save it.
 [[nodiscard]] constexpr bool valid_item_age(std::int64_t age) noexcept { return age >= item_age_never && age <= 32767; }
 

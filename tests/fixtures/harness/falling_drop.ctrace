@@ -1,0 +1,110 @@
+circuit-trace 2
+title Sand and gravel placed in the air fall and land
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.8.0+mc1.21.8
+mechanisms falling_block
+area -5 0 -2 5 7 2
+ticks 40
+changes ordered
+entities observed
+rng observed
+
+at 0 set -4 0 0 minecraft:stone
+at 0 set -3 0 0 minecraft:stone
+at 0 set -2 0 0 minecraft:stone
+at 0 set -1 0 0 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+
+at 1 set 0 6 0 minecraft:sand
+change 1 commands 0 6 0 minecraft:air minecraft:sand
+at 1 set 2 4 0 minecraft:gravel
+change 1 commands 2 4 0 minecraft:air minecraft:gravel
+at 1 set -2 2 0 minecraft:red_sand
+change 1 commands -2 2 0 minecraft:air minecraft:red_sand
+
+change 2 block_ticks 0 6 0 minecraft:sand minecraft:air
+entity-added 2 block_ticks e1 minecraft:falling_block 0.5 6.0 0.5 0 0 0 block=minecraft:sand
+change 2 block_ticks 2 4 0 minecraft:gravel minecraft:air
+entity-added 2 block_ticks e2 minecraft:falling_block 2.5 4.0 0.5 0 0 0 block=minecraft:gravel
+change 2 block_ticks -2 2 0 minecraft:red_sand minecraft:air
+entity-added 2 block_ticks e3 minecraft:falling_block -1.5 2.0 0.5 0 0 0 block=minecraft:red_sand
+entity-order 2 entities e1 e2 e3
+entity 2 e1 0.5 5.96 0.5 0 -0.0392 0 time=1 on-ground=false
+entity 2 e2 2.5 3.96 0.5 0 -0.0392 0 time=1 on-ground=false
+entity 2 e3 -1.5 1.96 0.5 0 -0.0392 0 time=1 on-ground=false
+
+at 3 set 4 1 0 minecraft:sand
+change 3 commands 4 1 0 minecraft:air minecraft:sand
+entity-order 3 entities e1 e2 e3
+entity 3 e1 0.5 5.8808 0.5 0 -0.07761599999999999 0 time=2 on-ground=false
+entity 3 e2 2.5 3.8808 0.5 0 -0.07761599999999999 0 time=2 on-ground=false
+entity 3 e3 -1.5 1.8808 0.5 0 -0.07761599999999999 0 time=2 on-ground=false
+
+entity-order 4 entities e1 e2 e3
+entity 4 e1 0.5 5.763184 0.5 0 -0.11526368 0 time=3 on-ground=false
+entity 4 e2 2.5 3.763184 0.5 0 -0.11526368 0 time=3 on-ground=false
+entity 4 e3 -1.5 1.763184 0.5 0 -0.11526368 0 time=3 on-ground=false
+
+entity-order 5 entities e1 e2 e3
+entity 5 e1 0.5 5.60792032 0.5 0 -0.15215840639999997 0 time=4 on-ground=false
+entity 5 e2 2.5 3.60792032 0.5 0 -0.15215840639999997 0 time=4 on-ground=false
+entity 5 e3 -1.5 1.60792032 0.5 0 -0.15215840639999997 0 time=4 on-ground=false
+
+entity-order 6 entities e1 e2 e3
+entity 6 e1 0.5 5.4157619136 0.5 0 -0.18831523827199997 0 time=5 on-ground=false
+entity 6 e2 2.5 3.4157619136 0.5 0 -0.18831523827199997 0 time=5 on-ground=false
+entity 6 e3 -1.5 1.4157619136000001 0.5 0 -0.18831523827199997 0 time=5 on-ground=false
+
+entity-order 7 entities e1 e2 e3
+entity 7 e1 0.5 5.187446675328 0.5 0 -0.22374893350655997 0 time=6 on-ground=false
+entity 7 e2 2.5 3.1874466753279997 0.5 0 -0.22374893350655997 0 time=6 on-ground=false
+entity 7 e3 -1.5 1.1874466753280002 0.5 0 -0.22374893350655997 0 time=6 on-ground=false
+
+change 8 entities -2 1 0 minecraft:air minecraft:red_sand
+entity-removed 8 entities e3 discarded
+entity-order 8 entities e1 e2 e3
+entity 8 e1 0.5 4.9236977418214405 0.5 0 -0.25847395483642877 0 time=7 on-ground=false
+entity 8 e2 2.5 2.9236977418214396 0.5 0 -0.25847395483642877 0 time=7 on-ground=false
+
+entity-order 9 entities e1 e2
+entity 9 e1 0.5 4.6252237869850115 0.5 0 -0.2925044757397002 0 time=8 on-ground=false
+entity 9 e2 2.5 2.625223786985011 0.5 0 -0.2925044757397002 0 time=8 on-ground=false
+
+entity-order 10 entities e1 e2
+entity 10 e1 0.5 4.292719311245311 0.5 0 -0.32585438622490615 0 time=9 on-ground=false
+entity 10 e2 2.5 2.292719311245311 0.5 0 -0.32585438622490615 0 time=9 on-ground=false
+
+entity-order 11 entities e1 e2
+entity 11 e1 0.5 3.9268649250204053 0.5 0 -0.358537298500408 0 time=10 on-ground=false
+entity 11 e2 2.5 1.9268649250204046 0.5 0 -0.358537298500408 0 time=10 on-ground=false
+
+entity-order 12 entities e1 e2
+entity 12 e1 0.5 3.528327626519997 0.5 0 -0.3905665525303998 0 time=11 on-ground=false
+entity 12 e2 2.5 1.5283276265199968 0.5 0 -0.3905665525303998 0 time=11 on-ground=false
+
+entity-order 13 entities e1 e2
+entity 13 e1 0.5 3.0977610739895973 0.5 0 -0.42195522147979175 0 time=12 on-ground=false
+entity 13 e2 2.5 1.0977610739895969 0.5 0 -0.42195522147979175 0 time=12 on-ground=false
+
+change 14 entities 2 1 0 minecraft:air minecraft:gravel
+entity-removed 14 entities e2 discarded
+entity-order 14 entities e1 e2
+entity 14 e1 0.5 2.6358058525098054 0.5 0 -0.4527161170501959 0 time=13 on-ground=false
+
+entity-order 15 entities e1
+entity 15 e1 0.5 2.1430897354596095 0.5 0 -0.48286179470919194 0 time=14 on-ground=false
+
+entity-order 16 entities e1
+entity 16 e1 0.5 1.6202279407504174 0.5 0 -0.512404558815008 0 time=15 on-ground=false
+
+entity-order 17 entities e1
+entity 17 e1 0.5 1.0678233819354093 0.5 0 -0.5413564676387079 0 time=16 on-ground=false
+
+change 18 entities 0 1 0 minecraft:air minecraft:sand
+entity-removed 18 entities e1 discarded
+entity-order 18 entities e1

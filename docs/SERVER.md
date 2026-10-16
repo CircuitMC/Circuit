@@ -80,7 +80,7 @@ A refused action is answered with the current state of the affected blocks, or, 
 - **Time:** as on both official servers, a `set_time` packet carries the world age, the day time and whether it advances (doDaylightCycle). It is sent on joining, to every player before each tick whose number is a multiple of 20 (after the commands that come with it), and at once when `/time` changes the time; changing doDaylightCycle sends nothing until the next one.
 - **Weather:** as on both official servers, the rain and thunder levels are sent (game events 7 and 8) in each tick they change, and the start or end of rain (events 1 and 2, then both levels) when the rain level passes 0.2; a player who joins while it rains gets the start of rain and both levels. A segment-by-segment comparison of 16 `/weather` commands (and a doWeatherCycle change) and their 1,348 replies and events, including every level value, was identical with both versions.
 - **Light updates:** light follows the blocks of the previous tick, as on the official servers; each tick, the sections whose light changed are sent as light updates to every player who has the chunk. The unmodified clients of both versions hold the same light as with the official servers (14 positions around a lit lamp and an overhang, also after joining again).
-- **Updates and entities:** block changes in a tick become block updates for every player who has the chunk. Item entities are spawned, moved and removed from the engine trace.
+- **Updates and entities:** block changes in a tick become block updates for every player who has the chunk. Item entities and falling blocks (whose spawn carries their block state) are spawned, moved and removed from the engine trace.
 
 ## Survival and inventories
 

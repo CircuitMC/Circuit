@@ -1,0 +1,69 @@
+circuit-trace 2
+title Falling sand onto a torch, a slab, a snow layer and water, and concrete powder into water
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms falling_block
+area -7 0 -2 7 5 2
+ticks 40
+changes ordered
+entities observed
+rng observed
+
+at 0 set -6 0 -1 minecraft:stone
+at 0 set -6 0 0 minecraft:stone
+at 0 set -6 0 1 minecraft:stone
+at 0 set -5 0 -1 minecraft:stone
+at 0 set -5 0 0 minecraft:stone
+at 0 set -5 0 1 minecraft:stone
+at 0 set -4 0 -1 minecraft:stone
+at 0 set -4 0 0 minecraft:stone
+at 0 set -4 0 1 minecraft:stone
+at 0 set -3 0 -1 minecraft:stone
+at 0 set -3 0 0 minecraft:stone
+at 0 set -3 0 1 minecraft:stone
+at 0 set -2 0 -1 minecraft:stone
+at 0 set -2 0 0 minecraft:stone
+at 0 set -2 0 1 minecraft:stone
+at 0 set -1 0 -1 minecraft:stone
+at 0 set -1 0 0 minecraft:stone
+at 0 set -1 0 1 minecraft:stone
+at 0 set 0 0 -1 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 1 0 -1 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 2 0 -1 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 3 0 -1 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 4 0 -1 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 5 0 -1 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 6 0 -1 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set -5 1 0 minecraft:torch
+at 0 set -3 1 0 minecraft:stone_slab[type=bottom,waterlogged=false]
+at 0 set -1 1 0 minecraft:snow[layers=1]
+at 0 set 1 1 0 minecraft:water[level=0]
+at 0 set 1 1 -1 minecraft:stone
+at 0 set 1 1 1 minecraft:stone
+at 0 set 0 1 0 minecraft:stone
+at 0 set 2 1 0 minecraft:stone
+at 0 set 4 1 0 minecraft:water[level=0]
+at 0 set 4 1 -1 minecraft:stone
+at 0 set 4 1 1 minecraft:stone
+at 0 set 3 1 0 minecraft:stone
+at 0 set 5 1 0 minecraft:stone
+at 2 set -5 4 0 minecraft:sand
+at 2 set -3 4 0 minecraft:sand
+at 2 set -1 4 0 minecraft:sand
+at 2 set 1 4 0 minecraft:sand
+at 2 set 4 4 0 minecraft:white_concrete_powder

@@ -23,7 +23,7 @@ enum class TraceKind : std::uint8_t {
     block_event_executed = 7,// pos, a = block, b = event, c = 1 if the block still matched
     chain_truncated = 8,     // pos = source of the first dropped update, a = updates counted in the chain
     inventory_changed = 9,   // pos, a = slot, b = old stack, c = new stack (item << 8 | count)
-    entity_spawned = 10,     // pos = block position, a = entity id, b = item << 8 | count
+    entity_spawned = 10,     // pos = block position, a = entity id, b = an item's stack (packed) or a falling block's state (raw), c = kind
     entity_changed_chunk = 11,// a = entity id, b = old chunk, c = new chunk (packed)
     entity_removed = 12,     // pos = block position, a = entity id, b = reason
     chunk_loaded = 13,       // pos = chunk origin, a = generation, b = level
@@ -38,7 +38,7 @@ enum class TraceKind : std::uint8_t {
                                 // bits of x, y and z (double_bits)
     entity_spawn_velocity = 22, // right after entity_spawn_position: a, b, c = the bits of the velocity
     level_random_draw = 23,     // a = the raw draws (next(bits) calls) one use of the level random made
-    entity_loaded = 24,         // an entity its chunk saved is back: a = its new id, b = its id before, c = its stack (packed);
+    entity_loaded = 24,         // an entity its chunk saved is back: a = its new id, b = its id before, c = as entity_spawned's b;
                                 // entity_spawn_position and entity_spawn_velocity follow
 };
 

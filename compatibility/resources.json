@@ -199,6 +199,173 @@
         "cases": [
           "trace/tnt_redstone_ignition"
         ]
+      },
+      "sand": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Falls when the block below can be replaced and lands as the official servers do",
+        "cases": [
+          "trace/falling_column",
+          "trace/falling_drop",
+          "trace/falling_onto",
+          "trace/falling_void"
+        ]
+      },
+      "red_sand": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Falls when the block below can be replaced and lands as the official servers do",
+        "cases": [
+          "trace/falling_column",
+          "trace/falling_drop",
+          "trace/falling_onto",
+          "trace/falling_void"
+        ]
+      },
+      "gravel": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Falls when the block below can be replaced and lands as the official servers do",
+        "cases": [
+          "trace/falling_column",
+          "trace/falling_drop",
+          "trace/falling_onto",
+          "trace/falling_void"
+        ]
+      },
+      "white_concrete_powder": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Falls when the block below can be replaced and lands as the official servers do; becomes concrete when it falls into water",
+        "cases": [
+          "trace/falling_column",
+          "trace/falling_drop",
+          "trace/falling_onto",
+          "trace/falling_void"
+        ],
+        "deviations": [
+          "does not become concrete beside water"
+        ]
+      },
+      "orange_concrete_powder": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Falls and lands as white concrete powder does (compared in trace/falling_onto); becomes concrete when it falls into water",
+        "deviations": [
+          "does not become concrete beside water"
+        ]
+      },
+      "magenta_concrete_powder": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Falls and lands as white concrete powder does (compared in trace/falling_onto); becomes concrete when it falls into water",
+        "deviations": [
+          "does not become concrete beside water"
+        ]
+      },
+      "light_blue_concrete_powder": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Falls and lands as white concrete powder does (compared in trace/falling_onto); becomes concrete when it falls into water",
+        "deviations": [
+          "does not become concrete beside water"
+        ]
+      },
+      "yellow_concrete_powder": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Falls and lands as white concrete powder does (compared in trace/falling_onto); becomes concrete when it falls into water",
+        "deviations": [
+          "does not become concrete beside water"
+        ]
+      },
+      "lime_concrete_powder": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Falls and lands as white concrete powder does (compared in trace/falling_onto); becomes concrete when it falls into water",
+        "deviations": [
+          "does not become concrete beside water"
+        ]
+      },
+      "pink_concrete_powder": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Falls and lands as white concrete powder does (compared in trace/falling_onto); becomes concrete when it falls into water",
+        "deviations": [
+          "does not become concrete beside water"
+        ]
+      },
+      "gray_concrete_powder": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Falls and lands as white concrete powder does (compared in trace/falling_onto); becomes concrete when it falls into water",
+        "deviations": [
+          "does not become concrete beside water"
+        ]
+      },
+      "light_gray_concrete_powder": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Falls and lands as white concrete powder does (compared in trace/falling_onto); becomes concrete when it falls into water",
+        "deviations": [
+          "does not become concrete beside water"
+        ]
+      },
+      "cyan_concrete_powder": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Falls and lands as white concrete powder does (compared in trace/falling_onto); becomes concrete when it falls into water",
+        "deviations": [
+          "does not become concrete beside water"
+        ]
+      },
+      "purple_concrete_powder": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Falls and lands as white concrete powder does (compared in trace/falling_onto); becomes concrete when it falls into water",
+        "deviations": [
+          "does not become concrete beside water"
+        ]
+      },
+      "blue_concrete_powder": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Falls and lands as white concrete powder does (compared in trace/falling_onto); becomes concrete when it falls into water",
+        "deviations": [
+          "does not become concrete beside water"
+        ]
+      },
+      "brown_concrete_powder": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Falls and lands as white concrete powder does (compared in trace/falling_onto); becomes concrete when it falls into water",
+        "deviations": [
+          "does not become concrete beside water"
+        ]
+      },
+      "green_concrete_powder": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Falls and lands as white concrete powder does (compared in trace/falling_onto); becomes concrete when it falls into water",
+        "deviations": [
+          "does not become concrete beside water"
+        ]
+      },
+      "red_concrete_powder": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Falls and lands as white concrete powder does (compared in trace/falling_onto); becomes concrete when it falls into water",
+        "deviations": [
+          "does not become concrete beside water"
+        ]
+      },
+      "black_concrete_powder": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Falls and lands as white concrete powder does (compared in trace/falling_onto); becomes concrete when it falls into water",
+        "deviations": [
+          "does not become concrete beside water"
+        ]
       }
     },
     "item": {
@@ -421,6 +588,20 @@
         "evidence": "reference_only",
         "cases": [
           "trace/tnt_redstone_ignition"
+        ]
+      },
+      "falling_block": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Sand, gravel and concrete powder: motion, landing, breaking, time limits; spawned to clients with their block",
+        "cases": [
+          "trace/falling_column",
+          "trace/falling_drop",
+          "trace/falling_onto",
+          "trace/falling_void"
+        ],
+        "deviations": [
+          "falling anvils, dripstone and scaffolding; damage"
         ]
       }
     },

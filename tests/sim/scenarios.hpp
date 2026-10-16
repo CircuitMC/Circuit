@@ -573,11 +573,58 @@ inline Scenario in_levels(const Scenario& a, DimensionId la, const Scenario& b, 
     return s;
 }
 
+// Sand, gravel and concrete powder falling across the x=16 chunk edge: columns
+// whose support goes, blocks dropped onto slabs (their items then merge),
+// into water (powder becomes concrete) and onto a hopper.
+inline Scenario falling_scenario() {
+    return {"falling_blocks", 83, 160, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        const auto sand = registry_block("sand"), gravel = registry_block("gravel");
+        const auto powder = registry_block("white_concrete_powder");
+        const auto slab = registry_block("stone_slab", {{"type", "bottom"}, {"waterlogged", "false"}});
+        if (t == 2) {
+            for (int x = 8; x <= 24; ++x)
+                for (int z = 0; z <= 6; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            c.push_back(place({14, 0, 4}, slab));
+            c.push_back(place({17, 0, 4}, slab));
+            c.push_back(place({12, 0, 6}, blocks::water_source()));
+            c.push_back(place({20, 0, 6}, blocks::hopper(Direction::down)));
+        }
+        const auto phase = t % 40;
+        if (phase == 5) {
+            // A column on a support at each side of the edge.
+            for (const int x : {15, 16}) {
+                c.push_back(place({x, 0, 1}, blocks::stone()));
+                for (int y = 1; y <= 4; ++y) c.push_back(place({x, y, 1}, y % 2 ? sand : gravel));
+            }
+        }
+        if (phase == 15) {
+            c.push_back(place({15, 0, 1}, blocks::air()));
+            c.push_back(place({16, 0, 1}, blocks::air()));
+        }
+        if (phase == 20) {
+            c.push_back(place({14, 6, 4}, sand));
+            c.push_back(place({17, 7, 4}, sand));
+            c.push_back(place({12, 5, 6}, powder));
+            c.push_back(place({20, 6, 6}, gravel));
+        }
+        if (phase == 35) {
+            // Clear what landed, so that the next round falls again.
+            for (const int x : {15, 16})
+                for (int y = 0; y <= 4; ++y) c.push_back(place({x, y, 1}, blocks::air()));
+            c.push_back(place({12, 0, 6}, blocks::water_source()));
+            c.push_back(place({20, 1, 6}, blocks::air()));
+        }
+        return c;
+    }, 5};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
-            transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario()};
+            transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario()};
 }
 
 } // namespace circuit::test
