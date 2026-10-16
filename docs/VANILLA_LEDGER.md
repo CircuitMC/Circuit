@@ -127,7 +127,7 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 19 |
+| black_box | passing | 20 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 3 |
 | official_trace | passing | 53 |
@@ -159,7 +159,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | --- | --- | --- | --- | --- |
 | Internal representation of every block and state property | C1 | implemented, documented | implemented, documented | circuit-blocks-1 from public data: 1,106 internal blocks and 27,958 internal states with stable ids; every state of both releases round-trips through notation and wire ids |
 | Per-version mapping between internal states and protocol state ids | C1 | implemented, compared | implemented, compared | `trace/dust_shape`; Every state of both releases maps to one Circuit state and back |
-| Collision shapes of block states | C1 | partial, compared | partial, compared | `client/collision`; Every state for player movement, from minecraft-data; the rules see blocks without rules of their own per cell (no, partial or full collision, and the faces it covers) |
+| Collision shapes of block states | C1 | partial, compared | partial, compared | `client/collision`, `collision/official_states`; position-dependent offsets (bamboo, pointed dripstone and others) are not applied; Every state's collision boxes, from the block registry (minecraft-data), equal to both official servers' report; items and players move against them. Offsets some blocks apply by position are not modeled |
 | Hardness, blast resistance, harvest tools, light emission and opacity, friction, sounds | C1 | partial, documented | partial, documented | Hardness, effective tool and harvest tier of every block from public data, the tool and tier from the block tags when the official data pack is loaded; opacity from its light filtering |
 
 ### V03 Item and entity components and registries

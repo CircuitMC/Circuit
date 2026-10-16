@@ -4,7 +4,6 @@
 // limits and the translation of player actions into simulation commands.
 #include "../support/check.hpp"
 #include "test_client.hpp"
-#include "../../src/server/collision_shapes.hpp"
 #include "../../src/server/command_reader.hpp"
 #include "../../src/server/game.hpp"
 #include "../../src/server/server_data.hpp"
@@ -1691,7 +1690,8 @@ int main() {
         }
     });
 
-    suite.run("every block state of both protocols has a palette entry and a collision shape", [] {
+    suite.run("every block state of both protocols has a palette entry", [] {
+        // (Every state's collision boxes: evidence_tests, against the official servers.)
         for (const auto& [protocol, version] : {std::pair{772, "1.21.8"}, std::pair{769, "1.21.4"}}) {
             const auto& tables = *protocol::ContentTables::for_protocol(protocol);
             const auto& mapping = *evidence::ContentMapping::for_game_version(version);
@@ -1700,7 +1700,6 @@ int main() {
                 const auto s = palette.reference(id);
                 require(s && palette.wire(*s) == id, std::format("{}: state {} maps both ways", version, id));
                 require(mapping.block(*tables.notation(id)) == *s, std::format("{}: state {} is {}", version, id, *tables.notation(id)));
-                require(server::collision_boxes(protocol, id).has_value(), std::format("{}: shape of state {}", version, id));
             }
         }
     });

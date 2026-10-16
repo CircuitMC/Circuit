@@ -1,0 +1,16 @@
+# The collision boxes of the block states of the official 1.21.4 server that 1.21.8 does not have, or has with other
+# boxes (circuit-harness 0.6.0 with its collision report, 2026-10-16); every other 1.21.4 state has the boxes of
+# collision-1.21.8.tsv. Same notation as that file.
+minecraft:creaking_heart[active=true,axis=x,natural=true]	0,0,0,32,32,32
+minecraft:creaking_heart[active=true,axis=x,natural=false]	0,0,0,32,32,32
+minecraft:creaking_heart[active=true,axis=y,natural=true]	0,0,0,32,32,32
+minecraft:creaking_heart[active=true,axis=y,natural=false]	0,0,0,32,32,32
+minecraft:creaking_heart[active=true,axis=z,natural=true]	0,0,0,32,32,32
+minecraft:creaking_heart[active=true,axis=z,natural=false]	0,0,0,32,32,32
+minecraft:creaking_heart[active=false,axis=x,natural=true]	0,0,0,32,32,32
+minecraft:creaking_heart[active=false,axis=x,natural=false]	0,0,0,32,32,32
+minecraft:creaking_heart[active=false,axis=y,natural=true]	0,0,0,32,32,32
+minecraft:creaking_heart[active=false,axis=y,natural=false]	0,0,0,32,32,32
+minecraft:creaking_heart[active=false,axis=z,natural=true]	0,0,0,32,32,32
+minecraft:creaking_heart[active=false,axis=z,natural=false]	0,0,0,32,32,32
+minecraft:pitcher_crop[age=0,half=upper]	10,-2,10,22,6,22

@@ -8,7 +8,12 @@
 #include <circuit/evidence/content.hpp>
 #include <circuit/evidence/fixture_runner.hpp>
 #include <circuit/gameplay/block_registry.hpp>
+#include <circuit/gameplay/physics.hpp>
 #include <circuit/gameplay/light.hpp>
+#include <array>
+#include <charconv>
+#include <cmath>
+#include <algorithm>
 #include <filesystem>
 #include <format>
 #include <fstream>
@@ -321,6 +326,92 @@ int main(int argc, char** argv) {
             }
         }
         require(states == 27946 + 12, std::format("{} states", states));
+    });
+
+    suite.run("collision boxes match both official servers", [&] {
+        // tests/fixtures/collision: every state's collision boxes as the
+        // official servers report them, in 1/32 block; Circuit's through its
+        // own state representation (modeled states included).
+        namespace registry = circuit::gameplay::registry;
+        using Boxes = std::vector<std::array<int, 6>>;
+        const auto parse_boxes = [](std::string_view text) {
+            Boxes out;
+            if (text == "-") return out;
+            for (std::size_t i = 0; i < text.size();) {
+                const auto end = std::min(text.find(';', i), text.size());
+                std::array<int, 6> b{};
+                std::size_t at = i;
+                for (auto& v : b) {
+                    const auto stop = std::min(text.find_first_of(",;", at), end);
+                    std::from_chars(text.data() + at, text.data() + stop, v);
+                    at = stop + 1;
+                }
+                out.push_back(b);
+                i = end + 1;
+            }
+            std::ranges::sort(out);
+            return out;
+        };
+        const auto circuit_boxes = [](circuit::gameplay::BlockState s, std::string_view release) {
+            Boxes out;
+            for (const auto& b : circuit::gameplay::physics::collision_boxes(s, release)) {
+                std::array<int, 6> v{};
+                const std::array<double, 6> d{b.min_x, b.min_y, b.min_z, b.max_x, b.max_y, b.max_z};
+                for (std::size_t i = 0; i < 6; ++i) {
+                    v[i] = static_cast<int>(std::lround(d[i] * 32.0));
+                    require(static_cast<double>(v[i]) == d[i] * 32.0, "boxes in 1/32 block");
+                }
+                out.push_back(v);
+            }
+            std::ranges::sort(out);
+            return out;
+        };
+        // The official boxes of a release's states, by Circuit state.
+        const auto official = [&](std::string_view file, std::string_view release, std::map<std::uint32_t, Boxes>& out) {
+            const auto* mapping = ContentMapping::for_game_version(release);
+            std::istringstream lines(read_text(fixtures / "collision" / std::string(file)));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto tab = line.find('\t');
+                require(tab != std::string::npos, line);
+                const auto name = line.substr(0, tab);
+                const auto boxes = parse_boxes(std::string_view(line).substr(tab + 1));
+                if (name.find('[') != std::string::npos) {
+                    const auto state = mapping->block(name);
+                    require(state.has_value(), name);
+                    out[state->raw()] = boxes;
+                    continue;
+                }
+                const auto block = registry::find_block(release, name);
+                require(block.has_value(), name);
+                const auto info = registry::block(*block);
+                for (auto s = info.first_state; s < info.first_state + info.state_count; ++s) {
+                    const auto state = mapping->block(registry::notation(s));
+                    require(state.has_value(), registry::notation(s));
+                    out[state->raw()] = boxes;
+                }
+            }
+        };
+        std::map<std::uint32_t, Boxes> latest, older;
+        official("collision-1.21.8.tsv", "1.21.8", latest);
+        older = latest;
+        official("collision-1.21.4-only.tsv", "1.21.4", older);
+        std::size_t states = 0;
+        for (const auto& [release, expected] : {std::pair{"1.21.8", &latest}, std::pair{"1.21.4", &older}}) {
+            const auto* mapping = ContentMapping::for_game_version(release);
+            for (std::uint32_t wire = 0; wire < registry::wire_state_count(release); ++wire) {
+                const auto internal = registry::from_wire(release, static_cast<std::int32_t>(wire));
+                require(internal.has_value(), std::format("{} wire state {}", release, wire));
+                const auto notation = registry::notation(*internal);
+                const auto state = mapping->block(notation);
+                require(state.has_value(), notation);
+                const auto it = expected->find(state->raw());
+                require(it != expected->end(), std::format("{} {}: no official boxes", release, notation));
+                require(circuit_boxes(*state, release) == it->second, std::format("{} {}", release, notation));
+                ++states;
+            }
+        }
+        require(states == 27946 + 27866, std::format("{} states", states));
     });
 
     suite.run("light properties match both official servers", [&] {

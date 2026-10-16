@@ -99,7 +99,7 @@ The clicks were calibrated against the official 1.21.8 and 1.21.4 servers. The s
 ### Movement and vitals
 
 The server follows the target version's movement handling for every player but spectators:
-- **Collision:** a claimed move is replayed from the last accepted position against the collision shapes of every block state (compiled from minecraft-data at the pinned commit by `tools/compile_collision_shapes.py`). The vertical axis moves first, then the horizontal axis with the larger movement, and a player on the ground steps up to 0.6 blocks.
+- **Collision:** a claimed move is replayed from the last accepted position against the collision boxes of every block state, the same boxes and box collision items use in the simulation (the block registry; equal to both official servers' boxes for every state). The vertical axis moves first, then the horizontal axis with the larger movement, and a player on the ground steps up to 0.6 blocks.
 - **Refused moves:** in survival, a move that ends more than 0.25 blocks away horizontally from the replayed one is refused, unless the player was already stuck in a block. In any mode, a move into a block the player was not already in is refused. Vertical differences are not compared, as in the target version.
 - **Floating:** a survival player who neither sinks nor stands on or next to anything for 80 ticks is kicked with the client's "Flying is not enabled" message, unless `allow-flight` is set.
 - **Falls:** the distance fallen since the ground, without the move that lands, deals one point per block beyond 3. Water and flying reset it; a slime block cancels the damage unless the player sneaks.

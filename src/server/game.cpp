@@ -867,8 +867,7 @@ struct Game::Impl final : GameServices {
         return [this](BlockPos b) -> movement::BlockShape {
             const auto v = engine->view().block(overworld, b);
             if (!v || v->is_air()) return {};
-            const auto boxes = collision_boxes(wire.protocol(), palette.wire(*v));
-            return {false, boxes ? *boxes : std::span<const CollisionBox>{}};
+            return {false, gameplay::physics::collision_boxes(*v, bundle.schema.content_release)};
         };
     }
 
