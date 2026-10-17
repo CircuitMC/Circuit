@@ -2,7 +2,7 @@ circuit-trace 2
 title TNT primed on obsidian explodes without breaking anything
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v10
+harness circuit-reference-rules-v11
 mechanisms tnt
 area -4 0 -4 4 4 4
 ticks 90

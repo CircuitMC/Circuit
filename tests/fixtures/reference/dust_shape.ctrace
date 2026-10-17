@@ -2,7 +2,7 @@ circuit-trace 1
 title Dust powers only the sides it points to
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v10
+harness circuit-reference-rules-v11
 mechanisms redstone_wire redstone_lamp
 area -1 -1 -1 5 1 2
 ticks 6

@@ -2,7 +2,7 @@ circuit-trace 2
 title Redstone ignites TNT: at placement, by blocks, diodes, observers, dust and pistons
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v10
+harness circuit-reference-rules-v11
 mechanisms tnt
 area -8 0 -8 8 3 8
 ticks 45

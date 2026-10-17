@@ -2,7 +2,7 @@ circuit-trace 2
 title Boats sink under water, slide on land and blue ice and fall off an edge
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v10
+harness circuit-reference-rules-v11
 mechanisms vehicle water
 area -4 0 -8 24 7 8
 ticks 70

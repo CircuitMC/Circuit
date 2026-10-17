@@ -2,7 +2,7 @@ circuit-trace 2
 title An explosion at a chunk corner destroys items in eight sections
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v10
+harness circuit-reference-rules-v11
 mechanisms tnt
 area -5 -6 -5 5 5 5
 ticks 82

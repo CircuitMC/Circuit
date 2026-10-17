@@ -2,7 +2,7 @@ circuit-trace 2
 title Moving items check for merges when they cross into another block
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v10
+harness circuit-reference-rules-v11
 mechanisms item_entity
 area -3 0 -3 7 3 3
 ticks 45

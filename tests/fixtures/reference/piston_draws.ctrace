@@ -2,7 +2,7 @@ circuit-trace 2
 title Pistons draw from the level random when they extend and retract
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v10
+harness circuit-reference-rules-v11
 mechanisms piston
 area -4 0 -2 4 2 2
 ticks 12

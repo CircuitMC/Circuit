@@ -2,7 +2,7 @@ circuit-trace 2
 title Sand and gravel placed in the air fall and land
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v10
+harness circuit-reference-rules-v11
 mechanisms falling_block
 area -5 0 -2 5 7 2
 ticks 40

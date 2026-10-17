@@ -2,7 +2,7 @@ circuit-trace 2
 title A TNT explosion primes TNT across a chunk edge
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v10
+harness circuit-reference-rules-v11
 mechanisms tnt
 area 9 0 -3 23 5 3
 ticks 130

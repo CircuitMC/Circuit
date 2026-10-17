@@ -2,7 +2,7 @@ circuit-trace 1
 title A repeater locked by a diode at its side
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v10
+harness circuit-reference-rules-v11
 mechanisms repeater redstone_lamp scheduled_ticks
 area -1 -1 -1 5 1 4
 ticks 24

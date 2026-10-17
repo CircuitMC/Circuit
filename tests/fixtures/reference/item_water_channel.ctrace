@@ -2,7 +2,7 @@ circuit-trace 2
 title Items carried along a channel of flowing water
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v10
+harness circuit-reference-rules-v11
 mechanisms item_entity water
 area -2 0 -2 12 3 2
 ticks 110

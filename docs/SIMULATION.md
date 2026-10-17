@@ -4,7 +4,7 @@
 
 The Part I core runs headless: shared contracts, a set of reference rules, a sequential scheduling oracle, and a region-parallel runtime checked against the oracle. The oracle shares gameplay rules with the runtime; it checks scheduling equivalence, while external reference observations and hand-derived expectations check the rules themselves. The [network server](SERVER.md) and [persistence](PERSISTENCE.md) are built on it.
 
-The rules are **circuit-reference-rules-v10**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
+The rules are **circuit-reference-rules-v11**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
 
 Two version bundles run them: `java-1.21.8` and `java-1.21.4`. 1.21.8 has 78 traces and 1.21.4 has 77 recorded on the unmodified server (1.21.4 lacks the tntExplodes game rule, so `tnt_explodes_disabled` is 1.21.8's only):
 - 1.21.8 traces are in `tests/fixtures/harness/`;

@@ -31,7 +31,7 @@ Parts I and II completed their original subset, not the complete game. The [vani
 - [x] **C0 — Baselines and evidence:** exact version/profile manifests, a feature/evidence ledger, entity/RNG/lifecycle observations and independent comparisons ([ledger](docs/VANILLA_LEDGER.md)).
 - [x] **C1 — Complete data model:** extensible block states, item/entity/block-entity components, versioned schemas and registry/pack foundations.
 - [x] **C2 — World foundations:** dimension-scoped ownership, vanilla ticket levels, chunk lifecycle, lighting and environmental state.
-- [ ] **C3 — Entities and TNT:** general entity lifecycle/physics, non-living entities and baseline TNT ignition, fuse and explosions.
+- [x] **C3 — Entities and TNT:** general entity lifecycle/physics, non-living entities (falling blocks, arrows, snowballs, minecarts off rails, boats) and baseline TNT ignition, fuse and explosions.
 - [ ] **C4 — Technical gameplay:** missing components and exact machine behavior, including version-specific TNT duplication and cross-chunk acceptance.
 - [ ] **C5 — Blocks, items and production:** complete block families, item use, fluids/growth, recipes/loot and functional menus.
 - [ ] **C6 — Complete player gameplay:** modes, movement, combat, equipment, effects, food and experience.

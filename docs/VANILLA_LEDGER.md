@@ -127,11 +127,11 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 22 |
+| black_box | passing | 28 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 5 |
 | official_trace | passing | 78 |
-| planned | planned | 8 |
+| planned | planned | 2 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 

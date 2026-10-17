@@ -229,7 +229,7 @@ int main() {
             auto bad_type = encode_replay(one).value();
             bad_type[bad_type.size() - 6] = std::byte{9};
             require(decode_replay(bad_type).error() == ErrorCode::malformed_record, "an unknown ticket type is refused");
-            ReplayLog rules{"java-1.21.8", "circuit-reference-rules-v10", 1, {}, "circuit-blocks-1"};
+            ReplayLog rules{"java-1.21.8", "circuit-reference-rules-v11", 1, {}, "circuit-blocks-1"};
             rules.ticks.push_back({1, {{1, SetGameRule{"randomTickSpeed", -7}}, {2, SetGameRule{"keepInventory", 1}}}});
             require(decode_replay(encode_replay(rules).value()).value() == rules, "game rules round-trip");
             auto digit = encode_replay(rules).value();
@@ -238,19 +238,19 @@ int main() {
             require(!at.empty(), "the rule name is written");
             at.front() = std::byte{'1'};
             require(decode_replay(digit).error() == ErrorCode::malformed_record, "a rule name of letters only");
-            ReplayLog day{"java-1.21.8", "circuit-reference-rules-v10", 1, {}, "circuit-blocks-1"};
+            ReplayLog day{"java-1.21.8", "circuit-reference-rules-v11", 1, {}, "circuit-blocks-1"};
             day.ticks.push_back({1, {{1, SetDayTime{4294967318}}}});
             require(decode_replay(encode_replay(day).value()).value() == day, "day times round-trip");
             auto negative = encode_replay(day).value();
             negative[negative.size() - 1] = std::byte{0x80}; // the top byte of the little-endian time
             require(decode_replay(negative).error() == ErrorCode::malformed_record, "a negative day time is refused");
-            ReplayLog weather{"java-1.21.8", "circuit-reference-rules-v10", 1, {}, "circuit-blocks-1"};
+            ReplayLog weather{"java-1.21.8", "circuit-reference-rules-v11", 1, {}, "circuit-blocks-1"};
             weather.ticks.push_back({1, {{1, SetWeather{WeatherKind::thunder, 0}}, {2, SetWeather{WeatherKind::clear, 24000}}}});
             require(decode_replay(encode_replay(weather).value()).value() == weather, "weather round-trips");
             auto kind = encode_replay(weather).value();
             kind[kind.size() - 5] = std::byte{3}; // the second command's kind
             require(decode_replay(kind).error() == ErrorCode::malformed_record, "an unknown weather is refused");
-            ReplayLog summons{"java-1.21.8", "circuit-reference-rules-v10", 1, {}, "circuit-blocks-1"};
+            ReplayLog summons{"java-1.21.8", "circuit-reference-rules-v11", 1, {}, "circuit-blocks-1"};
             summons.ticks.push_back({1, {{1, SummonEntity{"minecraft:arrow", {0.5, 3.0, 0.5}, {1.2, 0.25, 0.05}, 80, 300}},
                                          {2, SummonEntity{"minecraft:tnt", {1.5, 2.0, 0.5}, {}, 3, 0}}}});
             require(decode_replay(encode_replay(summons).value()).value() == summons, "summons round-trip");

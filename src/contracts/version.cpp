@@ -7,7 +7,7 @@ namespace {
 using enum CompatibilityTier;
 using enum EvidenceSource;
 
-// Compatibility table for circuit-reference-rules-v10. Every row claims a tier.
+// Compatibility table for circuit-reference-rules-v11. Every row claims a tier.
 // A row claims L0 only when harness fixtures recorded on the target version
 // pass and no gap is known; "Not covered" names aspects no fixture exercises.
 // Every other row claims L2 and lists its gaps, which include behavior not yet
@@ -325,9 +325,9 @@ constexpr std::array game_rules_1_21_4{
 // every pair). What differs is the bundles' own: content, component schema,
 // registries and game rules, and where random ticks run (RandomTickRange),
 // which the official servers showed differs.
-constexpr RuleSet rules_1_21_8{"circuit-reference-rules-v10", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
+constexpr RuleSet rules_1_21_8{"circuit-reference-rules-v11", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
                                "circuit-blocks-1", "harness traces of 1.21.8 (tests/fixtures/harness)", RandomTickRange::entity_ticking};
-constexpr RuleSet rules_1_21_4{"circuit-reference-rules-v10", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
+constexpr RuleSet rules_1_21_4{"circuit-reference-rules-v11", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
                                "circuit-blocks-1",
                                "harness traces of 1.21.4 (tests/fixtures/harness-1.21.4), each identical to its 1.21.8 recording; "
                                "random ticks run only near players (observed on the official 1.21.4 server)",

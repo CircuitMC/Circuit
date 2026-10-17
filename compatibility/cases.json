@@ -100,67 +100,67 @@
     },
     {
       "id": "TNT-01",
-      "kind": "planned",
+      "kind": "black_box",
       "versions": [
         "java-1.21.4",
         "java-1.21.8"
       ],
-      "location": "planned",
-      "status": "planned",
+      "location": "trace/tnt_ignition, trace/arrow_tnt, trace/tnt_chain_edge; server_tests (player placement)",
+      "status": "passing",
       "description": "TNT placement, breaking and every ignition path"
     },
     {
       "id": "TNT-02",
-      "kind": "planned",
+      "kind": "black_box",
       "versions": [
         "java-1.21.4",
         "java-1.21.8"
       ],
-      "location": "planned",
-      "status": "planned",
+      "location": "trace/tnt_ignition, trace/tnt_motion, trace/tnt_redstone_ignition",
+      "status": "passing",
       "description": "Primed TNT creation order, fuse, motion, collision and removal"
     },
     {
       "id": "TNT-03",
-      "kind": "planned",
+      "kind": "black_box",
       "versions": [
         "java-1.21.4",
         "java-1.21.8"
       ],
-      "location": "planned",
-      "status": "planned",
+      "location": "trace/tnt_motion, trace/tnt_water_current, trace/tnt_void",
+      "status": "passing",
       "description": "Primed TNT on the ground, in the air, in water and at chunk edges"
     },
     {
       "id": "TNT-04",
-      "kind": "planned",
+      "kind": "black_box",
       "versions": [
         "java-1.21.4",
         "java-1.21.8"
       ],
-      "location": "planned",
-      "status": "planned",
+      "location": "trace/tnt_redstone_ignition, trace/tnt_obsidian, trace/tnt_drops, trace/tnt_void, trace/tnt_entity_order, trace/tnt_knockback, trace/tnt_items, trace/tnt_chain_edge, trace/tnt_water, trace/tnt_power; collision/resistance",
+      "status": "passing",
       "description": "Explosion blocks, drops, chain reactions, damage and knockback, also submerged"
     },
     {
       "id": "TNT-05",
-      "kind": "planned",
+      "kind": "black_box",
       "versions": [
         "java-1.21.4",
         "java-1.21.8"
       ],
-      "location": "planned",
-      "status": "planned",
+      "location": "trace/tnt_reload; server_tests (rule-set migration of a world with primed TNT, restart survival); storage_tests, anvil_tests",
+      "status": "passing",
       "description": "Live fuses across save, reload and unload"
     },
     {
       "id": "TNT-06",
-      "kind": "planned",
+      "kind": "black_box",
       "versions": [
         "java-1.21.8"
       ],
-      "location": "planned",
-      "status": "planned",
+      "location": "trace/tnt_explodes_disabled",
+      "status": "passing",
       "description": "The tntExplodes game rule on and off (1.21.8 only)"
     },
     {

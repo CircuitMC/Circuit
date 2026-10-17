@@ -2,7 +2,7 @@ circuit-trace 2
 title TNT primed above a pool falls in and explodes under water
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v10
+harness circuit-reference-rules-v11
 mechanisms tnt
 area -4 0 -4 4 6 4
 ticks 90

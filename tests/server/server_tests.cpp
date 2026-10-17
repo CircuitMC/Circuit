@@ -1871,6 +1871,42 @@ int main() {
         std::filesystem::remove_all(dir);
     });
 
+    suite.run("primed TNT survives a restart and explodes when its fuse runs out", [] {
+        const auto dir = temporary_directory();
+        auto config = offline_config();
+        config.world_directory = dir / "world";
+        {
+            server::Server s(config);
+            s.start();
+            TestClient c(s.port());
+            c.join("Igniter");
+            confirm_spawn(c);
+            use_item_on(c, "minecraft:redstone_block", {2, -61, 1}, 1);
+            require(block_update(c, {2, -60, 1}) == content().state_id("minecraft:redstone_block"), "redstone block placed");
+            use_item_on(c, "minecraft:tnt", {3, -61, 1}, 2);
+            require(c.until(State::play, "add_entity").has_value(), "primed");
+            s.stop();
+        }
+        const auto saved = recovered_state(config.world_directory);
+        const auto tnt = std::ranges::find_if(saved.overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::primed_tnt; });
+        require(tnt != saved.overworld().entities.end() && tnt->fuse > 0 && tnt->fuse < 80, "saved with its fuse");
+        {
+            // The player's chunk loads again and the fuse runs on.
+            server::Server s(config);
+            s.start();
+            TestClient c(s.port());
+            c.join("Igniter");
+            confirm_spawn(c);
+            require(c.until(State::play, "explode", std::chrono::milliseconds(15000)).has_value(), "it explodes after the restart");
+            s.stop();
+        }
+        const auto after = recovered_state(config.world_directory);
+        require(std::ranges::none_of(after.overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::primed_tnt; })
+                    && block_at(after, {2, -60, 1}) == 0,
+                "gone, and the redstone block with it");
+        std::filesystem::remove_all(dir);
+    });
+
     suite.run("a killed server process loses no synced input", [] {
         // The real server binary, killed with SIGKILL while players act; the
         // input log is synced every tick.
@@ -2425,9 +2461,9 @@ int main() {
             error = e.what();
         }
         require(error.find("circuit-reference-rules-v9") != std::string::npos && error.find("--migrate-world") != std::string::npos, error);
-        const auto tick = server::migrate_world(config.world_directory, dir / "v10", "java-1.21.8");
+        const auto tick = server::migrate_world(config.world_directory, dir / "current", "java-1.21.8");
         require(tick == 311, std::format("migration: {}", tick ? std::to_string(*tick) : tick.error()));
-        config.world_directory = dir / "v10";
+        config.world_directory = dir / "current";
         GameFixture f(config);
         f.game->tick();
         const auto d = f.game->engine().dump();
@@ -2438,6 +2474,49 @@ int main() {
                 "day time and weather carried over; the start sets the levels");
         require(std::ranges::any_of(d.tickets, [](const auto& t) { return t.type == contracts::TicketType::forced && t.center == contracts::ChunkPos{2, 2}; }),
                 "the forced chunk carried over");
+        std::filesystem::remove_all(dir);
+    });
+
+    suite.run("a world of the previous rule set migrates with its live entities", [] {
+        // tests/fixtures/storage/v10world-*: a world the last
+        // circuit-reference-rules-v10 server wrote and stopped cleanly, 20
+        // ticks after a player placed TNT beside a redstone block in a forced
+        // chunk (/forceload add 0 0, randomTickSpeed 2).
+        const auto dir = temporary_directory();
+        auto config = offline_config();
+        config.world_directory = dir / "v10";
+        std::filesystem::create_directories(config.world_directory);
+        for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::path(CIRCUIT_SOURCE_DIR) / "tests/fixtures/storage")) {
+            const auto name = entry.path().filename().string();
+            if (name.starts_with("v10world-")) std::filesystem::copy_file(entry.path(), config.world_directory / name.substr(9));
+        }
+        std::string error;
+        try {
+            server::Server s(config);
+        } catch (const std::runtime_error& e) {
+            error = e.what();
+        }
+        require(error.find("circuit-reference-rules-v10") != std::string::npos && error.find("--migrate-world") != std::string::npos, error);
+        const auto tick = server::migrate_world(config.world_directory, dir / "current", "java-1.21.8");
+        require(tick == 151, std::format("migration: {}", tick ? std::to_string(*tick) : tick.error()));
+        config.world_directory = dir / "current";
+        GameFixture f(config);
+        const auto primed = [&] {
+            const auto d = f.game->engine().dump();
+            const auto it = std::ranges::find_if(d.overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::primed_tnt; });
+            return it == d.overworld().entities.end() ? -1 : it->fuse;
+        };
+        const auto fuse = primed();
+        require(fuse > 0 && fuse < 80, std::format("the primed TNT carried over with its fuse: {}", fuse));
+        require(f.game->engine().dump().game_rules.at("randomTickSpeed") == 2, "the game rule carried over");
+        int ticks = 0;
+        bool exploded = false;
+        while (!exploded && ticks < 100) {
+            f.game->tick();
+            ++ticks;
+            exploded = std::ranges::any_of(f.game->engine().trace(), [](const auto& r) { return r.kind == contracts::TraceKind::explosion; });
+        }
+        require(exploded && ticks == fuse, std::format("it explodes when its fuse runs out: after {} ticks, fuse {}", ticks, fuse));
         std::filesystem::remove_all(dir);
     });
 

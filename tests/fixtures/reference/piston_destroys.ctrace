@@ -2,7 +2,7 @@ circuit-trace 1
 title Piston destroys dust, a lever and a repeater
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v10
+harness circuit-reference-rules-v11
 mechanisms piston block_events
 area -1 -1 -1 6 0 5
 ticks 4

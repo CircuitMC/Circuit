@@ -2,7 +2,7 @@ circuit-trace 2
 title Rings around a force-loaded chunk: scheduled ticks, block events and block entities
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v10
+harness circuit-reference-rules-v11
 mechanisms chunk_tickets redstone_lamp piston hopper
 area 320 0 0 367 10 15
 ticks 70
