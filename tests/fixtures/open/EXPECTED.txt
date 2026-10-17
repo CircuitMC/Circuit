@@ -4,3 +4,4 @@ item_drop_piston.ctrace FAIL tick 1 entity probe (line 28)
 item_piston_push.ctrace FAIL tick 6 entity probe (line 40)
 tnt_reload_pending.ctrace FAIL tick 45
 arrow_reload.ctrace FAIL tick 30
+boat_motion.ctrace FAIL tick 7 entity probe (line 626)

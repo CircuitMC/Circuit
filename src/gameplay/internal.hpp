@@ -196,6 +196,12 @@ struct InWater {
     contracts::Vec3 push{};
 };
 InWater water_at(RuleContext& ctx, const physics::Aabb& entity);
+// How slippery a block is to entities on it (0.6; ice 0.98, blue ice 0.989,
+// slime 0.8).
+float slipperiness(BlockState s);
+// Minecarts off rails and boats (vehicle.cpp).
+void run_minecart(RuleContext& ctx, EntityId id, Entity& e);
+void run_boat(RuleContext& ctx, EntityId id, Entity& e);
 // Moves an entity's box by its velocity against the blocks around it; the
 // velocity loses the components that collided, and the vertical one too
 // when it hit something. A move that a collision shortened to a squared

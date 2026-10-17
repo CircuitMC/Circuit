@@ -170,8 +170,15 @@ std::string_view entity_kind_name(EntityKind kind) noexcept {
     case EntityKind::primed_tnt: return "minecraft:tnt";
     case EntityKind::arrow: return "minecraft:arrow";
     case EntityKind::snowball: return "minecraft:snowball";
+    case EntityKind::minecart: return "minecraft:minecart";
+    case EntityKind::boat: return boat_types[0];
     }
     return "?";
+}
+
+std::string_view entity_type_name(EntityKind kind, std::uint64_t payload) noexcept {
+    if (kind == EntityKind::boat && payload < boat_types.size()) return boat_types[payload];
+    return entity_kind_name(kind);
 }
 
 namespace {
@@ -191,10 +198,10 @@ std::string text(const std::pair<BlockPos, BlockEntity>& b) {
 }
 std::string text(const Entity& e) {
     return std::format("entity {} {} pos=({},{},{}) vel=({},{},{}) ticks={} stack={}x{}/{} age={} last_tick={} ground={} pickup_delay={} "
-                       "returns={} carried={:#x} fall_time={} fuse={} health={} in_ground={} life={} fire={}",
+                       "returns={} carried={:#x} fall_time={} fuse={} health={} in_ground={} life={} fire={} variant={} status={} last_dy={} in_water={}",
                        e.id.value, entity_kind_name(e.kind), e.position.x, e.position.y, e.position.z, e.velocity.x, e.velocity.y,
                        e.velocity.z, e.tick_count, e.stack.item, e.stack.count, e.stack.damage, e.age, e.last_tick, e.on_ground,
-                       e.pickup_delay, e.returns, e.carried.raw(), e.fall_time, e.fuse, e.health, e.in_ground, e.life, e.fire);
+                       e.pickup_delay, e.returns, e.carried.raw(), e.fall_time, e.fuse, e.health, e.in_ground, e.life, e.fire, e.variant, e.status, e.last_dy, e.in_water);
 }
 std::string text(const LevelDump::PendingTick& t) {
     return std::format("tick list={} {} block={} due={} priority={} suborder={}", static_cast<int>(t.list),
@@ -338,6 +345,7 @@ std::uint64_t digest(const WorldDump& d) {
             h.add(e.tick_count); h.add(static_cast<std::uint32_t>(e.age)); h.add(e.last_tick); h.add(e.on_ground); h.add(e.pickup_delay);
             h.add(e.returns); h.add(e.carried.raw()); h.add(e.fall_time); h.add(static_cast<std::uint32_t>(e.fuse)); h.add(static_cast<std::uint32_t>(e.health));
             h.add(e.in_ground); h.add(static_cast<std::uint32_t>(e.life)); h.add(static_cast<std::uint32_t>(e.fire));
+            h.add(e.variant); h.add(e.status); h.add(contracts::double_bits(e.last_dy)); h.add(e.in_water);
         }
         h.add(l.ticks.size());
         for (const auto& t : l.ticks) {

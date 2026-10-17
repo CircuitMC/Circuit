@@ -44,7 +44,7 @@ Feature counts per implementation state, then the number of features with compar
 | V18 Technical machines and vanilla quirks | C4, C7 | 6 | 0 / 0 | 1 / 1 | 0 / 0 | 5 / 5 | 0 / 0 | 1 / 1 |
 | V19 General entity lifecycle | C3 | 17 | 0 / 0 | 4 / 4 | 0 / 0 | 13 / 13 | 0 / 0 | 3 / 3 |
 | V20 Item entities and experience | C3, C6 | 7 | 2 / 2 | 3 / 3 | 0 / 0 | 2 / 2 | 0 / 0 | 4 / 4 |
-| V21 Projectiles, vehicles and mounts | C3, C6 | 109 | 0 / 0 | 3 / 3 | 39 / 57 | 46 / 48 | 21 / 1 | 3 / 3 |
+| V21 Projectiles, vehicles and mounts | C3, C6 | 109 | 0 / 0 | 16 / 16 | 39 / 57 | 33 / 35 | 21 / 1 | 7 / 7 |
 | V22 Movement and player modes | C6 | 7 | 3 / 3 | 2 / 2 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
 | V23 Combat, attributes and effects | C6 | 219 | 1 / 1 | 6 / 6 | 91 / 91 | 118 / 121 | 3 / 0 | 6 / 6 |
 | V24 Food, equipment and item use | C5, C6 | 143 | 0 / 0 | 16 / 16 | 121 / 123 | 4 / 4 | 2 / 0 | 1 / 2 |
@@ -69,7 +69,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 3 / 3 | 39 / 39 | 1053 / 1063 | 0 / 0 |
 | item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 30 / 30 | 1354 / 1385 | 0 / 0 |
-| entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 6 / 6 | 0 / 0 | 143 / 145 |
+| entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 17 / 17 | 0 / 0 | 132 / 134 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
 | enchantment | approximate: minecraft-data pc/1.21.1/enchantments.json / minecraft-data pc/1.21.8/enchantments.json | 42 / 42 | 0 / 0 | 0 / 0 | 0 / 0 | 42 / 42 |
 | attribute | approximate: minecraft-data pc/1.21.3/attributes.json / minecraft-data pc/1.21.8/attributes.json | 32 / 35 | 0 / 0 | 0 / 0 | 0 / 0 | 32 / 35 |
@@ -129,8 +129,8 @@ Their counts are unknown, not zero.
 | --- | --- | ---: |
 | black_box | passing | 22 |
 | black_box | unsupported | 1 |
-| official_trace | failing | 4 |
-| official_trace | passing | 75 |
+| official_trace | failing | 5 |
+| official_trace | passing | 78 |
 | planned | planned | 8 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
@@ -365,8 +365,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
 | Arrows, tridents, thrown items, potions, fireworks, wind charges and fishing bobbers | C3 | partial, compared | partial, compared | `trace/arrow_flight`, `trace/arrow_life`, `trace/arrow_reload`, `trace/arrow_tnt`; after an unload the official servers remove a chunk's arrows a tick later than Circuit in trace/arrow_reload (their unload timing varies); bows, crossbows, dispensers and players do not shoot; currents do not push arrows; projectiles pass through entities; tridents, thrown potions, eggs, ender pearls, fireworks, wind charges and fishing bobbers are missing; Arrows and snowballs (summoned): flight, drag in air and water, sticking 0.05 short of the shape they hit, falling again when their block goes, life and despawn, fire counted down and put out by water, burning arrows priming TNT, snowballs breaking on blocks |
-| Boats and rafts | C3 | missing, none | missing, none |  |
-| Minecarts of every kind | C3 | missing, none | missing, none |  |
+| Boats and rafts | C3 | partial, compared | partial, compared | `trace/boat_land`, `trace/boat_motion`; a boat floating on still water differs from the official vertical velocity in the last bits after a few ticks (trace/boat_motion; positions stay within 2.2e-16); bubble columns; chest boats; riders and paddling; Empty boats and rafts (summoned): floating with buoyancy, sinking under water, sliding on land with the slipperiness under them, falling, landing on the surface from the air, currents, pushing each other |
+| Minecarts of every kind | C3 | partial, compared | partial, compared | `trace/minecart_ground`, `trace/minecart_water`; chest, hopper, furnace, TNT, spawner and command block minecarts; minecarts pushing or pushed by other entities; rails and minecarts on rails (C4.2); riders; Empty minecarts off rails (summoned): falling, the 0.4 (0.2 in water) speed limit, halving on the ground, 5% drag in the air, water as their last tick ended |
 | Riding and mount controls | C6 | missing, none | missing, none |  |
 | Happy Ghast harnesses and leash changes | C8 | not_applicable, none | missing, none |  |
 

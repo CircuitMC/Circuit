@@ -641,6 +641,101 @@
         "deviations": [
           "passes through entities; not thrown by players or dispensers"
         ]
+      },
+      "minecart": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Off rails: falling, sliding, water; spawned to clients",
+        "cases": [
+          "trace/minecart_ground",
+          "trace/minecart_water"
+        ],
+        "deviations": [
+          "rails, riders, pushing"
+        ]
+      },
+      "oak_boat": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Floating, sinking, sliding, currents, pushing each other; spawned to clients",
+        "cases": [
+          "trace/boat_land"
+        ],
+        "deviations": [
+          "riders and paddling"
+        ]
+      },
+      "spruce_boat": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Floating, sinking, sliding, currents, pushing each other; spawned to clients; moves as the oak boat does (compared in trace/boat_land)",
+        "deviations": [
+          "riders and paddling"
+        ]
+      },
+      "birch_boat": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Floating, sinking, sliding, currents, pushing each other; spawned to clients; moves as the oak boat does (compared in trace/boat_land)",
+        "deviations": [
+          "riders and paddling"
+        ]
+      },
+      "jungle_boat": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Floating, sinking, sliding, currents, pushing each other; spawned to clients; moves as the oak boat does (compared in trace/boat_land)",
+        "deviations": [
+          "riders and paddling"
+        ]
+      },
+      "acacia_boat": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Floating, sinking, sliding, currents, pushing each other; spawned to clients; moves as the oak boat does (compared in trace/boat_land)",
+        "deviations": [
+          "riders and paddling"
+        ]
+      },
+      "cherry_boat": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Floating, sinking, sliding, currents, pushing each other; spawned to clients; moves as the oak boat does (compared in trace/boat_land)",
+        "deviations": [
+          "riders and paddling"
+        ]
+      },
+      "dark_oak_boat": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Floating, sinking, sliding, currents, pushing each other; spawned to clients; moves as the oak boat does (compared in trace/boat_land)",
+        "deviations": [
+          "riders and paddling"
+        ]
+      },
+      "mangrove_boat": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Floating, sinking, sliding, currents, pushing each other; spawned to clients; moves as the oak boat does (compared in trace/boat_land)",
+        "deviations": [
+          "riders and paddling"
+        ]
+      },
+      "pale_oak_boat": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Floating, sinking, sliding, currents, pushing each other; spawned to clients; moves as the oak boat does (compared in trace/boat_land)",
+        "deviations": [
+          "riders and paddling"
+        ]
+      },
+      "bamboo_raft": {
+        "impl": "partial",
+        "evidence": "documented",
+        "note": "Floating, sinking, sliding, currents, pushing each other; spawned to clients; moves as the oak boat does (compared in trace/boat_land)",
+        "deviations": [
+          "riders and paddling"
+        ]
       }
     },
     "damage_type": {

@@ -2,6 +2,7 @@
 #pragma once
 #include <algorithm>
 #include <array>
+#include <string_view>
 #include <circuit/contracts/commands.hpp>
 #include <circuit/contracts/ids.hpp>
 #include <circuit/contracts/time.hpp>
@@ -73,9 +74,11 @@ inline constexpr double max_entity_speed = 64.0;
 
 // The kinds of entities the rules model (their registry names in
 // entity_kind_name).
-enum class EntityKind : std::uint8_t { item = 1, falling_block = 2, primed_tnt = 3, arrow = 4, snowball = 5 };
-inline constexpr std::uint8_t entity_kind_count = 6; // kinds are 1 to entity_kind_count - 1
+enum class EntityKind : std::uint8_t { item = 1, falling_block = 2, primed_tnt = 3, arrow = 4, snowball = 5, minecart = 6, boat = 7 };
+inline constexpr std::uint8_t entity_kind_count = 8; // kinds are 1 to entity_kind_count - 1
 std::string_view entity_kind_name(EntityKind kind) noexcept;
+// The entity type of a kind with its spawn record's payload (a boat's kind).
+std::string_view entity_type_name(EntityKind kind, std::uint64_t payload) noexcept;
 
 // Item ages and pickup delays the target versions treat as "never": an item
 // of age -32768 never ages, despawns or merges; one with the pickup delay
@@ -112,17 +115,32 @@ struct Entity {
     bool in_ground{};
     std::int32_t life{};
     std::int32_t fire{};
+    // Boats: the kind of boat (boat_types), the state it was in last tick (1
+    // in water, 2 under water, 3 under flowing water, 4 on land, 5 in the
+    // air; 0 none yet) and its last vertical move.
+    std::uint8_t variant{};
+    std::uint8_t status{};
+    double last_dy{};
+    // Minecarts: whether water held it at the end of its last tick (what its
+    // next tick's motion follows; none before its first).
+    bool in_water{};
     // Saved with a chunk that loaded again: the tick it comes back, under a
     // new id (0: it is in the level).
     Tick returns{};
     bool operator==(const Entity&) const = default;
 };
+// The boats both target versions have, by Entity::variant.
+inline constexpr std::array<std::string_view, 10> boat_types{"minecraft:oak_boat", "minecraft:spruce_boat", "minecraft:birch_boat",
+                                                              "minecraft:jungle_boat", "minecraft:acacia_boat", "minecraft:cherry_boat",
+                                                              "minecraft:dark_oak_boat", "minecraft:mangrove_boat", "minecraft:pale_oak_boat",
+                                                              "minecraft:bamboo_raft"};
 // What a spawn or load record says about the entity: an item's stack
 // (packed), a falling block's state (raw), primed TNT's fuse.
 [[nodiscard]] inline std::uint64_t entity_payload(const Entity& e) noexcept {
     switch (e.kind) {
     case EntityKind::falling_block: return e.carried.raw();
     case EntityKind::primed_tnt: return static_cast<std::uint32_t>(e.fuse);
+    case EntityKind::boat: return e.variant;
     default: return contracts::pack_stack(e.stack);
     }
 }

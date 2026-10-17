@@ -707,12 +707,41 @@ inline Scenario projectile_scenario() {
     }, 5};
 }
 
+// Boats drifting down a channel of flowing water across the x=16 chunk edge
+// and pushing each other; minecarts sliding off rails across it.
+inline Scenario vehicle_scenario() {
+    return {"vehicles", 103, 160, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        if (t == 2) {
+            for (int x = 8; x <= 26; ++x)
+                for (int z = -5; z <= 5; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            for (int x = 9; x <= 25; ++x) {
+                c.push_back(place({x, 0, -4}, blocks::stone()));
+                c.push_back(place({x, 0, 0}, blocks::stone()));
+            }
+            for (int z = -3; z <= -1; ++z) {
+                c.push_back(place({9, 0, z}, blocks::stone()));
+                c.push_back(place({10, 0, z}, blocks::water_source()));
+            }
+        }
+        const auto phase = t % 60;
+        if (phase == 30) {
+            c.push_back(SummonEntity{"minecraft:oak_boat", {11.5, 0.5, -2.0}, {0.0, 0.0, 0.0}, 80, 0});
+            c.push_back(SummonEntity{"minecraft:birch_boat", {12.8, 2.5, -2.0}, {0.05, 0.0, 0.0}, 80, 0});
+            c.push_back(SummonEntity{"minecraft:minecart", {12.5, 0.0, 2.5}, {0.8, 0.0, 0.02}, 80, 0});
+            c.push_back(SummonEntity{"minecraft:minecart", {20.5, 3.0, 3.5}, {-0.6, 0.2, 0.0}, 80, 0});
+        }
+        return c;
+    }, 5};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
-            tnt_scenario(), projectile_scenario()};
+            tnt_scenario(), projectile_scenario(), vehicle_scenario()};
 }
 
 } // namespace circuit::test

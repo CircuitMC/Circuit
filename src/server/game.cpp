@@ -258,7 +258,9 @@ struct Game::Impl final : GameServices {
     std::unordered_map<std::uint64_t, Tracked> tracked;
     std::int32_t dimension_type{};
     std::int32_t biome{};
-    std::int32_t item_entity_type{}, falling_block_type{}, tnt_entity_type{}, arrow_entity_type{}, snowball_entity_type{}, player_entity_type{};
+    std::int32_t item_entity_type{}, falling_block_type{}, tnt_entity_type{}, arrow_entity_type{}, snowball_entity_type{}, minecart_entity_type{},
+        player_entity_type{};
+    std::array<std::int32_t, gameplay::boat_types.size()> boat_entity_types{};
     std::unordered_map<std::uint16_t, std::int32_t> item_wire; // reference item -> wire item id
     bool started{false};
 
@@ -281,6 +283,8 @@ struct Game::Impl final : GameServices {
         tnt_entity_type = content.entity_type("minecraft:tnt").value();
         arrow_entity_type = content.entity_type("minecraft:arrow").value();
         snowball_entity_type = content.entity_type("minecraft:snowball").value();
+        minecart_entity_type = content.entity_type("minecraft:minecart").value();
+        for (std::size_t i = 0; i < gameplay::boat_types.size(); ++i) boat_entity_types[i] = content.entity_type(gameplay::boat_types[i]).value();
         player_entity_type = content.entity_type("minecraft:player").value();
         for (std::uint16_t i = 1; i <= gameplay::items::max_id; ++i)
             if (const auto id = content.item_id(mapping.item_name(i))) item_wire[i] = *id;
@@ -1881,6 +1885,11 @@ struct Game::Impl final : GameServices {
             // The spawn data of a falling block is its block state.
             p.peer->send(wire.spawn_entity(t.protocol_id, entity_uuid(engine_id), falling_block_type, t.last, 0, 0, 0,
                                            palette.wire(e.carried), e.velocity));
+            return;
+        }
+        if (e.kind == gameplay::EntityKind::minecart || e.kind == gameplay::EntityKind::boat) {
+            const auto type = e.kind == gameplay::EntityKind::minecart ? minecart_entity_type : boat_entity_types.at(e.variant);
+            p.peer->send(wire.spawn_entity(t.protocol_id, entity_uuid(engine_id), type, t.last, 0, 0, 0, 0, e.velocity));
             return;
         }
         if (e.kind == gameplay::EntityKind::arrow || e.kind == gameplay::EntityKind::snowball) {

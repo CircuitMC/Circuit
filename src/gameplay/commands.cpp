@@ -114,6 +114,9 @@ Plan plan(RuleContext& ctx, const contracts::SummonEntity& c) {
     if (c.type == "minecraft:tnt") e.kind = EntityKind::primed_tnt, e.fuse = c.fuse;
     else if (c.type == "minecraft:arrow") e.kind = EntityKind::arrow, e.fire = c.fire;
     else if (c.type == "minecraft:snowball") e.kind = EntityKind::snowball;
+    else if (c.type == "minecraft:minecart") e.kind = EntityKind::minecart;
+    else if (const auto boat = std::ranges::find(boat_types, c.type); boat != boat_types.end())
+        e.kind = EntityKind::boat, e.variant = static_cast<std::uint8_t>(boat - boat_types.begin());
     else return std::unexpected(ErrorCode::unknown_command);
     e.position = c.position;
     e.velocity = c.velocity;

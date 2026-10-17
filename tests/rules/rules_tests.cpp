@@ -1448,6 +1448,35 @@ int main() {
         require(fell != arrows.end() && fell->in_ground && fell->position.y == static_cast<double>(0.05f) && fell->life > 0, "fell to the floor");
     });
 
+    suite.run("minecarts slide off rails, boats float and push each other", [] {
+        Sim s;
+        std::vector<CommandBody> build = floor(-1, 14, -3, 6);
+        for (int x = -1; x <= 9; ++x)
+            for (int z = 1; z <= 6; ++z)
+                build.push_back(place({x, 0, z}, x < 0 || x > 8 || z < 2 || z > 5 ? blocks::stone() : blocks::water_source()));
+        s.tick(build);
+        s.tick({SummonEntity{"minecraft:minecart", {0.5, 0.0, -1.5}, {1.5, 0.0, 0.0}, 80, 0},
+                SummonEntity{"minecraft:oak_boat", {2.5, 0.5, 3.5}, {0.0, 0.0, 0.0}, 80, 0},
+                SummonEntity{"minecraft:spruce_boat", {3.6, 0.5, 3.5}, {0.0, 0.0, 0.0}, 80, 0}});
+        const auto of = [&](circuit::gameplay::EntityKind kind) {
+            std::vector<circuit::gameplay::Entity> out;
+            const auto d = s.oracle.dump();
+            for (const auto& e : d.overworld().entities)
+                if (e.kind == kind) out.push_back(e);
+            return out;
+        };
+        auto cart = of(circuit::gameplay::EntityKind::minecart).at(0);
+        require(cart.position.x == 0.9 && cart.on_ground, "the first move is held to 0.4");
+        s.tick();
+        cart = of(circuit::gameplay::EntityKind::minecart).at(0);
+        require(cart.position.x == 1.1 && cart.velocity.x == 0.2, "on the ground it keeps half");
+        for (int i = 0; i < 40; ++i) s.tick();
+        const auto boats = of(circuit::gameplay::EntityKind::boat);
+        require(boats.size() == 2 && boats[0].variant != boats[1].variant, "two kinds of boats");
+        for (const auto& b : boats) require(b.position.y > 0.5 && b.position.y < 1.0 && b.status == 1, std::format("afloat at {}", b.position.y));
+        require(std::abs(boats[0].position.x - boats[1].position.x) > 1.2, "pushed apart");
+    });
+
     suite.run("entities leave with their chunk and come back under new ids", [] {
         Sim s(bundle(), 7, 0); // tick 1: chunk (0,0) entity ticking
         s.tick({place({4, -1, 4}, blocks::stone()), SpawnItem{at_block(4.5, 0.0, 4.5), {}, {items::stone, 3}}}); // 2

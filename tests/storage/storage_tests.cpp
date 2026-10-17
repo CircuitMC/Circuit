@@ -363,6 +363,21 @@ int main() {
         arrow.life = 345;
         arrow.fire = 12;
         never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(arrow);
+        // A boat afloat after a fall, and a minecart in water.
+        circuit::gameplay::Entity boat;
+        boat.id = circuit::contracts::EntityId{never.state.next_entity_id++};
+        boat.kind = circuit::gameplay::EntityKind::boat;
+        boat.position = {8.5, 1.5385, 8.5};
+        boat.variant = 9;
+        boat.status = 1;
+        boat.last_dy = -0.0012501467973757997;
+        never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(boat);
+        circuit::gameplay::Entity cart;
+        cart.id = circuit::contracts::EntityId{never.state.next_entity_id++};
+        cart.kind = circuit::gameplay::EntityKind::minecart;
+        cart.position = {10.5, 1.0, 8.5};
+        cart.in_water = true;
+        never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(cart);
         // And one waiting to come back with its reloaded chunk.
         auto returning = item;
         returning.id = circuit::contracts::EntityId{never.state.next_entity_id++};

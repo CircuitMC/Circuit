@@ -1585,15 +1585,37 @@
           "id": "boats",
           "name": "Boats and rafts",
           "milestone": "C3",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/boat_land",
+            "trace/boat_motion"
+          ],
+          "note": "Empty boats and rafts (summoned): floating with buoyancy, sinking under water, sliding on land with the slipperiness under them, falling, landing on the surface from the air, currents, pushing each other",
+          "deviations": [
+            "a boat floating on still water differs from the official vertical velocity in the last bits after a few ticks (trace/boat_motion; positions stay within 2.2e-16)",
+            "riders and paddling",
+            "chest boats",
+            "bubble columns"
+          ]
         },
         {
           "id": "minecarts",
           "name": "Minecarts of every kind",
           "milestone": "C3",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/minecart_ground",
+            "trace/minecart_water"
+          ],
+          "note": "Empty minecarts off rails (summoned): falling, the 0.4 (0.2 in water) speed limit, halving on the ground, 5% drag in the air, water as their last tick ended",
+          "deviations": [
+            "rails and minecarts on rails (C4.2)",
+            "chest, hopper, furnace, TNT, spawner and command block minecarts",
+            "riders",
+            "minecarts pushing or pushed by other entities"
+          ]
         },
         {
           "id": "riding",

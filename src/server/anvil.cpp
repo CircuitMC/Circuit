@@ -799,8 +799,10 @@ private:
             const auto id = text(e, "id").value_or("");
             const bool falling = id == "minecraft:falling_block";
             const bool tnt = id == "minecraft:tnt";
-            const bool arrow = id == "minecraft:arrow", snowball = id == "minecraft:snowball";
-            if (id != "minecraft:item" && !falling && !tnt && !arrow && !snowball) {
+            const bool arrow = id == "minecraft:arrow", snowball = id == "minecraft:snowball", minecart = id == "minecraft:minecart";
+            const auto boat = std::ranges::find(gameplay::boat_types, id);
+            const bool is_boat = boat != gameplay::boat_types.end();
+            if (id != "minecraft:item" && !falling && !tnt && !arrow && !snowball && !minecart && !is_boat) {
                 unsupported("entity " + id);
                 continue;
             }
@@ -814,7 +816,12 @@ private:
                 continue;
             }
             gameplay::Entity out;
-            if (arrow || snowball) {
+            if (minecart || is_boat) {
+                // Their state before this tick is not saved: a loaded boat
+                // has no state before, a minecart no water.
+                out.kind = minecart ? gameplay::EntityKind::minecart : gameplay::EntityKind::boat;
+                if (is_boat) out.variant = static_cast<std::uint8_t>(boat - gameplay::boat_types.begin());
+            } else if (arrow || snowball) {
                 // An arrow's owner, damage, pickup rule and item, and a
                 // snowball's item, are not modeled.
                 out.kind = arrow ? gameplay::EntityKind::arrow : gameplay::EntityKind::snowball;
@@ -1203,6 +1210,23 @@ private:
             t.set("Rotation", std::move(rotation));
             t.set("OnGround", Tag::boolean(e->on_ground));
             const auto hi = std::uint64_t{0x43697263756974ULL}, lo = e->id.value;
+            if (e->kind == gameplay::EntityKind::minecart || e->kind == gameplay::EntityKind::boat) {
+                // As the target versions save an empty minecart or boat.
+                if (e->kind == gameplay::EntityKind::boat) {
+                    t.set("id", Tag::string(std::string(gameplay::boat_types.at(e->variant))));
+                } else {
+                    t.set("FallDistance", Tag::float_(0.0f));
+                }
+                t.set("Air", Tag::short_(300));
+                t.set("Fire", Tag::short_(-1));
+                t.set("Invulnerable", Tag::boolean(false));
+                t.set("PortalCooldown", Tag::int_(0));
+                t.set("UUID", Tag::int_array({static_cast<std::int32_t>(hi >> 32), static_cast<std::int32_t>(hi & 0xFFFFFFFF),
+                                              static_cast<std::int32_t>(lo >> 32), static_cast<std::int32_t>(lo & 0xFFFFFFFF)}));
+                list.push(std::move(t));
+                ++report_.entities;
+                continue;
+            }
             if (e->kind == gameplay::EntityKind::arrow || e->kind == gameplay::EntityKind::snowball) {
                 // As the target versions save a summoned arrow or snowball.
                 if (e->kind == gameplay::EntityKind::arrow) {

@@ -676,6 +676,22 @@ int main() {
         require(arrows == 30 && primed == 6 && crossed >= 24, std::format("{} arrows, {} primed, {} chunk changes", arrows, primed, crossed));
     });
 
+    suite.run("boats and minecarts move across chunk edges", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("vehicles"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the vehicle scenario");
+        const auto& ref = references[index];
+        std::size_t crossed = 0;
+        for (const auto& trace : ref.traces)
+            for (const auto& r : trace)
+                if (r.kind == TraceKind::entity_changed_chunk) ++crossed;
+        const auto& end = ref.dumps.rbegin()->second;
+        const auto vehicles = std::ranges::count_if(end.overworld().entities, [](const auto& e) {
+            return e.kind == circuit::gameplay::EntityKind::boat || e.kind == circuit::gameplay::EntityKind::minecart;
+        });
+        // Four vehicles a round, three rounds; nothing removes them.
+        require(crossed >= 4 && vehicles == 12, std::format("{} chunk changes, {} vehicles", crossed, vehicles));
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");

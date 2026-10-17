@@ -154,6 +154,13 @@ constexpr std::array reference_v4_mechanisms{
         "hit; snowballs fall by 0.03 and lose 1% before they move, and break on the first block (arrow_flight, "
         "arrow_tnt). Gaps: projectiles pass through entities; bows, crossbows, dispensers and players do not shoot; "
         "currents do not push arrows; water does not put out burning arrows; other projectiles."},
+    MechanismEntry{"vehicle", l0_exact, l2_declared_deviation, harness_trace,
+        "Minecarts off rails and boats without riders, summoned: minecarts fall, keep within 0.4 a tick, halve "
+        "their speed on the ground and lose 5% in the air; boats float on water at a depth proportional "
+        "buoyancy, sink under it, slide on land with the slipperiness of the blocks under them, are pushed by "
+        "currents and land on the surface when they fall into water (minecart_ground, minecart_water, "
+        "boat_motion, boat_land). Gaps: rails, riders, players and mobs pushing or entering vehicles, vehicles "
+        "colliding with each other, chest and furnace variants."},
     MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, harness_trace,
         "Entities tick in ascending id order once per tick; one merged away before its turn does not tick "
         "(item_hopper_pickup, item_water_current, item_merge, item_merge_moving). Gap: compared for item "

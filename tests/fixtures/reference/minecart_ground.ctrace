@@ -1,0 +1,701 @@
+circuit-trace 2
+title Minecarts off rails fall, slide into a wall, glide on ice and sink in water
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v10
+mechanisms vehicle water
+area -2 -1 -6 14 6 6
+ticks 60
+changes ordered
+entities observed
+rng observed
+
+at 0 set -2 0 -6 minecraft:obsidian
+at 0 set -2 0 -5 minecraft:obsidian
+at 0 set -2 0 -4 minecraft:obsidian
+at 0 set -2 0 -3 minecraft:obsidian
+at 0 set -2 0 -2 minecraft:obsidian
+at 0 set -2 0 -1 minecraft:obsidian
+at 0 set -2 0 0 minecraft:obsidian
+at 0 set -2 0 1 minecraft:obsidian
+at 0 set -2 0 2 minecraft:obsidian
+at 0 set -2 0 3 minecraft:obsidian
+at 0 set -2 0 4 minecraft:obsidian
+at 0 set -2 0 5 minecraft:obsidian
+at 0 set -2 0 6 minecraft:obsidian
+at 0 set -1 0 -6 minecraft:obsidian
+at 0 set -1 0 -5 minecraft:obsidian
+at 0 set -1 0 -4 minecraft:obsidian
+at 0 set -1 0 -3 minecraft:obsidian
+at 0 set -1 0 -2 minecraft:obsidian
+at 0 set -1 0 -1 minecraft:obsidian
+at 0 set -1 0 0 minecraft:obsidian
+at 0 set -1 0 1 minecraft:obsidian
+at 0 set -1 0 2 minecraft:obsidian
+at 0 set -1 0 3 minecraft:obsidian
+at 0 set -1 0 4 minecraft:obsidian
+at 0 set -1 0 5 minecraft:obsidian
+at 0 set -1 0 6 minecraft:obsidian
+at 0 set 0 0 -6 minecraft:obsidian
+at 0 set 0 0 -5 minecraft:obsidian
+at 0 set 0 0 -4 minecraft:obsidian
+at 0 set 0 0 -3 minecraft:obsidian
+at 0 set 0 0 -2 minecraft:obsidian
+at 0 set 0 0 -1 minecraft:obsidian
+at 0 set 0 0 0 minecraft:obsidian
+at 0 set 0 0 1 minecraft:obsidian
+at 0 set 0 0 2 minecraft:obsidian
+at 0 set 0 0 3 minecraft:obsidian
+at 0 set 0 0 4 minecraft:obsidian
+at 0 set 0 0 5 minecraft:obsidian
+at 0 set 0 0 6 minecraft:obsidian
+at 0 set 1 0 -6 minecraft:obsidian
+at 0 set 1 0 -5 minecraft:obsidian
+at 0 set 1 0 -4 minecraft:obsidian
+at 0 set 1 0 -3 minecraft:obsidian
+at 0 set 1 0 -2 minecraft:obsidian
+at 0 set 1 0 -1 minecraft:obsidian
+at 0 set 1 0 0 minecraft:obsidian
+at 0 set 1 0 1 minecraft:obsidian
+at 0 set 1 0 2 minecraft:obsidian
+at 0 set 1 0 3 minecraft:obsidian
+at 0 set 1 0 4 minecraft:obsidian
+at 0 set 1 0 5 minecraft:obsidian
+at 0 set 1 0 6 minecraft:obsidian
+at 0 set 2 0 -6 minecraft:obsidian
+at 0 set 2 0 -5 minecraft:obsidian
+at 0 set 2 0 -4 minecraft:obsidian
+at 0 set 2 0 -3 minecraft:obsidian
+at 0 set 2 0 -2 minecraft:obsidian
+at 0 set 2 0 -1 minecraft:obsidian
+at 0 set 2 0 0 minecraft:obsidian
+at 0 set 2 0 1 minecraft:obsidian
+at 0 set 2 0 2 minecraft:obsidian
+at 0 set 2 0 3 minecraft:obsidian
+at 0 set 2 0 4 minecraft:obsidian
+at 0 set 2 0 5 minecraft:obsidian
+at 0 set 2 0 6 minecraft:obsidian
+at 0 set 3 0 -6 minecraft:obsidian
+at 0 set 3 0 -5 minecraft:obsidian
+at 0 set 3 0 -4 minecraft:obsidian
+at 0 set 3 0 -3 minecraft:obsidian
+at 0 set 3 0 -2 minecraft:obsidian
+at 0 set 3 0 -1 minecraft:obsidian
+at 0 set 3 0 0 minecraft:obsidian
+at 0 set 3 0 1 minecraft:obsidian
+at 0 set 3 0 2 minecraft:obsidian
+at 0 set 3 0 3 minecraft:obsidian
+at 0 set 3 0 4 minecraft:obsidian
+at 0 set 3 0 5 minecraft:obsidian
+at 0 set 3 0 6 minecraft:obsidian
+at 0 set 4 0 -6 minecraft:obsidian
+at 0 set 4 0 -5 minecraft:obsidian
+at 0 set 4 0 -4 minecraft:obsidian
+at 0 set 4 0 -3 minecraft:obsidian
+at 0 set 4 0 -2 minecraft:obsidian
+at 0 set 4 0 -1 minecraft:obsidian
+at 0 set 4 0 0 minecraft:obsidian
+at 0 set 4 0 1 minecraft:obsidian
+at 0 set 4 0 2 minecraft:obsidian
+at 0 set 4 0 3 minecraft:obsidian
+at 0 set 4 0 4 minecraft:obsidian
+at 0 set 4 0 5 minecraft:obsidian
+at 0 set 4 0 6 minecraft:obsidian
+at 0 set 5 0 -6 minecraft:obsidian
+at 0 set 5 0 -5 minecraft:obsidian
+at 0 set 5 0 -4 minecraft:obsidian
+at 0 set 5 0 -3 minecraft:obsidian
+at 0 set 5 0 -2 minecraft:obsidian
+at 0 set 5 0 -1 minecraft:obsidian
+at 0 set 5 0 0 minecraft:obsidian
+at 0 set 5 0 1 minecraft:obsidian
+at 0 set 5 0 2 minecraft:obsidian
+at 0 set 5 0 3 minecraft:obsidian
+at 0 set 5 0 4 minecraft:obsidian
+at 0 set 5 0 5 minecraft:obsidian
+at 0 set 5 0 6 minecraft:obsidian
+at 0 set 6 0 -6 minecraft:obsidian
+at 0 set 6 0 -5 minecraft:obsidian
+at 0 set 6 0 -4 minecraft:obsidian
+at 0 set 6 0 -3 minecraft:obsidian
+at 0 set 6 0 -2 minecraft:obsidian
+at 0 set 6 0 -1 minecraft:obsidian
+at 0 set 6 0 0 minecraft:obsidian
+at 0 set 6 0 1 minecraft:obsidian
+at 0 set 6 0 2 minecraft:obsidian
+at 0 set 6 0 3 minecraft:obsidian
+at 0 set 6 0 4 minecraft:obsidian
+at 0 set 6 0 5 minecraft:obsidian
+at 0 set 6 0 6 minecraft:obsidian
+at 0 set 7 0 -6 minecraft:obsidian
+at 0 set 7 0 -5 minecraft:obsidian
+at 0 set 7 0 -4 minecraft:obsidian
+at 0 set 7 0 -3 minecraft:obsidian
+at 0 set 7 0 -2 minecraft:obsidian
+at 0 set 7 0 -1 minecraft:obsidian
+at 0 set 7 0 0 minecraft:obsidian
+at 0 set 7 0 1 minecraft:obsidian
+at 0 set 7 0 2 minecraft:obsidian
+at 0 set 7 0 3 minecraft:obsidian
+at 0 set 7 0 4 minecraft:obsidian
+at 0 set 7 0 5 minecraft:obsidian
+at 0 set 7 0 6 minecraft:obsidian
+at 0 set 8 0 -6 minecraft:obsidian
+at 0 set 8 0 -5 minecraft:obsidian
+at 0 set 8 0 -4 minecraft:obsidian
+at 0 set 8 0 -3 minecraft:obsidian
+at 0 set 8 0 -2 minecraft:obsidian
+at 0 set 8 0 -1 minecraft:obsidian
+at 0 set 8 0 0 minecraft:obsidian
+at 0 set 8 0 1 minecraft:obsidian
+at 0 set 8 0 2 minecraft:obsidian
+at 0 set 8 0 3 minecraft:obsidian
+at 0 set 8 0 4 minecraft:obsidian
+at 0 set 8 0 5 minecraft:obsidian
+at 0 set 8 0 6 minecraft:obsidian
+at 0 set 9 0 -6 minecraft:obsidian
+at 0 set 9 0 -5 minecraft:obsidian
+at 0 set 9 0 -4 minecraft:obsidian
+at 0 set 9 0 -3 minecraft:obsidian
+at 0 set 9 0 -2 minecraft:obsidian
+at 0 set 9 0 -1 minecraft:obsidian
+at 0 set 9 0 0 minecraft:obsidian
+at 0 set 9 0 1 minecraft:obsidian
+at 0 set 9 0 2 minecraft:obsidian
+at 0 set 9 0 3 minecraft:obsidian
+at 0 set 9 0 4 minecraft:obsidian
+at 0 set 9 0 5 minecraft:obsidian
+at 0 set 9 0 6 minecraft:obsidian
+at 0 set 10 0 -6 minecraft:obsidian
+at 0 set 10 0 -5 minecraft:obsidian
+at 0 set 10 0 -4 minecraft:obsidian
+at 0 set 10 0 -3 minecraft:obsidian
+at 0 set 10 0 -2 minecraft:obsidian
+at 0 set 10 0 -1 minecraft:obsidian
+at 0 set 10 0 0 minecraft:obsidian
+at 0 set 10 0 1 minecraft:obsidian
+at 0 set 10 0 2 minecraft:obsidian
+at 0 set 10 0 3 minecraft:obsidian
+at 0 set 10 0 4 minecraft:obsidian
+at 0 set 10 0 5 minecraft:obsidian
+at 0 set 10 0 6 minecraft:obsidian
+at 0 set 11 0 -6 minecraft:obsidian
+at 0 set 11 0 -5 minecraft:obsidian
+at 0 set 11 0 -4 minecraft:obsidian
+at 0 set 11 0 -3 minecraft:obsidian
+at 0 set 11 0 -2 minecraft:obsidian
+at 0 set 11 0 -1 minecraft:obsidian
+at 0 set 11 0 0 minecraft:obsidian
+at 0 set 11 0 1 minecraft:obsidian
+at 0 set 11 0 2 minecraft:obsidian
+at 0 set 11 0 3 minecraft:obsidian
+at 0 set 11 0 4 minecraft:obsidian
+at 0 set 11 0 5 minecraft:obsidian
+at 0 set 11 0 6 minecraft:obsidian
+at 0 set 12 0 -6 minecraft:obsidian
+at 0 set 12 0 -5 minecraft:obsidian
+at 0 set 12 0 -4 minecraft:obsidian
+at 0 set 12 0 -3 minecraft:obsidian
+at 0 set 12 0 -2 minecraft:obsidian
+at 0 set 12 0 -1 minecraft:obsidian
+at 0 set 12 0 0 minecraft:obsidian
+at 0 set 12 0 1 minecraft:obsidian
+at 0 set 12 0 2 minecraft:obsidian
+at 0 set 12 0 3 minecraft:obsidian
+at 0 set 12 0 4 minecraft:obsidian
+at 0 set 12 0 5 minecraft:obsidian
+at 0 set 12 0 6 minecraft:obsidian
+at 0 set 13 0 -6 minecraft:obsidian
+at 0 set 13 0 -5 minecraft:obsidian
+at 0 set 13 0 -4 minecraft:obsidian
+at 0 set 13 0 -3 minecraft:obsidian
+at 0 set 13 0 -2 minecraft:obsidian
+at 0 set 13 0 -1 minecraft:obsidian
+at 0 set 13 0 0 minecraft:obsidian
+at 0 set 13 0 1 minecraft:obsidian
+at 0 set 13 0 2 minecraft:obsidian
+at 0 set 13 0 3 minecraft:obsidian
+at 0 set 13 0 4 minecraft:obsidian
+at 0 set 13 0 5 minecraft:obsidian
+at 0 set 13 0 6 minecraft:obsidian
+at 0 set 14 0 -6 minecraft:obsidian
+at 0 set 14 0 -5 minecraft:obsidian
+at 0 set 14 0 -4 minecraft:obsidian
+at 0 set 14 0 -3 minecraft:obsidian
+at 0 set 14 0 -2 minecraft:obsidian
+at 0 set 14 0 -1 minecraft:obsidian
+at 0 set 14 0 0 minecraft:obsidian
+at 0 set 14 0 1 minecraft:obsidian
+at 0 set 14 0 2 minecraft:obsidian
+at 0 set 14 0 3 minecraft:obsidian
+at 0 set 14 0 4 minecraft:obsidian
+at 0 set 14 0 5 minecraft:obsidian
+at 0 set 14 0 6 minecraft:obsidian
+at 0 set 14 1 -6 minecraft:obsidian
+at 0 set 14 1 -5 minecraft:obsidian
+at 0 set 14 1 -4 minecraft:obsidian
+at 0 set 14 1 -3 minecraft:obsidian
+at 0 set 14 1 -2 minecraft:obsidian
+at 0 set 14 1 -1 minecraft:obsidian
+at 0 set 14 1 0 minecraft:obsidian
+at 0 set 14 1 1 minecraft:obsidian
+at 0 set 14 1 2 minecraft:obsidian
+at 0 set 14 1 3 minecraft:obsidian
+at 0 set 14 1 4 minecraft:obsidian
+at 0 set 14 1 5 minecraft:obsidian
+at 0 set 14 1 6 minecraft:obsidian
+at 0 set 0 0 -4 minecraft:ice
+at 0 set 1 0 -4 minecraft:ice
+at 0 set 2 0 -4 minecraft:ice
+at 0 set 3 0 -4 minecraft:ice
+at 0 set 4 0 -4 minecraft:ice
+at 0 set 5 0 -4 minecraft:ice
+at 0 set 6 0 -4 minecraft:ice
+at 0 set 7 0 -4 minecraft:ice
+at 0 set 8 0 -4 minecraft:ice
+at 0 set 9 0 -4 minecraft:ice
+at 0 set 10 0 -4 minecraft:ice
+at 0 set 11 0 -4 minecraft:ice
+at 0 set 12 0 -4 minecraft:ice
+at 0 set 13 0 -4 minecraft:ice
+at 0 set 3 -1 1 minecraft:obsidian
+at 0 set 3 -1 2 minecraft:obsidian
+at 0 set 3 -1 3 minecraft:obsidian
+at 0 set 3 -1 4 minecraft:obsidian
+at 0 set 3 -1 5 minecraft:obsidian
+at 0 set 3 -1 6 minecraft:obsidian
+at 0 set 4 -1 1 minecraft:obsidian
+at 0 set 4 -1 2 minecraft:obsidian
+at 0 set 4 -1 3 minecraft:obsidian
+at 0 set 4 -1 4 minecraft:obsidian
+at 0 set 4 -1 5 minecraft:obsidian
+at 0 set 4 -1 6 minecraft:obsidian
+at 0 set 5 -1 1 minecraft:obsidian
+at 0 set 5 -1 2 minecraft:obsidian
+at 0 set 5 -1 3 minecraft:obsidian
+at 0 set 5 -1 4 minecraft:obsidian
+at 0 set 5 -1 5 minecraft:obsidian
+at 0 set 5 -1 6 minecraft:obsidian
+at 0 set 6 -1 1 minecraft:obsidian
+at 0 set 6 -1 2 minecraft:obsidian
+at 0 set 6 -1 3 minecraft:obsidian
+at 0 set 6 -1 4 minecraft:obsidian
+at 0 set 6 -1 5 minecraft:obsidian
+at 0 set 6 -1 6 minecraft:obsidian
+at 0 set 7 -1 1 minecraft:obsidian
+at 0 set 7 -1 2 minecraft:obsidian
+at 0 set 7 -1 3 minecraft:obsidian
+at 0 set 7 -1 4 minecraft:obsidian
+at 0 set 7 -1 5 minecraft:obsidian
+at 0 set 7 -1 6 minecraft:obsidian
+at 0 set 8 -1 1 minecraft:obsidian
+at 0 set 8 -1 2 minecraft:obsidian
+at 0 set 8 -1 3 minecraft:obsidian
+at 0 set 8 -1 4 minecraft:obsidian
+at 0 set 8 -1 5 minecraft:obsidian
+at 0 set 8 -1 6 minecraft:obsidian
+at 0 set 9 -1 1 minecraft:obsidian
+at 0 set 9 -1 2 minecraft:obsidian
+at 0 set 9 -1 3 minecraft:obsidian
+at 0 set 9 -1 4 minecraft:obsidian
+at 0 set 9 -1 5 minecraft:obsidian
+at 0 set 9 -1 6 minecraft:obsidian
+at 0 set 4 0 2 minecraft:water[level=0]
+at 0 set 4 0 3 minecraft:water[level=0]
+at 0 set 4 0 4 minecraft:water[level=0]
+at 0 set 4 0 5 minecraft:water[level=0]
+at 0 set 5 0 2 minecraft:water[level=0]
+at 0 set 5 0 3 minecraft:water[level=0]
+at 0 set 5 0 4 minecraft:water[level=0]
+at 0 set 5 0 5 minecraft:water[level=0]
+at 0 set 6 0 2 minecraft:water[level=0]
+at 0 set 6 0 3 minecraft:water[level=0]
+at 0 set 6 0 4 minecraft:water[level=0]
+at 0 set 6 0 5 minecraft:water[level=0]
+at 0 set 7 0 2 minecraft:water[level=0]
+at 0 set 7 0 3 minecraft:water[level=0]
+at 0 set 7 0 4 minecraft:water[level=0]
+at 0 set 7 0 5 minecraft:water[level=0]
+at 0 set 8 0 2 minecraft:water[level=0]
+at 0 set 8 0 3 minecraft:water[level=0]
+at 0 set 8 0 4 minecraft:water[level=0]
+at 0 set 8 0 5 minecraft:water[level=0]
+at 0 set 4 0 1 minecraft:obsidian
+at 0 set 4 0 6 minecraft:obsidian
+at 0 set 5 0 1 minecraft:obsidian
+at 0 set 5 0 6 minecraft:obsidian
+at 0 set 6 0 1 minecraft:obsidian
+at 0 set 6 0 6 minecraft:obsidian
+at 0 set 7 0 1 minecraft:obsidian
+at 0 set 7 0 6 minecraft:obsidian
+at 0 set 8 0 1 minecraft:obsidian
+at 0 set 8 0 6 minecraft:obsidian
+at 0 set 3 0 2 minecraft:obsidian
+at 0 set 3 0 3 minecraft:obsidian
+at 0 set 3 0 4 minecraft:obsidian
+at 0 set 3 0 5 minecraft:obsidian
+at 0 set 9 0 2 minecraft:obsidian
+at 0 set 9 0 3 minecraft:obsidian
+at 0 set 9 0 4 minecraft:obsidian
+at 0 set 9 0 5 minecraft:obsidian
+
+at 2 command summon minecraft:minecart 0.5 4 0.5 {Motion:[0.6d,0.0d,0.05d]}
+at 2 command summon minecraft:minecart 0.5 1 -1.5 {Motion:[1.5d,0.0d,0.0d]}
+at 2 command summon minecraft:minecart 0.5 1 -3.5 {Motion:[0.5d,0.0d,0.0d]}
+entity-added 2 commands e1 minecraft:minecart 0.5 4 0.5 0.6 0 0.05
+entity-added 2 commands e2 minecraft:minecart 0.5 1 -1.5 1.5 0 0
+entity-added 2 commands e3 minecraft:minecart 0.5 1 -3.5 0.5 0 0
+entity-order 2 entities e1 e2 e3
+entity 2 e1 0.9 3.96 0.55 0.38 -0.038 0.0475 on-ground=false
+entity 2 e2 0.9 1 -1.5 0.4 0 0 on-ground=true
+entity 2 e3 0.9 1 -3.5 0.4 0 0 on-ground=true
+
+at 3 command summon minecraft:minecart 1.5 2 3.5 {Motion:[0.4d,0.1d,0.0d]}
+entity-added 3 commands e4 minecraft:minecart 1.5 2 3.5 0.4 0.1 0
+entity-order 3 entities e1 e2 e3 e4
+entity 3 e1 1.28 3.882 0.5975 0.361 -0.0741 0.045125 on-ground=false
+entity 3 e2 1.1 1 -1.5 0.2 0 0 on-ground=true
+entity 3 e3 1.1 1 -3.5 0.2 0 0 on-ground=true
+entity 3 e4 1.9 2.06 3.5 0.38 0.057 0 on-ground=false
+
+entity-order 4 entities e1 e2 e3 e4
+entity 4 e1 1.641 3.7679 0.642625 0.34295 -0.108395 0.04286875 on-ground=false
+entity 4 e2 1.2000000000000002 1 -1.5 0.1 0 0 on-ground=true
+entity 4 e3 1.2000000000000002 1 -3.5 0.1 0 0 on-ground=true
+entity 4 e4 2.28 2.077 3.5 0.361 0.01615 0 on-ground=false
+
+entity-order 5 entities e1 e2 e3 e4
+entity 5 e1 1.98395 3.619505 0.68549375 0.32580249999999994 -0.14097525 0.04072531249999999 on-ground=false
+entity 5 e2 1.2500000000000002 1 -1.5 0.05 0 0 on-ground=true
+entity 5 e3 1.2500000000000002 1 -3.5 0.05 0 0 on-ground=true
+entity 5 e4 2.641 2.05315 3.5 0.34295 -0.022657499999999997 0 on-ground=false
+
+entity-order 6 entities e1 e2 e3 e4
+entity 6 e1 2.3097525 3.4385297500000003 0.7262190625 0.30951237499999995 -0.1719264875 0.038689046874999994 on-ground=false
+entity 6 e2 1.2750000000000001 1 -1.5 0.025 0 0 on-ground=true
+entity 6 e3 1.2750000000000001 1 -3.5 0.025 0 0 on-ground=true
+entity 6 e4 2.98395 1.9904925 3.5 0.32580249999999994 -0.059524625000000005 0 on-ground=false
+
+entity-order 7 entities e1 e2 e3 e4
+entity 7 e1 2.619264875 3.2266032625000003 0.764908109375 0.2940367562499999 -0.201330163125 0.03675459453124999 on-ground=false
+entity 7 e2 1.2875 1 -1.5 0.0125 0 0 on-ground=true
+entity 7 e3 1.2875 1 -3.5 0.0125 0 0 on-ground=true
+entity 7 e4 3.3097525 1.890967875 3.5 0.30951237499999995 -0.09454839375 0 on-ground=false
+
+entity-order 8 entities e1 e2 e3 e4
+entity 8 e1 2.9133016312499995 2.985273099375 0.8016627039062499 0.2793349184374999 -0.22926365496874998 0.03491686480468749 on-ground=false
+entity 8 e2 1.2937500000000002 1 -1.5 0.00625 0 0 on-ground=true
+entity 8 e3 1.2937500000000002 1 -3.5 0.00625 0 0 on-ground=true
+entity 8 e4 3.619264875 1.75641948125 3.5 0.2940367562499999 -0.12782097406249998 0 on-ground=false
+
+entity-order 9 entities e1 e2 e3 e4
+entity 9 e1 3.1926365496874993 2.71600944440625 0.8365795687109374 0.2653681725156249 -0.2558004722203125 0.03317102156445311 on-ground=false
+entity 9 e2 1.2968750000000002 1 -1.5 0.003125 0 0 on-ground=true
+entity 9 e3 1.2968750000000002 1 -3.5 0.003125 0 0 on-ground=true
+entity 9 e4 3.9133016312499995 1.5885985071875 3.5 0.2793349184374999 -0.15942992535937497 0 on-ground=false
+
+entity-order 10 entities e1 e2 e3 e4
+entity 10 e1 3.4580047222031243 2.4202089721859377 0.8697505902753905 0.2520997638898436 -0.28101044860929686 0.03151247048623045 on-ground=false
+entity 10 e2 1.2984375000000001 1 -1.5 0.0015625 0 0 on-ground=true
+entity 10 e3 1.2984375000000001 1 -3.5 0.0015625 0 0 on-ground=true
+entity 10 e4 4.192636549687499 1.389168581828125 3.5 0.2653681725156249 -0.18945842909140623 0 on-ground=false
+
+entity-order 11 entities e1 e2 e3 e4
+entity 11 e1 3.710104486092968 2.099198523576641 0.9012630607616209 0.23949477569535144 -0.304959926178832 0.02993684696191893 on-ground=false
+entity 11 e2 1.29921875 1 -1.5 0.00078125 0 0 on-ground=true
+entity 11 e3 1.29921875 1 -3.5 0.00078125 0 0 on-ground=true
+entity 11 e4 4.458004722203124 1.1597101527367188 3.5 0.2520997638898436 -0.2179855076368359 0 on-ground=false
+
+entity-order 12 entities e1 e2 e3 e4
+entity 12 e1 3.9495992617883195 1.754238597397809 0.9311999077235398 0.22752003691058387 -0.32771192986989034 0.028440004613822983 on-ground=false
+entity 12 e2 1.2996093750000002 1 -1.5 0.000390625 0 0 on-ground=true
+entity 12 e3 1.2996093750000002 1 -3.5 0.000390625 0 0 on-ground=true
+entity 12 e4 4.710104486092967 1 3.5 0.2520997638898436 0 0 on-ground=true
+
+entity-order 13 entities e1 e2 e3 e4
+entity 13 e1 4.177119298698903 1.3865266675279186 0.9596399123373628 0.21614403506505467 -0.3493263333763958 0.027018004383131834 on-ground=false
+entity 13 e2 1.2996093750000002 1 -1.5 0.0001953125 0 0 on-ground=true
+entity 13 e3 1.2996093750000002 1 -3.5 0.0001953125 0 0 on-ground=true
+entity 13 e4 4.836154368037889 0.98 3.5 0.11974738784767572 -0.019 0 on-ground=false
+
+entity-order 14 entities e1 e2 e3 e4
+entity 14 e1 4.393263333763958 1 0.9866579167204946 0.21614403506505467 0 0.027018004383131834 on-ground=true
+entity 14 e2 1.2996093750000002 1 -1.5 9.765625e-05 0 0 on-ground=true
+entity 14 e3 1.2996093750000002 1 -3.5 9.765625e-05 0 0 on-ground=true
+entity 14 e4 4.955901755885565 0.921 3.5 0.11376001845529193 -0.056049999999999996 0 on-ground=false
+
+entity-order 15 entities e1 e2 e3 e4
+entity 15 e1 4.501335351296485 1 1.0001669189120606 0.10807201753252733 0 0.013509002191565917 on-ground=true
+entity 15 e2 1.2996093750000002 1 -1.5 4.8828125e-05 0 0 on-ground=true
+entity 15 e3 1.2996093750000002 1 -3.5 4.8828125e-05 0 0 on-ground=true
+entity 15 e4 5.069661774340856 0.8249500000000001 3.5 0.10807201753252733 -0.0912475 0 on-ground=false
+
+entity-order 16 entities e1 e2 e3 e4
+entity 16 e1 4.555371360062749 1 1.0069214200078436 0.05403600876626367 0 0.006754501095782958 on-ground=true
+entity 16 e2 1.2996093750000002 1 -1.5 2.44140625e-05 0 0 on-ground=true
+entity 16 e3 1.2996093750000002 1 -3.5 2.44140625e-05 0 0 on-ground=true
+entity 16 e4 5.177733791873384 0.7287025 3.5 0.10266841665590096 -0.09143512499999999 0 on-ground=false
+
+entity-order 17 entities e1 e2 e3 e4
+entity 17 e1 4.582389364445881 1 1.010298670555735 0.027018004383131834 0 0.003377250547891479 on-ground=true
+entity 17 e2 1.2996093750000002 1 -1.5 1.220703125e-05 0 0 on-ground=true
+entity 17 e3 1.2996093750000002 1 -3.5 1.220703125e-05 0 0 on-ground=true
+entity 17 e4 5.280402208529285 0.6322673750000001 3.5 0.0975349958231059 -0.09161336875 0 on-ground=false
+
+entity-order 18 entities e1 e2 e3 e4
+entity 18 e1 4.595898366637447 1 1.0119872958296807 0.013509002191565917 0 0.0016886252739457396 on-ground=true
+entity 18 e2 1.2996093750000002 1 -1.5 6.103515625e-06 0 0 on-ground=true
+entity 18 e3 1.2996093750000002 1 -3.5 6.103515625e-06 0 0 on-ground=true
+entity 18 e4 5.377937204352391 0.53565400625 3.5 0.09265824603195061 -0.09178270031249999 0 on-ground=false
+
+entity-order 19 entities e1 e2 e3 e4
+entity 19 e1 4.602652867733229 1 1.0128316084666535 0.006754501095782958 0 0.0008443126369728698 on-ground=true
+entity 19 e2 1.2996093750000002 1 -1.5 3.0517578125e-06 0 0 on-ground=true
+entity 19 e3 1.2996093750000002 1 -3.5 3.0517578125e-06 0 0 on-ground=true
+entity 19 e4 5.470595450384342 0.4388713059375 3.5 0.08802533373035308 -0.09194356529687499 0 on-ground=false
+
+entity-order 20 entities e1 e2 e3 e4
+entity 20 e1 4.6060301182811205 1 1.01325376478514 0.003377250547891479 0 0.0004221563184864349 on-ground=true
+entity 20 e2 1.2996093750000002 1 -1.5 1.52587890625e-06 0 0 on-ground=true
+entity 20 e3 1.2996093750000002 1 -3.5 1.52587890625e-06 0 0 on-ground=true
+entity 20 e4 5.558620784114694 0.34192774064062503 3.5 0.08362406704383542 -0.09209638703203124 0 on-ground=false
+
+entity-order 21 entities e1 e2 e3 e4
+entity 21 e1 4.607718743555067 1 1.0134648429443833 0.0016886252739457396 0 0.00021107815924321745 on-ground=true
+entity 21 e2 1.2996093750000002 1 -1.5 7.62939453125e-07 0 0 on-ground=true
+entity 21 e3 1.2996093750000002 1 -3.5 7.62939453125e-07 0 0 on-ground=true
+entity 21 e4 5.64224485115853 0.2448313536085938 3.5 0.07944286369164365 -0.09224156768042968 0 on-ground=false
+
+entity-order 22 entities e1 e2 e3 e4
+entity 22 e1 4.60856305619204 1 1.013570382024005 0.0008443126369728698 0 0.00010553907962160872 on-ground=true
+entity 22 e2 1.2996093750000002 1 -1.5 3.814697265625e-07 0 0 on-ground=true
+entity 22 e3 1.2996093750000002 1 -3.5 3.814697265625e-07 0 0 on-ground=true
+entity 22 e4 5.721687714850174 0.1475897859281641 3.5 0.07547072050706147 -0.0923794892964082 0 on-ground=false
+
+entity-order 23 entities e1 e2 e3 e4
+entity 23 e1 4.608985212510526 1 1.0136231515638157 0.0004221563184864349 0 5.276953981080436e-05 on-ground=true
+entity 23 e2 1.2996093750000002 1 -1.5 1.9073486328125e-07 0 0 on-ground=true
+entity 23 e3 1.2996093750000002 1 -3.5 1.9073486328125e-07 0 0 on-ground=true
+entity 23 e4 5.797158435357235 0.0502102966317559 3.5 0.07169718448170839 -0.09251051483158779 0 on-ground=false
+
+entity-order 24 entities e1 e2 e3 e4
+entity 24 e1 4.608985212510526 1 1.0136231515638157 0.00021107815924321745 0 2.638476990540218e-05 on-ground=true
+entity 24 e2 1.2996093750000002 1 -1.5 9.5367431640625e-08 0 0 on-ground=true
+entity 24 e3 1.2996093750000002 1 -3.5 9.5367431640625e-08 0 0 on-ground=true
+entity 24 e4 5.868855619838944 0 3.5 0.07169718448170839 0 0 on-ground=true
+
+entity-order 25 entities e1 e2 e3 e4
+entity 25 e1 4.608985212510526 1 1.0136231515638157 0.00010553907962160872 0 1.319238495270109e-05 on-ground=true
+entity 25 e2 1.2996093750000002 1 -1.5 4.76837158203125e-08 0 0 on-ground=true
+entity 25 e3 1.2996093750000002 1 -3.5 4.76837158203125e-08 0 0 on-ground=true
+entity 25 e4 5.904704212079798 0 3.5 0.035848592240854196 0 0 on-ground=true
+
+entity-order 26 entities e1 e2 e3 e4
+entity 26 e1 4.608985212510526 1 1.0136231515638157 5.276953981080436e-05 0 6.596192476350545e-06 on-ground=true
+entity 26 e2 1.2996093750000002 1 -1.5 2.384185791015625e-08 0 0 on-ground=true
+entity 26 e3 1.2996093750000002 1 -3.5 2.384185791015625e-08 0 0 on-ground=true
+entity 26 e4 5.922628508200225 0 3.5 0.017924296120427098 0 0 on-ground=true
+
+entity-order 27 entities e1 e2 e3 e4
+entity 27 e1 4.608985212510526 1 1.0136231515638157 2.638476990540218e-05 0 3.2980962381752726e-06 on-ground=true
+entity 27 e2 1.2996093750000002 1 -1.5 1.1920928955078126e-08 0 0 on-ground=true
+entity 27 e3 1.2996093750000002 1 -3.5 1.1920928955078126e-08 0 0 on-ground=true
+entity 27 e4 5.931590656260438 0 3.5 0.008962148060213549 0 0 on-ground=true
+
+entity-order 28 entities e1 e2 e3 e4
+entity 28 e1 4.608985212510526 1 1.0136231515638157 1.319238495270109e-05 0 1.6490481190876363e-06 on-ground=true
+entity 28 e2 1.2996093750000002 1 -1.5 5.960464477539063e-09 0 0 on-ground=true
+entity 28 e3 1.2996093750000002 1 -3.5 5.960464477539063e-09 0 0 on-ground=true
+entity 28 e4 5.936071730290545 0 3.5 0.0044810740301067745 0 0 on-ground=true
+
+entity-order 29 entities e1 e2 e3 e4
+entity 29 e1 4.608985212510526 1 1.0136231515638157 6.596192476350545e-06 0 8.245240595438182e-07 on-ground=true
+entity 29 e2 1.2996093750000002 1 -1.5 2.9802322387695314e-09 0 0 on-ground=true
+entity 29 e3 1.2996093750000002 1 -3.5 2.9802322387695314e-09 0 0 on-ground=true
+entity 29 e4 5.938312267305598 0 3.5 0.0022405370150533873 0 0 on-ground=true
+
+entity-order 30 entities e1 e2 e3 e4
+entity 30 e1 4.608985212510526 1 1.0136231515638157 3.2980962381752726e-06 0 4.122620297719091e-07 on-ground=true
+entity 30 e2 1.2996093750000002 1 -1.5 1.4901161193847657e-09 0 0 on-ground=true
+entity 30 e3 1.2996093750000002 1 -3.5 1.4901161193847657e-09 0 0 on-ground=true
+entity 30 e4 5.939432535813125 0 3.5 0.0011202685075266936 0 0 on-ground=true
+
+entity-order 31 entities e1 e2 e3 e4
+entity 31 e1 4.608985212510526 1 1.0136231515638157 1.6490481190876363e-06 0 2.0613101488595454e-07 on-ground=true
+entity 31 e2 1.2996093750000002 1 -1.5 7.450580596923829e-10 0 0 on-ground=true
+entity 31 e3 1.2996093750000002 1 -3.5 7.450580596923829e-10 0 0 on-ground=true
+entity 31 e4 5.939992670066888 0 3.5 0.0005601342537633468 0 0 on-ground=true
+
+entity-order 32 entities e1 e2 e3 e4
+entity 32 e1 4.608985212510526 1 1.0136231515638157 8.245240595438182e-07 0 1.0306550744297727e-07 on-ground=true
+entity 32 e2 1.2996093750000002 1 -1.5 3.7252902984619143e-10 0 0 on-ground=true
+entity 32 e3 1.2996093750000002 1 -3.5 3.7252902984619143e-10 0 0 on-ground=true
+entity 32 e4 5.939992670066888 0 3.5 0.0002800671268816734 0 0 on-ground=true
+
+entity-order 33 entities e1 e2 e3 e4
+entity 33 e1 4.608985212510526 1 1.0136231515638157 4.122620297719091e-07 0 5.1532753721488635e-08 on-ground=true
+entity 33 e2 1.2996093750000002 1 -1.5 1.8626451492309571e-10 0 0 on-ground=true
+entity 33 e3 1.2996093750000002 1 -3.5 1.8626451492309571e-10 0 0 on-ground=true
+entity 33 e4 5.939992670066888 0 3.5 0.0001400335634408367 0 0 on-ground=true
+
+entity-order 34 entities e1 e2 e3 e4
+entity 34 e1 4.608985212510526 1 1.0136231515638157 2.0613101488595454e-07 0 2.5766376860744318e-08 on-ground=true
+entity 34 e2 1.2996093750000002 1 -1.5 9.313225746154786e-11 0 0 on-ground=true
+entity 34 e3 1.2996093750000002 1 -3.5 9.313225746154786e-11 0 0 on-ground=true
+entity 34 e4 5.939992670066888 0 3.5 7.001678172041835e-05 0 0 on-ground=true
+
+entity-order 35 entities e1 e2 e3 e4
+entity 35 e1 4.608985212510526 1 1.0136231515638157 1.0306550744297727e-07 0 1.2883188430372159e-08 on-ground=true
+entity 35 e2 1.2996093750000002 1 -1.5 4.656612873077393e-11 0 0 on-ground=true
+entity 35 e3 1.2996093750000002 1 -3.5 4.656612873077393e-11 0 0 on-ground=true
+entity 35 e4 5.939992670066888 0 3.5 3.5008390860209176e-05 0 0 on-ground=true
+
+entity-order 36 entities e1 e2 e3 e4
+entity 36 e1 4.608985212510526 1 1.0136231515638157 5.1532753721488635e-08 0 6.441594215186079e-09 on-ground=true
+entity 36 e2 1.2996093750000002 1 -1.5 2.3283064365386964e-11 0 0 on-ground=true
+entity 36 e3 1.2996093750000002 1 -3.5 2.3283064365386964e-11 0 0 on-ground=true
+entity 36 e4 5.939992670066888 0 3.5 1.7504195430104588e-05 0 0 on-ground=true
+
+entity-order 37 entities e1 e2 e3 e4
+entity 37 e1 4.608985212510526 1 1.0136231515638157 2.5766376860744318e-08 0 3.2207971075930397e-09 on-ground=true
+entity 37 e2 1.2996093750000002 1 -1.5 1.1641532182693482e-11 0 0 on-ground=true
+entity 37 e3 1.2996093750000002 1 -3.5 1.1641532182693482e-11 0 0 on-ground=true
+entity 37 e4 5.939992670066888 0 3.5 8.752097715052294e-06 0 0 on-ground=true
+
+entity-order 38 entities e1 e2 e3 e4
+entity 38 e1 4.608985212510526 1 1.0136231515638157 1.2883188430372159e-08 0 1.6103985537965198e-09 on-ground=true
+entity 38 e2 1.2996093750000002 1 -1.5 5.820766091346741e-12 0 0 on-ground=true
+entity 38 e3 1.2996093750000002 1 -3.5 5.820766091346741e-12 0 0 on-ground=true
+entity 38 e4 5.939992670066888 0 3.5 4.376048857526147e-06 0 0 on-ground=true
+
+entity-order 39 entities e1 e2 e3 e4
+entity 39 e1 4.608985212510526 1 1.0136231515638157 6.441594215186079e-09 0 8.051992768982599e-10 on-ground=true
+entity 39 e2 1.2996093750000002 1 -1.5 2.9103830456733705e-12 0 0 on-ground=true
+entity 39 e3 1.2996093750000002 1 -3.5 2.9103830456733705e-12 0 0 on-ground=true
+entity 39 e4 5.939992670066888 0 3.5 2.1880244287630735e-06 0 0 on-ground=true
+
+entity-order 40 entities e1 e2 e3 e4
+entity 40 e1 4.608985212510526 1 1.0136231515638157 3.2207971075930397e-09 0 4.0259963844912996e-10 on-ground=true
+entity 40 e2 1.2996093750000002 1 -1.5 1.4551915228366853e-12 0 0 on-ground=true
+entity 40 e3 1.2996093750000002 1 -3.5 1.4551915228366853e-12 0 0 on-ground=true
+entity 40 e4 5.939992670066888 0 3.5 1.0940122143815368e-06 0 0 on-ground=true
+
+entity-order 41 entities e1 e2 e3 e4
+entity 41 e1 4.608985212510526 1 1.0136231515638157 1.6103985537965198e-09 0 2.0129981922456498e-10 on-ground=true
+entity 41 e2 1.2996093750000002 1 -1.5 7.275957614183426e-13 0 0 on-ground=true
+entity 41 e3 1.2996093750000002 1 -3.5 7.275957614183426e-13 0 0 on-ground=true
+entity 41 e4 5.939992670066888 0 3.5 5.470061071907684e-07 0 0 on-ground=true
+
+entity-order 42 entities e1 e2 e3 e4
+entity 42 e1 4.608985212510526 1 1.0136231515638157 8.051992768982599e-10 0 1.0064990961228249e-10 on-ground=true
+entity 42 e2 1.2996093750000002 1 -1.5 3.637978807091713e-13 0 0 on-ground=true
+entity 42 e3 1.2996093750000002 1 -3.5 3.637978807091713e-13 0 0 on-ground=true
+entity 42 e4 5.939992670066888 0 3.5 2.735030535953842e-07 0 0 on-ground=true
+
+entity-order 43 entities e1 e2 e3 e4
+entity 43 e1 4.608985212510526 1 1.0136231515638157 4.0259963844912996e-10 0 5.0324954806141245e-11 on-ground=true
+entity 43 e2 1.2996093750000002 1 -1.5 1.8189894035458566e-13 0 0 on-ground=true
+entity 43 e3 1.2996093750000002 1 -3.5 1.8189894035458566e-13 0 0 on-ground=true
+entity 43 e4 5.939992670066888 0 3.5 1.367515267976921e-07 0 0 on-ground=true
+
+entity-order 44 entities e1 e2 e3 e4
+entity 44 e1 4.608985212510526 1 1.0136231515638157 2.0129981922456498e-10 0 2.5162477403070623e-11 on-ground=true
+entity 44 e2 1.2996093750000002 1 -1.5 9.094947017729283e-14 0 0 on-ground=true
+entity 44 e3 1.2996093750000002 1 -3.5 9.094947017729283e-14 0 0 on-ground=true
+entity 44 e4 5.939992670066888 0 3.5 6.837576339884605e-08 0 0 on-ground=true
+
+entity-order 45 entities e1 e2 e3 e4
+entity 45 e1 4.608985212510526 1 1.0136231515638157 1.0064990961228249e-10 0 1.2581238701535311e-11 on-ground=true
+entity 45 e2 1.2996093750000002 1 -1.5 4.5474735088646414e-14 0 0 on-ground=true
+entity 45 e3 1.2996093750000002 1 -3.5 4.5474735088646414e-14 0 0 on-ground=true
+entity 45 e4 5.939992670066888 0 3.5 3.4187881699423023e-08 0 0 on-ground=true
+
+entity-order 46 entities e1 e2 e3 e4
+entity 46 e1 4.608985212510526 1 1.0136231515638157 5.0324954806141245e-11 0 6.290619350767656e-12 on-ground=true
+entity 46 e2 1.2996093750000002 1 -1.5 2.2737367544323207e-14 0 0 on-ground=true
+entity 46 e3 1.2996093750000002 1 -3.5 2.2737367544323207e-14 0 0 on-ground=true
+entity 46 e4 5.939992670066888 0 3.5 1.7093940849711512e-08 0 0 on-ground=true
+
+entity-order 47 entities e1 e2 e3 e4
+entity 47 e1 4.608985212510526 1 1.0136231515638157 2.5162477403070623e-11 0 3.145309675383828e-12 on-ground=true
+entity 47 e2 1.2996093750000002 1 -1.5 1.1368683772161604e-14 0 0 on-ground=true
+entity 47 e3 1.2996093750000002 1 -3.5 1.1368683772161604e-14 0 0 on-ground=true
+entity 47 e4 5.939992670066888 0 3.5 8.546970424855756e-09 0 0 on-ground=true
+
+entity-order 48 entities e1 e2 e3 e4
+entity 48 e1 4.608985212510526 1 1.0136231515638157 1.2581238701535311e-11 0 1.572654837691914e-12 on-ground=true
+entity 48 e2 1.2996093750000002 1 -1.5 5.684341886080802e-15 0 0 on-ground=true
+entity 48 e3 1.2996093750000002 1 -3.5 5.684341886080802e-15 0 0 on-ground=true
+entity 48 e4 5.939992670066888 0 3.5 4.273485212427878e-09 0 0 on-ground=true
+
+entity-order 49 entities e1 e2 e3 e4
+entity 49 e1 4.608985212510526 1 1.0136231515638157 6.290619350767656e-12 0 7.86327418845957e-13 on-ground=true
+entity 49 e2 1.2996093750000002 1 -1.5 2.842170943040401e-15 0 0 on-ground=true
+entity 49 e3 1.2996093750000002 1 -3.5 2.842170943040401e-15 0 0 on-ground=true
+entity 49 e4 5.939992670066888 0 3.5 2.136742606213939e-09 0 0 on-ground=true
+
+entity-order 50 entities e1 e2 e3 e4
+entity 50 e1 4.608985212510526 1 1.0136231515638157 3.145309675383828e-12 0 3.931637094229785e-13 on-ground=true
+entity 50 e2 1.2996093750000002 1 -1.5 1.4210854715202005e-15 0 0 on-ground=true
+entity 50 e3 1.2996093750000002 1 -3.5 1.4210854715202005e-15 0 0 on-ground=true
+entity 50 e4 5.939992670066888 0 3.5 1.0683713031069695e-09 0 0 on-ground=true
+
+entity-order 51 entities e1 e2 e3 e4
+entity 51 e1 4.608985212510526 1 1.0136231515638157 1.572654837691914e-12 0 1.9658185471148924e-13 on-ground=true
+entity 51 e2 1.2996093750000002 1 -1.5 7.105427357601002e-16 0 0 on-ground=true
+entity 51 e3 1.2996093750000002 1 -3.5 7.105427357601002e-16 0 0 on-ground=true
+entity 51 e4 5.939992670066888 0 3.5 5.341856515534847e-10 0 0 on-ground=true
+
+entity-order 52 entities e1 e2 e3 e4
+entity 52 e1 4.608985212510526 1 1.0136231515638157 7.86327418845957e-13 0 9.829092735574462e-14 on-ground=true
+entity 52 e2 1.2996093750000002 1 -1.5 3.552713678800501e-16 0 0 on-ground=true
+entity 52 e3 1.2996093750000002 1 -3.5 3.552713678800501e-16 0 0 on-ground=true
+entity 52 e4 5.939992670066888 0 3.5 2.6709282577674237e-10 0 0 on-ground=true
+
+entity-order 53 entities e1 e2 e3 e4
+entity 53 e1 4.608985212510526 1 1.0136231515638157 3.931637094229785e-13 0 4.914546367787231e-14 on-ground=true
+entity 53 e2 1.2996093750000002 1 -1.5 1.7763568394002506e-16 0 0 on-ground=true
+entity 53 e3 1.2996093750000002 1 -3.5 1.7763568394002506e-16 0 0 on-ground=true
+entity 53 e4 5.939992670066888 0 3.5 1.3354641288837119e-10 0 0 on-ground=true
+
+entity-order 54 entities e1 e2 e3 e4
+entity 54 e1 4.608985212510526 1 1.0136231515638157 1.9658185471148924e-13 0 2.4572731838936155e-14 on-ground=true
+entity 54 e2 1.2996093750000002 1 -1.5 8.881784197001253e-17 0 0 on-ground=true
+entity 54 e3 1.2996093750000002 1 -3.5 8.881784197001253e-17 0 0 on-ground=true
+entity 54 e4 5.939992670066888 0 3.5 6.677320644418559e-11 0 0 on-ground=true
+
+entity-order 55 entities e1 e2 e3 e4
+entity 55 e1 4.608985212510526 1 1.0136231515638157 9.829092735574462e-14 0 1.2286365919468077e-14 on-ground=true
+entity 55 e2 1.2996093750000002 1 -1.5 4.4408920985006264e-17 0 0 on-ground=true
+entity 55 e3 1.2996093750000002 1 -3.5 4.4408920985006264e-17 0 0 on-ground=true
+entity 55 e4 5.939992670066888 0 3.5 3.3386603222092796e-11 0 0 on-ground=true
+
+entity-order 56 entities e1 e2 e3 e4
+entity 56 e1 4.608985212510526 1 1.0136231515638157 4.914546367787231e-14 0 6.143182959734039e-15 on-ground=true
+entity 56 e2 1.2996093750000002 1 -1.5 2.2204460492503132e-17 0 0 on-ground=true
+entity 56 e3 1.2996093750000002 1 -3.5 2.2204460492503132e-17 0 0 on-ground=true
+entity 56 e4 5.939992670066888 0 3.5 1.6693301611046398e-11 0 0 on-ground=true
+
+entity-order 57 entities e1 e2 e3 e4
+entity 57 e1 4.608985212510526 1 1.0136231515638157 2.4572731838936155e-14 0 3.0715914798670194e-15 on-ground=true
+entity 57 e2 1.2996093750000002 1 -1.5 1.1102230246251566e-17 0 0 on-ground=true
+entity 57 e3 1.2996093750000002 1 -3.5 1.1102230246251566e-17 0 0 on-ground=true
+entity 57 e4 5.939992670066888 0 3.5 8.346650805523199e-12 0 0 on-ground=true
+
+entity-order 58 entities e1 e2 e3 e4
+entity 58 e1 4.608985212510526 1 1.0136231515638157 1.2286365919468077e-14 0 1.5357957399335097e-15 on-ground=true
+entity 58 e2 1.2996093750000002 1 -1.5 5.551115123125783e-18 0 0 on-ground=true
+entity 58 e3 1.2996093750000002 1 -3.5 5.551115123125783e-18 0 0 on-ground=true
+entity 58 e4 5.939992670066888 0 3.5 4.1733254027615995e-12 0 0 on-ground=true
+
+entity-order 59 entities e1 e2 e3 e4
+entity 59 e1 4.608985212510526 1 1.0136231515638157 6.143182959734039e-15 0 7.678978699667548e-16 on-ground=true
+entity 59 e2 1.2996093750000002 1 -1.5 2.7755575615628915e-18 0 0 on-ground=true
+entity 59 e3 1.2996093750000002 1 -3.5 2.7755575615628915e-18 0 0 on-ground=true
+entity 59 e4 5.939992670066888 0 3.5 2.0866627013807998e-12 0 0 on-ground=true
+
+entity-order 60 entities e1 e2 e3 e4
+entity 60 e1 4.608985212510526 1 1.0136231515638157 3.0715914798670194e-15 0 3.839489349833774e-16 on-ground=true
+entity 60 e2 1.2996093750000002 1 -1.5 1.3877787807814458e-18 0 0 on-ground=true
+entity 60 e3 1.2996093750000002 1 -3.5 1.3877787807814458e-18 0 0 on-ground=true
+entity 60 e4 5.939992670066888 0 3.5 1.0433313506903999e-12 0 0 on-ground=true

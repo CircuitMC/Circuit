@@ -80,8 +80,8 @@ Vec3d to_vec(contracts::Vec3 v) { return {v.x, v.y, v.z}; }
 // optional), Fire (short, `s` optional) and fuse (primed TNT). Anything else
 // is not modeled.
 std::expected<contracts::SummonEntity, std::string> summon(const std::string& command) {
-    const auto unsupported = std::format("command `{}`: summon is modeled for minecraft:tnt, minecraft:arrow and minecraft:snowball "
-                                         "at absolute coordinates with Motion, Fire and fuse",
+    const auto unsupported = std::format("command `{}`: summon is modeled for minecraft:tnt, minecraft:arrow, minecraft:snowball, "
+                                         "minecraft:minecart and boats at absolute coordinates with Motion, Fire and fuse",
                                          command);
     std::istringstream in(command);
     std::string word, type, xs, ys, zs;
@@ -138,7 +138,9 @@ std::expected<contracts::SummonEntity, std::string> summon(const std::string& co
             }
         }
     }
-    if (type != "minecraft:tnt" && type != "minecraft:arrow" && type != "minecraft:snowball") return std::unexpected(unsupported);
+    if (type != "minecraft:tnt" && type != "minecraft:arrow" && type != "minecraft:snowball" && type != "minecraft:minecart"
+        && std::ranges::find(gameplay::boat_types, type) == gameplay::boat_types.end())
+        return std::unexpected(unsupported);
     return c;
 }
 
@@ -445,7 +447,7 @@ public:
                     // The target versions load entities with their chunks
                     // outside the stages the harness instruments.
                     entities.push_back({tick, loading_ ? "other" : stage_of(r), loading_ ? EntityEvent::Kind::loaded : EntityEvent::Kind::added, it->second,
-                                        std::string(gameplay::entity_kind_name(kinds_.at(spawned_))), to_vec(spawn_position_),
+                                        std::string(gameplay::entity_type_name(kinds_.at(spawned_), stacks_.at(spawned_))), to_vec(spawn_position_),
                                         to_vec(velocity), payload_properties(kinds_.at(spawned_), stacks_.at(spawned_)), "", seq++, 0});
                 }
                 break;
@@ -496,7 +498,7 @@ public:
                 props.emplace_back("in-ground", e.in_ground ? "true" : "false");
                 props.emplace_back("life", std::to_string(e.life));
                 if (e.fire > 0) props.emplace_back("fire", std::to_string(e.fire));
-            } else if (e.kind == gameplay::EntityKind::snowball) {
+            } else if (e.kind != gameplay::EntityKind::item) {
                 if (e.fire > 0) props.emplace_back("fire", std::to_string(e.fire));
             } else {
                 props = stack_properties(contracts::pack_stack(e.stack));
@@ -540,7 +542,7 @@ private:
         if (kind == gameplay::EntityKind::falling_block)
             return {{"block", mapping_.notation(gameplay::BlockState::decode(static_cast<std::uint32_t>(payload)).value())}};
         if (kind == gameplay::EntityKind::primed_tnt) return {{"fuse", std::to_string(static_cast<std::int32_t>(payload))}};
-        if (kind == gameplay::EntityKind::arrow || kind == gameplay::EntityKind::snowball) return {};
+        if (kind != gameplay::EntityKind::item) return {};
         return stack_properties(payload);
     }
     Properties stack_properties(std::uint64_t packed) const {

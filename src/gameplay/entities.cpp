@@ -44,18 +44,23 @@ physics::ShapeAt shapes(RuleContext& ctx) {
     };
 }
 
+} // namespace
+
 // minecraft.wiki "Slipperiness": 0.6 but for ice (0.98), blue ice (0.989)
 // and slime blocks (0.8).
-float slipperiness(BlockState s) {
+float detail::slipperiness(BlockState s) {
+    if (s.is(BlockType::slime_block)) return 0.8f;
     if (!s.is(BlockType::other)) return 0.6f;
     const auto block = registry::block_of(s.registry_state());
     if (!block) return 0.6f;
     const auto name = registry::block(*block).name;
     if (name == "ice" || name == "packed_ice" || name == "frosted_ice") return 0.98f;
     if (name == "blue_ice") return 0.989f;
-    if (name == "slime_block") return 0.8f;
     return 0.6f;
 }
+
+namespace {
+using detail::slipperiness;
 
 // ---- water ---------------------------------------------------------------
 //
@@ -298,6 +303,8 @@ physics::Aabb entity_box(const Entity& e) {
     switch (e.kind) {
     case EntityKind::item: case EntityKind::snowball: return physics::box_at(e.position, item_size, item_size);
     case EntityKind::arrow: return physics::box_at(e.position, 0.5, 0.5);
+    case EntityKind::minecart: return physics::box_at(e.position, static_cast<double>(0.98f), static_cast<double>(0.7f));
+    case EntityKind::boat: return physics::box_at(e.position, 1.375, 0.5625);
     default: break;
     }
     const double size = static_cast<double>(0.98f);
@@ -342,6 +349,8 @@ void run_entity(RuleContext& ctx, EntityId id) {
     case EntityKind::primed_tnt: detail::run_primed_tnt(ctx, id, *e); break;
     case EntityKind::arrow: detail::run_arrow(ctx, id, *e); break;
     case EntityKind::snowball: detail::run_snowball(ctx, id, *e); break;
+    case EntityKind::minecart: detail::run_minecart(ctx, id, *e); break;
+    case EntityKind::boat: detail::run_boat(ctx, id, *e); break;
     }
 }
 

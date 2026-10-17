@@ -189,7 +189,8 @@ float exposure(RuleContext& ctx, Vec3 center, const physics::Aabb& box) {
 
 // The height of an entity's eyes above its feet.
 double eye_height(const Entity& e) {
-    const float height = e.kind == EntityKind::item ? 0.25f : 0.98f;
+    const auto box = entity_box(e);
+    const auto height = static_cast<float>(box.max_y - box.min_y);
     return static_cast<double>(height * 0.85f);
 }
 

@@ -1,0 +1,1199 @@
+circuit-trace 2
+title Boats sink under water, slide on land and blue ice and fall off an edge
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v10
+mechanisms vehicle water
+area -4 0 -8 24 7 8
+ticks 70
+changes ordered
+entities observed
+rng observed
+
+at 0 set -4 0 -8 minecraft:obsidian
+at 0 set -4 0 -7 minecraft:obsidian
+at 0 set -4 0 -6 minecraft:obsidian
+at 0 set -4 0 -5 minecraft:obsidian
+at 0 set -4 0 -4 minecraft:obsidian
+at 0 set -4 0 -3 minecraft:obsidian
+at 0 set -4 0 -2 minecraft:obsidian
+at 0 set -4 0 -1 minecraft:obsidian
+at 0 set -4 0 0 minecraft:obsidian
+at 0 set -4 0 1 minecraft:obsidian
+at 0 set -4 0 2 minecraft:obsidian
+at 0 set -4 0 3 minecraft:obsidian
+at 0 set -4 0 4 minecraft:obsidian
+at 0 set -4 0 5 minecraft:obsidian
+at 0 set -4 0 6 minecraft:obsidian
+at 0 set -4 0 7 minecraft:obsidian
+at 0 set -4 0 8 minecraft:obsidian
+at 0 set -3 0 -8 minecraft:obsidian
+at 0 set -3 0 -7 minecraft:obsidian
+at 0 set -3 0 -6 minecraft:obsidian
+at 0 set -3 0 -5 minecraft:obsidian
+at 0 set -3 0 -4 minecraft:obsidian
+at 0 set -3 0 -3 minecraft:obsidian
+at 0 set -3 0 -2 minecraft:obsidian
+at 0 set -3 0 -1 minecraft:obsidian
+at 0 set -3 0 0 minecraft:obsidian
+at 0 set -3 0 1 minecraft:obsidian
+at 0 set -3 0 2 minecraft:obsidian
+at 0 set -3 0 3 minecraft:obsidian
+at 0 set -3 0 4 minecraft:obsidian
+at 0 set -3 0 5 minecraft:obsidian
+at 0 set -3 0 6 minecraft:obsidian
+at 0 set -3 0 7 minecraft:obsidian
+at 0 set -3 0 8 minecraft:obsidian
+at 0 set -2 0 -8 minecraft:obsidian
+at 0 set -2 0 -7 minecraft:obsidian
+at 0 set -2 0 -6 minecraft:obsidian
+at 0 set -2 0 -5 minecraft:obsidian
+at 0 set -2 0 -4 minecraft:obsidian
+at 0 set -2 0 -3 minecraft:obsidian
+at 0 set -2 0 -2 minecraft:obsidian
+at 0 set -2 0 -1 minecraft:obsidian
+at 0 set -2 0 0 minecraft:obsidian
+at 0 set -2 0 1 minecraft:obsidian
+at 0 set -2 0 2 minecraft:obsidian
+at 0 set -2 0 3 minecraft:obsidian
+at 0 set -2 0 4 minecraft:obsidian
+at 0 set -2 0 5 minecraft:obsidian
+at 0 set -2 0 6 minecraft:obsidian
+at 0 set -2 0 7 minecraft:obsidian
+at 0 set -2 0 8 minecraft:obsidian
+at 0 set -1 0 -8 minecraft:obsidian
+at 0 set -1 0 -7 minecraft:obsidian
+at 0 set -1 0 -6 minecraft:obsidian
+at 0 set -1 0 -5 minecraft:obsidian
+at 0 set -1 0 -4 minecraft:obsidian
+at 0 set -1 0 -3 minecraft:obsidian
+at 0 set -1 0 -2 minecraft:obsidian
+at 0 set -1 0 -1 minecraft:obsidian
+at 0 set -1 0 0 minecraft:obsidian
+at 0 set -1 0 1 minecraft:obsidian
+at 0 set -1 0 2 minecraft:obsidian
+at 0 set -1 0 3 minecraft:obsidian
+at 0 set -1 0 4 minecraft:obsidian
+at 0 set -1 0 5 minecraft:obsidian
+at 0 set -1 0 6 minecraft:obsidian
+at 0 set -1 0 7 minecraft:obsidian
+at 0 set -1 0 8 minecraft:obsidian
+at 0 set 0 0 -8 minecraft:obsidian
+at 0 set 0 0 -7 minecraft:obsidian
+at 0 set 0 0 -6 minecraft:obsidian
+at 0 set 0 0 -5 minecraft:obsidian
+at 0 set 0 0 -4 minecraft:obsidian
+at 0 set 0 0 -3 minecraft:obsidian
+at 0 set 0 0 -2 minecraft:obsidian
+at 0 set 0 0 -1 minecraft:obsidian
+at 0 set 0 0 0 minecraft:obsidian
+at 0 set 0 0 1 minecraft:obsidian
+at 0 set 0 0 2 minecraft:obsidian
+at 0 set 0 0 3 minecraft:obsidian
+at 0 set 0 0 4 minecraft:obsidian
+at 0 set 0 0 5 minecraft:obsidian
+at 0 set 0 0 6 minecraft:obsidian
+at 0 set 0 0 7 minecraft:obsidian
+at 0 set 0 0 8 minecraft:obsidian
+at 0 set 1 0 -8 minecraft:obsidian
+at 0 set 1 0 -7 minecraft:obsidian
+at 0 set 1 0 -6 minecraft:obsidian
+at 0 set 1 0 -5 minecraft:obsidian
+at 0 set 1 0 -4 minecraft:obsidian
+at 0 set 1 0 -3 minecraft:obsidian
+at 0 set 1 0 -2 minecraft:obsidian
+at 0 set 1 0 -1 minecraft:obsidian
+at 0 set 1 0 0 minecraft:obsidian
+at 0 set 1 0 1 minecraft:obsidian
+at 0 set 1 0 2 minecraft:obsidian
+at 0 set 1 0 3 minecraft:obsidian
+at 0 set 1 0 4 minecraft:obsidian
+at 0 set 1 0 5 minecraft:obsidian
+at 0 set 1 0 6 minecraft:obsidian
+at 0 set 1 0 7 minecraft:obsidian
+at 0 set 1 0 8 minecraft:obsidian
+at 0 set 2 0 -8 minecraft:obsidian
+at 0 set 2 0 -7 minecraft:obsidian
+at 0 set 2 0 -6 minecraft:obsidian
+at 0 set 2 0 -5 minecraft:obsidian
+at 0 set 2 0 -4 minecraft:obsidian
+at 0 set 2 0 -3 minecraft:obsidian
+at 0 set 2 0 -2 minecraft:obsidian
+at 0 set 2 0 -1 minecraft:obsidian
+at 0 set 2 0 0 minecraft:obsidian
+at 0 set 2 0 1 minecraft:obsidian
+at 0 set 2 0 2 minecraft:obsidian
+at 0 set 2 0 3 minecraft:obsidian
+at 0 set 2 0 4 minecraft:obsidian
+at 0 set 2 0 5 minecraft:obsidian
+at 0 set 2 0 6 minecraft:obsidian
+at 0 set 2 0 7 minecraft:obsidian
+at 0 set 2 0 8 minecraft:obsidian
+at 0 set 3 0 -8 minecraft:obsidian
+at 0 set 3 0 -7 minecraft:obsidian
+at 0 set 3 0 -6 minecraft:obsidian
+at 0 set 3 0 -5 minecraft:obsidian
+at 0 set 3 0 -4 minecraft:obsidian
+at 0 set 3 0 -3 minecraft:obsidian
+at 0 set 3 0 -2 minecraft:obsidian
+at 0 set 3 0 -1 minecraft:obsidian
+at 0 set 3 0 0 minecraft:obsidian
+at 0 set 3 0 1 minecraft:obsidian
+at 0 set 3 0 2 minecraft:obsidian
+at 0 set 3 0 3 minecraft:obsidian
+at 0 set 3 0 4 minecraft:obsidian
+at 0 set 3 0 5 minecraft:obsidian
+at 0 set 3 0 6 minecraft:obsidian
+at 0 set 3 0 7 minecraft:obsidian
+at 0 set 3 0 8 minecraft:obsidian
+at 0 set 4 0 -8 minecraft:obsidian
+at 0 set 4 0 -7 minecraft:obsidian
+at 0 set 4 0 -6 minecraft:obsidian
+at 0 set 4 0 -5 minecraft:obsidian
+at 0 set 4 0 -4 minecraft:obsidian
+at 0 set 4 0 -3 minecraft:obsidian
+at 0 set 4 0 -2 minecraft:obsidian
+at 0 set 4 0 -1 minecraft:obsidian
+at 0 set 4 0 0 minecraft:obsidian
+at 0 set 4 0 1 minecraft:obsidian
+at 0 set 4 0 2 minecraft:obsidian
+at 0 set 4 0 3 minecraft:obsidian
+at 0 set 4 0 4 minecraft:obsidian
+at 0 set 4 0 5 minecraft:obsidian
+at 0 set 4 0 6 minecraft:obsidian
+at 0 set 4 0 7 minecraft:obsidian
+at 0 set 4 0 8 minecraft:obsidian
+at 0 set 5 0 -8 minecraft:obsidian
+at 0 set 5 0 -7 minecraft:obsidian
+at 0 set 5 0 -6 minecraft:obsidian
+at 0 set 5 0 -5 minecraft:obsidian
+at 0 set 5 0 -4 minecraft:obsidian
+at 0 set 5 0 -3 minecraft:obsidian
+at 0 set 5 0 -2 minecraft:obsidian
+at 0 set 5 0 -1 minecraft:obsidian
+at 0 set 5 0 0 minecraft:obsidian
+at 0 set 5 0 1 minecraft:obsidian
+at 0 set 5 0 2 minecraft:obsidian
+at 0 set 5 0 3 minecraft:obsidian
+at 0 set 5 0 4 minecraft:obsidian
+at 0 set 5 0 5 minecraft:obsidian
+at 0 set 5 0 6 minecraft:obsidian
+at 0 set 5 0 7 minecraft:obsidian
+at 0 set 5 0 8 minecraft:obsidian
+at 0 set 6 0 -8 minecraft:obsidian
+at 0 set 6 0 -7 minecraft:obsidian
+at 0 set 6 0 -6 minecraft:obsidian
+at 0 set 6 0 -5 minecraft:obsidian
+at 0 set 6 0 -4 minecraft:obsidian
+at 0 set 6 0 -3 minecraft:obsidian
+at 0 set 6 0 -2 minecraft:obsidian
+at 0 set 6 0 -1 minecraft:obsidian
+at 0 set 6 0 0 minecraft:obsidian
+at 0 set 6 0 1 minecraft:obsidian
+at 0 set 6 0 2 minecraft:obsidian
+at 0 set 6 0 3 minecraft:obsidian
+at 0 set 6 0 4 minecraft:obsidian
+at 0 set 6 0 5 minecraft:obsidian
+at 0 set 6 0 6 minecraft:obsidian
+at 0 set 6 0 7 minecraft:obsidian
+at 0 set 6 0 8 minecraft:obsidian
+at 0 set 7 0 -8 minecraft:obsidian
+at 0 set 7 0 -7 minecraft:obsidian
+at 0 set 7 0 -6 minecraft:obsidian
+at 0 set 7 0 -5 minecraft:obsidian
+at 0 set 7 0 -4 minecraft:obsidian
+at 0 set 7 0 -3 minecraft:obsidian
+at 0 set 7 0 -2 minecraft:obsidian
+at 0 set 7 0 -1 minecraft:obsidian
+at 0 set 7 0 0 minecraft:obsidian
+at 0 set 7 0 1 minecraft:obsidian
+at 0 set 7 0 2 minecraft:obsidian
+at 0 set 7 0 3 minecraft:obsidian
+at 0 set 7 0 4 minecraft:obsidian
+at 0 set 7 0 5 minecraft:obsidian
+at 0 set 7 0 6 minecraft:obsidian
+at 0 set 7 0 7 minecraft:obsidian
+at 0 set 7 0 8 minecraft:obsidian
+at 0 set 8 0 -8 minecraft:obsidian
+at 0 set 8 0 -7 minecraft:obsidian
+at 0 set 8 0 -6 minecraft:obsidian
+at 0 set 8 0 -5 minecraft:obsidian
+at 0 set 8 0 -4 minecraft:obsidian
+at 0 set 8 0 -3 minecraft:obsidian
+at 0 set 8 0 -2 minecraft:obsidian
+at 0 set 8 0 -1 minecraft:obsidian
+at 0 set 8 0 0 minecraft:obsidian
+at 0 set 8 0 1 minecraft:obsidian
+at 0 set 8 0 2 minecraft:obsidian
+at 0 set 8 0 3 minecraft:obsidian
+at 0 set 8 0 4 minecraft:obsidian
+at 0 set 8 0 5 minecraft:obsidian
+at 0 set 8 0 6 minecraft:obsidian
+at 0 set 8 0 7 minecraft:obsidian
+at 0 set 8 0 8 minecraft:obsidian
+at 0 set 9 0 -8 minecraft:obsidian
+at 0 set 9 0 -7 minecraft:obsidian
+at 0 set 9 0 -6 minecraft:obsidian
+at 0 set 9 0 -5 minecraft:obsidian
+at 0 set 9 0 -4 minecraft:obsidian
+at 0 set 9 0 -3 minecraft:obsidian
+at 0 set 9 0 -2 minecraft:obsidian
+at 0 set 9 0 -1 minecraft:obsidian
+at 0 set 9 0 0 minecraft:obsidian
+at 0 set 9 0 1 minecraft:obsidian
+at 0 set 9 0 2 minecraft:obsidian
+at 0 set 9 0 3 minecraft:obsidian
+at 0 set 9 0 4 minecraft:obsidian
+at 0 set 9 0 5 minecraft:obsidian
+at 0 set 9 0 6 minecraft:obsidian
+at 0 set 9 0 7 minecraft:obsidian
+at 0 set 9 0 8 minecraft:obsidian
+at 0 set 10 0 -8 minecraft:obsidian
+at 0 set 10 0 -7 minecraft:obsidian
+at 0 set 10 0 -6 minecraft:obsidian
+at 0 set 10 0 -5 minecraft:obsidian
+at 0 set 10 0 -4 minecraft:obsidian
+at 0 set 10 0 -3 minecraft:obsidian
+at 0 set 10 0 -2 minecraft:obsidian
+at 0 set 10 0 -1 minecraft:obsidian
+at 0 set 10 0 0 minecraft:obsidian
+at 0 set 10 0 1 minecraft:obsidian
+at 0 set 10 0 2 minecraft:obsidian
+at 0 set 10 0 3 minecraft:obsidian
+at 0 set 10 0 4 minecraft:obsidian
+at 0 set 10 0 5 minecraft:obsidian
+at 0 set 10 0 6 minecraft:obsidian
+at 0 set 10 0 7 minecraft:obsidian
+at 0 set 10 0 8 minecraft:obsidian
+at 0 set 11 0 -8 minecraft:obsidian
+at 0 set 11 0 -7 minecraft:obsidian
+at 0 set 11 0 -6 minecraft:obsidian
+at 0 set 11 0 -5 minecraft:obsidian
+at 0 set 11 0 -4 minecraft:obsidian
+at 0 set 11 0 -3 minecraft:obsidian
+at 0 set 11 0 -2 minecraft:obsidian
+at 0 set 11 0 -1 minecraft:obsidian
+at 0 set 11 0 0 minecraft:obsidian
+at 0 set 11 0 1 minecraft:obsidian
+at 0 set 11 0 2 minecraft:obsidian
+at 0 set 11 0 3 minecraft:obsidian
+at 0 set 11 0 4 minecraft:obsidian
+at 0 set 11 0 5 minecraft:obsidian
+at 0 set 11 0 6 minecraft:obsidian
+at 0 set 11 0 7 minecraft:obsidian
+at 0 set 11 0 8 minecraft:obsidian
+at 0 set 12 0 -8 minecraft:obsidian
+at 0 set 12 0 -7 minecraft:obsidian
+at 0 set 12 0 -6 minecraft:obsidian
+at 0 set 12 0 -5 minecraft:obsidian
+at 0 set 12 0 -4 minecraft:obsidian
+at 0 set 12 0 -3 minecraft:obsidian
+at 0 set 12 0 -2 minecraft:obsidian
+at 0 set 12 0 -1 minecraft:obsidian
+at 0 set 12 0 0 minecraft:obsidian
+at 0 set 12 0 1 minecraft:obsidian
+at 0 set 12 0 2 minecraft:obsidian
+at 0 set 12 0 3 minecraft:obsidian
+at 0 set 12 0 4 minecraft:obsidian
+at 0 set 12 0 5 minecraft:obsidian
+at 0 set 12 0 6 minecraft:obsidian
+at 0 set 12 0 7 minecraft:obsidian
+at 0 set 12 0 8 minecraft:obsidian
+at 0 set 13 0 -8 minecraft:obsidian
+at 0 set 13 0 -7 minecraft:obsidian
+at 0 set 13 0 -6 minecraft:obsidian
+at 0 set 13 0 -5 minecraft:obsidian
+at 0 set 13 0 -4 minecraft:obsidian
+at 0 set 13 0 -3 minecraft:obsidian
+at 0 set 13 0 -2 minecraft:obsidian
+at 0 set 13 0 -1 minecraft:obsidian
+at 0 set 13 0 0 minecraft:obsidian
+at 0 set 13 0 1 minecraft:obsidian
+at 0 set 13 0 2 minecraft:obsidian
+at 0 set 13 0 3 minecraft:obsidian
+at 0 set 13 0 4 minecraft:obsidian
+at 0 set 13 0 5 minecraft:obsidian
+at 0 set 13 0 6 minecraft:obsidian
+at 0 set 13 0 7 minecraft:obsidian
+at 0 set 13 0 8 minecraft:obsidian
+at 0 set 14 0 -8 minecraft:obsidian
+at 0 set 14 0 -7 minecraft:obsidian
+at 0 set 14 0 -6 minecraft:obsidian
+at 0 set 14 0 -5 minecraft:obsidian
+at 0 set 14 0 -4 minecraft:obsidian
+at 0 set 14 0 -3 minecraft:obsidian
+at 0 set 14 0 -2 minecraft:obsidian
+at 0 set 14 0 -1 minecraft:obsidian
+at 0 set 14 0 0 minecraft:obsidian
+at 0 set 14 0 1 minecraft:obsidian
+at 0 set 14 0 2 minecraft:obsidian
+at 0 set 14 0 3 minecraft:obsidian
+at 0 set 14 0 4 minecraft:obsidian
+at 0 set 14 0 5 minecraft:obsidian
+at 0 set 14 0 6 minecraft:obsidian
+at 0 set 14 0 7 minecraft:obsidian
+at 0 set 14 0 8 minecraft:obsidian
+at 0 set 15 0 -8 minecraft:obsidian
+at 0 set 15 0 -7 minecraft:obsidian
+at 0 set 15 0 -6 minecraft:obsidian
+at 0 set 15 0 -5 minecraft:obsidian
+at 0 set 15 0 -4 minecraft:obsidian
+at 0 set 15 0 -3 minecraft:obsidian
+at 0 set 15 0 -2 minecraft:obsidian
+at 0 set 15 0 -1 minecraft:obsidian
+at 0 set 15 0 0 minecraft:obsidian
+at 0 set 15 0 1 minecraft:obsidian
+at 0 set 15 0 2 minecraft:obsidian
+at 0 set 15 0 3 minecraft:obsidian
+at 0 set 15 0 4 minecraft:obsidian
+at 0 set 15 0 5 minecraft:obsidian
+at 0 set 15 0 6 minecraft:obsidian
+at 0 set 15 0 7 minecraft:obsidian
+at 0 set 15 0 8 minecraft:obsidian
+at 0 set 16 0 -8 minecraft:obsidian
+at 0 set 16 0 -7 minecraft:obsidian
+at 0 set 16 0 -6 minecraft:obsidian
+at 0 set 16 0 -5 minecraft:obsidian
+at 0 set 16 0 -4 minecraft:obsidian
+at 0 set 16 0 -3 minecraft:obsidian
+at 0 set 16 0 -2 minecraft:obsidian
+at 0 set 16 0 -1 minecraft:obsidian
+at 0 set 16 0 0 minecraft:obsidian
+at 0 set 16 0 1 minecraft:obsidian
+at 0 set 16 0 2 minecraft:obsidian
+at 0 set 16 0 3 minecraft:obsidian
+at 0 set 16 0 4 minecraft:obsidian
+at 0 set 16 0 5 minecraft:obsidian
+at 0 set 16 0 6 minecraft:obsidian
+at 0 set 16 0 7 minecraft:obsidian
+at 0 set 16 0 8 minecraft:obsidian
+at 0 set 17 0 -8 minecraft:obsidian
+at 0 set 17 0 -7 minecraft:obsidian
+at 0 set 17 0 -6 minecraft:obsidian
+at 0 set 17 0 -5 minecraft:obsidian
+at 0 set 17 0 -4 minecraft:obsidian
+at 0 set 17 0 -3 minecraft:obsidian
+at 0 set 17 0 -2 minecraft:obsidian
+at 0 set 17 0 -1 minecraft:obsidian
+at 0 set 17 0 0 minecraft:obsidian
+at 0 set 17 0 1 minecraft:obsidian
+at 0 set 17 0 2 minecraft:obsidian
+at 0 set 17 0 3 minecraft:obsidian
+at 0 set 17 0 4 minecraft:obsidian
+at 0 set 17 0 5 minecraft:obsidian
+at 0 set 17 0 6 minecraft:obsidian
+at 0 set 17 0 7 minecraft:obsidian
+at 0 set 17 0 8 minecraft:obsidian
+at 0 set 18 0 -8 minecraft:obsidian
+at 0 set 18 0 -7 minecraft:obsidian
+at 0 set 18 0 -6 minecraft:obsidian
+at 0 set 18 0 -5 minecraft:obsidian
+at 0 set 18 0 -4 minecraft:obsidian
+at 0 set 18 0 -3 minecraft:obsidian
+at 0 set 18 0 -2 minecraft:obsidian
+at 0 set 18 0 -1 minecraft:obsidian
+at 0 set 18 0 0 minecraft:obsidian
+at 0 set 18 0 1 minecraft:obsidian
+at 0 set 18 0 2 minecraft:obsidian
+at 0 set 18 0 3 minecraft:obsidian
+at 0 set 18 0 4 minecraft:obsidian
+at 0 set 18 0 5 minecraft:obsidian
+at 0 set 18 0 6 minecraft:obsidian
+at 0 set 18 0 7 minecraft:obsidian
+at 0 set 18 0 8 minecraft:obsidian
+at 0 set 19 0 -8 minecraft:obsidian
+at 0 set 19 0 -7 minecraft:obsidian
+at 0 set 19 0 -6 minecraft:obsidian
+at 0 set 19 0 -5 minecraft:obsidian
+at 0 set 19 0 -4 minecraft:obsidian
+at 0 set 19 0 -3 minecraft:obsidian
+at 0 set 19 0 -2 minecraft:obsidian
+at 0 set 19 0 -1 minecraft:obsidian
+at 0 set 19 0 0 minecraft:obsidian
+at 0 set 19 0 1 minecraft:obsidian
+at 0 set 19 0 2 minecraft:obsidian
+at 0 set 19 0 3 minecraft:obsidian
+at 0 set 19 0 4 minecraft:obsidian
+at 0 set 19 0 5 minecraft:obsidian
+at 0 set 19 0 6 minecraft:obsidian
+at 0 set 19 0 7 minecraft:obsidian
+at 0 set 19 0 8 minecraft:obsidian
+at 0 set 20 0 -8 minecraft:obsidian
+at 0 set 20 0 -7 minecraft:obsidian
+at 0 set 20 0 -6 minecraft:obsidian
+at 0 set 20 0 -5 minecraft:obsidian
+at 0 set 20 0 -4 minecraft:obsidian
+at 0 set 20 0 -3 minecraft:obsidian
+at 0 set 20 0 -2 minecraft:obsidian
+at 0 set 20 0 -1 minecraft:obsidian
+at 0 set 20 0 0 minecraft:obsidian
+at 0 set 20 0 1 minecraft:obsidian
+at 0 set 20 0 2 minecraft:obsidian
+at 0 set 20 0 3 minecraft:obsidian
+at 0 set 20 0 4 minecraft:obsidian
+at 0 set 20 0 5 minecraft:obsidian
+at 0 set 20 0 6 minecraft:obsidian
+at 0 set 20 0 7 minecraft:obsidian
+at 0 set 20 0 8 minecraft:obsidian
+at 0 set 21 0 -8 minecraft:obsidian
+at 0 set 21 0 -7 minecraft:obsidian
+at 0 set 21 0 -6 minecraft:obsidian
+at 0 set 21 0 -5 minecraft:obsidian
+at 0 set 21 0 -4 minecraft:obsidian
+at 0 set 21 0 -3 minecraft:obsidian
+at 0 set 21 0 -2 minecraft:obsidian
+at 0 set 21 0 -1 minecraft:obsidian
+at 0 set 21 0 0 minecraft:obsidian
+at 0 set 21 0 1 minecraft:obsidian
+at 0 set 21 0 2 minecraft:obsidian
+at 0 set 21 0 3 minecraft:obsidian
+at 0 set 21 0 4 minecraft:obsidian
+at 0 set 21 0 5 minecraft:obsidian
+at 0 set 21 0 6 minecraft:obsidian
+at 0 set 21 0 7 minecraft:obsidian
+at 0 set 21 0 8 minecraft:obsidian
+at 0 set 22 0 -8 minecraft:obsidian
+at 0 set 22 0 -7 minecraft:obsidian
+at 0 set 22 0 -6 minecraft:obsidian
+at 0 set 22 0 -5 minecraft:obsidian
+at 0 set 22 0 -4 minecraft:obsidian
+at 0 set 22 0 -3 minecraft:obsidian
+at 0 set 22 0 -2 minecraft:obsidian
+at 0 set 22 0 -1 minecraft:obsidian
+at 0 set 22 0 0 minecraft:obsidian
+at 0 set 22 0 1 minecraft:obsidian
+at 0 set 22 0 2 minecraft:obsidian
+at 0 set 22 0 3 minecraft:obsidian
+at 0 set 22 0 4 minecraft:obsidian
+at 0 set 22 0 5 minecraft:obsidian
+at 0 set 22 0 6 minecraft:obsidian
+at 0 set 22 0 7 minecraft:obsidian
+at 0 set 22 0 8 minecraft:obsidian
+at 0 set 23 0 -8 minecraft:obsidian
+at 0 set 23 0 -7 minecraft:obsidian
+at 0 set 23 0 -6 minecraft:obsidian
+at 0 set 23 0 -5 minecraft:obsidian
+at 0 set 23 0 -4 minecraft:obsidian
+at 0 set 23 0 -3 minecraft:obsidian
+at 0 set 23 0 -2 minecraft:obsidian
+at 0 set 23 0 -1 minecraft:obsidian
+at 0 set 23 0 0 minecraft:obsidian
+at 0 set 23 0 1 minecraft:obsidian
+at 0 set 23 0 2 minecraft:obsidian
+at 0 set 23 0 3 minecraft:obsidian
+at 0 set 23 0 4 minecraft:obsidian
+at 0 set 23 0 5 minecraft:obsidian
+at 0 set 23 0 6 minecraft:obsidian
+at 0 set 23 0 7 minecraft:obsidian
+at 0 set 23 0 8 minecraft:obsidian
+at 0 set 24 0 -8 minecraft:obsidian
+at 0 set 24 0 -7 minecraft:obsidian
+at 0 set 24 0 -6 minecraft:obsidian
+at 0 set 24 0 -5 minecraft:obsidian
+at 0 set 24 0 -4 minecraft:obsidian
+at 0 set 24 0 -3 minecraft:obsidian
+at 0 set 24 0 -2 minecraft:obsidian
+at 0 set 24 0 -1 minecraft:obsidian
+at 0 set 24 0 0 minecraft:obsidian
+at 0 set 24 0 1 minecraft:obsidian
+at 0 set 24 0 2 minecraft:obsidian
+at 0 set 24 0 3 minecraft:obsidian
+at 0 set 24 0 4 minecraft:obsidian
+at 0 set 24 0 5 minecraft:obsidian
+at 0 set 24 0 6 minecraft:obsidian
+at 0 set 24 0 7 minecraft:obsidian
+at 0 set 24 0 8 minecraft:obsidian
+at 0 set 0 1 -6 minecraft:water[level=0]
+at 0 set 0 2 -6 minecraft:water[level=0]
+at 0 set 0 3 -6 minecraft:water[level=0]
+at 0 set 0 1 -5 minecraft:water[level=0]
+at 0 set 0 2 -5 minecraft:water[level=0]
+at 0 set 0 3 -5 minecraft:water[level=0]
+at 0 set 0 1 -4 minecraft:water[level=0]
+at 0 set 0 2 -4 minecraft:water[level=0]
+at 0 set 0 3 -4 minecraft:water[level=0]
+at 0 set 0 1 -3 minecraft:water[level=0]
+at 0 set 0 2 -3 minecraft:water[level=0]
+at 0 set 0 3 -3 minecraft:water[level=0]
+at 0 set 0 1 -2 minecraft:water[level=0]
+at 0 set 0 2 -2 minecraft:water[level=0]
+at 0 set 0 3 -2 minecraft:water[level=0]
+at 0 set 1 1 -6 minecraft:water[level=0]
+at 0 set 1 2 -6 minecraft:water[level=0]
+at 0 set 1 3 -6 minecraft:water[level=0]
+at 0 set 1 1 -5 minecraft:water[level=0]
+at 0 set 1 2 -5 minecraft:water[level=0]
+at 0 set 1 3 -5 minecraft:water[level=0]
+at 0 set 1 1 -4 minecraft:water[level=0]
+at 0 set 1 2 -4 minecraft:water[level=0]
+at 0 set 1 3 -4 minecraft:water[level=0]
+at 0 set 1 1 -3 minecraft:water[level=0]
+at 0 set 1 2 -3 minecraft:water[level=0]
+at 0 set 1 3 -3 minecraft:water[level=0]
+at 0 set 1 1 -2 minecraft:water[level=0]
+at 0 set 1 2 -2 minecraft:water[level=0]
+at 0 set 1 3 -2 minecraft:water[level=0]
+at 0 set 2 1 -6 minecraft:water[level=0]
+at 0 set 2 2 -6 minecraft:water[level=0]
+at 0 set 2 3 -6 minecraft:water[level=0]
+at 0 set 2 1 -5 minecraft:water[level=0]
+at 0 set 2 2 -5 minecraft:water[level=0]
+at 0 set 2 3 -5 minecraft:water[level=0]
+at 0 set 2 1 -4 minecraft:water[level=0]
+at 0 set 2 2 -4 minecraft:water[level=0]
+at 0 set 2 3 -4 minecraft:water[level=0]
+at 0 set 2 1 -3 minecraft:water[level=0]
+at 0 set 2 2 -3 minecraft:water[level=0]
+at 0 set 2 3 -3 minecraft:water[level=0]
+at 0 set 2 1 -2 minecraft:water[level=0]
+at 0 set 2 2 -2 minecraft:water[level=0]
+at 0 set 2 3 -2 minecraft:water[level=0]
+at 0 set 3 1 -6 minecraft:water[level=0]
+at 0 set 3 2 -6 minecraft:water[level=0]
+at 0 set 3 3 -6 minecraft:water[level=0]
+at 0 set 3 1 -5 minecraft:water[level=0]
+at 0 set 3 2 -5 minecraft:water[level=0]
+at 0 set 3 3 -5 minecraft:water[level=0]
+at 0 set 3 1 -4 minecraft:water[level=0]
+at 0 set 3 2 -4 minecraft:water[level=0]
+at 0 set 3 3 -4 minecraft:water[level=0]
+at 0 set 3 1 -3 minecraft:water[level=0]
+at 0 set 3 2 -3 minecraft:water[level=0]
+at 0 set 3 3 -3 minecraft:water[level=0]
+at 0 set 3 1 -2 minecraft:water[level=0]
+at 0 set 3 2 -2 minecraft:water[level=0]
+at 0 set 3 3 -2 minecraft:water[level=0]
+at 0 set 4 1 -6 minecraft:water[level=0]
+at 0 set 4 2 -6 minecraft:water[level=0]
+at 0 set 4 3 -6 minecraft:water[level=0]
+at 0 set 4 1 -5 minecraft:water[level=0]
+at 0 set 4 2 -5 minecraft:water[level=0]
+at 0 set 4 3 -5 minecraft:water[level=0]
+at 0 set 4 1 -4 minecraft:water[level=0]
+at 0 set 4 2 -4 minecraft:water[level=0]
+at 0 set 4 3 -4 minecraft:water[level=0]
+at 0 set 4 1 -3 minecraft:water[level=0]
+at 0 set 4 2 -3 minecraft:water[level=0]
+at 0 set 4 3 -3 minecraft:water[level=0]
+at 0 set 4 1 -2 minecraft:water[level=0]
+at 0 set 4 2 -2 minecraft:water[level=0]
+at 0 set 4 3 -2 minecraft:water[level=0]
+at 0 set 5 1 -6 minecraft:water[level=0]
+at 0 set 5 2 -6 minecraft:water[level=0]
+at 0 set 5 3 -6 minecraft:water[level=0]
+at 0 set 5 1 -5 minecraft:water[level=0]
+at 0 set 5 2 -5 minecraft:water[level=0]
+at 0 set 5 3 -5 minecraft:water[level=0]
+at 0 set 5 1 -4 minecraft:water[level=0]
+at 0 set 5 2 -4 minecraft:water[level=0]
+at 0 set 5 3 -4 minecraft:water[level=0]
+at 0 set 5 1 -3 minecraft:water[level=0]
+at 0 set 5 2 -3 minecraft:water[level=0]
+at 0 set 5 3 -3 minecraft:water[level=0]
+at 0 set 5 1 -2 minecraft:water[level=0]
+at 0 set 5 2 -2 minecraft:water[level=0]
+at 0 set 5 3 -2 minecraft:water[level=0]
+at 0 set 6 1 -6 minecraft:water[level=0]
+at 0 set 6 2 -6 minecraft:water[level=0]
+at 0 set 6 3 -6 minecraft:water[level=0]
+at 0 set 6 1 -5 minecraft:water[level=0]
+at 0 set 6 2 -5 minecraft:water[level=0]
+at 0 set 6 3 -5 minecraft:water[level=0]
+at 0 set 6 1 -4 minecraft:water[level=0]
+at 0 set 6 2 -4 minecraft:water[level=0]
+at 0 set 6 3 -4 minecraft:water[level=0]
+at 0 set 6 1 -3 minecraft:water[level=0]
+at 0 set 6 2 -3 minecraft:water[level=0]
+at 0 set 6 3 -3 minecraft:water[level=0]
+at 0 set 6 1 -2 minecraft:water[level=0]
+at 0 set 6 2 -2 minecraft:water[level=0]
+at 0 set 6 3 -2 minecraft:water[level=0]
+at 0 set 7 1 -6 minecraft:water[level=0]
+at 0 set 7 2 -6 minecraft:water[level=0]
+at 0 set 7 3 -6 minecraft:water[level=0]
+at 0 set 7 1 -5 minecraft:water[level=0]
+at 0 set 7 2 -5 minecraft:water[level=0]
+at 0 set 7 3 -5 minecraft:water[level=0]
+at 0 set 7 1 -4 minecraft:water[level=0]
+at 0 set 7 2 -4 minecraft:water[level=0]
+at 0 set 7 3 -4 minecraft:water[level=0]
+at 0 set 7 1 -3 minecraft:water[level=0]
+at 0 set 7 2 -3 minecraft:water[level=0]
+at 0 set 7 3 -3 minecraft:water[level=0]
+at 0 set 7 1 -2 minecraft:water[level=0]
+at 0 set 7 2 -2 minecraft:water[level=0]
+at 0 set 7 3 -2 minecraft:water[level=0]
+at 0 set -1 1 -7 minecraft:obsidian
+at 0 set -1 2 -7 minecraft:obsidian
+at 0 set -1 3 -7 minecraft:obsidian
+at 0 set -1 1 -6 minecraft:obsidian
+at 0 set -1 2 -6 minecraft:obsidian
+at 0 set -1 3 -6 minecraft:obsidian
+at 0 set -1 1 -5 minecraft:obsidian
+at 0 set -1 2 -5 minecraft:obsidian
+at 0 set -1 3 -5 minecraft:obsidian
+at 0 set -1 1 -4 minecraft:obsidian
+at 0 set -1 2 -4 minecraft:obsidian
+at 0 set -1 3 -4 minecraft:obsidian
+at 0 set -1 1 -3 minecraft:obsidian
+at 0 set -1 2 -3 minecraft:obsidian
+at 0 set -1 3 -3 minecraft:obsidian
+at 0 set -1 1 -2 minecraft:obsidian
+at 0 set -1 2 -2 minecraft:obsidian
+at 0 set -1 3 -2 minecraft:obsidian
+at 0 set -1 1 -1 minecraft:obsidian
+at 0 set -1 2 -1 minecraft:obsidian
+at 0 set -1 3 -1 minecraft:obsidian
+at 0 set 8 1 -7 minecraft:obsidian
+at 0 set 8 2 -7 minecraft:obsidian
+at 0 set 8 3 -7 minecraft:obsidian
+at 0 set 8 1 -6 minecraft:obsidian
+at 0 set 8 2 -6 minecraft:obsidian
+at 0 set 8 3 -6 minecraft:obsidian
+at 0 set 8 1 -5 minecraft:obsidian
+at 0 set 8 2 -5 minecraft:obsidian
+at 0 set 8 3 -5 minecraft:obsidian
+at 0 set 8 1 -4 minecraft:obsidian
+at 0 set 8 2 -4 minecraft:obsidian
+at 0 set 8 3 -4 minecraft:obsidian
+at 0 set 8 1 -3 minecraft:obsidian
+at 0 set 8 2 -3 minecraft:obsidian
+at 0 set 8 3 -3 minecraft:obsidian
+at 0 set 8 1 -2 minecraft:obsidian
+at 0 set 8 2 -2 minecraft:obsidian
+at 0 set 8 3 -2 minecraft:obsidian
+at 0 set 8 1 -1 minecraft:obsidian
+at 0 set 8 2 -1 minecraft:obsidian
+at 0 set 8 3 -1 minecraft:obsidian
+at 0 set 0 1 -7 minecraft:obsidian
+at 0 set 0 2 -7 minecraft:obsidian
+at 0 set 0 3 -7 minecraft:obsidian
+at 0 set 0 1 -1 minecraft:obsidian
+at 0 set 0 2 -1 minecraft:obsidian
+at 0 set 0 3 -1 minecraft:obsidian
+at 0 set 1 1 -7 minecraft:obsidian
+at 0 set 1 2 -7 minecraft:obsidian
+at 0 set 1 3 -7 minecraft:obsidian
+at 0 set 1 1 -1 minecraft:obsidian
+at 0 set 1 2 -1 minecraft:obsidian
+at 0 set 1 3 -1 minecraft:obsidian
+at 0 set 2 1 -7 minecraft:obsidian
+at 0 set 2 2 -7 minecraft:obsidian
+at 0 set 2 3 -7 minecraft:obsidian
+at 0 set 2 1 -1 minecraft:obsidian
+at 0 set 2 2 -1 minecraft:obsidian
+at 0 set 2 3 -1 minecraft:obsidian
+at 0 set 3 1 -7 minecraft:obsidian
+at 0 set 3 2 -7 minecraft:obsidian
+at 0 set 3 3 -7 minecraft:obsidian
+at 0 set 3 1 -1 minecraft:obsidian
+at 0 set 3 2 -1 minecraft:obsidian
+at 0 set 3 3 -1 minecraft:obsidian
+at 0 set 4 1 -7 minecraft:obsidian
+at 0 set 4 2 -7 minecraft:obsidian
+at 0 set 4 3 -7 minecraft:obsidian
+at 0 set 4 1 -1 minecraft:obsidian
+at 0 set 4 2 -1 minecraft:obsidian
+at 0 set 4 3 -1 minecraft:obsidian
+at 0 set 5 1 -7 minecraft:obsidian
+at 0 set 5 2 -7 minecraft:obsidian
+at 0 set 5 3 -7 minecraft:obsidian
+at 0 set 5 1 -1 minecraft:obsidian
+at 0 set 5 2 -1 minecraft:obsidian
+at 0 set 5 3 -1 minecraft:obsidian
+at 0 set 6 1 -7 minecraft:obsidian
+at 0 set 6 2 -7 minecraft:obsidian
+at 0 set 6 3 -7 minecraft:obsidian
+at 0 set 6 1 -1 minecraft:obsidian
+at 0 set 6 2 -1 minecraft:obsidian
+at 0 set 6 3 -1 minecraft:obsidian
+at 0 set 7 1 -7 minecraft:obsidian
+at 0 set 7 2 -7 minecraft:obsidian
+at 0 set 7 3 -7 minecraft:obsidian
+at 0 set 7 1 -1 minecraft:obsidian
+at 0 set 7 2 -1 minecraft:obsidian
+at 0 set 7 3 -1 minecraft:obsidian
+at 0 set 12 0 -3 minecraft:blue_ice
+at 0 set 12 0 -2 minecraft:blue_ice
+at 0 set 12 0 -1 minecraft:blue_ice
+at 0 set 13 0 -3 minecraft:blue_ice
+at 0 set 13 0 -2 minecraft:blue_ice
+at 0 set 13 0 -1 minecraft:blue_ice
+at 0 set 14 0 -3 minecraft:blue_ice
+at 0 set 14 0 -2 minecraft:blue_ice
+at 0 set 14 0 -1 minecraft:blue_ice
+at 0 set 15 0 -3 minecraft:blue_ice
+at 0 set 15 0 -2 minecraft:blue_ice
+at 0 set 15 0 -1 minecraft:blue_ice
+at 0 set 16 0 -3 minecraft:blue_ice
+at 0 set 16 0 -2 minecraft:blue_ice
+at 0 set 16 0 -1 minecraft:blue_ice
+at 0 set 17 0 -3 minecraft:blue_ice
+at 0 set 17 0 -2 minecraft:blue_ice
+at 0 set 17 0 -1 minecraft:blue_ice
+at 0 set 18 0 -3 minecraft:blue_ice
+at 0 set 18 0 -2 minecraft:blue_ice
+at 0 set 18 0 -1 minecraft:blue_ice
+at 0 set 19 0 -3 minecraft:blue_ice
+at 0 set 19 0 -2 minecraft:blue_ice
+at 0 set 19 0 -1 minecraft:blue_ice
+at 0 set 20 0 -3 minecraft:blue_ice
+at 0 set 20 0 -2 minecraft:blue_ice
+at 0 set 20 0 -1 minecraft:blue_ice
+at 0 set 21 0 -3 minecraft:blue_ice
+at 0 set 21 0 -2 minecraft:blue_ice
+at 0 set 21 0 -1 minecraft:blue_ice
+at 0 set 10 3 3 minecraft:obsidian
+at 0 set 10 3 4 minecraft:obsidian
+at 0 set 10 3 5 minecraft:obsidian
+at 0 set 10 3 6 minecraft:obsidian
+at 0 set 11 3 3 minecraft:obsidian
+at 0 set 11 3 4 minecraft:obsidian
+at 0 set 11 3 5 minecraft:obsidian
+at 0 set 11 3 6 minecraft:obsidian
+at 0 set 12 3 3 minecraft:obsidian
+at 0 set 12 3 4 minecraft:obsidian
+at 0 set 12 3 5 minecraft:obsidian
+at 0 set 12 3 6 minecraft:obsidian
+at 0 set 13 3 3 minecraft:obsidian
+at 0 set 13 3 4 minecraft:obsidian
+at 0 set 13 3 5 minecraft:obsidian
+at 0 set 13 3 6 minecraft:obsidian
+at 0 set 14 3 3 minecraft:obsidian
+at 0 set 14 3 4 minecraft:obsidian
+at 0 set 14 3 5 minecraft:obsidian
+at 0 set 14 3 6 minecraft:obsidian
+at 0 set 15 3 3 minecraft:obsidian
+at 0 set 15 3 4 minecraft:obsidian
+at 0 set 15 3 5 minecraft:obsidian
+at 0 set 15 3 6 minecraft:obsidian
+at 0 set 16 3 3 minecraft:obsidian
+at 0 set 16 3 4 minecraft:obsidian
+at 0 set 16 3 5 minecraft:obsidian
+at 0 set 16 3 6 minecraft:obsidian
+at 0 set 17 3 3 minecraft:obsidian
+at 0 set 17 3 4 minecraft:obsidian
+at 0 set 17 3 5 minecraft:obsidian
+at 0 set 17 3 6 minecraft:obsidian
+
+at 2 command summon minecraft:oak_boat 3.5 1.2 -4.5 {Motion:[0.1d,0.0d,0.0d]}
+at 2 command summon minecraft:oak_boat 2.5 1 4.5 {Motion:[0.5d,0.0d,0.2d]}
+at 2 command summon minecraft:oak_boat 12.5 1 -1.5 {Motion:[1.0d,0.0d,0.0d]}
+at 2 command summon minecraft:oak_boat 14.5 4 4.5 {Motion:[0.6d,0.0d,0.0d]}
+entity-added 2 commands e1 minecraft:oak_boat 3.5 1.2 -4.5 0.1 0 0
+entity-added 2 commands e2 minecraft:oak_boat 2.5 1 4.5 0.5 0 0.2
+entity-added 2 commands e3 minecraft:oak_boat 12.5 1 -1.5 1 0 0
+entity-added 2 commands e4 minecraft:oak_boat 14.5 4 4.5 0.6 0 0
+entity-order 2 entities e1 e2 e3 e4
+entity 2 e1 3.5449999988079073 1.1704615384512222 -4.5 0.04499999880790711 -0.02953846154877773 0 on-ground=false
+entity 2 e2 2.7999999821186066 1 4.6199999928474424 0.29999998211860657 0 0.11999999284744263 on-ground=true
+entity 2 e3 13.359333276748657 1 -1.5 0.8593332767486572 0 0 on-ground=true
+entity 2 e4 14.859999978542328 4 4.5 0.35999997854232785 0 0 on-ground=true
+
+entity-order 3 entities e1 e2 e3 e4
+entity 3 e1 3.5652499977350236 1.1187692307408612 -4.5 0.02024999892711641 -0.05169230771036102 0 on-ground=false
+entity 3 e2 2.979999960660935 1 4.691999984264374 0.17999997854232852 0 0.0719999914169314 on-ground=true
+entity 3 e3 14.209213906711895 1 -1.5 0.8498806299632378 0 0 on-ground=true
+entity 3 e4 15.075999952793122 4 4.5 0.2159999742507942 0 0 on-ground=true
+
+entity-order 4 entities e1 e2 e3 e4
+entity 4 e1 3.574362497010827 1.0504615384093128 -4.5 0.009112499275803586 -0.06830769233154849 0 on-ground=false
+entity 4 e2 3.0879999520778663 1 4.735199980831147 0.10799999141693102 0 0.04319999656677241 on-ground=true
+entity 4 e3 15.049745868792506 1 -1.5 0.8405319620806114 0 0 on-ground=true
+entity 4 e4 15.205599929618838 4 4.5 0.12959997682571547 0 0 on-ground=true
+
+entity-order 5 entities e1 e2 e3 e4
+entity 5 e1 3.578463121576309 1 -4.5 0.004100624565482157 0 0 on-ground=true
+entity 5 e2 3.1527999495029455 1 4.761119979801179 0.06479999742507907 0 0.025919998970031628 on-ground=true
+entity 5 e3 15.881031998127684 1 -1.5 0.8312861293351776 0 0 on-ground=true
+entity 5 e4 15.283359911079412 4 4.5 0.07775998146057293 0 0 on-ground=true
+
+entity-order 6 entities e1 e2 e3 e4
+entity 6 e1 3.5803084025818928 1 -4.5 0.0018452810055837167 0 0 on-ground=true
+entity 6 e2 3.1916799495029453 1 4.776671979801178 0.03887999999999977 0 0.01555199999999991 on-ground=true
+entity 6 e3 16.703173998670415 1 -1.5 0.8221420005427321 0 0 on-ground=true
+entity 6 e4 15.330015897174842 4 4.5 0.04665598609543012 0 0 on-ground=true
+
+entity-order 7 entities e1 e2 e3 e4
+entity 7 e1 3.581138779012408 1 -4.5 0.0008303764305152087 0 0 on-ground=true
+entity 7 e2 3.2150079504299165 1 4.786003180171967 0.023328000926971296 0 0.00933120037078852 on-ground=true
+entity 7 e3 17.516272455632485 1 -1.5 0.8130984569620713 0 0 on-ground=true
+entity 7 e4 15.358009487163553 4 4.5 0.027993589988709985 0 0 on-ground=true
+
+entity-order 8 entities e1 e2 e3 e4
+entity 8 e1 3.581512448396241 1 -4.5 0.0003736693838329855 0 0 on-ground=true
+entity 8 e2 3.229004751542282 1 4.7916019006169135 0.013996801112365662 0 0.005598720444946265 on-ground=true
+entity 8 e3 18.320426847790603 1 -1.5 0.8041543921581197 0 0 on-ground=true
+entity 8 e4 15.37480564015565 4 4.5 0.016796152992097198 0 0 on-ground=true
+
+entity-order 9 entities e1 e2 e3 e4
+entity 9 e1 3.581512448396241 1 -4.5 0.0001681512182703573 0 0 on-ground=true
+entity 9 e2 3.237402832543411 1 4.794961133017365 0.00839808100112914 0 0.0033592324004516564 on-ground=true
+entity 9 e3 19.115735559657168 1 -1.5 0.795308711866563 0 0 on-ground=true
+entity 9 e4 15.384883331350231 4 4.5 0.010077691194581078 0 0 on-ground=true
+
+entity-order 10 entities e1 e2 e3 e4
+entity 10 e1 3.581512448396241 1 -4.5 7.566804621714206e-05 0 0 on-ground=true
+entity 10 e2 3.242441681344314 1 4.796976672537726 0.005038848800903338 0 0.0020155395203613354 on-ground=true
+entity 10 e3 19.902295893517138 1 -1.5 0.7865603338599699 0 0 on-ground=true
+entity 10 e4 15.390929945706574 4 4.5 0.006046614356342325 0 0 on-ground=true
+
+entity-order 11 entities e1 e2 e3 e4
+entity 11 e1 3.581512448396241 1 -4.5 3.4050619895680524e-05 0 0 on-ground=true
+entity 11 e2 3.2454649907449915 1 4.798185996297997 0.00302330940067752 0 0.001209323760271008 on-ground=true
+entity 11 e3 20.680204081332526 1 -1.5 0.7779081878153864 0 0 on-ground=true
+entity 11 e4 15.394557914104135 4 4.5 0.0036279683975616143 0 0 on-ground=true
+
+entity-order 12 entities e1 e2 e3 e4
+entity 12 e1 3.581512448396241 1 -4.5 1.5322778547141215e-05 0 0 on-ground=true
+entity 12 e2 3.2472789764574794 1 4.798911590582993 0.001813985712487825 0 0.0007255942849951301 on-ground=true
+entity 12 e3 21.449555296515914 1 -1.5 0.769351215183387 0 0 on-ground=true
+entity 12 e4 15.396734695012926 4 4.5 0.002176780908790708 0 0 on-ground=true
+
+entity-order 13 entities e1 e2 e3 e4
+entity 13 e1 3.581512448396241 1 -4.5 6.8952501635517924e-06 0 0 on-ground=true
+entity 13 e2 3.248367367928221 1 4.799346947171289 0.0010883914707414846 0 0.0004353565882965939 on-ground=true
+entity 13 e3 22.110684397230017 1 -1.5 0.6611291007141012 0 0 on-ground=true
+entity 13 e4 15.398040763480353 4 4.5 0.0013060684674266732 0 0 on-ground=true
+
+entity-order 14 entities e1 e2 e3 e4
+entity 14 e1 3.581512448396241 1 -4.5 3.102862491400519e-06 0 0 on-ground=true
+entity 14 e2 3.249020402836615 1 4.799608161134646 0.0006530349083941656 0 0.00026121396335766626 on-ground=true
+entity 14 e3 22.63595142392749 1 -1.5 0.5252670266974754 0 0 on-ground=true
+entity 14 e4 15.3988244045141 4 4.5 0.0007836410337473557 0 0 on-ground=true
+
+entity-order 15 entities e1 e2 e3 e4
+entity 15 e1 3.581512448396241 1 -4.5 1.3962880841412303e-06 0 0 on-ground=true
+entity 15 e2 3.249412223797221 1 4.7997648895188885 0.0003918209606060648 0 0.00015672838424242596 on-ground=true
+entity 15 e3 23.019221224500033 1 -1.5 0.38326980057254195 0 0 on-ground=true
+entity 15 e4 15.399294589106322 4 4.5 0.00047018459222322614 0 0 on-ground=true
+
+entity-order 16 entities e1 e2 e3 e4
+entity 16 e1 3.581512448396241 1 -4.5 6.283296212185026e-07 0 0 on-ground=true
+entity 16 e2 3.249412223797221 1 4.7997648895188885 0.00023509258570537857 0 9.403703428215144e-05 on-ground=true
+entity 16 e3 23.24918309113676 1 -1.5 0.229961866636729 0 0 on-ground=true
+entity 16 e4 15.399294589106322 4 4.5 0.00028211073851882435 0 0 on-ground=true
+
+entity-order 17 entities e1 e2 e3 e4
+entity 17 e1 3.581512448396241 1 -4.5 2.827483220580534e-07 0 0 on-ground=true
+entity 17 e2 3.249412223797221 1 4.7997648895188885 0.00014105555702827118 0 5.6422222811308476e-05 on-ground=true
+entity 17 e3 23.38716020289472 1 -1.5 0.13797711175796018 0 0 on-ground=true
+entity 17 e4 15.399294589106322 4 4.5 0.0001692664330222284 0 0 on-ground=true
+
+entity-order 18 entities e1 e2 e3 e4
+entity 18 e1 3.581512448396241 1 -4.5 1.2723674155550136e-07 0 0 on-ground=true
+entity 18 e2 3.249412223797221 1 4.7997648895188885 8.463333757998926e-05 0 3.3853335031995706e-05 on-ground=true
+entity 18 e3 23.46994646501505 1 -1.5 0.08278626212033006 0 0 on-ground=true
+entity 18 e4 15.399294589106322 4 4.5 0.00010155985375989767 0 0 on-ground=true
+
+entity-order 19 entities e1 e2 e3 e4
+entity 19 e1 3.581512448396241 1 -4.5 5.7256532183195456e-08 0 0 on-ground=true
+entity 19 e2 3.249412223797221 1 4.7997648895188885 5.078000456580956e-05 0 2.0312001826323826e-05 on-ground=true
+entity 19 e3 23.51961821932658 1 -1.5 0.04967175431153059 0 0 on-ground=true
+entity 19 e4 15.399294589106322 4 4.5 6.0935908623875194e-05 0 0 on-ground=true
+
+entity-order 20 entities e1 e2 e3 e4
+entity 20 e1 3.581512448396241 1 -4.5 2.57654387998869e-08 0 0 on-ground=true
+entity 20 e2 3.249412223797221 1 4.7997648895188885 3.046800395017539e-05 0 1.2187201580070157e-05 on-ground=true
+entity 20 e3 23.5494212701371 1 -1.5 0.02980305081051799 0 0 on-ground=true
+entity 20 e4 15.399294589106322 4 4.5 3.6561542995087205e-05 0 0 on-ground=true
+
+entity-order 21 entities e1 e2 e3 e4
+entity 21 e1 3.581512448396241 1 -4.5 1.159444715280114e-08 0 0 on-ground=true
+entity 21 e2 3.249412223797221 1 4.7997648895188885 1.8280803096519053e-05 0 7.312321238607622e-06 on-ground=true
+entity 21 e3 23.56730309955757 1 -1.5 0.01788182942047064 0 0 on-ground=true
+entity 21 e4 15.399294589106322 4 4.5 2.1936924489509653e-05 0 0 on-ground=true
+
+entity-order 22 entities e1 e2 e3 e4
+entity 22 e1 3.581512448396241 1 -4.5 5.2175010805439325e-09 0 0 on-ground=true
+entity 22 e2 3.249412223797221 1 4.7997648895188885 1.0968482293759741e-05 0 4.3873929175038975e-06 on-ground=true
+entity 22 e3 23.578032196570348 1 -1.5 0.010729097012778329 0 0 on-ground=true
+entity 22 e4 15.399294589106322 4 4.5 1.3162153909180236e-05 0 0 on-ground=true
+
+entity-order 23 entities e1 e2 e3 e4
+entity 23 e1 3.581512448396241 1 -4.5 2.3478754240473098e-09 0 0 on-ground=true
+entity 23 e2 3.249412223797221 1 4.7997648895188885 6.581089637764841e-06 0 2.632435855105937e-06 on-ground=true
+entity 23 e3 23.58446965439431 1 -1.5 0.006437457823964587 0 0 on-ground=true
+entity 23 e4 15.399294589106322 4 4.5 7.897291874792836e-06 0 0 on-ground=true
+
+entity-order 24 entities e1 e2 e3 e4
+entity 24 e1 3.581512448396241 1 -4.5 1.0565439128324333e-09 0 0 on-ground=true
+entity 24 e2 3.249412223797221 1 4.7997648895188885 3.9486539395643085e-06 0 1.5794615758257236e-06 on-ground=true
+entity 24 e3 23.588332128858468 1 -1.5 0.00386247446415732 0 0 on-ground=true
+entity 24 e4 15.399294589106322 4 4.5 4.738374842446536e-06 0 0 on-ground=true
+
+entity-order 25 entities e1 e2 e3 e4
+entity 25 e1 3.581512448396241 1 -4.5 4.754447481796101e-10 0 0 on-ground=true
+entity 25 e2 3.249412223797221 1 4.7997648895188885 2.3691924578818314e-06 0 9.476769831527326e-07 on-ground=true
+entity 25 e3 23.59064961339883 1 -1.5 0.002317484540361541 0 0 on-ground=true
+entity 25 e4 15.399294589106322 4 4.5 2.8430247360104317e-06 0 0 on-ground=true
+
+entity-order 26 entities e1 e2 e3 e4
+entity 26 e1 3.581512448396241 1 -4.5 2.1395013101308147e-10 0 0 on-ground=true
+entity 26 e2 3.249412223797221 1 4.7997648895188885 1.4215155312150487e-06 0 5.686062124860196e-07 on-ground=true
+entity 26 e3 23.59204010404017 1 -1.5 0.0013904906413372189 0 0 on-ground=true
+entity 26 e4 15.399294589106322 4 4.5 1.7058147399317714e-06 0 0 on-ground=true
+
+entity-order 27 entities e1 e2 e3 e4
+entity 27 e1 3.581512448396241 1 -4.5 9.627755640540236e-11 0 0 on-ground=true
+entity 27 e2 3.249412223797221 1 4.7997648895188885 8.529093526206006e-07 0 3.4116374104824026e-07 on-ground=true
+entity 27 e3 23.592874398375244 1 -1.5 0.0008342943350745109 0 0 on-ground=true
+entity 27 e4 15.399294589106322 4 4.5 1.0234887829543738e-06 0 0 on-ground=true
+
+entity-order 28 entities e1 e2 e3 e4
+entity 28 e1 3.581512448396241 1 -4.5 4.332489923471315e-11 0 0 on-ground=true
+entity 28 e2 3.249412223797221 1 4.7997648895188885 5.117456319073039e-07 0 2.0469825276292158e-07 on-ground=true
+entity 28 e3 23.593374974946453 1 -1.5 0.000500576571208016 0 0 on-ground=true
+entity 28 e4 15.399294589106322 4 4.5 6.14093233169813e-07 0 0 on-ground=true
+
+entity-order 29 entities e1 e2 e3 e4
+entity 29 e1 3.581512448396241 1 -4.5 1.949620413914787e-11 0 0 on-ground=true
+entity 29 e2 3.249412223797221 1 4.7997648895188885 3.07047391345349e-07 0 1.228189565381396e-07 on-ground=true
+entity 29 e3 23.593374974946453 1 -1.5 0.00030034592482279635 0 0 on-ground=true
+entity 29 e4 15.399294589106322 4 4.5 3.684559179402024e-07 0 0 on-ground=true
+
+entity-order 30 entities e1 e2 e3 e4
+entity 30 e1 3.581512448396241 1 -4.5 8.773291630203677e-12 0 0 on-ground=true
+entity 30 e2 3.249412223797221 1 4.7997648895188885 1.8422844212778968e-07 0 7.369137685111587e-08 on-ground=true
+entity 30 e3 23.593374974946453 1 -1.5 0.00018020754415247052 0 0 on-ground=true
+entity 30 e4 15.399294589106322 4 4.5 2.21073537587111e-07 0 0 on-ground=true
+
+entity-order 31 entities e1 e2 e3 e4
+entity 31 e1 3.581512448396241 1 -4.5 3.947981129005869e-12 0 0 on-ground=true
+entity 31 e2 3.249412223797221 1 4.7997648895188885 1.1053706966902215e-07 0 4.421482786760886e-08 on-ground=true
+entity 31 e3 23.593374974946453 1 -1.5 0.00010812452004675833 0 0 on-ground=true
+entity 31 e4 15.399294589106322 4 4.5 1.326441146460608e-07 0 0 on-ground=true
+
+entity-order 32 entities e1 e2 e3 e4
+entity 32 e1 3.581512448396241 1 -4.5 1.7765914609890383e-12 0 0 on-ground=true
+entity 32 e2 3.249412223797221 1 4.7997648895188885 6.63222444368224e-08 0 2.6528897774728957e-08 on-ground=true
+entity 32 e3 23.593374974946453 1 -1.5 6.487470816122083e-05 0 0 on-ground=true
+entity 32 e4 15.399294589106322 4 4.5 7.958646404391328e-08 0 0 on-ground=true
+
+entity-order 33 entities e1 e2 e3 e4
+entity 33 e1 3.581512448396241 1 -4.5 7.994661362664466e-13 0 0 on-ground=true
+entity 33 e2 3.249412223797221 1 4.7997648895188885 3.979334824333896e-08 0 1.5917339297335585e-08 on-ground=true
+entity 33 e3 23.593374974946453 1 -1.5 3.8924822576632137e-05 0 0 on-ground=true
+entity 33 e4 15.399294589106322 4 4.5 4.775187558011422e-08 0 0 on-ground=true
+
+entity-order 34 entities e1 e2 e3 e4
+entity 34 e1 3.581512448396241 1 -4.5 3.59759751789522e-13 0 0 on-ground=true
+entity 34 e2 3.249412223797221 1 4.7997648895188885 2.387600989475073e-08 0 9.550403957900293e-09 on-ground=true
+entity 34 e3 23.593374974946453 1 -1.5 2.3354892153919148e-05 0 0 on-ground=true
+entity 34 e4 15.399294589106322 4 4.5 2.8651123640328383e-08 0 0 on-ground=true
+
+entity-order 35 entities e1 e2 e3 e4
+entity 35 e1 3.581512448396241 1 -4.5 1.6189188401661444e-13 0 0 on-ground=true
+entity 35 e2 3.249412223797221 1 4.7997648895188885 1.4325606506098874e-08 0 5.73024260243955e-09 on-ground=true
+entity 35 e3 23.593374974946453 1 -1.5 1.4012934457115459e-05 0 0 on-ground=true
+entity 35 e4 15.399294589106322 4 4.5 1.7190673159553002e-08 0 0 on-ground=true
+
+entity-order 36 entities e1 e2 e3 e4
+entity 36 e1 3.581512448396241 1 -4.5 7.285134587757486e-14 0 0 on-ground=true
+entity 36 e2 3.249412223797221 1 4.7997648895188885 8.595364245208399e-09 0 3.43814569808336e-09 on-ground=true
+entity 36 e3 23.593374974946453 1 -1.5 8.407760173127686e-06 0 0 on-ground=true
+entity 36 e4 15.399294589106322 4 4.5 1.0314403280945422e-08 0 0 on-ground=true
+
+entity-order 37 entities e1 e2 e3 e4
+entity 37 e1 3.581512448396241 1 -4.5 3.2783104776452966e-14 0 0 on-ground=true
+entity 37 e2 3.249412223797221 1 4.7997648895188885 5.157218752054492e-09 0 2.0628875008217975e-09 on-ground=true
+entity 37 e3 23.593374974946453 1 -1.5 5.044655803191677e-06 0 0 on-ground=true
+entity 37 e4 15.399294589106322 4 4.5 6.188641599695447e-09 0 0 on-ground=true
+
+entity-order 38 entities e1 e2 e3 e4
+entity 38 e1 3.581512448396241 1 -4.5 1.4752396758598773e-14 0 0 on-ground=true
+entity 38 e2 3.249412223797221 1 4.7997648895188885 3.094331374190372e-09 0 1.237732549676149e-09 on-ground=true
+entity 38 e3 23.593374974946453 1 -1.5 3.026793301504056e-06 0 0 on-ground=true
+entity 38 e4 15.399294589106322 4 4.5 3.7131847384941977e-09 0 0 on-ground=true
+
+entity-order 39 entities e1 e2 e3 e4
+entity 39 e1 3.581512448396241 1 -4.5 6.638578365507174e-15 0 0 on-ground=true
+entity 39 e2 3.249412223797221 1 4.7997648895188885 1.8565988982888322e-09 0 7.42639559315533e-10 on-ground=true
+entity 39 e3 23.593374974946453 1 -1.5 1.81607587265587e-06 0 0 on-ground=true
+entity 39 e4 15.399294589106322 4 4.5 2.227910710302684e-09 0 0 on-ground=true
+
+entity-order 40 entities e1 e2 e3 e4
+entity 40 e1 3.581512448396241 1 -4.5 2.9873601853402074e-15 0 0 on-ground=true
+entity 40 e2 3.249412223797221 1 4.7997648895188885 1.1139593832380664e-09 0 4.4558375329522667e-10 on-ground=true
+entity 40 e3 23.593374974946453 1 -1.5 1.0896454586455876e-06 0 0 on-ground=true
+entity 40 e4 15.399294589106322 4 4.5 1.3367463465053146e-09 0 0 on-ground=true
+
+entity-order 41 entities e1 e2 e3 e4
+entity 41 e1 3.581512448396241 1 -4.5 1.3443120477909847e-15 0 0 on-ground=true
+entity 41 e2 3.249412223797221 1 4.7997648895188885 6.683756565017012e-10 0 2.6735026260068054e-10 on-ground=true
+entity 41 e3 23.593374974946453 1 -1.5 6.537872362185943e-07 0 0 on-ground=true
+entity 41 e4 15.399294589106322 4 4.5 8.02047760097414e-10 0 0 on-ground=true
+
+entity-order 42 entities e1 e2 e3 e4
+entity 42 e1 3.581512448396241 1 -4.5 6.049404054804947e-16 0 0 on-ground=true
+entity 42 e2 3.249412223797221 1 4.7997648895188885 4.0102540983633816e-10 0 1.604101639345353e-10 on-ground=true
+entity 42 e3 23.593374974946453 1 -1.5 3.92272318349903e-07 0 0 on-ground=true
+entity 42 e4 15.399294589106322 4 4.5 4.812286273749853e-10 0 0 on-ground=true
+
+entity-order 43 entities e1 e2 e3 e4
+entity 43 e1 3.581512448396241 1 -4.5 2.7222317525477104e-16 0 0 on-ground=true
+entity 43 e2 3.249412223797221 1 4.7997648895188885 2.406152554629937e-10 0 9.624610218519752e-11 on-ground=true
+entity 43 e3 23.593374974946453 1 -1.5 2.353633769811905e-07 0 0 on-ground=true
+entity 43 e4 15.399294589106322 4 4.5 2.887371592149144e-10 0 0 on-ground=true
+
+entity-order 44 entities e1 e2 e3 e4
+entity 44 e1 3.581512448396241 1 -4.5 1.2250042561949384e-16 0 0 on-ground=true
+entity 44 e2 3.249412223797221 1 4.7997648895188885 1.4436915901451097e-10 0 5.7747663605804407e-11 on-ground=true
+entity 44 e3 23.593374974946453 1 -1.5 1.4121801777146403e-07 0 0 on-ground=true
+entity 44 e4 15.399294589106322 4 4.5 1.7324228520290315e-10 0 0 on-ground=true
+
+entity-order 45 entities e1 e2 e3 e4
+entity 45 e1 3.581512448396241 1 -4.5 5.5125190068453354e-17 0 0 on-ground=true
+entity 45 e2 3.249412223797221 1 4.7997648895188885 8.662149885073556e-11 0 3.4648599540294236e-11 on-ground=true
+entity 45 e3 23.593374974946453 1 -1.5 8.473080561252854e-08 0 0 on-ground=true
+entity 45 e4 15.399294589106322 4 4.5 1.0394536492611497e-10 0 0 on-ground=true
+
+entity-order 46 entities e1 e2 e3 e4
+entity 46 e1 3.581512448396241 1 -4.5 2.4806334873660537e-17 0 0 on-ground=true
+entity 46 e2 3.249412223797221 1 4.7997648895188885 5.19729013756588e-11 0 2.078916055026353e-11 on-ground=true
+entity 46 e3 23.593374974946453 1 -1.5 5.083848033730738e-08 0 0 on-ground=true
+entity 46 e4 15.399294589106322 4 4.5 6.236721523829306e-11 0 0 on-ground=true
+
+entity-order 47 entities e1 e2 e3 e4
+entity 47 e1 3.581512448396241 1 -4.5 1.1162850397432685e-17 0 0 on-ground=true
+entity 47 e2 3.249412223797221 1 4.7997648895188885 3.118374206452581e-11 0 1.247349682581033e-11 on-ground=true
+entity 47 e3 23.593374974946453 1 -1.5 3.050308638425869e-08 0 0 on-ground=true
+entity 47 e4 15.399294589106322 4 4.5 3.742032691255041e-11 0 0 on-ground=true
+
+entity-order 48 entities e1 e2 e3 e4
+entity 48 e1 3.581512448396241 1 -4.5 5.023282545773162e-18 0 0 on-ground=true
+entity 48 e2 3.249412223797221 1 4.7997648895188885 1.8710245982193835e-11 0 7.484098392877537e-12 on-ground=true
+entity 48 e3 23.593374974946453 1 -1.5 1.830185073967984e-08 0 0 on-ground=true
+entity 48 e4 15.399294589106322 4 4.5 2.2452194809275067e-11 0 0 on-ground=true
+
+entity-order 49 entities e1 e2 e3 e4
+entity 49 e1 3.581512448396241 1 -4.5 2.2604770857157286e-18 0 0 on-ground=true
+entity 49 e2 3.249412223797221 1 4.7997648895188885 1.1226148035403328e-11 0 4.490459214161333e-12 on-ground=true
+entity 49 e3 23.593374974946453 1 -1.5 1.0981109789282717e-08 0 0 on-ground=true
+entity 49 e4 15.399294589106322 4 4.5 1.3471316082611984e-11 0 0 on-ground=true
+
+entity-order 50 entities e1 e2 e3 e4
+entity 50 e1 3.581512448396241 1 -4.5 1.017214661625091e-18 0 0 on-ground=true
+entity 50 e2 3.249412223797221 1 4.7997648895188885 6.735689088894223e-12 0 2.6942756355576903e-12 on-ground=true
+entity 50 e3 23.593374974946453 1 -1.5 6.588665480854541e-09 0 0 on-ground=true
+entity 50 e4 15.399294589106322 4 4.5 8.082789167795384e-12 0 0 on-ground=true
+
+entity-order 51 entities e1 e2 e3 e4
+entity 51 e1 3.581512448396241 1 -4.5 4.577465856051472e-19 0 0 on-ground=true
+entity 51 e2 3.249412223797221 1 4.7997648895188885 4.0414136139278764e-12 0 1.616565445571151e-12 on-ground=true
+entity 51 e3 23.593374974946453 1 -1.5 3.953199052883685e-09 0 0 on-ground=true
+entity 51 e4 15.399294589106322 4 4.5 4.849673211614164e-12 0 0 on-ground=true
+
+entity-order 52 entities e1 e2 e3 e4
+entity 52 e1 3.581512448396241 1 -4.5 2.0598595806555173e-19 0 0 on-ground=true
+entity 52 e2 3.249412223797221 1 4.7997648895188885 2.424848264711535e-12 0 9.699393058846144e-13 on-ground=true
+entity 52 e3 23.593374974946453 1 -1.5 2.371919290352796e-09 0 0 on-ground=true
+entity 52 e4 15.399294589106322 4 4.5 2.909803753530669e-12 0 0 on-ground=true
+
+entity-order 53 entities e1 e2 e3 e4
+entity 53 e1 3.581512448396241 1 -4.5 9.26936786739543e-20 0 0 on-ground=true
+entity 53 e2 3.249412223797221 1 4.7997648895188885 1.4549090166398089e-12 0 5.819636066559238e-13 on-ground=true
+entity 53 e3 23.593374974946453 1 -1.5 1.4231514893852336e-09 0 0 on-ground=true
+entity 53 e4 15.399294589106322 4 4.5 1.74588214805571e-12 0 0 on-ground=true
+
+entity-order 54 entities e1 e2 e3 e4
+entity 54 e1 3.581512448396241 1 -4.5 4.171215429828468e-20 0 0 on-ground=true
+entity 54 e2 3.249412223797221 1 4.7997648895188885 8.729454446716194e-13 0 3.4917817786864786e-13 on-ground=true
+entity 54 e3 23.593374974946453 1 -1.5 8.538908427352768e-10 0 0 on-ground=true
+entity 54 e4 15.399294589106322 4 4.5 1.0475292263958148e-12 0 0 on-ground=true
+
+entity-order 55 entities e1 e2 e3 e4
+entity 55 e1 3.581512448396241 1 -4.5 1.877046893698048e-20 0 0 on-ground=true
+entity 55 e2 3.249412223797221 1 4.7997648895188885 5.237672876156129e-13 0 2.095069150462452e-13 on-ground=true
+entity 55 e3 23.593374974946453 1 -1.5 5.123344751036499e-10 0 0 on-ground=true
+entity 55 e4 15.399294589106322 4 4.5 6.285174983749244e-13 0 0 on-ground=true
+
+entity-order 56 entities e1 e2 e3 e4
+entity 56 e1 3.581512448396241 1 -4.5 8.44671079787979e-21 0 0 on-ground=true
+entity 56 e2 3.249412223797221 1 4.7997648895188885 3.14260385056953e-13 0 1.2570415402278122e-13 on-ground=true
+entity 56 e3 23.593374974946453 1 -1.5 3.074006667396813e-10 0 0 on-ground=true
+entity 56 e4 15.399294589106322 4 4.5 3.771104765474173e-13 0 0 on-ground=true
+
+entity-order 57 entities e1 e2 e3 e4
+entity 57 e1 3.581512448396241 1 -4.5 3.801019758353266e-21 0 0 on-ground=true
+entity 57 e2 3.249412223797221 1 4.7997648895188885 1.8855623852672325e-13 0 7.542249541068931e-14 on-ground=true
+entity 57 e3 23.593374974946453 1 -1.5 1.8444038905030426e-10 0 0 on-ground=true
+entity 57 e4 15.399294589106322 4 4.5 2.2626627244192878e-13 0 0 on-ground=true
+
+entity-order 58 entities e1 e2 e3 e4
+entity 58 e1 3.581512448396241 1 -4.5 1.7104588459472833e-21 0 0 on-ground=true
+entity 58 e2 3.249412223797221 1 4.7997648895188885 1.1313374761156499e-13 0 4.5253499044626004e-14 on-ground=true
+entity 58 e3 23.593374974946453 1 -1.5 1.1066422683408023e-10 0 0 on-ground=true
+entity 58 e4 15.399294589106322 4 4.5 1.357597553732448e-13 0 0 on-ground=true
+
+entity-order 59 entities e1 e2 e3 e4
+entity 59 e1 3.581512448396241 1 -4.5 7.697064602860191e-22 0 0 on-ground=true
+entity 59 e2 3.249412223797221 1 4.7997648895188885 6.788025126425773e-14 0 2.7152100505703095e-14 on-ground=true
+entity 59 e3 23.593374974946453 1 -1.5 6.639853214278698e-11 0 0 on-ground=true
+entity 59 e4 15.399294589106322 4 4.5 8.145584836879968e-14 0 0 on-ground=true
+
+entity-order 60 entities e1 e2 e3 e4
+entity 60 e1 3.581512448396241 1 -4.5 3.4636789795309257e-22 0 0 on-ground=true
+entity 60 e2 3.249412223797221 1 4.7997648895188885 4.072815237694595e-14 0 1.629126095077838e-14 on-ground=true
+entity 60 e3 23.593374974946453 1 -1.5 3.983911691107563e-11 0 0 on-ground=true
+entity 60 e4 15.399294589106322 4 4.5 4.8873506108191665e-14 0 0 on-ground=true
+
+entity-order 61 entities e1 e2 e3 e4
+entity 61 e1 3.581512448396241 1 -4.5 1.5586554994986455e-22 0 0 on-ground=true
+entity 61 e2 3.249412223797221 1 4.7997648895188885 2.4436892397202392e-14 0 9.774756958880956e-15 on-ground=true
+entity 61 e3 23.593374974946453 1 -1.5 2.390346872188753e-11 0 0 on-ground=true
+entity 61 e4 15.399294589106322 4 4.5 2.9324101917062214e-14 0 0 on-ground=true
+
+entity-order 62 entities e1 e2 e3 e4
+entity 62 e1 3.581512448396241 1 -4.5 7.01394956193769e-23 0 0 on-ground=true
+entity 62 e2 3.249412223797221 1 4.7997648895188885 1.4662136020942352e-14 0 5.86485440837694e-15 on-ground=true
+entity 62 e3 23.593374974946453 1 -1.5 1.434208037827786e-11 0 0 on-ground=true
+entity 62 e4 15.399294589106322 4 4.5 1.7594460101525722e-14 0 0 on-ground=true
+
+entity-order 63 entities e1 e2 e3 e4
+entity 63 e1 3.581512448396241 1 -4.5 3.1562772192591664e-23 0 0 on-ground=true
+entity 63 e2 3.249412223797221 1 4.7997648895188885 8.797281962137975e-15 0 3.5189127848551893e-15 on-ground=true
+entity 63 e3 23.593374974946453 1 -1.5 8.605247714053952e-12 0 0 on-ground=true
+entity 63 e4 15.399294589106322 4 4.5 1.0556675431688507e-14 0 0 on-ground=true
+
+entity-order 64 entities e1 e2 e3 e4
+entity 64 e1 3.581512448396241 1 -4.5 1.4203247110408685e-23 0 0 on-ground=true
+entity 64 e2 3.249412223797221 1 4.7997648895188885 5.278369387026332e-15 0 2.111347754810532e-15 on-ground=true
+entity 64 e3 23.593374974946453 1 -1.5 5.163148320684731e-12 0 0 on-ground=true
+entity 64 e4 15.399294589106322 4 4.5 6.334004881476971e-15 0 0 on-ground=true
+
+entity-order 65 entities e1 e2 e3 e4
+entity 65 e1 3.581512448396241 1 -4.5 6.391461030368008e-24 0 0 on-ground=true
+entity 65 e2 3.249412223797221 1 4.7997648895188885 3.167021758061932e-15 0 1.2668087032247725e-15 on-ground=true
+entity 65 e3 23.593374974946453 1 -1.5 3.0978888077622656e-12 0 0 on-ground=true
+entity 65 e4 15.399294589106322 4 4.5 3.800402702364516e-15 0 0 on-ground=true
+
+entity-order 66 entities e1 e2 e3 e4
+entity 66 e1 3.581512448396241 1 -4.5 2.876157387473451e-24 0 0 on-ground=true
+entity 66 e2 3.249412223797221 1 4.7997648895188885 1.900213130344842e-15 0 7.600852521379366e-16 on-ground=true
+entity 66 e3 23.593374974946453 1 -1.5 1.858733173868222e-12 0 0 on-ground=true
+entity 66 e4 15.399294589106322 4 4.5 2.2802414855057177e-15 0 0 on-ground=true
+
+entity-order 67 entities e1 e2 e3 e4
+entity 67 e1 3.581512448396241 1 -4.5 1.294270790076585e-24 0 0 on-ground=true
+entity 67 e2 3.249412223797221 1 4.7997648895188885 1.1401279235115165e-15 0 4.560511694046065e-16 on-ground=true
+entity 67 e3 23.593374974946453 1 -1.5 1.115239837847455e-12 0 0 on-ground=true
+entity 67 e4 15.399294589106322 4 4.5 1.3681448097556404e-15 0 0 on-ground=true
+
+entity-order 68 entities e1 e2 e3 e4
+entity 68 e1 3.581512448396241 1 -4.5 5.824218401055532e-25 0 0 on-ground=true
+entity 68 e2 3.249412223797221 1 4.7997648895188885 6.840767812896779e-16 0 2.736307125158711e-16 on-ground=true
+entity 68 e3 23.593374974946453 1 -1.5 6.691438628243883e-13 0 0 on-ground=true
+entity 68 e4 15.399294589106322 4 4.5 8.20886836924713e-16 0 0 on-ground=true
+
+entity-order 69 entities e1 e2 e3 e4
+entity 69 e1 3.581512448396241 1 -4.5 2.6208982110448954e-25 0 0 on-ground=true
+entity 69 e2 3.249412223797221 1 4.7997648895188885 4.1044608508346815e-16 0 1.641784340333872e-16 on-ground=true
+entity 69 e3 23.593374974946453 1 -1.5 4.014862937641836e-13 0 0 on-ground=true
+entity 69 e4 15.399294589106322 4 4.5 4.925320727976268e-16 0 0 on-ground=true
+
+entity-order 70 entities e1 e2 e3 e4
+entity 70 e1 3.581512448396241 1 -4.5 1.1794041637266616e-25 0 0 on-ground=true
+entity 70 e2 3.249412223797221 1 4.7997648895188885 2.4626766083587813e-16 0 9.850706433435123e-17 on-ground=true
+entity 70 e3 23.593374974946453 1 -1.5 2.408917619002414e-13 0 0 on-ground=true
+entity 70 e4 15.399294589106322 4 4.5 2.9551922606425655e-16 0 0 on-ground=true
