@@ -51,6 +51,12 @@ public:
         used_.insert(it->first);
         return it->second;
     }
+    std::optional<std::string> optional(std::string_view key) {
+        const auto it = values_.find(std::string(key));
+        if (it == values_.end()) return std::nullopt;
+        used_.insert(it->first);
+        return it->second;
+    }
     std::expected<bool, std::string> flag(std::string_view key) {
         const auto v = required(key);
         if (!v) return std::unexpected(v.error());
@@ -282,6 +288,17 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
     if (id == "minecraft:target") {
         CIRCUIT_TRY(power, p.integer_or("power", 0, 15, 0));
         return simple(blocks::target(static_cast<std::uint8_t>(power)));
+    }
+    if (id == "minecraft:note_block") {
+        // Absent properties take the target version's defaults (harp, 0, unpowered).
+        std::uint8_t instrument = 0;
+        if (const auto value = p.optional("instrument")) {
+            while (instrument < gameplay::note_instruments && gameplay::instrument_name(instrument) != *value) ++instrument;
+            if (instrument == gameplay::note_instruments) return std::unexpected(std::format("{}: unknown instrument `{}`", id, *value));
+        }
+        CIRCUIT_TRY(note, p.integer_or("note", 0, 24, 0));
+        CIRCUIT_TRY(powered, p.choice("powered", {"false", "true"}, 0));
+        return simple(blocks::note_block(instrument, static_cast<std::uint8_t>(note), powered == 1));
     }
     if (id == "minecraft:daylight_detector") {
         CIRCUIT_TRY(inverted, p.choice("inverted", {"false", "true"}, 0));

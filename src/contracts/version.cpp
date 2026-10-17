@@ -218,6 +218,12 @@ constexpr std::array reference_v4_mechanisms{
         "slide down it, TNT drawing twice from the level random as it does; honey moving sideways carries what "
         "stands on it (honey_basics, honey_slide, honey_entry, honey_more). Gaps: entities other than items and primed "
         "TNT do not slide; jumping is not modeled."},
+    MechanismEntry{"note_block", l0_exact, l2_declared_deviation, harness_trace,
+        "Note blocks take the instrument of a mob head above them or else of the block below, when placed, moved "
+        "and on a shape update from above or below; they play on a rising signal and when used (the next note), "
+        "unless a block other than air is above and the instrument is not a head's; the block event draws a long "
+        "from the level random for the sound (note_instruments, note_play). Gaps: player heads with a note block "
+        "sound of their own play nothing."},
     MechanismEntry{"daylight_detector", l0_exact, l2_declared_deviation, harness_trace,
         "Daylight detectors set their output every 20 game ticks from the sky light in their cell less the sky's "
         "darkening by the day time, rain and thunder; inverted ones give 15 less that, normal ones scale it by the "

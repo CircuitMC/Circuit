@@ -1,0 +1,368 @@
+circuit-trace 2
+title Note blocks played by power and by use, silenced by a block above, and moved by pistons
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms note_block piston
+area 0 0 0 23 4 11
+ticks 70
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 0 0 10 minecraft:stone
+at 0 set 0 0 11 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:stone
+at 0 set 1 0 11 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 2 0 10 minecraft:stone
+at 0 set 2 0 11 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 3 0 10 minecraft:stone
+at 0 set 3 0 11 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 4 0 11 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 5 0 10 minecraft:stone
+at 0 set 5 0 11 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 6 0 10 minecraft:stone
+at 0 set 6 0 11 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 7 0 10 minecraft:stone
+at 0 set 7 0 11 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 8 0 10 minecraft:stone
+at 0 set 8 0 11 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 9 0 10 minecraft:stone
+at 0 set 9 0 11 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 10 0 10 minecraft:stone
+at 0 set 10 0 11 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 11 0 10 minecraft:stone
+at 0 set 11 0 11 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 12 0 8 minecraft:stone
+at 0 set 12 0 9 minecraft:stone
+at 0 set 12 0 10 minecraft:stone
+at 0 set 12 0 11 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 13 0 8 minecraft:stone
+at 0 set 13 0 9 minecraft:stone
+at 0 set 13 0 10 minecraft:stone
+at 0 set 13 0 11 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 14 0 8 minecraft:stone
+at 0 set 14 0 9 minecraft:stone
+at 0 set 14 0 10 minecraft:stone
+at 0 set 14 0 11 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 15 0 8 minecraft:stone
+at 0 set 15 0 9 minecraft:stone
+at 0 set 15 0 10 minecraft:stone
+at 0 set 15 0 11 minecraft:stone
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 0 1 minecraft:stone
+at 0 set 16 0 2 minecraft:stone
+at 0 set 16 0 3 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 set 16 0 5 minecraft:stone
+at 0 set 16 0 6 minecraft:stone
+at 0 set 16 0 7 minecraft:stone
+at 0 set 16 0 8 minecraft:stone
+at 0 set 16 0 9 minecraft:stone
+at 0 set 16 0 10 minecraft:stone
+at 0 set 16 0 11 minecraft:stone
+at 0 set 17 0 0 minecraft:stone
+at 0 set 17 0 1 minecraft:stone
+at 0 set 17 0 2 minecraft:stone
+at 0 set 17 0 3 minecraft:stone
+at 0 set 17 0 4 minecraft:stone
+at 0 set 17 0 5 minecraft:stone
+at 0 set 17 0 6 minecraft:stone
+at 0 set 17 0 7 minecraft:stone
+at 0 set 17 0 8 minecraft:stone
+at 0 set 17 0 9 minecraft:stone
+at 0 set 17 0 10 minecraft:stone
+at 0 set 17 0 11 minecraft:stone
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 0 1 minecraft:stone
+at 0 set 18 0 2 minecraft:stone
+at 0 set 18 0 3 minecraft:stone
+at 0 set 18 0 4 minecraft:stone
+at 0 set 18 0 5 minecraft:stone
+at 0 set 18 0 6 minecraft:stone
+at 0 set 18 0 7 minecraft:stone
+at 0 set 18 0 8 minecraft:stone
+at 0 set 18 0 9 minecraft:stone
+at 0 set 18 0 10 minecraft:stone
+at 0 set 18 0 11 minecraft:stone
+at 0 set 19 0 0 minecraft:stone
+at 0 set 19 0 1 minecraft:stone
+at 0 set 19 0 2 minecraft:stone
+at 0 set 19 0 3 minecraft:stone
+at 0 set 19 0 4 minecraft:stone
+at 0 set 19 0 5 minecraft:stone
+at 0 set 19 0 6 minecraft:stone
+at 0 set 19 0 7 minecraft:stone
+at 0 set 19 0 8 minecraft:stone
+at 0 set 19 0 9 minecraft:stone
+at 0 set 19 0 10 minecraft:stone
+at 0 set 19 0 11 minecraft:stone
+at 0 set 20 0 0 minecraft:stone
+at 0 set 20 0 1 minecraft:stone
+at 0 set 20 0 2 minecraft:stone
+at 0 set 20 0 3 minecraft:stone
+at 0 set 20 0 4 minecraft:stone
+at 0 set 20 0 5 minecraft:stone
+at 0 set 20 0 6 minecraft:stone
+at 0 set 20 0 7 minecraft:stone
+at 0 set 20 0 8 minecraft:stone
+at 0 set 20 0 9 minecraft:stone
+at 0 set 20 0 10 minecraft:stone
+at 0 set 20 0 11 minecraft:stone
+at 0 set 21 0 0 minecraft:stone
+at 0 set 21 0 1 minecraft:stone
+at 0 set 21 0 2 minecraft:stone
+at 0 set 21 0 3 minecraft:stone
+at 0 set 21 0 4 minecraft:stone
+at 0 set 21 0 5 minecraft:stone
+at 0 set 21 0 6 minecraft:stone
+at 0 set 21 0 7 minecraft:stone
+at 0 set 21 0 8 minecraft:stone
+at 0 set 21 0 9 minecraft:stone
+at 0 set 21 0 10 minecraft:stone
+at 0 set 21 0 11 minecraft:stone
+at 0 set 22 0 0 minecraft:stone
+at 0 set 22 0 1 minecraft:stone
+at 0 set 22 0 2 minecraft:stone
+at 0 set 22 0 3 minecraft:stone
+at 0 set 22 0 4 minecraft:stone
+at 0 set 22 0 5 minecraft:stone
+at 0 set 22 0 6 minecraft:stone
+at 0 set 22 0 7 minecraft:stone
+at 0 set 22 0 8 minecraft:stone
+at 0 set 22 0 9 minecraft:stone
+at 0 set 22 0 10 minecraft:stone
+at 0 set 22 0 11 minecraft:stone
+at 0 set 23 0 0 minecraft:stone
+at 0 set 23 0 1 minecraft:stone
+at 0 set 23 0 2 minecraft:stone
+at 0 set 23 0 3 minecraft:stone
+at 0 set 23 0 4 minecraft:stone
+at 0 set 23 0 5 minecraft:stone
+at 0 set 23 0 6 minecraft:stone
+at 0 set 23 0 7 minecraft:stone
+at 0 set 23 0 8 minecraft:stone
+at 0 set 23 0 9 minecraft:stone
+at 0 set 23 0 10 minecraft:stone
+at 0 set 23 0 11 minecraft:stone
+at 0 set 1 1 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 2 1 1 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 5 2 1 minecraft:stone
+at 0 set 6 1 1 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 9 1 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 10 1 1 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 13 1 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 15 1 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 14 1 1 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 14 1 3 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 14 1 4 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 14 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 2 1 6 minecraft:piston[extended=false,facing=east]
+at 0 set 3 1 6 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 4 0 6 minecraft:oak_planks
+at 0 set 1 1 6 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 7 1 10 minecraft:sticky_piston[extended=false,facing=east]
+at 0 set 8 1 10 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 9 0 10 minecraft:gold_block
+at 0 set 6 1 10 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 12 1 8 minecraft:piston[extended=false,facing=east]
+at 0 set 11 1 8 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 10 1 8 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 10 use 2 1 1
+at 12 use 5 1 1
+at 14 use 6 1 1
+at 16 use 9 1 1
+at 16 use 10 1 1
+at 18 use 14 1 1
+at 20 use 2 1 1
+at 22 use 1 1 6
+at 24 use 6 1 10
+at 25 use 2 1 1
+at 26 use 2 1 1
+at 28 use 14 1 1
+at 30 use 1 1 1
+at 31 use 1 1 1
+at 32 use 1 1 1
+at 32 use 11 1 8
+at 33 use 1 1 1
+at 34 use 1 1 1
+at 35 use 1 1 1
+at 36 use 1 1 1
+at 37 use 1 1 1
+at 38 use 1 1 1
+at 38 use 14 1 1
+at 39 use 1 1 1
+at 40 use 1 1 1
+at 40 set 5 2 1 minecraft:air
+at 41 use 1 1 1
+at 41 use 5 1 1
+at 42 use 1 1 1
+at 43 use 1 1 1
+at 44 use 1 1 1
+at 44 use 1 1 6
+at 45 use 1 1 1
+at 46 use 1 1 1
+at 47 use 1 1 1
+at 48 use 1 1 1
+at 48 use 6 1 10
+at 49 use 1 1 1
+at 50 use 1 1 1
+at 51 use 1 1 1
+at 52 use 1 1 1
+at 52 use 11 1 8
+at 53 use 1 1 1
+at 54 use 1 1 1

@@ -90,6 +90,7 @@ A wrong convention makes fixtures fail rather than pass.
 | `light_weighted_pressure_plate`, `heavy_weighted_pressure_plate` | `power` 0–15 | — |
 | `target` | `power` 0–15 | — |
 | `daylight_detector` | `inverted`, `power` 0–15 | — |
+| `note_block` | `instrument`, `note` 0–24, `powered` | — |
 | `<kind>_door`, `<kind>_trapdoor` (21 kinds: the wooden ones, iron and the copper ones) | door: `facing`, `half`, `hinge`, `open`, `powered`; trapdoor: `facing`, `half`, `open`, `powered`, `waterlogged` | each kind is a block of its own; a trapdoor's `waterlogged` is stored only |
 | `<kind>_fence_gate` (the 12 wooden kinds) | `facing`, `in_wall`, `open`, `powered` | — |
 

@@ -20,7 +20,8 @@ struct BlockData {
     std::uint8_t tool;
     std::uint8_t tier;
     float resistance;
-    std::uint8_t push; // registry::PushClass
+    std::uint8_t push;       // registry::PushClass
+    std::uint8_t instrument; // registry::Instrument
 };
 struct PropertyData {
     const char* name;

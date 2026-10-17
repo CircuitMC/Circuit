@@ -47,6 +47,7 @@ enum class BlockType : std::uint8_t {
     fence_gate,          // facing (horizontal); level: 1 in a wall; flag: open; extra: powered; variant: DoorKind (wooden kinds)
     honey_block,
     daylight_detector,   // level: power 0-15; flag: inverted. Block entity: ticks it every 20 game ticks
+    note_block,          // level and extra bit 0: note 0-24 (note_of); flag: powered; variant: registry::Instrument
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -215,6 +216,11 @@ constexpr BlockState target(std::uint8_t power = 0) { return BlockState::of(Bloc
 constexpr BlockState daylight_detector(bool inverted = false, std::uint8_t power = 0) {
     return BlockState::of(BlockType::daylight_detector).with_flag(inverted).with_level(power);
 }
+// A note block; `instrument` is a registry::Instrument.
+constexpr BlockState note_block(std::uint8_t instrument = 0, std::uint8_t note = 0, bool powered = false) {
+    return BlockState::of(BlockType::note_block).with_variant(instrument).with_level(static_cast<std::uint8_t>(note & 15))
+        .with_extra(static_cast<std::uint8_t>(note >> 4)).with_flag(powered);
+}
 // Doors and trapdoors, wooden ones first, then iron and the copper ones;
 // fence gates come in the wooden kinds (registry names: "<kind>_door",
 // "<kind>_trapdoor", "<kind>_fence_gate").
@@ -238,6 +244,8 @@ constexpr BlockState fence_gate(DoorKind kind, Direction facing, bool open = fal
         .with_level(in_wall ? 1 : 0).with_flag(open).with_extra(powered ? 1 : 0);
 }
 } // namespace blocks
+// "harp" for a note block's instrument 0 (registry::Instrument).
+std::string_view instrument_name(std::uint8_t instrument) noexcept;
 // "oak" for an oak door, "waxed_copper" for a waxed copper one.
 std::string_view door_kind_name(std::uint8_t variant) noexcept;
 // Iron doors and trapdoors open only by power.
@@ -249,6 +257,8 @@ std::string_view button_kind_name(std::uint8_t variant) noexcept;
 constexpr bool wooden_button(BlockState s) noexcept {
     return s.is(BlockType::button) && s.variant() < static_cast<std::uint8_t>(blocks::ButtonKind::stone);
 }
+// The note block's instruments (registry::instrument_count), its variant.
+inline constexpr std::uint8_t note_instruments = 23;
 // Blocks of several kinds that share a BlockType and keep the kind as their variant.
 constexpr bool has_variant(BlockType t) noexcept {
     return t == BlockType::button || t == BlockType::pressure_plate || t == BlockType::weighted_plate || t == BlockType::door
@@ -261,6 +271,11 @@ constexpr std::uint8_t variant_count(BlockType t) noexcept {
     case BlockType::fence_gate: return blocks::fence_gate_kinds;
     default: return has_variant(t) ? blocks::button_kinds : 1;
     }
+}
+// A note block's note (0-24) and the state with another one.
+constexpr std::uint8_t note_of(BlockState s) noexcept { return static_cast<std::uint8_t>(s.level() | (s.extra() << 4)); }
+constexpr BlockState with_note(BlockState s, std::uint8_t note) noexcept {
+    return s.with_level(static_cast<std::uint8_t>(note & 15)).with_extra(static_cast<std::uint8_t>(note >> 4));
 }
 constexpr bool is_opening(BlockType t) noexcept { return t == BlockType::door || t == BlockType::trapdoor || t == BlockType::fence_gate; }
 constexpr bool is_torch(BlockType t) noexcept { return t == BlockType::redstone_torch || t == BlockType::redstone_wall_torch; }
@@ -310,7 +325,8 @@ inline bool is_solid(BlockState s) noexcept {
     case BlockType::stone: case BlockType::glass: case BlockType::obsidian: case BlockType::redstone_block:
     case BlockType::redstone_lamp: case BlockType::observer: case BlockType::piston: case BlockType::sticky_piston:
     case BlockType::piston_head: case BlockType::slime_block: case BlockType::hopper: case BlockType::chest:
-    case BlockType::moving_piston: case BlockType::target: case BlockType::honey_block:
+    case BlockType::moving_piston: case BlockType::target: case BlockType::honey_block: case BlockType::daylight_detector:
+    case BlockType::note_block:
         return true;
     case BlockType::other: return other_has_collision(s);
     default:
@@ -327,7 +343,7 @@ inline bool is_movable(BlockState s) noexcept {
     switch (s.type()) {
     case BlockType::stone: case BlockType::glass: case BlockType::redstone_block: case BlockType::redstone_lamp:
     case BlockType::observer: case BlockType::slime_block: case BlockType::target: case BlockType::trapdoor:
-    case BlockType::fence_gate: case BlockType::honey_block:
+    case BlockType::fence_gate: case BlockType::honey_block: case BlockType::note_block:
         return true;
     case BlockType::piston: case BlockType::sticky_piston:
         return !s.flag();
@@ -374,6 +390,8 @@ void for_each_modeled_state(F&& f) {
                     if (const auto w = BlockState::decode(raw | (shape << 18))) f(*w);
             } else if (has_variant(s->type())) {
                 for (std::uint32_t kind = 0; kind < variant_count(s->type()); ++kind) f(s->with_variant(static_cast<std::uint8_t>(kind)));
+            } else if (s->is(BlockType::note_block)) {
+                for (std::uint8_t instrument = 0; instrument < note_instruments; ++instrument) f(s->with_variant(instrument));
             } else {
                 f(*s);
             }

@@ -37,7 +37,7 @@ Feature counts per implementation state, then the number of features with compar
 | V11 Common building blocks | C5 | 1344 | 0 / 0 | 116 / 116 | 1226 / 1226 | 2 / 2 | 0 / 0 | 15 / 15 |
 | V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 24 / 24 | 54 / 54 | 4 / 4 | 0 / 0 | 8 / 8 |
 | V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 2 / 2 | 298 / 312 | 6 / 6 | 14 / 0 | 0 / 0 |
-| V14 Redstone sources and signal consumers | C4 | 138 | 6 / 6 | 85 / 85 | 45 / 45 | 2 / 2 | 0 / 0 | 31 / 33 |
+| V14 Redstone sources and signal consumers | C4 | 138 | 6 / 6 | 87 / 87 | 43 / 43 | 2 / 2 | 0 / 0 | 32 / 34 |
 | V15 Pistons and moving structures | C3, C4 | 16 | 2 / 2 | 14 / 14 | 0 / 0 | 0 / 0 | 0 / 0 | 12 / 12 |
 | V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 4 / 4 | 52 / 52 | 3 / 3 | 0 / 0 | 6 / 6 |
 | V17 TNT and explosions | C3, C4 | 11 | 0 / 1 | 7 / 7 | 1 / 1 | 2 / 2 | 1 / 0 | 7 / 8 |
@@ -67,8 +67,8 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 128 / 128 | 963 / 973 | 0 / 0 |
-| item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 118 / 118 | 1266 / 1297 | 0 / 0 |
+| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 129 / 129 | 962 / 972 | 0 / 0 |
+| item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 119 / 119 | 1265 / 1296 | 0 / 0 |
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 17 / 17 | 0 / 0 | 132 / 134 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
 | enchantment | approximate: minecraft-data pc/1.21.1/enchantments.json / minecraft-data pc/1.21.8/enchantments.json | 42 / 42 | 0 / 0 | 0 / 0 | 0 / 0 | 42 / 42 |
@@ -130,7 +130,7 @@ Their counts are unknown, not zero.
 | black_box | passing | 29 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 3 |
-| official_trace | passing | 99 |
+| official_trace | passing | 101 |
 | planned | planned | 2 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
@@ -291,7 +291,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Redstone torches and burnout | C4 | partial, compared | partial, compared | `trace/torch_basics`, `trace/torch_button_piston`, `trace/water_torch_button`; floor support comes from collision shapes; no burnout sound or smoke; players place torches on the clicked face, not by their view; Floor and wall torches power every neighbor but their block and the block above them strongly; power in their block turns them off two ticks after an update; the eighth turn-off of a position within 60 ticks burns a torch out for 160 ticks |
 | Buttons, pressure plates, tripwire and targets | C4 | partial, compared | partial, compared | `trace/button_basics`, `trace/plate_target_more`, `trace/pressure_plates`, `trace/target_block`, `trace/torch_button_piston`, `trace/water_torch_button`; no mobs or players press plates yet; only arrows press wooden buttons; of the projectiles only arrows and snowballs hit target blocks; tripwire is not modeled; Buttons of every kind on floors, walls and ceilings: 20 ticks for stone and polished blackstone, 30 for wooden ones, which arrows press and hold; pressure plates of every kind sensing the entities on them (weighted ones counting them); target blocks grading projectile hits |
 | Daylight detectors, sculk sensors, lightning rods and other sources | C4 | partial, compared | partial, compared | `trace/daylight_basics`, `trace/daylight_cycle`, `trace/daylight_more`; sculk sensors, lightning rods and the other sensors are not modeled; Daylight detectors, normal and inverted, set their output every 20 game ticks from the sky light in their cell, the time of day, rain and thunder; using one inverts it at once |
-| Doors, trapdoors, fence gates, note blocks, bells, copper bulbs and other consumers | C4 | partial, compared | partial, compared | `trace/door_basics`, `trace/door_more`; copper doors and trapdoors do not weather; note blocks, bells, copper bulbs and the other consumers are not modeled; Doors, trapdoors and fence gates of every kind open and close with the power around them and by hand (iron ones only by power), quietly, with a level-random draw for the sound |
+| Doors, trapdoors, fence gates, note blocks, bells, copper bulbs and other consumers | C4 | partial, compared | partial, compared | `trace/door_basics`, `trace/door_more`, `trace/note_instruments`, `trace/note_play`; bells, copper bulbs and the other consumers are not modeled; copper doors and trapdoors do not weather; player heads with a note block sound of their own play nothing; Doors, trapdoors and fence gates of every kind open and close with the power around them and by hand (iron ones only by power), quietly, with a level-random draw for the sound; note blocks take the instrument of the block below or a head above and play on a rising signal and when used, as block events that draw for the sound |
 | Rails, powered, detector and activator rails | C4 | missing, none | missing, none |  |
 | Comparator readings of every container and special block | C4 | partial, compared | partial, compared | `trace/double_chest`; Chests and hoppers |
 

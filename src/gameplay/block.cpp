@@ -11,11 +11,14 @@ namespace circuit::gameplay {
 namespace {
 // Registry blocks with a BlockType of their own (see evidence::ContentMapping),
 // besides the buttons and pressure plates of each kind.
-constexpr std::array<std::string_view, 29> modeled_names{
+constexpr std::array<std::string_view, 30> modeled_names{
     "air", "cave_air", "void_air", "stone", "glass", "obsidian", "redstone_block", "slime_block", "lever", "redstone_wire",
     "repeater", "redstone_lamp", "observer", "piston", "sticky_piston", "piston_head", "moving_piston", "hopper", "chest",
     "comparator", "water", "wheat", "redstone_torch", "redstone_wall_torch", "light_weighted_pressure_plate",
-    "heavy_weighted_pressure_plate", "target", "honey_block", "daylight_detector"};
+    "heavy_weighted_pressure_plate", "target", "honey_block", "daylight_detector", "note_block"};
+constexpr std::array<std::string_view, note_instruments> instrument_names{
+    "harp", "basedrum", "snare", "hat", "bass", "flute", "bell", "guitar", "chime", "xylophone", "iron_xylophone", "cow_bell",
+    "didgeridoo", "bit", "banjo", "pling", "zombie", "skeleton", "creeper", "dragon", "wither_skeleton", "piglin", "custom_head"};
 constexpr std::array<std::string_view, blocks::button_kinds> button_names{
     "oak", "spruce", "birch", "jungle", "acacia", "cherry", "dark_oak", "pale_oak", "mangrove", "bamboo", "crimson", "warped",
     "stone", "polished_blackstone"};
@@ -48,6 +51,7 @@ constexpr Properties properties(BlockType t) noexcept {
     case BlockType::weighted_plate: case BlockType::target: return {false, true, false, false};
     case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: return {true, true, true, true};
     case BlockType::daylight_detector: return {false, true, true, false};
+    case BlockType::note_block: return {false, true, true, true};
     default: return {false, false, false, false};
     }
 }
@@ -76,6 +80,10 @@ const std::vector<bool>& modeled_blocks() {
 
 std::string_view button_kind_name(std::uint8_t variant) noexcept {
     return variant < button_names.size() ? button_names[variant] : std::string_view{};
+}
+
+std::string_view instrument_name(std::uint8_t instrument) noexcept {
+    return instrument < instrument_names.size() ? instrument_names[instrument] : std::string_view{};
 }
 
 std::string_view door_kind_name(std::uint8_t variant) noexcept {
@@ -133,6 +141,8 @@ contracts::Result<BlockState> BlockState::decode(std::uint32_t raw) noexcept {
         // several kinds a variant.
         if (has_variant(s.type())) {
             if (s.variant() >= variant_count(s.type())) return invalid;
+        } else if (s.is(BlockType::note_block)) {
+            if (s.variant() >= note_instruments) return invalid;
         } else if (!s.is(BlockType::redstone_wire)) {
             return invalid;
         } else {
@@ -163,6 +173,9 @@ contracts::Result<BlockState> BlockState::decode(std::uint32_t raw) noexcept {
         break;
     case BlockType::fence_gate:
         if (!contracts::is_horizontal(s.facing()) || s.level() > 1 || s.extra() > 1) return invalid;
+        break;
+    case BlockType::note_block:
+        if (note_of(s) > 24) return invalid;
         break;
     case BlockType::hopper:
         if (s.facing() == Direction::up) return invalid;
@@ -269,6 +282,8 @@ std::string block_notation(BlockState s) {
     case BlockType::target: return std::format("minecraft:target[power={}]", s.level());
     case BlockType::daylight_detector:
         return std::format("minecraft:daylight_detector[inverted={},power={}]", b(s.flag()), s.level());
+    case BlockType::note_block:
+        return std::format("minecraft:note_block[instrument={},note={},powered={}]", instrument_name(s.variant()), note_of(s), b(s.flag()));
     case BlockType::door:
         return std::format("minecraft:{}_door[facing={},half={},hinge={},open={},powered={}]", door_kind_name(s.variant()),
                            direction_name(s.facing()), upper_half(s) ? "upper" : "lower", (s.level() & 2) ? "right" : "left", b(s.flag()),

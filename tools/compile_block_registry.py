@@ -13,7 +13,8 @@ the committed table.
 Each version maps its states to internal ids and back. Per internal block the
 table keeps the data the rules use for blocks without rules of their own:
 hardness, opacity, the effective tool and the lowest tier that harvests the
-block, every block's blast resistance and how pistons treat it (push_class). Per state it keeps the collision class (empty, partial, full cube),
+block, every block's blast resistance, how pistons treat it (push_class) and the note block instrument it gives (instrument). Per
+state it keeps the collision class (empty, partial, full cube),
 which faces the collision shape covers completely, its light: emission,
 dampening and, for states whose shape occludes light, the parts of each face
 the occlusion shape covers (light_of below; minecraft-data gives light per
@@ -269,6 +270,51 @@ def push_class(name, hardness):
     return MOVE
 
 
+# The note block instrument of a block (instrument): what a note block above it
+# plays, unless it is a mob head's, which a note block below it plays. In the
+# order of the note block's `instrument` values. Wood (the axe's blocks) plays
+# the bass and stone (the pickaxe's) the bass drum, but for the lists; the
+# rest the harp. Iterated against a report of every block of both official
+# servers (tests/fixtures/collision/instrument-*.txt) until no block differed.
+INSTRUMENTS = ["harp", "basedrum", "snare", "hat", "bass", "flute", "bell", "guitar", "chime", "xylophone", "iron_xylophone",
+               "cow_bell", "didgeridoo", "bit", "banjo", "pling", "zombie", "skeleton", "creeper", "dragon", "wither_skeleton",
+               "piglin", "custom_head"]
+INSTRUMENT_NAMES = {
+    "gold_block": "bell", "iron_block": "iron_xylophone", "clay": "flute", "soul_sand": "cow_bell", "glowstone": "pling",
+    "pumpkin": "didgeridoo", "emerald_block": "bit", "hay_block": "banjo", "packed_ice": "chime", "bone_block": "xylophone",
+    "skeleton_skull": "skeleton", "wither_skeleton_skull": "wither_skeleton", "zombie_head": "zombie", "player_head": "custom_head",
+    "creeper_head": "creeper", "dragon_head": "dragon", "piglin_head": "piglin", "beacon": "hat", "sea_lantern": "hat",
+    "conduit": "hat", "heavy_core": "snare",
+}
+HARP_PATTERNS = [r"_button$", r"rail$", r"^infested_", r"shulker_box$", r"cauldron$", r"anvil$", r"amethyst", r"copper_door$",
+                 r"lantern$", r"(^|_)ice$"]
+HARP_NAMES = {"ladder", "bamboo", "scaffolding", "piston", "sticky_piston", "piston_head", "iron_door", "iron_trapdoor", "packed_mud",
+              "iron_bars", "chain", "brewing_stand", "light_weighted_pressure_plate", "heavy_weighted_pressure_plate",
+              "redstone_block", "hopper", "grindstone", "bell", "lodestone"}
+BASEDRUM_NAMES = {"bedrock", "obsidian", "crying_obsidian", "respawn_anchor", "resin_block", "end_portal_frame",
+                  "reinforced_deepslate", "trial_spawner", "vault", "creaking_heart"}
+
+def instrument(name, material):
+    if name in INSTRUMENT_NAMES:
+        return INSTRUMENTS.index(INSTRUMENT_NAMES[name])
+    if re.search(r"(^|_)glass(_pane)?$", name):
+        return INSTRUMENTS.index("hat")
+    if re.fullmatch(r"(red_)?sand|gravel|suspicious_(sand|gravel)|.*_concrete_powder", name):
+        return INSTRUMENTS.index("snare")
+    if name.endswith("_wool"):
+        return INSTRUMENTS.index("guitar")
+    if name in HARP_NAMES or any(re.search(p, name) for p in HARP_PATTERNS):
+        return INSTRUMENTS.index("harp")
+    if name in BASEDRUM_NAMES or re.search(r"_ore$|^raw_.*_block$", name):
+        return INSTRUMENTS.index("basedrum")
+    tools = (material or "").split(";")
+    if "mineable/axe" in tools and "plant" not in tools and "gourd" not in tools:
+        return INSTRUMENTS.index("bass")
+    if "mineable/pickaxe" in tools:
+        return INSTRUMENTS.index("basedrum")
+    return INSTRUMENTS.index("harp")
+
+
 def previous_blocks(path):
     text = open(path, encoding="utf-8").read()
     body = text.split("const BlockData blocks[] = {", 1)[1].split("};", 1)[0]
@@ -319,7 +365,7 @@ def main():
         "",
         "// name, first property, property count, first internal state, state count, default state offset,",
         "// hardness (negative: unbreakable), opaque, effective tool, harvest tier, blast resistance,",
-        "// push class (0 move, 1 destroy, 2 push only, 3 immovable)",
+        "// push class (0 move, 1 destroy, 2 push only, 3 immovable), note block instrument",
         "const BlockData blocks[] = {",
     ]
     properties = []  # (name, first value, count)
@@ -396,8 +442,13 @@ def main():
             if other is not None and float(other["resistance"]) != resistance:
                 sys.exit(f"{name}: blast resistance differs in {release}")
         push = push_class(b["name"], b.get("hardness"))
+        sound = instrument(b["name"], b.get("material"))
+        for release, other_blocks, _, _ in versions:
+            other = next((ob for ob in other_blocks if ob["name"] == b["name"] and schema(ob) == sch), None)
+            if other is not None and instrument(other["name"], other.get("material")) != sound:
+                sys.exit(f"{name}: instrument differs in {release}")
         out.append(f'    {{"{name}", {first_prop}, {len(sch)}, {first_state}, {count}, {b["defaultState"] - b["minStateId"]}, '
-                   f'{hardness!r}f, {opaque}, {tool}, {tier_of(b, tool, items)}, {resistance!r}f, {push}}},')
+                   f'{hardness!r}f, {opaque}, {tool}, {tier_of(b, tool, items)}, {resistance!r}f, {push}, {sound}}},')
         first_state += count
     out += ["};", f"const std::uint32_t block_count = {len(internal)};", f"const std::uint32_t state_count = {first_state - 1};", ""]
     out.append("const PropertyData properties[] = {")

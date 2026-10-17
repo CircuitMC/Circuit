@@ -47,6 +47,7 @@ void run_block_event(RuleContext& ctx, const BlockEvent& event) {
     ctx.record(TraceKind::block_event_executed, event.pos, static_cast<std::uint64_t>(event.block), event.event, matches);
     if (!matches) return;
     if (is_piston(event.block)) run_piston_event(ctx, event, s);
+    else if (event.block == BlockType::note_block) run_note_event(ctx, s);
 }
 
 void run_block_entity(RuleContext& ctx, BlockPos pos) {

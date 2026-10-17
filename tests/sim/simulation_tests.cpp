@@ -812,6 +812,28 @@ int main() {
         require(at(200, {15, 0, 0}).level() == 11 && at(200, {16, 0, 0}).level() == 4, "noon in the storm");
     });
 
+    suite.run("note blocks play across chunk edges", [&] {
+        using circuit::gameplay::registry::Instrument;
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("note_blocks"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the note block scenario");
+        const auto& ref = references[index];
+        const auto at = [&](Tick t, BlockPos p) { return state_at(ref.dumps.at(t), p); };
+        const auto& end = ref.dumps.rbegin()->second;
+        // Uses at ticks 3 mod 7 from 10 on: 16 by the end. Set by a command,
+        // it keeps the harp: nothing above or below it changes.
+        require(note_of(state_at(end, {17, 0, 0})) == 16 && at(50, {17, 0, 0}).variant() == static_cast<std::uint8_t>(Instrument::harp),
+                "the note block across the edge counted its uses");
+        require(state_at(end, {16, 0, 2}) == blocks::note_block(static_cast<std::uint8_t>(Instrument::bell)), "pushed onto gold");
+        require(state_at(end, {15, 0, 0}).variant() == static_cast<std::uint8_t>(Instrument::zombie), "a zombie head above");
+        // Six rising signals play both note blocks, and each use the one it
+        // uses; at tick 10 the use and the signal give one event.
+        std::size_t note_events = 0;
+        for (const auto& records : ref.traces)
+            for (const auto& r : records)
+                if (r.kind == TraceKind::block_event_executed && r.a == static_cast<std::uint64_t>(BlockType::note_block)) ++note_events;
+        require(note_events == 6 * 2 + 16 - 1, std::format("{} note block events", note_events));
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");

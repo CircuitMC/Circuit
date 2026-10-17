@@ -202,6 +202,18 @@ bool head_has_base(RuleContext& ctx, BlockPos pos, BlockState head);
 // Block-entity tick of a moving piston: completes the move after two ticks.
 void tick_moving_piston(RuleContext& ctx, BlockPos pos);
 
+// ---- note blocks (note.cpp) ----
+// The state with the instrument its neighbors give it.
+BlockState tuned_note_block(RuleContext& ctx, BlockPos pos, BlockState s);
+// A neighbor update: sets it to the power around it, playing on a rise.
+void check_note_block(RuleContext& ctx, BlockPos pos, BlockState s);
+// Used: the next note, played.
+void use_note_block(RuleContext& ctx, BlockPos pos, BlockState s);
+// A shape update from `d`: from above or below, the instrument.
+void note_block_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d);
+// Its block event: the sound's draw.
+void run_note_event(RuleContext& ctx, BlockState s);
+
 // ---- daylight detectors (daylight.cpp) ----
 // Block-entity tick: the output from the sky every 20 game ticks.
 void tick_daylight_detector(RuleContext& ctx, BlockPos pos, BlockState s);

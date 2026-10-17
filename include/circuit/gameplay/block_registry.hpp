@@ -35,6 +35,18 @@ inline constexpr std::uint8_t other_tool_tier = 255;
 // never pulled, or left in place.
 enum class PushClass : std::uint8_t { move = 0, destroy = 1, push_only = 2, immovable = 3 };
 
+// The note block instrument a block gives (tools/compile_block_registry.py,
+// checked against both official servers): what a note block above it plays,
+// or, for the mob heads (zombie and after), what a note block below plays.
+// In the order of the note block's `instrument` values.
+enum class Instrument : std::uint8_t {
+    harp, basedrum, snare, hat, bass, flute, bell, guitar, chime, xylophone, iron_xylophone, cow_bell, didgeridoo, bit, banjo,
+    pling, zombie, skeleton, creeper, dragon, wither_skeleton, piglin, custom_head,
+};
+inline constexpr std::uint8_t instrument_count = 23;
+// Mob heads play from above a note block.
+constexpr bool head_instrument(Instrument i) noexcept { return i >= Instrument::zombie; }
+
 struct BlockInfo {
     std::string_view name; // without namespace, e.g. "oak_log"
     std::uint32_t first_state;
@@ -46,6 +58,7 @@ struct BlockInfo {
     std::uint8_t tier; // lowest tier of `tool` that harvests the block; 0 for any tool
     float resistance;  // blast resistance
     PushClass push;    // how pistons treat it
+    Instrument instrument;
 };
 
 // A box of a collision shape, in block coordinates (0 to 1; fences, walls

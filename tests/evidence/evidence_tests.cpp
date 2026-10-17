@@ -504,6 +504,30 @@ int main(int argc, char** argv) {
         require(blocks == 1105 + 1095, std::format("{} blocks", blocks));
     });
 
+    suite.run("note block instruments match both official servers", [&] {
+        // tests/fixtures/collision/instrument-*.txt: the instrument every
+        // block gives a note block, as the official servers report it.
+        namespace registry = circuit::gameplay::registry;
+        constexpr std::array<std::string_view, registry::instrument_count> names{
+            "harp", "basedrum", "snare", "hat", "bass", "flute", "bell", "guitar", "chime", "xylophone", "iron_xylophone", "cow_bell",
+            "didgeridoo", "bit", "banjo", "pling", "zombie", "skeleton", "creeper", "dragon", "wither_skeleton", "piglin", "custom_head"};
+        std::size_t blocks = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            std::istringstream lines(read_text(fixtures / "collision" / std::format("instrument-{}.txt", release)));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto space = line.find(' ');
+                const auto id = line.substr(0, space);
+                const auto block = registry::find_block(release, id.substr(std::string("minecraft:").size()));
+                require(block.has_value(), std::format("{} {}: in the registry", release, id));
+                const auto compiled = names[static_cast<std::size_t>(registry::block(*block).instrument)];
+                require(compiled == line.substr(space + 1), std::format("{} {}: compiled {}, official {}", release, id, compiled, line.substr(space + 1)));
+                ++blocks;
+            }
+        }
+        require(blocks == 1105 + 1095, std::format("{} blocks", blocks));
+    });
+
     suite.run("light properties match both official servers", [&] {
         // tests/fixtures/light: every state's emission, dampening and
         // occlusion shape as the official servers report them.

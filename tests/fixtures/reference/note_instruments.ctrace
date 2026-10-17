@@ -1,0 +1,356 @@
+circuit-trace 2
+title Note blocks taking the instrument of the block below and of a head above, and playing it
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v11
+mechanisms note_block
+area 0 0 0 29 3 4
+ticks 70
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 0 1 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 set 17 0 0 minecraft:stone
+at 0 set 17 0 1 minecraft:stone
+at 0 set 17 0 4 minecraft:stone
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 0 1 minecraft:stone
+at 0 set 18 0 4 minecraft:stone
+at 0 set 19 0 0 minecraft:stone
+at 0 set 19 0 1 minecraft:stone
+at 0 set 19 0 4 minecraft:stone
+at 0 set 20 0 0 minecraft:stone
+at 0 set 20 0 1 minecraft:stone
+at 0 set 20 0 4 minecraft:stone
+at 0 set 21 0 0 minecraft:stone
+at 0 set 21 0 1 minecraft:stone
+at 0 set 21 0 4 minecraft:stone
+at 0 set 22 0 0 minecraft:stone
+at 0 set 22 0 1 minecraft:stone
+at 0 set 22 0 4 minecraft:stone
+at 0 set 23 0 0 minecraft:stone
+at 0 set 23 0 1 minecraft:stone
+at 0 set 23 0 4 minecraft:stone
+at 0 set 24 0 0 minecraft:stone
+at 0 set 24 0 1 minecraft:stone
+at 0 set 24 0 4 minecraft:stone
+at 0 set 25 0 0 minecraft:stone
+at 0 set 25 0 1 minecraft:stone
+at 0 set 25 0 4 minecraft:stone
+at 0 set 26 0 0 minecraft:stone
+at 0 set 26 0 1 minecraft:stone
+at 0 set 26 0 4 minecraft:stone
+at 0 set 27 0 0 minecraft:stone
+at 0 set 27 0 1 minecraft:stone
+at 0 set 27 0 4 minecraft:stone
+at 0 set 28 0 0 minecraft:stone
+at 0 set 28 0 1 minecraft:stone
+at 0 set 28 0 4 minecraft:stone
+at 0 set 29 0 0 minecraft:stone
+at 0 set 29 0 1 minecraft:stone
+at 0 set 29 0 4 minecraft:stone
+at 0 set 0 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 1 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 2 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 3 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 4 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 5 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 6 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 7 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 8 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 9 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 10 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 11 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 12 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 13 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 14 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 15 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 16 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 17 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 18 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 19 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 20 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 21 2 1 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 0 2 4 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 0 1 4 minecraft:stone
+at 0 set 1 2 4 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 1 1 4 minecraft:stone
+at 0 set 2 2 4 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 2 1 4 minecraft:stone
+at 0 set 3 2 4 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 3 1 4 minecraft:stone
+at 0 set 4 2 4 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 4 1 4 minecraft:stone
+at 0 set 5 2 4 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 5 1 4 minecraft:stone
+at 0 set 6 2 4 minecraft:note_block[instrument=harp,note=0,powered=false]
+at 0 set 6 1 4 minecraft:stone
+at 0 set 10 2 4 minecraft:note_block[instrument=harp,note=0,powered=false]
+
+at 1 set 0 1 1 minecraft:dirt
+at 1 set 1 1 1 minecraft:stone
+at 1 set 2 1 1 minecraft:heavy_core[waterlogged=false]
+at 1 set 3 1 1 minecraft:glass
+at 1 set 4 1 1 minecraft:oak_planks
+at 1 set 5 1 1 minecraft:clay
+at 1 set 6 1 1 minecraft:gold_block
+at 1 set 7 1 1 minecraft:white_wool
+at 1 set 8 1 1 minecraft:packed_ice
+at 1 set 9 1 1 minecraft:bone_block[axis=y]
+at 1 set 10 1 1 minecraft:iron_block
+at 1 set 11 1 1 minecraft:soul_sand
+at 1 set 12 1 1 minecraft:pumpkin
+at 1 set 13 1 1 minecraft:emerald_block
+at 1 set 14 1 1 minecraft:hay_block[axis=y]
+at 1 set 15 1 1 minecraft:glowstone
+at 1 set 16 1 1 minecraft:obsidian
+at 1 set 17 1 1 minecraft:sand
+at 1 set 18 1 1 minecraft:redstone_block
+at 1 set 19 1 1 minecraft:oak_slab[type=bottom,waterlogged=false]
+at 1 set 20 1 1 minecraft:copper_block
+at 1 set 21 1 1 minecraft:sea_lantern
+change 1 commands 0 1 1 minecraft:air minecraft:dirt
+change 1 commands 1 1 1 minecraft:air minecraft:stone
+change 1 commands 1 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=basedrum,note=0,powered=false]
+change 1 commands 2 1 1 minecraft:air minecraft:heavy_core[waterlogged=false]
+change 1 commands 2 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=snare,note=0,powered=false]
+change 1 commands 3 1 1 minecraft:air minecraft:glass
+change 1 commands 3 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=hat,note=0,powered=false]
+change 1 commands 4 1 1 minecraft:air minecraft:oak_planks
+change 1 commands 4 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=bass,note=0,powered=false]
+change 1 commands 5 1 1 minecraft:air minecraft:clay
+change 1 commands 5 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=flute,note=0,powered=false]
+change 1 commands 6 1 1 minecraft:air minecraft:gold_block
+change 1 commands 6 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=bell,note=0,powered=false]
+change 1 commands 7 1 1 minecraft:air minecraft:white_wool
+change 1 commands 7 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=guitar,note=0,powered=false]
+change 1 commands 8 1 1 minecraft:air minecraft:packed_ice
+change 1 commands 8 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=chime,note=0,powered=false]
+change 1 commands 9 1 1 minecraft:air minecraft:bone_block[axis=y]
+change 1 commands 9 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=xylophone,note=0,powered=false]
+change 1 commands 10 1 1 minecraft:air minecraft:iron_block
+change 1 commands 10 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=iron_xylophone,note=0,powered=false]
+change 1 commands 11 1 1 minecraft:air minecraft:soul_sand
+change 1 commands 11 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=cow_bell,note=0,powered=false]
+change 1 commands 12 1 1 minecraft:air minecraft:pumpkin
+change 1 commands 12 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=didgeridoo,note=0,powered=false]
+change 1 commands 13 1 1 minecraft:air minecraft:emerald_block
+change 1 commands 13 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=bit,note=0,powered=false]
+change 1 commands 14 1 1 minecraft:air minecraft:hay_block[axis=y]
+change 1 commands 14 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=banjo,note=0,powered=false]
+change 1 commands 15 1 1 minecraft:air minecraft:glowstone
+change 1 commands 15 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=pling,note=0,powered=false]
+change 1 commands 16 1 1 minecraft:air minecraft:obsidian
+change 1 commands 16 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=basedrum,note=0,powered=false]
+change 1 commands 17 1 1 minecraft:air minecraft:sand
+change 1 commands 17 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=snare,note=0,powered=false]
+change 1 commands 18 1 1 minecraft:air minecraft:redstone_block
+change 1 commands 18 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=harp,note=0,powered=true]
+change 1 commands 19 1 1 minecraft:air minecraft:oak_slab[type=bottom,waterlogged=false]
+change 1 commands 19 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=bass,note=0,powered=false]
+change 1 commands 20 1 1 minecraft:air minecraft:copper_block
+change 1 commands 21 1 1 minecraft:air minecraft:sea_lantern
+change 1 commands 21 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=hat,note=0,powered=false]
+draws 1 block_events level 2
+
+at 2 set 0 3 4 minecraft:zombie_head[powered=false,rotation=0]
+at 2 set 1 3 4 minecraft:skeleton_skull[powered=false,rotation=0]
+at 2 set 2 3 4 minecraft:creeper_head[powered=false,rotation=0]
+at 2 set 3 3 4 minecraft:dragon_head[powered=false,rotation=0]
+at 2 set 4 3 4 minecraft:wither_skeleton_skull[powered=false,rotation=0]
+at 2 set 5 3 4 minecraft:piglin_head[powered=false,rotation=0]
+at 2 set 6 3 4 minecraft:player_head[powered=false,rotation=0]
+change 2 commands 0 3 4 minecraft:air minecraft:zombie_head[powered=false,rotation=0]
+change 2 commands 0 2 4 minecraft:note_block[instrument=basedrum,note=0,powered=false] minecraft:note_block[instrument=zombie,note=0,powered=false]
+change 2 commands 1 3 4 minecraft:air minecraft:skeleton_skull[powered=false,rotation=0]
+change 2 commands 1 2 4 minecraft:note_block[instrument=basedrum,note=0,powered=false] minecraft:note_block[instrument=skeleton,note=0,powered=false]
+change 2 commands 2 3 4 minecraft:air minecraft:creeper_head[powered=false,rotation=0]
+change 2 commands 2 2 4 minecraft:note_block[instrument=basedrum,note=0,powered=false] minecraft:note_block[instrument=creeper,note=0,powered=false]
+change 2 commands 3 3 4 minecraft:air minecraft:dragon_head[powered=false,rotation=0]
+change 2 commands 3 2 4 minecraft:note_block[instrument=basedrum,note=0,powered=false] minecraft:note_block[instrument=dragon,note=0,powered=false]
+change 2 commands 4 3 4 minecraft:air minecraft:wither_skeleton_skull[powered=false,rotation=0]
+change 2 commands 4 2 4 minecraft:note_block[instrument=basedrum,note=0,powered=false] minecraft:note_block[instrument=wither_skeleton,note=0,powered=false]
+change 2 commands 5 3 4 minecraft:air minecraft:piglin_head[powered=false,rotation=0]
+change 2 commands 5 2 4 minecraft:note_block[instrument=basedrum,note=0,powered=false] minecraft:note_block[instrument=piglin,note=0,powered=false]
+change 2 commands 6 3 4 minecraft:air minecraft:player_head[powered=false,rotation=0]
+change 2 commands 6 2 4 minecraft:note_block[instrument=basedrum,note=0,powered=false] minecraft:note_block[instrument=custom_head,note=0,powered=false]
+
+at 3 set 10 1 4 minecraft:zombie_head[powered=false,rotation=0]
+change 3 commands 10 1 4 minecraft:air minecraft:zombie_head[powered=false,rotation=0]
+
+at 10 set 0 3 4 minecraft:air
+change 10 commands 0 3 4 minecraft:zombie_head[powered=false,rotation=0] minecraft:air
+change 10 commands 0 2 4 minecraft:note_block[instrument=zombie,note=0,powered=false] minecraft:note_block[instrument=basedrum,note=0,powered=false]
+
+at 11 set 1 1 4 minecraft:white_wool
+change 11 commands 1 1 4 minecraft:stone minecraft:white_wool
+
+at 20 use 0 2 1
+change 20 commands 0 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=harp,note=1,powered=false]
+draws 20 block_events level 2
+
+at 21 use 1 2 1
+change 21 commands 1 2 1 minecraft:note_block[instrument=basedrum,note=0,powered=false] minecraft:note_block[instrument=basedrum,note=1,powered=false]
+draws 21 block_events level 2
+
+at 22 use 2 2 1
+change 22 commands 2 2 1 minecraft:note_block[instrument=snare,note=0,powered=false] minecraft:note_block[instrument=snare,note=1,powered=false]
+draws 22 block_events level 2
+
+at 23 use 3 2 1
+change 23 commands 3 2 1 minecraft:note_block[instrument=hat,note=0,powered=false] minecraft:note_block[instrument=hat,note=1,powered=false]
+draws 23 block_events level 2
+
+at 24 use 4 2 1
+change 24 commands 4 2 1 minecraft:note_block[instrument=bass,note=0,powered=false] minecraft:note_block[instrument=bass,note=1,powered=false]
+draws 24 block_events level 2
+
+at 25 use 5 2 1
+change 25 commands 5 2 1 minecraft:note_block[instrument=flute,note=0,powered=false] minecraft:note_block[instrument=flute,note=1,powered=false]
+draws 25 block_events level 2
+
+at 26 use 6 2 1
+change 26 commands 6 2 1 minecraft:note_block[instrument=bell,note=0,powered=false] minecraft:note_block[instrument=bell,note=1,powered=false]
+draws 26 block_events level 2
+
+at 27 use 7 2 1
+change 27 commands 7 2 1 minecraft:note_block[instrument=guitar,note=0,powered=false] minecraft:note_block[instrument=guitar,note=1,powered=false]
+draws 27 block_events level 2
+
+at 28 use 8 2 1
+change 28 commands 8 2 1 minecraft:note_block[instrument=chime,note=0,powered=false] minecraft:note_block[instrument=chime,note=1,powered=false]
+draws 28 block_events level 2
+
+at 29 use 9 2 1
+change 29 commands 9 2 1 minecraft:note_block[instrument=xylophone,note=0,powered=false] minecraft:note_block[instrument=xylophone,note=1,powered=false]
+draws 29 block_events level 2
+
+at 30 use 10 2 1
+change 30 commands 10 2 1 minecraft:note_block[instrument=iron_xylophone,note=0,powered=false] minecraft:note_block[instrument=iron_xylophone,note=1,powered=false]
+draws 30 block_events level 2
+
+at 31 use 11 2 1
+change 31 commands 11 2 1 minecraft:note_block[instrument=cow_bell,note=0,powered=false] minecraft:note_block[instrument=cow_bell,note=1,powered=false]
+draws 31 block_events level 2
+
+at 32 use 12 2 1
+change 32 commands 12 2 1 minecraft:note_block[instrument=didgeridoo,note=0,powered=false] minecraft:note_block[instrument=didgeridoo,note=1,powered=false]
+draws 32 block_events level 2
+
+at 33 use 13 2 1
+change 33 commands 13 2 1 minecraft:note_block[instrument=bit,note=0,powered=false] minecraft:note_block[instrument=bit,note=1,powered=false]
+draws 33 block_events level 2
+
+at 34 use 14 2 1
+change 34 commands 14 2 1 minecraft:note_block[instrument=banjo,note=0,powered=false] minecraft:note_block[instrument=banjo,note=1,powered=false]
+draws 34 block_events level 2
+
+at 35 use 15 2 1
+change 35 commands 15 2 1 minecraft:note_block[instrument=pling,note=0,powered=false] minecraft:note_block[instrument=pling,note=1,powered=false]
+draws 35 block_events level 2
+
+at 36 use 16 2 1
+change 36 commands 16 2 1 minecraft:note_block[instrument=basedrum,note=0,powered=false] minecraft:note_block[instrument=basedrum,note=1,powered=false]
+draws 36 block_events level 2
+
+at 37 use 17 2 1
+change 37 commands 17 2 1 minecraft:note_block[instrument=snare,note=0,powered=false] minecraft:note_block[instrument=snare,note=1,powered=false]
+draws 37 block_events level 2
+
+at 38 use 18 2 1
+change 38 commands 18 2 1 minecraft:note_block[instrument=harp,note=0,powered=true] minecraft:note_block[instrument=harp,note=1,powered=true]
+draws 38 block_events level 2
+
+at 39 use 19 2 1
+change 39 commands 19 2 1 minecraft:note_block[instrument=bass,note=0,powered=false] minecraft:note_block[instrument=bass,note=1,powered=false]
+draws 39 block_events level 2
+
+at 40 use 20 2 1
+change 40 commands 20 2 1 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=harp,note=1,powered=false]
+draws 40 block_events level 2
+
+at 41 use 21 2 1
+change 41 commands 21 2 1 minecraft:note_block[instrument=hat,note=0,powered=false] minecraft:note_block[instrument=hat,note=1,powered=false]
+draws 41 block_events level 2
+
+at 50 use 0 2 4
+change 50 commands 0 2 4 minecraft:note_block[instrument=basedrum,note=0,powered=false] minecraft:note_block[instrument=basedrum,note=1,powered=false]
+draws 50 block_events level 2
+
+at 51 use 1 2 4
+change 51 commands 1 2 4 minecraft:note_block[instrument=skeleton,note=0,powered=false] minecraft:note_block[instrument=skeleton,note=1,powered=false]
+draws 51 block_events level 2
+
+at 52 use 2 2 4
+change 52 commands 2 2 4 minecraft:note_block[instrument=creeper,note=0,powered=false] minecraft:note_block[instrument=creeper,note=1,powered=false]
+draws 52 block_events level 2
+
+at 53 use 3 2 4
+change 53 commands 3 2 4 minecraft:note_block[instrument=dragon,note=0,powered=false] minecraft:note_block[instrument=dragon,note=1,powered=false]
+draws 53 block_events level 2
+
+at 54 use 4 2 4
+change 54 commands 4 2 4 minecraft:note_block[instrument=wither_skeleton,note=0,powered=false] minecraft:note_block[instrument=wither_skeleton,note=1,powered=false]
+draws 54 block_events level 2
+
+at 55 use 5 2 4
+change 55 commands 5 2 4 minecraft:note_block[instrument=piglin,note=0,powered=false] minecraft:note_block[instrument=piglin,note=1,powered=false]
+draws 55 block_events level 2
+
+at 56 use 6 2 4
+change 56 commands 6 2 4 minecraft:note_block[instrument=custom_head,note=0,powered=false] minecraft:note_block[instrument=custom_head,note=1,powered=false]
+
+at 60 use 10 2 4
+change 60 commands 10 2 4 minecraft:note_block[instrument=harp,note=0,powered=false] minecraft:note_block[instrument=harp,note=1,powered=false]
+draws 60 block_events level 2

@@ -1748,6 +1748,51 @@ int main() {
                 std::format("noon in the rain: {} and {}", s.at({0, 0, 0}).level(), s.at({2, 0, 0}).level()));
     });
 
+    suite.run("note blocks take their instrument and play by power and use", [] {
+        using circuit::contracts::UseBlock;
+        using circuit::gameplay::registry::Instrument;
+        const auto note = [](Instrument i, std::uint8_t n = 0, bool powered = false) {
+            return blocks::note_block(static_cast<std::uint8_t>(i), n, powered);
+        };
+        Sim s;
+        std::vector<CommandBody> build = floor(-2, 8, -1, 4);
+        build.push_back(place({0, 0, 0}, blocks::note_block()));
+        build.push_back(place({1, 0, 0}, blocks::lever(false)));
+        build.push_back(place({4, 0, 0}, blocks::note_block()));
+        build.push_back(place({4, 1, 0}, blocks::stone()));
+        s.tick(build);
+        const auto draws = [&] {
+            std::uint64_t n = 0;
+            for (const auto& r : of_kind(s.last, TraceKind::level_random_draw)) n += r.a;
+            return n;
+        };
+        // Set by commands as given; a shape update from below gives the
+        // instrument of the block there.
+        s.tick({place({0, -1, 0}, registry_block("oak_planks")), place({4, -1, 0}, registry_block("gold_block"))});
+        require(s.at({0, 0, 0}) == note(Instrument::bass) && s.at({4, 0, 0}) == note(Instrument::bell), "bass on planks, bell on gold");
+        s.tick({UseBlock{{1, 0, 0}}});
+        require(s.at({0, 0, 0}) == note(Instrument::bass, 0, true) && draws() == 2, "a rising signal plays it: one long");
+        s.tick({UseBlock{{1, 0, 0}}});
+        require(s.at({0, 0, 0}) == note(Instrument::bass) && draws() == 0, "a falling one does not");
+        // Used: the next note, played; under stone it stays silent.
+        s.tick({UseBlock{{0, 0, 0}}, UseBlock{{4, 0, 0}}});
+        require(s.at({0, 0, 0}) == note(Instrument::bass, 1) && s.at({4, 0, 0}) == note(Instrument::bell, 1) && draws() == 2,
+                "one sound, two notes");
+        for (int i = 0; i < 24; ++i) s.tick({UseBlock{{0, 0, 0}}});
+        require(s.at({0, 0, 0}) == note(Instrument::bass), "the note wraps after 24");
+        // A head above plays its sound, also from under a block.
+        s.tick({place({0, 1, 0}, registry_block("creeper_head", {{"powered", "false"}, {"rotation", "0"}}))});
+        require(s.at({0, 0, 0}) == note(Instrument::creeper), "a creeper head above");
+        s.tick({UseBlock{{0, 0, 0}}});
+        require(draws() == 2, "it plays under the head");
+        // Pushed onto other blocks it takes their instrument.
+        s.tick({place({6, 0, 2}, blocks::piston(D::east)), place({7, 0, 2}, blocks::note_block()), place({8, -1, 2}, registry_block("clay")),
+                place({5, 0, 2}, blocks::lever(false))});
+        s.tick({UseBlock{{5, 0, 2}}});
+        for (int i = 0; i < 3; ++i) s.tick();
+        require(s.at({8, 0, 2}) == note(Instrument::flute), std::format("moved onto clay: {}", circuit::gameplay::block_notation(s.at({8, 0, 2}))));
+    });
+
     suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {
         using circuit::contracts::UseBlock;
         Sim s;

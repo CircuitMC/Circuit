@@ -12,6 +12,12 @@ constexpr std::uint8_t move_ticks = 2;
 
 bool sticky(BlockState s) { return s.is(BlockType::slime_block) || s.is(BlockType::honey_block); }
 
+// A moved block set down takes the state its new neighbors give it (a note
+// block's instrument).
+BlockState settled(RuleContext& ctx, BlockPos pos, BlockState s) {
+    return s.is(BlockType::note_block) ? tuned_note_block(ctx, pos, s) : s;
+}
+
 // A moved block arrives without its water (both official servers; push_classes).
 BlockState dried(BlockState s) {
     if (s.is(BlockType::trapdoor)) return s.with_level(static_cast<std::uint8_t>(s.level() & 1));
@@ -159,7 +165,7 @@ public:
     // Ends a move at once: the carried block appears in place.
     void finish_moving(BlockPos p, BlockState carried) {
         ctx_.remove_block_entity(p);
-        write(p, dried(carried));
+        write(p, settled(ctx_, p, dried(carried)));
         placed_.push_back(p);
     }
     // Moves a resolved structure one block along `dir`: destroyed blocks first,
@@ -475,7 +481,7 @@ void tick_moving_piston(RuleContext& ctx, BlockPos pos) {
         return;
     }
     const auto carried = BlockState::decode(be->moving).value_or(blocks::air());
-    set_block(ctx, pos, dried(carried)); // Removes the moving piston's block entity.
+    set_block(ctx, pos, settled(ctx, pos, dried(carried))); // Removes the moving piston's block entity.
 }
 
 } // namespace circuit::gameplay::detail

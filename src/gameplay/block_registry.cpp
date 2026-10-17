@@ -56,7 +56,8 @@ std::uint32_t block_count() noexcept { return data::block_count; }
 BlockInfo block(std::uint32_t index) noexcept {
     const auto& b = data::blocks[index];
     return {b.name, b.first_state, b.state_count, b.first_state + b.default_offset, b.hardness, b.opaque != 0,
-            static_cast<Tool>(b.tool), b.tier, b.resistance, static_cast<PushClass>(b.push)};
+            static_cast<Tool>(b.tool), b.tier, b.resistance, static_cast<PushClass>(b.push),
+            static_cast<Instrument>(b.instrument)};
 }
 
 std::optional<std::uint32_t> block_of(std::uint32_t state) noexcept {

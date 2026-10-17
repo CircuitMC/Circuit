@@ -183,6 +183,7 @@ void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
         if (*d == Direction::down && !can_survive(ctx, target, s)) destroy_block(ctx, target);
         break;
     case BlockType::door: case BlockType::fence_gate: opening_shape_update(ctx, target, *d); break;
+    case BlockType::note_block: note_block_shape_update(ctx, target, s, *d); break;
     case BlockType::piston_head:
         // A head without its base disappears.
         if (*d == contracts::opposite(s.facing()) && !head_has_base(ctx, target, s)) set_block(ctx, target, blocks::air());
@@ -279,6 +280,7 @@ void on_neighbor_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
     case BlockType::redstone_lamp: check_lamp(ctx, target); break;
     case BlockType::redstone_torch: case BlockType::redstone_wall_torch: check_torch(ctx, target, s); break;
     case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: check_opening(ctx, target, from); break;
+    case BlockType::note_block: check_note_block(ctx, target, s); break;
     case BlockType::piston: case BlockType::sticky_piston: check_piston(ctx, target); break;
     case BlockType::hopper: check_hopper(ctx, target); break;
     case BlockType::water: schedule(ctx, TickList::fluid, target, BlockType::water, 5, 0); break;

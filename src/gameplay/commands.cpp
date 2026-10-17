@@ -69,6 +69,7 @@ Plan plan(RuleContext& ctx, const contracts::UseBlock& c) {
             detail::refresh_comparator(ctx, pos, toggled);
         };
     case BlockType::daylight_detector: return [&ctx, pos = c.pos, s] { detail::use_daylight_detector(ctx, pos, s); };
+    case BlockType::note_block: return [&ctx, pos = c.pos, s] { detail::use_note_block(ctx, pos, s); };
     default: return std::unexpected(ErrorCode::not_usable);
     }
 }
@@ -150,7 +151,7 @@ Plan plan(RuleContext& ctx, const contracts::RemoveEntity& c) {
 bool replaceable(BlockState s) { return s.is_air() || s.is(BlockType::water); }
 bool usable(BlockState s) {
     return s.is(BlockType::lever) || s.is(BlockType::button) || s.is(BlockType::repeater) || s.is(BlockType::comparator)
-        || s.is(BlockType::daylight_detector) || detail::is_dot(s) || detail::is_cross(s) || (is_opening(s.type()) && opens_by_hand(s));
+        || s.is(BlockType::daylight_detector) || s.is(BlockType::note_block) || detail::is_dot(s) || detail::is_cross(s) || (is_opening(s.type()) && opens_by_hand(s));
 }
 
 Plan plan(RuleContext& ctx, const contracts::UseBlock& c);
@@ -201,6 +202,7 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
     case BlockType::repeater: state = state->with_level(detail::repeater_locked_now(ctx, target, *state) ? 1 : 0); break;
     case BlockType::redstone_lamp: state = state->with_flag(detail::has_neighbor_signal(ctx, target)); break;
     case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: state = detail::placed_opening(ctx, target, *state); break;
+    case BlockType::note_block: state = detail::tuned_note_block(ctx, target, *state); break;
     default: break;
     }
     return [&ctx, target, s = *state, c, held] {

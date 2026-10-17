@@ -935,13 +935,39 @@ inline Scenario daylight_scenario() {
     }, 10};
 }
 
+// Note blocks across the x=16 chunk edge: one lever playing a note block on
+// either side, uses, a piston pushing a note block over the edge onto gold,
+// and a head set above one.
+inline Scenario note_scenario() {
+    return {"note_blocks", 117, 120, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        if (t == 2) {
+            for (int x = 10; x <= 22; ++x)
+                for (int z = -3; z <= 4; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            c.push_back(place({15, 0, 0}, blocks::note_block()));
+            c.push_back(place({17, 0, 0}, blocks::note_block()));
+            c.push_back(place({16, 0, 0}, blocks::lever(false)));
+            c.push_back(place({14, 0, 2}, blocks::piston(Direction::east)));
+            c.push_back(place({15, 0, 2}, blocks::note_block()));
+            c.push_back(place({16, -1, 2}, registry_block("gold_block")));
+            c.push_back(place({13, 0, 2}, blocks::lever(false)));
+        }
+        if (t >= 10 && t % 10 == 0) c.push_back(UseBlock{{16, 0, 0}});
+        if (t >= 10 && t % 7 == 3) c.push_back(UseBlock{{17, 0, 0}});
+        if (t == 40) c.push_back(UseBlock{{13, 0, 2}});
+        if (t == 60) c.push_back(place({15, 1, 0}, registry_block("zombie_head", {{"powered", "false"}, {"rotation", "0"}})));
+        return c;
+    }, 10};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
-            plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario()};
+            plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario()};
 }
 
 } // namespace circuit::test
