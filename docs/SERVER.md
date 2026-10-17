@@ -2,7 +2,7 @@
 
 ## Status
 
-Circuit runs a playable world for Java Edition 1.21.8 (protocol 772) or 1.21.4 (protocol 769) on top of the headless engine. One server runs one version, chosen with `game-version`. The world is a flat stone floor at y = −61. The real client of either version can join in offline and online mode, build with the reference blocks, use levers, repeaters and comparators, and watch redstone, pistons, observers, hoppers, water and item entities run under the reference rules. Several players see each other and chat. Native modules and Java plugins can extend it through controlled services; see [the plugin API](PLUGIN_API.md).
+Circuit runs a playable world for Java Edition 1.21.8 (protocol 772) or 1.21.4 (protocol 769) on top of the headless engine. One server runs one version, chosen with `game-version`. The world is a flat stone floor at y = −61. The real client of either version can join in offline and online mode, build with the reference blocks, use levers, buttons, repeaters and comparators, and watch redstone, pistons, observers, hoppers, water and item entities run under the reference rules. Several players see each other and chat. Native modules and Java plugins can extend it through controlled services; see [the plugin API](PLUGIN_API.md).
 
 Players play in creative or survival mode. In survival, placing uses up items, breaking takes the block's dig time and drops what the tool harvests, items are thrown and picked up, and chests, double chests and hoppers open with every click mode. Movement is checked against block shapes; players get hungry, take fall and void damage, die, drop their inventory and respawn. Inventories are simulation state; see [Survival and inventories](#survival-and-inventories).
 
@@ -62,11 +62,11 @@ Players never touch engine state directly.
 - which of the two possible positions, the clicked block or its neighbor, is within reach and free of players.
 
 When the command is applied:
-- **Use:** a lever, repeater or comparator is used, unless the player sneaks while holding an item.
+- **Use:** a lever, button, repeater or comparator is used, unless the player sneaks while holding an item.
 - **Placement:**
   - the block replaces the clicked block if that is air or water, otherwise it goes next to it;
   - the target must be air or water;
-  - dust, repeaters and comparators need a solid block below, and levers a solid block to attach to;
+  - dust, repeaters and comparators need a solid block below, and levers and buttons a solid block to attach to; a redstone torch goes on the side of the clicked block, or on top of it when the top or bottom was clicked, and needs its support there;
   - TNT placed where redstone reaches it is primed at once;
   - a chest joins a neighboring single chest as the official server does: next to one of the same facing, clockwise first, unless the player sneaks; when sneaking, the chest whose side was clicked, taking its facing.
 - **Breaking:** any block but air and moving pistons; a piston head takes its base along.

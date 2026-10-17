@@ -127,7 +127,8 @@ bool touches_blocks(RuleContext& ctx, const physics::Aabb& box) {
 }
 } // namespace
 
-void run_arrow(RuleContext& ctx, EntityId id, Entity& e) {
+namespace {
+void step_arrow(RuleContext& ctx, EntityId id, Entity& e) {
     ++e.tick_count;
     // An arrow inside the collision shape of its cell's block is stuck in it.
     if (const auto cell = contracts::block_of(e.position); !e.in_ground && ctx.world().contains_y(cell.y)) {
@@ -170,6 +171,13 @@ void run_arrow(RuleContext& ctx, EntityId id, Entity& e) {
     // Water it ends the tick in puts it out.
     if (e.fire > 0 && water_at(ctx, physics::box_at(to, 0.5, 0.5)).inside) e.fire = 0;
     moved(ctx, id, start, to);
+}
+} // namespace
+
+void run_arrow(RuleContext& ctx, EntityId id, Entity& e) {
+    step_arrow(ctx, id, e);
+    // Where it is now, flying or stuck, it presses wooden buttons.
+    if (const auto* arrow = ctx.peek_entity(id)) arrow_inside(ctx, *arrow);
 }
 
 void run_snowball(RuleContext& ctx, EntityId id, Entity& e) {

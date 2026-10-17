@@ -9,11 +9,15 @@
 
 namespace circuit::gameplay {
 namespace {
-// Registry blocks with a BlockType of their own (see evidence::ContentMapping).
-constexpr std::array<std::string_view, 22> modeled_names{
+// Registry blocks with a BlockType of their own (see evidence::ContentMapping),
+// besides the buttons.
+constexpr std::array<std::string_view, 24> modeled_names{
     "air", "cave_air", "void_air", "stone", "glass", "obsidian", "redstone_block", "slime_block", "lever", "redstone_wire",
     "repeater", "redstone_lamp", "observer", "piston", "sticky_piston", "piston_head", "moving_piston", "hopper", "chest",
-    "comparator", "water", "wheat"};
+    "comparator", "water", "wheat", "redstone_torch", "redstone_wall_torch"};
+constexpr std::array<std::string_view, blocks::button_kinds> button_names{
+    "oak", "spruce", "birch", "jungle", "acacia", "cherry", "dark_oak", "pale_oak", "mangrove", "bamboo", "crimson", "warped",
+    "stone", "polished_blackstone"};
 
 struct Properties {
     bool facing, level, flag, delay;
@@ -32,20 +36,30 @@ constexpr Properties properties(BlockType t) noexcept {
     case BlockType::water: return {false, true, true, false};
     case BlockType::chest: return {true, true, true, false};
     case BlockType::comparator: return {true, true, true, false};
+    case BlockType::redstone_torch: return {false, false, true, false};
+    case BlockType::redstone_wall_torch: return {true, false, true, false};
+    case BlockType::button: return {true, true, true, false};
     default: return {false, false, false, false};
     }
 }
 const std::vector<bool>& modeled_blocks() {
     static const auto modeled = [] {
         std::vector<bool> out(registry::block_count());
-        for (const auto name : modeled_names)
+        const auto mark = [&](std::string_view name) {
             for (const auto release : registry::releases())
                 if (const auto b = registry::find_block(release, name)) out[*b] = true;
+        };
+        for (const auto name : modeled_names) mark(name);
+        for (const auto kind : button_names) mark(std::string(kind) + "_button");
         return out;
     }();
     return modeled;
 }
 } // namespace
+
+std::string_view button_kind_name(std::uint8_t variant) noexcept {
+    return variant < button_names.size() ? button_names[variant] : std::string_view{};
+}
 
 bool modeled_block(std::uint32_t internal_block) noexcept {
     const auto& modeled = modeled_blocks();
@@ -56,6 +70,8 @@ std::uint32_t registry_state_count() noexcept { return registry::state_count(); 
 
 bool same_block(BlockState a, BlockState b) noexcept {
     if (a.type() != b.type()) return false;
+    // Each kind of button is a block of its own.
+    if (a.is(BlockType::button)) return a.variant() == b.variant();
     return !a.is(BlockType::other) || registry::block_of(a.registry_state()) == registry::block_of(b.registry_state());
 }
 
@@ -80,10 +96,15 @@ contracts::Result<BlockState> BlockState::decode(std::uint32_t raw) noexcept {
     }
     if (raw >> 26) return invalid;
     if (raw >> 18) {
-        // Only dust stores sides, each none, side or up.
-        if (!s.is(BlockType::redstone_wire)) return invalid;
-        for (auto d : contracts::horizontal_directions)
-            if (static_cast<std::uint8_t>(s.wire_side(d)) > 2) return invalid;
+        // Only dust stores sides, each none, side or up, and only buttons a variant.
+        if (s.is(BlockType::button)) {
+            if (s.variant() >= blocks::button_kinds) return invalid;
+        } else if (!s.is(BlockType::redstone_wire)) {
+            return invalid;
+        } else {
+            for (auto d : contracts::horizontal_directions)
+                if (static_cast<std::uint8_t>(s.wire_side(d)) > 2) return invalid;
+        }
     }
     const auto p = properties(s.type());
     const auto facing = (raw >> 8) & 7;
@@ -96,8 +117,11 @@ contracts::Result<BlockState> BlockState::decode(std::uint32_t raw) noexcept {
     case BlockType::repeater:
         if (!contracts::is_horizontal(s.facing()) || s.level() > 1) return invalid;
         break;
-    case BlockType::lever:
+    case BlockType::lever: case BlockType::button:
         if (!contracts::is_horizontal(s.facing()) || s.level() > 2) return invalid;
+        break;
+    case BlockType::redstone_wall_torch:
+        if (!contracts::is_horizontal(s.facing())) return invalid;
         break;
     case BlockType::hopper:
         if (s.facing() == Direction::up) return invalid;
@@ -188,6 +212,14 @@ std::string block_notation(BlockState s) {
     case BlockType::water:
         return std::format("minecraft:water[level={}]", s.flag() ? 8 + s.level() : s.level());
     case BlockType::wheat: return std::format("minecraft:wheat[age={}]", s.level());
+    case BlockType::redstone_torch: return std::format("minecraft:redstone_torch[lit={}]", b(s.flag()));
+    case BlockType::redstone_wall_torch:
+        return std::format("minecraft:redstone_wall_torch[facing={},lit={}]", direction_name(s.facing()), b(s.flag()));
+    case BlockType::button: {
+        constexpr std::array<std::string_view, 3> faces{"floor", "wall", "ceiling"};
+        return std::format("minecraft:{}_button[face={},facing={},powered={}]", button_kind_name(s.variant()), faces[s.level() % 3],
+                           direction_name(s.facing()), b(s.flag()));
+    }
     case BlockType::other: return registry::notation(s.registry_state());
     default: return std::format("circuit:unrepresentable[raw={}]", s.raw());
     }

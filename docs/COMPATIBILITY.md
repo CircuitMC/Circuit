@@ -48,6 +48,8 @@ Every block state of both versions is represented, with its official name and pr
 | `chest` | `facing`, `type` | `waterlogged` (stored, not simulated) |
 | `water` | `level` | — |
 | `wheat` | `age` | — |
+| `redstone_torch`, `redstone_wall_torch` | `facing`, `lit` | — |
+| `*_button` (every kind) | `face`, `facing`, `powered` | — |
 
 **Other blocks** keep every property and are inert: they are solid for items when they have a collision shape, conduct redstone power when opaque, support dust and diodes on faces their collision shape covers (or any face when opaque), cannot be moved by pistons, break at their documented hardness with their documented tool, and do nothing else. With the official data pack they drop from their loot tables, except where a table draws random numbers (see [data packs](DATA_PACKS.md)). Players collide with their exact collision shapes. A world may contain them, and the client shows them, but no machine that depends on their behavior works yet.
 
@@ -70,10 +72,11 @@ Block and item registration do not provide behavior. Rails, coral fans and honey
 | Piston quasi-connectivity and activation after an update | Recorded target-version scenarios pass; this does not cover every BUD layout. |
 | Sticky-piston block dropping on a short pulse | The one-game-tick pulse scenario passes recorded traces for both versions. |
 | Slime structures, the 12-block push limit and observers watching piston writes | Implemented with rule, trace and cross-chunk simulation checks. Pistons remain L2 because item pushing, drops and some update ordering have gaps. |
-| TNT ignition, fuse, motion and explosions | Redstone and explosions prime TNT (placed by commands, players or pistons); primed TNT's motion and fuse and its explosions (blocks, drops, chain reactions, item damage and knockback) match recorded traces of both versions. Fire, flint and steel, projectiles and dispensers do not ignite TNT, and explosions do not hurt players. |
+| TNT ignition, fuse, motion and explosions | Redstone and explosions prime TNT (placed by commands, players or pistons); primed TNT's motion and fuse and its explosions (blocks, drops, chain reactions, item damage and knockback) match recorded traces of both versions. Burning arrows prime TNT; fire, flint and steel and dispensers do not, and explosions do not hurt players. |
 | TNT duplication machines | Not supported. Primed TNT and explosions exist, but common machine components such as rails, minecarts and coral fans are absent, and TNT duplication itself is not modeled. No TNT-duplication reference fixture exists. |
 | Honey-based flying machines | Not supported; honey-block behavior is absent. Slime and piston tests do not establish compatibility for complete flying-machine designs. |
-| Dispensers, droppers, redstone torches and buttons | Not implemented. Existing wire, lever and diode support does not cover machines requiring these components. |
+| Redstone torches and buttons | Torch inverters, towers and burnout, and buttons pressed by players and arrows, match recorded traces of both versions, including the update order of the dust they drive. Pressure plates, tripwire and target blocks are not modeled yet. |
+| Dispensers and droppers | Not implemented. Machines that need them are not supported. |
 | Portal chunk loaders, sand duplication and bedrock-breaking machines | No compatibility claim. Dimensions/portals and the required block/interaction coverage are absent; falling blocks exist but are not duplicated. |
 
 Importing an unsupported machine with substitution does not preserve its mechanism. Default Anvil import rejects unrepresentable content; explicit substitution can replace blocks or discard entities and reports those losses.

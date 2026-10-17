@@ -736,12 +736,55 @@ inline Scenario vehicle_scenario() {
     }, 5};
 }
 
+// Redstone torches and buttons across the x=16 chunk edge: a torch that
+// turns itself off through dust and a repeater in the other chunk burns out
+// and relights; a lever turns a torch off and on; a stone button powers a
+// block in the other chunk; arrows press an oak button and hold it until
+// its block goes.
+inline Scenario torch_button_scenario() {
+    return {"torches_buttons", 107, 300, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        const auto oak = blocks::button(blocks::ButtonKind::oak, false, Direction::east);
+        if (t == 2) {
+            for (int x = 8; x <= 24; ++x)
+                for (int z = -4; z <= 6; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            // The burnout loop: torch, dust, repeater into the torch's block.
+            c.push_back(place({15, 0, 0}, blocks::stone()));
+            c.push_back(place({15, 0, 1}, blocks::repeater(Direction::north)));
+            for (const BlockPos p : {BlockPos{16, 0, 1}, BlockPos{16, 0, 2}, BlockPos{15, 0, 2}}) c.push_back(place(p, blocks::wire()));
+            c.push_back(place({12, 0, 4}, blocks::stone()));
+            c.push_back(place({12, 1, 4}, blocks::lever(false, Direction::north, blocks::LeverFace::floor)));
+            c.push_back(place({14, 0, 4}, blocks::lamp()));
+            c.push_back(place({15, 0, 5}, blocks::stone()));
+            c.push_back(place({14, 0, 5}, blocks::lamp()));
+            c.push_back(place({16, 0, 5}, blocks::button(blocks::ButtonKind::stone, false, Direction::east)));
+            c.push_back(place({15, 1, -2}, blocks::stone()));
+            c.push_back(place({15, 2, -2}, blocks::lamp()));
+        }
+        if (t == 5) {
+            c.push_back(place({16, 0, 0}, blocks::wall_torch(Direction::east)));
+            c.push_back(place({13, 0, 4}, blocks::wall_torch(Direction::east)));
+        }
+        if (t >= 10 && t < 60 && t % 3 == 0) c.push_back(UseBlock{{12, 1, 4}});
+        const auto phase = t % 100;
+        if (phase == 20 || phase == 45) c.push_back(UseBlock{{16, 0, 5}});
+        if (phase == 30) {
+            c.push_back(place({16, 1, -2}, oak));
+            c.push_back(SummonEntity{"minecraft:arrow", {20.5, 1.5, -1.5}, {-1.0, 0.04, 0.0}, 80, 0});
+        }
+        if (phase == 80) c.push_back(place({15, 1, -2}, blocks::air()));
+        if (phase == 90) c.push_back(place({15, 1, -2}, blocks::stone()));
+        return c;
+    }, 5};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
-            tnt_scenario(), projectile_scenario(), vehicle_scenario()};
+            tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario()};
 }
 
 } // namespace circuit::test

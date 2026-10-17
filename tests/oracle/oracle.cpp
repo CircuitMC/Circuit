@@ -61,6 +61,9 @@ public:
         lv().tick_index[l].insert({pos, type});
     }
     bool has_block_event(const BlockEvent& event) override { return lv().pending_events.contains(event); }
+    std::size_t torch_turn_offs(BlockPos pos, Tick since, bool add) override {
+        return count_turn_offs(lv().turn_offs[contracts::chunk_of(pos)], pos, since, add, now());
+    }
     void add_block_event(const BlockEvent& event, std::uint32_t) override {
         lv().events.push_back(event);
         lv().pending_events.insert(event);
@@ -484,6 +487,7 @@ WorldDump Oracle::dump() const {
         for (int t = 0; t < 2; ++t)
             for (const auto& tick : lv.ticks[t]) l.ticks.push_back({static_cast<TickList>(t), tick});
         l.block_events.assign(lv.events.begin(), lv.events.end());
+        for (const auto& [c, column] : lv.turn_offs) l.turn_offs.insert(l.turn_offs.end(), column.begin(), column.end());
     }
     d.tickets = tickets_.list();
     for (const auto& [key, inv] : players_) d.players.push_back(inv);

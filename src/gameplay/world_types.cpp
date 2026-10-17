@@ -144,6 +144,12 @@ LevelDump& WorldDump::level(contracts::DimensionId dimension) {
     return *levels.insert(it, std::move(fresh));
 }
 
+std::size_t count_turn_offs(TurnOffs& column, BlockPos pos, Tick since, bool add, Tick now) {
+    std::erase_if(column, [&](const auto& t) { return t.second < since; });
+    if (add) column.emplace_back(pos, now);
+    return static_cast<std::size_t>(std::ranges::count(column, pos, &TurnOffs::value_type::first));
+}
+
 void canonicalize(WorldDump& d) {
     std::erase_if(d.levels, [](const LevelDump& l) { return l.chunks.empty() && l.presences.empty() && l.last_active == 0; });
     std::ranges::sort(d.levels, {}, &LevelDump::dimension);
@@ -156,6 +162,7 @@ void canonicalize(WorldDump& d) {
             if (a.list != b.list) return a.list < b.list;
             return tick_before(a.tick, b.tick);
         });
+        std::ranges::sort(l.turn_offs);
         std::ranges::sort(l.presences, {}, &Presence::player);
     }
     std::ranges::sort(d.tickets, {}, &Ticket::id);
@@ -211,6 +218,7 @@ std::string text(const LevelDump::PendingTick& t) {
 std::string text(const BlockEvent& e) {
     return std::format("block_event {} block={} event={} param={}", pos_text(e.pos), static_cast<int>(e.block), e.event, e.param);
 }
+std::string text(const std::pair<BlockPos, Tick>& t) { return std::format("turn_off {} at={}", pos_text(t.first), t.second); }
 std::string text(const Ticket& t) {
     return std::format("ticket {} {} type={} center={} radius={} level={} expires={}", t.id, contracts::dimension_name(t.dimension),
                        static_cast<int>(t.type), chunk_text(t.center), t.radius, t.level, t.expires);
@@ -274,7 +282,8 @@ std::string first_difference(const WorldDump& a, const WorldDump& b) {
         for (auto s : {compare("chunks", la.chunks, lb.chunks), compare("blocks", la.blocks, lb.blocks),
                        compare("block_entities", la.block_entities, lb.block_entities),
                        compare("entities", la.entities, lb.entities), compare("ticks", la.ticks, lb.ticks),
-                       compare("block_events", la.block_events, lb.block_events), compare("presences", la.presences, lb.presences)})
+                       compare("block_events", la.block_events, lb.block_events), compare("turn_offs", la.turn_offs, lb.turn_offs),
+                       compare("presences", la.presences, lb.presences)})
             if (!s.empty()) return prefix + s;
     }
     for (auto s : {compare("tickets", a.tickets, b.tickets), compare("players", a.players, b.players)})
@@ -356,6 +365,8 @@ std::uint64_t digest(const WorldDump& d) {
         }
         h.add(l.block_events.size());
         for (const auto& e : l.block_events) { h.add(e.pos); h.add(static_cast<std::uint64_t>(e.block)); h.add(e.event); h.add(e.param); }
+        h.add(l.turn_offs.size());
+        for (const auto& [p, when] : l.turn_offs) { h.add(p); h.add(when); }
     }
     for (const auto& t : d.tickets) {
         h.add(t.id); h.add(static_cast<std::uint64_t>(t.dimension)); h.add(contracts::pack_chunk(t.center)); h.add(t.radius);

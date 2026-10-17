@@ -692,6 +692,30 @@ int main() {
         require(crossed >= 4 && vehicles == 12, std::format("{} chunk changes, {} vehicles", crossed, vehicles));
     });
 
+    suite.run("torches burn out and arrows press buttons across chunk edges", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("torches_buttons"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the torch and button scenario");
+        const auto& ref = references[index];
+        std::vector<Tick> relit;
+        std::size_t arrow_presses = 0, releases = 0;
+        for (const auto& trace : ref.traces)
+            for (const auto& r : of_kind(trace, TraceKind::block_changed)) {
+                const auto next = BlockState::decode(static_cast<std::uint32_t>(r.b)).value();
+                if (r.pos == BlockPos{16, 0, 0} && next.is(BlockType::redstone_wall_torch) && next.flag()) relit.push_back(r.key.tick);
+                if (r.pos == BlockPos{16, 1, -2} && next.is(BlockType::button))
+                    (next.flag() && r.key.phase == Phase::entities ? arrow_presses : releases) += 1;
+            }
+        Tick longest = 0;
+        for (std::size_t i = 1; i < relit.size(); ++i) longest = std::max(longest, relit[i] - relit[i - 1]);
+        // Turned off every 8 ticks, the torch burns out on its eighth
+        // turn-off and relights 160 ticks later.
+        require(relit.size() > 10 && longest >= 160 && longest < 170, std::format("{} relights, longest gap {}", relit.size(), longest));
+        require(arrow_presses == 3, std::format("{} buttons pressed by arrows", arrow_presses));
+        bool kept = false;
+        for (const auto& [t, d] : ref.dumps) kept = kept || !d.overworld().turn_offs.empty();
+        require(kept, "turn-offs are world state");
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");

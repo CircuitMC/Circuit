@@ -19,7 +19,9 @@ bool connects_to(BlockState n, std::optional<Direction> d) {
     switch (n.type()) {
     case BlockType::repeater: return n.facing() == *d || n.facing() == contracts::opposite(*d);
     case BlockType::observer: return n.facing() == *d;
-    case BlockType::lever: case BlockType::redstone_block: case BlockType::comparator: return true;
+    case BlockType::lever: case BlockType::redstone_block: case BlockType::comparator: case BlockType::button:
+    case BlockType::redstone_torch: case BlockType::redstone_wall_torch:
+        return true;
     default: return false;
     }
 }

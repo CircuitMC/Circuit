@@ -373,6 +373,142 @@
         "deviations": [
           "does not become concrete beside water"
         ]
+      },
+      "redstone_torch": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "players place it on the clicked face, not by their view",
+          "no burnout sound or smoke"
+        ]
+      },
+      "redstone_wall_torch": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "players place it on the clicked face, not by their view",
+          "no burnout sound or smoke"
+        ]
+      },
+      "oak_button": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "click sounds",
+          "only arrows press it"
+        ]
+      },
+      "spruce_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "only arrows press it"
+        ],
+        "note": "A wooden button, as the compared oak and crimson buttons"
+      },
+      "birch_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "only arrows press it"
+        ],
+        "note": "A wooden button, as the compared oak and crimson buttons"
+      },
+      "jungle_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "only arrows press it"
+        ],
+        "note": "A wooden button, as the compared oak and crimson buttons"
+      },
+      "acacia_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "only arrows press it"
+        ],
+        "note": "A wooden button, as the compared oak and crimson buttons"
+      },
+      "cherry_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "only arrows press it"
+        ],
+        "note": "A wooden button, as the compared oak and crimson buttons"
+      },
+      "dark_oak_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "only arrows press it"
+        ],
+        "note": "A wooden button, as the compared oak and crimson buttons"
+      },
+      "pale_oak_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "only arrows press it"
+        ],
+        "note": "A wooden button, as the compared oak and crimson buttons"
+      },
+      "mangrove_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "only arrows press it"
+        ],
+        "note": "A wooden button, as the compared oak and crimson buttons"
+      },
+      "bamboo_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "only arrows press it"
+        ],
+        "note": "A wooden button, as the compared oak and crimson buttons"
+      },
+      "crimson_button": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "click sounds",
+          "only arrows press it"
+        ]
+      },
+      "warped_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "only arrows press it"
+        ],
+        "note": "A wooden button, as the compared oak and crimson buttons"
+      },
+      "stone_button": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "click sounds"
+        ]
+      },
+      "polished_blackstone_button": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "click sounds"
+        ]
       }
     },
     "item": {
@@ -561,6 +697,81 @@
         "cases": [
           "client/windows"
         ]
+      },
+      "redstone_torch": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "oak_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "spruce_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "birch_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "jungle_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "acacia_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "cherry_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "dark_oak_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "pale_oak_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "mangrove_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "bamboo_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "crimson_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "warped_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "stone_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "polished_blackstone_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
       }
     },
     "entity": {

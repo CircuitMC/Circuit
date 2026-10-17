@@ -58,7 +58,9 @@ bool supports_dust(BlockState below) noexcept;
 bool supports_diode(BlockState below) noexcept;
 // Direction from a lever to the block it hangs on.
 Direction lever_attachment(BlockState lever) noexcept;
-// Whether dust, a diode or a lever still has its support.
+// Direction from a lever, button or redstone torch to the block it stands or hangs on.
+Direction attachment(BlockState s) noexcept;
+// Whether dust, a diode, a lever, a button or a torch still has its support.
 bool can_survive(RuleContext& ctx, BlockPos pos, BlockState s);
 // Power the block at `pos` gives its neighbor in direction `toward`, and the
 // strong power it gives the block it powers through (`direct`). With `wires`
@@ -76,6 +78,8 @@ bool has_neighbor_signal(RuleContext& ctx, BlockPos pos);
 // The block a player places with `item`, oriented by the player's facing and
 // the clicked face; nullopt for items that place no block.
 std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Direction horizontal, Direction look);
+// The item of a button's kind.
+std::uint16_t button_item(BlockState s);
 // Whether a block obstructs players standing in its cell.
 bool has_collision(BlockState s);
 // Records a player slot (contracts::player_slots: the cursor) after a change.
@@ -124,6 +128,21 @@ void repeater_shape_update(RuleContext& ctx, BlockPos pos, Direction from_side);
 void check_lamp(RuleContext& ctx, BlockPos pos);
 void tick_lamp(RuleContext& ctx, BlockPos pos, BlockState state);
 void tick_observer(RuleContext& ctx, BlockPos pos, BlockState state);
+
+// ---- redstone torches (torch.cpp) and buttons (button.cpp) ----
+// The updates of every state a torch takes and of its removal: the
+// neighbors of each of its neighbors.
+void torch_updates(RuleContext& ctx, BlockPos pos);
+// Schedules the torch when its state disagrees with the power in its block.
+void check_torch(RuleContext& ctx, BlockPos pos, BlockState s);
+void tick_torch(RuleContext& ctx, BlockPos pos, BlockState s);
+// A player or command uses the button.
+void press_button(RuleContext& ctx, BlockPos pos, BlockState s);
+void tick_button(RuleContext& ctx, BlockPos pos, BlockState s);
+void button_removed(RuleContext& ctx, BlockPos pos, BlockState previous);
+// An arrow at the end of its tick, in or out of the ground: the wooden
+// buttons in the cells its box reaches check for arrows.
+void arrow_inside(RuleContext& ctx, const Entity& arrow);
 
 bool piston_powered(RuleContext& ctx, BlockPos pos, Direction facing);
 void check_piston(RuleContext& ctx, BlockPos pos);

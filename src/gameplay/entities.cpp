@@ -293,11 +293,6 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
     if (const auto water = water_at(ctx, physics::box_at(p, item_size, item_size)); water.inside)
         v = {v.x + water.push.x, v.y + water.push.y, v.z + water.push.z};
     e.velocity = v;
-    if (p.y < static_cast<double>(ctx.world().min_y - 64)) {
-        ctx.record(TraceKind::entity_removed, contracts::block_of(p), id.value, static_cast<std::uint64_t>(RemovalReason::fell_out_of_world));
-        ctx.remove_entity(id);
-        return;
-    }
     if (p != start) {
         const auto from = contracts::chunk_of(contracts::block_of(start));
         const auto to = contracts::chunk_of(contracts::block_of(p));
@@ -362,6 +357,16 @@ void run_entity(RuleContext& ctx, EntityId id) {
     const auto now = ctx.now();
     if (e->last_tick == now) return; // Basic advancement happens at most once per logical tick.
     e->last_tick = now;
+    // An entity more than 64 below the world is gone at the start of its
+    // tick (items: torch_basics); falling blocks and primed TNT fall on
+    // until their time is up (falling_void, tnt_void).
+    if (e->kind != EntityKind::falling_block && e->kind != EntityKind::primed_tnt
+        && e->position.y < static_cast<double>(ctx.world().min_y - 64)) {
+        ctx.record(TraceKind::entity_removed, contracts::block_of(e->position), id.value,
+                   static_cast<std::uint64_t>(RemovalReason::fell_out_of_world));
+        ctx.remove_entity(id);
+        return;
+    }
     switch (e->kind) {
     case EntityKind::item: run_item(ctx, id, *e); break;
     case EntityKind::falling_block: detail::run_falling_block(ctx, id, *e); break;

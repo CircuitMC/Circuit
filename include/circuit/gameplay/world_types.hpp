@@ -194,6 +194,13 @@ struct ScheduledTick {
     std::uint64_t suborder{}; // Level-wide counter value assigned in serial order.
     bool operator==(const ScheduledTick&) const = default;
 };
+// Redstone torch turn-offs of one column, kept for their burnout (see
+// RuleContext::torch_turn_offs): where and when.
+using TurnOffs = std::vector<std::pair<BlockPos, Tick>>;
+// Forgets the turn-offs before `since`, records one at `pos` at `now` with
+// `add`, and returns how many `pos` has.
+std::size_t count_turn_offs(TurnOffs& column, BlockPos pos, Tick since, bool add, Tick now);
+
 // Drain order of one tick list.
 constexpr bool tick_before(const ScheduledTick& a, const ScheduledTick& b) noexcept {
     if (a.due != b.due) return a.due < b.due;
@@ -370,6 +377,7 @@ struct LevelDump {
     std::vector<Entity> entities;                               // ascending id
     std::vector<PendingTick> ticks;                             // by list, then drain order
     std::vector<BlockEvent> block_events;                       // queue order
+    TurnOffs turn_offs;                                         // ascending position, then tick
     std::vector<Presence> presences;                            // ascending player
     // The last tick the level had players or forced chunks (contracts::idle_level_ticks).
     Tick last_active{};

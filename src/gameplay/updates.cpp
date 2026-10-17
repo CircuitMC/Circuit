@@ -176,8 +176,8 @@ void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
     case BlockType::comparator:
         if (*d == Direction::down && !can_survive(ctx, target, s)) destroy_block(ctx, target);
         break;
-    case BlockType::lever:
-        if (*d == lever_attachment(s) && !can_survive(ctx, target, s)) destroy_block(ctx, target);
+    case BlockType::lever: case BlockType::button: case BlockType::redstone_torch: case BlockType::redstone_wall_torch:
+        if (*d == attachment(s) && !can_survive(ctx, target, s)) destroy_block(ctx, target);
         break;
     case BlockType::piston_head:
         // A head without its base disappears.
@@ -214,6 +214,8 @@ void on_placed(RuleContext& ctx, BlockPos pos, BlockState state, BlockState prev
     case BlockType::chest:
         if (fresh) check_chest(ctx, pos);
         break;
+    // Every state of a torch updates around it.
+    case BlockType::redstone_torch: case BlockType::redstone_wall_torch: torch_updates(ctx, pos); break;
     case BlockType::observer:
         // An observer moved by a piston fires at its new position (observed in
         // target-version traces); other placements do not.
@@ -241,6 +243,8 @@ void on_removed(RuleContext& ctx, BlockPos pos, BlockState previous) {
             notify_neighbors(ctx, pos.relative(lever_attachment(previous)));
         }
         break;
+    case BlockType::button: button_removed(ctx, pos, previous); break;
+    case BlockType::redstone_torch: case BlockType::redstone_wall_torch: torch_updates(ctx, pos); break;
     default: break;
     }
 }
@@ -261,6 +265,7 @@ void on_neighbor_changed(RuleContext& ctx, BlockPos target, [[maybe_unused]] Blo
         else check_comparator(ctx, target);
         break;
     case BlockType::redstone_lamp: check_lamp(ctx, target); break;
+    case BlockType::redstone_torch: case BlockType::redstone_wall_torch: check_torch(ctx, target, s); break;
     case BlockType::piston: case BlockType::sticky_piston: check_piston(ctx, target); break;
     case BlockType::hopper: check_hopper(ctx, target); break;
     case BlockType::water: schedule(ctx, TickList::fluid, target, BlockType::water, 5, 0); break;

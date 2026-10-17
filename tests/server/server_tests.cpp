@@ -1562,6 +1562,31 @@ int main() {
         s.stop();
     });
 
+    suite.run("a button and a redstone torch light lamps through the engine", [] {
+        server::Server s(offline_config());
+        s.start();
+        TestClient c(s.port());
+        c.join("Presser");
+        confirm_spawn(c);
+        use_item_on(c, "minecraft:redstone_lamp", {2, -61, 1}, 1);
+        require(block_update(c, {2, -60, 1}) == content().state_id("minecraft:redstone_lamp[lit=false]"), "lamp placed");
+        use_item_on(c, "minecraft:stone_button", {1, -61, 1}, 2);
+        const auto button = block_update(c, {1, -60, 1});
+        require(button.has_value() && content().notation(*button).value_or("").starts_with("minecraft:stone_button[face=floor,"),
+                "a floor button placed");
+        c.send(State::play, "use_item_on",
+               Writer().varint(0).position({1, -60, 1}).varint(1).f32(0.5f).f32(0.1f).f32(0.5f).boolean(false).boolean(false).varint(3));
+        require(block_update(c, {2, -60, 1}) == content().state_id("minecraft:redstone_lamp[lit=true]"), "pressed, the lamp lights");
+        // Released after 20 ticks, the lamp goes out 4 ticks later.
+        require(block_update(c, {2, -60, 1}) == content().state_id("minecraft:redstone_lamp[lit=false]"), "released, the lamp goes out");
+        use_item_on(c, "minecraft:redstone_lamp", {5, -61, 1}, 4);
+        require(block_update(c, {5, -60, 1}) == content().state_id("minecraft:redstone_lamp[lit=false]"), "second lamp placed");
+        use_item_on(c, "minecraft:redstone_torch", {4, -61, 1}, 5);
+        require(block_update(c, {4, -60, 1}) == content().state_id("minecraft:redstone_torch[lit=true]"), "a floor torch placed");
+        require(block_update(c, {5, -60, 1}) == content().state_id("minecraft:redstone_lamp[lit=true]"), "the torch lights the lamp");
+        s.stop();
+    });
+
     suite.run("TNT placed beside power is primed and shown to players", [] {
         server::Server s(offline_config());
         s.start();
@@ -2267,8 +2292,10 @@ int main() {
             std::size_t loot_blocks, loot_used, recipes, crafted;
         };
         std::size_t checked = 0;
-        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 1007, 913, 1407, 984},
-                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 999, 905, 1370, 948}}) {
+        // Tables of blocks with rules of their own are not counted: the
+        // redstone torch's and the 14 buttons' since rules v11's torches and buttons.
+        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 992, 898, 1407, 984},
+                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 984, 890, 1370, 948}}) {
             const char* jar = std::getenv(e.variable);
             if (!jar || !*jar) continue;
             const auto& bundle = **contracts::BundleRegistry::find(e.bundle);

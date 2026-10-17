@@ -4,8 +4,23 @@
 #include "internal.hpp"
 
 namespace circuit::gameplay::detail {
+namespace {
+constexpr std::array<std::uint16_t, blocks::button_kinds> button_items{
+    items::oak_button, items::spruce_button, items::birch_button, items::jungle_button, items::acacia_button,
+    items::cherry_button, items::dark_oak_button, items::pale_oak_button, items::mangrove_button, items::bamboo_button,
+    items::crimson_button, items::warped_button, items::stone_button, items::polished_blackstone_button};
+} // namespace
+
+std::uint16_t button_item(BlockState s) { return button_items[s.variant() % blocks::button_kinds]; }
 
 std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Direction horizontal, Direction look) {
+    // Mounted on the clicked face as levers are.
+    if (const auto it = std::ranges::find(button_items, item); it != button_items.end()) {
+        const auto kind = static_cast<blocks::ButtonKind>(it - button_items.begin());
+        if (face == Direction::up) return blocks::button(kind, false, horizontal, blocks::LeverFace::floor);
+        if (face == Direction::down) return blocks::button(kind, false, horizontal, blocks::LeverFace::ceiling);
+        return blocks::button(kind, false, face, blocks::LeverFace::wall);
+    }
     switch (item) {
     case items::stone: return blocks::stone();
     case items::glass: return blocks::glass();
@@ -30,6 +45,10 @@ std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Directio
     case items::chest: return blocks::chest(contracts::opposite(horizontal));
     case items::water_bucket: return blocks::water_source();
     case items::wheat_seeds: return blocks::wheat();
+    // On the side of the clicked block, or standing (torches do not hang
+    // under blocks; an approximation of the official choice by the
+    // player's view).
+    case items::redstone_torch: return contracts::is_horizontal(face) ? blocks::wall_torch(face) : blocks::torch();
     default: return std::nullopt;
     }
 }
@@ -37,6 +56,7 @@ std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Directio
 bool has_collision(BlockState s) {
     switch (s.type()) {
     case BlockType::air: case BlockType::redstone_wire: case BlockType::lever: case BlockType::wheat: case BlockType::water:
+    case BlockType::redstone_torch: case BlockType::redstone_wall_torch: case BlockType::button:
         return false;
     case BlockType::other: return other_has_collision(s);
     default: return true;

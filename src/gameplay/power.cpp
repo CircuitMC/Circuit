@@ -2,8 +2,11 @@
 // Redstone power of circuit-reference-rules-v6, as documented and observed in
 // target-version traces (strong_power, weak_power, dust_shape):
 // - Sources give power to their neighbors. Some also power one block strongly:
-//   a lever the block it hangs on, a repeater or comparator the block in front,
-//   an observer the block at its back.
+//   a lever or button the block it hangs on, a repeater or comparator the
+//   block in front, an observer the block at its back, a redstone torch the
+//   block above it.
+// - A redstone torch powers every neighbor but the block it stands or hangs
+//   on, and goes out while that block is powered (redstone_torch).
 // - Conductors (full opaque blocks) give nothing themselves. A conductor that a
 //   source powers strongly powers dust and components next to it. Dust powers
 //   the block below it and the blocks it points into; such a weakly powered
@@ -39,6 +42,19 @@ bool face_sturdy(BlockState s, Direction face) noexcept {
 }
 
 bool supports_dust(BlockState below) noexcept { return face_sturdy(below, Direction::up) || below.is(BlockType::hopper); }
+
+// A floor torch stands on a sturdy top, or on a block without rules of its
+// own whose collision shape reaches the top over the middle of the cell
+// (fences, walls, panes: an approximation of support shapes from collision
+// data).
+bool supports_torch(RuleContext& ctx, BlockState below) {
+    if (face_sturdy(below, Direction::up)) return true;
+    if (!below.is(BlockType::other)) return false;
+    constexpr double low = 7.0 / 16, high = 9.0 / 16;
+    for (const auto& b : registry::collision_boxes(below.registry_state(), ctx.bundle().schema.content_release))
+        if (b.min_x <= low && b.max_x >= high && b.min_z <= low && b.max_z >= high && b.max_y >= 1.0) return true;
+    return false;
+}
 bool supports_diode(BlockState below) noexcept { return face_sturdy(below, Direction::up); }
 
 Direction lever_attachment(BlockState lever) noexcept {
@@ -49,21 +65,32 @@ Direction lever_attachment(BlockState lever) noexcept {
     }
 }
 
+Direction attachment(BlockState s) noexcept {
+    switch (s.type()) {
+    case BlockType::redstone_torch: return Direction::down;
+    case BlockType::redstone_wall_torch: return contracts::opposite(s.facing());
+    default: return lever_attachment(s);
+    }
+}
+
 bool can_survive(RuleContext& ctx, BlockPos pos, BlockState s) {
     switch (s.type()) {
     case BlockType::redstone_wire: return supports_dust(ctx.block(pos.relative(Direction::down)));
     case BlockType::repeater: case BlockType::comparator: return supports_diode(ctx.block(pos.relative(Direction::down)));
-    case BlockType::lever: {
-        const auto d = lever_attachment(s);
+    case BlockType::lever: case BlockType::button: case BlockType::redstone_wall_torch: {
+        const auto d = attachment(s);
         return face_sturdy(ctx.block(pos.relative(d)), contracts::opposite(d));
     }
+    case BlockType::redstone_torch: return supports_torch(ctx, ctx.block(pos.relative(Direction::down)));
     default: return true;
     }
 }
 
 std::uint8_t emitted(RuleContext& ctx, BlockPos pos, BlockState s, Direction toward, bool wires) {
     switch (s.type()) {
-    case BlockType::lever: return s.flag() ? 15 : 0;
+    case BlockType::lever: case BlockType::button: return s.flag() ? 15 : 0;
+    case BlockType::redstone_torch: case BlockType::redstone_wall_torch:
+        return s.flag() && toward != attachment(s) ? 15 : 0;
     case BlockType::redstone_block: return 15;
     case BlockType::repeater: return s.flag() && toward == s.facing() ? 15 : 0;
     case BlockType::comparator: {
@@ -84,7 +111,8 @@ std::uint8_t emitted(RuleContext& ctx, BlockPos pos, BlockState s, Direction tow
 
 std::uint8_t direct(RuleContext& ctx, BlockPos pos, BlockState s, Direction toward, bool wires) {
     switch (s.type()) {
-    case BlockType::lever: return s.flag() && toward == lever_attachment(s) ? 15 : 0;
+    case BlockType::lever: case BlockType::button: return s.flag() && toward == attachment(s) ? 15 : 0;
+    case BlockType::redstone_torch: case BlockType::redstone_wall_torch: return s.flag() && toward == Direction::up ? 15 : 0;
     case BlockType::repeater: case BlockType::comparator: case BlockType::observer: case BlockType::redstone_wire:
         return emitted(ctx, pos, s, toward, wires);
     default: return 0;

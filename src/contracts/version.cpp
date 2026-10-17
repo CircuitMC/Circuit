@@ -84,8 +84,8 @@ constexpr std::array reference_v4_mechanisms{
     MechanismEntry{"water", l0_exact, l0_exact, harness_trace,
         "5-tick fluid ticks; distance-limited spread in the order north, south, west, east, only toward the "
         "nearest drops within reach when there are any; a new source between two sources on solid ground; "
-        "dust, levers, repeaters and comparators washed away with their drops (water_channel, water_drop, "
-        "water_washes). Not covered: sources above flowing water and three sources beside falling water."},
+        "dust, levers, buttons, redstone torches, repeaters and comparators washed away with their drops "
+        "(water_channel, water_drop, water_washes, water_torch_button). Not covered: sources above flowing water and three sources beside falling water."},
     MechanismEntry{"random_ticks", l1_region_equivalent, l2_declared_deviation, documented_behavior,
         "Speed from the game rule per section; sections without blocks that react are skipped, as in the target "
         "version; positions and rule draws use a stream derived from (seed, tick, chunk, section) instead of a "
@@ -164,6 +164,23 @@ constexpr std::array reference_v4_mechanisms{
         "currents and land on the surface when they fall into water (minecart_ground, minecart_water, "
         "boat_motion, boat_land). Gaps: rails, riders, players and mobs pushing or entering vehicles, vehicles "
         "colliding with each other, chest and furnace variants."},
+    MechanismEntry{"redstone_torch", l0_exact, l2_declared_deviation, harness_trace,
+        "Floor and wall torches power every neighbor but the block they are on, and the block above them "
+        "strongly; power in that block (from a source, through a conductor or from dust) turns them off 2 "
+        "ticks after an update, and its loss on again; every state change and removal updates the neighbors of "
+        "each neighbor; the eighth turn-off of a position within 60 ticks burns a torch out for 160 ticks, "
+        "turn-offs kept with their column; torches drop without their support and are washed away (torch_basics, "
+        "water_torch_button). Gaps: players "
+        "place torches on the clicked face rather than by their view; floor support comes from collision "
+        "shapes; no burnout sound or smoke."},
+    MechanismEntry{"button", l0_exact, l2_declared_deviation, harness_trace,
+        "Floor, wall and ceiling buttons of every kind: used, they press, power their neighbors and their block "
+        "strongly, update both, and release after 20 ticks (stone, polished blackstone) or 30 (wooden); wooden "
+        "buttons are pressed by an arrow whose box meets their shape at the end of its tick, flying or stuck, "
+        "and stay pressed while one does; removed while pressed, they update around; water washes them away "
+        "(button_basics, water_torch_button). Gaps: a "
+        "pending check of one button kind also serves another kind placed at the same position; other "
+        "projectiles that press buttons are not modeled."},
     MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, harness_trace,
         "Entities tick in ascending id order once per tick; one merged away before its turn does not tick "
         "(item_hopper_pickup, item_water_current, item_merge, item_merge_moving). Gap: compared for item "
@@ -173,9 +190,10 @@ constexpr std::array reference_v4_mechanisms{
         "piston_observed) and competing hoppers act in placement order (hopper_competition). Not covered: "
         "order after a chunk reload."},
     MechanismEntry{"support", l0_exact, l0_exact, harness_trace,
-        "Dust needs a whole top face or a hopper below it, repeaters and comparators a whole top face, levers "
-        "a whole face to hang on; an update that finds the support gone breaks them with their drops "
-        "(support, lever_attachment). The drops' positions follow item_entity."},
+        "Dust needs a whole top face or a hopper below it, repeaters and comparators a whole top face, levers, "
+        "buttons and wall torches a whole face to hang on, floor torches the middle of the top; an update that "
+        "finds the support gone breaks them with their drops (support, lever_attachment, torch_basics, "
+        "button_basics). The drops' positions follow item_entity."},
     MechanismEntry{"container_menus", l0_exact, l2_declared_deviation, controlled_experiment,
         "Player windows and chest, double chest and hopper menus with every click mode, applied as commands. "
         "A 48-step client scenario (every click mode, double chests, hoppers, the own window, throws and "

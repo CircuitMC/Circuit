@@ -7,7 +7,7 @@ namespace circuit::gameplay::detail {
 namespace {
 // Water as the target version describes it in amounts: a source or falling
 // water has 8, flowing water at distance d has 8 - d. Observed in
-// water_channel, water_drop and water_washes.
+// water_channel, water_drop, water_washes and water_torch_button.
 constexpr std::array<Direction, 4> plane{Direction::north, Direction::east, Direction::south, Direction::west};
 constexpr int slope_find_distance = 4;
 
@@ -19,7 +19,7 @@ int amount(BlockState s) {
 // Blocks flowing water replaces, dropping their items.
 bool washed_away(BlockType t) {
     return t == BlockType::redstone_wire || t == BlockType::lever || t == BlockType::repeater || t == BlockType::comparator
-        || t == BlockType::wheat;
+        || t == BlockType::wheat || t == BlockType::redstone_torch || t == BlockType::redstone_wall_torch || t == BlockType::button;
 }
 // Water may flow into the block: it holds water and is no source.
 bool passable(BlockState s) { return holds_water(s) && !is_source(s); }

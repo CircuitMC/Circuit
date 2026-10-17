@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 
 // Block states of the reference rules. Blocks with rules of their own have a
 // BlockType and a packed state; every other block state of the registry
@@ -35,6 +36,9 @@ enum class BlockType : std::uint8_t {
     comparator,     // facing: output side (horizontal); level: 0 compare, 1 subtract; flag: powered
     moving_piston,  // facing: facing of the moving piston; flag: sticky. Block entity holds the moving block.
     other,          // Any other registry block: bits 8-31 hold its internal state. Inert (see below).
+    redstone_torch,      // flag: lit
+    redstone_wall_torch, // facing: away from the block it hangs on (horizontal); flag: lit
+    button,              // facing (horizontal) and level (LeverFace): mounting, as for levers; flag: powered; variant: ButtonKind
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -44,8 +48,9 @@ enum class BlockType : std::uint8_t {
 enum class WireSide : std::uint8_t { none = 0, side = 1, up = 2 };
 
 // Packed state: bits 0-7 type, 8-10 facing, 11-14 level, 15 flag, 16-17 delay-1,
-// 18-25 the four wire sides (two bits each: north, south, west, east). An
-// `other` state keeps its internal registry state in bits 8-31 instead.
+// 18-25 the four wire sides (two bits each: north, south, west, east) or,
+// for buttons, the variant. An `other` state keeps its internal registry
+// state in bits 8-31 instead.
 class BlockState {
 public:
     constexpr BlockState() noexcept = default;
@@ -73,6 +78,8 @@ public:
         return static_cast<WireSide>((raw_ >> wire_shift(d)) & 3);
     }
     [[nodiscard]] constexpr bool wire_connected(Direction d) const noexcept { return wire_side(d) != WireSide::none; }
+    // Which block of a family the state is (buttons: ButtonKind).
+    [[nodiscard]] constexpr std::uint8_t variant() const noexcept { return static_cast<std::uint8_t>((raw_ >> 18) & 0xFF); }
 
     [[nodiscard]] constexpr BlockState with_facing(Direction d) const noexcept {
         return BlockState((raw_ & ~(7u << 8)) | (static_cast<std::uint32_t>(d) << 8));
@@ -88,6 +95,9 @@ public:
     }
     [[nodiscard]] constexpr BlockState with_wire_side(Direction d, WireSide side) const noexcept {
         return BlockState((raw_ & ~(3u << wire_shift(d))) | (static_cast<std::uint32_t>(side) << wire_shift(d)));
+    }
+    [[nodiscard]] constexpr BlockState with_variant(std::uint8_t variant) const noexcept {
+        return BlockState((raw_ & ~(0xFFu << 18)) | (static_cast<std::uint32_t>(variant) << 18));
     }
     // All four wire sides at once (used to compare shapes).
     [[nodiscard]] constexpr std::uint32_t wire_shape() const noexcept { return (raw_ >> 18) & 0xFF; }
@@ -162,7 +172,31 @@ constexpr BlockState water_source() { return BlockState::of(BlockType::water); }
 constexpr BlockState water_flowing(std::uint8_t distance) { return BlockState::of(BlockType::water).with_level(distance); }
 constexpr BlockState water_falling() { return BlockState::of(BlockType::water).with_flag(true); }
 constexpr BlockState wheat(std::uint8_t age = 0) { return BlockState::of(BlockType::wheat).with_level(age); }
+constexpr BlockState torch(bool lit = true) { return BlockState::of(BlockType::redstone_torch).with_flag(lit); }
+// A wall torch faces away from the block it hangs on.
+constexpr BlockState wall_torch(Direction facing, bool lit = true) {
+    return BlockState::of(BlockType::redstone_wall_torch).with_facing(facing).with_flag(lit);
+}
+// The buttons, wooden ones first (registry names: "<kind>_button").
+enum class ButtonKind : std::uint8_t {
+    oak, spruce, birch, jungle, acacia, cherry, dark_oak, pale_oak, mangrove, bamboo, crimson, warped,
+    stone, polished_blackstone,
+};
+inline constexpr std::uint8_t button_kinds = 14;
+// Mounted as levers are: wall buttons face away from their block.
+constexpr BlockState button(ButtonKind kind, bool powered = false, Direction facing = Direction::north,
+                            LeverFace face = LeverFace::wall) {
+    return BlockState::of(BlockType::button).with_variant(static_cast<std::uint8_t>(kind)).with_flag(powered).with_facing(facing)
+        .with_level(static_cast<std::uint8_t>(face));
+}
 } // namespace blocks
+// "oak" for an oak button.
+std::string_view button_kind_name(std::uint8_t variant) noexcept;
+// Wooden buttons stay pressed longer and arrows press them.
+constexpr bool wooden_button(BlockState s) noexcept {
+    return s.is(BlockType::button) && s.variant() < static_cast<std::uint8_t>(blocks::ButtonKind::stone);
+}
+constexpr bool is_torch(BlockType t) noexcept { return t == BlockType::redstone_torch || t == BlockType::redstone_wall_torch; }
 
 // Whether an internal registry block has rules of its own (a BlockType other
 // than `other`); its states never use the registry encoding.
@@ -237,7 +271,8 @@ inline bool is_movable(BlockState s) noexcept {
 constexpr bool destroyed_by_piston(BlockType t) noexcept {
     switch (t) {
     case BlockType::redstone_wire: case BlockType::lever: case BlockType::repeater: case BlockType::comparator:
-    case BlockType::water: case BlockType::wheat:
+    case BlockType::water: case BlockType::wheat: case BlockType::redstone_torch: case BlockType::redstone_wall_torch:
+    case BlockType::button:
         return true;
     default:
         return false;
@@ -257,12 +292,14 @@ void for_each_modeled_state(F&& f) {
     for (std::uint32_t raw = 0; raw < (1u << 18); ++raw)
         if (const auto s = BlockState::decode(raw)) {
             if (s->is(BlockType::other)) continue;
-            if (!s->is(BlockType::redstone_wire)) {
+            if (s->is(BlockType::redstone_wire)) {
+                for (std::uint32_t shape = 0; shape < 256; ++shape)
+                    if (const auto w = BlockState::decode(raw | (shape << 18))) f(*w);
+            } else if (s->is(BlockType::button)) {
+                for (std::uint32_t kind = 0; kind < blocks::button_kinds; ++kind) f(s->with_variant(static_cast<std::uint8_t>(kind)));
+            } else {
                 f(*s);
-                continue;
             }
-            for (std::uint32_t shape = 0; shape < 256; ++shape)
-                if (const auto w = BlockState::decode(raw | (shape << 18))) f(*w);
         }
 }
 

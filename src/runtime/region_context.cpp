@@ -129,6 +129,17 @@ bool RegionContext::has_block_event(const BlockEvent& event) {
     return false;
 }
 
+std::size_t RegionContext::torch_turn_offs(BlockPos pos, Tick since, bool add) {
+    auto* data = loaded_in_world(pos);
+    if (!data) throw std::logic_error("runtime: torch at an unloaded position");
+    const auto c = chunk_of(pos);
+    auto& column = owned(c, *data).turn_offs;
+    // Only a change takes a snapshot of the column.
+    if (add || std::ranges::any_of(column, [&](const auto& t) { return t.second < since; }))
+        return gameplay::count_turn_offs(writable(c, *data).turn_offs, pos, since, add, now());
+    return static_cast<std::size_t>(std::ranges::count(column, pos, &gameplay::TurnOffs::value_type::first));
+}
+
 void RegionContext::push_local(const BlockEvent& event) {
     fifo.push_back({event, next_local++});
     fifo_pending.insert(event);

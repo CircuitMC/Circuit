@@ -266,6 +266,35 @@ int main() {
         require(state_at(resumed.dump(), {3, 0, 3}) == registry_block("gravel"), "landed");
     });
 
+    suite.run("buttons and torches round-trip through Anvil with their ticks", [&] {
+        using circuit::gameplay::blocks::ButtonKind;
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine.advance(admit({place({3, 0, 3}, blocks::stone()), place({4, 0, 3}, blocks::button(ButtonKind::stone, false, Direction::east)),
+                              place({3, 0, 5}, blocks::stone()), place({4, 0, 5}, blocks::wall_torch(Direction::east)),
+                              place({6, 0, 6}, blocks::torch()), place({2, 0, 5}, blocks::button(ButtonKind::warped, false, Direction::west))}));
+        engine.advance(admit({circuit::contracts::UseBlock{{4, 0, 3}}, circuit::contracts::UseBlock{{2, 0, 5}}}));
+        engine.advance({});
+        const auto state = engine.dump();
+        require(state.overworld().ticks.size() >= 2, "the pressed buttons wait for their release");
+        const auto target = root / "buttons";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "buttons", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        const auto diff = describe(kept(state), kept(back->state));
+        require(diff.empty(), diff);
+        // Released on time after the import, once the chunk is loaded.
+        Engine resumed(bundle(), 5, back->state);
+        Admissions again;
+        resumed.advance(again({ticket(1, {0, 0}, 1)}));
+        for (int i = 0; i < 40; ++i) resumed.advance({});
+        const auto end = resumed.dump();
+        require(!state_at(end, {4, 0, 3}).flag() && !state_at(end, {2, 0, 5}).flag(), "both released");
+        require(state_at(end, {2, 0, 5}).variant() == static_cast<std::uint8_t>(ButtonKind::warped), "the warped button kept its kind");
+        require(state_at(end, {4, 0, 5}) == blocks::wall_torch(Direction::east) && state_at(end, {6, 0, 6}) == blocks::torch(), "the torches");
+    });
+
     suite.run("primed TNT round-trips through Anvil with its fuse", [&] {
         Engine engine(bundle(), 5);
         Admissions admit;

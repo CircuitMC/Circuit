@@ -57,6 +57,7 @@ private:
         std::set<TickKey> tick_index[2];
         std::deque<gameplay::BlockEvent> events;
         std::set<gameplay::BlockEvent> pending_events;
+        std::map<contracts::ChunkPos, gameplay::TurnOffs> turn_offs; // by column, as the runtime keeps them
         std::uint64_t next_suborder{};
         std::uint64_t next_block_entity_order{};
         std::map<contracts::PlayerKey, gameplay::Presence> presences;

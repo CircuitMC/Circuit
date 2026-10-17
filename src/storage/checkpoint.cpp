@@ -19,6 +19,7 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 22: levels carry their redstone torches' recent turn-offs;
 // 21: entities carry how far pistons pushed them in their last pushed tick;
 // 20: boats carry their kind, last state and last vertical move, minecarts
 // whether they were in water;
@@ -49,7 +50,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 21;
+constexpr std::uint32_t version = 22;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -176,6 +177,11 @@ void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
         pos(w, e.pos);
         w.u8(static_cast<std::uint8_t>(e.block)).u8(e.event).u8(e.param);
     }
+    w.varint(static_cast<std::int32_t>(l.turn_offs.size()));
+    for (const auto& [p, when] : l.turn_offs) {
+        pos(w, p);
+        w.varlong(static_cast<std::int64_t>(when));
+    }
 }
 
 // Writes the body: time, the entity id counter, the levels, tickets, players
@@ -260,8 +266,8 @@ struct BodyReader {
     bool pos(contracts::BlockPos& p) { return get(r.i32(), p.x) && get(r.i32(), p.y) && get(r.i32(), p.z); }
 };
 
-// Reads a level's column table, block entities, entities, scheduled ticks
-// and block events into `l`.
+// Reads a level's column table, block entities, entities, scheduled ticks,
+// block events and torch turn-offs into `l`.
 bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
     auto& s = l;
     std::size_t chunks = 0;
@@ -436,6 +442,14 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
         if (!b.pos(e.pos) || !b.get(b.r.u8(), block) || !b.get(b.r.u8(), e.event) || !b.get(b.r.u8(), e.param)) return false;
         e.block = static_cast<gameplay::BlockType>(block);
         s.block_events.push_back(e);
+    }
+    if (b.version >= 22) {
+        if (!b.count(n, 13)) return false;
+        for (std::size_t i = 0; i < n; ++i) {
+            std::pair<contracts::BlockPos, contracts::Tick> t;
+            if (!b.pos(t.first) || !b.u64(t.second)) return false;
+            s.turn_offs.push_back(t);
+        }
     }
     return true;
 }

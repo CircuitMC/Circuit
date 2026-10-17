@@ -44,6 +44,7 @@ public:
     bool has_tick(TickList list, BlockPos pos, BlockType block) override;
     void add_tick(TickList list, BlockPos pos, BlockType block, Tick due, std::int8_t priority, std::uint32_t seq) override;
     bool has_block_event(const BlockEvent& event) override;
+    std::size_t torch_turn_offs(BlockPos pos, Tick since, bool add) override;
     void add_block_event(const BlockEvent& event, std::uint32_t seq) override;
     const BlockEntity* peek_block_entity(BlockPos pos) override;
     BlockEntity* block_entity(BlockPos pos) override;

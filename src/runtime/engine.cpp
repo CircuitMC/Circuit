@@ -1003,6 +1003,7 @@ void fill_dump(const WorldStore& world, const contracts::VersionBundle& bundle, 
             for (const auto& [k, e] : data.ticks[t])
                 l.ticks.push_back({static_cast<TickList>(t), {k.first, k.second, e.due, e.priority, e.suborder}});
         for (const auto& e : data.events) events[data.dimension].push_back({e.seq, e.event});
+        l.turn_offs.insert(l.turn_offs.end(), data.turn_offs.begin(), data.turn_offs.end());
     };
     for (const auto& [c, data] : world.loaded) add(*data, data->level);
     for (const auto& [c, data] : world.saved) add(*data, ChunkLevel::unloaded);
@@ -1133,7 +1134,11 @@ void Engine::Impl::restore(const WorldDump& state) {
         // Entities may be above or below the world height (falling out of it),
         // within the bounds the rules can reach; everything else is checked at
         // full width so that ticking a restored state cannot overflow.
-        const double lowest = static_cast<double>(shape.min_y) - 65.0;
+        // Below the world: falling blocks and primed TNT fall on until their
+        // time is up (at most 32,767 ticks, under 2 blocks a tick once their
+        // speed of at most 64 has worn off), other entities are gone a tick
+        // after passing 64 below it.
+        const double lowest = static_cast<double>(shape.min_y) - 131072.0;
         const double highest = static_cast<double>(shape.min_y) + shape.height + 4096.0;
         for (const auto& e : l.entities) {
             if (!contracts::within_border(e.position) || e.id.value == 0 || e.id.value >= world.next_entity_id) bad("entity");
@@ -1209,6 +1214,10 @@ void Engine::Impl::restore(const WorldDump& state) {
         }
         // Block events keep their queue order; their internal sequence restarts.
         for (const auto& e : l.block_events) column(e.pos).events.push_back({e, counters.next_event_seq++, {}});
+        for (const auto& t : l.turn_offs) {
+            if (t.second > state.time) bad("torch turn-off");
+            column(t.first).turn_offs.push_back(t);
+        }
     }
     for (const auto& t : state.tickets)
         if (!contracts::valid_dimension(static_cast<std::uint8_t>(t.dimension)) || !world.tickets.restore(t, bundle.limits))

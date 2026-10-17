@@ -797,7 +797,8 @@
           "cases": [
             "trace/water_channel",
             "trace/water_drop",
-            "trace/water_washes"
+            "trace/water_washes",
+            "trace/water_torch_button"
           ]
         },
         {
@@ -1007,15 +1008,36 @@
           "id": "torches",
           "name": "Redstone torches and burnout",
           "milestone": "C4",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/torch_basics",
+            "trace/torch_button_piston",
+            "trace/water_torch_button"
+          ],
+          "deviations": [
+            "players place torches on the clicked face, not by their view",
+            "floor support comes from collision shapes",
+            "no burnout sound or smoke"
+          ],
+          "note": "Floor and wall torches power every neighbor but their block and the block above them strongly; power in their block turns them off two ticks after an update; the eighth turn-off of a position within 60 ticks burns a torch out for 160 ticks"
         },
         {
           "id": "buttons_and_plates",
           "name": "Buttons, pressure plates, tripwire and targets",
           "milestone": "C4",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/button_basics",
+            "trace/torch_button_piston",
+            "trace/water_torch_button"
+          ],
+          "deviations": [
+            "pressure plates, tripwire and target blocks are not modeled",
+            "only arrows press wooden buttons"
+          ],
+          "note": "Buttons of every kind on floors, walls and ceilings: 20 ticks for stone and polished blackstone, 30 for wooden ones, which arrows press and hold"
         },
         {
           "id": "sensors",

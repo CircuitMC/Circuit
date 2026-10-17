@@ -97,6 +97,11 @@ public:
     virtual void add_tick(TickList list, BlockPos pos, BlockType block, Tick due, std::int8_t priority,
                           std::uint32_t seq) = 0;
     virtual bool has_block_event(const BlockEvent& event) = 0;
+    // Turn-offs of redstone torches (their burnout), kept with the column of
+    // `pos` through block changes and reloads (count_turn_offs): forgets the
+    // column's turn-offs before `since`, records one at `pos` now with
+    // `add`, and returns how many `pos` has.
+    virtual std::size_t torch_turn_offs(BlockPos pos, Tick since, bool add) = 0;
     virtual void add_block_event(const BlockEvent& event, std::uint32_t seq) = 0;
 
     // Pointers stay valid until the current root finishes or the block entity

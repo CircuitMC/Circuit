@@ -74,6 +74,7 @@ Tool effective_tool(BlockState s, const GameData* data) noexcept {
     case BlockType::piston: case BlockType::sticky_piston: case BlockType::piston_head: case BlockType::hopper:
         return Tool::pickaxe;
     case BlockType::chest: return Tool::axe;
+    case BlockType::button: return wooden_button(s) ? Tool::axe : Tool::pickaxe;
     default: return Tool::none;
     }
 }
@@ -103,11 +104,11 @@ float hardness(BlockState s) noexcept {
     case BlockType::glass: case BlockType::redstone_lamp: return 0.3f;
     case BlockType::obsidian: return 50.0f;
     case BlockType::redstone_block: return 5.0f;
-    case BlockType::lever: return 0.5f;
+    case BlockType::lever: case BlockType::button: return 0.5f;
     case BlockType::observer: case BlockType::hopper: return 3.0f;
     case BlockType::chest: return 2.5f;
     case BlockType::slime_block: case BlockType::redstone_wire: case BlockType::repeater: case BlockType::comparator:
-    case BlockType::wheat:
+    case BlockType::wheat: case BlockType::redstone_torch: case BlockType::redstone_wall_torch:
         return 0.0f;
     default: return -1.0f; // air, water, moving pistons
     }

@@ -1481,6 +1481,114 @@ int main() {
         require(std::abs(boats[0].position.x - boats[1].position.x) > 1.2, "pushed apart");
     });
 
+    suite.run("redstone torches invert their block, burn out and relight", [] {
+        using circuit::contracts::UseBlock;
+        Sim s;
+        std::vector<CommandBody> build = floor(-1, 8, -1, 4);
+        build.push_back(place({1, 0, 0}, blocks::lamp()));
+        build.push_back(place({0, 1, 0}, blocks::stone()));
+        build.push_back(place({0, 2, 0}, blocks::lamp()));
+        build.push_back(place({4, 0, 2}, blocks::stone()));
+        build.push_back(place({4, 1, 2}, blocks::lever(false)));
+        build.push_back(place({6, 0, 2}, blocks::lamp()));
+        build.push_back(place({7, 0, 0}, blocks::redstone_block()));
+        s.tick(build);
+        s.tick({place({0, 0, 0}, blocks::torch()), place({5, 0, 2}, blocks::wall_torch(D::east)), place({7, 1, 0}, blocks::torch())});
+        require(s.at({1, 0, 0}) == blocks::lamp(true) && s.at({0, 2, 0}) == blocks::lamp(true) && s.at({6, 0, 2}) == blocks::lamp(true),
+                "torches light the lamps beside them, and through the block above them");
+        s.tick();
+        require(s.at({7, 1, 0}) == blocks::torch(false), "a torch on a redstone block goes out");
+        // The lever powers the wall torch's block: off after 2 ticks.
+        s.tick({UseBlock{{4, 1, 2}}});
+        require(s.at({5, 0, 2}) == blocks::wall_torch(D::east, true), "still lit");
+        s.tick();
+        require(s.at({5, 0, 2}) == blocks::wall_torch(D::east, false), "turned off");
+        s.tick({UseBlock{{4, 1, 2}}});
+        s.tick();
+        require(s.at({5, 0, 2}) == blocks::wall_torch(D::east, true), "on again");
+        // Seven more turn-offs within 60 ticks burn it out on the eighth.
+        Tick eighth = 0;
+        for (int i = 0; i < 7; ++i) {
+            s.tick({UseBlock{{4, 1, 2}}});
+            s.tick();
+            eighth = s.oracle.time();
+            s.tick({UseBlock{{4, 1, 2}}});
+            s.tick();
+        }
+        const auto d = s.oracle.dump();
+        require(std::ranges::count(d.overworld().turn_offs, BlockPos{5, 0, 2}, &circuit::gameplay::TurnOffs::value_type::first) == 8,
+                "eight turn-offs kept");
+        require(s.at({5, 0, 2}) == blocks::wall_torch(D::east, false), "burnt out: off though unpowered");
+        s.until(eighth + 159);
+        require(s.at({5, 0, 2}) == blocks::wall_torch(D::east, false), "still out");
+        s.tick();
+        require(s.at({5, 0, 2}) == blocks::wall_torch(D::east, true), "relit 160 ticks after the eighth turn-off");
+        require(s.oracle.dump().overworld().turn_offs.empty(), "old turn-offs forgotten");
+        // Without its support a torch drops.
+        s.tick({place({0, -1, 0}, blocks::air())});
+        require(s.at({0, 0, 0}).is_air() && s.oracle.dump().overworld().entities.size() == 1, "the torch dropped");
+    });
+
+    suite.run("buttons stay pressed 20 or 30 ticks; arrows hold wooden ones", [] {
+        using circuit::contracts::RemoveEntity;
+        using circuit::contracts::UseBlock;
+        using circuit::gameplay::blocks::ButtonKind;
+        using circuit::gameplay::blocks::LeverFace;
+        Sim s;
+        std::vector<CommandBody> build = floor(-1, 8, -1, 6);
+        build.push_back(place({0, 0, 0}, blocks::stone()));
+        build.push_back(place({1, 0, 0}, blocks::button(ButtonKind::stone, false, D::east)));
+        build.push_back(place({2, 0, 0}, blocks::lamp()));
+        build.push_back(place({-1, 0, 0}, blocks::lamp()));
+        build.push_back(place({4, 0, 0}, blocks::button(ButtonKind::oak, false, D::north, LeverFace::floor)));
+        build.push_back(place({5, 0, 0}, blocks::lamp()));
+        build.push_back(place({0, 1, 4}, blocks::stone()));
+        build.push_back(place({1, 1, 4}, blocks::button(ButtonKind::oak, false, D::east)));
+        build.push_back(place({0, 2, 4}, blocks::lamp()));
+        s.tick(build);
+        s.tick({UseBlock{{1, 0, 0}}, UseBlock{{4, 0, 0}}});
+        const auto pressed = s.oracle.time();
+        require(s.at({1, 0, 0}).flag() && s.at({4, 0, 0}).flag(), "pressed");
+        require(s.at({2, 0, 0}).flag() && s.at({-1, 0, 0}).flag() && s.at({5, 0, 0}).flag(),
+                "they power their neighbors, and their block strongly");
+        s.tick({UseBlock{{1, 0, 0}}});
+        require(of_kind(s.last, TraceKind::command_applied).size() == 1 && of_kind(s.last, TraceKind::block_changed).empty(),
+                "using a pressed button does nothing");
+        s.until(pressed + 18);
+        require(s.at({1, 0, 0}).flag(), "a stone button holds for 20 ticks");
+        s.tick();
+        require(!s.at({1, 0, 0}).flag() && s.at({4, 0, 0}).flag(), "the stone button is out, the oak one still in");
+        s.until(pressed + 29);
+        require(!s.at({4, 0, 0}).flag(), "the oak button holds for 30 ticks");
+        // An arrow sticks in the oak button's cell and holds it pressed.
+        s.tick({SummonEntity{"minecraft:arrow", {5.5, 1.5, 4.5}, {-1.0, 0.04, 0.0}, 80, 0}});
+        for (int i = 0; i < 6; ++i) s.tick();
+        require(s.at({1, 1, 4}).flag() && s.at({0, 2, 4}).flag(), "pressed by the arrow");
+        for (int i = 0; i < 60; ++i) s.tick();
+        require(s.at({1, 1, 4}).flag(), "held while the arrow is in it");
+        const auto arrow = s.oracle.dump().overworld().entities.at(0).id;
+        s.tick({RemoveEntity{arrow}});
+        for (int i = 0; i < 30; ++i) s.tick();
+        require(!s.at({1, 1, 4}).flag(), "out once the arrow is gone");
+        // Players place buttons and torches on the clicked face; buttons
+        // drop themselves.
+        const circuit::contracts::PlayerKey alex{1, 2};
+        s.tick({circuit::contracts::SetPlayerSlot{alex, 36, {items::stone_button, 2, 0}},
+                circuit::contracts::SetPlayerSlot{alex, 37, {items::redstone_torch, 2, 0}},
+                circuit::contracts::PlayerUse{alex, 36, {7, -1, 5}, D::up, D::west, D::down, false, false, 3, 3},
+                circuit::contracts::PlayerUse{alex, 36, {0, 1, 4}, D::down, D::west, D::up, false, false, 3, 3},
+                circuit::contracts::PlayerUse{alex, 37, {0, 1, 4}, D::south, D::north, D::north, false, false, 3, 3},
+                circuit::contracts::PlayerUse{alex, 37, {8, -1, 6}, D::up, D::north, D::down, false, false, 3, 3}});
+        require(s.at({7, 0, 5}) == blocks::button(ButtonKind::stone, false, D::west, LeverFace::floor), "a floor button");
+        require(s.at({0, 0, 4}) == blocks::button(ButtonKind::stone, false, D::west, LeverFace::ceiling), "a ceiling button");
+        require(s.at({0, 1, 5}) == blocks::wall_torch(D::south), "a wall torch");
+        require(s.at({8, 0, 6}) == blocks::torch(), "a floor torch");
+        s.tick({circuit::contracts::PlayerBreak{alex, {7, 0, 5}, true, 38}});
+        const auto d = s.oracle.dump();
+        require(std::ranges::any_of(d.overworld().entities, [](const auto& e) { return e.stack.item == items::stone_button; }),
+                "a stone button drops by hand");
+    });
+
     suite.run("entities leave with their chunk and come back under new ids", [] {
         Sim s(bundle(), 7, 0); // tick 1: chunk (0,0) entity ticking
         s.tick({place({4, -1, 4}, blocks::stone()), SpawnItem{at_block(4.5, 0.0, 4.5), {}, {items::stone, 3}}}); // 2

@@ -408,9 +408,7 @@ public:
         return *tables_->state(display_state(*palette_, at, p, s));
     }
     protocol::BlockStateInfo info(BlockState s) const { return *tables_->state(palette_->wire(s)); }
-    std::string block_name(BlockType t) const {
-        return protocol::parse_notation(mapping_->notation(BlockState::of(t)))->first;
-    }
+    std::string block_name(BlockState s) const { return protocol::parse_notation(mapping_->notation(s))->first; }
 
 private:
     const protocol::ContentTables* tables_;
@@ -1059,10 +1057,16 @@ private:
         for (const auto* t : ticks) {
             auto tag = Tag::compound();
             const bool fluid = t->list == contracts::TickList::fluid;
-            tag.set("i", Tag::string(fluid ? (at(t->tick.pos).is(BlockType::water) && at(t->tick.pos).level() == 0 && !at(t->tick.pos).flag()
+            // A block tick names the block at its position (the kind of
+            // button, the falling block); one whose block is gone names its
+            // type, unless that is a block without rules of its own, which
+            // a stale tick leaves alone.
+            const auto here = at(t->tick.pos);
+            if (!fluid && here.type() != t->tick.block && t->tick.block == BlockType::other) continue;
+            tag.set("i", Tag::string(fluid ? (here.is(BlockType::water) && here.level() == 0 && !here.flag()
                                                   ? "minecraft:water"
                                                   : "minecraft:flowing_water")
-                                           : content_.block_name(t->tick.block)));
+                                           : content_.block_name(here.type() == t->tick.block ? here : BlockState::of(t->tick.block))));
             tag.set("p", Tag::int_(t->tick.priority));
             tag.set("t", Tag::int_(static_cast<std::int32_t>(static_cast<std::int64_t>(t->tick.due) - static_cast<std::int64_t>(world_.time))));
             tag.set("x", Tag::int_(t->tick.pos.x));

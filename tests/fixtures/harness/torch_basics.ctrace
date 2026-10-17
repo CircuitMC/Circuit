@@ -1,0 +1,1781 @@
+circuit-trace 2
+title Redstone torches power lamps, are turned off through their block, burn out and drop
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.9.0+mc1.21.8
+mechanisms redstone_torch redstone_lamp repeater
+area -6 0 -8 8 4 8
+ticks 260
+changes ordered
+entities observed
+rng observed
+
+at 0 set -6 0 -8 minecraft:obsidian
+at 0 set -6 0 -7 minecraft:obsidian
+at 0 set -6 0 -6 minecraft:obsidian
+at 0 set -6 0 -5 minecraft:obsidian
+at 0 set -6 0 -4 minecraft:obsidian
+at 0 set -6 0 -3 minecraft:obsidian
+at 0 set -6 0 -2 minecraft:obsidian
+at 0 set -6 0 -1 minecraft:obsidian
+at 0 set -6 0 0 minecraft:obsidian
+at 0 set -6 0 1 minecraft:obsidian
+at 0 set -6 0 2 minecraft:obsidian
+at 0 set -6 0 3 minecraft:obsidian
+at 0 set -6 0 4 minecraft:obsidian
+at 0 set -6 0 5 minecraft:obsidian
+at 0 set -6 0 6 minecraft:obsidian
+at 0 set -6 0 7 minecraft:obsidian
+at 0 set -6 0 8 minecraft:obsidian
+at 0 set -5 0 -8 minecraft:obsidian
+at 0 set -5 0 -7 minecraft:obsidian
+at 0 set -5 0 -6 minecraft:obsidian
+at 0 set -5 0 -5 minecraft:obsidian
+at 0 set -5 0 -4 minecraft:obsidian
+at 0 set -5 0 -3 minecraft:obsidian
+at 0 set -5 0 -2 minecraft:obsidian
+at 0 set -5 0 -1 minecraft:obsidian
+at 0 set -5 0 0 minecraft:obsidian
+at 0 set -5 0 1 minecraft:obsidian
+at 0 set -5 0 2 minecraft:obsidian
+at 0 set -5 0 3 minecraft:obsidian
+at 0 set -5 0 4 minecraft:obsidian
+at 0 set -5 0 5 minecraft:obsidian
+at 0 set -5 0 6 minecraft:obsidian
+at 0 set -5 0 7 minecraft:obsidian
+at 0 set -5 0 8 minecraft:obsidian
+at 0 set -4 0 -8 minecraft:obsidian
+at 0 set -4 0 -7 minecraft:obsidian
+at 0 set -4 0 -6 minecraft:obsidian
+at 0 set -4 0 -5 minecraft:obsidian
+at 0 set -4 0 -4 minecraft:obsidian
+at 0 set -4 0 -3 minecraft:obsidian
+at 0 set -4 0 -2 minecraft:obsidian
+at 0 set -4 0 -1 minecraft:obsidian
+at 0 set -4 0 0 minecraft:obsidian
+at 0 set -4 0 1 minecraft:obsidian
+at 0 set -4 0 2 minecraft:obsidian
+at 0 set -4 0 3 minecraft:obsidian
+at 0 set -4 0 4 minecraft:obsidian
+at 0 set -4 0 5 minecraft:obsidian
+at 0 set -4 0 6 minecraft:obsidian
+at 0 set -4 0 7 minecraft:obsidian
+at 0 set -4 0 8 minecraft:obsidian
+at 0 set -3 0 -8 minecraft:obsidian
+at 0 set -3 0 -7 minecraft:obsidian
+at 0 set -3 0 -6 minecraft:obsidian
+at 0 set -3 0 -5 minecraft:obsidian
+at 0 set -3 0 -4 minecraft:obsidian
+at 0 set -3 0 -3 minecraft:obsidian
+at 0 set -3 0 -2 minecraft:obsidian
+at 0 set -3 0 -1 minecraft:obsidian
+at 0 set -3 0 0 minecraft:obsidian
+at 0 set -3 0 1 minecraft:obsidian
+at 0 set -3 0 2 minecraft:obsidian
+at 0 set -3 0 3 minecraft:obsidian
+at 0 set -3 0 4 minecraft:obsidian
+at 0 set -3 0 5 minecraft:obsidian
+at 0 set -3 0 6 minecraft:obsidian
+at 0 set -3 0 7 minecraft:obsidian
+at 0 set -3 0 8 minecraft:obsidian
+at 0 set -2 0 -8 minecraft:obsidian
+at 0 set -2 0 -7 minecraft:obsidian
+at 0 set -2 0 -6 minecraft:obsidian
+at 0 set -2 0 -5 minecraft:obsidian
+at 0 set -2 0 -4 minecraft:obsidian
+at 0 set -2 0 -3 minecraft:obsidian
+at 0 set -2 0 -2 minecraft:obsidian
+at 0 set -2 0 -1 minecraft:obsidian
+at 0 set -2 0 0 minecraft:obsidian
+at 0 set -2 0 1 minecraft:obsidian
+at 0 set -2 0 2 minecraft:obsidian
+at 0 set -2 0 3 minecraft:obsidian
+at 0 set -2 0 4 minecraft:obsidian
+at 0 set -2 0 5 minecraft:obsidian
+at 0 set -2 0 6 minecraft:obsidian
+at 0 set -2 0 7 minecraft:obsidian
+at 0 set -2 0 8 minecraft:obsidian
+at 0 set -1 0 -8 minecraft:obsidian
+at 0 set -1 0 -7 minecraft:obsidian
+at 0 set -1 0 -6 minecraft:obsidian
+at 0 set -1 0 -5 minecraft:obsidian
+at 0 set -1 0 -4 minecraft:obsidian
+at 0 set -1 0 -3 minecraft:obsidian
+at 0 set -1 0 -2 minecraft:obsidian
+at 0 set -1 0 -1 minecraft:obsidian
+at 0 set -1 0 0 minecraft:obsidian
+at 0 set -1 0 1 minecraft:obsidian
+at 0 set -1 0 2 minecraft:obsidian
+at 0 set -1 0 3 minecraft:obsidian
+at 0 set -1 0 4 minecraft:obsidian
+at 0 set -1 0 5 minecraft:obsidian
+at 0 set -1 0 6 minecraft:obsidian
+at 0 set -1 0 7 minecraft:obsidian
+at 0 set -1 0 8 minecraft:obsidian
+at 0 set 0 0 -8 minecraft:obsidian
+at 0 set 0 0 -7 minecraft:obsidian
+at 0 set 0 0 -6 minecraft:obsidian
+at 0 set 0 0 -5 minecraft:obsidian
+at 0 set 0 0 -4 minecraft:obsidian
+at 0 set 0 0 -3 minecraft:obsidian
+at 0 set 0 0 -2 minecraft:obsidian
+at 0 set 0 0 -1 minecraft:obsidian
+at 0 set 0 0 0 minecraft:obsidian
+at 0 set 0 0 1 minecraft:obsidian
+at 0 set 0 0 2 minecraft:obsidian
+at 0 set 0 0 3 minecraft:obsidian
+at 0 set 0 0 4 minecraft:obsidian
+at 0 set 0 0 5 minecraft:obsidian
+at 0 set 0 0 6 minecraft:obsidian
+at 0 set 0 0 7 minecraft:obsidian
+at 0 set 0 0 8 minecraft:obsidian
+at 0 set 1 0 -8 minecraft:obsidian
+at 0 set 1 0 -7 minecraft:obsidian
+at 0 set 1 0 -6 minecraft:obsidian
+at 0 set 1 0 -5 minecraft:obsidian
+at 0 set 1 0 -4 minecraft:obsidian
+at 0 set 1 0 -3 minecraft:obsidian
+at 0 set 1 0 -2 minecraft:obsidian
+at 0 set 1 0 -1 minecraft:obsidian
+at 0 set 1 0 0 minecraft:obsidian
+at 0 set 1 0 1 minecraft:obsidian
+at 0 set 1 0 2 minecraft:obsidian
+at 0 set 1 0 3 minecraft:obsidian
+at 0 set 1 0 4 minecraft:obsidian
+at 0 set 1 0 5 minecraft:obsidian
+at 0 set 1 0 6 minecraft:obsidian
+at 0 set 1 0 7 minecraft:obsidian
+at 0 set 1 0 8 minecraft:obsidian
+at 0 set 2 0 -8 minecraft:obsidian
+at 0 set 2 0 -7 minecraft:obsidian
+at 0 set 2 0 -6 minecraft:obsidian
+at 0 set 2 0 -5 minecraft:obsidian
+at 0 set 2 0 -4 minecraft:obsidian
+at 0 set 2 0 -3 minecraft:obsidian
+at 0 set 2 0 -2 minecraft:obsidian
+at 0 set 2 0 -1 minecraft:obsidian
+at 0 set 2 0 0 minecraft:obsidian
+at 0 set 2 0 1 minecraft:obsidian
+at 0 set 2 0 2 minecraft:obsidian
+at 0 set 2 0 3 minecraft:obsidian
+at 0 set 2 0 4 minecraft:obsidian
+at 0 set 2 0 5 minecraft:obsidian
+at 0 set 2 0 6 minecraft:obsidian
+at 0 set 2 0 7 minecraft:obsidian
+at 0 set 2 0 8 minecraft:obsidian
+at 0 set 3 0 -8 minecraft:obsidian
+at 0 set 3 0 -7 minecraft:obsidian
+at 0 set 3 0 -6 minecraft:obsidian
+at 0 set 3 0 -5 minecraft:obsidian
+at 0 set 3 0 -4 minecraft:obsidian
+at 0 set 3 0 -3 minecraft:obsidian
+at 0 set 3 0 -2 minecraft:obsidian
+at 0 set 3 0 -1 minecraft:obsidian
+at 0 set 3 0 0 minecraft:obsidian
+at 0 set 3 0 1 minecraft:obsidian
+at 0 set 3 0 2 minecraft:obsidian
+at 0 set 3 0 3 minecraft:obsidian
+at 0 set 3 0 4 minecraft:obsidian
+at 0 set 3 0 5 minecraft:obsidian
+at 0 set 3 0 6 minecraft:obsidian
+at 0 set 3 0 7 minecraft:obsidian
+at 0 set 3 0 8 minecraft:obsidian
+at 0 set 4 0 -8 minecraft:obsidian
+at 0 set 4 0 -7 minecraft:obsidian
+at 0 set 4 0 -6 minecraft:obsidian
+at 0 set 4 0 -5 minecraft:obsidian
+at 0 set 4 0 -4 minecraft:obsidian
+at 0 set 4 0 -3 minecraft:obsidian
+at 0 set 4 0 -2 minecraft:obsidian
+at 0 set 4 0 -1 minecraft:obsidian
+at 0 set 4 0 0 minecraft:obsidian
+at 0 set 4 0 1 minecraft:obsidian
+at 0 set 4 0 2 minecraft:obsidian
+at 0 set 4 0 3 minecraft:obsidian
+at 0 set 4 0 4 minecraft:obsidian
+at 0 set 4 0 5 minecraft:obsidian
+at 0 set 4 0 6 minecraft:obsidian
+at 0 set 4 0 7 minecraft:obsidian
+at 0 set 4 0 8 minecraft:obsidian
+at 0 set 5 0 -8 minecraft:obsidian
+at 0 set 5 0 -7 minecraft:obsidian
+at 0 set 5 0 -6 minecraft:obsidian
+at 0 set 5 0 -5 minecraft:obsidian
+at 0 set 5 0 -4 minecraft:obsidian
+at 0 set 5 0 -3 minecraft:obsidian
+at 0 set 5 0 -2 minecraft:obsidian
+at 0 set 5 0 -1 minecraft:obsidian
+at 0 set 5 0 0 minecraft:obsidian
+at 0 set 5 0 1 minecraft:obsidian
+at 0 set 5 0 2 minecraft:obsidian
+at 0 set 5 0 3 minecraft:obsidian
+at 0 set 5 0 4 minecraft:obsidian
+at 0 set 5 0 5 minecraft:obsidian
+at 0 set 5 0 6 minecraft:obsidian
+at 0 set 5 0 7 minecraft:obsidian
+at 0 set 5 0 8 minecraft:obsidian
+at 0 set 6 0 -8 minecraft:obsidian
+at 0 set 6 0 -7 minecraft:obsidian
+at 0 set 6 0 -6 minecraft:obsidian
+at 0 set 6 0 -5 minecraft:obsidian
+at 0 set 6 0 -4 minecraft:obsidian
+at 0 set 6 0 -3 minecraft:obsidian
+at 0 set 6 0 -2 minecraft:obsidian
+at 0 set 6 0 -1 minecraft:obsidian
+at 0 set 6 0 0 minecraft:obsidian
+at 0 set 6 0 1 minecraft:obsidian
+at 0 set 6 0 2 minecraft:obsidian
+at 0 set 6 0 3 minecraft:obsidian
+at 0 set 6 0 4 minecraft:obsidian
+at 0 set 6 0 5 minecraft:obsidian
+at 0 set 6 0 6 minecraft:obsidian
+at 0 set 6 0 7 minecraft:obsidian
+at 0 set 6 0 8 minecraft:obsidian
+at 0 set 7 0 -8 minecraft:obsidian
+at 0 set 7 0 -7 minecraft:obsidian
+at 0 set 7 0 -6 minecraft:obsidian
+at 0 set 7 0 -5 minecraft:obsidian
+at 0 set 7 0 -4 minecraft:obsidian
+at 0 set 7 0 -3 minecraft:obsidian
+at 0 set 7 0 -2 minecraft:obsidian
+at 0 set 7 0 -1 minecraft:obsidian
+at 0 set 7 0 0 minecraft:obsidian
+at 0 set 7 0 1 minecraft:obsidian
+at 0 set 7 0 2 minecraft:obsidian
+at 0 set 7 0 3 minecraft:obsidian
+at 0 set 7 0 4 minecraft:obsidian
+at 0 set 7 0 5 minecraft:obsidian
+at 0 set 7 0 6 minecraft:obsidian
+at 0 set 7 0 7 minecraft:obsidian
+at 0 set 7 0 8 minecraft:obsidian
+at 0 set 8 0 -8 minecraft:obsidian
+at 0 set 8 0 -7 minecraft:obsidian
+at 0 set 8 0 -6 minecraft:obsidian
+at 0 set 8 0 -5 minecraft:obsidian
+at 0 set 8 0 -4 minecraft:obsidian
+at 0 set 8 0 -3 minecraft:obsidian
+at 0 set 8 0 -2 minecraft:obsidian
+at 0 set 8 0 -1 minecraft:obsidian
+at 0 set 8 0 0 minecraft:obsidian
+at 0 set 8 0 1 minecraft:obsidian
+at 0 set 8 0 2 minecraft:obsidian
+at 0 set 8 0 3 minecraft:obsidian
+at 0 set 8 0 4 minecraft:obsidian
+at 0 set 8 0 5 minecraft:obsidian
+at 0 set 8 0 6 minecraft:obsidian
+at 0 set 8 0 7 minecraft:obsidian
+at 0 set 8 0 8 minecraft:obsidian
+at 0 set 1 1 -6 minecraft:redstone_lamp[lit=false]
+at 0 set -1 1 -6 minecraft:redstone_lamp[lit=false]
+at 0 set 0 2 -6 minecraft:stone
+at 0 set 0 3 -6 minecraft:redstone_lamp[lit=false]
+at 0 set 4 1 -6 minecraft:redstone_block
+at 0 set 5 2 -6 minecraft:redstone_lamp[lit=false]
+at 0 set 0 1 -3 minecraft:stone
+at 0 set 0 2 -3 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 2 1 -3 minecraft:redstone_lamp[lit=false]
+at 0 set 1 2 -3 minecraft:stone
+at 0 set 1 3 -3 minecraft:redstone_lamp[lit=false]
+at 0 set 0 1 0 minecraft:stone
+at 0 set 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+at 0 set 1 1 1 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 1 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 0 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 5 1 3 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 6 1 3 minecraft:stone
+at 0 set 6 2 3 minecraft:redstone_lamp[lit=false]
+at 0 set 8 1 3 minecraft:redstone_lamp[lit=false]
+at 0 set 0 1 6 minecraft:stone
+at 0 set 0 2 6 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 2 1 6 minecraft:redstone_lamp[lit=false]
+
+at 2 set 0 1 -6 minecraft:redstone_torch[lit=true]
+change 2 commands 0 1 -6 minecraft:air minecraft:redstone_torch[lit=true]
+change 2 commands 0 3 -6 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+change 2 commands -1 1 -6 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+change 2 commands 1 1 -6 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+at 2 set 4 2 -6 minecraft:redstone_torch[lit=true]
+change 2 commands 4 2 -6 minecraft:air minecraft:redstone_torch[lit=true]
+change 2 commands 5 2 -6 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+at 2 set 1 1 -3 minecraft:redstone_wall_torch[facing=east,lit=true]
+change 2 commands 1 1 -3 minecraft:air minecraft:redstone_wall_torch[facing=east,lit=true]
+change 2 commands 1 3 -3 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+change 2 commands 2 1 -3 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+at 2 set 7 1 3 minecraft:redstone_wall_torch[facing=east,lit=true]
+change 2 commands 7 1 3 minecraft:air minecraft:redstone_wall_torch[facing=east,lit=true]
+change 2 commands 8 1 3 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+at 2 set 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=true]
+change 2 commands 1 1 6 minecraft:air minecraft:redstone_wall_torch[facing=east,lit=true]
+change 2 commands 2 1 6 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+
+change 3 block_ticks 4 2 -6 minecraft:redstone_torch[lit=true] minecraft:redstone_torch[lit=false]
+
+at 4 set 4 1 3 minecraft:redstone_torch[lit=true]
+change 4 commands 4 1 3 minecraft:air minecraft:redstone_torch[lit=true]
+change 4 commands 5 1 3 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:redstone_wire[east=none,north=none,power=15,south=none,west=none]
+change 4 commands 6 2 3 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+change 4 commands 5 1 3 minecraft:redstone_wire[east=none,north=none,power=15,south=none,west=none] minecraft:redstone_wire[east=side,north=none,power=15,south=none,west=side]
+
+at 5 set 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=true]
+change 5 commands 1 1 0 minecraft:air minecraft:redstone_wall_torch[facing=east,lit=true]
+change 5 commands 1 1 1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 5 commands 1 1 2 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side]
+change 5 commands 0 1 2 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none]
+change 5 block_ticks 7 1 3 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+
+change 6 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false] minecraft:repeater[delay=1,facing=south,locked=false,powered=true]
+
+change 7 block_ticks 5 2 -6 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+
+change 8 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+change 8 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none]
+change 8 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side]
+change 8 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none]
+change 8 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none]
+change 8 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side]
+change 8 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none]
+change 8 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none]
+change 8 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side]
+change 8 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none]
+change 8 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none]
+change 8 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side]
+change 8 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none]
+change 8 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none]
+change 8 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side]
+change 8 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none]
+change 8 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none]
+change 8 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side]
+change 8 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none]
+change 8 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+change 8 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
+change 8 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+change 8 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+
+change 9 block_ticks 8 1 3 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+
+at 10 use 0 2 -3
+change 10 commands 0 2 -3 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=true] minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+
+change 11 block_ticks 1 1 -3 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+
+change 12 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+change 12 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 12 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side]
+change 12 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none]
+
+change 14 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false] minecraft:repeater[delay=1,facing=south,locked=false,powered=true]
+
+change 15 block_ticks 1 3 -3 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+change 15 block_ticks 2 1 -3 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+
+change 16 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+change 16 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none]
+change 16 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side]
+change 16 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none]
+change 16 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none]
+change 16 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side]
+change 16 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none]
+change 16 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none]
+change 16 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side]
+change 16 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none]
+change 16 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none]
+change 16 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side]
+change 16 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none]
+change 16 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none]
+change 16 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side]
+change 16 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none]
+change 16 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none]
+change 16 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side]
+change 16 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none]
+change 16 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+change 16 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
+change 16 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+change 16 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+
+change 18 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=true] minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+
+at 20 use 0 2 6
+change 20 commands 0 2 6 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 20 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+change 20 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 20 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side]
+change 20 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none]
+
+change 21 block_ticks 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+
+change 22 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false] minecraft:repeater[delay=1,facing=south,locked=false,powered=true]
+
+at 23 use 0 2 6
+change 23 commands 0 2 6 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+
+change 24 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+change 24 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none]
+change 24 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side]
+change 24 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none]
+change 24 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none]
+change 24 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side]
+change 24 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none]
+change 24 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none]
+change 24 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side]
+change 24 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none]
+change 24 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none]
+change 24 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side]
+change 24 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none]
+change 24 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none]
+change 24 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side]
+change 24 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none]
+change 24 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none]
+change 24 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side]
+change 24 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none]
+change 24 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+change 24 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
+change 24 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+change 24 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+change 24 block_ticks 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+
+change 26 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=true] minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+
+at 28 use 0 2 6
+change 28 commands 0 2 6 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 28 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+change 28 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 28 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side]
+change 28 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none]
+
+change 29 block_ticks 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+
+at 30 use 0 2 -3
+change 30 commands 0 2 -3 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false] minecraft:repeater[delay=1,facing=south,locked=false,powered=true]
+
+at 31 use 0 2 6
+change 31 commands 0 2 6 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 31 block_ticks 1 1 -3 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+change 31 block_ticks 1 3 -3 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+change 31 block_ticks 2 1 -3 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+
+change 32 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+change 32 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none]
+change 32 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side]
+change 32 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none]
+change 32 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none]
+change 32 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side]
+change 32 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none]
+change 32 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none]
+change 32 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side]
+change 32 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none]
+change 32 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none]
+change 32 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side]
+change 32 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none]
+change 32 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none]
+change 32 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side]
+change 32 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none]
+change 32 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none]
+change 32 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side]
+change 32 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none]
+change 32 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+change 32 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
+change 32 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+change 32 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+change 32 block_ticks 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+
+change 34 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=true] minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+
+at 36 use 0 2 6
+change 36 commands 0 2 6 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 36 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+change 36 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 36 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side]
+change 36 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none]
+
+change 37 block_ticks 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+
+change 38 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false] minecraft:repeater[delay=1,facing=south,locked=false,powered=true]
+
+at 39 use 0 2 6
+change 39 commands 0 2 6 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+
+at 40 set 0 0 -6 minecraft:air
+change 40 commands 0 0 -6 minecraft:obsidian minecraft:air
+entity-added 40 commands e1 minecraft:item 0.6154838936883285 1.2452682078357429 -5.431291287324946 0.010087401023526787 0.2 0.019509055559440353 item=minecraft:redstone_torch count=1
+change 40 commands 0 1 -6 minecraft:redstone_torch[lit=true] minecraft:air
+change 40 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+change 40 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none]
+change 40 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side]
+change 40 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none]
+change 40 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none]
+change 40 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side]
+change 40 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none]
+change 40 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none]
+change 40 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side]
+change 40 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none]
+change 40 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none]
+change 40 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side]
+change 40 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none]
+change 40 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none]
+change 40 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side]
+change 40 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none]
+change 40 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none]
+change 40 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side]
+change 40 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none]
+change 40 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+change 40 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
+change 40 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+change 40 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+change 40 block_ticks 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+draws 40 commands level 10
+entity-order 40 entities e1
+entity 40 e1 0.6255712947118552 1.4052682078357428 -5.411782231765506 0.009885653195458158 0.1568 0.01911887482035725 item=minecraft:redstone_torch count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 41 entities e1
+entity 41 e1 0.6354569479073134 1.5220682078357428 -5.392663356945149 0.009687940320102865 0.11446399999999998 0.018736497688613702 item=minecraft:redstone_torch count=1 age=2 pickup-delay=8 on-ground=false
+
+change 42 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=true] minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+entity-order 42 entities e1
+entity 42 e1 0.6451448882274163 1.5965322078357427 -5.373926859256535 0.009494181698483605 0.07297471999999998 0.01836176809221176 item=minecraft:redstone_torch count=1 age=3 pickup-delay=7 on-ground=false
+
+change 43 block_ticks 0 3 -6 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+change 43 block_ticks -1 1 -6 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+change 43 block_ticks 1 1 -6 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+entity-order 43 entities e1
+entity 43 e1 0.6546390699258999 1.6295069278357426 -5.3555650911643236 0.009304298245601078 0.032315225599999976 0.017994533080590458 item=minecraft:redstone_torch count=1 age=4 pickup-delay=6 on-ground=false
+
+at 44 use 0 2 6
+change 44 commands 0 2 6 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 44 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+change 44 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 44 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side]
+change 44 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none]
+entity-order 44 entities e1
+entity 44 e1 0.663943368171501 1.6218221534357427 -5.337570558083733 0.009118212458154463 -0.007531078912000024 0.01763464276219713 item=minecraft:redstone_torch count=1 age=5 pickup-delay=5 on-ground=false
+
+change 45 block_ticks 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+entity-order 45 entities e1
+entity 45 e1 0.6730615806296555 1.5742910745237426 -5.319935915321536 0.008935848382907475 -0.04658045733376002 0.017281950243307306 item=minecraft:redstone_torch count=1 age=6 pickup-delay=4 on-ground=false
+
+change 46 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false] minecraft:repeater[delay=1,facing=south,locked=false,powered=true]
+entity-order 46 entities e1
+entity 46 e1 0.681997429012563 1.4877106171899825 -5.302653965078228 0.008757131585687108 -0.08484884818708481 0.016936311568068203 item=minecraft:redstone_torch count=1 age=7 pickup-delay=3 on-ground=false
+
+at 47 use 0 2 6
+change 47 commands 0 2 6 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+entity-order 47 entities e1
+entity 47 e1 0.6907545605982501 1.3628617690028977 -5.28571765351016 0.008581989121002396 -0.12235187122334311 0.016597585659741346 item=minecraft:redstone_torch count=1 age=8 pickup-delay=2 on-ground=false
+
+change 48 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+change 48 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none]
+change 48 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side]
+change 48 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none]
+change 48 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none]
+change 48 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side]
+change 48 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none]
+change 48 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none]
+change 48 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side]
+change 48 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none]
+change 48 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none]
+change 48 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side]
+change 48 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none]
+change 48 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none]
+change 48 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side]
+change 48 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none]
+change 48 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none]
+change 48 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side]
+change 48 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none]
+change 48 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+change 48 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
+change 48 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+change 48 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+change 48 block_ticks 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+entity-order 48 entities e1
+entity 48 e1 0.6993365497192525 1.2005098977795545 -5.269120067850419 0.0084103495022708 -0.15910483379887624 0.016265634263120343 item=minecraft:redstone_torch count=1 age=9 pickup-delay=1 on-ground=false
+
+entity-order 49 entities e1
+entity 49 e1 0.7077468992215233 1.0014050639806782 -5.252854433587299 0.008242142672640071 -0.1951227371228987 0.015940321888100288 item=minecraft:redstone_torch count=1 age=10 pickup-delay=0 on-ground=false
+
+at 50 set 0 1 -3 minecraft:air
+change 50 commands 0 1 -3 minecraft:stone minecraft:air
+entity-added 50 commands e2 minecraft:item 1.4166091997383248 1.3175945923703591 -2.2575792299000956 0.07583650357449603 0.2 0.08824983589642288 item=minecraft:redstone_torch count=1
+change 50 commands 1 1 -3 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:air
+entity-added 50 commands e3 minecraft:item 0.3874769830177424 2.1894485754368884 -2.676699171176741 -0.09535237550322212 0.2 0.009347951439693108 item=minecraft:lever count=1
+change 50 commands 0 2 -3 minecraft:lever[face=floor,facing=north,powered=false] minecraft:air
+change 50 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=true] minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+draws 50 commands level 20
+entity-order 50 entities e1 e2 e3
+entity 50 e1 0.7159890418941635 0.7662823268577794 -5.236914111699198 0.008077299976393665 -0.23042028238044074 0.015621515754375793 item=minecraft:redstone_torch count=1 age=11 pickup-delay=0 on-ground=false
+entity 50 e2 1.492445703312821 1.477594592370359 -2.1693293940036726 0.07431977494947263 0.1568 0.08648484086172646 item=minecraft:redstone_torch count=1 age=1 pickup-delay=9 on-ground=false
+entity 50 e3 0.2921246075145203 2.3494485754368886 -2.6673512197370477 -0.0934453298118599 0.1568 0.00916099258919727 item=minecraft:lever count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 51 entities e1 e2 e3
+entity 51 e1 0.7240663418705571 0.49586204447733867 -5.221292595944822 0.007915754130928062 -0.26501187673283194 0.015309085737245045 item=minecraft:redstone_torch count=1 age=12 pickup-delay=0 on-ground=false
+entity 51 e2 1.5667654782622935 1.594394592370359 -2.082844553141946 0.0728333808680204 0.11446399999999998 0.08475514569405936 item=minecraft:redstone_torch count=1 age=2 pickup-delay=8 on-ground=false
+entity 51 e3 0.1986792777026604 2.4662485754368886 -2.6581902271478506 -0.09157642499795093 0.11446399999999998 0.008977772912145392 item=minecraft:lever count=1 age=2 pickup-delay=8 on-ground=false
+
+at 52 use 0 2 6
+change 52 commands 0 2 6 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 52 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+change 52 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 52 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side]
+change 52 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none]
+entity-order 52 entities e1 e2 e3
+entity 52 e1 0.7319820960014851 0.19085016774450675 -5.205983510207577 0.007757439199290529 -0.29891163919817526 0.015002904314497781 item=minecraft:redstone_torch count=1 age=13 pickup-delay=0 on-ground=false
+entity 52 e2 1.639598859130314 1.6688585923703592 -1.9980894074478868 0.07137671463984648 0.07297471999999998 0.08306004439675428 item=minecraft:redstone_torch count=1 age=3 pickup-delay=7 on-ground=false
+entity 52 e3 0.10710285270470946 2.5407125754368884 -2.6492124542357054 -0.0897448982446736 0.07297471999999998 0.008798217625139913 item=minecraft:lever count=1 age=3 pickup-delay=7 on-ground=false
+
+change 53 block_ticks 1 3 -3 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+change 53 block_ticks 2 1 -3 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+change 53 block_ticks 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+entity-order 53 entities e1 e2 e3
+entity 53 e1 0.7397395352007756 -0.1480614714536685 -5.190980605893079 0.007602290563266129 -0.33213340641421174 0.014702846514365516 item=minecraft:redstone_torch count=1 age=14 pickup-delay=0 on-ground=false
+entity 53 e2 1.7109755737701604 1.701833312370359 -1.9150293630511326 0.06994918170845234 0.032315225599999976 0.08139884509306382 item=minecraft:redstone_torch count=1 age=4 pickup-delay=6 on-ground=false
+entity 53 e3 0.01735795446003585 2.5736872954368883 -2.6404142366105656 -0.08795000199152822 0.032315225599999976 0.008622253440449798 item=minecraft:lever count=1 age=4 pickup-delay=6 on-ground=false
+
+change 54 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false] minecraft:repeater[delay=1,facing=south,locked=false,powered=true]
+entity-order 54 entities e1 e2 e3
+entity 54 e1 0.7473418257640417 -0.5201948778678802 -5.1762777593787135 0.007450244897002992 -0.36469073828592746 0.014408789864512748 item=minecraft:redstone_torch count=1 age=15 pickup-delay=0 on-ground=false
+entity 54 e2 1.7809247554786127 1.6941485379703591 -1.8336305179580688 0.06855019940845805 -0.007531078912000024 0.0797708697437623 item=minecraft:redstone_torch count=1 age=5 pickup-delay=5 on-ground=false
+entity 54 e3 -0.07059204753149237 2.5660025210368884 -2.6317919831701158 -0.08619100362921081 -0.007531078912000024 0.008449808536097236 item=minecraft:lever count=1 age=5 pickup-delay=5 on-ground=false
+
+at 55 use 0 2 6
+change 55 commands 0 2 6 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+entity-order 55 entities e1 e2 e3
+entity 55 e1 0.7547920706610447 -0.9248856161538077 -5.161868969514201 0.007301240141165076 -0.39659692352020887 0.01412061434204835 item=minecraft:redstone_torch count=1 age=16 pickup-delay=0 on-ground=false
+entity 55 e2 1.8494749548870708 1.646617459058359 -1.7538596482143065 0.06717919672778018 -0.04658045733376002 0.07817545387039565 item=minecraft:redstone_torch count=1 age=6 pickup-delay=4 on-ground=false
+entity 55 e3 -0.15678305116070318 2.5184714421248886 -2.6233421746340184 -0.08446718520058952 -0.04658045733376002 0.008280812526542598 item=minecraft:lever count=1 age=6 pickup-delay=4 on-ground=false
+
+change 56 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+change 56 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none]
+change 56 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side]
+change 56 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none]
+change 56 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none]
+change 56 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side]
+change 56 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none]
+change 56 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none]
+change 56 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side]
+change 56 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none]
+change 56 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none]
+change 56 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side]
+change 56 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none]
+change 56 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none]
+change 56 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side]
+change 56 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none]
+change 56 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none]
+change 56 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side]
+change 56 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none]
+change 56 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+change 56 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
+change 56 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+change 56 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+change 56 block_ticks 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+entity-order 56 entities e1 e2 e3
+entity 56 e1 0.7620933108022098 -1.3614825396740167 -5.147748355172152 0.0071552154776018785 -0.42786498504980464 0.013838202324536728 item=minecraft:redstone_torch count=1 age=17 pickup-delay=0 on-ground=false
+entity 56 e2 1.916654151614851 1.560037001724599 -1.675684194343911 0.06583561407456606 -0.08484884818708481 0.07661194628406619 item=minecraft:redstone_torch count=1 age=7 pickup-delay=3 on-ground=false
+entity 56 e3 -0.2412502363612927 2.4318909847911288 -2.615061362107476 -0.08277784310766143 -0.08484884818708481 0.00811519643395571 item=minecraft:lever count=1 age=7 pickup-delay=3 on-ground=false
+
+entity-order 57 entities e1 e2 e3
+entity 57 e1 0.7692485262798117 -1.8293475247238213 -5.133910152847616 0.007012111304524745 -0.45850768534880854 0.013561438541988756 item=minecraft:redstone_torch count=1 age=18 pickup-delay=0 on-ground=false
+entity 57 e2 1.982489765689417 1.4351881535375142 -1.5990722480598447 0.06451890304878942 -0.12235187122334311 0.07507970881964178 item=minecraft:redstone_torch count=1 age=8 pickup-delay=2 on-ground=false
+entity 57 e3 -0.3240280794689541 2.307042136604044 -2.60694616567352 -0.08112228782437025 -0.12235187122334311 0.007952892660061684 item=minecraft:lever count=1 age=8 pickup-delay=2 on-ground=false
+
+change 58 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=true] minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+entity-order 58 entities e1 e2 e3
+entity 58 e1 0.7762606375843364 -2.32785521007263 -5.120348714305627 0.006871869212179659 -0.48853753164183233 0.013290210029812894 item=minecraft:redstone_torch count=1 age=19 pickup-delay=0 on-ground=false
+entity 58 e2 2.0470086687382065 1.272836282314171 -1.523992539240203 0.06322852621841404 -0.15910483379887624 0.07357811607528074 item=minecraft:redstone_torch count=1 age=9 pickup-delay=1 on-ground=false
+entity 58 e3 -0.4051503672933244 2.144690265380701 -2.598993273013458 -0.0794998436151677 -0.15910483379887624 0.00779383495854984 item=minecraft:lever count=1 age=9 pickup-delay=1 on-ground=false
+
+entity-order 59 entities e1 e2 e3
+entity 59 e1 0.783132506796516 -2.8563927417144623 -5.107058504275814 0.006734431959006569 -0.5179667810089957 0.013024406082707276 item=minecraft:redstone_torch count=1 age=20 pickup-delay=0 on-ground=false
+entity 59 e2 2.1102371949566208 1.0737314485152947 -1.4504144231649223 0.061963956900034194 -0.1951227371228987 0.07210655515716631 item=minecraft:redstone_torch count=1 age=10 pickup-delay=0 on-ground=false
+entity 59 e3 -0.4846502109084921 1.9455854315818248 -2.5911994380549084 -0.07790984825920352 -0.1951227371228987 0.007637958408034448 item=minecraft:lever count=1 age=10 pickup-delay=0 on-ground=false
+
+at 60 use 0 2 6
+change 60 commands 0 2 6 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 60 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+change 60 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 60 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side]
+change 60 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none]
+entity-order 60 entities e1 e2 e3
+entity 60 e1 0.7898669387555226 -3.414359522723458 -5.094034098193107 0.006599743448275534 -0.5468074453888159 0.012763918209473962 item=minecraft:redstone_torch count=1 age=21 pickup-delay=0 on-ground=false
+entity 60 e2 2.172201151856655 1.0 -1.378307868007756 0.03643481032101303 0 0.04239865869591631 item=minecraft:redstone_torch count=1 age=11 pickup-delay=0 on-ground=true
+entity 60 e3 -0.5625600591676956 1.710462694458926 -2.5835614796468738 -0.07635165278003188 -0.23042028238044074 0.007485199385556254 item=minecraft:lever count=1 age=11 pickup-delay=0 on-ground=false
+
+change 61 block_ticks 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+entity-order 61 entities e1 e2 e3
+entity 61 e1 0.7964666822037981 -4.001166968112274 -5.081270179983632 0.0064677487051901395 -0.5750712964810396 0.012508640088736901 item=minecraft:redstone_torch count=1 age=22 pickup-delay=0 on-ground=false
+entity 61 e2 2.208635962177668 1.0 -1.3359092093118397 0.021423670623066115 0 0.024930413820138525 item=minecraft:redstone_torch count=1 age=12 pickup-delay=0 on-ground=true
+entity 61 e3 -0.6389117119477274 1.4400424120784854 -2.5760762802613173 -0.07482462118072344 -0.26501187673283194 0.007335495540613977 item=minecraft:lever count=1 age=12 pickup-delay=0 on-ground=false
+
+change 62 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false] minecraft:repeater[delay=1,facing=south,locked=false,powered=true]
+entity-order 62 entities e1 e2 e3
+entity 62 e1 0.8029344309089883 -4.6162382645933135 -5.068761539894895 0.006338393854448853 -0.6027698705514188 0.01225846752554554 item=minecraft:redstone_torch count=1 age=23 pickup-delay=0 on-ground=false
+entity 62 e2 2.230059632800734 1.0 -1.3109787954917012 0.01259711959309755 0 0.014659084800322165 item=minecraft:redstone_torch count=1 age=13 pickup-delay=0 on-ground=true
+entity 62 e3 -0.7137363331284509 1.1350305353456536 -2.568740784720703 -0.07332813018427536 -0.29891163919817526 0.007188785769715171 item=minecraft:lever count=1 age=13 pickup-delay=0 on-ground=false
+
+at 63 use 0 2 6
+change 63 commands 0 2 6 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+entity-order 63 entities e1 e2 e3
+entity 63 e1 0.8092728247634372 -5.259008135144732 -5.05650307236935 0.006211626098255145 -0.6299144731403905 0.01201329840884634 item=minecraft:redstone_torch count=1 age=24 pickup-delay=0 on-ground=false
+entity 63 e2 2.2426567523938314 1.0 -1.296319710691379 0.0074071070655814236 0 0.00861954272934898 item=minecraft:redstone_torch count=1 age=14 pickup-delay=0 on-ground=true
+entity 63 e3 -0.7870644633127262 1.0 -2.561551998950988 -0.04311694488408549 0 0.004227006457649663 item=minecraft:lever count=1 age=14 pickup-delay=0 on-ground=true
+
+change 64 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+change 64 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none]
+change 64 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side]
+change 64 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none]
+change 64 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none]
+change 64 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side]
+change 64 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none]
+change 64 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none]
+change 64 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side]
+change 64 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none]
+change 64 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none]
+change 64 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side]
+change 64 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none]
+change 64 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none]
+change 64 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side]
+change 64 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none]
+change 64 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none]
+change 64 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side]
+change 64 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none]
+change 64 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+change 64 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
+change 64 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+change 64 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+change 64 block_ticks 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+entity-order 64 entities e1 e2 e3
+entity 64 e1 0.8154844508616923 -5.928922608285123 -5.044489773960503 0.006087393694767408 -0.6565161836775827 0.011773032669804897 item=minecraft:redstone_torch count=1 age=25 pickup-delay=0 on-ground=false
+entity 64 e2 2.250063859459413 1.0 -1.2877001679620301 0.004355379392527879 0 0.005068291634511864 item=minecraft:redstone_torch count=1 age=15 pickup-delay=0 on-ground=true
+entity 64 e3 -0.8301814081968116 1.0 -2.557324992493338 -0.02535276614125269 0 0.0024854800470316264 item=minecraft:lever count=1 age=15 pickup-delay=0 on-ground=true
+
+entity-order 65 entities e1 e2 e3
+entity 65 e1 0.8215718445564597 -6.625438791962705 -5.032716741290698 0.00596564593697988 -0.6825858600040311 0.011537572240961576 item=minecraft:redstone_torch count=1 age=26 pickup-delay=0 on-ground=false
+entity 65 e2 2.254419238851941 1.0 -1.2826318763275182 0.0025609633403304273 0 0.0029801557807699487 item=minecraft:redstone_torch count=1 age=16 pickup-delay=0 on-ground=true
+entity 65 e3 -0.8555341743380643 1.0 -2.5548395124463066 -0.01490742799011006 0 0.0014614624146155823 item=minecraft:lever count=1 age=16 pickup-delay=0 on-ground=true
+
+change 66 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=true] minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+entity-order 66 entities e1 e2 e3
+entity 66 e1 0.8275374904934396 -7.348024651966736 -5.021179169049736 0.005846333132025949 -0.7081341428039505 0.011306821016204071 item=minecraft:redstone_torch count=1 age=27 pickup-delay=0 on-ground=false
+entity 66 e2 2.2569802021922714 1.0 -1.2796517205467481 0.001505846595538439 0 0.0017523317753028074 item=minecraft:redstone_torch count=1 age=17 pickup-delay=0 on-ground=true
+entity 66 e3 -0.8704416023281744 1.0 -2.553378050031691 -0.00876556853962825 0 8.593399862070308E-4 item=minecraft:lever count=1 age=17 pickup-delay=0 on-ground=true
+
+entity-order 67 entities e1 e2 e3
+entity 67 e1 0.8333838236254656 -8.096158794770687 -5.009872348033532 0.005729406580895385 -0.7331714599478715 0.011080684811540486 item=minecraft:redstone_torch count=1 age=28 pickup-delay=0 on-ground=false
+entity 67 e2 2.25848604878781 1.0 -1.2778993887714454 8.854378872140099E-4 0 0.0010303711874895868 item=minecraft:redstone_torch count=1 age=18 pickup-delay=0 on-ground=true
+entity 67 e3 -0.8792071708678026 1.0 -2.5525187100454843 -0.005154154819590261 0 5.052919627006235E-4 item=minecraft:lever count=1 age=18 pickup-delay=0 on-ground=true
+
+at 68 use 0 2 6
+change 68 commands 0 2 6 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+entity-order 68 entities e1 e2 e3
+entity 68 e1 0.839113230206361 -8.869330254718559 -4.998791663221992 0.005614818558557236 -0.757708030748914 0.010859071326656967 item=minecraft:redstone_torch count=1 age=29 pickup-delay=0 on-ground=false
+entity 68 e2 2.25848604878781 1.0 -1.2778993887714454 8.854378872140099E-4 -0.04 0.0010303711874895868 item=minecraft:redstone_torch count=1 age=19 pickup-delay=0 on-ground=true
+entity 68 e3 -0.8843613256873929 1.0 -2.5520134180827836 -0.003030643338672948 0 2.9711170394477256E-4 item=minecraft:lever count=1 age=19 pickup-delay=0 on-ground=true
+
+change 69 block_ticks 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+entity-order 69 entities e1 e2 e3
+entity 69 e1 0.8447280487649182 -9.667038285467473 -4.987932591895335 0.005502522294480256 -0.7817538701339357 0.010641890107244176 item=minecraft:redstone_torch count=1 age=30 pickup-delay=0 on-ground=false
+entity 69 e2 2.25848604878781 1.0 -1.2778993887714454 8.854378872140099E-4 -0.08 0.0010303711874895868 item=minecraft:redstone_torch count=1 age=20 pickup-delay=0 on-ground=true
+entity 69 e3 -0.8843613256873929 1.0 -2.5520134180827836 -0.003030643338672948 -0.04 2.9711170394477256E-4 item=minecraft:lever count=1 age=20 pickup-delay=0 on-ground=true
+
+entity-order 70 entities e1 e2 e3
+entity 70 e1 0.8502305710593985 -10.48879215560141 -4.977290701788091 0.005392471953542935 -0.8053187927312571 0.010429052508077238 item=minecraft:redstone_torch count=1 age=31 pickup-delay=0 on-ground=false
+entity 70 e2 2.25848604878781 1.0 -1.2778993887714454 8.854378872140099E-4 -0.12 0.0010303711874895868 item=minecraft:redstone_torch count=1 age=21 pickup-delay=0 on-ground=true
+entity 70 e3 -0.8873919690260659 1.0 -2.5517163063788386 -0.0017820184623349898 0 1.7470169948708995E-4 item=minecraft:lever count=1 age=21 pickup-delay=0 on-ground=true
+
+at 71 use 0 2 6
+change 71 commands 0 2 6 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+entity-order 71 entities e1 e2 e3
+entity 71 e1 0.8556230430129415 -11.334110948332667 -4.9668616492800135 0.005284622617325316 -0.8284124168766319 0.010220471656834084 item=minecraft:redstone_torch count=1 age=32 pickup-delay=0 on-ground=false
+entity 71 e2 2.2593714866750236 1.0 -1.2768690175839559 5.206375300358389E-4 0 6.058583191674664E-4 item=minecraft:redstone_torch count=1 age=22 pickup-delay=0 on-ground=true
+entity 71 e3 -0.8873919690260659 1.0 -2.5517163063788386 -0.0017820184623349898 -0.04 1.7470169948708995E-4 item=minecraft:lever count=1 age=22 pickup-delay=0 on-ground=true
+
+change 72 block_ticks 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+entity-order 72 entities e1 e2 e3
+entity 72 e1 0.8609076656302668 -12.202523365209299 -4.95664117762318 0.005178930265774987 -0.8510441685390993 0.010016062418637428 item=minecraft:redstone_torch count=1 age=33 pickup-delay=0 on-ground=false
+entity 72 e2 2.2593714866750236 1.0 -1.2768690175839559 5.206375300358389E-4 -0.04 6.058583191674664E-4 item=minecraft:redstone_torch count=1 age=23 pickup-delay=0 on-ground=true
+entity 72 e3 -0.8873919690260659 1.0 -2.5517163063788386 -0.0017820184623349898 -0.08 1.7470169948708995E-4 item=minecraft:lever count=1 age=23 pickup-delay=0 on-ground=true
+
+entity-order 73 entities e1 e2 e3
+entity 73 e1 0.8660865958960418 -13.093567533748399 -4.946625115204542 0.005075351759239743 -0.8732232851683173 0.009815741361305908 item=minecraft:redstone_torch count=1 age=34 pickup-delay=0 on-ground=false
+entity 73 e2 2.2593714866750236 1.0 -1.2768690175839559 5.206375300358389E-4 -0.08 6.058583191674664E-4 item=minecraft:redstone_torch count=1 age=24 pickup-delay=0 on-ground=true
+entity 73 e3 -0.8873919690260659 1.0 -2.5517163063788386 -0.0017820184623349898 -0.12 1.7470169948708995E-4 item=minecraft:lever count=1 age=24 pickup-delay=0 on-ground=true
+
+entity-order 74 entities e1 e2 e3
+entity 74 e1 0.8711619476552815 -14.006790818916716 -4.936809373843236 0.004973844820859601 -0.8949588194649509 0.009619426721300199 item=minecraft:redstone_torch count=1 age=35 pickup-delay=0 on-ground=false
+entity 74 e2 2.2593714866750236 1.0 -1.2768690175839559 5.206375300358389E-4 -0.12 6.058583191674664E-4 item=minecraft:redstone_torch count=1 age=25 pickup-delay=0 on-ground=true
+entity 74 e3 -0.8891739874884008 1.0 -2.5515416046793513 -0.0010478269612198188 0 1.0272460962813736E-4 item=minecraft:lever count=1 age=25 pickup-delay=0 on-ground=true
+
+entity-order 75 entities e1 e2 e3
+entity 75 e1 0.8761357924761412 -14.941749638381667 -4.927189947121936 0.00487436801931097 -0.9162596430756519 0.009427038370350199 item=minecraft:redstone_torch count=1 age=36 pickup-delay=0 on-ground=false
+entity 75 e2 2.2598921242050594 1.0 -1.2762631592647884 3.06134898445229E-4 0 3.5624472749354433E-4 item=minecraft:redstone_torch count=1 age=26 pickup-delay=0 on-ground=true
+entity 75 e3 -0.8891739874884008 1.0 -2.5515416046793513 -0.0010478269612198188 -0.04 1.0272460962813736E-4 item=minecraft:lever count=1 age=26 pickup-delay=0 on-ground=true
+
+entity-order 76 entities e1 e2 e3
+entity 76 e1 0.8810101604954521 -15.89800928145732 -4.917762908751586 0.004776880751895942 -0.9371344502141389 0.009238497782749683 item=minecraft:redstone_torch count=1 age=37 pickup-delay=0 on-ground=false
+entity 76 e2 2.2598921242050594 1.0 -1.2762631592647884 3.06134898445229E-4 -0.04 3.5624472749354433E-4 item=minecraft:redstone_torch count=1 age=27 pickup-delay=0 on-ground=true
+entity 76 e3 -0.8891739874884008 1.0 -2.5515416046793513 -0.0010478269612198188 -0.08 1.0272460962813736E-4 item=minecraft:lever count=1 age=27 pickup-delay=0 on-ground=true
+
+entity-order 77 entities e1 e2 e3
+entity 77 e1 0.8857870412473481 -16.875143731671457 -4.908524410968836 0.004681343227969793 -0.9575917612098561 0.009053728003305051 item=minecraft:redstone_torch count=1 age=38 pickup-delay=0 on-ground=false
+entity 77 e2 2.2598921242050594 1.0 -1.2762631592647884 3.06134898445229E-4 -0.08 3.5624472749354433E-4 item=minecraft:redstone_torch count=1 age=28 pickup-delay=0 on-ground=true
+entity 77 e3 -0.8891739874884008 1.0 -2.5515416046793513 -0.0010478269612198188 -0.12 1.0272460962813736E-4 item=minecraft:lever count=1 age=28 pickup-delay=0 on-ground=true
+
+entity-order 78 entities e1 e2 e3
+entity 78 e1 0.8904683844753178 -17.872735492881315 -4.89947068296553 0.0045877164526999335 -0.977639925985659 0.008872653615925107 item=minecraft:redstone_torch count=1 age=39 pickup-delay=0 on-ground=false
+entity 78 e2 2.2598921242050594 1.0 -1.2762631592647884 3.06134898445229E-4 -0.12 3.5624472749354433E-4 item=minecraft:redstone_torch count=1 age=29 pickup-delay=0 on-ground=true
+entity 78 e3 -0.8902218144496207 1.0 -2.551438880069723 -6.161223151529644E-4 0 6.040207653522572E-5 item=minecraft:lever count=1 age=29 pickup-delay=0 on-ground=true
+
+entity-order 79 entities e1 e2 e3
+entity 79 e1 0.8950561009280178 -18.890375418866974 -4.890598029349605 0.004495962211149682 -0.9972871274659458 0.008695200712839043 item=minecraft:redstone_torch count=1 age=40 pickup-delay=0 on-ground=false
+entity 79 e2 2.260198259103505 1.0 -1.2759069145372948 1.8000733838688003E-4 0 2.0947192083017378E-4 item=minecraft:redstone_torch count=1 age=30 pickup-delay=0 on-ground=true
+entity 79 e3 -0.8902218144496207 1.0 -2.551438880069723 -6.161223151529644E-4 -0.04 6.040207653522572E-5 item=minecraft:lever count=1 age=30 pickup-delay=0 on-ground=true
+
+at 80 use 0 2 6
+change 80 commands 0 2 6 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+entity-order 80 entities e1 e2 e3
+entity 80 e1 0.8995520631391675 -19.92766254633292 -4.8819028286367665 0.004406043052680362 -1.016541384916627 0.008521296864430055 item=minecraft:redstone_torch count=1 age=41 pickup-delay=0 on-ground=false
+entity 80 e2 2.260198259103505 1.0 -1.2759069145372948 1.8000733838688003E-4 -0.04 2.0947192083017378E-4 item=minecraft:redstone_torch count=1 age=31 pickup-delay=0 on-ground=true
+entity 80 e3 -0.8902218144496207 1.0 -2.551438880069723 -6.161223151529644E-4 -0.08 6.040207653522572E-5 item=minecraft:lever count=1 age=31 pickup-delay=0 on-ground=true
+
+change 81 block_ticks 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+entity-order 81 entities e1 e2 e3
+entity 81 e1 0.9039581061918478 -20.984203931249546 -4.873381531772337 0.004317922275665357 -1.0354105572182943 0.008350871089672293 item=minecraft:redstone_torch count=1 age=42 pickup-delay=0 on-ground=false
+entity 81 e2 2.260198259103505 1.0 -1.2759069145372948 1.8000733838688003E-4 -0.08 2.0947192083017378E-4 item=minecraft:redstone_torch count=1 age=32 pickup-delay=0 on-ground=true
+entity 81 e3 -0.8902218144496207 1.0 -2.551438880069723 -6.161223151529644E-4 -0.12 6.040207653522572E-5 item=minecraft:lever count=1 age=32 pickup-delay=0 on-ground=true
+
+entity-order 82 entities e1 e2 e3
+entity 82 e1 0.9082760284675132 -22.05961448846784 -4.865030660682664 0.004231563912509882 -1.0539023460739285 0.008183853827159073 item=minecraft:redstone_torch count=1 age=43 pickup-delay=0 on-ground=false
+entity 82 e2 2.260198259103505 1.0 -1.2759069145372948 1.8000733838688003E-4 -0.12 2.0947192083017378E-4 item=minecraft:redstone_torch count=1 age=33 pickup-delay=0 on-ground=true
+entity 82 e3 -0.8908379367647736 1.0 -2.551378477993188 -3.6227995773990476E-4 0 3.5516424574155086E-5 item=minecraft:lever count=1 age=33 pickup-delay=0 on-ground=true
+
+at 83 use 0 2 6
+change 83 commands 0 2 6 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+entity-order 83 entities e1 e2 e3
+entity 83 e1 0.9125075923800231 -23.15351683454177 -4.856846806855505 0.004146932714970361 -1.07202429915245 0.008020176906710516 item=minecraft:redstone_torch count=1 age=44 pickup-delay=0 on-ground=false
+entity 83 e2 2.260198259103505 1.0 -1.2759069145372948 1.0584432561492472E-4 0 1.231695018337576E-4 item=minecraft:redstone_torch count=1 age=34 pickup-delay=0 on-ground=true
+entity 83 e3 -0.8908379367647736 1.0 -2.551378477993188 -3.6227995773990476E-4 -0.04 3.5516424574155086E-5 item=minecraft:lever count=1 age=34 pickup-delay=0 on-ground=true
+
+entity-order 84 entities e1 e2 e3
+entity 84 e1 0.9166545250949935 -24.265541133694217 -4.848826629948794 0.004063994139767418 -1.089783813169401 0.00785977352154904 item=minecraft:redstone_torch count=1 age=45 pickup-delay=0 on-ground=false
+entity 84 e2 2.260198259103505 1.0 -1.2759069145372948 1.0584432561492472E-4 -0.04 1.231695018337576E-4 item=minecraft:redstone_torch count=1 age=35 pickup-delay=0 on-ground=true
+entity 84 e3 -0.8908379367647736 1.0 -2.551378477993188 -3.6227995773990476E-4 -0.08 3.5516424574155086E-5 item=minecraft:lever count=1 age=35 pickup-delay=0 on-ground=true
+
+change 85 block_ticks 2 1 6 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+entity-order 85 entities e1 e2 e3
+entity 85 e1 0.9207185192347609 -25.395324946863617 -4.8409668564272454 0.003982714334486606 -1.107188136906013 0.0077025782010313425 item=minecraft:redstone_torch count=1 age=46 pickup-delay=0 on-ground=false
+entity 85 e2 2.260198259103505 1.0 -1.2759069145372948 1.0584432561492472E-4 -0.08 1.231695018337576E-4 item=minecraft:redstone_torch count=1 age=36 pickup-delay=0 on-ground=true
+entity 85 e3 -0.8908379367647736 1.0 -2.551378477993188 -3.6227995773990476E-4 -0.12 3.5516424574155086E-5 item=minecraft:lever count=1 age=36 pickup-delay=0 on-ground=true
+
+entity-order 86 entities e1 e2 e3
+entity 86 e1 0.9247012335692475 -26.54251308376963 -4.833264278226214 0.0039030601237611214 -1.1242443741678927 0.007548526783925736 item=minecraft:redstone_torch count=1 age=47 pickup-delay=0 on-ground=false
+entity 86 e2 2.260198259103505 1.0 -1.2759069145372948 1.0584432561492472E-4 -0.12 1.231695018337576E-4 item=minecraft:redstone_torch count=1 age=37 pickup-delay=0 on-ground=true
+entity 86 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.1302063657188366E-4 0 2.088365974961151E-5 item=minecraft:lever count=1 age=37 pickup-delay=0 on-ground=true
+
+entity-order 87 entities e1 e2 e3
+entity 87 e1 0.9286042936930086 -27.706757457937524 -4.825715751442289 0.003824998995730863 -1.140959486684535 0.007397556392223944 item=minecraft:redstone_torch count=1 age=48 pickup-delay=0 on-ground=false
+entity 87 e2 2.260198259103505 1.0 -1.2759069145372948 6.223646971991866E-5 0 7.242367436099209E-5 item=minecraft:redstone_torch count=1 age=38 pickup-delay=0 on-ground=true
+entity 87 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.1302063657188366E-4 -0.04 2.088365974961151E-5 item=minecraft:lever count=1 age=38 pickup-delay=0 on-ground=true
+
+entity-order 88 entities e1 e2 e3
+entity 88 e1 0.9324292926887394 -28.88771694462206 -4.818318195050065 0.0037484990887723117 -1.1573402969508442 0.007249605405476656 item=minecraft:redstone_torch count=1 age=49 pickup-delay=0 on-ground=false
+entity 88 e2 2.260198259103505 1.0 -1.2759069145372948 6.223646971991866E-5 -0.04 7.242367436099209E-5 item=minecraft:redstone_torch count=1 age=39 pickup-delay=0 on-ground=true
+entity 88 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.1302063657188366E-4 -0.08 2.088365974961151E-5 item=minecraft:lever count=1 age=39 pickup-delay=0 on-ground=true
+
+entity-order 89 entities e1 e2 e3
+entity 89 e1 0.9361777917775117 -30.085057241572905 -4.811068589644588 0.0036735291784938118 -1.1733934910118273 0.007104613435642372 item=minecraft:redstone_torch count=1 age=50 pickup-delay=0 on-ground=false
+entity 89 e2 2.260198259103505 1.0 -1.2759069145372948 6.223646971991866E-5 -0.08 7.242367436099209E-5 item=minecraft:redstone_torch count=1 age=40 pickup-delay=0 on-ground=true
+entity 89 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.1302063657188366E-4 -0.12 2.088365974961151E-5 item=minecraft:lever count=1 age=40 pickup-delay=0 on-ground=true
+
+entity-order 90 entities e1 e2 e3
+entity 90 e1 0.9398513209560055 -31.298450732584733 -4.803963976208945 0.003600058664990944 -1.1891256211915908 0.006962521302439272 item=minecraft:redstone_torch count=1 age=51 pickup-delay=0 on-ground=false
+entity 90 e2 2.260198259103505 1.0 -1.2759069145372948 6.223646971991866E-5 -0.12 7.242367436099209E-5 item=minecraft:redstone_torch count=1 age=41 pickup-delay=0 on-ground=true
+entity 90 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.2525614689971081E-4 0 1.2279593167576584E-5 item=minecraft:lever count=1 age=41 pickup-delay=0 on-ground=true
+
+entity-order 91 entities e1 e2 e3
+entity 91 e1 0.9434513796209965 -32.527576353776325 -4.797001454906506 0.0035280575603567946 -1.204543108767759 0.006823271009190041 item=minecraft:redstone_torch count=1 age=52 pickup-delay=0 on-ground=false
+entity 91 e2 2.260198259103505 1.0 -1.2759069145372948 3.659504787521818E-5 0 4.258512480651643E-5 item=minecraft:redstone_torch count=1 age=42 pickup-delay=0 on-ground=true
+entity 91 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.2525614689971081E-4 -0.04 1.2279593167576584E-5 item=minecraft:lever count=1 age=42 pickup-delay=0 on-ground=true
+
+entity-order 92 entities e1 e2 e3
+entity 92 e1 0.9469794371813532 -33.77211946254408 -4.790178183897316 0.0034574964764420165 -1.2196522465924038 0.006686805719149806 item=minecraft:redstone_torch count=1 age=53 pickup-delay=0 on-ground=false
+entity 92 e2 2.260198259103505 1.0 -1.2759069145372948 3.659504787521818E-5 -0.04 4.258512480651643E-5 item=minecraft:redstone_torch count=1 age=43 pickup-delay=0 on-ground=true
+entity 92 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.2525614689971081E-4 -0.08 1.2279593167576584E-5 item=minecraft:lever count=1 age=43 pickup-delay=0 on-ground=true
+
+entity-order 93 entities e1 e2 e3
+entity 93 e1 0.9504369336577952 -35.031771709136486 -4.783491378178167 0.003388346612859688 -1.2344592016605558 0.006553069732307508 item=minecraft:redstone_torch count=1 age=54 pickup-delay=0 on-ground=false
+entity 93 e2 2.260198259103505 1.0 -1.2759069145372948 3.659504787521818E-5 -0.08 4.258512480651643E-5 item=minecraft:redstone_torch count=1 age=44 pickup-delay=0 on-ground=true
+entity 93 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.2525614689971081E-4 -0.12 1.2279593167576584E-5 item=minecraft:lever count=1 age=44 pickup-delay=0 on-ground=true
+
+entity-order 94 entities e1 e2 e3
+entity 94 e1 0.9538252802706549 -36.30623091079704 -4.776938308445859 0.003320579745230077 -1.2489700176273446 0.006422008462651244 item=minecraft:redstone_torch count=1 age=55 pickup-delay=0 on-ground=false
+entity 94 e2 2.260198259103505 1.0 -1.2759069145372948 3.659504787521818E-5 -0.12 4.258512480651643E-5 item=minecraft:redstone_torch count=1 age=45 pickup-delay=0 on-ground=true
+entity 94 e3 -0.8912002167225135 1.0 -2.5513429615686136 -7.365062178315132E-5 0 7.220401508600454E-6 item=minecraft:lever count=1 age=45 pickup-delay=0 on-ground=true
+
+entity-order 95 entities e1 e2 e3
+entity 95 e1 0.957145860015885 -37.59520092842438 -4.770516299983208 0.0032541682136605077 -1.2631906172747978 0.006293568415888309 item=minecraft:redstone_torch count=1 age=56 pickup-delay=0 on-ground=false
+entity 95 e2 2.260198259103505 1.0 -1.2759069145372948 2.1517890314413238E-5 0 2.504005590419673E-5 item=minecraft:redstone_torch count=1 age=46 pickup-delay=0 on-ground=true
+entity 95 e3 -0.8912002167225135 1.0 -2.5513429615686136 -7.365062178315132E-5 -0.04 7.220401508600454E-6 item=minecraft:lever count=1 age=46 pickup-delay=0 on-ground=true
+
+entity-order 96 entities e1 e2 e3
+entity 96 e1 0.9604000282295455 -38.898391545699184 -4.76422273156732 0.0031890849114556306 -1.2771268049293019 0.006167697167610834 item=minecraft:redstone_torch count=1 age=57 pickup-delay=0 on-ground=false
+entity 96 e2 2.260198259103505 1.0 -1.2759069145372948 2.1517890314413238E-5 -0.04 2.504005590419673E-5 item=minecraft:redstone_torch count=1 age=47 pickup-delay=0 on-ground=true
+entity 96 e3 -0.8912002167225135 1.0 -2.5513429615686136 -7.365062178315132E-5 -0.08 7.220401508600454E-6 item=minecraft:lever count=1 age=47 pickup-delay=0 on-ground=true
+
+entity-order 97 entities e1 e2 e3
+entity 97 e1 0.9635891131410012 -40.215518350628486 -4.758055034399709 0.0031253032740534855 -1.2907842688307158 0.006044343341898105 item=minecraft:redstone_torch count=1 age=58 pickup-delay=0 on-ground=false
+entity 97 e2 2.260198259103505 1.0 -1.2759069145372948 2.1517890314413238E-5 -0.08 2.504005590419673E-5 item=minecraft:redstone_torch count=1 age=48 pickup-delay=0 on-ground=true
+entity 97 e3 -0.8912002167225135 1.0 -2.5513429615686136 -7.365062178315132E-5 -0.12 7.220401508600454E-6 item=minecraft:lever count=1 age=48 pickup-delay=0 on-ground=true
+
+entity-order 98 entities e1 e2 e3
+entity 98 e1 0.9667144164150546 -41.546302619459205 -4.75201069105781 0.003062797268182845 -1.3041685834541015 0.005923456590346843 item=minecraft:redstone_torch count=1 age=59 pickup-delay=0 on-ground=false
+entity 98 e2 2.260198259103505 1.0 -1.2759069145372948 2.1517890314413238E-5 -0.12 2.504005590419673E-5 item=minecraft:redstone_torch count=1 age=49 pickup-delay=0 on-ground=true
+entity 98 e3 -0.8912002167225135 1.0 -2.5513429615686136 -4.330656996329277E-5 0 4.245596513983579E-6 item=minecraft:lever count=1 age=49 pickup-delay=0 on-ground=true
+
+entity-order 99 entities e1 e2 e3
+entity 99 e1 0.9697772136832374 -42.890471202913304 -4.746087234467463 0.00300154138123741 -1.3172852117850196 0.005804987571520874 item=minecraft:redstone_torch count=1 age=60 pickup-delay=0 on-ground=false
+entity 99 e2 2.260198259103505 1.0 -1.2759069145372948 1.2652520777180664E-5 0 1.4723554352231285E-5 item=minecraft:redstone_torch count=1 age=50 pickup-delay=0 on-ground=true
+entity 99 e3 -0.8912002167225135 1.0 -2.5513429615686136 -4.330656996329277E-5 -0.04 4.245596513983579E-6 item=minecraft:lever count=1 age=50 pickup-delay=0 on-ground=true
+
+entity-order 100 entities e1 e2 e3
+entity 100 e1 0.9727787550644749 -44.24775641469832 -4.7402822468959425 0.0029415106108625203 -1.3301395075493192 0.005688887930811808 item=minecraft:redstone_torch count=1 age=61 pickup-delay=0 on-ground=false
+entity 100 e2 2.260198259103505 1.0 -1.2759069145372948 1.2652520777180664E-5 -0.04 1.4723554352231285E-5 item=minecraft:redstone_torch count=1 age=51 pickup-delay=0 on-ground=true
+entity 100 e3 -0.8912002167225135 1.0 -2.5513429615686136 -4.330656996329277E-5 -0.08 4.245596513983579E-6 item=minecraft:lever count=1 age=51 pickup-delay=0 on-ground=true
+
+entity-order 101 entities e1 e2 e3
+entity 101 e1 0.9757202656753374 -45.61789592224764 -4.734593358965131 0.0028826804547501324 -1.342736717398333 0.005575110280702498 item=minecraft:redstone_torch count=1 age=62 pickup-delay=0 on-ground=false
+entity 101 e2 2.260198259103505 1.0 -1.2759069145372948 1.2652520777180664E-5 -0.08 1.4723554352231285E-5 item=minecraft:redstone_torch count=1 age=52 pickup-delay=0 on-ground=true
+entity 101 e3 -0.8912002167225135 1.0 -2.5513429615686136 -4.330656996329277E-5 -0.12 4.245596513983579E-6 item=minecraft:lever count=1 age=52 pickup-delay=0 on-ground=true
+
+entity-order 102 entities e1 e2 e3
+entity 102 e1 0.9786029461300876 -47.00063263964597 -4.7290182486844285 0.002825026900637896 -1.3550819830503662 0.005463608181425238 item=minecraft:redstone_torch count=1 age=63 pickup-delay=0 on-ground=false
+entity 102 e2 2.260198259103505 1.0 -1.2759069145372948 1.2652520777180664E-5 -0.12 1.4723554352231285E-5 item=minecraft:redstone_torch count=1 age=53 pickup-delay=0 on-ground=true
+entity 102 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.5464265699038687E-5 0 2.4964110012551584E-6 item=minecraft:lever count=1 age=53 pickup-delay=0 on-ground=true
+
+entity-order 103 entities e1 e2 e3
+entity 103 e1 0.9814279730307255 -48.39571462269634 -4.7235546405030036 0.00276852641650825 -1.3671803433893588 0.005354336122006789 item=minecraft:redstone_torch count=1 age=64 pickup-delay=0 on-ground=false
+entity 103 e2 2.260198259103505 1.0 -1.2759069145372948 7.439682965098045E-6 0 8.657450829683484E-6 item=minecraft:redstone_torch count=1 age=54 pickup-delay=0 on-ground=true
+entity 103 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.5464265699038687E-5 -0.04 2.4964110012551584E-6 item=minecraft:lever count=1 age=54 pickup-delay=0 on-ground=true
+
+entity-order 104 entities e1 e2 e3
+entity 104 e1 0.9841964994472338 -49.802894966085695 -4.718200304380996 0.002713155940983536 -1.3790367365215717 0.005247249501692509 item=minecraft:redstone_torch count=1 age=65 pickup-delay=0 on-ground=false
+entity 104 e2 2.260198259103505 1.0 -1.2759069145372948 7.439682965098045E-6 -0.04 8.657450829683484E-6 item=minecraft:redstone_torch count=1 age=55 pickup-delay=0 on-ground=true
+entity 104 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.5464265699038687E-5 -0.08 2.4964110012551584E-6 item=minecraft:lever count=1 age=55 pickup-delay=0 on-ground=true
+
+entity-order 105 entities e1 e2 e3
+entity 105 e1 0.9869096553882173 -51.221931702607264 -4.7129530548793035 0.002658892873913208 -1.3906560017911402 0.005142304611742001 item=minecraft:redstone_torch count=1 age=66 pickup-delay=0 on-ground=false
+entity 105 e2 2.260198259103505 1.0 -1.2759069145372948 7.439682965098045E-6 -0.08 8.657450829683484E-6 item=minecraft:redstone_torch count=1 age=56 pickup-delay=0 on-ground=true
+entity 105 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.5464265699038687E-5 -0.12 2.4964110012551584E-6 item=minecraft:lever count=1 age=56 pickup-delay=0 on-ground=true
+
+entity-order 106 entities e1 e2 e3
+entity 106 e1 0.9895685482621305 -52.65258770439841 -4.707810750267561 0.0026057150671493006 -1.4020428817553174 0.005039458617588838 item=minecraft:redstone_torch count=1 age=67 pickup-delay=0 on-ground=false
+entity 106 e2 2.260198259103505 1.0 -1.2759069145372948 7.439682965098045E-6 -0.12 8.657450829683484E-6 item=minecraft:redstone_torch count=1 age=57 pickup-delay=0 on-ground=true
+entity 106 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.4972989736680951E-5 0 1.4678898163453426E-6 item=minecraft:lever count=1 age=57 pickup-delay=0 on-ground=true
+
+entity-order 107 entities e1 e2 e3
+entity 107 e1 0.9921742633292798 -54.09463058615373 -4.702771291649972 0.002553600815506385 -1.413202024120211 0.004938669541357106 item=minecraft:redstone_torch count=1 age=68 pickup-delay=0 on-ground=false
+entity 107 e2 2.260198259103505 1.0 -1.2759069145372948 4.374534023369794E-6 0 5.0905815997499755E-6 item=minecraft:redstone_torch count=1 age=58 pickup-delay=0 on-ground=true
+entity 107 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.4972989736680951E-5 -0.04 1.4678898163453426E-6 item=minecraft:lever count=1 age=58 pickup-delay=0 on-ground=true
+
+entity-order 108 entities e1 e2 e3
+entity 108 e1 0.9947278641447862 -55.547832610273936 -4.697832622108615 0.0025025288479023277 -1.4241379836378067 0.00483989624472761 item=minecraft:redstone_torch count=1 age=69 pickup-delay=0 on-ground=false
+entity 108 e2 2.260198259103505 1.0 -1.2759069145372948 4.374534023369794E-6 -0.04 5.0905815997499755E-6 item=minecraft:redstone_torch count=1 age=59 pickup-delay=0 on-ground=true
+entity 108 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.4972989736680951E-5 -0.08 1.4678898163453426E-6 item=minecraft:lever count=1 age=59 pickup-delay=0 on-ground=true
+
+entity-order 109 entities e1 e2 e3
+entity 109 e1 0.9972303929926886 -57.01197059391174 -4.6929927258638875 0.002452478318676231 -1.4348552239650507 0.004743098412146753 item=minecraft:redstone_torch count=1 age=70 pickup-delay=0 on-ground=false
+entity 109 e2 2.260198259103505 1.0 -1.2759069145372948 4.374534023369794E-6 -0.08 5.0905815997499755E-6 item=minecraft:redstone_torch count=1 age=60 pickup-delay=0 on-ground=true
+entity 109 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.4972989736680951E-5 -0.12 1.4678898163453426E-6 item=minecraft:lever count=1 age=60 pickup-delay=0 on-ground=true
+
+entity-order 110 entities e1 e2 e3
+entity 110 e1 0.9996828713113648 -58.48682581787679 -4.688249627451741 0.002403428799080018 -1.4453581194857497 0.00464823653437124 item=minecraft:redstone_torch count=1 age=71 pickup-delay=0 on-ground=false
+entity 110 e2 2.260198259103505 1.0 -1.2759069145372948 4.374534023369794E-6 -0.12 5.0905815997499755E-6 item=minecraft:redstone_torch count=1 age=61 pickup-delay=0 on-ground=true
+entity 110 e3 -0.8912002167225135 1.0 -2.5513429615686136 -8.804118850488456E-6 0 8.631192988041682E-7 item=minecraft:lever count=1 age=61 pickup-delay=0 on-ground=true
+
+entity-order 111 entities e1 e2 e3
+entity 111 e1 1.0020863001104447 -59.972183937362544 -4.68360139091737 0.002355360268940184 -1.4556509570960348 0.004555271892341891 item=minecraft:redstone_torch count=1 age=72 pickup-delay=0 on-ground=false
+entity 111 e2 2.260198259103505 1.0 -1.2759069145372948 2.572226264398045E-6 0 2.993262281647915E-6 item=minecraft:redstone_torch count=1 age=62 pickup-delay=0 on-ground=true
+entity 111 e3 -0.8912002167225135 1.0 -2.5513429615686136 -8.804118850488456E-6 -0.04 8.631192988041682E-7 item=minecraft:lever count=1 age=62 pickup-delay=0 on-ground=true
+
+entity-order 112 entities e1 e2 e3
+entity 112 e1 1.0044416603793849 -61.467834894458576 -4.679046119025028 0.002308253108486312 -1.465737937954114 0.004464166541379969 item=minecraft:redstone_torch count=1 age=73 pickup-delay=0 on-ground=false
+entity 112 e2 2.260198259103505 1.0 -1.2759069145372948 2.572226264398045E-6 -0.04 2.993262281647915E-6 item=minecraft:redstone_torch count=1 age=63 pickup-delay=0 on-ground=true
+entity 112 e3 -0.8912002167225135 1.0 -2.5513429615686136 -8.804118850488456E-6 -0.08 8.631192988041682E-7 item=minecraft:lever count=1 age=63 pickup-delay=0 on-ground=true
+
+entity-order 113 entities e1 e2 e3
+entity 113 e1 1.0067499134878712 -62.97357283241269 -4.674581952483647 0.0022620880903430197 -1.4756231791950318 0.004374883295699589 item=minecraft:redstone_torch count=1 age=74 pickup-delay=0 on-ground=false
+entity 113 e2 2.260198259103505 1.0 -1.2759069145372948 2.572226264398045E-6 -0.08 2.993262281647915E-6 item=minecraft:redstone_torch count=1 age=64 pickup-delay=0 on-ground=true
+entity 113 e3 -0.8912002167225135 1.0 -2.5513429615686136 -8.804118850488456E-6 -0.12 8.631192988041682E-7 item=minecraft:lever count=1 age=64 pickup-delay=0 on-ground=true
+
+entity-order 114 entities e1 e2 e3
+entity 114 e1 1.0090120015782142 -64.48919601160773 -4.670207069187947 0.0022168463716820655 -1.4853107156111311 0.004287385713229874 item=minecraft:redstone_torch count=1 age=75 pickup-delay=0 on-ground=false
+entity 114 e2 2.260198259103505 1.0 -1.2759069145372948 2.572226264398045E-6 -0.12 2.993262281647915E-6 item=minecraft:redstone_torch count=1 age=65 pickup-delay=0 on-ground=true
+entity 114 e3 -0.8912002167225135 1.0 -2.5513429615686136 -5.1768224046554575E-6 0 5.075141987312027E-7 item=minecraft:lever count=1 age=65 pickup-delay=0 on-ground=true
+
+entity-order 115 entities e1 e2 e3
+entity 115 e1 1.0112288479498963 -66.01450672721886 -4.665919683474717 0.0021725094865314132 -1.4948045012989086 0.004201638080740669 item=minecraft:redstone_torch count=1 age=76 pickup-delay=0 on-ground=false
+entity 115 e2 2.260198259103505 1.0 -1.2759069145372948 1.5124691955561503E-6 0 1.7600383985940105E-6 item=minecraft:redstone_torch count=1 age=66 pickup-delay=0 on-ground=true
+entity 115 e3 -0.8912002167225135 1.0 -2.5513429615686136 -5.1768224046554575E-6 -0.04 5.075141987312027E-7 item=minecraft:lever count=1 age=66 pickup-delay=0 on-ground=true
+
+entity-order 116 entities e1 e2 e3
+entity 116 e1 1.0134013574364278 -67.54931122851777 -4.661718045393977 0.002129059338238115 -1.5041084112729304 0.004117605399265742 item=minecraft:redstone_torch count=1 age=77 pickup-delay=0 on-ground=false
+entity 116 e2 2.260198259103505 1.0 -1.2759069145372948 1.5124691955561503E-6 -0.04 1.7600383985940105E-6 item=minecraft:redstone_torch count=1 age=67 pickup-delay=0 on-ground=true
+entity 116 e3 -0.8912002167225135 1.0 -2.5513429615686136 -5.1768224046554575E-6 -0.08 5.075141987312027E-7 item=minecraft:lever count=1 age=67 pickup-delay=0 on-ground=true
+
+entity-order 117 entities e1 e2 e3
+entity 117 e1 1.015530416774666 -69.0934196397907 -4.657600439994711 0.002086478192081937 -1.5132262430474719 0.004035253369817518 item=minecraft:redstone_torch count=1 age=78 pickup-delay=0 on-ground=false
+entity 117 e2 2.260198259103505 1.0 -1.2759069145372948 1.5124691955561503E-6 -0.08 1.7600383985940105E-6 item=minecraft:redstone_torch count=1 age=68 pickup-delay=0 on-ground=true
+entity 117 e3 -0.8912002167225135 1.0 -2.5513429615686136 -5.1768224046554575E-6 -0.12 5.075141987312027E-7 item=minecraft:lever count=1 age=68 pickup-delay=0 on-ground=true
+
+entity-order 118 entities e1 e2 e3
+entity 118 e1 1.017616894966748 -70.64664588283817 -4.653565186624894 0.0020447486680367113 -1.5221617181865224 0.0039545483793875175 item=minecraft:redstone_torch count=1 age=79 pickup-delay=0 on-ground=false
+entity 118 e2 2.260198259103505 1.0 -1.2759069145372948 1.5124691955561503E-6 -0.12 1.7600383985940105E-6 item=minecraft:redstone_torch count=1 age=69 pickup-delay=0 on-ground=true
+entity 118 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.043971880031568E-6 0 2.9841837886214914E-7 item=minecraft:lever count=1 age=69 pickup-delay=0 on-ground=true
+
+entity-order 119 entities e1 e2 e3
+entity 119 e1 1.0196616436347845 -72.20880760102469 -4.649610638245506 0.002003853733676463 -1.5309184838227918 0.0038754574872267916 item=minecraft:redstone_torch count=1 age=80 pickup-delay=0 on-ground=false
+entity 119 e2 2.260198259103505 1.0 -1.2759069145372948 8.89331976416004E-7 0 1.03490268244049E-6 item=minecraft:redstone_torch count=1 age=70 pickup-delay=0 on-ground=true
+entity 119 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.043971880031568E-6 -0.04 2.9841837886214914E-7 item=minecraft:lever count=1 age=70 pickup-delay=0 on-ground=true
+
+entity-order 120 entities e1 e2 e3
+entity 120 e1 1.021665497368461 -73.77972608484748 -4.64573518075828 0.0019637766972234105 -1.539500114146336 0.003797948411400741 item=minecraft:redstone_torch count=1 age=81 pickup-delay=0 on-ground=false
+entity 120 e2 2.260198259103505 1.0 -1.2759069145372948 8.89331976416004E-7 -0.04 1.03490268244049E-6 item=minecraft:redstone_torch count=1 age=71 pickup-delay=0 on-ground=true
+entity 120 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.043971880031568E-6 -0.08 2.9841837886214914E-7 item=minecraft:lever count=1 age=71 pickup-delay=0 on-ground=true
+
+entity-order 121 entities e1 e2 e3
+entity 121 e1 1.0236292740656843 -75.35922619899382 -4.641937232346879 0.0019245012007350103 -1.5479101118634093 0.0037219895156128434 item=minecraft:redstone_torch count=1 age=82 pickup-delay=0 on-ground=false
+entity 121 e2 2.260198259103505 1.0 -1.2759069145372948 8.89331976416004E-7 -0.08 1.03490268244049E-6 item=minecraft:redstone_torch count=1 age=72 pickup-delay=0 on-ground=true
+entity 121 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.043971880031568E-6 -0.12 2.9841837886214914E-7 item=minecraft:lever count=1 age=72 pickup-delay=0 on-ground=true
+
+entity-order 122 entities e1 e2 e3
+entity 122 e1 1.0255537752664192 -76.94713631085723 -4.638215242831266 0.0018860112134272574 -1.5561519096261411 0.0036475497962919026 item=minecraft:redstone_torch count=1 age=83 pickup-delay=0 on-ground=false
+entity 122 e2 2.260198259103505 1.0 -1.2759069145372948 8.89331976416004E-7 -0.12 1.03490268244049E-6 item=minecraft:redstone_torch count=1 age=73 pickup-delay=0 on-ground=true
+entity 122 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.7898556454419457E-6 0 1.754700244157682E-7 item=minecraft:lever count=1 age=73 pickup-delay=0 on-ground=true
+
+entity-order 123 entities e1 e2 e3
+entity 123 e1 1.0274397864798466 -78.54328822048338 -4.634567693034974 0.0018482910251315214 -1.5642288714336183 0.0035745988699375556 item=minecraft:redstone_torch count=1 age=84 pickup-delay=0 on-ground=false
+entity 123 e2 2.260198259103505 1.0 -1.2759069145372948 5.229272547168604E-7 0 6.085228384665349E-7 item=minecraft:redstone_torch count=1 age=74 pickup-delay=0 on-ground=true
+entity 123 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.7898556454419457E-6 -0.04 1.754700244157682E-7 item=minecraft:lever count=1 age=74 pickup-delay=0 on-ground=true
+
+entity-order 124 entities e1 e2 e3
+entity 124 e1 1.0292880775049782 -80.147517091917 -4.630993094165037 0.0018113252398822446 -1.572144294004946 0.003503106960718867 item=minecraft:redstone_torch count=1 age=85 pickup-delay=0 on-ground=false
+entity 124 e2 2.260198259103505 1.0 -1.2759069145372948 5.229272547168604E-7 -0.04 6.085228384665349E-7 item=minecraft:redstone_torch count=1 age=75 pickup-delay=0 on-ground=true
+entity 124 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.7898556454419457E-6 -0.08 1.754700244157682E-7 item=minecraft:lever count=1 age=75 pickup-delay=0 on-ground=true
+
+entity-order 125 entities e1 e2 e3
+entity 125 e1 1.0310994027448603 -81.75966138592194 -4.627489987204318 0.0017750987696328868 -1.579901408124847 0.0034330448883209525 item=minecraft:redstone_torch count=1 age=86 pickup-delay=0 on-ground=false
+entity 125 e2 2.260198259103505 1.0 -1.2759069145372948 5.229272547168604E-7 -0.08 6.085228384665349E-7 item=minecraft:redstone_torch count=1 age=76 pickup-delay=0 on-ground=true
+entity 125 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.7898556454419457E-6 -0.12 1.754700244157682E-7 item=minecraft:lever count=1 age=76 pickup-delay=0 on-ground=true
+
+entity-order 126 entities e1 e2 e3
+entity 126 e1 1.0328745015144931 -83.37956279404679 -4.624056942315997 0.0017395968280975512 -1.5875033799623501 0.003364384056034668 item=minecraft:redstone_torch count=1 age=87 pickup-delay=0 on-ground=false
+entity 126 e2 2.260198259103505 1.0 -1.2759069145372948 5.229272547168604E-7 -0.12 6.085228384665349E-7 item=minecraft:redstone_torch count=1 age=77 pickup-delay=0 on-ground=true
+entity 126 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.0524352253501044E-6 0 1.0317638473162954E-7 item=minecraft:lever count=1 age=77 pickup-delay=0 on-ground=true
+
+entity-order 127 entities e1 e2 e3
+entity 127 e1 1.0346140983425907 -85.00706617400914 -4.620692558259963 0.0017048049247157765 -1.5949533123631032 0.003297096439084508 item=minecraft:redstone_torch count=1 age=88 pickup-delay=0 on-ground=false
+entity 127 e2 2.260198259103505 1.0 -1.2759069145372948 3.07481256693056E-7 0 3.578114649989438E-7 item=minecraft:redstone_torch count=1 age=78 pickup-delay=0 on-ground=true
+entity 127 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.0524352253501044E-6 -0.04 1.0317638473162954E-7 item=minecraft:lever count=1 age=78 pickup-delay=0 on-ground=true
+
+entity-order 128 entities e1 e2 e3
+entity 128 e1 1.0363189032673064 -86.64201948637225 -4.617395461820879 0.0016707088587380344 -1.602254246115841 0.0032311545731899417 item=minecraft:redstone_torch count=1 age=89 pickup-delay=0 on-ground=false
+entity 128 e2 2.260198259103505 1.0 -1.2759069145372948 3.07481256693056E-7 -0.04 3.578114649989438E-7 item=minecraft:redstone_torch count=1 age=79 pickup-delay=0 on-ground=true
+entity 128 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.0524352253501044E-6 -0.08 1.0317638473162954E-7 item=minecraft:lever count=1 age=79 pickup-delay=0 on-ground=true
+
+entity-order 129 entities e1 e2 e3
+entity 129 e1 1.0379896121260443 -88.28427373248809 -4.614164307247688 0.0016372947134295163 -1.6094091611935244 0.0031665315433555253 item=minecraft:redstone_torch count=1 age=90 pickup-delay=0 on-ground=false
+entity 129 e2 2.260198259103505 1.0 -1.2759069145372948 3.07481256693056E-7 -0.08 3.578114649989438E-7 item=minecraft:redstone_torch count=1 age=80 pickup-delay=0 on-ground=true
+entity 129 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.0524352253501044E-6 -0.12 1.0317638473162954E-7 item=minecraft:lever count=1 age=80 pickup-delay=0 on-ground=true
+
+entity-order 130 entities e1 e2 e3
+entity 130 e1 1.039626906839474 -89.9336828936816 -4.610997775704333 0.0016045488503898444 -1.616420977969654 0.0031032009728852107 item=minecraft:redstone_torch count=1 age=91 pickup-delay=0 on-ground=false
+entity 130 e2 2.260198259103505 1.0 -1.2759069145372948 3.07481256693056E-7 -0.12 3.578114649989438E-7 item=minecraft:redstone_torch count=1 age=81 pickup-delay=0 on-ground=true
+entity 130 e3 -0.8912002167225135 1.0 -2.5513429615686136 -6.18831974734049E-7 0 6.066772032279159E-8 item=minecraft:lever count=1 age=81 pickup-delay=0 on-ground=true
+
+entity-order 131 entities e1 e2 e3
+entity 131 e1 1.0412314556898636 -91.59010387165127 -4.607894574731448 0.0015724579039863881 -1.6232925584102609 0.0030411370126163678 item=minecraft:redstone_torch count=1 age=92 pickup-delay=0 on-ground=false
+entity 131 e2 2.260198259103505 1.0 -1.2759069145372948 1.8079899711620952E-7 0 2.1039316257598643E-7 item=minecraft:redstone_torch count=1 age=82 pickup-delay=0 on-ground=true
+entity 131 e3 -0.8912002167225135 1.0 -2.5513429615686136 -6.18831974734049E-7 -0.04 6.066772032279159E-8 item=minecraft:lever count=1 age=82 pickup-delay=0 on-ground=true
+
+entity-order 132 entities e1 e2 e3
+entity 132 e1 1.04280391359385 -93.25339643006153 -4.604853437718832 0.0015410087758989147 -1.6300267072420556 0.0029803143303691257 item=minecraft:redstone_torch count=1 age=93 pickup-delay=0 on-ground=false
+entity 132 e2 2.260198259103505 1.0 -1.2759069145372948 1.8079899711620952E-7 -0.04 2.1039316257598643E-7 item=minecraft:redstone_torch count=1 age=83 pickup-delay=0 on-ground=true
+entity 132 e3 -0.8912002167225135 1.0 -2.5513429615686136 -6.18831974734049E-7 -0.08 6.066772032279159E-8 item=minecraft:lever count=1 age=83 pickup-delay=0 on-ground=true
+
+entity-order 133 entities e1 e2 e3
+entity 133 e1 1.044344922369749 -94.92342313730359 -4.601873123388463 0.0015101886297733463 -1.6366261730972145 0.002920708100606728 item=minecraft:redstone_torch count=1 age=94 pickup-delay=0 on-ground=false
+entity 133 e2 2.260198259103505 1.0 -1.2759069145372948 1.8079899711620952E-7 -0.08 2.1039316257598643E-7 item=minecraft:redstone_torch count=1 age=84 pickup-delay=0 on-ground=true
+entity 133 e3 -0.8912002167225135 1.0 -2.5513429615686136 -6.18831974734049E-7 -0.12 6.066772032279159E-8 item=minecraft:lever count=1 age=84 pickup-delay=0 on-ground=true
+
+entity-order 134 entities e1 e2 e3
+entity 134 e1 1.0458551109995222 -96.6000493104008 -4.598952415287856 0.0014799848859824417 -1.6430936496352702 0.0028622939943026794 item=minecraft:redstone_torch count=1 age=95 pickup-delay=0 on-ground=false
+entity 134 e2 2.260198259103505 1.0 -1.2759069145372948 1.8079899711620952E-7 -0.12 2.1039316257598643E-7 item=minecraft:redstone_torch count=1 age=85 pickup-delay=0 on-ground=true
+entity 134 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.6387323773379876E-7 0 3.567262313695075E-8 item=minecraft:lever count=1 age=85 pickup-delay=0 on-ground=true
+
+entity-order 135 entities e1 e2 e3
+entity 135 e1 1.0473350958855046 -98.28314296003607 -4.596090121293553 0.0014503852164912644 -1.6494317766425648 0.0028050481690105513 item=minecraft:redstone_torch count=1 age=96 pickup-delay=0 on-ground=false
+entity 135 e2 2.260198259103505 1.0 -1.2759069145372948 1.0630982099457952E-7 0 1.2371119203476646E-7 item=minecraft:redstone_torch count=1 age=86 pickup-delay=0 on-ground=true
+entity 135 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.6387323773379876E-7 -0.04 3.567262313695075E-8 item=minecraft:lever count=1 age=86 pickup-delay=0 on-ground=true
+
+entity-order 136 entities e1 e2 e3
+entity 136 e1 1.0487854811019959 -99.97257473667864 -4.593285073124543 0.0014213775398253417 -1.6556431411097134 0.002748947259132388 item=minecraft:redstone_torch count=1 age=97 pickup-delay=0 on-ground=false
+entity 136 e2 2.260198259103505 1.0 -1.2759069145372948 1.0630982099457952E-7 -0.04 1.2371119203476646E-7 item=minecraft:redstone_torch count=1 age=87 pickup-delay=0 on-ground=true
+entity 136 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.6387323773379876E-7 -0.08 3.567262313695075E-8 item=minecraft:lever count=1 age=87 pickup-delay=0 on-ground=true
+
+entity-order 137 entities e1 e2 e3
+entity 137 e1 1.0502068586418212 -101.66821787778835 -4.590536125865411 0.00139295001613946 -1.6617302782875192 0.0026939683663817484 item=minecraft:redstone_torch count=1 age=98 pickup-delay=0 on-ground=false
+entity 137 e2 2.260198259103505 1.0 -1.2759069145372948 1.0630982099457952E-7 -0.08 1.2371119203476646E-7 item=minecraft:redstone_torch count=1 age=88 pickup-delay=0 on-ground=true
+entity 137 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.6387323773379876E-7 -0.12 3.567262313695075E-8 item=minecraft:lever count=1 age=88 pickup-delay=0 on-ground=true
+
+entity-order 138 entities e1 e2 e3
+entity 138 e1 1.0515998086579605 -103.36994815607586 -4.587842157499029 0.0013650910423850839 -1.6676956727217689 0.0026400890504374823 item=minecraft:redstone_torch count=1 age=99 pickup-delay=0 on-ground=false
+entity 138 e2 2.260198259103505 1.0 -1.2759069145372948 1.0630982099457952E-7 -0.12 1.2371119203476646E-7 item=minecraft:redstone_torch count=1 age=89 pickup-delay=0 on-ground=true
+entity 138 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.1395748530250045E-7 0 2.097550451377104E-8 item=minecraft:lever count=1 age=89 pickup-delay=0 on-ground=true
+
+entity-order 139 entities e1 e2 e3
+entity 139 e1 1.0529648997003456 -105.07764382879763 -4.5852020684485915 0.0013377892475744276 -1.6735417592673336 0.0025872873197844352 item=minecraft:redstone_torch count=1 age=100 pickup-delay=0 on-ground=false
+entity 139 e2 2.260198259103505 1.0 -1.2759069145372948 6.25101810306794E-8 0 7.274218823121424E-8 item=minecraft:redstone_torch count=1 age=90 pickup-delay=0 on-ground=true
+entity 139 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.1395748530250045E-7 -0.04 2.097550451377104E-8 item=minecraft:lever count=1 age=90 pickup-delay=0 on-ground=true
+
+entity-order 140 entities e1 e2 e3
+entity 140 e1 1.05430268894792 -106.79118558806496 -4.582614781128807 0.001311033488139244 -1.679270924081987 0.0025355416227373358 item=minecraft:redstone_torch count=1 age=101 pickup-delay=0 on-ground=false
+entity 140 e2 2.260198259103505 1.0 -1.2759069145372948 6.25101810306794E-8 -0.04 7.274218823121424E-8 item=minecraft:redstone_torch count=1 age=91 pickup-delay=0 on-ground=true
+entity 140 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.1395748530250045E-7 -0.08 2.097550451377104E-8 item=minecraft:lever count=1 age=91 pickup-delay=0 on-ground=true
+
+entity-order 141 entities e1 e2 e3
+entity 141 e1 1.055613722436059 -108.51045651214694 -4.58007923950607 0.0012848128433824383 -1.6848855056003473 0.0024848308386442074 item=minecraft:redstone_torch count=1 age=102 pickup-delay=0 on-ground=false
+entity 141 e2 2.260198259103505 1.0 -1.2759069145372948 6.25101810306794E-8 -0.08 7.274218823121424E-8 item=minecraft:redstone_torch count=1 age=92 pickup-delay=0 on-ground=true
+entity 141 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.1395748530250045E-7 -0.12 2.097550451377104E-8 item=minecraft:lever count=1 age=92 pickup-delay=0 on-ground=true
+
+entity-order 142 entities e1 e2 e3
+entity 142 e1 1.0568985352794416 -110.23534201774729 -4.577594408667426 0.0012591166110206497 -1.6903877954883404 0.0024351342692657102 item=minecraft:redstone_torch count=1 age=103 pickup-delay=0 on-ground=false
+entity 142 e2 2.260198259103505 1.0 -1.2759069145372948 6.25101810306794E-8 -0.12 7.274218823121424E-8 item=minecraft:redstone_torch count=1 age=93 pickup-delay=0 on-ground=true
+entity 142 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.258070140087073E-7 0 1.2333597894332966E-8 item=minecraft:lever count=1 age=93 pickup-delay=0 on-ground=true
+
+entity-order 143 entities e1 e2 e3
+entity 143 e1 1.0581576518904623 -111.96572981323563 -4.5751592743981595 0.00123393430281598 -1.6957800395785736 0.002386431630326896 item=minecraft:redstone_torch count=1 age=104 pickup-delay=0 on-ground=false
+entity 143 e2 2.260198259103505 1.0 -1.2759069145372948 3.675599014212945E-8 0 4.2772410981040083E-8 item=minecraft:redstone_torch count=1 age=94 pickup-delay=0 on-ground=true
+entity 143 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.258070140087073E-7 -0.04 1.2333597894332966E-8 item=minecraft:lever count=1 age=94 pickup-delay=0 on-ground=true
+
+entity-order 144 entities e1 e2 e3
+entity 144 e1 1.0593915861932783 -113.7015098528142 -4.572772842767833 0.0012092556402950895 -1.7010644387870022 0.0023387030432379294 item=minecraft:redstone_torch count=1 age=105 pickup-delay=0 on-ground=false
+entity 144 e2 2.260198259103505 1.0 -1.2759069145372948 3.675599014212945E-8 -0.04 4.2772410981040083E-8 item=minecraft:redstone_torch count=1 age=95 pickup-delay=0 on-ground=true
+entity 144 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.258070140087073E-7 -0.08 1.2333597894332966E-8 item=minecraft:lever count=1 age=95 pickup-delay=0 on-ground=true
+
+entity-order 145 entities e1 e2 e3
+entity 145 e1 1.0606008418335735 -115.4425742916012 -4.570434139724595 0.0011850705505539088 -1.7062431500112623 0.0022919290269803913 item=minecraft:redstone_torch count=1 age=106 pickup-delay=0 on-ground=false
+entity 145 e2 2.260198259103505 1.0 -1.2759069145372948 3.675599014212945E-8 -0.08 4.2772410981040083E-8 item=minecraft:redstone_torch count=1 age=96 pickup-delay=0 on-ground=true
+entity 145 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.258070140087073E-7 -0.12 1.2333597894332966E-8 item=minecraft:lever count=1 age=96 pickup-delay=0 on-ground=true
+
+entity-order 146 entities e1 e2 e3
+entity 146 e1 1.0617859123841273 -117.18881744161247 -4.568142210697615 0.0011613691621462576 -1.711318287011037 0.0022460904901558604 item=minecraft:redstone_torch count=1 age=107 pickup-delay=0 on-ground=false
+entity 146 e2 2.260198259103505 1.0 -1.2759069145372948 3.675599014212945E-8 -0.12 4.2772410981040083E-8 item=minecraft:redstone_torch count=1 age=97 pickup-delay=0 on-ground=true
+entity 146 e3 -0.8912002167225135 1.0 -2.5513429615686136 -7.397453167581281E-8 0 7.252156291126388E-9 item=minecraft:lever count=1 age=97 pickup-delay=0 on-ground=true
+
+entity-order 147 entities e1 e2 e3
+entity 147 e1 1.0629472815462735 -118.9401357286235 -4.565896120207459 0.0011381418010546912 -1.7162919212708163 0.0022011687231935193 item=minecraft:redstone_torch count=1 age=108 pickup-delay=0 on-ground=false
+entity 147 e2 2.260198259103505 1.0 -1.2759069145372948 2.1612524376873228E-8 0 2.5150180185890457E-8 item=minecraft:redstone_torch count=1 age=98 pickup-delay=0 on-ground=true
+entity 147 e3 -0.8912002167225135 1.0 -2.5513429615686136 -7.397453167581281E-8 -0.04 7.252156291126388E-9 item=minecraft:lever count=1 age=98 pickup-delay=0 on-ground=true
+
+entity-order 148 entities e1 e2 e3
+entity 148 e1 1.0640854233473283 -120.69642764989432 -4.5636949514842655 0.0011153789867419295 -1.7211660828454 0.0021571453907136104 item=minecraft:redstone_torch count=1 age=109 pickup-delay=0 on-ground=false
+entity 148 e2 2.260198259103505 1.0 -1.2759069145372948 2.1612524376873228E-8 -0.04 2.5150180185890457E-8 item=minecraft:redstone_torch count=1 age=99 pickup-delay=0 on-ground=true
+entity 148 e3 -0.8912002167225135 1.0 -2.5513429615686136 -7.397453167581281E-8 -0.08 7.252156291126388E-9 item=minecraft:lever count=1 age=99 pickup-delay=0 on-ground=true
+
+entity-order 149 entities e1 e2 e3
+entity 149 e1 1.0652008023340702 -122.45759373273972 -4.561537806093552 0.0010930714282812567 -1.725942761188492 0.0021140025240436212 item=minecraft:redstone_torch count=1 age=110 pickup-delay=0 on-ground=false
+entity 149 e2 2.260198259103505 1.0 -1.2759069145372948 2.1612524376873228E-8 -0.08 2.5150180185890457E-8 item=minecraft:redstone_torch count=1 age=100 pickup-delay=0 on-ground=true
+entity 149 e3 -0.8912002167225135 1.0 -2.5513429615686136 -7.397453167581281E-8 -0.12 7.252156291126388E-9 item=minecraft:lever count=1 age=100 pickup-delay=0 on-ground=true
+
+entity-order 150 entities e1 e2 e3
+entity 150 e1 1.0662938737623515 -124.22353649392822 -4.5594238035695085 0.0010712100205643145 -1.7306239059647222 0.002071722513884147 item=minecraft:redstone_torch count=1 age=111 pickup-delay=0 on-ground=false
+entity 150 e2 2.260198259103505 1.0 -1.2759069145372948 2.1612524376873228E-8 -0.12 2.5150180185890457E-8 item=minecraft:redstone_torch count=1 age=101 pickup-delay=0 on-ground=true
+entity 150 e3 -0.8912002167225135 1.0 -2.5513429615686136 -4.349702899932981E-8 0 4.264268327986418E-9 item=minecraft:lever count=1 age=101 pickup-delay=0 on-ground=true
+
+entity-order 151 entities e1 e2 e3
+entity 151 e1 1.0673650837829158 -125.99416039989295 -4.557352081055624 0.001049785840584738 -1.7352114278454278 0.002030288103121435 item=minecraft:redstone_torch count=1 age=112 pickup-delay=0 on-ground=false
+entity 151 e2 2.260198259103505 1.0 -1.2759069145372948 1.2708165611502641E-8 0 1.4788307436378604E-8 item=minecraft:redstone_torch count=1 age=102 pickup-delay=0 on-ground=true
+entity 151 e3 -0.8912002167225135 1.0 -2.5513429615686136 -4.349702899932981E-8 -0.04 4.264268327986418E-9 item=minecraft:lever count=1 age=102 pickup-delay=0 on-ground=true
+
+entity-order 152 entities e1 e2 e3
+entity 152 e1 1.0684148696235005 -127.76937182773838 -4.555321792952503 0.001028790143796119 -1.7397071992885194 0.0019896823797836785 item=minecraft:redstone_torch count=1 age=113 pickup-delay=0 on-ground=false
+entity 152 e2 2.260198259103505 1.0 -1.2759069145372948 1.2708165611502641E-8 -0.04 1.4788307436378604E-8 item=minecraft:redstone_torch count=1 age=103 pickup-delay=0 on-ground=true
+entity 152 e3 -0.8912002167225135 1.0 -2.5513429615686136 -4.349702899932981E-8 -0.08 4.264268327986418E-9 item=minecraft:lever count=1 age=103 pickup-delay=0 on-ground=true
+
+entity-order 153 entities e1 e2 e3
+entity 153 e1 1.0694436597672967 -129.5490790270269 -4.553332110572719 0.0010082143605428114 -1.744113055302749 0.0019498887701381847 item=minecraft:redstone_torch count=1 age=114 pickup-delay=0 on-ground=false
+entity 153 e2 2.260198259103505 1.0 -1.2759069145372948 1.2708165611502641E-8 -0.08 1.4788307436378604E-8 item=minecraft:redstone_torch count=1 age=104 pickup-delay=0 on-ground=true
+entity 153 e3 -0.8912002167225135 1.0 -2.5513429615686136 -4.349702899932981E-8 -0.12 4.264268327986418E-9 item=minecraft:lever count=1 age=104 pickup-delay=0 on-ground=true
+
+entity-removed 154 entities e1 discarded
+entity-order 154 entities e1 e2 e3
+entity 154 e2 2.260198259103505 1.0 -1.2759069145372948 1.2708165611502641E-8 -0.12 1.4788307436378604E-8 item=minecraft:redstone_torch count=1 age=105 pickup-delay=0 on-ground=true
+entity 154 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.5576255623489893E-8 0 2.5073900289928512E-9 item=minecraft:lever count=1 age=105 pickup-delay=0 on-ground=true
+
+entity-order 155 entities e2 e3
+entity 155 e2 2.260198259103505 1.0 -1.2759069145372948 7.472402130969524E-9 0 8.695525646990817E-9 item=minecraft:redstone_torch count=1 age=106 pickup-delay=0 on-ground=true
+entity 155 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.5576255623489893E-8 -0.04 2.5073900289928512E-9 item=minecraft:lever count=1 age=106 pickup-delay=0 on-ground=true
+
+entity-order 156 entities e2 e3
+entity 156 e2 2.260198259103505 1.0 -1.2759069145372948 7.472402130969524E-9 -0.04 8.695525646990817E-9 item=minecraft:redstone_torch count=1 age=107 pickup-delay=0 on-ground=true
+entity 156 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.5576255623489893E-8 -0.08 2.5073900289928512E-9 item=minecraft:lever count=1 age=107 pickup-delay=0 on-ground=true
+
+entity-order 157 entities e2 e3
+entity 157 e2 2.260198259103505 1.0 -1.2759069145372948 7.472402130969524E-9 -0.08 8.695525646990817E-9 item=minecraft:redstone_torch count=1 age=108 pickup-delay=0 on-ground=true
+entity 157 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.5576255623489893E-8 -0.12 2.5073900289928512E-9 item=minecraft:lever count=1 age=108 pickup-delay=0 on-ground=true
+
+entity-order 158 entities e2 e3
+entity 158 e2 2.260198259103505 1.0 -1.2759069145372948 7.472402130969524E-9 -0.12 8.695525646990817E-9 item=minecraft:redstone_torch count=1 age=109 pickup-delay=0 on-ground=true
+entity 158 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.503883981887998E-8 0 1.4743454853042718E-9 item=minecraft:lever count=1 age=109 pickup-delay=0 on-ground=true
+
+entity-order 159 entities e2 e3
+entity 159 e2 2.260198259103505 1.0 -1.2759069145372948 4.393772894836836E-9 0 5.112969594577968E-9 item=minecraft:redstone_torch count=1 age=110 pickup-delay=0 on-ground=true
+entity 159 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.503883981887998E-8 -0.04 1.4743454853042718E-9 item=minecraft:lever count=1 age=110 pickup-delay=0 on-ground=true
+
+entity-order 160 entities e2 e3
+entity 160 e2 2.260198259103505 1.0 -1.2759069145372948 4.393772894836836E-9 -0.04 5.112969594577968E-9 item=minecraft:redstone_torch count=1 age=111 pickup-delay=0 on-ground=true
+entity 160 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.503883981887998E-8 -0.08 1.4743454853042718E-9 item=minecraft:lever count=1 age=111 pickup-delay=0 on-ground=true
+
+entity-order 161 entities e2 e3
+entity 161 e2 2.260198259103505 1.0 -1.2759069145372948 4.393772894836836E-9 -0.08 5.112969594577968E-9 item=minecraft:redstone_torch count=1 age=112 pickup-delay=0 on-ground=true
+entity 161 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.503883981887998E-8 -0.12 1.4743454853042718E-9 item=minecraft:lever count=1 age=112 pickup-delay=0 on-ground=true
+
+entity-order 162 entities e2 e3
+entity 162 e2 2.260198259103505 1.0 -1.2759069145372948 4.393772894836836E-9 -0.12 5.112969594577968E-9 item=minecraft:redstone_torch count=1 age=113 pickup-delay=0 on-ground=true
+entity 162 e3 -0.8912002167225135 1.0 -2.5513429615686136 -8.842838702715055E-9 0 8.66915232533728E-10 item=minecraft:lever count=1 age=113 pickup-delay=0 on-ground=true
+
+entity-order 163 entities e2 e3
+entity 163 e2 2.260198259103505 1.0 -1.2759069145372948 2.583538721958218E-9 0 3.0064264239305275E-9 item=minecraft:redstone_torch count=1 age=114 pickup-delay=0 on-ground=true
+entity 163 e3 -0.8912002167225135 1.0 -2.5513429615686136 -8.842838702715055E-9 -0.04 8.66915232533728E-10 item=minecraft:lever count=1 age=114 pickup-delay=0 on-ground=true
+
+entity-order 164 entities e2 e3
+entity 164 e2 2.260198259103505 1.0 -1.2759069145372948 2.583538721958218E-9 -0.04 3.0064264239305275E-9 item=minecraft:redstone_torch count=1 age=115 pickup-delay=0 on-ground=true
+entity 164 e3 -0.8912002167225135 1.0 -2.5513429615686136 -8.842838702715055E-9 -0.08 8.66915232533728E-10 item=minecraft:lever count=1 age=115 pickup-delay=0 on-ground=true
+
+entity-order 165 entities e2 e3
+entity 165 e2 2.260198259103505 1.0 -1.2759069145372948 2.583538721958218E-9 -0.08 3.0064264239305275E-9 item=minecraft:redstone_torch count=1 age=116 pickup-delay=0 on-ground=true
+entity 165 e3 -0.8912002167225135 1.0 -2.5513429615686136 -8.842838702715055E-9 -0.12 8.66915232533728E-10 item=minecraft:lever count=1 age=116 pickup-delay=0 on-ground=true
+
+entity-order 166 entities e2 e3
+entity 166 e2 2.260198259103505 1.0 -1.2759069145372948 2.583538721958218E-9 -0.12 3.0064264239305275E-9 item=minecraft:redstone_torch count=1 age=117 pickup-delay=0 on-ground=true
+entity 166 e3 -0.8912002167225135 1.0 -2.5513429615686136 -5.199589680054118E-9 0 5.097462079886292E-10 item=minecraft:lever count=1 age=117 pickup-delay=0 on-ground=true
+
+entity-order 167 entities e2 e3
+entity 167 e2 2.260198259103505 1.0 -1.2759069145372948 1.519120921270413E-9 0 1.7677789150345533E-9 item=minecraft:redstone_torch count=1 age=118 pickup-delay=0 on-ground=true
+entity 167 e3 -0.8912002167225135 1.0 -2.5513429615686136 -5.199589680054118E-9 -0.04 5.097462079886292E-10 item=minecraft:lever count=1 age=118 pickup-delay=0 on-ground=true
+
+entity-order 168 entities e2 e3
+entity 168 e2 2.260198259103505 1.0 -1.2759069145372948 1.519120921270413E-9 -0.04 1.7677789150345533E-9 item=minecraft:redstone_torch count=1 age=119 pickup-delay=0 on-ground=true
+entity 168 e3 -0.8912002167225135 1.0 -2.5513429615686136 -5.199589680054118E-9 -0.08 5.097462079886292E-10 item=minecraft:lever count=1 age=119 pickup-delay=0 on-ground=true
+
+entity-order 169 entities e2 e3
+entity 169 e2 2.260198259103505 1.0 -1.2759069145372948 1.519120921270413E-9 -0.08 1.7677789150345533E-9 item=minecraft:redstone_torch count=1 age=120 pickup-delay=0 on-ground=true
+entity 169 e3 -0.8912002167225135 1.0 -2.5513429615686136 -5.199589680054118E-9 -0.12 5.097462079886292E-10 item=minecraft:lever count=1 age=120 pickup-delay=0 on-ground=true
+
+entity-order 170 entities e2 e3
+entity 170 e2 2.260198259103505 1.0 -1.2759069145372948 1.519120921270413E-9 -0.12 1.7677789150345533E-9 item=minecraft:redstone_torch count=1 age=121 pickup-delay=0 on-ground=true
+entity 170 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.0573590393121598E-9 0 2.997308004374897E-10 item=minecraft:lever count=1 age=121 pickup-delay=0 on-ground=true
+
+entity-order 171 entities e2 e3
+entity 171 e2 2.260198259103505 1.0 -1.2759069145372948 8.932431915292924E-10 0 1.0394541065652089E-9 item=minecraft:redstone_torch count=1 age=122 pickup-delay=0 on-ground=true
+entity 171 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.0573590393121598E-9 -0.04 2.997308004374897E-10 item=minecraft:lever count=1 age=122 pickup-delay=0 on-ground=true
+
+entity-order 172 entities e2 e3
+entity 172 e2 2.260198259103505 1.0 -1.2759069145372948 8.932431915292924E-10 -0.04 1.0394541065652089E-9 item=minecraft:redstone_torch count=1 age=123 pickup-delay=0 on-ground=true
+entity 172 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.0573590393121598E-9 -0.08 2.997308004374897E-10 item=minecraft:lever count=1 age=123 pickup-delay=0 on-ground=true
+
+entity-order 173 entities e2 e3
+entity 173 e2 2.260198259103505 1.0 -1.2759069145372948 8.932431915292924E-10 -0.08 1.0394541065652089E-9 item=minecraft:redstone_torch count=1 age=124 pickup-delay=0 on-ground=true
+entity 173 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.0573590393121598E-9 -0.12 2.997308004374897E-10 item=minecraft:lever count=1 age=124 pickup-delay=0 on-ground=true
+
+entity-order 174 entities e2 e3
+entity 174 e2 2.260198259103505 1.0 -1.2759069145372948 8.932431915292924E-10 -0.12 1.0394541065652089E-9 item=minecraft:redstone_torch count=1 age=125 pickup-delay=0 on-ground=true
+entity 174 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.797727295890487E-9 0 1.7624172837966904E-10 item=minecraft:lever count=1 age=125 pickup-delay=0 on-ground=true
+
+entity-order 175 entities e2 e3
+entity 175 e2 2.260198259103505 1.0 -1.2759069145372948 5.252270494347355E-10 0 6.111990761209853E-10 item=minecraft:redstone_torch count=1 age=126 pickup-delay=0 on-ground=true
+entity 175 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.797727295890487E-9 -0.04 1.7624172837966904E-10 item=minecraft:lever count=1 age=126 pickup-delay=0 on-ground=true
+
+entity-order 176 entities e2 e3
+entity 176 e2 2.260198259103505 1.0 -1.2759069145372948 5.252270494347355E-10 -0.04 6.111990761209853E-10 item=minecraft:redstone_torch count=1 age=127 pickup-delay=0 on-ground=true
+entity 176 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.797727295890487E-9 -0.08 1.7624172837966904E-10 item=minecraft:lever count=1 age=127 pickup-delay=0 on-ground=true
+
+entity-order 177 entities e2 e3
+entity 177 e2 2.260198259103505 1.0 -1.2759069145372948 5.252270494347355E-10 -0.08 6.111990761209853E-10 item=minecraft:redstone_torch count=1 age=128 pickup-delay=0 on-ground=true
+entity 177 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.797727295890487E-9 -0.12 1.7624172837966904E-10 item=minecraft:lever count=1 age=128 pickup-delay=0 on-ground=true
+
+entity-order 178 entities e2 e3
+entity 178 e2 2.260198259103505 1.0 -1.2759069145372948 5.252270494347355E-10 -0.12 6.111990761209853E-10 item=minecraft:redstone_torch count=1 age=129 pickup-delay=0 on-ground=true
+entity 178 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.05706375627928E-9 0 1.0363014670803241E-10 item=minecraft:lever count=1 age=129 pickup-delay=0 on-ground=true
+
+entity-order 179 entities e2 e3
+entity 179 e2 2.260198259103505 1.0 -1.2759069145372948 3.088335361231484E-10 0 3.5938509289800074E-10 item=minecraft:redstone_torch count=1 age=130 pickup-delay=0 on-ground=true
+entity 179 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.05706375627928E-9 -0.04 1.0363014670803241E-10 item=minecraft:lever count=1 age=130 pickup-delay=0 on-ground=true
+
+entity-order 180 entities e2 e3
+entity 180 e2 2.260198259103505 1.0 -1.2759069145372948 3.088335361231484E-10 -0.04 3.5938509289800074E-10 item=minecraft:redstone_torch count=1 age=131 pickup-delay=0 on-ground=true
+entity 180 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.05706375627928E-9 -0.08 1.0363014670803241E-10 item=minecraft:lever count=1 age=131 pickup-delay=0 on-ground=true
+
+entity-order 181 entities e2 e3
+entity 181 e2 2.260198259103505 1.0 -1.2759069145372948 3.088335361231484E-10 -0.08 3.5938509289800074E-10 item=minecraft:redstone_torch count=1 age=132 pickup-delay=0 on-ground=true
+entity 181 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.05706375627928E-9 -0.12 1.0363014670803241E-10 item=minecraft:lever count=1 age=132 pickup-delay=0 on-ground=true
+
+entity-order 182 entities e2 e3
+entity 182 e2 2.260198259103505 1.0 -1.2759069145372948 3.088335361231484E-10 -0.12 3.5938509289800074E-10 item=minecraft:redstone_torch count=1 age=133 pickup-delay=0 on-ground=true
+entity 182 e3 -0.8912002167225135 1.0 -2.5513429615686136 -6.21553551194079E-10 0 6.093453239174644E-11 item=minecraft:lever count=1 age=133 pickup-delay=0 on-ground=true
+
+entity-order 183 entities e2 e3
+entity 183 e2 2.260198259103505 1.0 -1.2759069145372948 1.8159413750106119E-10 0 2.1131845587367707E-10 item=minecraft:redstone_torch count=1 age=134 pickup-delay=0 on-ground=true
+entity 183 e3 -0.8912002167225135 1.0 -2.5513429615686136 -6.21553551194079E-10 -0.04 6.093453239174644E-11 item=minecraft:lever count=1 age=134 pickup-delay=0 on-ground=true
+
+entity-order 184 entities e2 e3
+entity 184 e2 2.260198259103505 1.0 -1.2759069145372948 1.8159413750106119E-10 -0.04 2.1131845587367707E-10 item=minecraft:redstone_torch count=1 age=135 pickup-delay=0 on-ground=true
+entity 184 e3 -0.8912002167225135 1.0 -2.5513429615686136 -6.21553551194079E-10 -0.08 6.093453239174644E-11 item=minecraft:lever count=1 age=135 pickup-delay=0 on-ground=true
+
+entity-order 185 entities e2 e3
+entity 185 e2 2.260198259103505 1.0 -1.2759069145372948 1.8159413750106119E-10 -0.08 2.1131845587367707E-10 item=minecraft:redstone_torch count=1 age=136 pickup-delay=0 on-ground=true
+entity 185 e3 -0.8912002167225135 1.0 -2.5513429615686136 -6.21553551194079E-10 -0.12 6.093453239174644E-11 item=minecraft:lever count=1 age=136 pickup-delay=0 on-ground=true
+
+entity-order 186 entities e2 e3
+entity 186 e2 2.260198259103505 1.0 -1.2759069145372948 1.8159413750106119E-10 -0.12 2.1131845587367707E-10 item=minecraft:redstone_torch count=1 age=137 pickup-delay=0 on-ground=true
+entity 186 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.654735248532173E-10 0 3.5829508649272216E-11 item=minecraft:lever count=1 age=137 pickup-delay=0 on-ground=true
+
+entity-order 187 entities e2 e3
+entity 187 e2 2.260198259103505 1.0 -1.2759069145372948 1.067773635878872E-10 0 1.2425526454851913E-10 item=minecraft:redstone_torch count=1 age=138 pickup-delay=0 on-ground=true
+entity 187 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.654735248532173E-10 -0.04 3.5829508649272216E-11 item=minecraft:lever count=1 age=138 pickup-delay=0 on-ground=true
+
+entity-order 188 entities e2 e3
+entity 188 e2 2.260198259103505 1.0 -1.2759069145372948 1.067773635878872E-10 -0.04 1.2425526454851913E-10 item=minecraft:redstone_torch count=1 age=139 pickup-delay=0 on-ground=true
+entity 188 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.654735248532173E-10 -0.08 3.5829508649272216E-11 item=minecraft:lever count=1 age=139 pickup-delay=0 on-ground=true
+
+entity-order 189 entities e2 e3
+entity 189 e2 2.260198259103505 1.0 -1.2759069145372948 1.067773635878872E-10 -0.08 1.2425526454851913E-10 item=minecraft:redstone_torch count=1 age=140 pickup-delay=0 on-ground=true
+entity 189 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.654735248532173E-10 -0.12 3.5829508649272216E-11 item=minecraft:lever count=1 age=140 pickup-delay=0 on-ground=true
+
+entity-order 190 entities e2 e3
+entity 190 e2 2.260198259103505 1.0 -1.2759069145372948 1.067773635878872E-10 -0.12 1.2425526454851913E-10 item=minecraft:redstone_torch count=1 age=141 pickup-delay=0 on-ground=true
+entity 190 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.1489845422334003E-10 0 2.1067753204292357E-11 item=minecraft:lever count=1 age=141 pickup-delay=0 on-ground=true
+
+entity-order 191 entities e2 e3
+entity 191 e2 2.260198259103505 1.0 -1.2759069145372948 6.278509610318909E-11 0 7.306210290147062E-11 item=minecraft:redstone_torch count=1 age=142 pickup-delay=0 on-ground=true
+entity 191 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.1489845422334003E-10 -0.04 2.1067753204292357E-11 item=minecraft:lever count=1 age=142 pickup-delay=0 on-ground=true
+
+entity-order 192 entities e2 e3
+entity 192 e2 2.260198259103505 1.0 -1.2759069145372948 6.278509610318909E-11 -0.04 7.306210290147062E-11 item=minecraft:redstone_torch count=1 age=143 pickup-delay=0 on-ground=true
+entity 192 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.1489845422334003E-10 -0.08 2.1067753204292357E-11 item=minecraft:lever count=1 age=143 pickup-delay=0 on-ground=true
+
+entity-order 193 entities e2 e3
+entity 193 e2 2.260198259103505 1.0 -1.2759069145372948 6.278509610318909E-11 -0.08 7.306210290147062E-11 item=minecraft:redstone_torch count=1 age=144 pickup-delay=0 on-ground=true
+entity 193 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.1489845422334003E-10 -0.12 2.1067753204292357E-11 item=minecraft:lever count=1 age=144 pickup-delay=0 on-ground=true
+
+entity-order 194 entities e2 e3
+entity 194 e2 2.260198259103505 1.0 -1.2759069145372948 6.278509610318909E-11 -0.12 7.306210290147062E-11 item=minecraft:redstone_torch count=1 age=145 pickup-delay=0 on-ground=true
+entity 194 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.263603037897984E-10 0 1.2387840129813963E-11 item=minecraft:lever count=1 age=145 pickup-delay=0 on-ground=true
+
+entity-order 195 entities e2 e3
+entity 195 e2 2.260198259103505 1.0 -1.2759069145372948 3.6917640221020264E-11 0 4.2960520826066693E-11 item=minecraft:redstone_torch count=1 age=146 pickup-delay=0 on-ground=true
+entity 195 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.263603037897984E-10 -0.04 1.2387840129813963E-11 item=minecraft:lever count=1 age=146 pickup-delay=0 on-ground=true
+
+entity-order 196 entities e2 e3
+entity 196 e2 2.260198259103505 1.0 -1.2759069145372948 3.6917640221020264E-11 -0.04 4.2960520826066693E-11 item=minecraft:redstone_torch count=1 age=147 pickup-delay=0 on-ground=true
+entity 196 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.263603037897984E-10 -0.08 1.2387840129813963E-11 item=minecraft:lever count=1 age=147 pickup-delay=0 on-ground=true
+
+entity-order 197 entities e2 e3
+entity 197 e2 2.260198259103505 1.0 -1.2759069145372948 3.6917640221020264E-11 -0.08 4.2960520826066693E-11 item=minecraft:redstone_torch count=1 age=148 pickup-delay=0 on-ground=true
+entity 197 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.263603037897984E-10 -0.12 1.2387840129813963E-11 item=minecraft:lever count=1 age=148 pickup-delay=0 on-ground=true
+
+entity-order 198 entities e2 e3
+entity 198 e2 2.260198259103505 1.0 -1.2759069145372948 3.6917640221020264E-11 -0.12 4.2960520826066693E-11 item=minecraft:redstone_torch count=1 age=149 pickup-delay=0 on-ground=true
+entity 198 e3 -0.8912002167225135 1.0 -2.5513429615686136 -7.42998660998092E-11 0 7.284050728796439E-12 item=minecraft:lever count=1 age=149 pickup-delay=0 on-ground=true
+
+entity-order 199 entities e2 e3
+entity 199 e2 2.260198259103505 1.0 -1.2759069145372948 2.1707574632819044E-11 0 2.5260788785888627E-11 item=minecraft:redstone_torch count=1 age=150 pickup-delay=0 on-ground=true
+entity 199 e3 -0.8912002167225135 1.0 -2.5513429615686136 -7.42998660998092E-11 -0.04 7.284050728796439E-12 item=minecraft:lever count=1 age=150 pickup-delay=0 on-ground=true
+
+entity-order 200 entities e2 e3
+entity 200 e2 2.260198259103505 1.0 -1.2759069145372948 2.1707574632819044E-11 -0.04 2.5260788785888627E-11 item=minecraft:redstone_torch count=1 age=151 pickup-delay=0 on-ground=true
+entity 200 e3 -0.8912002167225135 1.0 -2.5513429615686136 -7.42998660998092E-11 -0.08 7.284050728796439E-12 item=minecraft:lever count=1 age=151 pickup-delay=0 on-ground=true
+
+entity-order 201 entities e2 e3
+entity 201 e2 2.260198259103505 1.0 -1.2759069145372948 2.1707574632819044E-11 -0.08 2.5260788785888627E-11 item=minecraft:redstone_torch count=1 age=152 pickup-delay=0 on-ground=true
+entity 201 e3 -0.8912002167225135 1.0 -2.5513429615686136 -7.42998660998092E-11 -0.12 7.284050728796439E-12 item=minecraft:lever count=1 age=152 pickup-delay=0 on-ground=true
+
+entity-order 202 entities e2 e3
+entity 202 e2 2.260198259103505 1.0 -1.2759069145372948 2.1707574632819044E-11 -0.12 2.5260788785888627E-11 item=minecraft:redstone_torch count=1 age=153 pickup-delay=0 on-ground=true
+entity 202 e3 -0.8912002167225135 1.0 -2.5513429615686136 -4.3688325659875995E-11 0 4.283022259222256E-12 item=minecraft:lever count=1 age=153 pickup-delay=0 on-ground=true
+
+entity-order 203 entities e2 e3
+entity 203 e2 2.260198259103505 1.0 -1.2759069145372948 1.2764055167618895E-11 0 1.485334529971757E-11 item=minecraft:redstone_torch count=1 age=154 pickup-delay=0 on-ground=true
+entity 203 e3 -0.8912002167225135 1.0 -2.5513429615686136 -4.3688325659875995E-11 -0.04 4.283022259222256E-12 item=minecraft:lever count=1 age=154 pickup-delay=0 on-ground=true
+
+entity-order 204 entities e2 e3
+entity 204 e2 2.260198259103505 1.0 -1.2759069145372948 1.2764055167618895E-11 -0.04 1.485334529971757E-11 item=minecraft:redstone_torch count=1 age=155 pickup-delay=0 on-ground=true
+entity 204 e3 -0.8912002167225135 1.0 -2.5513429615686136 -4.3688325659875995E-11 -0.08 4.283022259222256E-12 item=minecraft:lever count=1 age=155 pickup-delay=0 on-ground=true
+
+entity-order 205 entities e2 e3
+entity 205 e2 2.260198259103505 1.0 -1.2759069145372948 1.2764055167618895E-11 -0.08 1.485334529971757E-11 item=minecraft:redstone_torch count=1 age=156 pickup-delay=0 on-ground=true
+entity 205 e3 -0.8912002167225135 1.0 -2.5513429615686136 -4.3688325659875995E-11 -0.12 4.283022259222256E-12 item=minecraft:lever count=1 age=156 pickup-delay=0 on-ground=true
+
+entity-order 206 entities e2 e3
+entity 206 e2 2.260198259103505 1.0 -1.2759069145372948 1.2764055167618895E-11 -0.12 1.485334529971757E-11 item=minecraft:redstone_torch count=1 age=157 pickup-delay=0 on-ground=true
+entity 206 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.5688738071202E-11 0 2.5184173416684028E-12 item=minecraft:lever count=1 age=157 pickup-delay=0 on-ground=true
+
+entity-order 207 entities e2 e3
+entity 207 e2 2.260198259103505 1.0 -1.2759069145372948 7.505265193270508E-12 0 8.733767914479674E-12 item=minecraft:redstone_torch count=1 age=158 pickup-delay=0 on-ground=true
+entity 207 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.5688738071202E-11 -0.04 2.5184173416684028E-12 item=minecraft:lever count=1 age=158 pickup-delay=0 on-ground=true
+
+entity-order 208 entities e2 e3
+entity 208 e2 2.260198259103505 1.0 -1.2759069145372948 7.505265193270508E-12 -0.04 8.733767914479674E-12 item=minecraft:redstone_torch count=1 age=159 pickup-delay=0 on-ground=true
+entity 208 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.5688738071202E-11 -0.08 2.5184173416684028E-12 item=minecraft:lever count=1 age=159 pickup-delay=0 on-ground=true
+
+entity-order 209 entities e2 e3
+entity 209 e2 2.260198259103505 1.0 -1.2759069145372948 7.505265193270508E-12 -0.08 8.733767914479674E-12 item=minecraft:redstone_torch count=1 age=160 pickup-delay=0 on-ground=true
+entity 209 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.5688738071202E-11 -0.12 2.5184173416684028E-12 item=minecraft:lever count=1 age=160 pickup-delay=0 on-ground=true
+
+entity-order 210 entities e2 e3
+entity 210 e2 2.260198259103505 1.0 -1.2759069145372948 7.505265193270508E-12 -0.12 8.733767914479674E-12 item=minecraft:redstone_torch count=1 age=161 pickup-delay=0 on-ground=true
+entity 210 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.5104979504785537E-11 0 1.480829545809517E-12 item=minecraft:lever count=1 age=161 pickup-delay=0 on-ground=true
+
+entity-order 211 entities e2 e3
+entity 211 e2 2.260198259103505 1.0 -1.2759069145372948 4.413096377412935E-12 0 5.135456050122597E-12 item=minecraft:redstone_torch count=1 age=162 pickup-delay=0 on-ground=true
+entity 211 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.5104979504785537E-11 -0.04 1.480829545809517E-12 item=minecraft:lever count=1 age=162 pickup-delay=0 on-ground=true
+
+entity-order 212 entities e2 e3
+entity 212 e2 2.260198259103505 1.0 -1.2759069145372948 4.413096377412935E-12 -0.04 5.135456050122597E-12 item=minecraft:redstone_torch count=1 age=163 pickup-delay=0 on-ground=true
+entity 212 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.5104979504785537E-11 -0.08 1.480829545809517E-12 item=minecraft:lever count=1 age=163 pickup-delay=0 on-ground=true
+
+entity-order 213 entities e2 e3
+entity 213 e2 2.260198259103505 1.0 -1.2759069145372948 4.413096377412935E-12 -0.08 5.135456050122597E-12 item=minecraft:redstone_torch count=1 age=164 pickup-delay=0 on-ground=true
+entity 213 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.5104979504785537E-11 -0.12 1.480829545809517E-12 item=minecraft:lever count=1 age=164 pickup-delay=0 on-ground=true
+
+entity-order 214 entities e2 e3
+entity 214 e2 2.260198259103505 1.0 -1.2759069145372948 4.413096377412935E-12 -0.12 5.135456050122597E-12 item=minecraft:redstone_torch count=1 age=165 pickup-delay=0 on-ground=true
+entity 214 e3 -0.8912002167225135 1.0 -2.5513429615686136 -8.881728841938217E-12 0 8.707278604942005E-13 item=minecraft:lever count=1 age=165 pickup-delay=0 on-ground=true
+
+entity-order 215 entities e2 e3
+entity 215 e2 2.260198259103505 1.0 -1.2759069145372948 2.5949009308555194E-12 0 3.0196484611203446E-12 item=minecraft:redstone_torch count=1 age=166 pickup-delay=0 on-ground=true
+entity 215 e3 -0.8912002167225135 1.0 -2.5513429615686136 -8.881728841938217E-12 -0.04 8.707278604942005E-13 item=minecraft:lever count=1 age=166 pickup-delay=0 on-ground=true
+
+entity-order 216 entities e2 e3
+entity 216 e2 2.260198259103505 1.0 -1.2759069145372948 2.5949009308555194E-12 -0.04 3.0196484611203446E-12 item=minecraft:redstone_torch count=1 age=167 pickup-delay=0 on-ground=true
+entity 216 e3 -0.8912002167225135 1.0 -2.5513429615686136 -8.881728841938217E-12 -0.08 8.707278604942005E-13 item=minecraft:lever count=1 age=167 pickup-delay=0 on-ground=true
+
+entity-order 217 entities e2 e3
+entity 217 e2 2.260198259103505 1.0 -1.2759069145372948 2.5949009308555194E-12 -0.08 3.0196484611203446E-12 item=minecraft:redstone_torch count=1 age=168 pickup-delay=0 on-ground=true
+entity 217 e3 -0.8912002167225135 1.0 -2.5513429615686136 -8.881728841938217E-12 -0.12 8.707278604942005E-13 item=minecraft:lever count=1 age=168 pickup-delay=0 on-ground=true
+
+entity-order 218 entities e2 e3
+entity 218 e2 2.260198259103505 1.0 -1.2759069145372948 2.5949009308555194E-12 -0.12 3.0196484611203446E-12 item=minecraft:redstone_torch count=1 age=169 pickup-delay=0 on-ground=true
+entity 218 e3 -0.8912002167225135 1.0 -2.5513429615686136 -5.222457084216826E-12 0 5.119880334548193E-13 item=minecraft:lever count=1 age=169 pickup-delay=0 on-ground=true
+
+entity-order 219 entities e2 e3
+entity 219 e2 2.260198259103505 1.0 -1.2759069145372948 1.5258019007738484E-12 0 1.7755534736839559E-12 item=minecraft:redstone_torch count=1 age=170 pickup-delay=0 on-ground=true
+entity 219 e3 -0.8912002167225135 1.0 -2.5513429615686136 -5.222457084216826E-12 -0.04 5.119880334548193E-13 item=minecraft:lever count=1 age=170 pickup-delay=0 on-ground=true
+
+entity-order 220 entities e2 e3
+entity 220 e2 2.260198259103505 1.0 -1.2759069145372948 1.5258019007738484E-12 -0.04 1.7755534736839559E-12 item=minecraft:redstone_torch count=1 age=171 pickup-delay=0 on-ground=true
+entity 220 e3 -0.8912002167225135 1.0 -2.5513429615686136 -5.222457084216826E-12 -0.08 5.119880334548193E-13 item=minecraft:lever count=1 age=171 pickup-delay=0 on-ground=true
+
+entity-order 221 entities e2 e3
+entity 221 e2 2.260198259103505 1.0 -1.2759069145372948 1.5258019007738484E-12 -0.08 1.7755534736839559E-12 item=minecraft:redstone_torch count=1 age=172 pickup-delay=0 on-ground=true
+entity 221 e3 -0.8912002167225135 1.0 -2.5513429615686136 -5.222457084216826E-12 -0.12 5.119880334548193E-13 item=minecraft:lever count=1 age=172 pickup-delay=0 on-ground=true
+
+entity-order 222 entities e2 e3
+entity 222 e2 2.260198259103505 1.0 -1.2759069145372948 1.5258019007738484E-12 -0.12 1.7755534736839559E-12 item=minecraft:redstone_torch count=1 age=173 pickup-delay=0 on-ground=true
+entity 222 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.0708050743119314E-12 0 3.010489939441637E-13 item=minecraft:lever count=1 age=173 pickup-delay=0 on-ground=true
+
+entity-order 223 entities e2 e3
+entity 223 e2 2.260198259103505 1.0 -1.2759069145372948 8.97171607872344E-13 0 1.0440255475107502E-12 item=minecraft:redstone_torch count=1 age=174 pickup-delay=0 on-ground=true
+entity 223 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.0708050743119314E-12 -0.04 3.010489939441637E-13 item=minecraft:lever count=1 age=174 pickup-delay=0 on-ground=true
+
+change 224 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+change 224 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 224 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side]
+change 224 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none]
+entity-order 224 entities e2 e3
+entity 224 e2 2.260198259103505 1.0 -1.2759069145372948 8.97171607872344E-13 -0.04 1.0440255475107502E-12 item=minecraft:redstone_torch count=1 age=175 pickup-delay=0 on-ground=true
+entity 224 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.0708050743119314E-12 -0.08 3.010489939441637E-13 item=minecraft:lever count=1 age=175 pickup-delay=0 on-ground=true
+
+entity-order 225 entities e2 e3
+entity 225 e2 2.260198259103505 1.0 -1.2759069145372948 8.97171607872344E-13 -0.08 1.0440255475107502E-12 item=minecraft:redstone_torch count=1 age=176 pickup-delay=0 on-ground=true
+entity 225 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.0708050743119314E-12 -0.12 3.010489939441637E-13 item=minecraft:lever count=1 age=176 pickup-delay=0 on-ground=true
+
+change 226 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false] minecraft:repeater[delay=1,facing=south,locked=false,powered=true]
+entity-order 226 entities e2 e3
+entity 226 e2 2.260198259103505 1.0 -1.2759069145372948 8.97171607872344E-13 -0.12 1.0440255475107502E-12 item=minecraft:redstone_torch count=1 age=177 pickup-delay=0 on-ground=true
+entity 226 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.8056335652653873E-12 0 1.7701682623953527E-13 item=minecraft:lever count=1 age=177 pickup-delay=0 on-ground=true
+
+entity-order 227 entities e2 e3
+entity 227 e2 2.260198259103505 1.0 -1.2759069145372948 5.275369584767286E-13 0 6.138870836672628E-13 item=minecraft:redstone_torch count=1 age=178 pickup-delay=0 on-ground=true
+entity 227 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.8056335652653873E-12 -0.04 1.7701682623953527E-13 item=minecraft:lever count=1 age=178 pickup-delay=0 on-ground=true
+
+change 228 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+change 228 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none]
+change 228 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side]
+change 228 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none]
+change 228 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none]
+change 228 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side]
+change 228 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none]
+change 228 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none]
+change 228 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side]
+change 228 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none]
+change 228 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none]
+change 228 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side]
+change 228 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none]
+change 228 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none]
+change 228 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side]
+change 228 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none]
+change 228 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none]
+change 228 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side]
+change 228 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none]
+change 228 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+change 228 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
+change 228 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+change 228 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+entity-order 228 entities e2 e3
+entity 228 e2 2.260198259103505 1.0 -1.2759069145372948 5.275369584767286E-13 -0.04 6.138870836672628E-13 item=minecraft:redstone_torch count=1 age=179 pickup-delay=0 on-ground=true
+entity 228 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.8056335652653873E-12 -0.08 1.7701682623953527E-13 item=minecraft:lever count=1 age=179 pickup-delay=0 on-ground=true
+
+entity-order 229 entities e2 e3
+entity 229 e2 2.260198259103505 1.0 -1.2759069145372948 5.275369584767286E-13 -0.08 6.138870836672628E-13 item=minecraft:redstone_torch count=1 age=180 pickup-delay=0 on-ground=true
+entity 229 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.8056335652653873E-12 -0.12 1.7701682623953527E-13 item=minecraft:lever count=1 age=180 pickup-delay=0 on-ground=true
+
+change 230 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=true] minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+entity-order 230 entities e2 e3
+entity 230 e2 2.260198259103505 1.0 -1.2759069145372948 5.275369584767286E-13 -0.12 6.138870836672628E-13 item=minecraft:redstone_torch count=1 age=181 pickup-delay=0 on-ground=true
+entity 230 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.0617126431392019E-12 0 1.0408590429546358E-13 item=minecraft:lever count=1 age=181 pickup-delay=0 on-ground=true
+
+entity-order 231 entities e2 e3
+entity 231 e2 2.260198259103505 1.0 -1.2759069145372948 3.1019176277642016E-13 0 3.6096564149414795E-13 item=minecraft:redstone_torch count=1 age=182 pickup-delay=0 on-ground=true
+entity 231 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.0617126431392019E-12 -0.04 1.0408590429546358E-13 item=minecraft:lever count=1 age=182 pickup-delay=0 on-ground=true
+
+change 232 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+change 232 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 232 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side]
+change 232 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none]
+entity-order 232 entities e2 e3
+entity 232 e2 2.260198259103505 1.0 -1.2759069145372948 3.1019176277642016E-13 -0.04 3.6096564149414795E-13 item=minecraft:redstone_torch count=1 age=183 pickup-delay=0 on-ground=true
+entity 232 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.0617126431392019E-12 -0.08 1.0408590429546358E-13 item=minecraft:lever count=1 age=183 pickup-delay=0 on-ground=true
+
+entity-order 233 entities e2 e3
+entity 233 e2 2.260198259103505 1.0 -1.2759069145372948 3.1019176277642016E-13 -0.08 3.6096564149414795E-13 item=minecraft:redstone_torch count=1 age=184 pickup-delay=0 on-ground=true
+entity 233 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.0617126431392019E-12 -0.12 1.0408590429546358E-13 item=minecraft:lever count=1 age=184 pickup-delay=0 on-ground=true
+
+change 234 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false] minecraft:repeater[delay=1,facing=south,locked=false,powered=true]
+entity-order 234 entities e2 e3
+entity 234 e2 2.260198259103505 1.0 -1.2759069145372948 3.1019176277642016E-13 -0.12 3.6096564149414795E-13 item=minecraft:redstone_torch count=1 age=185 pickup-delay=0 on-ground=true
+entity 234 e3 -0.8912002167225135 1.0 -2.5513429615686136 -6.242870969425916E-13 0 6.12025178801039E-14 item=minecraft:lever count=1 age=185 pickup-delay=0 on-ground=true
+
+entity-order 235 entities e2 e3
+entity 235 e2 2.260198259103505 1.0 -1.2759069145372948 1.8239277485349392E-13 0 2.12247818541666E-13 item=minecraft:redstone_torch count=1 age=186 pickup-delay=0 on-ground=true
+entity 235 e3 -0.8912002167225135 1.0 -2.5513429615686136 -6.242870969425916E-13 -0.04 6.12025178801039E-14 item=minecraft:lever count=1 age=186 pickup-delay=0 on-ground=true
+
+change 236 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+change 236 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none]
+change 236 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side]
+change 236 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none]
+change 236 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none]
+change 236 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side]
+change 236 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none]
+change 236 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none]
+change 236 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side]
+change 236 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none]
+change 236 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none]
+change 236 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side]
+change 236 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none]
+change 236 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none]
+change 236 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side]
+change 236 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none]
+change 236 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none]
+change 236 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side]
+change 236 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none]
+change 236 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+change 236 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
+change 236 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+change 236 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+entity-order 236 entities e2 e3
+entity 236 e2 2.260198259103505 1.0 -1.2759069145372948 1.8239277485349392E-13 -0.04 2.12247818541666E-13 item=minecraft:redstone_torch count=1 age=187 pickup-delay=0 on-ground=true
+entity 236 e3 -0.8912002167225135 1.0 -2.5513429615686136 -6.242870969425916E-13 -0.08 6.12025178801039E-14 item=minecraft:lever count=1 age=187 pickup-delay=0 on-ground=true
+
+entity-order 237 entities e2 e3
+entity 237 e2 2.260198259103505 1.0 -1.2759069145372948 1.8239277485349392E-13 -0.08 2.12247818541666E-13 item=minecraft:redstone_torch count=1 age=188 pickup-delay=0 on-ground=true
+entity 237 e3 -0.8912002167225135 1.0 -2.5513429615686136 -6.242870969425916E-13 -0.12 6.12025178801039E-14 item=minecraft:lever count=1 age=188 pickup-delay=0 on-ground=true
+
+change 238 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=true] minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+entity-order 238 entities e2 e3
+entity 238 e2 2.260198259103505 1.0 -1.2759069145372948 1.8239277485349392E-13 -0.12 2.12247818541666E-13 item=minecraft:redstone_torch count=1 age=189 pickup-delay=0 on-ground=true
+entity 238 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.670808499149712E-13 0 3.59870841322718E-14 item=minecraft:lever count=1 age=189 pickup-delay=0 on-ground=true
+
+entity-order 239 entities e2 e3
+entity 239 e2 2.260198259103505 1.0 -1.2759069145372948 1.0724696239833933E-13 0 1.248017298522478E-13 item=minecraft:redstone_torch count=1 age=190 pickup-delay=0 on-ground=true
+entity 239 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.670808499149712E-13 -0.04 3.59870841322718E-14 item=minecraft:lever count=1 age=190 pickup-delay=0 on-ground=true
+
+change 240 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+change 240 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 240 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side]
+change 240 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none]
+entity-order 240 entities e2 e3
+entity 240 e2 2.260198259103505 1.0 -1.2759069145372948 1.0724696239833933E-13 -0.04 1.248017298522478E-13 item=minecraft:redstone_torch count=1 age=191 pickup-delay=0 on-ground=true
+entity 240 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.670808499149712E-13 -0.08 3.59870841322718E-14 item=minecraft:lever count=1 age=191 pickup-delay=0 on-ground=true
+
+change 241 block_ticks 1 1 6 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+change 241 block_ticks 2 1 6 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+entity-order 241 entities e2 e3
+entity 241 e2 2.260198259103505 1.0 -1.2759069145372948 1.0724696239833933E-13 -0.08 1.248017298522478E-13 item=minecraft:redstone_torch count=1 age=192 pickup-delay=0 on-ground=true
+entity 241 e3 -0.8912002167225135 1.0 -2.5513429615686136 -3.670808499149712E-13 -0.12 3.59870841322718E-14 item=minecraft:lever count=1 age=192 pickup-delay=0 on-ground=true
+
+change 242 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false] minecraft:repeater[delay=1,facing=south,locked=false,powered=true]
+entity-order 242 entities e2 e3
+entity 242 e2 2.260198259103505 1.0 -1.2759069145372948 1.0724696239833933E-13 -0.12 1.248017298522478E-13 item=minecraft:redstone_torch count=1 age=193 pickup-delay=0 on-ground=true
+entity 242 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.1584356145468895E-13 0 2.1160407597613204E-14 item=minecraft:lever count=1 age=193 pickup-delay=0 on-ground=true
+
+entity-order 243 entities e2 e3
+entity 243 e2 2.260198259103505 1.0 -1.2759069145372948 6.306122023150129E-14 0 7.338342453237438E-14 item=minecraft:redstone_torch count=1 age=194 pickup-delay=0 on-ground=true
+entity 243 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.1584356145468895E-13 -0.04 2.1160407597613204E-14 item=minecraft:lever count=1 age=194 pickup-delay=0 on-ground=true
+
+change 244 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+change 244 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none]
+change 244 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side]
+change 244 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none]
+change 244 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none]
+change 244 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side]
+change 244 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none]
+change 244 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none]
+change 244 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side]
+change 244 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none]
+change 244 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none]
+change 244 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side]
+change 244 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none]
+change 244 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none]
+change 244 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side]
+change 244 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none]
+change 244 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none]
+change 244 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side]
+change 244 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none]
+change 244 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+change 244 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
+change 244 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+change 244 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+entity-order 244 entities e2 e3
+entity 244 e2 2.260198259103505 1.0 -1.2759069145372948 6.306122023150129E-14 -0.04 7.338342453237438E-14 item=minecraft:redstone_torch count=1 age=195 pickup-delay=0 on-ground=true
+entity 244 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.1584356145468895E-13 -0.08 2.1160407597613204E-14 item=minecraft:lever count=1 age=195 pickup-delay=0 on-ground=true
+
+entity-order 245 entities e2 e3
+entity 245 e2 2.260198259103505 1.0 -1.2759069145372948 6.306122023150129E-14 -0.08 7.338342453237438E-14 item=minecraft:redstone_torch count=1 age=196 pickup-delay=0 on-ground=true
+entity 245 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.1584356145468895E-13 -0.12 2.1160407597613204E-14 item=minecraft:lever count=1 age=196 pickup-delay=0 on-ground=true
+
+change 246 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=true] minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+entity-order 246 entities e2 e3
+entity 246 e2 2.260198259103505 1.0 -1.2759069145372948 6.306122023150129E-14 -0.12 7.338342453237438E-14 item=minecraft:redstone_torch count=1 age=197 pickup-delay=0 on-ground=true
+entity 246 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.269160268977137E-13 0 1.2442320918565073E-14 item=minecraft:lever count=1 age=197 pickup-delay=0 on-ground=true
+
+entity-order 247 entities e2 e3
+entity 247 e2 2.260198259103505 1.0 -1.2759069145372948 3.708000122479445E-14 0 4.3149457964037145E-14 item=minecraft:redstone_torch count=1 age=198 pickup-delay=0 on-ground=true
+entity 247 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.269160268977137E-13 -0.04 1.2442320918565073E-14 item=minecraft:lever count=1 age=198 pickup-delay=0 on-ground=true
+
+change 248 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+change 248 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 248 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side]
+change 248 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none]
+entity-order 248 entities e2 e3
+entity 248 e2 2.260198259103505 1.0 -1.2759069145372948 3.708000122479445E-14 -0.04 4.3149457964037145E-14 item=minecraft:redstone_torch count=1 age=199 pickup-delay=0 on-ground=true
+entity 248 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.269160268977137E-13 -0.08 1.2442320918565073E-14 item=minecraft:lever count=1 age=199 pickup-delay=0 on-ground=true
+
+entity-order 249 entities e2 e3
+entity 249 e2 2.260198259103505 1.0 -1.2759069145372948 3.708000122479445E-14 -0.08 4.3149457964037145E-14 item=minecraft:redstone_torch count=1 age=200 pickup-delay=0 on-ground=true
+entity 249 e3 -0.8912002167225135 1.0 -2.5513429615686136 -1.269160268977137E-13 -0.12 1.2442320918565073E-14 item=minecraft:lever count=1 age=200 pickup-delay=0 on-ground=true
+
+change 250 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false] minecraft:repeater[delay=1,facing=south,locked=false,powered=true]
+entity-order 250 entities e2 e3
+entity 250 e2 2.260198259103505 1.0 -1.2759069145372948 3.708000122479445E-14 -0.12 4.3149457964037145E-14 item=minecraft:redstone_torch count=1 age=201 pickup-delay=0 on-ground=true
+entity 250 e3 -0.8912002167225135 1.0 -2.5513429615686136 -7.462663132012207E-14 0 7.316085435803421E-15 item=minecraft:lever count=1 age=201 pickup-delay=0 on-ground=true
+
+entity-order 251 entities e2 e3
+entity 251 e2 2.260198259103505 1.0 -1.2759069145372948 2.1803042912638316E-14 0 2.537188383418669E-14 item=minecraft:redstone_torch count=1 age=202 pickup-delay=0 on-ground=true
+entity 251 e3 -0.8912002167225135 1.0 -2.5513429615686136 -7.462663132012207E-14 -0.04 7.316085435803421E-15 item=minecraft:lever count=1 age=202 pickup-delay=0 on-ground=true
+
+change 252 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+change 252 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none]
+change 252 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side]
+change 252 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none]
+change 252 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none]
+change 252 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side]
+change 252 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none]
+change 252 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none]
+change 252 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side]
+change 252 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none]
+change 252 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none]
+change 252 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side]
+change 252 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none]
+change 252 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none]
+change 252 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side]
+change 252 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none]
+change 252 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none]
+change 252 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side]
+change 252 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none]
+change 252 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+change 252 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
+change 252 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+change 252 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+entity-order 252 entities e2 e3
+entity 252 e2 2.260198259103505 1.0 -1.2759069145372948 2.1803042912638316E-14 -0.04 2.537188383418669E-14 item=minecraft:redstone_torch count=1 age=203 pickup-delay=0 on-ground=true
+entity 252 e3 -0.8912002167225135 1.0 -2.5513429615686136 -7.462663132012207E-14 -0.08 7.316085435803421E-15 item=minecraft:lever count=1 age=203 pickup-delay=0 on-ground=true
+
+entity-order 253 entities e2 e3
+entity 253 e2 2.260198259103505 1.0 -1.2759069145372948 2.1803042912638316E-14 -0.08 2.537188383418669E-14 item=minecraft:redstone_torch count=1 age=204 pickup-delay=0 on-ground=true
+entity 253 e3 -0.8912002167225135 1.0 -2.5513429615686136 -7.462663132012207E-14 -0.12 7.316085435803421E-15 item=minecraft:lever count=1 age=204 pickup-delay=0 on-ground=true
+
+change 254 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=true] minecraft:repeater[delay=1,facing=south,locked=false,powered=false]
+entity-order 254 entities e2 e3
+entity 254 e2 2.260198259103505 1.0 -1.2759069145372948 2.1803042912638316E-14 -0.12 2.537188383418669E-14 item=minecraft:redstone_torch count=1 age=205 pickup-delay=0 on-ground=true
+entity 254 e3 -0.8912002167225135 1.0 -2.5513429615686136 -4.3880463628740875E-14 0 4.301858668836504E-15 item=minecraft:lever count=1 age=205 pickup-delay=0 on-ground=true
+
+entity-order 255 entities e2 e3
+entity 255 e2 2.260198259103505 1.0 -1.2759069145372948 1.2820190521797457E-14 0 1.491866919468564E-14 item=minecraft:redstone_torch count=1 age=206 pickup-delay=0 on-ground=true
+entity 255 e3 -0.8912002167225135 1.0 -2.5513429615686136 -4.3880463628740875E-14 -0.04 4.301858668836504E-15 item=minecraft:lever count=1 age=206 pickup-delay=0 on-ground=true
+
+change 256 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=false] minecraft:redstone_wall_torch[facing=east,lit=true]
+change 256 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 256 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side]
+change 256 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none]
+entity-order 256 entities e2 e3
+entity 256 e2 2.260198259103505 1.0 -1.2759069145372948 1.2820190521797457E-14 -0.04 1.491866919468564E-14 item=minecraft:redstone_torch count=1 age=207 pickup-delay=0 on-ground=true
+entity 256 e3 -0.8912002167225135 1.0 -2.5513429615686136 -4.3880463628740875E-14 -0.08 4.301858668836504E-15 item=minecraft:lever count=1 age=207 pickup-delay=0 on-ground=true
+
+entity-order 257 entities e2 e3
+entity 257 e2 2.260198259103505 1.0 -1.2759069145372948 1.2820190521797457E-14 -0.08 1.491866919468564E-14 item=minecraft:redstone_torch count=1 age=208 pickup-delay=0 on-ground=true
+entity 257 e3 -0.8912002167225135 1.0 -2.5513429615686136 -4.3880463628740875E-14 -0.12 4.301858668836504E-15 item=minecraft:lever count=1 age=208 pickup-delay=0 on-ground=true
+
+change 258 block_ticks 0 1 1 minecraft:repeater[delay=1,facing=south,locked=false,powered=false] minecraft:repeater[delay=1,facing=south,locked=false,powered=true]
+entity-order 258 entities e2 e3
+entity 258 e2 2.260198259103505 1.0 -1.2759069145372948 1.2820190521797457E-14 -0.12 1.491866919468564E-14 item=minecraft:redstone_torch count=1 age=209 pickup-delay=0 on-ground=true
+entity 258 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.5801715208255248E-14 0 2.529493151635336E-15 item=minecraft:lever count=1 age=209 pickup-delay=0 on-ground=true
+
+entity-order 259 entities e2 e3
+entity 259 e2 2.260198259103505 1.0 -1.2759069145372948 7.538272784846664E-15 0 8.772178368583358E-15 item=minecraft:redstone_torch count=1 age=210 pickup-delay=0 on-ground=true
+entity 259 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.5801715208255248E-14 -0.04 2.529493151635336E-15 item=minecraft:lever count=1 age=210 pickup-delay=0 on-ground=true
+
+change 260 block_ticks 1 1 0 minecraft:redstone_wall_torch[facing=east,lit=true] minecraft:redstone_wall_torch[facing=east,lit=false]
+change 260 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none]
+change 260 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=14,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side]
+change 260 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=13,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none]
+change 260 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=13,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none]
+change 260 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=12,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side]
+change 260 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=11,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none]
+change 260 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none]
+change 260 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=10,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side]
+change 260 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=9,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none]
+change 260 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=9,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none]
+change 260 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=8,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side]
+change 260 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=7,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none]
+change 260 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=7,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none]
+change 260 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=6,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side]
+change 260 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=5,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none]
+change 260 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none]
+change 260 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=4,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side]
+change 260 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=3,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none]
+change 260 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+change 260 block_ticks 1 1 2 minecraft:redstone_wire[east=none,north=side,power=2,south=none,west=side] minecraft:redstone_wire[east=none,north=side,power=0,south=none,west=side]
+change 260 block_ticks 0 1 2 minecraft:redstone_wire[east=side,north=side,power=1,south=none,west=none] minecraft:redstone_wire[east=side,north=side,power=0,south=none,west=none]
+change 260 block_ticks 1 1 1 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+entity-order 260 entities e2 e3
+entity 260 e2 2.260198259103505 1.0 -1.2759069145372948 7.538272784846664E-15 -0.04 8.772178368583358E-15 item=minecraft:redstone_torch count=1 age=211 pickup-delay=0 on-ground=true
+entity 260 e3 -0.8912002167225135 1.0 -2.5513429615686136 -2.5801715208255248E-14 -0.08 2.529493151635336E-15 item=minecraft:lever count=1 age=211 pickup-delay=0 on-ground=true

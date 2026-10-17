@@ -49,6 +49,8 @@ Plan plan(RuleContext& ctx, const contracts::UseBlock& c) {
             detail::notify_neighbors(ctx, pos);
             detail::notify_neighbors(ctx, pos.relative(detail::lever_attachment(s)));
         };
+    // Using a pressed button does nothing.
+    case BlockType::button: return [&ctx, pos = c.pos, s] { detail::press_button(ctx, pos, s); };
     case BlockType::redstone_wire:
         if (!detail::is_dot(s) && !detail::is_cross(s)) return std::unexpected(ErrorCode::not_usable);
         return [&ctx, pos = c.pos, s] { detail::toggle_wire(ctx, pos, s); };
@@ -140,8 +142,8 @@ Plan plan(RuleContext& ctx, const contracts::RemoveEntity& c) {
 // Blocks a placement replaces instead of placing next to.
 bool replaceable(BlockState s) { return s.is_air() || s.is(BlockType::water); }
 bool usable(BlockState s) {
-    return s.is(BlockType::lever) || s.is(BlockType::repeater) || s.is(BlockType::comparator) || detail::is_dot(s)
-        || detail::is_cross(s);
+    return s.is(BlockType::lever) || s.is(BlockType::button) || s.is(BlockType::repeater) || s.is(BlockType::comparator)
+        || detail::is_dot(s) || detail::is_cross(s);
 }
 
 Plan plan(RuleContext& ctx, const contracts::UseBlock& c);
@@ -176,7 +178,8 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
     if (auto ok = check_loaded(ctx, target); !ok) return std::unexpected(ok.error());
     if (!replaceable(ctx.block(target))) return std::unexpected(ErrorCode::occupied);
     // The placed block must be able to stand where it goes.
-    if (state->is(BlockType::lever) && (replace || !detail::face_sturdy(clicked, c.face))) return std::unexpected(ErrorCode::unsupported);
+    if ((state->is(BlockType::lever) || state->is(BlockType::button)) && (replace || !detail::face_sturdy(clicked, c.face)))
+        return std::unexpected(ErrorCode::unsupported);
     if (!detail::can_survive(ctx, target, *state)) return std::unexpected(ErrorCode::unsupported);
     // States the placement takes from the surroundings.
     switch (state->type()) {

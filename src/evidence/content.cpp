@@ -247,6 +247,29 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
         CIRCUIT_TRY(age, p.integer("age", 0, 7));
         return simple(blocks::wheat(static_cast<std::uint8_t>(age)));
     }
+    // Absent properties take the target version's defaults (lit, north, wall).
+    if (id == "minecraft:redstone_torch") {
+        CIRCUIT_TRY(lit, p.choice("lit", {"false", "true"}, 1));
+        return simple(blocks::torch(lit == 1));
+    }
+    if (id == "minecraft:redstone_wall_torch") {
+        CIRCUIT_TRY(facing, p.direction_or("facing", Direction::north));
+        CIRCUIT_TRY(lit, p.choice("lit", {"false", "true"}, 1));
+        if (!contracts::is_horizontal(facing)) return std::unexpected("minecraft:redstone_wall_torch: facing must be horizontal");
+        return simple(blocks::wall_torch(facing, lit == 1));
+    }
+    if (id.starts_with("minecraft:") && id.ends_with("_button")) {
+        const auto kind = id.substr(10, id.size() - 10 - 7);
+        for (std::uint8_t k = 0; k < blocks::button_kinds; ++k) {
+            if (gameplay::button_kind_name(k) != kind) continue;
+            CIRCUIT_TRY(face, p.choice("face", {"floor", "wall", "ceiling"}, 1));
+            CIRCUIT_TRY(facing, p.direction_or("facing", Direction::north));
+            CIRCUIT_TRY(powered, p.choice("powered", {"false", "true"}, 0));
+            if (!contracts::is_horizontal(facing)) return std::unexpected(std::format("{}: facing must be horizontal", id));
+            return simple(blocks::button(static_cast<blocks::ButtonKind>(k), powered == 1, facing,
+                                         static_cast<blocks::LeverFace>(face)));
+        }
+    }
     // Every other block is a registry state without rules of its own.
     const auto block = gameplay::registry::find_block(game_version_, id);
     if (!block || gameplay::modeled_block(*block))

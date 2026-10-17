@@ -1,0 +1,520 @@
+circuit-trace 2
+title Water flows into redstone torches and buttons
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.9.0+mc1.21.8
+mechanisms water redstone_torch button
+area -3 0 -3 8 3 12
+ticks 40
+changes ordered
+entities observed
+rng observed
+
+at 0 set -3 0 -3 minecraft:obsidian
+at 0 set -3 0 -2 minecraft:obsidian
+at 0 set -3 0 -1 minecraft:obsidian
+at 0 set -3 0 0 minecraft:obsidian
+at 0 set -3 0 1 minecraft:obsidian
+at 0 set -3 0 2 minecraft:obsidian
+at 0 set -3 0 3 minecraft:obsidian
+at 0 set -3 0 4 minecraft:obsidian
+at 0 set -3 0 5 minecraft:obsidian
+at 0 set -3 0 6 minecraft:obsidian
+at 0 set -3 0 7 minecraft:obsidian
+at 0 set -3 0 8 minecraft:obsidian
+at 0 set -3 0 9 minecraft:obsidian
+at 0 set -3 0 10 minecraft:obsidian
+at 0 set -3 0 11 minecraft:obsidian
+at 0 set -3 0 12 minecraft:obsidian
+at 0 set -2 0 -3 minecraft:obsidian
+at 0 set -2 0 -2 minecraft:obsidian
+at 0 set -2 0 -1 minecraft:obsidian
+at 0 set -2 0 0 minecraft:obsidian
+at 0 set -2 0 1 minecraft:obsidian
+at 0 set -2 0 2 minecraft:obsidian
+at 0 set -2 0 3 minecraft:obsidian
+at 0 set -2 0 4 minecraft:obsidian
+at 0 set -2 0 5 minecraft:obsidian
+at 0 set -2 0 6 minecraft:obsidian
+at 0 set -2 0 7 minecraft:obsidian
+at 0 set -2 0 8 minecraft:obsidian
+at 0 set -2 0 9 minecraft:obsidian
+at 0 set -2 0 10 minecraft:obsidian
+at 0 set -2 0 11 minecraft:obsidian
+at 0 set -2 0 12 minecraft:obsidian
+at 0 set -1 0 -3 minecraft:obsidian
+at 0 set -1 0 -2 minecraft:obsidian
+at 0 set -1 0 -1 minecraft:obsidian
+at 0 set -1 0 0 minecraft:obsidian
+at 0 set -1 0 1 minecraft:obsidian
+at 0 set -1 0 2 minecraft:obsidian
+at 0 set -1 0 3 minecraft:obsidian
+at 0 set -1 0 4 minecraft:obsidian
+at 0 set -1 0 5 minecraft:obsidian
+at 0 set -1 0 6 minecraft:obsidian
+at 0 set -1 0 7 minecraft:obsidian
+at 0 set -1 0 8 minecraft:obsidian
+at 0 set -1 0 9 minecraft:obsidian
+at 0 set -1 0 10 minecraft:obsidian
+at 0 set -1 0 11 minecraft:obsidian
+at 0 set -1 0 12 minecraft:obsidian
+at 0 set 0 0 -3 minecraft:obsidian
+at 0 set 0 0 -2 minecraft:obsidian
+at 0 set 0 0 -1 minecraft:obsidian
+at 0 set 0 0 0 minecraft:obsidian
+at 0 set 0 0 1 minecraft:obsidian
+at 0 set 0 0 2 minecraft:obsidian
+at 0 set 0 0 3 minecraft:obsidian
+at 0 set 0 0 4 minecraft:obsidian
+at 0 set 0 0 5 minecraft:obsidian
+at 0 set 0 0 6 minecraft:obsidian
+at 0 set 0 0 7 minecraft:obsidian
+at 0 set 0 0 8 minecraft:obsidian
+at 0 set 0 0 9 minecraft:obsidian
+at 0 set 0 0 10 minecraft:obsidian
+at 0 set 0 0 11 minecraft:obsidian
+at 0 set 0 0 12 minecraft:obsidian
+at 0 set 1 0 -3 minecraft:obsidian
+at 0 set 1 0 -2 minecraft:obsidian
+at 0 set 1 0 -1 minecraft:obsidian
+at 0 set 1 0 0 minecraft:obsidian
+at 0 set 1 0 1 minecraft:obsidian
+at 0 set 1 0 2 minecraft:obsidian
+at 0 set 1 0 3 minecraft:obsidian
+at 0 set 1 0 4 minecraft:obsidian
+at 0 set 1 0 5 minecraft:obsidian
+at 0 set 1 0 6 minecraft:obsidian
+at 0 set 1 0 7 minecraft:obsidian
+at 0 set 1 0 8 minecraft:obsidian
+at 0 set 1 0 9 minecraft:obsidian
+at 0 set 1 0 10 minecraft:obsidian
+at 0 set 1 0 11 minecraft:obsidian
+at 0 set 1 0 12 minecraft:obsidian
+at 0 set 2 0 -3 minecraft:obsidian
+at 0 set 2 0 -2 minecraft:obsidian
+at 0 set 2 0 -1 minecraft:obsidian
+at 0 set 2 0 0 minecraft:obsidian
+at 0 set 2 0 1 minecraft:obsidian
+at 0 set 2 0 2 minecraft:obsidian
+at 0 set 2 0 3 minecraft:obsidian
+at 0 set 2 0 4 minecraft:obsidian
+at 0 set 2 0 5 minecraft:obsidian
+at 0 set 2 0 6 minecraft:obsidian
+at 0 set 2 0 7 minecraft:obsidian
+at 0 set 2 0 8 minecraft:obsidian
+at 0 set 2 0 9 minecraft:obsidian
+at 0 set 2 0 10 minecraft:obsidian
+at 0 set 2 0 11 minecraft:obsidian
+at 0 set 2 0 12 minecraft:obsidian
+at 0 set 3 0 -3 minecraft:obsidian
+at 0 set 3 0 -2 minecraft:obsidian
+at 0 set 3 0 -1 minecraft:obsidian
+at 0 set 3 0 0 minecraft:obsidian
+at 0 set 3 0 1 minecraft:obsidian
+at 0 set 3 0 2 minecraft:obsidian
+at 0 set 3 0 3 minecraft:obsidian
+at 0 set 3 0 4 minecraft:obsidian
+at 0 set 3 0 5 minecraft:obsidian
+at 0 set 3 0 6 minecraft:obsidian
+at 0 set 3 0 7 minecraft:obsidian
+at 0 set 3 0 8 minecraft:obsidian
+at 0 set 3 0 9 minecraft:obsidian
+at 0 set 3 0 10 minecraft:obsidian
+at 0 set 3 0 11 minecraft:obsidian
+at 0 set 3 0 12 minecraft:obsidian
+at 0 set 4 0 -3 minecraft:obsidian
+at 0 set 4 0 -2 minecraft:obsidian
+at 0 set 4 0 -1 minecraft:obsidian
+at 0 set 4 0 0 minecraft:obsidian
+at 0 set 4 0 1 minecraft:obsidian
+at 0 set 4 0 2 minecraft:obsidian
+at 0 set 4 0 3 minecraft:obsidian
+at 0 set 4 0 4 minecraft:obsidian
+at 0 set 4 0 5 minecraft:obsidian
+at 0 set 4 0 6 minecraft:obsidian
+at 0 set 4 0 7 minecraft:obsidian
+at 0 set 4 0 8 minecraft:obsidian
+at 0 set 4 0 9 minecraft:obsidian
+at 0 set 4 0 10 minecraft:obsidian
+at 0 set 4 0 11 minecraft:obsidian
+at 0 set 4 0 12 minecraft:obsidian
+at 0 set 5 0 -3 minecraft:obsidian
+at 0 set 5 0 -2 minecraft:obsidian
+at 0 set 5 0 -1 minecraft:obsidian
+at 0 set 5 0 0 minecraft:obsidian
+at 0 set 5 0 1 minecraft:obsidian
+at 0 set 5 0 2 minecraft:obsidian
+at 0 set 5 0 3 minecraft:obsidian
+at 0 set 5 0 4 minecraft:obsidian
+at 0 set 5 0 5 minecraft:obsidian
+at 0 set 5 0 6 minecraft:obsidian
+at 0 set 5 0 7 minecraft:obsidian
+at 0 set 5 0 8 minecraft:obsidian
+at 0 set 5 0 9 minecraft:obsidian
+at 0 set 5 0 10 minecraft:obsidian
+at 0 set 5 0 11 minecraft:obsidian
+at 0 set 5 0 12 minecraft:obsidian
+at 0 set 6 0 -3 minecraft:obsidian
+at 0 set 6 0 -2 minecraft:obsidian
+at 0 set 6 0 -1 minecraft:obsidian
+at 0 set 6 0 0 minecraft:obsidian
+at 0 set 6 0 1 minecraft:obsidian
+at 0 set 6 0 2 minecraft:obsidian
+at 0 set 6 0 3 minecraft:obsidian
+at 0 set 6 0 4 minecraft:obsidian
+at 0 set 6 0 5 minecraft:obsidian
+at 0 set 6 0 6 minecraft:obsidian
+at 0 set 6 0 7 minecraft:obsidian
+at 0 set 6 0 8 minecraft:obsidian
+at 0 set 6 0 9 minecraft:obsidian
+at 0 set 6 0 10 minecraft:obsidian
+at 0 set 6 0 11 minecraft:obsidian
+at 0 set 6 0 12 minecraft:obsidian
+at 0 set 7 0 -3 minecraft:obsidian
+at 0 set 7 0 -2 minecraft:obsidian
+at 0 set 7 0 -1 minecraft:obsidian
+at 0 set 7 0 0 minecraft:obsidian
+at 0 set 7 0 1 minecraft:obsidian
+at 0 set 7 0 2 minecraft:obsidian
+at 0 set 7 0 3 minecraft:obsidian
+at 0 set 7 0 4 minecraft:obsidian
+at 0 set 7 0 5 minecraft:obsidian
+at 0 set 7 0 6 minecraft:obsidian
+at 0 set 7 0 7 minecraft:obsidian
+at 0 set 7 0 8 minecraft:obsidian
+at 0 set 7 0 9 minecraft:obsidian
+at 0 set 7 0 10 minecraft:obsidian
+at 0 set 7 0 11 minecraft:obsidian
+at 0 set 7 0 12 minecraft:obsidian
+at 0 set 8 0 -3 minecraft:obsidian
+at 0 set 8 0 -2 minecraft:obsidian
+at 0 set 8 0 -1 minecraft:obsidian
+at 0 set 8 0 0 minecraft:obsidian
+at 0 set 8 0 1 minecraft:obsidian
+at 0 set 8 0 2 minecraft:obsidian
+at 0 set 8 0 3 minecraft:obsidian
+at 0 set 8 0 4 minecraft:obsidian
+at 0 set 8 0 5 minecraft:obsidian
+at 0 set 8 0 6 minecraft:obsidian
+at 0 set 8 0 7 minecraft:obsidian
+at 0 set 8 0 8 minecraft:obsidian
+at 0 set 8 0 9 minecraft:obsidian
+at 0 set 8 0 10 minecraft:obsidian
+at 0 set 8 0 11 minecraft:obsidian
+at 0 set 8 0 12 minecraft:obsidian
+at 0 set -1 1 0 minecraft:stone
+at 0 set 7 1 0 minecraft:stone
+at 0 set 0 1 -1 minecraft:stone
+at 0 set 0 1 1 minecraft:stone
+at 0 set 1 1 -1 minecraft:stone
+at 0 set 1 1 1 minecraft:stone
+at 0 set 2 1 -1 minecraft:stone
+at 0 set 2 1 1 minecraft:stone
+at 0 set 3 1 -1 minecraft:stone
+at 0 set 3 1 1 minecraft:stone
+at 0 set 4 1 -1 minecraft:stone
+at 0 set 4 1 1 minecraft:stone
+at 0 set 5 1 -1 minecraft:stone
+at 0 set 5 1 1 minecraft:stone
+at 0 set 6 1 -1 minecraft:stone
+at 0 set 6 1 1 minecraft:stone
+at 0 set -1 1 3 minecraft:stone
+at 0 set 7 1 3 minecraft:stone
+at 0 set 0 1 2 minecraft:stone
+at 0 set 0 1 4 minecraft:stone
+at 0 set 1 1 2 minecraft:stone
+at 0 set 1 1 4 minecraft:stone
+at 0 set 2 1 2 minecraft:stone
+at 0 set 2 1 4 minecraft:stone
+at 0 set 3 1 2 minecraft:stone
+at 0 set 3 1 4 minecraft:stone
+at 0 set 4 1 2 minecraft:stone
+at 0 set 4 1 4 minecraft:stone
+at 0 set 5 1 2 minecraft:stone
+at 0 set 5 1 4 minecraft:stone
+at 0 set 6 1 2 minecraft:stone
+at 0 set 6 1 4 minecraft:stone
+at 0 set -1 1 6 minecraft:stone
+at 0 set 7 1 6 minecraft:stone
+at 0 set 0 1 5 minecraft:stone
+at 0 set 0 1 7 minecraft:stone
+at 0 set 1 1 5 minecraft:stone
+at 0 set 1 1 7 minecraft:stone
+at 0 set 2 1 5 minecraft:stone
+at 0 set 2 1 7 minecraft:stone
+at 0 set 3 1 5 minecraft:stone
+at 0 set 3 1 7 minecraft:stone
+at 0 set 4 1 5 minecraft:stone
+at 0 set 4 1 7 minecraft:stone
+at 0 set 5 1 5 minecraft:stone
+at 0 set 5 1 7 minecraft:stone
+at 0 set 6 1 5 minecraft:stone
+at 0 set 6 1 7 minecraft:stone
+at 0 set -1 1 9 minecraft:stone
+at 0 set 7 1 9 minecraft:stone
+at 0 set 0 1 8 minecraft:stone
+at 0 set 0 1 10 minecraft:stone
+at 0 set 1 1 8 minecraft:stone
+at 0 set 1 1 10 minecraft:stone
+at 0 set 2 1 8 minecraft:stone
+at 0 set 2 1 10 minecraft:stone
+at 0 set 3 1 8 minecraft:stone
+at 0 set 3 1 10 minecraft:stone
+at 0 set 4 1 8 minecraft:stone
+at 0 set 4 1 10 minecraft:stone
+at 0 set 5 1 8 minecraft:stone
+at 0 set 5 1 10 minecraft:stone
+at 0 set 6 1 8 minecraft:stone
+at 0 set 6 1 10 minecraft:stone
+at 0 set 1 1 0 minecraft:redstone_torch[lit=true]
+at 0 set 1 1 3 minecraft:redstone_wall_torch[facing=south,lit=true]
+at 0 set 1 1 6 minecraft:stone_button[face=floor,facing=north,powered=false]
+at 0 set 1 1 9 minecraft:oak_button[face=wall,facing=south,powered=false]
+
+at 2 set 0 1 0 minecraft:water[level=0]
+change 2 commands 0 1 0 minecraft:air minecraft:water[level=0]
+at 2 set 0 1 3 minecraft:water[level=0]
+change 2 commands 0 1 3 minecraft:air minecraft:water[level=0]
+at 2 set 0 1 6 minecraft:water[level=0]
+change 2 commands 0 1 6 minecraft:air minecraft:water[level=0]
+at 2 set 0 1 9 minecraft:water[level=0]
+change 2 commands 0 1 9 minecraft:air minecraft:water[level=0]
+
+entity-added 6 fluid_ticks e1 minecraft:item 1.6154838936883285 1.2452682078357429 0.5687087126750541 0.010087401023526787 0.2 0.019509055559440353 item=minecraft:redstone_torch count=1
+change 6 fluid_ticks 1 1 0 minecraft:redstone_torch[lit=true] minecraft:water[level=1]
+entity-added 6 fluid_ticks e2 minecraft:item 1.4166091997383248 1.3175945923703591 3.7424207700999044 0.07583650357449603 0.2 0.08824983589642288 item=minecraft:redstone_torch count=1
+change 6 fluid_ticks 1 1 3 minecraft:redstone_wall_torch[facing=south,lit=true] minecraft:water[level=1]
+entity-added 6 fluid_ticks e3 minecraft:item 1.3874769830177425 1.1894485754368884 6.3233008288232595 -0.09535237550322212 0.2 0.009347951439693108 item=minecraft:stone_button count=1
+change 6 fluid_ticks 1 1 6 minecraft:stone_button[face=floor,facing=north,powered=false] minecraft:water[level=1]
+entity-added 6 fluid_ticks e4 minecraft:item 1.732243430338425 1.177245343125486 9.56257318173278 -0.017840760901787656 0.2 0.05526245825498652 item=minecraft:oak_button count=1
+change 6 fluid_ticks 1 1 9 minecraft:oak_button[face=wall,facing=south,powered=false] minecraft:water[level=1]
+draws 6 fluid_ticks level 40
+entity-order 6 entities e1 e2 e3 e4
+entity 6 e1 1.6393304209313353 1.4452682078357428 0.5880226778649529 0.03736959715298315 0.196 0.018927686254485477 item=minecraft:redstone_torch count=1 age=1 pickup-delay=9 on-ground=false
+entity 6 e2 1.5055473391338234 1.517594592370359 3.829788108478979 0.10115937830394914 0.196 0.08561999327789291 item=minecraft:redstone_torch count=1 age=1 pickup-delay=9 on-ground=false
+entity 6 e3 1.3069381304937158 1.3894485754368884 6.332555300837705 -0.06492807700970278 0.196 0.009069382750671331 item=minecraft:stone_button count=1 age=1 pickup-delay=9 on-ground=false
+entity 6 e4 1.728441077009027 1.3772453431254859 9.61728301593224 0.0102736936646657 0.196 0.053615638558978586 item=minecraft:oak_button count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 7 entities e1 e2 e3 e4
+entity 7 e1 1.6901863226026872 1.6412682078357428 0.606761087437402 0.06383878460792429 0.19208 0.01836364173840692 item=minecraft:redstone_torch count=1 age=2 pickup-delay=8 on-ground=false
+entity 7 e2 1.6195551247529785 1.713594592370359 3.875 0.12572763208129792 0.19208 0 item=minecraft:redstone_torch count=1 age=2 pickup-delay=8 on-ground=false
+entity 7 e3 1.256519333768422 1.5854485754368883 6.341533989847362 -0.0354104217524501 0.19208 0.008799115400718755 item=minecraft:stone_button count=1 age=2 pickup-delay=8 on-ground=false
+entity 7 e4 1.752472033968538 1.5732453431254858 9.670362498616948 0.03755033827867493 0.19208 0.05201789404342401 item=minecraft:oak_button count=1 age=2 pickup-delay=8 on-ground=false
+
+entity-order 8 entities e1 e2 e3 e4
+entity 8 e1 1.7672467201068607 1.8333482078357428 0.6249410929335542 0.0755191910239005 0.1882384 0.01781640573298523 item=minecraft:redstone_torch count=1 age=3 pickup-delay=7 on-ground=false
+entity 8 e2 1.7592827568342764 1.865674592370359 3.875 0.13693308210476504 0.1490384 0 item=minecraft:redstone_torch count=1 age=3 pickup-delay=7 on-ground=false
+entity 8 e3 1.2353230160293107 1.7775285754368884 6.350245114177989 -0.020772391788616743 0.1882384 0.008536902010165453 item=minecraft:stone_button count=1 age=3 pickup-delay=7 on-ground=false
+entity 8 e4 1.8035068693560485 1.7653253431254858 9.721860214216019 0.06401413965317254 0.1882384 0.05046776226933062 item=minecraft:oak_button count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 9 entities e1 e2 e3 e4
+entity 9 e1 1.8427659111307613 1.9815866078357427 0.6427574986665394 0.07400880864383676 0.14527363199999999 0.017460077958146494 item=minecraft:redstone_torch count=1 age=4 pickup-delay=6 on-ground=false
+entity 9 e2 1.8962158389390413 1.974712992370359 3.875 0.134194423074461 0.10685763199999998 0 item=minecraft:redstone_torch count=1 age=4 pickup-delay=6 on-ground=false
+entity 9 e3 1.214550624240694 1.9257669754368885 6.3587820161881545 -0.02035694434904634 0.14527363199999999 0.008366164132790628 item=minecraft:stone_button count=1 age=4 pickup-delay=6 on-ground=false
+entity 9 e4 1.8815210090092211 1.913563743125486 9.77232797648535 0.07645385834811072 0.14527363199999999 0.04945840798654018 item=minecraft:oak_button count=1 age=4 pickup-delay=6 on-ground=false
+
+entity-order 10 entities e1 e2 e3 e4
+entity 10 e1 1.9167747197745981 2.0868602398357425 0.6602175766246859 0.07252863388256602 0.10316815935999998 0.01711087673200812 item=minecraft:redstone_torch count=1 age=5 pickup-delay=5 on-ground=false
+entity 10 e2 2.0304102620135023 2.041570624370359 3.875 0.13151053717252728 0.06552047935999997 0 item=minecraft:redstone_torch count=1 age=5 pickup-delay=5 on-ground=false
+entity 10 e3 1.1941936798916477 2.0310406074368883 6.367148180320945 -0.01994980585034331 0.10316815935999998 0.008198841009706732 item=minecraft:stone_button count=1 age=5 pickup-delay=5 on-ground=false
+entity 10 e4 1.9579748673573318 2.018837375125486 9.82178638447189 0.07492478263939013 0.10316815935999998 0.048469240770153646 item=minecraft:oak_button count=1 age=5 pickup-delay=5 on-ground=false
+
+change 11 fluid_ticks 2 1 0 minecraft:air minecraft:water[level=2]
+change 11 fluid_ticks 2 1 3 minecraft:air minecraft:water[level=2]
+change 11 fluid_ticks 2 1 6 minecraft:air minecraft:water[level=2]
+change 11 fluid_ticks 2 1 9 minecraft:air minecraft:water[level=2]
+entity-order 11 entities e1 e2 e3 e4
+entity 11 e1 1.989303353657164 2.1500283991957425 0.6773284533566941 0.0710780625882886 0.061904796172799974 0.01676865952373203 item=minecraft:redstone_torch count=1 age=6 pickup-delay=4 on-ground=false
+entity 11 e2 2.1619207991860296 2.067091103730359 3.875 0.12888032893744117 0.025010069772799966 0 item=minecraft:redstone_torch count=1 age=6 pickup-delay=4 on-ground=false
+entity 11 e3 1.1742438740413044 2.0942087667968883 6.375347021330652 -0.019550810113848793 0.061904796172799974 0.008034864345893079 item=minecraft:stone_button count=1 age=6 pickup-delay=4 on-ground=false
+entity 11 e4 2.032899649996722 2.0820055344854858 9.870255625242043 0.07342628841567915 0.061904796172799974 0.047499856879227975 item=minecraft:oak_button count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 12 entities e1 e2 e3 e4
+entity 12 e1 2.060381416245453 2.1719331953685423 0.6940971128804262 0.06965650269222928 0.021466700249343974 0.016433286653094188 item=minecraft:redstone_torch count=1 age=7 pickup-delay=3 on-ground=false
+entity 12 e2 2.290801128123471 2.052101173503159 3.875 0.12630272481688953 -0.014690131622656035 0 item=minecraft:redstone_torch count=1 age=7 pickup-delay=3 on-ground=false
+entity 12 e3 1.1546930639274555 2.116113562969688 6.3833818856765445 -0.019159794284473928 0.021466700249343974 0.007874167212228092 item=minecraft:stone_button count=1 age=7 pickup-delay=3 on-ground=false
+entity 12 e4 2.106325938412401 2.1039103306582856 9.91775548212127 0.07195776404786088 0.021466700249343974 0.04654986064763129 item=minecraft:oak_button count=1 age=7 pickup-delay=3 on-ground=false
+
+entity-order 13 entities e1 e2 e3 e4
+entity 13 e1 2.130037918937682 2.1533998956178864 0.7105303995335204 0.06826337396697704 -0.018162633755642907 0.016104621233472373 item=minecraft:redstone_torch count=1 age=8 pickup-delay=2 on-ground=false
+entity 13 e2 2.4171038529403606 1.997411041880503 3.875 0.12377667272958504 -0.05359632899020291 0 item=minecraft:redstone_torch count=1 age=8 pickup-delay=2 on-ground=false
+entity 13 e3 1.1355332696429816 2.097580263219032 6.391256052888773 -0.018776598764228523 -0.018162633755642907 0.007716684018171351 item=minecraft:stone_button count=1 age=8 pickup-delay=2 on-ground=false
+entity 13 e4 2.178283702460262 2.0853770309076296 9.964305342768903 0.07051861013938909 -0.018162633755642907 0.04561886432254679 item=minecraft:oak_button count=1 age=8 pickup-delay=2 on-ground=false
+
+entity-order 14 entities e1 e2 e3 e4
+entity 14 e1 2.198301292904659 2.0952372618622435 0.7266350207669927 0.06689810778965803 -0.05699938108053005 0.0157825291159742 item=minecraft:redstone_torch count=1 age=9 pickup-delay=1 on-ground=false
+entity 14 e2 2.5408805256699454 1.9038147128903 3.875 0.12130114163584602 -0.09172440241039885 0 item=minecraft:redstone_torch count=1 age=9 pickup-delay=1 on-ground=false
+entity 14 e3 1.116756670878753 2.0394176294633892 6.398972736906944 -0.01840106714707915 -0.05699938108053005 0.007562350484991992 item=minecraft:stone_button count=1 age=9 pickup-delay=1 on-ground=false
+entity 14 e4 2.248802312599651 2.0272143971519867 10.00992420709145 0.06910823928163706 -0.05699938108053005 0.04470648790620664 item=minecraft:oak_button count=1 age=9 pickup-delay=1 on-ground=false
+
+entity-order 15 entities e1 e2 e3 e4
+entity 15 e1 2.2651994006943172 1.9982378807817134 0.7424175498829669 0.06556014690984502 -0.09505939345891945 0.015466878834682568 item=minecraft:redstone_torch count=1 age=10 pickup-delay=0 on-ground=false
+entity 15 e2 2.6621816673057914 1.7720903104799013 3.875 0.11887512111676476 -0.12908991436219086 0 item=minecraft:redstone_torch count=1 age=10 pickup-delay=0 on-ground=false
+entity 15 e3 1.098355603731674 1.9424182483828591 6.406535087391936 -0.01803304615511007 -0.09505939345891945 0.00741110361953254 item=minecraft:stone_button count=1 age=10 pickup-delay=0 on-ground=false
+entity 15 e4 2.317910551881288 2.0 10.054630694997655 0.04063564878382127 0 0.02628741753224612 item=minecraft:oak_button count=1 age=10 pickup-delay=0 on-ground=true
+
+change 16 fluid_ticks 3 1 0 minecraft:air minecraft:water[level=3]
+change 16 fluid_ticks 3 1 3 minecraft:air minecraft:water[level=3]
+change 16 fluid_ticks 3 1 6 minecraft:air minecraft:water[level=3]
+change 16 fluid_ticks 3 1 9 minecraft:air minecraft:water[level=3]
+entity-order 16 entities e1 e2 e3 e4
+entity 16 e1 2.3307595476041625 1.863178487322794 0.7578844287176495 0.06424894522210868 -0.13235820558974107 0.015157541552996218 item=minecraft:redstone_torch count=1 age=11 pickup-delay=0 on-ground=false
+entity 16 e2 2.781056788422556 1.6030003961177104 3.875 0.13049762096179246 -0.16570811607494704 0 item=minecraft:redstone_torch count=1 age=11 pickup-delay=0 on-ground=false
+entity 16 e3 1.0803225575765638 1.8073588549239397 6.413946191011469 -0.0036723855759609302 -0.13235820558974107 0.007262881688497473 item=minecraft:stone_button count=1 age=11 pickup-delay=0 on-ground=false
+entity 16 e4 2.3585462006651094 2.0 10.080918112529902 0.02389376388758373 0 0.015457003063278085 item=minecraft:oak_button count=1 age=11 pickup-delay=0 on-ground=true
+
+entity-order 17 entities e1 e2 e3 e4
+entity 17 e1 2.395008492826271 1.6908202817330529 0.7730419702706457 0.06296396754311788 -0.16891104147794625 0.014854391011043456 item=minecraft:redstone_torch count=1 age=12 pickup-delay=0 on-ground=false
+entity 17 e2 2.9255544093843486 1.3972922800427634 3.875 0.15560767129863004 -0.2015939537534481 0 item=minecraft:redstone_torch count=1 age=12 pickup-delay=0 on-ground=false
+entity 17 e3 1.090650172000603 1.6350006493341986 6.421209072699966 0.024121062332541902 -0.16891104147794625 0.007117624193255998 item=minecraft:stone_button count=1 age=12 pickup-delay=0 on-ground=false
+entity 17 e4 2.382439964552693 2.0 10.09637511559318 0.014049534578685107 0 0.009088718715146217 item=minecraft:oak_button count=1 age=12 pickup-delay=0 on-ground=true
+
+entity-order 18 entities e1 e2 e3 e4
+entity 18 e1 2.457972460369389 1.4819092402551066 0.7878963612816892 0.0757046893931979 -0.20473282064838733 0.01455730347414761 item=minecraft:redstone_torch count=1 age=13 pickup-delay=0 on-ground=false
+entity 18 e2 3.093466005587497 1.196198326313064 3.875 0.17855336748174513 -0.19707207465510537 0 item=minecraft:redstone_torch count=1 age=13 pickup-delay=0 on-ground=false
+entity 18 e3 1.1283900240733702 1.4665896078800011 6.428255520719168 0.05098505575114247 -0.16504282062511358 0.006905519193218674 item=minecraft:stone_button count=1 age=13 pickup-delay=0 on-ground=false
+entity 18 e4 2.3964894991313783 2.0 10.105463834308326 0.008261127162985021 0 0.005344167141901988 item=minecraft:oak_button count=1 age=13 pickup-delay=0 on-ground=true
+
+entity-order 19 entities e1 e2 e3 e4
+entity 19 e1 2.5467801037241458 1.277676419630468 0.8023080918599246 0.10103149218153273 -0.20014816421214582 0.014123496241552637 item=minecraft:redstone_torch count=1 age=14 pickup-delay=0 on-ground=false
+entity 19 e2 3.2840938412307565 1.0 3.875 0.12608917862964272 0 0 item=minecraft:redstone_torch count=1 age=14 pickup-delay=0 on-ground=true
+entity 19 e3 1.192725229886747 1.3020467872786363 6.435091984786311 0.07704850292420597 -0.16125196418933754 0.0066997349161950015 item=minecraft:stone_button count=1 age=14 pickup-delay=0 on-ground=false
+entity 19 e4 2.4047506262943634 2.0 10.110808001450227 0.00485754326029753 0 0.0031423705954272555 item=minecraft:oak_button count=1 age=14 pickup-delay=0 on-ground=true
+
+entity-order 20 entities e1 e2 e3 e4
+entity 20 e1 2.660661282080889 1.0780282554420708 0.8162903532737539 0.12560355696171943 -0.19565520090462915 0.013702616452243153 item=minecraft:redstone_torch count=1 age=15 pickup-delay=0 on-ground=false
+entity 20 e2 3.4227821294100975 1.0005000000237487 3.875 0.14991452506102318 4.900000232737512E-4 0 item=minecraft:redstone_torch count=1 age=15 pickup-delay=0 on-ground=false
+entity 20 e3 1.282863248650017 1.1412948231130475 6.441724722417238 0.10233526010725097 -0.15753692488227705 0.0065000830048176 item=minecraft:stone_button count=1 age=15 pickup-delay=0 on-ground=false
+entity 20 e4 2.409608169554661 2.0 10.113950372045654 0.0028562357242708307 0 0.0018477140959127101 item=minecraft:oak_button count=1 age=15 pickup-delay=0 on-ground=true
+
+change 21 fluid_ticks 4 1 0 minecraft:air minecraft:water[level=4]
+change 21 fluid_ticks 4 1 3 minecraft:air minecraft:water[level=4]
+change 21 fluid_ticks 4 1 6 minecraft:air minecraft:water[level=4]
+change 21 fluid_ticks 4 1 9 minecraft:air minecraft:water[level=4]
+entity-order 21 entities e1 e2 e3 e4
+entity 21 e1 2.7988688048043544 1.0 0.829855943692153 0.09526603153330554 0 0.007976567968122265 item=minecraft:redstone_torch count=1 age=16 pickup-delay=0 on-ground=true
+entity 21 e2 3.585057510783721 1.0014900000707712 3.875 0.1730298768413085 9.702000460820272E-4 0 item=minecraft:redstone_torch count=1 age=16 pickup-delay=0 on-ground=false
+entity 21 e3 1.398035157265655 1.0 6.448159804653997 0.08172108907585758 0 0.003783828735706623 item=minecraft:stone_button count=1 age=16 pickup-delay=0 on-ground=true
+entity 21 e4 2.4124644052789317 2.0 10.115798086141567 0.001679466774754205 0 0.0010864559976479571 item=minecraft:oak_button count=1 age=16 pickup-delay=0 on-ground=true
+
+entity-order 22 entities e1 e2 e3 e4
+entity 22 e1 2.907042177064369 1.0005000000237487 0.8377527460566645 0.1200099068780576 4.900000232737512E-4 0.007738866467840845 item=minecraft:redstone_torch count=1 age=17 pickup-delay=0 on-ground=false
+entity 22 e2 3.7702170906402723 1.002960200140602 3.875 0.19545639179105903 0.0014407960684341377 0 item=minecraft:redstone_torch count=1 age=17 pickup-delay=0 on-ground=false
+entity 22 e3 1.4927990363636214 1.0005000000237487 6.451905795138432 0.10686860332348468 4.900000232737512E-4 0.0036710707461953588 item=minecraft:stone_button count=1 age=17 pickup-delay=0 on-ground=false
+entity 22 e4 2.4124644052789317 2.0 10.115798086141567 0.001679466774754205 -0.04 0.0010864559976479571 item=minecraft:oak_button count=1 age=17 pickup-delay=0 on-ground=true
+
+entity-order 23 entities e1 e2 e3 e4
+entity 23 e1 3.039711986151664 1.0014900000707712 0.8454142239336305 0.14401641543602497 9.702000460820272E-4 0.0075082484655577915 item=minecraft:redstone_torch count=1 age=18 pickup-delay=0 on-ground=false
+entity 23 e2 3.9775789205109526 1.0049009962327848 3.875 0.2172145972283797 0.001901980170339206 0 item=minecraft:redstone_torch count=1 age=18 pickup-delay=0 on-ground=false
+entity 23 e3 1.6124589548065642 1.0014900000707712 6.455540155212176 0.13126672235641562 9.702000460820272E-4 0.003561672941588512 item=minecraft:stone_button count=1 age=18 pickup-delay=0 on-ground=false
+entity 23 e4 2.4124644052789317 2.0 10.115798086141567 0.001679466774754205 -0.08 0.0010864559976479571 item=minecraft:oak_button count=1 age=18 pickup-delay=0 on-ground=true
+
+entity-order 24 entities e1 e2 e3 e4
+entity 24 e1 3.1961482389402907 1.002960200140602 0.852847389986137 0.16730753071663892 0.0014407960684341377 0.0072845028732327136 item=minecraft:redstone_torch count=1 age=19 pickup-delay=0 on-ground=false
+entity 24 e2 4.206481373972083 1.0073029764268728 3.875 0.2383244087578754 0.002353940590206173 0 item=minecraft:redstone_torch count=1 age=19 pickup-delay=0 on-ground=false
+entity 24 e3 1.756273011324787 1.002960200140602 6.459066211458315 0.1549377781308939 0.0014407960684341377 0.003455535188470785 item=minecraft:stone_button count=1 age=19 pickup-delay=0 on-ground=false
+entity 24 e4 2.4124644052789317 2.0 10.115798086141567 0.001679466774754205 -0.12 0.0010864559976479571 item=minecraft:oak_button count=1 age=19 pickup-delay=0 on-ground=true
+
+entity-order 25 entities e1 e2 e3 e4
+entity 25 e1 3.3756426960788466 1.0049009962327848 0.8600590479001078 0.1899045714193699 0.001901980170339206 0.007067424893242862 item=minecraft:redstone_torch count=1 age=20 pickup-delay=0 on-ground=false
+entity 25 e2 4.456282541048733 1.0101569170408278 3.875 0.2588051484996959 0.0027968618016758007 0 item=minecraft:redstone_torch count=1 age=20 pickup-delay=0 on-ground=false
+entity 25 e3 1.9235214132854883 1.0049009962327848 6.462487191327855 0.17790343711149728 0.001901980170339206 0.003352560337399829 item=minecraft:stone_button count=1 age=20 pickup-delay=0 on-ground=false
+entity 25 e4 2.414143872053686 2.0 10.116884542139214 9.875265628586608E-4 0 6.3883619085676E-4 item=minecraft:oak_button count=1 age=20 pickup-delay=0 on-ground=true
+
+change 26 fluid_ticks 5 1 0 minecraft:air minecraft:water[level=5]
+change 26 fluid_ticks 5 1 3 minecraft:air minecraft:water[level=5]
+change 26 fluid_ticks 5 1 6 minecraft:air minecraft:water[level=5]
+change 26 fluid_ticks 5 1 9 minecraft:air minecraft:water[level=5]
+entity-order 26 entities e1 e2 e3 e4
+entity 26 e1 3.5775082237286084 1.0073029764268728 0.8670557986118185 0.2118282209470459 0.002353940590206173 0.006856815830928865 item=minecraft:redstone_torch count=1 age=21 pickup-delay=0 on-ground=false
+entity 26 e2 4.7263596406651045 1.0134537788662523 3.875 0.278675562775356 0.0032309245889160358 0 item=minecraft:redstone_torch count=1 age=21 pickup-delay=0 on-ground=false
+entity 26 e3 2.113505817856004 1.0073029764268728 6.465806226093854 0.20018472010277075 0.002353940590206173 0.003252654133983935 item=minecraft:stone_button count=1 age=21 pickup-delay=0 on-ground=false
+entity 26 e4 2.414143872053686 2.0 10.116884542139214 9.875265628586608E-4 -0.04 6.3883619085676E-4 item=minecraft:oak_button count=1 age=21 pickup-delay=0 on-ground=true
+
+entity-order 27 entities e1 e2 e3 e4
+entity 27 e1 3.8010781646198497 1.0101569170408278 0.8738440463498297 0.23309854633767457 0.0027968618016758007 0.0066524829127265935 item=minecraft:redstone_torch count=1 age=22 pickup-delay=0 on-ground=false
+entity 27 e2 5.016108450603879 1.017184703478917 3.875 0.2979538392665186 0.003656306120411466 0 item=minecraft:redstone_torch count=1 age=22 pickup-delay=0 on-ground=false
+entity 27 e3 2.325548692800372 1.0101569170408278 6.469026353717517 0.22180202148987724 0.0027968618016758007 0.0031557251326096063 item=minecraft:stone_button count=1 age=22 pickup-delay=0 on-ground=false
+entity 27 e4 2.414143872053686 2.0 10.116884542139214 9.875265628586608E-4 -0.08 6.3883619085676E-4 item=minecraft:oak_button count=1 age=22 pickup-delay=0 on-ground=true
+
+entity-order 28 entities e1 e2 e3 e4
+entity 28 e1 4.045705727850663 1.0134537788662523 0.875 0.25373501663209747 0.0032309245889160358 0 item=minecraft:redstone_torch count=1 age=23 pickup-delay=0 on-ground=false
+entity 28 e2 5.3249427544527554 1.0213410096230773 3.875 0.3166576236624464 0.004073180021276988 0 item=minecraft:redstone_torch count=1 age=23 pickup-delay=0 on-ground=false
+entity 28 e3 2.558992696324134 1.0134537788662523 6.472150521628896 0.24277512790587757 0.0032309245889160358 0.003061684612740047 item=minecraft:stone_button count=1 age=23 pickup-delay=0 on-ground=false
+entity 28 e4 2.414143872053686 2.0 10.116884542139214 9.875265628586608E-4 -0.12 6.3883619085676E-4 item=minecraft:oak_button count=1 age=23 pickup-delay=0 on-ground=true
+
+entity-order 29 entities e1 e2 e3 e4
+entity 29 e1 4.31076339686976 1.017184703478917 0.875 0.2737565206942885 0.003656306120411466 0 item=minecraft:redstone_torch count=1 age=24 pickup-delay=0 on-ground=false
+entity 29 e2 5.652293805031974 1.025914189668103 3.875 0.3348040358113602 0.0044817164441251995 0 item=minecraft:redstone_torch count=1 age=24 pickup-delay=0 on-ground=false
+entity 29 e3 2.813200075399751 1.017184703478917 6.4751815894247065 0.2631232363427259 0.003656306120411466 0.0029704464977079537 item=minecraft:stone_button count=1 age=24 pickup-delay=0 on-ground=false
+entity 29 e4 2.4151313986165444 2.0 10.117523378330072 5.806656773511732E-4 0 3.7563571799675827E-4 item=minecraft:oak_button count=1 age=24 pickup-delay=0 on-ground=true
+
+entity-order 30 entities e1 e2 e3 e4
+entity 30 e1 4.595642355101366 1.0213410096230773 0.875 0.2931813845006085 0.004073180021276988 0 item=minecraft:redstone_torch count=1 age=25 pickup-delay=0 on-ground=false
+entity 30 e2 5.997609803811675 1.0308959061359768 3.875 0.35240968539048706 0.004882082138516447 0 item=minecraft:redstone_torch count=1 age=25 pickup-delay=0 on-ground=false
+entity 30 e3 3.0875520820219027 1.0213410096230773 6.478122331485766 0.282864971722558 0.004073180021276988 0.0028819272759282775 item=minecraft:stone_button count=1 age=25 pickup-delay=0 on-ground=false
+entity 30 e4 2.4151313986165444 2.0 10.117523378330072 5.806656773511732E-4 -0.04 3.7563571799675827E-4 item=minecraft:oak_button count=1 age=25 pickup-delay=0 on-ground=true
+
+change 31 fluid_ticks 6 1 0 minecraft:air minecraft:water[level=6]
+change 31 fluid_ticks 6 1 3 minecraft:air minecraft:water[level=6]
+change 31 fluid_ticks 6 1 6 minecraft:air minecraft:water[level=6]
+change 31 fluid_ticks 6 1 9 minecraft:air minecraft:water[level=6]
+entity-order 31 entities e1 e2 e3 e4
+entity 31 e1 4.899751928686478 1.025914189668103 0.875 0.31202738791383994 0.0044817164441251995 0 item=minecraft:redstone_torch count=1 age=26 pickup-delay=0 on-ground=false
+entity 31 e2 6.360355395842612 1.036277988298242 3.875 0.3694906871091416 0.005274440519019869 0 item=minecraft:redstone_torch count=1 age=26 pickup-delay=0 on-ground=false
+entity 31 e3 3.38144840685836 1.025914189668103 6.480975439516419 0.3020184039453558 0.0044817164441251995 0.002796045924458848 item=minecraft:stone_button count=1 age=26 pickup-delay=0 on-ground=false
+entity 31 e4 2.4151313986165444 2.0 10.117523378330072 5.806656773511732E-4 -0.08 3.7563571799675827E-4 item=minecraft:oak_button count=1 age=26 pickup-delay=0 on-ground=true
+
+entity-order 32 entities e1 e2 e3 e4
+entity 32 e1 5.222519045830419 1.0308959061359768 0.875 0.3303117809573564 0.004882082138516447 0 item=minecraft:redstone_torch count=1 age=27 pickup-delay=0 on-ground=false
+entity 32 e2 6.740011179737914 1.0420524288410107 3.875 0.3860626754587558 0.0056589517319132225 0 item=minecraft:redstone_torch count=1 age=27 pickup-delay=0 on-ground=false
+entity 32 e3 3.6943066297780485 1.0308959061359768 6.483743525008298 0.3206010644285918 0.004882082138516447 0.0027127238348388836 item=minecraft:stone_button count=1 age=27 pickup-delay=0 on-ground=false
+entity 32 e4 2.4151313986165444 2.0 10.117523378330072 5.806656773511732E-4 -0.12 3.7563571799675827E-4 item=minecraft:oak_button count=1 age=27 pickup-delay=0 on-ground=true
+
+entity-order 33 entities e1 e2 e3 e4
+entity 33 e1 5.5633877122618145 1.036277988298242 0.875 0.34805129960432185 0.005274440519019869 0 item=minecraft:redstone_torch count=1 age=28 pickup-delay=0 on-ground=false
+entity 33 e2 6.875 1.0482113805966726 3.875 0.014 0.006035772720548709 0 item=minecraft:redstone_torch count=1 age=28 pickup-delay=0 on-ground=false
+entity 33 e3 4.025561686753359 1.036277988298242 6.486429121630659 0.33862996215399294 0.005274440519019869 0.0026318847411375148 item=minecraft:stone_button count=1 age=28 pickup-delay=0 on-ground=false
+entity 33 e4 2.4157120642938956 2.0 10.117899014048069 3.414314526159783E-4 0 2.2087382439261034E-4 item=minecraft:oak_button count=1 age=28 pickup-delay=0 on-ground=true
+
+entity-order 34 entities e1 e2 e3 e4
+entity 34 e1 5.921818502322884 1.0420524288410107 0.875 0.3652621810963723 0.0056589517319132225 0 item=minecraft:redstone_torch count=1 age=29 pickup-delay=0 on-ground=false
+entity 34 e2 6.875 1.05474715334097 3.875 0.014 0.006405057289411486 0 item=minecraft:redstone_torch count=1 age=29 pickup-delay=0 on-ground=false
+entity 34 e3 4.374665352648753 1.0420524288410107 6.489034687549484 0.3561215992361105 0.0056589517319132225 0.0025534546501464594 item=minecraft:stone_button count=1 age=29 pickup-delay=0 on-ground=false
+entity 34 e4 2.4157120642938956 2.0 10.117899014048069 3.414314526159783E-4 -0.04 2.2087382439261034E-4 item=minecraft:oak_button count=1 age=29 pickup-delay=0 on-ground=true
+
+entity-order 35 entities e1 e2 e3 e4
+entity 35 e1 6.297288065225218 1.0482113805966726 0.875 0.3819601788058015 0.006035772720548709 0 item=minecraft:redstone_torch count=1 age=30 pickup-delay=0 on-ground=false
+entity 35 e2 6.875 1.0616522106541302 3.875 0.014 0.006766956166897007 0 item=minecraft:redstone_torch count=1 age=30 pickup-delay=0 on-ground=false
+entity 35 e3 4.741085739422257 1.0482113805966726 6.491562607677481 0.3730919860269482 0.006035772720548709 0.002477361773652953 item=minecraft:stone_button count=1 age=30 pickup-delay=0 on-ground=false
+entity 35 e4 2.4157120642938956 2.0 10.117899014048069 3.414314526159783E-4 -0.08 2.2087382439261034E-4 item=minecraft:oak_button count=1 age=30 pickup-delay=0 on-ground=true
+
+entity-order 36 entities e1 e2 e3 e4
+entity 36 e1 6.689288646019132 1.05474715334097 0.875 0.3981605766548535 0.006405057289411486 0 item=minecraft:redstone_torch count=1 age=31 pickup-delay=0 on-ground=false
+entity 36 e2 6.875 1.068919166844776 3.875 0.014 0.007121617066832817 0 item=minecraft:redstone_torch count=1 age=31 pickup-delay=0 on-ground=false
+entity 36 e3 5.124306809280532 1.05474715334097 6.494015195857023 0.38955665577047194 0.006405057289411486 0.002403536462730946 item=minecraft:stone_button count=1 age=31 pickup-delay=0 on-ground=false
+entity 36 e4 2.4157120642938956 2.0 10.117899014048069 3.414314526159783E-4 -0.12 2.2087382439261034E-4 item=minecraft:oak_button count=1 age=31 pickup-delay=0 on-ground=true
+
+entity-order 37 entities e1 e2 e3 e4
+entity 37 e1 6.875 1.0616522106541302 0.875 0.014 0.006766956166897007 0 item=minecraft:redstone_torch count=1 age=32 pickup-delay=0 on-ground=false
+entity 37 e2 6.875 1.0765407839353576 3.875 0.014 0.007469184748769912 0 item=minecraft:redstone_torch count=1 age=32 pickup-delay=0 on-ground=false
+entity 37 e3 5.523827902341916 1.0616522106541302 6.496394696978049 0.4055306788204158 0.006766956166897007 0.0023319111439904176 item=minecraft:stone_button count=1 age=32 pickup-delay=0 on-ground=false
+entity 37 e4 2.4160534957465116 2.0 10.118119887872462 2.0076171432628848E-4 0 1.2987382180263988E-4 item=minecraft:oak_button count=1 age=32 pickup-delay=0 on-ground=true
+
+entity-order 38 entities e1 e2 e3 e4
+entity 38 e1 6.875 1.068919166844776 0.875 0.014 0.007121617066832817 0 item=minecraft:redstone_torch count=1 age=33 pickup-delay=0 on-ground=false
+entity 38 e2 6.875 1.0845099687078763 3.875 0.014 0.007809801077068264 0 item=minecraft:redstone_torch count=1 age=33 pickup-delay=0 on-ground=false
+entity 38 e3 5.939163278375084 1.068919166844776 6.4987032890328384 0.4210286764343983 0.007121617066832817 0.002262420257726463 item=minecraft:stone_button count=1 age=33 pickup-delay=0 on-ground=false
+entity 38 e4 2.4160534957465116 2.0 10.118119887872462 2.0076171432628848E-4 -0.04 1.2987382180263988E-4 item=minecraft:oak_button count=1 age=33 pickup-delay=0 on-ground=true
+
+entity-order 39 entities e1 e2 e3 e4
+entity 39 e1 6.875 1.0765407839353576 0.875 0.014 0.007469184748769912 0 item=minecraft:redstone_torch count=1 age=34 pickup-delay=0 on-ground=false
+entity 39 e2 6.875 1.0928197698086932 3.875 0.014 0.008143605078800648 0 item=minecraft:redstone_torch count=1 age=34 pickup-delay=0 on-ground=false
+entity 39 e3 6.369841672193894 1.0765407839353576 6.500943085109564 0.43606483415697334 0.007469184748769912 0.0021950001979115326 item=minecraft:stone_button count=1 age=34 pickup-delay=0 on-ground=false
+entity 39 e4 2.4160534957465116 2.0 10.118119887872462 2.0076171432628848E-4 -0.08 1.2987382180263988E-4 item=minecraft:oak_button count=1 age=34 pickup-delay=0 on-ground=true
+
+entity-order 40 entities e1 e2 e3 e4
+entity 40 e1 6.875 1.0845099687078763 0.875 0.014 0.007809801077068264 0 item=minecraft:redstone_torch count=1 age=35 pickup-delay=0 on-ground=false
+entity 40 e2 6.875 1.1014633749112426 3.875 0.014 0.008470733000498385 0 item=minecraft:redstone_torch count=1 age=35 pickup-delay=0 on-ground=false
+entity 40 e3 6.815405862301451 1.0845099687078763 6.5031161353264295 0.4506529148038677 0.007809801077068264 0.0021295892539759027 item=minecraft:stone_button count=1 age=35 pickup-delay=0 on-ground=false
+entity 40 e4 2.4160534957465116 2.0 10.118119887872462 2.0076171432628848E-4 -0.12 1.2987382180263988E-4 item=minecraft:oak_button count=1 age=35 pickup-delay=0 on-ground=true

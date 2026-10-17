@@ -32,7 +32,7 @@ A fixture is UTF-8 text with one statement per line. Blank lines and lines start
 | Body line | Meaning |
 | --- | --- |
 | `at <t> set <x> <y> <z> <state>` | Replace the block at the start of tick `t` |
-| `at <t> use <x> <y> <z>` | Use the block at the start of tick `t`: toggle a lever, cycle a repeater's delay, or toggle a comparator's mode |
+| `at <t> use <x> <y> <z>` | Use the block at the start of tick `t`: toggle a lever, press a button, cycle a repeater's delay, or toggle a comparator's mode |
 | `at <t> insert <x> <y> <z> <slot> <item> <count>` | Add items to a container slot at the start of tick `t` |
 | `change <t> <x> <y> <z> <old> <new>` | A block changed during tick `t ≥ 1` |
 | `block <t> <x> <y> <z> <state or ?>` | Block state at the end of tick `t` |
@@ -83,6 +83,9 @@ A wrong convention makes fixtures fail rather than pass.
 | `comparator` | `facing`, `mode`, `powered` | `facing` is taken to name the **input** side; the output signal is block-entity state and is not part of the notation |
 | `water` | `level`: 0 source, 1–7 flowing distance, 8–15 falling | the rules treat every falling level alike and write 8 |
 | `wheat` | `age` 0–7 | — |
+| `redstone_torch` | `lit` | — |
+| `redstone_wall_torch` | `facing`, `lit` | `facing` points away from the block the torch hangs on |
+| `<kind>_button` (14 kinds) | `face`, `facing`, `powered` | as for levers; each kind is a block of its own |
 
 Items: any item of the rule set's registry (since rules v7, every item of both versions), named `namespace:id`, without data components. Version 1 has no entity observations; dropped and pushed items are visible only through container slots that collect them. Version 2 observes them directly.
 
