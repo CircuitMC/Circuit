@@ -107,7 +107,7 @@ A file that starts with `circuit-trace 2` may use everything version 1 allows, p
 | `dimension` | The scenario's dimension, default `minecraft:overworld` |
 | `entities` | `observed` records entity lines (below); default `none` |
 | `chunks` | `observed` records chunk status lines; default `none` |
-| `rng` | `observed` records draws from the target version's random streams; default `none` |
+| `rng` | `observed` records draws from the target version's random streams (requires `entities observed`: the reference harness counts draws while it observes entities); default `none` |
 | `tolerance` | Allowed difference of entity positions and velocities, 0–1 blocks; default 0 (exact). A tolerance turns a comparison into a declared approximation and belongs in the fixture's review |
 | `load` | `area` (default) force-loads the area as described under Semantics; `none` loads nothing, so that the actions load what the scenario needs |
 | `observe <cx0> <cz0> <cx1> <cz1>` | The chunks whose status lines are recorded, inclusive, at most 64 by 64; default every chunk |

@@ -54,7 +54,8 @@ constexpr std::array reference_v4_mechanisms{
         "observer_moved, piston_observed). Not covered: observers moved while powered."},
     MechanismEntry{"piston", l0_exact, l2_declared_deviation, harness_trace,
         "Two-tick moves through moving pistons; structure discovery and placement order, vacated cells in hash "
-        "order, shape updates after every write but a destruction, block dropping, destruction (piston_timing, "
+        "order, shape updates after every write but a destruction, the moved blocks' neighbor updates before an extending "
+        "base changes (block_event_order), block dropping, destruction (piston_timing, "
         "piston_slime, piston_destroys, piston_observed, quasi_connectivity, door_more); a draw from the level random after each "
         "extension and retraction (piston_draws); entities pushed out of the space a moving block sweeps "
         "through each step (0.01 beyond it, at most 0.51 a tick on each axis), moving blocks colliding where "
@@ -66,8 +67,8 @@ constexpr std::array reference_v4_mechanisms{
         "after a move in first-change "
         "order are not compared."},
     MechanismEntry{"block_events", l0_exact, l0_exact, harness_trace,
-        "Level-wide FIFO with set semantics, drained including additions (piston_observed, piston_slime, "
-        "piston_timing). Not covered: deferral in non-ticking chunks."},
+        "Level-wide FIFO with set semantics, drained including additions; events of chunks that do not tick blocks "
+        "wait in place until they do (piston_observed, piston_slime, piston_timing, block_event_order, block_event_rings)."},
     MechanismEntry{"hopper", l0_exact, l0_exact, harness_trace,
         "Push then pull, 8-tick cooldown, disabled while powered, item pickup, competition in block-entity order; "
         "a hopper receiving into an empty inventory from another hopper waits 8 game ticks, or 7 when it "

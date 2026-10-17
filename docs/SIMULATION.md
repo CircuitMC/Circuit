@@ -6,11 +6,11 @@ The Part I core runs headless: shared contracts, a set of reference rules, a seq
 
 The rules are **circuit-reference-rules-v11**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
 
-Two version bundles run them: `java-1.21.8` and `java-1.21.4`. 1.21.8 has 101 traces and 1.21.4 has 100 recorded on the unmodified server (1.21.4 lacks the tntExplodes game rule, so `tnt_explodes_disabled` is 1.21.8's only):
+Two version bundles run them: `java-1.21.8` and `java-1.21.4`. 1.21.8 has 103 traces and 1.21.4 has 102 recorded on the unmodified server (1.21.4 lacks the tntExplodes game rule, so `tnt_explodes_disabled` is 1.21.8's only):
 - 1.21.8 traces are in `tests/fixtures/harness/`;
 - 1.21.4 traces are in `tests/fixtures/harness-1.21.4/`.
 
-The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 201 pass on both the parallel runtime and the oracle.
+The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 205 pass on both the parallel runtime and the oracle.
 
 The compatibility table is part of the version bundle (`src/contracts/version.cpp`). `circuit-server --compatibility` prints it. Each row states a target tier, a claimed tier, the evidence source, and its limitations:
 
@@ -31,7 +31,7 @@ The tiers are defined in the architecture: L0 exact, L1 region-equivalent, L2 de
 | `support` | L0 | support, lever_attachment, torch_basics, button_basics, pressure_plates |
 | `redstone_lamp` | L0 | lamp_timing, vertical_slice, tick_priority |
 | `observer` | L0 | observer_pulse, observer_clock, observer_moved, piston_observed |
-| `block_events` | L0 | piston_observed, piston_slime, piston_timing |
+| `block_events` | L0 | piston_observed, piston_slime, piston_timing, block_event_order, block_event_rings: events of the command phase, scheduled ticks and block entities in queue order, an equal event queued once, events whose block changed dropped, events queued while events run, and events of chunks that do not tick blocks waiting until a ticket makes them tick |
 | `double_chest` | L0 | double_chest, double_chest_left_input |
 | `block_entity_order` | L0 | piston_slime, piston_observed, hopper_competition |
 | `hopper` | L0 | hopper_chain, hopper_competition, double_chest, hopper_chained |
@@ -96,7 +96,7 @@ Logical time advances by one per executed tick. Each tick runs these phases in o
 | fluid ticks | scheduled fluid ticks, same order and limit |
 | chunks | the level's tickets whose lifetime is over go, then one root applies its chunk-level changes |
 | random ticks | chunks whose random ticks run (below) in coordinate order, then sections bottom to top |
-| block events | the level's FIFO, including events queued while it drains; events in chunks that do not block tick stay queued in order |
+| block events | the level's FIFO, including events queued while it drains; an equal event is queued once, and an event runs only if its block is still there; events in chunks that do not block tick stay queued in order and run once the chunk ticks (block_event_rings) |
 | entities | entities in entity-ticking chunks, ascending id, at most once per tick, while the level is awake |
 | block entities | block entities in block-ticking chunks, ascending creation order, while the level is awake |
 
@@ -171,7 +171,7 @@ v10 is v9 with what C2.3 and C2.4 added to the rules: crops that need light, gam
     4. vacated cells, in hash order;
     5. the extended base.
 
-    Every write sends shape updates at once. Neighbor updates follow when the action ends.
+    Every write sends shape updates at once. The neighbor updates of the first four follow before the base extends (a note block beside the head plays before it: block_event_order), the base's after it; on a retraction they follow when the action ends.
   - **Retraction write order:**
     1. a still-extending head is cleared;
     2. the base becomes a moving piston;

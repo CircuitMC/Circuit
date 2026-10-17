@@ -121,9 +121,8 @@ private:
 
 // Writes of one piston action, in the target version's order. Every write
 // but a destruction sends shape updates at once (observed in target-version
-// traces); neighbor
-// updates for the changed positions follow when the action finishes, in
-// first-write order.
+// traces); neighbor updates for the changed positions follow when a part of
+// the action finishes, in first-write order.
 class Edit {
 public:
     explicit Edit(RuleContext& ctx) : ctx_(ctx) {}
@@ -194,6 +193,8 @@ public:
     void finish() {
         for (auto p : placed_) on_placed(ctx_, p, ctx_.block(p), blocks::moving_piston(Direction::down, false));
         for (auto p : changed_) notify_neighbors(ctx_, p);
+        placed_.clear();
+        changed_.clear();
     }
 
 private:
@@ -213,6 +214,9 @@ bool extend(RuleContext& ctx, BlockPos pos, BlockState s) {
     edit.move(structure, facing, {facing, true, false},
               std::pair{head_pos, BlockState::of(BlockType::piston_head).with_facing(facing).with_flag(sticky_piston)},
               sticky_piston);
+    // The structure's neighbor updates come before the base extends (a note
+    // block beside the head plays first: block_event_order).
+    edit.finish();
     edit.write(pos, s.with_flag(true));
     edit.finish();
     return true;

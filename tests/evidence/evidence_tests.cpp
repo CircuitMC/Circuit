@@ -231,6 +231,7 @@ int main(int argc, char** argv) {
         expect(h + "entity-added 1 commands e1 minecraft:item 0.5 0.5 0.5 0 0 0\n", 9, "require `entities observed`");
         expect(h + "chunk 1 commands 0 0 border\n", 9, "require `chunks observed`");
         expect(h + "draws 1 random_ticks level 2\n", 9, "require `rng observed`");
+        expect(h + "rng observed\nchanges ordered\nchange 1 commands 0 0 0 minecraft:air minecraft:stone\n", 11, "requires `entities observed`");
         expect(h + "tolerance 2\n", 9, "invalid tolerance");
         expect(h + "chunks observed\nchunk 1 commands 0 0 loaded\n", 10, "unknown chunk status");
         expect(e + "entity-added 1 commands e2 minecraft:item 0.5 0.5 0.5 0 0 0\n", 10, "the next entity is e1");

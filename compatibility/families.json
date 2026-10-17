@@ -361,6 +361,7 @@
           "evidence": "compared",
           "cases": [
             "trace/ring_blocks",
+            "trace/block_event_rings",
             "observation/chunk_levels"
           ],
           "note": "Load and simulation levels: 31 and lower entity ticking, 32 block ticking, 33 border. Scheduled ticks, block events and block entities run at simulation level 32 and lower, entities at 31 and lower; a level without players or forced chunks stops its entities and block entities after 300 ticks. Ticket changes take effect in each level's chunk stage, after its scheduled ticks",
@@ -532,8 +533,11 @@
           "evidence": "compared",
           "tier": "L0",
           "cases": [
-            "trace/piston_timing"
-          ]
+            "trace/piston_timing",
+            "trace/block_event_order",
+            "trace/block_event_rings"
+          ],
+          "note": "One FIFO per level with set semantics: events queued by commands, scheduled ticks and block entities run in queue order (those of the entity and block-entity phases in the next tick), an equal event is queued once, an event runs only if its block is still there, and events queued while events run join the queue; events of chunks that do not tick blocks wait, keeping their place, until they do"
         },
         {
           "id": "neighbor_update_order",

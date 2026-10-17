@@ -250,6 +250,8 @@ private:
         header_done_ = true;
         for (const auto* key : {"title", "game-version", "source", "harness", "mechanisms", "area", "ticks"})
             if (!seen_.contains(key)) return fail(line, std::format("missing required key `{}`", key));
+        // The reference harness counts draws only while it observes entities.
+        if (f_.observe_rng && !f_.observe_entities) return fail(line, "`rng observed` requires `entities observed`");
         return {};
     }
 
