@@ -889,6 +889,23 @@ int main() {
         require(carts[3].position.x > 17.5 && carts[2].position.x < carts[3].position.x, "pushed over the edge");
     });
 
+    suite.run("detector rails sense minecarts across chunk edges", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("detector_rails"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the detector rail scenario");
+        const auto& ref = references[index];
+        const auto at = [&](Tick t, BlockPos p) { return state_at(ref.dumps.at(t), p); };
+        // The running cart pressed both rails by tick 30 and both were released by tick 80.
+        bool seen15 = false, seen17 = false, lamp = false;
+        for (const auto& [t, d] : ref.dumps) {
+            seen15 = seen15 || state_at(d, {15, 0, 0}).flag();
+            seen17 = seen17 || state_at(d, {17, 0, 0}).flag();
+            lamp = lamp || state_at(d, {17, 0, 1}).flag();
+        }
+        require(seen15 && seen17 && lamp && !at(90, {15, 0, 0}).flag() && !at(90, {17, 0, 0}).flag(), "the running cart");
+        // The cart at rest keeps its detector rail and the powered rails over the edge on.
+        require(at(90, {15, 0, 4}).flag() && at(90, {16, 0, 4}).flag() && at(90, {20, 0, 4}).flag(), "the cart at rest");
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");

@@ -1101,13 +1101,16 @@
             "trace/rail_power",
             "trace/rail_more",
             "trace/minecart_rails",
-            "trace/minecart_tracks"
+            "trace/minecart_tracks",
+            "trace/detector_rails",
+            "trace/detector_rails_more"
           ],
           "deviations": [
-            "detector rails sense nothing",
-            "waterlogging is stored only"
+            "waterlogging is stored only",
+            "activator rails act on no minecart (only empty ones exist, which they leave unchanged)",
+            "comparators read 0 from detector rails (no minecart has contents)"
           ],
-          "note": "Rails take their shapes from the rails beside them and make them join, curve with the official preferences, rise toward higher rails, switch at three-way junctions on updates from signal sources and need a sturdy top; powered and activator rails pass power along up to eight rails of their kind"
+          "note": "Rails take their shapes from the rails beside them and make them join, curve with the official preferences, rise toward higher rails, switch at three-way junctions on updates from signal sources and need a sturdy top; powered and activator rails pass power along up to eight rails of their kind; detector rails sense minecarts, check every 20 ticks and power their ends, neighbors and the block below"
         },
         {
           "id": "comparator_sources",
@@ -1705,8 +1708,7 @@
             "a moving minecart picks up the boats it touches (riding is not modeled; it neither picks them up nor pushes them)",
             "yaw from an exact arctangent (the official servers use an approximation; only the push test reads it)",
             "chest, hopper, furnace, TNT, spawner and command block minecarts",
-            "riders",
-            "detector rails do not sense minecarts and activator rails do nothing"
+            "riders"
           ]
         },
         {

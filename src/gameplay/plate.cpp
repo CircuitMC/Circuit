@@ -87,6 +87,7 @@ void entity_inside(RuleContext& ctx, const Entity& entity) {
                 const auto s = ctx.block(pos);
                 if (is_plate(s.type()) && output(s) == 0) check_plate(ctx, pos, s);
                 else if (s.is(BlockType::button)) entity_at_button(ctx, pos, s);
+                else if (s.is(BlockType::rail)) detector_entity_inside(ctx, pos, s);
             }
 }
 

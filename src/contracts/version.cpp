@@ -228,7 +228,9 @@ constexpr std::array reference_v4_mechanisms{
         "make those join them, curve (plain rails) with the official preferences, rise toward a higher rail, switch at "
         "three-way junctions on updates from signal sources, need a sturdy top below (and on the side they rise "
         "toward), and powered and activator rails pass power along up to eight rails of their kind (rail_shapes, "
-        "rail_power); minecarts ride them (vehicle). Gaps: detector rails sense nothing; activator rails do nothing to minecarts."},
+        "rail_power); minecarts ride them (vehicle); detector rails sense minecarts in the middle of their cell, look again every "
+        "20 ticks and power their ends, neighbors and the block below (detector_rails, detector_rails_more). Gaps: comparators read "
+        "0 from detector rails and activator rails act on nothing, as only empty minecarts exist."},
     MechanismEntry{"note_block", l0_exact, l2_declared_deviation, harness_trace,
         "Note blocks take the instrument of a mob head above them or else of the block below, when placed, moved "
         "and on a shape update from above or below; they play on a rising signal and when used (the next note), "

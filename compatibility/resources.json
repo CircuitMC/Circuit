@@ -687,7 +687,7 @@
         "evidence": "compared",
         "deviations": [
           "waterlogging is stored only",
-          "does nothing to minecarts"
+          "acts on no minecart (empty minecarts are unchanged)"
         ]
       },
       "detector_rail": {
@@ -695,7 +695,7 @@
         "evidence": "compared",
         "deviations": [
           "waterlogging is stored only",
-          "senses nothing"
+          "comparators read 0 (no minecart has contents)"
         ]
       },
       "oak_door": {

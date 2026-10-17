@@ -212,6 +212,11 @@ void check_rail(RuleContext& ctx, BlockPos pos, BlockState cause);
 void rail_removed(RuleContext& ctx, BlockPos pos, BlockState previous);
 bool rail_supported(RuleContext& ctx, BlockPos pos);
 std::uint16_t rail_item(BlockState s);
+// An entity in a detector rail's cell: an unpowered one looks for minecarts.
+void detector_entity_inside(RuleContext& ctx, BlockPos pos, BlockState s);
+// A rail's scheduled tick: a powered detector rail looks again.
+void tick_rail(RuleContext& ctx, BlockPos pos, BlockState s);
+bool is_detector_rail(BlockState s) noexcept;
 
 // ---- note blocks (note.cpp) ----
 // The state with the instrument its neighbors give it.

@@ -18,6 +18,13 @@
 // line through up to eight powered rails of their kind from one that has a
 // signal. Rails need a sturdy top below them, an ascending rail also on the
 // side it rises toward; without it they break with their drop.
+//
+// A detector rail is pressed while a minecart's box meets the middle of its
+// cell (0.2 in from each side, up to 0.8 above its bottom): an entity inside
+// it while it is unpowered, a placement and its check 20 ticks after each
+// press look. A change of its power updates the rails at its ends, around
+// it and below it, then the comparators that read it, which read 0 (no
+// minecart has contents).
 #include "internal.hpp"
 #include <array>
 #include <optional>
@@ -259,6 +266,29 @@ bool signal_source(BlockState s) {
     }
 }
 
+bool is_detector(BlockState s) { return is_rail(s) && s.variant() == static_cast<std::uint8_t>(RailKind::detector); }
+
+bool cart_on(RuleContext& ctx, BlockPos pos) {
+    const physics::Aabb area{pos.x + 0.2, static_cast<double>(pos.y), pos.z + 0.2, pos.x + 0.8, pos.y + 0.8, pos.z + 0.8};
+    for (const auto id : entities_intersecting(ctx, area))
+        if (const auto* e = ctx.peek_entity(id); e && e->kind == EntityKind::minecart) return true;
+    return false;
+}
+
+void check_detector(RuleContext& ctx, BlockPos pos, BlockState s) {
+    const bool pressed = cart_on(ctx, pos);
+    if (pressed != s.flag()) {
+        const auto next = s.with_flag(pressed);
+        set_block(ctx, pos, next);
+        // Each block at its ends gets an update as from itself.
+        for (const auto& end : ends_of(pos, shape_of(next))) notify_single(ctx, end, pos, ctx.block(end));
+        notify_neighbors(ctx, pos, std::nullopt, next);
+        notify_neighbors(ctx, pos.relative(Direction::down), std::nullopt, next);
+    }
+    if (pressed) schedule(ctx, TickList::block, pos, BlockType::rail, 20, 0);
+    container_changed(ctx, pos);
+}
+
 void check_power(RuleContext& ctx, BlockPos pos, BlockState s) {
     const bool on = has_neighbor_signal(ctx, pos) || line_power(ctx, pos, s, true, 0) || line_power(ctx, pos, s, false, 0);
     if (on == s.flag()) return;
@@ -294,7 +324,18 @@ void rail_placed(RuleContext& ctx, BlockPos pos) {
     // The others check themselves at once, as a neighbor update would.
     const auto s = ctx.block(pos);
     if (is_rail(s) && !curves(s)) rail_neighbor_changed(ctx, pos, std::nullopt);
+    if (const auto now = ctx.block(pos); is_detector(now)) check_detector(ctx, pos, now);
 }
+
+void detector_entity_inside(RuleContext& ctx, BlockPos pos, BlockState s) {
+    if (is_detector(s) && !s.flag()) check_detector(ctx, pos, s);
+}
+
+void tick_rail(RuleContext& ctx, BlockPos pos, BlockState s) {
+    if (is_detector(s) && s.flag()) check_detector(ctx, pos, s);
+}
+
+bool is_detector_rail(BlockState s) noexcept { return is_detector(s); }
 
 void check_rail(RuleContext& ctx, BlockPos pos, BlockState cause) { rail_neighbor_changed(ctx, pos, cause); }
 

@@ -1887,6 +1887,31 @@ int main() {
                 std::format("the runner's yaw {}, the other's {} at z={}", now[2].yaw, now[3].yaw, now[3].position.z));
     });
 
+    suite.run("detector rails sense minecarts and look again every 20 ticks", [] {
+        using circuit::gameplay::blocks::RailKind;
+        using circuit::gameplay::blocks::RailShape;
+        Sim s;
+        std::vector<CommandBody> build = floor(-2, 20, -1, 4);
+        for (int x = 0; x <= 18; ++x)
+            build.push_back(place({x, 0, 0}, blocks::rail(x == 10 ? RailKind::detector : RailKind::rail, RailShape::east_west)));
+        build.push_back(place({10, 0, 1}, blocks::lamp()));
+        build.push_back(place({10, 0, -1}, blocks::comparator(D::north)));
+        s.tick(build);
+        s.tick({SummonEntity{"minecraft:minecart", {6.5, 0.0, 0.5}, {0.4, 0.0, 0.0}, 0, 0}});
+        Tick pressed = 0;
+        for (int i = 0; i < 20 && !pressed; ++i) {
+            s.tick();
+            if (s.at({10, 0, 0}).flag()) pressed = s.oracle.time();
+        }
+        require(pressed != 0 && s.at({10, 0, 1}).flag(), "the cart pressed it and lit the lamp");
+        // The comparator reads 0: the cart has no contents.
+        require(!s.at({10, 0, -1}).flag(), "the comparator stays off");
+        s.until(pressed + 19);
+        require(s.at({10, 0, 0}).flag(), "still powered before its check");
+        s.tick();
+        require(!s.at({10, 0, 0}).flag(), "the check 20 ticks later finds no cart");
+    });
+
     suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {
         using circuit::contracts::UseBlock;
         Sim s;

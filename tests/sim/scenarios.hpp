@@ -1058,13 +1058,44 @@ inline Scenario minecart_meeting_scenario() {
     }, 10};
 }
 
+// Detector rails at the x=16 chunk edge: a cart crossing the edge over one
+// on each side, a lamp beside the one past the edge, and one pressed by a
+// cart at rest powering powered rails over the edge.
+inline Scenario detector_rail_scenario() {
+    using blocks::RailKind;
+    using blocks::RailShape;
+    return {"detector_rails", 121, 100, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        if (t == 2) {
+            for (int x = 6; x <= 26; ++x)
+                for (int z = -2; z <= 6; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            for (int x = 7; x <= 25; ++x) {
+                const auto kind = x == 15 || x == 17 ? RailKind::detector : RailKind::rail;
+                c.push_back(place({x, 0, 0}, blocks::rail(kind, RailShape::east_west)));
+            }
+            c.push_back(place({17, 0, 1}, blocks::lamp()));
+            for (int x = 12; x <= 20; ++x) {
+                const auto kind = x == 15 ? RailKind::detector : x > 15 ? RailKind::powered : RailKind::rail;
+                c.push_back(place({x, 0, 4}, blocks::rail(kind, RailShape::east_west)));
+            }
+            c.push_back(place({14, 0, 4}, blocks::stone()));
+        }
+        if (t == 4) {
+            c.push_back(SummonEntity{"minecraft:minecart", {9.5, 0.0, 0.5}, {0.5, 0.0, 0.0}, 0, 0});
+            c.push_back(SummonEntity{"minecraft:minecart", {15.5, 0.0, 4.5}, {}, 0, 0});
+        }
+        return c;
+    }, 10};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
-            plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario(), rail_scenario(), minecart_rail_scenario(), minecart_meeting_scenario()};
+            plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario(), rail_scenario(), minecart_rail_scenario(), minecart_meeting_scenario(), detector_rail_scenario()};
 }
 
 } // namespace circuit::test
