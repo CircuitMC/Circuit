@@ -196,14 +196,15 @@
       "tnt": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Primed where redstone reaches it when placed, moved in by a piston or updated, unless tntExplodes is off; pistons move it; explosions prime it with a short fuse",
+        "note": "Primed where redstone reaches it when placed, moved in by a piston or updated, unless tntExplodes is off; pistons move it; explosions prime it with a short fuse; burning arrows prime it",
         "cases": [
           "trace/tnt_ignition",
           "trace/tnt_explodes_disabled",
-          "trace/tnt_chain_edge"
+          "trace/tnt_chain_edge",
+          "trace/arrow_tnt"
         ],
         "deviations": [
-          "fire, players, projectiles and dispensers do not ignite it yet"
+          "fire, players and dispensers do not ignite it yet"
         ]
       },
       "sand": {
@@ -615,6 +616,30 @@
         ],
         "deviations": [
           "falling anvils, dripstone and scaffolding; damage"
+        ]
+      },
+      "arrow": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Summoned arrows: flight, sticking, falling, life, fire, priming TNT; spawned to clients",
+        "cases": [
+          "trace/arrow_flight",
+          "trace/arrow_tnt",
+          "trace/arrow_life"
+        ],
+        "deviations": [
+          "passes through entities; not shot by bows, crossbows or dispensers"
+        ]
+      },
+      "snowball": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Summoned snowballs: flight and breaking on blocks; spawned to clients",
+        "cases": [
+          "trace/arrow_tnt"
+        ],
+        "deviations": [
+          "passes through entities; not thrown by players or dispensers"
         ]
       }
     },

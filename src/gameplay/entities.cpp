@@ -295,7 +295,12 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
 
 namespace detail {
 physics::Aabb entity_box(const Entity& e) {
-    const double size = e.kind == EntityKind::item ? item_size : static_cast<double>(0.98f);
+    switch (e.kind) {
+    case EntityKind::item: case EntityKind::snowball: return physics::box_at(e.position, item_size, item_size);
+    case EntityKind::arrow: return physics::box_at(e.position, 0.5, 0.5);
+    default: break;
+    }
+    const double size = static_cast<double>(0.98f);
     return physics::box_at(e.position, size, size);
 }
 
@@ -335,6 +340,8 @@ void run_entity(RuleContext& ctx, EntityId id) {
     case EntityKind::item: run_item(ctx, id, *e); break;
     case EntityKind::falling_block: detail::run_falling_block(ctx, id, *e); break;
     case EntityKind::primed_tnt: detail::run_primed_tnt(ctx, id, *e); break;
+    case EntityKind::arrow: detail::run_arrow(ctx, id, *e); break;
+    case EntityKind::snowball: detail::run_snowball(ctx, id, *e); break;
     }
 }
 

@@ -1,0 +1,334 @@
+circuit-trace 2
+title Arrows keep their state while their chunk unloads and reloads
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.9.0+mc1.21.8
+mechanisms projectile chunk_tickets
+area 328 0 -1 343 7 2
+ticks 70
+changes ordered
+entities observed
+rng observed
+chunks none
+load none
+
+at 1 command forceload add 328 0
+
+at 10 set 328 0 -1 minecraft:stone
+change 10 commands 328 0 -1 minecraft:air minecraft:stone
+at 10 set 328 0 0 minecraft:stone
+change 10 commands 328 0 0 minecraft:air minecraft:stone
+at 10 set 328 0 1 minecraft:stone
+change 10 commands 328 0 1 minecraft:air minecraft:stone
+at 10 set 328 0 2 minecraft:stone
+change 10 commands 328 0 2 minecraft:air minecraft:stone
+at 10 set 329 0 -1 minecraft:stone
+change 10 commands 329 0 -1 minecraft:air minecraft:stone
+at 10 set 329 0 0 minecraft:stone
+change 10 commands 329 0 0 minecraft:air minecraft:stone
+at 10 set 329 0 1 minecraft:stone
+change 10 commands 329 0 1 minecraft:air minecraft:stone
+at 10 set 329 0 2 minecraft:stone
+change 10 commands 329 0 2 minecraft:air minecraft:stone
+at 10 set 330 0 -1 minecraft:stone
+change 10 commands 330 0 -1 minecraft:air minecraft:stone
+at 10 set 330 0 0 minecraft:stone
+change 10 commands 330 0 0 minecraft:air minecraft:stone
+at 10 set 330 0 1 minecraft:stone
+change 10 commands 330 0 1 minecraft:air minecraft:stone
+at 10 set 330 0 2 minecraft:stone
+change 10 commands 330 0 2 minecraft:air minecraft:stone
+at 10 set 331 0 -1 minecraft:stone
+change 10 commands 331 0 -1 minecraft:air minecraft:stone
+at 10 set 331 0 0 minecraft:stone
+change 10 commands 331 0 0 minecraft:air minecraft:stone
+at 10 set 331 0 1 minecraft:stone
+change 10 commands 331 0 1 minecraft:air minecraft:stone
+at 10 set 331 0 2 minecraft:stone
+change 10 commands 331 0 2 minecraft:air minecraft:stone
+at 10 set 332 0 -1 minecraft:stone
+change 10 commands 332 0 -1 minecraft:air minecraft:stone
+at 10 set 332 0 0 minecraft:stone
+change 10 commands 332 0 0 minecraft:air minecraft:stone
+at 10 set 332 0 1 minecraft:stone
+change 10 commands 332 0 1 minecraft:air minecraft:stone
+at 10 set 332 0 2 minecraft:stone
+change 10 commands 332 0 2 minecraft:air minecraft:stone
+at 10 set 333 0 -1 minecraft:stone
+change 10 commands 333 0 -1 minecraft:air minecraft:stone
+at 10 set 333 0 0 minecraft:stone
+change 10 commands 333 0 0 minecraft:air minecraft:stone
+at 10 set 333 0 1 minecraft:stone
+change 10 commands 333 0 1 minecraft:air minecraft:stone
+at 10 set 333 0 2 minecraft:stone
+change 10 commands 333 0 2 minecraft:air minecraft:stone
+at 10 set 334 0 -1 minecraft:stone
+change 10 commands 334 0 -1 minecraft:air minecraft:stone
+at 10 set 334 0 0 minecraft:stone
+change 10 commands 334 0 0 minecraft:air minecraft:stone
+at 10 set 334 0 1 minecraft:stone
+change 10 commands 334 0 1 minecraft:air minecraft:stone
+at 10 set 334 0 2 minecraft:stone
+change 10 commands 334 0 2 minecraft:air minecraft:stone
+at 10 set 335 0 -1 minecraft:stone
+change 10 commands 335 0 -1 minecraft:air minecraft:stone
+at 10 set 335 0 0 minecraft:stone
+change 10 commands 335 0 0 minecraft:air minecraft:stone
+at 10 set 335 0 1 minecraft:stone
+change 10 commands 335 0 1 minecraft:air minecraft:stone
+at 10 set 335 0 2 minecraft:stone
+change 10 commands 335 0 2 minecraft:air minecraft:stone
+at 10 set 336 0 -1 minecraft:stone
+change 10 commands 336 0 -1 minecraft:air minecraft:stone
+at 10 set 336 0 0 minecraft:stone
+change 10 commands 336 0 0 minecraft:air minecraft:stone
+at 10 set 336 0 1 minecraft:stone
+change 10 commands 336 0 1 minecraft:air minecraft:stone
+at 10 set 336 0 2 minecraft:stone
+change 10 commands 336 0 2 minecraft:air minecraft:stone
+at 10 set 337 0 -1 minecraft:stone
+change 10 commands 337 0 -1 minecraft:air minecraft:stone
+at 10 set 337 0 0 minecraft:stone
+change 10 commands 337 0 0 minecraft:air minecraft:stone
+at 10 set 337 0 1 minecraft:stone
+change 10 commands 337 0 1 minecraft:air minecraft:stone
+at 10 set 337 0 2 minecraft:stone
+change 10 commands 337 0 2 minecraft:air minecraft:stone
+at 10 set 338 0 -1 minecraft:stone
+change 10 commands 338 0 -1 minecraft:air minecraft:stone
+at 10 set 338 0 0 minecraft:stone
+change 10 commands 338 0 0 minecraft:air minecraft:stone
+at 10 set 338 0 1 minecraft:stone
+change 10 commands 338 0 1 minecraft:air minecraft:stone
+at 10 set 338 0 2 minecraft:stone
+change 10 commands 338 0 2 minecraft:air minecraft:stone
+at 10 set 339 0 -1 minecraft:stone
+change 10 commands 339 0 -1 minecraft:air minecraft:stone
+at 10 set 339 0 0 minecraft:stone
+change 10 commands 339 0 0 minecraft:air minecraft:stone
+at 10 set 339 0 1 minecraft:stone
+change 10 commands 339 0 1 minecraft:air minecraft:stone
+at 10 set 339 0 2 minecraft:stone
+change 10 commands 339 0 2 minecraft:air minecraft:stone
+at 10 set 340 0 -1 minecraft:stone
+change 10 commands 340 0 -1 minecraft:air minecraft:stone
+at 10 set 340 0 0 minecraft:stone
+change 10 commands 340 0 0 minecraft:air minecraft:stone
+at 10 set 340 0 1 minecraft:stone
+change 10 commands 340 0 1 minecraft:air minecraft:stone
+at 10 set 340 0 2 minecraft:stone
+change 10 commands 340 0 2 minecraft:air minecraft:stone
+at 10 set 341 0 -1 minecraft:stone
+change 10 commands 341 0 -1 minecraft:air minecraft:stone
+at 10 set 341 0 0 minecraft:stone
+change 10 commands 341 0 0 minecraft:air minecraft:stone
+at 10 set 341 0 1 minecraft:stone
+change 10 commands 341 0 1 minecraft:air minecraft:stone
+at 10 set 341 0 2 minecraft:stone
+change 10 commands 341 0 2 minecraft:air minecraft:stone
+at 10 set 342 0 -1 minecraft:stone
+change 10 commands 342 0 -1 minecraft:air minecraft:stone
+at 10 set 342 0 0 minecraft:stone
+change 10 commands 342 0 0 minecraft:air minecraft:stone
+at 10 set 342 0 1 minecraft:stone
+change 10 commands 342 0 1 minecraft:air minecraft:stone
+at 10 set 342 0 2 minecraft:stone
+change 10 commands 342 0 2 minecraft:air minecraft:stone
+at 10 set 343 0 -1 minecraft:stone
+change 10 commands 343 0 -1 minecraft:air minecraft:stone
+at 10 set 343 0 0 minecraft:stone
+change 10 commands 343 0 0 minecraft:air minecraft:stone
+at 10 set 343 0 1 minecraft:stone
+change 10 commands 343 0 1 minecraft:air minecraft:stone
+at 10 set 343 0 2 minecraft:stone
+change 10 commands 343 0 2 minecraft:air minecraft:stone
+
+at 12 command summon minecraft:arrow 330.5 3 0.5 {Motion:[0.0d,-1.0d,0.0d]}
+entity-added 12 commands e1 minecraft:arrow 330.5 3.0 0.5 0 -1.0 0
+entity-order 12 entities e1
+entity 12 e1 330.5 2.0 0.5 0 -1.0400000095367432 0 in-ground=false life=0 on-ground=false
+
+entity-order 13 entities e1
+entity 13 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=0 on-ground=false
+
+entity-order 14 entities e1
+entity 14 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=1 on-ground=false
+
+entity-order 15 entities e1
+entity 15 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=2 on-ground=false
+
+entity-order 16 entities e1
+entity 16 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=3 on-ground=false
+
+entity-order 17 entities e1
+entity 17 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=4 on-ground=false
+
+entity-order 18 entities e1
+entity 18 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=5 on-ground=false
+
+entity-order 19 entities e1
+entity 19 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=6 on-ground=false
+
+entity-order 20 entities e1
+entity 20 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=7 on-ground=false
+
+entity-order 21 entities e1
+entity 21 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=8 on-ground=false
+
+entity-order 22 entities e1
+entity 22 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=9 on-ground=false
+
+entity-order 23 entities e1
+entity 23 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=10 on-ground=false
+
+entity-order 24 entities e1
+entity 24 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=11 on-ground=false
+
+entity-order 25 entities e1
+entity 25 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=12 on-ground=false
+
+entity-order 26 entities e1
+entity 26 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=13 on-ground=false
+
+entity-order 27 entities e1
+entity 27 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=14 on-ground=false
+
+at 28 command summon minecraft:arrow 329.5 5 1.5 {Motion:[0.3d,0.2d,0.0d],Fire:200s}
+entity-added 28 commands e2 minecraft:arrow 329.5 5.0 1.5 0.3 0.2 0
+entity-order 28 entities e1 e2
+entity 28 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=15 on-ground=false
+entity 28 e2 329.8 5.2 1.5 0.29700000286102296 0.14800000190734863 0 in-ground=false life=0 fire=199 on-ground=false
+
+entity-order 29 entities e1 e2
+entity 29 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=16 on-ground=false
+entity 29 e2 330.097000002861 5.348000001907349 1.5 0.29403000566482546 0.09652000329971315 0 in-ground=false life=0 fire=198 on-ground=false
+
+at 30 command forceload remove 328 0
+entity 30 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=16 on-ground=false
+entity 30 e2 330.097000002861 5.348000001907349 1.5 0.29403000566482546 0.09652000329971315 0 in-ground=false life=0 fire=198 on-ground=false
+
+entity-removed 31 other e1 unloaded_to_chunk
+entity-removed 31 other e2 unloaded_to_chunk
+
+at 40 command forceload add 328 0
+
+entity-loaded 41 other e1 minecraft:arrow 330.5 1.050000000745058 0.5 0 0 0
+entity-loaded 41 other e2 minecraft:arrow 330.097000002861 5.348000001907349 1.5 0.29403000566482546 0.09652000329971315 0
+entity 41 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=16 on-ground=false
+entity 41 e2 330.097000002861 5.348000001907349 1.5 0.29403000566482546 0.09652000329971315 0 in-ground=false life=0 fire=198 on-ground=false
+
+entity-order 42 entities e1 e2
+entity 42 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=17 on-ground=false
+entity 42 e2 330.39103000852583 5.444520005207062 1.5 0.29108970841226584 0.045554804187202494 0 in-ground=false life=0 fire=197 on-ground=false
+
+entity-order 43 entities e1 e2
+entity 43 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=18 on-ground=false
+entity 43 e2 330.6821197169381 5.490074809394264 1.5 0.28817881410419094 -0.004900743420225069 0 in-ground=false life=0 fire=196 on-ground=false
+
+entity-order 44 entities e1 e2
+entity 44 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=19 on-ground=false
+entity 44 e2 330.97029853104226 5.485174065974039 1.5 0.28529702871143636 -0.05485173603275995 0 in-ground=false life=0 fire=195 on-ground=false
+
+entity-order 45 entities e1 e2
+entity 45 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=20 on-ground=false
+entity 45 e2 331.2555955597537 5.430322329941279 1.5 0.2824440611451265 -0.10430321919553928 0 in-ground=false life=0 fire=194 on-ground=false
+
+entity-order 46 entities e1 e2
+entity 46 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=21 on-ground=false
+entity 46 e2 331.5380396208988 5.32601911074574 1.5 0.2796196232272717 -0.1532601879982969 0 in-ground=false life=0 fire=193 on-ground=false
+
+entity-order 47 entities e1 e2
+entity 47 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=22 on-ground=false
+entity 47 e2 331.8176592441261 5.172758922747443 1.5 0.2768234296616595 -0.201727587579917 0 in-ground=false life=0 fire=192 on-ground=false
+
+entity-order 48 entities e1 e2
+entity 48 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=23 on-ground=false
+entity 48 e2 332.09448267378775 4.971031335167526 1.5 0.27405519800503686 -0.249710313627942 0 in-ground=false life=0 fire=191 on-ground=false
+
+entity-order 49 entities e1 e2
+entity 49 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=24 on-ground=false
+entity 49 e2 332.3685378717928 4.721321021539584 1.5 0.2713146486385805 -0.2972132128730857 0 in-ground=false life=0 fire=190 on-ground=false
+
+entity-order 50 entities e1 e2
+entity 50 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=25 on-ground=false
+entity 50 e2 332.63985252043136 4.424107808666498 1.5 0.26860150473965283 -0.3442410835788009 0 in-ground=false life=0 fire=189 on-ground=false
+
+entity-order 51 entities e1 e2
+entity 51 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=26 on-ground=false
+entity 51 e2 332.908454025171 4.079866725087697 1.5 0.26591549225383987 -0.3907986760259517 0 in-ground=false life=0 fire=188 on-ground=false
+
+entity-order 52 entities e1 e2
+entity 52 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=27 on-ground=false
+entity 52 e2 333.17436951742485 3.6890680490617456 1.5 0.2632563398672692 -0.4368906929926388 0 in-ground=false life=0 fire=187 on-ground=false
+
+entity-order 53 entities e1 e2
+entity 53 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=28 on-ground=false
+entity 53 e2 333.4376258572921 3.2521773560691067 1.5 0.26062377897920463 -0.4825217902292267 0 in-ground=false life=0 fire=186 on-ground=false
+
+entity-order 54 entities e1 e2
+entity 54 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=29 on-ground=false
+entity 54 e2 333.6982496362713 2.76965556583988 1.5 0.25801754367491464 -0.5276965769286208 0 in-ground=false life=0 fire=185 on-ground=false
+
+entity-order 55 entities e1 e2
+entity 55 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=30 on-ground=false
+entity 55 e2 333.9562671799462 2.241958988911259 1.5 0.25543737069881256 -0.5724196161918413 0 in-ground=false life=0 fire=184 on-ground=false
+
+entity-order 56 entities e1 e2
+entity 56 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=31 on-ground=false
+entity 56 e2 334.21170455064504 1.6695393727194177 1.5 0.252882999427865 -0.6166954254889419 0 in-ground=false life=0 fire=183 on-ground=false
+
+entity-order 57 entities e1 e2
+entity 57 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=32 on-ground=false
+entity 57 e2 334.4645875500729 1.0528439472304758 1.5 0.2503541718452666 -0.6605284771153184 0 in-ground=false life=0 fire=182 on-ground=false
+
+entity-order 58 entities e1 e2
+entity 58 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=33 on-ground=false
+entity 58 e2 334.43461651568475 1.050000000745058 1.5 0 0 0 in-ground=true life=0 fire=181 on-ground=false
+
+entity-order 59 entities e1 e2
+entity 59 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=34 on-ground=false
+entity 59 e2 334.43461651568475 1.050000000745058 1.5 0 0 0 in-ground=true life=1 fire=181 on-ground=false
+
+entity-order 60 entities e1 e2
+entity 60 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=35 on-ground=false
+entity 60 e2 334.43461651568475 1.050000000745058 1.5 0 0 0 in-ground=true life=2 fire=181 on-ground=false
+
+entity-order 61 entities e1 e2
+entity 61 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=36 on-ground=false
+entity 61 e2 334.43461651568475 1.050000000745058 1.5 0 0 0 in-ground=true life=3 fire=181 on-ground=false
+
+entity-order 62 entities e1 e2
+entity 62 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=37 on-ground=false
+entity 62 e2 334.43461651568475 1.050000000745058 1.5 0 0 0 in-ground=true life=4 fire=181 on-ground=false
+
+entity-order 63 entities e1 e2
+entity 63 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=38 on-ground=false
+entity 63 e2 334.43461651568475 1.050000000745058 1.5 0 0 0 in-ground=true life=5 fire=181 on-ground=false
+
+entity-order 64 entities e1 e2
+entity 64 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=39 on-ground=false
+entity 64 e2 334.43461651568475 1.050000000745058 1.5 0 0 0 in-ground=true life=6 fire=181 on-ground=false
+
+entity-order 65 entities e1 e2
+entity 65 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=40 on-ground=false
+entity 65 e2 334.43461651568475 1.050000000745058 1.5 0 0 0 in-ground=true life=7 fire=181 on-ground=false
+
+entity-order 66 entities e1 e2
+entity 66 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=41 on-ground=false
+entity 66 e2 334.43461651568475 1.050000000745058 1.5 0 0 0 in-ground=true life=8 fire=181 on-ground=false
+
+entity-order 67 entities e1 e2
+entity 67 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=42 on-ground=false
+entity 67 e2 334.43461651568475 1.050000000745058 1.5 0 0 0 in-ground=true life=9 fire=181 on-ground=false
+
+entity-order 68 entities e1 e2
+entity 68 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=43 on-ground=false
+entity 68 e2 334.43461651568475 1.050000000745058 1.5 0 0 0 in-ground=true life=10 fire=181 on-ground=false
+
+entity-order 69 entities e1 e2
+entity 69 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=44 on-ground=false
+entity 69 e2 334.43461651568475 1.050000000745058 1.5 0 0 0 in-ground=true life=11 fire=181 on-ground=false
+
+entity-order 70 entities e1 e2
+entity 70 e1 330.5 1.050000000745058 0.5 0 0 0 in-ground=true life=45 on-ground=false
+entity 70 e2 334.43461651568475 1.050000000745058 1.5 0 0 0 in-ground=true life=12 fire=181 on-ground=false

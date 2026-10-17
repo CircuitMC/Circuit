@@ -73,8 +73,8 @@ inline constexpr double max_entity_speed = 64.0;
 
 // The kinds of entities the rules model (their registry names in
 // entity_kind_name).
-enum class EntityKind : std::uint8_t { item = 1, falling_block = 2, primed_tnt = 3 };
-inline constexpr std::uint8_t entity_kind_count = 4; // kinds are 1 to entity_kind_count - 1
+enum class EntityKind : std::uint8_t { item = 1, falling_block = 2, primed_tnt = 3, arrow = 4, snowball = 5 };
+inline constexpr std::uint8_t entity_kind_count = 6; // kinds are 1 to entity_kind_count - 1
 std::string_view entity_kind_name(EntityKind kind) noexcept;
 
 // Item ages and pickup delays the target versions treat as "never": an item
@@ -107,6 +107,11 @@ struct Entity {
     std::uint32_t fall_time{};
     // Primed TNT: the ticks until it explodes.
     std::int32_t fuse{};
+    // Arrows: whether it is stuck in a block and the ticks it has been, and
+    // the ticks it burns for.
+    bool in_ground{};
+    std::int32_t life{};
+    std::int32_t fire{};
     // Saved with a chunk that loaded again: the tick it comes back, under a
     // new id (0: it is in the level).
     Tick returns{};

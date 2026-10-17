@@ -1,0 +1,442 @@
+circuit-trace 2
+title A burning arrow primes TNT, a cold one does not, and a snowball breaks on a wall
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.9.0+mc1.21.4
+mechanisms projectile tnt
+area -2 0 -4 13 5 4
+ticks 40
+changes ordered
+entities observed
+rng observed
+
+at 0 set -2 0 -4 minecraft:obsidian
+at 0 set -2 0 -3 minecraft:obsidian
+at 0 set -2 0 -2 minecraft:obsidian
+at 0 set -2 0 -1 minecraft:obsidian
+at 0 set -2 0 0 minecraft:obsidian
+at 0 set -2 0 1 minecraft:obsidian
+at 0 set -2 0 2 minecraft:obsidian
+at 0 set -2 0 3 minecraft:obsidian
+at 0 set -2 0 4 minecraft:obsidian
+at 0 set -1 0 -4 minecraft:obsidian
+at 0 set -1 0 -3 minecraft:obsidian
+at 0 set -1 0 -2 minecraft:obsidian
+at 0 set -1 0 -1 minecraft:obsidian
+at 0 set -1 0 0 minecraft:obsidian
+at 0 set -1 0 1 minecraft:obsidian
+at 0 set -1 0 2 minecraft:obsidian
+at 0 set -1 0 3 minecraft:obsidian
+at 0 set -1 0 4 minecraft:obsidian
+at 0 set 0 0 -4 minecraft:obsidian
+at 0 set 0 0 -3 minecraft:obsidian
+at 0 set 0 0 -2 minecraft:obsidian
+at 0 set 0 0 -1 minecraft:obsidian
+at 0 set 0 0 0 minecraft:obsidian
+at 0 set 0 0 1 minecraft:obsidian
+at 0 set 0 0 2 minecraft:obsidian
+at 0 set 0 0 3 minecraft:obsidian
+at 0 set 0 0 4 minecraft:obsidian
+at 0 set 1 0 -4 minecraft:obsidian
+at 0 set 1 0 -3 minecraft:obsidian
+at 0 set 1 0 -2 minecraft:obsidian
+at 0 set 1 0 -1 minecraft:obsidian
+at 0 set 1 0 0 minecraft:obsidian
+at 0 set 1 0 1 minecraft:obsidian
+at 0 set 1 0 2 minecraft:obsidian
+at 0 set 1 0 3 minecraft:obsidian
+at 0 set 1 0 4 minecraft:obsidian
+at 0 set 2 0 -4 minecraft:obsidian
+at 0 set 2 0 -3 minecraft:obsidian
+at 0 set 2 0 -2 minecraft:obsidian
+at 0 set 2 0 -1 minecraft:obsidian
+at 0 set 2 0 0 minecraft:obsidian
+at 0 set 2 0 1 minecraft:obsidian
+at 0 set 2 0 2 minecraft:obsidian
+at 0 set 2 0 3 minecraft:obsidian
+at 0 set 2 0 4 minecraft:obsidian
+at 0 set 3 0 -4 minecraft:obsidian
+at 0 set 3 0 -3 minecraft:obsidian
+at 0 set 3 0 -2 minecraft:obsidian
+at 0 set 3 0 -1 minecraft:obsidian
+at 0 set 3 0 0 minecraft:obsidian
+at 0 set 3 0 1 minecraft:obsidian
+at 0 set 3 0 2 minecraft:obsidian
+at 0 set 3 0 3 minecraft:obsidian
+at 0 set 3 0 4 minecraft:obsidian
+at 0 set 4 0 -4 minecraft:obsidian
+at 0 set 4 0 -3 minecraft:obsidian
+at 0 set 4 0 -2 minecraft:obsidian
+at 0 set 4 0 -1 minecraft:obsidian
+at 0 set 4 0 0 minecraft:obsidian
+at 0 set 4 0 1 minecraft:obsidian
+at 0 set 4 0 2 minecraft:obsidian
+at 0 set 4 0 3 minecraft:obsidian
+at 0 set 4 0 4 minecraft:obsidian
+at 0 set 5 0 -4 minecraft:obsidian
+at 0 set 5 0 -3 minecraft:obsidian
+at 0 set 5 0 -2 minecraft:obsidian
+at 0 set 5 0 -1 minecraft:obsidian
+at 0 set 5 0 0 minecraft:obsidian
+at 0 set 5 0 1 minecraft:obsidian
+at 0 set 5 0 2 minecraft:obsidian
+at 0 set 5 0 3 minecraft:obsidian
+at 0 set 5 0 4 minecraft:obsidian
+at 0 set 6 0 -4 minecraft:obsidian
+at 0 set 6 0 -3 minecraft:obsidian
+at 0 set 6 0 -2 minecraft:obsidian
+at 0 set 6 0 -1 minecraft:obsidian
+at 0 set 6 0 0 minecraft:obsidian
+at 0 set 6 0 1 minecraft:obsidian
+at 0 set 6 0 2 minecraft:obsidian
+at 0 set 6 0 3 minecraft:obsidian
+at 0 set 6 0 4 minecraft:obsidian
+at 0 set 7 0 -4 minecraft:obsidian
+at 0 set 7 0 -3 minecraft:obsidian
+at 0 set 7 0 -2 minecraft:obsidian
+at 0 set 7 0 -1 minecraft:obsidian
+at 0 set 7 0 0 minecraft:obsidian
+at 0 set 7 0 1 minecraft:obsidian
+at 0 set 7 0 2 minecraft:obsidian
+at 0 set 7 0 3 minecraft:obsidian
+at 0 set 7 0 4 minecraft:obsidian
+at 0 set 8 0 -4 minecraft:obsidian
+at 0 set 8 0 -3 minecraft:obsidian
+at 0 set 8 0 -2 minecraft:obsidian
+at 0 set 8 0 -1 minecraft:obsidian
+at 0 set 8 0 0 minecraft:obsidian
+at 0 set 8 0 1 minecraft:obsidian
+at 0 set 8 0 2 minecraft:obsidian
+at 0 set 8 0 3 minecraft:obsidian
+at 0 set 8 0 4 minecraft:obsidian
+at 0 set 9 0 -4 minecraft:obsidian
+at 0 set 9 0 -3 minecraft:obsidian
+at 0 set 9 0 -2 minecraft:obsidian
+at 0 set 9 0 -1 minecraft:obsidian
+at 0 set 9 0 0 minecraft:obsidian
+at 0 set 9 0 1 minecraft:obsidian
+at 0 set 9 0 2 minecraft:obsidian
+at 0 set 9 0 3 minecraft:obsidian
+at 0 set 9 0 4 minecraft:obsidian
+at 0 set 10 0 -4 minecraft:obsidian
+at 0 set 10 0 -3 minecraft:obsidian
+at 0 set 10 0 -2 minecraft:obsidian
+at 0 set 10 0 -1 minecraft:obsidian
+at 0 set 10 0 0 minecraft:obsidian
+at 0 set 10 0 1 minecraft:obsidian
+at 0 set 10 0 2 minecraft:obsidian
+at 0 set 10 0 3 minecraft:obsidian
+at 0 set 10 0 4 minecraft:obsidian
+at 0 set 11 0 -4 minecraft:obsidian
+at 0 set 11 0 -3 minecraft:obsidian
+at 0 set 11 0 -2 minecraft:obsidian
+at 0 set 11 0 -1 minecraft:obsidian
+at 0 set 11 0 0 minecraft:obsidian
+at 0 set 11 0 1 minecraft:obsidian
+at 0 set 11 0 2 minecraft:obsidian
+at 0 set 11 0 3 minecraft:obsidian
+at 0 set 11 0 4 minecraft:obsidian
+at 0 set 12 0 -4 minecraft:obsidian
+at 0 set 12 0 -3 minecraft:obsidian
+at 0 set 12 0 -2 minecraft:obsidian
+at 0 set 12 0 -1 minecraft:obsidian
+at 0 set 12 0 0 minecraft:obsidian
+at 0 set 12 0 1 minecraft:obsidian
+at 0 set 12 0 2 minecraft:obsidian
+at 0 set 12 0 3 minecraft:obsidian
+at 0 set 12 0 4 minecraft:obsidian
+at 0 set 8 1 0 minecraft:tnt[unstable=false]
+at 0 set 8 1 -3 minecraft:tnt[unstable=false]
+at 0 set 11 1 0 minecraft:tnt[unstable=false]
+at 0 set 8 1 3 minecraft:obsidian
+
+at 2 command summon minecraft:snowball 0.5 2 3.5 {Motion:[0.8d,0.1d,0.0d]}
+entity-added 2 commands e1 minecraft:snowball 0.5 2.0 3.5 0.8 0.1 0
+at 2 command summon minecraft:arrow 4.5 1.5 0.5 {Motion:[1.0d,0.05d,0.0d],Fire:300s}
+entity-added 2 commands e2 minecraft:arrow 4.5 1.5 0.5 1.0 0.05 0
+at 2 command summon minecraft:arrow 4.5 1.5 -2.5 {Motion:[1.0d,0.05d,0.0d]}
+entity-added 2 commands e3 minecraft:arrow 4.5 1.5 -2.5 1.0 0.05 0
+entity-order 2 entities e1 e2 e3
+entity 2 e1 1.2920000076293947 2.069300000667572 3.5 0.7920000076293946 0.06930000066757203 0 on-ground=false
+entity 2 e2 5.5 1.55 0.5 0.9900000095367432 -4.999995231628404E-4 0 in-ground=false life=0 fire=299 on-ground=false
+entity 2 e3 5.5 1.55 -2.5 0.9900000095367432 -4.999995231628404E-4 0 in-ground=false life=0 on-ground=false
+
+at 3 command summon minecraft:arrow 11.5 4 0.5 {Motion:[0.0d,-1.0d,0.0d],Fire:100s}
+entity-added 3 commands e4 minecraft:arrow 11.5 4.0 0.5 0 -1.0 0
+entity-order 3 entities e1 e2 e3 e4
+entity 3 e1 2.0760800227355958 2.108207001703262 3.5 0.7840800151062013 0.03890700103569032 0 on-ground=false
+entity 3 e2 6.490000009536743 1.5495000004768371 0.5 0.9801000188827516 -0.050494999532699585 0 in-ground=false life=0 fire=298 on-ground=false
+entity 3 e3 6.490000009536743 1.5495000004768371 -2.5 0.9801000188827516 -0.050494999532699585 0 in-ground=false life=0 on-ground=false
+entity 3 e4 11.5 3.0 0.5 0 -1.0400000095367432 0 in-ground=false life=0 fire=99 on-ground=false
+
+entity-added 4 entities e5 minecraft:tnt 11.5 1.0 0.5 0.019857169889349057 0.20000000298023224 0.002385959761925832 fuse=80
+change 4 entities 11 1 0 minecraft:tnt[unstable=false] minecraft:air
+draws 4 entities level 2
+entity-order 4 entities e1 e2 e3 e4
+entity 4 e1 2.852319245168305 2.1170249328135395 3.5 0.776239222432709 0.008817931110277202 0 on-ground=false
+entity 4 e2 7.470100028419495 1.4990050009441376 0.5 0.9702990280408862 -0.09999005001893044 0 in-ground=false life=0 fire=297 on-ground=false
+entity 4 e3 7.470100028419495 1.4990050009441376 -2.5 0.9702990280408862 -0.09999005001893044 0 in-ground=false life=0 on-ground=false
+entity 4 e4 11.5 2.050000000745058 0.5 0 0 0 in-ground=true life=0 fire=98 on-ground=false
+entity 4 e5 11.5 1.0 0.5 0.019857169889349057 0.20000000298023224 0.002385959761925832 fuse=80 on-ground=false
+
+entity-added 5 entities e6 minecraft:tnt 8.5 1.0 0.5 -0.019964653821068924 0.20000000298023224 -0.0011885275785096675 fuse=80
+change 5 entities 8 1 0 minecraft:tnt[unstable=false] minecraft:air
+draws 5 entities level 2
+entity-order 5 entities e1 e2 e3 e4 e5
+entity 5 e1 3.620796082779481 2.096054684410706 3.5 0.768476837611176 -0.02097024840283352 0 on-ground=false
+entity 5 e2 7.949999999254942 1.494398408121494 0.5 0 0 0 in-ground=true life=0 fire=296 on-ground=false
+entity 5 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=0 on-ground=false
+entity 5 e4 11.5 2.050000000745058 0.5 0 0 0 in-ground=false life=0 fire=98 on-ground=false
+entity 5 e5 11.519857169889349 1.1600000029802322 0.5023859597619258 0.019460026491562074 0.1568000029206276 0.0023382405666873152 fuse=79 on-ground=false
+entity 5 e6 8.5 1.0 0.5 -0.019964653821068924 0.20000000298023224 -0.0011885275785096675 fuse=80 on-ground=false
+
+entity-order 6 entities e1 e2 e3 e4 e5 e6
+entity 6 e1 4.381588159343312 2.0455941380058107 3.5 0.7607920765638305 -0.050460546404895355 0 on-ground=false
+entity 6 e2 7.949999999254942 1.494398408121494 0.5 0 0 0 in-ground=false life=0 fire=296 on-ground=false
+entity 6 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=1 on-ground=false
+entity 6 e4 11.5 2.050000000745058 0.5 0 -0.05 0 in-ground=false life=0 fire=97 on-ground=false
+entity 6 e5 11.53931719638091 1.2768000059008597 0.5047242003286131 0.019070825961730833 0.11446400286221503 0.002291475755353569 fuse=78 on-ground=false
+entity 6 e6 8.480035346178932 1.1600000029802322 0.4988114724214903 -0.019565360744647545 0.1568000029206276 -0.001164757026939474 fuse=79 on-ground=false
+
+entity-order 7 entities e1 e2 e3 e4 e5 e6
+entity 7 e1 5.134772322396983 1.9659381962976328 3.5 0.7531841630536709 -0.07965594170817797 0 on-ground=false
+entity 7 e2 7.949999999254942 1.494398408121494 0.5 0 -0.05 0 in-ground=false life=0 fire=295 on-ground=false
+entity 7 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=2 on-ground=false
+entity 7 e4 11.5 2.0000000007450582 0.5 0 -0.09950000047683716 0 in-ground=false life=0 fire=96 on-ground=false
+entity 7 e5 11.55838802234264 1.3512640087630747 0.5070156760839667 0.018689409442496217 0.07297472280497072 0.0022456462402464976 fuse=77 on-ground=false
+entity 7 e6 8.460469985434283 1.2768000059008597 0.49764671539455085 -0.019174053529754594 0.11446400286221503 -0.0011414618864006845 fuse=78 on-ground=false
+
+entity-order 8 entities e1 e2 e3 e4 e5 e6
+entity 8 e1 5.880424651003041 1.857378812960776 3.5 0.7456523286060581 -0.10855938333685675 0 on-ground=false
+entity 8 e2 7.949999999254942 1.444398408121494 0.5 0 -0.09950000047683716 0 in-ground=false life=0 fire=294 on-ground=false
+entity 8 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=3 on-ground=false
+entity 8 e4 11.5 1.900500000268221 0.5 0 -0.14850500142097472 0 in-ground=false life=0 fire=95 on-ground=false
+entity 8 e5 11.577077431785137 1.3842387315680456 0.5092613223242132 0.018315621253646292 0.03231522834887131 0.0022007333154415677 fuse=76 on-ground=false
+entity 8 e6 8.441295931904529 1.3512640087630747 0.49650525350815017 -0.0187905724591595 0.07297472280497072 -0.0011186326486726707 fuse=77 on-ground=false
+
+entity-order 9 entities e1 e2 e3 e4 e5 e6
+entity 9 e1 6.618620463434134 1.7202050221358827 3.5 0.7381958124310923 -0.13717379082489342 0 on-ground=false
+entity 9 e2 7.949999999254942 1.3448984076446568 0.5 0 -0.14850500142097472 0 in-ground=false life=0 fire=293 on-ground=false
+entity 9 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=4 on-ground=false
+entity 9 e4 11.5 1.7519949988472463 0.5 0 -0.19701995282301904 0 in-ground=false life=0 fire=94 on-ground=false
+entity 9 e5 11.595393053038784 1.3765539599169168 0.5114620556396547 0.017949308828573367 -0.0075310762181061185 0.0021567186491327365 fuse=75 on-ground=false
+entity 9 e6 8.422505359445369 1.3842387315680456 0.4953866208594775 -0.01841476100997631 0.03231522834887131 -0.0010962599956992173 fuse=76 on-ground=false
+
+entity-order 10 entities e1 e2 e3 e4 e5 e6
+entity 10 e1 7.349434324780899 1.5547029676249446 3.5 0.7308138613467653 -0.165502054510938 0 on-ground=false
+entity 10 e2 7.949999999254942 1.196393406223682 0.5 0 -0.19701995282301904 0 in-ground=false life=0 fire=292 on-ground=false
+entity 10 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=5 on-ground=false
+entity 10 e4 11.5 1.5549750460242273 0.5 0 -0.24504975517371752 0 in-ground=false life=0 fire=93 on-ground=false
+entity 10 e5 11.613342361867357 1.3290228836988107 0.5136187742887874 0.0175903226520019 -0.046580454693744 0.0021135842761500815 fuse=74 on-ground=false
+entity 10 e6 8.404090598435392 1.3765539599169168 0.49429036086377826 -0.018046465789776783 -0.0075310762181061185 -0.001074334795785233 fuse=75 on-ground=false
+
+entity-removed 11 entities e1 discarded
+entity-order 11 entities e1 e2 e3 e4 e5 e6
+entity 11 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=0 fire=291 on-ground=false
+entity 11 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=6 on-ground=false
+entity 11 e4 11.5 1.3099252908505097 0.5 0 -0.2925992599589569 0 in-ground=false life=0 fire=92 on-ground=false
+entity 11 e5 11.630932684519358 1.2424424290050666 0.5157323585649375 0.01723851619896186 -0.08484884559986913 0.00207131259062708 fuse=73 on-ground=false
+entity 11 e6 8.386044132645615 1.3290228836988107 0.49321602606799303 -0.01768553647398125 -0.046580454693744 -0.0010528480998695283 fuse=74 on-ground=false
+
+entity-order 12 entities e2 e3 e4 e5 e6
+entity 12 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=1 fire=291 on-ground=false
+entity 12 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=7 on-ground=false
+entity 12 e4 11.5 1.0173260308915528 0.5 0 -0.3396732701498113 0 in-ground=false life=0 fire=91 on-ground=false
+entity 12 e5 11.64817120071832 1.1175935834051975 0.5178036711555646 0.016893745874982623 -0.12235186868787176 0.0020298863388145383 fuse=72 on-ground=false
+entity 12 e6 8.368358596171634 1.2424424290050666 0.4921631779681235 -0.017331825744501622 -0.08484884559986913 -0.0010317911378721378 fuse=73 on-ground=false
+
+entity-order 13 entities e2 e3 e4 e5 e6
+entity 13 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=2 fire=291 on-ground=false
+entity 13 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=8 on-ground=false
+entity 13 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=0 fire=90 on-ground=false
+entity 13 e5 11.665064946593303 1.0 0.5198335574943791 0.011589109670238079 0 0.0013925020284267732 fuse=71 on-ground=true
+entity 13 e6 8.351026770427133 1.1175935834051975 0.4911313868302513 -0.016985189229611588 -0.12235186868787176 -0.0010111553151146949 fuse=72 on-ground=false
+
+entity-order 14 entities e2 e3 e4 e5 e6
+entity 14 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=3 fire=291 on-ground=false
+entity 14 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=9 on-ground=false
+entity 14 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=1 fire=90 on-ground=false
+entity 14 e5 11.67665405626354 1.0 0.5212260595228059 0.007950129233783321 0 9.552563915007663E-4 fuse=70 on-ground=true
+entity 14 e6 8.334041581197521 1.0 0.4901202315151366 -0.011651839811513548 0 -6.936525461686806E-4 fuse=71 on-ground=true
+
+entity-order 15 entities e2 e3 e4 e5 e6
+entity 15 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=4 fire=291 on-ground=false
+entity 15 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=10 on-ground=false
+entity 15 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=2 fire=90 on-ground=false
+entity 15 e5 11.684604185497324 1.0 0.5221813159143066 0.005453788654375358 0 6.553058845695257E-4 fuse=69 on-ground=true
+entity 15 e6 8.322389741386008 1.0 0.48942657896896796 -0.007993162110698292 0 -4.7584564667171484E-4 fuse=70 on-ground=true
+
+entity-order 16 entities e2 e3 e4 e5 e6
+entity 16 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=5 fire=291 on-ground=false
+entity 16 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=11 on-ground=false
+entity 16 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=3 fire=90 on-ground=false
+entity 16 e5 11.6900579741517 1.0 0.5228366217988761 0.003741299016901495 0 4.495398368146946E-4 fuse=68 on-ground=true
+entity 16 e6 8.314396579275309 1.0 0.48895073332229627 -0.005483309207939028 0 -3.2643011361679637E-4 fuse=69 on-ground=true
+
+entity-order 17 entities e2 e3 e4 e5 e6
+entity 17 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=6 fire=291 on-ground=false
+entity 17 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=12 on-ground=false
+entity 17 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=4 fire=90 on-ground=false
+entity 17 e5 11.693799273168601 1.0 0.5232861616356909 0.0025665311255944254 0 3.083843280548805E-4 fuse=67 on-ground=true
+entity 17 e6 8.30891327006737 1.0 0.4886243032086795 -0.003761550116646173 0 -2.2393105794112227E-4 fuse=68 on-ground=true
+
+entity-order 18 entities e2 e3 e4 e5 e6
+entity 18 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=7 fire=291 on-ground=false
+entity 18 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=13 on-ground=false
+entity 18 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=5 fire=90 on-ground=false
+entity 18 e5 11.696365804294196 1.0 0.5235945459637458 0.0017606403521577758 0 2.1155164904564802E-4 fuse=66 on-ground=true
+entity 18 e6 8.305151719950723 1.0 0.4884003721507384 -0.0025804233800192744 0 -1.5361670574760988E-4 fuse=67 on-ground=true
+
+entity-order 19 entities e2 e3 e4 e5 e6
+entity 19 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=8 fire=291 on-ground=false
+entity 19 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=14 on-ground=false
+entity 19 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=6 fire=90 on-ground=false
+entity 19 e5 11.698126444646354 1.0 0.5238060976127914 0.001207799281580234 0 1.4512443124531453E-4 fuse=65 on-ground=true
+entity 19 e6 8.302571296570704 1.0 0.4882467554449908 -0.001770170438693222 0 -1.0538106014286038E-4 fuse=66 on-ground=true
+
+entity-order 20 entities e2 e3 e4 e5 e6
+entity 20 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=9 fire=291 on-ground=false
+entity 20 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=15 on-ground=false
+entity 20 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=7 fire=90 on-ground=false
+entity 20 e5 11.699334243927934 1.0 0.5239512220440368 8.285503071640406E-4 0 9.955535983428576E-5 fuse=64 on-ground=true
+entity 20 e6 8.300801126132011 1.0 0.48814137438484795 -0.0012143369209435503 0 -7.229140725800221E-5 fuse=65 on-ground=true
+
+entity-order 21 entities e2 e3 e4 e5 e6
+entity 21 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=10 fire=291 on-ground=false
+entity 21 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=16 on-ground=false
+entity 21 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=8 fire=90 on-ground=false
+entity 21 e5 11.700162794235098 1.0 0.5240507774038711 5.683855107145318E-4 0 6.829497684632003E-5 fuse=63 on-ground=true
+entity 21 e6 8.299586789211068 1.0 0.48806908297758994 -8.330351277672754E-4 0 -4.959190537898952E-5 fuse=64 on-ground=true
+
+entity-order 22 entities e2 e3 e4 e5 e6
+entity 22 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=11 fire=291 on-ground=false
+entity 22 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=17 on-ground=false
+entity 22 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=9 fire=90 on-ground=false
+entity 22 e5 11.700731179745812 1.0 0.5241190723807174 3.8991246035016875E-4 0 4.6850354116575534E-5 fuse=62 on-ground=true
+entity 22 e6 8.2987537540833 1.0 0.48801949107221093 -5.714620976483508E-4 0 -3.4020047089986807E-5 fuse=63 on-ground=true
+
+entity-order 23 entities e2 e3 e4 e5 e6
+entity 23 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=12 fire=291 on-ground=false
+entity 23 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=18 on-ground=false
+entity 23 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=10 fire=90 on-ground=false
+entity 23 e5 11.701121092206163 1.0 0.524165922734834 2.6747994780021574E-4 0 3.2139342923970814E-5 fuse=61 on-ground=true
+entity 23 e6 8.298182291985652 1.0 0.48798547102512096 -3.920229989867686E-4 0 -2.3337752303730945E-5 fuse=62 on-ground=true
+
+entity-order 24 entities e2 e3 e4 e5 e6
+entity 24 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=13 fire=291 on-ground=false
+entity 24 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=19 on-ground=false
+entity 24 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=11 fire=90 on-ground=false
+entity 24 e5 11.701121092206163 1.0 0.524165922734834 1.8349124419094802E-4 0 2.2047589245843973E-5 fuse=60 on-ground=true
+entity 24 e6 8.297790268986665 1.0 0.48796213327281723 -2.689277773049232E-4 0 -1.6009698080359427E-5 fuse=61 on-ground=true
+
+entity-order 25 entities e2 e3 e4 e5 e6
+entity 25 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=14 fire=291 on-ground=false
+entity 25 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=20 on-ground=false
+entity 25 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=12 fire=90 on-ground=false
+entity 25 e5 11.701121092206163 1.0 0.524165922734834 1.2587499351499032E-4 0 1.5124646222648963E-5 fuse=59 on-ground=true
+entity 25 e6 8.297790268986665 1.0 0.48796213327281723 -1.8448445523117728E-4 0 -1.0982652883126566E-5 fuse=60 on-ground=true
+
+entity-order 26 entities e2 e3 e4 e5 e6
+entity 26 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=15 fire=291 on-ground=false
+entity 26 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=21 on-ground=false
+entity 26 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=13 fire=90 on-ground=false
+entity 26 e5 11.701121092206163 1.0 0.524165922734834 8.635024555128335E-5 0 1.0375507308737189E-5 fuse=58 on-ground=true
+entity 26 e6 8.297790268986665 1.0 0.48796213327281723 -1.265563362885876E-4 0 -7.534099877824823E-6 fuse=59 on-ground=true
+
+entity-order 27 entities e2 e3 e4 e5 e6
+entity 27 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=16 fire=291 on-ground=false
+entity 27 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=22 on-ground=false
+entity 27 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=14 fire=90 on-ground=false
+entity 27 e5 11.701121092206163 1.0 0.524165922734834 5.923626844818038E-5 0 7.117598013793711E-6 fuse=57 on-ground=true
+entity 27 e6 8.297790268986665 1.0 0.48796213327281723 -8.681764669397108E-5 0 -5.168392516187829E-6 fuse=58 on-ground=true
+
+entity-order 28 entities e2 e3 e4 e5 e6
+entity 28 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=17 fire=291 on-ground=false
+entity 28 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=23 on-ground=false
+entity 28 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=15 fire=90 on-ground=false
+entity 28 e5 11.701121092206163 1.0 0.524165922734834 4.0636080155451736E-5 0 4.882672237462486E-6 fuse=56 on-ground=true
+entity 28 e6 8.297790268986665 1.0 0.48796213327281723 -5.955690563206416E-5 0 -3.54551726610485E-6 fuse=57 on-ground=true
+
+entity-order 29 entities e2 e3 e4 e5 e6
+entity 29 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=18 fire=291 on-ground=false
+entity 29 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=24 on-ground=false
+entity 29 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=16 fire=90 on-ground=false
+entity 29 e5 11.701121092206163 1.0 0.524165922734834 2.7876350986639887E-5 0 3.3495131548992647E-6 fuse=55 on-ground=true
+entity 29 e6 8.297790268986665 1.0 0.48796213327281723 -4.085603726359601E-5 0 -2.4322248445479267E-6 fuse=56 on-ground=true
+
+entity-order 30 entities e2 e3 e4 e5 e6
+entity 30 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=19 fire=291 on-ground=false
+entity 30 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=25 on-ground=false
+entity 30 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=17 fire=90 on-ground=false
+entity 30 e5 11.701121092206163 1.0 0.524165922734834 1.912317677683496E-5 0 2.2977660242608953E-6 fuse=54 on-ground=true
+entity 30 e6 8.297790268986665 1.0 0.48796213327281723 -2.8027241562826855E-5 0 -1.6685062433598775E-6 fuse=55 on-ground=true
+
+entity-order 31 entities e2 e3 e4 e5 e6
+entity 31 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=20 fire=291 on-ground=false
+entity 31 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=26 on-ground=false
+entity 31 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=18 fire=90 on-ground=false
+entity 31 e5 11.701121092206163 1.0 0.524165922734834 1.3118499268908782E-5 0 1.5762674926429741E-6 fuse=53 on-ground=true
+entity 31 e6 8.297790268986665 1.0 0.48796213327281723 -1.922668771209922E-5 0 -1.144595282944876E-6 fuse=54 on-ground=true
+
+entity-order 32 entities e2 e3 e4 e5 e6
+entity 32 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=21 fire=291 on-ground=false
+entity 32 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=27 on-ground=false
+entity 32 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=19 fire=90 on-ground=false
+entity 32 e5 11.701121092206163 1.0 0.524165922734834 8.999290498471423E-6 0 1.0813194999530802E-6 fuse=52 on-ground=true
+entity 32 e6 8.297790268986665 1.0 0.48796213327281723 -1.3189507770500065E-5 0 -7.851923641001848E-7 fuse=53 on-ground=true
+
+entity-order 33 entities e2 e3 e4 e5 e6
+entity 33 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=22 fire=291 on-ground=false
+entity 33 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=28 on-ground=false
+entity 33 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=20 fire=90 on-ground=false
+entity 33 e5 11.701121092206163 1.0 0.524165922734834 6.1735132819513955E-6 0 7.41785176967813E-7 fuse=51 on-ground=true
+entity 33 e6 8.297790268986665 1.0 0.48796213327281723 -9.048002330563043E-6 0 -5.386419617727267E-7 fuse=52 on-ground=true
+
+entity-order 34 entities e2 e3 e4 e5 e6
+entity 34 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=23 fire=291 on-ground=false
+entity 34 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=29 on-ground=false
+entity 34 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=21 fire=90 on-ground=false
+entity 34 e5 11.701121092206163 1.0 0.524165922734834 4.235030111418657E-6 0 5.088646313999197E-7 fuse=50 on-ground=true
+entity 34 e6 8.297790268986665 1.0 0.48796213327281723 -6.206929598766248E-6 0 -3.6950838577609055E-7 fuse=51 on-ground=true
+
+entity-order 35 entities e2 e3 e4 e5 e6
+entity 35 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=24 fire=291 on-ground=false
+entity 35 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=30 on-ground=false
+entity 35 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=22 fire=90 on-ground=false
+entity 35 e5 11.701121092206163 1.0 0.524165922734834 2.9052306564331985E-6 0 3.4908113714034483E-7 fuse=49 on-ground=true
+entity 35 e6 8.297790268986665 1.0 0.48796213327281723 -4.257953704753646E-6 0 -2.534827526423981E-7 fuse=50 on-ground=true
+
+entity-order 36 entities e2 e3 e4 e5 e6
+entity 36 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=25 fire=291 on-ground=false
+entity 36 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=31 on-ground=false
+entity 36 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=23 fire=90 on-ground=false
+entity 36 e5 11.701121092206163 1.0 0.524165922734834 1.992988230313174E-6 0 2.3946966007827654E-7 fuse=48 on-ground=true
+entity 36 e6 8.297790268986665 1.0 0.48796213327281723 -2.920956241461001E-6 0 -1.7388916831268507E-7 fuse=49 on-ground=true
+
+entity-order 37 entities e2 e3 e4 e5 e6
+entity 37 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=26 fire=291 on-ground=false
+entity 37 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=32 on-ground=false
+entity 37 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=24 fire=90 on-ground=false
+entity 37 e5 11.701121092206163 1.0 0.524165922734834 1.3671899259948374E-6 0 1.642761868136977E-7 fuse=47 on-ground=true
+entity 37 e6 8.297790268986665 1.0 0.48796213327281723 -2.003775981642247E-6 0 -1.1928796946250196E-7 fuse=48 on-ground=true
+
+entity-order 38 entities e2 e3 e4 e5 e6
+entity 38 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=27 fire=291 on-ground=false
+entity 38 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=33 on-ground=false
+entity 38 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=25 fire=90 on-ground=false
+entity 38 e5 11.701121092206163 1.0 0.524165922734834 9.378922892324584E-7 0 1.1269346415419661E-7 fuse=46 on-ground=true
+entity 38 e6 8.297790268986665 1.0 0.48796213327281723 -1.3745903234065812E-6 0 -8.183154705127634E-8 fuse=47 on-ground=true
+
+entity-order 39 entities e2 e3 e4 e5 e6
+entity 39 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=28 fire=291 on-ground=false
+entity 39 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=34 on-ground=false
+entity 39 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=26 fire=90 on-ground=false
+entity 39 e5 11.701121092206163 1.0 0.524165922734834 6.433941104134664E-7 0 7.730771640977887E-8 fuse=45 on-ground=true
+entity 39 e6 8.297790268986665 1.0 0.48796213327281723 -9.429689618569146E-7 0 -5.613644127717556E-8 fuse=46 on-ground=true
+
+entity-order 40 entities e2 e3 e4 e5 e6
+entity 40 e2 7.949999999254942 1.050000000745058 0.5 0 0 0 in-ground=true life=29 fire=291 on-ground=false
+entity 40 e3 7.949999999254942 1.494398408121494 -2.5 0 0 0 in-ground=true life=35 on-ground=false
+entity 40 e4 11.5 1.050000000745058 0.5 0 0 0 in-ground=true life=27 fire=90 on-ground=false
+entity 40 e5 11.701121092206163 1.0 0.524165922734834 4.413683597436379E-7 0 5.30330934571083E-8 fuse=44 on-ground=true
+entity 40 e6 8.297790268986665 1.0 0.48796213327281723 -6.468767078338434E-7 0 -3.850959871614243E-8 fuse=45 on-ground=true

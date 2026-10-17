@@ -19,6 +19,7 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 19: arrows carry whether they are in the ground, their life and fire;
 // 18: items carry their health;
 // 17: primed TNT carries its fuse;
 // 16: falling blocks carry their block state and fall time;
@@ -45,7 +46,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 18;
+constexpr std::uint32_t version = 19;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -156,6 +157,7 @@ void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
         w.varlong(static_cast<std::int64_t>(e.returns));
         w.i32(static_cast<std::int32_t>(e.carried.raw())).varlong(static_cast<std::int64_t>(e.fall_time));
         w.varint(e.fuse).varint(e.health);
+        w.boolean(e.in_ground).varint(e.life).varint(e.fire);
     }
     w.varint(static_cast<std::int32_t>(l.ticks.size()));
     for (const auto& t : l.ticks) {
@@ -393,6 +395,7 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
         }
         if (b.version >= 17 && !b.get(b.r.varint(), e.fuse)) return false;
         if (b.version >= 18 && !b.get(b.r.varint(), e.health)) return false;
+        if (b.version >= 19 && (!b.get(b.r.boolean(), e.in_ground) || !b.get(b.r.varint(), e.life) || !b.get(b.r.varint(), e.fire))) return false;
         e.age = age;
         // Before version 14 nothing reset an item's age, which counted every
         // tick since it was spawned.

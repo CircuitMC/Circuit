@@ -250,6 +250,14 @@ int main() {
             auto kind = encode_replay(weather).value();
             kind[kind.size() - 5] = std::byte{3}; // the second command's kind
             require(decode_replay(kind).error() == ErrorCode::malformed_record, "an unknown weather is refused");
+            ReplayLog summons{"java-1.21.8", "circuit-reference-rules-v10", 1, {}, "circuit-blocks-1"};
+            summons.ticks.push_back({1, {{1, SummonEntity{"minecraft:arrow", {0.5, 3.0, 0.5}, {1.2, 0.25, 0.05}, 80, 300}},
+                                         {2, SummonEntity{"minecraft:tnt", {1.5, 2.0, 0.5}, {}, 3, 0}}}});
+            require(decode_replay(encode_replay(summons).value()).value() == summons, "summons round-trip");
+            CommandQueue q2(4);
+            require(q2.admit(SummonEntity{"minecraft:arrow", {}, {}, 80, 0}).has_value() && q2.admit(SummonEntity{"Minecraft:Arrow", {}, {}, 80, 0}).error() == ErrorCode::invalid_argument
+                        && q2.admit(SummonEntity{"", {}, {}, 80, 0}).error() == ErrorCode::invalid_argument,
+                    "entity types are lower-case resource ids");
         }
 
         auto version_one = *bytes;

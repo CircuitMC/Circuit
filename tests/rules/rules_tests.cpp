@@ -1410,6 +1410,44 @@ int main() {
                 "resistances");
     });
 
+    suite.run("arrows stick, fall when their block goes and prime TNT when burning; snowballs break", [] {
+        const auto tnt = registry_block("tnt");
+        Sim s;
+        std::vector<CommandBody> build = floor(-1, 12, -2, 2);
+        for (int y = 0; y <= 3; ++y) build.push_back(place({10, y, 0}, blocks::obsidian()));
+        build.push_back(place({10, 0, 2}, tnt));
+        build.push_back(place({10, 0, -2}, tnt));
+        s.tick(build);
+        s.tick({SummonEntity{"minecraft:arrow", {0.5, 1.5, 0.5}, {1.0, 0.1, 0.0}, 80, 0},
+                SummonEntity{"minecraft:arrow", {4.5, 0.5, 2.5}, {1.0, 0.05, 0.0}, 80, 200},
+                SummonEntity{"minecraft:arrow", {4.5, 0.5, -1.5}, {1.0, 0.05, 0.0}, 80, 0},
+                SummonEntity{"minecraft:snowball", {0.5, 3.5, 0.5}, {1.0, 0.0, 0.0}, 80, 0}});
+        const auto of = [&](circuit::gameplay::EntityKind kind) {
+            std::vector<circuit::gameplay::Entity> out;
+            const auto d = s.oracle.dump();
+            for (const auto& e : d.overworld().entities)
+                if (e.kind == kind) out.push_back(e);
+            return out;
+        };
+        for (int i = 0; i < 15; ++i) s.tick();
+        auto arrows = of(circuit::gameplay::EntityKind::arrow);
+        require(arrows.size() == 3, "three arrows");
+        const auto wall = std::ranges::find_if(arrows, [](const auto& e) { return std::abs(e.position.z - 0.5) < 0.1; });
+        require(wall != arrows.end() && wall->in_ground && wall->position.x == 10.0 - static_cast<double>(0.05f) && wall->velocity == Vec3{},
+                "stuck 0.05 short of the wall");
+        require(s.at({10, 0, 2}).is_air() && s.at({10, 0, -2}) == tnt, "the burning arrow primed its TNT, the cold one did not");
+        require(of(circuit::gameplay::EntityKind::primed_tnt).size() == 1, "one primed TNT");
+        require(of(circuit::gameplay::EntityKind::snowball).empty(), "the snowball broke on the wall");
+        // The wall goes: the arrow stuck in it falls to the floor.
+        std::vector<CommandBody> clear;
+        for (int y = 0; y <= 3; ++y) clear.push_back(place({10, y, 0}, blocks::air()));
+        s.tick(clear);
+        for (int i = 0; i < 30; ++i) s.tick();
+        arrows = of(circuit::gameplay::EntityKind::arrow);
+        const auto fell = std::ranges::find_if(arrows, [](const auto& e) { return std::abs(e.position.z - 0.5) < 0.1; });
+        require(fell != arrows.end() && fell->in_ground && fell->position.y == static_cast<double>(0.05f) && fell->life > 0, "fell to the floor");
+    });
+
     suite.run("entities leave with their chunk and come back under new ids", [] {
         Sim s(bundle(), 7, 0); // tick 1: chunk (0,0) entity ticking
         s.tick({place({4, -1, 4}, blocks::stone()), SpawnItem{at_block(4.5, 0.0, 4.5), {}, {items::stone, 3}}}); // 2

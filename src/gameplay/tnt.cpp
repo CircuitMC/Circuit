@@ -77,6 +77,10 @@ void check_tnt(RuleContext& ctx, BlockPos pos) {
     if (has_neighbor_signal(ctx, pos) && tnt_explodes(ctx)) prime(ctx, pos);
 }
 
+void prime_by_fire(RuleContext& ctx, BlockPos pos) {
+    if (tnt_explodes(ctx)) prime(ctx, pos);
+}
+
 void prime_by_explosion(RuleContext& ctx, BlockPos pos) {
     if (!tnt_explodes(ctx)) return;
     auto e = primed_at(ctx, pos);

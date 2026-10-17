@@ -44,7 +44,7 @@ Feature counts per implementation state, then the number of features with compar
 | V18 Technical machines and vanilla quirks | C4, C7 | 6 | 0 / 0 | 1 / 1 | 0 / 0 | 5 / 5 | 0 / 0 | 1 / 1 |
 | V19 General entity lifecycle | C3 | 17 | 0 / 0 | 4 / 4 | 0 / 0 | 13 / 13 | 0 / 0 | 3 / 3 |
 | V20 Item entities and experience | C3, C6 | 7 | 2 / 2 | 3 / 3 | 0 / 0 | 2 / 2 | 0 / 0 | 4 / 4 |
-| V21 Projectiles, vehicles and mounts | C3, C6 | 109 | 0 / 0 | 0 / 0 | 39 / 57 | 49 / 51 | 21 / 1 | 0 / 0 |
+| V21 Projectiles, vehicles and mounts | C3, C6 | 109 | 0 / 0 | 3 / 3 | 39 / 57 | 46 / 48 | 21 / 1 | 3 / 3 |
 | V22 Movement and player modes | C6 | 7 | 3 / 3 | 2 / 2 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
 | V23 Combat, attributes and effects | C6 | 219 | 1 / 1 | 6 / 6 | 91 / 91 | 118 / 121 | 3 / 0 | 6 / 6 |
 | V24 Food, equipment and item use | C5, C6 | 143 | 0 / 0 | 16 / 16 | 121 / 123 | 4 / 4 | 2 / 0 | 1 / 2 |
@@ -69,7 +69,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 3 / 3 | 39 / 39 | 1053 / 1063 | 0 / 0 |
 | item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 30 / 30 | 1354 / 1385 | 0 / 0 |
-| entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 4 / 4 | 0 / 0 | 145 / 147 |
+| entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 6 / 6 | 0 / 0 | 143 / 145 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
 | enchantment | approximate: minecraft-data pc/1.21.1/enchantments.json / minecraft-data pc/1.21.8/enchantments.json | 42 / 42 | 0 / 0 | 0 / 0 | 0 / 0 | 42 / 42 |
 | attribute | approximate: minecraft-data pc/1.21.3/attributes.json / minecraft-data pc/1.21.8/attributes.json | 32 / 35 | 0 / 0 | 0 / 0 | 0 / 0 | 32 / 35 |
@@ -129,8 +129,8 @@ Their counts are unknown, not zero.
 | --- | --- | ---: |
 | black_box | passing | 22 |
 | black_box | unsupported | 1 |
-| official_trace | failing | 3 |
-| official_trace | passing | 72 |
+| official_trace | failing | 4 |
+| official_trace | passing | 75 |
 | planned | planned | 8 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
@@ -322,7 +322,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
 | TNT placement and breaking | C3 | partial, compared | partial, compared | `TNT-01`, `trace/tnt_ignition`; unstable TNT is not primed when broken; TNT placed by commands, pistons and players becomes primed TNT where redstone reaches it; broken, it drops itself by its loot table |
-| Ignition by redstone, fire, flint and steel, fire charges, burning projectiles and explosions | C3 | partial, compared | partial, compared | `TNT-01`, `trace/tnt_chain_edge`, `trace/tnt_explodes_disabled`, `trace/tnt_ignition`, `trace/tnt_power`; fire, flint and steel, fire charges, burning projectiles and dispensers do not ignite TNT yet; Redstone: a signal from any neighbor when TNT is placed, moved in by a piston or updated (blocks, levers, diodes, observers, dust, strongly powered blocks); explosions prime TNT with a fuse of 10 to 29 ticks |
+| Ignition by redstone, fire, flint and steel, fire charges, burning projectiles and explosions | C3 | partial, compared | partial, compared | `TNT-01`, `trace/arrow_tnt`, `trace/tnt_chain_edge`, `trace/tnt_explodes_disabled`, `trace/tnt_ignition`, `trace/tnt_power`; fire, flint and steel, fire charges and dispensers do not ignite TNT yet; of the burning projectiles only arrows are modeled; Redstone: a signal from any neighbor when TNT is placed, moved in by a piston or updated (blocks, levers, diodes, observers, dust, strongly powered blocks); explosions prime TNT with a fuse of 10 to 29 ticks; a burning arrow primes the TNT it hits |
 | Primed TNT entities: fuse, motion, collision and removal | C3 | partial, compared | partial, compared | `TNT-02`, `TNT-03`, `trace/tnt_ignition`, `trace/tnt_knockback`, `trace/tnt_motion`, `trace/tnt_redstone_ignition`, `trace/tnt_reload`, `trace/tnt_void`, `trace/tnt_water_current`; lava, bubble columns, portals and entity pushing do not move primed TNT; Creation before the block goes, launch from the level random, the fuse, gravity, collision, ground friction, currents after the move, chunk edges, falling below the world without being removed; it explodes when the fuse runs out and is pushed by other explosions |
 | Explosions: affected blocks, resistance, fluids, drops, chain reactions, damage and knockback | C3 | partial, compared | partial, compared | `TNT-04`, `collision/resistance`, `trace/tnt_chain_edge`, `trace/tnt_drops`, `trace/tnt_entity_order`, `trace/tnt_items`, `trace/tnt_knockback`, `trace/tnt_obsidian`, `trace/tnt_power`, `trace/tnt_redstone_ignition`, `trace/tnt_void`, `trace/tnt_water`; a hash-set bucket of eight or more cells (Java turns it into a tree) is ordered as a list; entities of one chunk section are hurt in id order, not the order they entered the section; explosions do not hurt or push players yet; TNT's explosion: rays with single-precision intensity and blast resistance (waterlogged blocks resist as water), the reached cells in hash-set order shuffled by the level random, entities hurt and pushed first by distance and exposure (items destroyed or left with less health; nether stars immune; primed TNT pushed from its feet), then blocks cleared with drops merged into stacks of 16, TNT primed with a 10-29 tick fuse, nothing out of the world's height |
 | Live fuses across save, reload and unload | C3 | partial, compared | partial, compared | `TNT-05`, `trace/tnt_reload`, `trace/tnt_reload_pending`; after an unload the official servers run a pending tick of the chunk one tick later than Circuit in trace/tnt_reload_pending (their unload timing varies; Circuit unloads dropped chunks at once); Fuse, position and motion kept by checkpoints, Anvil and unloading chunks |
@@ -364,7 +364,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Arrows, tridents, thrown items, potions, fireworks, wind charges and fishing bobbers | C3 | missing, none | missing, none |  |
+| Arrows, tridents, thrown items, potions, fireworks, wind charges and fishing bobbers | C3 | partial, compared | partial, compared | `trace/arrow_flight`, `trace/arrow_life`, `trace/arrow_reload`, `trace/arrow_tnt`; after an unload the official servers remove a chunk's arrows a tick later than Circuit in trace/arrow_reload (their unload timing varies); bows, crossbows, dispensers and players do not shoot; currents do not push arrows; projectiles pass through entities; tridents, thrown potions, eggs, ender pearls, fireworks, wind charges and fishing bobbers are missing; Arrows and snowballs (summoned): flight, drag in air and water, sticking 0.05 short of the shape they hit, falling again when their block goes, life and despawn, fire counted down and put out by water, burning arrows priming TNT, snowballs breaking on blocks |
 | Boats and rafts | C3 | missing, none | missing, none |  |
 | Minecarts of every kind | C3 | missing, none | missing, none |  |
 | Riding and mount controls | C6 | missing, none | missing, none |  |

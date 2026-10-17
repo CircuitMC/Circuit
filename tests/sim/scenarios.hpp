@@ -525,7 +525,7 @@ inline Scenario raised(Scenario s, std::int32_t dy) {
         std::visit([&](auto& c) {
             using T = std::decay_t<decltype(c)>;
             if constexpr (std::is_same_v<T, SetBlock> || std::is_same_v<T, UseBlock> || std::is_same_v<T, InsertItem>) up(c.pos);
-            else if constexpr (std::is_same_v<T, SpawnItem>) up_fixed(c.position);
+            else if constexpr (std::is_same_v<T, SpawnItem> || std::is_same_v<T, SummonEntity>) up_fixed(c.position);
             else if constexpr (std::is_same_v<T, PlayerUse> || std::is_same_v<T, PlayerBreak>) up(c.pos);
             else if constexpr (std::is_same_v<T, DropItem> || std::is_same_v<T, PlayerDeath>) up_fixed(c.position);
             else if constexpr (std::is_same_v<T, ContainerClick>) {
@@ -665,12 +665,54 @@ inline Scenario tnt_scenario() {
     }, 5};
 }
 
+// Arrows and snowballs flying across the x=16 chunk edge into walls on both
+// sides; burning arrows prime TNT in the other chunk; a wall goes and its
+// arrows fall.
+inline Scenario projectile_scenario() {
+    return {"projectiles", 101, 150, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        const auto tnt = registry_block("tnt");
+        if (t == 2) {
+            for (int x = 6; x <= 26; ++x)
+                for (int z = -4; z <= 4; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            for (int y = 0; y <= 4; ++y)
+                for (int z = -4; z <= 4; ++z) {
+                    c.push_back(place({7, y, z}, blocks::obsidian()));
+                    c.push_back(place({25, y, z}, blocks::obsidian()));
+                }
+        }
+        const auto phase = t % 50;
+        if (phase == 5) {
+            c.push_back(place({24, 0, 2}, tnt));
+            c.push_back(place({8, 0, -2}, tnt));
+            for (int i = 0; i < 4; ++i) {
+                const double z = -3.5 + 2.0 * i;
+                c.push_back(SummonEntity{"minecraft:arrow", {12.5, 1.5, z}, {1.1, 0.2 + 0.05 * i, 0.01 * i}, 80, 0});
+                c.push_back(SummonEntity{"minecraft:arrow", {20.5, 2.5, z + 0.5}, {-1.0, 0.1, -0.02 * i}, 80, 0});
+            }
+            c.push_back(SummonEntity{"minecraft:arrow", {19.5, 0.5, 2.5}, {1.0, 0.05, 0.0}, 80, 300});
+            c.push_back(SummonEntity{"minecraft:arrow", {13.5, 0.5, -1.5}, {-1.0, 0.05, 0.0}, 80, 300});
+            c.push_back(SummonEntity{"minecraft:snowball", {15.5, 3.5, 0.5}, {0.9, 0.2, 0.0}, 80, 0});
+        }
+        if (phase == 30) {
+            // The east wall goes; its arrows fall. It comes back later.
+            for (int y = 0; y <= 4; ++y)
+                for (int z = -4; z <= 4; ++z) c.push_back(place({25, y, z}, blocks::air()));
+        }
+        if (phase == 45)
+            for (int y = 0; y <= 4; ++y)
+                for (int z = -4; z <= 4; ++z) c.push_back(place({25, y, z}, blocks::obsidian()));
+        return c;
+    }, 5};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
-            tnt_scenario()};
+            tnt_scenario(), projectile_scenario()};
 }
 
 } // namespace circuit::test

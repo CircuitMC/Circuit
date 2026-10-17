@@ -354,6 +354,15 @@ int main() {
         primed.velocity = {0.01, 0.2, -0.01};
         primed.fuse = 37;
         never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(primed);
+        // A burning arrow stuck in the ground.
+        circuit::gameplay::Entity arrow;
+        arrow.id = circuit::contracts::EntityId{never.state.next_entity_id++};
+        arrow.kind = circuit::gameplay::EntityKind::arrow;
+        arrow.position = {6.5, 1.05, 6.5};
+        arrow.in_ground = true;
+        arrow.life = 345;
+        arrow.fire = 12;
+        never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(arrow);
         // And one waiting to come back with its reloaded chunk.
         auto returning = item;
         returning.id = circuit::contracts::EntityId{never.state.next_entity_id++};

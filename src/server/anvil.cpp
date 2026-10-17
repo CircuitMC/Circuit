@@ -799,7 +799,8 @@ private:
             const auto id = text(e, "id").value_or("");
             const bool falling = id == "minecraft:falling_block";
             const bool tnt = id == "minecraft:tnt";
-            if (id != "minecraft:item" && !falling && !tnt) {
+            const bool arrow = id == "minecraft:arrow", snowball = id == "minecraft:snowball";
+            if (id != "minecraft:item" && !falling && !tnt && !arrow && !snowball) {
                 unsupported("entity " + id);
                 continue;
             }
@@ -807,13 +808,23 @@ private:
             const auto motion = numbers(e, "Motion", 3).value_or(std::vector<double>{0, 0, 0});
             const auto* item = child(e, "Item", TagType::compound);
             const auto* state = child(e, "BlockState", TagType::compound);
-            if (!pos || (falling && !state) || (!falling && !tnt && !item) || !std::isfinite((*pos)[0]) || !std::isfinite((*pos)[1])
+            if (!pos || (falling && !state) || (id == "minecraft:item" && !item) || !std::isfinite((*pos)[0]) || !std::isfinite((*pos)[1])
                 || !std::isfinite((*pos)[2])) {
                 unsupported(falling ? "malformed falling block" : tnt ? "malformed primed TNT" : "malformed item entity");
                 continue;
             }
             gameplay::Entity out;
-            if (tnt) {
+            if (arrow || snowball) {
+                // An arrow's owner, damage, pickup rule and item, and a
+                // snowball's item, are not modeled.
+                out.kind = arrow ? gameplay::EntityKind::arrow : gameplay::EntityKind::snowball;
+                if (arrow) {
+                    out.in_ground = integer(e, "inGround").value_or(0) != 0;
+                    out.life = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "life").value_or(0), 0, 32767));
+                    out.fire = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "Fire").value_or(0), -32768, 32767));
+                    if (out.fire < 0) out.fire = 0;
+                }
+            } else if (tnt) {
                 // Primed TNT that looks like another block, or explodes with
                 // another power, is not modeled; its owner only blames
                 // damage on someone.
@@ -1192,6 +1203,29 @@ private:
             t.set("Rotation", std::move(rotation));
             t.set("OnGround", Tag::boolean(e->on_ground));
             const auto hi = std::uint64_t{0x43697263756974ULL}, lo = e->id.value;
+            if (e->kind == gameplay::EntityKind::arrow || e->kind == gameplay::EntityKind::snowball) {
+                // As the target versions save a summoned arrow or snowball.
+                if (e->kind == gameplay::EntityKind::arrow) {
+                    t.set("life", Tag::short_(static_cast<std::int16_t>(e->life)));
+                    t.set("inGround", Tag::boolean(e->in_ground));
+                    t.set("shake", Tag::byte(0));
+                    t.set("pickup", Tag::byte(0));
+                    t.set("crit", Tag::boolean(false));
+                    t.set("damage", Tag::double_(2.0));
+                    t.set("PierceLevel", Tag::byte(0));
+                    auto item = Tag::compound();
+                    item.set("id", Tag::string("minecraft:arrow"));
+                    item.set("count", Tag::int_(1));
+                    t.set("item", std::move(item));
+                }
+                t.set("Air", Tag::short_(300));
+                t.set("Fire", Tag::short_(static_cast<std::int16_t>(e->kind == gameplay::EntityKind::arrow && e->fire > 0 ? e->fire : -1)));
+                t.set("UUID", Tag::int_array({static_cast<std::int32_t>(hi >> 32), static_cast<std::int32_t>(hi & 0xFFFFFFFF),
+                                              static_cast<std::int32_t>(lo >> 32), static_cast<std::int32_t>(lo & 0xFFFFFFFF)}));
+                list.push(std::move(t));
+                ++report_.entities;
+                continue;
+            }
             if (tnt) {
                 // As the target versions save TNT primed by redstone.
                 t.set("fuse", Tag::short_(static_cast<std::int16_t>(std::clamp(e->fuse, -32768, 32767))));

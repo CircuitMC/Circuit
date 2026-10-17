@@ -662,6 +662,20 @@ int main() {
                 std::format("{} primed, {} explosions, {} entities exploded or destroyed", primed, explosions, destroyed));
     });
 
+    suite.run("arrows and snowballs fly across chunk edges", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("projectiles"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the projectile scenario");
+        const auto& ref = references[index];
+        std::size_t arrows = 0, primed = 0, crossed = 0;
+        for (const auto& trace : ref.traces)
+            for (const auto& r : trace) {
+                if (r.kind == TraceKind::entity_spawned && r.c == static_cast<std::uint64_t>(circuit::gameplay::EntityKind::arrow)) ++arrows;
+                if (r.kind == TraceKind::entity_spawned && r.c == static_cast<std::uint64_t>(circuit::gameplay::EntityKind::primed_tnt)) ++primed;
+                if (r.kind == TraceKind::entity_changed_chunk) ++crossed;
+            }
+        require(arrows == 30 && primed == 6 && crossed >= 24, std::format("{} arrows, {} primed, {} chunk changes", arrows, primed, crossed));
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");

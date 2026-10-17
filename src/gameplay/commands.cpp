@@ -104,6 +104,22 @@ Plan plan(RuleContext& ctx, const contracts::SpawnItem& c) {
     };
 }
 
+Plan plan(RuleContext& ctx, const contracts::SummonEntity& c) {
+    if (!contracts::within_border(c.position) || !ctx.world().contains_position_y(c.position.y))
+        return std::unexpected(ErrorCode::out_of_bounds);
+    if (auto ok = check_loaded(ctx, contracts::block_of(c.position)); !ok) return std::unexpected(ok.error());
+    if (!valid_velocity(c.velocity) || c.fuse < -32768 || c.fuse > 32767 || c.fire < -32768 || c.fire > 32767)
+        return std::unexpected(ErrorCode::invalid_argument);
+    Entity e;
+    if (c.type == "minecraft:tnt") e.kind = EntityKind::primed_tnt, e.fuse = c.fuse;
+    else if (c.type == "minecraft:arrow") e.kind = EntityKind::arrow, e.fire = c.fire;
+    else if (c.type == "minecraft:snowball") e.kind = EntityKind::snowball;
+    else return std::unexpected(ErrorCode::unknown_command);
+    e.position = c.position;
+    e.velocity = c.velocity;
+    return [&ctx, e] { detail::record_spawn(ctx, ctx.spawn_entity(e), e); };
+}
+
 Plan plan(RuleContext& ctx, const contracts::RemoveEntity& c) {
     const auto* e = ctx.peek_entity(c.id);
     if (!e) return std::unexpected(ErrorCode::unknown_entity);

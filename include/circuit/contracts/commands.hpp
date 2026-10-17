@@ -7,6 +7,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <variant>
 #include <vector>
 
@@ -40,6 +41,17 @@ struct SpawnItem {
     std::uint16_t pickup_delay{}; // 0 to 32767 (never picked up)
     std::int32_t age{};           // -32768 (never ages) or 0 to 32767
     bool operator==(const SpawnItem&) const = default;
+};
+// An entity summoned as /summon does it: of a type the rules support
+// (minecraft:tnt, minecraft:arrow, minecraft:snowball), with a velocity,
+// primed TNT's fuse and the ticks it burns for.
+struct SummonEntity {
+    std::string type; // resource id, e.g. "minecraft:arrow"
+    Vec3 position;
+    Vec3 velocity;
+    std::int32_t fuse{80};
+    std::int32_t fire{};
+    bool operator==(const SummonEntity&) const = default;
 };
 struct RemoveEntity {
     EntityId id;
@@ -215,6 +227,13 @@ struct LevelsStarted {
 // rules and their types; a boolean is 0 or 1. Game rules belong to the
 // world, not to a level.
 inline constexpr std::size_t max_game_rule_name = 64;
+// Records store a summoned entity's type in at most 64 characters of a
+// resource id.
+inline constexpr std::size_t max_entity_type = 64;
+[[nodiscard]] inline bool valid_entity_type(std::string_view type) noexcept {
+    return !type.empty() && type.size() <= max_entity_type
+        && std::ranges::all_of(type, [](char ch) { return (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') || ch == '_' || ch == ':'; });
+}
 struct SetGameRule {
     std::string name;
     std::int32_t value{};
@@ -242,7 +261,7 @@ struct SetWeather {
 
 using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket,
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
-                                 PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather>;
+                                 PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.
@@ -271,6 +290,8 @@ public:
                      || !std::ranges::all_of(rule->name, [](char ch) { return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'); })))
             return std::unexpected(ErrorCode::invalid_argument);
         if (const auto* day = std::get_if<SetDayTime>(&body); day && day->time < 0) return std::unexpected(ErrorCode::invalid_argument);
+        if (const auto* summon = std::get_if<SummonEntity>(&body); summon && !valid_entity_type(summon->type))
+            return std::unexpected(ErrorCode::invalid_argument);
         if (const auto* weather = std::get_if<SetWeather>(&body);
             weather && (static_cast<std::uint8_t>(weather->kind) >= weather_kind_count || weather->duration < 0))
             return std::unexpected(ErrorCode::invalid_argument);

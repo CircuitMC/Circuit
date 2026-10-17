@@ -147,6 +147,13 @@ constexpr std::array reference_v4_mechanisms{
         "tnt_chain_edge, tnt_water, tnt_power). Gaps: fire, players, projectiles and dispensers do not ignite TNT; "
         "entities of one chunk section are hurt in id order rather than the order they entered it; explosions "
         "do not hurt players yet."},
+    MechanismEntry{"projectile", l0_exact, l2_declared_deviation, harness_trace,
+        "Arrows and snowballs summoned with a velocity: arrows move, then lose 1% of their speed (40% in water) "
+        "and 0.05 downwards, stick 0.05 short of the block shape they hit, count their life to 1,200 and fall again "
+        "when no block is left beside them; burning arrows count their fire down in flight and prime TNT they "
+        "hit; snowballs fall by 0.03 and lose 1% before they move, and break on the first block (arrow_flight, "
+        "arrow_tnt). Gaps: projectiles pass through entities; bows, crossbows, dispensers and players do not shoot; "
+        "currents do not push arrows; water does not put out burning arrows; other projectiles."},
     MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, harness_trace,
         "Entities tick in ascending id order once per tick; one merged away before its turn does not tick "
         "(item_hopper_pickup, item_water_current, item_merge, item_merge_moving). Gap: compared for item "

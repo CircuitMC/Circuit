@@ -168,6 +168,8 @@ std::string_view entity_kind_name(EntityKind kind) noexcept {
     case EntityKind::item: return "minecraft:item";
     case EntityKind::falling_block: return "minecraft:falling_block";
     case EntityKind::primed_tnt: return "minecraft:tnt";
+    case EntityKind::arrow: return "minecraft:arrow";
+    case EntityKind::snowball: return "minecraft:snowball";
     }
     return "?";
 }
@@ -189,10 +191,10 @@ std::string text(const std::pair<BlockPos, BlockEntity>& b) {
 }
 std::string text(const Entity& e) {
     return std::format("entity {} {} pos=({},{},{}) vel=({},{},{}) ticks={} stack={}x{}/{} age={} last_tick={} ground={} pickup_delay={} "
-                       "returns={} carried={:#x} fall_time={} fuse={} health={}",
+                       "returns={} carried={:#x} fall_time={} fuse={} health={} in_ground={} life={} fire={}",
                        e.id.value, entity_kind_name(e.kind), e.position.x, e.position.y, e.position.z, e.velocity.x, e.velocity.y,
                        e.velocity.z, e.tick_count, e.stack.item, e.stack.count, e.stack.damage, e.age, e.last_tick, e.on_ground,
-                       e.pickup_delay, e.returns, e.carried.raw(), e.fall_time, e.fuse, e.health);
+                       e.pickup_delay, e.returns, e.carried.raw(), e.fall_time, e.fuse, e.health, e.in_ground, e.life, e.fire);
 }
 std::string text(const LevelDump::PendingTick& t) {
     return std::format("tick list={} {} block={} due={} priority={} suborder={}", static_cast<int>(t.list),
@@ -335,6 +337,7 @@ std::uint64_t digest(const WorldDump& d) {
             h.add(e.stack.components.hash());
             h.add(e.tick_count); h.add(static_cast<std::uint32_t>(e.age)); h.add(e.last_tick); h.add(e.on_ground); h.add(e.pickup_delay);
             h.add(e.returns); h.add(e.carried.raw()); h.add(e.fall_time); h.add(static_cast<std::uint32_t>(e.fuse)); h.add(static_cast<std::uint32_t>(e.health));
+            h.add(e.in_ground); h.add(static_cast<std::uint32_t>(e.life)); h.add(static_cast<std::uint32_t>(e.fire));
         }
         h.add(l.ticks.size());
         for (const auto& t : l.ticks) {

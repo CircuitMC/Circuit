@@ -1229,11 +1229,12 @@
             "trace/tnt_ignition",
             "trace/tnt_explodes_disabled",
             "trace/tnt_chain_edge",
-            "trace/tnt_power"
+            "trace/tnt_power",
+            "trace/arrow_tnt"
           ],
-          "note": "Redstone: a signal from any neighbor when TNT is placed, moved in by a piston or updated (blocks, levers, diodes, observers, dust, strongly powered blocks); explosions prime TNT with a fuse of 10 to 29 ticks",
+          "note": "Redstone: a signal from any neighbor when TNT is placed, moved in by a piston or updated (blocks, levers, diodes, observers, dust, strongly powered blocks); explosions prime TNT with a fuse of 10 to 29 ticks; a burning arrow primes the TNT it hits",
           "deviations": [
-            "fire, flint and steel, fire charges, burning projectiles and dispensers do not ignite TNT yet"
+            "fire, flint and steel, fire charges and dispensers do not ignite TNT yet; of the burning projectiles only arrows are modeled"
           ]
         },
         {
@@ -1563,8 +1564,22 @@
           "id": "projectiles",
           "name": "Arrows, tridents, thrown items, potions, fireworks, wind charges and fishing bobbers",
           "milestone": "C3",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/arrow_flight",
+            "trace/arrow_tnt",
+            "trace/arrow_life",
+            "trace/arrow_reload"
+          ],
+          "note": "Arrows and snowballs (summoned): flight, drag in air and water, sticking 0.05 short of the shape they hit, falling again when their block goes, life and despawn, fire counted down and put out by water, burning arrows priming TNT, snowballs breaking on blocks",
+          "deviations": [
+            "projectiles pass through entities",
+            "bows, crossbows, dispensers and players do not shoot",
+            "currents do not push arrows",
+            "tridents, thrown potions, eggs, ender pearls, fireworks, wind charges and fishing bobbers are missing",
+            "after an unload the official servers remove a chunk's arrows a tick later than Circuit in trace/arrow_reload (their unload timing varies)"
+          ]
         },
         {
           "id": "boats",

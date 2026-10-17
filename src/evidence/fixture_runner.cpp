@@ -4,7 +4,9 @@
 #include <circuit/runtime/engine.hpp>
 #include <algorithm>
 #include <charconv>
+#include <array>
 #include <cmath>
+#include <sstream>
 #include <format>
 #include <map>
 #include <set>
@@ -73,6 +75,73 @@ FixtureReport report(Outcome outcome, std::string detail) { return {outcome, std
 
 Vec3d to_vec(contracts::Vec3 v) { return {v.x, v.y, v.z}; }
 
+// `summon <type> <x> <y> <z> [{...}]` for the entities the rules summon:
+// absolute coordinates and these data tags: Motion:[x,y,z] (doubles, `d`
+// optional), Fire (short, `s` optional) and fuse (primed TNT). Anything else
+// is not modeled.
+std::expected<contracts::SummonEntity, std::string> summon(const std::string& command) {
+    const auto unsupported = std::format("command `{}`: summon is modeled for minecraft:tnt, minecraft:arrow and minecraft:snowball "
+                                         "at absolute coordinates with Motion, Fire and fuse",
+                                         command);
+    std::istringstream in(command);
+    std::string word, type, xs, ys, zs;
+    in >> word >> type >> xs >> ys >> zs;
+    if (word != "summon" || zs.empty()) return std::unexpected(unsupported);
+    if (type.find(':') == std::string::npos) type = "minecraft:" + type;
+    const auto number = [](std::string_view text, char suffix, double& out) {
+        if (!text.empty() && (text.back() == suffix || text.back() == static_cast<char>(suffix - 'a' + 'A'))) text.remove_suffix(1);
+        const auto [end, ec] = std::from_chars(text.data(), text.data() + text.size(), out);
+        return ec == std::errc{} && end == text.data() + text.size() && std::isfinite(out);
+    };
+    contracts::SummonEntity c;
+    c.type = type;
+    if (!number(xs, 'd', c.position.x) || !number(ys, 'd', c.position.y) || !number(zs, 'd', c.position.z)) return std::unexpected(unsupported);
+    std::string data;
+    std::getline(in, data);
+    while (!data.empty() && data.front() == ' ') data.erase(data.begin());
+    if (!data.empty()) {
+        if (data.front() != '{' || data.back() != '}') return std::unexpected(unsupported);
+        std::string_view body(data);
+        body = body.substr(1, body.size() - 2);
+        while (!body.empty()) {
+            const auto colon = body.find(':');
+            if (colon == std::string_view::npos) return std::unexpected(unsupported);
+            const auto key = body.substr(0, colon);
+            body.remove_prefix(colon + 1);
+            std::string_view value;
+            if (!body.empty() && body.front() == '[') {
+                const auto close = body.find(']');
+                if (close == std::string_view::npos) return std::unexpected(unsupported);
+                value = body.substr(0, close + 1);
+                body.remove_prefix(close + 1);
+            } else {
+                const auto comma = body.find(',');
+                value = body.substr(0, comma);
+                body.remove_prefix(comma == std::string_view::npos ? body.size() : comma);
+            }
+            if (!body.empty() && body.front() == ',') body.remove_prefix(1);
+            if (key == "Motion") {
+                std::array<double, 3> m{};
+                auto list = value.substr(1, value.size() - 2);
+                for (int i = 0; i < 3; ++i) {
+                    const auto comma = list.find(',');
+                    if ((i < 2) != (comma != std::string_view::npos) || !number(list.substr(0, comma), 'd', m[i])) return std::unexpected(unsupported);
+                    list.remove_prefix(comma == std::string_view::npos ? list.size() : comma + 1);
+                }
+                c.velocity = {m[0], m[1], m[2]};
+            } else if (key == "Fire" || key == "fuse") {
+                double v{};
+                if (!number(value, 's', v) || v != std::floor(v) || v < -32768 || v > 32767) return std::unexpected(unsupported);
+                (key == "Fire" ? c.fire : c.fuse) = static_cast<std::int32_t>(v);
+            } else {
+                return std::unexpected(unsupported);
+            }
+        }
+    }
+    if (type != "minecraft:tnt" && type != "minecraft:arrow" && type != "minecraft:snowball") return std::unexpected(unsupported);
+    return c;
+}
+
 // The commands of a `forceload add|remove <x> <z> [<x2> <z2>]` or
 // `forceload remove all` action: one forced ticket (level 31, radius 0) per
 // chunk of the block coordinates' rectangle, as the target versions'
@@ -86,7 +155,12 @@ std::expected<std::vector<contracts::CommandBody>, std::string> forceload(const 
         w.push_back(command.substr(i, end - i));
         i = end + 1;
     }
-    const auto unsupported = std::format("command `{}`: only forceload add and remove and gamerule randomTickSpeed are modeled", command);
+    const auto unsupported = std::format("command `{}`: only forceload add and remove, gamerule randomTickSpeed and summon are modeled", command);
+    if (!w.empty() && w[0] == "summon") {
+        auto c = summon(command);
+        if (!c) return std::unexpected(c.error());
+        return std::vector<contracts::CommandBody>{std::move(*c)};
+    }
     if (w.size() == 3 && w[0] == "gamerule" && w[1] == "randomTickSpeed") {
         std::int32_t v{};
         const auto [end, ec] = std::from_chars(w[2].data(), w[2].data() + w[2].size(), v);
@@ -418,6 +492,12 @@ public:
                 props.emplace_back("time", std::to_string(e.fall_time));
             } else if (e.kind == gameplay::EntityKind::primed_tnt) {
                 props.emplace_back("fuse", std::to_string(e.fuse));
+            } else if (e.kind == gameplay::EntityKind::arrow) {
+                props.emplace_back("in-ground", e.in_ground ? "true" : "false");
+                props.emplace_back("life", std::to_string(e.life));
+                if (e.fire > 0) props.emplace_back("fire", std::to_string(e.fire));
+            } else if (e.kind == gameplay::EntityKind::snowball) {
+                if (e.fire > 0) props.emplace_back("fire", std::to_string(e.fire));
             } else {
                 props = stack_properties(contracts::pack_stack(e.stack));
                 props.emplace_back("age", std::to_string(e.age));
@@ -460,6 +540,7 @@ private:
         if (kind == gameplay::EntityKind::falling_block)
             return {{"block", mapping_.notation(gameplay::BlockState::decode(static_cast<std::uint32_t>(payload)).value())}};
         if (kind == gameplay::EntityKind::primed_tnt) return {{"fuse", std::to_string(static_cast<std::int32_t>(payload))}};
+        if (kind == gameplay::EntityKind::arrow || kind == gameplay::EntityKind::snowball) return {};
         return stack_properties(payload);
     }
     Properties stack_properties(std::uint64_t packed) const {

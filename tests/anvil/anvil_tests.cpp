@@ -299,6 +299,29 @@ int main() {
         require(ticks == 71, std::format("exploded after {} ticks", ticks));
     });
 
+    suite.run("arrows round-trip through Anvil", [&] {
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine.advance(admit({place({8, 0, 3}, blocks::obsidian()), SummonEntity{"minecraft:arrow", {2.5, 0.5, 3.5}, {1.0, 0.05, 0.0}, 80, 100},
+                              SummonEntity{"minecraft:arrow", {2.5, 5.5, 3.5}, {0.2, 0.3, 0.0}, 80, 0}}));
+        for (int i = 0; i < 8; ++i) engine.advance({});
+        const auto state = engine.dump();
+        const auto stuck = std::ranges::count_if(state.overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::arrow && e.in_ground; });
+        require(stuck == 1, "one arrow stuck, one in flight");
+        const auto target = root / "arrows";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "arrows", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        const auto lost = [](const WorldDump& w) {
+            std::vector<std::tuple<Vec3, Vec3, bool, std::int32_t, std::int32_t>> out;
+            for (const auto& e : w.overworld().entities) out.emplace_back(e.position, e.velocity, e.in_ground, e.life, e.fire);
+            std::ranges::sort(out);
+            return out;
+        };
+        require(lost(state) == lost(back->state), "arrows kept with their state");
+    });
+
     suite.run("unsupported content is rejected or substituted by policy", [&] {
         // Every block state of the target version imports; unknown blocks and
         // invalid properties are unsupported.

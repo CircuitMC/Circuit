@@ -1,0 +1,83 @@
+circuit-trace 2
+title Arrows keep their state while their chunk unloads and reloads
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms projectile chunk_tickets
+area 328 0 -1 343 7 2
+ticks 70
+changes ordered
+entities observed
+rng observed
+chunks none
+load none
+
+at 1 command forceload add 328 0
+at 10 set 328 0 -1 minecraft:stone
+at 10 set 328 0 0 minecraft:stone
+at 10 set 328 0 1 minecraft:stone
+at 10 set 328 0 2 minecraft:stone
+at 10 set 329 0 -1 minecraft:stone
+at 10 set 329 0 0 minecraft:stone
+at 10 set 329 0 1 minecraft:stone
+at 10 set 329 0 2 minecraft:stone
+at 10 set 330 0 -1 minecraft:stone
+at 10 set 330 0 0 minecraft:stone
+at 10 set 330 0 1 minecraft:stone
+at 10 set 330 0 2 minecraft:stone
+at 10 set 331 0 -1 minecraft:stone
+at 10 set 331 0 0 minecraft:stone
+at 10 set 331 0 1 minecraft:stone
+at 10 set 331 0 2 minecraft:stone
+at 10 set 332 0 -1 minecraft:stone
+at 10 set 332 0 0 minecraft:stone
+at 10 set 332 0 1 minecraft:stone
+at 10 set 332 0 2 minecraft:stone
+at 10 set 333 0 -1 minecraft:stone
+at 10 set 333 0 0 minecraft:stone
+at 10 set 333 0 1 minecraft:stone
+at 10 set 333 0 2 minecraft:stone
+at 10 set 334 0 -1 minecraft:stone
+at 10 set 334 0 0 minecraft:stone
+at 10 set 334 0 1 minecraft:stone
+at 10 set 334 0 2 minecraft:stone
+at 10 set 335 0 -1 minecraft:stone
+at 10 set 335 0 0 minecraft:stone
+at 10 set 335 0 1 minecraft:stone
+at 10 set 335 0 2 minecraft:stone
+at 10 set 336 0 -1 minecraft:stone
+at 10 set 336 0 0 minecraft:stone
+at 10 set 336 0 1 minecraft:stone
+at 10 set 336 0 2 minecraft:stone
+at 10 set 337 0 -1 minecraft:stone
+at 10 set 337 0 0 minecraft:stone
+at 10 set 337 0 1 minecraft:stone
+at 10 set 337 0 2 minecraft:stone
+at 10 set 338 0 -1 minecraft:stone
+at 10 set 338 0 0 minecraft:stone
+at 10 set 338 0 1 minecraft:stone
+at 10 set 338 0 2 minecraft:stone
+at 10 set 339 0 -1 minecraft:stone
+at 10 set 339 0 0 minecraft:stone
+at 10 set 339 0 1 minecraft:stone
+at 10 set 339 0 2 minecraft:stone
+at 10 set 340 0 -1 minecraft:stone
+at 10 set 340 0 0 minecraft:stone
+at 10 set 340 0 1 minecraft:stone
+at 10 set 340 0 2 minecraft:stone
+at 10 set 341 0 -1 minecraft:stone
+at 10 set 341 0 0 minecraft:stone
+at 10 set 341 0 1 minecraft:stone
+at 10 set 341 0 2 minecraft:stone
+at 10 set 342 0 -1 minecraft:stone
+at 10 set 342 0 0 minecraft:stone
+at 10 set 342 0 1 minecraft:stone
+at 10 set 342 0 2 minecraft:stone
+at 10 set 343 0 -1 minecraft:stone
+at 10 set 343 0 0 minecraft:stone
+at 10 set 343 0 1 minecraft:stone
+at 10 set 343 0 2 minecraft:stone
+at 12 command summon minecraft:arrow 330.5 3 0.5 {Motion:[0.0d,-1.0d,0.0d]}
+at 28 command summon minecraft:arrow 329.5 5 1.5 {Motion:[0.3d,0.2d,0.0d],Fire:200s}
+at 30 command forceload remove 328 0
+at 40 command forceload add 328 0

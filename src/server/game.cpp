@@ -258,7 +258,7 @@ struct Game::Impl final : GameServices {
     std::unordered_map<std::uint64_t, Tracked> tracked;
     std::int32_t dimension_type{};
     std::int32_t biome{};
-    std::int32_t item_entity_type{}, falling_block_type{}, tnt_entity_type{}, player_entity_type{};
+    std::int32_t item_entity_type{}, falling_block_type{}, tnt_entity_type{}, arrow_entity_type{}, snowball_entity_type{}, player_entity_type{};
     std::unordered_map<std::uint16_t, std::int32_t> item_wire; // reference item -> wire item id
     bool started{false};
 
@@ -279,6 +279,8 @@ struct Game::Impl final : GameServices {
         item_entity_type = content.entity_type("minecraft:item").value();
         falling_block_type = content.entity_type("minecraft:falling_block").value();
         tnt_entity_type = content.entity_type("minecraft:tnt").value();
+        arrow_entity_type = content.entity_type("minecraft:arrow").value();
+        snowball_entity_type = content.entity_type("minecraft:snowball").value();
         player_entity_type = content.entity_type("minecraft:player").value();
         for (std::uint16_t i = 1; i <= gameplay::items::max_id; ++i)
             if (const auto id = content.item_id(mapping.item_name(i))) item_wire[i] = *id;
@@ -1879,6 +1881,13 @@ struct Game::Impl final : GameServices {
             // The spawn data of a falling block is its block state.
             p.peer->send(wire.spawn_entity(t.protocol_id, entity_uuid(engine_id), falling_block_type, t.last, 0, 0, 0,
                                            palette.wire(e.carried), e.velocity));
+            return;
+        }
+        if (e.kind == gameplay::EntityKind::arrow || e.kind == gameplay::EntityKind::snowball) {
+            // No owner (spawn data 0); clients fly them themselves.
+            p.peer->send(wire.spawn_entity(t.protocol_id, entity_uuid(engine_id),
+                                           e.kind == gameplay::EntityKind::arrow ? arrow_entity_type : snowball_entity_type, t.last, 0, 0, 0, 0,
+                                           e.velocity));
             return;
         }
         if (e.kind == gameplay::EntityKind::primed_tnt) {

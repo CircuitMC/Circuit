@@ -7,6 +7,7 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
+// 13: summoned entities (tag 23);
 // 12: spawned items may carry a pickup delay and an age (tag 22);
 // 11: positions and velocities are doubles (before: 1/4096 block units);
 // 10: weather (tag 21); 9: day time (tag 20); 8: game rules (tag 19); 7: typed tickets (tag 16), player presences and levels started; 6: each
@@ -14,7 +15,7 @@ constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
 // block registry id; 3: stacks carry damage, player commands carry their
 // player. Commands of versions before 6 are the overworld's. Tickets of
 // versions before 7 (tags 5 and 9) read as forced squares.
-constexpr std::uint16_t format_version = 12;
+constexpr std::uint16_t format_version = 13;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -115,8 +116,10 @@ private:
 // 10 SetPlayerSlot, 11 PickUp, 12 DropItem, 13 ContainerClick,
 // 14 CloseContainer, 15 PlayerDeath, 16 AddTicket, 17 PlayerPresence,
 // 18 LevelsStarted, 19 SetGameRule, 20 SetDayTime, 21 SetWeather,
-// 22 SpawnItem with a pickup delay or an age (tag 3 has neither).
+// 22 SpawnItem with a pickup delay or an age (tag 3 has neither),
+// 23 SummonEntity.
 std::uint8_t tag_of(const CommandBody& body) {
+    if (std::holds_alternative<SummonEntity>(body)) return 23;
     if (const auto* spawn = std::get_if<SpawnItem>(&body); spawn && (spawn->pickup_delay != 0 || spawn->age != 0)) return 22;
     if (std::holds_alternative<SetGameRule>(body)) return 19;
     if (std::holds_alternative<SetDayTime>(body)) return 20;
@@ -164,6 +167,13 @@ void encode_command(Writer& w, const Command& c) {
             w.put(static_cast<std::uint8_t>(body.name.size()));
             for (const char ch : body.name) w.put(static_cast<std::uint8_t>(ch));
             w.put(body.value);
+        } else if constexpr (std::is_same_v<T, SummonEntity>) {
+            w.put(static_cast<std::uint8_t>(body.type.size()));
+            for (const char ch : body.type) w.put(static_cast<std::uint8_t>(ch));
+            w.vec(body.position);
+            w.vec(body.velocity);
+            w.put(body.fuse);
+            w.put(body.fire);
         } else if constexpr (std::is_same_v<T, SetDayTime>) {
             w.put(body.time);
         } else if constexpr (std::is_same_v<T, SetWeather>) {
@@ -398,6 +408,16 @@ bool decode_command(Reader& r, Command& c) {
         SpawnItem b;
         if (!r.vec(b.position) || !r.vec(b.velocity) || !r.stack(b.stack) || !r.get(b.pickup_delay) || !r.get(b.age)) return false;
         if (b.pickup_delay == 0 && b.age == 0) return false; // written as tag 3
+        c.body = b;
+        return true;
+    }
+    case 23: {
+        SummonEntity b;
+        std::uint8_t length{};
+        if (!r.get(length) || length == 0 || length > max_entity_type || !r.bytes(length, b.type) || !r.vec(b.position)
+            || !r.vec(b.velocity) || !r.get(b.fuse) || !r.get(b.fire))
+            return false;
+        if (!valid_entity_type(b.type)) return false;
         c.body = b;
         return true;
     }

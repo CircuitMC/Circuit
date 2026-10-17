@@ -1140,25 +1140,41 @@ void Engine::Impl::restore(const WorldDump& state) {
             if (static_cast<std::uint8_t>(e.kind) == 0 || static_cast<std::uint8_t>(e.kind) >= gameplay::entity_kind_count) bad("entity kind");
             if (e.position.y < lowest || e.position.y >= highest) bad("entity height");
             if (!gameplay::valid_velocity(e.velocity)) bad("entity velocity");
-            if (e.kind == gameplay::EntityKind::item) {
+            // Each kind's own state, valid; the state of other kinds at its defaults.
+            auto rest = e;
+            switch (e.kind) {
+            case gameplay::EntityKind::item:
                 if (!gameplay::items::valid(e.stack.item) || e.stack.count < 1 || e.stack.count > gameplay::items::max_stack(e.stack)
                     || e.stack.damage > gameplay::items::max_damage(e.stack) || e.pickup_delay > gameplay::item_pickup_never)
                     bad("entity stack");
                 if (!gameplay::valid_item_age(e.age)) bad("entity age");
                 if (e.health < 1 || e.health > 32767) bad("item health"); // a short, as saved
-                if (e.carried != gameplay::BlockState{} || e.fall_time != 0 || e.fuse != 0) bad("item with a block");
-            } else if (e.kind == gameplay::EntityKind::falling_block) {
-                // A falling block carries a block state and nothing else.
+                rest.stack = {};
+                rest.age = 0;
+                rest.pickup_delay = 0;
+                rest.health = gameplay::item_health;
+                break;
+            case gameplay::EntityKind::falling_block:
                 if (!gameplay::BlockState::decode(e.carried.raw()) || e.carried.is_air() || e.carried.is_unloaded()) bad("falling block state");
-                if (!e.stack.empty() || e.age != 0 || e.pickup_delay != 0 || e.fuse != 0 || e.health != gameplay::item_health)
-                    bad("falling block with an item");
-            } else {
-                // Primed TNT has a fuse (saved as a short) and nothing else.
-                if (e.fuse < -32768 || e.fuse > 32767) bad("primed TNT fuse");
-                if (!e.stack.empty() || e.age != 0 || e.pickup_delay != 0 || e.carried != gameplay::BlockState{} || e.fall_time != 0
-                    || e.health != gameplay::item_health)
-                    bad("primed TNT with an item or a block");
+                rest.carried = {};
+                rest.fall_time = 0;
+                break;
+            case gameplay::EntityKind::primed_tnt:
+                if (e.fuse < -32768 || e.fuse > 32767) bad("primed TNT fuse"); // a short, as saved
+                rest.fuse = 0;
+                break;
+            case gameplay::EntityKind::arrow:
+                if (e.life < 0 || e.life > 32767 || e.fire < -32768 || e.fire > 32767) bad("arrow state");
+                rest.in_ground = false;
+                rest.life = 0;
+                rest.fire = 0;
+                break;
+            default: break;
             }
+            if (!rest.stack.empty() || rest.age != 0 || rest.pickup_delay != 0 || rest.health != gameplay::item_health
+                || rest.carried != gameplay::BlockState{} || rest.fall_time != 0 || rest.fuse != 0 || rest.in_ground || rest.life != 0
+                || rest.fire != 0)
+                bad("entity state of another kind");
             const auto it = columns.find(contracts::chunk_of(contracts::block_of(e.position)));
             if (it == columns.end()) bad("entity in an unknown column");
             auto& chunk = *it->second;

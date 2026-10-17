@@ -175,6 +175,11 @@ void check_tnt(RuleContext& ctx, BlockPos pos);
 // TNT an explosion reached (its block already gone): primed TNT with a fuse
 // of 10 to 29 ticks.
 void prime_by_explosion(RuleContext& ctx, BlockPos pos);
+// TNT a burning projectile hit: primed as by redstone.
+void prime_by_fire(RuleContext& ctx, BlockPos pos);
+// Arrows and snowballs (projectile.cpp).
+void run_arrow(RuleContext& ctx, EntityId id, Entity& e);
+void run_snowball(RuleContext& ctx, EntityId id, Entity& e);
 void run_primed_tnt(RuleContext& ctx, EntityId id, Entity& e);
 
 // Explosions (explosion.cpp): one of `power` centered at `center`.
@@ -199,8 +204,8 @@ InWater water_at(RuleContext& ctx, const physics::Aabb& entity);
 // landed (hit something while falling).
 bool move_entity(RuleContext& ctx, contracts::Vec3& position, contracts::Vec3& velocity, double width, double height);
 
-// The box of an entity (items: 0.25 wide and tall; falling blocks and
-// primed TNT 0.98).
+// The box of an entity (items and snowballs: 0.25 wide and tall; arrows
+// 0.5; falling blocks and primed TNT 0.98).
 [[nodiscard]] physics::Aabb entity_box(const Entity& e);
 // Ids of entities whose box intersects `area` (faces that only touch do
 // not), ascending.
