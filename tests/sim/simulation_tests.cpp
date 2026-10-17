@@ -735,6 +735,29 @@ int main() {
                 std::format("wooden {} light {} heavy {} targets {}", wooden, light_max, heavy_max, targets));
     });
 
+    suite.run("doors, trapdoors and gates open across chunk edges", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("doors"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the door scenario");
+        const auto& ref = references[index];
+        std::size_t doors = 0, trapdoors = 0, gates = 0, fell = 0;
+        for (const auto& trace : ref.traces) {
+            for (const auto& r : of_kind(trace, TraceKind::block_changed)) {
+                const auto next = BlockState::decode(static_cast<std::uint32_t>(r.b)).value();
+                if (!next.flag()) continue;
+                doors += next.is(BlockType::door) && !upper_half(next);
+                trapdoors += next.is(BlockType::trapdoor);
+                gates += next.is(BlockType::fence_gate);
+            }
+            for (const auto& r : of_kind(trace, TraceKind::entity_removed))
+                fell += r.b == static_cast<std::uint64_t>(RemovalReason::fell_out_of_world);
+        }
+        // The lever opens the door every 40 ticks; the redstone block opens
+        // the trapdoor and the gate every 40; the items on the trapdoor
+        // fall through the hole below it out of the world.
+        require(doors == 5 && trapdoors == 5 && gates == 5 && fell >= 1,
+                std::format("doors {} trapdoors {} gates {} fell {}", doors, trapdoors, gates, fell));
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");

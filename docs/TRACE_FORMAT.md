@@ -32,7 +32,7 @@ A fixture is UTF-8 text with one statement per line. Blank lines and lines start
 | Body line | Meaning |
 | --- | --- |
 | `at <t> set <x> <y> <z> <state>` | Replace the block at the start of tick `t` |
-| `at <t> use <x> <y> <z>` | Use the block at the start of tick `t`: toggle a lever, press a button, cycle a repeater's delay, or toggle a comparator's mode |
+| `at <t> use <x> <y> <z>` | Use the block at the start of tick `t`: toggle a lever, press a button, cycle a repeater's delay, toggle a comparator's mode, or open or close a door, trapdoor or fence gate, as a player facing south (the reference harness's player) |
 | `at <t> insert <x> <y> <z> <slot> <item> <count>` | Add items to a container slot at the start of tick `t` |
 | `change <t> <x> <y> <z> <old> <new>` | A block changed during tick `t ≥ 1` |
 | `block <t> <x> <y> <z> <state or ?>` | Block state at the end of tick `t` |
@@ -89,6 +89,8 @@ A wrong convention makes fixtures fail rather than pass.
 | `<kind>_pressure_plate` (the same 14 kinds) | `powered` | each kind is a block of its own |
 | `light_weighted_pressure_plate`, `heavy_weighted_pressure_plate` | `power` 0–15 | — |
 | `target` | `power` 0–15 | — |
+| `<kind>_door`, `<kind>_trapdoor` (21 kinds: the wooden ones, iron and the copper ones) | door: `facing`, `half`, `hinge`, `open`, `powered`; trapdoor: `facing`, `half`, `open`, `powered`, `waterlogged` | each kind is a block of its own; a trapdoor's `waterlogged` is stored only |
+| `<kind>_fence_gate` (the 12 wooden kinds) | `facing`, `in_wall`, `open`, `powered` | — |
 
 Items: any item of the rule set's registry (since rules v7, every item of both versions), named `namespace:id`, without data components. Version 1 has no entity observations; dropped and pushed items are visible only through container slots that collect them. Version 2 observes them directly.
 

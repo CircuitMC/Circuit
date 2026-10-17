@@ -1631,6 +1631,52 @@ int main() {
         require(s.at({4, 0, 8}).level() == 0, "the arrow's too");
     });
 
+    suite.run("doors, trapdoors and fence gates open by power and by hand", [] {
+        using circuit::contracts::UseBlock;
+        using circuit::gameplay::blocks::DoorKind;
+        Sim s;
+        std::vector<CommandBody> build = floor(-2, 8, -1, 8);
+        build.push_back(place({0, 0, 0}, blocks::door(DoorKind::oak, D::east, false)));
+        build.push_back(place({0, 1, 0}, blocks::door(DoorKind::oak, D::east, true)));
+        build.push_back(place({0, 0, 1}, blocks::lever(false)));
+        build.push_back(place({3, 0, 0}, blocks::door(DoorKind::iron, D::east, false)));
+        build.push_back(place({3, 1, 0}, blocks::door(DoorKind::iron, D::east, true)));
+        build.push_back(place({0, 0, 4}, blocks::trapdoor(DoorKind::oak, D::north)));
+        build.push_back(place({3, 0, 4}, blocks::fence_gate(DoorKind::oak, D::north)));
+        s.tick(build);
+        const auto draws = [&] {
+            std::uint64_t n = 0;
+            for (const auto& r : of_kind(s.last, TraceKind::level_random_draw)) n += r.a;
+            return n;
+        };
+        s.tick({UseBlock{{0, 0, 1}}});
+        require(s.at({0, 0, 0}) == blocks::door(DoorKind::oak, D::east, false, false, true, true)
+                    && s.at({0, 1, 0}) == blocks::door(DoorKind::oak, D::east, true, false, true, true),
+                "both halves open with the power");
+        require(draws() == 1, "one draw for the sound");
+        s.tick({UseBlock{{0, 1, 0}}});
+        require(!s.at({0, 0, 0}).flag() && s.at({0, 0, 0}).extra() == 1, "closed by hand, still powered");
+        s.tick({UseBlock{{0, 0, 1}}});
+        require(!s.at({0, 0, 0}).flag() && s.at({0, 0, 0}).extra() == 0, "unpowered, it stays closed");
+        require(draws() == 0, "no sound without a move");
+        s.tick({UseBlock{{3, 0, 0}}, UseBlock{{0, 0, 4}}, UseBlock{{3, 0, 4}}});
+        require(!s.at({3, 0, 0}).flag(), "hands do not open iron doors");
+        require(s.at({0, 0, 4}).flag() && s.at({3, 0, 4}) == blocks::fence_gate(DoorKind::oak, D::south, true),
+                "the trapdoor opens; the gate opens away from the player facing south");
+        // A half without its other half breaks; the lower one drops the door.
+        s.tick({place({0, 1, 0}, blocks::air())});
+        require(s.at({0, 0, 0}).is_air(), "the lower half broke");
+        const auto d = s.oracle.dump();
+        require(std::ranges::count_if(d.overworld().entities, [](const auto& e) { return e.stack.item == items::oak_door; }) == 1,
+                "one door dropped");
+        // Players place a door with its upper half.
+        const circuit::contracts::PlayerKey alex{1, 2};
+        s.tick({circuit::contracts::SetPlayerSlot{alex, 36, {items::iron_door, 1, 0}},
+                circuit::contracts::PlayerUse{alex, 36, {6, -1, 6}, D::up, D::north, D::down, false, false, 3, 3}});
+        require(s.at({6, 0, 6}) == blocks::door(DoorKind::iron, D::north, false) && s.at({6, 1, 6}) == blocks::door(DoorKind::iron, D::north, true),
+                "a placed door");
+    });
+
     suite.run("entities leave with their chunk and come back under new ids", [] {
         Sim s(bundle(), 7, 0); // tick 1: chunk (0,0) entity ticking
         s.tick({place({4, -1, 4}, blocks::stone()), SpawnItem{at_block(4.5, 0.0, 4.5), {}, {items::stone, 3}}}); // 2

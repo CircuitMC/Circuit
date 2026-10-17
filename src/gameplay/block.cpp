@@ -19,6 +19,10 @@ constexpr std::array<std::string_view, 27> modeled_names{
 constexpr std::array<std::string_view, blocks::button_kinds> button_names{
     "oak", "spruce", "birch", "jungle", "acacia", "cherry", "dark_oak", "pale_oak", "mangrove", "bamboo", "crimson", "warped",
     "stone", "polished_blackstone"};
+constexpr std::array<std::string_view, blocks::door_kinds> door_names{
+    "oak", "spruce", "birch", "jungle", "acacia", "cherry", "dark_oak", "pale_oak", "mangrove", "bamboo", "crimson", "warped",
+    "iron", "copper", "exposed_copper", "weathered_copper", "oxidized_copper", "waxed_copper", "waxed_exposed_copper",
+    "waxed_weathered_copper", "waxed_oxidized_copper"};
 
 struct Properties {
     bool facing, level, flag, delay;
@@ -42,6 +46,7 @@ constexpr Properties properties(BlockType t) noexcept {
     case BlockType::button: return {true, true, true, false};
     case BlockType::pressure_plate: return {false, false, true, false};
     case BlockType::weighted_plate: case BlockType::target: return {false, true, false, false};
+    case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: return {true, true, true, true};
     default: return {false, false, false, false};
     }
 }
@@ -57,6 +62,11 @@ const std::vector<bool>& modeled_blocks() {
             mark(std::string(kind) + "_button");
             mark(std::string(kind) + "_pressure_plate");
         }
+        for (std::size_t k = 0; k < door_names.size(); ++k) {
+            mark(std::string(door_names[k]) + "_door");
+            mark(std::string(door_names[k]) + "_trapdoor");
+            if (k < blocks::fence_gate_kinds) mark(std::string(door_names[k]) + "_fence_gate");
+        }
         return out;
     }();
     return modeled;
@@ -65,6 +75,10 @@ const std::vector<bool>& modeled_blocks() {
 
 std::string_view button_kind_name(std::uint8_t variant) noexcept {
     return variant < button_names.size() ? button_names[variant] : std::string_view{};
+}
+
+std::string_view door_kind_name(std::uint8_t variant) noexcept {
+    return variant < door_names.size() ? door_names[variant] : std::string_view{};
 }
 
 bool modeled_block(std::uint32_t internal_block) noexcept {
@@ -129,6 +143,13 @@ contracts::Result<BlockState> BlockState::decode(std::uint32_t raw) noexcept {
         break;
     case BlockType::redstone_wall_torch:
         if (!contracts::is_horizontal(s.facing())) return invalid;
+        break;
+    // Powered is one bit; a fence gate's level only says whether it is in a wall.
+    case BlockType::door: case BlockType::trapdoor:
+        if (!contracts::is_horizontal(s.facing()) || s.level() > 3 || s.extra() > 1) return invalid;
+        break;
+    case BlockType::fence_gate:
+        if (!contracts::is_horizontal(s.facing()) || s.level() > 1 || s.extra() > 1) return invalid;
         break;
     case BlockType::hopper:
         if (s.facing() == Direction::up) return invalid;
@@ -232,6 +253,17 @@ std::string block_notation(BlockState s) {
     case BlockType::weighted_plate:
         return std::format("minecraft:{}_weighted_pressure_plate[power={}]", s.variant() == 1 ? "heavy" : "light", s.level());
     case BlockType::target: return std::format("minecraft:target[power={}]", s.level());
+    case BlockType::door:
+        return std::format("minecraft:{}_door[facing={},half={},hinge={},open={},powered={}]", door_kind_name(s.variant()),
+                           direction_name(s.facing()), upper_half(s) ? "upper" : "lower", (s.level() & 2) ? "right" : "left", b(s.flag()),
+                           b(s.extra() != 0));
+    case BlockType::trapdoor:
+        return std::format("minecraft:{}_trapdoor[facing={},half={},open={},powered={},waterlogged={}]", door_kind_name(s.variant()),
+                           direction_name(s.facing()), (s.level() & 1) ? "top" : "bottom", b(s.flag()), b(s.extra() != 0),
+                           b((s.level() & 2) != 0));
+    case BlockType::fence_gate:
+        return std::format("minecraft:{}_fence_gate[facing={},in_wall={},open={},powered={}]", door_kind_name(s.variant()),
+                           direction_name(s.facing()), b(s.level() != 0), b(s.flag()), b(s.extra() != 0));
     case BlockType::other: return registry::notation(s.registry_state());
     default: return std::format("circuit:unrepresentable[raw={}]", s.raw());
     }

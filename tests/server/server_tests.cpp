@@ -2215,8 +2215,8 @@ int main() {
               {"function": "minecraft:explosion_decay"}]}]}], "conditions": [{"condition": "minecraft:survives_explosion"}])");
         table("coal_ore", R"("entries": [{"type": "minecraft:item", "name": "minecraft:coal", "functions": [{"function": "minecraft:apply_bonus",
             "enchantment": "minecraft:fortune", "formula": "minecraft:ore_drops"}]}])");
-        table("oak_door", R"("entries": [{"type": "minecraft:item", "name": "minecraft:oak_door", "conditions": [{"condition":
-            "minecraft:block_state_property", "block": "minecraft:oak_door", "properties": {"half": "lower"}}]}])");
+        table("lilac", R"("entries": [{"type": "minecraft:item", "name": "minecraft:lilac", "conditions": [{"condition":
+            "minecraft:block_state_property", "block": "minecraft:lilac", "properties": {"half": "lower"}}]}])");
         table("glowstone", R"("entries": [{"type": "minecraft:item", "name": "minecraft:glowstone_dust", "functions": [{"function":
             "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 2, "max": 4}}]}])");
         table("gravel", R"("entries": [{"type": "minecraft:item", "name": "minecraft:flint", "conditions": [{"condition": "minecraft:table_bonus",
@@ -2294,9 +2294,10 @@ int main() {
         std::size_t checked = 0;
         // Tables of blocks with rules of their own are not counted: since
         // rules v11 also the redstone torch's, the 14 buttons', the 16
-        // pressure plates' and the target block's.
-        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 975, 881, 1407, 984},
-                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 967, 873, 1370, 948}}) {
+        // pressure plates', the target block's and the 54 doors', trapdoors'
+        // and fence gates'.
+        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 921, 827, 1407, 984},
+                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 913, 819, 1370, 948}}) {
             const char* jar = std::getenv(e.variable);
             if (!jar || !*jar) continue;
             const auto& bundle = **contracts::BundleRegistry::find(e.bundle);

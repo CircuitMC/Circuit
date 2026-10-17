@@ -56,6 +56,13 @@ const std::unordered_map<std::uint32_t, std::uint32_t>& modeled_registry_states(
 }
 } // namespace
 
+std::optional<std::uint32_t> registry_state_of(BlockState s) {
+    if (s.is(BlockType::other)) return s.registry_state();
+    const auto& modeled = modeled_registry_states();
+    const auto it = modeled.find(s.raw());
+    return it == modeled.end() ? std::nullopt : std::optional(it->second);
+}
+
 Aabb Aabb::expand_towards(double dx, double dy, double dz) const noexcept {
     Aabb b = *this;
     (dx < 0 ? b.min_x : b.max_x) += dx;

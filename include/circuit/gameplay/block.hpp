@@ -42,6 +42,9 @@ enum class BlockType : std::uint8_t {
     pressure_plate,      // flag: powered; variant: ButtonKind (the same kinds)
     weighted_plate,      // level: power 0-15; variant: 0 light, 1 heavy
     target,              // level: power 0-15
+    door,                // facing (horizontal); level: bit 0 upper half, bit 1 right hinge; flag: open; extra: powered; variant: DoorKind
+    trapdoor,            // facing (horizontal); level: bit 0 top half, bit 1 waterlogged (stored); flag: open; extra: powered; variant: DoorKind
+    fence_gate,          // facing (horizontal); level: 1 in a wall; flag: open; extra: powered; variant: DoorKind (wooden kinds)
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -50,9 +53,10 @@ enum class BlockType : std::uint8_t {
 // block on that side.
 enum class WireSide : std::uint8_t { none = 0, side = 1, up = 2 };
 
-// Packed state: bits 0-7 type, 8-10 facing, 11-14 level, 15 flag, 16-17 delay-1,
+// Packed state: bits 0-7 type, 8-10 facing, 11-14 level, 15 flag, 16-17 delay-1
+// (doors, trapdoors and fence gates: extra, their powered state),
 // 18-25 the four wire sides (two bits each: north, south, west, east) or,
-// for buttons and pressure plates, the variant. An `other` state keeps its internal registry
+// for blocks of several kinds, the variant. An `other` state keeps its internal registry
 // state in bits 8-31 instead.
 class BlockState {
 public:
@@ -77,6 +81,8 @@ public:
     [[nodiscard]] constexpr std::uint8_t level() const noexcept { return static_cast<std::uint8_t>((raw_ >> 11) & 15); }
     [[nodiscard]] constexpr bool flag() const noexcept { return (raw_ >> 15) & 1; }
     [[nodiscard]] constexpr std::uint8_t delay() const noexcept { return static_cast<std::uint8_t>(((raw_ >> 16) & 3) + 1); }
+    // The same two bits as they are, for blocks without a delay.
+    [[nodiscard]] constexpr std::uint8_t extra() const noexcept { return static_cast<std::uint8_t>((raw_ >> 16) & 3); }
     [[nodiscard]] constexpr WireSide wire_side(Direction d) const noexcept {
         return static_cast<WireSide>((raw_ >> wire_shift(d)) & 3);
     }
@@ -92,6 +98,9 @@ public:
     }
     [[nodiscard]] constexpr BlockState with_flag(bool value) const noexcept {
         return BlockState((raw_ & ~(1u << 15)) | (static_cast<std::uint32_t>(value) << 15));
+    }
+    [[nodiscard]] constexpr BlockState with_extra(std::uint8_t extra) const noexcept {
+        return BlockState((raw_ & ~(3u << 16)) | (static_cast<std::uint32_t>(extra & 3) << 16));
     }
     [[nodiscard]] constexpr BlockState with_delay(std::uint8_t delay) const noexcept {
         return BlockState((raw_ & ~(3u << 16)) | (static_cast<std::uint32_t>((delay - 1) & 3) << 16));
@@ -200,7 +209,34 @@ constexpr BlockState weighted_plate(bool heavy, std::uint8_t power = 0) {
     return BlockState::of(BlockType::weighted_plate).with_variant(heavy ? 1 : 0).with_level(power);
 }
 constexpr BlockState target(std::uint8_t power = 0) { return BlockState::of(BlockType::target).with_level(power); }
+// Doors and trapdoors, wooden ones first, then iron and the copper ones;
+// fence gates come in the wooden kinds (registry names: "<kind>_door",
+// "<kind>_trapdoor", "<kind>_fence_gate").
+enum class DoorKind : std::uint8_t {
+    oak, spruce, birch, jungle, acacia, cherry, dark_oak, pale_oak, mangrove, bamboo, crimson, warped,
+    iron, copper, exposed_copper, weathered_copper, oxidized_copper,
+    waxed_copper, waxed_exposed_copper, waxed_weathered_copper, waxed_oxidized_copper,
+};
+inline constexpr std::uint8_t door_kinds = 21;
+inline constexpr std::uint8_t fence_gate_kinds = 12;
+constexpr BlockState door(DoorKind kind, Direction facing, bool upper, bool right_hinge = false, bool open = false, bool powered = false) {
+    return BlockState::of(BlockType::door).with_variant(static_cast<std::uint8_t>(kind)).with_facing(facing)
+        .with_level(static_cast<std::uint8_t>((upper ? 1 : 0) | (right_hinge ? 2 : 0))).with_flag(open).with_extra(powered ? 1 : 0);
+}
+constexpr BlockState trapdoor(DoorKind kind, Direction facing, bool top = false, bool open = false, bool powered = false) {
+    return BlockState::of(BlockType::trapdoor).with_variant(static_cast<std::uint8_t>(kind)).with_facing(facing)
+        .with_level(top ? 1 : 0).with_flag(open).with_extra(powered ? 1 : 0);
+}
+constexpr BlockState fence_gate(DoorKind kind, Direction facing, bool open = false, bool powered = false, bool in_wall = false) {
+    return BlockState::of(BlockType::fence_gate).with_variant(static_cast<std::uint8_t>(kind)).with_facing(facing)
+        .with_level(in_wall ? 1 : 0).with_flag(open).with_extra(powered ? 1 : 0);
+}
 } // namespace blocks
+// "oak" for an oak door, "waxed_copper" for a waxed copper one.
+std::string_view door_kind_name(std::uint8_t variant) noexcept;
+// Iron doors and trapdoors open only by power.
+constexpr bool opens_by_hand(BlockState s) noexcept { return s.variant() != static_cast<std::uint8_t>(blocks::DoorKind::iron); }
+constexpr bool upper_half(BlockState door) noexcept { return (door.level() & 1) != 0; }
 // "oak" for an oak button.
 std::string_view button_kind_name(std::uint8_t variant) noexcept;
 // Wooden buttons stay pressed longer and arrows press them.
@@ -209,11 +245,18 @@ constexpr bool wooden_button(BlockState s) noexcept {
 }
 // Blocks of several kinds that share a BlockType and keep the kind as their variant.
 constexpr bool has_variant(BlockType t) noexcept {
-    return t == BlockType::button || t == BlockType::pressure_plate || t == BlockType::weighted_plate;
+    return t == BlockType::button || t == BlockType::pressure_plate || t == BlockType::weighted_plate || t == BlockType::door
+        || t == BlockType::trapdoor || t == BlockType::fence_gate;
 }
 constexpr std::uint8_t variant_count(BlockType t) noexcept {
-    return t == BlockType::weighted_plate ? 2 : has_variant(t) ? blocks::button_kinds : 1;
+    switch (t) {
+    case BlockType::weighted_plate: return 2;
+    case BlockType::door: case BlockType::trapdoor: return blocks::door_kinds;
+    case BlockType::fence_gate: return blocks::fence_gate_kinds;
+    default: return has_variant(t) ? blocks::button_kinds : 1;
+    }
 }
+constexpr bool is_opening(BlockType t) noexcept { return t == BlockType::door || t == BlockType::trapdoor || t == BlockType::fence_gate; }
 constexpr bool is_torch(BlockType t) noexcept { return t == BlockType::redstone_torch || t == BlockType::redstone_wall_torch; }
 
 // Whether an internal registry block has rules of its own (a BlockType other
@@ -274,7 +317,8 @@ bool other_movable(BlockState s) noexcept;
 inline bool is_movable(BlockState s) noexcept {
     switch (s.type()) {
     case BlockType::stone: case BlockType::glass: case BlockType::redstone_block: case BlockType::redstone_lamp:
-    case BlockType::observer: case BlockType::slime_block: case BlockType::target:
+    case BlockType::observer: case BlockType::slime_block: case BlockType::target: case BlockType::trapdoor:
+    case BlockType::fence_gate:
         return true;
     case BlockType::piston: case BlockType::sticky_piston:
         return !s.flag();
@@ -290,7 +334,7 @@ constexpr bool destroyed_by_piston(BlockType t) noexcept {
     switch (t) {
     case BlockType::redstone_wire: case BlockType::lever: case BlockType::repeater: case BlockType::comparator:
     case BlockType::water: case BlockType::wheat: case BlockType::redstone_torch: case BlockType::redstone_wall_torch:
-    case BlockType::button: case BlockType::pressure_plate: case BlockType::weighted_plate:
+    case BlockType::button: case BlockType::pressure_plate: case BlockType::weighted_plate: case BlockType::door:
         return true;
     default:
         return false;

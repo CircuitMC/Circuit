@@ -30,6 +30,11 @@ bool is_conductor(BlockState s) noexcept {
 bool face_sturdy(BlockState s, Direction face) noexcept {
     switch (s.type()) {
     case BlockType::other: return other_opaque(s) || other_face_covered(s, face);
+    // Doors, trapdoors and fence gates by the shape of the state they stand for.
+    case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: {
+        const auto state = physics::registry_state_of(s);
+        return state && registry::face_covered(*state, face);
+    }
     case BlockType::stone: case BlockType::glass: case BlockType::obsidian: case BlockType::redstone_block:
     case BlockType::slime_block: case BlockType::redstone_lamp: case BlockType::observer: case BlockType::target:
         return true;
@@ -85,6 +90,8 @@ bool can_survive(RuleContext& ctx, BlockPos pos, BlockState s) {
     // center support).
     case BlockType::redstone_torch: case BlockType::pressure_plate: case BlockType::weighted_plate:
         return supports_torch(ctx, ctx.block(pos.relative(Direction::down)));
+    // A door's lower half needs a sturdy top below it; the upper one its lower half.
+    case BlockType::door: return upper_half(s) || face_sturdy(ctx.block(pos.relative(Direction::down)), Direction::up);
     default: return true;
     }
 }

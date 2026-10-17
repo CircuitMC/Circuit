@@ -753,8 +753,16 @@
           "id": "multi_block",
           "name": "Two-part blocks: doors, beds, tall plants",
           "milestone": "C5",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/door_basics",
+            "trace/door_more"
+          ],
+          "deviations": [
+            "beds and tall plants are not modeled"
+          ],
+          "note": "Doors: the halves follow each other, and a half without the other breaks (the lower one with the drop)"
         },
         {
           "id": "block_entity_data",
@@ -1054,8 +1062,17 @@
           "id": "consumers",
           "name": "Doors, trapdoors, fence gates, note blocks, bells, copper bulbs and other consumers",
           "milestone": "C4",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/door_basics",
+            "trace/door_more"
+          ],
+          "deviations": [
+            "note blocks, bells, copper bulbs and the other consumers are not modeled",
+            "copper doors and trapdoors do not weather"
+          ],
+          "note": "Doors, trapdoors and fence gates of every kind open and close with the power around them and by hand (iron ones only by power), quietly, with a level-random draw for the sound"
         },
         {
           "id": "rails",

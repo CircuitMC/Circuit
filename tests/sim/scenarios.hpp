@@ -812,13 +812,46 @@ inline Scenario plate_target_scenario() {
     }, 5};
 }
 
+// Doors, trapdoors and fence gates across the x=16 chunk edge: a lever in one
+// chunk opens a door in the other, dust lines carry redstone blocks' power to
+// a trapdoor and a fence gate across the edge, and items on the trapdoor
+// fall through it when it opens.
+inline Scenario door_scenario() {
+    using blocks::DoorKind;
+    return {"doors", 111, 200, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        if (t == 2) {
+            for (int x = 8; x <= 24; ++x)
+                for (int z = -4; z <= 6; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            c.push_back(place({16, 0, 0}, blocks::door(DoorKind::oak, Direction::east, false)));
+            c.push_back(place({16, 1, 0}, blocks::door(DoorKind::oak, Direction::east, true)));
+            c.push_back(place({15, 0, 0}, blocks::lever(false)));
+            for (int x = 12; x <= 15; ++x) {
+                c.push_back(place({x, 0, 3}, blocks::wire()));
+                c.push_back(place({x, 0, 5}, blocks::wire()));
+            }
+            c.push_back(place({16, 0, 3}, blocks::trapdoor(DoorKind::spruce, Direction::north)));
+            c.push_back(place({16, 0, 5}, blocks::fence_gate(DoorKind::birch, Direction::north)));
+            c.push_back(place({16, -1, 3}, blocks::air()));
+        }
+        if (t >= 5 && t % 20 == 5) c.push_back(UseBlock{{15, 0, 0}});
+        for (const int z : {3, 5}) {
+            if (t % 40 == 10) c.push_back(place({11, 0, z}, blocks::redstone_block()));
+            if (t % 40 == 30) c.push_back(place({11, 0, z}, blocks::air()));
+        }
+        if (t % 40 == 20) c.push_back(SpawnItem{at_block(16.5, 0.5, 3.5), {}, {items::stone, 1}});
+        return c;
+    }, 5};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
-            plate_target_scenario()};
+            plate_target_scenario(), door_scenario()};
 }
 
 } // namespace circuit::test

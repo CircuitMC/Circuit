@@ -49,6 +49,11 @@ std::optional<ItemStack> own_item(BlockState s) {
     case BlockType::button: return ItemStack{button_item(s), 1};
     case BlockType::pressure_plate: case BlockType::weighted_plate: return ItemStack{plate_item(s), 1};
     case BlockType::target: return ItemStack{items::target, 1};
+    // A door drops from its lower half.
+    case BlockType::door:
+        if (upper_half(s)) return std::nullopt;
+        return ItemStack{opening_item(s), 1};
+    case BlockType::trapdoor: case BlockType::fence_gate: return ItemStack{opening_item(s), 1};
     default: return std::nullopt;
     }
 }

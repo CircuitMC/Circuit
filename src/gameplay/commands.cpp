@@ -51,6 +51,12 @@ Plan plan(RuleContext& ctx, const contracts::UseBlock& c) {
         };
     // Using a pressed button does nothing.
     case BlockType::button: return [&ctx, pos = c.pos, s] { detail::press_button(ctx, pos, s); };
+    // A command uses blocks as a player facing south does; iron doors and
+    // trapdoors do not move.
+    case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate:
+        return [&ctx, pos = c.pos, s] {
+            if (opens_by_hand(s)) detail::use_opening(ctx, pos, s, Direction::south);
+        };
     case BlockType::redstone_wire:
         if (!detail::is_dot(s) && !detail::is_cross(s)) return std::unexpected(ErrorCode::not_usable);
         return [&ctx, pos = c.pos, s] { detail::toggle_wire(ctx, pos, s); };
@@ -143,7 +149,7 @@ Plan plan(RuleContext& ctx, const contracts::RemoveEntity& c) {
 bool replaceable(BlockState s) { return s.is_air() || s.is(BlockType::water); }
 bool usable(BlockState s) {
     return s.is(BlockType::lever) || s.is(BlockType::button) || s.is(BlockType::repeater) || s.is(BlockType::comparator)
-        || detail::is_dot(s) || detail::is_cross(s);
+        || detail::is_dot(s) || detail::is_cross(s) || (is_opening(s.type()) && opens_by_hand(s));
 }
 
 Plan plan(RuleContext& ctx, const contracts::UseBlock& c);
@@ -158,6 +164,8 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
     const auto clicked = ctx.block(c.pos);
     // Blocks are used with the main hand only, and not while sneaking with an item.
     if (!off_hand && !(c.sneaking && holding)) {
+        if (is_opening(clicked.type()) && opens_by_hand(clicked))
+            return [&ctx, c, clicked] { detail::use_opening(ctx, c.pos, clicked, c.horizontal); };
         if (usable(clicked)) return plan(ctx, contracts::UseBlock{c.pos});
         if (is_container(clicked.type())) {
             // A chest under a solid block does not open.
@@ -181,12 +189,17 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
     if ((state->is(BlockType::lever) || state->is(BlockType::button)) && (replace || !detail::face_sturdy(clicked, c.face)))
         return std::unexpected(ErrorCode::unsupported);
     if (!detail::can_survive(ctx, target, *state)) return std::unexpected(ErrorCode::unsupported);
+    // A door needs room for its upper half.
+    const auto above = target.relative(Direction::up);
+    if (state->is(BlockType::door) && (!in_world(ctx.world(), above) || !replaceable(ctx.block(above))))
+        return std::unexpected(ErrorCode::occupied);
     // States the placement takes from the surroundings.
     switch (state->type()) {
     case BlockType::chest: state = detail::placed_chest(ctx, target, *state, c.face, c.sneaking); break;
     case BlockType::redstone_wire: state = detail::fresh_wire_shape(ctx, target, *state, false); break;
     case BlockType::repeater: state = state->with_level(detail::repeater_locked_now(ctx, target, *state) ? 1 : 0); break;
     case BlockType::redstone_lamp: state = state->with_flag(detail::has_neighbor_signal(ctx, target)); break;
+    case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: state = detail::placed_opening(ctx, target, *state); break;
     default: break;
     }
     return [&ctx, target, s = *state, c, held] {
@@ -199,6 +212,8 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
             detail::record_slot(ctx, inv, c.slot);
         }
         set_block(ctx, target, s);
+        // A door's upper half follows its lower half.
+        if (s.is(BlockType::door)) set_block(ctx, target.relative(Direction::up), s.with_level(static_cast<std::uint8_t>(s.level() | 1)));
         // A diode placed with its input on starts after one tick.
         const auto placed = ctx.block(target);
         if ((placed.is(BlockType::repeater) && detail::repeater_input(ctx, target, placed))

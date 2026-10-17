@@ -90,20 +90,21 @@ private:
 };
 
 // Writes of one piston action, in the target version's order. Every write
-// sends shape updates at once (observed in target-version traces); neighbor
+// but a destruction sends shape updates at once (observed in target-version
+// traces); neighbor
 // updates for the changed positions follow when the action finishes, in
 // first-write order.
 class Edit {
 public:
     explicit Edit(RuleContext& ctx) : ctx_(ctx) {}
     // Every write is recorded as it happens, including intermediate states.
-    void write(BlockPos p, BlockState s) {
+    void write(BlockPos p, BlockState s, bool shapes = true) {
         const auto before = ctx_.block(p);
         if (before == s) return;
         ctx_.write_block(p, s);
         ctx_.record(TraceKind::block_changed, p, before.raw(), s.raw());
         if (touched_.insert(p).second) changed_.push_back(p);
-        notify_shapes(ctx_, p);
+        if (shapes) notify_shapes(ctx_, p);
     }
     // Replaces a block, and its block entity if any, with air.
     void clear(BlockPos p) {
@@ -111,11 +112,14 @@ public:
         write(p, blocks::air());
     }
     // A block destroyed by the move: its drops spawned, then removed (the
-    // order of both official servers' traces).
+    // order of both official servers' traces). The removal sends no shape
+    // updates; the moving block written there next does (a door's upper
+    // half breaks only then: door_more).
     void destroy(BlockPos p) {
         const auto s = ctx_.block(p);
         drop_items(ctx_, p, s);
-        clear(p);
+        if (has_block_entity(s.type())) ctx_.remove_block_entity(p);
+        write(p, blocks::air(), false);
     }
     // Places a moving piston that turns into `carried` after the move.
     void moving(BlockPos p, BlockState carried, Motion motion, bool sticky_type) {

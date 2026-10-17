@@ -54,8 +54,8 @@ constexpr std::array reference_v4_mechanisms{
         "observer_moved, piston_observed). Not covered: observers moved while powered."},
     MechanismEntry{"piston", l0_exact, l2_declared_deviation, harness_trace,
         "Two-tick moves through moving pistons; structure discovery and placement order, vacated cells in hash "
-        "order, shape updates after every write, block dropping, destruction (piston_timing, piston_slime, "
-        "piston_destroys, piston_observed, quasi_connectivity); a draw from the level random after each "
+        "order, shape updates after every write but a destruction, block dropping, destruction (piston_timing, "
+        "piston_slime, piston_destroys, piston_observed, quasi_connectivity, door_more); a draw from the level random after each "
         "extension and retraction (piston_draws); entities pushed out of the space a moving block sweeps "
         "through each step (0.01 beyond it, at most 0.51 a tick on each axis), moving blocks colliding where "
         "they stand, moving slime blocks launching entities (item_piston_push, item_drop_piston, "
@@ -194,6 +194,20 @@ constexpr std::array reference_v4_mechanisms{
         "(the larger of the two offsets, in double precision), for 20 ticks after an arrow and 8 after a "
         "snowball; hits while it waits are ignored (target_block, plate_target_more). Gaps: other projectiles; "
         "a target placed with power keeps it."},
+    MechanismEntry{"door", l0_exact, l2_declared_deviation, harness_trace,
+        "Doors of every kind open and close at once when an update finds power around either half different from "
+        "their powered state, and by hand unless iron; the change is quiet and the other half follows through its "
+        "shape update; each opening and closing draws a float from the level random; a half without its other half "
+        "or a lower half without a sturdy top below breaks, the lower one with the door's drop (door_basics). Gaps: "
+        "players place doors with the left hinge; copper doors do not weather."},
+    MechanismEntry{"trapdoor", l0_exact, l2_declared_deviation, harness_trace,
+        "Trapdoors of every kind follow the power around them and open by hand unless iron, quietly, with a draw "
+        "for the sound; entities collide with their open and closed shapes (door_basics). Gaps: waterlogging is "
+        "stored only; players place side trapdoors in the bottom half; copper trapdoors do not weather."},
+    MechanismEntry{"fence_gate", l0_exact, l2_declared_deviation, harness_trace,
+        "Fence gates follow the power around them and open by hand, turning to face away from the player opened "
+        "from their facing side (commands use them as a player facing south); a gate between walls is in a wall "
+        "(door_basics). Gaps: walls are recognized by name."},
     MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, harness_trace,
         "Entities tick in ascending id order once per tick; one merged away before its turn does not tick "
         "(item_hopper_pickup, item_water_current, item_merge, item_merge_moving). Gap: compared for item "

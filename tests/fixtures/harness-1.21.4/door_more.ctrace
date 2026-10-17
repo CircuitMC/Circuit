@@ -1,0 +1,664 @@
+circuit-trace 2
+title Fence gates in walls, doors used while powered, broken, pressed open, shot at and pushed
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.9.0+mc1.21.4
+mechanisms door trapdoor fence_gate piston
+area -4 0 -2 8 4 20
+ticks 50
+changes ordered
+entities observed
+rng observed
+
+at 0 set -4 0 -2 minecraft:obsidian
+at 0 set -4 0 -1 minecraft:obsidian
+at 0 set -4 0 0 minecraft:obsidian
+at 0 set -4 0 1 minecraft:obsidian
+at 0 set -4 0 2 minecraft:obsidian
+at 0 set -4 0 3 minecraft:obsidian
+at 0 set -4 0 4 minecraft:obsidian
+at 0 set -4 0 5 minecraft:obsidian
+at 0 set -4 0 6 minecraft:obsidian
+at 0 set -4 0 7 minecraft:obsidian
+at 0 set -4 0 8 minecraft:obsidian
+at 0 set -4 0 9 minecraft:obsidian
+at 0 set -4 0 10 minecraft:obsidian
+at 0 set -4 0 11 minecraft:obsidian
+at 0 set -4 0 12 minecraft:obsidian
+at 0 set -4 0 13 minecraft:obsidian
+at 0 set -4 0 14 minecraft:obsidian
+at 0 set -4 0 15 minecraft:obsidian
+at 0 set -4 0 16 minecraft:obsidian
+at 0 set -4 0 17 minecraft:obsidian
+at 0 set -4 0 18 minecraft:obsidian
+at 0 set -4 0 19 minecraft:obsidian
+at 0 set -4 0 20 minecraft:obsidian
+at 0 set -3 0 -2 minecraft:obsidian
+at 0 set -3 0 -1 minecraft:obsidian
+at 0 set -3 0 0 minecraft:obsidian
+at 0 set -3 0 1 minecraft:obsidian
+at 0 set -3 0 2 minecraft:obsidian
+at 0 set -3 0 3 minecraft:obsidian
+at 0 set -3 0 4 minecraft:obsidian
+at 0 set -3 0 5 minecraft:obsidian
+at 0 set -3 0 6 minecraft:obsidian
+at 0 set -3 0 7 minecraft:obsidian
+at 0 set -3 0 8 minecraft:obsidian
+at 0 set -3 0 9 minecraft:obsidian
+at 0 set -3 0 10 minecraft:obsidian
+at 0 set -3 0 11 minecraft:obsidian
+at 0 set -3 0 12 minecraft:obsidian
+at 0 set -3 0 13 minecraft:obsidian
+at 0 set -3 0 14 minecraft:obsidian
+at 0 set -3 0 15 minecraft:obsidian
+at 0 set -3 0 16 minecraft:obsidian
+at 0 set -3 0 17 minecraft:obsidian
+at 0 set -3 0 18 minecraft:obsidian
+at 0 set -3 0 19 minecraft:obsidian
+at 0 set -3 0 20 minecraft:obsidian
+at 0 set -2 0 -2 minecraft:obsidian
+at 0 set -2 0 -1 minecraft:obsidian
+at 0 set -2 0 0 minecraft:obsidian
+at 0 set -2 0 1 minecraft:obsidian
+at 0 set -2 0 2 minecraft:obsidian
+at 0 set -2 0 3 minecraft:obsidian
+at 0 set -2 0 4 minecraft:obsidian
+at 0 set -2 0 5 minecraft:obsidian
+at 0 set -2 0 6 minecraft:obsidian
+at 0 set -2 0 7 minecraft:obsidian
+at 0 set -2 0 8 minecraft:obsidian
+at 0 set -2 0 9 minecraft:obsidian
+at 0 set -2 0 10 minecraft:obsidian
+at 0 set -2 0 11 minecraft:obsidian
+at 0 set -2 0 12 minecraft:obsidian
+at 0 set -2 0 13 minecraft:obsidian
+at 0 set -2 0 14 minecraft:obsidian
+at 0 set -2 0 15 minecraft:obsidian
+at 0 set -2 0 16 minecraft:obsidian
+at 0 set -2 0 17 minecraft:obsidian
+at 0 set -2 0 18 minecraft:obsidian
+at 0 set -2 0 19 minecraft:obsidian
+at 0 set -2 0 20 minecraft:obsidian
+at 0 set -1 0 -2 minecraft:obsidian
+at 0 set -1 0 -1 minecraft:obsidian
+at 0 set -1 0 0 minecraft:obsidian
+at 0 set -1 0 1 minecraft:obsidian
+at 0 set -1 0 2 minecraft:obsidian
+at 0 set -1 0 3 minecraft:obsidian
+at 0 set -1 0 4 minecraft:obsidian
+at 0 set -1 0 5 minecraft:obsidian
+at 0 set -1 0 6 minecraft:obsidian
+at 0 set -1 0 7 minecraft:obsidian
+at 0 set -1 0 8 minecraft:obsidian
+at 0 set -1 0 9 minecraft:obsidian
+at 0 set -1 0 10 minecraft:obsidian
+at 0 set -1 0 11 minecraft:obsidian
+at 0 set -1 0 12 minecraft:obsidian
+at 0 set -1 0 13 minecraft:obsidian
+at 0 set -1 0 14 minecraft:obsidian
+at 0 set -1 0 15 minecraft:obsidian
+at 0 set -1 0 16 minecraft:obsidian
+at 0 set -1 0 17 minecraft:obsidian
+at 0 set -1 0 18 minecraft:obsidian
+at 0 set -1 0 19 minecraft:obsidian
+at 0 set -1 0 20 minecraft:obsidian
+at 0 set 0 0 -2 minecraft:obsidian
+at 0 set 0 0 -1 minecraft:obsidian
+at 0 set 0 0 0 minecraft:obsidian
+at 0 set 0 0 1 minecraft:obsidian
+at 0 set 0 0 2 minecraft:obsidian
+at 0 set 0 0 3 minecraft:obsidian
+at 0 set 0 0 4 minecraft:obsidian
+at 0 set 0 0 5 minecraft:obsidian
+at 0 set 0 0 6 minecraft:obsidian
+at 0 set 0 0 7 minecraft:obsidian
+at 0 set 0 0 8 minecraft:obsidian
+at 0 set 0 0 9 minecraft:obsidian
+at 0 set 0 0 10 minecraft:obsidian
+at 0 set 0 0 11 minecraft:obsidian
+at 0 set 0 0 12 minecraft:obsidian
+at 0 set 0 0 13 minecraft:obsidian
+at 0 set 0 0 14 minecraft:obsidian
+at 0 set 0 0 15 minecraft:obsidian
+at 0 set 0 0 16 minecraft:obsidian
+at 0 set 0 0 17 minecraft:obsidian
+at 0 set 0 0 18 minecraft:obsidian
+at 0 set 0 0 19 minecraft:obsidian
+at 0 set 0 0 20 minecraft:obsidian
+at 0 set 1 0 -2 minecraft:obsidian
+at 0 set 1 0 -1 minecraft:obsidian
+at 0 set 1 0 0 minecraft:obsidian
+at 0 set 1 0 1 minecraft:obsidian
+at 0 set 1 0 2 minecraft:obsidian
+at 0 set 1 0 3 minecraft:obsidian
+at 0 set 1 0 4 minecraft:obsidian
+at 0 set 1 0 5 minecraft:obsidian
+at 0 set 1 0 6 minecraft:obsidian
+at 0 set 1 0 7 minecraft:obsidian
+at 0 set 1 0 8 minecraft:obsidian
+at 0 set 1 0 9 minecraft:obsidian
+at 0 set 1 0 10 minecraft:obsidian
+at 0 set 1 0 11 minecraft:obsidian
+at 0 set 1 0 12 minecraft:obsidian
+at 0 set 1 0 13 minecraft:obsidian
+at 0 set 1 0 14 minecraft:obsidian
+at 0 set 1 0 15 minecraft:obsidian
+at 0 set 1 0 16 minecraft:obsidian
+at 0 set 1 0 17 minecraft:obsidian
+at 0 set 1 0 18 minecraft:obsidian
+at 0 set 1 0 19 minecraft:obsidian
+at 0 set 1 0 20 minecraft:obsidian
+at 0 set 2 0 -2 minecraft:obsidian
+at 0 set 2 0 -1 minecraft:obsidian
+at 0 set 2 0 0 minecraft:obsidian
+at 0 set 2 0 1 minecraft:obsidian
+at 0 set 2 0 2 minecraft:obsidian
+at 0 set 2 0 3 minecraft:obsidian
+at 0 set 2 0 4 minecraft:obsidian
+at 0 set 2 0 5 minecraft:obsidian
+at 0 set 2 0 6 minecraft:obsidian
+at 0 set 2 0 7 minecraft:obsidian
+at 0 set 2 0 8 minecraft:obsidian
+at 0 set 2 0 9 minecraft:obsidian
+at 0 set 2 0 10 minecraft:obsidian
+at 0 set 2 0 11 minecraft:obsidian
+at 0 set 2 0 12 minecraft:obsidian
+at 0 set 2 0 13 minecraft:obsidian
+at 0 set 2 0 14 minecraft:obsidian
+at 0 set 2 0 15 minecraft:obsidian
+at 0 set 2 0 16 minecraft:obsidian
+at 0 set 2 0 17 minecraft:obsidian
+at 0 set 2 0 18 minecraft:obsidian
+at 0 set 2 0 19 minecraft:obsidian
+at 0 set 2 0 20 minecraft:obsidian
+at 0 set 3 0 -2 minecraft:obsidian
+at 0 set 3 0 -1 minecraft:obsidian
+at 0 set 3 0 0 minecraft:obsidian
+at 0 set 3 0 1 minecraft:obsidian
+at 0 set 3 0 2 minecraft:obsidian
+at 0 set 3 0 3 minecraft:obsidian
+at 0 set 3 0 4 minecraft:obsidian
+at 0 set 3 0 5 minecraft:obsidian
+at 0 set 3 0 6 minecraft:obsidian
+at 0 set 3 0 7 minecraft:obsidian
+at 0 set 3 0 8 minecraft:obsidian
+at 0 set 3 0 9 minecraft:obsidian
+at 0 set 3 0 10 minecraft:obsidian
+at 0 set 3 0 11 minecraft:obsidian
+at 0 set 3 0 12 minecraft:obsidian
+at 0 set 3 0 13 minecraft:obsidian
+at 0 set 3 0 14 minecraft:obsidian
+at 0 set 3 0 15 minecraft:obsidian
+at 0 set 3 0 16 minecraft:obsidian
+at 0 set 3 0 17 minecraft:obsidian
+at 0 set 3 0 18 minecraft:obsidian
+at 0 set 3 0 19 minecraft:obsidian
+at 0 set 3 0 20 minecraft:obsidian
+at 0 set 4 0 -2 minecraft:obsidian
+at 0 set 4 0 -1 minecraft:obsidian
+at 0 set 4 0 0 minecraft:obsidian
+at 0 set 4 0 1 minecraft:obsidian
+at 0 set 4 0 2 minecraft:obsidian
+at 0 set 4 0 3 minecraft:obsidian
+at 0 set 4 0 4 minecraft:obsidian
+at 0 set 4 0 5 minecraft:obsidian
+at 0 set 4 0 6 minecraft:obsidian
+at 0 set 4 0 7 minecraft:obsidian
+at 0 set 4 0 8 minecraft:obsidian
+at 0 set 4 0 9 minecraft:obsidian
+at 0 set 4 0 10 minecraft:obsidian
+at 0 set 4 0 11 minecraft:obsidian
+at 0 set 4 0 12 minecraft:obsidian
+at 0 set 4 0 13 minecraft:obsidian
+at 0 set 4 0 14 minecraft:obsidian
+at 0 set 4 0 15 minecraft:obsidian
+at 0 set 4 0 16 minecraft:obsidian
+at 0 set 4 0 17 minecraft:obsidian
+at 0 set 4 0 18 minecraft:obsidian
+at 0 set 4 0 19 minecraft:obsidian
+at 0 set 4 0 20 minecraft:obsidian
+at 0 set 5 0 -2 minecraft:obsidian
+at 0 set 5 0 -1 minecraft:obsidian
+at 0 set 5 0 0 minecraft:obsidian
+at 0 set 5 0 1 minecraft:obsidian
+at 0 set 5 0 2 minecraft:obsidian
+at 0 set 5 0 3 minecraft:obsidian
+at 0 set 5 0 4 minecraft:obsidian
+at 0 set 5 0 5 minecraft:obsidian
+at 0 set 5 0 6 minecraft:obsidian
+at 0 set 5 0 7 minecraft:obsidian
+at 0 set 5 0 8 minecraft:obsidian
+at 0 set 5 0 9 minecraft:obsidian
+at 0 set 5 0 10 minecraft:obsidian
+at 0 set 5 0 11 minecraft:obsidian
+at 0 set 5 0 12 minecraft:obsidian
+at 0 set 5 0 13 minecraft:obsidian
+at 0 set 5 0 14 minecraft:obsidian
+at 0 set 5 0 15 minecraft:obsidian
+at 0 set 5 0 16 minecraft:obsidian
+at 0 set 5 0 17 minecraft:obsidian
+at 0 set 5 0 18 minecraft:obsidian
+at 0 set 5 0 19 minecraft:obsidian
+at 0 set 5 0 20 minecraft:obsidian
+at 0 set 6 0 -2 minecraft:obsidian
+at 0 set 6 0 -1 minecraft:obsidian
+at 0 set 6 0 0 minecraft:obsidian
+at 0 set 6 0 1 minecraft:obsidian
+at 0 set 6 0 2 minecraft:obsidian
+at 0 set 6 0 3 minecraft:obsidian
+at 0 set 6 0 4 minecraft:obsidian
+at 0 set 6 0 5 minecraft:obsidian
+at 0 set 6 0 6 minecraft:obsidian
+at 0 set 6 0 7 minecraft:obsidian
+at 0 set 6 0 8 minecraft:obsidian
+at 0 set 6 0 9 minecraft:obsidian
+at 0 set 6 0 10 minecraft:obsidian
+at 0 set 6 0 11 minecraft:obsidian
+at 0 set 6 0 12 minecraft:obsidian
+at 0 set 6 0 13 minecraft:obsidian
+at 0 set 6 0 14 minecraft:obsidian
+at 0 set 6 0 15 minecraft:obsidian
+at 0 set 6 0 16 minecraft:obsidian
+at 0 set 6 0 17 minecraft:obsidian
+at 0 set 6 0 18 minecraft:obsidian
+at 0 set 6 0 19 minecraft:obsidian
+at 0 set 6 0 20 minecraft:obsidian
+at 0 set 7 0 -2 minecraft:obsidian
+at 0 set 7 0 -1 minecraft:obsidian
+at 0 set 7 0 0 minecraft:obsidian
+at 0 set 7 0 1 minecraft:obsidian
+at 0 set 7 0 2 minecraft:obsidian
+at 0 set 7 0 3 minecraft:obsidian
+at 0 set 7 0 4 minecraft:obsidian
+at 0 set 7 0 5 minecraft:obsidian
+at 0 set 7 0 6 minecraft:obsidian
+at 0 set 7 0 7 minecraft:obsidian
+at 0 set 7 0 8 minecraft:obsidian
+at 0 set 7 0 9 minecraft:obsidian
+at 0 set 7 0 10 minecraft:obsidian
+at 0 set 7 0 11 minecraft:obsidian
+at 0 set 7 0 12 minecraft:obsidian
+at 0 set 7 0 13 minecraft:obsidian
+at 0 set 7 0 14 minecraft:obsidian
+at 0 set 7 0 15 minecraft:obsidian
+at 0 set 7 0 16 minecraft:obsidian
+at 0 set 7 0 17 minecraft:obsidian
+at 0 set 7 0 18 minecraft:obsidian
+at 0 set 7 0 19 minecraft:obsidian
+at 0 set 7 0 20 minecraft:obsidian
+at 0 set 8 0 -2 minecraft:obsidian
+at 0 set 8 0 -1 minecraft:obsidian
+at 0 set 8 0 0 minecraft:obsidian
+at 0 set 8 0 1 minecraft:obsidian
+at 0 set 8 0 2 minecraft:obsidian
+at 0 set 8 0 3 minecraft:obsidian
+at 0 set 8 0 4 minecraft:obsidian
+at 0 set 8 0 5 minecraft:obsidian
+at 0 set 8 0 6 minecraft:obsidian
+at 0 set 8 0 7 minecraft:obsidian
+at 0 set 8 0 8 minecraft:obsidian
+at 0 set 8 0 9 minecraft:obsidian
+at 0 set 8 0 10 minecraft:obsidian
+at 0 set 8 0 11 minecraft:obsidian
+at 0 set 8 0 12 minecraft:obsidian
+at 0 set 8 0 13 minecraft:obsidian
+at 0 set 8 0 14 minecraft:obsidian
+at 0 set 8 0 15 minecraft:obsidian
+at 0 set 8 0 16 minecraft:obsidian
+at 0 set 8 0 17 minecraft:obsidian
+at 0 set 8 0 18 minecraft:obsidian
+at 0 set 8 0 19 minecraft:obsidian
+at 0 set 8 0 20 minecraft:obsidian
+at 0 set 0 1 0 minecraft:oak_fence_gate[facing=north,in_wall=false,open=false,powered=false]
+at 0 set 1 1 0 minecraft:cobblestone_wall[east=none,north=none,south=none,up=true,waterlogged=false,west=low]
+at 0 set -1 1 0 minecraft:cobblestone_wall[east=low,north=none,south=none,up=true,waterlogged=false,west=none]
+at 0 set 0 1 3 minecraft:spruce_door[facing=east,half=lower,hinge=left,open=false,powered=false]
+at 0 set 0 2 3 minecraft:spruce_door[facing=east,half=upper,hinge=left,open=false,powered=false]
+at 0 set 0 1 4 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 0 1 6 minecraft:oak_door[facing=east,half=lower,hinge=left,open=false,powered=false]
+at 0 set 0 2 6 minecraft:oak_door[facing=east,half=upper,hinge=left,open=false,powered=false]
+at 0 set 0 1 9 minecraft:iron_door[facing=north,half=lower,hinge=left,open=false,powered=false]
+at 0 set 0 2 9 minecraft:iron_door[facing=north,half=upper,hinge=left,open=false,powered=false]
+at 0 set 1 1 8 minecraft:stone
+at 0 set 1 1 9 minecraft:stone_button[face=wall,facing=south,powered=false]
+at 0 set 0 1 12 minecraft:birch_door[facing=west,half=lower,hinge=left,open=false,powered=false]
+at 0 set 0 2 12 minecraft:birch_door[facing=west,half=upper,hinge=left,open=false,powered=false]
+at 0 set 3 1 12 minecraft:jungle_door[facing=west,half=lower,hinge=left,open=false,powered=false]
+at 0 set 3 2 12 minecraft:jungle_door[facing=west,half=upper,hinge=left,open=false,powered=false]
+at 0 set -2 1 15 minecraft:piston[extended=false,facing=east]
+at 0 set -1 1 15 minecraft:acacia_trapdoor[facing=north,half=top,open=false,powered=false,waterlogged=false]
+at 0 set -3 1 15 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 4 1 18 minecraft:piston[extended=false,facing=east]
+at 0 set 5 1 18 minecraft:dark_oak_door[facing=east,half=lower,hinge=left,open=false,powered=false]
+at 0 set 5 2 18 minecraft:dark_oak_door[facing=east,half=upper,hinge=left,open=false,powered=false]
+at 0 set 3 1 18 minecraft:lever[face=floor,facing=north,powered=false]
+
+at 2 use 0 1 12
+change 2 commands 0 1 12 minecraft:birch_door[facing=west,half=lower,hinge=left,open=false,powered=false] minecraft:birch_door[facing=west,half=lower,hinge=left,open=true,powered=false]
+change 2 commands 0 2 12 minecraft:birch_door[facing=west,half=upper,hinge=left,open=false,powered=false] minecraft:birch_door[facing=west,half=upper,hinge=left,open=true,powered=false]
+draws 2 commands level 1
+
+at 4 command summon minecraft:arrow -2.5 1.5 12.5 {Motion:[1.0d,0.04d,0.0d]}
+entity-added 4 commands e1 minecraft:arrow -2.5 1.5 12.5 1.0 0.04 0
+at 4 command summon minecraft:arrow 6.5 1.5 12.6 {Motion:[-1.0d,0.04d,0.0d]}
+entity-added 4 commands e2 minecraft:arrow 6.5 1.5 12.6 -1.0 0.04 0
+entity-order 4 entities e1 e2
+entity 4 e1 -1.5 1.54 12.5 0.9900000095367432 -0.010399999618530276 0 in-ground=false life=0 on-ground=false
+entity 4 e2 5.5 1.54 12.6 -0.9900000095367432 -0.010399999618530276 0 in-ground=false life=0 on-ground=false
+
+at 5 use 1 1 9
+change 5 commands 1 1 9 minecraft:stone_button[face=wall,facing=south,powered=false] minecraft:stone_button[face=wall,facing=south,powered=true]
+change 5 commands 0 1 9 minecraft:iron_door[facing=north,half=lower,hinge=left,open=false,powered=false] minecraft:iron_door[facing=north,half=lower,hinge=left,open=true,powered=true]
+change 5 commands 0 2 9 minecraft:iron_door[facing=north,half=upper,hinge=left,open=false,powered=false] minecraft:iron_door[facing=north,half=upper,hinge=left,open=true,powered=true]
+draws 5 commands level 1
+entity-order 5 entities e1 e2
+entity 5 e1 -0.5099999904632568 1.5296000003814698 12.5 0.9801000188827516 -0.060295999721527105 0 in-ground=false life=0 on-ground=false
+entity 5 e2 4.509999990463257 1.5296000003814698 12.6 -0.9801000188827516 -0.060295999721527105 0 in-ground=false life=0 on-ground=false
+
+entity-order 6 entities e1 e2
+entity 6 e1 0.4701000284194947 1.4693040006599427 12.5 0.9702990280408862 -0.1096930402993393 0 in-ground=false life=0 on-ground=false
+entity 6 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=0 on-ground=false
+
+entity-order 7 entities e1 e2
+entity 7 e1 1.440399056460381 1.3596109603606035 12.5 0.96059604701397 -0.15859611094246026 0 in-ground=false life=0 on-ground=false
+entity 7 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=1 on-ground=false
+
+entity-order 8 entities e1 e2
+entity 8 e1 2.400995103474351 1.2010148494181432 12.5 0.950990095704788 -0.20701015134552603 0 in-ground=false life=0 on-ground=false
+entity 8 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=2 on-ground=false
+
+entity-order 9 entities e1 e2
+entity 9 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=0 on-ground=false
+entity 9 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=3 on-ground=false
+
+at 10 use 0 1 4
+change 10 commands 0 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 0 1 3 minecraft:spruce_door[facing=east,half=lower,hinge=left,open=false,powered=false] minecraft:spruce_door[facing=east,half=lower,hinge=left,open=true,powered=true]
+change 10 commands 0 2 3 minecraft:spruce_door[facing=east,half=upper,hinge=left,open=false,powered=false] minecraft:spruce_door[facing=east,half=upper,hinge=left,open=true,powered=true]
+at 10 set 0 2 6 minecraft:air
+change 10 commands 0 2 6 minecraft:oak_door[facing=east,half=upper,hinge=left,open=false,powered=false] minecraft:air
+entity-added 10 commands e3 minecraft:item 0.5531726079986798 1.2795252840998546 6.3085033044036125 0.05630692640906096 0.2 -0.04944476668480283 item=minecraft:oak_door count=1
+change 10 commands 0 1 6 minecraft:oak_door[facing=east,half=lower,hinge=left,open=false,powered=false] minecraft:air
+at 10 use -3 1 15
+change 10 commands -3 1 15 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 block_events 0 1 15 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 10 block_events -1 1 15 minecraft:acacia_trapdoor[facing=north,half=top,open=false,powered=false,waterlogged=false] minecraft:moving_piston[facing=east,type=normal]
+change 10 block_events -2 1 15 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
+draws 10 commands level 11
+draws 10 block_events level 1
+entity-order 10 entities e1 e2 e3
+entity 10 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=1 on-ground=false
+entity 10 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=4 on-ground=false
+entity 10 e3 0.6094795344077408 1.4395252840998545 6.2590585377188095 0.05518078895484913 0.1568 -0.04845587229419085 item=minecraft:oak_door count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 11 entities e1 e2 e3
+entity 11 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=2 on-ground=false
+entity 11 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=5 on-ground=false
+entity 11 e3 0.66466032336259 1.5563252840998545 6.210602665424618 0.054077174228242174 0.11446399999999998 -0.04748675577252945 item=minecraft:oak_door count=1 age=2 pickup-delay=8 on-ground=false
+
+at 12 use 3 1 18
+change 12 commands 3 1 18 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+entity-added 12 block_events e4 minecraft:item 5.742420770099905 1.56459125893624 18.720624589741057 -0.04500920679290304 0.2 -0.07422056982524466 item=minecraft:dark_oak_door count=1
+change 12 block_events 5 1 18 minecraft:dark_oak_door[facing=east,half=lower,hinge=left,open=false,powered=false] minecraft:air
+change 12 block_events 5 1 18 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 12 block_events 5 2 18 minecraft:dark_oak_door[facing=east,half=upper,hinge=left,open=false,powered=false] minecraft:air
+change 12 block_events 4 1 18 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
+change 12 block_entities 0 1 15 minecraft:moving_piston[facing=east,type=normal] minecraft:acacia_trapdoor[facing=north,half=top,open=false,powered=false,waterlogged=false]
+change 12 block_entities -1 1 15 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+draws 12 block_events level 11
+entity-order 12 entities e1 e2 e3 e4
+entity 12 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=3 on-ground=false
+entity 12 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=6 on-ground=false
+entity 12 e3 0.7187374975908322 1.6307892840998544 6.163115909652089 0.052995631775117576 0.07297471999999998 -0.04653702156281685 item=minecraft:oak_door count=1 age=3 pickup-delay=7 on-ground=false
+entity 12 e4 5.697411563307002 1.72459125893624 18.646404019915813 -0.044109023515527465 0.1568 -0.07273615984438479 item=minecraft:dark_oak_door count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 13 entities e1 e2 e3 e4
+entity 13 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=4 on-ground=false
+entity 13 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=7 on-ground=false
+entity 13 e3 0.7717331293659497 1.6637640040998543 6.116578888089272 0.05193572015042668 0.032315225599999976 -0.04560628201918376 item=minecraft:oak_door count=1 age=4 pickup-delay=6 on-ground=false
+entity 13 e4 6.135 1.84139125893624 18.573667860071428 -0.043226843886529774 0.11446399999999998 -0.07128143803482925 item=minecraft:dark_oak_door count=1 age=2 pickup-delay=8 on-ground=false
+
+change 14 block_entities 5 1 18 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+entity-order 14 entities e1 e2 e3 e4
+entity 14 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=5 on-ground=false
+entity 14 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=8 on-ground=false
+entity 14 e3 0.8236688495163764 1.6560792296998543 6.070972606070089 0.050897006738013395 -0.007531078912000024 -0.04469415724867088 item=minecraft:oak_door count=1 age=5 pickup-delay=5 on-ground=false
+entity 14 e4 6.125 1.91585525893624 18.502386422036597 0 0.07297471999999998 -0.06985581063371821 item=minecraft:dark_oak_door count=1 age=3 pickup-delay=7 on-ground=false
+
+at 15 set 1 1 0 minecraft:air
+change 15 commands 1 1 0 minecraft:cobblestone_wall[east=none,north=none,south=none,up=true,waterlogged=false,west=low] minecraft:air
+at 15 use 0 1 3
+change 15 commands 0 1 3 minecraft:spruce_door[facing=east,half=lower,hinge=left,open=true,powered=true] minecraft:spruce_door[facing=east,half=lower,hinge=left,open=false,powered=true]
+change 15 commands 0 2 3 minecraft:spruce_door[facing=east,half=upper,hinge=left,open=true,powered=true] minecraft:spruce_door[facing=east,half=upper,hinge=left,open=false,powered=true]
+draws 15 commands level 1
+entity-order 15 entities e1 e2 e3 e4
+entity 15 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=6 on-ground=false
+entity 15 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=9 on-ground=false
+entity 15 e3 0.8745658562543899 1.6085481507878543 6.026278448821418 0.04987906757403649 -0.04658045733376002 -0.04380027495617086 item=minecraft:oak_door count=1 age=6 pickup-delay=4 on-ground=false
+entity 15 e4 6.125 1.94882997893624 18.43253061140288 0 0.032315225599999976 -0.06845869575343769 item=minecraft:dark_oak_door count=1 age=4 pickup-delay=6 on-ground=false
+
+entity-order 16 entities e1 e2 e3 e4
+entity 16 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=7 on-ground=false
+entity 16 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=10 on-ground=false
+entity 16 e3 0.9244449238284264 1.5219676934540942 5.982478173865247 0.048881487173923474 -0.08484884818708481 -0.04292427029247139 item=minecraft:oak_door count=1 age=7 pickup-delay=3 on-ground=false
+entity 16 e4 6.125 1.94114520453624 18.36407191564944 0 -0.007531078912000024 -0.06708952314411493 item=minecraft:dark_oak_door count=1 age=5 pickup-delay=5 on-ground=false
+
+entity-order 17 entities e1 e2 e3 e4
+entity 17 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=8 on-ground=false
+entity 17 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=11 on-ground=false
+entity 17 e3 0.9733264110023498 1.3971188452670094 5.939553903572776 0.04790385836278538 -0.12235187122334311 -0.04206578570533744 item=minecraft:oak_door count=1 age=8 pickup-delay=2 on-ground=false
+entity 17 e4 6.125 1.89361412562424 18.296982392505324 0 -0.04658045733376002 -0.06574773396086372 item=minecraft:dark_oak_door count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 18 entities e1 e2 e3 e4
+entity 18 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=9 on-ground=false
+entity 18 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=12 on-ground=false
+entity 18 e3 1.0212302693651352 1.2347669740436662 5.8974881178674385 0.04694578210922326 -0.15910483379887624 -0.04122447079357188 item=minecraft:oak_door count=1 age=9 pickup-delay=1 on-ground=false
+entity 18 e4 6.125 1.80703366829048 18.23123465854446 0 -0.08484884818708481 -0.06443278053568495 item=minecraft:dark_oak_door count=1 age=7 pickup-delay=3 on-ground=false
+
+entity-order 19 entities e1 e2 e3 e4
+entity 19 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=10 on-ground=false
+entity 19 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=13 on-ground=false
+entity 19 e3 1.0681760514743583 1.0356621402447899 5.856263647073867 0.04600686736245853 -0.1951227371228987 -0.040399982163994826 item=minecraft:oak_door count=1 age=10 pickup-delay=0 on-ground=false
+entity 19 e4 6.125 1.682184820103395 18.166801878008773 0 -0.12235187122334311 -0.063144126153929 item=minecraft:dark_oak_door count=1 age=8 pickup-delay=2 on-ground=false
+
+at 20 set -1 1 0 minecraft:air
+change 20 commands -1 1 0 minecraft:cobblestone_wall[east=low,north=none,south=none,up=true,waterlogged=false,west=none] minecraft:air
+change 20 commands 0 1 0 minecraft:oak_fence_gate[facing=north,in_wall=true,open=false,powered=false] minecraft:oak_fence_gate[facing=north,in_wall=false,open=false,powered=false]
+at 20 use 0 2 3
+change 20 commands 0 2 3 minecraft:spruce_door[facing=east,half=upper,hinge=left,open=false,powered=true] minecraft:spruce_door[facing=east,half=upper,hinge=left,open=true,powered=true]
+change 20 commands 0 1 3 minecraft:spruce_door[facing=east,half=lower,hinge=left,open=false,powered=true] minecraft:spruce_door[facing=east,half=lower,hinge=left,open=true,powered=true]
+draws 20 commands level 1
+entity-order 20 entities e1 e2 e3 e4
+entity 20 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=11 on-ground=false
+entity 20 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=14 on-ground=false
+entity 20 e3 1.1141829188368169 1.0 5.815863664909872 0.027052040729410816 0 -0.023755191901191332 item=minecraft:oak_door count=1 age=11 pickup-delay=0 on-ground=true
+entity 20 e4 6.125 1.519832948880052 18.103657751854843 0 -0.15910483379887624 -0.06188124483522905 item=minecraft:dark_oak_door count=1 age=9 pickup-delay=1 on-ground=false
+
+entity-order 21 entities e1 e2 e3 e4
+entity 21 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=12 on-ground=false
+entity 21 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=15 on-ground=false
+entity 21 e3 1.1412349595662277 1.0 5.792108473008681 0.01590660154842142 0 -0.01396805424249292 item=minecraft:oak_door count=1 age=12 pickup-delay=0 on-ground=true
+entity 21 e4 6.125 1.3207281150811756 18.041776507019616 0 -0.1951227371228987 -0.06064362111881554 item=minecraft:dark_oak_door count=1 age=10 pickup-delay=0 on-ground=false
+
+entity-order 22 entities e1 e2 e3 e4
+entity 22 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=13 on-ground=false
+entity 22 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=16 on-ground=false
+entity 22 e3 1.1571415611146492 1.0 5.7781404187661884 0.009353082650994271 0 -0.008213216720486262 item=minecraft:oak_door count=1 age=13 pickup-delay=0 on-ground=true
+entity 22 e4 6.125 1.0856053779582768 17.981132885900802 0 -0.23042028238044074 -0.05943074985312451 item=minecraft:dark_oak_door count=1 age=11 pickup-delay=0 on-ground=false
+
+entity-order 23 entities e1 e2 e3 e4
+entity 23 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=14 on-ground=false
+entity 23 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=17 on-ground=false
+entity 23 e3 1.1664946437656434 1.0 5.769927202045702 0.005499613151811903 0 -0.00482937191727542 item=minecraft:oak_door count=1 age=14 pickup-delay=0 on-ground=true
+entity 23 e4 6.125 1.0 17.921702136047678 0 0 -0.034945284427647154 item=minecraft:dark_oak_door count=1 age=12 pickup-delay=0 on-ground=true
+
+change 24 block_ticks 1 1 9 minecraft:stone_button[face=wall,facing=south,powered=true] minecraft:stone_button[face=wall,facing=south,powered=false]
+change 24 block_ticks 0 1 9 minecraft:iron_door[facing=north,half=lower,hinge=left,open=true,powered=true] minecraft:iron_door[facing=north,half=lower,hinge=left,open=false,powered=false]
+change 24 block_ticks 0 2 9 minecraft:iron_door[facing=north,half=upper,hinge=left,open=true,powered=true] minecraft:iron_door[facing=north,half=upper,hinge=left,open=false,powered=false]
+draws 24 block_ticks level 1
+entity-order 24 entities e1 e2 e3 e4
+entity 24 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=15 on-ground=false
+entity 24 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=18 on-ground=false
+entity 24 e3 1.1719942569174553 1.0 5.765097830128426 0.0032337728584454673 0 -0.0028396709729081207 item=minecraft:oak_door count=1 age=15 pickup-delay=0 on-ground=true
+entity 24 e4 6.125 1.0 17.88675685162003 0 0 -0.020547829309694583 item=minecraft:dark_oak_door count=1 age=13 pickup-delay=0 on-ground=true
+
+at 25 use 0 1 4
+change 25 commands 0 1 4 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 25 commands 0 1 3 minecraft:spruce_door[facing=east,half=lower,hinge=left,open=true,powered=true] minecraft:spruce_door[facing=east,half=lower,hinge=left,open=false,powered=false]
+change 25 commands 0 2 3 minecraft:spruce_door[facing=east,half=upper,hinge=left,open=true,powered=true] minecraft:spruce_door[facing=east,half=upper,hinge=left,open=false,powered=false]
+draws 25 commands level 1
+entity-order 25 entities e1 e2 e3 e4
+entity 25 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=16 on-ground=false
+entity 25 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=19 on-ground=false
+entity 25 e3 1.1752280297759008 1.0 5.762258159155518 0.0019014586319718342 0 -0.001669726699973494 item=minecraft:oak_door count=1 age=16 pickup-delay=0 on-ground=true
+entity 25 e4 6.125 1.0 17.866209022310336 0 0 -0.012082124849048513 item=minecraft:dark_oak_door count=1 age=14 pickup-delay=0 on-ground=true
+
+entity-order 26 entities e1 e2 e3 e4
+entity 26 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=17 on-ground=false
+entity 26 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=20 on-ground=false
+entity 26 e3 1.1771294884078727 1.0 5.7605884324555445 0.0011180577880285187 0 -9.817993983116935E-4 item=minecraft:oak_door count=1 age=17 pickup-delay=0 on-ground=true
+entity 26 e4 6.125 1.0 17.85412689746129 0 0 -0.007104290125630079 item=minecraft:dark_oak_door count=1 age=15 pickup-delay=0 on-ground=true
+
+entity-order 27 entities e1 e2 e3 e4
+entity 27 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=18 on-ground=false
+entity 27 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=21 on-ground=false
+entity 27 e3 1.1771294884078727 1.0 5.7605884324555445 0.0011180577880285187 -0.04 -9.817993983116935E-4 item=minecraft:oak_door count=1 age=18 pickup-delay=0 on-ground=true
+entity 27 e4 6.125 1.0 17.84702260733566 0 0 -0.004177323013931586 item=minecraft:dark_oak_door count=1 age=16 pickup-delay=0 on-ground=true
+
+entity-order 28 entities e1 e2 e3 e4
+entity 28 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=19 on-ground=false
+entity 28 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=22 on-ground=false
+entity 28 e3 1.1771294884078727 1.0 5.7605884324555445 0.0011180577880285187 -0.08 -9.817993983116935E-4 item=minecraft:oak_door count=1 age=19 pickup-delay=0 on-ground=true
+entity 28 e4 6.125 1.0 17.84284528432173 0 0 -0.002456266179187724 item=minecraft:dark_oak_door count=1 age=17 pickup-delay=0 on-ground=true
+
+entity-order 29 entities e1 e2 e3 e4
+entity 29 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=20 on-ground=false
+entity 29 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=23 on-ground=false
+entity 29 e3 1.1771294884078727 1.0 5.7605884324555445 0.0011180577880285187 -0.12 -9.817993983116935E-4 item=minecraft:oak_door count=1 age=20 pickup-delay=0 on-ground=true
+entity 29 e4 6.125 1.0 17.84284528432173 0 -0.04 -0.002456266179187724 item=minecraft:dark_oak_door count=1 age=18 pickup-delay=0 on-ground=true
+
+entity-order 30 entities e1 e2 e3 e4
+entity 30 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=21 on-ground=false
+entity 30 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=24 on-ground=false
+entity 30 e3 1.1782475461959012 1.0 5.759606633057233 6.574180454690748E-4 0 -5.772981042589218E-4 item=minecraft:oak_door count=1 age=21 pickup-delay=0 on-ground=true
+entity 30 e4 6.125 1.0 17.84284528432173 0 -0.08 -0.002456266179187724 item=minecraft:dark_oak_door count=1 age=19 pickup-delay=0 on-ground=true
+
+entity-order 31 entities e1 e2 e3 e4
+entity 31 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=22 on-ground=false
+entity 31 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=25 on-ground=false
+entity 31 e3 1.1782475461959012 1.0 5.759606633057233 6.574180454690748E-4 -0.04 -5.772981042589218E-4 item=minecraft:oak_door count=1 age=22 pickup-delay=0 on-ground=true
+entity 31 e4 6.125 1.0 17.84038901814254 0 0 -0.001444284658596016 item=minecraft:dark_oak_door count=1 age=20 pickup-delay=0 on-ground=true
+
+entity-order 32 entities e1 e2 e3 e4
+entity 32 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=23 on-ground=false
+entity 32 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=26 on-ground=false
+entity 32 e3 1.1782475461959012 1.0 5.759606633057233 6.574180454690748E-4 -0.08 -5.772981042589218E-4 item=minecraft:oak_door count=1 age=23 pickup-delay=0 on-ground=true
+entity 32 e4 6.125 1.0 17.84038901814254 0 -0.04 -0.001444284658596016 item=minecraft:dark_oak_door count=1 age=21 pickup-delay=0 on-ground=true
+
+entity-order 33 entities e1 e2 e3 e4
+entity 33 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=24 on-ground=false
+entity 33 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=27 on-ground=false
+entity 33 e3 1.1782475461959012 1.0 5.759606633057233 6.574180454690748E-4 -0.12 -5.772981042589218E-4 item=minecraft:oak_door count=1 age=24 pickup-delay=0 on-ground=true
+entity 33 e4 6.125 1.0 17.84038901814254 0 -0.08 -0.001444284658596016 item=minecraft:dark_oak_door count=1 age=22 pickup-delay=0 on-ground=true
+
+entity-order 34 entities e1 e2 e3 e4
+entity 34 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=25 on-ground=false
+entity 34 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=28 on-ground=false
+entity 34 e3 1.1789049642413703 1.0 5.759029334952974 3.865618496075037E-4 0 -3.3945131943861727E-4 item=minecraft:oak_door count=1 age=25 pickup-delay=0 on-ground=true
+entity 34 e4 6.125 1.0 17.84038901814254 0 -0.12 -0.001444284658596016 item=minecraft:dark_oak_door count=1 age=23 pickup-delay=0 on-ground=true
+
+entity-order 35 entities e1 e2 e3 e4
+entity 35 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=26 on-ground=false
+entity 35 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=29 on-ground=false
+entity 35 e3 1.1789049642413703 1.0 5.759029334952974 3.865618496075037E-4 -0.04 -3.3945131943861727E-4 item=minecraft:oak_door count=1 age=26 pickup-delay=0 on-ground=true
+entity 35 e4 6.125 1.0 17.838944733483945 0 0 -8.492394646518428E-4 item=minecraft:dark_oak_door count=1 age=24 pickup-delay=0 on-ground=true
+
+entity-order 36 entities e1 e2 e3 e4
+entity 36 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=27 on-ground=false
+entity 36 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=30 on-ground=false
+entity 36 e3 1.1789049642413703 1.0 5.759029334952974 3.865618496075037E-4 -0.08 -3.3945131943861727E-4 item=minecraft:oak_door count=1 age=27 pickup-delay=0 on-ground=true
+entity 36 e4 6.125 1.0 17.838944733483945 0 -0.04 -8.492394646518428E-4 item=minecraft:dark_oak_door count=1 age=25 pickup-delay=0 on-ground=true
+
+entity-order 37 entities e1 e2 e3 e4
+entity 37 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=28 on-ground=false
+entity 37 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=31 on-ground=false
+entity 37 e3 1.1789049642413703 1.0 5.759029334952974 3.865618496075037E-4 -0.12 -3.3945131943861727E-4 item=minecraft:oak_door count=1 age=28 pickup-delay=0 on-ground=true
+entity 37 e4 6.125 1.0 17.838944733483945 0 -0.08 -8.492394646518428E-4 item=minecraft:dark_oak_door count=1 age=26 pickup-delay=0 on-ground=true
+
+entity-order 38 entities e1 e2 e3 e4
+entity 38 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=29 on-ground=false
+entity 38 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=32 on-ground=false
+entity 38 e3 1.1792915260909778 1.0 5.758689883633535 2.2729839042576685E-4 0 -1.9959739590091926E-4 item=minecraft:oak_door count=1 age=29 pickup-delay=0 on-ground=true
+entity 38 e4 6.125 1.0 17.838944733483945 0 -0.12 -8.492394646518428E-4 item=minecraft:dark_oak_door count=1 age=27 pickup-delay=0 on-ground=true
+
+entity-order 39 entities e1 e2 e3 e4
+entity 39 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=30 on-ground=false
+entity 39 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=33 on-ground=false
+entity 39 e3 1.1792915260909778 1.0 5.758689883633535 2.2729839042576685E-4 -0.04 -1.9959739590091926E-4 item=minecraft:oak_door count=1 age=30 pickup-delay=0 on-ground=true
+entity 39 e4 6.125 1.0 17.838095494019292 0 0 -4.993528554289513E-4 item=minecraft:dark_oak_door count=1 age=28 pickup-delay=0 on-ground=true
+
+entity-order 40 entities e1 e2 e3 e4
+entity 40 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=31 on-ground=false
+entity 40 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=34 on-ground=false
+entity 40 e3 1.1792915260909778 1.0 5.758689883633535 2.2729839042576685E-4 -0.08 -1.9959739590091926E-4 item=minecraft:oak_door count=1 age=31 pickup-delay=0 on-ground=true
+entity 40 e4 6.125 1.0 17.838095494019292 0 -0.04 -4.993528554289513E-4 item=minecraft:dark_oak_door count=1 age=29 pickup-delay=0 on-ground=true
+
+entity-order 41 entities e1 e2 e3 e4
+entity 41 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=32 on-ground=false
+entity 41 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=35 on-ground=false
+entity 41 e3 1.1792915260909778 1.0 5.758689883633535 2.2729839042576685E-4 -0.12 -1.9959739590091926E-4 item=minecraft:oak_door count=1 age=32 pickup-delay=0 on-ground=true
+entity 41 e4 6.125 1.0 17.838095494019292 0 -0.08 -4.993528554289513E-4 item=minecraft:dark_oak_door count=1 age=30 pickup-delay=0 on-ground=true
+
+entity-order 42 entities e1 e2 e3 e4
+entity 42 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=33 on-ground=false
+entity 42 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=36 on-ground=false
+entity 42 e3 1.1792915260909778 1.0 5.758689883633535 1.3365146701000642E-4 0 -1.1736328059149694E-4 item=minecraft:oak_door count=1 age=33 pickup-delay=0 on-ground=true
+entity 42 e4 6.125 1.0 17.838095494019292 0 -0.12 -4.993528554289513E-4 item=minecraft:dark_oak_door count=1 age=31 pickup-delay=0 on-ground=true
+
+entity-order 43 entities e1 e2 e3 e4
+entity 43 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=34 on-ground=false
+entity 43 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=37 on-ground=false
+entity 43 e3 1.1792915260909778 1.0 5.758689883633535 1.3365146701000642E-4 -0.04 -1.1736328059149694E-4 item=minecraft:oak_door count=1 age=34 pickup-delay=0 on-ground=true
+entity 43 e4 6.125 1.0 17.837596141163864 0 0 -2.936195085178629E-4 item=minecraft:dark_oak_door count=1 age=32 pickup-delay=0 on-ground=true
+
+entity-order 44 entities e1 e2 e3 e4
+entity 44 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=35 on-ground=false
+entity 44 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=38 on-ground=false
+entity 44 e3 1.1792915260909778 1.0 5.758689883633535 1.3365146701000642E-4 -0.08 -1.1736328059149694E-4 item=minecraft:oak_door count=1 age=35 pickup-delay=0 on-ground=true
+entity 44 e4 6.125 1.0 17.837596141163864 0 -0.04 -2.936195085178629E-4 item=minecraft:dark_oak_door count=1 age=33 pickup-delay=0 on-ground=true
+
+entity-order 45 entities e1 e2 e3 e4
+entity 45 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=36 on-ground=false
+entity 45 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=39 on-ground=false
+entity 45 e3 1.1792915260909778 1.0 5.758689883633535 1.3365146701000642E-4 -0.12 -1.1736328059149694E-4 item=minecraft:oak_door count=1 age=36 pickup-delay=0 on-ground=true
+entity 45 e4 6.125 1.0 17.837596141163864 0 -0.08 -2.936195085178629E-4 item=minecraft:dark_oak_door count=1 age=34 pickup-delay=0 on-ground=true
+
+entity-order 46 entities e1 e2 e3 e4
+entity 46 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=37 on-ground=false
+entity 46 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=40 on-ground=false
+entity 46 e3 1.1792915260909778 1.0 5.758689883633535 7.8587070504402E-5 0 -6.900961592723368E-5 item=minecraft:oak_door count=1 age=37 pickup-delay=0 on-ground=true
+entity 46 e4 6.125 1.0 17.837596141163864 0 -0.12 -2.936195085178629E-4 item=minecraft:dark_oak_door count=1 age=35 pickup-delay=0 on-ground=true
+
+entity-order 47 entities e1 e2 e3 e4
+entity 47 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=38 on-ground=false
+entity 47 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=41 on-ground=false
+entity 47 e3 1.1792915260909778 1.0 5.758689883633535 7.8587070504402E-5 -0.04 -6.900961592723368E-5 item=minecraft:oak_door count=1 age=38 pickup-delay=0 on-ground=true
+entity 47 e4 6.125 1.0 17.837596141163864 0 0 -1.7264828836958122E-4 item=minecraft:dark_oak_door count=1 age=36 pickup-delay=0 on-ground=true
+
+entity-order 48 entities e1 e2 e3 e4
+entity 48 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=39 on-ground=false
+entity 48 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=42 on-ground=false
+entity 48 e3 1.1792915260909778 1.0 5.758689883633535 7.8587070504402E-5 -0.08 -6.900961592723368E-5 item=minecraft:oak_door count=1 age=39 pickup-delay=0 on-ground=true
+entity 48 e4 6.125 1.0 17.837596141163864 0 -0.04 -1.7264828836958122E-4 item=minecraft:dark_oak_door count=1 age=37 pickup-delay=0 on-ground=true
+
+entity-order 49 entities e1 e2 e3 e4
+entity 49 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=40 on-ground=false
+entity 49 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=43 on-ground=false
+entity 49 e3 1.1792915260909778 1.0 5.758689883633535 7.8587070504402E-5 -0.12 -6.900961592723368E-5 item=minecraft:oak_door count=1 age=40 pickup-delay=0 on-ground=true
+entity 49 e4 6.125 1.0 17.837596141163864 0 -0.08 -1.7264828836958122E-4 item=minecraft:dark_oak_door count=1 age=38 pickup-delay=0 on-ground=true
+
+entity-order 50 entities e1 e2 e3 e4
+entity 50 e1 3.2744432024660455 1.050000000745058 12.5 0 0 0 in-ground=true life=41 on-ground=false
+entity 50 e2 4.050000000745058 1.5482246734145608 12.6 0 0 0 in-ground=true life=44 on-ground=false
+entity 50 e3 1.1792915260909778 1.0 5.758689883633535 4.620920210326956E-5 0 -4.05776582456007E-5 item=minecraft:oak_door count=1 age=41 pickup-delay=0 on-ground=true
+entity 50 e4 6.125 1.0 17.837596141163864 0 -0.12 -1.7264828836958122E-4 item=minecraft:dark_oak_door count=1 age=39 pickup-delay=0 on-ground=true

@@ -159,6 +159,23 @@ void entity_inside(RuleContext& ctx, const Entity& entity);
 void target_hit(RuleContext& ctx, BlockPos pos, contracts::Vec3 at, int axis, bool arrow);
 void tick_target(RuleContext& ctx, BlockPos pos, BlockState s);
 
+// ---- doors, trapdoors and fence gates (door.cpp) ----
+// A neighbor update from `from`: opens or closes it to match the power.
+void check_opening(RuleContext& ctx, BlockPos pos, BlockPos from);
+// Used by hand by a player facing `player` (horizontal).
+void use_opening(RuleContext& ctx, BlockPos pos, BlockState s, Direction player);
+// A shape update from `d`: a door half follows or loses its other half, a
+// fence gate notices walls at its sides.
+void opening_shape_update(RuleContext& ctx, BlockPos pos, Direction d);
+// The state a player places at `pos`: powered and open where power reaches
+// it, and a fence gate in a wall between walls.
+BlockState placed_opening(RuleContext& ctx, BlockPos pos, BlockState s);
+// The item of a door, trapdoor or fence gate, and the one an item places.
+std::uint16_t opening_item(BlockState s);
+std::optional<BlockState> placed_opening_by(std::uint16_t item, Direction face, Direction horizontal);
+// Registry data of the state a modeled block of several kinds stands for.
+std::optional<registry::BlockInfo> modeled_info(BlockState s);
+
 bool piston_powered(RuleContext& ctx, BlockPos pos, Direction facing);
 void check_piston(RuleContext& ctx, BlockPos pos);
 void run_piston_event(RuleContext& ctx, const BlockEvent& event, BlockState state);

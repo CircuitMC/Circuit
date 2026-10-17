@@ -55,6 +55,10 @@ float blast_resistance(BlockState s) {
             if (key == "waterlogged" && value == "true") r = std::max(r, 100.0f);
         return r;
     }
+    // Kinds of one type may resist differently (iron and oak doors).
+    if (has_variant(s.type()))
+        if (const auto state = physics::registry_state_of(s))
+            if (const auto block = registry::block_of(*state)) return registry::block(*block).resistance;
     return modeled_resistance(s.type());
 }
 } // namespace circuit::gameplay

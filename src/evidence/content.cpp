@@ -290,6 +290,33 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
             return simple(blocks::pressure_plate(static_cast<blocks::ButtonKind>(k), powered == 1));
         }
     }
+    for (const auto& [suffix, type] : {std::pair{std::string_view("_door"), BlockType::door}, std::pair{std::string_view("_trapdoor"), BlockType::trapdoor},
+                                      std::pair{std::string_view("_fence_gate"), BlockType::fence_gate}}) {
+        if (!id.starts_with("minecraft:") || !id.ends_with(suffix)) continue;
+        const auto kind = id.substr(10, id.size() - 10 - suffix.size());
+        const auto kinds = type == BlockType::fence_gate ? blocks::fence_gate_kinds : blocks::door_kinds;
+        for (std::uint8_t k = 0; k < kinds; ++k) {
+            if (gameplay::door_kind_name(k) != kind) continue;
+            const auto dk = static_cast<blocks::DoorKind>(k);
+            CIRCUIT_TRY(facing, p.direction_or("facing", Direction::north));
+            if (!contracts::is_horizontal(facing)) return std::unexpected(std::format("{}: facing must be horizontal", id));
+            CIRCUIT_TRY(open, p.choice("open", {"false", "true"}, 0));
+            CIRCUIT_TRY(powered, p.choice("powered", {"false", "true"}, 0));
+            if (type == BlockType::door) {
+                CIRCUIT_TRY(half, p.choice("half", {"lower", "upper"}, 0));
+                CIRCUIT_TRY(hinge, p.choice("hinge", {"left", "right"}, 0));
+                return simple(blocks::door(dk, facing, half == 1, hinge == 1, open == 1, powered == 1));
+            }
+            if (type == BlockType::trapdoor) {
+                CIRCUIT_TRY(half, p.choice("half", {"bottom", "top"}, 0));
+                CIRCUIT_TRY(waterlogged, p.choice("waterlogged", {"false", "true"}, 0));
+                return simple(blocks::trapdoor(dk, facing, half == 1, open == 1, powered == 1)
+                                  .with_level(static_cast<std::uint8_t>(half | (waterlogged << 1))));
+            }
+            CIRCUIT_TRY(in_wall, p.choice("in_wall", {"false", "true"}, 0));
+            return simple(blocks::fence_gate(dk, facing, open == 1, powered == 1, in_wall == 1));
+        }
+    }
     // Every other block is a registry state without rules of its own.
     const auto block = gameplay::registry::find_block(game_version_, id);
     if (!block || gameplay::modeled_block(*block))

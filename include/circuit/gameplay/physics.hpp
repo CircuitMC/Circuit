@@ -4,6 +4,7 @@
 #include <circuit/gameplay/block.hpp>
 #include <circuit/gameplay/block_registry.hpp>
 #include <functional>
+#include <optional>
 #include <span>
 #include <string_view>
 #include <vector>
@@ -40,6 +41,9 @@ struct Aabb {
 // The box of an entity `width` wide and `height` tall standing at `feet`.
 [[nodiscard]] Aabb box_at(Vec3 feet, double width, double height) noexcept;
 
+// The registry state a state stands for (a table built once); nullopt for
+// the unloaded sentinel.
+[[nodiscard]] std::optional<std::uint32_t> registry_state_of(BlockState s);
 // A state's collision boxes in a release, in block coordinates (modeled
 // states through the registry states they stand for).
 [[nodiscard]] std::span<const registry::Box> collision_boxes(BlockState s, std::string_view release);

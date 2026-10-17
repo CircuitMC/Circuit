@@ -23,6 +23,7 @@ std::uint16_t plate_item(BlockState s) {
 }
 
 std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Direction horizontal, Direction look) {
+    if (const auto opening = placed_opening_by(item, face, horizontal)) return opening;
     // Mounted on the clicked face as levers are.
     if (const auto it = std::ranges::find(button_items, item); it != button_items.end()) {
         const auto kind = static_cast<blocks::ButtonKind>(it - button_items.begin());

@@ -79,6 +79,14 @@ Tool effective_tool(BlockState s, const GameData* data) noexcept {
         return s.variant() < static_cast<std::uint8_t>(blocks::ButtonKind::stone) ? Tool::axe : Tool::pickaxe;
     case BlockType::weighted_plate: return Tool::pickaxe;
     case BlockType::target: return Tool::hoe;
+    case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: {
+        const auto info = detail::modeled_info(s);
+        switch (info ? info->tool : registry::Tool::none) {
+        case registry::Tool::pickaxe: return Tool::pickaxe;
+        case registry::Tool::axe: return Tool::axe;
+        default: return Tool::none;
+        }
+    }
     default: return Tool::none;
     }
 }
@@ -93,6 +101,10 @@ int required_tier(BlockState s, const GameData* data) noexcept {
     }
     case BlockType::stone: case BlockType::redstone_block: case BlockType::observer: case BlockType::hopper: return 1;
     case BlockType::obsidian: return 4;
+    case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: {
+        const auto info = detail::modeled_info(s);
+        return info ? info->tier : 0;
+    }
     default: return 0;
     }
 }
@@ -111,6 +123,10 @@ float hardness(BlockState s) noexcept {
     case BlockType::lever: case BlockType::button: case BlockType::pressure_plate: case BlockType::weighted_plate:
     case BlockType::target:
         return 0.5f;
+    case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: {
+        const auto info = detail::modeled_info(s);
+        return info ? info->hardness : -1.0f;
+    }
     case BlockType::observer: case BlockType::hopper: return 3.0f;
     case BlockType::chest: return 2.5f;
     case BlockType::slime_block: case BlockType::redstone_wire: case BlockType::repeater: case BlockType::comparator:

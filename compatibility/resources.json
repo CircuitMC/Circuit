@@ -656,6 +656,408 @@
         "deviations": [
           "of the projectiles only arrows and snowballs hit it"
         ]
+      },
+      "oak_door": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "players place it with the left hinge"
+        ]
+      },
+      "oak_trapdoor": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "waterlogging is stored only"
+        ]
+      },
+      "oak_fence_gate": {
+        "impl": "partial",
+        "evidence": "compared"
+      },
+      "spruce_door": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "players place it with the left hinge"
+        ]
+      },
+      "spruce_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "spruce_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "As the compared oak fence gate"
+      },
+      "birch_door": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "players place it with the left hinge"
+        ]
+      },
+      "birch_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "birch_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "As the compared oak fence gate"
+      },
+      "jungle_door": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "players place it with the left hinge"
+        ]
+      },
+      "jungle_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "jungle_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "As the compared oak fence gate"
+      },
+      "acacia_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "players place it with the left hinge"
+        ],
+        "note": "As the compared oak door"
+      },
+      "acacia_trapdoor": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "waterlogging is stored only"
+        ]
+      },
+      "acacia_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "As the compared oak fence gate"
+      },
+      "cherry_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "players place it with the left hinge"
+        ],
+        "note": "As the compared oak door"
+      },
+      "cherry_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "cherry_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "As the compared oak fence gate"
+      },
+      "dark_oak_door": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "players place it with the left hinge"
+        ]
+      },
+      "dark_oak_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "dark_oak_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "As the compared oak fence gate"
+      },
+      "pale_oak_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "players place it with the left hinge"
+        ],
+        "note": "As the compared oak door"
+      },
+      "pale_oak_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "pale_oak_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "As the compared oak fence gate"
+      },
+      "mangrove_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "players place it with the left hinge"
+        ],
+        "note": "As the compared oak door"
+      },
+      "mangrove_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "mangrove_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "As the compared oak fence gate"
+      },
+      "bamboo_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "players place it with the left hinge"
+        ],
+        "note": "As the compared oak door"
+      },
+      "bamboo_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "bamboo_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "As the compared oak fence gate"
+      },
+      "crimson_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "players place it with the left hinge"
+        ],
+        "note": "As the compared oak door"
+      },
+      "crimson_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "crimson_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "As the compared oak fence gate"
+      },
+      "warped_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "players place it with the left hinge"
+        ],
+        "note": "As the compared oak door"
+      },
+      "warped_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "warped_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "As the compared oak fence gate"
+      },
+      "iron_door": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "players place it with the left hinge"
+        ]
+      },
+      "iron_trapdoor": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "waterlogging is stored only"
+        ]
+      },
+      "copper_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "does not weather",
+          "players place it with the left hinge"
+        ],
+        "note": "As the compared oak door"
+      },
+      "copper_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "does not weather",
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "exposed_copper_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "does not weather",
+          "players place it with the left hinge"
+        ],
+        "note": "As the compared oak door"
+      },
+      "exposed_copper_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "does not weather",
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "weathered_copper_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "does not weather",
+          "players place it with the left hinge"
+        ],
+        "note": "As the compared oak door"
+      },
+      "weathered_copper_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "does not weather",
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "oxidized_copper_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "does not weather",
+          "players place it with the left hinge"
+        ],
+        "note": "As the compared oak door"
+      },
+      "oxidized_copper_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "does not weather",
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "waxed_copper_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "does not weather",
+          "players place it with the left hinge"
+        ],
+        "note": "As the compared oak door"
+      },
+      "waxed_copper_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "does not weather",
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "waxed_exposed_copper_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "does not weather",
+          "players place it with the left hinge"
+        ],
+        "note": "As the compared oak door"
+      },
+      "waxed_exposed_copper_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "does not weather",
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "waxed_weathered_copper_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "does not weather",
+          "players place it with the left hinge"
+        ],
+        "note": "As the compared oak door"
+      },
+      "waxed_weathered_copper_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "does not weather",
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
+      },
+      "waxed_oxidized_copper_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "does not weather",
+          "players place it with the left hinge"
+        ],
+        "note": "As the compared oak door"
+      },
+      "waxed_oxidized_copper_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "does not weather",
+          "waterlogging is stored only"
+        ],
+        "note": "As the compared oak trapdoor"
       }
     },
     "item": {
@@ -1001,6 +1403,276 @@
         "note": "Placed"
       },
       "target": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "oak_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "oak_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "oak_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "spruce_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "spruce_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "spruce_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "birch_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "birch_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "birch_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "jungle_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "jungle_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "jungle_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "acacia_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "acacia_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "acacia_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "cherry_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "cherry_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "cherry_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "dark_oak_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "dark_oak_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "dark_oak_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "pale_oak_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "pale_oak_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "pale_oak_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "mangrove_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "mangrove_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "mangrove_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "bamboo_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "bamboo_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "bamboo_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "crimson_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "crimson_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "crimson_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "warped_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "warped_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "warped_fence_gate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "iron_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "iron_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "copper_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "copper_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "exposed_copper_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "exposed_copper_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "weathered_copper_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "weathered_copper_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "oxidized_copper_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "oxidized_copper_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "waxed_copper_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "waxed_copper_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "waxed_exposed_copper_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "waxed_exposed_copper_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "waxed_weathered_copper_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "waxed_weathered_copper_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "waxed_oxidized_copper_door": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "waxed_oxidized_copper_trapdoor": {
         "impl": "partial",
         "evidence": "none",
         "note": "Placed"
