@@ -452,14 +452,18 @@ int main() {
                        SpawnItem{at_block(15.5, 0.0, 0.5), {}, {items::stone, 1}}});
         s.tick(build); // 2
         s.tick({place({13, 0, 1}, blocks::redstone_block())}); // 3: stone starts moving into cell 15
+        // Each step pushes it out of the space the block sweeps through, to
+        // 0.01 beyond it: from the block's face at 15 to 15.5, then to 16.
         const auto d = s.oracle.dump();
-        require(d.overworld().entities.size() == 1 && d.overworld().entities[0].position.x == 16.0, "pushed half a block, out of the cell");
+        require(d.overworld().entities.size() == 1 && std::abs(d.overworld().entities[0].position.x - 15.635) < 1e-9, "pushed out of the first step");
+        s.tick(); // 4
+        require(std::abs(entity_in(s.oracle.dump(), EntityId{1})->position.x - 16.135) < 1e-9, "and out of the second, into chunk 1");
         const auto crossed = of_kind(s.last, TraceKind::entity_changed_chunk);
         require(crossed.size() == 1 && crossed[0].key.phase == Phase::block_entities && crossed[0].c == pack_chunk({1, 0}),
                 "pushed into chunk 1");
-        s.until(5);
-        require(entity_in(s.oracle.dump(), EntityId{1})->position.x == 16.0 && s.at({15, 0, 0}).is(BlockType::stone),
-                "pushed once; block arrived");
+        s.until(6);
+        require(std::abs(entity_in(s.oracle.dump(), EntityId{1})->position.x - 16.135) < 1e-9 && s.at({15, 0, 0}).is(BlockType::stone),
+                "pushed twice; block arrived");
     });
 
     suite.run("moving blocks do not conduct power", [] {

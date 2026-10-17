@@ -124,6 +124,10 @@ struct Entity {
     // Minecarts: whether water held it at the end of its last tick (what its
     // next tick's motion follows; none before its first).
     bool in_water{};
+    // How far pistons have pushed it in the tick `piston_tick` (at most 0.51
+    // on each axis in one tick).
+    Tick piston_tick{};
+    Vec3 piston_push{};
     // Saved with a chunk that loaded again: the tick it comes back, under a
     // new id (0: it is in the level).
     Tick returns{};

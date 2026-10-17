@@ -209,6 +209,13 @@ void run_boat(RuleContext& ctx, EntityId id, Entity& e);
 // in place, while longer moves, from 1.8e-7, are made). Returns whether it
 // landed (hit something while falling).
 bool move_entity(RuleContext& ctx, contracts::Vec3& position, contracts::Vec3& velocity, double width, double height);
+// The same for a `movement` other than the velocity (a piston's push): the
+// velocity loses what the movement could not make.
+bool move_entity_by(RuleContext& ctx, contracts::Vec3& position, contracts::Vec3& velocity, contracts::Vec3 movement, double width,
+                    double height);
+// The collision boxes of the block a moving piston at `pos` carries, where
+// it stands in its move, in the cell's coordinates.
+std::vector<registry::Box> moving_block_boxes(RuleContext& ctx, BlockPos pos);
 
 // The box of an entity (items and snowballs: 0.25 wide and tall; arrows
 // 0.5; falling blocks and primed TNT 0.98).

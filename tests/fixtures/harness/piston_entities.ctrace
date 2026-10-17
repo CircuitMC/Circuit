@@ -1,0 +1,712 @@
+circuit-trace 2
+title Pistons push items and primed TNT with their heads and the blocks they move, and pull blocks back
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.9.0+mc1.21.8
+mechanisms piston item_entity tnt
+area -8 0 -8 8 4 8
+ticks 40
+changes ordered
+entities observed
+rng observed
+
+at 0 set -8 0 -8 minecraft:obsidian
+at 0 set -8 0 -7 minecraft:obsidian
+at 0 set -8 0 -6 minecraft:obsidian
+at 0 set -8 0 -5 minecraft:obsidian
+at 0 set -8 0 -4 minecraft:obsidian
+at 0 set -8 0 -3 minecraft:obsidian
+at 0 set -8 0 -2 minecraft:obsidian
+at 0 set -8 0 -1 minecraft:obsidian
+at 0 set -8 0 0 minecraft:obsidian
+at 0 set -8 0 1 minecraft:obsidian
+at 0 set -8 0 2 minecraft:obsidian
+at 0 set -8 0 3 minecraft:obsidian
+at 0 set -8 0 4 minecraft:obsidian
+at 0 set -8 0 5 minecraft:obsidian
+at 0 set -8 0 6 minecraft:obsidian
+at 0 set -8 0 7 minecraft:obsidian
+at 0 set -8 0 8 minecraft:obsidian
+at 0 set -7 0 -8 minecraft:obsidian
+at 0 set -7 0 -7 minecraft:obsidian
+at 0 set -7 0 -6 minecraft:obsidian
+at 0 set -7 0 -5 minecraft:obsidian
+at 0 set -7 0 -4 minecraft:obsidian
+at 0 set -7 0 -3 minecraft:obsidian
+at 0 set -7 0 -2 minecraft:obsidian
+at 0 set -7 0 -1 minecraft:obsidian
+at 0 set -7 0 0 minecraft:obsidian
+at 0 set -7 0 1 minecraft:obsidian
+at 0 set -7 0 2 minecraft:obsidian
+at 0 set -7 0 3 minecraft:obsidian
+at 0 set -7 0 4 minecraft:obsidian
+at 0 set -7 0 5 minecraft:obsidian
+at 0 set -7 0 6 minecraft:obsidian
+at 0 set -7 0 7 minecraft:obsidian
+at 0 set -7 0 8 minecraft:obsidian
+at 0 set -6 0 -8 minecraft:obsidian
+at 0 set -6 0 -7 minecraft:obsidian
+at 0 set -6 0 -6 minecraft:obsidian
+at 0 set -6 0 -5 minecraft:obsidian
+at 0 set -6 0 -4 minecraft:obsidian
+at 0 set -6 0 -3 minecraft:obsidian
+at 0 set -6 0 -2 minecraft:obsidian
+at 0 set -6 0 -1 minecraft:obsidian
+at 0 set -6 0 0 minecraft:obsidian
+at 0 set -6 0 1 minecraft:obsidian
+at 0 set -6 0 2 minecraft:obsidian
+at 0 set -6 0 3 minecraft:obsidian
+at 0 set -6 0 4 minecraft:obsidian
+at 0 set -6 0 5 minecraft:obsidian
+at 0 set -6 0 6 minecraft:obsidian
+at 0 set -6 0 7 minecraft:obsidian
+at 0 set -6 0 8 minecraft:obsidian
+at 0 set -5 0 -8 minecraft:obsidian
+at 0 set -5 0 -7 minecraft:obsidian
+at 0 set -5 0 -6 minecraft:obsidian
+at 0 set -5 0 -5 minecraft:obsidian
+at 0 set -5 0 -4 minecraft:obsidian
+at 0 set -5 0 -3 minecraft:obsidian
+at 0 set -5 0 -2 minecraft:obsidian
+at 0 set -5 0 -1 minecraft:obsidian
+at 0 set -5 0 0 minecraft:obsidian
+at 0 set -5 0 1 minecraft:obsidian
+at 0 set -5 0 2 minecraft:obsidian
+at 0 set -5 0 3 minecraft:obsidian
+at 0 set -5 0 4 minecraft:obsidian
+at 0 set -5 0 5 minecraft:obsidian
+at 0 set -5 0 6 minecraft:obsidian
+at 0 set -5 0 7 minecraft:obsidian
+at 0 set -5 0 8 minecraft:obsidian
+at 0 set -4 0 -8 minecraft:obsidian
+at 0 set -4 0 -7 minecraft:obsidian
+at 0 set -4 0 -6 minecraft:obsidian
+at 0 set -4 0 -5 minecraft:obsidian
+at 0 set -4 0 -4 minecraft:obsidian
+at 0 set -4 0 -3 minecraft:obsidian
+at 0 set -4 0 -2 minecraft:obsidian
+at 0 set -4 0 -1 minecraft:obsidian
+at 0 set -4 0 0 minecraft:obsidian
+at 0 set -4 0 1 minecraft:obsidian
+at 0 set -4 0 2 minecraft:obsidian
+at 0 set -4 0 3 minecraft:obsidian
+at 0 set -4 0 4 minecraft:obsidian
+at 0 set -4 0 5 minecraft:obsidian
+at 0 set -4 0 6 minecraft:obsidian
+at 0 set -4 0 7 minecraft:obsidian
+at 0 set -4 0 8 minecraft:obsidian
+at 0 set -3 0 -8 minecraft:obsidian
+at 0 set -3 0 -7 minecraft:obsidian
+at 0 set -3 0 -6 minecraft:obsidian
+at 0 set -3 0 -5 minecraft:obsidian
+at 0 set -3 0 -4 minecraft:obsidian
+at 0 set -3 0 -3 minecraft:obsidian
+at 0 set -3 0 -2 minecraft:obsidian
+at 0 set -3 0 -1 minecraft:obsidian
+at 0 set -3 0 0 minecraft:obsidian
+at 0 set -3 0 1 minecraft:obsidian
+at 0 set -3 0 2 minecraft:obsidian
+at 0 set -3 0 3 minecraft:obsidian
+at 0 set -3 0 4 minecraft:obsidian
+at 0 set -3 0 5 minecraft:obsidian
+at 0 set -3 0 6 minecraft:obsidian
+at 0 set -3 0 7 minecraft:obsidian
+at 0 set -3 0 8 minecraft:obsidian
+at 0 set -2 0 -8 minecraft:obsidian
+at 0 set -2 0 -7 minecraft:obsidian
+at 0 set -2 0 -6 minecraft:obsidian
+at 0 set -2 0 -5 minecraft:obsidian
+at 0 set -2 0 -4 minecraft:obsidian
+at 0 set -2 0 -3 minecraft:obsidian
+at 0 set -2 0 -2 minecraft:obsidian
+at 0 set -2 0 -1 minecraft:obsidian
+at 0 set -2 0 0 minecraft:obsidian
+at 0 set -2 0 1 minecraft:obsidian
+at 0 set -2 0 2 minecraft:obsidian
+at 0 set -2 0 3 minecraft:obsidian
+at 0 set -2 0 4 minecraft:obsidian
+at 0 set -2 0 5 minecraft:obsidian
+at 0 set -2 0 6 minecraft:obsidian
+at 0 set -2 0 7 minecraft:obsidian
+at 0 set -2 0 8 minecraft:obsidian
+at 0 set -1 0 -8 minecraft:obsidian
+at 0 set -1 0 -7 minecraft:obsidian
+at 0 set -1 0 -6 minecraft:obsidian
+at 0 set -1 0 -5 minecraft:obsidian
+at 0 set -1 0 -4 minecraft:obsidian
+at 0 set -1 0 -3 minecraft:obsidian
+at 0 set -1 0 -2 minecraft:obsidian
+at 0 set -1 0 -1 minecraft:obsidian
+at 0 set -1 0 0 minecraft:obsidian
+at 0 set -1 0 1 minecraft:obsidian
+at 0 set -1 0 2 minecraft:obsidian
+at 0 set -1 0 3 minecraft:obsidian
+at 0 set -1 0 4 minecraft:obsidian
+at 0 set -1 0 5 minecraft:obsidian
+at 0 set -1 0 6 minecraft:obsidian
+at 0 set -1 0 7 minecraft:obsidian
+at 0 set -1 0 8 minecraft:obsidian
+at 0 set 0 0 -8 minecraft:obsidian
+at 0 set 0 0 -7 minecraft:obsidian
+at 0 set 0 0 -6 minecraft:obsidian
+at 0 set 0 0 -5 minecraft:obsidian
+at 0 set 0 0 -4 minecraft:obsidian
+at 0 set 0 0 -3 minecraft:obsidian
+at 0 set 0 0 -2 minecraft:obsidian
+at 0 set 0 0 -1 minecraft:obsidian
+at 0 set 0 0 0 minecraft:obsidian
+at 0 set 0 0 1 minecraft:obsidian
+at 0 set 0 0 2 minecraft:obsidian
+at 0 set 0 0 3 minecraft:obsidian
+at 0 set 0 0 4 minecraft:obsidian
+at 0 set 0 0 5 minecraft:obsidian
+at 0 set 0 0 6 minecraft:obsidian
+at 0 set 0 0 7 minecraft:obsidian
+at 0 set 0 0 8 minecraft:obsidian
+at 0 set 1 0 -8 minecraft:obsidian
+at 0 set 1 0 -7 minecraft:obsidian
+at 0 set 1 0 -6 minecraft:obsidian
+at 0 set 1 0 -5 minecraft:obsidian
+at 0 set 1 0 -4 minecraft:obsidian
+at 0 set 1 0 -3 minecraft:obsidian
+at 0 set 1 0 -2 minecraft:obsidian
+at 0 set 1 0 -1 minecraft:obsidian
+at 0 set 1 0 0 minecraft:obsidian
+at 0 set 1 0 1 minecraft:obsidian
+at 0 set 1 0 2 minecraft:obsidian
+at 0 set 1 0 3 minecraft:obsidian
+at 0 set 1 0 4 minecraft:obsidian
+at 0 set 1 0 5 minecraft:obsidian
+at 0 set 1 0 6 minecraft:obsidian
+at 0 set 1 0 7 minecraft:obsidian
+at 0 set 1 0 8 minecraft:obsidian
+at 0 set 2 0 -8 minecraft:obsidian
+at 0 set 2 0 -7 minecraft:obsidian
+at 0 set 2 0 -6 minecraft:obsidian
+at 0 set 2 0 -5 minecraft:obsidian
+at 0 set 2 0 -4 minecraft:obsidian
+at 0 set 2 0 -3 minecraft:obsidian
+at 0 set 2 0 -2 minecraft:obsidian
+at 0 set 2 0 -1 minecraft:obsidian
+at 0 set 2 0 0 minecraft:obsidian
+at 0 set 2 0 1 minecraft:obsidian
+at 0 set 2 0 2 minecraft:obsidian
+at 0 set 2 0 3 minecraft:obsidian
+at 0 set 2 0 4 minecraft:obsidian
+at 0 set 2 0 5 minecraft:obsidian
+at 0 set 2 0 6 minecraft:obsidian
+at 0 set 2 0 7 minecraft:obsidian
+at 0 set 2 0 8 minecraft:obsidian
+at 0 set 3 0 -8 minecraft:obsidian
+at 0 set 3 0 -7 minecraft:obsidian
+at 0 set 3 0 -6 minecraft:obsidian
+at 0 set 3 0 -5 minecraft:obsidian
+at 0 set 3 0 -4 minecraft:obsidian
+at 0 set 3 0 -3 minecraft:obsidian
+at 0 set 3 0 -2 minecraft:obsidian
+at 0 set 3 0 -1 minecraft:obsidian
+at 0 set 3 0 0 minecraft:obsidian
+at 0 set 3 0 1 minecraft:obsidian
+at 0 set 3 0 2 minecraft:obsidian
+at 0 set 3 0 3 minecraft:obsidian
+at 0 set 3 0 4 minecraft:obsidian
+at 0 set 3 0 5 minecraft:obsidian
+at 0 set 3 0 6 minecraft:obsidian
+at 0 set 3 0 7 minecraft:obsidian
+at 0 set 3 0 8 minecraft:obsidian
+at 0 set 4 0 -8 minecraft:obsidian
+at 0 set 4 0 -7 minecraft:obsidian
+at 0 set 4 0 -6 minecraft:obsidian
+at 0 set 4 0 -5 minecraft:obsidian
+at 0 set 4 0 -4 minecraft:obsidian
+at 0 set 4 0 -3 minecraft:obsidian
+at 0 set 4 0 -2 minecraft:obsidian
+at 0 set 4 0 -1 minecraft:obsidian
+at 0 set 4 0 0 minecraft:obsidian
+at 0 set 4 0 1 minecraft:obsidian
+at 0 set 4 0 2 minecraft:obsidian
+at 0 set 4 0 3 minecraft:obsidian
+at 0 set 4 0 4 minecraft:obsidian
+at 0 set 4 0 5 minecraft:obsidian
+at 0 set 4 0 6 minecraft:obsidian
+at 0 set 4 0 7 minecraft:obsidian
+at 0 set 4 0 8 minecraft:obsidian
+at 0 set 5 0 -8 minecraft:obsidian
+at 0 set 5 0 -7 minecraft:obsidian
+at 0 set 5 0 -6 minecraft:obsidian
+at 0 set 5 0 -5 minecraft:obsidian
+at 0 set 5 0 -4 minecraft:obsidian
+at 0 set 5 0 -3 minecraft:obsidian
+at 0 set 5 0 -2 minecraft:obsidian
+at 0 set 5 0 -1 minecraft:obsidian
+at 0 set 5 0 0 minecraft:obsidian
+at 0 set 5 0 1 minecraft:obsidian
+at 0 set 5 0 2 minecraft:obsidian
+at 0 set 5 0 3 minecraft:obsidian
+at 0 set 5 0 4 minecraft:obsidian
+at 0 set 5 0 5 minecraft:obsidian
+at 0 set 5 0 6 minecraft:obsidian
+at 0 set 5 0 7 minecraft:obsidian
+at 0 set 5 0 8 minecraft:obsidian
+at 0 set 6 0 -8 minecraft:obsidian
+at 0 set 6 0 -7 minecraft:obsidian
+at 0 set 6 0 -6 minecraft:obsidian
+at 0 set 6 0 -5 minecraft:obsidian
+at 0 set 6 0 -4 minecraft:obsidian
+at 0 set 6 0 -3 minecraft:obsidian
+at 0 set 6 0 -2 minecraft:obsidian
+at 0 set 6 0 -1 minecraft:obsidian
+at 0 set 6 0 0 minecraft:obsidian
+at 0 set 6 0 1 minecraft:obsidian
+at 0 set 6 0 2 minecraft:obsidian
+at 0 set 6 0 3 minecraft:obsidian
+at 0 set 6 0 4 minecraft:obsidian
+at 0 set 6 0 5 minecraft:obsidian
+at 0 set 6 0 6 minecraft:obsidian
+at 0 set 6 0 7 minecraft:obsidian
+at 0 set 6 0 8 minecraft:obsidian
+at 0 set 7 0 -8 minecraft:obsidian
+at 0 set 7 0 -7 minecraft:obsidian
+at 0 set 7 0 -6 minecraft:obsidian
+at 0 set 7 0 -5 minecraft:obsidian
+at 0 set 7 0 -4 minecraft:obsidian
+at 0 set 7 0 -3 minecraft:obsidian
+at 0 set 7 0 -2 minecraft:obsidian
+at 0 set 7 0 -1 minecraft:obsidian
+at 0 set 7 0 0 minecraft:obsidian
+at 0 set 7 0 1 minecraft:obsidian
+at 0 set 7 0 2 minecraft:obsidian
+at 0 set 7 0 3 minecraft:obsidian
+at 0 set 7 0 4 minecraft:obsidian
+at 0 set 7 0 5 minecraft:obsidian
+at 0 set 7 0 6 minecraft:obsidian
+at 0 set 7 0 7 minecraft:obsidian
+at 0 set 7 0 8 minecraft:obsidian
+at 0 set 8 0 -8 minecraft:obsidian
+at 0 set 8 0 -7 minecraft:obsidian
+at 0 set 8 0 -6 minecraft:obsidian
+at 0 set 8 0 -5 minecraft:obsidian
+at 0 set 8 0 -4 minecraft:obsidian
+at 0 set 8 0 -3 minecraft:obsidian
+at 0 set 8 0 -2 minecraft:obsidian
+at 0 set 8 0 -1 minecraft:obsidian
+at 0 set 8 0 0 minecraft:obsidian
+at 0 set 8 0 1 minecraft:obsidian
+at 0 set 8 0 2 minecraft:obsidian
+at 0 set 8 0 3 minecraft:obsidian
+at 0 set 8 0 4 minecraft:obsidian
+at 0 set 8 0 5 minecraft:obsidian
+at 0 set 8 0 6 minecraft:obsidian
+at 0 set 8 0 7 minecraft:obsidian
+at 0 set 8 0 8 minecraft:obsidian
+at 0 set -4 1 -6 minecraft:piston[extended=false,facing=east]
+at 0 set -4 1 -3 minecraft:piston[extended=false,facing=east]
+at 0 set -3 1 -3 minecraft:stone
+at 0 set -3 1 0 minecraft:piston[extended=false,facing=up]
+at 0 set 4 1 3 minecraft:piston[extended=false,facing=west]
+at 0 set 3 1 5 minecraft:tnt[unstable=false]
+at 0 set 3 1 3 minecraft:tnt[unstable=false]
+at 0 set -4 1 6 minecraft:sticky_piston[extended=false,facing=east]
+at 0 set -3 1 6 minecraft:stone
+
+at 2 spawn-item -2.7 1 -5.5 0 0 0 minecraft:stone 1
+entity-added 2 commands e1 minecraft:item -2.7 1.0 -5.5 0 0 0 item=minecraft:stone count=1
+at 2 spawn-item -1.5 1 -2.5 0 0 0 minecraft:stone 1
+entity-added 2 commands e2 minecraft:item -1.5 1.0 -2.5 0 0 0 item=minecraft:stone count=1
+at 2 spawn-item -1.2 1 -2.6 0 0 0 minecraft:redstone 1
+entity-added 2 commands e3 minecraft:item -1.2 1.0 -2.6 0 0 0 item=minecraft:redstone count=1
+at 2 spawn-item -2.5 2 0.5 0 0 0 minecraft:stone 1
+entity-added 2 commands e4 minecraft:item -2.5 2.0 0.5 0 0 0 item=minecraft:stone count=1
+at 2 set 3 1 6 minecraft:redstone_block
+change 2 commands 3 1 6 minecraft:air minecraft:redstone_block
+entity-added 2 commands e5 minecraft:tnt 3.5 1.0 5.5 0.019857169889349057 0.20000000298023224 0.002385959761925832 fuse=80
+change 2 commands 3 1 5 minecraft:tnt[unstable=false] minecraft:air
+draws 2 commands level 2
+entity-order 2 entities e1 e2 e3 e4 e5
+entity 2 e1 -2.7 1.0 -5.5 0 0 0 item=minecraft:stone count=1 age=1 pickup-delay=0 on-ground=true
+entity 2 e2 -1.5 1.0 -2.5 0 0 0 item=minecraft:stone count=1 age=1 pickup-delay=0 on-ground=true
+entity 2 e3 -1.2 1.0 -2.6 0 0 0 item=minecraft:redstone count=1 age=1 pickup-delay=0 on-ground=true
+entity 2 e4 -2.5 2.0 0.5 0 0 0 item=minecraft:stone count=1 age=1 pickup-delay=0 on-ground=true
+entity 2 e5 3.5198571698893493 1.1600000029802322 5.502385959761926 0.019460026491562074 0.1568000029206276 0.0023382405666873152 fuse=79 on-ground=false
+
+at 3 set 3 1 6 minecraft:air
+change 3 commands 3 1 6 minecraft:redstone_block minecraft:air
+entity-order 3 entities e1 e2 e3 e4 e5
+entity 3 e1 -2.7 1.0 -5.5 0 -0.04 0 item=minecraft:stone count=1 age=2 pickup-delay=0 on-ground=true
+entity 3 e2 -1.5 1.0 -2.5 0 0 0 item=minecraft:stone count=1 age=2 pickup-delay=0 on-ground=true
+entity 3 e3 -1.2 1.0 -2.6 0 -0.04 0 item=minecraft:redstone count=1 age=2 pickup-delay=0 on-ground=true
+entity 3 e4 -2.5 2.0 0.5 0 -0.04 0 item=minecraft:stone count=1 age=2 pickup-delay=0 on-ground=true
+entity 3 e5 3.539317196380911 1.2768000059008597 5.504724200328614 0.019070825961730833 0.11446400286221503 0.002291475755353569 fuse=78 on-ground=false
+
+at 4 set 3 2 3 minecraft:redstone_block
+change 4 commands 3 2 3 minecraft:air minecraft:redstone_block
+entity-added 4 commands e6 minecraft:tnt 3.5 1.0 3.5 -0.019964653821068924 0.20000000298023224 -0.0011885275785096675 fuse=80
+change 4 commands 3 1 3 minecraft:tnt[unstable=false] minecraft:air
+change 4 block_events 3 1 3 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 4 block_events 4 1 3 minecraft:piston[extended=false,facing=west] minecraft:piston[extended=true,facing=west]
+draws 4 commands level 2
+draws 4 block_events level 1
+entity-order 4 entities e1 e2 e3 e4 e5 e6
+entity 4 e1 -2.7 1.0 -5.5 0 0 0 item=minecraft:stone count=1 age=3 pickup-delay=0 on-ground=true
+entity 4 e2 -1.5 1.0 -2.5 0 -0.04 0 item=minecraft:stone count=1 age=3 pickup-delay=0 on-ground=true
+entity 4 e3 -1.2 1.0 -2.6 0 -0.08 0 item=minecraft:redstone count=1 age=3 pickup-delay=0 on-ground=true
+entity 4 e4 -2.5 2.0 0.5 0 -0.08 0 item=minecraft:stone count=1 age=3 pickup-delay=0 on-ground=true
+entity 4 e5 3.558388022342642 1.3512640087630747 5.5070156760839675 0.018689409442496217 0.07297472280497072 0.0022456462402464976 fuse=77 on-ground=false
+entity 4 e6 2.999999990463257 1.0199999809265137 3.4988114724214903 -0.019565360744647545 0 -0.001164757026939474 fuse=79 on-ground=false
+
+entity-order 5 entities e1 e2 e3 e4 e5 e6
+entity 5 e1 -2.7 1.0 -5.5 0 -0.04 0 item=minecraft:stone count=1 age=4 pickup-delay=0 on-ground=true
+entity 5 e2 -1.5 1.0 -2.5 0 -0.08 0 item=minecraft:stone count=1 age=4 pickup-delay=0 on-ground=true
+entity 5 e3 -1.2 1.0 -2.6 0 -0.12 0 item=minecraft:redstone count=1 age=4 pickup-delay=0 on-ground=true
+entity 5 e4 -2.5 2.0 0.5 0 0 0 item=minecraft:stone count=1 age=4 pickup-delay=0 on-ground=true
+entity 5 e5 3.577077431785138 1.3842387315680456 5.509261322324214 0.018315621253646292 0.03231522834887131 0.0022007333154415677 fuse=76 on-ground=false
+entity 5 e6 2.499999990463257 1.0 3.4976467153945507 -0.013421837470828216 0 -7.990233204804791E-4 fuse=78 on-ground=false
+
+at 6 set -5 1 -6 minecraft:redstone_block
+change 6 commands -5 1 -6 minecraft:air minecraft:redstone_block
+change 6 block_events -3 1 -6 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 6 block_events -4 1 -6 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
+change 6 block_entities 3 1 3 minecraft:moving_piston[facing=west,type=normal] minecraft:piston_head[facing=west,short=false,type=normal]
+draws 6 block_events level 1
+entity-order 6 entities e1 e2 e3 e4 e5 e6
+entity 6 e1 -2.365 1.0 -5.5 0 -0.08 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=false
+entity 6 e2 -1.5 1.0 -2.5 0 -0.12 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+entity 6 e3 -1.2 1.0 -2.6 0 0 0 item=minecraft:redstone count=1 age=5 pickup-delay=0 on-ground=true
+entity 6 e4 -2.5 2.0 0.5 0 -0.04 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+entity 6 e5 3.595393053038784 1.3765539599169168 5.511462055639655 0.017949308828573367 -0.0075310762181061185 0.0021567186491327365 fuse=75 on-ground=false
+entity 6 e6 2.4865781529924287 1.0 3.4968476920740703 -0.009207380504988155 0 -5.481299978496087E-4 fuse=77 on-ground=true
+
+at 7 set -5 1 -3 minecraft:redstone_block
+change 7 commands -5 1 -3 minecraft:air minecraft:redstone_block
+change 7 block_events -2 1 -3 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 7 block_events -3 1 -3 minecraft:stone minecraft:moving_piston[facing=east,type=normal]
+change 7 block_events -4 1 -3 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
+draws 7 block_events level 1
+entity-order 7 entities e1 e2 e3 e4 e5 e6
+entity 7 e1 -1.865 1.0 -5.5 0 0 0 item=minecraft:stone count=1 age=6 pickup-delay=0 on-ground=false
+entity 7 e2 -1.365 1.0 -2.5 0 0 0 item=minecraft:stone count=1 age=6 pickup-delay=0 on-ground=false
+entity 7 e3 -1.2 1.0 -2.6 0 -0.04 0 item=minecraft:redstone count=1 age=6 pickup-delay=0 on-ground=true
+entity 7 e4 -2.5 2.0 0.5 0 -0.08 0 item=minecraft:stone count=1 age=6 pickup-delay=0 on-ground=true
+entity 7 e5 3.6133423618673572 1.3290228836988107 5.513618774288788 0.0175903226520019 -0.046580454693744 0.0021135842761500815 fuse=74 on-ground=false
+entity 7 e6 2.4773707724874403 1.0 3.4962995620762207 -0.006316263026421874 0 -3.760171785248315E-4 fuse=76 on-ground=true
+
+at 8 set -4 1 0 minecraft:redstone_block
+change 8 commands -4 1 0 minecraft:air minecraft:redstone_block
+change 8 block_events -3 2 0 minecraft:air minecraft:moving_piston[facing=up,type=normal]
+change 8 block_events -3 1 0 minecraft:piston[extended=false,facing=up] minecraft:piston[extended=true,facing=up]
+change 8 block_entities -3 1 -6 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+draws 8 block_events level 1
+entity-order 8 entities e1 e2 e3 e4 e5 e6
+entity 8 e1 -1.865 1.0 -5.5 0 0 0 item=minecraft:stone count=1 age=7 pickup-delay=0 on-ground=true
+entity 8 e2 -0.865 1.0 -2.5 0 0 0 item=minecraft:stone count=1 age=7 pickup-delay=0 on-ground=false
+entity 8 e3 -0.865 1.0 -2.6 0 -0.08 0 item=minecraft:redstone count=1 age=7 pickup-delay=0 on-ground=false
+entity 8 e4 -2.5 2.51 0.5 0 -0.12 0 item=minecraft:stone count=1 age=7 pickup-delay=0 on-ground=false
+entity 8 e5 3.630932684519359 1.2424424290050666 5.515732358564938 0.01723851619896186 -0.08484884559986913 0.00207131259062708 fuse=73 on-ground=false
+entity 8 e6 2.4710545094610183 1.0 3.4959235448976957 -0.0043329564361254055 0 -2.579477844680344E-4 fuse=75 on-ground=true
+
+at 9 set 5 1 3 minecraft:redstone_block
+change 9 commands 5 1 3 minecraft:air minecraft:redstone_block
+change 9 block_entities -2 1 -3 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 9 block_entities -3 1 -3 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+entity-order 9 entities e1 e2 e3 e4 e5 e6
+entity 9 e1 -1.865 1.0 -5.5 0 -0.04 0 item=minecraft:stone count=1 age=8 pickup-delay=0 on-ground=true
+entity 9 e2 -0.865 1.0 -2.5 0 0 0 item=minecraft:stone count=1 age=8 pickup-delay=0 on-ground=true
+entity 9 e3 -0.865 1.0 -2.6 0 0 0 item=minecraft:redstone count=1 age=8 pickup-delay=0 on-ground=true
+entity 9 e4 -2.5 3.01 0.5 0 0 0 item=minecraft:stone count=1 age=8 pickup-delay=0 on-ground=false
+entity 9 e5 3.6481712007183207 1.1175935834051975 5.517803671155565 0.016893745874982623 -0.12235186868787176 0.0020298863388145383 fuse=72 on-ground=false
+entity 9 e6 2.466721553024893 1.0 3.4956655971132276 -0.0029724081151820277 0 -1.7695218014507154E-4 fuse=74 on-ground=true
+
+at 10 set -5 1 6 minecraft:redstone_block
+change 10 commands -5 1 6 minecraft:air minecraft:redstone_block
+change 10 block_events -2 1 6 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 10 block_events -3 1 6 minecraft:stone minecraft:moving_piston[facing=east,type=sticky]
+change 10 block_events -4 1 6 minecraft:sticky_piston[extended=false,facing=east] minecraft:sticky_piston[extended=true,facing=east]
+change 10 block_entities -3 2 0 minecraft:moving_piston[facing=up,type=normal] minecraft:piston_head[facing=up,short=false,type=normal]
+draws 10 block_events level 1
+entity-order 10 entities e1 e2 e3 e4 e5 e6
+entity 10 e1 -1.865 1.0 -5.5 0 -0.08 0 item=minecraft:stone count=1 age=9 pickup-delay=0 on-ground=true
+entity 10 e2 -0.865 1.0 -2.5 0 -0.04 0 item=minecraft:stone count=1 age=9 pickup-delay=0 on-ground=true
+entity 10 e3 -0.865 1.0 -2.6 0 0 0 item=minecraft:redstone count=1 age=9 pickup-delay=0 on-ground=true
+entity 10 e4 -2.5 3.0 0.5 0 0 0 item=minecraft:stone count=1 age=9 pickup-delay=0 on-ground=true
+entity 10 e5 3.6650649465933034 1.0 5.519833557494379 0.011589109670238079 0 0.0013925020284267732 fuse=71 on-ground=true
+entity 10 e6 2.4637491449097113 1.0 3.4954886449330824 -0.002039071967014871 0 -1.2138919557951908E-4 fuse=73 on-ground=true
+
+entity-order 11 entities e1 e2 e3 e4 e5 e6
+entity 11 e1 -1.865 1.0 -5.5 0 -0.12 0 item=minecraft:stone count=1 age=10 pickup-delay=0 on-ground=true
+entity 11 e2 -0.865 1.0 -2.5 0 0 0 item=minecraft:stone count=1 age=10 pickup-delay=0 on-ground=true
+entity 11 e3 -0.865 1.0 -2.6 0 -0.04 0 item=minecraft:redstone count=1 age=10 pickup-delay=0 on-ground=true
+entity 11 e4 -2.5 3.0 0.5 0 -0.04 0 item=minecraft:stone count=1 age=10 pickup-delay=0 on-ground=true
+entity 11 e5 3.6766540562635415 1.0 5.521226059522806 0.007950129233783321 0 9.552563915007663E-4 fuse=70 on-ground=true
+entity 11 e6 2.4617100729426964 1.0 3.495367255737503 -0.0013988033693722013 0 -8.327298816755008E-5 fuse=72 on-ground=true
+
+change 12 block_entities -2 1 6 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+change 12 block_entities -3 1 6 minecraft:moving_piston[facing=east,type=sticky] minecraft:piston_head[facing=east,short=false,type=sticky]
+entity-order 12 entities e1 e2 e3 e4 e5 e6
+entity 12 e1 -1.865 1.0 -5.5 0 0 0 item=minecraft:stone count=1 age=11 pickup-delay=0 on-ground=true
+entity 12 e2 -0.865 1.0 -2.5 0 -0.04 0 item=minecraft:stone count=1 age=11 pickup-delay=0 on-ground=true
+entity 12 e3 -0.865 1.0 -2.6 0 -0.08 0 item=minecraft:redstone count=1 age=11 pickup-delay=0 on-ground=true
+entity 12 e4 -2.5 3.0 0.5 0 -0.08 0 item=minecraft:stone count=1 age=11 pickup-delay=0 on-ground=true
+entity 12 e5 3.684604185497325 1.0 5.522181315914307 0.005453788654375358 0 6.553058845695257E-4 fuse=69 on-ground=true
+entity 12 e6 2.460311269573324 1.0 3.4952839827493354 -9.595791113893301E-4 0 -5.7125269882939353E-5 fuse=71 on-ground=true
+
+entity-order 13 entities e1 e2 e3 e4 e5 e6
+entity 13 e1 -1.865 1.0 -5.5 0 -0.04 0 item=minecraft:stone count=1 age=12 pickup-delay=0 on-ground=true
+entity 13 e2 -0.865 1.0 -2.5 0 -0.08 0 item=minecraft:stone count=1 age=12 pickup-delay=0 on-ground=true
+entity 13 e3 -0.865 1.0 -2.6 0 -0.12 0 item=minecraft:redstone count=1 age=12 pickup-delay=0 on-ground=true
+entity 13 e4 -2.5 3.0 0.5 0 0 0 item=minecraft:stone count=1 age=12 pickup-delay=0 on-ground=true
+entity 13 e5 3.6900579741517 1.0 5.522836621798876 0.003741299016901495 0 4.495398368146946E-4 fuse=68 on-ground=true
+entity 13 e6 2.4593516904619346 1.0 3.4952268574794525 -6.582712704130804E-4 0 -3.9187935139696394E-5 fuse=70 on-ground=true
+
+at 14 spawn-item -1.5 2 6.5 0 0 0 minecraft:stone 1
+entity-added 14 commands e7 minecraft:item -1.5 2.0 6.5 0 0 0 item=minecraft:stone count=1
+entity-order 14 entities e1 e2 e3 e4 e5 e6 e7
+entity 14 e1 -1.865 1.0 -5.5 0 -0.08 0 item=minecraft:stone count=1 age=13 pickup-delay=0 on-ground=true
+entity 14 e2 -0.865 1.0 -2.5 0 -0.12 0 item=minecraft:stone count=1 age=13 pickup-delay=0 on-ground=true
+entity 14 e3 -0.865 1.0 -2.6 0 0 0 item=minecraft:redstone count=1 age=13 pickup-delay=0 on-ground=true
+entity 14 e4 -2.5 3.0 0.5 0 -0.04 0 item=minecraft:stone count=1 age=13 pickup-delay=0 on-ground=true
+entity 14 e5 3.693799273168602 1.0 5.523286161635691 0.0025665311255944254 0 3.083843280548805E-4 fuse=67 on-ground=true
+entity 14 e6 2.4586934191915213 1.0 3.495187669544313 -4.5157409150337307E-4 0 -2.688292350583172E-5 fuse=69 on-ground=true
+entity 14 e7 -1.5 2.0 6.5 0 0 0 item=minecraft:stone count=1 age=1 pickup-delay=0 on-ground=true
+
+entity-order 15 entities e1 e2 e3 e4 e5 e6 e7
+entity 15 e1 -1.865 1.0 -5.5 0 -0.12 0 item=minecraft:stone count=1 age=14 pickup-delay=0 on-ground=true
+entity 15 e2 -0.865 1.0 -2.5 0 0 0 item=minecraft:stone count=1 age=14 pickup-delay=0 on-ground=true
+entity 15 e3 -0.865 1.0 -2.6 0 -0.04 0 item=minecraft:redstone count=1 age=14 pickup-delay=0 on-ground=true
+entity 15 e4 -2.5 3.0 0.5 0 -0.08 0 item=minecraft:stone count=1 age=14 pickup-delay=0 on-ground=true
+entity 15 e5 3.6963658042941963 1.0 5.523594545963746 0.0017606403521577758 0 2.1155164904564802E-4 fuse=66 on-ground=true
+entity 15 e6 2.458241845100018 1.0 3.495160786620807 -3.097798267713139E-4 0 -1.844168552500056E-5 fuse=68 on-ground=true
+entity 15 e7 -1.5 2.0 6.5 0 -0.04 0 item=minecraft:stone count=1 age=2 pickup-delay=0 on-ground=true
+
+entity-order 16 entities e1 e2 e3 e4 e5 e6 e7
+entity 16 e1 -1.865 1.0 -5.5 0 0 0 item=minecraft:stone count=1 age=15 pickup-delay=0 on-ground=true
+entity 16 e2 -0.865 1.0 -2.5 0 -0.04 0 item=minecraft:stone count=1 age=15 pickup-delay=0 on-ground=true
+entity 16 e3 -0.865 1.0 -2.6 0 -0.08 0 item=minecraft:redstone count=1 age=15 pickup-delay=0 on-ground=true
+entity 16 e4 -2.5 3.0 0.5 0 -0.12 0 item=minecraft:stone count=1 age=15 pickup-delay=0 on-ground=true
+entity 16 e5 3.698126444646354 1.0 5.523806097612792 0.001207799281580234 0 1.4512443124531453E-4 fuse=65 on-ground=true
+entity 16 e6 2.458241845100018 1.0 3.495160786620807 -2.1250896116512132E-4 0 -1.2650996270150385E-5 fuse=67 on-ground=true
+entity 16 e7 -1.5 2.0 6.5 0 -0.08 0 item=minecraft:stone count=1 age=3 pickup-delay=0 on-ground=true
+
+entity-order 17 entities e1 e2 e3 e4 e5 e6 e7
+entity 17 e1 -1.865 1.0 -5.5 0 -0.04 0 item=minecraft:stone count=1 age=16 pickup-delay=0 on-ground=true
+entity 17 e2 -0.865 1.0 -2.5 0 -0.08 0 item=minecraft:stone count=1 age=16 pickup-delay=0 on-ground=true
+entity 17 e3 -0.865 1.0 -2.6 0 -0.12 0 item=minecraft:redstone count=1 age=16 pickup-delay=0 on-ground=true
+entity 17 e4 -2.5 3.0 0.5 0 0 0 item=minecraft:stone count=1 age=16 pickup-delay=0 on-ground=true
+entity 17 e5 3.6993342439279346 1.0 5.523951222044038 8.285503071640406E-4 0 9.955535983428576E-5 fuse=64 on-ground=true
+entity 17 e6 2.458241845100018 1.0 3.495160786620807 -1.457811473592732E-4 0 -8.678583441323163E-6 fuse=66 on-ground=true
+entity 17 e7 -1.5 2.0 6.5 0 -0.12 0 item=minecraft:stone count=1 age=4 pickup-delay=0 on-ground=true
+
+entity-order 18 entities e1 e2 e3 e4 e5 e6 e7
+entity 18 e1 -1.865 1.0 -5.5 0 -0.08 0 item=minecraft:stone count=1 age=17 pickup-delay=0 on-ground=true
+entity 18 e2 -0.865 1.0 -2.5 0 -0.12 0 item=minecraft:stone count=1 age=17 pickup-delay=0 on-ground=true
+entity 18 e3 -0.865 1.0 -2.6 0 0 0 item=minecraft:redstone count=1 age=17 pickup-delay=0 on-ground=true
+entity 18 e4 -2.5 3.0 0.5 0 -0.04 0 item=minecraft:stone count=1 age=17 pickup-delay=0 on-ground=true
+entity 18 e5 3.7001627942350988 1.0 5.524050777403872 5.683855107145318E-4 0 6.829497684632003E-5 fuse=63 on-ground=true
+entity 18 e6 2.458241845100018 1.0 3.495160786620807 -1.0000586708846142E-4 0 -5.95350824074769E-6 fuse=65 on-ground=true
+entity 18 e7 -1.5 2.0 6.5 0 0 0 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=true
+
+entity-order 19 entities e1 e2 e3 e4 e5 e6 e7
+entity 19 e1 -1.865 1.0 -5.5 0 -0.12 0 item=minecraft:stone count=1 age=18 pickup-delay=0 on-ground=true
+entity 19 e2 -0.865 1.0 -2.5 0 0 0 item=minecraft:stone count=1 age=18 pickup-delay=0 on-ground=true
+entity 19 e3 -0.865 1.0 -2.6 0 -0.04 0 item=minecraft:redstone count=1 age=18 pickup-delay=0 on-ground=true
+entity 19 e4 -2.5 3.0 0.5 0 -0.08 0 item=minecraft:stone count=1 age=18 pickup-delay=0 on-ground=true
+entity 19 e5 3.700731179745813 1.0 5.524119072380718 3.8991246035016875E-4 0 4.6850354116575534E-5 fuse=62 on-ground=true
+entity 19 e6 2.458241845100018 1.0 3.495160786620807 -6.860402482268453E-5 0 -4.084106653152915E-6 fuse=64 on-ground=true
+entity 19 e7 -1.5 2.0 6.5 0 -0.04 0 item=minecraft:stone count=1 age=6 pickup-delay=0 on-ground=true
+
+at 20 set -5 1 6 minecraft:air
+change 20 commands -5 1 6 minecraft:redstone_block minecraft:air
+change 20 block_events -4 1 6 minecraft:sticky_piston[extended=true,facing=east] minecraft:moving_piston[facing=east,type=sticky]
+change 20 block_events -3 1 6 minecraft:piston_head[facing=east,short=false,type=sticky] minecraft:air
+change 20 block_events -3 1 6 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 20 block_events -2 1 6 minecraft:stone minecraft:air
+draws 20 block_events level 1
+entity-order 20 entities e1 e2 e3 e4 e5 e6 e7
+entity 20 e1 -1.865 1.0 -5.5 0 0 0 item=minecraft:stone count=1 age=19 pickup-delay=0 on-ground=true
+entity 20 e2 -0.865 1.0 -2.5 0 -0.04 0 item=minecraft:stone count=1 age=19 pickup-delay=0 on-ground=true
+entity 20 e3 -0.865 1.0 -2.6 0 -0.08 0 item=minecraft:redstone count=1 age=19 pickup-delay=0 on-ground=true
+entity 20 e4 -2.5 3.0 0.5 0 -0.12 0 item=minecraft:stone count=1 age=19 pickup-delay=0 on-ground=true
+entity 20 e5 3.7011210922061633 1.0 5.524165922734834 2.6747994780021574E-4 0 3.2139342923970814E-5 fuse=61 on-ground=true
+entity 20 e6 2.458241845100018 1.0 3.495160786620807 -4.706236102836158E-5 0 -2.8016971640628995E-6 fuse=63 on-ground=true
+entity 20 e7 -1.5 2.0 6.5 0 -0.08 0 item=minecraft:stone count=1 age=7 pickup-delay=0 on-ground=true
+
+entity-order 21 entities e1 e2 e3 e4 e5 e6 e7
+entity 21 e1 -1.865 1.0 -5.5 0 -0.04 0 item=minecraft:stone count=1 age=20 pickup-delay=0 on-ground=true
+entity 21 e2 -0.865 1.0 -2.5 0 -0.08 0 item=minecraft:stone count=1 age=20 pickup-delay=0 on-ground=true
+entity 21 e3 -0.865 1.0 -2.6 0 -0.12 0 item=minecraft:redstone count=1 age=20 pickup-delay=0 on-ground=true
+entity 21 e4 -2.5 3.0 0.5 0 0 0 item=minecraft:stone count=1 age=20 pickup-delay=0 on-ground=true
+entity 21 e5 3.7011210922061633 1.0 5.524165922734834 1.8349124419094802E-4 0 2.2047589245843973E-5 fuse=60 on-ground=true
+entity 21 e6 2.458241845100018 1.0 3.495160786620807 -3.228477966545604E-5 0 -1.9219642545471487E-6 fuse=62 on-ground=true
+entity 21 e7 -1.5 2.0 6.5 0 -0.12 0 item=minecraft:stone count=1 age=8 pickup-delay=0 on-ground=true
+
+change 22 block_entities -4 1 6 minecraft:moving_piston[facing=east,type=sticky] minecraft:sticky_piston[extended=false,facing=east]
+change 22 block_entities -3 1 6 minecraft:moving_piston[facing=east,type=normal] minecraft:stone
+entity-order 22 entities e1 e2 e3 e4 e5 e6 e7
+entity 22 e1 -1.865 1.0 -5.5 0 -0.08 0 item=minecraft:stone count=1 age=21 pickup-delay=0 on-ground=true
+entity 22 e2 -0.865 1.0 -2.5 0 -0.12 0 item=minecraft:stone count=1 age=21 pickup-delay=0 on-ground=true
+entity 22 e3 -0.865 1.0 -2.6 0 0 0 item=minecraft:redstone count=1 age=21 pickup-delay=0 on-ground=true
+entity 22 e4 -2.5 3.0 0.5 0 -0.04 0 item=minecraft:stone count=1 age=21 pickup-delay=0 on-ground=true
+entity 22 e5 3.7011210922061633 1.0 5.524165922734834 1.2587499351499032E-4 0 1.5124646222648963E-5 fuse=59 on-ground=true
+entity 22 e6 2.458241845100018 1.0 3.495160786620807 -2.2147358850502844E-5 0 -1.3184674786193439E-6 fuse=61 on-ground=true
+entity 22 e7 -1.5 1.84 6.5 0 -0.1568 0 item=minecraft:stone count=1 age=9 pickup-delay=0 on-ground=false
+
+entity-order 23 entities e1 e2 e3 e4 e5 e6 e7
+entity 23 e1 -1.865 1.0 -5.5 0 -0.12 0 item=minecraft:stone count=1 age=22 pickup-delay=0 on-ground=true
+entity 23 e2 -0.865 1.0 -2.5 0 0 0 item=minecraft:stone count=1 age=22 pickup-delay=0 on-ground=true
+entity 23 e3 -0.865 1.0 -2.6 0 -0.04 0 item=minecraft:redstone count=1 age=22 pickup-delay=0 on-ground=true
+entity 23 e4 -2.5 3.0 0.5 0 -0.08 0 item=minecraft:stone count=1 age=22 pickup-delay=0 on-ground=true
+entity 23 e5 3.7011210922061633 1.0 5.524165922734834 8.635024555128335E-5 0 1.0375507308737189E-5 fuse=58 on-ground=true
+entity 23 e6 2.458241845100018 1.0 3.495160786620807 -1.5193088171444951E-5 0 -9.044686903328698E-7 fuse=60 on-ground=true
+entity 23 e7 -1.5 1.6432 6.5 0 -0.192864 0 item=minecraft:stone count=1 age=10 pickup-delay=0 on-ground=false
+
+entity-order 24 entities e1 e2 e3 e4 e5 e6 e7
+entity 24 e1 -1.865 1.0 -5.5 0 0 0 item=minecraft:stone count=1 age=23 pickup-delay=0 on-ground=true
+entity 24 e2 -0.865 1.0 -2.5 0 -0.04 0 item=minecraft:stone count=1 age=23 pickup-delay=0 on-ground=true
+entity 24 e3 -0.865 1.0 -2.6 0 -0.08 0 item=minecraft:redstone count=1 age=23 pickup-delay=0 on-ground=true
+entity 24 e4 -2.5 3.0 0.5 0 -0.12 0 item=minecraft:stone count=1 age=23 pickup-delay=0 on-ground=true
+entity 24 e5 3.7011210922061633 1.0 5.524165922734834 5.923626844818038E-5 0 7.117598013793711E-6 fuse=57 on-ground=true
+entity 24 e6 2.458241845100018 1.0 3.495160786620807 -1.0422458485611237E-5 0 -6.204655215683486E-7 fuse=59 on-ground=true
+entity 24 e7 -1.5 1.410336 6.5 0 -0.22820672 0 item=minecraft:stone count=1 age=11 pickup-delay=0 on-ground=false
+
+entity-order 25 entities e1 e2 e3 e4 e5 e6 e7
+entity 25 e1 -1.865 1.0 -5.5 0 -0.04 0 item=minecraft:stone count=1 age=24 pickup-delay=0 on-ground=true
+entity 25 e2 -0.865 1.0 -2.5 0 -0.08 0 item=minecraft:stone count=1 age=24 pickup-delay=0 on-ground=true
+entity 25 e3 -0.865 1.0 -2.6 0 -0.12 0 item=minecraft:redstone count=1 age=24 pickup-delay=0 on-ground=true
+entity 25 e4 -2.5 3.0 0.5 0 0 0 item=minecraft:stone count=1 age=24 pickup-delay=0 on-ground=true
+entity 25 e5 3.7011210922061633 1.0 5.524165922734834 4.0636080155451736E-5 0 4.882672237462486E-6 fuse=56 on-ground=true
+entity 25 e6 2.458241845100018 1.0 3.495160786620807 -7.149806521129308E-6 0 -4.2563934779588714E-7 fuse=58 on-ground=true
+entity 25 e7 -1.5 1.14212928 6.5 0 -0.2628425856 0 item=minecraft:stone count=1 age=12 pickup-delay=0 on-ground=false
+
+entity-order 26 entities e1 e2 e3 e4 e5 e6 e7
+entity 26 e1 -1.865 1.0 -5.5 0 -0.08 0 item=minecraft:stone count=1 age=25 pickup-delay=0 on-ground=true
+entity 26 e2 -0.865 1.0 -2.5 0 -0.12 0 item=minecraft:stone count=1 age=25 pickup-delay=0 on-ground=true
+entity 26 e3 -0.865 1.0 -2.6 0 0 0 item=minecraft:redstone count=1 age=25 pickup-delay=0 on-ground=true
+entity 26 e4 -2.5 3.0 0.5 0 -0.04 0 item=minecraft:stone count=1 age=25 pickup-delay=0 on-ground=true
+entity 26 e5 3.7011210922061633 1.0 5.524165922734834 2.7876350986639887E-5 0 3.3495131548992647E-6 fuse=55 on-ground=true
+entity 26 e6 2.458241845100018 1.0 3.495160786620807 -4.9047672734947056E-6 0 -2.9198859258797855E-7 fuse=57 on-ground=true
+entity 26 e7 -1.5 1.0 6.5 0 0 0 item=minecraft:stone count=1 age=13 pickup-delay=0 on-ground=true
+
+entity-order 27 entities e1 e2 e3 e4 e5 e6 e7
+entity 27 e1 -1.865 1.0 -5.5 0 -0.12 0 item=minecraft:stone count=1 age=26 pickup-delay=0 on-ground=true
+entity 27 e2 -0.865 1.0 -2.5 0 0 0 item=minecraft:stone count=1 age=26 pickup-delay=0 on-ground=true
+entity 27 e3 -0.865 1.0 -2.6 0 -0.04 0 item=minecraft:redstone count=1 age=26 pickup-delay=0 on-ground=true
+entity 27 e4 -2.5 3.0 0.5 0 -0.08 0 item=minecraft:stone count=1 age=26 pickup-delay=0 on-ground=true
+entity 27 e5 3.7011210922061633 1.0 5.524165922734834 1.912317677683496E-5 0 2.2977660242608953E-6 fuse=54 on-ground=true
+entity 27 e6 2.458241845100018 1.0 3.495160786620807 -3.3646703496173677E-6 0 -2.0030417451535328E-7 fuse=56 on-ground=true
+entity 27 e7 -1.5 1.0 6.5 0 -0.04 0 item=minecraft:stone count=1 age=14 pickup-delay=0 on-ground=true
+
+entity-order 28 entities e1 e2 e3 e4 e5 e6 e7
+entity 28 e1 -1.865 1.0 -5.5 0 0 0 item=minecraft:stone count=1 age=27 pickup-delay=0 on-ground=true
+entity 28 e2 -0.865 1.0 -2.5 0 -0.04 0 item=minecraft:stone count=1 age=27 pickup-delay=0 on-ground=true
+entity 28 e3 -0.865 1.0 -2.6 0 -0.08 0 item=minecraft:redstone count=1 age=27 pickup-delay=0 on-ground=true
+entity 28 e4 -2.5 3.0 0.5 0 -0.12 0 item=minecraft:stone count=1 age=27 pickup-delay=0 on-ground=true
+entity 28 e5 3.7011210922061633 1.0 5.524165922734834 1.3118499268908782E-5 0 1.5762674926429741E-6 fuse=53 on-ground=true
+entity 28 e6 2.458241845100018 1.0 3.495160786620807 -2.308163859837514E-6 0 -1.3740866371753233E-7 fuse=55 on-ground=true
+entity 28 e7 -1.5 1.0 6.5 0 -0.08 0 item=minecraft:stone count=1 age=15 pickup-delay=0 on-ground=true
+
+entity-order 29 entities e1 e2 e3 e4 e5 e6 e7
+entity 29 e1 -1.865 1.0 -5.5 0 -0.04 0 item=minecraft:stone count=1 age=28 pickup-delay=0 on-ground=true
+entity 29 e2 -0.865 1.0 -2.5 0 -0.08 0 item=minecraft:stone count=1 age=28 pickup-delay=0 on-ground=true
+entity 29 e3 -0.865 1.0 -2.6 0 -0.12 0 item=minecraft:redstone count=1 age=28 pickup-delay=0 on-ground=true
+entity 29 e4 -2.5 3.0 0.5 0 0 0 item=minecraft:stone count=1 age=28 pickup-delay=0 on-ground=true
+entity 29 e5 3.7011210922061633 1.0 5.524165922734834 8.999290498471423E-6 0 1.0813194999530802E-6 fuse=52 on-ground=true
+entity 29 e6 2.458241845100018 1.0 3.495160786620807 -1.5834004078485346E-6 0 -9.426234331022718E-8 fuse=54 on-ground=true
+entity 29 e7 -1.5 1.0 6.5 0 -0.12 0 item=minecraft:stone count=1 age=16 pickup-delay=0 on-ground=true
+
+entity-order 30 entities e1 e2 e3 e4 e5 e6 e7
+entity 30 e1 -1.865 1.0 -5.5 0 -0.08 0 item=minecraft:stone count=1 age=29 pickup-delay=0 on-ground=true
+entity 30 e2 -0.865 1.0 -2.5 0 -0.12 0 item=minecraft:stone count=1 age=29 pickup-delay=0 on-ground=true
+entity 30 e3 -0.865 1.0 -2.6 0 0 0 item=minecraft:redstone count=1 age=29 pickup-delay=0 on-ground=true
+entity 30 e4 -2.5 3.0 0.5 0 -0.04 0 item=minecraft:stone count=1 age=29 pickup-delay=0 on-ground=true
+entity 30 e5 3.7011210922061633 1.0 5.524165922734834 6.1735132819513955E-6 0 7.41785176967813E-7 fuse=51 on-ground=true
+entity 30 e6 2.458241845100018 1.0 3.495160786620807 -1.0862126797840946E-6 0 -6.466396751081585E-8 fuse=53 on-ground=true
+entity 30 e7 -1.5 1.0 6.5 0 0 0 item=minecraft:stone count=1 age=17 pickup-delay=0 on-ground=true
+
+entity-order 31 entities e1 e2 e3 e4 e5 e6 e7
+entity 31 e1 -1.865 1.0 -5.5 0 -0.12 0 item=minecraft:stone count=1 age=30 pickup-delay=0 on-ground=true
+entity 31 e2 -0.865 1.0 -2.5 0 0 0 item=minecraft:stone count=1 age=30 pickup-delay=0 on-ground=true
+entity 31 e3 -0.865 1.0 -2.6 0 -0.04 0 item=minecraft:redstone count=1 age=30 pickup-delay=0 on-ground=true
+entity 31 e4 -2.5 3.0 0.5 0 -0.08 0 item=minecraft:stone count=1 age=30 pickup-delay=0 on-ground=true
+entity 31 e5 3.7011210922061633 1.0 5.524165922734834 4.235030111418657E-6 0 5.088646313999197E-7 fuse=50 on-ground=true
+entity 31 e6 2.458241845100018 1.0 3.495160786620807 -7.451418983318888E-7 0 -4.4359481712419664E-8 fuse=52 on-ground=true
+entity 31 e7 -1.5 1.0 6.5 0 -0.04 0 item=minecraft:stone count=1 age=18 pickup-delay=0 on-ground=true
+
+entity-order 32 entities e1 e2 e3 e4 e5 e6 e7
+entity 32 e1 -1.865 1.0 -5.5 0 0 0 item=minecraft:stone count=1 age=31 pickup-delay=0 on-ground=true
+entity 32 e2 -0.865 1.0 -2.5 0 -0.04 0 item=minecraft:stone count=1 age=31 pickup-delay=0 on-ground=true
+entity 32 e3 -0.865 1.0 -2.6 0 -0.08 0 item=minecraft:redstone count=1 age=31 pickup-delay=0 on-ground=true
+entity 32 e4 -2.5 3.0 0.5 0 -0.12 0 item=minecraft:stone count=1 age=31 pickup-delay=0 on-ground=true
+entity 32 e5 3.7011210922061633 1.0 5.524165922734834 2.9052306564331985E-6 0 3.4908113714034483E-7 fuse=49 on-ground=true
+entity 32 e6 2.458241845100018 1.0 3.495160786620807 -5.111673422556757E-7 0 -3.0430604454719886E-8 fuse=51 on-ground=true
+entity 32 e7 -1.5 1.0 6.5 0 -0.08 0 item=minecraft:stone count=1 age=19 pickup-delay=0 on-ground=true
+
+entity-order 33 entities e1 e2 e3 e4 e5 e6 e7
+entity 33 e1 -1.865 1.0 -5.5 0 -0.04 0 item=minecraft:stone count=1 age=32 pickup-delay=0 on-ground=true
+entity 33 e2 -0.865 1.0 -2.5 0 -0.08 0 item=minecraft:stone count=1 age=32 pickup-delay=0 on-ground=true
+entity 33 e3 -0.865 1.0 -2.6 0 -0.12 0 item=minecraft:redstone count=1 age=32 pickup-delay=0 on-ground=true
+entity 33 e4 -2.5 3.0 0.5 0 0 0 item=minecraft:stone count=1 age=32 pickup-delay=0 on-ground=true
+entity 33 e5 3.7011210922061633 1.0 5.524165922734834 1.992988230313174E-6 0 2.3946966007827654E-7 fuse=48 on-ground=true
+entity 33 e6 2.458241845100018 1.0 3.495160786620807 -3.5066079678739354E-7 0 -2.087539465593784E-8 fuse=50 on-ground=true
+entity 33 e7 -1.5 1.0 6.5 0 -0.12 0 item=minecraft:stone count=1 age=20 pickup-delay=0 on-ground=true
+
+entity-order 34 entities e1 e2 e3 e4 e5 e6 e7
+entity 34 e1 -1.865 1.0 -5.5 0 -0.08 0 item=minecraft:stone count=1 age=33 pickup-delay=0 on-ground=true
+entity 34 e2 -0.865 1.0 -2.5 0 -0.12 0 item=minecraft:stone count=1 age=33 pickup-delay=0 on-ground=true
+entity 34 e3 -0.865 1.0 -2.6 0 0 0 item=minecraft:redstone count=1 age=33 pickup-delay=0 on-ground=true
+entity 34 e4 -2.5 3.0 0.5 0 -0.04 0 item=minecraft:stone count=1 age=33 pickup-delay=0 on-ground=true
+entity 34 e5 3.7011210922061633 1.0 5.524165922734834 1.3671899259948374E-6 0 1.642761868136977E-7 fuse=47 on-ground=true
+entity 34 e6 2.458241845100018 1.0 3.495160786620807 -2.4055330659615195E-7 0 -1.4320520733973357E-8 fuse=49 on-ground=true
+entity 34 e7 -1.5 1.0 6.5 0 0 0 item=minecraft:stone count=1 age=21 pickup-delay=0 on-ground=true
+
+entity-order 35 entities e1 e2 e3 e4 e5 e6 e7
+entity 35 e1 -1.865 1.0 -5.5 0 -0.12 0 item=minecraft:stone count=1 age=34 pickup-delay=0 on-ground=true
+entity 35 e2 -0.865 1.0 -2.5 0 0 0 item=minecraft:stone count=1 age=34 pickup-delay=0 on-ground=true
+entity 35 e3 -0.865 1.0 -2.6 0 -0.04 0 item=minecraft:redstone count=1 age=34 pickup-delay=0 on-ground=true
+entity 35 e4 -2.5 3.0 0.5 0 -0.08 0 item=minecraft:stone count=1 age=34 pickup-delay=0 on-ground=true
+entity 35 e5 3.7011210922061633 1.0 5.524165922734834 9.378922892324584E-7 0 1.1269346415419661E-7 fuse=46 on-ground=true
+entity 35 e6 2.458241845100018 1.0 3.495160786620807 -1.6501956832496022E-7 0 -9.823877223505723E-9 fuse=48 on-ground=true
+entity 35 e7 -1.5 1.0 6.5 0 -0.04 0 item=minecraft:stone count=1 age=22 pickup-delay=0 on-ground=true
+
+entity-order 36 entities e1 e2 e3 e4 e5 e6 e7
+entity 36 e1 -1.865 1.0 -5.5 0 0 0 item=minecraft:stone count=1 age=35 pickup-delay=0 on-ground=true
+entity 36 e2 -0.865 1.0 -2.5 0 -0.04 0 item=minecraft:stone count=1 age=35 pickup-delay=0 on-ground=true
+entity 36 e3 -0.865 1.0 -2.6 0 -0.08 0 item=minecraft:redstone count=1 age=35 pickup-delay=0 on-ground=true
+entity 36 e4 -2.5 3.0 0.5 0 -0.12 0 item=minecraft:stone count=1 age=35 pickup-delay=0 on-ground=true
+entity 36 e5 3.7011210922061633 1.0 5.524165922734834 6.433941104134664E-7 0 7.730771640977887E-8 fuse=45 on-ground=true
+entity 36 e6 2.458241845100018 1.0 3.495160786620807 -1.1320342387092269E-7 0 -6.739179775324925E-9 fuse=47 on-ground=true
+entity 36 e7 -1.5 1.0 6.5 0 -0.08 0 item=minecraft:stone count=1 age=23 pickup-delay=0 on-ground=true
+
+entity-order 37 entities e1 e2 e3 e4 e5 e6 e7
+entity 37 e1 -1.865 1.0 -5.5 0 -0.04 0 item=minecraft:stone count=1 age=36 pickup-delay=0 on-ground=true
+entity 37 e2 -0.865 1.0 -2.5 0 -0.08 0 item=minecraft:stone count=1 age=36 pickup-delay=0 on-ground=true
+entity 37 e3 -0.865 1.0 -2.6 0 -0.12 0 item=minecraft:redstone count=1 age=36 pickup-delay=0 on-ground=true
+entity 37 e4 -2.5 3.0 0.5 0 0 0 item=minecraft:stone count=1 age=36 pickup-delay=0 on-ground=true
+entity 37 e5 3.7011210922061633 1.0 5.524165922734834 4.413683597436379E-7 0 5.30330934571083E-8 fuse=44 on-ground=true
+entity 37 e6 2.458241845100018 1.0 3.495160786620807 -7.765754877545295E-8 0 -4.6230773258728986E-9 fuse=46 on-ground=true
+entity 37 e7 -1.5 1.0 6.5 0 -0.12 0 item=minecraft:stone count=1 age=24 pickup-delay=0 on-ground=true
+
+entity-order 38 entities e1 e2 e3 e4 e5 e6 e7
+entity 38 e1 -1.865 1.0 -5.5 0 -0.08 0 item=minecraft:stone count=1 age=37 pickup-delay=0 on-ground=true
+entity 38 e2 -0.865 1.0 -2.5 0 -0.12 0 item=minecraft:stone count=1 age=37 pickup-delay=0 on-ground=true
+entity 38 e3 -0.865 1.0 -2.6 0 0 0 item=minecraft:redstone count=1 age=37 pickup-delay=0 on-ground=true
+entity 38 e4 -2.5 3.0 0.5 0 -0.04 0 item=minecraft:stone count=1 age=37 pickup-delay=0 on-ground=true
+entity 38 e5 3.7011210922061633 1.0 5.524165922734834 3.0277869478413555E-7 0 3.638070211157629E-8 fuse=43 on-ground=true
+entity 38 e6 2.458241845100018 1.0 3.495160786620807 -5.327307845996072E-8 0 -3.1714310455488084E-9 fuse=45 on-ground=true
+entity 38 e7 -1.5 1.0 6.5 0 0 0 item=minecraft:stone count=1 age=25 pickup-delay=0 on-ground=true
+
+entity-order 39 entities e1 e2 e3 e4 e5 e6 e7
+entity 39 e1 -1.865 1.0 -5.5 0 -0.12 0 item=minecraft:stone count=1 age=38 pickup-delay=0 on-ground=true
+entity 39 e2 -0.865 1.0 -2.5 0 0 0 item=minecraft:stone count=1 age=38 pickup-delay=0 on-ground=true
+entity 39 e3 -0.865 1.0 -2.6 0 -0.04 0 item=minecraft:redstone count=1 age=38 pickup-delay=0 on-ground=true
+entity 39 e4 -2.5 3.0 0.5 0 -0.08 0 item=minecraft:stone count=1 age=38 pickup-delay=0 on-ground=true
+entity 39 e5 3.7011210922061633 1.0 5.524165922734834 2.0770618462191697E-7 0 2.4957161648541332E-8 fuse=42 on-ground=true
+entity 39 e6 2.458241845100018 1.0 3.495160786620807 -3.6545331823533054E-8 0 -2.1756016972464824E-9 fuse=44 on-ground=true
+entity 39 e7 -1.5 1.0 6.5 0 -0.04 0 item=minecraft:stone count=1 age=26 pickup-delay=0 on-ground=true
+
+entity-order 40 entities e1 e2 e3 e4 e5 e6 e7
+entity 40 e1 -1.865 1.0 -5.5 0 0 0 item=minecraft:stone count=1 age=39 pickup-delay=0 on-ground=true
+entity 40 e2 -0.865 1.0 -2.5 0 -0.04 0 item=minecraft:stone count=1 age=39 pickup-delay=0 on-ground=true
+entity 40 e3 -0.865 1.0 -2.6 0 -0.08 0 item=minecraft:redstone count=1 age=39 pickup-delay=0 on-ground=true
+entity 40 e4 -2.5 3.0 0.5 0 -0.12 0 item=minecraft:stone count=1 age=39 pickup-delay=0 on-ground=true
+entity 40 e5 3.7011210922061633 1.0 5.524165922734834 1.4248644265063503E-7 0 1.7120612890899355E-8 fuse=41 on-ground=true
+entity 40 e6 2.458241845100018 1.0 3.495160786620807 -2.5070097630943675E-8 0 -1.4924627643110868E-9 fuse=43 on-ground=true
+entity 40 e7 -1.5 1.0 6.5 0 -0.08 0 item=minecraft:stone count=1 age=27 pickup-delay=0 on-ground=true

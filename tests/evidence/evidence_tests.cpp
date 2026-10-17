@@ -846,14 +846,17 @@ int main(int argc, char** argv) {
     });
 
     suite.run("recordings of the same scenario are compared observation by observation", [&] {
-        const auto official = parse(read_text(fixtures / "open" / "item_drop_piston.ctrace"));
+        const auto official = parse(read_text(fixtures / "harness" / "item_drop_piston.ctrace"));
         const auto circuit = parse(read_text(fixtures / "reference" / "item_drop_piston.ctrace"));
         require(!first_difference(official, official).has_value(), "a recording equals itself");
-        require(!first_difference(official, parse(read_text(fixtures / "open-1.21.4" / "item_drop_piston.ctrace"))).has_value(),
+        require(!first_difference(official, parse(read_text(fixtures / "harness-1.21.4" / "item_drop_piston.ctrace"))).has_value(),
                 "provenance is not compared: both versions recorded the same");
-        const auto d = first_difference(official, circuit);
-        // The drop matches; the moving block pushes it a tick early (C4.1).
-        require(d && d->starts_with("tick 1 observation 2 (line 28 / line 28)") && d->find("entity e1") != std::string::npos, *d);
+        require(!first_difference(official, circuit).has_value(), "Circuit's recording equals the official one");
+        // The first observation that differs is named.
+        auto pushed = circuit;
+        pushed.entity_probes.at(1).position[0] += 0.5;
+        const auto d = first_difference(official, pushed);
+        require(d && d->find("entity e1") != std::string::npos, d.value_or("no difference"));
         // Property order in block states does not matter; values do.
         auto dust = parse(read_text(fixtures / "reference" / "item_drop_piston.ctrace"));
         for (auto& c : dust.recorded_changes)

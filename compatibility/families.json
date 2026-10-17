@@ -1094,13 +1094,10 @@
           "name": "Blocks destroyed by pistons and their drops",
           "milestone": "C4",
           "impl": "partial",
-          "evidence": "mismatch",
+          "evidence": "compared",
           "cases": [
             "trace/piston_destroys",
             "trace/item_drop_piston"
-          ],
-          "deviations": [
-            "moving blocks push items a tick early (trace/item_drop_piston)"
           ]
         },
         {
@@ -1108,13 +1105,18 @@
           "name": "Moving blocks pushing entities and players",
           "milestone": "C3",
           "impl": "partial",
-          "evidence": "mismatch",
+          "evidence": "compared",
           "deviations": [
-            "item entities only"
+            "honey blocks do not drag entities",
+            "stuck-entity and piston-base corrections are not modeled"
           ],
           "cases": [
-            "trace/item_piston_push"
-          ]
+            "trace/item_piston_push",
+            "trace/item_drop_piston",
+            "trace/piston_entities",
+            "trace/slime_entities"
+          ],
+          "note": "Entities pushed out of the space a moving block sweeps through each step (0.01 beyond it, at most 0.51 a tick on each axis); moving blocks collide where they stand; moving slime blocks set the speed along their motion to one block a tick; slime blocks bounce what lands on them at 80%"
         },
         {
           "id": "push_reactions",

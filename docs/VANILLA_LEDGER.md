@@ -38,12 +38,12 @@ Feature counts per implementation state, then the number of features with compar
 | V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 24 / 24 | 54 / 54 | 4 / 4 | 0 / 0 | 8 / 8 |
 | V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 2 / 2 | 298 / 312 | 6 / 6 | 14 / 0 | 0 / 0 |
 | V14 Redstone sources and signal consumers | C4 | 138 | 5 / 5 | 15 / 15 | 112 / 112 | 6 / 6 | 0 / 0 | 15 / 17 |
-| V15 Pistons and moving structures | C3, C4 | 16 | 1 / 1 | 12 / 12 | 2 / 2 | 1 / 1 | 0 / 0 | 7 / 7 |
+| V15 Pistons and moving structures | C3, C4 | 16 | 1 / 1 | 12 / 12 | 2 / 2 | 1 / 1 | 0 / 0 | 9 / 9 |
 | V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 4 / 4 | 52 / 52 | 3 / 3 | 0 / 0 | 6 / 6 |
 | V17 TNT and explosions | C3, C4 | 11 | 0 / 1 | 7 / 7 | 1 / 1 | 2 / 2 | 1 / 0 | 7 / 8 |
 | V18 Technical machines and vanilla quirks | C4, C7 | 6 | 0 / 0 | 1 / 1 | 0 / 0 | 5 / 5 | 0 / 0 | 1 / 1 |
 | V19 General entity lifecycle | C3 | 17 | 0 / 0 | 4 / 4 | 0 / 0 | 13 / 13 | 0 / 0 | 3 / 3 |
-| V20 Item entities and experience | C3, C6 | 7 | 2 / 2 | 3 / 3 | 0 / 0 | 2 / 2 | 0 / 0 | 4 / 4 |
+| V20 Item entities and experience | C3, C6 | 7 | 2 / 2 | 3 / 3 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
 | V21 Projectiles, vehicles and mounts | C3, C6 | 109 | 0 / 0 | 16 / 16 | 39 / 57 | 33 / 35 | 21 / 1 | 7 / 7 |
 | V22 Movement and player modes | C6 | 7 | 3 / 3 | 2 / 2 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
 | V23 Combat, attributes and effects | C6 | 219 | 1 / 1 | 6 / 6 | 91 / 91 | 118 / 121 | 3 / 0 | 6 / 6 |
@@ -129,8 +129,8 @@ Their counts are unknown, not zero.
 | --- | --- | ---: |
 | black_box | passing | 28 |
 | black_box | unsupported | 1 |
-| official_trace | failing | 5 |
-| official_trace | passing | 78 |
+| official_trace | failing | 3 |
+| official_trace | passing | 82 |
 | planned | planned | 2 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
@@ -302,8 +302,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Pushing, pulling and quasi-connectivity | C4 | partial, compared | partial, compared | `trace/piston_observed`, `trace/piston_timing`, `trace/quasi_connectivity` |
 | Slime block structures | C4 | implemented, compared | implemented, compared | `trace/piston_slime` |
 | Honey blocks and slime-honey separation | C4 | missing, none | missing, none |  |
-| Blocks destroyed by pistons and their drops | C4 | partial, mismatch | partial, mismatch | `trace/item_drop_piston`, `trace/piston_destroys`; moving blocks push items a tick early (trace/item_drop_piston) |
-| Moving blocks pushing entities and players | C3 | partial, mismatch | partial, mismatch | `trace/item_piston_push`; item entities only |
+| Blocks destroyed by pistons and their drops | C4 | partial, compared | partial, compared | `trace/item_drop_piston`, `trace/piston_destroys` |
+| Moving blocks pushing entities and players | C3 | partial, compared | partial, compared | `trace/item_drop_piston`, `trace/item_piston_push`, `trace/piston_entities`, `trace/slime_entities`; honey blocks do not drag entities; stuck-entity and piston-base corrections are not modeled; Entities pushed out of the space a moving block sweeps through each step (0.01 beyond it, at most 0.51 a tick on each axis); moving blocks collide where they stand; moving slime blocks set the speed along their motion to one block a tick; slime blocks bounce what lands on them at 80% |
 | Push reactions of every block (immovable, destroy, block entities) | C4 | partial, none | partial, none | Modeled blocks only |
 
 ### V16 Automation and storage blocks

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
+#include <circuit/gameplay/physics.hpp>
 #include <algorithm>
 #include <optional>
 #include <set>
@@ -267,40 +268,157 @@ void run_piston_event(RuleContext& ctx, const BlockEvent& event, BlockState s) {
 }
 
 namespace {
-constexpr double push_step = 0.5;
+using contracts::Vec3;
+constexpr double step = 0.5;           // of a move, each tick
+constexpr double push_margin = 0.01;   // beyond the moving shape
+constexpr double piston_push_limit = 0.51; // a tick, on each axis
 
-// Moves item entities in the moving block's cell half a block along the
-// motion. A retracting base does not move, so it pushes nothing.
-void push_entities(RuleContext& ctx, BlockPos pos, Motion motion) {
-    if (motion.source && !motion.extending) return;
-    const auto o = contracts::offset(motion.extending ? motion.facing : contracts::opposite(motion.facing));
-    for (const auto id : ctx.entities_in_cell(pos)) {
-        const auto* e = ctx.peek_entity(id);
+// Where a moving piston's block goes, and how far along it is (0 to 1).
+struct Move {
+    BlockState carried;
+    Direction dir;
+    bool moves;
+    double progress;
+};
+std::optional<Move> move_of(RuleContext& ctx, BlockPos pos) {
+    const auto* be = ctx.peek_block_entity(pos);
+    if (!be) return std::nullopt;
+    const auto m = Motion::unpack(be->motion);
+    const auto carried = BlockState::decode(be->moving).value_or(blocks::air());
+    // A retracting piston's base stays where it is; pulled blocks move back.
+    return Move{carried, m.extending ? m.facing : contracts::opposite(m.facing), m.extending || !m.source,
+                std::min(1.0, static_cast<double>(be->progress) * step)};
+}
+
+std::vector<physics::Aabb> boxes_at(RuleContext& ctx, BlockPos pos, const Move& move) {
+    std::vector<physics::Aabb> out;
+    const auto o = contracts::offset(move.dir);
+    const double back = move.moves ? move.progress - 1.0 : 0.0;
+    for (const auto& b : physics::collision_boxes(move.carried, ctx.bundle().schema.content_release))
+        out.push_back(physics::Aabb{pos.x + b.min_x, pos.y + b.min_y, pos.z + b.min_z, pos.x + b.max_x, pos.y + b.max_y, pos.z + b.max_z}
+                          .move(o.dx * back, o.dy * back, o.dz * back));
+    return out;
+}
+
+// The space a box sweeps through moving `length` along `dir`.
+physics::Aabb sweep(const physics::Aabb& b, Direction dir, double length) {
+    switch (dir) {
+    case Direction::east: return {b.max_x, b.min_y, b.min_z, b.max_x + length, b.max_y, b.max_z};
+    case Direction::west: return {b.min_x - length, b.min_y, b.min_z, b.min_x, b.max_y, b.max_z};
+    case Direction::up: return {b.min_x, b.max_y, b.min_z, b.max_x, b.max_y + length, b.max_z};
+    case Direction::down: return {b.min_x, b.min_y - length, b.min_z, b.max_x, b.min_y, b.max_z};
+    case Direction::south: return {b.min_x, b.min_y, b.max_z, b.max_x, b.max_y, b.max_z + length};
+    case Direction::north: return {b.min_x, b.min_y, b.min_z - length, b.max_x, b.max_y, b.max_z};
+    }
+    return b;
+}
+
+// How far an entity's box must move along `dir` to leave the swept space.
+double needed(const physics::Aabb& area, Direction dir, const physics::Aabb& e) {
+    switch (dir) {
+    case Direction::east: return area.max_x - e.min_x;
+    case Direction::west: return e.max_x - area.min_x;
+    case Direction::up: return area.max_y - e.min_y;
+    case Direction::down: return e.max_y - area.min_y;
+    case Direction::south: return area.max_z - e.min_z;
+    case Direction::north: return e.max_z - area.min_z;
+    }
+    return 0.0;
+}
+
+physics::Aabb bounds(const std::vector<physics::Aabb>& boxes) {
+    auto b = boxes.front();
+    for (const auto& x : boxes)
+        b = {std::min(b.min_x, x.min_x), std::min(b.min_y, x.min_y), std::min(b.min_z, x.min_z), std::max(b.max_x, x.max_x),
+             std::max(b.max_y, x.max_y), std::max(b.max_z, x.max_z)};
+    return b;
+}
+
+// Moves an entity as a piston does: against the blocks, at most 0.51 on
+// each axis in one tick from all pistons together.
+void piston_move(RuleContext& ctx, EntityId id, Vec3 push) {
+    auto* e = ctx.entity(id);
+    if (e->piston_tick != ctx.now()) {
+        e->piston_tick = ctx.now();
+        e->piston_push = {};
+    }
+    const auto limit = [](double& total, double& v) {
+        const double next = std::clamp(total + v, -piston_push_limit, piston_push_limit);
+        v = next - total;
+        total = next;
+    };
+    limit(e->piston_push.x, push.x);
+    limit(e->piston_push.y, push.y);
+    limit(e->piston_push.z, push.z);
+    if (push == Vec3{}) return;
+    const auto box = entity_box(*e);
+    const auto start = e->position;
+    auto p = start;
+    auto v = e->velocity;
+    e->on_ground = move_entity_by(ctx, p, v, push, box.max_x - box.min_x, box.max_y - box.min_y);
+    e->velocity = v;
+    if (p == start) return;
+    const auto from = contracts::chunk_of(contracts::block_of(start));
+    const auto to = contracts::chunk_of(contracts::block_of(p));
+    if (from != to) ctx.record(TraceKind::entity_changed_chunk, contracts::block_of(p), id.value, contracts::pack_chunk(from), contracts::pack_chunk(to));
+    ctx.relocate_entity(id, p);
+}
+
+// Entities in the space the moving block sweeps through this step are
+// pushed along to 0.01 beyond it (at most the step); a moving slime block
+// also sets their speed along its motion to one block a tick (both official
+// servers; piston_entities, slime_entities, item_piston_push).
+void push_entities(RuleContext& ctx, BlockPos pos) {
+    const auto move = move_of(ctx, pos);
+    if (!move || !move->moves) return;
+    const auto boxes = boxes_at(ctx, pos, *move);
+    if (boxes.empty()) return;
+    const auto whole = bounds(boxes);
+    const auto ahead = sweep(whole, move->dir, step);
+    const physics::Aabb area{std::min(whole.min_x, ahead.min_x), std::min(whole.min_y, ahead.min_y), std::min(whole.min_z, ahead.min_z),
+                             std::max(whole.max_x, ahead.max_x), std::max(whole.max_y, ahead.max_y), std::max(whole.max_z, ahead.max_z)};
+    const bool slime = move->carried.is(BlockType::slime_block);
+    const auto o = contracts::offset(move->dir);
+    for (const auto id : entities_in_section_order(ctx, entities_intersecting(ctx, area))) {
+        auto* e = ctx.entity(id);
         if (!e) continue;
-        auto next = e->position;
-        next.x += o.dx * push_step;
-        next.y += o.dy * push_step;
-        next.z += o.dz * push_step;
-        if (!contracts::within_border(next) || !ctx.world().contains_position_y(next.y)) continue;
-        const auto cell = contracts::block_of(next);
-        if (!ctx.chunk_generation(contracts::chunk_of(cell))) continue;
-        if (cell != pos && is_solid(ctx.block(cell))) continue;
-        const auto from = contracts::chunk_of(contracts::block_of(e->position));
-        const auto to = contracts::chunk_of(cell);
-        if (from != to)
-            ctx.record(TraceKind::entity_changed_chunk, cell, id.value, contracts::pack_chunk(from), contracts::pack_chunk(to));
-        ctx.relocate_entity(id, next);
+        if (slime) {
+            auto& v = e->velocity;
+            if (o.dx != 0) v.x = o.dx;
+            if (o.dy != 0) v.y = o.dy;
+            if (o.dz != 0) v.z = o.dz;
+        }
+        const auto eb = entity_box(*e);
+        double d = 0.0;
+        for (const auto& b : boxes) {
+            const auto swept = sweep(b, move->dir, step);
+            if (!swept.intersects(eb)) continue;
+            d = std::max(d, needed(swept, move->dir, eb));
+            if (d >= step) break;
+        }
+        if (d <= 0.0) continue;
+        const double amount = std::min(d, step) + push_margin;
+        piston_move(ctx, id, {o.dx * amount, o.dy * amount, o.dz * amount});
     }
 }
 } // namespace
+
+std::vector<registry::Box> moving_block_boxes(RuleContext& ctx, BlockPos pos) {
+    std::vector<registry::Box> out;
+    const auto move = move_of(ctx, pos);
+    if (!move) return out;
+    for (const auto& b : boxes_at(ctx, pos, *move))
+        out.push_back({b.min_x - pos.x, b.min_y - pos.y, b.min_z - pos.z, b.max_x - pos.x, b.max_y - pos.y, b.max_z - pos.z});
+    return out;
+}
 
 void tick_moving_piston(RuleContext& ctx, BlockPos pos) {
     auto* be = ctx.block_entity(pos);
     if (!be) return;
     if (be->progress < move_ticks) {
-        const auto motion = Motion::unpack(be->motion);
-        ++be->progress;
-        push_entities(ctx, pos, motion); // `be` must not be used after entities move.
+        // Entities are pushed from where the block stood, then it moves on.
+        push_entities(ctx, pos); // `be` must not be used after entities move.
+        ++ctx.block_entity(pos)->progress;
         return;
     }
     const auto carried = BlockState::decode(be->moving).value_or(blocks::air());

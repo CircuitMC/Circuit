@@ -566,9 +566,9 @@
     "entity": {
       "item": {
         "impl": "partial",
-        "evidence": "mismatch",
+        "evidence": "compared",
         "deviations": [
-          "moving blocks push items differently; reloaded entities come back in coordinate order"
+          "reloaded entities come back in coordinate order"
         ],
         "cases": [
           "trace/item_chest_scatter",
@@ -577,7 +577,9 @@
           "trace/item_merge",
           "trace/item_piston_push",
           "trace/item_water_channel",
-          "trace/item_water_current"
+          "trace/item_water_current",
+          "trace/piston_entities",
+          "trace/slime_entities"
         ]
       },
       "player": {

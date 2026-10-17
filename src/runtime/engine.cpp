@@ -1140,6 +1140,9 @@ void Engine::Impl::restore(const WorldDump& state) {
             if (static_cast<std::uint8_t>(e.kind) == 0 || static_cast<std::uint8_t>(e.kind) >= gameplay::entity_kind_count) bad("entity kind");
             if (e.position.y < lowest || e.position.y >= highest) bad("entity height");
             if (!gameplay::valid_velocity(e.velocity)) bad("entity velocity");
+            if (e.piston_tick > state.time || !contracts::finite(e.piston_push) || std::abs(e.piston_push.x) > 0.51 || std::abs(e.piston_push.y) > 0.51
+                || std::abs(e.piston_push.z) > 0.51)
+                bad("entity piston push");
             // Each kind's own state, valid; the state of other kinds at its defaults.
             auto rest = e;
             switch (e.kind) {

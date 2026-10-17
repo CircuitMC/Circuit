@@ -5,6 +5,8 @@
 #include <circuit/gameplay/survival.hpp>
 #include <algorithm>
 #include <cmath>
+#include <deque>
+#include <memory>
 #include <tuple>
 
 // Item entities, as both official servers run them (checked against their
@@ -35,11 +37,17 @@ constexpr double item_size = 0.25;
 // enter them). Above and below the world there is nothing.
 constexpr registry::Box full_cube{0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
 
+// A moving block collides where it stands in its move.
 physics::ShapeAt shapes(RuleContext& ctx) {
-    return [&ctx](contracts::BlockPos p) -> std::span<const registry::Box> {
+    auto moving = std::make_shared<std::deque<std::vector<registry::Box>>>();
+    return [&ctx, moving](contracts::BlockPos p) -> std::span<const registry::Box> {
         if (!ctx.world().contains_y(p.y)) return {};
         const auto s = ctx.block(p);
         if (s.is_unloaded()) return {&full_cube, 1};
+        if (s.is(BlockType::moving_piston)) {
+            moving->push_back(detail::moving_block_boxes(ctx, p));
+            return moving->back();
+        }
         return physics::collision_boxes(s, ctx.bundle().schema.content_release);
     };
 }
@@ -159,19 +167,30 @@ InWater water_at(RuleContext& ctx, const physics::Aabb& entity) {
 }
 
 bool move_entity(RuleContext& ctx, Vec3& position, Vec3& velocity, double width, double height) {
+    return move_entity_by(ctx, position, velocity, velocity, width, height);
+}
+
+bool move_entity_by(RuleContext& ctx, Vec3& position, Vec3& velocity, Vec3 movement, double width, double height) {
     const auto box = physics::box_at(position, width, height);
-    const auto done = physics::collide(box, velocity, shapes(ctx));
+    const auto done = physics::collide(box, movement, shapes(ctx));
     const double made = done.x * done.x + done.y * done.y + done.z * done.z;
-    const double wanted = velocity.x * velocity.x + velocity.y * velocity.y + velocity.z * velocity.z;
+    const double wanted = movement.x * movement.x + movement.y * movement.y + movement.z * movement.z;
     if (made > 1.0e-7 || wanted - made < 1.0e-7) position = {position.x + done.x, position.y + done.y, position.z + done.z};
-    const bool landed = done.y != velocity.y && velocity.y < 0.0;
+    const bool landed = done.y != movement.y && movement.y < 0.0;
     // A horizontal component stops only when the collision shortened it by
     // 1e-5 or more (both official servers keep primed TNT's last 5e-8 of
     // speed while a shorter move is dropped).
     constexpr double horizontal = 1.0e-5f;
-    if (std::abs(done.x - velocity.x) >= horizontal) velocity.x = 0.0;
-    if (std::abs(done.z - velocity.z) >= horizontal) velocity.z = 0.0;
-    if (done.y != velocity.y) velocity.y = 0.0;
+    if (std::abs(done.x - movement.x) >= horizontal) velocity.x = 0.0;
+    if (std::abs(done.z - movement.z) >= horizontal) velocity.z = 0.0;
+    if (done.y != movement.y) {
+        // A slime block under the entity sends it back up at 80% of the
+        // speed it landed with (minecraft.wiki "Slime Block"; observed for
+        // items); anything else stops it.
+        const auto under = contracts::block_of(Vec3{position.x, position.y - 0.2, position.z});
+        const bool slime = landed && ctx.world().contains_y(under.y) && ctx.block(under).is(BlockType::slime_block);
+        velocity.y = slime && velocity.y < 0.0 ? -velocity.y * 0.8 : 0.0;
+    }
     return landed;
 }
 } // namespace detail

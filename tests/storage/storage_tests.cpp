@@ -80,10 +80,12 @@ bool legacy_reads_as(const Checkpoint& legacy, const Checkpoint& current) {
     const auto& la = a.overworld();
     const auto& lb = b.overworld();
     // Entities: the same ones; their motion followed the rules of the release
-    // that wrote the world (1/4096 block units, read exactly).
+    // that wrote the world (1/4096 block units, read exactly), and so did
+    // their ages, which count the ticks they spent in entity-ticking chunks
+    // (pistons now push items across a chunk edge a tick later).
     const auto same_entity = [](const circuit::gameplay::Entity& x, const circuit::gameplay::Entity& y) {
         const auto whole = [](double v) { return v * 4096.0 == std::floor(v * 4096.0); };
-        return x.id == y.id && x.kind == y.kind && x.stack == y.stack && x.age == y.age && x.pickup_delay == y.pickup_delay
+        return x.id == y.id && x.kind == y.kind && x.stack == y.stack && std::abs(x.age - y.age) <= 1 && x.pickup_delay == y.pickup_delay
                && whole(x.position.x) && whole(x.position.y) && whole(x.position.z) && whole(x.velocity.x) && whole(x.velocity.y);
     };
     if (la.entities.size() != lb.entities.size() || !std::ranges::equal(la.entities, lb.entities, same_entity)) return false;

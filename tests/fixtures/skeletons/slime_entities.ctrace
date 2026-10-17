@@ -1,0 +1,139 @@
+circuit-trace 2
+title Moving slime blocks launch items; an item lands on a slime block
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms piston item_entity
+area -6 0 -4 6 8 4
+ticks 40
+changes ordered
+entities observed
+rng observed
+
+at 0 set -6 0 -4 minecraft:obsidian
+at 0 set -6 0 -3 minecraft:obsidian
+at 0 set -6 0 -2 minecraft:obsidian
+at 0 set -6 0 -1 minecraft:obsidian
+at 0 set -6 0 0 minecraft:obsidian
+at 0 set -6 0 1 minecraft:obsidian
+at 0 set -6 0 2 minecraft:obsidian
+at 0 set -6 0 3 minecraft:obsidian
+at 0 set -6 0 4 minecraft:obsidian
+at 0 set -5 0 -4 minecraft:obsidian
+at 0 set -5 0 -3 minecraft:obsidian
+at 0 set -5 0 -2 minecraft:obsidian
+at 0 set -5 0 -1 minecraft:obsidian
+at 0 set -5 0 0 minecraft:obsidian
+at 0 set -5 0 1 minecraft:obsidian
+at 0 set -5 0 2 minecraft:obsidian
+at 0 set -5 0 3 minecraft:obsidian
+at 0 set -5 0 4 minecraft:obsidian
+at 0 set -4 0 -4 minecraft:obsidian
+at 0 set -4 0 -3 minecraft:obsidian
+at 0 set -4 0 -2 minecraft:obsidian
+at 0 set -4 0 -1 minecraft:obsidian
+at 0 set -4 0 0 minecraft:obsidian
+at 0 set -4 0 1 minecraft:obsidian
+at 0 set -4 0 2 minecraft:obsidian
+at 0 set -4 0 3 minecraft:obsidian
+at 0 set -4 0 4 minecraft:obsidian
+at 0 set -3 0 -4 minecraft:obsidian
+at 0 set -3 0 -3 minecraft:obsidian
+at 0 set -3 0 -2 minecraft:obsidian
+at 0 set -3 0 -1 minecraft:obsidian
+at 0 set -3 0 0 minecraft:obsidian
+at 0 set -3 0 1 minecraft:obsidian
+at 0 set -3 0 2 minecraft:obsidian
+at 0 set -3 0 3 minecraft:obsidian
+at 0 set -3 0 4 minecraft:obsidian
+at 0 set -2 0 -4 minecraft:obsidian
+at 0 set -2 0 -3 minecraft:obsidian
+at 0 set -2 0 -2 minecraft:obsidian
+at 0 set -2 0 -1 minecraft:obsidian
+at 0 set -2 0 0 minecraft:obsidian
+at 0 set -2 0 1 minecraft:obsidian
+at 0 set -2 0 2 minecraft:obsidian
+at 0 set -2 0 3 minecraft:obsidian
+at 0 set -2 0 4 minecraft:obsidian
+at 0 set -1 0 -4 minecraft:obsidian
+at 0 set -1 0 -3 minecraft:obsidian
+at 0 set -1 0 -2 minecraft:obsidian
+at 0 set -1 0 -1 minecraft:obsidian
+at 0 set -1 0 0 minecraft:obsidian
+at 0 set -1 0 1 minecraft:obsidian
+at 0 set -1 0 2 minecraft:obsidian
+at 0 set -1 0 3 minecraft:obsidian
+at 0 set -1 0 4 minecraft:obsidian
+at 0 set 0 0 -4 minecraft:obsidian
+at 0 set 0 0 -3 minecraft:obsidian
+at 0 set 0 0 -2 minecraft:obsidian
+at 0 set 0 0 -1 minecraft:obsidian
+at 0 set 0 0 0 minecraft:obsidian
+at 0 set 0 0 1 minecraft:obsidian
+at 0 set 0 0 2 minecraft:obsidian
+at 0 set 0 0 3 minecraft:obsidian
+at 0 set 0 0 4 minecraft:obsidian
+at 0 set 1 0 -4 minecraft:obsidian
+at 0 set 1 0 -3 minecraft:obsidian
+at 0 set 1 0 -2 minecraft:obsidian
+at 0 set 1 0 -1 minecraft:obsidian
+at 0 set 1 0 0 minecraft:obsidian
+at 0 set 1 0 1 minecraft:obsidian
+at 0 set 1 0 2 minecraft:obsidian
+at 0 set 1 0 3 minecraft:obsidian
+at 0 set 1 0 4 minecraft:obsidian
+at 0 set 2 0 -4 minecraft:obsidian
+at 0 set 2 0 -3 minecraft:obsidian
+at 0 set 2 0 -2 minecraft:obsidian
+at 0 set 2 0 -1 minecraft:obsidian
+at 0 set 2 0 0 minecraft:obsidian
+at 0 set 2 0 1 minecraft:obsidian
+at 0 set 2 0 2 minecraft:obsidian
+at 0 set 2 0 3 minecraft:obsidian
+at 0 set 2 0 4 minecraft:obsidian
+at 0 set 3 0 -4 minecraft:obsidian
+at 0 set 3 0 -3 minecraft:obsidian
+at 0 set 3 0 -2 minecraft:obsidian
+at 0 set 3 0 -1 minecraft:obsidian
+at 0 set 3 0 0 minecraft:obsidian
+at 0 set 3 0 1 minecraft:obsidian
+at 0 set 3 0 2 minecraft:obsidian
+at 0 set 3 0 3 minecraft:obsidian
+at 0 set 3 0 4 minecraft:obsidian
+at 0 set 4 0 -4 minecraft:obsidian
+at 0 set 4 0 -3 minecraft:obsidian
+at 0 set 4 0 -2 minecraft:obsidian
+at 0 set 4 0 -1 minecraft:obsidian
+at 0 set 4 0 0 minecraft:obsidian
+at 0 set 4 0 1 minecraft:obsidian
+at 0 set 4 0 2 minecraft:obsidian
+at 0 set 4 0 3 minecraft:obsidian
+at 0 set 4 0 4 minecraft:obsidian
+at 0 set 5 0 -4 minecraft:obsidian
+at 0 set 5 0 -3 minecraft:obsidian
+at 0 set 5 0 -2 minecraft:obsidian
+at 0 set 5 0 -1 minecraft:obsidian
+at 0 set 5 0 0 minecraft:obsidian
+at 0 set 5 0 1 minecraft:obsidian
+at 0 set 5 0 2 minecraft:obsidian
+at 0 set 5 0 3 minecraft:obsidian
+at 0 set 5 0 4 minecraft:obsidian
+at 0 set 6 0 -4 minecraft:obsidian
+at 0 set 6 0 -3 minecraft:obsidian
+at 0 set 6 0 -2 minecraft:obsidian
+at 0 set 6 0 -1 minecraft:obsidian
+at 0 set 6 0 0 minecraft:obsidian
+at 0 set 6 0 1 minecraft:obsidian
+at 0 set 6 0 2 minecraft:obsidian
+at 0 set 6 0 3 minecraft:obsidian
+at 0 set 6 0 4 minecraft:obsidian
+at 0 set -3 1 0 minecraft:piston[extended=false,facing=east]
+at 0 set -2 1 0 minecraft:slime_block
+at 0 set 2 1 3 minecraft:piston[extended=false,facing=up]
+at 0 set 2 2 3 minecraft:slime_block
+at 0 set 4 0 -3 minecraft:slime_block
+at 2 spawn-item 0.2 1 0.5 0 0 0 minecraft:stone 1
+at 2 spawn-item 2.5 3 3.5 0 0 0 minecraft:stone 1
+at 2 spawn-item 4.5 1.2 -2.5 0 -0.5 0 minecraft:stone 1
+at 6 set -4 1 0 minecraft:redstone_block
+at 7 set 3 1 3 minecraft:redstone_block

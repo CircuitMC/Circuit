@@ -56,8 +56,11 @@ constexpr std::array reference_v4_mechanisms{
         "Two-tick moves through moving pistons; structure discovery and placement order, vacated cells in hash "
         "order, shape updates after every write, block dropping, destruction (piston_timing, piston_slime, "
         "piston_destroys, piston_observed, quasi_connectivity); a draw from the level random after each "
-        "extension and retraction (piston_draws). Gaps: items pushed half a block per step, a tick earlier "
-        "than the target versions; neighbor updates after a move in first-change order are not compared."},
+        "extension and retraction (piston_draws); entities pushed out of the space a moving block sweeps "
+        "through each step (0.01 beyond it, at most 0.51 a tick on each axis), moving blocks colliding where "
+        "they stand, moving slime blocks launching entities (item_piston_push, item_drop_piston, "
+        "piston_entities, slime_entities). Gaps: honey blocks; neighbor updates after a move in first-change "
+        "order are not compared."},
     MechanismEntry{"block_events", l0_exact, l0_exact, harness_trace,
         "Level-wide FIFO with set semantics, drained including additions (piston_observed, piston_slime, "
         "piston_timing). Not covered: deferral in non-ticking chunks."},
@@ -100,7 +103,7 @@ constexpr std::array reference_v4_mechanisms{
         "item_water_still, item_water_channel, item_water_ice_corner, item_water_falling, item_water_fall); "
         "entities leave with an unloading chunk and come back a tick after it reloads, under new ids "
         "(item_chunk_edge). Ids of entities spawned outside the command phase are assigned in serial order. Gaps: "
-        "moving blocks push items differently; reloaded entities come back in coordinate order, not the target "
+        "reloaded entities come back in coordinate order, not the target "
         "versions' chunk-map order; lava, bubble columns and waterlogged blocks do not move items."},
     MechanismEntry{"chunk_tickets", l0_exact, l2_declared_deviation, harness_trace,
         "Typed tickets with a level, a square and a lifetime; load and simulation levels decide each chunk's "
