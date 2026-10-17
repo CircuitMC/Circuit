@@ -29,7 +29,7 @@ bool set_block(RuleContext& ctx, BlockPos pos, BlockState next) {
     }
     if (replaced && has_block_entity(next.type())) ctx.create_block_entity(pos, next.type());
     on_placed(ctx, pos, next, prev);
-    notify_neighbors(ctx, pos);
+    notify_neighbors(ctx, pos, std::nullopt, prev);
     shape_updates(ctx, pos, prev, next);
     return true;
 }
@@ -72,12 +72,12 @@ void enqueue(RuleContext& ctx, NeighborUpdater::Entry entry) {
             const auto dir = update_order[top.next++];
             if (top.skip == static_cast<std::int8_t>(dir)) continue;
             const auto from = top.source;
-            on_neighbor_changed(ctx, from.relative(dir), from);
+            on_neighbor_changed(ctx, from.relative(dir), from, top.cause);
         } else {
             const auto e = top;
             u.stack.pop_back();
             if (e.kind == Kind::single) {
-                on_neighbor_changed(ctx, e.target, e.source);
+                on_neighbor_changed(ctx, e.target, e.source, e.cause);
             } else {
                 u.shape_depth = e.depth;
                 on_shape_changed(ctx, e.target, e.source);
@@ -103,17 +103,19 @@ void break_unsupported(RuleContext& ctx, BlockPos pos, BlockState s) {
     destroy_block(ctx, pos);
     if (s.is(BlockType::repeater) || s.is(BlockType::comparator))
         for (const auto d : {Direction::down, Direction::up, Direction::north, Direction::south, Direction::west, Direction::east})
-            notify_neighbors(ctx, pos.relative(d));
+            notify_neighbors(ctx, pos.relative(d), std::nullopt, s);
 }
 } // namespace
 
-void notify_neighbors(RuleContext& ctx, BlockPos source, std::optional<Direction> except) {
+void notify_neighbors(RuleContext& ctx, BlockPos source, std::optional<Direction> except, std::optional<BlockState> cause) {
     enqueue(ctx, {.kind = Kind::neighbors, .source = source, .target = source, .next = 0,
-                  .skip = except ? static_cast<std::int8_t>(*except) : std::int8_t{-1}, .depth = 0});
+                  .skip = except ? static_cast<std::int8_t>(*except) : std::int8_t{-1}, .depth = 0,
+                  .cause = cause ? *cause : ctx.block(source)});
 }
 
-void notify_single(RuleContext& ctx, BlockPos target, BlockPos from) {
-    enqueue(ctx, {.kind = Kind::single, .source = from, .target = target, .next = 0, .skip = -1, .depth = 0});
+void notify_single(RuleContext& ctx, BlockPos target, BlockPos from, std::optional<BlockState> cause) {
+    enqueue(ctx, {.kind = Kind::single, .source = from, .target = target, .next = 0, .skip = -1, .depth = 0,
+                  .cause = cause ? *cause : ctx.block(from)});
 }
 
 void notify_shape(RuleContext& ctx, BlockPos target, BlockPos from) {
@@ -156,10 +158,11 @@ bool head_has_base(RuleContext& ctx, BlockPos pos, BlockState head) {
     return base.is(BlockType::moving_piston) && base.facing() == head.facing();
 }
 
-void update_front(RuleContext& ctx, BlockPos pos, Direction output) {
+void update_front(RuleContext& ctx, BlockPos pos, Direction output, std::optional<BlockState> cause) {
     const auto front = pos.relative(output);
-    notify_single(ctx, front, pos);
-    notify_neighbors(ctx, front, contracts::opposite(output));
+    const auto from = cause ? *cause : ctx.block(pos);
+    notify_single(ctx, front, pos, from);
+    notify_neighbors(ctx, front, contracts::opposite(output), from);
 }
 
 void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
@@ -220,11 +223,15 @@ void on_placed(RuleContext& ctx, BlockPos pos, BlockState state, BlockState prev
         if (fresh) check_chest(ctx, pos);
         break;
     // Every state of a torch updates around it.
-    case BlockType::redstone_torch: case BlockType::redstone_wall_torch: torch_updates(ctx, pos); break;
+    case BlockType::redstone_torch: case BlockType::redstone_wall_torch: torch_updates(ctx, pos, state); break;
     case BlockType::observer:
         // An observer moved by a piston fires at its new position (observed in
         // target-version traces); other placements do not.
         if (moved_in) schedule(ctx, TickList::block, pos, BlockType::observer, 2, 0);
+        break;
+    // A rail of another block or moved in takes its shape.
+    case BlockType::rail:
+        if (!same_block(previous, state)) rail_placed(ctx, pos);
         break;
     case BlockType::other:
         if (falls(state)) schedule_fall(ctx, pos);
@@ -238,14 +245,14 @@ void on_placed(RuleContext& ctx, BlockPos pos, BlockState state, BlockState prev
 void on_removed(RuleContext& ctx, BlockPos pos, BlockState previous) {
     switch (previous.type()) {
     case BlockType::redstone_wire: wire_removed(ctx, pos, previous); break;
-    case BlockType::repeater: case BlockType::comparator: update_front(ctx, pos, previous.facing()); break;
+    case BlockType::repeater: case BlockType::comparator: update_front(ctx, pos, previous.facing(), previous); break;
     case BlockType::observer:
-        if (previous.flag()) update_front(ctx, pos, contracts::opposite(previous.facing()));
+        if (previous.flag()) update_front(ctx, pos, contracts::opposite(previous.facing()), previous);
         break;
     case BlockType::lever:
         if (previous.flag()) {
-            notify_neighbors(ctx, pos);
-            notify_neighbors(ctx, pos.relative(lever_attachment(previous)));
+            notify_neighbors(ctx, pos, std::nullopt, previous);
+            notify_neighbors(ctx, pos.relative(lever_attachment(previous)), std::nullopt, previous);
         }
         break;
     case BlockType::button: button_removed(ctx, pos, previous); break;
@@ -257,12 +264,13 @@ void on_removed(RuleContext& ctx, BlockPos pos, BlockState previous) {
         break;
     }
     case BlockType::pressure_plate: case BlockType::weighted_plate: plate_removed(ctx, pos, previous); break;
-    case BlockType::redstone_torch: case BlockType::redstone_wall_torch: torch_updates(ctx, pos); break;
+    case BlockType::redstone_torch: case BlockType::redstone_wall_torch: torch_updates(ctx, pos, previous); break;
+    case BlockType::rail: rail_removed(ctx, pos, previous); break;
     default: break;
     }
 }
 
-void on_neighbor_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
+void on_neighbor_changed(RuleContext& ctx, BlockPos target, BlockPos from, BlockState cause) {
     const auto s = ctx.block(target);
     switch (s.type()) {
     case BlockType::redstone_wire:
@@ -281,6 +289,7 @@ void on_neighbor_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
     case BlockType::redstone_torch: case BlockType::redstone_wall_torch: check_torch(ctx, target, s); break;
     case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: check_opening(ctx, target, from); break;
     case BlockType::note_block: check_note_block(ctx, target, s); break;
+    case BlockType::rail: check_rail(ctx, target, cause); break;
     case BlockType::piston: case BlockType::sticky_piston: check_piston(ctx, target); break;
     case BlockType::hopper: check_hopper(ctx, target); break;
     case BlockType::water: schedule(ctx, TickList::fluid, target, BlockType::water, 5, 0); break;

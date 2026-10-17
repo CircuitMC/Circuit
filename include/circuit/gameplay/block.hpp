@@ -48,6 +48,7 @@ enum class BlockType : std::uint8_t {
     honey_block,
     daylight_detector,   // level: power 0-15; flag: inverted. Block entity: ticks it every 20 game ticks
     note_block,          // level and extra bit 0: note 0-24 (note_of); flag: powered; variant: registry::Instrument
+    rail,                // level: RailShape; flag: powered (not plain rails); extra: waterlogged (stored); variant: RailKind
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -216,6 +217,18 @@ constexpr BlockState target(std::uint8_t power = 0) { return BlockState::of(Bloc
 constexpr BlockState daylight_detector(bool inverted = false, std::uint8_t power = 0) {
     return BlockState::of(BlockType::daylight_detector).with_flag(inverted).with_level(power);
 }
+// Rails: plain ones take every shape, the others only the straight and
+// ascending ones (the first six). Registry names: "rail", "<kind>_rail".
+enum class RailKind : std::uint8_t { rail, powered, activator, detector };
+inline constexpr std::uint8_t rail_kinds = 4;
+enum class RailShape : std::uint8_t {
+    north_south, east_west, ascending_east, ascending_west, ascending_north, ascending_south,
+    south_east, south_west, north_west, north_east,
+};
+constexpr BlockState rail(RailKind kind = RailKind::rail, RailShape shape = RailShape::north_south, bool powered = false) {
+    return BlockState::of(BlockType::rail).with_variant(static_cast<std::uint8_t>(kind)).with_level(static_cast<std::uint8_t>(shape))
+        .with_flag(powered);
+}
 // A note block; `instrument` is a registry::Instrument.
 constexpr BlockState note_block(std::uint8_t instrument = 0, std::uint8_t note = 0, bool powered = false) {
     return BlockState::of(BlockType::note_block).with_variant(instrument).with_level(static_cast<std::uint8_t>(note & 15))
@@ -244,6 +257,8 @@ constexpr BlockState fence_gate(DoorKind kind, Direction facing, bool open = fal
         .with_level(in_wall ? 1 : 0).with_flag(open).with_extra(powered ? 1 : 0);
 }
 } // namespace blocks
+// "north_south" for RailShape::north_south.
+std::string_view rail_shape_name(std::uint8_t shape) noexcept;
 // "harp" for a note block's instrument 0 (registry::Instrument).
 std::string_view instrument_name(std::uint8_t instrument) noexcept;
 // "oak" for an oak door, "waxed_copper" for a waxed copper one.
@@ -262,13 +277,14 @@ inline constexpr std::uint8_t note_instruments = 23;
 // Blocks of several kinds that share a BlockType and keep the kind as their variant.
 constexpr bool has_variant(BlockType t) noexcept {
     return t == BlockType::button || t == BlockType::pressure_plate || t == BlockType::weighted_plate || t == BlockType::door
-        || t == BlockType::trapdoor || t == BlockType::fence_gate;
+        || t == BlockType::trapdoor || t == BlockType::fence_gate || t == BlockType::rail;
 }
 constexpr std::uint8_t variant_count(BlockType t) noexcept {
     switch (t) {
     case BlockType::weighted_plate: return 2;
     case BlockType::door: case BlockType::trapdoor: return blocks::door_kinds;
     case BlockType::fence_gate: return blocks::fence_gate_kinds;
+    case BlockType::rail: return blocks::rail_kinds;
     default: return has_variant(t) ? blocks::button_kinds : 1;
     }
 }
@@ -343,7 +359,7 @@ inline bool is_movable(BlockState s) noexcept {
     switch (s.type()) {
     case BlockType::stone: case BlockType::glass: case BlockType::redstone_block: case BlockType::redstone_lamp:
     case BlockType::observer: case BlockType::slime_block: case BlockType::target: case BlockType::trapdoor:
-    case BlockType::fence_gate: case BlockType::honey_block: case BlockType::note_block:
+    case BlockType::fence_gate: case BlockType::honey_block: case BlockType::note_block: case BlockType::rail:
         return true;
     case BlockType::piston: case BlockType::sticky_piston:
         return !s.flag();
@@ -382,20 +398,26 @@ std::optional<std::uint32_t> registry_equivalent(BlockState s);
 
 template <class F>
 void for_each_modeled_state(F&& f) {
-    for (std::uint32_t raw = 0; raw < (1u << 18); ++raw)
-        if (const auto s = BlockState::decode(raw)) {
-            if (s->is(BlockType::other)) continue;
-            if (s->is(BlockType::redstone_wire)) {
-                for (std::uint32_t shape = 0; shape < 256; ++shape)
-                    if (const auto w = BlockState::decode(raw | (shape << 18))) f(*w);
-            } else if (has_variant(s->type())) {
-                for (std::uint32_t kind = 0; kind < variant_count(s->type()); ++kind) f(s->with_variant(static_cast<std::uint8_t>(kind)));
-            } else if (s->is(BlockType::note_block)) {
-                for (std::uint8_t instrument = 0; instrument < note_instruments; ++instrument) f(s->with_variant(instrument));
-            } else {
-                f(*s);
-            }
+    for (std::uint32_t raw = 0; raw < (1u << 18); ++raw) {
+        const auto type = static_cast<BlockType>(raw & 0xFF);
+        if (type == BlockType::other || static_cast<std::uint8_t>(type) >= static_cast<std::uint8_t>(BlockType::count_)) continue;
+        // Not every kind takes every state (powered rails do not curve; only they are powered).
+        if (has_variant(type)) {
+            for (std::uint32_t kind = 0; kind < variant_count(type); ++kind)
+                if (const auto v = BlockState::decode(raw | kind << 18)) f(*v);
+            continue;
         }
+        const auto s = BlockState::decode(raw);
+        if (!s) continue;
+        if (s->is(BlockType::redstone_wire)) {
+            for (std::uint32_t shape = 0; shape < 256; ++shape)
+                if (const auto w = BlockState::decode(raw | (shape << 18))) f(*w);
+        } else if (s->is(BlockType::note_block)) {
+            for (std::uint8_t instrument = 0; instrument < note_instruments; ++instrument) f(s->with_variant(instrument));
+        } else {
+            f(*s);
+        }
+    }
 }
 
 template <class F>

@@ -54,6 +54,8 @@ Every block state of both versions is represented, with its official name and pr
 | `target` | `power` | — |
 | `daylight_detector` | `inverted`, `power` | — |
 | `note_block` | `instrument`, `note`, `powered` | — |
+| `rail` | `shape` | `waterlogged` (stored) |
+| `powered_rail`, `activator_rail`, `detector_rail` | `powered`, `shape` | `waterlogged` (stored) |
 | `*_door`, `*_trapdoor`, `*_fence_gate` (every kind) | `facing`, `half`, `hinge`, `in_wall`, `open`, `powered` | a trapdoor's `waterlogged` (stored, not simulated) |
 
 **Other blocks** keep every property and are inert: they are solid for items when they have a collision shape, conduct redstone power when opaque, support dust and diodes on faces their collision shape covers (or any face when opaque), cannot be moved by pistons, break at their documented hardness with their documented tool, and do nothing else. With the official data pack they drop from their loot tables, except where a table draws random numbers (see [data packs](DATA_PACKS.md)). Players collide with their exact collision shapes. A world may contain them, and the client shows them, but no machine that depends on their behavior works yet.
@@ -70,7 +72,7 @@ Every block state of both versions is represented, with its official name and pr
 
 ### Technical machines
 
-Block and item registration do not provide behavior. Rails and coral fans exist as inert blocks (pistons move or destroy them as the official servers do), and their items cannot be placed by the current rules. Common building blocks such as cobblestone, dirt and oak logs are inert too; sand, gravel and concrete powder fall, and TNT is primed and explodes (below). Survival inventories and container screens therefore do not constitute complete vanilla survival support.
+Block and item registration do not provide behavior. Coral fans exist as inert blocks (pistons destroy them as the official servers do), and their items cannot be placed by the current rules. Rails take their shapes and pass power, but minecarts do not ride them yet. Common building blocks such as cobblestone, dirt and oak logs are inert too; sand, gravel and concrete powder fall, and TNT is primed and explodes (below). Survival inventories and container screens therefore do not constitute complete vanilla survival support.
 
 | Mechanism or machine | Current support |
 | --- | --- |
@@ -78,11 +80,12 @@ Block and item registration do not provide behavior. Rails and coral fans exist 
 | Sticky-piston block dropping on a short pulse | The one-game-tick pulse scenario passes recorded traces for both versions. |
 | Slime structures, the 12-block push limit and observers watching piston writes | Implemented with rule, trace and cross-chunk simulation checks. Pistons remain L2 because item pushing, drops and some update ordering have gaps. |
 | TNT ignition, fuse, motion and explosions | Redstone and explosions prime TNT (placed by commands, players or pistons); primed TNT's motion and fuse and its explosions (blocks, drops, chain reactions, item damage and knockback) match recorded traces of both versions. Burning arrows prime TNT; fire, flint and steel and dispensers do not, and explosions do not hurt players. |
-| TNT duplication machines | Not supported. Primed TNT and explosions exist, but common machine components such as rails, minecarts and coral fans are absent, and TNT duplication itself is not modeled. No TNT-duplication reference fixture exists. |
+| TNT duplication machines | Not supported. Primed TNT, explosions and rails exist, but minecarts do not ride rails, coral fans are inert, and TNT duplication itself is not modeled. No TNT-duplication reference fixture exists. |
 | Honey-based flying machines | Honey blocks, their separation from slime and the entities they carry match recorded traces of both versions, including a small slime-honey flying machine. Larger flying-machine designs have no acceptance evidence yet. |
 | Redstone torches, buttons, pressure plates and target blocks | Torch inverters, towers and burnout, buttons pressed by players and arrows, pressure plates sensing items and arrows (weighted ones counting them) and target blocks grading hits match recorded traces of both versions, including the update order of the dust they drive. Mobs and players do not press plates yet, and tripwire is not modeled. |
 | Daylight detectors | Normal and inverted detectors follow the sky light, the time of day, rain and thunder every 20 game ticks, and invert when used, as in recorded traces of both versions over a day, with and without the daylight cycle. Sculk sensors, lightning rods and the other sensors are not modeled. |
 | Doors, trapdoors and fence gates | Opened and closed by power and by hand, with their halves, shapes and sound draws, as in recorded traces of both versions. Bells, copper bulbs and other consumers are not modeled yet. |
+| Rails | Rails, powered, activator and detector rails take their shapes from their neighbors, curve, rise, switch at junctions and pass power as in recorded traces of both versions. Minecarts do not ride them yet, and detector rails sense nothing. |
 | Note blocks | Their instruments from the block below or a head above, playing by power and by use as block events with the sound's draw, silenced by a block above, and retuned when pistons move them, as in recorded traces of both versions. Player heads with a sound of their own play nothing. |
 | Dispensers and droppers | Not implemented. Machines that need them are not supported. |
 | Portal chunk loaders, sand duplication and bedrock-breaking machines | No compatibility claim. Dimensions/portals and the required block/interaction coverage are absent; falling blocks exist but are not duplicated. |

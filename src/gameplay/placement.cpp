@@ -67,6 +67,13 @@ std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Directio
     case items::target: return blocks::target();
     case items::daylight_detector: return blocks::daylight_detector();
     case items::note_block: return blocks::note_block();
+    // Along the player's view.
+    case items::rail: case items::powered_rail: case items::activator_rail: case items::detector_rail: {
+        const auto kind = item == items::rail ? blocks::RailKind::rail : item == items::powered_rail ? blocks::RailKind::powered
+                        : item == items::activator_rail ? blocks::RailKind::activator : blocks::RailKind::detector;
+        const bool east_west = horizontal == Direction::east || horizontal == Direction::west;
+        return blocks::rail(kind, east_west ? blocks::RailShape::east_west : blocks::RailShape::north_south);
+    }
     default: return std::nullopt;
     }
 }

@@ -1094,8 +1094,19 @@
           "id": "rails",
           "name": "Rails, powered, detector and activator rails",
           "milestone": "C4",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/rail_shapes",
+            "trace/rail_power",
+            "trace/rail_more"
+          ],
+          "deviations": [
+            "minecarts do not ride rails yet",
+            "detector rails sense nothing",
+            "waterlogging is stored only"
+          ],
+          "note": "Rails take their shapes from the rails beside them and make them join, curve with the official preferences, rise toward higher rails, switch at three-way junctions on updates from signal sources and need a sturdy top; powered and activator rails pass power along up to eight rails of their kind"
         },
         {
           "id": "comparator_sources",

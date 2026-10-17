@@ -961,13 +961,49 @@ inline Scenario note_scenario() {
     }, 10};
 }
 
+// Rails across the x=16 chunk edge: a line laid a rail a tick over the edge
+// and turning south, powered rails on both sides of the edge on one lever, a
+// junction at the edge switched by another, and a piston pushing a rail over
+// the edge to the end of a line.
+inline Scenario rail_scenario() {
+    using blocks::RailKind;
+    using blocks::RailShape;
+    return {"rails", 118, 100, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        if (t == 2)
+            for (int x = 8; x <= 24; ++x)
+                for (int z = -4; z <= 8; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+        if (t >= 4 && t <= 12) c.push_back(place({static_cast<std::int32_t>(8 + t), 0, 0}, blocks::rail()));
+        if (t == 13) c.push_back(place({20, 0, 1}, blocks::rail()));
+        if (t == 14) {
+            for (int x = 12; x <= 20; ++x) c.push_back(place({x, 0, 3}, blocks::rail(RailKind::powered, RailShape::east_west)));
+            c.push_back(place({11, 0, 3}, blocks::lever(false)));
+            c.push_back(place({15, 0, 5}, blocks::rail(RailKind::rail, RailShape::east_west)));
+            c.push_back(place({17, 0, 5}, blocks::rail(RailKind::rail, RailShape::east_west)));
+            c.push_back(place({16, 0, 6}, blocks::rail()));
+            c.push_back(place({14, 0, -2}, blocks::piston(Direction::east)));
+            c.push_back(place({15, 0, -2}, blocks::rail()));
+            c.push_back(place({17, 0, -2}, blocks::rail(RailKind::rail, RailShape::east_west)));
+            c.push_back(place({18, 0, -2}, blocks::rail(RailKind::rail, RailShape::east_west)));
+            c.push_back(place({13, 0, -2}, blocks::lever(false)));
+        }
+        if (t == 15) c.push_back(place({16, 0, 5}, blocks::rail()));
+        if (t == 16) c.push_back(place({16, 0, 4}, blocks::lever(false)));
+        if (t >= 20 && t % 20 == 0) c.push_back(UseBlock{{11, 0, 3}});
+        if (t >= 30 && t % 20 == 10) c.push_back(UseBlock{{16, 0, 4}});
+        if (t == 25) c.push_back(UseBlock{{13, 0, -2}});
+        return c;
+    }, 10};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
-            plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario()};
+            plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario(), rail_scenario()};
 }
 
 } // namespace circuit::test

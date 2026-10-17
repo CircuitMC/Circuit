@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
+#include <map>
 #include <circuit/gameplay/physics.hpp>
 #include <algorithm>
 #include <optional>
@@ -132,7 +133,12 @@ public:
         if (before == s) return;
         ctx_.write_block(p, s);
         ctx_.record(TraceKind::block_changed, p, before.raw(), s.raw());
-        if (touched_.insert(p).second) changed_.push_back(p);
+        if (touched_.insert(p).second) {
+            changed_.push_back(p);
+            // Updates come from the block that was there (the moved block
+            // at its old position, the destroyed block, the base).
+            causes_[p] = before;
+        }
         if (shapes) notify_shapes(ctx_, p);
     }
     // Replaces a block, and its block entity if any, with air.
@@ -184,6 +190,7 @@ public:
         if (head) {
             moving(head->first, head->second, {motion.facing, motion.extending, true}, head_sticky);
             occupied.insert(head->first);
+            causes_[head->first] = head->second;
         }
         std::vector<BlockPos> vacated;
         for (auto p : structure.moved)
@@ -192,7 +199,7 @@ public:
     }
     void finish() {
         for (auto p : placed_) on_placed(ctx_, p, ctx_.block(p), blocks::moving_piston(Direction::down, false));
-        for (auto p : changed_) notify_neighbors(ctx_, p);
+        for (auto p : changed_) notify_neighbors(ctx_, p, std::nullopt, causes_.at(p));
         placed_.clear();
         changed_.clear();
     }
@@ -201,6 +208,7 @@ private:
     RuleContext& ctx_;
     std::set<BlockPos> touched_;
     std::vector<BlockPos> changed_;
+    std::map<BlockPos, BlockState> causes_;
     std::vector<BlockPos> placed_;
 };
 

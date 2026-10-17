@@ -52,6 +52,7 @@ std::optional<ItemStack> own_item(BlockState s) {
     case BlockType::target: return ItemStack{items::target, 1};
     case BlockType::daylight_detector: return ItemStack{items::daylight_detector, 1};
     case BlockType::note_block: return ItemStack{items::note_block, 1};
+    case BlockType::rail: return ItemStack{rail_item(s), 1};
     // A door drops from its lower half.
     case BlockType::door:
         if (upper_half(s)) return std::nullopt;

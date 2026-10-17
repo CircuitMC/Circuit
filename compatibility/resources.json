@@ -668,6 +668,39 @@
           "player heads with a sound of their own play nothing"
         ]
       },
+      "rail": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "no minecarts ride it yet",
+          "waterlogging is stored only"
+        ]
+      },
+      "powered_rail": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "no minecarts ride it yet",
+          "waterlogging is stored only"
+        ]
+      },
+      "activator_rail": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "no minecarts ride it yet",
+          "waterlogging is stored only"
+        ]
+      },
+      "detector_rail": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "no minecarts ride it yet",
+          "waterlogging is stored only",
+          "senses nothing"
+        ]
+      },
       "oak_door": {
         "impl": "partial",
         "evidence": "compared",
@@ -1439,6 +1472,26 @@
         "note": "Placed"
       },
       "note_block": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "rail": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "powered_rail": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "activator_rail": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "detector_rail": {
         "impl": "partial",
         "evidence": "none",
         "note": "Placed"

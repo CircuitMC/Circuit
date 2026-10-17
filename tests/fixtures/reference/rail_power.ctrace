@@ -1,0 +1,1313 @@
+circuit-trace 2
+title Powered and activator rails powered along lines, past eight and up a slope, and T-junctions switched by redstone
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v11
+mechanisms rails
+area 0 0 0 39 4 23
+ticks 77
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 0 0 10 minecraft:stone
+at 0 set 0 0 11 minecraft:stone
+at 0 set 0 0 12 minecraft:stone
+at 0 set 0 0 13 minecraft:stone
+at 0 set 0 0 14 minecraft:stone
+at 0 set 0 0 15 minecraft:stone
+at 0 set 0 0 16 minecraft:stone
+at 0 set 0 0 17 minecraft:stone
+at 0 set 0 0 18 minecraft:stone
+at 0 set 0 0 19 minecraft:stone
+at 0 set 0 0 20 minecraft:stone
+at 0 set 0 0 21 minecraft:stone
+at 0 set 0 0 22 minecraft:stone
+at 0 set 0 0 23 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:stone
+at 0 set 1 0 11 minecraft:stone
+at 0 set 1 0 12 minecraft:stone
+at 0 set 1 0 13 minecraft:stone
+at 0 set 1 0 14 minecraft:stone
+at 0 set 1 0 15 minecraft:stone
+at 0 set 1 0 16 minecraft:stone
+at 0 set 1 0 17 minecraft:stone
+at 0 set 1 0 18 minecraft:stone
+at 0 set 1 0 19 minecraft:stone
+at 0 set 1 0 20 minecraft:stone
+at 0 set 1 0 21 minecraft:stone
+at 0 set 1 0 22 minecraft:stone
+at 0 set 1 0 23 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 2 0 10 minecraft:stone
+at 0 set 2 0 11 minecraft:stone
+at 0 set 2 0 12 minecraft:stone
+at 0 set 2 0 13 minecraft:stone
+at 0 set 2 0 14 minecraft:stone
+at 0 set 2 0 15 minecraft:stone
+at 0 set 2 0 16 minecraft:stone
+at 0 set 2 0 17 minecraft:stone
+at 0 set 2 0 18 minecraft:stone
+at 0 set 2 0 19 minecraft:stone
+at 0 set 2 0 20 minecraft:stone
+at 0 set 2 0 21 minecraft:stone
+at 0 set 2 0 22 minecraft:stone
+at 0 set 2 0 23 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 3 0 10 minecraft:stone
+at 0 set 3 0 11 minecraft:stone
+at 0 set 3 0 12 minecraft:stone
+at 0 set 3 0 13 minecraft:stone
+at 0 set 3 0 14 minecraft:stone
+at 0 set 3 0 15 minecraft:stone
+at 0 set 3 0 16 minecraft:stone
+at 0 set 3 0 17 minecraft:stone
+at 0 set 3 0 18 minecraft:stone
+at 0 set 3 0 19 minecraft:stone
+at 0 set 3 0 20 minecraft:stone
+at 0 set 3 0 21 minecraft:stone
+at 0 set 3 0 22 minecraft:stone
+at 0 set 3 0 23 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 4 0 11 minecraft:stone
+at 0 set 4 0 12 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 4 0 14 minecraft:stone
+at 0 set 4 0 15 minecraft:stone
+at 0 set 4 0 16 minecraft:stone
+at 0 set 4 0 17 minecraft:stone
+at 0 set 4 0 18 minecraft:stone
+at 0 set 4 0 19 minecraft:stone
+at 0 set 4 0 20 minecraft:stone
+at 0 set 4 0 21 minecraft:stone
+at 0 set 4 0 22 minecraft:stone
+at 0 set 4 0 23 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 5 0 10 minecraft:stone
+at 0 set 5 0 11 minecraft:stone
+at 0 set 5 0 12 minecraft:stone
+at 0 set 5 0 13 minecraft:stone
+at 0 set 5 0 14 minecraft:stone
+at 0 set 5 0 15 minecraft:stone
+at 0 set 5 0 16 minecraft:stone
+at 0 set 5 0 17 minecraft:stone
+at 0 set 5 0 18 minecraft:stone
+at 0 set 5 0 19 minecraft:stone
+at 0 set 5 0 20 minecraft:stone
+at 0 set 5 0 21 minecraft:stone
+at 0 set 5 0 22 minecraft:stone
+at 0 set 5 0 23 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 6 0 10 minecraft:stone
+at 0 set 6 0 11 minecraft:stone
+at 0 set 6 0 12 minecraft:stone
+at 0 set 6 0 13 minecraft:stone
+at 0 set 6 0 14 minecraft:stone
+at 0 set 6 0 15 minecraft:stone
+at 0 set 6 0 16 minecraft:stone
+at 0 set 6 0 17 minecraft:stone
+at 0 set 6 0 18 minecraft:stone
+at 0 set 6 0 19 minecraft:stone
+at 0 set 6 0 20 minecraft:stone
+at 0 set 6 0 21 minecraft:stone
+at 0 set 6 0 22 minecraft:stone
+at 0 set 6 0 23 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 7 0 10 minecraft:stone
+at 0 set 7 0 11 minecraft:stone
+at 0 set 7 0 12 minecraft:stone
+at 0 set 7 0 13 minecraft:stone
+at 0 set 7 0 14 minecraft:stone
+at 0 set 7 0 15 minecraft:stone
+at 0 set 7 0 16 minecraft:stone
+at 0 set 7 0 17 minecraft:stone
+at 0 set 7 0 18 minecraft:stone
+at 0 set 7 0 19 minecraft:stone
+at 0 set 7 0 20 minecraft:stone
+at 0 set 7 0 21 minecraft:stone
+at 0 set 7 0 22 minecraft:stone
+at 0 set 7 0 23 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 8 0 10 minecraft:stone
+at 0 set 8 0 11 minecraft:stone
+at 0 set 8 0 12 minecraft:stone
+at 0 set 8 0 13 minecraft:stone
+at 0 set 8 0 14 minecraft:stone
+at 0 set 8 0 15 minecraft:stone
+at 0 set 8 0 16 minecraft:stone
+at 0 set 8 0 17 minecraft:stone
+at 0 set 8 0 18 minecraft:stone
+at 0 set 8 0 19 minecraft:stone
+at 0 set 8 0 20 minecraft:stone
+at 0 set 8 0 21 minecraft:stone
+at 0 set 8 0 22 minecraft:stone
+at 0 set 8 0 23 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 9 0 10 minecraft:stone
+at 0 set 9 0 11 minecraft:stone
+at 0 set 9 0 12 minecraft:stone
+at 0 set 9 0 13 minecraft:stone
+at 0 set 9 0 14 minecraft:stone
+at 0 set 9 0 15 minecraft:stone
+at 0 set 9 0 16 minecraft:stone
+at 0 set 9 0 17 minecraft:stone
+at 0 set 9 0 18 minecraft:stone
+at 0 set 9 0 19 minecraft:stone
+at 0 set 9 0 20 minecraft:stone
+at 0 set 9 0 21 minecraft:stone
+at 0 set 9 0 22 minecraft:stone
+at 0 set 9 0 23 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 10 0 10 minecraft:stone
+at 0 set 10 0 11 minecraft:stone
+at 0 set 10 0 12 minecraft:stone
+at 0 set 10 0 13 minecraft:stone
+at 0 set 10 0 14 minecraft:stone
+at 0 set 10 0 15 minecraft:stone
+at 0 set 10 0 16 minecraft:stone
+at 0 set 10 0 17 minecraft:stone
+at 0 set 10 0 18 minecraft:stone
+at 0 set 10 0 19 minecraft:stone
+at 0 set 10 0 20 minecraft:stone
+at 0 set 10 0 21 minecraft:stone
+at 0 set 10 0 22 minecraft:stone
+at 0 set 10 0 23 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 11 0 10 minecraft:stone
+at 0 set 11 0 11 minecraft:stone
+at 0 set 11 0 12 minecraft:stone
+at 0 set 11 0 13 minecraft:stone
+at 0 set 11 0 14 minecraft:stone
+at 0 set 11 0 15 minecraft:stone
+at 0 set 11 0 16 minecraft:stone
+at 0 set 11 0 17 minecraft:stone
+at 0 set 11 0 18 minecraft:stone
+at 0 set 11 0 19 minecraft:stone
+at 0 set 11 0 20 minecraft:stone
+at 0 set 11 0 21 minecraft:stone
+at 0 set 11 0 22 minecraft:stone
+at 0 set 11 0 23 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 12 0 8 minecraft:stone
+at 0 set 12 0 9 minecraft:stone
+at 0 set 12 0 10 minecraft:stone
+at 0 set 12 0 11 minecraft:stone
+at 0 set 12 0 12 minecraft:stone
+at 0 set 12 0 13 minecraft:stone
+at 0 set 12 0 14 minecraft:stone
+at 0 set 12 0 15 minecraft:stone
+at 0 set 12 0 16 minecraft:stone
+at 0 set 12 0 17 minecraft:stone
+at 0 set 12 0 18 minecraft:stone
+at 0 set 12 0 19 minecraft:stone
+at 0 set 12 0 20 minecraft:stone
+at 0 set 12 0 21 minecraft:stone
+at 0 set 12 0 22 minecraft:stone
+at 0 set 12 0 23 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 13 0 8 minecraft:stone
+at 0 set 13 0 9 minecraft:stone
+at 0 set 13 0 10 minecraft:stone
+at 0 set 13 0 11 minecraft:stone
+at 0 set 13 0 12 minecraft:stone
+at 0 set 13 0 13 minecraft:stone
+at 0 set 13 0 14 minecraft:stone
+at 0 set 13 0 15 minecraft:stone
+at 0 set 13 0 16 minecraft:stone
+at 0 set 13 0 17 minecraft:stone
+at 0 set 13 0 18 minecraft:stone
+at 0 set 13 0 19 minecraft:stone
+at 0 set 13 0 20 minecraft:stone
+at 0 set 13 0 21 minecraft:stone
+at 0 set 13 0 22 minecraft:stone
+at 0 set 13 0 23 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 14 0 8 minecraft:stone
+at 0 set 14 0 9 minecraft:stone
+at 0 set 14 0 10 minecraft:stone
+at 0 set 14 0 11 minecraft:stone
+at 0 set 14 0 12 minecraft:stone
+at 0 set 14 0 13 minecraft:stone
+at 0 set 14 0 14 minecraft:stone
+at 0 set 14 0 15 minecraft:stone
+at 0 set 14 0 16 minecraft:stone
+at 0 set 14 0 17 minecraft:stone
+at 0 set 14 0 18 minecraft:stone
+at 0 set 14 0 19 minecraft:stone
+at 0 set 14 0 20 minecraft:stone
+at 0 set 14 0 21 minecraft:stone
+at 0 set 14 0 22 minecraft:stone
+at 0 set 14 0 23 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 15 0 8 minecraft:stone
+at 0 set 15 0 9 minecraft:stone
+at 0 set 15 0 10 minecraft:stone
+at 0 set 15 0 11 minecraft:stone
+at 0 set 15 0 12 minecraft:stone
+at 0 set 15 0 13 minecraft:stone
+at 0 set 15 0 14 minecraft:stone
+at 0 set 15 0 15 minecraft:stone
+at 0 set 15 0 16 minecraft:stone
+at 0 set 15 0 17 minecraft:stone
+at 0 set 15 0 18 minecraft:stone
+at 0 set 15 0 19 minecraft:stone
+at 0 set 15 0 20 minecraft:stone
+at 0 set 15 0 21 minecraft:stone
+at 0 set 15 0 22 minecraft:stone
+at 0 set 15 0 23 minecraft:stone
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 0 1 minecraft:stone
+at 0 set 16 0 2 minecraft:stone
+at 0 set 16 0 3 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 set 16 0 5 minecraft:stone
+at 0 set 16 0 6 minecraft:stone
+at 0 set 16 0 7 minecraft:stone
+at 0 set 16 0 8 minecraft:stone
+at 0 set 16 0 9 minecraft:stone
+at 0 set 16 0 10 minecraft:stone
+at 0 set 16 0 11 minecraft:stone
+at 0 set 16 0 12 minecraft:stone
+at 0 set 16 0 13 minecraft:stone
+at 0 set 16 0 14 minecraft:stone
+at 0 set 16 0 15 minecraft:stone
+at 0 set 16 0 16 minecraft:stone
+at 0 set 16 0 17 minecraft:stone
+at 0 set 16 0 18 minecraft:stone
+at 0 set 16 0 19 minecraft:stone
+at 0 set 16 0 20 minecraft:stone
+at 0 set 16 0 21 minecraft:stone
+at 0 set 16 0 22 minecraft:stone
+at 0 set 16 0 23 minecraft:stone
+at 0 set 17 0 0 minecraft:stone
+at 0 set 17 0 1 minecraft:stone
+at 0 set 17 0 2 minecraft:stone
+at 0 set 17 0 3 minecraft:stone
+at 0 set 17 0 4 minecraft:stone
+at 0 set 17 0 5 minecraft:stone
+at 0 set 17 0 6 minecraft:stone
+at 0 set 17 0 7 minecraft:stone
+at 0 set 17 0 8 minecraft:stone
+at 0 set 17 0 9 minecraft:stone
+at 0 set 17 0 10 minecraft:stone
+at 0 set 17 0 11 minecraft:stone
+at 0 set 17 0 12 minecraft:stone
+at 0 set 17 0 13 minecraft:stone
+at 0 set 17 0 14 minecraft:stone
+at 0 set 17 0 15 minecraft:stone
+at 0 set 17 0 16 minecraft:stone
+at 0 set 17 0 17 minecraft:stone
+at 0 set 17 0 18 minecraft:stone
+at 0 set 17 0 19 minecraft:stone
+at 0 set 17 0 20 minecraft:stone
+at 0 set 17 0 21 minecraft:stone
+at 0 set 17 0 22 minecraft:stone
+at 0 set 17 0 23 minecraft:stone
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 0 1 minecraft:stone
+at 0 set 18 0 2 minecraft:stone
+at 0 set 18 0 3 minecraft:stone
+at 0 set 18 0 4 minecraft:stone
+at 0 set 18 0 5 minecraft:stone
+at 0 set 18 0 6 minecraft:stone
+at 0 set 18 0 7 minecraft:stone
+at 0 set 18 0 8 minecraft:stone
+at 0 set 18 0 9 minecraft:stone
+at 0 set 18 0 10 minecraft:stone
+at 0 set 18 0 11 minecraft:stone
+at 0 set 18 0 12 minecraft:stone
+at 0 set 18 0 13 minecraft:stone
+at 0 set 18 0 14 minecraft:stone
+at 0 set 18 0 15 minecraft:stone
+at 0 set 18 0 16 minecraft:stone
+at 0 set 18 0 17 minecraft:stone
+at 0 set 18 0 18 minecraft:stone
+at 0 set 18 0 19 minecraft:stone
+at 0 set 18 0 20 minecraft:stone
+at 0 set 18 0 21 minecraft:stone
+at 0 set 18 0 22 minecraft:stone
+at 0 set 18 0 23 minecraft:stone
+at 0 set 19 0 0 minecraft:stone
+at 0 set 19 0 1 minecraft:stone
+at 0 set 19 0 2 minecraft:stone
+at 0 set 19 0 3 minecraft:stone
+at 0 set 19 0 4 minecraft:stone
+at 0 set 19 0 5 minecraft:stone
+at 0 set 19 0 6 minecraft:stone
+at 0 set 19 0 7 minecraft:stone
+at 0 set 19 0 8 minecraft:stone
+at 0 set 19 0 9 minecraft:stone
+at 0 set 19 0 10 minecraft:stone
+at 0 set 19 0 11 minecraft:stone
+at 0 set 19 0 12 minecraft:stone
+at 0 set 19 0 13 minecraft:stone
+at 0 set 19 0 14 minecraft:stone
+at 0 set 19 0 15 minecraft:stone
+at 0 set 19 0 16 minecraft:stone
+at 0 set 19 0 17 minecraft:stone
+at 0 set 19 0 18 minecraft:stone
+at 0 set 19 0 19 minecraft:stone
+at 0 set 19 0 20 minecraft:stone
+at 0 set 19 0 21 minecraft:stone
+at 0 set 19 0 22 minecraft:stone
+at 0 set 19 0 23 minecraft:stone
+at 0 set 20 0 0 minecraft:stone
+at 0 set 20 0 1 minecraft:stone
+at 0 set 20 0 2 minecraft:stone
+at 0 set 20 0 3 minecraft:stone
+at 0 set 20 0 4 minecraft:stone
+at 0 set 20 0 5 minecraft:stone
+at 0 set 20 0 6 minecraft:stone
+at 0 set 20 0 7 minecraft:stone
+at 0 set 20 0 8 minecraft:stone
+at 0 set 20 0 9 minecraft:stone
+at 0 set 20 0 10 minecraft:stone
+at 0 set 20 0 11 minecraft:stone
+at 0 set 20 0 12 minecraft:stone
+at 0 set 20 0 13 minecraft:stone
+at 0 set 20 0 14 minecraft:stone
+at 0 set 20 0 15 minecraft:stone
+at 0 set 20 0 16 minecraft:stone
+at 0 set 20 0 17 minecraft:stone
+at 0 set 20 0 18 minecraft:stone
+at 0 set 20 0 19 minecraft:stone
+at 0 set 20 0 20 minecraft:stone
+at 0 set 20 0 21 minecraft:stone
+at 0 set 20 0 22 minecraft:stone
+at 0 set 20 0 23 minecraft:stone
+at 0 set 21 0 0 minecraft:stone
+at 0 set 21 0 1 minecraft:stone
+at 0 set 21 0 2 minecraft:stone
+at 0 set 21 0 3 minecraft:stone
+at 0 set 21 0 4 minecraft:stone
+at 0 set 21 0 5 minecraft:stone
+at 0 set 21 0 6 minecraft:stone
+at 0 set 21 0 7 minecraft:stone
+at 0 set 21 0 8 minecraft:stone
+at 0 set 21 0 9 minecraft:stone
+at 0 set 21 0 10 minecraft:stone
+at 0 set 21 0 11 minecraft:stone
+at 0 set 21 0 12 minecraft:stone
+at 0 set 21 0 13 minecraft:stone
+at 0 set 21 0 14 minecraft:stone
+at 0 set 21 0 15 minecraft:stone
+at 0 set 21 0 16 minecraft:stone
+at 0 set 21 0 17 minecraft:stone
+at 0 set 21 0 18 minecraft:stone
+at 0 set 21 0 19 minecraft:stone
+at 0 set 21 0 20 minecraft:stone
+at 0 set 21 0 21 minecraft:stone
+at 0 set 21 0 22 minecraft:stone
+at 0 set 21 0 23 minecraft:stone
+at 0 set 22 0 0 minecraft:stone
+at 0 set 22 0 1 minecraft:stone
+at 0 set 22 0 2 minecraft:stone
+at 0 set 22 0 3 minecraft:stone
+at 0 set 22 0 4 minecraft:stone
+at 0 set 22 0 5 minecraft:stone
+at 0 set 22 0 6 minecraft:stone
+at 0 set 22 0 7 minecraft:stone
+at 0 set 22 0 8 minecraft:stone
+at 0 set 22 0 9 minecraft:stone
+at 0 set 22 0 10 minecraft:stone
+at 0 set 22 0 11 minecraft:stone
+at 0 set 22 0 12 minecraft:stone
+at 0 set 22 0 13 minecraft:stone
+at 0 set 22 0 14 minecraft:stone
+at 0 set 22 0 15 minecraft:stone
+at 0 set 22 0 16 minecraft:stone
+at 0 set 22 0 17 minecraft:stone
+at 0 set 22 0 18 minecraft:stone
+at 0 set 22 0 19 minecraft:stone
+at 0 set 22 0 20 minecraft:stone
+at 0 set 22 0 21 minecraft:stone
+at 0 set 22 0 22 minecraft:stone
+at 0 set 22 0 23 minecraft:stone
+at 0 set 23 0 0 minecraft:stone
+at 0 set 23 0 1 minecraft:stone
+at 0 set 23 0 2 minecraft:stone
+at 0 set 23 0 3 minecraft:stone
+at 0 set 23 0 4 minecraft:stone
+at 0 set 23 0 5 minecraft:stone
+at 0 set 23 0 6 minecraft:stone
+at 0 set 23 0 7 minecraft:stone
+at 0 set 23 0 8 minecraft:stone
+at 0 set 23 0 9 minecraft:stone
+at 0 set 23 0 10 minecraft:stone
+at 0 set 23 0 11 minecraft:stone
+at 0 set 23 0 12 minecraft:stone
+at 0 set 23 0 13 minecraft:stone
+at 0 set 23 0 14 minecraft:stone
+at 0 set 23 0 15 minecraft:stone
+at 0 set 23 0 16 minecraft:stone
+at 0 set 23 0 17 minecraft:stone
+at 0 set 23 0 18 minecraft:stone
+at 0 set 23 0 19 minecraft:stone
+at 0 set 23 0 20 minecraft:stone
+at 0 set 23 0 21 minecraft:stone
+at 0 set 23 0 22 minecraft:stone
+at 0 set 23 0 23 minecraft:stone
+at 0 set 24 0 0 minecraft:stone
+at 0 set 24 0 1 minecraft:stone
+at 0 set 24 0 2 minecraft:stone
+at 0 set 24 0 3 minecraft:stone
+at 0 set 24 0 4 minecraft:stone
+at 0 set 24 0 5 minecraft:stone
+at 0 set 24 0 6 minecraft:stone
+at 0 set 24 0 7 minecraft:stone
+at 0 set 24 0 8 minecraft:stone
+at 0 set 24 0 9 minecraft:stone
+at 0 set 24 0 10 minecraft:stone
+at 0 set 24 0 11 minecraft:stone
+at 0 set 24 0 12 minecraft:stone
+at 0 set 24 0 13 minecraft:stone
+at 0 set 24 0 14 minecraft:stone
+at 0 set 24 0 15 minecraft:stone
+at 0 set 24 0 16 minecraft:stone
+at 0 set 24 0 17 minecraft:stone
+at 0 set 24 0 18 minecraft:stone
+at 0 set 24 0 19 minecraft:stone
+at 0 set 24 0 20 minecraft:stone
+at 0 set 24 0 21 minecraft:stone
+at 0 set 24 0 22 minecraft:stone
+at 0 set 24 0 23 minecraft:stone
+at 0 set 25 0 0 minecraft:stone
+at 0 set 25 0 1 minecraft:stone
+at 0 set 25 0 2 minecraft:stone
+at 0 set 25 0 3 minecraft:stone
+at 0 set 25 0 4 minecraft:stone
+at 0 set 25 0 5 minecraft:stone
+at 0 set 25 0 6 minecraft:stone
+at 0 set 25 0 7 minecraft:stone
+at 0 set 25 0 8 minecraft:stone
+at 0 set 25 0 9 minecraft:stone
+at 0 set 25 0 10 minecraft:stone
+at 0 set 25 0 11 minecraft:stone
+at 0 set 25 0 12 minecraft:stone
+at 0 set 25 0 13 minecraft:stone
+at 0 set 25 0 14 minecraft:stone
+at 0 set 25 0 15 minecraft:stone
+at 0 set 25 0 16 minecraft:stone
+at 0 set 25 0 17 minecraft:stone
+at 0 set 25 0 18 minecraft:stone
+at 0 set 25 0 19 minecraft:stone
+at 0 set 25 0 20 minecraft:stone
+at 0 set 25 0 21 minecraft:stone
+at 0 set 25 0 22 minecraft:stone
+at 0 set 25 0 23 minecraft:stone
+at 0 set 26 0 0 minecraft:stone
+at 0 set 26 0 1 minecraft:stone
+at 0 set 26 0 2 minecraft:stone
+at 0 set 26 0 3 minecraft:stone
+at 0 set 26 0 4 minecraft:stone
+at 0 set 26 0 5 minecraft:stone
+at 0 set 26 0 6 minecraft:stone
+at 0 set 26 0 7 minecraft:stone
+at 0 set 26 0 8 minecraft:stone
+at 0 set 26 0 9 minecraft:stone
+at 0 set 26 0 10 minecraft:stone
+at 0 set 26 0 11 minecraft:stone
+at 0 set 26 0 12 minecraft:stone
+at 0 set 26 0 13 minecraft:stone
+at 0 set 26 0 14 minecraft:stone
+at 0 set 26 0 15 minecraft:stone
+at 0 set 26 0 16 minecraft:stone
+at 0 set 26 0 17 minecraft:stone
+at 0 set 26 0 18 minecraft:stone
+at 0 set 26 0 19 minecraft:stone
+at 0 set 26 0 20 minecraft:stone
+at 0 set 26 0 21 minecraft:stone
+at 0 set 26 0 22 minecraft:stone
+at 0 set 26 0 23 minecraft:stone
+at 0 set 27 0 0 minecraft:stone
+at 0 set 27 0 1 minecraft:stone
+at 0 set 27 0 2 minecraft:stone
+at 0 set 27 0 3 minecraft:stone
+at 0 set 27 0 4 minecraft:stone
+at 0 set 27 0 5 minecraft:stone
+at 0 set 27 0 6 minecraft:stone
+at 0 set 27 0 7 minecraft:stone
+at 0 set 27 0 8 minecraft:stone
+at 0 set 27 0 9 minecraft:stone
+at 0 set 27 0 10 minecraft:stone
+at 0 set 27 0 11 minecraft:stone
+at 0 set 27 0 12 minecraft:stone
+at 0 set 27 0 13 minecraft:stone
+at 0 set 27 0 14 minecraft:stone
+at 0 set 27 0 15 minecraft:stone
+at 0 set 27 0 16 minecraft:stone
+at 0 set 27 0 17 minecraft:stone
+at 0 set 27 0 18 minecraft:stone
+at 0 set 27 0 19 minecraft:stone
+at 0 set 27 0 20 minecraft:stone
+at 0 set 27 0 21 minecraft:stone
+at 0 set 27 0 22 minecraft:stone
+at 0 set 27 0 23 minecraft:stone
+at 0 set 28 0 0 minecraft:stone
+at 0 set 28 0 1 minecraft:stone
+at 0 set 28 0 2 minecraft:stone
+at 0 set 28 0 3 minecraft:stone
+at 0 set 28 0 4 minecraft:stone
+at 0 set 28 0 5 minecraft:stone
+at 0 set 28 0 6 minecraft:stone
+at 0 set 28 0 7 minecraft:stone
+at 0 set 28 0 8 minecraft:stone
+at 0 set 28 0 9 minecraft:stone
+at 0 set 28 0 10 minecraft:stone
+at 0 set 28 0 11 minecraft:stone
+at 0 set 28 0 12 minecraft:stone
+at 0 set 28 0 13 minecraft:stone
+at 0 set 28 0 14 minecraft:stone
+at 0 set 28 0 15 minecraft:stone
+at 0 set 28 0 16 minecraft:stone
+at 0 set 28 0 17 minecraft:stone
+at 0 set 28 0 18 minecraft:stone
+at 0 set 28 0 19 minecraft:stone
+at 0 set 28 0 20 minecraft:stone
+at 0 set 28 0 21 minecraft:stone
+at 0 set 28 0 22 minecraft:stone
+at 0 set 28 0 23 minecraft:stone
+at 0 set 29 0 0 minecraft:stone
+at 0 set 29 0 1 minecraft:stone
+at 0 set 29 0 2 minecraft:stone
+at 0 set 29 0 3 minecraft:stone
+at 0 set 29 0 4 minecraft:stone
+at 0 set 29 0 5 minecraft:stone
+at 0 set 29 0 6 minecraft:stone
+at 0 set 29 0 7 minecraft:stone
+at 0 set 29 0 8 minecraft:stone
+at 0 set 29 0 9 minecraft:stone
+at 0 set 29 0 10 minecraft:stone
+at 0 set 29 0 11 minecraft:stone
+at 0 set 29 0 12 minecraft:stone
+at 0 set 29 0 13 minecraft:stone
+at 0 set 29 0 14 minecraft:stone
+at 0 set 29 0 15 minecraft:stone
+at 0 set 29 0 16 minecraft:stone
+at 0 set 29 0 17 minecraft:stone
+at 0 set 29 0 18 minecraft:stone
+at 0 set 29 0 19 minecraft:stone
+at 0 set 29 0 20 minecraft:stone
+at 0 set 29 0 21 minecraft:stone
+at 0 set 29 0 22 minecraft:stone
+at 0 set 29 0 23 minecraft:stone
+at 0 set 30 0 0 minecraft:stone
+at 0 set 30 0 1 minecraft:stone
+at 0 set 30 0 2 minecraft:stone
+at 0 set 30 0 3 minecraft:stone
+at 0 set 30 0 4 minecraft:stone
+at 0 set 30 0 5 minecraft:stone
+at 0 set 30 0 6 minecraft:stone
+at 0 set 30 0 7 minecraft:stone
+at 0 set 30 0 8 minecraft:stone
+at 0 set 30 0 9 minecraft:stone
+at 0 set 30 0 10 minecraft:stone
+at 0 set 30 0 11 minecraft:stone
+at 0 set 30 0 12 minecraft:stone
+at 0 set 30 0 13 minecraft:stone
+at 0 set 30 0 14 minecraft:stone
+at 0 set 30 0 15 minecraft:stone
+at 0 set 30 0 16 minecraft:stone
+at 0 set 30 0 17 minecraft:stone
+at 0 set 30 0 18 minecraft:stone
+at 0 set 30 0 19 minecraft:stone
+at 0 set 30 0 20 minecraft:stone
+at 0 set 30 0 21 minecraft:stone
+at 0 set 30 0 22 minecraft:stone
+at 0 set 30 0 23 minecraft:stone
+at 0 set 31 0 0 minecraft:stone
+at 0 set 31 0 1 minecraft:stone
+at 0 set 31 0 2 minecraft:stone
+at 0 set 31 0 3 minecraft:stone
+at 0 set 31 0 4 minecraft:stone
+at 0 set 31 0 5 minecraft:stone
+at 0 set 31 0 6 minecraft:stone
+at 0 set 31 0 7 minecraft:stone
+at 0 set 31 0 8 minecraft:stone
+at 0 set 31 0 9 minecraft:stone
+at 0 set 31 0 10 minecraft:stone
+at 0 set 31 0 11 minecraft:stone
+at 0 set 31 0 12 minecraft:stone
+at 0 set 31 0 13 minecraft:stone
+at 0 set 31 0 14 minecraft:stone
+at 0 set 31 0 15 minecraft:stone
+at 0 set 31 0 16 minecraft:stone
+at 0 set 31 0 17 minecraft:stone
+at 0 set 31 0 18 minecraft:stone
+at 0 set 31 0 19 minecraft:stone
+at 0 set 31 0 20 minecraft:stone
+at 0 set 31 0 21 minecraft:stone
+at 0 set 31 0 22 minecraft:stone
+at 0 set 31 0 23 minecraft:stone
+at 0 set 32 0 0 minecraft:stone
+at 0 set 32 0 1 minecraft:stone
+at 0 set 32 0 2 minecraft:stone
+at 0 set 32 0 3 minecraft:stone
+at 0 set 32 0 4 minecraft:stone
+at 0 set 32 0 5 minecraft:stone
+at 0 set 32 0 6 minecraft:stone
+at 0 set 32 0 7 minecraft:stone
+at 0 set 32 0 8 minecraft:stone
+at 0 set 32 0 9 minecraft:stone
+at 0 set 32 0 10 minecraft:stone
+at 0 set 32 0 11 minecraft:stone
+at 0 set 32 0 12 minecraft:stone
+at 0 set 32 0 13 minecraft:stone
+at 0 set 32 0 14 minecraft:stone
+at 0 set 32 0 15 minecraft:stone
+at 0 set 32 0 16 minecraft:stone
+at 0 set 32 0 17 minecraft:stone
+at 0 set 32 0 18 minecraft:stone
+at 0 set 32 0 19 minecraft:stone
+at 0 set 32 0 20 minecraft:stone
+at 0 set 32 0 21 minecraft:stone
+at 0 set 32 0 22 minecraft:stone
+at 0 set 32 0 23 minecraft:stone
+at 0 set 33 0 0 minecraft:stone
+at 0 set 33 0 1 minecraft:stone
+at 0 set 33 0 2 minecraft:stone
+at 0 set 33 0 3 minecraft:stone
+at 0 set 33 0 4 minecraft:stone
+at 0 set 33 0 5 minecraft:stone
+at 0 set 33 0 6 minecraft:stone
+at 0 set 33 0 7 minecraft:stone
+at 0 set 33 0 8 minecraft:stone
+at 0 set 33 0 9 minecraft:stone
+at 0 set 33 0 10 minecraft:stone
+at 0 set 33 0 11 minecraft:stone
+at 0 set 33 0 12 minecraft:stone
+at 0 set 33 0 13 minecraft:stone
+at 0 set 33 0 14 minecraft:stone
+at 0 set 33 0 15 minecraft:stone
+at 0 set 33 0 16 minecraft:stone
+at 0 set 33 0 17 minecraft:stone
+at 0 set 33 0 18 minecraft:stone
+at 0 set 33 0 19 minecraft:stone
+at 0 set 33 0 20 minecraft:stone
+at 0 set 33 0 21 minecraft:stone
+at 0 set 33 0 22 minecraft:stone
+at 0 set 33 0 23 minecraft:stone
+at 0 set 34 0 0 minecraft:stone
+at 0 set 34 0 1 minecraft:stone
+at 0 set 34 0 2 minecraft:stone
+at 0 set 34 0 3 minecraft:stone
+at 0 set 34 0 4 minecraft:stone
+at 0 set 34 0 5 minecraft:stone
+at 0 set 34 0 6 minecraft:stone
+at 0 set 34 0 7 minecraft:stone
+at 0 set 34 0 8 minecraft:stone
+at 0 set 34 0 9 minecraft:stone
+at 0 set 34 0 10 minecraft:stone
+at 0 set 34 0 11 minecraft:stone
+at 0 set 34 0 12 minecraft:stone
+at 0 set 34 0 13 minecraft:stone
+at 0 set 34 0 14 minecraft:stone
+at 0 set 34 0 15 minecraft:stone
+at 0 set 34 0 16 minecraft:stone
+at 0 set 34 0 17 minecraft:stone
+at 0 set 34 0 18 minecraft:stone
+at 0 set 34 0 19 minecraft:stone
+at 0 set 34 0 20 minecraft:stone
+at 0 set 34 0 21 minecraft:stone
+at 0 set 34 0 22 minecraft:stone
+at 0 set 34 0 23 minecraft:stone
+at 0 set 35 0 0 minecraft:stone
+at 0 set 35 0 1 minecraft:stone
+at 0 set 35 0 2 minecraft:stone
+at 0 set 35 0 3 minecraft:stone
+at 0 set 35 0 4 minecraft:stone
+at 0 set 35 0 5 minecraft:stone
+at 0 set 35 0 6 minecraft:stone
+at 0 set 35 0 7 minecraft:stone
+at 0 set 35 0 8 minecraft:stone
+at 0 set 35 0 9 minecraft:stone
+at 0 set 35 0 10 minecraft:stone
+at 0 set 35 0 11 minecraft:stone
+at 0 set 35 0 12 minecraft:stone
+at 0 set 35 0 13 minecraft:stone
+at 0 set 35 0 14 minecraft:stone
+at 0 set 35 0 15 minecraft:stone
+at 0 set 35 0 16 minecraft:stone
+at 0 set 35 0 17 minecraft:stone
+at 0 set 35 0 18 minecraft:stone
+at 0 set 35 0 19 minecraft:stone
+at 0 set 35 0 20 minecraft:stone
+at 0 set 35 0 21 minecraft:stone
+at 0 set 35 0 22 minecraft:stone
+at 0 set 35 0 23 minecraft:stone
+at 0 set 36 0 0 minecraft:stone
+at 0 set 36 0 1 minecraft:stone
+at 0 set 36 0 2 minecraft:stone
+at 0 set 36 0 3 minecraft:stone
+at 0 set 36 0 4 minecraft:stone
+at 0 set 36 0 5 minecraft:stone
+at 0 set 36 0 6 minecraft:stone
+at 0 set 36 0 7 minecraft:stone
+at 0 set 36 0 8 minecraft:stone
+at 0 set 36 0 9 minecraft:stone
+at 0 set 36 0 10 minecraft:stone
+at 0 set 36 0 11 minecraft:stone
+at 0 set 36 0 12 minecraft:stone
+at 0 set 36 0 13 minecraft:stone
+at 0 set 36 0 14 minecraft:stone
+at 0 set 36 0 15 minecraft:stone
+at 0 set 36 0 16 minecraft:stone
+at 0 set 36 0 17 minecraft:stone
+at 0 set 36 0 18 minecraft:stone
+at 0 set 36 0 19 minecraft:stone
+at 0 set 36 0 20 minecraft:stone
+at 0 set 36 0 21 minecraft:stone
+at 0 set 36 0 22 minecraft:stone
+at 0 set 36 0 23 minecraft:stone
+at 0 set 37 0 0 minecraft:stone
+at 0 set 37 0 1 minecraft:stone
+at 0 set 37 0 2 minecraft:stone
+at 0 set 37 0 3 minecraft:stone
+at 0 set 37 0 4 minecraft:stone
+at 0 set 37 0 5 minecraft:stone
+at 0 set 37 0 6 minecraft:stone
+at 0 set 37 0 7 minecraft:stone
+at 0 set 37 0 8 minecraft:stone
+at 0 set 37 0 9 minecraft:stone
+at 0 set 37 0 10 minecraft:stone
+at 0 set 37 0 11 minecraft:stone
+at 0 set 37 0 12 minecraft:stone
+at 0 set 37 0 13 minecraft:stone
+at 0 set 37 0 14 minecraft:stone
+at 0 set 37 0 15 minecraft:stone
+at 0 set 37 0 16 minecraft:stone
+at 0 set 37 0 17 minecraft:stone
+at 0 set 37 0 18 minecraft:stone
+at 0 set 37 0 19 minecraft:stone
+at 0 set 37 0 20 minecraft:stone
+at 0 set 37 0 21 minecraft:stone
+at 0 set 37 0 22 minecraft:stone
+at 0 set 37 0 23 minecraft:stone
+at 0 set 38 0 0 minecraft:stone
+at 0 set 38 0 1 minecraft:stone
+at 0 set 38 0 2 minecraft:stone
+at 0 set 38 0 3 minecraft:stone
+at 0 set 38 0 4 minecraft:stone
+at 0 set 38 0 5 minecraft:stone
+at 0 set 38 0 6 minecraft:stone
+at 0 set 38 0 7 minecraft:stone
+at 0 set 38 0 8 minecraft:stone
+at 0 set 38 0 9 minecraft:stone
+at 0 set 38 0 10 minecraft:stone
+at 0 set 38 0 11 minecraft:stone
+at 0 set 38 0 12 minecraft:stone
+at 0 set 38 0 13 minecraft:stone
+at 0 set 38 0 14 minecraft:stone
+at 0 set 38 0 15 minecraft:stone
+at 0 set 38 0 16 minecraft:stone
+at 0 set 38 0 17 minecraft:stone
+at 0 set 38 0 18 minecraft:stone
+at 0 set 38 0 19 minecraft:stone
+at 0 set 38 0 20 minecraft:stone
+at 0 set 38 0 21 minecraft:stone
+at 0 set 38 0 22 minecraft:stone
+at 0 set 38 0 23 minecraft:stone
+at 0 set 39 0 0 minecraft:stone
+at 0 set 39 0 1 minecraft:stone
+at 0 set 39 0 2 minecraft:stone
+at 0 set 39 0 3 minecraft:stone
+at 0 set 39 0 4 minecraft:stone
+at 0 set 39 0 5 minecraft:stone
+at 0 set 39 0 6 minecraft:stone
+at 0 set 39 0 7 minecraft:stone
+at 0 set 39 0 8 minecraft:stone
+at 0 set 39 0 9 minecraft:stone
+at 0 set 39 0 10 minecraft:stone
+at 0 set 39 0 11 minecraft:stone
+at 0 set 39 0 12 minecraft:stone
+at 0 set 39 0 13 minecraft:stone
+at 0 set 39 0 14 minecraft:stone
+at 0 set 39 0 15 minecraft:stone
+at 0 set 39 0 16 minecraft:stone
+at 0 set 39 0 17 minecraft:stone
+at 0 set 39 0 18 minecraft:stone
+at 0 set 39 0 19 minecraft:stone
+at 0 set 39 0 20 minecraft:stone
+at 0 set 39 0 21 minecraft:stone
+at 0 set 39 0 22 minecraft:stone
+at 0 set 39 0 23 minecraft:stone
+
+at 1 set 1 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 2 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 3 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 4 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 5 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 6 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 7 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 8 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 9 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 10 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 11 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 12 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 1 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 2 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 3 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 4 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 5 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 6 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 7 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 8 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 9 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 10 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 11 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 12 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 1 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 2 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 3 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 4 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 5 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 6 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 7 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 8 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 9 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 10 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 11 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 12 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 13 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 14 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 15 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 16 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 17 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 18 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 19 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 20 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 6 1 10 minecraft:stone
+at 1 set 7 1 10 minecraft:stone
+at 1 set 8 1 10 minecraft:stone
+at 1 set 9 1 10 minecraft:stone
+at 1 set 10 1 10 minecraft:stone
+at 1 set 11 1 10 minecraft:stone
+at 1 set 12 1 10 minecraft:stone
+at 1 set 13 1 10 minecraft:stone
+at 1 set 10 2 10 minecraft:stone
+at 1 set 11 2 10 minecraft:stone
+at 1 set 12 2 10 minecraft:stone
+at 1 set 13 2 10 minecraft:stone
+at 1 set 1 1 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 2 1 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 3 1 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 4 1 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 5 1 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 6 2 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 7 2 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 8 2 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 9 2 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 10 3 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 11 3 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 12 3 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+at 1 set 13 3 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 1 1 1 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 2 1 1 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 3 1 1 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 4 1 1 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 5 1 1 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 6 1 1 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 7 1 1 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 8 1 1 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 9 1 1 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 10 1 1 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 11 1 1 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 12 1 1 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 1 1 4 minecraft:air minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 2 1 4 minecraft:air minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 3 1 4 minecraft:air minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 4 1 4 minecraft:air minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 5 1 4 minecraft:air minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 6 1 4 minecraft:air minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 7 1 4 minecraft:air minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 8 1 4 minecraft:air minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 9 1 4 minecraft:air minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 10 1 4 minecraft:air minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 11 1 4 minecraft:air minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 12 1 4 minecraft:air minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 1 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 2 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 3 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 4 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 5 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 6 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 7 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 8 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 9 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 10 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 11 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 12 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 13 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 14 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 15 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 16 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 17 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 18 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 19 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 20 1 7 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 6 1 10 minecraft:air minecraft:stone
+change 1 commands 7 1 10 minecraft:air minecraft:stone
+change 1 commands 8 1 10 minecraft:air minecraft:stone
+change 1 commands 9 1 10 minecraft:air minecraft:stone
+change 1 commands 10 1 10 minecraft:air minecraft:stone
+change 1 commands 11 1 10 minecraft:air minecraft:stone
+change 1 commands 12 1 10 minecraft:air minecraft:stone
+change 1 commands 13 1 10 minecraft:air minecraft:stone
+change 1 commands 10 2 10 minecraft:air minecraft:stone
+change 1 commands 11 2 10 minecraft:air minecraft:stone
+change 1 commands 12 2 10 minecraft:air minecraft:stone
+change 1 commands 13 2 10 minecraft:air minecraft:stone
+change 1 commands 1 1 10 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 2 1 10 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 3 1 10 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 4 1 10 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 5 1 10 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 6 2 10 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 5 1 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=ascending_east,waterlogged=false]
+change 1 commands 7 2 10 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 8 2 10 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 9 2 10 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 10 3 10 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 9 2 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=ascending_east,waterlogged=false]
+change 1 commands 11 3 10 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 12 3 10 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 1 commands 13 3 10 minecraft:air minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+
+at 2 set 0 1 1 minecraft:lever[face=floor,facing=north,powered=false]
+at 2 set 0 1 4 minecraft:lever[face=floor,facing=north,powered=false]
+at 2 set 10 1 8 minecraft:lever[face=floor,facing=north,powered=false]
+at 2 set 0 1 10 minecraft:lever[face=floor,facing=north,powered=false]
+change 2 commands 0 1 1 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 2 commands 0 1 4 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 2 commands 10 1 8 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 2 commands 0 1 10 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+
+at 3 use 0 1 1
+change 3 commands 0 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 3 commands 1 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 3 commands 2 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 3 commands 3 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 3 commands 4 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 3 commands 5 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 3 commands 6 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 3 commands 7 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 3 commands 8 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 3 commands 9 1 1 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+
+at 7 use 0 1 4
+change 7 commands 0 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 7 commands 1 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false]
+change 7 commands 2 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false]
+change 7 commands 3 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false]
+change 7 commands 4 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false]
+change 7 commands 5 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false]
+change 7 commands 6 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false]
+change 7 commands 7 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false]
+change 7 commands 8 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false]
+change 7 commands 9 1 4 minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false]
+
+at 11 use 10 1 8
+change 11 commands 10 1 8 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 11 commands 10 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 11 commands 9 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 11 commands 8 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 11 commands 7 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 11 commands 6 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 11 commands 5 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 11 commands 4 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 11 commands 3 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 11 commands 2 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 11 commands 11 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 11 commands 12 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 11 commands 13 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 11 commands 14 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 11 commands 15 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 11 commands 16 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 11 commands 17 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 11 commands 18 1 7 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+
+at 15 use 0 1 10
+change 15 commands 0 1 10 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 1 1 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 15 commands 2 1 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 15 commands 3 1 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 15 commands 4 1 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 15 commands 5 1 10 minecraft:powered_rail[powered=false,shape=ascending_east,waterlogged=false] minecraft:powered_rail[powered=true,shape=ascending_east,waterlogged=false]
+change 15 commands 6 2 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 15 commands 7 2 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 15 commands 8 2 10 minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false]
+change 15 commands 9 2 10 minecraft:powered_rail[powered=false,shape=ascending_east,waterlogged=false] minecraft:powered_rail[powered=true,shape=ascending_east,waterlogged=false]
+
+at 23 use 0 1 1
+change 23 commands 0 1 1 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 23 commands 1 1 1 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 23 commands 2 1 1 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 23 commands 3 1 1 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 23 commands 4 1 1 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 23 commands 5 1 1 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 23 commands 6 1 1 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 23 commands 7 1 1 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 23 commands 8 1 1 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 23 commands 9 1 1 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+
+at 27 use 0 1 4
+change 27 commands 0 1 4 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 27 commands 1 1 4 minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 27 commands 2 1 4 minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 27 commands 3 1 4 minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 27 commands 4 1 4 minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 27 commands 5 1 4 minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 27 commands 6 1 4 minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 27 commands 7 1 4 minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 27 commands 8 1 4 minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+change 27 commands 9 1 4 minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false] minecraft:activator_rail[powered=false,shape=east_west,waterlogged=false]
+
+at 31 use 10 1 8
+change 31 commands 10 1 8 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 31 commands 10 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 31 commands 9 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 31 commands 8 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 31 commands 7 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 31 commands 6 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 31 commands 5 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 31 commands 4 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 31 commands 3 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 31 commands 2 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 31 commands 11 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 31 commands 12 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 31 commands 13 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 31 commands 14 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 31 commands 15 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 31 commands 16 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 31 commands 17 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 31 commands 18 1 7 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+
+at 35 use 0 1 10
+change 35 commands 0 1 10 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 35 commands 1 1 10 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 35 commands 2 1 10 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 35 commands 3 1 10 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 35 commands 4 1 10 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 35 commands 5 1 10 minecraft:powered_rail[powered=true,shape=ascending_east,waterlogged=false] minecraft:powered_rail[powered=false,shape=ascending_east,waterlogged=false]
+change 35 commands 6 2 10 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 35 commands 7 2 10 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 35 commands 8 2 10 minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] minecraft:powered_rail[powered=false,shape=east_west,waterlogged=false]
+change 35 commands 9 2 10 minecraft:powered_rail[powered=true,shape=ascending_east,waterlogged=false] minecraft:powered_rail[powered=false,shape=ascending_east,waterlogged=false]
+
+at 43 set 3 1 15 minecraft:rail[shape=east_west,waterlogged=false]
+at 43 set 2 1 16 minecraft:rail[shape=north_south,waterlogged=false]
+at 43 set 2 1 14 minecraft:rail[shape=north_south,waterlogged=false]
+at 43 set 7 1 15 minecraft:rail[shape=east_west,waterlogged=false]
+at 43 set 8 1 16 minecraft:rail[shape=north_south,waterlogged=false]
+at 43 set 8 1 14 minecraft:rail[shape=north_south,waterlogged=false]
+at 43 set 13 1 15 minecraft:rail[shape=east_west,waterlogged=false]
+at 43 set 15 1 15 minecraft:rail[shape=east_west,waterlogged=false]
+at 43 set 14 1 14 minecraft:rail[shape=north_south,waterlogged=false]
+at 43 set 19 1 15 minecraft:rail[shape=east_west,waterlogged=false]
+at 43 set 21 1 15 minecraft:rail[shape=east_west,waterlogged=false]
+at 43 set 20 1 16 minecraft:rail[shape=north_south,waterlogged=false]
+change 43 commands 3 1 15 minecraft:air minecraft:rail[shape=east_west,waterlogged=false]
+change 43 commands 2 1 16 minecraft:air minecraft:rail[shape=north_south,waterlogged=false]
+change 43 commands 2 1 14 minecraft:air minecraft:rail[shape=north_south,waterlogged=false]
+change 43 commands 7 1 15 minecraft:air minecraft:rail[shape=east_west,waterlogged=false]
+change 43 commands 8 1 16 minecraft:air minecraft:rail[shape=north_south,waterlogged=false]
+change 43 commands 8 1 14 minecraft:air minecraft:rail[shape=north_south,waterlogged=false]
+change 43 commands 13 1 15 minecraft:air minecraft:rail[shape=east_west,waterlogged=false]
+change 43 commands 15 1 15 minecraft:air minecraft:rail[shape=east_west,waterlogged=false]
+change 43 commands 14 1 14 minecraft:air minecraft:rail[shape=north_south,waterlogged=false]
+change 43 commands 19 1 15 minecraft:air minecraft:rail[shape=east_west,waterlogged=false]
+change 43 commands 21 1 15 minecraft:air minecraft:rail[shape=east_west,waterlogged=false]
+change 43 commands 20 1 16 minecraft:air minecraft:rail[shape=north_south,waterlogged=false]
+
+at 44 set 2 1 15 minecraft:rail[shape=north_south,waterlogged=false]
+at 44 set 8 1 15 minecraft:rail[shape=north_south,waterlogged=false]
+at 44 set 14 1 15 minecraft:rail[shape=north_south,waterlogged=false]
+at 44 set 20 1 15 minecraft:rail[shape=north_south,waterlogged=false]
+change 44 commands 2 1 15 minecraft:air minecraft:rail[shape=north_south,waterlogged=false]
+change 44 commands 2 1 15 minecraft:rail[shape=north_south,waterlogged=false] minecraft:rail[shape=south_east,waterlogged=false]
+change 44 commands 8 1 15 minecraft:air minecraft:rail[shape=north_south,waterlogged=false]
+change 44 commands 8 1 15 minecraft:rail[shape=north_south,waterlogged=false] minecraft:rail[shape=south_west,waterlogged=false]
+change 44 commands 14 1 15 minecraft:air minecraft:rail[shape=north_south,waterlogged=false]
+change 44 commands 14 1 15 minecraft:rail[shape=north_south,waterlogged=false] minecraft:rail[shape=north_east,waterlogged=false]
+change 44 commands 20 1 15 minecraft:air minecraft:rail[shape=north_south,waterlogged=false]
+change 44 commands 20 1 15 minecraft:rail[shape=north_south,waterlogged=false] minecraft:rail[shape=south_east,waterlogged=false]
+
+at 45 set 1 1 15 minecraft:lever[face=floor,facing=north,powered=false]
+at 45 set 9 1 15 minecraft:lever[face=floor,facing=north,powered=false]
+at 45 set 14 1 16 minecraft:lever[face=floor,facing=north,powered=false]
+at 45 set 20 1 14 minecraft:lever[face=floor,facing=north,powered=false]
+change 45 commands 1 1 15 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 45 commands 9 1 15 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 45 commands 14 1 16 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 45 commands 20 1 14 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+
+at 47 use 1 1 15
+change 47 commands 1 1 15 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 47 commands 2 1 15 minecraft:rail[shape=south_east,waterlogged=false] minecraft:rail[shape=north_east,waterlogged=false]
+
+at 49 use 9 1 15
+change 49 commands 9 1 15 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 49 commands 8 1 15 minecraft:rail[shape=south_west,waterlogged=false] minecraft:rail[shape=north_west,waterlogged=false]
+
+at 51 use 14 1 16
+change 51 commands 14 1 16 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 51 commands 14 1 15 minecraft:rail[shape=north_east,waterlogged=false] minecraft:rail[shape=north_west,waterlogged=false]
+
+at 53 use 20 1 14
+change 53 commands 20 1 14 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 53 commands 20 1 15 minecraft:rail[shape=south_east,waterlogged=false] minecraft:rail[shape=south_west,waterlogged=false]
+
+at 57 use 1 1 15
+change 57 commands 1 1 15 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 57 commands 2 1 15 minecraft:rail[shape=north_east,waterlogged=false] minecraft:rail[shape=south_east,waterlogged=false]
+
+at 59 use 9 1 15
+change 59 commands 9 1 15 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 59 commands 8 1 15 minecraft:rail[shape=north_west,waterlogged=false] minecraft:rail[shape=south_west,waterlogged=false]
+
+at 61 use 14 1 16
+change 61 commands 14 1 16 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 61 commands 14 1 15 minecraft:rail[shape=north_west,waterlogged=false] minecraft:rail[shape=north_east,waterlogged=false]
+
+at 63 use 20 1 14
+change 63 commands 20 1 14 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 63 commands 20 1 15 minecraft:rail[shape=south_west,waterlogged=false] minecraft:rail[shape=south_east,waterlogged=false]

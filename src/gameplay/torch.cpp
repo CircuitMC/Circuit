@@ -28,9 +28,9 @@ bool torch_powered(RuleContext& ctx, BlockPos pos, BlockState s) {
 }
 } // namespace
 
-void torch_updates(RuleContext& ctx, BlockPos pos) {
+void torch_updates(RuleContext& ctx, BlockPos pos, BlockState torch) {
     for (const auto d : {Direction::down, Direction::up, Direction::north, Direction::south, Direction::west, Direction::east})
-        notify_neighbors(ctx, pos.relative(d));
+        notify_neighbors(ctx, pos.relative(d), std::nullopt, torch);
 }
 
 void check_torch(RuleContext& ctx, BlockPos pos, BlockState s) {

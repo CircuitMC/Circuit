@@ -2295,10 +2295,10 @@ int main() {
         // Tables of blocks with rules of their own are not counted: since
         // rules v11 also the redstone torch's, the 14 buttons', the 16
         // pressure plates', the target block's, the 54 doors', trapdoors'
-        // and fence gates', the honey block's, the daylight detector's and
-        // the note block's.
-        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 918, 824, 1407, 984},
-                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 910, 816, 1370, 948}}) {
+        // and fence gates', the honey block's, the daylight detector's, the
+        // note block's and the four rails'.
+        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 914, 820, 1407, 984},
+                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 906, 812, 1370, 948}}) {
             const char* jar = std::getenv(e.variable);
             if (!jar || !*jar) continue;
             const auto& bundle = **contracts::BundleRegistry::find(e.bundle);

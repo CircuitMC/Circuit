@@ -834,6 +834,27 @@ int main() {
         require(note_events == 6 * 2 + 16 - 1, std::format("{} note block events", note_events));
     });
 
+    suite.run("rails join and pass power across chunk edges", [&] {
+        using circuit::gameplay::blocks::RailKind;
+        using circuit::gameplay::blocks::RailShape;
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("rails"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the rail scenario");
+        const auto& ref = references[index];
+        const auto at = [&](Tick t, BlockPos p) { return state_at(ref.dumps.at(t), p); };
+        // The line over the edge, turning south at its end.
+        require(at(20, {15, 0, 0}) == blocks::rail(RailKind::rail, RailShape::east_west) && at(20, {16, 0, 0}) == at(20, {15, 0, 0})
+                    && at(20, {20, 0, 0}) == blocks::rail(RailKind::rail, RailShape::south_west),
+                "the line over the edge");
+        // One lever at x=11 powers its rail and eight more, over the edge.
+        require(at(30, {20, 0, 3}).flag() && at(30, {16, 0, 3}).flag() && !at(50, {16, 0, 3}).flag(), "powered rails over the edge");
+        // The junction at the edge: south-east unpowered, south-west powered (its east arm a lever away).
+        require(at(30, {16, 0, 5}) == blocks::rail(RailKind::rail, RailShape::south_west)
+                    && at(50, {16, 0, 5}) == blocks::rail(RailKind::rail, RailShape::south_east),
+                std::format("the junction: {} then {}", block_notation(at(30, {16, 0, 5})), block_notation(at(50, {16, 0, 5}))));
+        // The pushed rail joined the line across the edge.
+        require(at(30, {16, 0, -2}) == blocks::rail(RailKind::rail, RailShape::east_west), "the pushed rail joined the line");
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");

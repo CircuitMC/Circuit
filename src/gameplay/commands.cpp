@@ -47,7 +47,7 @@ Plan plan(RuleContext& ctx, const contracts::UseBlock& c) {
         return [&ctx, pos = c.pos, s] {
             set_block(ctx, pos, s.with_flag(!s.flag()));
             detail::notify_neighbors(ctx, pos);
-            detail::notify_neighbors(ctx, pos.relative(detail::lever_attachment(s)));
+            detail::notify_neighbors(ctx, pos.relative(detail::lever_attachment(s)), std::nullopt, s);
         };
     // Using a pressed button does nothing.
     case BlockType::button: return [&ctx, pos = c.pos, s] { detail::press_button(ctx, pos, s); };

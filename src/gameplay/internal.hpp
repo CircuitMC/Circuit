@@ -19,10 +19,12 @@ inline constexpr std::array<Direction, 6> update_order{
 inline constexpr std::array<Direction, 4> spread_order{
     Direction::west, Direction::east, Direction::north, Direction::south};
 
-// Neighbor updates to the six neighbors of `source` (except one direction).
-void notify_neighbors(RuleContext& ctx, BlockPos source, std::optional<Direction> except = std::nullopt);
+// Neighbor updates to the six neighbors of `source` (except one direction),
+// from the block `cause` (default: the block now at `source`).
+void notify_neighbors(RuleContext& ctx, BlockPos source, std::optional<Direction> except = std::nullopt,
+                      std::optional<BlockState> cause = std::nullopt);
 // One neighbor update delivered to `target`.
-void notify_single(RuleContext& ctx, BlockPos target, BlockPos from);
+void notify_single(RuleContext& ctx, BlockPos target, BlockPos from, std::optional<BlockState> cause = std::nullopt);
 // One shape update delivered to `target`, as from its neighbor `from`.
 void notify_shape(RuleContext& ctx, BlockPos target, BlockPos from);
 // Shape updates to the six neighbors of `source` (west, east, north, south,
@@ -37,12 +39,12 @@ void set_block_quiet(RuleContext& ctx, BlockPos pos, BlockState state);
 void destroy_block(RuleContext& ctx, BlockPos pos);
 // Output update of a diode-like component: its front block, then the front
 // block's neighbors except the component itself.
-void update_front(RuleContext& ctx, BlockPos pos, Direction output);
+void update_front(RuleContext& ctx, BlockPos pos, Direction output, std::optional<BlockState> cause = std::nullopt);
 // Reactions to a state set at `pos` (every change, `previous` was there before)
 // and to the removal of a block of another type.
 void on_placed(RuleContext& ctx, BlockPos pos, BlockState state, BlockState previous);
 void on_removed(RuleContext& ctx, BlockPos pos, BlockState previous);
-void on_neighbor_changed(RuleContext& ctx, BlockPos target, BlockPos from);
+void on_neighbor_changed(RuleContext& ctx, BlockPos target, BlockPos from, BlockState cause);
 void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from);
 
 // ---- power (power.cpp) ----
@@ -133,7 +135,7 @@ void tick_observer(RuleContext& ctx, BlockPos pos, BlockState state);
 // ---- redstone torches (torch.cpp) and buttons (button.cpp) ----
 // The updates of every state a torch takes and of its removal: the
 // neighbors of each of its neighbors.
-void torch_updates(RuleContext& ctx, BlockPos pos);
+void torch_updates(RuleContext& ctx, BlockPos pos, BlockState torch);
 // Schedules the torch when its state disagrees with the power in its block.
 void check_torch(RuleContext& ctx, BlockPos pos, BlockState s);
 void tick_torch(RuleContext& ctx, BlockPos pos, BlockState s);
@@ -201,6 +203,15 @@ void spawn_dropped(RuleContext& ctx, BlockPos cell, contracts::Vec3 position, co
 bool head_has_base(RuleContext& ctx, BlockPos pos, BlockState head);
 // Block-entity tick of a moving piston: completes the move after two ticks.
 void tick_moving_piston(RuleContext& ctx, BlockPos pos);
+
+// ---- rails (rail.cpp) ----
+// A rail appeared (placed, set or moved in): its shape and its neighbors'.
+void rail_placed(RuleContext& ctx, BlockPos pos);
+// A neighbor update from a block `cause`.
+void check_rail(RuleContext& ctx, BlockPos pos, BlockState cause);
+void rail_removed(RuleContext& ctx, BlockPos pos, BlockState previous);
+bool rail_supported(RuleContext& ctx, BlockPos pos);
+std::uint16_t rail_item(BlockState s);
 
 // ---- note blocks (note.cpp) ----
 // The state with the instrument its neighbors give it.

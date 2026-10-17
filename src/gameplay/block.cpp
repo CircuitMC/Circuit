@@ -52,6 +52,7 @@ constexpr Properties properties(BlockType t) noexcept {
     case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: return {true, true, true, true};
     case BlockType::daylight_detector: return {false, true, true, false};
     case BlockType::note_block: return {false, true, true, true};
+    case BlockType::rail: return {false, true, true, true};
     default: return {false, false, false, false};
     }
 }
@@ -67,6 +68,7 @@ const std::vector<bool>& modeled_blocks() {
             mark(std::string(kind) + "_button");
             mark(std::string(kind) + "_pressure_plate");
         }
+        for (const auto name : {"rail", "powered_rail", "activator_rail", "detector_rail"}) mark(name);
         for (std::size_t k = 0; k < door_names.size(); ++k) {
             mark(std::string(door_names[k]) + "_door");
             mark(std::string(door_names[k]) + "_trapdoor");
@@ -80,6 +82,12 @@ const std::vector<bool>& modeled_blocks() {
 
 std::string_view button_kind_name(std::uint8_t variant) noexcept {
     return variant < button_names.size() ? button_names[variant] : std::string_view{};
+}
+
+std::string_view rail_shape_name(std::uint8_t shape) noexcept {
+    constexpr std::array<std::string_view, 10> names{"north_south", "east_west", "ascending_east", "ascending_west", "ascending_north",
+                                                    "ascending_south", "south_east", "south_west", "north_west", "north_east"};
+    return shape < names.size() ? names[shape] : std::string_view{};
 }
 
 std::string_view instrument_name(std::uint8_t instrument) noexcept {
@@ -176,6 +184,10 @@ contracts::Result<BlockState> BlockState::decode(std::uint32_t raw) noexcept {
         break;
     case BlockType::note_block:
         if (note_of(s) > 24) return invalid;
+        break;
+    // Plain rails curve and are never powered; the others do not curve.
+    case BlockType::rail:
+        if (s.extra() > 1 || s.level() >= (s.variant() == 0 ? 10 : 6) || (s.variant() == 0 && s.flag())) return invalid;
         break;
     case BlockType::hopper:
         if (s.facing() == Direction::up) return invalid;
@@ -284,6 +296,12 @@ std::string block_notation(BlockState s) {
         return std::format("minecraft:daylight_detector[inverted={},power={}]", b(s.flag()), s.level());
     case BlockType::note_block:
         return std::format("minecraft:note_block[instrument={},note={},powered={}]", instrument_name(s.variant()), note_of(s), b(s.flag()));
+    case BlockType::rail: {
+        if (s.variant() == 0) return std::format("minecraft:rail[shape={},waterlogged={}]", rail_shape_name(s.level()), b(s.extra() != 0));
+        constexpr std::array<std::string_view, 4> kinds{"rail", "powered_rail", "activator_rail", "detector_rail"};
+        return std::format("minecraft:{}[powered={},shape={},waterlogged={}]", kinds[s.variant() % 4], b(s.flag()), rail_shape_name(s.level()),
+                           b(s.extra() != 0));
+    }
     case BlockType::door:
         return std::format("minecraft:{}_door[facing={},half={},hinge={},open={},powered={}]", door_kind_name(s.variant()),
                            direction_name(s.facing()), upper_half(s) ? "upper" : "lower", (s.level() & 2) ? "right" : "left", b(s.flag()),

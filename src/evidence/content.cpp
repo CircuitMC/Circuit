@@ -289,6 +289,25 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
         CIRCUIT_TRY(power, p.integer_or("power", 0, 15, 0));
         return simple(blocks::target(static_cast<std::uint8_t>(power)));
     }
+    for (std::uint8_t k = 0; k < blocks::rail_kinds; ++k) {
+        constexpr std::array<std::string_view, 4> names{"minecraft:rail", "minecraft:powered_rail", "minecraft:activator_rail",
+                                                         "minecraft:detector_rail"};
+        if (id != names[k]) continue;
+        // Absent properties take the target version's defaults (north_south, unpowered, dry).
+        std::uint8_t shape = 0;
+        if (const auto value = p.optional("shape")) {
+            while (shape < (k == 0 ? 10 : 6) && gameplay::rail_shape_name(shape) != *value) ++shape;
+            if (shape == (k == 0 ? 10 : 6)) return std::unexpected(std::format("{}: invalid shape `{}`", id, *value));
+        }
+        CIRCUIT_TRY(waterlogged, p.choice("waterlogged", {"false", "true"}, 0));
+        unsigned powered = 0;
+        if (k != 0) {
+            CIRCUIT_TRY(on, p.choice("powered", {"false", "true"}, 0));
+            powered = on;
+        }
+        return simple(blocks::rail(static_cast<blocks::RailKind>(k), static_cast<blocks::RailShape>(shape), powered == 1)
+                          .with_extra(static_cast<std::uint8_t>(waterlogged)));
+    }
     if (id == "minecraft:note_block") {
         // Absent properties take the target version's defaults (harp, 0, unpowered).
         std::uint8_t instrument = 0;

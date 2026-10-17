@@ -34,6 +34,9 @@ struct NeighborUpdater {
         std::uint8_t next{};   // Next direction index of a `neighbors` entry.
         std::int8_t skip{-1};  // Direction not notified, or -1.
         std::uint16_t depth{}; // Nesting of a `shape` entry.
+        // The block the update comes from, as the target versions name it:
+        // the block a change replaced, or the block that sends the update.
+        BlockState cause{};
     };
     std::vector<Entry> stack;
     std::vector<Entry> layer;

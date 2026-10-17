@@ -1793,6 +1793,41 @@ int main() {
         require(s.at({8, 0, 2}) == note(Instrument::flute), std::format("moved onto clay: {}", circuit::gameplay::block_notation(s.at({8, 0, 2}))));
     });
 
+    suite.run("rails take their shapes from their neighbors and pass power", [] {
+        using circuit::contracts::UseBlock;
+        using circuit::gameplay::blocks::RailKind;
+        using circuit::gameplay::blocks::RailShape;
+        const auto rail = [](RailShape r, RailKind k = RailKind::rail, bool on = false) { return blocks::rail(k, r, on); };
+        Sim s;
+        s.tick(floor(-2, 14, -1, 8));
+        // A line laid east: each rail joins the one before.
+        s.tick({place({0, 0, 0}, rail(RailShape::north_south))});
+        s.tick({place({1, 0, 0}, rail(RailShape::north_south))});
+        require(s.at({0, 0, 0}) == rail(RailShape::east_west) && s.at({1, 0, 0}) == rail(RailShape::east_west), "a line");
+        // A rail south of the end makes a curve.
+        s.tick({place({1, 0, 1}, rail(RailShape::north_south))});
+        require(s.at({1, 0, 0}) == rail(RailShape::south_west), "the end curves south");
+        // A junction prefers south-east, and north-west while powered.
+        s.tick({place({4, 0, 3}, rail(RailShape::east_west)), place({6, 0, 3}, rail(RailShape::east_west)), place({5, 0, 4}, rail(RailShape::north_south)),
+                place({5, 0, 2}, rail(RailShape::north_south))});
+        s.tick({place({5, 0, 3}, rail(RailShape::north_south))});
+        require(s.at({5, 0, 3}) == rail(RailShape::south_east), std::format("junction: {}", circuit::gameplay::block_notation(s.at({5, 0, 3}))));
+        // A rail rises toward a rail a block higher.
+        s.tick({place({0, 0, 6}, blocks::stone()), place({0, 1, 6}, rail(RailShape::north_south))});
+        s.tick({place({1, 0, 6}, rail(RailShape::north_south))});
+        require(s.at({1, 0, 6}) == rail(RailShape::ascending_west), "ascending toward the higher rail");
+        // Powered rails: a lever at the end of ten powers nine of them.
+        std::vector<CommandBody> line;
+        for (int x = 3; x <= 12; ++x) line.push_back(place({x, 0, 8}, rail(RailShape::east_west, RailKind::powered)));
+        line.push_back(place({2, 0, 8}, blocks::lever(false)));
+        s.tick(line);
+        s.tick({UseBlock{{2, 0, 8}}});
+        require(s.at({11, 0, 8}).flag() && !s.at({12, 0, 8}).flag(), "eight rails beyond the one with the signal");
+        // Without a sturdy top below, a rail breaks with its drop.
+        s.tick({place({0, -1, 0}, registry_block("oak_slab", {{"type", "bottom"}, {"waterlogged", "false"}}))});
+        require(s.at({0, 0, 0}).is_air(), "the rail on a bottom slab broke");
+    });
+
     suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {
         using circuit::contracts::UseBlock;
         Sim s;

@@ -94,6 +94,7 @@ bool can_survive(RuleContext& ctx, BlockPos pos, BlockState s) {
         return supports_torch(ctx, ctx.block(pos.relative(Direction::down)));
     // A door's lower half needs a sturdy top below it; the upper one its lower half.
     case BlockType::door: return upper_half(s) || face_sturdy(ctx.block(pos.relative(Direction::down)), Direction::up);
+    case BlockType::rail: return rail_supported(ctx, pos);
     default: return true;
     }
 }
@@ -106,6 +107,7 @@ std::uint8_t emitted(RuleContext& ctx, BlockPos pos, BlockState s, Direction tow
     case BlockType::redstone_block: return 15;
     case BlockType::pressure_plate: case BlockType::weighted_plate: return plate_output(s);
     case BlockType::target: case BlockType::daylight_detector: return s.level();
+    case BlockType::rail: return s.variant() == static_cast<std::uint8_t>(blocks::RailKind::detector) && s.flag() ? 15 : 0;
     case BlockType::repeater: return s.flag() && toward == s.facing() ? 15 : 0;
     case BlockType::comparator: {
         if (!s.flag() || toward != s.facing()) return 0;
@@ -128,6 +130,7 @@ std::uint8_t direct(RuleContext& ctx, BlockPos pos, BlockState s, Direction towa
     case BlockType::lever: case BlockType::button: return s.flag() && toward == attachment(s) ? 15 : 0;
     case BlockType::redstone_torch: case BlockType::redstone_wall_torch: return s.flag() && toward == Direction::up ? 15 : 0;
     case BlockType::pressure_plate: case BlockType::weighted_plate: return toward == Direction::down ? plate_output(s) : 0;
+    case BlockType::rail: return toward == Direction::down ? emitted(ctx, pos, s, toward, wires) : 0;
     case BlockType::repeater: case BlockType::comparator: case BlockType::observer: case BlockType::redstone_wire:
         return emitted(ctx, pos, s, toward, wires);
     default: return 0;

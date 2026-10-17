@@ -55,8 +55,8 @@ bool arrow_in(RuleContext& ctx, BlockPos pos, BlockState s) {
 }
 
 void button_updates(RuleContext& ctx, BlockPos pos, BlockState s) {
-    notify_neighbors(ctx, pos);
-    notify_neighbors(ctx, pos.relative(attachment(s)));
+    notify_neighbors(ctx, pos, std::nullopt, s);
+    notify_neighbors(ctx, pos.relative(attachment(s)), std::nullopt, s);
 }
 
 // Sets the button pressed while an arrow is in it, released otherwise; a

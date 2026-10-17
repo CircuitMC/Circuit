@@ -23,6 +23,7 @@ bool connects_to(BlockState n, std::optional<Direction> d) {
     case BlockType::redstone_torch: case BlockType::redstone_wall_torch: case BlockType::pressure_plate:
     case BlockType::weighted_plate: case BlockType::target: case BlockType::daylight_detector:
         return true;
+    case BlockType::rail: return n.variant() == static_cast<std::uint8_t>(blocks::RailKind::detector);
     default: return false;
     }
 }
@@ -54,13 +55,13 @@ std::uint8_t wire_target(RuleContext& ctx, BlockPos pos) {
 void power_set_updates(RuleContext& ctx, BlockPos pos) {
     std::vector<BlockPos> around{pos};
     for (auto d : contracts::all_directions) around.push_back(pos.relative(d));
-    for (const auto p : hash_order(around, around.size())) notify_neighbors(ctx, p);
+    for (const auto p : hash_order(around, around.size())) notify_neighbors(ctx, p, std::nullopt, blocks::wire());
 }
 
 void check_corner(RuleContext& ctx, BlockPos pos) {
     if (!ctx.block(pos).is(BlockType::redstone_wire)) return;
-    notify_neighbors(ctx, pos);
-    for (const auto d : all_in_order) notify_neighbors(ctx, pos.relative(d));
+    notify_neighbors(ctx, pos, std::nullopt, blocks::wire());
+    for (const auto d : all_in_order) notify_neighbors(ctx, pos.relative(d), std::nullopt, blocks::wire());
 }
 
 // Dust placed or removed updates the dust around it, also one step up or down.
@@ -168,13 +169,13 @@ void update_wire(RuleContext& ctx, BlockPos pos) {
 
 void wire_placed(RuleContext& ctx, BlockPos pos) {
     update_wire(ctx, pos);
-    notify_neighbors(ctx, pos.relative(Direction::up));
-    notify_neighbors(ctx, pos.relative(Direction::down));
+    notify_neighbors(ctx, pos.relative(Direction::up), std::nullopt, blocks::wire());
+    notify_neighbors(ctx, pos.relative(Direction::down), std::nullopt, blocks::wire());
     neighboring_wire_corners(ctx, pos);
 }
 
 void wire_removed(RuleContext& ctx, BlockPos pos, BlockState previous) {
-    for (const auto d : all_in_order) notify_neighbors(ctx, pos.relative(d));
+    for (const auto d : all_in_order) notify_neighbors(ctx, pos.relative(d), std::nullopt, previous);
     // The power the dust would have now, compared with what it had.
     if (wire_target(ctx, pos) != previous.level()) power_set_updates(ctx, pos);
     neighboring_wire_corners(ctx, pos);
@@ -194,7 +195,7 @@ void toggle_wire(RuleContext& ctx, BlockPos pos, BlockState s) {
     // Conductors that the dust now points into, or no longer does, update around.
     for (const auto d : plane)
         if (s.wire_connected(d) != next.wire_connected(d) && is_conductor(ctx.block(pos.relative(d))))
-            notify_neighbors(ctx, pos.relative(d), contracts::opposite(d));
+            notify_neighbors(ctx, pos.relative(d), contracts::opposite(d), next);
 }
 
 bool feeds_diode(RuleContext& ctx, BlockPos pos, BlockState s) {
@@ -264,11 +265,11 @@ void tick_lamp(RuleContext& ctx, BlockPos pos, BlockState s) {
 void tick_observer(RuleContext& ctx, BlockPos pos, BlockState s) {
     if (!s.flag()) {
         set_block_quiet(ctx, pos, s.with_flag(true));
-        update_front(ctx, pos, contracts::opposite(s.facing()));
+        update_front(ctx, pos, contracts::opposite(s.facing()), s);
         schedule(ctx, TickList::block, pos, BlockType::observer, 2, 0);
     } else {
         set_block_quiet(ctx, pos, s.with_flag(false));
-        update_front(ctx, pos, contracts::opposite(s.facing()));
+        update_front(ctx, pos, contracts::opposite(s.facing()), s);
     }
 }
 

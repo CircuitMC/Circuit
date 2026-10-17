@@ -50,16 +50,16 @@ std::uint8_t sensed_signal(RuleContext& ctx, BlockPos pos, BlockState s) {
     return static_cast<std::uint8_t>((std::min<std::size_t>(count, 150) + 9) / 10);
 }
 
-void plate_updates(RuleContext& ctx, BlockPos pos) {
-    notify_neighbors(ctx, pos);
-    notify_neighbors(ctx, pos.relative(Direction::down));
+void plate_updates(RuleContext& ctx, BlockPos pos, BlockState s) {
+    notify_neighbors(ctx, pos, std::nullopt, s);
+    notify_neighbors(ctx, pos.relative(Direction::down), std::nullopt, s);
 }
 
 void check_plate(RuleContext& ctx, BlockPos pos, BlockState s) {
     const auto signal = sensed_signal(ctx, pos, s);
     if (signal != output(s)) {
         set_block_quiet(ctx, pos, with_output(s, signal));
-        plate_updates(ctx, pos);
+        plate_updates(ctx, pos, s);
     }
     if (signal > 0) schedule(ctx, TickList::block, pos, s.type(), pressed_ticks(s), 0);
 }
@@ -74,7 +74,7 @@ void tick_plate(RuleContext& ctx, BlockPos pos, BlockState s) {
 }
 
 void plate_removed(RuleContext& ctx, BlockPos pos, BlockState previous) {
-    if (output(previous) > 0) plate_updates(ctx, pos);
+    if (output(previous) > 0) plate_updates(ctx, pos, previous);
 }
 
 void entity_inside(RuleContext& ctx, const Entity& entity) {

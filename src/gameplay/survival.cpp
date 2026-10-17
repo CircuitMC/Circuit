@@ -80,7 +80,7 @@ Tool effective_tool(BlockState s, const GameData* data) noexcept {
     case BlockType::weighted_plate: return Tool::pickaxe;
     case BlockType::target: return Tool::hoe;
     case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: case BlockType::daylight_detector:
-    case BlockType::note_block: {
+    case BlockType::note_block: case BlockType::rail: {
         const auto info = detail::modeled_info(s);
         switch (info ? info->tool : registry::Tool::none) {
         case registry::Tool::pickaxe: return Tool::pickaxe;
@@ -125,7 +125,7 @@ float hardness(BlockState s) noexcept {
     case BlockType::target:
         return 0.5f;
     case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: case BlockType::daylight_detector:
-    case BlockType::note_block: {
+    case BlockType::note_block: case BlockType::rail: {
         const auto info = detail::modeled_info(s);
         return info ? info->hardness : -1.0f;
     }

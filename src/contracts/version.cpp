@@ -167,7 +167,7 @@ constexpr std::array reference_v4_mechanisms{
         "their speed on the ground and lose 5% in the air; boats float on water at a depth proportional "
         "buoyancy, sink under it, slide on land with the slipperiness of the blocks under them, are pushed by "
         "currents and land on the surface when they fall into water (minecart_ground, minecart_water, "
-        "boat_motion, boat_land). Gaps: rails, riders, players and mobs pushing or entering vehicles, vehicles "
+        "boat_motion, boat_land). Gaps: minecarts do not ride rails yet, riders, players and mobs pushing or entering vehicles, vehicles "
         "colliding with each other, chest and furnace variants."},
     MechanismEntry{"redstone_torch", l0_exact, l2_declared_deviation, harness_trace,
         "Floor and wall torches power every neighbor but the block they are on, and the block above them "
@@ -219,6 +219,12 @@ constexpr std::array reference_v4_mechanisms{
         "slide down it, TNT drawing twice from the level random as it does; honey moving sideways carries what "
         "stands on it (honey_basics, honey_slide, honey_entry, honey_more). Gaps: entities other than items and primed "
         "TNT do not slide; jumping is not modeled."},
+    MechanismEntry{"rails", l0_exact, l2_declared_deviation, harness_trace,
+        "Rails, powered, activator and detector rails take their shapes from the rails beside them as they appear and "
+        "make those join them, curve (plain rails) with the official preferences, rise toward a higher rail, switch at "
+        "three-way junctions on updates from signal sources, need a sturdy top below (and on the side they rise "
+        "toward), and powered and activator rails pass power along up to eight rails of their kind (rail_shapes, "
+        "rail_power). Gaps: no minecarts ride them; detector rails sense nothing."},
     MechanismEntry{"note_block", l0_exact, l2_declared_deviation, harness_trace,
         "Note blocks take the instrument of a mob head above them or else of the block below, when placed, moved "
         "and on a shape update from above or below; they play on a rising signal and when used (the next note), "
