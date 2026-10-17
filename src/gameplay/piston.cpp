@@ -11,6 +11,20 @@ constexpr std::size_t push_limit = 12;
 constexpr std::uint8_t move_ticks = 2;
 
 bool sticky(BlockState s) { return s.is(BlockType::slime_block) || s.is(BlockType::honey_block); }
+
+// A moved block arrives without its water (both official servers; push_classes).
+BlockState dried(BlockState s) {
+    if (s.is(BlockType::trapdoor)) return s.with_level(static_cast<std::uint8_t>(s.level() & 1));
+    if (!s.is(BlockType::other)) return s;
+    auto props = registry::properties(s.registry_state());
+    bool wet = false;
+    for (auto& [key, value] : props)
+        if (key == "waterlogged" && value == "true") value = "false", wet = true;
+    if (!wet) return s;
+    const auto block = registry::block_of(s.registry_state());
+    const auto state = block ? registry::state_of(*block, props) : std::nullopt;
+    return state ? BlockState::registered(*state) : s;
+}
 // Sticky blocks hold their neighbors, but slime and honey do not hold each other.
 bool stick(BlockState a, BlockState b) {
     if ((a.is(BlockType::slime_block) && b.is(BlockType::honey_block)) || (a.is(BlockType::honey_block) && b.is(BlockType::slime_block)))
@@ -25,13 +39,15 @@ bool stick(BlockState a, BlockState b) {
 // game's direction order (down, up, north, south, west, east).
 class Resolver {
 public:
-    Resolver(RuleContext& ctx, BlockPos piston, Direction movement) : ctx_(ctx), piston_(piston), movement_(movement) {}
+    // A pull leaves blocks that pistons only push.
+    Resolver(RuleContext& ctx, BlockPos piston, Direction movement, bool pulling = false)
+        : ctx_(ctx), piston_(piston), movement_(movement), pulling_(pulling) {}
 
     bool resolve(BlockPos start) {
         const auto s = ctx_.block(start);
         if (s.is_air()) return true;
-        if (!is_movable(s) || start == piston_) {
-            if (destroyed_by_piston(s.type())) {
+        if (!movable(s) || start == piston_) {
+            if (destroyed_by_piston(s)) {
                 destroyed.push_back(start);
                 return true;
             }
@@ -48,17 +64,18 @@ public:
 
 private:
     bool contains(BlockPos p) const { return std::ranges::find(moved, p) != moved.end(); }
+    bool movable(BlockState s) const { return is_movable(s) && !(pulling_ && push_only(s)); }
 
     bool line(BlockPos origin) {
         auto state = ctx_.block(origin);
-        if (state.is_air() || !is_movable(state) || origin == piston_ || contains(origin)) return true;
+        if (state.is_air() || !movable(state) || origin == piston_ || contains(origin)) return true;
         std::size_t count = 1;
         if (count + moved.size() > push_limit) return false;
         // Sticky blocks drag the chain behind them.
         while (sticky(state)) {
             const auto behind = origin.relative(contracts::opposite(movement_), static_cast<std::int32_t>(count));
             const auto bs = ctx_.block(behind);
-            if (bs.is_air() || !stick(state, bs) || !is_movable(bs) || behind == piston_) break;
+            if (bs.is_air() || !stick(state, bs) || !movable(bs) || behind == piston_) break;
             if (++count + moved.size() > push_limit) return false;
             state = bs;
         }
@@ -68,11 +85,11 @@ private:
             const auto ahead = origin.relative(movement_, j);
             const auto as = ctx_.block(ahead);
             if (as.is_air()) return true;
-            if (destroyed_by_piston(as.type())) {
+            if (destroyed_by_piston(as)) {
                 destroyed.push_back(ahead);
                 return true;
             }
-            if (!is_movable(as) || ahead == piston_) return false;
+            if (!movable(as) || ahead == piston_) return false;
             if (contains(ahead)) return true;
             if (moved.size() + 1 > push_limit) return false;
             moved.push_back(ahead);
@@ -84,7 +101,7 @@ private:
             if (d == movement_ || d == contracts::opposite(movement_)) continue;
             const auto n = p.relative(d);
             const auto ns = ctx_.block(n);
-            if (ns.is_air() || !stick(ctx_.block(p), ns) || !is_movable(ns) || n == piston_) continue;
+            if (ns.is_air() || !stick(ctx_.block(p), ns) || !movable(ns) || n == piston_) continue;
             if (!line(n)) return false;
         }
         return true;
@@ -93,6 +110,7 @@ private:
     RuleContext& ctx_;
     BlockPos piston_;
     Direction movement_;
+    bool pulling_;
 };
 
 // Writes of one piston action, in the target version's order. Every write
@@ -124,7 +142,8 @@ public:
     void destroy(BlockPos p) {
         const auto s = ctx_.block(p);
         drop_items(ctx_, p, s);
-        if (has_block_entity(s.type())) ctx_.remove_block_entity(p);
+        // A registry block's saved block entity goes with it.
+        if (has_block_entity(s.type()) || (s.is(BlockType::other) && ctx_.peek_block_entity(p))) ctx_.remove_block_entity(p);
         write(p, blocks::air(), false);
     }
     // Places a moving piston that turns into `carried` after the move.
@@ -140,7 +159,7 @@ public:
     // Ends a move at once: the carried block appears in place.
     void finish_moving(BlockPos p, BlockState carried) {
         ctx_.remove_block_entity(p);
-        write(p, carried);
+        write(p, dried(carried));
         placed_.push_back(p);
     }
     // Moves a resolved structure one block along `dir`: destroyed blocks first,
@@ -227,8 +246,8 @@ void retract(RuleContext& ctx, BlockPos pos, BlockState s) {
         edit.finish_moving(target, *carried);
     } else if (ctx.block(head_pos).is_air()) {
         const auto ts = ctx.block(target);
-        if (!ts.is_air() && is_movable(ts)) {
-            Resolver structure(ctx, pos, contracts::opposite(facing));
+        if (!ts.is_air() && is_movable(ts) && !push_only(ts)) {
+            Resolver structure(ctx, pos, contracts::opposite(facing), true);
             if (structure.resolve(target)) edit.move(structure, contracts::opposite(facing), {facing, false, false}, std::nullopt, false);
         }
     }
@@ -456,7 +475,7 @@ void tick_moving_piston(RuleContext& ctx, BlockPos pos) {
         return;
     }
     const auto carried = BlockState::decode(be->moving).value_or(blocks::air());
-    set_block(ctx, pos, carried); // Removes the moving piston's block entity.
+    set_block(ctx, pos, dried(carried)); // Removes the moving piston's block entity.
 }
 
 } // namespace circuit::gameplay::detail

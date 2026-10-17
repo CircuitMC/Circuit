@@ -1175,9 +1175,13 @@
           "id": "push_reactions",
           "name": "Push reactions of every block (immovable, destroy, block entities)",
           "milestone": "C4",
-          "impl": "partial",
-          "evidence": "none",
-          "note": "Modeled blocks only"
+          "impl": "implemented",
+          "evidence": "compared",
+          "cases": [
+            "trace/push_classes",
+            "collision/push"
+          ],
+          "note": "Every block of both versions is moved (pushed and pulled), destroyed, pushed only or left in place as the official servers' pistons treat it; moved blocks arrive without their water"
         }
       ]
     },

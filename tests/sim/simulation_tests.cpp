@@ -776,6 +776,23 @@ int main() {
                 std::format("{} chunk changes, {} sliding", crossed, slid));
     });
 
+    suite.run("pistons move blocks without rules across chunk edges", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("push_classes"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the push class scenario");
+        const auto& ref = references[index];
+        const auto& end = ref.dumps.rbegin()->second;
+        // Four pushes and four pulls: the sticky piston pulls the dirt back
+        // each time; the cobblestone and the terracotta stay where the first
+        // push left them, out of the next pushes' reach; the enchanting
+        // table never moves.
+        require(state_at(end, {13, 0, 0}) == registry_block("dirt") && state_at(end, {15, 0, 0}) == registry_block("cobblestone")
+                    && state_at(end, {16, 0, 0}) == registry_block("white_glazed_terracotta", {{"facing", "north"}}),
+                "the dirt pulled back, the rest across the edge");
+        require(state_at(end, {16, 0, 5}) == registry_block("enchanting_table") && !state_at(end, {15, 0, 5}).flag(), "the table holds");
+        require(state_at(end, {16, 0, 3}) == registry_block("cobblestone") || state_at(end, {15, 0, 3}) == registry_block("cobblestone"),
+                "the cobblestone that destroyed the dandelion");
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");

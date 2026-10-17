@@ -113,12 +113,13 @@ int main() {
             require(s.at({0, 0, 0}).is_air() && s.at({2, 0, 0}).is(BlockType::redstone_wire) && s.at({4, 0, 0}).is(BlockType::redstone_wire),
                     "dust support");
         }
-        // Pistons cannot move them.
+        // Pistons cannot move the immovable ones (see the push classes below).
         {
             Sim s;
-            s.tick({place({1, 0, 0}, dirt), place({0, 0, 0}, blocks::piston(D::east))});
+            const auto table = registry_block("enchanting_table");
+            s.tick({place({1, 0, 0}, table), place({0, 0, 0}, blocks::piston(D::east))});
             s.tick({place({0, 0, 1}, blocks::redstone_block())});
-            require(!s.at({0, 0, 0}).flag() && s.at({1, 0, 0}) == dirt && of_kind(s.last, TraceKind::piston_blocked).size() == 1,
+            require(!s.at({0, 0, 0}).flag() && s.at({1, 0, 0}) == table && of_kind(s.last, TraceKind::piston_blocked).size() == 1,
                     "immovable");
         }
         // Items land on blocks with collision and fall through those without.
@@ -1706,6 +1707,32 @@ int main() {
         const auto slider = item(items::stone);
         require(slider.velocity.y == (-0.05 - 0.08) * static_cast<double>(0.98f) * 0.98 && slider.position.y < 4.0,
                 std::format("sliding down the honey at {}", slider.velocity.y));
+    });
+
+    suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {
+        using circuit::contracts::UseBlock;
+        Sim s;
+        std::vector<CommandBody> build = floor(-2, 6, -1, 12);
+        const std::array<BlockState, 6> lanes{registry_block("cobblestone"), registry_block("white_glazed_terracotta", {{"facing", "north"}}),
+                                              registry_block("dandelion"), registry_block("bedrock"), registry_block("dirt"),
+                                              registry_block("enchanting_table")};
+        for (int i = 0; i < static_cast<int>(lanes.size()); ++i) {
+            build.push_back(place({0, 0, 2 * i}, blocks::piston(D::east, true)));
+            build.push_back(place({1, 0, 2 * i}, lanes[static_cast<std::size_t>(i)]));
+            build.push_back(place({-1, 0, 2 * i}, blocks::lever(false)));
+        }
+        s.tick(build);
+        std::vector<CommandBody> on;
+        for (int i = 0; i < static_cast<int>(lanes.size()); ++i) on.push_back(UseBlock{{-1, 0, 2 * i}});
+        s.tick(on);
+        for (int i = 0; i < 4; ++i) s.tick();
+        require(s.at({2, 0, 0}) == lanes[0] && s.at({2, 0, 2}) == lanes[1] && s.at({2, 0, 8}) == lanes[4], "cobblestone, terracotta and dirt pushed");
+        require(s.at({1, 0, 4}).is(BlockType::piston_head) && s.at({2, 0, 4}).is_air(), "the dandelion destroyed");
+        require(s.at({1, 0, 6}) == lanes[3] && s.at({1, 0, 10}) == lanes[5], "bedrock and the enchanting table stay");
+        s.tick(on);
+        for (int i = 0; i < 4; ++i) s.tick();
+        require(s.at({1, 0, 0}) == lanes[0] && s.at({1, 0, 8}) == lanes[4], "cobblestone and dirt pulled back");
+        require(s.at({2, 0, 2}) == lanes[1] && s.at({1, 0, 2}).is_air(), "glazed terracotta is never pulled");
     });
 
     suite.run("entities leave with their chunk and come back under new ids", [] {

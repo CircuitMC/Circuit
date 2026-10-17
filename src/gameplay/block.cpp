@@ -95,6 +95,18 @@ bool same_block(BlockState a, BlockState b) noexcept {
     return !a.is(BlockType::other) || registry::block_of(a.registry_state()) == registry::block_of(b.registry_state());
 }
 
+registry::PushClass push_class(BlockState s) noexcept {
+    const auto block = registry::block_of(s.registry_state());
+    return block ? registry::block(*block).push : registry::PushClass::immovable;
+}
+
+bool other_movable(BlockState s) noexcept {
+    const auto c = push_class(s);
+    return c == registry::PushClass::move || c == registry::PushClass::push_only;
+}
+bool other_destroyed_by_piston(BlockState s) noexcept { return push_class(s) == registry::PushClass::destroy; }
+bool other_push_only(BlockState s) noexcept { return push_class(s) == registry::PushClass::push_only; }
+
 bool other_has_collision(BlockState s) noexcept { return registry::collision(s.registry_state()) != registry::Collision::empty; }
 
 bool other_opaque(BlockState s) noexcept {

@@ -13,7 +13,7 @@ the committed table.
 Each version maps its states to internal ids and back. Per internal block the
 table keeps the data the rules use for blocks without rules of their own:
 hardness, opacity, the effective tool and the lowest tier that harvests the
-block, and every block's blast resistance. Per state it keeps the collision class (empty, partial, full cube),
+block, every block's blast resistance and how pistons treat it (push_class). Per state it keeps the collision class (empty, partial, full cube),
 which faces the collision shape covers completely, its light: emission,
 dampening and, for states whose shape occludes light, the parts of each face
 the occlusion shape covers (light_of below; minecraft-data gives light per
@@ -219,6 +219,56 @@ def tier_of(block, tool, item_names):
     return min(tiers) if tiers else 255
 
 
+# How pistons treat a block (push_class): 0 move (pushed, and pulled by sticky
+# pistons), 1 destroy (broken with its drops), 2 push only (pushed, never
+# pulled), 3 immovable. Unbreakable blocks are immovable; the lists name the
+# rest. Iterated against a report of every block of both official servers
+# (tests/fixtures/collision/push-*.txt) until no block differed, and checked
+# by pushing and pulling every block on both (tests/fixtures/harness/push_grid).
+MOVE, DESTROY, PUSH_ONLY, IMMOVABLE = 0, 1, 2, 3
+IMMOVABLE_NAMES = {
+    "obsidian", "crying_obsidian", "respawn_anchor", "reinforced_deepslate", "anvil", "chipped_anvil", "damaged_anvil",
+    "grindstone", "lodestone", "piston_head", "moving_piston",
+    # Blocks with block entities that pistons leave in place.
+    "dispenser", "dropper", "chest", "trapped_chest", "ender_chest", "furnace", "blast_furnace", "smoker", "barrel", "hopper",
+    "chiseled_bookshelf", "spawner", "trial_spawner", "vault", "creaking_heart", "jukebox", "enchanting_table", "brewing_stand",
+    "beacon", "conduit", "daylight_detector", "lectern", "campfire", "soul_campfire", "bee_nest", "beehive", "sculk_sensor",
+    "calibrated_sculk_sensor", "sculk_catalyst", "sculk_shrieker", "crafter", "end_portal", "end_gateway", "nether_portal",
+}
+DESTROY_NAMES = {
+    "water", "lava", "suspicious_sand", "suspicious_gravel", "cobweb", "short_grass", "fern", "dead_bush", "bush", "short_dry_grass",
+    "tall_dry_grass", "seagrass", "tall_seagrass", "dandelion", "torchflower", "poppy", "blue_orchid", "allium", "azure_bluet",
+    "oxeye_daisy", "cornflower", "wither_rose", "lily_of_the_valley", "brown_mushroom", "red_mushroom", "torch", "wall_torch",
+    "fire", "soul_fire", "redstone_wire", "wheat", "ladder", "lever", "redstone_torch", "redstone_wall_torch", "snow", "cactus",
+    "cactus_flower", "sugar_cane", "soul_torch", "soul_wall_torch", "carved_pumpkin", "jack_o_lantern", "cake", "repeater",
+    "pumpkin", "melon", "attached_pumpkin_stem", "attached_melon_stem", "pumpkin_stem", "melon_stem", "vine", "glow_lichen",
+    "resin_clump", "lily_pad", "nether_wart", "dragon_egg", "cocoa", "tripwire_hook", "tripwire", "flower_pot", "carrots",
+    "potatoes", "comparator", "sunflower", "lilac", "rose_bush", "peony", "tall_grass", "large_fern", "chorus_plant",
+    "chorus_flower", "torchflower_crop", "pitcher_crop", "pitcher_plant", "beetroots", "structure_void", "kelp", "kelp_plant",
+    "turtle_egg", "sea_pickle", "bamboo_sapling", "bamboo", "bubble_column", "scaffolding", "bell", "lantern", "soul_lantern",
+    "sweet_berry_bush", "warped_fungus", "warped_roots", "nether_sprouts", "crimson_fungus", "weeping_vines",
+    "weeping_vines_plant", "twisting_vines", "twisting_vines_plant", "crimson_roots", "budding_amethyst", "amethyst_cluster",
+    "large_amethyst_bud", "medium_amethyst_bud", "small_amethyst_bud", "sculk_vein", "pointed_dripstone", "cave_vines",
+    "cave_vines_plant", "spore_blossom", "azalea", "flowering_azalea", "moss_carpet", "pink_petals", "wildflowers", "leaf_litter",
+    "moss_block", "big_dripleaf", "big_dripleaf_stem", "small_dripleaf", "hanging_roots", "frogspawn", "decorated_pot",
+    "pale_moss_block", "pale_moss_carpet", "pale_hanging_moss", "open_eyeblossom", "closed_eyeblossom", "firefly_bush",
+    "mangrove_propagule", "candle", "shulker_box",
+}
+DESTROY_PATTERNS = [r"_sapling$", r"_leaves$", r"_bed$", r"_tulip$", r"_door$", r"_pressure_plate$", r"_button$", r"_skull$",
+                    r"_head$", r"_shulker_box$", r"^(tube|brain|bubble|fire|horn)_coral(_fan|_wall_fan)?$", r"^potted_",
+                    r"_candle$", r"candle_cake$"]
+IMMOVABLE_PATTERNS = [r"_sign$", r"_banner$", r"command_block$"]
+
+def push_class(name, hardness):
+    if name in ("air", "cave_air", "void_air") or name.endswith("_glazed_terracotta"):
+        return PUSH_ONLY
+    if hardness is None or hardness < 0 or name in IMMOVABLE_NAMES or any(re.search(p, name) for p in IMMOVABLE_PATTERNS):
+        return IMMOVABLE
+    if name in DESTROY_NAMES or any(re.search(p, name) for p in DESTROY_PATTERNS):
+        return DESTROY
+    return MOVE
+
+
 def previous_blocks(path):
     text = open(path, encoding="utf-8").read()
     body = text.split("const BlockData blocks[] = {", 1)[1].split("};", 1)[0]
@@ -268,7 +318,8 @@ def main():
         f'const char* const registry_id = "{REGISTRY_ID}";',
         "",
         "// name, first property, property count, first internal state, state count, default state offset,",
-        "// hardness (negative: unbreakable), opaque, effective tool, harvest tier, blast resistance",
+        "// hardness (negative: unbreakable), opaque, effective tool, harvest tier, blast resistance,",
+        "// push class (0 move, 1 destroy, 2 push only, 3 immovable)",
         "const BlockData blocks[] = {",
     ]
     properties = []  # (name, first value, count)
@@ -344,8 +395,9 @@ def main():
             other = next((ob for ob in other_blocks if ob["name"] == b["name"] and schema(ob) == sch), None)
             if other is not None and float(other["resistance"]) != resistance:
                 sys.exit(f"{name}: blast resistance differs in {release}")
+        push = push_class(b["name"], b.get("hardness"))
         out.append(f'    {{"{name}", {first_prop}, {len(sch)}, {first_state}, {count}, {b["defaultState"] - b["minStateId"]}, '
-                   f'{hardness!r}f, {opaque}, {tool}, {tier_of(b, tool, items)}, {resistance!r}f}},')
+                   f'{hardness!r}f, {opaque}, {tool}, {tier_of(b, tool, items)}, {resistance!r}f, {push}}},')
         first_state += count
     out += ["};", f"const std::uint32_t block_count = {len(internal)};", f"const std::uint32_t state_count = {first_state - 1};", ""]
     out.append("const PropertyData properties[] = {")

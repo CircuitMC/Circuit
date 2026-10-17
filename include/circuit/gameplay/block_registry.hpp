@@ -30,6 +30,11 @@ enum class Tool : std::uint8_t { none, pickaxe, axe, shovel, hoe };
 // Tier value of a block that only tools of another kind harvest.
 inline constexpr std::uint8_t other_tool_tier = 255;
 
+// How pistons treat a block (tools/compile_block_registry.py, checked against
+// both official servers): pushed and pulled, broken with its drops, pushed but
+// never pulled, or left in place.
+enum class PushClass : std::uint8_t { move = 0, destroy = 1, push_only = 2, immovable = 3 };
+
 struct BlockInfo {
     std::string_view name; // without namespace, e.g. "oak_log"
     std::uint32_t first_state;
@@ -40,6 +45,7 @@ struct BlockInfo {
     Tool tool;
     std::uint8_t tier; // lowest tier of `tool` that harvests the block; 0 for any tool
     float resistance;  // blast resistance
+    PushClass push;    // how pistons treat it
 };
 
 // A box of a collision shape, in block coordinates (0 to 1; fences, walls

@@ -312,9 +312,11 @@ inline bool is_solid(BlockState s) noexcept {
         return false;
     }
 }
-// Registry blocks a piston may move: TNT (observed); the others are immovable
-// until their push behavior is modeled.
+// How pistons treat a registry block without rules of its own: its push
+// class (block_registry.hpp; observed on both official servers).
 bool other_movable(BlockState s) noexcept;
+bool other_destroyed_by_piston(BlockState s) noexcept;
+bool other_push_only(BlockState s) noexcept;
 // Whether a piston may move this state. Air is handled by the structure resolver.
 inline bool is_movable(BlockState s) noexcept {
     switch (s.type()) {
@@ -331,7 +333,7 @@ inline bool is_movable(BlockState s) noexcept {
     }
 }
 
-// Blocks a piston destroys (without drops) instead of moving or being blocked by.
+// Blocks a piston destroys (with their drops) instead of moving or being blocked by.
 constexpr bool destroyed_by_piston(BlockType t) noexcept {
     switch (t) {
     case BlockType::redstone_wire: case BlockType::lever: case BlockType::repeater: case BlockType::comparator:
@@ -342,6 +344,12 @@ constexpr bool destroyed_by_piston(BlockType t) noexcept {
         return false;
     }
 }
+// The same for any state, registry blocks by their push class.
+inline bool destroyed_by_piston(BlockState s) noexcept {
+    return s.is(BlockType::other) ? other_destroyed_by_piston(s) : destroyed_by_piston(s.type());
+}
+// Blocks pistons push but never pull (glazed terracotta).
+inline bool push_only(BlockState s) noexcept { return s.is(BlockType::other) && other_push_only(s); }
 
 // Number of internal registry states (block_registry.hpp), for iteration.
 std::uint32_t registry_state_count() noexcept;

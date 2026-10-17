@@ -879,13 +879,43 @@ inline Scenario honey_scenario() {
     }, 5};
 }
 
+// Pistons moving blocks without rules of their own across the x=16 chunk
+// edge: a sticky piston pushes a line of dirt, cobblestone and glazed
+// terracotta over it and pulls the dirt back, another destroys a dandelion,
+// a third is held by an enchanting table.
+inline Scenario push_class_scenario() {
+    return {"push_classes", 115, 160, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        if (t == 2) {
+            for (int x = 8; x <= 24; ++x)
+                for (int z = -4; z <= 6; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            c.push_back(place({12, 0, 0}, blocks::piston(Direction::east, true)));
+            c.push_back(place({13, 0, 0}, registry_block("dirt")));
+            c.push_back(place({14, 0, 0}, registry_block("cobblestone")));
+            c.push_back(place({15, 0, 0}, registry_block("white_glazed_terracotta", {{"facing", "north"}})));
+            c.push_back(place({11, 0, 0}, blocks::lever(false)));
+            c.push_back(place({14, 0, 3}, blocks::piston(Direction::east)));
+            c.push_back(place({15, 0, 3}, registry_block("cobblestone")));
+            c.push_back(place({16, 0, 3}, registry_block("dandelion")));
+            c.push_back(place({13, 0, 3}, blocks::lever(false)));
+            c.push_back(place({15, 0, 5}, blocks::piston(Direction::east)));
+            c.push_back(place({16, 0, 5}, registry_block("enchanting_table")));
+            c.push_back(place({14, 0, 5}, blocks::lever(false)));
+        }
+        if (t >= 10 && t % 20 == 10)
+            for (const BlockPos p : {BlockPos{11, 0, 0}, BlockPos{13, 0, 3}, BlockPos{14, 0, 5}}) c.push_back(UseBlock{p});
+        return c;
+    }, 5};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
-            plate_target_scenario(), door_scenario(), honey_scenario()};
+            plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario()};
 }
 
 } // namespace circuit::test

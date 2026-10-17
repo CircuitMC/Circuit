@@ -5,7 +5,7 @@
     "block": {
       "impl": "data_only",
       "evidence": "none",
-      "note": "A registry state without rules of its own: represented, stored, sent, imported and exported; solid when it has a collision shape, a conductor when opaque, immovable by pistons, with no drops"
+      "note": "A registry state without rules of its own: represented, stored, sent, imported and exported; solid when it has a collision shape, a conductor when opaque, moved, destroyed or left in place by pistons as the official servers do, with no drops"
     },
     "item": {
       "impl": "data_only",

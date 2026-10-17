@@ -38,7 +38,7 @@ Feature counts per implementation state, then the number of features with compar
 | V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 24 / 24 | 54 / 54 | 4 / 4 | 0 / 0 | 8 / 8 |
 | V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 2 / 2 | 298 / 312 | 6 / 6 | 14 / 0 | 0 / 0 |
 | V14 Redstone sources and signal consumers | C4 | 138 | 5 / 5 | 83 / 83 | 47 / 47 | 3 / 3 | 0 / 0 | 29 / 31 |
-| V15 Pistons and moving structures | C3, C4 | 16 | 1 / 1 | 15 / 15 | 0 / 0 | 0 / 0 | 0 / 0 | 11 / 11 |
+| V15 Pistons and moving structures | C3, C4 | 16 | 2 / 2 | 14 / 14 | 0 / 0 | 0 / 0 | 0 / 0 | 12 / 12 |
 | V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 4 / 4 | 52 / 52 | 3 / 3 | 0 / 0 | 6 / 6 |
 | V17 TNT and explosions | C3, C4 | 11 | 0 / 1 | 7 / 7 | 1 / 1 | 2 / 2 | 1 / 0 | 7 / 8 |
 | V18 Technical machines and vanilla quirks | C4, C7 | 6 | 0 / 0 | 1 / 1 | 0 / 0 | 5 / 5 | 0 / 0 | 1 / 1 |
@@ -127,10 +127,10 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 28 |
+| black_box | passing | 29 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 3 |
-| official_trace | passing | 95 |
+| official_trace | passing | 96 |
 | planned | planned | 2 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
@@ -304,7 +304,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Honey blocks and slime-honey separation | C4 | partial, compared | partial, compared | `trace/honey_basics`, `trace/honey_entry`, `trace/honey_more`, `trace/honey_slide`; entities other than items and primed TNT do not slide down honey; Sticky in piston structures but not to slime; slows what moves on it to 40%; items and primed TNT slide down its sides; moving sideways it carries what stands on it |
 | Blocks destroyed by pistons and their drops | C4 | partial, compared | partial, compared | `trace/item_drop_piston`, `trace/piston_destroys` |
 | Moving blocks pushing entities and players | C3 | partial, compared | partial, compared | `trace/honey_more`, `trace/item_drop_piston`, `trace/item_piston_push`, `trace/piston_entities`, `trace/slime_entities`; stuck-entity and piston-base corrections are not modeled; Entities pushed out of the space a moving block sweeps through each step (0.01 beyond it, at most 0.51 a tick on each axis); moving blocks collide where they stand; moving slime blocks set the speed along their motion to one block a tick; slime blocks bounce what lands on them at 80% |
-| Push reactions of every block (immovable, destroy, block entities) | C4 | partial, none | partial, none | Modeled blocks only |
+| Push reactions of every block (immovable, destroy, block entities) | C4 | implemented, compared | implemented, compared | `collision/push`, `trace/push_classes`; Every block of both versions is moved (pushed and pulled), destroyed, pushed only or left in place as the official servers' pistons treat it; moved blocks arrive without their water |
 
 ### V16 Automation and storage blocks
 

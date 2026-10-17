@@ -60,7 +60,9 @@ constexpr std::array reference_v4_mechanisms{
         "through each step (0.01 beyond it, at most 0.51 a tick on each axis), moving blocks colliding where "
         "they stand, moving slime blocks launching entities (item_piston_push, item_drop_piston, "
         "piston_entities, slime_entities); honey blocks as sticky blocks that do not hold slime, carrying what stands "
-        "on them sideways, and a head's removal taking its base (honey_basics, honey_more). Gaps: neighbor updates "
+        "on them sideways, and a head's removal taking its base (honey_basics, honey_more); every block moved, "
+        "destroyed, pushed only or left in place as the official servers do, arriving without its water "
+        "(push_classes). Gaps: neighbor updates "
         "after a move in first-change "
         "order are not compared."},
     MechanismEntry{"block_events", l0_exact, l0_exact, harness_trace,

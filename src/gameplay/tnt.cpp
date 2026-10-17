@@ -127,7 +127,3 @@ void run_primed_tnt(RuleContext& ctx, EntityId id, Entity& e) {
 }
 
 } // namespace circuit::gameplay::detail
-
-namespace circuit::gameplay {
-bool other_movable(BlockState s) noexcept { return detail::is_tnt(s); }
-} // namespace circuit::gameplay

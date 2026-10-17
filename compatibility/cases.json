@@ -317,6 +317,17 @@
       "description": "The blast resistance of every block, reported by both official servers (1,105 blocks of 1.21.8, 1,095 of 1.21.4); Circuit's registry matches every one"
     },
     {
+      "id": "collision/push",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "tests/fixtures/collision/push-*.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness push report",
+      "status": "passing",
+      "description": "How pistons treat every block, reported by both official servers (1,105 blocks of 1.21.8, 1,095 of 1.21.4: moved, destroyed, pushed only or left in place); Circuit's registry and rules match every one, and trace/push_classes pushes and pulls 656 of them on both"
+    },
+    {
       "id": "heightmap/official_states",
       "kind": "black_box",
       "versions": [

@@ -469,6 +469,41 @@ int main(int argc, char** argv) {
         require(blocks == 1105 + 1095, std::format("{} blocks", blocks));
     });
 
+    suite.run("piston push classes match both official servers", [&] {
+        // tests/fixtures/collision/push-*.txt: how the official servers'
+        // pistons treat every block (unextended pistons).
+        namespace registry = circuit::gameplay::registry;
+        using circuit::gameplay::BlockState;
+        std::size_t blocks = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            const auto* mapping = ContentMapping::for_game_version(release);
+            std::istringstream lines(read_text(fixtures / "collision" / std::format("push-{}.txt", release)));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto space = line.find(' ');
+                const auto id = line.substr(0, space);
+                const auto expected = line.substr(space + 1);
+                const auto block = registry::find_block(release, id.substr(std::string("minecraft:").size()));
+                require(block.has_value(), std::format("{} {}: in the registry", release, id));
+                constexpr std::array<std::string_view, 4> names{"move", "destroy", "push_only", "immovable"};
+                const auto compiled = names[static_cast<std::size_t>(registry::block(*block).push)];
+                require(compiled == expected, std::format("{} {}: compiled {}, official {}", release, id, compiled, expected));
+                // The rules treat the default state so, modeled or not
+                // (pistons modeled by their own rules, unextended).
+                const auto state = mapping->block(registry::notation(registry::block(*block).default_state));
+                require(state.has_value(), std::format("{} {}: maps", release, id));
+                const auto s = *state;
+                const auto rules = circuit::gameplay::destroyed_by_piston(s)  ? "destroy"
+                                 : !circuit::gameplay::is_movable(s) || s.is_air() ? (s.is_air() ? "push_only" : "immovable")
+                                 : circuit::gameplay::push_only(s)            ? "push_only"
+                                                                              : "move";
+                require(rules == expected, std::format("{} {}: the rules {}, official {}", release, id, rules, expected));
+                ++blocks;
+            }
+        }
+        require(blocks == 1105 + 1095, std::format("{} blocks", blocks));
+    });
+
     suite.run("light properties match both official servers", [&] {
         // tests/fixtures/light: every state's emission, dampening and
         // occlusion shape as the official servers report them.
