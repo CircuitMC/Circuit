@@ -248,6 +248,13 @@ void on_removed(RuleContext& ctx, BlockPos pos, BlockState previous) {
         }
         break;
     case BlockType::button: button_removed(ctx, pos, previous); break;
+    // A head removed by anything but its piston takes its extended base,
+    // which drops (an explosion: honey_more).
+    case BlockType::piston_head: {
+        const auto base = pos.relative(contracts::opposite(previous.facing()));
+        if (head_has_base(ctx, pos, previous) && is_piston(ctx.block(base).type())) destroy_block(ctx, base);
+        break;
+    }
     case BlockType::pressure_plate: case BlockType::weighted_plate: plate_removed(ctx, pos, previous); break;
     case BlockType::redstone_torch: case BlockType::redstone_wall_torch: torch_updates(ctx, pos); break;
     default: break;

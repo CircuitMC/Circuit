@@ -166,8 +166,53 @@ InWater water_at(RuleContext& ctx, const physics::Aabb& entity) {
     return out;
 }
 
+namespace {
+bool is_soul_sand(BlockState s) {
+    if (!s.is(BlockType::other)) return false;
+    const auto block = registry::block_of(s.registry_state());
+    return block && registry::block(*block).name == "soul_sand";
+}
+float speed_factor(BlockState s) { return s.is(BlockType::honey_block) || is_soul_sand(s) ? 0.4f : 1.0f; }
+} // namespace
+
 bool move_entity(RuleContext& ctx, Vec3& position, Vec3& velocity, double width, double height) {
-    return move_entity_by(ctx, position, velocity, velocity, width, height);
+    const bool landed = move_entity_by(ctx, position, velocity, velocity, width, height);
+    // Honey and soul sand slow what moves in or on them: the block at its
+    // feet, or the one half a block below (items and primed TNT observed).
+    const auto at = [&](double dy) {
+        const auto cell = contracts::block_of(Vec3{position.x, position.y + dy, position.z});
+        return ctx.world().contains_y(cell.y) ? ctx.block(cell) : blocks::air();
+    };
+    const auto here = at(0.0);
+    float f = here.is(BlockType::water) ? 1.0f : speed_factor(here);
+    if (f == 1.0f && !here.is(BlockType::water)) f = speed_factor(at(-0.500001));
+    velocity = {velocity.x * static_cast<double>(f), velocity.y, velocity.z * static_cast<double>(f)};
+    return landed;
+}
+
+bool honey_slide(RuleContext& ctx, Vec3 position, Vec3& velocity, double width, double height, bool on_ground) {
+    if (on_ground) return false;
+    constexpr double drag = static_cast<double>(0.98f);
+    const double w = velocity.y / drag + 0.08;
+    if (w >= -0.08) return false;
+    const auto box = physics::box_at(position, width, height);
+    const auto cell = [](double v) { return static_cast<std::int32_t>(std::floor(v)); };
+    const double reach = 0.4375 + width / 2.0;
+    for (auto z = cell(box.min_z); z <= cell(box.max_z); ++z)
+        for (auto y = cell(box.min_y); y <= cell(box.max_y); ++y)
+            for (auto x = cell(box.min_x); x <= cell(box.max_x); ++x) {
+                if (!ctx.world().contains_y(y) || !ctx.block({x, y, z}).is(BlockType::honey_block)) continue;
+                if (position.y > y + 0.9375 - 1.0e-7) continue;
+                if (std::abs(x + 0.5 - position.x) + 1.0e-7 <= reach && std::abs(z + 0.5 - position.z) + 1.0e-7 <= reach) continue;
+                if (w < -0.13) {
+                    const double d = -0.05 / w;
+                    velocity.x *= d;
+                    velocity.z *= d;
+                }
+                velocity.y = (-0.05 - 0.08) * drag;
+                return true;
+            }
+    return false;
 }
 
 bool move_entity_by(RuleContext& ctx, Vec3& position, Vec3& velocity, Vec3 movement, double width, double height) {
@@ -285,6 +330,7 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
     const bool moves = !(e.on_ground && v.x * v.x + v.z * v.z <= 1.0e-5 && (ticks + id.value) % 4 != 0);
     if (moves) {
         e.on_ground = detail::move_entity(ctx, p, v, item_size, item_size);
+        detail::honey_slide(ctx, p, v, item_size, item_size, e.on_ground);
         float f = 0.98f;
         if (e.on_ground) f = slipperiness(ctx.block(contracts::block_of(Vec3{p.x, p.y - 0.5000001, p.z}))) * 0.98f;
         v = {v.x * static_cast<double>(f), v.y * 0.98, v.z * static_cast<double>(f)};

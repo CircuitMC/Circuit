@@ -845,13 +845,47 @@ inline Scenario door_scenario() {
     }, 5};
 }
 
+// Honey across the x=16 chunk edge: a sticky piston moves a honey block with
+// an item on it between the chunks, a pushed slime block leaves the honey
+// beside it, and items and primed TNT in one chunk slide down a honey wall
+// in the other.
+inline Scenario honey_scenario() {
+    return {"honey", 113, 200, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        if (t == 2) {
+            for (int x = 8; x <= 24; ++x)
+                for (int z = -4; z <= 8; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            c.push_back(place({14, 0, 0}, blocks::piston(Direction::east, true)));
+            c.push_back(place({15, 0, 0}, blocks::honey()));
+            c.push_back(place({13, 0, 0}, blocks::lever(false)));
+            c.push_back(place({14, 0, -3}, blocks::piston(Direction::east)));
+            c.push_back(place({15, 0, -3}, blocks::slime()));
+            c.push_back(place({15, 0, -2}, blocks::honey()));
+            c.push_back(place({15, 0, -4}, blocks::stone()));
+            c.push_back(place({13, 0, -3}, blocks::lever(false)));
+            for (int y = 0; y <= 4; ++y)
+                for (int z = 3; z <= 7; ++z) c.push_back(place({16, y, z}, blocks::honey()));
+        }
+        if (t == 4) c.push_back(SpawnItem{at_block(15.5, 0.9375, 0.5), {}, {items::stone, 1}});
+        if (t >= 10 && t % 20 == 10) c.push_back(UseBlock{{13, 0, 0}});
+        if (t == 30) c.push_back(UseBlock{{13, 0, -3}});
+        if (t % 50 == 5) {
+            c.push_back(SpawnItem{at_block(15.93, 7.5, 3.5), {}, {items::dirt, 1}});
+            c.push_back(SpawnItem{at_block(15.93, 8.5, 5.5), {0.0, 0.0, 0.1}, {items::sand, 1}});
+            c.push_back(SummonEntity{"minecraft:tnt", {15.53, 7.5, 6.5}, {}, 400, 0});
+        }
+        return c;
+    }, 5};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
-            plate_target_scenario(), door_scenario()};
+            plate_target_scenario(), door_scenario(), honey_scenario()};
 }
 
 } // namespace circuit::test

@@ -95,6 +95,12 @@ void run_primed_tnt(RuleContext& ctx, EntityId id, Entity& e) {
     auto p = e.position;
     v.y -= gravity;
     const bool landed = move_entity(ctx, p, v, size, size);
+    // Sliding TNT draws twice from the level random for the slide's sound
+    // and particles (items do not).
+    if (honey_slide(ctx, p, v, size, size, landed)) {
+        ctx.random_int(5);
+        ctx.random_int(5);
+    }
     v = {v.x * 0.98, v.y * 0.98, v.z * 0.98};
     if (landed) v = {v.x * 0.7, v.y * -0.5, v.z * 0.7};
     e.on_ground = landed;

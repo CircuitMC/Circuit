@@ -1677,6 +1677,37 @@ int main() {
                 "a placed door");
     });
 
+    suite.run("honey sticks in piston structures, slows and lets things slide", [] {
+        using circuit::contracts::UseBlock;
+        Sim s;
+        std::vector<CommandBody> build = floor(-2, 10, -1, 10);
+        // A pushed slime block takes the stone beside it but not the honey.
+        build.push_back(place({0, 0, 0}, blocks::piston(D::east)));
+        build.push_back(place({1, 0, 0}, blocks::slime()));
+        build.push_back(place({1, 0, 1}, blocks::honey()));
+        build.push_back(place({1, 0, -1}, blocks::stone()));
+        build.push_back(place({-1, 0, 0}, blocks::lever(false)));
+        // A honey wall, and honey to slide on.
+        for (int y = 0; y <= 3; ++y) build.push_back(place({6, y, 4}, blocks::honey()));
+        build.push_back(place({4, 0, 8}, blocks::honey()));
+        s.tick(build);
+        s.tick({UseBlock{{-1, 0, 0}},
+                SpawnItem{at_block(5.93, 5.5, 4.5), {}, {items::stone, 1}},
+                SpawnItem{at_block(4.5, 0.9375, 8.5), {0.0, 0.0, 0.2}, {items::dirt, 1}}});
+        const auto item = [&](std::uint16_t kind) {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find_if(d.overworld().entities, [&](const auto& e) { return e.stack.item == kind; });
+        };
+        require(std::abs(item(items::dirt).velocity.z - 0.2 * 0.4 * 0.6 * 0.98) < 1e-6, "honey slows a sliding item to 40% a tick");
+        for (int i = 0; i < 3; ++i) s.tick();
+        require(s.at({2, 0, 0}).is(BlockType::slime_block) && s.at({2, 0, -1}).is(BlockType::stone) && s.at({1, 0, 1}).is(BlockType::honey_block),
+                "slime and honey do not stick to each other");
+        for (int i = 0; i < 12; ++i) s.tick();
+        const auto slider = item(items::stone);
+        require(slider.velocity.y == (-0.05 - 0.08) * static_cast<double>(0.98f) * 0.98 && slider.position.y < 4.0,
+                std::format("sliding down the honey at {}", slider.velocity.y));
+    });
+
     suite.run("entities leave with their chunk and come back under new ids", [] {
         Sim s(bundle(), 7, 0); // tick 1: chunk (0,0) entity ticking
         s.tick({place({4, -1, 4}, blocks::stone()), SpawnItem{at_block(4.5, 0.0, 4.5), {}, {items::stone, 3}}}); // 2

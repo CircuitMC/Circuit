@@ -1129,8 +1129,18 @@
           "id": "honey",
           "name": "Honey blocks and slime-honey separation",
           "milestone": "C4",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/honey_basics",
+            "trace/honey_slide",
+            "trace/honey_entry",
+            "trace/honey_more"
+          ],
+          "deviations": [
+            "entities other than items and primed TNT do not slide down honey"
+          ],
+          "note": "Sticky in piston structures but not to slime; slows what moves on it to 40%; items and primed TNT slide down its sides; moving sideways it carries what stands on it"
         },
         {
           "id": "destroyed_blocks",
@@ -1150,13 +1160,13 @@
           "impl": "partial",
           "evidence": "compared",
           "deviations": [
-            "honey blocks do not drag entities",
             "stuck-entity and piston-base corrections are not modeled"
           ],
           "cases": [
             "trace/item_piston_push",
             "trace/item_drop_piston",
             "trace/piston_entities",
+            "trace/honey_more",
             "trace/slime_entities"
           ],
           "note": "Entities pushed out of the space a moving block sweeps through each step (0.01 beyond it, at most 0.51 a tick on each axis); moving blocks collide where they stand; moving slime blocks set the speed along their motion to one block a tick; slime blocks bounce what lands on them at 80%"

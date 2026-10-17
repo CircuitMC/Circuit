@@ -45,6 +45,7 @@ enum class BlockType : std::uint8_t {
     door,                // facing (horizontal); level: bit 0 upper half, bit 1 right hinge; flag: open; extra: powered; variant: DoorKind
     trapdoor,            // facing (horizontal); level: bit 0 top half, bit 1 waterlogged (stored); flag: open; extra: powered; variant: DoorKind
     fence_gate,          // facing (horizontal); level: 1 in a wall; flag: open; extra: powered; variant: DoorKind (wooden kinds)
+    honey_block,
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -142,6 +143,7 @@ constexpr BlockState glass() { return BlockState::of(BlockType::glass); }
 constexpr BlockState obsidian() { return BlockState::of(BlockType::obsidian); }
 constexpr BlockState redstone_block() { return BlockState::of(BlockType::redstone_block); }
 constexpr BlockState slime() { return BlockState::of(BlockType::slime_block); }
+constexpr BlockState honey() { return BlockState::of(BlockType::honey_block); }
 // Lever mounting is display data: the rules ignore it.
 enum class LeverFace : std::uint8_t { floor = 0, wall = 1, ceiling = 2 };
 constexpr BlockState lever(bool on = false, Direction facing = Direction::north, LeverFace face = LeverFace::floor) {
@@ -303,7 +305,7 @@ inline bool is_solid(BlockState s) noexcept {
     case BlockType::stone: case BlockType::glass: case BlockType::obsidian: case BlockType::redstone_block:
     case BlockType::redstone_lamp: case BlockType::observer: case BlockType::piston: case BlockType::sticky_piston:
     case BlockType::piston_head: case BlockType::slime_block: case BlockType::hopper: case BlockType::chest:
-    case BlockType::moving_piston: case BlockType::target:
+    case BlockType::moving_piston: case BlockType::target: case BlockType::honey_block:
         return true;
     case BlockType::other: return other_has_collision(s);
     default:
@@ -318,7 +320,7 @@ inline bool is_movable(BlockState s) noexcept {
     switch (s.type()) {
     case BlockType::stone: case BlockType::glass: case BlockType::redstone_block: case BlockType::redstone_lamp:
     case BlockType::observer: case BlockType::slime_block: case BlockType::target: case BlockType::trapdoor:
-    case BlockType::fence_gate:
+    case BlockType::fence_gate: case BlockType::honey_block:
         return true;
     case BlockType::piston: case BlockType::sticky_piston:
         return !s.flag();

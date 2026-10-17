@@ -39,6 +39,7 @@ std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Directio
     case items::obsidian: return blocks::obsidian();
     case items::redstone_block: return blocks::redstone_block();
     case items::slime_block: return blocks::slime();
+    case items::honey_block: return blocks::honey();
     case items::redstone_lamp: return blocks::lamp();
     case items::redstone: return blocks::wire();
     case items::lever:

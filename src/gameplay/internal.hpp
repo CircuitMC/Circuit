@@ -264,6 +264,12 @@ bool move_entity(RuleContext& ctx, contracts::Vec3& position, contracts::Vec3& v
 // velocity loses what the movement could not make.
 bool move_entity_by(RuleContext& ctx, contracts::Vec3& position, contracts::Vec3& velocity, contracts::Vec3 movement, double width,
                     double height);
+// An entity whose box ends a move beside honey, below its top, falling,
+// and outside its middle, slides down it (items and primed TNT, observed):
+// with w = vy / 0.98f + 0.08, a w below -0.13 scales the horizontal velocity
+// by -0.05 / w, and the vertical one becomes -0.13 * 0.98f, before drag.
+// Returns whether it slid.
+bool honey_slide(RuleContext& ctx, contracts::Vec3 position, contracts::Vec3& velocity, double width, double height, bool on_ground);
 // The collision boxes of the block a moving piston at `pos` carries, where
 // it stands in its move, in the cell's coordinates.
 std::vector<registry::Box> moving_block_boxes(RuleContext& ctx, BlockPos pos);

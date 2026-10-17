@@ -11,11 +11,11 @@ namespace circuit::gameplay {
 namespace {
 // Registry blocks with a BlockType of their own (see evidence::ContentMapping),
 // besides the buttons and pressure plates of each kind.
-constexpr std::array<std::string_view, 27> modeled_names{
+constexpr std::array<std::string_view, 28> modeled_names{
     "air", "cave_air", "void_air", "stone", "glass", "obsidian", "redstone_block", "slime_block", "lever", "redstone_wire",
     "repeater", "redstone_lamp", "observer", "piston", "sticky_piston", "piston_head", "moving_piston", "hopper", "chest",
     "comparator", "water", "wheat", "redstone_torch", "redstone_wall_torch", "light_weighted_pressure_plate",
-    "heavy_weighted_pressure_plate", "target"};
+    "heavy_weighted_pressure_plate", "target", "honey_block"};
 constexpr std::array<std::string_view, blocks::button_kinds> button_names{
     "oak", "spruce", "birch", "jungle", "acacia", "cherry", "dark_oak", "pale_oak", "mangrove", "bamboo", "crimson", "warped",
     "stone", "polished_blackstone"};
@@ -201,6 +201,7 @@ std::string block_notation(BlockState s) {
     case BlockType::obsidian: return "minecraft:obsidian";
     case BlockType::redstone_block: return "minecraft:redstone_block";
     case BlockType::slime_block: return "minecraft:slime_block";
+    case BlockType::honey_block: return "minecraft:honey_block";
     case BlockType::lever: {
         constexpr std::array<std::string_view, 3> faces{"floor", "wall", "ceiling"};
         return std::format("minecraft:lever[face={},facing={},powered={}]", faces[s.level() % 3], direction_name(s.facing()),

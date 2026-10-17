@@ -34,11 +34,11 @@ Feature counts per implementation state, then the number of features with compar
 | V08 Terrain and biomes | C7 | 70 | 0 / 0 | 2 / 2 | 64 / 64 | 4 / 4 | 0 / 0 | 0 / 0 |
 | V09 Structures and decoration | C7, C5 | 6 | 0 / 0 | 0 / 0 | 0 / 0 | 6 / 6 | 0 / 0 | 0 / 0 |
 | V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 1 / 1 | 39 / 39 | 3 / 3 | 0 / 0 | 1 / 1 |
-| V11 Common building blocks | C5 | 1344 | 0 / 0 | 115 / 115 | 1227 / 1227 | 2 / 2 | 0 / 0 | 14 / 14 |
+| V11 Common building blocks | C5 | 1344 | 0 / 0 | 116 / 116 | 1226 / 1226 | 2 / 2 | 0 / 0 | 15 / 15 |
 | V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 24 / 24 | 54 / 54 | 4 / 4 | 0 / 0 | 8 / 8 |
 | V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 2 / 2 | 298 / 312 | 6 / 6 | 14 / 0 | 0 / 0 |
 | V14 Redstone sources and signal consumers | C4 | 138 | 5 / 5 | 83 / 83 | 47 / 47 | 3 / 3 | 0 / 0 | 29 / 31 |
-| V15 Pistons and moving structures | C3, C4 | 16 | 1 / 1 | 12 / 12 | 2 / 2 | 1 / 1 | 0 / 0 | 9 / 9 |
+| V15 Pistons and moving structures | C3, C4 | 16 | 1 / 1 | 15 / 15 | 0 / 0 | 0 / 0 | 0 / 0 | 11 / 11 |
 | V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 4 / 4 | 52 / 52 | 3 / 3 | 0 / 0 | 6 / 6 |
 | V17 TNT and explosions | C3, C4 | 11 | 0 / 1 | 7 / 7 | 1 / 1 | 2 / 2 | 1 / 0 | 7 / 8 |
 | V18 Technical machines and vanilla quirks | C4, C7 | 6 | 0 / 0 | 1 / 1 | 0 / 0 | 5 / 5 | 0 / 0 | 1 / 1 |
@@ -67,8 +67,8 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 3 / 3 | 126 / 126 | 966 / 976 | 0 / 0 |
-| item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 116 / 116 | 1268 / 1299 | 0 / 0 |
+| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 3 / 3 | 128 / 128 | 964 / 974 | 0 / 0 |
+| item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 117 / 117 | 1267 / 1298 | 0 / 0 |
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 17 / 17 | 0 / 0 | 132 / 134 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
 | enchantment | approximate: minecraft-data pc/1.21.1/enchantments.json / minecraft-data pc/1.21.8/enchantments.json | 42 / 42 | 0 / 0 | 0 / 0 | 0 / 0 | 42 / 42 |
@@ -130,7 +130,7 @@ Their counts are unknown, not zero.
 | black_box | passing | 28 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 3 |
-| official_trace | passing | 91 |
+| official_trace | passing | 95 |
 | planned | planned | 2 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
@@ -301,9 +301,9 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | --- | --- | --- | --- | --- |
 | Pushing, pulling and quasi-connectivity | C4 | partial, compared | partial, compared | `trace/piston_observed`, `trace/piston_timing`, `trace/quasi_connectivity` |
 | Slime block structures | C4 | implemented, compared | implemented, compared | `trace/piston_slime` |
-| Honey blocks and slime-honey separation | C4 | missing, none | missing, none |  |
+| Honey blocks and slime-honey separation | C4 | partial, compared | partial, compared | `trace/honey_basics`, `trace/honey_entry`, `trace/honey_more`, `trace/honey_slide`; entities other than items and primed TNT do not slide down honey; Sticky in piston structures but not to slime; slows what moves on it to 40%; items and primed TNT slide down its sides; moving sideways it carries what stands on it |
 | Blocks destroyed by pistons and their drops | C4 | partial, compared | partial, compared | `trace/item_drop_piston`, `trace/piston_destroys` |
-| Moving blocks pushing entities and players | C3 | partial, compared | partial, compared | `trace/item_drop_piston`, `trace/item_piston_push`, `trace/piston_entities`, `trace/slime_entities`; honey blocks do not drag entities; stuck-entity and piston-base corrections are not modeled; Entities pushed out of the space a moving block sweeps through each step (0.01 beyond it, at most 0.51 a tick on each axis); moving blocks collide where they stand; moving slime blocks set the speed along their motion to one block a tick; slime blocks bounce what lands on them at 80% |
+| Moving blocks pushing entities and players | C3 | partial, compared | partial, compared | `trace/honey_more`, `trace/item_drop_piston`, `trace/item_piston_push`, `trace/piston_entities`, `trace/slime_entities`; stuck-entity and piston-base corrections are not modeled; Entities pushed out of the space a moving block sweeps through each step (0.01 beyond it, at most 0.51 a tick on each axis); moving blocks collide where they stand; moving slime blocks set the speed along their motion to one block a tick; slime blocks bounce what lands on them at 80% |
 | Push reactions of every block (immovable, destroy, block entities) | C4 | partial, none | partial, none | Modeled blocks only |
 
 ### V16 Automation and storage blocks

@@ -35,6 +35,7 @@ std::optional<ItemStack> own_item(BlockState s) {
     case BlockType::obsidian: return ItemStack{items::obsidian, 1};
     case BlockType::redstone_block: return ItemStack{items::redstone_block, 1};
     case BlockType::slime_block: return ItemStack{items::slime_block, 1};
+    case BlockType::honey_block: return ItemStack{items::honey_block, 1};
     case BlockType::redstone_lamp: return ItemStack{items::redstone_lamp, 1};
     case BlockType::redstone_wire: return ItemStack{items::redstone, 1};
     case BlockType::lever: return ItemStack{items::lever, 1};

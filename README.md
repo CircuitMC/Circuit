@@ -15,11 +15,11 @@ See [the roadmap](TODO.md) for milestones and [the executable reasoning models](
 The headless Part I core is complete for its declared scope. It provides:
 
 - shared contracts;
-- reference rules for redstone (including redstone torches, buttons, pressure plates, target blocks, doors, trapdoors, fence gates, comparators and observers), pistons, hoppers and double chests, water, crops, item entities, falling blocks, TNT and explosions, arrows, minecarts and boats, chunk tickets, light, and player inventories with survival use and container menus;
+- reference rules for redstone (including redstone torches, buttons, pressure plates, target blocks, doors, trapdoors, fence gates, comparators and observers), pistons with slime and honey, hoppers and double chests, water, crops, item entities, falling blocks, TNT and explosions, arrows, minecarts and boats, chunk tickets, light, and player inventories with survival use and container menus;
 - a sequential scheduling oracle that shares the gameplay rules;
 - a region-parallel runtime that matches the oracle across tested worker counts, region layouts and seeded schedules.
 
-The rules are checked against traces recorded on unmodified Java Edition servers: 91 on 1.21.8 and 90 on 1.21.4 (every scenario but one that needs a 1.21.8 game rule), with identical results. Sixteen mechanisms claim exact behavior, including scheduled-tick order, block-event order, the update-chain limit, power through solid blocks, dust, repeaters, comparators, observers, hoppers, double chests and water. The others declare their deviations, such as the random parts of piston drops. See [the simulation core](docs/SIMULATION.md) for the compatibility table and coverage limits.
+The rules are checked against traces recorded on unmodified Java Edition servers: 95 on 1.21.8 and 94 on 1.21.4 (every scenario but one that needs a 1.21.8 game rule), with identical results. Sixteen mechanisms claim exact behavior, including scheduled-tick order, block-event order, the update-chain limit, power through solid blocks, dust, repeaters, comparators, observers, hoppers, double chests and water. The others declare their deviations, such as the random parts of piston drops. See [the simulation core](docs/SIMULATION.md) for the compatibility table and coverage limits.
 
 Full vanilla compatibility remains a separate deliverable. The [completion roadmap](docs/VANILLA_COMPLETION.md) inventories the missing systems and version differences, including TNT/technical machines, full content, world generation, mobs, data packs and complete world interchange. Parts I and II describe the implemented foundation; Part III tracks completion against both versions.
 

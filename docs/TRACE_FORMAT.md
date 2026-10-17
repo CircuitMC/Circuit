@@ -69,7 +69,7 @@ A wrong convention makes fixtures fail rather than pass.
 | Block | Properties | Notes |
 | --- | --- | --- |
 | `air`, `cave_air`, `void_air` | — | three states of the same air block in the rules |
-| `stone`, `glass`, `obsidian`, `redstone_block`, `slime_block` | — | no other properties |
+| `stone`, `glass`, `obsidian`, `redstone_block`, `slime_block`, `honey_block` | — | no other properties |
 | `lever` | `face`, `facing`, `powered` | `face` and `facing` locate the block the lever hangs on |
 | `redstone_wire` | `power` 0–15, `north`/`south`/`east`/`west` (`none`, `side`, `up`) | the stored shape; absent sides are `none`, so dust given without sides is a dot |
 | `repeater` | `delay` 1–4, `facing`, `locked`, `powered` | `facing` names the **input** side |

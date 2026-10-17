@@ -36,7 +36,7 @@ Every block state of both versions is represented, with its official name and pr
 | Blocks | Properties the rules use | Display-only properties |
 | --- | --- | --- |
 | `air`, `cave_air`, `void_air` | — | — |
-| `stone`, `glass`, `obsidian`, `redstone_block`, `slime_block` | — | — |
+| `stone`, `glass`, `obsidian`, `redstone_block`, `slime_block`, `honey_block` | — | — |
 | `redstone_wire` | `power`, `north`, `south`, `east`, `west` (the stored shape) | — |
 | `lever` | `face`, `facing`, `powered` | — |
 | `repeater` | `delay`, `facing`, `locked`, `powered` | — |
@@ -68,7 +68,7 @@ Every block state of both versions is represented, with its official name and pr
 
 ### Technical machines
 
-Block and item registration do not provide behavior. Rails, coral fans and honey blocks exist as inert blocks, and their items cannot be placed by the current rules. Common building blocks such as cobblestone, dirt and oak logs are inert too; sand, gravel and concrete powder fall, and TNT is primed and explodes (below). Survival inventories and container screens therefore do not constitute complete vanilla survival support.
+Block and item registration do not provide behavior. Rails and coral fans exist as inert blocks, and their items cannot be placed by the current rules. Common building blocks such as cobblestone, dirt and oak logs are inert too; sand, gravel and concrete powder fall, and TNT is primed and explodes (below). Survival inventories and container screens therefore do not constitute complete vanilla survival support.
 
 | Mechanism or machine | Current support |
 | --- | --- |
@@ -77,7 +77,7 @@ Block and item registration do not provide behavior. Rails, coral fans and honey
 | Slime structures, the 12-block push limit and observers watching piston writes | Implemented with rule, trace and cross-chunk simulation checks. Pistons remain L2 because item pushing, drops and some update ordering have gaps. |
 | TNT ignition, fuse, motion and explosions | Redstone and explosions prime TNT (placed by commands, players or pistons); primed TNT's motion and fuse and its explosions (blocks, drops, chain reactions, item damage and knockback) match recorded traces of both versions. Burning arrows prime TNT; fire, flint and steel and dispensers do not, and explosions do not hurt players. |
 | TNT duplication machines | Not supported. Primed TNT and explosions exist, but common machine components such as rails, minecarts and coral fans are absent, and TNT duplication itself is not modeled. No TNT-duplication reference fixture exists. |
-| Honey-based flying machines | Not supported; honey-block behavior is absent. Slime and piston tests do not establish compatibility for complete flying-machine designs. |
+| Honey-based flying machines | Honey blocks, their separation from slime and the entities they carry match recorded traces of both versions, including a small slime-honey flying machine. Larger flying-machine designs have no acceptance evidence yet. |
 | Redstone torches, buttons, pressure plates and target blocks | Torch inverters, towers and burnout, buttons pressed by players and arrows, pressure plates sensing items and arrows (weighted ones counting them) and target blocks grading hits match recorded traces of both versions, including the update order of the dust they drive. Mobs and players do not press plates yet, and tripwire is not modeled. |
 | Doors, trapdoors and fence gates | Opened and closed by power and by hand, with their halves, shapes and sound draws, as in recorded traces of both versions. Note blocks, bells, copper bulbs and other consumers are not modeled yet. |
 | Dispensers and droppers | Not implemented. Machines that need them are not supported. |

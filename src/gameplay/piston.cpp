@@ -10,7 +10,13 @@ namespace {
 constexpr std::size_t push_limit = 12;
 constexpr std::uint8_t move_ticks = 2;
 
-bool sticky(BlockState s) { return s.is(BlockType::slime_block); }
+bool sticky(BlockState s) { return s.is(BlockType::slime_block) || s.is(BlockType::honey_block); }
+// Sticky blocks hold their neighbors, but slime and honey do not hold each other.
+bool stick(BlockState a, BlockState b) {
+    if ((a.is(BlockType::slime_block) && b.is(BlockType::honey_block)) || (a.is(BlockType::honey_block) && b.is(BlockType::slime_block)))
+        return false;
+    return sticky(a) || sticky(b);
+}
 
 // Structure discovery of the target version as observed in harness traces:
 // a line runs from the sticky chain behind its origin through the origin and
@@ -52,7 +58,7 @@ private:
         while (sticky(state)) {
             const auto behind = origin.relative(contracts::opposite(movement_), static_cast<std::int32_t>(count));
             const auto bs = ctx_.block(behind);
-            if (bs.is_air() || !is_movable(bs) || behind == piston_) break;
+            if (bs.is_air() || !stick(state, bs) || !is_movable(bs) || behind == piston_) break;
             if (++count + moved.size() > push_limit) return false;
             state = bs;
         }
@@ -78,7 +84,7 @@ private:
             if (d == movement_ || d == contracts::opposite(movement_)) continue;
             const auto n = p.relative(d);
             const auto ns = ctx_.block(n);
-            if (ns.is_air() || !is_movable(ns) || n == piston_) continue;
+            if (ns.is_air() || !stick(ctx_.block(p), ns) || !is_movable(ns) || n == piston_) continue;
             if (!line(n)) return false;
         }
         return true;
@@ -405,6 +411,29 @@ void push_entities(RuleContext& ctx, BlockPos pos) {
         piston_move(ctx, id, {o.dx * amount, o.dy * amount, o.dz * amount});
     }
 }
+
+// Honey moving sideways then carries what stands on it: entities on the
+// ground whose box meets the space from its top to 1.5 above its cell, with
+// their position over the cell, move the step along with it (both official
+// servers; honey_more).
+void carry_stuck(RuleContext& ctx, BlockPos pos) {
+    const auto move = move_of(ctx, pos);
+    if (!move || !move->moves || !move->carried.is(BlockType::honey_block) || !contracts::is_horizontal(move->dir)) return;
+    const auto boxes = boxes_at(ctx, pos, *move);
+    if (boxes.empty()) return;
+    const auto o = contracts::offset(move->dir);
+    const double back = move->progress - 1.0;
+    const physics::Aabb area = physics::Aabb{static_cast<double>(pos.x), bounds(boxes).max_y, static_cast<double>(pos.z),
+                                             pos.x + 1.0, pos.y + 1.500001, pos.z + 1.0}
+                                   .move(o.dx * back, 0.0, o.dz * back);
+    for (const auto id : entities_in_section_order(ctx, entities_intersecting(ctx, area))) {
+        const auto* e = ctx.peek_entity(id);
+        if (!e || !e->on_ground) continue;
+        const auto& p = e->position;
+        if (p.x < area.min_x || p.x > area.max_x || p.z < area.min_z || p.z > area.max_z) continue;
+        piston_move(ctx, id, {o.dx * step, 0.0, o.dz * step});
+    }
+}
 } // namespace
 
 std::vector<registry::Box> moving_block_boxes(RuleContext& ctx, BlockPos pos) {
@@ -422,6 +451,7 @@ void tick_moving_piston(RuleContext& ctx, BlockPos pos) {
     if (be->progress < move_ticks) {
         // Entities are pushed from where the block stood, then it moves on.
         push_entities(ctx, pos); // `be` must not be used after entities move.
+        carry_stuck(ctx, pos);
         ++ctx.block_entity(pos)->progress;
         return;
     }

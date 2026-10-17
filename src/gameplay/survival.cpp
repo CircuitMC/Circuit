@@ -129,7 +129,8 @@ float hardness(BlockState s) noexcept {
     }
     case BlockType::observer: case BlockType::hopper: return 3.0f;
     case BlockType::chest: return 2.5f;
-    case BlockType::slime_block: case BlockType::redstone_wire: case BlockType::repeater: case BlockType::comparator:
+    case BlockType::slime_block: case BlockType::honey_block: case BlockType::redstone_wire: case BlockType::repeater:
+    case BlockType::comparator:
     case BlockType::wheat: case BlockType::redstone_torch: case BlockType::redstone_wall_torch:
         return 0.0f;
     default: return -1.0f; // air, water, moving pistons

@@ -658,7 +658,9 @@ int main() {
         // Explosions break the dust line, the piston and the floor around
         // them and destroy the items they drop; what later rounds can still
         // prime by redstone, and what explosions prime, decide the counts.
-        require(primed == 14 && explosions == 13 && destroyed == 34,
+        // (Since a removed head takes its base, the piston goes with the
+        // first explosion that reaches its head.)
+        require(primed == 12 && explosions == 11 && destroyed == 27,
                 std::format("{} primed, {} explosions, {} entities exploded or destroyed", primed, explosions, destroyed));
     });
 
@@ -756,6 +758,22 @@ int main() {
         // fall through the hole below it out of the world.
         require(doors == 5 && trapdoors == 5 && gates == 5 && fell >= 1,
                 std::format("doors {} trapdoors {} gates {} fell {}", doors, trapdoors, gates, fell));
+    });
+
+    suite.run("honey carries and lets things slide across chunk edges", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("honey"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the honey scenario");
+        const auto& ref = references[index];
+        std::size_t crossed = 0, slid = 0;
+        for (const auto& [t, d] : ref.dumps)
+            for (const auto& e : d.overworld().entities)
+                slid += e.velocity.y == (-0.05 - 0.08) * static_cast<double>(0.98f) * 0.98;
+        for (const auto& trace : ref.traces) crossed += of_kind(trace, TraceKind::entity_changed_chunk).size();
+        const auto& end = ref.dumps.rbegin()->second;
+        // The carried item goes over the edge with the honey and back; the
+        // slime block went without the honey.
+        require(crossed >= 4 && slid >= 6 && state_at(end, {15, 0, -2}).is(BlockType::honey_block) && state_at(end, {16, 0, -3}).is(BlockType::slime_block),
+                std::format("{} chunk changes, {} sliding", crossed, slid));
     });
 
     suite.run("chunk levels decide what runs", [&] {

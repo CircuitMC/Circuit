@@ -156,6 +156,7 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
     if (id == "minecraft:obsidian") return simple(blocks::obsidian());
     if (id == "minecraft:redstone_block") return simple(blocks::redstone_block());
     if (id == "minecraft:slime_block") return simple(blocks::slime());
+    if (id == "minecraft:honey_block") return simple(blocks::honey());
     if (id == "minecraft:lever") {
         CIRCUIT_TRY(powered, p.flag("powered"));
         // Absent mounting properties take the target version's defaults (wall, north).

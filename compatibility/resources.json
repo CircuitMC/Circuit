@@ -142,14 +142,14 @@
         "impl": "partial",
         "evidence": "compared",
         "deviations": [
-          "entity pushing, honey"
+          "entity pushing"
         ]
       },
       "sticky_piston": {
         "impl": "partial",
         "evidence": "compared",
         "deviations": [
-          "entity pushing, honey"
+          "entity pushing"
         ]
       },
       "piston_head": {
@@ -1058,6 +1058,21 @@
           "waterlogging is stored only"
         ],
         "note": "As the compared oak trapdoor"
+      },
+      "honey_block": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "only items and primed TNT slide down its sides"
+        ]
+      },
+      "soul_sand": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Slows what moves on it to 40% (items and primed TNT compared); otherwise inert",
+        "deviations": [
+          "no bubble columns, no soul fire"
+        ]
       }
     },
     "item": {
@@ -1673,6 +1688,11 @@
         "note": "Placed"
       },
       "waxed_oxidized_copper_trapdoor": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "honey_block": {
         "impl": "partial",
         "evidence": "none",
         "note": "Placed"

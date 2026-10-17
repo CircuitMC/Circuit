@@ -1,0 +1,976 @@
+circuit-trace 2
+title Items entering a slide down honey at different speeds and distances
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.9.0+mc1.21.4
+mechanisms honey item_entity
+area -3 0 -2 8 12 26
+ticks 40
+changes ordered
+entities observed
+rng observed
+
+at 0 set -3 0 -2 minecraft:obsidian
+at 0 set -3 0 -1 minecraft:obsidian
+at 0 set -3 0 0 minecraft:obsidian
+at 0 set -3 0 1 minecraft:obsidian
+at 0 set -3 0 2 minecraft:obsidian
+at 0 set -3 0 3 minecraft:obsidian
+at 0 set -3 0 4 minecraft:obsidian
+at 0 set -3 0 5 minecraft:obsidian
+at 0 set -3 0 6 minecraft:obsidian
+at 0 set -3 0 7 minecraft:obsidian
+at 0 set -3 0 8 minecraft:obsidian
+at 0 set -3 0 9 minecraft:obsidian
+at 0 set -3 0 10 minecraft:obsidian
+at 0 set -3 0 11 minecraft:obsidian
+at 0 set -3 0 12 minecraft:obsidian
+at 0 set -3 0 13 minecraft:obsidian
+at 0 set -3 0 14 minecraft:obsidian
+at 0 set -3 0 15 minecraft:obsidian
+at 0 set -3 0 16 minecraft:obsidian
+at 0 set -3 0 17 minecraft:obsidian
+at 0 set -3 0 18 minecraft:obsidian
+at 0 set -3 0 19 minecraft:obsidian
+at 0 set -3 0 20 minecraft:obsidian
+at 0 set -3 0 21 minecraft:obsidian
+at 0 set -3 0 22 minecraft:obsidian
+at 0 set -3 0 23 minecraft:obsidian
+at 0 set -3 0 24 minecraft:obsidian
+at 0 set -3 0 25 minecraft:obsidian
+at 0 set -3 0 26 minecraft:obsidian
+at 0 set -2 0 -2 minecraft:obsidian
+at 0 set -2 0 -1 minecraft:obsidian
+at 0 set -2 0 0 minecraft:obsidian
+at 0 set -2 0 1 minecraft:obsidian
+at 0 set -2 0 2 minecraft:obsidian
+at 0 set -2 0 3 minecraft:obsidian
+at 0 set -2 0 4 minecraft:obsidian
+at 0 set -2 0 5 minecraft:obsidian
+at 0 set -2 0 6 minecraft:obsidian
+at 0 set -2 0 7 minecraft:obsidian
+at 0 set -2 0 8 minecraft:obsidian
+at 0 set -2 0 9 minecraft:obsidian
+at 0 set -2 0 10 minecraft:obsidian
+at 0 set -2 0 11 minecraft:obsidian
+at 0 set -2 0 12 minecraft:obsidian
+at 0 set -2 0 13 minecraft:obsidian
+at 0 set -2 0 14 minecraft:obsidian
+at 0 set -2 0 15 minecraft:obsidian
+at 0 set -2 0 16 minecraft:obsidian
+at 0 set -2 0 17 minecraft:obsidian
+at 0 set -2 0 18 minecraft:obsidian
+at 0 set -2 0 19 minecraft:obsidian
+at 0 set -2 0 20 minecraft:obsidian
+at 0 set -2 0 21 minecraft:obsidian
+at 0 set -2 0 22 minecraft:obsidian
+at 0 set -2 0 23 minecraft:obsidian
+at 0 set -2 0 24 minecraft:obsidian
+at 0 set -2 0 25 minecraft:obsidian
+at 0 set -2 0 26 minecraft:obsidian
+at 0 set -1 0 -2 minecraft:obsidian
+at 0 set -1 0 -1 minecraft:obsidian
+at 0 set -1 0 0 minecraft:obsidian
+at 0 set -1 0 1 minecraft:obsidian
+at 0 set -1 0 2 minecraft:obsidian
+at 0 set -1 0 3 minecraft:obsidian
+at 0 set -1 0 4 minecraft:obsidian
+at 0 set -1 0 5 minecraft:obsidian
+at 0 set -1 0 6 minecraft:obsidian
+at 0 set -1 0 7 minecraft:obsidian
+at 0 set -1 0 8 minecraft:obsidian
+at 0 set -1 0 9 minecraft:obsidian
+at 0 set -1 0 10 minecraft:obsidian
+at 0 set -1 0 11 minecraft:obsidian
+at 0 set -1 0 12 minecraft:obsidian
+at 0 set -1 0 13 minecraft:obsidian
+at 0 set -1 0 14 minecraft:obsidian
+at 0 set -1 0 15 minecraft:obsidian
+at 0 set -1 0 16 minecraft:obsidian
+at 0 set -1 0 17 minecraft:obsidian
+at 0 set -1 0 18 minecraft:obsidian
+at 0 set -1 0 19 minecraft:obsidian
+at 0 set -1 0 20 minecraft:obsidian
+at 0 set -1 0 21 minecraft:obsidian
+at 0 set -1 0 22 minecraft:obsidian
+at 0 set -1 0 23 minecraft:obsidian
+at 0 set -1 0 24 minecraft:obsidian
+at 0 set -1 0 25 minecraft:obsidian
+at 0 set -1 0 26 minecraft:obsidian
+at 0 set 0 0 -2 minecraft:obsidian
+at 0 set 0 0 -1 minecraft:obsidian
+at 0 set 0 0 0 minecraft:obsidian
+at 0 set 0 0 1 minecraft:obsidian
+at 0 set 0 0 2 minecraft:obsidian
+at 0 set 0 0 3 minecraft:obsidian
+at 0 set 0 0 4 minecraft:obsidian
+at 0 set 0 0 5 minecraft:obsidian
+at 0 set 0 0 6 minecraft:obsidian
+at 0 set 0 0 7 minecraft:obsidian
+at 0 set 0 0 8 minecraft:obsidian
+at 0 set 0 0 9 minecraft:obsidian
+at 0 set 0 0 10 minecraft:obsidian
+at 0 set 0 0 11 minecraft:obsidian
+at 0 set 0 0 12 minecraft:obsidian
+at 0 set 0 0 13 minecraft:obsidian
+at 0 set 0 0 14 minecraft:obsidian
+at 0 set 0 0 15 minecraft:obsidian
+at 0 set 0 0 16 minecraft:obsidian
+at 0 set 0 0 17 minecraft:obsidian
+at 0 set 0 0 18 minecraft:obsidian
+at 0 set 0 0 19 minecraft:obsidian
+at 0 set 0 0 20 minecraft:obsidian
+at 0 set 0 0 21 minecraft:obsidian
+at 0 set 0 0 22 minecraft:obsidian
+at 0 set 0 0 23 minecraft:obsidian
+at 0 set 0 0 24 minecraft:obsidian
+at 0 set 0 0 25 minecraft:obsidian
+at 0 set 0 0 26 minecraft:obsidian
+at 0 set 1 0 -2 minecraft:obsidian
+at 0 set 1 0 -1 minecraft:obsidian
+at 0 set 1 0 0 minecraft:obsidian
+at 0 set 1 0 1 minecraft:obsidian
+at 0 set 1 0 2 minecraft:obsidian
+at 0 set 1 0 3 minecraft:obsidian
+at 0 set 1 0 4 minecraft:obsidian
+at 0 set 1 0 5 minecraft:obsidian
+at 0 set 1 0 6 minecraft:obsidian
+at 0 set 1 0 7 minecraft:obsidian
+at 0 set 1 0 8 minecraft:obsidian
+at 0 set 1 0 9 minecraft:obsidian
+at 0 set 1 0 10 minecraft:obsidian
+at 0 set 1 0 11 minecraft:obsidian
+at 0 set 1 0 12 minecraft:obsidian
+at 0 set 1 0 13 minecraft:obsidian
+at 0 set 1 0 14 minecraft:obsidian
+at 0 set 1 0 15 minecraft:obsidian
+at 0 set 1 0 16 minecraft:obsidian
+at 0 set 1 0 17 minecraft:obsidian
+at 0 set 1 0 18 minecraft:obsidian
+at 0 set 1 0 19 minecraft:obsidian
+at 0 set 1 0 20 minecraft:obsidian
+at 0 set 1 0 21 minecraft:obsidian
+at 0 set 1 0 22 minecraft:obsidian
+at 0 set 1 0 23 minecraft:obsidian
+at 0 set 1 0 24 minecraft:obsidian
+at 0 set 1 0 25 minecraft:obsidian
+at 0 set 1 0 26 minecraft:obsidian
+at 0 set 2 0 -2 minecraft:obsidian
+at 0 set 2 0 -1 minecraft:obsidian
+at 0 set 2 0 0 minecraft:obsidian
+at 0 set 2 0 1 minecraft:obsidian
+at 0 set 2 0 2 minecraft:obsidian
+at 0 set 2 0 3 minecraft:obsidian
+at 0 set 2 0 4 minecraft:obsidian
+at 0 set 2 0 5 minecraft:obsidian
+at 0 set 2 0 6 minecraft:obsidian
+at 0 set 2 0 7 minecraft:obsidian
+at 0 set 2 0 8 minecraft:obsidian
+at 0 set 2 0 9 minecraft:obsidian
+at 0 set 2 0 10 minecraft:obsidian
+at 0 set 2 0 11 minecraft:obsidian
+at 0 set 2 0 12 minecraft:obsidian
+at 0 set 2 0 13 minecraft:obsidian
+at 0 set 2 0 14 minecraft:obsidian
+at 0 set 2 0 15 minecraft:obsidian
+at 0 set 2 0 16 minecraft:obsidian
+at 0 set 2 0 17 minecraft:obsidian
+at 0 set 2 0 18 minecraft:obsidian
+at 0 set 2 0 19 minecraft:obsidian
+at 0 set 2 0 20 minecraft:obsidian
+at 0 set 2 0 21 minecraft:obsidian
+at 0 set 2 0 22 minecraft:obsidian
+at 0 set 2 0 23 minecraft:obsidian
+at 0 set 2 0 24 minecraft:obsidian
+at 0 set 2 0 25 minecraft:obsidian
+at 0 set 2 0 26 minecraft:obsidian
+at 0 set 3 0 -2 minecraft:obsidian
+at 0 set 3 0 -1 minecraft:obsidian
+at 0 set 3 0 0 minecraft:obsidian
+at 0 set 3 0 1 minecraft:obsidian
+at 0 set 3 0 2 minecraft:obsidian
+at 0 set 3 0 3 minecraft:obsidian
+at 0 set 3 0 4 minecraft:obsidian
+at 0 set 3 0 5 minecraft:obsidian
+at 0 set 3 0 6 minecraft:obsidian
+at 0 set 3 0 7 minecraft:obsidian
+at 0 set 3 0 8 minecraft:obsidian
+at 0 set 3 0 9 minecraft:obsidian
+at 0 set 3 0 10 minecraft:obsidian
+at 0 set 3 0 11 minecraft:obsidian
+at 0 set 3 0 12 minecraft:obsidian
+at 0 set 3 0 13 minecraft:obsidian
+at 0 set 3 0 14 minecraft:obsidian
+at 0 set 3 0 15 minecraft:obsidian
+at 0 set 3 0 16 minecraft:obsidian
+at 0 set 3 0 17 minecraft:obsidian
+at 0 set 3 0 18 minecraft:obsidian
+at 0 set 3 0 19 minecraft:obsidian
+at 0 set 3 0 20 minecraft:obsidian
+at 0 set 3 0 21 minecraft:obsidian
+at 0 set 3 0 22 minecraft:obsidian
+at 0 set 3 0 23 minecraft:obsidian
+at 0 set 3 0 24 minecraft:obsidian
+at 0 set 3 0 25 minecraft:obsidian
+at 0 set 3 0 26 minecraft:obsidian
+at 0 set 4 0 -2 minecraft:obsidian
+at 0 set 4 0 -1 minecraft:obsidian
+at 0 set 4 0 0 minecraft:obsidian
+at 0 set 4 0 1 minecraft:obsidian
+at 0 set 4 0 2 minecraft:obsidian
+at 0 set 4 0 3 minecraft:obsidian
+at 0 set 4 0 4 minecraft:obsidian
+at 0 set 4 0 5 minecraft:obsidian
+at 0 set 4 0 6 minecraft:obsidian
+at 0 set 4 0 7 minecraft:obsidian
+at 0 set 4 0 8 minecraft:obsidian
+at 0 set 4 0 9 minecraft:obsidian
+at 0 set 4 0 10 minecraft:obsidian
+at 0 set 4 0 11 minecraft:obsidian
+at 0 set 4 0 12 minecraft:obsidian
+at 0 set 4 0 13 minecraft:obsidian
+at 0 set 4 0 14 minecraft:obsidian
+at 0 set 4 0 15 minecraft:obsidian
+at 0 set 4 0 16 minecraft:obsidian
+at 0 set 4 0 17 minecraft:obsidian
+at 0 set 4 0 18 minecraft:obsidian
+at 0 set 4 0 19 minecraft:obsidian
+at 0 set 4 0 20 minecraft:obsidian
+at 0 set 4 0 21 minecraft:obsidian
+at 0 set 4 0 22 minecraft:obsidian
+at 0 set 4 0 23 minecraft:obsidian
+at 0 set 4 0 24 minecraft:obsidian
+at 0 set 4 0 25 minecraft:obsidian
+at 0 set 4 0 26 minecraft:obsidian
+at 0 set 5 0 -2 minecraft:obsidian
+at 0 set 5 0 -1 minecraft:obsidian
+at 0 set 5 0 0 minecraft:obsidian
+at 0 set 5 0 1 minecraft:obsidian
+at 0 set 5 0 2 minecraft:obsidian
+at 0 set 5 0 3 minecraft:obsidian
+at 0 set 5 0 4 minecraft:obsidian
+at 0 set 5 0 5 minecraft:obsidian
+at 0 set 5 0 6 minecraft:obsidian
+at 0 set 5 0 7 minecraft:obsidian
+at 0 set 5 0 8 minecraft:obsidian
+at 0 set 5 0 9 minecraft:obsidian
+at 0 set 5 0 10 minecraft:obsidian
+at 0 set 5 0 11 minecraft:obsidian
+at 0 set 5 0 12 minecraft:obsidian
+at 0 set 5 0 13 minecraft:obsidian
+at 0 set 5 0 14 minecraft:obsidian
+at 0 set 5 0 15 minecraft:obsidian
+at 0 set 5 0 16 minecraft:obsidian
+at 0 set 5 0 17 minecraft:obsidian
+at 0 set 5 0 18 minecraft:obsidian
+at 0 set 5 0 19 minecraft:obsidian
+at 0 set 5 0 20 minecraft:obsidian
+at 0 set 5 0 21 minecraft:obsidian
+at 0 set 5 0 22 minecraft:obsidian
+at 0 set 5 0 23 minecraft:obsidian
+at 0 set 5 0 24 minecraft:obsidian
+at 0 set 5 0 25 minecraft:obsidian
+at 0 set 5 0 26 minecraft:obsidian
+at 0 set 6 0 -2 minecraft:obsidian
+at 0 set 6 0 -1 minecraft:obsidian
+at 0 set 6 0 0 minecraft:obsidian
+at 0 set 6 0 1 minecraft:obsidian
+at 0 set 6 0 2 minecraft:obsidian
+at 0 set 6 0 3 minecraft:obsidian
+at 0 set 6 0 4 minecraft:obsidian
+at 0 set 6 0 5 minecraft:obsidian
+at 0 set 6 0 6 minecraft:obsidian
+at 0 set 6 0 7 minecraft:obsidian
+at 0 set 6 0 8 minecraft:obsidian
+at 0 set 6 0 9 minecraft:obsidian
+at 0 set 6 0 10 minecraft:obsidian
+at 0 set 6 0 11 minecraft:obsidian
+at 0 set 6 0 12 minecraft:obsidian
+at 0 set 6 0 13 minecraft:obsidian
+at 0 set 6 0 14 minecraft:obsidian
+at 0 set 6 0 15 minecraft:obsidian
+at 0 set 6 0 16 minecraft:obsidian
+at 0 set 6 0 17 minecraft:obsidian
+at 0 set 6 0 18 minecraft:obsidian
+at 0 set 6 0 19 minecraft:obsidian
+at 0 set 6 0 20 minecraft:obsidian
+at 0 set 6 0 21 minecraft:obsidian
+at 0 set 6 0 22 minecraft:obsidian
+at 0 set 6 0 23 minecraft:obsidian
+at 0 set 6 0 24 minecraft:obsidian
+at 0 set 6 0 25 minecraft:obsidian
+at 0 set 6 0 26 minecraft:obsidian
+at 0 set 7 0 -2 minecraft:obsidian
+at 0 set 7 0 -1 minecraft:obsidian
+at 0 set 7 0 0 minecraft:obsidian
+at 0 set 7 0 1 minecraft:obsidian
+at 0 set 7 0 2 minecraft:obsidian
+at 0 set 7 0 3 minecraft:obsidian
+at 0 set 7 0 4 minecraft:obsidian
+at 0 set 7 0 5 minecraft:obsidian
+at 0 set 7 0 6 minecraft:obsidian
+at 0 set 7 0 7 minecraft:obsidian
+at 0 set 7 0 8 minecraft:obsidian
+at 0 set 7 0 9 minecraft:obsidian
+at 0 set 7 0 10 minecraft:obsidian
+at 0 set 7 0 11 minecraft:obsidian
+at 0 set 7 0 12 minecraft:obsidian
+at 0 set 7 0 13 minecraft:obsidian
+at 0 set 7 0 14 minecraft:obsidian
+at 0 set 7 0 15 minecraft:obsidian
+at 0 set 7 0 16 minecraft:obsidian
+at 0 set 7 0 17 minecraft:obsidian
+at 0 set 7 0 18 minecraft:obsidian
+at 0 set 7 0 19 minecraft:obsidian
+at 0 set 7 0 20 minecraft:obsidian
+at 0 set 7 0 21 minecraft:obsidian
+at 0 set 7 0 22 minecraft:obsidian
+at 0 set 7 0 23 minecraft:obsidian
+at 0 set 7 0 24 minecraft:obsidian
+at 0 set 7 0 25 minecraft:obsidian
+at 0 set 7 0 26 minecraft:obsidian
+at 0 set 8 0 -2 minecraft:obsidian
+at 0 set 8 0 -1 minecraft:obsidian
+at 0 set 8 0 0 minecraft:obsidian
+at 0 set 8 0 1 minecraft:obsidian
+at 0 set 8 0 2 minecraft:obsidian
+at 0 set 8 0 3 minecraft:obsidian
+at 0 set 8 0 4 minecraft:obsidian
+at 0 set 8 0 5 minecraft:obsidian
+at 0 set 8 0 6 minecraft:obsidian
+at 0 set 8 0 7 minecraft:obsidian
+at 0 set 8 0 8 minecraft:obsidian
+at 0 set 8 0 9 minecraft:obsidian
+at 0 set 8 0 10 minecraft:obsidian
+at 0 set 8 0 11 minecraft:obsidian
+at 0 set 8 0 12 minecraft:obsidian
+at 0 set 8 0 13 minecraft:obsidian
+at 0 set 8 0 14 minecraft:obsidian
+at 0 set 8 0 15 minecraft:obsidian
+at 0 set 8 0 16 minecraft:obsidian
+at 0 set 8 0 17 minecraft:obsidian
+at 0 set 8 0 18 minecraft:obsidian
+at 0 set 8 0 19 minecraft:obsidian
+at 0 set 8 0 20 minecraft:obsidian
+at 0 set 8 0 21 minecraft:obsidian
+at 0 set 8 0 22 minecraft:obsidian
+at 0 set 8 0 23 minecraft:obsidian
+at 0 set 8 0 24 minecraft:obsidian
+at 0 set 8 0 25 minecraft:obsidian
+at 0 set 8 0 26 minecraft:obsidian
+at 0 set 2 1 0 minecraft:honey_block
+at 0 set 2 2 0 minecraft:honey_block
+at 0 set 2 3 0 minecraft:honey_block
+at 0 set 2 4 0 minecraft:honey_block
+at 0 set 2 1 1 minecraft:honey_block
+at 0 set 2 2 1 minecraft:honey_block
+at 0 set 2 3 1 minecraft:honey_block
+at 0 set 2 4 1 minecraft:honey_block
+at 0 set 2 1 2 minecraft:honey_block
+at 0 set 2 2 2 minecraft:honey_block
+at 0 set 2 3 2 minecraft:honey_block
+at 0 set 2 4 2 minecraft:honey_block
+at 0 set 2 1 3 minecraft:honey_block
+at 0 set 2 2 3 minecraft:honey_block
+at 0 set 2 3 3 minecraft:honey_block
+at 0 set 2 4 3 minecraft:honey_block
+at 0 set 2 1 4 minecraft:honey_block
+at 0 set 2 2 4 minecraft:honey_block
+at 0 set 2 3 4 minecraft:honey_block
+at 0 set 2 4 4 minecraft:honey_block
+at 0 set 2 1 5 minecraft:honey_block
+at 0 set 2 2 5 minecraft:honey_block
+at 0 set 2 3 5 minecraft:honey_block
+at 0 set 2 4 5 minecraft:honey_block
+at 0 set 2 1 6 minecraft:honey_block
+at 0 set 2 2 6 minecraft:honey_block
+at 0 set 2 3 6 minecraft:honey_block
+at 0 set 2 4 6 minecraft:honey_block
+at 0 set 2 1 7 minecraft:honey_block
+at 0 set 2 2 7 minecraft:honey_block
+at 0 set 2 3 7 minecraft:honey_block
+at 0 set 2 4 7 minecraft:honey_block
+at 0 set 2 1 8 minecraft:honey_block
+at 0 set 2 2 8 minecraft:honey_block
+at 0 set 2 3 8 minecraft:honey_block
+at 0 set 2 4 8 minecraft:honey_block
+at 0 set 2 1 9 minecraft:honey_block
+at 0 set 2 2 9 minecraft:honey_block
+at 0 set 2 3 9 minecraft:honey_block
+at 0 set 2 4 9 minecraft:honey_block
+at 0 set 2 1 10 minecraft:honey_block
+at 0 set 2 2 10 minecraft:honey_block
+at 0 set 2 3 10 minecraft:honey_block
+at 0 set 2 4 10 minecraft:honey_block
+at 0 set 2 1 11 minecraft:honey_block
+at 0 set 2 2 11 minecraft:honey_block
+at 0 set 2 3 11 minecraft:honey_block
+at 0 set 2 4 11 minecraft:honey_block
+at 0 set 2 1 12 minecraft:honey_block
+at 0 set 2 2 12 minecraft:honey_block
+at 0 set 2 3 12 minecraft:honey_block
+at 0 set 2 4 12 minecraft:honey_block
+at 0 set 2 1 13 minecraft:honey_block
+at 0 set 2 2 13 minecraft:honey_block
+at 0 set 2 3 13 minecraft:honey_block
+at 0 set 2 4 13 minecraft:honey_block
+at 0 set 2 1 14 minecraft:honey_block
+at 0 set 2 2 14 minecraft:honey_block
+at 0 set 2 3 14 minecraft:honey_block
+at 0 set 2 4 14 minecraft:honey_block
+at 0 set 2 1 15 minecraft:honey_block
+at 0 set 2 2 15 minecraft:honey_block
+at 0 set 2 3 15 minecraft:honey_block
+at 0 set 2 4 15 minecraft:honey_block
+at 0 set 2 1 16 minecraft:honey_block
+at 0 set 2 2 16 minecraft:honey_block
+at 0 set 2 3 16 minecraft:honey_block
+at 0 set 2 4 16 minecraft:honey_block
+at 0 set 2 1 17 minecraft:honey_block
+at 0 set 2 2 17 minecraft:honey_block
+at 0 set 2 3 17 minecraft:honey_block
+at 0 set 2 4 17 minecraft:honey_block
+at 0 set 2 1 18 minecraft:honey_block
+at 0 set 2 2 18 minecraft:honey_block
+at 0 set 2 3 18 minecraft:honey_block
+at 0 set 2 4 18 minecraft:honey_block
+at 0 set 2 1 19 minecraft:honey_block
+at 0 set 2 2 19 minecraft:honey_block
+at 0 set 2 3 19 minecraft:honey_block
+at 0 set 2 4 19 minecraft:honey_block
+at 0 set 2 1 20 minecraft:honey_block
+at 0 set 2 2 20 minecraft:honey_block
+at 0 set 2 3 20 minecraft:honey_block
+at 0 set 2 4 20 minecraft:honey_block
+at 0 set 2 1 21 minecraft:honey_block
+at 0 set 2 2 21 minecraft:honey_block
+at 0 set 2 3 21 minecraft:honey_block
+at 0 set 2 4 21 minecraft:honey_block
+at 0 set 2 1 22 minecraft:honey_block
+at 0 set 2 2 22 minecraft:honey_block
+at 0 set 2 3 22 minecraft:honey_block
+at 0 set 2 4 22 minecraft:honey_block
+at 0 set 2 1 23 minecraft:honey_block
+at 0 set 2 2 23 minecraft:honey_block
+at 0 set 2 3 23 minecraft:honey_block
+at 0 set 2 4 23 minecraft:honey_block
+at 0 set 2 1 24 minecraft:honey_block
+at 0 set 2 2 24 minecraft:honey_block
+at 0 set 2 3 24 minecraft:honey_block
+at 0 set 2 4 24 minecraft:honey_block
+
+at 3 spawn-item 1.93 5.5 0.5 0 0 0.1 minecraft:stone 1
+entity-added 3 commands e1 minecraft:item 1.93 5.5 0.5 0 0 0.1 item=minecraft:stone count=1
+at 3 spawn-item 1.93 6.5 2.5 0 0 0.1 minecraft:dirt 1
+entity-added 3 commands e2 minecraft:item 1.93 6.5 2.5 0 0 0.1 item=minecraft:dirt count=1
+at 3 spawn-item 1.93 8.5 4.5 0 0 0.1 minecraft:sand 1
+entity-added 3 commands e3 minecraft:item 1.93 8.5 4.5 0 0 0.1 item=minecraft:sand count=1
+at 3 spawn-item 1.93 10.5 6.5 0 0 0.1 minecraft:gravel 1
+entity-added 3 commands e4 minecraft:item 1.93 10.5 6.5 0 0 0.1 item=minecraft:gravel count=1
+at 3 spawn-item 1.93 6.5 8.5 0 0 0.0 minecraft:glass 1
+entity-added 3 commands e5 minecraft:item 1.93 6.5 8.5 0 0 0 item=minecraft:glass count=1
+at 3 spawn-item 1.93 6.5 10.5 0 0 0.2 minecraft:clay 1
+entity-added 3 commands e6 minecraft:item 1.93 6.5 10.5 0 0 0.2 item=minecraft:clay count=1
+at 3 spawn-item 1.93 6.5 12.5 0 0 -0.1 minecraft:granite 1
+entity-added 3 commands e7 minecraft:item 1.93 6.5 12.5 0 0 -0.1 item=minecraft:granite count=1
+at 3 spawn-item 1.9 6.5 14.5 0 0 0.0 minecraft:diorite 1
+entity-added 3 commands e8 minecraft:item 1.9 6.5 14.5 0 0 0 item=minecraft:diorite count=1
+at 3 spawn-item 1.94 6.5 16.5 0 0 0.0 minecraft:andesite 1
+entity-added 3 commands e9 minecraft:item 1.94 6.5 16.5 0 0 0 item=minecraft:andesite count=1
+at 3 spawn-item 1.98 6.5 18.5 0 0 0.0 minecraft:cobblestone 1
+entity-added 3 commands e10 minecraft:item 1.98 6.5 18.5 0 0 0 item=minecraft:cobblestone count=1
+at 3 spawn-item 1.85 6.5 20.5 0 0 0.0 minecraft:obsidian 1
+entity-added 3 commands e11 minecraft:item 1.85 6.5 20.5 0 0 0 item=minecraft:obsidian count=1
+entity-order 3 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 3 e1 1.93 5.46 0.6 0 -0.0392 0.09800000190734864 item=minecraft:stone count=1 age=1 pickup-delay=0 on-ground=false
+entity 3 e2 1.93 6.46 2.6 0 -0.0392 0.09800000190734864 item=minecraft:dirt count=1 age=1 pickup-delay=0 on-ground=false
+entity 3 e3 1.93 8.46 4.6 0 -0.0392 0.09800000190734864 item=minecraft:sand count=1 age=1 pickup-delay=0 on-ground=false
+entity 3 e4 1.93 10.46 6.6 0 -0.0392 0.09800000190734864 item=minecraft:gravel count=1 age=1 pickup-delay=0 on-ground=false
+entity 3 e5 1.93 6.46 8.5 0 -0.0392 0 item=minecraft:glass count=1 age=1 pickup-delay=0 on-ground=false
+entity 3 e6 1.93 6.46 10.7 0 -0.0392 0.1960000038146973 item=minecraft:clay count=1 age=1 pickup-delay=0 on-ground=false
+entity 3 e7 1.93 6.46 12.4 0 -0.0392 -0.09800000190734864 item=minecraft:granite count=1 age=1 pickup-delay=0 on-ground=false
+entity 3 e8 1.9 6.46 14.5 0 -0.0392 0 item=minecraft:diorite count=1 age=1 pickup-delay=0 on-ground=false
+entity 3 e9 1.94 6.46 16.5 0 -0.0392 0 item=minecraft:andesite count=1 age=1 pickup-delay=0 on-ground=false
+entity 3 e10 1.98 6.46 18.5 0 -0.0392 0 item=minecraft:cobblestone count=1 age=1 pickup-delay=0 on-ground=false
+entity 3 e11 1.85 6.46 20.5 0 -0.0392 0 item=minecraft:obsidian count=1 age=1 pickup-delay=0 on-ground=false
+
+entity-order 4 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 4 e1 1.93 5.3808 0.6980000019073487 0 -0.07761599999999999 0.09604000373840337 item=minecraft:stone count=1 age=2 pickup-delay=0 on-ground=false
+entity 4 e2 1.93 6.3808 2.698000001907349 0 -0.07761599999999999 0.09604000373840337 item=minecraft:dirt count=1 age=2 pickup-delay=0 on-ground=false
+entity 4 e3 1.93 8.3808 4.6980000019073485 0 -0.07761599999999999 0.09604000373840337 item=minecraft:sand count=1 age=2 pickup-delay=0 on-ground=false
+entity 4 e4 1.93 10.3808 6.6980000019073485 0 -0.07761599999999999 0.09604000373840337 item=minecraft:gravel count=1 age=2 pickup-delay=0 on-ground=false
+entity 4 e5 1.93 6.3808 8.5 0 -0.07761599999999999 0 item=minecraft:glass count=1 age=2 pickup-delay=0 on-ground=false
+entity 4 e6 1.93 6.3808 10.896000003814697 0 -0.07761599999999999 0.19208000747680673 item=minecraft:clay count=1 age=2 pickup-delay=0 on-ground=false
+entity 4 e7 1.93 6.3808 12.301999998092652 0 -0.07761599999999999 -0.09604000373840337 item=minecraft:granite count=1 age=2 pickup-delay=0 on-ground=false
+entity 4 e8 1.9 6.3808 14.5 0 -0.07761599999999999 0 item=minecraft:diorite count=1 age=2 pickup-delay=0 on-ground=false
+entity 4 e9 1.94 6.3808 16.5 0 -0.07761599999999999 0 item=minecraft:andesite count=1 age=2 pickup-delay=0 on-ground=false
+entity 4 e10 1.98 6.3808 18.5 0 -0.07761599999999999 0 item=minecraft:cobblestone count=1 age=2 pickup-delay=0 on-ground=false
+entity 4 e11 1.85 6.3808 20.5 0 -0.07761599999999999 0 item=minecraft:obsidian count=1 age=2 pickup-delay=0 on-ground=false
+
+entity-order 5 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 5 e1 1.93 5.263184 0.7940400056457521 0 -0.11526368 0.094119205495453 item=minecraft:stone count=1 age=3 pickup-delay=0 on-ground=false
+entity 5 e2 1.93 6.263184 2.794040005645752 0 -0.11526368 0.094119205495453 item=minecraft:dirt count=1 age=3 pickup-delay=0 on-ground=false
+entity 5 e3 1.93 8.263184 4.794040005645752 0 -0.11526368 0.094119205495453 item=minecraft:sand count=1 age=3 pickup-delay=0 on-ground=false
+entity 5 e4 1.93 10.263184 6.794040005645752 0 -0.11526368 0.094119205495453 item=minecraft:gravel count=1 age=3 pickup-delay=0 on-ground=false
+entity 5 e5 1.93 6.263184 8.5 0 -0.11526368 0 item=minecraft:glass count=1 age=3 pickup-delay=0 on-ground=false
+entity 5 e6 1.93 6.263184 11.088080011291504 0 -0.11526368 0.188238410990906 item=minecraft:clay count=1 age=3 pickup-delay=0 on-ground=false
+entity 5 e7 1.93 6.263184 12.205959994354249 0 -0.11526368 -0.094119205495453 item=minecraft:granite count=1 age=3 pickup-delay=0 on-ground=false
+entity 5 e8 1.9 6.263184 14.5 0 -0.11526368 0 item=minecraft:diorite count=1 age=3 pickup-delay=0 on-ground=false
+entity 5 e9 1.94 6.263184 16.5 0 -0.11526368 0 item=minecraft:andesite count=1 age=3 pickup-delay=0 on-ground=false
+entity 5 e10 1.98 6.263184 18.5 0 -0.11526368 0 item=minecraft:cobblestone count=1 age=3 pickup-delay=0 on-ground=false
+entity 5 e11 1.85 6.263184 20.5 0 -0.11526368 0 item=minecraft:obsidian count=1 age=3 pickup-delay=0 on-ground=false
+
+entity-order 6 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 6 e1 1.93 5.10792032 0.8881592111412051 0 -0.15215840639999997 0.09223682318072532 item=minecraft:stone count=1 age=4 pickup-delay=0 on-ground=false
+entity 6 e2 1.93 6.10792032 2.8881592111412053 0 -0.15215840639999997 0.09223682318072532 item=minecraft:dirt count=1 age=4 pickup-delay=0 on-ground=false
+entity 6 e3 1.93 8.107920320000002 4.888159211141205 0 -0.15215840639999997 0.09223682318072532 item=minecraft:sand count=1 age=4 pickup-delay=0 on-ground=false
+entity 6 e4 1.93 10.107920320000002 6.888159211141205 0 -0.15215840639999997 0.09223682318072532 item=minecraft:gravel count=1 age=4 pickup-delay=0 on-ground=false
+entity 6 e5 1.93 6.10792032 8.5 0 -0.15215840639999997 0 item=minecraft:glass count=1 age=4 pickup-delay=0 on-ground=false
+entity 6 e6 1.93 6.10792032 11.27631842228241 0 -0.15215840639999997 0.18447364636145064 item=minecraft:clay count=1 age=4 pickup-delay=0 on-ground=false
+entity 6 e7 1.93 6.10792032 12.111840788858796 0 -0.15215840639999997 -0.09223682318072532 item=minecraft:granite count=1 age=4 pickup-delay=0 on-ground=false
+entity 6 e8 1.9 6.10792032 14.5 0 -0.15215840639999997 0 item=minecraft:diorite count=1 age=4 pickup-delay=0 on-ground=false
+entity 6 e9 1.94 6.10792032 16.5 0 -0.15215840639999997 0 item=minecraft:andesite count=1 age=4 pickup-delay=0 on-ground=false
+entity 6 e10 1.98 6.10792032 18.5 0 -0.15215840639999997 0 item=minecraft:cobblestone count=1 age=4 pickup-delay=0 on-ground=false
+entity 6 e11 1.85 6.10792032 20.5 0 -0.15215840639999997 0 item=minecraft:obsidian count=1 age=4 pickup-delay=0 on-ground=false
+
+entity-order 7 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 7 e1 1.93 4.9157619136 0.9803960343219305 0 -0.12485200242996215 0.0903920884763886 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=false
+entity 7 e2 1.93 5.9157619136 2.9803960343219305 0 -0.18831523827199997 0.0903920884763886 item=minecraft:dirt count=1 age=5 pickup-delay=0 on-ground=false
+entity 7 e3 1.93 7.915761913600002 4.98039603432193 0 -0.18831523827199997 0.0903920884763886 item=minecraft:sand count=1 age=5 pickup-delay=0 on-ground=false
+entity 7 e4 1.93 9.9157619136 6.98039603432193 0 -0.18831523827199997 0.0903920884763886 item=minecraft:gravel count=1 age=5 pickup-delay=0 on-ground=false
+entity 7 e5 1.93 5.9157619136 8.5 0 -0.18831523827199997 0 item=minecraft:glass count=1 age=5 pickup-delay=0 on-ground=false
+entity 7 e6 1.93 5.9157619136 11.46079206864386 0 -0.18831523827199997 0.1807841769527772 item=minecraft:clay count=1 age=5 pickup-delay=0 on-ground=false
+entity 7 e7 1.93 5.9157619136 12.01960396567807 0 -0.18831523827199997 -0.0903920884763886 item=minecraft:granite count=1 age=5 pickup-delay=0 on-ground=false
+entity 7 e8 1.9 5.9157619136 14.5 0 -0.18831523827199997 0 item=minecraft:diorite count=1 age=5 pickup-delay=0 on-ground=false
+entity 7 e9 1.94 5.9157619136 16.5 0 -0.18831523827199997 0 item=minecraft:andesite count=1 age=5 pickup-delay=0 on-ground=false
+entity 7 e10 1.98 5.9157619136 18.5 0 -0.18831523827199997 0 item=minecraft:cobblestone count=1 age=5 pickup-delay=0 on-ground=false
+entity 7 e11 1.85 5.9157619136 20.5 0 -0.18831523827199997 0 item=minecraft:obsidian count=1 age=5 pickup-delay=0 on-ground=false
+
+entity-order 8 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 8 e1 1.93 4.750909911170038 1.0707881227983191 0 -0.12485200242996215 0.0885842484309531 item=minecraft:stone count=1 age=6 pickup-delay=0 on-ground=false
+entity 8 e2 1.93 5.687446675328 3.070788122798319 0 -0.22374893350655997 0.0885842484309531 item=minecraft:dirt count=1 age=6 pickup-delay=0 on-ground=false
+entity 8 e3 1.93 7.687446675328002 5.0707881227983185 0 -0.22374893350655997 0.0885842484309531 item=minecraft:sand count=1 age=6 pickup-delay=0 on-ground=false
+entity 8 e4 1.93 9.687446675328001 7.0707881227983185 0 -0.22374893350655997 0.0885842484309531 item=minecraft:gravel count=1 age=6 pickup-delay=0 on-ground=false
+entity 8 e5 1.93 5.687446675328 8.5 0 -0.22374893350655997 0 item=minecraft:glass count=1 age=6 pickup-delay=0 on-ground=false
+entity 8 e6 1.93 5.687446675328 11.641576245596637 0 -0.22374893350655997 0.1771684968619062 item=minecraft:clay count=1 age=6 pickup-delay=0 on-ground=false
+entity 8 e7 1.93 5.687446675328 11.929211877201682 0 -0.22374893350655997 -0.0885842484309531 item=minecraft:granite count=1 age=6 pickup-delay=0 on-ground=false
+entity 8 e8 1.9 5.687446675328 14.5 0 -0.22374893350655997 0 item=minecraft:diorite count=1 age=6 pickup-delay=0 on-ground=false
+entity 8 e9 1.94 5.687446675328 16.5 0 -0.22374893350655997 0 item=minecraft:andesite count=1 age=6 pickup-delay=0 on-ground=false
+entity 8 e10 1.98 5.687446675328 18.5 0 -0.22374893350655997 0 item=minecraft:cobblestone count=1 age=6 pickup-delay=0 on-ground=false
+entity 8 e11 1.85 5.687446675328 20.5 0 -0.22374893350655997 0 item=minecraft:obsidian count=1 age=6 pickup-delay=0 on-ground=false
+
+entity-order 9 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 9 e1 1.93 4.586057908740076 1.1593723712292723 0 -0.12485200242996215 0.08681256515194449 item=minecraft:stone count=1 age=7 pickup-delay=0 on-ground=false
+entity 9 e2 1.93 5.4236977418214405 3.159372371229272 0 -0.25847395483642877 0.08681256515194449 item=minecraft:dirt count=1 age=7 pickup-delay=0 on-ground=false
+entity 9 e3 1.93 7.423697741821442 5.159372371229272 0 -0.25847395483642877 0.08681256515194449 item=minecraft:sand count=1 age=7 pickup-delay=0 on-ground=false
+entity 9 e4 1.93 9.42369774182144 7.159372371229272 0 -0.25847395483642877 0.08681256515194449 item=minecraft:gravel count=1 age=7 pickup-delay=0 on-ground=false
+entity 9 e5 1.93 5.4236977418214405 8.5 0 -0.25847395483642877 0 item=minecraft:glass count=1 age=7 pickup-delay=0 on-ground=false
+entity 9 e6 1.93 5.4236977418214405 11.818744742458543 0 -0.25847395483642877 0.17362513030388899 item=minecraft:clay count=1 age=7 pickup-delay=0 on-ground=false
+entity 9 e7 1.93 5.4236977418214405 11.84062762877073 0 -0.25847395483642877 -0.08681256515194449 item=minecraft:granite count=1 age=7 pickup-delay=0 on-ground=false
+entity 9 e8 1.9 5.4236977418214405 14.5 0 -0.25847395483642877 0 item=minecraft:diorite count=1 age=7 pickup-delay=0 on-ground=false
+entity 9 e9 1.94 5.4236977418214405 16.5 0 -0.25847395483642877 0 item=minecraft:andesite count=1 age=7 pickup-delay=0 on-ground=false
+entity 9 e10 1.98 5.4236977418214405 18.5 0 -0.25847395483642877 0 item=minecraft:cobblestone count=1 age=7 pickup-delay=0 on-ground=false
+entity 9 e11 1.85 5.4236977418214405 20.5 0 -0.25847395483642877 0 item=minecraft:obsidian count=1 age=7 pickup-delay=0 on-ground=false
+
+entity-order 10 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 10 e1 1.93 4.421205906310115 1.2461849363812167 0 -0.12485200242996215 0.08507631550472387 item=minecraft:stone count=1 age=8 pickup-delay=0 on-ground=false
+entity 10 e2 1.93 5.1252237869850115 3.2461849363812165 0 -0.2925044757397002 0.08507631550472387 item=minecraft:dirt count=1 age=8 pickup-delay=0 on-ground=false
+entity 10 e3 1.93 7.125223786985013 5.2461849363812165 0 -0.2925044757397002 0.08507631550472387 item=minecraft:sand count=1 age=8 pickup-delay=0 on-ground=false
+entity 10 e4 1.93 9.125223786985012 7.2461849363812165 0 -0.2925044757397002 0.08507631550472387 item=minecraft:gravel count=1 age=8 pickup-delay=0 on-ground=false
+entity 10 e5 1.93 5.1252237869850115 8.5 0 -0.2925044757397002 0 item=minecraft:glass count=1 age=8 pickup-delay=0 on-ground=false
+entity 10 e6 1.93 5.1252237869850115 11.992369872762433 0 -0.2925044757397002 0.17015263100944775 item=minecraft:clay count=1 age=8 pickup-delay=0 on-ground=false
+entity 10 e7 1.93 5.1252237869850115 11.753815063618784 0 -0.2925044757397002 -0.08507631550472387 item=minecraft:granite count=1 age=8 pickup-delay=0 on-ground=false
+entity 10 e8 1.9 5.1252237869850115 14.5 0 -0.2925044757397002 0 item=minecraft:diorite count=1 age=8 pickup-delay=0 on-ground=false
+entity 10 e9 1.94 5.1252237869850115 16.5 0 -0.2925044757397002 0 item=minecraft:andesite count=1 age=8 pickup-delay=0 on-ground=false
+entity 10 e10 1.98 5.1252237869850115 18.5 0 -0.2925044757397002 0 item=minecraft:cobblestone count=1 age=8 pickup-delay=0 on-ground=false
+entity 10 e11 1.85 5.1252237869850115 20.5 0 -0.2925044757397002 0 item=minecraft:obsidian count=1 age=8 pickup-delay=0 on-ground=false
+
+entity-order 11 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 11 e1 1.93 4.256353903880153 1.3312612518859406 0 -0.12485200242996215 0.08337479081733133 item=minecraft:stone count=1 age=9 pickup-delay=0 on-ground=false
+entity 11 e2 1.93 4.792719311245311 3.3312612518859406 0 -0.12485200242996215 0.01607750057216199 item=minecraft:dirt count=1 age=9 pickup-delay=0 on-ground=false
+entity 11 e3 1.93 6.792719311245313 5.33126125188594 0 -0.32585438622490615 0.08337479081733133 item=minecraft:sand count=1 age=9 pickup-delay=0 on-ground=false
+entity 11 e4 1.93 8.792719311245312 7.33126125188594 0 -0.32585438622490615 0.08337479081733133 item=minecraft:gravel count=1 age=9 pickup-delay=0 on-ground=false
+entity 11 e5 1.93 4.792719311245311 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=9 pickup-delay=0 on-ground=false
+entity 11 e6 1.93 4.792719311245311 12.16252250377188 0 -0.12485200242996215 0.03215500114432398 item=minecraft:clay count=1 age=9 pickup-delay=0 on-ground=false
+entity 11 e7 1.93 4.792719311245311 11.66873874811406 0 -0.12485200242996215 -0.01607750057216199 item=minecraft:granite count=1 age=9 pickup-delay=0 on-ground=false
+entity 11 e8 1.9 4.792719311245311 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=9 pickup-delay=0 on-ground=false
+entity 11 e9 1.94 4.9375 16.5 0 0 0 item=minecraft:andesite count=1 age=9 pickup-delay=0 on-ground=true
+entity 11 e10 1.98 4.9375 18.5 0 0 0 item=minecraft:cobblestone count=1 age=9 pickup-delay=0 on-ground=true
+entity 11 e11 1.85 4.792719311245311 20.5 0 -0.32585438622490615 0 item=minecraft:obsidian count=1 age=9 pickup-delay=0 on-ground=false
+
+entity-order 12 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 12 e1 1.93 4.091501901450191 1.4146360427032718 0 -0.12485200242996215 0.08170729659123263 item=minecraft:stone count=1 age=10 pickup-delay=0 on-ground=false
+entity 12 e2 1.93 4.6278673088153495 3.3473387524581026 0 -0.12485200242996215 0.015755950867372737 item=minecraft:dirt count=1 age=10 pickup-delay=0 on-ground=false
+entity 12 e3 1.93 6.426864925020407 5.414636042703272 0 -0.358537298500408 0.08170729659123263 item=minecraft:sand count=1 age=10 pickup-delay=0 on-ground=false
+entity 12 e4 1.93 8.426864925020405 7.414636042703272 0 -0.358537298500408 0.08170729659123263 item=minecraft:gravel count=1 age=10 pickup-delay=0 on-ground=false
+entity 12 e5 1.93 4.6278673088153495 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=10 pickup-delay=0 on-ground=false
+entity 12 e6 1.93 4.6278673088153495 12.194677504916204 0 -0.12485200242996215 0.031511901734745475 item=minecraft:clay count=1 age=10 pickup-delay=0 on-ground=false
+entity 12 e7 1.93 4.6278673088153495 11.652661247541898 0 -0.12485200242996215 -0.015755950867372737 item=minecraft:granite count=1 age=10 pickup-delay=0 on-ground=false
+entity 12 e8 1.9 4.6278673088153495 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=10 pickup-delay=0 on-ground=false
+entity 12 e9 1.94 4.9375 16.5 0 -0.04 0 item=minecraft:andesite count=1 age=10 pickup-delay=0 on-ground=true
+entity 12 e10 1.98 4.9375 18.5 0 0 0 item=minecraft:cobblestone count=1 age=10 pickup-delay=0 on-ground=true
+entity 12 e11 1.85 4.426864925020405 20.5 0 -0.358537298500408 0 item=minecraft:obsidian count=1 age=10 pickup-delay=0 on-ground=false
+
+entity-order 13 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 13 e1 1.93 3.9266498990202288 1.4963433392945045 0 -0.12485200242996215 0.08007315221785098 item=minecraft:stone count=1 age=11 pickup-delay=0 on-ground=false
+entity 13 e2 1.93 4.463015306385388 3.3630947033254754 0 -0.12485200242996215 0.015440832150546197 item=minecraft:dirt count=1 age=11 pickup-delay=0 on-ground=false
+entity 13 e3 1.93 6.028327626519999 5.496343339294504 0 -0.3905665525303998 0.08007315221785098 item=minecraft:sand count=1 age=11 pickup-delay=0 on-ground=false
+entity 13 e4 1.93 8.028327626519998 7.496343339294504 0 -0.3905665525303998 0.08007315221785098 item=minecraft:gravel count=1 age=11 pickup-delay=0 on-ground=false
+entity 13 e5 1.93 4.463015306385388 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=11 pickup-delay=0 on-ground=false
+entity 13 e6 1.93 4.463015306385388 12.226189406650949 0 -0.12485200242996215 0.030881664301092394 item=minecraft:clay count=1 age=11 pickup-delay=0 on-ground=false
+entity 13 e7 1.93 4.463015306385388 11.636905296674525 0 -0.12485200242996215 -0.015440832150546197 item=minecraft:granite count=1 age=11 pickup-delay=0 on-ground=false
+entity 13 e8 1.9 4.463015306385388 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=11 pickup-delay=0 on-ground=false
+entity 13 e9 1.94 4.9375 16.5 0 0 0 item=minecraft:andesite count=1 age=11 pickup-delay=0 on-ground=true
+entity 13 e10 1.98 4.9375 18.5 0 -0.04 0 item=minecraft:cobblestone count=1 age=11 pickup-delay=0 on-ground=true
+entity 13 e11 1.85 4.028327626519998 20.5 0 -0.3905665525303998 0 item=minecraft:obsidian count=1 age=11 pickup-delay=0 on-ground=false
+
+entity-order 14 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 14 e1 1.93 3.7617978965902665 1.5764164915123555 0 -0.12485200242996215 0.07847169070076813 item=minecraft:stone count=1 age=12 pickup-delay=0 on-ground=false
+entity 14 e2 1.93 4.298163303955426 3.3785355354760216 0 -0.12485200242996215 0.015132015802045774 item=minecraft:dirt count=1 age=12 pickup-delay=0 on-ground=false
+entity 14 e3 1.93 5.5977610739895995 5.576416491512355 0 -0.42195522147979175 0.07847169070076813 item=minecraft:sand count=1 age=12 pickup-delay=0 on-ground=false
+entity 14 e4 1.93 7.597761073989598 7.576416491512355 0 -0.42195522147979175 0.07847169070076813 item=minecraft:gravel count=1 age=12 pickup-delay=0 on-ground=false
+entity 14 e5 1.93 4.298163303955426 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=12 pickup-delay=0 on-ground=false
+entity 14 e6 1.93 4.298163303955426 12.257071070952042 0 -0.12485200242996215 0.030264031604091548 item=minecraft:clay count=1 age=12 pickup-delay=0 on-ground=false
+entity 14 e7 1.93 4.298163303955426 11.62146446452398 0 -0.12485200242996215 -0.015132015802045774 item=minecraft:granite count=1 age=12 pickup-delay=0 on-ground=false
+entity 14 e8 1.9 4.298163303955426 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=12 pickup-delay=0 on-ground=false
+entity 14 e9 1.94 4.9375 16.5 0 -0.04 0 item=minecraft:andesite count=1 age=12 pickup-delay=0 on-ground=true
+entity 14 e10 1.98 4.9375 18.5 0 -0.08 0 item=minecraft:cobblestone count=1 age=12 pickup-delay=0 on-ground=true
+entity 14 e11 1.85 3.5977610739895978 20.5 0 -0.42195522147979175 0 item=minecraft:obsidian count=1 age=12 pickup-delay=0 on-ground=false
+
+entity-order 15 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 15 e1 1.93 3.5969458941603043 1.6548881822131236 0 -0.12485200242996215 0.0769022583834815 item=minecraft:stone count=1 age=13 pickup-delay=0 on-ground=false
+entity 15 e2 1.93 4.133311301525464 3.3936675512780674 0 -0.12485200242996215 0.014829375774625154 item=minecraft:dirt count=1 age=13 pickup-delay=0 on-ground=false
+entity 15 e3 1.93 5.135805852509808 5.654888182213123 0 -0.4527161170501959 0.0769022583834815 item=minecraft:sand count=1 age=13 pickup-delay=0 on-ground=false
+entity 15 e4 1.93 7.135805852509806 7.654888182213123 0 -0.4527161170501959 0.0769022583834815 item=minecraft:gravel count=1 age=13 pickup-delay=0 on-ground=false
+entity 15 e5 1.93 4.133311301525464 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=13 pickup-delay=0 on-ground=false
+entity 15 e6 1.93 4.133311301525464 12.287335102556133 0 -0.12485200242996215 0.02965875154925031 item=minecraft:clay count=1 age=13 pickup-delay=0 on-ground=false
+entity 15 e7 1.93 4.133311301525464 11.606332448721934 0 -0.12485200242996215 -0.014829375774625154 item=minecraft:granite count=1 age=13 pickup-delay=0 on-ground=false
+entity 15 e8 1.9 4.133311301525464 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=13 pickup-delay=0 on-ground=false
+entity 15 e9 1.94 4.9375 16.5 0 -0.08 0 item=minecraft:andesite count=1 age=13 pickup-delay=0 on-ground=true
+entity 15 e10 1.98 4.9375 18.5 0 -0.12 0 item=minecraft:cobblestone count=1 age=13 pickup-delay=0 on-ground=true
+entity 15 e11 1.85 3.1358058525098063 20.5 0 -0.4527161170501959 0 item=minecraft:obsidian count=1 age=13 pickup-delay=0 on-ground=false
+
+entity-order 16 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 16 e1 1.93 3.432093891730342 1.7317904405966051 0 -0.12485200242996215 0.07536421468260604 item=minecraft:stone count=1 age=14 pickup-delay=0 on-ground=false
+entity 16 e2 1.93 3.968459299095502 3.4084969270526924 0 -0.12485200242996215 0.014532788541980547 item=minecraft:dirt count=1 age=14 pickup-delay=0 on-ground=false
+entity 16 e3 1.93 4.643089735459612 5.731790440596605 0 -0.12485200242996215 0.00891311356944761 item=minecraft:sand count=1 age=14 pickup-delay=0 on-ground=false
+entity 16 e4 1.93 6.64308973545961 7.731790440596605 0 -0.48286179470919194 0.07536421468260604 item=minecraft:gravel count=1 age=14 pickup-delay=0 on-ground=false
+entity 16 e5 1.93 3.968459299095502 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=14 pickup-delay=0 on-ground=false
+entity 16 e6 1.93 3.968459299095502 12.316993854105384 0 -0.12485200242996215 0.029065577083961094 item=minecraft:clay count=1 age=14 pickup-delay=0 on-ground=false
+entity 16 e7 1.93 3.968459299095502 11.59150307294731 0 -0.12485200242996215 -0.014532788541980547 item=minecraft:granite count=1 age=14 pickup-delay=0 on-ground=false
+entity 16 e8 1.9 3.968459299095502 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=14 pickup-delay=0 on-ground=false
+entity 16 e9 1.94 4.9375 16.5 0 -0.12 0 item=minecraft:andesite count=1 age=14 pickup-delay=0 on-ground=true
+entity 16 e10 1.98 4.9375 18.5 0 0 0 item=minecraft:cobblestone count=1 age=14 pickup-delay=0 on-ground=true
+entity 16 e11 1.85 2.6430897354596103 20.5 0 -0.48286179470919194 0 item=minecraft:obsidian count=1 age=14 pickup-delay=0 on-ground=false
+
+entity-order 17 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 17 e1 1.93 3.26724188930038 1.8071546552792113 0 -0.12485200242996215 0.07385693182641223 item=minecraft:stone count=1 age=15 pickup-delay=0 on-ground=false
+entity 17 e2 1.93 3.8036072966655396 3.423029715594673 0 -0.12485200242996215 0.014242133048331879 item=minecraft:dirt count=1 age=15 pickup-delay=0 on-ground=false
+entity 17 e3 1.93 4.47823773302965 5.7407035541660525 0 -0.12485200242996215 0.008734851468062807 item=minecraft:sand count=1 age=15 pickup-delay=0 on-ground=false
+entity 17 e4 1.93 6.120227940750419 7.807154655279211 0 -0.512404558815008 0.07385693182641223 item=minecraft:gravel count=1 age=15 pickup-delay=0 on-ground=false
+entity 17 e5 1.93 3.8036072966655396 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=15 pickup-delay=0 on-ground=false
+entity 17 e6 1.93 3.8036072966655396 12.346059431189344 0 -0.12485200242996215 0.028484266096663758 item=minecraft:clay count=1 age=15 pickup-delay=0 on-ground=false
+entity 17 e7 1.93 3.8036072966655396 11.576970284405329 0 -0.12485200242996215 -0.014242133048331879 item=minecraft:granite count=1 age=15 pickup-delay=0 on-ground=false
+entity 17 e8 1.9 3.8036072966655396 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=15 pickup-delay=0 on-ground=false
+entity 17 e9 1.94 4.9375 16.5 0 0 0 item=minecraft:andesite count=1 age=15 pickup-delay=0 on-ground=true
+entity 17 e10 1.98 4.9375 18.5 0 -0.04 0 item=minecraft:cobblestone count=1 age=15 pickup-delay=0 on-ground=true
+entity 17 e11 1.85 2.1202279407504183 20.5 0 -0.512404558815008 0 item=minecraft:obsidian count=1 age=15 pickup-delay=0 on-ground=false
+
+entity-order 18 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 18 e1 1.93 3.1023898868704176 1.8810115871056234 0 -0.12485200242996215 0.07237979459859317 item=minecraft:stone count=1 age=16 pickup-delay=0 on-ground=false
+entity 18 e2 1.93 3.6387552942355774 3.4372718486430047 0 -0.12485200242996215 0.013957290659012371 item=minecraft:dirt count=1 age=16 pickup-delay=0 on-ground=false
+entity 18 e3 1.93 4.3133857305996886 5.749438405634115 0 -0.12485200242996215 0.008560154605305622 item=minecraft:sand count=1 age=16 pickup-delay=0 on-ground=false
+entity 18 e4 1.93 5.567823381935411 7.881011587105624 0 -0.5413564676387079 0.07237979459859317 item=minecraft:gravel count=1 age=16 pickup-delay=0 on-ground=false
+entity 18 e5 1.93 3.6387552942355774 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=16 pickup-delay=0 on-ground=false
+entity 18 e6 1.93 3.6387552942355774 12.374543697286008 0 -0.12485200242996215 0.027914581318024743 item=minecraft:clay count=1 age=16 pickup-delay=0 on-ground=false
+entity 18 e7 1.93 3.6387552942355774 11.562728151356996 0 -0.12485200242996215 -0.013957290659012371 item=minecraft:granite count=1 age=16 pickup-delay=0 on-ground=false
+entity 18 e8 1.9 3.6387552942355774 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=16 pickup-delay=0 on-ground=false
+entity 18 e9 1.94 4.9375 16.5 0 -0.04 0 item=minecraft:andesite count=1 age=16 pickup-delay=0 on-ground=true
+entity 18 e10 1.98 4.9375 18.5 0 -0.08 0 item=minecraft:cobblestone count=1 age=16 pickup-delay=0 on-ground=true
+entity 18 e11 1.85 1.5678233819354102 20.5 0 -0.5413564676387079 0 item=minecraft:obsidian count=1 age=16 pickup-delay=0 on-ground=false
+
+entity-order 19 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 19 e1 1.93 2.9375378844404554 1.9533913817042166 0 -0.12485200242996215 0.07093220008715634 item=minecraft:stone count=1 age=17 pickup-delay=0 on-ground=false
+entity 19 e2 1.93 3.473903291805615 3.451229139302017 0 -0.12485200242996215 0.013678145112046316 item=minecraft:dirt count=1 age=17 pickup-delay=0 on-ground=false
+entity 19 e3 1.93 4.148533728169727 5.757998560239421 0 -0.12485200242996215 0.0083889516764715 item=minecraft:sand count=1 age=17 pickup-delay=0 on-ground=false
+entity 19 e4 1.93 4.986466914296703 7.953391381704217 0 -0.5697293382859338 0.07093220008715634 item=minecraft:gravel count=1 age=17 pickup-delay=0 on-ground=false
+entity 19 e5 1.93 3.473903291805615 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=17 pickup-delay=0 on-ground=false
+entity 19 e6 1.93 3.473903291805615 12.402458278604032 0 -0.12485200242996215 0.02735629022409263 item=minecraft:clay count=1 age=17 pickup-delay=0 on-ground=false
+entity 19 e7 1.93 3.473903291805615 11.548770860697983 0 -0.12485200242996215 -0.013678145112046316 item=minecraft:granite count=1 age=17 pickup-delay=0 on-ground=false
+entity 19 e8 1.9 3.473903291805615 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=17 pickup-delay=0 on-ground=false
+entity 19 e9 1.94 4.9375 16.5 0 -0.08 0 item=minecraft:andesite count=1 age=17 pickup-delay=0 on-ground=true
+entity 19 e10 1.98 4.9375 18.5 0 -0.12 0 item=minecraft:cobblestone count=1 age=17 pickup-delay=0 on-ground=true
+entity 19 e11 1.85 1.0 20.5 0 0 0 item=minecraft:obsidian count=1 age=17 pickup-delay=0 on-ground=true
+
+entity-order 20 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 20 e1 1.93 2.772685882010493 2.0243235817913727 0 -0.12485200242996215 0.06951355743833756 item=minecraft:stone count=1 age=18 pickup-delay=0 on-ground=false
+entity 20 e2 1.93 3.309051289375653 3.4649072844140636 0 -0.12485200242996215 0.013404582470695304 item=minecraft:dirt count=1 age=18 pickup-delay=0 on-ground=false
+entity 20 e3 1.93 3.9836817257397645 5.766387511915893 0 -0.12485200242996215 0.008221172802948627 item=minecraft:sand count=1 age=18 pickup-delay=0 on-ground=false
+entity 20 e4 1.93 4.376737576010769 8.024323581791373 0 -0.12485200242996215 0.006410646175763561 item=minecraft:gravel count=1 age=18 pickup-delay=0 on-ground=false
+entity 20 e5 1.93 3.309051289375653 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=18 pickup-delay=0 on-ground=false
+entity 20 e6 1.93 3.309051289375653 12.429814568828125 0 -0.12485200242996215 0.026809164941390608 item=minecraft:clay count=1 age=18 pickup-delay=0 on-ground=false
+entity 20 e7 1.93 3.309051289375653 11.535092715585938 0 -0.12485200242996215 -0.013404582470695304 item=minecraft:granite count=1 age=18 pickup-delay=0 on-ground=false
+entity 20 e8 1.9 3.309051289375653 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=18 pickup-delay=0 on-ground=false
+entity 20 e9 1.94 4.9375 16.5 0 -0.12 0 item=minecraft:andesite count=1 age=18 pickup-delay=0 on-ground=true
+entity 20 e10 1.98 4.9375 18.5 0 0 0 item=minecraft:cobblestone count=1 age=18 pickup-delay=0 on-ground=true
+entity 20 e11 1.85 1.0 20.5 0 -0.04 0 item=minecraft:obsidian count=1 age=18 pickup-delay=0 on-ground=true
+
+entity-order 21 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 21 e1 1.93 2.607833879580531 2.09383713922971 0 -0.12485200242996215 0.0681232876154367 item=minecraft:stone count=1 age=19 pickup-delay=0 on-ground=false
+entity 21 e2 1.93 3.1441992869456907 3.478311866884759 0 -0.12485200242996215 0.013136491076953518 item=minecraft:dirt count=1 age=19 pickup-delay=0 on-ground=false
+entity 21 e3 1.93 3.8188297233098023 5.774608684718841 0 -0.12485200242996215 0.008056749503696082 item=minecraft:sand count=1 age=19 pickup-delay=0 on-ground=false
+entity 21 e4 1.93 4.211885573580807 8.030734227967137 0 -0.12485200242996215 0.0062824333745216615 item=minecraft:gravel count=1 age=19 pickup-delay=0 on-ground=false
+entity 21 e5 1.93 3.1441992869456907 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=19 pickup-delay=0 on-ground=false
+entity 21 e6 1.93 3.1441992869456907 12.456623733769515 0 -0.12485200242996215 0.026272982153907037 item=minecraft:clay count=1 age=19 pickup-delay=0 on-ground=false
+entity 21 e7 1.93 3.1441992869456907 11.521688133115243 0 -0.12485200242996215 -0.013136491076953518 item=minecraft:granite count=1 age=19 pickup-delay=0 on-ground=false
+entity 21 e8 1.9 3.1441992869456907 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=19 pickup-delay=0 on-ground=false
+entity 21 e9 1.94 4.9375 16.5 0 0 0 item=minecraft:andesite count=1 age=19 pickup-delay=0 on-ground=true
+entity 21 e10 1.98 4.9375 18.5 0 -0.04 0 item=minecraft:cobblestone count=1 age=19 pickup-delay=0 on-ground=true
+entity 21 e11 1.85 1.0 20.5 0 -0.08 0 item=minecraft:obsidian count=1 age=19 pickup-delay=0 on-ground=true
+
+entity-order 22 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 22 e1 1.93 2.4429818771505687 2.161960426845147 0 -0.12485200242996215 0.06676082316247657 item=minecraft:stone count=1 age=20 pickup-delay=0 on-ground=false
+entity 22 e2 1.93 2.9793472845157285 3.4914483579617124 0 -0.12485200242996215 0.01287376150597313 item=minecraft:dirt count=1 age=20 pickup-delay=0 on-ground=false
+entity 22 e3 1.93 3.65397772087984 5.782665434222538 0 -0.12485200242996215 0.007895614667292461 item=minecraft:sand count=1 age=20 pickup-delay=0 on-ground=false
+entity 22 e4 1.93 4.047033571150846 8.037016661341658 0 -0.12485200242996215 0.006156784826859135 item=minecraft:gravel count=1 age=20 pickup-delay=0 on-ground=false
+entity 22 e5 1.93 2.9793472845157285 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=20 pickup-delay=0 on-ground=false
+entity 22 e6 1.93 2.9793472845157285 12.482896715923422 0 -0.12485200242996215 0.02574752301194626 item=minecraft:clay count=1 age=20 pickup-delay=0 on-ground=false
+entity 22 e7 1.93 2.9793472845157285 11.50855164203829 0 -0.12485200242996215 -0.01287376150597313 item=minecraft:granite count=1 age=20 pickup-delay=0 on-ground=false
+entity 22 e8 1.9 2.9793472845157285 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=20 pickup-delay=0 on-ground=false
+entity 22 e9 1.94 4.9375 16.5 0 -0.04 0 item=minecraft:andesite count=1 age=20 pickup-delay=0 on-ground=true
+entity 22 e10 1.98 4.9375 18.5 0 -0.08 0 item=minecraft:cobblestone count=1 age=20 pickup-delay=0 on-ground=true
+entity 22 e11 1.85 1.0 20.5 0 -0.12 0 item=minecraft:obsidian count=1 age=20 pickup-delay=0 on-ground=true
+
+entity-order 23 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 23 e1 1.93 2.2781298747206065 2.2287212500076237 0 -0.12485200242996215 0.06542560797258869 item=minecraft:stone count=1 age=21 pickup-delay=0 on-ground=false
+entity 23 e2 1.93 2.8144952820857663 3.5043221194676857 0 -0.12485200242996215 0.012616286521401182 item=minecraft:dirt count=1 age=21 pickup-delay=0 on-ground=false
+entity 23 e3 1.93 3.489125718449878 5.79056104888983 0 -0.12485200242996215 0.00773770252454351 item=minecraft:sand count=1 age=21 pickup-delay=0 on-ground=false
+entity 23 e4 1.93 3.8821815687208834 8.043173446168517 0 -0.12485200242996215 0.006033649247753303 item=minecraft:gravel count=1 age=21 pickup-delay=0 on-ground=false
+entity 23 e5 1.93 2.8144952820857663 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=21 pickup-delay=0 on-ground=false
+entity 23 e6 1.93 2.8144952820857663 12.508644238935368 0 -0.12485200242996215 0.025232573042802364 item=minecraft:clay count=1 age=21 pickup-delay=0 on-ground=false
+entity 23 e7 1.93 2.8144952820857663 11.495677880532316 0 -0.12485200242996215 -0.012616286521401182 item=minecraft:granite count=1 age=21 pickup-delay=0 on-ground=false
+entity 23 e8 1.9 2.8144952820857663 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=21 pickup-delay=0 on-ground=false
+entity 23 e9 1.94 4.9375 16.5 0 -0.08 0 item=minecraft:andesite count=1 age=21 pickup-delay=0 on-ground=true
+entity 23 e10 1.98 4.9375 18.5 0 -0.12 0 item=minecraft:cobblestone count=1 age=21 pickup-delay=0 on-ground=true
+entity 23 e11 1.85 1.0 20.5 0 0 0 item=minecraft:obsidian count=1 age=21 pickup-delay=0 on-ground=true
+
+entity-order 24 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 24 e1 1.93 2.1132778722906442 2.2941468579802122 0 -0.12485200242996215 0.06411709706103136 item=minecraft:stone count=1 age=22 pickup-delay=0 on-ground=false
+entity 24 e2 1.93 2.649643279655804 3.516938405989087 0 -0.12485200242996215 0.012363961031609727 item=minecraft:dirt count=1 age=22 pickup-delay=0 on-ground=false
+entity 24 e3 1.93 3.3242737160199156 5.798298751414373 0 -0.12485200242996215 0.007582948621637603 item=minecraft:sand count=1 age=22 pickup-delay=0 on-ground=false
+entity 24 e4 1.93 3.717329566290921 8.04920709541627 0 -0.12485200242996215 0.005912976377880964 item=minecraft:gravel count=1 age=22 pickup-delay=0 on-ground=false
+entity 24 e5 1.93 2.649643279655804 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=22 pickup-delay=0 on-ground=false
+entity 24 e6 1.93 2.649643279655804 12.53387681197817 0 -0.12485200242996215 0.024727922063219453 item=minecraft:clay count=1 age=22 pickup-delay=0 on-ground=false
+entity 24 e7 1.93 2.649643279655804 11.483061594010914 0 -0.12485200242996215 -0.012363961031609727 item=minecraft:granite count=1 age=22 pickup-delay=0 on-ground=false
+entity 24 e8 1.9 2.649643279655804 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=22 pickup-delay=0 on-ground=false
+entity 24 e9 1.94 4.9375 16.5 0 -0.12 0 item=minecraft:andesite count=1 age=22 pickup-delay=0 on-ground=true
+entity 24 e10 1.98 4.9375 18.5 0 0 0 item=minecraft:cobblestone count=1 age=22 pickup-delay=0 on-ground=true
+entity 24 e11 1.85 1.0 20.5 0 -0.04 0 item=minecraft:obsidian count=1 age=22 pickup-delay=0 on-ground=true
+
+entity-order 25 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 25 e1 1.93 1.948425869860682 2.3582639550412434 0 -0.12485200242996215 0.06283475634274731 item=minecraft:stone count=1 age=23 pickup-delay=0 on-ground=false
+entity 25 e2 1.93 2.484791277225842 3.5293023670206964 0 -0.12485200242996215 0.012116682046801374 item=minecraft:dirt count=1 age=23 pickup-delay=0 on-ground=false
+entity 25 e3 1.93 3.1594217135899534 5.805881700036011 0 -0.12485200242996215 0.007431289793838118 item=minecraft:sand count=1 age=23 pickup-delay=0 on-ground=false
+entity 25 e4 1.93 3.552477563860959 8.05512007179415 0 -0.12485200242996215 0.005794716963104418 item=minecraft:gravel count=1 age=23 pickup-delay=0 on-ground=false
+entity 25 e5 1.93 2.484791277225842 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=23 pickup-delay=0 on-ground=false
+entity 25 e6 1.93 2.484791277225842 12.558604734041388 0 -0.12485200242996215 0.024233364093602747 item=minecraft:clay count=1 age=23 pickup-delay=0 on-ground=false
+entity 25 e7 1.93 2.484791277225842 11.470697632979304 0 -0.12485200242996215 -0.012116682046801374 item=minecraft:granite count=1 age=23 pickup-delay=0 on-ground=false
+entity 25 e8 1.9 2.484791277225842 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=23 pickup-delay=0 on-ground=false
+entity 25 e9 1.94 4.9375 16.5 0 0 0 item=minecraft:andesite count=1 age=23 pickup-delay=0 on-ground=true
+entity 25 e10 1.98 4.9375 18.5 0 -0.04 0 item=minecraft:cobblestone count=1 age=23 pickup-delay=0 on-ground=true
+entity 25 e11 1.85 1.0 20.5 0 -0.08 0 item=minecraft:obsidian count=1 age=23 pickup-delay=0 on-ground=true
+
+entity-order 26 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 26 e1 1.93 1.7835738674307198 2.4210987113839906 0 -0.12485200242996215 0.06157806241437023 item=minecraft:stone count=1 age=24 pickup-delay=0 on-ground=false
+entity 26 e2 1.93 2.3199392747958796 3.541419049067498 0 -0.12485200242996215 0.011874348636972716 item=minecraft:dirt count=1 age=24 pickup-delay=0 on-ground=false
+entity 26 e3 1.93 2.994569711159991 5.813312989829849 0 -0.12485200242996215 0.00728266413970196 item=minecraft:sand count=1 age=24 pickup-delay=0 on-ground=false
+entity 26 e4 1.93 3.3876255614309967 8.060914788757254 0 -0.12485200242996215 0.0056788227343677845 item=minecraft:gravel count=1 age=24 pickup-delay=0 on-ground=false
+entity 26 e5 1.93 2.3199392747958796 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=24 pickup-delay=0 on-ground=false
+entity 26 e6 1.93 2.3199392747958796 12.58283809813499 0 -0.12485200242996215 0.02374869727394543 item=minecraft:clay count=1 age=24 pickup-delay=0 on-ground=false
+entity 26 e7 1.93 2.3199392747958796 11.458580950932502 0 -0.12485200242996215 -0.011874348636972716 item=minecraft:granite count=1 age=24 pickup-delay=0 on-ground=false
+entity 26 e8 1.9 2.3199392747958796 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=24 pickup-delay=0 on-ground=false
+entity 26 e9 1.94 4.9375 16.5 0 -0.04 0 item=minecraft:andesite count=1 age=24 pickup-delay=0 on-ground=true
+entity 26 e10 1.98 4.9375 18.5 0 -0.08 0 item=minecraft:cobblestone count=1 age=24 pickup-delay=0 on-ground=true
+entity 26 e11 1.85 1.0 20.5 0 -0.12 0 item=minecraft:obsidian count=1 age=24 pickup-delay=0 on-ground=true
+
+entity-order 27 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 27 e1 1.93 1.6187218650007575 2.4826767737983606 0 -0.12485200242996215 0.060346502340591156 item=minecraft:stone count=1 age=25 pickup-delay=0 on-ground=false
+entity 27 e2 1.93 2.1550872723659174 3.5532933977044707 0 -0.12485200242996215 0.011636861890718489 item=minecraft:dirt count=1 age=25 pickup-delay=0 on-ground=false
+entity 27 e3 1.93 2.829717708730029 5.820595653969551 0 -0.12485200242996215 0.007137010995813716 item=minecraft:sand count=1 age=25 pickup-delay=0 on-ground=false
+entity 27 e4 1.93 3.2227735590010345 8.066593611491621 0 -0.12485200242996215 0.0055652463879953765 item=minecraft:gravel count=1 age=25 pickup-delay=0 on-ground=false
+entity 27 e5 1.93 2.1550872723659174 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=25 pickup-delay=0 on-ground=false
+entity 27 e6 1.93 2.1550872723659174 12.606586795408935 0 -0.12485200242996215 0.023273723781436977 item=minecraft:clay count=1 age=25 pickup-delay=0 on-ground=false
+entity 27 e7 1.93 2.1550872723659174 11.44670660229553 0 -0.12485200242996215 -0.011636861890718489 item=minecraft:granite count=1 age=25 pickup-delay=0 on-ground=false
+entity 27 e8 1.9 2.1550872723659174 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=25 pickup-delay=0 on-ground=false
+entity 27 e9 1.94 4.9375 16.5 0 -0.08 0 item=minecraft:andesite count=1 age=25 pickup-delay=0 on-ground=true
+entity 27 e10 1.98 4.9375 18.5 0 -0.12 0 item=minecraft:cobblestone count=1 age=25 pickup-delay=0 on-ground=true
+entity 27 e11 1.85 1.0 20.5 0 0 0 item=minecraft:obsidian count=1 age=25 pickup-delay=0 on-ground=true
+
+entity-order 28 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 28 e1 1.93 1.4538698625707953 2.543023276138952 0 -0.12485200242996215 0.05913957344479752 item=minecraft:stone count=1 age=26 pickup-delay=0 on-ground=false
+entity 28 e2 1.93 1.9902352699359551 3.5649302595951893 0 -0.12485200242996215 0.011404124874859645 item=minecraft:dirt count=1 age=26 pickup-delay=0 on-ground=false
+entity 28 e3 1.93 2.6648657063000667 5.827732664965365 0 -0.12485200242996215 0.006994270912025123 item=minecraft:sand count=1 age=26 pickup-delay=0 on-ground=false
+entity 28 e4 1.93 3.0579215565710722 8.072158857879616 0 -0.12485200242996215 0.00545394156638412 item=minecraft:gravel count=1 age=26 pickup-delay=0 on-ground=false
+entity 28 e5 1.93 1.9902352699359551 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=26 pickup-delay=0 on-ground=false
+entity 28 e6 1.93 1.9902352699359551 12.629860519190371 0 -0.12485200242996215 0.02280824974971929 item=minecraft:clay count=1 age=26 pickup-delay=0 on-ground=false
+entity 28 e7 1.93 1.9902352699359551 11.435069740404812 0 -0.12485200242996215 -0.011404124874859645 item=minecraft:granite count=1 age=26 pickup-delay=0 on-ground=false
+entity 28 e8 1.9 1.9902352699359551 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=26 pickup-delay=0 on-ground=false
+entity 28 e9 1.94 4.9375 16.5 0 -0.12 0 item=minecraft:andesite count=1 age=26 pickup-delay=0 on-ground=true
+entity 28 e10 1.98 4.9375 18.5 0 0 0 item=minecraft:cobblestone count=1 age=26 pickup-delay=0 on-ground=true
+entity 28 e11 1.85 1.0 20.5 0 -0.04 0 item=minecraft:obsidian count=1 age=26 pickup-delay=0 on-ground=true
+
+entity-order 29 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 29 e1 1.93 1.289017860140833 2.6021628495837494 0 -0.12485200242996215 0.057956783103899415 item=minecraft:stone count=1 age=27 pickup-delay=0 on-ground=false
+entity 29 e2 1.93 1.825383267505993 3.576334384470049 0 -0.12485200242996215 0.011176042594878872 item=minecraft:dirt count=1 age=27 pickup-delay=0 on-ground=false
+entity 29 e3 1.93 2.5000137038701045 5.83472693587739 0 -0.12485200242996215 0.006854385627189752 item=minecraft:sand count=1 age=27 pickup-delay=0 on-ground=false
+entity 29 e4 1.93 2.89306955414111 8.077612799446 0 -0.12485200242996215 0.005344862839082117 item=minecraft:gravel count=1 age=27 pickup-delay=0 on-ground=false
+entity 29 e5 1.93 1.825383267505993 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=27 pickup-delay=0 on-ground=false
+entity 29 e6 1.93 1.825383267505993 12.65266876894009 0 -0.12485200242996215 0.022352085189757745 item=minecraft:clay count=1 age=27 pickup-delay=0 on-ground=false
+entity 29 e7 1.93 1.825383267505993 11.423665615529952 0 -0.12485200242996215 -0.011176042594878872 item=minecraft:granite count=1 age=27 pickup-delay=0 on-ground=false
+entity 29 e8 1.9 1.825383267505993 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=27 pickup-delay=0 on-ground=false
+entity 29 e9 1.94 4.9375 16.5 0 0 0 item=minecraft:andesite count=1 age=27 pickup-delay=0 on-ground=true
+entity 29 e10 1.98 4.9375 18.5 0 -0.04 0 item=minecraft:cobblestone count=1 age=27 pickup-delay=0 on-ground=true
+entity 29 e11 1.85 1.0 20.5 0 -0.08 0 item=minecraft:obsidian count=1 age=27 pickup-delay=0 on-ground=true
+
+entity-order 30 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 30 e1 1.93 1.1241658577108709 2.660119632687649 0 -0.12485200242996215 0.056797648547259334 item=minecraft:stone count=1 age=28 pickup-delay=0 on-ground=false
+entity 30 e2 1.93 1.6605312650760307 3.587510427064928 0 -0.12485200242996215 0.01095252195614739 item=minecraft:dirt count=1 age=28 pickup-delay=0 on-ground=false
+entity 30 e3 1.93 2.3351617014401422 5.841581321504579 0 -0.12485200242996215 0.006717298045382987 item=minecraft:sand count=1 age=28 pickup-delay=0 on-ground=false
+entity 30 e4 1.93 2.7282175517111478 8.082957662285082 0 -0.12485200242996215 0.005237965684245643 item=minecraft:gravel count=1 age=28 pickup-delay=0 on-ground=false
+entity 30 e5 1.93 1.6605312650760307 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=28 pickup-delay=0 on-ground=false
+entity 30 e6 1.93 1.6605312650760307 12.675020854129848 0 -0.12485200242996215 0.02190504391229478 item=minecraft:clay count=1 age=28 pickup-delay=0 on-ground=false
+entity 30 e7 1.93 1.6605312650760307 11.412489572935073 0 -0.12485200242996215 -0.01095252195614739 item=minecraft:granite count=1 age=28 pickup-delay=0 on-ground=false
+entity 30 e8 1.9 1.6605312650760307 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=28 pickup-delay=0 on-ground=false
+entity 30 e9 1.94 4.9375 16.5 0 -0.04 0 item=minecraft:andesite count=1 age=28 pickup-delay=0 on-ground=true
+entity 30 e10 1.98 4.9375 18.5 0 -0.08 0 item=minecraft:cobblestone count=1 age=28 pickup-delay=0 on-ground=true
+entity 30 e11 1.85 1.0 20.5 0 -0.12 0 item=minecraft:obsidian count=1 age=28 pickup-delay=0 on-ground=true
+
+entity-order 31 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 31 e1 1.93 1.0 2.7169172812349083 0 0 0.03339702070410892 item=minecraft:stone count=1 age=29 pickup-delay=0 on-ground=true
+entity 31 e2 1.93 1.4956792626460684 3.598462949021075 0 -0.12485200242996215 0.01073347172592722 item=minecraft:dirt count=1 age=29 pickup-delay=0 on-ground=false
+entity 31 e3 1.93 2.17030969901018 5.848298619549962 0 -0.12485200242996215 0.00658295221259762 item=minecraft:sand count=1 age=29 pickup-delay=0 on-ground=false
+entity 31 e4 1.93 2.5633655492811855 8.088195627969329 0 -0.12485200242996215 0.0051332064704669965 item=minecraft:gravel count=1 age=29 pickup-delay=0 on-ground=false
+entity 31 e5 1.93 1.4956792626460684 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=29 pickup-delay=0 on-ground=false
+entity 31 e6 1.93 1.4956792626460684 12.696925898042142 0 -0.12485200242996215 0.02146694345185444 item=minecraft:clay count=1 age=29 pickup-delay=0 on-ground=false
+entity 31 e7 1.93 1.4956792626460684 11.401537050978925 0 -0.12485200242996215 -0.01073347172592722 item=minecraft:granite count=1 age=29 pickup-delay=0 on-ground=false
+entity 31 e8 1.9 1.4956792626460684 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=29 pickup-delay=0 on-ground=false
+entity 31 e9 1.94 4.9375 16.5 0 -0.08 0 item=minecraft:andesite count=1 age=29 pickup-delay=0 on-ground=true
+entity 31 e10 1.98 4.9375 18.5 0 -0.12 0 item=minecraft:cobblestone count=1 age=29 pickup-delay=0 on-ground=true
+entity 31 e11 1.85 1.0 20.5 0 0 0 item=minecraft:obsidian count=1 age=29 pickup-delay=0 on-ground=true
+
+entity-order 32 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 32 e1 1.93 1.0 2.7503143019390173 0 0 0.01963745014870866 item=minecraft:stone count=1 age=30 pickup-delay=0 on-ground=true
+entity 32 e2 1.93 1.3308272602161062 3.6091964207470024 0 -0.12485200242996215 0.010518802496133402 item=minecraft:dirt count=1 age=30 pickup-delay=0 on-ground=false
+entity 32 e3 1.93 2.0054576965802178 5.85488157176256 0 -0.12485200242996215 0.0064512932939055165 item=minecraft:sand count=1 age=30 pickup-delay=0 on-ground=false
+entity 32 e4 1.93 2.3985135468512233 8.093328834439795 0 -0.12485200242996215 0.0050305424389658 item=minecraft:gravel count=1 age=30 pickup-delay=0 on-ground=false
+entity 32 e5 1.93 1.3308272602161062 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=30 pickup-delay=0 on-ground=false
+entity 32 e6 1.93 1.3308272602161062 12.718392841493996 0 -0.12485200242996215 0.021037604992266805 item=minecraft:clay count=1 age=30 pickup-delay=0 on-ground=false
+entity 32 e7 1.93 1.3308272602161062 11.390803579252998 0 -0.12485200242996215 -0.010518802496133402 item=minecraft:granite count=1 age=30 pickup-delay=0 on-ground=false
+entity 32 e8 1.9 1.3308272602161062 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=30 pickup-delay=0 on-ground=false
+entity 32 e9 1.94 4.9375 16.5 0 -0.12 0 item=minecraft:andesite count=1 age=30 pickup-delay=0 on-ground=true
+entity 32 e10 1.98 4.9375 18.5 0 0 0 item=minecraft:cobblestone count=1 age=30 pickup-delay=0 on-ground=true
+entity 32 e11 1.85 1.0 20.5 0 -0.04 0 item=minecraft:obsidian count=1 age=30 pickup-delay=0 on-ground=true
+
+entity-order 33 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 33 e1 1.93 1.0 2.769951752087726 0 0 0.011546821848560066 item=minecraft:stone count=1 age=31 pickup-delay=0 on-ground=true
+entity 33 e2 1.93 1.165975257786144 3.6197152232431358 0 -0.12485200242996215 0.01030842664684097 item=minecraft:dirt count=1 age=31 pickup-delay=0 on-ground=false
+entity 33 e3 1.93 1.8406056941502555 5.861332865056466 0 -0.12485200242996215 0.006322267551076061 item=minecraft:sand count=1 age=31 pickup-delay=0 on-ground=false
+entity 33 e4 1.93 2.233661544421261 8.098359376878761 0 -0.12485200242996215 0.0049299316861364665 item=minecraft:gravel count=1 age=31 pickup-delay=0 on-ground=false
+entity 33 e5 1.93 1.165975257786144 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=31 pickup-delay=0 on-ground=false
+entity 33 e6 1.93 1.165975257786144 12.739430446486264 0 -0.12485200242996215 0.02061685329368194 item=minecraft:clay count=1 age=31 pickup-delay=0 on-ground=false
+entity 33 e7 1.93 1.165975257786144 11.380284776756865 0 -0.12485200242996215 -0.01030842664684097 item=minecraft:granite count=1 age=31 pickup-delay=0 on-ground=false
+entity 33 e8 1.9 1.165975257786144 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=31 pickup-delay=0 on-ground=false
+entity 33 e9 1.94 4.9375 16.5 0 0 0 item=minecraft:andesite count=1 age=31 pickup-delay=0 on-ground=true
+entity 33 e10 1.98 4.9375 18.5 0 -0.04 0 item=minecraft:cobblestone count=1 age=31 pickup-delay=0 on-ground=true
+entity 33 e11 1.85 1.0 20.5 0 -0.08 0 item=minecraft:obsidian count=1 age=31 pickup-delay=0 on-ground=true
+
+entity-order 34 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 34 e1 1.93 1.0 2.781498573936286 0 0 0.00678953192969158 item=minecraft:stone count=1 age=32 pickup-delay=0 on-ground=true
+entity 34 e2 1.93 1.0011232553561817 3.630023649889977 0 -0.12485200242996215 0.010102258310521786 item=minecraft:dirt count=1 age=32 pickup-delay=0 on-ground=false
+entity 34 e3 1.93 1.6757536917202933 5.867655132607542 0 -0.12485200242996215 0.006195822320642224 item=minecraft:sand count=1 age=32 pickup-delay=0 on-ground=false
+entity 34 e4 1.93 2.068809541991299 8.103289308564898 0 -0.12485200242996215 0.004831333146444722 item=minecraft:gravel count=1 age=32 pickup-delay=0 on-ground=false
+entity 34 e5 1.93 1.0011232553561817 8.5 0 -0.12485200242996215 0 item=minecraft:glass count=1 age=32 pickup-delay=0 on-ground=false
+entity 34 e6 1.93 1.0011232553561817 12.760047299779945 0 -0.12485200242996215 0.020204516621043573 item=minecraft:clay count=1 age=32 pickup-delay=0 on-ground=false
+entity 34 e7 1.93 1.0011232553561817 11.369976350110024 0 -0.12485200242996215 -0.010102258310521786 item=minecraft:granite count=1 age=32 pickup-delay=0 on-ground=false
+entity 34 e8 1.9 1.0011232553561817 14.5 0 -0.12485200242996215 0 item=minecraft:diorite count=1 age=32 pickup-delay=0 on-ground=false
+entity 34 e9 1.94 4.9375 16.5 0 -0.04 0 item=minecraft:andesite count=1 age=32 pickup-delay=0 on-ground=true
+entity 34 e10 1.98 4.9375 18.5 0 -0.08 0 item=minecraft:cobblestone count=1 age=32 pickup-delay=0 on-ground=true
+entity 34 e11 1.85 1.0 20.5 0 -0.12 0 item=minecraft:obsidian count=1 age=32 pickup-delay=0 on-ground=true
+
+entity-order 35 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 35 e1 1.93 1.0 2.788288105865978 0 0 0.003992245176108787 item=minecraft:stone count=1 age=33 pickup-delay=0 on-ground=true
+entity 35 e2 1.93 1.0 3.6401259082004986 0 0 0.005940128483911196 item=minecraft:dirt count=1 age=33 pickup-delay=0 on-ground=true
+entity 35 e3 1.93 1.510901689290331 5.8738509549281845 0 -0.12485200242996215 0.006071905992405311 item=minecraft:sand count=1 age=33 pickup-delay=0 on-ground=false
+entity 35 e4 1.93 1.9039575395613366 8.108120641711343 0 -0.12485200242996215 0.004734706575666194 item=minecraft:gravel count=1 age=33 pickup-delay=0 on-ground=false
+entity 35 e5 1.93 1.0 8.5 0 0 0 item=minecraft:glass count=1 age=33 pickup-delay=0 on-ground=true
+entity 35 e6 1.93 1.0 12.78025181640099 0 0 0.011880256967822392 item=minecraft:clay count=1 age=33 pickup-delay=0 on-ground=true
+entity 35 e7 1.93 1.0 11.359874091799503 0 0 -0.005940128483911196 item=minecraft:granite count=1 age=33 pickup-delay=0 on-ground=true
+entity 35 e8 1.9 1.0 14.5 0 0 0 item=minecraft:diorite count=1 age=33 pickup-delay=0 on-ground=true
+entity 35 e9 1.94 4.9375 16.5 0 -0.08 0 item=minecraft:andesite count=1 age=33 pickup-delay=0 on-ground=true
+entity 35 e10 1.98 4.9375 18.5 0 -0.12 0 item=minecraft:cobblestone count=1 age=33 pickup-delay=0 on-ground=true
+entity 35 e11 1.85 1.0 20.5 0 0 0 item=minecraft:obsidian count=1 age=33 pickup-delay=0 on-ground=true
+
+entity-order 36 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 36 e1 1.93 1.0 2.792280351042087 0 0 0.002347440399604671 item=minecraft:stone count=1 age=34 pickup-delay=0 on-ground=true
+entity 36 e2 1.93 1.0 3.64606603668441 0 0 0.0034927958997665576 item=minecraft:dirt count=1 age=34 pickup-delay=0 on-ground=true
+entity 36 e3 1.93 1.3460496868603689 5.87992286092059 0 -0.12485200242996215 0.0059504679883696215 item=minecraft:sand count=1 age=34 pickup-delay=0 on-ground=false
+entity 36 e4 1.93 1.7391055371313744 8.11285534828701 0 -0.12485200242996215 0.004640012534460232 item=minecraft:gravel count=1 age=34 pickup-delay=0 on-ground=false
+entity 36 e5 1.93 1.0 8.5 0 -0.04 0 item=minecraft:glass count=1 age=34 pickup-delay=0 on-ground=true
+entity 36 e6 1.93 1.0 12.792132073368812 0 0 0.006985591799533115 item=minecraft:clay count=1 age=34 pickup-delay=0 on-ground=true
+entity 36 e7 1.93 1.0 11.353933963315592 0 0 -0.0034927958997665576 item=minecraft:granite count=1 age=34 pickup-delay=0 on-ground=true
+entity 36 e8 1.9 1.0 14.5 0 -0.04 0 item=minecraft:diorite count=1 age=34 pickup-delay=0 on-ground=true
+entity 36 e9 1.94 4.9375 16.5 0 -0.12 0 item=minecraft:andesite count=1 age=34 pickup-delay=0 on-ground=true
+entity 36 e10 1.98 4.9375 18.5 0 0 0 item=minecraft:cobblestone count=1 age=34 pickup-delay=0 on-ground=true
+entity 36 e11 1.85 1.0 20.5 0 -0.04 0 item=minecraft:obsidian count=1 age=34 pickup-delay=0 on-ground=true
+
+entity-order 37 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 37 e1 1.93 1.0 2.7946277914416915 0 0 0.0013802950937665509 item=minecraft:stone count=1 age=35 pickup-delay=0 on-ground=true
+entity 37 e2 1.93 1.0 3.6495588325841766 0 0 0.0020537641955840997 item=minecraft:dirt count=1 age=35 pickup-delay=0 on-ground=true
+entity 37 e3 1.93 1.1811976844304066 5.885873328908959 0 -0.12485200242996215 0.005831458742098399 item=minecraft:sand count=1 age=35 pickup-delay=0 on-ground=false
+entity 37 e4 1.93 1.5742535347014122 8.11749536082147 0 -0.12485200242996215 0.004547212372272243 item=minecraft:gravel count=1 age=35 pickup-delay=0 on-ground=false
+entity 37 e5 1.93 1.0 8.5 0 0 0 item=minecraft:glass count=1 age=35 pickup-delay=0 on-ground=true
+entity 37 e6 1.93 1.0 12.799117665168344 0 0 0.0041075283911681994 item=minecraft:clay count=1 age=35 pickup-delay=0 on-ground=true
+entity 37 e7 1.93 1.0 11.350441167415825 0 0 -0.0020537641955840997 item=minecraft:granite count=1 age=35 pickup-delay=0 on-ground=true
+entity 37 e8 1.9 1.0 14.5 0 -0.08 0 item=minecraft:diorite count=1 age=35 pickup-delay=0 on-ground=true
+entity 37 e9 1.94 4.9375 16.5 0 0 0 item=minecraft:andesite count=1 age=35 pickup-delay=0 on-ground=true
+entity 37 e10 1.98 4.9375 18.5 0 -0.04 0 item=minecraft:cobblestone count=1 age=35 pickup-delay=0 on-ground=true
+entity 37 e11 1.85 1.0 20.5 0 -0.08 0 item=minecraft:obsidian count=1 age=35 pickup-delay=0 on-ground=true
+
+entity-order 38 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 38 e1 1.93 1.0 2.7946277914416915 0 -0.04 0.0013802950937665509 item=minecraft:stone count=1 age=36 pickup-delay=0 on-ground=true
+entity 38 e2 1.93 1.0 3.6495588325841766 0 -0.04 0.0020537641955840997 item=minecraft:dirt count=1 age=36 pickup-delay=0 on-ground=true
+entity 38 e3 1.93 1.0163456820004444 5.891704787651057 0 -0.12485200242996215 0.005714829678482679 item=minecraft:sand count=1 age=36 pickup-delay=0 on-ground=false
+entity 38 e4 1.93 1.40940153227145 8.122042573193742 0 -0.12485200242996215 0.004456268211557991 item=minecraft:gravel count=1 age=36 pickup-delay=0 on-ground=false
+entity 38 e5 1.93 1.0 8.5 0 -0.04 0 item=minecraft:glass count=1 age=36 pickup-delay=0 on-ground=true
+entity 38 e6 1.93 1.0 12.803225193559513 0 0 0.0024152269368760497 item=minecraft:clay count=1 age=36 pickup-delay=0 on-ground=true
+entity 38 e7 1.93 1.0 11.350441167415825 0 -0.04 -0.0020537641955840997 item=minecraft:granite count=1 age=36 pickup-delay=0 on-ground=true
+entity 38 e8 1.9 1.0 14.5 0 0 0 item=minecraft:diorite count=1 age=36 pickup-delay=0 on-ground=true
+entity 38 e9 1.94 4.9375 16.5 0 -0.04 0 item=minecraft:andesite count=1 age=36 pickup-delay=0 on-ground=true
+entity 38 e10 1.98 4.9375 18.5 0 -0.08 0 item=minecraft:cobblestone count=1 age=36 pickup-delay=0 on-ground=true
+entity 38 e11 1.85 1.0 20.5 0 -0.12 0 item=minecraft:obsidian count=1 age=36 pickup-delay=0 on-ground=true
+
+entity-order 39 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 39 e1 1.93 1.0 2.7946277914416915 0 -0.08 0.0013802950937665509 item=minecraft:stone count=1 age=37 pickup-delay=0 on-ground=true
+entity 39 e2 1.93 1.0 3.6495588325841766 0 -0.08 0.0020537641955840997 item=minecraft:dirt count=1 age=37 pickup-delay=0 on-ground=true
+entity 39 e3 1.93 1.0 5.89741961732954 0 0 0.0033603201888531653 item=minecraft:sand count=1 age=37 pickup-delay=0 on-ground=true
+entity 39 e4 1.93 1.2445495298414877 8.126498841405299 0 -0.12485200242996215 0.004367142932323402 item=minecraft:gravel count=1 age=37 pickup-delay=0 on-ground=false
+entity 39 e5 1.93 1.0 8.5 0 -0.08 0 item=minecraft:glass count=1 age=37 pickup-delay=0 on-ground=true
+entity 39 e6 1.93 1.0 12.803225193559513 0 -0.04 0.0024152269368760497 item=minecraft:clay count=1 age=37 pickup-delay=0 on-ground=true
+entity 39 e7 1.93 1.0 11.348387403220242 0 0 -0.0012076134684380249 item=minecraft:granite count=1 age=37 pickup-delay=0 on-ground=true
+entity 39 e8 1.9 1.0 14.5 0 -0.04 0 item=minecraft:diorite count=1 age=37 pickup-delay=0 on-ground=true
+entity 39 e9 1.94 4.9375 16.5 0 -0.08 0 item=minecraft:andesite count=1 age=37 pickup-delay=0 on-ground=true
+entity 39 e10 1.98 4.9375 18.5 0 -0.12 0 item=minecraft:cobblestone count=1 age=37 pickup-delay=0 on-ground=true
+entity 39 e11 1.85 1.0 20.5 0 0 0 item=minecraft:obsidian count=1 age=37 pickup-delay=0 on-ground=true
+
+entity-order 40 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11
+entity 40 e1 1.93 1.0 2.7946277914416915 0 -0.12 0.0013802950937665509 item=minecraft:stone count=1 age=38 pickup-delay=0 on-ground=true
+entity 40 e2 1.93 1.0 3.651612596779761 0 0 0.0012076134684380249 item=minecraft:dirt count=1 age=38 pickup-delay=0 on-ground=true
+entity 40 e3 1.93 1.0 5.900779937518393 0 0 0.001975868469734027 item=minecraft:sand count=1 age=38 pickup-delay=0 on-ground=true
+entity 40 e4 1.93 1.0796975274115255 8.130865984337623 0 -0.12485200242996215 0.004279800156973575 item=minecraft:gravel count=1 age=38 pickup-delay=0 on-ground=false
+entity 40 e5 1.93 1.0 8.5 0 -0.12 0 item=minecraft:glass count=1 age=38 pickup-delay=0 on-ground=true
+entity 40 e6 1.93 1.0 12.805640420496388 0 0 0.001420153581690191 item=minecraft:clay count=1 age=38 pickup-delay=0 on-ground=true
+entity 40 e7 1.93 1.0 11.348387403220242 0 -0.04 -0.0012076134684380249 item=minecraft:granite count=1 age=38 pickup-delay=0 on-ground=true
+entity 40 e8 1.9 1.0 14.5 0 -0.08 0 item=minecraft:diorite count=1 age=38 pickup-delay=0 on-ground=true
+entity 40 e9 1.94 4.9375 16.5 0 -0.12 0 item=minecraft:andesite count=1 age=38 pickup-delay=0 on-ground=true
+entity 40 e10 1.98 4.9375 18.5 0 0 0 item=minecraft:cobblestone count=1 age=38 pickup-delay=0 on-ground=true
+entity 40 e11 1.85 1.0 20.5 0 -0.04 0 item=minecraft:obsidian count=1 age=38 pickup-delay=0 on-ground=true

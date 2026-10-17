@@ -59,7 +59,9 @@ constexpr std::array reference_v4_mechanisms{
         "extension and retraction (piston_draws); entities pushed out of the space a moving block sweeps "
         "through each step (0.01 beyond it, at most 0.51 a tick on each axis), moving blocks colliding where "
         "they stand, moving slime blocks launching entities (item_piston_push, item_drop_piston, "
-        "piston_entities, slime_entities). Gaps: honey blocks; neighbor updates after a move in first-change "
+        "piston_entities, slime_entities); honey blocks as sticky blocks that do not hold slime, carrying what stands "
+        "on them sideways, and a head's removal taking its base (honey_basics, honey_more). Gaps: neighbor updates "
+        "after a move in first-change "
         "order are not compared."},
     MechanismEntry{"block_events", l0_exact, l0_exact, harness_trace,
         "Level-wide FIFO with set semantics, drained including additions (piston_observed, piston_slime, "
@@ -208,6 +210,12 @@ constexpr std::array reference_v4_mechanisms{
         "Fence gates follow the power around them and open by hand, turning to face away from the player opened "
         "from their facing side (commands use them as a player facing south); a gate between walls is in a wall "
         "(door_basics). Gaps: walls are recognized by name."},
+    MechanismEntry{"honey", l0_exact, l2_declared_deviation, harness_trace,
+        "Honey blocks hold their neighbors in piston structures as slime does, but slime and honey do not hold "
+        "each other; honey and soul sand slow what moves on them to 40%; items and primed TNT falling beside honey "
+        "slide down it, TNT drawing twice from the level random as it does; honey moving sideways carries what "
+        "stands on it (honey_basics, honey_slide, honey_entry, honey_more). Gaps: entities other than items and primed "
+        "TNT do not slide; jumping is not modeled."},
     MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, harness_trace,
         "Entities tick in ascending id order once per tick; one merged away before its turn does not tick "
         "(item_hopper_pickup, item_water_current, item_merge, item_merge_moving). Gap: compared for item "
