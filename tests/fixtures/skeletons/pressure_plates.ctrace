@@ -1,0 +1,305 @@
+circuit-trace 2
+title Pressure plates pressed by items and arrows, weighted plates counting items
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms pressure_plate item_entity projectile
+area -4 0 -2 6 4 20
+ticks 80
+changes ordered
+entities observed
+rng observed
+
+at 0 set -4 0 -2 minecraft:obsidian
+at 0 set -4 0 -1 minecraft:obsidian
+at 0 set -4 0 0 minecraft:obsidian
+at 0 set -4 0 1 minecraft:obsidian
+at 0 set -4 0 2 minecraft:obsidian
+at 0 set -4 0 3 minecraft:obsidian
+at 0 set -4 0 4 minecraft:obsidian
+at 0 set -4 0 5 minecraft:obsidian
+at 0 set -4 0 6 minecraft:obsidian
+at 0 set -4 0 7 minecraft:obsidian
+at 0 set -4 0 8 minecraft:obsidian
+at 0 set -4 0 9 minecraft:obsidian
+at 0 set -4 0 10 minecraft:obsidian
+at 0 set -4 0 11 minecraft:obsidian
+at 0 set -4 0 12 minecraft:obsidian
+at 0 set -4 0 13 minecraft:obsidian
+at 0 set -4 0 14 minecraft:obsidian
+at 0 set -4 0 15 minecraft:obsidian
+at 0 set -4 0 16 minecraft:obsidian
+at 0 set -4 0 17 minecraft:obsidian
+at 0 set -4 0 18 minecraft:obsidian
+at 0 set -4 0 19 minecraft:obsidian
+at 0 set -4 0 20 minecraft:obsidian
+at 0 set -3 0 -2 minecraft:obsidian
+at 0 set -3 0 -1 minecraft:obsidian
+at 0 set -3 0 0 minecraft:obsidian
+at 0 set -3 0 1 minecraft:obsidian
+at 0 set -3 0 2 minecraft:obsidian
+at 0 set -3 0 3 minecraft:obsidian
+at 0 set -3 0 4 minecraft:obsidian
+at 0 set -3 0 5 minecraft:obsidian
+at 0 set -3 0 6 minecraft:obsidian
+at 0 set -3 0 7 minecraft:obsidian
+at 0 set -3 0 8 minecraft:obsidian
+at 0 set -3 0 9 minecraft:obsidian
+at 0 set -3 0 10 minecraft:obsidian
+at 0 set -3 0 11 minecraft:obsidian
+at 0 set -3 0 12 minecraft:obsidian
+at 0 set -3 0 13 minecraft:obsidian
+at 0 set -3 0 14 minecraft:obsidian
+at 0 set -3 0 15 minecraft:obsidian
+at 0 set -3 0 16 minecraft:obsidian
+at 0 set -3 0 17 minecraft:obsidian
+at 0 set -3 0 18 minecraft:obsidian
+at 0 set -3 0 19 minecraft:obsidian
+at 0 set -3 0 20 minecraft:obsidian
+at 0 set -2 0 -2 minecraft:obsidian
+at 0 set -2 0 -1 minecraft:obsidian
+at 0 set -2 0 0 minecraft:obsidian
+at 0 set -2 0 1 minecraft:obsidian
+at 0 set -2 0 2 minecraft:obsidian
+at 0 set -2 0 3 minecraft:obsidian
+at 0 set -2 0 4 minecraft:obsidian
+at 0 set -2 0 5 minecraft:obsidian
+at 0 set -2 0 6 minecraft:obsidian
+at 0 set -2 0 7 minecraft:obsidian
+at 0 set -2 0 8 minecraft:obsidian
+at 0 set -2 0 9 minecraft:obsidian
+at 0 set -2 0 10 minecraft:obsidian
+at 0 set -2 0 11 minecraft:obsidian
+at 0 set -2 0 12 minecraft:obsidian
+at 0 set -2 0 13 minecraft:obsidian
+at 0 set -2 0 14 minecraft:obsidian
+at 0 set -2 0 15 minecraft:obsidian
+at 0 set -2 0 16 minecraft:obsidian
+at 0 set -2 0 17 minecraft:obsidian
+at 0 set -2 0 18 minecraft:obsidian
+at 0 set -2 0 19 minecraft:obsidian
+at 0 set -2 0 20 minecraft:obsidian
+at 0 set -1 0 -2 minecraft:obsidian
+at 0 set -1 0 -1 minecraft:obsidian
+at 0 set -1 0 0 minecraft:obsidian
+at 0 set -1 0 1 minecraft:obsidian
+at 0 set -1 0 2 minecraft:obsidian
+at 0 set -1 0 3 minecraft:obsidian
+at 0 set -1 0 4 minecraft:obsidian
+at 0 set -1 0 5 minecraft:obsidian
+at 0 set -1 0 6 minecraft:obsidian
+at 0 set -1 0 7 minecraft:obsidian
+at 0 set -1 0 8 minecraft:obsidian
+at 0 set -1 0 9 minecraft:obsidian
+at 0 set -1 0 10 minecraft:obsidian
+at 0 set -1 0 11 minecraft:obsidian
+at 0 set -1 0 12 minecraft:obsidian
+at 0 set -1 0 13 minecraft:obsidian
+at 0 set -1 0 14 minecraft:obsidian
+at 0 set -1 0 15 minecraft:obsidian
+at 0 set -1 0 16 minecraft:obsidian
+at 0 set -1 0 17 minecraft:obsidian
+at 0 set -1 0 18 minecraft:obsidian
+at 0 set -1 0 19 minecraft:obsidian
+at 0 set -1 0 20 minecraft:obsidian
+at 0 set 0 0 -2 minecraft:obsidian
+at 0 set 0 0 -1 minecraft:obsidian
+at 0 set 0 0 0 minecraft:obsidian
+at 0 set 0 0 1 minecraft:obsidian
+at 0 set 0 0 2 minecraft:obsidian
+at 0 set 0 0 3 minecraft:obsidian
+at 0 set 0 0 4 minecraft:obsidian
+at 0 set 0 0 5 minecraft:obsidian
+at 0 set 0 0 6 minecraft:obsidian
+at 0 set 0 0 7 minecraft:obsidian
+at 0 set 0 0 8 minecraft:obsidian
+at 0 set 0 0 9 minecraft:obsidian
+at 0 set 0 0 10 minecraft:obsidian
+at 0 set 0 0 11 minecraft:obsidian
+at 0 set 0 0 12 minecraft:obsidian
+at 0 set 0 0 13 minecraft:obsidian
+at 0 set 0 0 14 minecraft:obsidian
+at 0 set 0 0 15 minecraft:obsidian
+at 0 set 0 0 16 minecraft:obsidian
+at 0 set 0 0 17 minecraft:obsidian
+at 0 set 0 0 18 minecraft:obsidian
+at 0 set 0 0 19 minecraft:obsidian
+at 0 set 0 0 20 minecraft:obsidian
+at 0 set 1 0 -2 minecraft:obsidian
+at 0 set 1 0 -1 minecraft:obsidian
+at 0 set 1 0 0 minecraft:obsidian
+at 0 set 1 0 1 minecraft:obsidian
+at 0 set 1 0 2 minecraft:obsidian
+at 0 set 1 0 3 minecraft:obsidian
+at 0 set 1 0 4 minecraft:obsidian
+at 0 set 1 0 5 minecraft:obsidian
+at 0 set 1 0 6 minecraft:obsidian
+at 0 set 1 0 7 minecraft:obsidian
+at 0 set 1 0 8 minecraft:obsidian
+at 0 set 1 0 9 minecraft:obsidian
+at 0 set 1 0 10 minecraft:obsidian
+at 0 set 1 0 11 minecraft:obsidian
+at 0 set 1 0 12 minecraft:obsidian
+at 0 set 1 0 13 minecraft:obsidian
+at 0 set 1 0 14 minecraft:obsidian
+at 0 set 1 0 15 minecraft:obsidian
+at 0 set 1 0 16 minecraft:obsidian
+at 0 set 1 0 17 minecraft:obsidian
+at 0 set 1 0 18 minecraft:obsidian
+at 0 set 1 0 19 minecraft:obsidian
+at 0 set 1 0 20 minecraft:obsidian
+at 0 set 2 0 -2 minecraft:obsidian
+at 0 set 2 0 -1 minecraft:obsidian
+at 0 set 2 0 0 minecraft:obsidian
+at 0 set 2 0 1 minecraft:obsidian
+at 0 set 2 0 2 minecraft:obsidian
+at 0 set 2 0 3 minecraft:obsidian
+at 0 set 2 0 4 minecraft:obsidian
+at 0 set 2 0 5 minecraft:obsidian
+at 0 set 2 0 6 minecraft:obsidian
+at 0 set 2 0 7 minecraft:obsidian
+at 0 set 2 0 8 minecraft:obsidian
+at 0 set 2 0 9 minecraft:obsidian
+at 0 set 2 0 10 minecraft:obsidian
+at 0 set 2 0 11 minecraft:obsidian
+at 0 set 2 0 12 minecraft:obsidian
+at 0 set 2 0 13 minecraft:obsidian
+at 0 set 2 0 14 minecraft:obsidian
+at 0 set 2 0 15 minecraft:obsidian
+at 0 set 2 0 16 minecraft:obsidian
+at 0 set 2 0 17 minecraft:obsidian
+at 0 set 2 0 18 minecraft:obsidian
+at 0 set 2 0 19 minecraft:obsidian
+at 0 set 2 0 20 minecraft:obsidian
+at 0 set 3 0 -2 minecraft:obsidian
+at 0 set 3 0 -1 minecraft:obsidian
+at 0 set 3 0 0 minecraft:obsidian
+at 0 set 3 0 1 minecraft:obsidian
+at 0 set 3 0 2 minecraft:obsidian
+at 0 set 3 0 3 minecraft:obsidian
+at 0 set 3 0 4 minecraft:obsidian
+at 0 set 3 0 5 minecraft:obsidian
+at 0 set 3 0 6 minecraft:obsidian
+at 0 set 3 0 7 minecraft:obsidian
+at 0 set 3 0 8 minecraft:obsidian
+at 0 set 3 0 9 minecraft:obsidian
+at 0 set 3 0 10 minecraft:obsidian
+at 0 set 3 0 11 minecraft:obsidian
+at 0 set 3 0 12 minecraft:obsidian
+at 0 set 3 0 13 minecraft:obsidian
+at 0 set 3 0 14 minecraft:obsidian
+at 0 set 3 0 15 minecraft:obsidian
+at 0 set 3 0 16 minecraft:obsidian
+at 0 set 3 0 17 minecraft:obsidian
+at 0 set 3 0 18 minecraft:obsidian
+at 0 set 3 0 19 minecraft:obsidian
+at 0 set 3 0 20 minecraft:obsidian
+at 0 set 4 0 -2 minecraft:obsidian
+at 0 set 4 0 -1 minecraft:obsidian
+at 0 set 4 0 0 minecraft:obsidian
+at 0 set 4 0 1 minecraft:obsidian
+at 0 set 4 0 2 minecraft:obsidian
+at 0 set 4 0 3 minecraft:obsidian
+at 0 set 4 0 4 minecraft:obsidian
+at 0 set 4 0 5 minecraft:obsidian
+at 0 set 4 0 6 minecraft:obsidian
+at 0 set 4 0 7 minecraft:obsidian
+at 0 set 4 0 8 minecraft:obsidian
+at 0 set 4 0 9 minecraft:obsidian
+at 0 set 4 0 10 minecraft:obsidian
+at 0 set 4 0 11 minecraft:obsidian
+at 0 set 4 0 12 minecraft:obsidian
+at 0 set 4 0 13 minecraft:obsidian
+at 0 set 4 0 14 minecraft:obsidian
+at 0 set 4 0 15 minecraft:obsidian
+at 0 set 4 0 16 minecraft:obsidian
+at 0 set 4 0 17 minecraft:obsidian
+at 0 set 4 0 18 minecraft:obsidian
+at 0 set 4 0 19 minecraft:obsidian
+at 0 set 4 0 20 minecraft:obsidian
+at 0 set 5 0 -2 minecraft:obsidian
+at 0 set 5 0 -1 minecraft:obsidian
+at 0 set 5 0 0 minecraft:obsidian
+at 0 set 5 0 1 minecraft:obsidian
+at 0 set 5 0 2 minecraft:obsidian
+at 0 set 5 0 3 minecraft:obsidian
+at 0 set 5 0 4 minecraft:obsidian
+at 0 set 5 0 5 minecraft:obsidian
+at 0 set 5 0 6 minecraft:obsidian
+at 0 set 5 0 7 minecraft:obsidian
+at 0 set 5 0 8 minecraft:obsidian
+at 0 set 5 0 9 minecraft:obsidian
+at 0 set 5 0 10 minecraft:obsidian
+at 0 set 5 0 11 minecraft:obsidian
+at 0 set 5 0 12 minecraft:obsidian
+at 0 set 5 0 13 minecraft:obsidian
+at 0 set 5 0 14 minecraft:obsidian
+at 0 set 5 0 15 minecraft:obsidian
+at 0 set 5 0 16 minecraft:obsidian
+at 0 set 5 0 17 minecraft:obsidian
+at 0 set 5 0 18 minecraft:obsidian
+at 0 set 5 0 19 minecraft:obsidian
+at 0 set 5 0 20 minecraft:obsidian
+at 0 set 6 0 -2 minecraft:obsidian
+at 0 set 6 0 -1 minecraft:obsidian
+at 0 set 6 0 0 minecraft:obsidian
+at 0 set 6 0 1 minecraft:obsidian
+at 0 set 6 0 2 minecraft:obsidian
+at 0 set 6 0 3 minecraft:obsidian
+at 0 set 6 0 4 minecraft:obsidian
+at 0 set 6 0 5 minecraft:obsidian
+at 0 set 6 0 6 minecraft:obsidian
+at 0 set 6 0 7 minecraft:obsidian
+at 0 set 6 0 8 minecraft:obsidian
+at 0 set 6 0 9 minecraft:obsidian
+at 0 set 6 0 10 minecraft:obsidian
+at 0 set 6 0 11 minecraft:obsidian
+at 0 set 6 0 12 minecraft:obsidian
+at 0 set 6 0 13 minecraft:obsidian
+at 0 set 6 0 14 minecraft:obsidian
+at 0 set 6 0 15 minecraft:obsidian
+at 0 set 6 0 16 minecraft:obsidian
+at 0 set 6 0 17 minecraft:obsidian
+at 0 set 6 0 18 minecraft:obsidian
+at 0 set 6 0 19 minecraft:obsidian
+at 0 set 6 0 20 minecraft:obsidian
+at 0 set 0 1 0 minecraft:oak_pressure_plate[powered=false]
+at 0 set 0 1 1 minecraft:redstone_lamp[lit=false]
+at 0 set 0 1 3 minecraft:oak_pressure_plate[powered=false]
+at 0 set 0 1 4 minecraft:redstone_lamp[lit=false]
+at 0 set 0 1 6 minecraft:stone_pressure_plate[powered=false]
+at 0 set 0 1 7 minecraft:redstone_lamp[lit=false]
+at 0 set 0 1 9 minecraft:light_weighted_pressure_plate[power=0]
+at 0 set 1 1 9 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 2 1 9 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 3 1 9 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 0 1 12 minecraft:heavy_weighted_pressure_plate[power=0]
+at 0 set 1 1 12 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 2 1 12 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 3 1 12 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 0 1 15 minecraft:oak_pressure_plate[powered=false]
+at 0 set 0 1 16 minecraft:redstone_lamp[lit=false]
+at 0 set 0 1 18 minecraft:oak_pressure_plate[powered=false]
+at 0 set 0 1 19 minecraft:redstone_lamp[lit=false]
+at 3 spawn-item 0.5 2.0 0.5 0 0 0 minecraft:stone 1
+at 3 spawn-item -1.0 1.0 3.5 1.0 0 0 minecraft:stone 1
+at 3 spawn-item 0.5 2.0 6.5 0 0 0 minecraft:stone 1
+at 3 spawn-item 0.3 1.5 9.3 0 0 0 minecraft:stone 1
+at 3 spawn-item 0.20 1.5 12.5 0 0 0 minecraft:stone 1
+at 3 spawn-item 0.25 1.5 12.5 0 0 0 minecraft:dirt 1
+at 3 spawn-item 0.30 1.5 12.5 0 0 0 minecraft:sand 1
+at 3 spawn-item 0.35 1.5 12.5 0 0 0 minecraft:cobblestone 1
+at 3 spawn-item 0.40 1.5 12.5 0 0 0 minecraft:gravel 1
+at 3 spawn-item 0.45 1.5 12.5 0 0 0 minecraft:glass 1
+at 3 spawn-item 0.50 1.5 12.5 0 0 0 minecraft:oak_planks 1
+at 3 spawn-item 0.55 1.5 12.5 0 0 0 minecraft:obsidian 1
+at 3 spawn-item 0.60 1.5 12.5 0 0 0 minecraft:granite 1
+at 3 spawn-item 0.65 1.5 12.5 0 0 0 minecraft:diorite 1
+at 3 spawn-item 0.70 1.5 12.5 0 0 0 minecraft:andesite 1
+at 3 spawn-item 0.75 1.5 12.5 0 0 0 minecraft:clay 1
+at 3 command summon minecraft:arrow 0.5 3.5 15.5 {Motion:[0.0d,-0.5d,0.0d]}
+at 3 spawn-item 0.5 2.0 18.5 0 0 0 minecraft:stone 1
+at 14 spawn-item 0.7 1.5 9.7 0 0 0 minecraft:dirt 1
+at 25 spawn-item 0.3 1.5 9.7 0 0 0 minecraft:sand 1
+at 36 spawn-item 0.7 1.5 9.3 0 0 0 minecraft:cobblestone 10
+at 40 set 0 0 18 minecraft:air

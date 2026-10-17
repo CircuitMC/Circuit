@@ -67,6 +67,10 @@ public:
             return std::unexpected(std::format("{}: `{}` must be in [{}, {}]", id_, key, low, high));
         return n;
     }
+    std::expected<unsigned, std::string> integer_or(std::string_view key, unsigned low, unsigned high, unsigned fallback) {
+        if (!values_.contains(std::string(key))) return fallback;
+        return integer(key, low, high);
+    }
     std::expected<Direction, std::string> direction(std::string_view key) {
         const auto v = required(key);
         if (!v) return std::unexpected(v.error());
@@ -268,6 +272,22 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
             if (!contracts::is_horizontal(facing)) return std::unexpected(std::format("{}: facing must be horizontal", id));
             return simple(blocks::button(static_cast<blocks::ButtonKind>(k), powered == 1, facing,
                                          static_cast<blocks::LeverFace>(face)));
+        }
+    }
+    if (id == "minecraft:light_weighted_pressure_plate" || id == "minecraft:heavy_weighted_pressure_plate") {
+        CIRCUIT_TRY(power, p.integer_or("power", 0, 15, 0));
+        return simple(blocks::weighted_plate(id == "minecraft:heavy_weighted_pressure_plate", static_cast<std::uint8_t>(power)));
+    }
+    if (id == "minecraft:target") {
+        CIRCUIT_TRY(power, p.integer_or("power", 0, 15, 0));
+        return simple(blocks::target(static_cast<std::uint8_t>(power)));
+    }
+    if (id.starts_with("minecraft:") && id.ends_with("_pressure_plate")) {
+        const auto kind = id.substr(10, id.size() - 10 - 15);
+        for (std::uint8_t k = 0; k < blocks::button_kinds; ++k) {
+            if (gameplay::button_kind_name(k) != kind) continue;
+            CIRCUIT_TRY(powered, p.choice("powered", {"false", "true"}, 0));
+            return simple(blocks::pressure_plate(static_cast<blocks::ButtonKind>(k), powered == 1));
         }
     }
     // Every other block is a registry state without rules of its own.

@@ -2292,10 +2292,11 @@ int main() {
             std::size_t loot_blocks, loot_used, recipes, crafted;
         };
         std::size_t checked = 0;
-        // Tables of blocks with rules of their own are not counted: the
-        // redstone torch's and the 14 buttons' since rules v11's torches and buttons.
-        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 992, 898, 1407, 984},
-                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 984, 890, 1370, 948}}) {
+        // Tables of blocks with rules of their own are not counted: since
+        // rules v11 also the redstone torch's, the 14 buttons', the 16
+        // pressure plates' and the target block's.
+        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 975, 881, 1407, 984},
+                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 967, 873, 1370, 948}}) {
             const char* jar = std::getenv(e.variable);
             if (!jar || !*jar) continue;
             const auto& bundle = **contracts::BundleRegistry::find(e.bundle);

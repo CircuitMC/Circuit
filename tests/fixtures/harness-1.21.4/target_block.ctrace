@@ -1,0 +1,714 @@
+circuit-trace 2
+title Arrows and a snowball hit target blocks at different distances from the center
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.9.0+mc1.21.4
+mechanisms target projectile redstone_wire
+area -4 0 -2 8 4 14
+ticks 60
+changes ordered
+entities observed
+rng observed
+
+at 0 set -4 0 -2 minecraft:obsidian
+at 0 set -4 0 -1 minecraft:obsidian
+at 0 set -4 0 0 minecraft:obsidian
+at 0 set -4 0 1 minecraft:obsidian
+at 0 set -4 0 2 minecraft:obsidian
+at 0 set -4 0 3 minecraft:obsidian
+at 0 set -4 0 4 minecraft:obsidian
+at 0 set -4 0 5 minecraft:obsidian
+at 0 set -4 0 6 minecraft:obsidian
+at 0 set -4 0 7 minecraft:obsidian
+at 0 set -4 0 8 minecraft:obsidian
+at 0 set -4 0 9 minecraft:obsidian
+at 0 set -4 0 10 minecraft:obsidian
+at 0 set -4 0 11 minecraft:obsidian
+at 0 set -4 0 12 minecraft:obsidian
+at 0 set -4 0 13 minecraft:obsidian
+at 0 set -4 0 14 minecraft:obsidian
+at 0 set -3 0 -2 minecraft:obsidian
+at 0 set -3 0 -1 minecraft:obsidian
+at 0 set -3 0 0 minecraft:obsidian
+at 0 set -3 0 1 minecraft:obsidian
+at 0 set -3 0 2 minecraft:obsidian
+at 0 set -3 0 3 minecraft:obsidian
+at 0 set -3 0 4 minecraft:obsidian
+at 0 set -3 0 5 minecraft:obsidian
+at 0 set -3 0 6 minecraft:obsidian
+at 0 set -3 0 7 minecraft:obsidian
+at 0 set -3 0 8 minecraft:obsidian
+at 0 set -3 0 9 minecraft:obsidian
+at 0 set -3 0 10 minecraft:obsidian
+at 0 set -3 0 11 minecraft:obsidian
+at 0 set -3 0 12 minecraft:obsidian
+at 0 set -3 0 13 minecraft:obsidian
+at 0 set -3 0 14 minecraft:obsidian
+at 0 set -2 0 -2 minecraft:obsidian
+at 0 set -2 0 -1 minecraft:obsidian
+at 0 set -2 0 0 minecraft:obsidian
+at 0 set -2 0 1 minecraft:obsidian
+at 0 set -2 0 2 minecraft:obsidian
+at 0 set -2 0 3 minecraft:obsidian
+at 0 set -2 0 4 minecraft:obsidian
+at 0 set -2 0 5 minecraft:obsidian
+at 0 set -2 0 6 minecraft:obsidian
+at 0 set -2 0 7 minecraft:obsidian
+at 0 set -2 0 8 minecraft:obsidian
+at 0 set -2 0 9 minecraft:obsidian
+at 0 set -2 0 10 minecraft:obsidian
+at 0 set -2 0 11 minecraft:obsidian
+at 0 set -2 0 12 minecraft:obsidian
+at 0 set -2 0 13 minecraft:obsidian
+at 0 set -2 0 14 minecraft:obsidian
+at 0 set -1 0 -2 minecraft:obsidian
+at 0 set -1 0 -1 minecraft:obsidian
+at 0 set -1 0 0 minecraft:obsidian
+at 0 set -1 0 1 minecraft:obsidian
+at 0 set -1 0 2 minecraft:obsidian
+at 0 set -1 0 3 minecraft:obsidian
+at 0 set -1 0 4 minecraft:obsidian
+at 0 set -1 0 5 minecraft:obsidian
+at 0 set -1 0 6 minecraft:obsidian
+at 0 set -1 0 7 minecraft:obsidian
+at 0 set -1 0 8 minecraft:obsidian
+at 0 set -1 0 9 minecraft:obsidian
+at 0 set -1 0 10 minecraft:obsidian
+at 0 set -1 0 11 minecraft:obsidian
+at 0 set -1 0 12 minecraft:obsidian
+at 0 set -1 0 13 minecraft:obsidian
+at 0 set -1 0 14 minecraft:obsidian
+at 0 set 0 0 -2 minecraft:obsidian
+at 0 set 0 0 -1 minecraft:obsidian
+at 0 set 0 0 0 minecraft:obsidian
+at 0 set 0 0 1 minecraft:obsidian
+at 0 set 0 0 2 minecraft:obsidian
+at 0 set 0 0 3 minecraft:obsidian
+at 0 set 0 0 4 minecraft:obsidian
+at 0 set 0 0 5 minecraft:obsidian
+at 0 set 0 0 6 minecraft:obsidian
+at 0 set 0 0 7 minecraft:obsidian
+at 0 set 0 0 8 minecraft:obsidian
+at 0 set 0 0 9 minecraft:obsidian
+at 0 set 0 0 10 minecraft:obsidian
+at 0 set 0 0 11 minecraft:obsidian
+at 0 set 0 0 12 minecraft:obsidian
+at 0 set 0 0 13 minecraft:obsidian
+at 0 set 0 0 14 minecraft:obsidian
+at 0 set 1 0 -2 minecraft:obsidian
+at 0 set 1 0 -1 minecraft:obsidian
+at 0 set 1 0 0 minecraft:obsidian
+at 0 set 1 0 1 minecraft:obsidian
+at 0 set 1 0 2 minecraft:obsidian
+at 0 set 1 0 3 minecraft:obsidian
+at 0 set 1 0 4 minecraft:obsidian
+at 0 set 1 0 5 minecraft:obsidian
+at 0 set 1 0 6 minecraft:obsidian
+at 0 set 1 0 7 minecraft:obsidian
+at 0 set 1 0 8 minecraft:obsidian
+at 0 set 1 0 9 minecraft:obsidian
+at 0 set 1 0 10 minecraft:obsidian
+at 0 set 1 0 11 minecraft:obsidian
+at 0 set 1 0 12 minecraft:obsidian
+at 0 set 1 0 13 minecraft:obsidian
+at 0 set 1 0 14 minecraft:obsidian
+at 0 set 2 0 -2 minecraft:obsidian
+at 0 set 2 0 -1 minecraft:obsidian
+at 0 set 2 0 0 minecraft:obsidian
+at 0 set 2 0 1 minecraft:obsidian
+at 0 set 2 0 2 minecraft:obsidian
+at 0 set 2 0 3 minecraft:obsidian
+at 0 set 2 0 4 minecraft:obsidian
+at 0 set 2 0 5 minecraft:obsidian
+at 0 set 2 0 6 minecraft:obsidian
+at 0 set 2 0 7 minecraft:obsidian
+at 0 set 2 0 8 minecraft:obsidian
+at 0 set 2 0 9 minecraft:obsidian
+at 0 set 2 0 10 minecraft:obsidian
+at 0 set 2 0 11 minecraft:obsidian
+at 0 set 2 0 12 minecraft:obsidian
+at 0 set 2 0 13 minecraft:obsidian
+at 0 set 2 0 14 minecraft:obsidian
+at 0 set 3 0 -2 minecraft:obsidian
+at 0 set 3 0 -1 minecraft:obsidian
+at 0 set 3 0 0 minecraft:obsidian
+at 0 set 3 0 1 minecraft:obsidian
+at 0 set 3 0 2 minecraft:obsidian
+at 0 set 3 0 3 minecraft:obsidian
+at 0 set 3 0 4 minecraft:obsidian
+at 0 set 3 0 5 minecraft:obsidian
+at 0 set 3 0 6 minecraft:obsidian
+at 0 set 3 0 7 minecraft:obsidian
+at 0 set 3 0 8 minecraft:obsidian
+at 0 set 3 0 9 minecraft:obsidian
+at 0 set 3 0 10 minecraft:obsidian
+at 0 set 3 0 11 minecraft:obsidian
+at 0 set 3 0 12 minecraft:obsidian
+at 0 set 3 0 13 minecraft:obsidian
+at 0 set 3 0 14 minecraft:obsidian
+at 0 set 4 0 -2 minecraft:obsidian
+at 0 set 4 0 -1 minecraft:obsidian
+at 0 set 4 0 0 minecraft:obsidian
+at 0 set 4 0 1 minecraft:obsidian
+at 0 set 4 0 2 minecraft:obsidian
+at 0 set 4 0 3 minecraft:obsidian
+at 0 set 4 0 4 minecraft:obsidian
+at 0 set 4 0 5 minecraft:obsidian
+at 0 set 4 0 6 minecraft:obsidian
+at 0 set 4 0 7 minecraft:obsidian
+at 0 set 4 0 8 minecraft:obsidian
+at 0 set 4 0 9 minecraft:obsidian
+at 0 set 4 0 10 minecraft:obsidian
+at 0 set 4 0 11 minecraft:obsidian
+at 0 set 4 0 12 minecraft:obsidian
+at 0 set 4 0 13 minecraft:obsidian
+at 0 set 4 0 14 minecraft:obsidian
+at 0 set 5 0 -2 minecraft:obsidian
+at 0 set 5 0 -1 minecraft:obsidian
+at 0 set 5 0 0 minecraft:obsidian
+at 0 set 5 0 1 minecraft:obsidian
+at 0 set 5 0 2 minecraft:obsidian
+at 0 set 5 0 3 minecraft:obsidian
+at 0 set 5 0 4 minecraft:obsidian
+at 0 set 5 0 5 minecraft:obsidian
+at 0 set 5 0 6 minecraft:obsidian
+at 0 set 5 0 7 minecraft:obsidian
+at 0 set 5 0 8 minecraft:obsidian
+at 0 set 5 0 9 minecraft:obsidian
+at 0 set 5 0 10 minecraft:obsidian
+at 0 set 5 0 11 minecraft:obsidian
+at 0 set 5 0 12 minecraft:obsidian
+at 0 set 5 0 13 minecraft:obsidian
+at 0 set 5 0 14 minecraft:obsidian
+at 0 set 6 0 -2 minecraft:obsidian
+at 0 set 6 0 -1 minecraft:obsidian
+at 0 set 6 0 0 minecraft:obsidian
+at 0 set 6 0 1 minecraft:obsidian
+at 0 set 6 0 2 minecraft:obsidian
+at 0 set 6 0 3 minecraft:obsidian
+at 0 set 6 0 4 minecraft:obsidian
+at 0 set 6 0 5 minecraft:obsidian
+at 0 set 6 0 6 minecraft:obsidian
+at 0 set 6 0 7 minecraft:obsidian
+at 0 set 6 0 8 minecraft:obsidian
+at 0 set 6 0 9 minecraft:obsidian
+at 0 set 6 0 10 minecraft:obsidian
+at 0 set 6 0 11 minecraft:obsidian
+at 0 set 6 0 12 minecraft:obsidian
+at 0 set 6 0 13 minecraft:obsidian
+at 0 set 6 0 14 minecraft:obsidian
+at 0 set 7 0 -2 minecraft:obsidian
+at 0 set 7 0 -1 minecraft:obsidian
+at 0 set 7 0 0 minecraft:obsidian
+at 0 set 7 0 1 minecraft:obsidian
+at 0 set 7 0 2 minecraft:obsidian
+at 0 set 7 0 3 minecraft:obsidian
+at 0 set 7 0 4 minecraft:obsidian
+at 0 set 7 0 5 minecraft:obsidian
+at 0 set 7 0 6 minecraft:obsidian
+at 0 set 7 0 7 minecraft:obsidian
+at 0 set 7 0 8 minecraft:obsidian
+at 0 set 7 0 9 minecraft:obsidian
+at 0 set 7 0 10 minecraft:obsidian
+at 0 set 7 0 11 minecraft:obsidian
+at 0 set 7 0 12 minecraft:obsidian
+at 0 set 7 0 13 minecraft:obsidian
+at 0 set 7 0 14 minecraft:obsidian
+at 0 set 8 0 -2 minecraft:obsidian
+at 0 set 8 0 -1 minecraft:obsidian
+at 0 set 8 0 0 minecraft:obsidian
+at 0 set 8 0 1 minecraft:obsidian
+at 0 set 8 0 2 minecraft:obsidian
+at 0 set 8 0 3 minecraft:obsidian
+at 0 set 8 0 4 minecraft:obsidian
+at 0 set 8 0 5 minecraft:obsidian
+at 0 set 8 0 6 minecraft:obsidian
+at 0 set 8 0 7 minecraft:obsidian
+at 0 set 8 0 8 minecraft:obsidian
+at 0 set 8 0 9 minecraft:obsidian
+at 0 set 8 0 10 minecraft:obsidian
+at 0 set 8 0 11 minecraft:obsidian
+at 0 set 8 0 12 minecraft:obsidian
+at 0 set 8 0 13 minecraft:obsidian
+at 0 set 8 0 14 minecraft:obsidian
+at 0 set 0 1 0 minecraft:target[power=0]
+at 0 set -1 1 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set -2 1 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set -3 1 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 0 1 3 minecraft:target[power=0]
+at 0 set -1 1 3 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set -2 1 3 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set -3 1 3 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 0 1 6 minecraft:target[power=0]
+at 0 set -1 1 6 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set -2 1 6 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set -3 1 6 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 0 1 9 minecraft:target[power=0]
+at 0 set -1 1 9 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set -2 1 9 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set -3 1 9 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 0 1 12 minecraft:target[power=0]
+at 0 set -1 1 12 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set -2 1 12 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set -3 1 12 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+
+at 3 command summon minecraft:arrow 5.5 1.73 0.5 {Motion:[-1.0d,0.04d,0.0d]}
+entity-added 3 commands e1 minecraft:arrow 5.5 1.73 0.5 -1.0 0.04 0
+at 3 command summon minecraft:arrow 5.5 1.5 3.5 {Motion:[-1.0d,0.04d,0.0d]}
+entity-added 3 commands e2 minecraft:arrow 5.5 1.5 3.5 -1.0 0.04 0
+at 3 command summon minecraft:arrow 5.5 1.9 6.2 {Motion:[-1.0d,0.04d,0.0d]}
+entity-added 3 commands e3 minecraft:arrow 5.5 1.9 6.2 -1.0 0.04 0
+at 3 command summon minecraft:arrow 5.5 1.6 9.85 {Motion:[-1.0d,0.04d,0.0d]}
+entity-added 3 commands e4 minecraft:arrow 5.5 1.6 9.85 -1.0 0.04 0
+at 3 command summon minecraft:snowball 5.5 1.6 12.5 {Motion:[-1.0d,0.1d,0.0d]}
+entity-added 3 commands e5 minecraft:snowball 5.5 1.6 12.5 -1.0 0.1 0
+entity-order 3 entities e1 e2 e3 e4 e5
+entity 3 e1 4.5 1.77 0.5 -0.9900000095367432 -0.010399999618530276 0 in-ground=false life=0 on-ground=false
+entity 3 e2 4.5 1.54 3.5 -0.9900000095367432 -0.010399999618530276 0 in-ground=false life=0 on-ground=false
+entity 3 e3 4.5 1.94 6.2 -0.9900000095367432 -0.010399999618530276 0 in-ground=false life=0 on-ground=false
+entity 3 e4 4.5 1.6400000000000001 9.85 -0.9900000095367432 -0.010399999618530276 0 in-ground=false life=0 on-ground=false
+entity 3 e5 4.509999990463257 1.669300000667572 12.5 -0.9900000095367432 0.06930000066757203 0 on-ground=false
+
+entity-order 4 entities e1 e2 e3 e4 e5
+entity 4 e1 3.509999990463257 1.7596000003814698 0.5 -0.9801000188827516 -0.060295999721527105 0 in-ground=false life=0 on-ground=false
+entity 4 e2 3.509999990463257 1.5296000003814698 3.5 -0.9801000188827516 -0.060295999721527105 0 in-ground=false life=0 on-ground=false
+entity 4 e3 3.509999990463257 1.9296000003814697 6.2 -0.9801000188827516 -0.060295999721527105 0 in-ground=false life=0 on-ground=false
+entity 4 e4 3.509999990463257 1.62960000038147 9.85 -0.9801000188827516 -0.060295999721527105 0 in-ground=false life=0 on-ground=false
+entity 4 e5 3.5298999715805053 1.7082070017032622 12.5 -0.9801000188827516 0.03890700103569032 0 on-ground=false
+
+entity-order 5 entities e1 e2 e3 e4 e5
+entity 5 e1 2.5298999715805053 1.6993040006599427 0.5 -0.9702990280408862 -0.1096930402993393 0 in-ground=false life=0 on-ground=false
+entity 5 e2 2.5298999715805053 1.4693040006599427 3.5 -0.9702990280408862 -0.1096930402993393 0 in-ground=false life=0 on-ground=false
+entity 5 e3 2.5298999715805053 1.8693040006599426 6.2 -0.9702990280408862 -0.1096930402993393 0 in-ground=false life=0 on-ground=false
+entity 5 e4 2.5298999715805053 1.5693040006599428 9.85 -0.9702990280408862 -0.1096930402993393 0 in-ground=false life=0 on-ground=false
+entity 5 e5 2.559600943539619 1.7170249328135394 12.5 -0.9702990280408862 0.008817931110277202 0 on-ground=false
+
+entity-order 6 entities e1 e2 e3 e4 e5
+entity 6 e1 1.559600943539619 1.5896109603606035 0.5 -0.96059604701397 -0.15859611094246026 0 in-ground=false life=0 on-ground=false
+entity 6 e2 1.559600943539619 1.3596109603606035 3.5 -0.96059604701397 -0.15859611094246026 0 in-ground=false life=0 on-ground=false
+entity 6 e3 1.559600943539619 1.7596109603606034 6.2 -0.96059604701397 -0.15859611094246026 0 in-ground=false life=0 on-ground=false
+entity 6 e4 1.559600943539619 1.4596109603606036 9.85 -0.96059604701397 -0.15859611094246026 0 in-ground=false life=0 on-ground=false
+entity 6 e5 1.5990048965256491 1.6960546844107058 12.5 -0.96059604701397 -0.02097024840283352 0 on-ground=false
+
+change 7 entities 0 1 0 minecraft:target[power=0] minecraft:target[power=15]
+change 7 entities -1 1 0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=15,south=none,west=side]
+change 7 entities -2 1 0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=14,south=none,west=side]
+change 7 entities -3 1 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 7 entities -3 1 0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=13,south=none,west=side]
+change 7 entities 0 1 3 minecraft:target[power=0] minecraft:target[power=9]
+change 7 entities -1 1 3 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=9,south=none,west=side]
+change 7 entities -2 1 3 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=8,south=none,west=side]
+change 7 entities -3 1 3 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 7 entities -3 1 3 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=7,south=none,west=side]
+change 7 entities 0 1 6 minecraft:target[power=0] minecraft:target[power=7]
+change 7 entities -1 1 6 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=7,south=none,west=side]
+change 7 entities -2 1 6 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=6,south=none,west=side]
+change 7 entities -3 1 6 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 7 entities -3 1 6 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side]
+change 7 entities 0 1 9 minecraft:target[power=0] minecraft:target[power=5]
+change 7 entities -1 1 9 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side]
+change 7 entities -2 1 9 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=4,south=none,west=side]
+change 7 entities -3 1 9 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 7 entities -3 1 9 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side]
+change 7 entities 0 1 12 minecraft:target[power=0] minecraft:target[power=11]
+change 7 entities -1 1 12 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=11,south=none,west=side]
+change 7 entities -2 1 12 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=10,south=none,west=side]
+change 7 entities -3 1 12 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 7 entities -3 1 12 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=9,south=none,west=side]
+entity-removed 7 entities e5 discarded
+entity-order 7 entities e1 e2 e3 e4 e5
+entity 7 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=0 on-ground=false
+entity 7 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=0 on-ground=false
+entity 7 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=0 on-ground=false
+entity 7 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=0 on-ground=false
+
+entity-order 8 entities e1 e2 e3 e4
+entity 8 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=1 on-ground=false
+entity 8 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=1 on-ground=false
+entity 8 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=1 on-ground=false
+entity 8 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=1 on-ground=false
+
+entity-order 9 entities e1 e2 e3 e4
+entity 9 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=2 on-ground=false
+entity 9 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=2 on-ground=false
+entity 9 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=2 on-ground=false
+entity 9 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=2 on-ground=false
+
+entity-order 10 entities e1 e2 e3 e4
+entity 10 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=3 on-ground=false
+entity 10 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=3 on-ground=false
+entity 10 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=3 on-ground=false
+entity 10 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=3 on-ground=false
+
+entity-order 11 entities e1 e2 e3 e4
+entity 11 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=4 on-ground=false
+entity 11 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=4 on-ground=false
+entity 11 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=4 on-ground=false
+entity 11 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=4 on-ground=false
+
+entity-order 12 entities e1 e2 e3 e4
+entity 12 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=5 on-ground=false
+entity 12 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=5 on-ground=false
+entity 12 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=5 on-ground=false
+entity 12 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=5 on-ground=false
+
+entity-order 13 entities e1 e2 e3 e4
+entity 13 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=6 on-ground=false
+entity 13 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=6 on-ground=false
+entity 13 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=6 on-ground=false
+entity 13 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=6 on-ground=false
+
+entity-order 14 entities e1 e2 e3 e4
+entity 14 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=7 on-ground=false
+entity 14 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=7 on-ground=false
+entity 14 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=7 on-ground=false
+entity 14 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=7 on-ground=false
+
+change 15 block_ticks 0 1 12 minecraft:target[power=11] minecraft:target[power=0]
+change 15 block_ticks -1 1 12 minecraft:redstone_wire[east=side,north=none,power=11,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=9,south=none,west=side]
+change 15 block_ticks -2 1 12 minecraft:redstone_wire[east=side,north=none,power=10,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=8,south=none,west=side]
+change 15 block_ticks -3 1 12 minecraft:redstone_wire[east=side,north=none,power=9,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=7,south=none,west=side]
+change 15 block_ticks -1 1 12 minecraft:redstone_wire[east=side,north=none,power=9,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=7,south=none,west=side]
+change 15 block_ticks -2 1 12 minecraft:redstone_wire[east=side,north=none,power=8,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=6,south=none,west=side]
+change 15 block_ticks -3 1 12 minecraft:redstone_wire[east=side,north=none,power=7,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side]
+change 15 block_ticks -1 1 12 minecraft:redstone_wire[east=side,north=none,power=7,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side]
+change 15 block_ticks -2 1 12 minecraft:redstone_wire[east=side,north=none,power=6,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=4,south=none,west=side]
+change 15 block_ticks -3 1 12 minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side]
+change 15 block_ticks -1 1 12 minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side]
+change 15 block_ticks -2 1 12 minecraft:redstone_wire[east=side,north=none,power=4,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=2,south=none,west=side]
+change 15 block_ticks -3 1 12 minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side]
+change 15 block_ticks -1 1 12 minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side]
+change 15 block_ticks -2 1 12 minecraft:redstone_wire[east=side,north=none,power=2,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 15 block_ticks -3 1 12 minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 15 block_ticks -1 1 12 minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+entity-order 15 entities e1 e2 e3 e4
+entity 15 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=8 on-ground=false
+entity 15 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=8 on-ground=false
+entity 15 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=8 on-ground=false
+entity 15 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=8 on-ground=false
+
+entity-order 16 entities e1 e2 e3 e4
+entity 16 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=9 on-ground=false
+entity 16 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=9 on-ground=false
+entity 16 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=9 on-ground=false
+entity 16 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=9 on-ground=false
+
+entity-order 17 entities e1 e2 e3 e4
+entity 17 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=10 on-ground=false
+entity 17 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=10 on-ground=false
+entity 17 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=10 on-ground=false
+entity 17 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=10 on-ground=false
+
+entity-order 18 entities e1 e2 e3 e4
+entity 18 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=11 on-ground=false
+entity 18 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=11 on-ground=false
+entity 18 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=11 on-ground=false
+entity 18 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=11 on-ground=false
+
+entity-order 19 entities e1 e2 e3 e4
+entity 19 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=12 on-ground=false
+entity 19 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=12 on-ground=false
+entity 19 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=12 on-ground=false
+entity 19 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=12 on-ground=false
+
+entity-order 20 entities e1 e2 e3 e4
+entity 20 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=13 on-ground=false
+entity 20 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=13 on-ground=false
+entity 20 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=13 on-ground=false
+entity 20 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=13 on-ground=false
+
+entity-order 21 entities e1 e2 e3 e4
+entity 21 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=14 on-ground=false
+entity 21 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=14 on-ground=false
+entity 21 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=14 on-ground=false
+entity 21 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=14 on-ground=false
+
+entity-order 22 entities e1 e2 e3 e4
+entity 22 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=15 on-ground=false
+entity 22 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=15 on-ground=false
+entity 22 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=15 on-ground=false
+entity 22 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=15 on-ground=false
+
+entity-order 23 entities e1 e2 e3 e4
+entity 23 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=16 on-ground=false
+entity 23 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=16 on-ground=false
+entity 23 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=16 on-ground=false
+entity 23 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=16 on-ground=false
+
+entity-order 24 entities e1 e2 e3 e4
+entity 24 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=17 on-ground=false
+entity 24 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=17 on-ground=false
+entity 24 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=17 on-ground=false
+entity 24 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=17 on-ground=false
+
+entity-order 25 entities e1 e2 e3 e4
+entity 25 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=18 on-ground=false
+entity 25 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=18 on-ground=false
+entity 25 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=18 on-ground=false
+entity 25 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=18 on-ground=false
+
+entity-order 26 entities e1 e2 e3 e4
+entity 26 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=19 on-ground=false
+entity 26 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=19 on-ground=false
+entity 26 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=19 on-ground=false
+entity 26 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=19 on-ground=false
+
+change 27 block_ticks 0 1 0 minecraft:target[power=15] minecraft:target[power=0]
+change 27 block_ticks -1 1 0 minecraft:redstone_wire[east=side,north=none,power=15,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=13,south=none,west=side]
+change 27 block_ticks -2 1 0 minecraft:redstone_wire[east=side,north=none,power=14,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=12,south=none,west=side]
+change 27 block_ticks -3 1 0 minecraft:redstone_wire[east=side,north=none,power=13,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=11,south=none,west=side]
+change 27 block_ticks -1 1 0 minecraft:redstone_wire[east=side,north=none,power=13,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=11,south=none,west=side]
+change 27 block_ticks -2 1 0 minecraft:redstone_wire[east=side,north=none,power=12,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=10,south=none,west=side]
+change 27 block_ticks -3 1 0 minecraft:redstone_wire[east=side,north=none,power=11,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=9,south=none,west=side]
+change 27 block_ticks -1 1 0 minecraft:redstone_wire[east=side,north=none,power=11,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=9,south=none,west=side]
+change 27 block_ticks -2 1 0 minecraft:redstone_wire[east=side,north=none,power=10,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=8,south=none,west=side]
+change 27 block_ticks -3 1 0 minecraft:redstone_wire[east=side,north=none,power=9,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=7,south=none,west=side]
+change 27 block_ticks -1 1 0 minecraft:redstone_wire[east=side,north=none,power=9,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=7,south=none,west=side]
+change 27 block_ticks -2 1 0 minecraft:redstone_wire[east=side,north=none,power=8,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=6,south=none,west=side]
+change 27 block_ticks -3 1 0 minecraft:redstone_wire[east=side,north=none,power=7,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side]
+change 27 block_ticks -1 1 0 minecraft:redstone_wire[east=side,north=none,power=7,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side]
+change 27 block_ticks -2 1 0 minecraft:redstone_wire[east=side,north=none,power=6,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=4,south=none,west=side]
+change 27 block_ticks -3 1 0 minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side]
+change 27 block_ticks -1 1 0 minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side]
+change 27 block_ticks -2 1 0 minecraft:redstone_wire[east=side,north=none,power=4,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=2,south=none,west=side]
+change 27 block_ticks -3 1 0 minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side]
+change 27 block_ticks -1 1 0 minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side]
+change 27 block_ticks -2 1 0 minecraft:redstone_wire[east=side,north=none,power=2,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 27 block_ticks -3 1 0 minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 27 block_ticks -1 1 0 minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 27 block_ticks 0 1 3 minecraft:target[power=9] minecraft:target[power=0]
+change 27 block_ticks -1 1 3 minecraft:redstone_wire[east=side,north=none,power=9,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=7,south=none,west=side]
+change 27 block_ticks -2 1 3 minecraft:redstone_wire[east=side,north=none,power=8,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=6,south=none,west=side]
+change 27 block_ticks -3 1 3 minecraft:redstone_wire[east=side,north=none,power=7,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side]
+change 27 block_ticks -1 1 3 minecraft:redstone_wire[east=side,north=none,power=7,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side]
+change 27 block_ticks -2 1 3 minecraft:redstone_wire[east=side,north=none,power=6,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=4,south=none,west=side]
+change 27 block_ticks -3 1 3 minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side]
+change 27 block_ticks -1 1 3 minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side]
+change 27 block_ticks -2 1 3 minecraft:redstone_wire[east=side,north=none,power=4,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=2,south=none,west=side]
+change 27 block_ticks -3 1 3 minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side]
+change 27 block_ticks -1 1 3 minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side]
+change 27 block_ticks -2 1 3 minecraft:redstone_wire[east=side,north=none,power=2,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 27 block_ticks -3 1 3 minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 27 block_ticks -1 1 3 minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 27 block_ticks 0 1 6 minecraft:target[power=7] minecraft:target[power=0]
+change 27 block_ticks -1 1 6 minecraft:redstone_wire[east=side,north=none,power=7,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side]
+change 27 block_ticks -2 1 6 minecraft:redstone_wire[east=side,north=none,power=6,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=4,south=none,west=side]
+change 27 block_ticks -3 1 6 minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side]
+change 27 block_ticks -1 1 6 minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side]
+change 27 block_ticks -2 1 6 minecraft:redstone_wire[east=side,north=none,power=4,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=2,south=none,west=side]
+change 27 block_ticks -3 1 6 minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side]
+change 27 block_ticks -1 1 6 minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side]
+change 27 block_ticks -2 1 6 minecraft:redstone_wire[east=side,north=none,power=2,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 27 block_ticks -3 1 6 minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 27 block_ticks -1 1 6 minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 27 block_ticks 0 1 9 minecraft:target[power=5] minecraft:target[power=0]
+change 27 block_ticks -1 1 9 minecraft:redstone_wire[east=side,north=none,power=5,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side]
+change 27 block_ticks -2 1 9 minecraft:redstone_wire[east=side,north=none,power=4,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=2,south=none,west=side]
+change 27 block_ticks -3 1 9 minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side]
+change 27 block_ticks -1 1 9 minecraft:redstone_wire[east=side,north=none,power=3,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side]
+change 27 block_ticks -2 1 9 minecraft:redstone_wire[east=side,north=none,power=2,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 27 block_ticks -3 1 9 minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 27 block_ticks -1 1 9 minecraft:redstone_wire[east=side,north=none,power=1,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+entity-order 27 entities e1 e2 e3 e4
+entity 27 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=20 on-ground=false
+entity 27 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=20 on-ground=false
+entity 27 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=20 on-ground=false
+entity 27 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=20 on-ground=false
+
+entity-order 28 entities e1 e2 e3 e4
+entity 28 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=21 on-ground=false
+entity 28 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=21 on-ground=false
+entity 28 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=21 on-ground=false
+entity 28 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=21 on-ground=false
+
+entity-order 29 entities e1 e2 e3 e4
+entity 29 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=22 on-ground=false
+entity 29 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=22 on-ground=false
+entity 29 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=22 on-ground=false
+entity 29 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=22 on-ground=false
+
+entity-order 30 entities e1 e2 e3 e4
+entity 30 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=23 on-ground=false
+entity 30 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=23 on-ground=false
+entity 30 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=23 on-ground=false
+entity 30 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=23 on-ground=false
+
+entity-order 31 entities e1 e2 e3 e4
+entity 31 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=24 on-ground=false
+entity 31 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=24 on-ground=false
+entity 31 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=24 on-ground=false
+entity 31 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=24 on-ground=false
+
+entity-order 32 entities e1 e2 e3 e4
+entity 32 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=25 on-ground=false
+entity 32 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=25 on-ground=false
+entity 32 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=25 on-ground=false
+entity 32 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=25 on-ground=false
+
+entity-order 33 entities e1 e2 e3 e4
+entity 33 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=26 on-ground=false
+entity 33 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=26 on-ground=false
+entity 33 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=26 on-ground=false
+entity 33 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=26 on-ground=false
+
+entity-order 34 entities e1 e2 e3 e4
+entity 34 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=27 on-ground=false
+entity 34 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=27 on-ground=false
+entity 34 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=27 on-ground=false
+entity 34 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=27 on-ground=false
+
+entity-order 35 entities e1 e2 e3 e4
+entity 35 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=28 on-ground=false
+entity 35 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=28 on-ground=false
+entity 35 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=28 on-ground=false
+entity 35 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=28 on-ground=false
+
+entity-order 36 entities e1 e2 e3 e4
+entity 36 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=29 on-ground=false
+entity 36 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=29 on-ground=false
+entity 36 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=29 on-ground=false
+entity 36 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=29 on-ground=false
+
+entity-order 37 entities e1 e2 e3 e4
+entity 37 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=30 on-ground=false
+entity 37 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=30 on-ground=false
+entity 37 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=30 on-ground=false
+entity 37 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=30 on-ground=false
+
+entity-order 38 entities e1 e2 e3 e4
+entity 38 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=31 on-ground=false
+entity 38 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=31 on-ground=false
+entity 38 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=31 on-ground=false
+entity 38 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=31 on-ground=false
+
+entity-order 39 entities e1 e2 e3 e4
+entity 39 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=32 on-ground=false
+entity 39 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=32 on-ground=false
+entity 39 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=32 on-ground=false
+entity 39 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=32 on-ground=false
+
+entity-order 40 entities e1 e2 e3 e4
+entity 40 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=33 on-ground=false
+entity 40 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=33 on-ground=false
+entity 40 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=33 on-ground=false
+entity 40 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=33 on-ground=false
+
+entity-order 41 entities e1 e2 e3 e4
+entity 41 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=34 on-ground=false
+entity 41 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=34 on-ground=false
+entity 41 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=34 on-ground=false
+entity 41 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=34 on-ground=false
+
+entity-order 42 entities e1 e2 e3 e4
+entity 42 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=35 on-ground=false
+entity 42 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=35 on-ground=false
+entity 42 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=35 on-ground=false
+entity 42 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=35 on-ground=false
+
+entity-order 43 entities e1 e2 e3 e4
+entity 43 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=36 on-ground=false
+entity 43 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=36 on-ground=false
+entity 43 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=36 on-ground=false
+entity 43 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=36 on-ground=false
+
+entity-order 44 entities e1 e2 e3 e4
+entity 44 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=37 on-ground=false
+entity 44 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=37 on-ground=false
+entity 44 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=37 on-ground=false
+entity 44 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=37 on-ground=false
+
+entity-order 45 entities e1 e2 e3 e4
+entity 45 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=38 on-ground=false
+entity 45 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=38 on-ground=false
+entity 45 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=38 on-ground=false
+entity 45 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=38 on-ground=false
+
+entity-order 46 entities e1 e2 e3 e4
+entity 46 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=39 on-ground=false
+entity 46 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=39 on-ground=false
+entity 46 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=39 on-ground=false
+entity 46 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=39 on-ground=false
+
+entity-order 47 entities e1 e2 e3 e4
+entity 47 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=40 on-ground=false
+entity 47 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=40 on-ground=false
+entity 47 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=40 on-ground=false
+entity 47 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=40 on-ground=false
+
+entity-order 48 entities e1 e2 e3 e4
+entity 48 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=41 on-ground=false
+entity 48 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=41 on-ground=false
+entity 48 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=41 on-ground=false
+entity 48 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=41 on-ground=false
+
+entity-order 49 entities e1 e2 e3 e4
+entity 49 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=42 on-ground=false
+entity 49 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=42 on-ground=false
+entity 49 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=42 on-ground=false
+entity 49 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=42 on-ground=false
+
+entity-order 50 entities e1 e2 e3 e4
+entity 50 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=43 on-ground=false
+entity 50 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=43 on-ground=false
+entity 50 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=43 on-ground=false
+entity 50 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=43 on-ground=false
+
+entity-order 51 entities e1 e2 e3 e4
+entity 51 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=44 on-ground=false
+entity 51 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=44 on-ground=false
+entity 51 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=44 on-ground=false
+entity 51 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=44 on-ground=false
+
+entity-order 52 entities e1 e2 e3 e4
+entity 52 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=45 on-ground=false
+entity 52 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=45 on-ground=false
+entity 52 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=45 on-ground=false
+entity 52 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=45 on-ground=false
+
+entity-order 53 entities e1 e2 e3 e4
+entity 53 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=46 on-ground=false
+entity 53 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=46 on-ground=false
+entity 53 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=46 on-ground=false
+entity 53 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=46 on-ground=false
+
+entity-order 54 entities e1 e2 e3 e4
+entity 54 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=47 on-ground=false
+entity 54 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=47 on-ground=false
+entity 54 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=47 on-ground=false
+entity 54 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=47 on-ground=false
+
+entity-order 55 entities e1 e2 e3 e4
+entity 55 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=48 on-ground=false
+entity 55 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=48 on-ground=false
+entity 55 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=48 on-ground=false
+entity 55 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=48 on-ground=false
+
+entity-order 56 entities e1 e2 e3 e4
+entity 56 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=49 on-ground=false
+entity 56 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=49 on-ground=false
+entity 56 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=49 on-ground=false
+entity 56 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=49 on-ground=false
+
+entity-order 57 entities e1 e2 e3 e4
+entity 57 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=50 on-ground=false
+entity 57 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=50 on-ground=false
+entity 57 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=50 on-ground=false
+entity 57 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=50 on-ground=false
+
+entity-order 58 entities e1 e2 e3 e4
+entity 58 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=51 on-ground=false
+entity 58 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=51 on-ground=false
+entity 58 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=51 on-ground=false
+entity 58 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=51 on-ground=false
+
+entity-order 59 entities e1 e2 e3 e4
+entity 59 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=52 on-ground=false
+entity 59 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=52 on-ground=false
+entity 59 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=52 on-ground=false
+entity 59 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=52 on-ground=false
+
+entity-order 60 entities e1 e2 e3 e4
+entity 60 e1 1.050000000745058 1.5472198528963392 0.5 0 0 0 in-ground=true life=53 on-ground=false
+entity 60 e2 1.050000000745058 1.3172198528963392 3.5 0 0 0 in-ground=true life=53 on-ground=false
+entity 60 e3 1.050000000745058 1.7172198528963392 6.2 0 0 0 in-ground=true life=53 on-ground=false
+entity 60 e4 1.050000000745058 1.4172198528963393 9.85 0 0 0 in-ground=true life=53 on-ground=false

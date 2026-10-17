@@ -86,6 +86,9 @@ A wrong convention makes fixtures fail rather than pass.
 | `redstone_torch` | `lit` | — |
 | `redstone_wall_torch` | `facing`, `lit` | `facing` points away from the block the torch hangs on |
 | `<kind>_button` (14 kinds) | `face`, `facing`, `powered` | as for levers; each kind is a block of its own |
+| `<kind>_pressure_plate` (the same 14 kinds) | `powered` | each kind is a block of its own |
+| `light_weighted_pressure_plate`, `heavy_weighted_pressure_plate` | `power` 0–15 | — |
+| `target` | `power` 0–15 | — |
 
 Items: any item of the rule set's registry (since rules v7, every item of both versions), named `namespace:id`, without data components. Version 1 has no entity observations; dropped and pushed items are visible only through container slots that collect them. Version 2 observes them directly.
 

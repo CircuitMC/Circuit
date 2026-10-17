@@ -47,6 +47,8 @@ std::optional<ItemStack> own_item(BlockState s) {
     case BlockType::chest: return ItemStack{items::chest, 1};
     case BlockType::redstone_torch: case BlockType::redstone_wall_torch: return ItemStack{items::redstone_torch, 1};
     case BlockType::button: return ItemStack{button_item(s), 1};
+    case BlockType::pressure_plate: case BlockType::weighted_plate: return ItemStack{plate_item(s), 1};
+    case BlockType::target: return ItemStack{items::target, 1};
     default: return std::nullopt;
     }
 }

@@ -779,12 +779,46 @@ inline Scenario torch_button_scenario() {
     }, 5};
 }
 
+// Pressure plates and target blocks across the x=16 chunk edge: items slide
+// from one chunk over a wooden plate in the other; items whose positions lie
+// in the other chunk reach into weighted plates; arrows and snowballs fly
+// across the edge into target blocks.
+inline Scenario plate_target_scenario() {
+    return {"plates_targets", 109, 240, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        if (t == 2) {
+            for (int x = 8; x <= 24; ++x)
+                for (int z = -4; z <= 6; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            c.push_back(place({16, 0, 0}, blocks::pressure_plate(blocks::ButtonKind::oak)));
+            c.push_back(place({16, 0, 1}, blocks::lamp()));
+            c.push_back(place({15, 0, 3}, blocks::weighted_plate(false)));
+            c.push_back(place({14, 0, 3}, blocks::wire()));
+            c.push_back(place({17, 0, 3}, blocks::weighted_plate(true)));
+            c.push_back(place({15, 0, -3}, blocks::target()));
+            c.push_back(place({14, 0, -3}, blocks::wire()));
+            c.push_back(place({17, 0, -1}, blocks::target()));
+            c.push_back(place({18, 0, -1}, blocks::wire()));
+        }
+        const auto phase = t % 60;
+        if (phase == 5) {
+            c.push_back(SpawnItem{at_block(14.5, 0.0, 0.5), {1.5, 0.0, 0.0}, {items::stone, 1}});
+            for (int i = 0; i < 3; ++i) c.push_back(SpawnItem{at_block(16.05, 0.2 + 0.3 * i, 3.3 + 0.2 * i), {}, {items::dirt, 1}});
+            for (int i = 0; i < 4; ++i) c.push_back(SpawnItem{at_block(17.2 + 0.2 * i, 0.3, 3.5), {}, {items::sand, 1}});
+            c.push_back(SummonEntity{"minecraft:arrow", {20.5, 0.73, -2.5}, {-1.0, 0.04, 0.0}, 80, 0});
+            c.push_back(SummonEntity{"minecraft:snowball", {12.5, 0.6, -0.7}, {1.0, 0.1, 0.0}, 80, 0});
+        }
+        return c;
+    }, 5};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
-            tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario()};
+            tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
+            plate_target_scenario()};
 }
 
 } // namespace circuit::test

@@ -9,9 +9,18 @@ constexpr std::array<std::uint16_t, blocks::button_kinds> button_items{
     items::oak_button, items::spruce_button, items::birch_button, items::jungle_button, items::acacia_button,
     items::cherry_button, items::dark_oak_button, items::pale_oak_button, items::mangrove_button, items::bamboo_button,
     items::crimson_button, items::warped_button, items::stone_button, items::polished_blackstone_button};
+constexpr std::array<std::uint16_t, blocks::button_kinds> plate_items{
+    items::oak_pressure_plate, items::spruce_pressure_plate, items::birch_pressure_plate, items::jungle_pressure_plate,
+    items::acacia_pressure_plate, items::cherry_pressure_plate, items::dark_oak_pressure_plate, items::pale_oak_pressure_plate,
+    items::mangrove_pressure_plate, items::bamboo_pressure_plate, items::crimson_pressure_plate, items::warped_pressure_plate,
+    items::stone_pressure_plate, items::polished_blackstone_pressure_plate};
 } // namespace
 
 std::uint16_t button_item(BlockState s) { return button_items[s.variant() % blocks::button_kinds]; }
+std::uint16_t plate_item(BlockState s) {
+    if (s.is(BlockType::weighted_plate)) return s.variant() == 1 ? items::heavy_weighted_pressure_plate : items::light_weighted_pressure_plate;
+    return plate_items[s.variant() % blocks::button_kinds];
+}
 
 std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Direction horizontal, Direction look) {
     // Mounted on the clicked face as levers are.
@@ -21,6 +30,8 @@ std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Directio
         if (face == Direction::down) return blocks::button(kind, false, horizontal, blocks::LeverFace::ceiling);
         return blocks::button(kind, false, face, blocks::LeverFace::wall);
     }
+    if (const auto it = std::ranges::find(plate_items, item); it != plate_items.end())
+        return blocks::pressure_plate(static_cast<blocks::ButtonKind>(it - plate_items.begin()));
     switch (item) {
     case items::stone: return blocks::stone();
     case items::glass: return blocks::glass();
@@ -49,6 +60,9 @@ std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Directio
     // under blocks; an approximation of the official choice by the
     // player's view).
     case items::redstone_torch: return contracts::is_horizontal(face) ? blocks::wall_torch(face) : blocks::torch();
+    case items::light_weighted_pressure_plate: return blocks::weighted_plate(false);
+    case items::heavy_weighted_pressure_plate: return blocks::weighted_plate(true);
+    case items::target: return blocks::target();
     default: return std::nullopt;
     }
 }
@@ -57,6 +71,7 @@ bool has_collision(BlockState s) {
     switch (s.type()) {
     case BlockType::air: case BlockType::redstone_wire: case BlockType::lever: case BlockType::wheat: case BlockType::water:
     case BlockType::redstone_torch: case BlockType::redstone_wall_torch: case BlockType::button:
+    case BlockType::pressure_plate: case BlockType::weighted_plate:
         return false;
     case BlockType::other: return other_has_collision(s);
     default: return true;

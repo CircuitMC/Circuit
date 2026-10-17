@@ -39,6 +39,9 @@ enum class BlockType : std::uint8_t {
     redstone_torch,      // flag: lit
     redstone_wall_torch, // facing: away from the block it hangs on (horizontal); flag: lit
     button,              // facing (horizontal) and level (LeverFace): mounting, as for levers; flag: powered; variant: ButtonKind
+    pressure_plate,      // flag: powered; variant: ButtonKind (the same kinds)
+    weighted_plate,      // level: power 0-15; variant: 0 light, 1 heavy
+    target,              // level: power 0-15
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -49,7 +52,7 @@ enum class WireSide : std::uint8_t { none = 0, side = 1, up = 2 };
 
 // Packed state: bits 0-7 type, 8-10 facing, 11-14 level, 15 flag, 16-17 delay-1,
 // 18-25 the four wire sides (two bits each: north, south, west, east) or,
-// for buttons, the variant. An `other` state keeps its internal registry
+// for buttons and pressure plates, the variant. An `other` state keeps its internal registry
 // state in bits 8-31 instead.
 class BlockState {
 public:
@@ -78,7 +81,7 @@ public:
         return static_cast<WireSide>((raw_ >> wire_shift(d)) & 3);
     }
     [[nodiscard]] constexpr bool wire_connected(Direction d) const noexcept { return wire_side(d) != WireSide::none; }
-    // Which block of a family the state is (buttons: ButtonKind).
+    // Which block of a family the state is (buttons and pressure plates: ButtonKind).
     [[nodiscard]] constexpr std::uint8_t variant() const noexcept { return static_cast<std::uint8_t>((raw_ >> 18) & 0xFF); }
 
     [[nodiscard]] constexpr BlockState with_facing(Direction d) const noexcept {
@@ -177,7 +180,8 @@ constexpr BlockState torch(bool lit = true) { return BlockState::of(BlockType::r
 constexpr BlockState wall_torch(Direction facing, bool lit = true) {
     return BlockState::of(BlockType::redstone_wall_torch).with_facing(facing).with_flag(lit);
 }
-// The buttons, wooden ones first (registry names: "<kind>_button").
+// The buttons and pressure plates, wooden ones first (registry names:
+// "<kind>_button", "<kind>_pressure_plate").
 enum class ButtonKind : std::uint8_t {
     oak, spruce, birch, jungle, acacia, cherry, dark_oak, pale_oak, mangrove, bamboo, crimson, warped,
     stone, polished_blackstone,
@@ -189,12 +193,26 @@ constexpr BlockState button(ButtonKind kind, bool powered = false, Direction fac
     return BlockState::of(BlockType::button).with_variant(static_cast<std::uint8_t>(kind)).with_flag(powered).with_facing(facing)
         .with_level(static_cast<std::uint8_t>(face));
 }
+constexpr BlockState pressure_plate(ButtonKind kind, bool powered = false) {
+    return BlockState::of(BlockType::pressure_plate).with_variant(static_cast<std::uint8_t>(kind)).with_flag(powered);
+}
+constexpr BlockState weighted_plate(bool heavy, std::uint8_t power = 0) {
+    return BlockState::of(BlockType::weighted_plate).with_variant(heavy ? 1 : 0).with_level(power);
+}
+constexpr BlockState target(std::uint8_t power = 0) { return BlockState::of(BlockType::target).with_level(power); }
 } // namespace blocks
 // "oak" for an oak button.
 std::string_view button_kind_name(std::uint8_t variant) noexcept;
 // Wooden buttons stay pressed longer and arrows press them.
 constexpr bool wooden_button(BlockState s) noexcept {
     return s.is(BlockType::button) && s.variant() < static_cast<std::uint8_t>(blocks::ButtonKind::stone);
+}
+// Blocks of several kinds that share a BlockType and keep the kind as their variant.
+constexpr bool has_variant(BlockType t) noexcept {
+    return t == BlockType::button || t == BlockType::pressure_plate || t == BlockType::weighted_plate;
+}
+constexpr std::uint8_t variant_count(BlockType t) noexcept {
+    return t == BlockType::weighted_plate ? 2 : has_variant(t) ? blocks::button_kinds : 1;
 }
 constexpr bool is_torch(BlockType t) noexcept { return t == BlockType::redstone_torch || t == BlockType::redstone_wall_torch; }
 
@@ -242,7 +260,7 @@ inline bool is_solid(BlockState s) noexcept {
     case BlockType::stone: case BlockType::glass: case BlockType::obsidian: case BlockType::redstone_block:
     case BlockType::redstone_lamp: case BlockType::observer: case BlockType::piston: case BlockType::sticky_piston:
     case BlockType::piston_head: case BlockType::slime_block: case BlockType::hopper: case BlockType::chest:
-    case BlockType::moving_piston:
+    case BlockType::moving_piston: case BlockType::target:
         return true;
     case BlockType::other: return other_has_collision(s);
     default:
@@ -256,7 +274,7 @@ bool other_movable(BlockState s) noexcept;
 inline bool is_movable(BlockState s) noexcept {
     switch (s.type()) {
     case BlockType::stone: case BlockType::glass: case BlockType::redstone_block: case BlockType::redstone_lamp:
-    case BlockType::observer: case BlockType::slime_block:
+    case BlockType::observer: case BlockType::slime_block: case BlockType::target:
         return true;
     case BlockType::piston: case BlockType::sticky_piston:
         return !s.flag();
@@ -272,7 +290,7 @@ constexpr bool destroyed_by_piston(BlockType t) noexcept {
     switch (t) {
     case BlockType::redstone_wire: case BlockType::lever: case BlockType::repeater: case BlockType::comparator:
     case BlockType::water: case BlockType::wheat: case BlockType::redstone_torch: case BlockType::redstone_wall_torch:
-    case BlockType::button:
+    case BlockType::button: case BlockType::pressure_plate: case BlockType::weighted_plate:
         return true;
     default:
         return false;
@@ -295,8 +313,8 @@ void for_each_modeled_state(F&& f) {
             if (s->is(BlockType::redstone_wire)) {
                 for (std::uint32_t shape = 0; shape < 256; ++shape)
                     if (const auto w = BlockState::decode(raw | (shape << 18))) f(*w);
-            } else if (s->is(BlockType::button)) {
-                for (std::uint32_t kind = 0; kind < blocks::button_kinds; ++kind) f(s->with_variant(static_cast<std::uint8_t>(kind)));
+            } else if (has_variant(s->type())) {
+                for (std::uint32_t kind = 0; kind < variant_count(s->type()); ++kind) f(s->with_variant(static_cast<std::uint8_t>(kind)));
             } else {
                 f(*s);
             }

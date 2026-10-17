@@ -21,7 +21,7 @@ namespace circuit::gameplay::detail {
 // approximation of support shapes from collision data).
 bool is_conductor(BlockState s) noexcept {
     switch (s.type()) {
-    case BlockType::stone: case BlockType::obsidian: case BlockType::redstone_lamp: return true;
+    case BlockType::stone: case BlockType::obsidian: case BlockType::redstone_lamp: case BlockType::target: return true;
     case BlockType::other: return other_opaque(s);
     default: return false;
     }
@@ -31,7 +31,7 @@ bool face_sturdy(BlockState s, Direction face) noexcept {
     switch (s.type()) {
     case BlockType::other: return other_opaque(s) || other_face_covered(s, face);
     case BlockType::stone: case BlockType::glass: case BlockType::obsidian: case BlockType::redstone_block:
-    case BlockType::slime_block: case BlockType::redstone_lamp: case BlockType::observer:
+    case BlockType::slime_block: case BlockType::redstone_lamp: case BlockType::observer: case BlockType::target:
         return true;
     case BlockType::piston: case BlockType::sticky_piston:
         // An extended base keeps only its back face whole.
@@ -81,7 +81,10 @@ bool can_survive(RuleContext& ctx, BlockPos pos, BlockState s) {
         const auto d = attachment(s);
         return face_sturdy(ctx.block(pos.relative(d)), contracts::opposite(d));
     }
-    case BlockType::redstone_torch: return supports_torch(ctx, ctx.block(pos.relative(Direction::down)));
+    // Plates stand where floor torches do (an approximation of rigid and
+    // center support).
+    case BlockType::redstone_torch: case BlockType::pressure_plate: case BlockType::weighted_plate:
+        return supports_torch(ctx, ctx.block(pos.relative(Direction::down)));
     default: return true;
     }
 }
@@ -92,6 +95,8 @@ std::uint8_t emitted(RuleContext& ctx, BlockPos pos, BlockState s, Direction tow
     case BlockType::redstone_torch: case BlockType::redstone_wall_torch:
         return s.flag() && toward != attachment(s) ? 15 : 0;
     case BlockType::redstone_block: return 15;
+    case BlockType::pressure_plate: case BlockType::weighted_plate: return plate_output(s);
+    case BlockType::target: return s.level();
     case BlockType::repeater: return s.flag() && toward == s.facing() ? 15 : 0;
     case BlockType::comparator: {
         if (!s.flag() || toward != s.facing()) return 0;
@@ -113,6 +118,7 @@ std::uint8_t direct(RuleContext& ctx, BlockPos pos, BlockState s, Direction towa
     switch (s.type()) {
     case BlockType::lever: case BlockType::button: return s.flag() && toward == attachment(s) ? 15 : 0;
     case BlockType::redstone_torch: case BlockType::redstone_wall_torch: return s.flag() && toward == Direction::up ? 15 : 0;
+    case BlockType::pressure_plate: case BlockType::weighted_plate: return toward == Direction::down ? plate_output(s) : 0;
     case BlockType::repeater: case BlockType::comparator: case BlockType::observer: case BlockType::redstone_wire:
         return emitted(ctx, pos, s, toward, wires);
     default: return 0;

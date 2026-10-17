@@ -181,6 +181,19 @@ constexpr std::array reference_v4_mechanisms{
         "(button_basics, water_torch_button). Gaps: a "
         "pending check of one button kind also serves another kind placed at the same position; other "
         "projectiles that press buttons are not modeled."},
+    MechanismEntry{"pressure_plate", l0_exact, l2_declared_deviation, harness_trace,
+        "Wooden, stone, polished blackstone and weighted plates of every kind sense the entities whose box meets "
+        "the lower quarter of their cell, a pixel in from each side: an unpowered plate checks when an entity's "
+        "move ends in its cell (resting items every fourth tick), a powered one 20 ticks (weighted: 10) after "
+        "each check; wooden plates give 15 for any entity, a light weighted plate a level per entity, a heavy "
+        "one a level per ten; changes are quiet and update around the plate and the block below it, which it "
+        "powers strongly; water does not pass them (pressure_plates, plate_target_more). Gaps: no mobs or "
+        "players press plates yet."},
+    MechanismEntry{"target", l0_exact, l2_declared_deviation, harness_trace,
+        "A projectile hitting a target block gives 1 to 15 by how near the center of the hit face it hit "
+        "(the larger of the two offsets, in double precision), for 20 ticks after an arrow and 8 after a "
+        "snowball; hits while it waits are ignored (target_block, plate_target_more). Gaps: other projectiles; "
+        "a target placed with power keeps it."},
     MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, harness_trace,
         "Entities tick in ascending id order once per tick; one merged away before its turn does not tick "
         "(item_hopper_pickup, item_water_current, item_merge, item_merge_moving). Gap: compared for item "
@@ -191,9 +204,9 @@ constexpr std::array reference_v4_mechanisms{
         "order after a chunk reload."},
     MechanismEntry{"support", l0_exact, l0_exact, harness_trace,
         "Dust needs a whole top face or a hopper below it, repeaters and comparators a whole top face, levers, "
-        "buttons and wall torches a whole face to hang on, floor torches the middle of the top; an update that "
-        "finds the support gone breaks them with their drops (support, lever_attachment, torch_basics, "
-        "button_basics). The drops' positions follow item_entity."},
+        "buttons and wall torches a whole face to hang on, floor torches and pressure plates the middle of the top; "
+        "an update that finds the support gone breaks them with their drops (support, lever_attachment, "
+        "torch_basics, button_basics, pressure_plates). The drops' positions follow item_entity."},
     MechanismEntry{"container_menus", l0_exact, l2_declared_deviation, controlled_experiment,
         "Player windows and chest, double chest and hopper menus with every click mode, applied as commands. "
         "A 48-step client scenario (every click mode, double chests, hoppers, the own window, throws and "

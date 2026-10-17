@@ -66,7 +66,7 @@ When the command is applied:
 - **Placement:**
   - the block replaces the clicked block if that is air or water, otherwise it goes next to it;
   - the target must be air or water;
-  - dust, repeaters and comparators need a solid block below, and levers and buttons a solid block to attach to; a redstone torch goes on the side of the clicked block, or on top of it when the top or bottom was clicked, and needs its support there;
+  - dust, repeaters and comparators need a solid block below, and levers and buttons a solid block to attach to; a redstone torch goes on the side of the clicked block, or on top of it when the top or bottom was clicked, and needs its support there; pressure plates need a block below to stand on;
   - TNT placed where redstone reaches it is primed at once;
   - a chest joins a neighboring single chest as the official server does: next to one of the same facing, clockwise first, unless the player sneaks; when sneaking, the chest whose side was clicked, taking its facing.
 - **Breaking:** any block but air and moving pistons; a piston head takes its base along.

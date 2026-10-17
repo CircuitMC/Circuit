@@ -509,6 +509,153 @@
         "deviations": [
           "click sounds"
         ]
+      },
+      "oak_pressure_plate": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "click sounds",
+          "no mobs or players press it yet"
+        ]
+      },
+      "spruce_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "no mobs or players press it yet"
+        ],
+        "note": "A wooden plate, as the compared oak plate"
+      },
+      "birch_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "no mobs or players press it yet"
+        ],
+        "note": "A wooden plate, as the compared oak plate"
+      },
+      "jungle_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "no mobs or players press it yet"
+        ],
+        "note": "A wooden plate, as the compared oak plate"
+      },
+      "acacia_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "no mobs or players press it yet"
+        ],
+        "note": "A wooden plate, as the compared oak plate"
+      },
+      "cherry_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "no mobs or players press it yet"
+        ],
+        "note": "A wooden plate, as the compared oak plate"
+      },
+      "dark_oak_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "no mobs or players press it yet"
+        ],
+        "note": "A wooden plate, as the compared oak plate"
+      },
+      "pale_oak_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "no mobs or players press it yet"
+        ],
+        "note": "A wooden plate, as the compared oak plate"
+      },
+      "mangrove_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "no mobs or players press it yet"
+        ],
+        "note": "A wooden plate, as the compared oak plate"
+      },
+      "bamboo_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "no mobs or players press it yet"
+        ],
+        "note": "A wooden plate, as the compared oak plate"
+      },
+      "crimson_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "no mobs or players press it yet"
+        ],
+        "note": "A wooden plate, as the compared oak plate"
+      },
+      "warped_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "no mobs or players press it yet"
+        ],
+        "note": "A wooden plate, as the compared oak plate"
+      },
+      "stone_pressure_plate": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "click sounds",
+          "no mobs or players press it yet"
+        ]
+      },
+      "polished_blackstone_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "deviations": [
+          "click sounds",
+          "no mobs or players press it yet"
+        ],
+        "note": "As the compared stone plate"
+      },
+      "light_weighted_pressure_plate": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "click sounds",
+          "no mobs or players press it yet"
+        ]
+      },
+      "heavy_weighted_pressure_plate": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "click sounds",
+          "no mobs or players press it yet"
+        ]
+      },
+      "target": {
+        "impl": "partial",
+        "evidence": "compared",
+        "deviations": [
+          "of the projectiles only arrows and snowballs hit it"
+        ]
       }
     },
     "item": {
@@ -769,6 +916,91 @@
         "note": "Placed"
       },
       "polished_blackstone_button": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "oak_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "spruce_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "birch_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "jungle_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "acacia_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "cherry_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "dark_oak_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "pale_oak_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "mangrove_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "bamboo_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "crimson_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "warped_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "stone_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "polished_blackstone_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "light_weighted_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "heavy_weighted_pressure_plate": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "target": {
         "impl": "partial",
         "evidence": "none",
         "note": "Placed"

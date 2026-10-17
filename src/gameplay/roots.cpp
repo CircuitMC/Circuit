@@ -20,6 +20,8 @@ void run_scheduled_tick(RuleContext& ctx, TickList list, const ScheduledTick& ti
     case BlockType::comparator: tick_comparator(ctx, tick.pos, s); break;
     case BlockType::redstone_torch: case BlockType::redstone_wall_torch: tick_torch(ctx, tick.pos, s); break;
     case BlockType::button: tick_button(ctx, tick.pos, s); break;
+    case BlockType::pressure_plate: case BlockType::weighted_plate: tick_plate(ctx, tick.pos, s); break;
+    case BlockType::target: tick_target(ctx, tick.pos, s); break;
     case BlockType::other: tick_falling_block(ctx, tick.pos, s); break;
     default: break;
     }

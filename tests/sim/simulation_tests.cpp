@@ -716,6 +716,25 @@ int main() {
         require(kept, "turn-offs are world state");
     });
 
+    suite.run("plates and targets sense entities across chunk edges", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("plates_targets"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the plate and target scenario");
+        const auto& ref = references[index];
+        std::size_t wooden = 0, light_max = 0, heavy_max = 0, targets = 0;
+        for (const auto& trace : ref.traces)
+            for (const auto& r : of_kind(trace, TraceKind::block_changed)) {
+                const auto next = BlockState::decode(static_cast<std::uint32_t>(r.b)).value();
+                if (r.pos == BlockPos{16, 0, 0} && next.is(BlockType::pressure_plate) && next.flag()) ++wooden;
+                if (r.pos == BlockPos{15, 0, 3} && next.is(BlockType::weighted_plate)) light_max = std::max<std::size_t>(light_max, next.level());
+                if (r.pos == BlockPos{17, 0, 3} && next.is(BlockType::weighted_plate)) heavy_max = std::max<std::size_t>(heavy_max, next.level());
+                if (next.is(BlockType::target) && next.level() > 0) ++targets;
+            }
+        // Four rounds: a sliding item presses the wooden plate each time;
+        // the items reaching across the edge pile up on the light plate.
+        require(wooden == 4 && light_max >= 3 && heavy_max >= 1 && targets == 8,
+                std::format("wooden {} light {} heavy {} targets {}", wooden, light_max, heavy_max, targets));
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");

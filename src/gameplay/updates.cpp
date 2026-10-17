@@ -179,6 +179,9 @@ void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
     case BlockType::lever: case BlockType::button: case BlockType::redstone_torch: case BlockType::redstone_wall_torch:
         if (*d == attachment(s) && !can_survive(ctx, target, s)) destroy_block(ctx, target);
         break;
+    case BlockType::pressure_plate: case BlockType::weighted_plate:
+        if (*d == Direction::down && !can_survive(ctx, target, s)) destroy_block(ctx, target);
+        break;
     case BlockType::piston_head:
         // A head without its base disappears.
         if (*d == contracts::opposite(s.facing()) && !head_has_base(ctx, target, s)) set_block(ctx, target, blocks::air());
@@ -244,6 +247,7 @@ void on_removed(RuleContext& ctx, BlockPos pos, BlockState previous) {
         }
         break;
     case BlockType::button: button_removed(ctx, pos, previous); break;
+    case BlockType::pressure_plate: case BlockType::weighted_plate: plate_removed(ctx, pos, previous); break;
     case BlockType::redstone_torch: case BlockType::redstone_wall_torch: torch_updates(ctx, pos); break;
     default: break;
     }

@@ -10,11 +10,12 @@
 namespace circuit::gameplay {
 namespace {
 // Registry blocks with a BlockType of their own (see evidence::ContentMapping),
-// besides the buttons.
-constexpr std::array<std::string_view, 24> modeled_names{
+// besides the buttons and pressure plates of each kind.
+constexpr std::array<std::string_view, 27> modeled_names{
     "air", "cave_air", "void_air", "stone", "glass", "obsidian", "redstone_block", "slime_block", "lever", "redstone_wire",
     "repeater", "redstone_lamp", "observer", "piston", "sticky_piston", "piston_head", "moving_piston", "hopper", "chest",
-    "comparator", "water", "wheat", "redstone_torch", "redstone_wall_torch"};
+    "comparator", "water", "wheat", "redstone_torch", "redstone_wall_torch", "light_weighted_pressure_plate",
+    "heavy_weighted_pressure_plate", "target"};
 constexpr std::array<std::string_view, blocks::button_kinds> button_names{
     "oak", "spruce", "birch", "jungle", "acacia", "cherry", "dark_oak", "pale_oak", "mangrove", "bamboo", "crimson", "warped",
     "stone", "polished_blackstone"};
@@ -39,6 +40,8 @@ constexpr Properties properties(BlockType t) noexcept {
     case BlockType::redstone_torch: return {false, false, true, false};
     case BlockType::redstone_wall_torch: return {true, false, true, false};
     case BlockType::button: return {true, true, true, false};
+    case BlockType::pressure_plate: return {false, false, true, false};
+    case BlockType::weighted_plate: case BlockType::target: return {false, true, false, false};
     default: return {false, false, false, false};
     }
 }
@@ -50,7 +53,10 @@ const std::vector<bool>& modeled_blocks() {
                 if (const auto b = registry::find_block(release, name)) out[*b] = true;
         };
         for (const auto name : modeled_names) mark(name);
-        for (const auto kind : button_names) mark(std::string(kind) + "_button");
+        for (const auto kind : button_names) {
+            mark(std::string(kind) + "_button");
+            mark(std::string(kind) + "_pressure_plate");
+        }
         return out;
     }();
     return modeled;
@@ -70,8 +76,8 @@ std::uint32_t registry_state_count() noexcept { return registry::state_count(); 
 
 bool same_block(BlockState a, BlockState b) noexcept {
     if (a.type() != b.type()) return false;
-    // Each kind of button is a block of its own.
-    if (a.is(BlockType::button)) return a.variant() == b.variant();
+    // Each kind of button or pressure plate is a block of its own.
+    if (has_variant(a.type())) return a.variant() == b.variant();
     return !a.is(BlockType::other) || registry::block_of(a.registry_state()) == registry::block_of(b.registry_state());
 }
 
@@ -96,9 +102,10 @@ contracts::Result<BlockState> BlockState::decode(std::uint32_t raw) noexcept {
     }
     if (raw >> 26) return invalid;
     if (raw >> 18) {
-        // Only dust stores sides, each none, side or up, and only buttons a variant.
-        if (s.is(BlockType::button)) {
-            if (s.variant() >= blocks::button_kinds) return invalid;
+        // Only dust stores sides, each none, side or up, and only blocks of
+        // several kinds a variant.
+        if (has_variant(s.type())) {
+            if (s.variant() >= variant_count(s.type())) return invalid;
         } else if (!s.is(BlockType::redstone_wire)) {
             return invalid;
         } else {
@@ -220,6 +227,11 @@ std::string block_notation(BlockState s) {
         return std::format("minecraft:{}_button[face={},facing={},powered={}]", button_kind_name(s.variant()), faces[s.level() % 3],
                            direction_name(s.facing()), b(s.flag()));
     }
+    case BlockType::pressure_plate:
+        return std::format("minecraft:{}_pressure_plate[powered={}]", button_kind_name(s.variant()), b(s.flag()));
+    case BlockType::weighted_plate:
+        return std::format("minecraft:{}_weighted_pressure_plate[power={}]", s.variant() == 1 ? "heavy" : "light", s.level());
+    case BlockType::target: return std::format("minecraft:target[power={}]", s.level());
     case BlockType::other: return registry::notation(s.registry_state());
     default: return std::format("circuit:unrepresentable[raw={}]", s.raw());
     }

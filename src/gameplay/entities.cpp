@@ -300,7 +300,11 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
             ctx.record(TraceKind::entity_changed_chunk, contracts::block_of(p), id.value, contracts::pack_chunk(from), contracts::pack_chunk(to));
         ctx.relocate_entity(id, p); // `e` must not be used after relocation.
     }
-    if (moves && enter_hoppers(ctx, id)) return;
+    if (moves) {
+        // Plates and buttons in the cells its box reaches react to the move.
+        if (const auto* self = ctx.peek_entity(id)) detail::entity_inside(ctx, *self);
+        if (enter_hoppers(ctx, id)) return;
+    }
     const bool changed_block = contracts::block_of(start) != contracts::block_of(p);
     if ((ticks % 40 == 0 || (changed_block && ticks % 2 == 0)) && !merge_with_neighbours(ctx, id)) return;
     auto* self = ctx.entity(id);
@@ -367,7 +371,8 @@ void run_entity(RuleContext& ctx, EntityId id) {
         ctx.remove_entity(id);
         return;
     }
-    switch (e->kind) {
+    const auto kind = e->kind;
+    switch (kind) {
     case EntityKind::item: run_item(ctx, id, *e); break;
     case EntityKind::falling_block: detail::run_falling_block(ctx, id, *e); break;
     case EntityKind::primed_tnt: detail::run_primed_tnt(ctx, id, *e); break;
@@ -375,6 +380,14 @@ void run_entity(RuleContext& ctx, EntityId id) {
     case EntityKind::snowball: detail::run_snowball(ctx, id, *e); break;
     case EntityKind::minecart: detail::run_minecart(ctx, id, *e); break;
     case EntityKind::boat: detail::run_boat(ctx, id, *e); break;
+    }
+    // Entities that move every tick press plates and make buttons check
+    // where their move ends (items, arrows and snowballs do in their tick).
+    switch (kind) {
+    case EntityKind::falling_block: case EntityKind::primed_tnt: case EntityKind::minecart: case EntityKind::boat:
+        if (const auto* after = ctx.peek_entity(id)) detail::entity_inside(ctx, *after);
+        break;
+    default: break;
     }
 }
 

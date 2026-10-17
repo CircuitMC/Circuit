@@ -1589,6 +1589,48 @@ int main() {
                 "a stone button drops by hand");
     });
 
+    suite.run("pressure plates sense entities; target blocks grade hits", [] {
+        using circuit::gameplay::blocks::ButtonKind;
+        Sim s;
+        std::vector<CommandBody> build = floor(-2, 8, -1, 8);
+        build.push_back(place({0, 0, 0}, blocks::pressure_plate(ButtonKind::oak)));
+        build.push_back(place({0, 0, 1}, blocks::lamp()));
+        build.push_back(place({0, 0, 3}, blocks::pressure_plate(ButtonKind::stone)));
+        build.push_back(place({0, 0, 4}, blocks::lamp()));
+        build.push_back(place({0, 0, 6}, blocks::weighted_plate(false)));
+        build.push_back(place({4, 0, 6}, blocks::weighted_plate(true)));
+        s.tick(build);
+        std::vector<CommandBody> drops{SpawnItem{at_block(0.5, 0.5, 0.5), {}, {items::stone, 1}},
+                                       SpawnItem{at_block(0.5, 0.5, 3.5), {}, {items::stone, 1}}};
+        for (int i = 0; i < 5; ++i) {
+            drops.push_back(SpawnItem{at_block(0.2 + 0.15 * i, 0.1, 6.5), {}, {items::stone, 1}});
+            drops.push_back(SpawnItem{at_block(4.2 + 0.15 * i, 0.1, 6.5), {}, {items::stone, 1}});
+        }
+        s.tick(drops);
+        for (int i = 0; i < 25; ++i) s.tick();
+        require(s.at({0, 0, 0}) == blocks::pressure_plate(ButtonKind::oak, true) && s.at({0, 0, 1}).flag(), "an item presses a wooden plate");
+        require(s.at({0, 0, 3}) == blocks::pressure_plate(ButtonKind::stone) && !s.at({0, 0, 4}).flag(), "but not a stone one");
+        require(s.at({0, 0, 6}) == blocks::weighted_plate(false, 5), "a light plate counts five items");
+        require(s.at({4, 0, 6}) == blocks::weighted_plate(true, 1), "a heavy one a level per ten");
+        // Without its support a plate drops; the lamp goes out 4 ticks later.
+        s.tick({place({0, -1, 0}, blocks::air())});
+        require(s.at({0, 0, 0}).is_air(), "the plate dropped");
+        for (int i = 0; i < 4; ++i) s.tick();
+        require(!s.at({0, 0, 1}).flag(), "the lamp is out");
+        // An arrow at the center of a target's face gives 15 for 20 ticks; a
+        // snowball off center gives less, for 8.
+        s.tick({place({4, 0, 8}, blocks::target()), place({4, 0, 4}, blocks::target()),
+                SummonEntity{"minecraft:arrow", {9.5, 0.73, 8.5}, {-1.0, 0.04, 0.0}, 80, 0},
+                SummonEntity{"minecraft:snowball", {8.5, 0.6, 4.8}, {-1.0, 0.1, 0.0}, 80, 0}});
+        for (int i = 0; i < 5; ++i) s.tick();
+        const auto centered = s.at({4, 0, 8}).level(), off = s.at({4, 0, 4}).level();
+        require(centered == 15 && off > 1 && off < 15, std::format("centered {}, off center {}", centered, off));
+        for (int i = 0; i < 8; ++i) s.tick();
+        require(s.at({4, 0, 4}).level() == 0 && s.at({4, 0, 8}).level() == 15, "the snowball's 8 ticks are over, not the arrow's 20");
+        for (int i = 0; i < 12; ++i) s.tick();
+        require(s.at({4, 0, 8}).level() == 0, "the arrow's too");
+    });
+
     suite.run("entities leave with their chunk and come back under new ids", [] {
         Sim s(bundle(), 7, 0); // tick 1: chunk (0,0) entity ticking
         s.tick({place({4, -1, 4}, blocks::stone()), SpawnItem{at_block(4.5, 0.0, 4.5), {}, {items::stone, 3}}}); // 2

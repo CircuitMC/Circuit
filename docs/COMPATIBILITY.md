@@ -50,6 +50,8 @@ Every block state of both versions is represented, with its official name and pr
 | `wheat` | `age` | — |
 | `redstone_torch`, `redstone_wall_torch` | `facing`, `lit` | — |
 | `*_button` (every kind) | `face`, `facing`, `powered` | — |
+| `*_pressure_plate` (every kind, the weighted ones too) | `powered`, `power` | — |
+| `target` | `power` | — |
 
 **Other blocks** keep every property and are inert: they are solid for items when they have a collision shape, conduct redstone power when opaque, support dust and diodes on faces their collision shape covers (or any face when opaque), cannot be moved by pistons, break at their documented hardness with their documented tool, and do nothing else. With the official data pack they drop from their loot tables, except where a table draws random numbers (see [data packs](DATA_PACKS.md)). Players collide with their exact collision shapes. A world may contain them, and the client shows them, but no machine that depends on their behavior works yet.
 
@@ -75,7 +77,7 @@ Block and item registration do not provide behavior. Rails, coral fans and honey
 | TNT ignition, fuse, motion and explosions | Redstone and explosions prime TNT (placed by commands, players or pistons); primed TNT's motion and fuse and its explosions (blocks, drops, chain reactions, item damage and knockback) match recorded traces of both versions. Burning arrows prime TNT; fire, flint and steel and dispensers do not, and explosions do not hurt players. |
 | TNT duplication machines | Not supported. Primed TNT and explosions exist, but common machine components such as rails, minecarts and coral fans are absent, and TNT duplication itself is not modeled. No TNT-duplication reference fixture exists. |
 | Honey-based flying machines | Not supported; honey-block behavior is absent. Slime and piston tests do not establish compatibility for complete flying-machine designs. |
-| Redstone torches and buttons | Torch inverters, towers and burnout, and buttons pressed by players and arrows, match recorded traces of both versions, including the update order of the dust they drive. Pressure plates, tripwire and target blocks are not modeled yet. |
+| Redstone torches, buttons, pressure plates and target blocks | Torch inverters, towers and burnout, buttons pressed by players and arrows, pressure plates sensing items and arrows (weighted ones counting them) and target blocks grading hits match recorded traces of both versions, including the update order of the dust they drive. Mobs and players do not press plates yet, and tripwire is not modeled. |
 | Dispensers and droppers | Not implemented. Machines that need them are not supported. |
 | Portal chunk loaders, sand duplication and bedrock-breaking machines | No compatibility claim. Dimensions/portals and the required block/interaction coverage are absent; falling blocks exist but are not duplicated. |
 

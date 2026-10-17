@@ -31,6 +31,7 @@ constexpr std::int32_t arrow_despawn_life = 1200;
 struct Hit {
     Vec3 at;
     BlockPos block;
+    int axis{}; // of the face hit
 };
 
 // Where the segment from `from` to `to` first meets a block's collision
@@ -59,11 +60,13 @@ std::optional<Hit> clip(RuleContext& ctx, Vec3 from, Vec3 to) {
         const auto s = ctx.world().contains_y(p.y) ? ctx.block(p) : blocks::air();
         if (!s.is_air()) {
             std::optional<double> best;
+            int axis = 0;
             const auto boxes = s.is_unloaded() ? std::span<const registry::Box>{} : physics::collision_boxes(s, release);
             for (const auto& b : boxes) {
                 const std::array<double, 3> low{p.x + b.min_x, p.y + b.min_y, p.z + b.min_z};
                 const std::array<double, 3> high{p.x + b.max_x, p.y + b.max_y, p.z + b.max_z};
                 double t0 = 0.0, t1 = 1.0;
+                int entered = -1;
                 bool inside = true, missed = false;
                 for (int i = 0; i < 3 && !missed; ++i) {
                     if (delta[i] == 0.0) {
@@ -74,17 +77,24 @@ std::optional<Hit> clip(RuleContext& ctx, Vec3 from, Vec3 to) {
                     double ta = (low[i] - start[i]) / delta[i], tb = (high[i] - start[i]) / delta[i];
                     if (ta > tb) std::swap(ta, tb);
                     inside = inside && ta < 0.0;
-                    t0 = std::max(t0, ta);
+                    if (ta > t0) t0 = ta, entered = i;
                     t1 = std::min(t1, tb);
                     if (t0 > t1) missed = true;
                 }
                 if (missed) continue;
                 // A segment that starts inside a box hits it at once.
                 const double t = inside ? 0.001 : t0;
-                if (!best || t < *best) best = t;
+                if (!best || t < *best) {
+                    best = t;
+                    // Inside: the face its main motion leads to.
+                    axis = entered >= 0 ? entered
+                         : std::abs(delta[0]) >= std::abs(delta[1]) && std::abs(delta[0]) >= std::abs(delta[2]) ? 0
+                         : std::abs(delta[1]) >= std::abs(delta[2])                                         ? 1
+                                                                                                           : 2;
+                }
             }
             if (best)
-                return Hit{{from.x + *best * delta[0], from.y + *best * delta[1], from.z + *best * delta[2]}, p};
+                return Hit{{from.x + *best * delta[0], from.y + *best * delta[1], from.z + *best * delta[2]}, p, axis};
         }
         if (cell == last) return std::nullopt;
         const int axis = t_max[0] <= t_max[1] ? (t_max[0] <= t_max[2] ? 0 : 2) : (t_max[1] <= t_max[2] ? 1 : 2);
@@ -164,6 +174,7 @@ void step_arrow(RuleContext& ctx, EntityId id, Entity& e) {
         const bool burning = e.fire > 0;
         moved(ctx, id, start, at);
         if (burning && is_tnt(ctx.block(hit->block))) prime_by_fire(ctx, hit->block);
+        target_hit(ctx, hit->block, hit->at, hit->axis, true);
         return;
     }
     const double drag = in_water ? static_cast<double>(0.6f) : static_cast<double>(0.99f);
@@ -176,8 +187,8 @@ void step_arrow(RuleContext& ctx, EntityId id, Entity& e) {
 
 void run_arrow(RuleContext& ctx, EntityId id, Entity& e) {
     step_arrow(ctx, id, e);
-    // Where it is now, flying or stuck, it presses wooden buttons.
-    if (const auto* arrow = ctx.peek_entity(id)) arrow_inside(ctx, *arrow);
+    // Where it is now, flying or stuck, it presses plates and wooden buttons.
+    if (const auto* arrow = ctx.peek_entity(id)) entity_inside(ctx, *arrow);
 }
 
 void run_snowball(RuleContext& ctx, EntityId id, Entity& e) {
@@ -189,10 +200,12 @@ void run_snowball(RuleContext& ctx, EntityId id, Entity& e) {
     const Vec3 to{start.x + e.velocity.x, start.y + e.velocity.y, start.z + e.velocity.z};
     if (const auto hit = clip(ctx, start, to)) {
         moved(ctx, id, start, hit->at);
+        target_hit(ctx, hit->block, hit->at, hit->axis, false);
         remove(ctx, id, hit->at, RemovalReason::despawned);
         return;
     }
     moved(ctx, id, start, to);
+    if (const auto* ball = ctx.peek_entity(id)) entity_inside(ctx, *ball);
 }
 
 } // namespace circuit::gameplay::detail

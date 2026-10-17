@@ -7,9 +7,9 @@
 // 30 (the wooden ones). Using a pressed button does nothing.
 //
 // The check releases the button unless an arrow's box meets the button's
-// shape, which only wooden buttons heed: they are pressed by an arrow that
-// ends its tick in their cell with its box in their shape, flying or stuck,
-// and stay pressed, checking again, while one is there. An arrow flying
+// shape, which only wooden buttons heed: an entity that ends its move in
+// their cell (an arrow flying or stuck) makes them check, and they stay
+// pressed, checking again, while an arrow is there. An arrow flying
 // through without ending a tick there does not press them.
 //
 // The shape is 6 by 4 pixels on its block's face, 2 deep (1 pressed),
@@ -86,16 +86,8 @@ void button_removed(RuleContext& ctx, BlockPos pos, BlockState previous) {
     if (previous.flag()) button_updates(ctx, pos, previous);
 }
 
-void arrow_inside(RuleContext& ctx, const Entity& arrow) {
-    const auto box = entity_box(arrow);
-    const auto cell = [](double v) { return static_cast<std::int32_t>(std::floor(v)); };
-    for (auto z = cell(box.min_z); z <= cell(box.max_z); ++z)
-        for (auto y = cell(box.min_y); y <= cell(box.max_y); ++y)
-            for (auto x = cell(box.min_x); x <= cell(box.max_x); ++x) {
-                const BlockPos pos{x, y, z};
-                const auto s = ctx.block(pos);
-                if (wooden_button(s) && !s.flag()) check_pressed(ctx, pos, s);
-            }
+void entity_at_button(RuleContext& ctx, BlockPos pos, BlockState s) {
+    if (wooden_button(s) && !s.flag()) check_pressed(ctx, pos, s);
 }
 
 } // namespace circuit::gameplay::detail

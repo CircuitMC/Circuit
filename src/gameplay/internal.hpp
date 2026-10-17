@@ -78,8 +78,9 @@ bool has_neighbor_signal(RuleContext& ctx, BlockPos pos);
 // The block a player places with `item`, oriented by the player's facing and
 // the clicked face; nullopt for items that place no block.
 std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Direction horizontal, Direction look);
-// The item of a button's kind.
+// The item of a button's or a pressure plate's kind.
 std::uint16_t button_item(BlockState s);
+std::uint16_t plate_item(BlockState s);
 // Whether a block obstructs players standing in its cell.
 bool has_collision(BlockState s);
 // Records a player slot (contracts::player_slots: the cursor) after a change.
@@ -140,9 +141,23 @@ void tick_torch(RuleContext& ctx, BlockPos pos, BlockState s);
 void press_button(RuleContext& ctx, BlockPos pos, BlockState s);
 void tick_button(RuleContext& ctx, BlockPos pos, BlockState s);
 void button_removed(RuleContext& ctx, BlockPos pos, BlockState previous);
-// An arrow at the end of its tick, in or out of the ground: the wooden
-// buttons in the cells its box reaches check for arrows.
-void arrow_inside(RuleContext& ctx, const Entity& arrow);
+// An entity whose box ends a move in the cell of a wooden button makes it
+// check for arrows.
+void entity_at_button(RuleContext& ctx, BlockPos pos, BlockState s);
+
+// ---- pressure plates and target blocks (plate.cpp) ----
+bool is_plate(BlockType t) noexcept;
+std::uint8_t plate_output(BlockState s) noexcept;
+void tick_plate(RuleContext& ctx, BlockPos pos, BlockState s);
+void plate_removed(RuleContext& ctx, BlockPos pos, BlockState previous);
+// An entity at the end of its move: the plates and buttons in the cells its
+// box reaches react.
+void entity_inside(RuleContext& ctx, const Entity& entity);
+// A projectile hit the face along `axis` (0 x, 1 y, 2 z) of the block at
+// `pos` at `at`: a target block gives a signal for 20 ticks after an arrow,
+// 8 after another projectile.
+void target_hit(RuleContext& ctx, BlockPos pos, contracts::Vec3 at, int axis, bool arrow);
+void tick_target(RuleContext& ctx, BlockPos pos, BlockState s);
 
 bool piston_powered(RuleContext& ctx, BlockPos pos, Direction facing);
 void check_piston(RuleContext& ctx, BlockPos pos);
