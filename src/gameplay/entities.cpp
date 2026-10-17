@@ -175,12 +175,12 @@ bool is_soul_sand(BlockState s) {
 float speed_factor(BlockState s) { return s.is(BlockType::honey_block) || is_soul_sand(s) ? 0.4f : 1.0f; }
 } // namespace
 
-bool move_entity(RuleContext& ctx, Vec3& position, Vec3& velocity, double width, double height) {
-    return move_entity(ctx, position, velocity, velocity, width, height);
+bool move_entity(RuleContext& ctx, Vec3& position, Vec3& velocity, double width, double height, const Entity* self) {
+    return move_entity(ctx, position, velocity, velocity, width, height, self);
 }
 
-bool move_entity(RuleContext& ctx, Vec3& position, Vec3& velocity, Vec3 movement, double width, double height) {
-    const bool landed = move_entity_by(ctx, position, velocity, movement, width, height);
+bool move_entity(RuleContext& ctx, Vec3& position, Vec3& velocity, Vec3 movement, double width, double height, const Entity* self) {
+    const bool landed = move_entity_by(ctx, position, velocity, movement, width, height, self);
     // Honey and soul sand slow what moves in or on them: the block at its
     // feet, or the one half a block below (items and primed TNT observed).
     const auto at = [&](double dy) {
@@ -219,9 +219,29 @@ bool honey_slide(RuleContext& ctx, Vec3 position, Vec3& velocity, double width, 
     return false;
 }
 
-bool move_entity_by(RuleContext& ctx, Vec3& position, Vec3& velocity, Vec3 movement, double width, double height) {
+bool vehicle_collides(const Entity& mover, const Entity& other) noexcept {
+    if (other.id == mover.id) return false;
+    const bool vehicle = mover.kind == EntityKind::boat || mover.kind == EntityKind::minecart;
+    if (vehicle) return other.kind == EntityKind::boat || other.kind == EntityKind::minecart;
+    const bool solid_mover = mover.kind == EntityKind::item || mover.kind == EntityKind::primed_tnt || mover.kind == EntityKind::falling_block;
+    return solid_mover && other.kind == EntityKind::boat;
+}
+
+bool move_entity_by(RuleContext& ctx, Vec3& position, Vec3& velocity, Vec3 movement, double width, double height, const Entity* self) {
     const auto box = physics::box_at(position, width, height);
-    const auto done = physics::collide(box, movement, shapes(ctx));
+    Vec3 done = movement;
+    if (movement.x != 0.0 || movement.y != 0.0 || movement.z != 0.0) {
+        const auto area = box.expand_towards(movement.x, movement.y, movement.z);
+        auto boxes = physics::flatten(physics::colliders(area, shapes(ctx)));
+        // The boxes of the entities it cannot pass come first, as on both official servers.
+        if (self) {
+            std::vector<physics::Aabb> entities;
+            for (const auto id : entities_intersecting(ctx, area.inflate(1.0e-7, 1.0e-7, 1.0e-7)))
+                if (const auto* other = ctx.peek_entity(id); other && vehicle_collides(*self, *other)) entities.push_back(entity_box(*other));
+            boxes.insert(boxes.begin(), entities.begin(), entities.end());
+        }
+        done = physics::collide_with(movement, box, boxes);
+    }
     const double made = done.x * done.x + done.y * done.y + done.z * done.z;
     const double wanted = movement.x * movement.x + movement.y * movement.y + movement.z * movement.z;
     if (made > 1.0e-7 || wanted - made < 1.0e-7) position = {position.x + done.x, position.y + done.y, position.z + done.z};
@@ -333,7 +353,7 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
     }
     const bool moves = !(e.on_ground && v.x * v.x + v.z * v.z <= 1.0e-5 && (ticks + id.value) % 4 != 0);
     if (moves) {
-        e.on_ground = detail::move_entity(ctx, p, v, item_size, item_size);
+        e.on_ground = detail::move_entity(ctx, p, v, item_size, item_size, &e);
         detail::honey_slide(ctx, p, v, item_size, item_size, e.on_ground);
         float f = 0.98f;
         if (e.on_ground) f = slipperiness(ctx.block(contracts::block_of(Vec3{p.x, p.y - 0.5000001, p.z}))) * 0.98f;

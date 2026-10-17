@@ -1858,10 +1858,12 @@
           "trace/minecart_ground",
           "trace/minecart_water",
           "trace/minecart_rails",
-          "trace/minecart_tracks"
+          "trace/minecart_tracks",
+          "trace/minecart_meeting",
+          "trace/minecart_meeting_more"
         ],
         "deviations": [
-          "riders, collisions and pushing between vehicles"
+          "riders, and picking up boats"
         ]
       },
       "oak_boat": {

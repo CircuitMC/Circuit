@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
 #include <circuit/gameplay/physics.hpp>
+#include <circuit/gameplay/sky.hpp>
 #include <circuit/gameplay/survival.hpp>
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <numbers>
 #include <optional>
 
 // Minecarts off rails and boats without riders, as both official servers
@@ -261,7 +263,7 @@ void along_rail(RuleContext& ctx, Entity& e, Vec3& v, Vec3& p, BlockPos pos, Blo
     p = {x0 + dx * t, y, z0 + dz * t};
     const double limit = in_water ? 0.2 : 0.4;
     Vec3 step{std::clamp(v.x, -limit, limit), 0.0, std::clamp(v.z, -limit, limit)};
-    e.on_ground = move_entity(ctx, p, v, step, static_cast<double>(0.98f), static_cast<double>(0.7f));
+    e.on_ground = move_entity(ctx, p, v, step, static_cast<double>(0.98f), static_cast<double>(0.7f), &e);
     // Reaching a raised end's cell, it climbs to it.
     const auto at_end = [&](const std::array<int, 3>& end) {
         return end[1] != 0 && static_cast<std::int32_t>(cell(p.x)) - pos.x == end[0] && static_cast<std::int32_t>(cell(p.z)) - pos.z == end[2];
@@ -300,6 +302,76 @@ void along_rail(RuleContext& ctx, Entity& e, Vec3& v, Vec3& p, BlockPos pos, Blo
 }
 } // namespace
 
+namespace {
+// Java's float remainder keeps the dividend's sign, as std::fmod does.
+float wrap_degrees(float f) {
+    float r = std::fmod(f, 360.0f);
+    if (r >= 180.0f) r -= 360.0f;
+    if (r < -180.0f) r += 360.0f;
+    return r;
+}
+
+Vec3 normalized(double x, double z) {
+    const double d = std::sqrt(x * x + z * z);
+    return d < 1.0e-5 ? Vec3{} : Vec3{x / d, 0.0, z / d};
+}
+
+// Minecart `pushed` meets minecart `pusher`: when the direction to the
+// pusher lies within about 37 degrees of the pushed one's yaw, both keep a
+// fifth of their velocity and take the average of the two, pushed apart by
+// 0.05 along the line between them (less beyond a block apart).
+void push_minecart(RuleContext& ctx, EntityId pushed, EntityId pusher) {
+    const auto* b = ctx.peek_entity(pushed);
+    const auto* a = ctx.peek_entity(pusher);
+    if (!a || !b) return;
+    double dx = a->position.x - b->position.x, dz = a->position.z - b->position.z;
+    double d = dx * dx + dz * dz;
+    if (d < static_cast<double>(1.0e-4f)) return;
+    d = std::sqrt(d);
+    dx /= d;
+    dz /= d;
+    const double scale = std::min(1.0 / d, 1.0);
+    dx = dx * scale * static_cast<double>(0.1f) * 0.5;
+    dz = dz * scale * static_cast<double>(0.1f) * 0.5;
+    const auto toward = normalized(a->position.x - b->position.x, a->position.z - b->position.z);
+    const float radians = b->yaw * static_cast<float>(std::numbers::pi / 180.0);
+    const auto facing = normalized(static_cast<double>(table_cos(radians)), static_cast<double>(table_sin(radians)));
+    if (std::abs(toward.x * facing.x + toward.z * facing.z) < static_cast<double>(0.8f)) return;
+    const auto vb = b->velocity, va = a->velocity;
+    const double ax = (va.x + vb.x) / 2.0, az = (va.z + vb.z) / 2.0;
+    auto* bw = ctx.entity(pushed);
+    bw->velocity = {vb.x * 0.2 + (ax - dx), vb.y, vb.z * 0.2 + (az - dz)};
+    auto* aw = ctx.entity(pusher);
+    aw->velocity = {va.x * 0.2 + (ax + dx), va.y, va.z * 0.2 + (az + dz)};
+}
+
+// After its move a minecart turns its yaw toward where it came from (half a
+// turn more when flipped) and flips when the yaw would swing by 170 degrees
+// or more. Then it pushes the minecarts its box, 0.2 wider sideways, meets;
+// moving faster than 0.1 it would pick up the boats there, which is not
+// modeled (riding).
+void after_move(RuleContext& ctx, EntityId id, Vec3 start, float yaw_before) {
+    auto* e = ctx.entity(id);
+    const double dx = start.x - e->position.x, dz = start.z - e->position.z;
+    if (dx * dx + dz * dz > 0.001) {
+        e->yaw = static_cast<float>(std::atan2(dz, dx) * 180.0 / std::numbers::pi);
+        if (e->flipped) e->yaw += 180.0f;
+    }
+    const double swing = wrap_degrees(e->yaw - yaw_before);
+    if (swing < -170.0 || swing >= 170.0) {
+        e->yaw += 180.0f;
+        e->flipped = !e->flipped;
+    }
+    e->yaw = std::fmod(e->yaw, 360.0f);
+    const auto reach = entity_box(*e).inflate(0.2, 0.0, 0.2);
+    for (const auto other : entities_in_section_order(ctx, entities_intersecting(ctx, reach))) {
+        if (other == id) continue;
+        const auto* o = ctx.peek_entity(other);
+        if (o && o->kind == EntityKind::minecart) push_minecart(ctx, other, id);
+    }
+}
+} // namespace
+
 void run_minecart(RuleContext& ctx, EntityId id, Entity& e) {
     ++e.tick_count;
     // What water held it at the end of its last tick.
@@ -315,12 +387,14 @@ void run_minecart(RuleContext& ctx, EntityId id, Entity& e) {
         v.x = std::clamp(v.x, -limit, limit);
         v.z = std::clamp(v.z, -limit, limit);
         if (e.on_ground) v = {v.x * 0.5, v.y * 0.5, v.z * 0.5};
-        e.on_ground = move_entity(ctx, p, v, static_cast<double>(0.98f), static_cast<double>(0.7f));
+        e.on_ground = move_entity(ctx, p, v, static_cast<double>(0.98f), static_cast<double>(0.7f), &e);
         if (!e.on_ground) v = {v.x * 0.95, v.y * 0.95, v.z * 0.95};
     }
     e.velocity = v;
     e.in_water = water_at(ctx, physics::box_at(p, static_cast<double>(0.98f), static_cast<double>(0.7f))).inside;
+    const float yaw_before = e.yaw;
     relocate(ctx, id, start, p);
+    after_move(ctx, id, start, yaw_before);
 }
 
 void run_boat(RuleContext& ctx, EntityId id, Entity& e) {
@@ -362,7 +436,7 @@ void run_boat(RuleContext& ctx, EntityId id, Entity& e) {
         if (buoyancy > 0.0) v.y = (v.y + buoyancy * 0.06153846153846154) * 0.75;
     }
     const auto before = p;
-    e.on_ground = move_entity(ctx, p, v, 1.375, boat_height);
+    e.on_ground = move_entity(ctx, p, v, 1.375, boat_height, &e);
     e.last_dy = p.y - before.y;
     e.velocity = v;
     e.status = static_cast<std::uint8_t>(status);

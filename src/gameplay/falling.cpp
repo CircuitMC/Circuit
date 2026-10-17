@@ -124,7 +124,7 @@ void run_falling_block(RuleContext& ctx, EntityId id, Entity& e) {
     auto v = e.velocity;
     auto p = e.position;
     v.y -= gravity;
-    e.on_ground = move_entity(ctx, p, v, size, size);
+    e.on_ground = move_entity(ctx, p, v, size, size, &e);
     const auto cell = contracts::block_of(p);
     const auto here = ctx.block(cell);
     const bool in_water = gravity_of(e.carried) == Gravity::concrete_powder && here.is(BlockType::water);

@@ -205,11 +205,11 @@ std::string text(const std::pair<BlockPos, BlockEntity>& b) {
 }
 std::string text(const Entity& e) {
     return std::format("entity {} {} pos=({},{},{}) vel=({},{},{}) ticks={} stack={}x{}/{} age={} last_tick={} ground={} pickup_delay={} "
-                       "returns={} carried={:#x} fall_time={} fuse={} health={} in_ground={} life={} fire={} variant={} status={} last_dy={} in_water={} piston_tick={} piston_push=({},{},{})",
+                       "returns={} carried={:#x} fall_time={} fuse={} health={} in_ground={} life={} fire={} variant={} status={} last_dy={} in_water={} piston_tick={} piston_push=({},{},{}) yaw={} flipped={}",
                        e.id.value, entity_kind_name(e.kind), e.position.x, e.position.y, e.position.z, e.velocity.x, e.velocity.y,
                        e.velocity.z, e.tick_count, e.stack.item, e.stack.count, e.stack.damage, e.age, e.last_tick, e.on_ground,
                        e.pickup_delay, e.returns, e.carried.raw(), e.fall_time, e.fuse, e.health, e.in_ground, e.life, e.fire, e.variant, e.status, e.last_dy, e.in_water, e.piston_tick,
-                       e.piston_push.x, e.piston_push.y, e.piston_push.z);
+                       e.piston_push.x, e.piston_push.y, e.piston_push.z, e.yaw, e.flipped);
 }
 std::string text(const LevelDump::PendingTick& t) {
     return std::format("tick list={} {} block={} due={} priority={} suborder={}", static_cast<int>(t.list),
@@ -357,6 +357,7 @@ std::uint64_t digest(const WorldDump& d) {
             h.add(e.in_ground); h.add(static_cast<std::uint32_t>(e.life)); h.add(static_cast<std::uint32_t>(e.fire));
             h.add(e.variant); h.add(e.status); h.add(contracts::double_bits(e.last_dy)); h.add(e.in_water);
             h.add(e.piston_tick); h.add(e.piston_push);
+            h.add(std::bit_cast<std::uint32_t>(e.yaw)); h.add(e.flipped);
         }
         h.add(l.ticks.size());
         for (const auto& t : l.ticks) {

@@ -873,6 +873,22 @@ int main() {
                 "the slope");
     });
 
+    suite.run("minecarts meet across chunk edges", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("minecart_meeting"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the minecart meeting scenario");
+        const auto& ref = references[index];
+        const auto& end = ref.dumps.rbegin()->second;
+        std::vector<circuit::gameplay::Entity> carts;
+        for (const auto& e : end.overworld().entities)
+            if (e.kind == circuit::gameplay::EntityKind::minecart) carts.push_back(e);
+        std::ranges::sort(carts, {}, [](const auto& e) { return e.id.value; });
+        require(carts.size() == 4, std::format("{} minecarts", carts.size()));
+        // Head-on: they met and bounced back, neither passing the other.
+        require(carts[0].position.x < carts[1].position.x && carts[0].velocity.x <= 0.0 && carts[1].velocity.x >= 0.0, "the head-on pair");
+        // From behind: the cart at rest beyond the edge was pushed on.
+        require(carts[3].position.x > 17.5 && carts[2].position.x < carts[3].position.x, "pushed over the edge");
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");

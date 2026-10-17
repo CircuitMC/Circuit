@@ -33,6 +33,11 @@ float table_cos(float angle) noexcept {
     return sines()[static_cast<std::size_t>(index & 65535)];
 }
 
+float table_sin(float angle) noexcept {
+    const auto index = static_cast<std::int64_t>(angle * 10430.378f);
+    return sines()[static_cast<std::size_t>(index & 65535)];
+}
+
 std::uint8_t sky_darken(const Weather& weather, std::int64_t day_time) noexcept {
     const float rain = weather.rain_level, thunder = weather.thunder_level * rain;
     const double by_rain = 1.0 - static_cast<double>(rain * 5.0f) / 16.0;

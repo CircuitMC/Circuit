@@ -165,12 +165,14 @@ constexpr std::array reference_v4_mechanisms{
     MechanismEntry{"vehicle", l0_exact, l2_declared_deviation, harness_trace,
         "Minecarts off and on rails and boats without riders, summoned: on rails minecarts follow the rail's line at up to "
         "0.4 a tick, keep 96% of their speed, gain speed down slopes and lose it up them, turn through curves, stop at blocks, "
-        "are braked by unpowered powered rails and boosted by powered ones (minecart_rails, minecart_tracks); off rails they fall, keep within 0.4 a tick, halve "
+        "are braked by unpowered powered rails and boosted by powered ones (minecart_rails, minecart_tracks); minecarts collide with minecarts' and "
+        "boats' boxes, items, primed TNT and falling blocks with boats', and minecarts push minecarts by their yaw (minecart_meeting, "
+        "minecart_meeting_more); off rails they fall, keep within 0.4 a tick, halve "
         "their speed on the ground and lose 5% in the air; boats float on water at a depth proportional "
         "buoyancy, sink under it, slide on land with the slipperiness of the blocks under them, are pushed by "
         "currents and land on the surface when they fall into water (minecart_ground, minecart_water, "
-        "boat_motion, boat_land). Gaps: riders, players and mobs pushing or entering vehicles, vehicles "
-        "colliding with each other, chest and furnace variants."},
+        "boat_motion, boat_land). Gaps: riders (a moving minecart would pick up the boats it touches), players and mobs pushing or entering vehicles, "
+        "chest and furnace variants."},
     MechanismEntry{"redstone_torch", l0_exact, l2_declared_deviation, harness_trace,
         "Floor and wall torches power every neighbor but the block they are on, and the block above them "
         "strongly; power in that block (from a source, through a conductor or from dust) turns them off 2 "

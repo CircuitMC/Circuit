@@ -1206,13 +1206,17 @@ void Engine::Impl::restore(const WorldDump& state) {
                 rest.last_dy = 0.0;
                 break;
             case gameplay::EntityKind::minecart:
+                if (!std::isfinite(e.yaw) || std::abs(e.yaw) >= 360.0f) bad("minecart yaw");
                 rest.in_water = false;
+                rest.yaw = 0.0f;
+                rest.flipped = false;
                 break;
             default: break;
             }
             if (!rest.stack.empty() || rest.age != 0 || rest.pickup_delay != 0 || rest.health != gameplay::item_health
                 || rest.carried != gameplay::BlockState{} || rest.fall_time != 0 || rest.fuse != 0 || rest.in_ground || rest.life != 0
-                || rest.fire != 0 || rest.variant != 0 || rest.status != 0 || rest.last_dy != 0.0 || rest.in_water)
+                || rest.fire != 0 || rest.variant != 0 || rest.status != 0 || rest.last_dy != 0.0 || rest.in_water || rest.yaw != 0.0f
+                || rest.flipped)
                 bad("entity state of another kind");
             const auto it = columns.find(contracts::chunk_of(contracts::block_of(e.position)));
             if (it == columns.end()) bad("entity in an unknown column");

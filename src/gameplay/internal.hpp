@@ -288,14 +288,21 @@ void run_boat(RuleContext& ctx, EntityId id, Entity& e);
 // length below 1e-7 is not made (both official servers leave such entities
 // in place, while longer moves, from 1.8e-7, are made). Returns whether it
 // landed (hit something while falling).
-bool move_entity(RuleContext& ctx, contracts::Vec3& position, contracts::Vec3& velocity, double width, double height);
+// `self`, the entity that moves, also collides with the boxes of the
+// entities it cannot pass (vehicle_collides).
+bool move_entity(RuleContext& ctx, contracts::Vec3& position, contracts::Vec3& velocity, double width, double height,
+                 const Entity* self = nullptr);
 // The same moving by `movement`, which collisions stop in `velocity`.
 bool move_entity(RuleContext& ctx, contracts::Vec3& position, contracts::Vec3& velocity, contracts::Vec3 movement, double width,
-                 double height);
+                 double height, const Entity* self = nullptr);
 // The same for a `movement` other than the velocity (a piston's push): the
 // velocity loses what the movement could not make.
 bool move_entity_by(RuleContext& ctx, contracts::Vec3& position, contracts::Vec3& velocity, contracts::Vec3 movement, double width,
-                    double height);
+                    double height, const Entity* self = nullptr);
+// Whether a moving entity collides with another's box (both official
+// servers): boats and minecarts with boats and minecarts, items, primed TNT
+// and falling blocks with boats; minecarts are no obstacle to the others.
+bool vehicle_collides(const Entity& mover, const Entity& other) noexcept;
 // An entity whose box ends a move beside honey, below its top, falling,
 // and outside its middle, slides down it (items and primed TNT, observed):
 // with w = vy / 0.98f + 0.08, a w below -0.13 scales the horizontal velocity

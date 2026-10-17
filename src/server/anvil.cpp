@@ -821,6 +821,11 @@ private:
                 // has no state before, a minecart no water.
                 out.kind = minecart ? gameplay::EntityKind::minecart : gameplay::EntityKind::boat;
                 if (is_boat) out.variant = static_cast<std::uint8_t>(boat - gameplay::boat_types.begin());
+                // A minecart's yaw decides what pushes it; whether it is turned
+                // against its motion is not saved.
+                if (minecart)
+                    if (const auto rotation = numbers(e, "Rotation", 2); rotation && std::isfinite((*rotation)[0]))
+                        out.yaw = std::fmod(static_cast<float>((*rotation)[0]), 360.0f);
             } else if (arrow || snowball) {
                 // An arrow's owner, damage, pickup rule and item, and a
                 // snowball's item, are not modeled.
@@ -1212,7 +1217,7 @@ private:
             t.set("Pos", doubles({e->position.x, e->position.y, e->position.z}));
             t.set("Motion", doubles({e->velocity.x, e->velocity.y, e->velocity.z}));
             auto rotation = Tag::list(TagType::float_);
-            rotation.push(Tag::float_(0.0f));
+            rotation.push(Tag::float_(e->kind == gameplay::EntityKind::minecart ? e->yaw : 0.0f));
             rotation.push(Tag::float_(0.0f));
             t.set("Rotation", std::move(rotation));
             t.set("OnGround", Tag::boolean(e->on_ground));

@@ -1857,6 +1857,36 @@ int main() {
                 std::format("boosted: {} against {}", cart(4.5).position.x, cart(0.5).position.x));
     });
 
+    suite.run("minecarts collide with and push each other by their yaw", [] {
+        using circuit::gameplay::blocks::RailKind;
+        using circuit::gameplay::blocks::RailShape;
+        Sim s;
+        std::vector<CommandBody> build = floor(-2, 30, -1, 10);
+        for (int x = 0; x <= 28; ++x) build.push_back(place({x, 0, 0}, blocks::rail(RailKind::rail, RailShape::east_west)));
+        for (int z = 2; z <= 9; ++z) build.push_back(place({5, 0, z}, blocks::rail(RailKind::rail, RailShape::north_south)));
+        s.tick(build);
+        // Two carts summoned touching push each other apart at once.
+        s.tick({SummonEntity{"minecraft:minecart", {10.5, 0.0, 0.5}, {}, 0, 0}, SummonEntity{"minecraft:minecart", {11.2, 0.0, 0.5}, {}, 0, 0}});
+        const auto carts = [&] {
+            std::vector<circuit::gameplay::Entity> out;
+            const auto d = s.oracle.dump();
+            for (const auto& e : d.overworld().entities)
+                if (e.kind == circuit::gameplay::EntityKind::minecart) out.push_back(e);
+            std::ranges::sort(out, {}, [](const auto& e) { return e.id.value; });
+            return out;
+        };
+        require(carts().size() == 2 && carts()[0].velocity.x < 0.0 && carts()[1].velocity.x > 0.0, "pushed apart");
+        // A cart running into one at rest on a north-south line stops against
+        // its box; the one at rest, its yaw 0, does not push, the runner (its
+        // yaw along the line: -90 running south, 270 once it bounced back and
+        // flipped) does.
+        s.tick({SummonEntity{"minecraft:minecart", {5.5, 0.0, 2.5}, {0.0, 0.0, 0.8}, 0, 0}, SummonEntity{"minecraft:minecart", {5.5, 0.0, 6.5}, {}, 0, 0}});
+        for (int i = 0; i < 8; ++i) s.tick();
+        const auto now = carts();
+        require(std::fmod(std::abs(now[2].yaw), 180.0f) == 90.0f && now[3].position.z > 6.5,
+                std::format("the runner's yaw {}, the other's {} at z={}", now[2].yaw, now[3].yaw, now[3].position.z));
+    });
+
     suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {
         using circuit::contracts::UseBlock;
         Sim s;

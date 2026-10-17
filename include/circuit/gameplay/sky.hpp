@@ -19,8 +19,9 @@ namespace circuit::gameplay {
 
 [[nodiscard]] float time_of_day(std::int64_t day_time) noexcept;
 [[nodiscard]] float sun_angle(std::int64_t day_time) noexcept;
-// The cosine of a single-precision angle, from the sine table.
+// The cosine and sine of a single-precision angle, from the sine table.
 [[nodiscard]] float table_cos(float angle) noexcept;
+[[nodiscard]] float table_sin(float angle) noexcept;
 [[nodiscard]] std::uint8_t sky_darken(const Weather& weather, std::int64_t day_time) noexcept;
 
 } // namespace circuit::gameplay

@@ -122,8 +122,12 @@ struct Entity {
     std::uint8_t status{};
     double last_dy{};
     // Minecarts: whether water held it at the end of its last tick (what its
-    // next tick's motion follows; none before its first).
+    // next tick's motion follows; none before its first), its yaw in degrees
+    // (which decides whether another minecart pushes it) and whether the yaw
+    // is turned against its motion.
     bool in_water{};
+    float yaw{};
+    bool flipped{};
     // How far pistons have pushed it in the tick `piston_tick` (at most 0.51
     // on each axis in one tick).
     Tick piston_tick{};

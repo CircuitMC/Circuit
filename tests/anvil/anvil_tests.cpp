@@ -383,7 +383,8 @@ int main() {
         Engine engine(bundle(), 5);
         Admissions admit;
         engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        engine.advance(admit({place({3, -1, 3}, blocks::stone()), SummonEntity{"minecraft:minecart", {3.5, 0.0, 3.5}, {0.1, 0.0, 0.0}, 80, 0},
+        // Moving south the minecart turns its yaw to -90, which its Rotation keeps.
+        engine.advance(admit({place({3, -1, 3}, blocks::stone()), SummonEntity{"minecraft:minecart", {3.5, 0.0, 3.5}, {0.0, 0.0, 0.1}, 80, 0},
                               SummonEntity{"minecraft:cherry_boat", {6.5, 4.0, 6.5}, {0.0, 0.0, 0.0}, 80, 0}}));
         for (int i = 0; i < 3; ++i) engine.advance({});
         const auto state = engine.dump();
@@ -392,12 +393,14 @@ int main() {
         const auto back = anvil::import_world(target, bundle());
         require(back.has_value(), back ? "" : back.error());
         const auto kept = [](const WorldDump& w) {
-            std::vector<std::tuple<int, Vec3, Vec3, int>> out;
-            for (const auto& e : w.overworld().entities) out.emplace_back(static_cast<int>(e.kind), e.position, e.velocity, e.variant);
+            std::vector<std::tuple<int, Vec3, Vec3, int, float>> out;
+            for (const auto& e : w.overworld().entities) out.emplace_back(static_cast<int>(e.kind), e.position, e.velocity, e.variant, e.yaw);
             std::ranges::sort(out);
             return out;
         };
-        require(kept(state) == kept(back->state) && kept(state).size() == 2, "kinds, positions, velocities and the boat's wood");
+        require(kept(state) == kept(back->state) && kept(state).size() == 2, "kinds, positions, velocities, the boat's wood and the yaw");
+        require(std::ranges::any_of(state.overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::minecart && e.yaw == -90.0f; }),
+                "the minecart's yaw");
     });
 
     suite.run("unsupported content is rejected or substituted by policy", [&] {

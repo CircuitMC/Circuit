@@ -1032,13 +1032,39 @@ inline Scenario minecart_rail_scenario() {
     }, 10};
 }
 
+// Minecarts meeting at the x=16 chunk edge: two head-on on one line, one
+// running into a cart at rest in the other chunk.
+inline Scenario minecart_meeting_scenario() {
+    using blocks::RailKind;
+    using blocks::RailShape;
+    return {"minecart_meeting", 120, 80, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        if (t == 2) {
+            for (int x = 6; x <= 26; ++x)
+                for (int z = -2; z <= 6; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            for (int x = 7; x <= 25; ++x) {
+                c.push_back(place({x, 0, 0}, blocks::rail(RailKind::rail, RailShape::east_west)));
+                c.push_back(place({x, 0, 4}, blocks::rail(RailKind::rail, RailShape::east_west)));
+            }
+        }
+        if (t == 4) {
+            c.push_back(SummonEntity{"minecraft:minecart", {10.5, 0.0, 0.5}, {0.6, 0.0, 0.0}, 0, 0});
+            c.push_back(SummonEntity{"minecraft:minecart", {22.5, 0.0, 0.5}, {-0.6, 0.0, 0.0}, 0, 0});
+            c.push_back(SummonEntity{"minecraft:minecart", {12.5, 0.0, 4.5}, {0.5, 0.0, 0.0}, 0, 0});
+            c.push_back(SummonEntity{"minecraft:minecart", {17.5, 0.0, 4.5}, {}, 0, 0});
+        }
+        return c;
+    }, 10};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
-            plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario(), rail_scenario(), minecart_rail_scenario()};
+            plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario(), rail_scenario(), minecart_rail_scenario(), minecart_meeting_scenario()};
 }
 
 } // namespace circuit::test
