@@ -855,6 +855,24 @@ int main() {
         require(at(30, {16, 0, -2}) == blocks::rail(RailKind::rail, RailShape::east_west), "the pushed rail joined the line");
     });
 
+    suite.run("minecarts ride rails across chunk edges", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("minecart_rails"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the minecart rail scenario");
+        const auto& ref = references[index];
+        const auto& end = ref.dumps.rbegin()->second;
+        std::vector<circuit::gameplay::Entity> carts;
+        for (const auto& e : end.overworld().entities)
+            if (e.kind == circuit::gameplay::EntityKind::minecart) carts.push_back(e);
+        require(carts.size() == 3, std::format("{} minecarts", carts.size()));
+        // Every cart crossed the edge; the one in the curve went south, and
+        // by tick 40 the one on the slope had climbed it.
+        for (const auto& e : carts) require(e.position.x > 16.0, std::format("a cart at x={}", e.position.x));
+        require(std::ranges::any_of(carts, [](const auto& e) { return e.position.z > 5.0; }), "the curve");
+        const auto& mid = ref.dumps.at(40);
+        require(std::ranges::any_of(mid.overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::minecart && e.position.y > 1.0; }),
+                "the slope");
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");

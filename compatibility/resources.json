@@ -672,7 +672,6 @@
         "impl": "partial",
         "evidence": "compared",
         "deviations": [
-          "no minecarts ride it yet",
           "waterlogging is stored only"
         ]
       },
@@ -680,7 +679,6 @@
         "impl": "partial",
         "evidence": "compared",
         "deviations": [
-          "no minecarts ride it yet",
           "waterlogging is stored only"
         ]
       },
@@ -688,15 +686,14 @@
         "impl": "partial",
         "evidence": "compared",
         "deviations": [
-          "no minecarts ride it yet",
-          "waterlogging is stored only"
+          "waterlogging is stored only",
+          "does nothing to minecarts"
         ]
       },
       "detector_rail": {
         "impl": "partial",
         "evidence": "compared",
         "deviations": [
-          "no minecarts ride it yet",
           "waterlogging is stored only",
           "senses nothing"
         ]
@@ -1856,13 +1853,15 @@
       "minecart": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Off rails: falling, sliding, water; spawned to clients",
+        "note": "Off rails and on rails; spawned to clients",
         "cases": [
           "trace/minecart_ground",
-          "trace/minecart_water"
+          "trace/minecart_water",
+          "trace/minecart_rails",
+          "trace/minecart_tracks"
         ],
         "deviations": [
-          "rails, riders, pushing"
+          "riders, collisions and pushing between vehicles"
         ]
       },
       "oak_boat": {

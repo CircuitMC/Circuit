@@ -3,7 +3,9 @@
 #include <circuit/gameplay/physics.hpp>
 #include <circuit/gameplay/survival.hpp>
 #include <algorithm>
+#include <array>
 #include <cmath>
+#include <optional>
 
 // Minecarts off rails and boats without riders, as both official servers
 // move them (checked against their traces; minecraft.wiki "Minecart",
@@ -169,20 +171,153 @@ void relocate(RuleContext& ctx, EntityId id, Vec3 start, Vec3 to) {
 }
 } // namespace
 
+namespace {
+using blocks::RailShape;
+
+// The two ends of a rail shape, as offsets from its cell (a raised end a
+// block up is -1 at the other end: the shape's low end lies a block down
+// from its high one, seen from the cell above).
+struct Exits {
+    std::array<int, 3> a, b;
+};
+Exits exits(RailShape r) {
+    switch (r) {
+    case RailShape::north_south: return {{0, 0, -1}, {0, 0, 1}};
+    case RailShape::east_west: return {{-1, 0, 0}, {1, 0, 0}};
+    case RailShape::ascending_east: return {{-1, -1, 0}, {1, 0, 0}};
+    case RailShape::ascending_west: return {{-1, 0, 0}, {1, -1, 0}};
+    case RailShape::ascending_north: return {{0, 0, -1}, {0, -1, 1}};
+    case RailShape::ascending_south: return {{0, -1, -1}, {0, 0, 1}};
+    case RailShape::south_east: return {{0, 0, 1}, {1, 0, 0}};
+    case RailShape::south_west: return {{0, 0, 1}, {-1, 0, 0}};
+    case RailShape::north_west: return {{0, 0, -1}, {-1, 0, 0}};
+    case RailShape::north_east: return {{0, 0, -1}, {1, 0, 0}};
+    }
+    return {{0, 0, -1}, {0, 0, 1}};
+}
+
+double horizontal(Vec3 v) { return std::sqrt(v.x * v.x + v.z * v.z); }
+
+// The rail at a position: in its cell or the cell below.
+std::optional<BlockPos> rail_under(RuleContext& ctx, Vec3 p) {
+    BlockPos cell_pos{static_cast<std::int32_t>(cell(p.x)), static_cast<std::int32_t>(cell(p.y)), static_cast<std::int32_t>(cell(p.z))};
+    if (ctx.block(cell_pos.relative(Direction::down)).is(BlockType::rail)) cell_pos = cell_pos.relative(Direction::down);
+    return ctx.block(cell_pos).is(BlockType::rail) ? std::optional(cell_pos) : std::nullopt;
+}
+
+// The point of the rail under a position nearest it along the rail, a
+// sixteenth above the rail's cell (raised along a slope).
+std::optional<Vec3> on_track(RuleContext& ctx, Vec3 p) {
+    const auto pos = rail_under(ctx, p);
+    if (!pos) return std::nullopt;
+    const auto [a, b] = exits(static_cast<RailShape>(ctx.block(*pos).level()));
+    const double x0 = pos->x + 0.5 + a[0] * 0.5, y0 = pos->y + 0.0625 + a[1] * 0.5, z0 = pos->z + 0.5 + a[2] * 0.5;
+    const double x1 = pos->x + 0.5 + b[0] * 0.5, y1 = pos->y + 0.0625 + b[1] * 0.5, z1 = pos->z + 0.5 + b[2] * 0.5;
+    const double dx = x1 - x0, dy = (y1 - y0) * 2.0, dz = z1 - z0;
+    double t;
+    if (dx == 0.0) t = p.z - pos->z;
+    else if (dz == 0.0) t = p.x - pos->x;
+    else t = ((p.x - x0) * dx + (p.z - z0) * dz) * 2.0;
+    Vec3 out{x0 + dx * t, y0 + dy * t, z0 + dz * t};
+    if (dy < 0.0) out.y += 1.0;
+    else if (dy > 0.0) out.y += 0.5;
+    return out;
+}
+
+// One tick along a rail at `pos`: the minecart follows the rail's line,
+// gains speed down a slope, brakes on an unpowered powered rail and is
+// pushed along by a powered one.
+void along_rail(RuleContext& ctx, Entity& e, Vec3& v, Vec3& p, BlockPos pos, BlockState rail, bool in_water) {
+    const auto start = on_track(ctx, p);
+    const auto shape = static_cast<RailShape>(rail.level());
+    const bool powered_kind = rail.variant() == static_cast<std::uint8_t>(blocks::RailKind::powered);
+    const bool boost = powered_kind && rail.flag(), brake = powered_kind && !rail.flag();
+    double y = pos.y;
+    const double slope = in_water ? 0.0078125 * 0.2 : 0.0078125;
+    switch (shape) {
+    case RailShape::ascending_east: v.x -= slope; y += 1.0; break;
+    case RailShape::ascending_west: v.x += slope; y += 1.0; break;
+    case RailShape::ascending_north: v.z += slope; y += 1.0; break;
+    case RailShape::ascending_south: v.z -= slope; y += 1.0; break;
+    default: break;
+    }
+    const auto [a, b] = exits(shape);
+    double ex = b[0] - a[0], ez = b[2] - a[2];
+    const double length = std::sqrt(ex * ex + ez * ez);
+    if (v.x * ex + v.z * ez < 0.0) ex = -ex, ez = -ez;
+    const double speed = std::min(2.0, horizontal(v));
+    v = {speed * ex / length, v.y, speed * ez / length};
+    if (brake) {
+        if (horizontal(v) < 0.03) v = {};
+        else v = {v.x * 0.5, v.y * 0.0, v.z * 0.5};
+    }
+    const double x0 = pos.x + 0.5 + a[0] * 0.5, z0 = pos.z + 0.5 + a[2] * 0.5;
+    const double x1 = pos.x + 0.5 + b[0] * 0.5, z1 = pos.z + 0.5 + b[2] * 0.5;
+    const double dx = x1 - x0, dz = z1 - z0;
+    double t;
+    if (dx == 0.0) t = p.z - pos.z;
+    else if (dz == 0.0) t = p.x - pos.x;
+    else t = ((p.x - x0) * dx + (p.z - z0) * dz) * 2.0;
+    p = {x0 + dx * t, y, z0 + dz * t};
+    const double limit = in_water ? 0.2 : 0.4;
+    Vec3 step{std::clamp(v.x, -limit, limit), 0.0, std::clamp(v.z, -limit, limit)};
+    e.on_ground = move_entity(ctx, p, v, step, static_cast<double>(0.98f), static_cast<double>(0.7f));
+    // Reaching a raised end's cell, it climbs to it.
+    const auto at_end = [&](const std::array<int, 3>& end) {
+        return end[1] != 0 && static_cast<std::int32_t>(cell(p.x)) - pos.x == end[0] && static_cast<std::int32_t>(cell(p.z)) - pos.z == end[2];
+    };
+    if (at_end(a)) p.y += a[1];
+    else if (at_end(b)) p.y += b[1];
+    // Slowdown, then the speed a change of height gives or takes.
+    v = {v.x * 0.96, v.y * 0.0, v.z * 0.96};
+    if (in_water) v = {v.x * 0.95, v.y * 0.95, v.z * 0.95};
+    if (const auto end = on_track(ctx, p); end && start) {
+        const double gain = (start->y - end->y) * 0.05;
+        const double h = horizontal(v);
+        if (h > 0.0) v = {v.x * ((h + gain) / h), v.y, v.z * ((h + gain) / h)};
+        p.y = end->y;
+    }
+    // Into another cell, the speed turns toward it.
+    const auto cx = static_cast<std::int32_t>(cell(p.x)), cz = static_cast<std::int32_t>(cell(p.z));
+    if (cx != pos.x || cz != pos.z) {
+        const double h = horizontal(v);
+        v = {h * (cx - pos.x), v.y, h * (cz - pos.z)};
+    }
+    if (!boost) return;
+    const double h = horizontal(v);
+    if (h > 0.01) {
+        v = {v.x + v.x / h * 0.06, v.y, v.z + v.z / h * 0.06};
+        return;
+    }
+    // From rest a powered rail pushes away from a solid block at one end.
+    if (shape == RailShape::east_west) {
+        if (is_conductor(ctx.block(pos.relative(Direction::west)))) v.x = 0.02;
+        else if (is_conductor(ctx.block(pos.relative(Direction::east)))) v.x = -0.02;
+    } else if (shape == RailShape::north_south) {
+        if (is_conductor(ctx.block(pos.relative(Direction::north)))) v.z = 0.02;
+        else if (is_conductor(ctx.block(pos.relative(Direction::south)))) v.z = -0.02;
+    }
+}
+} // namespace
+
 void run_minecart(RuleContext& ctx, EntityId id, Entity& e) {
     ++e.tick_count;
     // What water held it at the end of its last tick.
     const bool in_water = e.in_water;
     auto v = e.velocity;
     v.y -= in_water ? 0.005 : 0.04;
-    const double limit = in_water ? 0.2 : 0.4;
-    v.x = std::clamp(v.x, -limit, limit);
-    v.z = std::clamp(v.z, -limit, limit);
-    if (e.on_ground) v = {v.x * 0.5, v.y * 0.5, v.z * 0.5};
     const auto start = e.position;
     auto p = start;
-    e.on_ground = move_entity(ctx, p, v, static_cast<double>(0.98f), static_cast<double>(0.7f));
-    if (!e.on_ground) v = {v.x * 0.95, v.y * 0.95, v.z * 0.95};
+    if (const auto pos = rail_under(ctx, p)) {
+        along_rail(ctx, e, v, p, *pos, ctx.block(*pos), in_water);
+    } else {
+        const double limit = in_water ? 0.2 : 0.4;
+        v.x = std::clamp(v.x, -limit, limit);
+        v.z = std::clamp(v.z, -limit, limit);
+        if (e.on_ground) v = {v.x * 0.5, v.y * 0.5, v.z * 0.5};
+        e.on_ground = move_entity(ctx, p, v, static_cast<double>(0.98f), static_cast<double>(0.7f));
+        if (!e.on_ground) v = {v.x * 0.95, v.y * 0.95, v.z * 0.95};
+    }
     e.velocity = v;
     e.in_water = water_at(ctx, physics::box_at(p, static_cast<double>(0.98f), static_cast<double>(0.7f))).inside;
     relocate(ctx, id, start, p);

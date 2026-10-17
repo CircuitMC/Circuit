@@ -289,6 +289,9 @@ void run_boat(RuleContext& ctx, EntityId id, Entity& e);
 // in place, while longer moves, from 1.8e-7, are made). Returns whether it
 // landed (hit something while falling).
 bool move_entity(RuleContext& ctx, contracts::Vec3& position, contracts::Vec3& velocity, double width, double height);
+// The same moving by `movement`, which collisions stop in `velocity`.
+bool move_entity(RuleContext& ctx, contracts::Vec3& position, contracts::Vec3& velocity, contracts::Vec3 movement, double width,
+                 double height);
 // The same for a `movement` other than the velocity (a piston's push): the
 // velocity loses what the movement could not make.
 bool move_entity_by(RuleContext& ctx, contracts::Vec3& position, contracts::Vec3& velocity, contracts::Vec3 movement, double width,

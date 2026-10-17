@@ -1099,10 +1099,11 @@
           "cases": [
             "trace/rail_shapes",
             "trace/rail_power",
-            "trace/rail_more"
+            "trace/rail_more",
+            "trace/minecart_rails",
+            "trace/minecart_tracks"
           ],
           "deviations": [
-            "minecarts do not ride rails yet",
             "detector rails sense nothing",
             "waterlogging is stored only"
           ],
@@ -1693,14 +1694,16 @@
           "evidence": "compared",
           "cases": [
             "trace/minecart_ground",
-            "trace/minecart_water"
+            "trace/minecart_water",
+            "trace/minecart_rails",
+            "trace/minecart_tracks"
           ],
-          "note": "Empty minecarts off rails (summoned): falling, the 0.4 (0.2 in water) speed limit, halving on the ground, 5% drag in the air, water as their last tick ended",
+          "note": "Empty minecarts (summoned) off rails — falling, the 0.4 (0.2 in water) speed limit, halving on the ground, 5% drag in the air, water as their last tick ended — and on rails: following the rail's line at up to 0.4 a tick, 4% drag, speeding up down slopes and slowing up them, turning through curves, stopped by blocks, braked by unpowered and boosted by powered powered rails",
           "deviations": [
-            "rails and minecarts on rails (C4.2)",
+            "minecarts colliding with and pushing each other and boats",
             "chest, hopper, furnace, TNT, spawner and command block minecarts",
             "riders",
-            "minecarts pushing or pushed by other entities"
+            "detector rails do not sense minecarts and activator rails do nothing"
           ]
         },
         {

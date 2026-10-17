@@ -176,7 +176,11 @@ float speed_factor(BlockState s) { return s.is(BlockType::honey_block) || is_sou
 } // namespace
 
 bool move_entity(RuleContext& ctx, Vec3& position, Vec3& velocity, double width, double height) {
-    const bool landed = move_entity_by(ctx, position, velocity, velocity, width, height);
+    return move_entity(ctx, position, velocity, velocity, width, height);
+}
+
+bool move_entity(RuleContext& ctx, Vec3& position, Vec3& velocity, Vec3 movement, double width, double height) {
+    const bool landed = move_entity_by(ctx, position, velocity, movement, width, height);
     // Honey and soul sand slow what moves in or on them: the block at its
     // feet, or the one half a block below (items and primed TNT observed).
     const auto at = [&](double dy) {

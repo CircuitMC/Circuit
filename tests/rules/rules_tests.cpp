@@ -1828,6 +1828,35 @@ int main() {
         require(s.at({0, 0, 0}).is_air(), "the rail on a bottom slab broke");
     });
 
+    suite.run("minecarts ride rails: drag, slopes, braking and boosting", [] {
+        using circuit::gameplay::blocks::RailKind;
+        using circuit::gameplay::blocks::RailShape;
+        Sim s;
+        std::vector<CommandBody> build = floor(-2, 30, -1, 6);
+        for (int x = 0; x <= 28; ++x) build.push_back(place({x, 0, 0}, blocks::rail(RailKind::rail, RailShape::east_west)));
+        // Powered rails at x=4..7 powered from below on a second line.
+        for (int x = 0; x <= 28; ++x) {
+            const bool powered = x >= 4 && x <= 7;
+            if (powered) build.push_back(place({x, -1, 4}, blocks::redstone_block()));
+            build.push_back(place({x, 0, 4}, blocks::rail(powered ? RailKind::powered : RailKind::rail, RailShape::east_west)));
+        }
+        s.tick(build);
+        s.tick({SummonEntity{"minecraft:minecart", {2.5, 0.0, 0.5}, {0.1, 0.0, 0.0}, 0, 0},
+                SummonEntity{"minecraft:minecart", {2.5, 0.0, 4.5}, {0.1, 0.0, 0.0}, 0, 0}});
+        const auto cart = [&](double z) {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find_if(d.overworld().entities, [&](const auto& e) { return e.position.z == z; });
+        };
+        // On a rail it sits a sixteenth above it, moves by its velocity and keeps 96%.
+        const auto first = cart(0.5);
+        require(first.position.y == 0.0625 && first.position.x == 2.6 && first.velocity.x == 0.1 * 0.96 && first.velocity.y == 0.0,
+                std::format("on the rail: {} {} {}", first.position.x, first.position.y, first.velocity.x));
+        for (int i = 0; i < 30; ++i) s.tick();
+        // The boosted cart passed the other.
+        require(cart(4.5).position.x > cart(0.5).position.x + 1.0 && cart(4.5).velocity.x > cart(0.5).velocity.x,
+                std::format("boosted: {} against {}", cart(4.5).position.x, cart(0.5).position.x));
+    });
+
     suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {
         using circuit::contracts::UseBlock;
         Sim s;
