@@ -202,6 +202,12 @@ bool head_has_base(RuleContext& ctx, BlockPos pos, BlockState head);
 // Block-entity tick of a moving piston: completes the move after two ticks.
 void tick_moving_piston(RuleContext& ctx, BlockPos pos);
 
+// ---- daylight detectors (daylight.cpp) ----
+// Block-entity tick: the output from the sky every 20 game ticks.
+void tick_daylight_detector(RuleContext& ctx, BlockPos pos, BlockState s);
+// Used: inverts it and sets its output.
+void use_daylight_detector(RuleContext& ctx, BlockPos pos, BlockState s);
+
 void check_hopper(RuleContext& ctx, BlockPos pos);
 void tick_hopper(RuleContext& ctx, BlockPos pos);
 // An item that moved inside a hopper's cell: the hopper takes what it can of

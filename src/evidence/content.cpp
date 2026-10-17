@@ -283,6 +283,11 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
         CIRCUIT_TRY(power, p.integer_or("power", 0, 15, 0));
         return simple(blocks::target(static_cast<std::uint8_t>(power)));
     }
+    if (id == "minecraft:daylight_detector") {
+        CIRCUIT_TRY(inverted, p.choice("inverted", {"false", "true"}, 0));
+        CIRCUIT_TRY(power, p.integer_or("power", 0, 15, 0));
+        return simple(blocks::daylight_detector(inverted == 1, static_cast<std::uint8_t>(power)));
+    }
     if (id.starts_with("minecraft:") && id.ends_with("_pressure_plate")) {
         const auto kind = id.substr(10, id.size() - 10 - 15);
         for (std::uint8_t k = 0; k < blocks::button_kinds; ++k) {

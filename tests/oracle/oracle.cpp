@@ -2,6 +2,7 @@
 #include "oracle.hpp"
 #include "../support/light_reference.hpp"
 #include <circuit/gameplay/rules.hpp>
+#include <circuit/gameplay/sky.hpp>
 #include <algorithm>
 #include <stdexcept>
 
@@ -45,6 +46,8 @@ public:
         else lv().blocks[pos] = state;
     }
     std::uint8_t light(BlockPos pos) override { return o_.light(dimension(), pos); }
+    std::uint8_t sky_light(BlockPos pos) override { return o_.light(dimension(), pos, true); }
+    Sky sky() override { return {o_.day_time_, o_.sky_darken_}; }
     std::int32_t game_rule(std::string_view name) override { return game_rule_value(o_.bundle_, o_.game_rules_, name); }
     std::optional<contracts::Generation> chunk_generation(ChunkPos chunk) override {
         if (lv().level(chunk) == ChunkLevel::unloaded) return std::nullopt;
@@ -173,7 +176,7 @@ struct Oracle::LightSnapshot {
 
 Oracle::~Oracle() = default;
 
-std::uint8_t Oracle::light(DimensionId level, BlockPos pos) {
+std::uint8_t Oracle::light(DimensionId level, BlockPos pos, bool sky_only) {
     auto& snap = light_[static_cast<std::size_t>(level)];
     const auto chunk = contracts::chunk_of(pos);
     if (!snap || !snap->loaded.contains(chunk)) return 0;
@@ -187,7 +190,8 @@ std::uint8_t Oracle::light(DimensionId level, BlockPos pos) {
         const test::MapLightWorld world(snap->blocks, snap->loaded);
         it = snap->around.try_emplace(chunk, world, columns, bundle_.shape(level).min_y, snap->top).first;
     }
-    return std::max(it->second.get(gameplay::LightKind::block, pos), it->second.get(gameplay::LightKind::sky, pos));
+    const auto sky = it->second.get(gameplay::LightKind::sky, pos);
+    return sky_only ? sky : std::max(it->second.get(gameplay::LightKind::block, pos), sky);
 }
 
 ChunkLevel Oracle::Level::level(ChunkPos chunk) const {
@@ -262,6 +266,7 @@ void Oracle::advance(const std::vector<contracts::Command>& commands) {
         else ctx_->record(TraceKind::command_rejected, {}, c.admission, static_cast<std::uint64_t>(ticket_result.error()), 0);
     }
     advance_weather(weather_, game_rule_value(bundle_, game_rules_, "doWeatherCycle") != 0, weather_rng);
+    sky_darken_ = sky_darken(weather_, day_time_);
     if (game_rule_value(bundle_, game_rules_, "doDaylightCycle") != 0) ++day_time_;
     // Each level runs its phases, in level order: the scheduled ticks of its
     // loaded chunks, then its chunk stage (tickets expire and chunk levels

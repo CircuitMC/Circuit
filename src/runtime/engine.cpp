@@ -3,6 +3,7 @@
 #include <circuit/gameplay/light.hpp>
 #include <circuit/gameplay/rng.hpp>
 #include <circuit/gameplay/rules.hpp>
+#include <circuit/gameplay/sky.hpp>
 #include <circuit/runtime/engine.hpp>
 #include <algorithm>
 #include <chrono>
@@ -259,6 +260,8 @@ void Engine::Impl::advance(const std::vector<Command>& commands) {
     // The weather, then the day time, advance before the levels run (both
     // official servers).
     gameplay::advance_weather(world.weather, gameplay::game_rule_value(bundle, world.game_rules, "doWeatherCycle") != 0, weather_rng);
+    // The sky darkens by the weather and the day time before it advances.
+    world.sky_darken = gameplay::sky_darken(world.weather, world.day_time);
     if (gameplay::game_rule_value(bundle, world.game_rules, "doDaylightCycle") != 0) ++world.day_time;
     // Then each level, in level order, runs its phases: the scheduled ticks
     // of its loaded chunks, its chunk stage, and the rest where chunks are
@@ -353,6 +356,12 @@ void Engine::Impl::light_phase(DimensionId level) {
 
 void Engine::Impl::command_phase(const std::vector<Command>& commands) {
     ++stats.phases;
+    // Commands that use blocks read the light as of the start of the tick.
+    if (!commands.empty())
+        for (const auto level : contracts::level_order) {
+            update_light(level);
+            world.light[static_cast<std::size_t>(level)] = light[static_cast<std::size_t>(level)] ? &*light[static_cast<std::size_t>(level)] : nullptr;
+        }
     // Commands run serially on the coordinator with access to every column.
     RegionContext ctx(bundle, world, regions, all_regions, Phase::commands, DimensionId::overworld, options.record_trace, false,
                       options.data.get());
@@ -391,6 +400,7 @@ void Engine::Impl::command_phase(const std::vector<Command>& commands) {
         if (ticket_result) ctx.record(TraceKind::command_applied, {}, c.admission, 0, 0);
         else ctx.record(TraceKind::command_rejected, {}, c.admission, static_cast<std::uint64_t>(ticket_result.error()), 0);
     }
+    world.light.fill(nullptr);
     commit({&ctx});
 }
 
@@ -611,6 +621,7 @@ void Engine::Impl::entity_phase(DimensionId level) {
 
 void Engine::Impl::block_entity_phase(DimensionId level) {
     std::vector<RootItem> roots;
+    bool reads_light = false;
     world.for_each_loaded(level, [&](ChunkPos c, const ChunkData& data) {
         if (!data.block_ticking() || world.time < data.resumes) return;
         for (const auto& [pos, be] : data.block_entities) {
@@ -619,10 +630,17 @@ void Engine::Impl::block_entity_phase(DimensionId level) {
             r.home = c;
             r.pos = pos;
             roots.push_back(r);
+            reads_light = reads_light || be.kind == gameplay::BlockType::daylight_detector;
         }
     });
     std::ranges::sort(roots, {}, &RootItem::key);
+    // Daylight detectors read the light as of the start of the tick.
+    if (reads_light) {
+        update_light(level);
+        world.light[static_cast<std::size_t>(level)] = light[static_cast<std::size_t>(level)] ? &*light[static_cast<std::size_t>(level)] : nullptr;
+    }
     run_phase(Phase::block_entities, level, std::move(roots));
+    world.light[static_cast<std::size_t>(level)] = nullptr;
 }
 
 bool Engine::Impl::awake(DimensionId level) {
@@ -1068,6 +1086,9 @@ void Engine::Impl::restore(const WorldDump& state) {
     world.day_time = state.day_time;
     if (!gameplay::valid_weather(state.weather)) bad("weather");
     world.weather = state.weather;
+    // As the last tick computed it, from the day time before it advanced.
+    world.sky_darken = gameplay::sky_darken(world.weather, world.day_time
+                                                               - (gameplay::game_rule_value(bundle, world.game_rules, "doDaylightCycle") != 0 ? 1 : 0));
     // Valid entity stacks; entities of every level are checked against the
     // global id counter.
     std::optional<DimensionId> previous;

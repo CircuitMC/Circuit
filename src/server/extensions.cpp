@@ -223,6 +223,7 @@ struct Extensions::Impl {
             case gameplay::BlockType::chest: return "minecraft:chest";
             case gameplay::BlockType::hopper: return "minecraft:hopper";
             case gameplay::BlockType::comparator: return "minecraft:comparator";
+            case gameplay::BlockType::daylight_detector: return "minecraft:daylight_detector";
             case gameplay::BlockType::moving_piston: return "minecraft:piston";
             default: return "unknown";
             }

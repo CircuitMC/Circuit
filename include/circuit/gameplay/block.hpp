@@ -46,6 +46,7 @@ enum class BlockType : std::uint8_t {
     trapdoor,            // facing (horizontal); level: bit 0 top half, bit 1 waterlogged (stored); flag: open; extra: powered; variant: DoorKind
     fence_gate,          // facing (horizontal); level: 1 in a wall; flag: open; extra: powered; variant: DoorKind (wooden kinds)
     honey_block,
+    daylight_detector,   // level: power 0-15; flag: inverted. Block entity: ticks it every 20 game ticks
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -211,6 +212,9 @@ constexpr BlockState weighted_plate(bool heavy, std::uint8_t power = 0) {
     return BlockState::of(BlockType::weighted_plate).with_variant(heavy ? 1 : 0).with_level(power);
 }
 constexpr BlockState target(std::uint8_t power = 0) { return BlockState::of(BlockType::target).with_level(power); }
+constexpr BlockState daylight_detector(bool inverted = false, std::uint8_t power = 0) {
+    return BlockState::of(BlockType::daylight_detector).with_flag(inverted).with_level(power);
+}
 // Doors and trapdoors, wooden ones first, then iron and the copper ones;
 // fence gates come in the wooden kinds (registry names: "<kind>_door",
 // "<kind>_trapdoor", "<kind>_fence_gate").
@@ -281,9 +285,10 @@ constexpr bool repeater_locked(BlockState s) noexcept { return s.is(BlockType::r
 template <class F>
 void for_each_block_state(F&& f);
 constexpr bool is_container(BlockType t) noexcept { return t == BlockType::hopper || t == BlockType::chest; }
-// Block entities hold container slots, hopper cooldowns, comparator output signals and moving blocks.
+// Block entities hold container slots, hopper cooldowns, comparator output
+// signals and moving blocks; a daylight detector's ticks it.
 constexpr bool has_block_entity(BlockType t) noexcept {
-    return is_container(t) || t == BlockType::comparator || t == BlockType::moving_piston;
+    return is_container(t) || t == BlockType::comparator || t == BlockType::moving_piston || t == BlockType::daylight_detector;
 }
 // Direction from a chest half to its partner (reference convention: left pairs
 // clockwise, right counter-clockwise, seen from above); nullopt for single chests.

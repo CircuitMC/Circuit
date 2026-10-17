@@ -52,6 +52,7 @@ Every block state of both versions is represented, with its official name and pr
 | `*_button` (every kind) | `face`, `facing`, `powered` | — |
 | `*_pressure_plate` (every kind, the weighted ones too) | `powered`, `power` | — |
 | `target` | `power` | — |
+| `daylight_detector` | `inverted`, `power` | — |
 | `*_door`, `*_trapdoor`, `*_fence_gate` (every kind) | `facing`, `half`, `hinge`, `in_wall`, `open`, `powered` | a trapdoor's `waterlogged` (stored, not simulated) |
 
 **Other blocks** keep every property and are inert: they are solid for items when they have a collision shape, conduct redstone power when opaque, support dust and diodes on faces their collision shape covers (or any face when opaque), cannot be moved by pistons, break at their documented hardness with their documented tool, and do nothing else. With the official data pack they drop from their loot tables, except where a table draws random numbers (see [data packs](DATA_PACKS.md)). Players collide with their exact collision shapes. A world may contain them, and the client shows them, but no machine that depends on their behavior works yet.
@@ -79,6 +80,7 @@ Block and item registration do not provide behavior. Rails and coral fans exist 
 | TNT duplication machines | Not supported. Primed TNT and explosions exist, but common machine components such as rails, minecarts and coral fans are absent, and TNT duplication itself is not modeled. No TNT-duplication reference fixture exists. |
 | Honey-based flying machines | Honey blocks, their separation from slime and the entities they carry match recorded traces of both versions, including a small slime-honey flying machine. Larger flying-machine designs have no acceptance evidence yet. |
 | Redstone torches, buttons, pressure plates and target blocks | Torch inverters, towers and burnout, buttons pressed by players and arrows, pressure plates sensing items and arrows (weighted ones counting them) and target blocks grading hits match recorded traces of both versions, including the update order of the dust they drive. Mobs and players do not press plates yet, and tripwire is not modeled. |
+| Daylight detectors | Normal and inverted detectors follow the sky light, the time of day, rain and thunder every 20 game ticks, and invert when used, as in recorded traces of both versions over a day, with and without the daylight cycle. Sculk sensors, lightning rods and the other sensors are not modeled. |
 | Doors, trapdoors and fence gates | Opened and closed by power and by hand, with their halves, shapes and sound draws, as in recorded traces of both versions. Note blocks, bells, copper bulbs and other consumers are not modeled yet. |
 | Dispensers and droppers | Not implemented. Machines that need them are not supported. |
 | Portal chunk loaders, sand duplication and bedrock-breaking machines | No compatibility claim. Dimensions/portals and the required block/interaction coverage are absent; falling blocks exist but are not duplicated. |

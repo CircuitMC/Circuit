@@ -11,11 +11,11 @@ namespace circuit::gameplay {
 namespace {
 // Registry blocks with a BlockType of their own (see evidence::ContentMapping),
 // besides the buttons and pressure plates of each kind.
-constexpr std::array<std::string_view, 28> modeled_names{
+constexpr std::array<std::string_view, 29> modeled_names{
     "air", "cave_air", "void_air", "stone", "glass", "obsidian", "redstone_block", "slime_block", "lever", "redstone_wire",
     "repeater", "redstone_lamp", "observer", "piston", "sticky_piston", "piston_head", "moving_piston", "hopper", "chest",
     "comparator", "water", "wheat", "redstone_torch", "redstone_wall_torch", "light_weighted_pressure_plate",
-    "heavy_weighted_pressure_plate", "target", "honey_block"};
+    "heavy_weighted_pressure_plate", "target", "honey_block", "daylight_detector"};
 constexpr std::array<std::string_view, blocks::button_kinds> button_names{
     "oak", "spruce", "birch", "jungle", "acacia", "cherry", "dark_oak", "pale_oak", "mangrove", "bamboo", "crimson", "warped",
     "stone", "polished_blackstone"};
@@ -47,6 +47,7 @@ constexpr Properties properties(BlockType t) noexcept {
     case BlockType::pressure_plate: return {false, false, true, false};
     case BlockType::weighted_plate: case BlockType::target: return {false, true, false, false};
     case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: return {true, true, true, true};
+    case BlockType::daylight_detector: return {false, true, true, false};
     default: return {false, false, false, false};
     }
 }
@@ -266,6 +267,8 @@ std::string block_notation(BlockState s) {
     case BlockType::weighted_plate:
         return std::format("minecraft:{}_weighted_pressure_plate[power={}]", s.variant() == 1 ? "heavy" : "light", s.level());
     case BlockType::target: return std::format("minecraft:target[power={}]", s.level());
+    case BlockType::daylight_detector:
+        return std::format("minecraft:daylight_detector[inverted={},power={}]", b(s.flag()), s.level());
     case BlockType::door:
         return std::format("minecraft:{}_door[facing={},half={},hinge={},open={},powered={}]", door_kind_name(s.variant()),
                            direction_name(s.facing()), upper_half(s) ? "upper" : "lower", (s.level() & 2) ? "right" : "left", b(s.flag()),

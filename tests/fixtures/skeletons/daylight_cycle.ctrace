@@ -1,0 +1,384 @@
+circuit-trace 2
+title Daylight detectors with the daylight cycle on, at the transitions of their outputs
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms daylight_detector
+area 0 0 0 18 2 6
+ticks 2261
+changes ordered
+entities observed
+rng observed
+gamerule doDaylightCycle true
+
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 16 0 2 minecraft:stone
+at 0 set 16 0 3 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 set 16 0 5 minecraft:stone
+at 0 set 16 0 6 minecraft:stone
+at 0 set 17 0 2 minecraft:stone
+at 0 set 17 0 3 minecraft:stone
+at 0 set 17 0 4 minecraft:stone
+at 0 set 17 0 5 minecraft:stone
+at 0 set 17 0 6 minecraft:stone
+at 0 set 18 0 2 minecraft:stone
+at 0 set 18 0 3 minecraft:stone
+at 0 set 18 0 4 minecraft:stone
+at 0 set 18 0 5 minecraft:stone
+at 0 set 18 0 6 minecraft:stone
+at 0 set 0 1 2 minecraft:stone
+at 0 set 1 1 2 minecraft:stone
+at 0 set 2 1 2 minecraft:stone
+at 0 set 3 1 2 minecraft:stone
+at 0 set 4 1 2 minecraft:stone
+at 0 set 5 1 2 minecraft:stone
+at 0 set 6 1 2 minecraft:stone
+at 0 set 7 1 2 minecraft:stone
+at 0 set 8 1 2 minecraft:stone
+at 0 set 9 1 2 minecraft:stone
+at 0 set 10 1 2 minecraft:stone
+at 0 set 11 1 2 minecraft:stone
+at 0 set 12 1 2 minecraft:stone
+at 0 set 13 1 2 minecraft:stone
+at 0 set 14 1 2 minecraft:stone
+at 0 set 15 1 2 minecraft:stone
+at 0 set 16 1 2 minecraft:stone
+at 0 set 17 1 2 minecraft:stone
+at 0 set 0 1 6 minecraft:stone
+at 0 set 1 1 6 minecraft:stone
+at 0 set 2 1 6 minecraft:stone
+at 0 set 3 1 6 minecraft:stone
+at 0 set 4 1 6 minecraft:stone
+at 0 set 5 1 6 minecraft:stone
+at 0 set 6 1 6 minecraft:stone
+at 0 set 7 1 6 minecraft:stone
+at 0 set 8 1 6 minecraft:stone
+at 0 set 9 1 6 minecraft:stone
+at 0 set 10 1 6 minecraft:stone
+at 0 set 11 1 6 minecraft:stone
+at 0 set 12 1 6 minecraft:stone
+at 0 set 13 1 6 minecraft:stone
+at 0 set 14 1 6 minecraft:stone
+at 0 set 15 1 6 minecraft:stone
+at 0 set 16 1 6 minecraft:stone
+at 0 set 17 1 6 minecraft:stone
+at 0 set 18 1 2 minecraft:stone
+at 0 set 18 1 3 minecraft:stone
+at 0 set 18 1 4 minecraft:stone
+at 0 set 18 1 5 minecraft:stone
+at 0 set 18 1 6 minecraft:stone
+at 0 set 1 2 2 minecraft:stone
+at 0 set 1 2 3 minecraft:stone
+at 0 set 1 2 4 minecraft:stone
+at 0 set 1 2 5 minecraft:stone
+at 0 set 1 2 6 minecraft:stone
+at 0 set 2 2 2 minecraft:stone
+at 0 set 2 2 3 minecraft:stone
+at 0 set 2 2 4 minecraft:stone
+at 0 set 2 2 5 minecraft:stone
+at 0 set 2 2 6 minecraft:stone
+at 0 set 3 2 2 minecraft:stone
+at 0 set 3 2 3 minecraft:stone
+at 0 set 3 2 4 minecraft:stone
+at 0 set 3 2 5 minecraft:stone
+at 0 set 3 2 6 minecraft:stone
+at 0 set 4 2 2 minecraft:stone
+at 0 set 4 2 3 minecraft:stone
+at 0 set 4 2 4 minecraft:stone
+at 0 set 4 2 5 minecraft:stone
+at 0 set 4 2 6 minecraft:stone
+at 0 set 5 2 2 minecraft:stone
+at 0 set 5 2 3 minecraft:stone
+at 0 set 5 2 4 minecraft:stone
+at 0 set 5 2 5 minecraft:stone
+at 0 set 5 2 6 minecraft:stone
+at 0 set 6 2 2 minecraft:stone
+at 0 set 6 2 3 minecraft:stone
+at 0 set 6 2 4 minecraft:stone
+at 0 set 6 2 5 minecraft:stone
+at 0 set 6 2 6 minecraft:stone
+at 0 set 7 2 2 minecraft:stone
+at 0 set 7 2 3 minecraft:stone
+at 0 set 7 2 4 minecraft:stone
+at 0 set 7 2 5 minecraft:stone
+at 0 set 7 2 6 minecraft:stone
+at 0 set 8 2 2 minecraft:stone
+at 0 set 8 2 3 minecraft:stone
+at 0 set 8 2 4 minecraft:stone
+at 0 set 8 2 5 minecraft:stone
+at 0 set 8 2 6 minecraft:stone
+at 0 set 9 2 2 minecraft:stone
+at 0 set 9 2 3 minecraft:stone
+at 0 set 9 2 4 minecraft:stone
+at 0 set 9 2 5 minecraft:stone
+at 0 set 9 2 6 minecraft:stone
+at 0 set 10 2 2 minecraft:stone
+at 0 set 10 2 3 minecraft:stone
+at 0 set 10 2 4 minecraft:stone
+at 0 set 10 2 5 minecraft:stone
+at 0 set 10 2 6 minecraft:stone
+at 0 set 11 2 2 minecraft:stone
+at 0 set 11 2 3 minecraft:stone
+at 0 set 11 2 4 minecraft:stone
+at 0 set 11 2 5 minecraft:stone
+at 0 set 11 2 6 minecraft:stone
+at 0 set 12 2 2 minecraft:stone
+at 0 set 12 2 3 minecraft:stone
+at 0 set 12 2 4 minecraft:stone
+at 0 set 12 2 5 minecraft:stone
+at 0 set 12 2 6 minecraft:stone
+at 0 set 13 2 2 minecraft:stone
+at 0 set 13 2 3 minecraft:stone
+at 0 set 13 2 4 minecraft:stone
+at 0 set 13 2 5 minecraft:stone
+at 0 set 13 2 6 minecraft:stone
+at 0 set 14 2 2 minecraft:stone
+at 0 set 14 2 3 minecraft:stone
+at 0 set 14 2 4 minecraft:stone
+at 0 set 14 2 5 minecraft:stone
+at 0 set 14 2 6 minecraft:stone
+at 0 set 15 2 2 minecraft:stone
+at 0 set 15 2 3 minecraft:stone
+at 0 set 15 2 4 minecraft:stone
+at 0 set 15 2 5 minecraft:stone
+at 0 set 15 2 6 minecraft:stone
+at 0 set 16 2 2 minecraft:stone
+at 0 set 16 2 3 minecraft:stone
+at 0 set 16 2 4 minecraft:stone
+at 0 set 16 2 5 minecraft:stone
+at 0 set 16 2 6 minecraft:stone
+at 0 set 17 2 2 minecraft:stone
+at 0 set 17 2 3 minecraft:stone
+at 0 set 17 2 4 minecraft:stone
+at 0 set 17 2 5 minecraft:stone
+at 0 set 17 2 6 minecraft:stone
+at 0 set 18 2 2 minecraft:stone
+at 0 set 18 2 3 minecraft:stone
+at 0 set 18 2 4 minecraft:stone
+at 0 set 18 2 5 minecraft:stone
+at 0 set 18 2 6 minecraft:stone
+at 0 set 0 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 0 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 1 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 1 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 2 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 2 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 3 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 3 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 4 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 4 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 5 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 5 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 6 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 6 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 7 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 7 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 8 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 8 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 9 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 9 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 10 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 10 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 11 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 11 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 12 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 12 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 13 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 13 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 14 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 14 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 15 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 15 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 command time set 0
+at 1 command time set 149
+at 21 command time set 150
+at 41 command time set 518
+at 61 command time set 519
+at 81 command time set 780
+at 101 command time set 781
+at 121 command time set 916
+at 141 command time set 917
+at 161 command time set 1354
+at 181 command time set 1355
+at 201 command time set 1511
+at 221 command time set 1512
+at 241 command time set 1848
+at 261 command time set 1849
+at 281 command time set 2427
+at 301 command time set 2428
+at 321 command time set 3158
+at 341 command time set 3159
+at 361 command time set 3822
+at 381 command time set 3823
+at 401 command time set 4277
+at 421 command time set 4278
+at 441 command time set 7688
+at 461 command time set 7689
+at 481 command time set 8143
+at 501 command time set 8144
+at 521 command time set 8808
+at 541 command time set 8809
+at 561 command time set 9539
+at 581 command time set 9540
+at 601 command time set 10118
+at 621 command time set 10119
+at 641 command time set 10454
+at 661 command time set 10455
+at 681 command time set 10611
+at 701 command time set 10612
+at 721 command time set 11049
+at 741 command time set 11050
+at 761 command time set 11186
+at 781 command time set 11187
+at 801 command time set 11447
+at 821 command time set 11448
+at 841 command time set 11817
+at 861 command time set 11818
+at 881 command time set 12023
+at 901 command time set 12024
+at 921 command time set 12142
+at 941 command time set 12143
+at 961 command time set 12192
+at 981 command time set 12193
+at 1001 command time set 12215
+at 1021 command time set 12216
+at 1041 command time set 12359
+at 1061 command time set 12360
+at 1081 command time set 12453
+at 1101 command time set 12454
+at 1121 command time set 12524
+at 1141 command time set 12525
+at 1161 command time set 12687
+at 1181 command time set 12688
+at 1201 command time set 12849
+at 1221 command time set 12850
+at 1241 command time set 12913
+at 1261 command time set 12914
+at 1281 command time set 13009
+at 1301 command time set 13010
+at 1321 command time set 13040
+at 1341 command time set 13041
+at 1361 command time set 13170
+at 1381 command time set 13171
+at 1401 command time set 13201
+at 1421 command time set 13202
+at 1441 command time set 13330
+at 1461 command time set 13331
+at 1481 command time set 13491
+at 1501 command time set 13492
+at 1521 command time set 13652
+at 1541 command time set 13653
+at 1561 command time set 22313
+at 1581 command time set 22314
+at 1601 command time set 22474
+at 1621 command time set 22475
+at 1641 command time set 22635
+at 1661 command time set 22636
+at 1681 command time set 22764
+at 1701 command time set 22765
+at 1721 command time set 22795
+at 1741 command time set 22796
+at 1761 command time set 22926
+at 1781 command time set 22927
+at 1801 command time set 22956
+at 1821 command time set 22957
+at 1841 command time set 23052
+at 1861 command time set 23053
+at 1881 command time set 23117
+at 1901 command time set 23118
+at 1921 command time set 23279
+at 1941 command time set 23280
+at 1961 command time set 23442
+at 1981 command time set 23443
+at 2001 command time set 23512
+at 2021 command time set 23513
+at 2041 command time set 23606
+at 2061 command time set 23607
+at 2081 command time set 23750
+at 2101 command time set 23751
+at 2121 command time set 23773
+at 2141 command time set 23774
+at 2161 command time set 23823
+at 2181 command time set 23824
+at 2201 command time set 23943
+at 2221 command time set 23944

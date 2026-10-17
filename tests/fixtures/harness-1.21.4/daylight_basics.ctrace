@@ -1,0 +1,1764 @@
+circuit-trace 2
+title Daylight detectors and inverted ones at sky light 0 to 15 through a day, rain and thunder
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.10.0+mc1.21.4
+mechanisms daylight_detector
+area 0 0 0 18 2 6
+ticks 3921
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 16 0 2 minecraft:stone
+at 0 set 16 0 3 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 set 16 0 5 minecraft:stone
+at 0 set 16 0 6 minecraft:stone
+at 0 set 17 0 2 minecraft:stone
+at 0 set 17 0 3 minecraft:stone
+at 0 set 17 0 4 minecraft:stone
+at 0 set 17 0 5 minecraft:stone
+at 0 set 17 0 6 minecraft:stone
+at 0 set 18 0 2 minecraft:stone
+at 0 set 18 0 3 minecraft:stone
+at 0 set 18 0 4 minecraft:stone
+at 0 set 18 0 5 minecraft:stone
+at 0 set 18 0 6 minecraft:stone
+at 0 set 0 1 2 minecraft:stone
+at 0 set 1 1 2 minecraft:stone
+at 0 set 2 1 2 minecraft:stone
+at 0 set 3 1 2 minecraft:stone
+at 0 set 4 1 2 minecraft:stone
+at 0 set 5 1 2 minecraft:stone
+at 0 set 6 1 2 minecraft:stone
+at 0 set 7 1 2 minecraft:stone
+at 0 set 8 1 2 minecraft:stone
+at 0 set 9 1 2 minecraft:stone
+at 0 set 10 1 2 minecraft:stone
+at 0 set 11 1 2 minecraft:stone
+at 0 set 12 1 2 minecraft:stone
+at 0 set 13 1 2 minecraft:stone
+at 0 set 14 1 2 minecraft:stone
+at 0 set 15 1 2 minecraft:stone
+at 0 set 16 1 2 minecraft:stone
+at 0 set 17 1 2 minecraft:stone
+at 0 set 0 1 6 minecraft:stone
+at 0 set 1 1 6 minecraft:stone
+at 0 set 2 1 6 minecraft:stone
+at 0 set 3 1 6 minecraft:stone
+at 0 set 4 1 6 minecraft:stone
+at 0 set 5 1 6 minecraft:stone
+at 0 set 6 1 6 minecraft:stone
+at 0 set 7 1 6 minecraft:stone
+at 0 set 8 1 6 minecraft:stone
+at 0 set 9 1 6 minecraft:stone
+at 0 set 10 1 6 minecraft:stone
+at 0 set 11 1 6 minecraft:stone
+at 0 set 12 1 6 minecraft:stone
+at 0 set 13 1 6 minecraft:stone
+at 0 set 14 1 6 minecraft:stone
+at 0 set 15 1 6 minecraft:stone
+at 0 set 16 1 6 minecraft:stone
+at 0 set 17 1 6 minecraft:stone
+at 0 set 18 1 2 minecraft:stone
+at 0 set 18 1 3 minecraft:stone
+at 0 set 18 1 4 minecraft:stone
+at 0 set 18 1 5 minecraft:stone
+at 0 set 18 1 6 minecraft:stone
+at 0 set 1 2 2 minecraft:stone
+at 0 set 1 2 3 minecraft:stone
+at 0 set 1 2 4 minecraft:stone
+at 0 set 1 2 5 minecraft:stone
+at 0 set 1 2 6 minecraft:stone
+at 0 set 2 2 2 minecraft:stone
+at 0 set 2 2 3 minecraft:stone
+at 0 set 2 2 4 minecraft:stone
+at 0 set 2 2 5 minecraft:stone
+at 0 set 2 2 6 minecraft:stone
+at 0 set 3 2 2 minecraft:stone
+at 0 set 3 2 3 minecraft:stone
+at 0 set 3 2 4 minecraft:stone
+at 0 set 3 2 5 minecraft:stone
+at 0 set 3 2 6 minecraft:stone
+at 0 set 4 2 2 minecraft:stone
+at 0 set 4 2 3 minecraft:stone
+at 0 set 4 2 4 minecraft:stone
+at 0 set 4 2 5 minecraft:stone
+at 0 set 4 2 6 minecraft:stone
+at 0 set 5 2 2 minecraft:stone
+at 0 set 5 2 3 minecraft:stone
+at 0 set 5 2 4 minecraft:stone
+at 0 set 5 2 5 minecraft:stone
+at 0 set 5 2 6 minecraft:stone
+at 0 set 6 2 2 minecraft:stone
+at 0 set 6 2 3 minecraft:stone
+at 0 set 6 2 4 minecraft:stone
+at 0 set 6 2 5 minecraft:stone
+at 0 set 6 2 6 minecraft:stone
+at 0 set 7 2 2 minecraft:stone
+at 0 set 7 2 3 minecraft:stone
+at 0 set 7 2 4 minecraft:stone
+at 0 set 7 2 5 minecraft:stone
+at 0 set 7 2 6 minecraft:stone
+at 0 set 8 2 2 minecraft:stone
+at 0 set 8 2 3 minecraft:stone
+at 0 set 8 2 4 minecraft:stone
+at 0 set 8 2 5 minecraft:stone
+at 0 set 8 2 6 minecraft:stone
+at 0 set 9 2 2 minecraft:stone
+at 0 set 9 2 3 minecraft:stone
+at 0 set 9 2 4 minecraft:stone
+at 0 set 9 2 5 minecraft:stone
+at 0 set 9 2 6 minecraft:stone
+at 0 set 10 2 2 minecraft:stone
+at 0 set 10 2 3 minecraft:stone
+at 0 set 10 2 4 minecraft:stone
+at 0 set 10 2 5 minecraft:stone
+at 0 set 10 2 6 minecraft:stone
+at 0 set 11 2 2 minecraft:stone
+at 0 set 11 2 3 minecraft:stone
+at 0 set 11 2 4 minecraft:stone
+at 0 set 11 2 5 minecraft:stone
+at 0 set 11 2 6 minecraft:stone
+at 0 set 12 2 2 minecraft:stone
+at 0 set 12 2 3 minecraft:stone
+at 0 set 12 2 4 minecraft:stone
+at 0 set 12 2 5 minecraft:stone
+at 0 set 12 2 6 minecraft:stone
+at 0 set 13 2 2 minecraft:stone
+at 0 set 13 2 3 minecraft:stone
+at 0 set 13 2 4 minecraft:stone
+at 0 set 13 2 5 minecraft:stone
+at 0 set 13 2 6 minecraft:stone
+at 0 set 14 2 2 minecraft:stone
+at 0 set 14 2 3 minecraft:stone
+at 0 set 14 2 4 minecraft:stone
+at 0 set 14 2 5 minecraft:stone
+at 0 set 14 2 6 minecraft:stone
+at 0 set 15 2 2 minecraft:stone
+at 0 set 15 2 3 minecraft:stone
+at 0 set 15 2 4 minecraft:stone
+at 0 set 15 2 5 minecraft:stone
+at 0 set 15 2 6 minecraft:stone
+at 0 set 16 2 2 minecraft:stone
+at 0 set 16 2 3 minecraft:stone
+at 0 set 16 2 4 minecraft:stone
+at 0 set 16 2 5 minecraft:stone
+at 0 set 16 2 6 minecraft:stone
+at 0 set 17 2 2 minecraft:stone
+at 0 set 17 2 3 minecraft:stone
+at 0 set 17 2 4 minecraft:stone
+at 0 set 17 2 5 minecraft:stone
+at 0 set 17 2 6 minecraft:stone
+at 0 set 18 2 2 minecraft:stone
+at 0 set 18 2 3 minecraft:stone
+at 0 set 18 2 4 minecraft:stone
+at 0 set 18 2 5 minecraft:stone
+at 0 set 18 2 6 minecraft:stone
+at 0 set 0 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 0 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 1 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 1 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 2 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 2 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 3 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 3 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 4 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 4 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 5 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 5 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 6 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 6 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 7 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 7 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 8 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 8 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 9 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 9 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 10 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 10 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 11 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 11 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 12 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 12 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 13 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 13 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 14 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 14 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 set 15 1 3 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 15 1 5 minecraft:daylight_detector[inverted=true,power=0]
+at 0 command time set 0
+
+at 1 command time set 0
+light 1 0 1 3 0 15
+light 1 1 1 3 0 14
+light 1 2 1 3 0 13
+light 1 3 1 3 0 12
+light 1 4 1 3 0 11
+light 1 5 1 3 0 10
+light 1 6 1 3 0 9
+light 1 7 1 3 0 8
+light 1 8 1 3 0 7
+light 1 9 1 3 0 6
+light 1 10 1 3 0 5
+light 1 11 1 3 0 4
+light 1 12 1 3 0 3
+light 1 13 1 3 0 2
+light 1 14 1 3 0 1
+light 1 15 1 3 0 0
+
+change 18 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=7]
+change 18 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=7]
+change 18 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=1]
+change 18 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=6]
+change 18 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=2]
+change 18 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=6]
+change 18 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=3]
+change 18 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=5]
+change 18 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=4]
+change 18 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=5]
+change 18 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=5]
+change 18 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=4]
+change 18 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=6]
+change 18 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=4]
+change 18 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=7]
+change 18 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=3]
+change 18 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=8]
+change 18 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=3]
+change 18 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=9]
+change 18 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=2]
+change 18 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=10]
+change 18 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=2]
+change 18 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=11]
+change 18 block_entities 12 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 18 block_entities 12 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=12]
+change 18 block_entities 13 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 18 block_entities 13 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=13]
+change 18 block_entities 14 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=14]
+change 18 block_entities 15 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=15]
+
+at 21 command time set 166
+
+at 41 command time set 167
+
+change 58 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=8]
+change 58 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=7]
+change 58 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=6]
+change 58 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=5]
+change 58 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+change 58 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+change 58 block_entities 12 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 58 block_entities 14 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+
+at 61 command time set 500
+
+change 78 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=8]
+change 78 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=7]
+change 78 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=6]
+
+at 81 command time set 535
+
+change 98 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=5]
+
+at 101 command time set 536
+
+change 118 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=9]
+
+at 121 command time set 797
+
+change 138 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=9]
+change 138 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=8]
+change 138 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=7]
+change 138 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+
+at 141 command time set 798
+
+change 158 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=6]
+
+at 161 command time set 933
+
+change 178 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=8]
+change 178 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+
+at 181 command time set 934
+
+change 198 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=10]
+
+at 201 command time set 1000
+
+change 218 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=5]
+
+at 221 command time set 1371
+
+change 238 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=10]
+change 238 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=9]
+change 238 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=8]
+change 238 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=7]
+change 238 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=6]
+
+at 241 command time set 1372
+
+change 258 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=11]
+change 258 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+
+at 261 command time set 1500
+
+change 278 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=9]
+
+at 281 command time set 1528
+
+at 301 command time set 1529
+
+change 318 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=7]
+
+at 321 command time set 1865
+
+change 338 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=11]
+change 338 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=10]
+change 338 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=8]
+change 338 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=5]
+change 338 block_entities 13 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+
+at 341 command time set 1866
+
+change 358 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=12]
+
+at 361 command time set 2000
+
+change 378 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=9]
+
+at 381 command time set 2444
+
+change 398 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=12]
+change 398 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=11]
+change 398 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=10]
+change 398 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=7]
+change 398 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=6]
+
+at 401 command time set 2445
+
+change 418 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=12] minecraft:daylight_detector[inverted=false,power=13]
+change 418 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=8]
+change 418 block_entities 12 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+
+at 421 command time set 2500
+
+at 441 command time set 3000
+
+change 458 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=12]
+change 458 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=11]
+change 458 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=10]
+change 458 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=9]
+change 458 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+
+at 461 command time set 3175
+
+change 478 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=12] minecraft:daylight_detector[inverted=false,power=13]
+
+at 481 command time set 3176
+
+change 498 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=13] minecraft:daylight_detector[inverted=false,power=14]
+change 498 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=5]
+
+at 501 command time set 3500
+
+change 518 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=6]
+
+at 521 command time set 3839
+
+change 538 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=8]
+change 538 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=7]
+
+at 541 command time set 3840
+
+change 558 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=9]
+
+at 561 command time set 4000
+
+change 578 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=10]
+
+at 581 command time set 4294
+
+change 598 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=13] minecraft:daylight_detector[inverted=false,power=14]
+change 598 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=12] minecraft:daylight_detector[inverted=false,power=13]
+change 598 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=12]
+change 598 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=11]
+
+at 601 command time set 4295
+
+change 618 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=14] minecraft:daylight_detector[inverted=false,power=15]
+
+at 621 command time set 4500
+
+at 641 command time set 5000
+
+at 661 command time set 5500
+
+at 681 command time set 6000
+
+at 701 command time set 6500
+
+at 721 command time set 7000
+
+at 741 command time set 7500
+
+at 761 command time set 7705
+
+at 781 command time set 7706
+
+change 798 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=15] minecraft:daylight_detector[inverted=false,power=14]
+
+at 801 command time set 8000
+
+change 818 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=14] minecraft:daylight_detector[inverted=false,power=13]
+change 818 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=13] minecraft:daylight_detector[inverted=false,power=12]
+change 818 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=12] minecraft:daylight_detector[inverted=false,power=11]
+change 818 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=10]
+
+at 821 command time set 8160
+
+change 838 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=9]
+
+at 841 command time set 8161
+
+change 858 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=8]
+
+at 861 command time set 8500
+
+change 878 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=7]
+change 878 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=6]
+
+at 881 command time set 8825
+
+change 898 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=5]
+
+at 901 command time set 8826
+
+change 918 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=14] minecraft:daylight_detector[inverted=false,power=13]
+change 918 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=4]
+
+at 921 command time set 9000
+
+change 938 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=13] minecraft:daylight_detector[inverted=false,power=12]
+
+at 941 command time set 9500
+
+change 958 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=12] minecraft:daylight_detector[inverted=false,power=11]
+change 958 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=10]
+change 958 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=9]
+change 958 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=8]
+change 958 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+
+at 961 command time set 9556
+
+at 981 command time set 9557
+
+change 998 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=13] minecraft:daylight_detector[inverted=false,power=12]
+change 998 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=7]
+change 998 block_entities 12 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+
+at 1001 command time set 10000
+
+change 1018 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=12] minecraft:daylight_detector[inverted=false,power=11]
+change 1018 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=10]
+change 1018 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=9]
+change 1018 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=6]
+change 1018 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=5]
+
+at 1021 command time set 10135
+
+change 1038 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=8]
+
+at 1041 command time set 10136
+
+change 1058 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=12] minecraft:daylight_detector[inverted=false,power=11]
+
+at 1061 command time set 10471
+
+change 1078 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=10]
+change 1078 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=9]
+change 1078 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=7]
+change 1078 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=4]
+change 1078 block_entities 13 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+
+at 1081 command time set 10472
+
+change 1098 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=6]
+
+at 1101 command time set 10500
+
+at 1121 command time set 10628
+
+change 1138 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=8]
+
+at 1141 command time set 10629
+
+change 1158 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=10]
+change 1158 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+
+at 1161 command time set 11000
+
+change 1178 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=9]
+change 1178 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=8]
+change 1178 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=7]
+change 1178 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=6]
+change 1178 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=5]
+
+at 1181 command time set 11066
+
+change 1198 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=4]
+
+at 1201 command time set 11067
+
+change 1218 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=9]
+
+at 1221 command time set 11203
+
+change 1238 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=7]
+change 1238 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+
+at 1241 command time set 11204
+
+change 1258 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=5]
+
+at 1261 command time set 11464
+
+change 1278 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=8]
+change 1278 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=7]
+change 1278 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=6]
+change 1278 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+
+at 1281 command time set 11465
+
+change 1298 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=8]
+
+at 1301 command time set 11500
+
+change 1318 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=4]
+
+at 1321 command time set 11834
+
+change 1338 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=7]
+change 1338 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=6]
+change 1338 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=5]
+
+at 1341 command time set 11835
+
+change 1358 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=7]
+change 1358 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=6]
+change 1358 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=5]
+change 1358 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=4]
+change 1358 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+change 1358 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 1358 block_entities 12 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 1358 block_entities 14 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+
+at 1361 command time set 12000
+
+at 1381 command time set 12040
+
+change 1398 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=6]
+
+at 1401 command time set 12041
+
+change 1418 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=6]
+change 1418 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=1]
+change 1418 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=1] minecraft:daylight_detector[inverted=true,power=2]
+change 1418 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=2] minecraft:daylight_detector[inverted=true,power=3]
+change 1418 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=5]
+change 1418 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=3] minecraft:daylight_detector[inverted=true,power=4]
+change 1418 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=5]
+change 1418 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=4]
+change 1418 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=6]
+change 1418 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=7]
+change 1418 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+change 1418 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=8]
+change 1418 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=9]
+change 1418 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 1418 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 1418 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 1418 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 1418 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 1418 block_entities 12 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 1418 block_entities 13 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 1418 block_entities 13 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 1418 block_entities 14 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 1421 command time set 12159
+
+change 1438 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=5]
+change 1438 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=4]
+
+at 1441 command time set 12160
+
+change 1458 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+
+at 1461 command time set 12209
+
+at 1481 command time set 12210
+
+change 1498 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=1] minecraft:daylight_detector[inverted=true,power=2]
+change 1498 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=5]
+change 1498 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=2] minecraft:daylight_detector[inverted=true,power=3]
+change 1498 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=3] minecraft:daylight_detector[inverted=true,power=4]
+change 1498 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=4]
+change 1498 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=5]
+change 1498 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=6]
+change 1498 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+change 1498 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=7]
+change 1498 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=8]
+change 1498 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=9]
+change 1498 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 1498 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 1498 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 1498 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 1498 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 1498 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 1498 block_entities 12 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 1498 block_entities 12 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 1498 block_entities 13 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 1501 command time set 12232
+
+at 1521 command time set 12233
+
+change 1538 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=5]
+
+at 1541 command time set 12376
+
+change 1558 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=4]
+change 1558 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+
+at 1561 command time set 12377
+
+change 1578 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=2] minecraft:daylight_detector[inverted=true,power=3]
+change 1578 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=4]
+change 1578 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=3] minecraft:daylight_detector[inverted=true,power=4]
+change 1578 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=5]
+change 1578 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=6]
+change 1578 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+change 1578 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=7]
+change 1578 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=8]
+change 1578 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 1578 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=9]
+change 1578 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 1578 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 1578 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 1578 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 1578 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 1578 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 1578 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 1578 block_entities 12 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 1581 command time set 12470
+
+change 1598 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+
+at 1601 command time set 12471
+
+change 1618 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=4]
+change 1618 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+
+at 1621 command time set 12500
+
+at 1641 command time set 12541
+
+at 1661 command time set 12542
+
+change 1678 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=3] minecraft:daylight_detector[inverted=true,power=4]
+change 1678 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=5]
+change 1678 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+change 1678 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=6]
+change 1678 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=7]
+change 1678 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=8]
+change 1678 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 1678 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=9]
+change 1678 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 1678 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 1678 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 1678 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 1678 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 1678 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 1678 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 1678 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 1681 command time set 12704
+
+change 1698 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+change 1698 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+
+at 1701 command time set 12705
+
+change 1718 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+change 1718 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=5]
+change 1718 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=6]
+change 1718 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=7]
+change 1718 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 1718 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=8]
+change 1718 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=9]
+change 1718 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 1718 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 1718 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 1718 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 1718 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 1718 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 1718 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 1718 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 1721 command time set 12866
+
+change 1738 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 1738 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+
+at 1741 command time set 12867
+
+change 1758 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=6]
+change 1758 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 1758 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=7]
+change 1758 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=8]
+change 1758 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=9]
+change 1758 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 1758 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 1758 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 1758 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 1758 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 1758 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 1758 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 1758 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 1761 command time set 12930
+
+at 1781 command time set 12931
+
+change 1798 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+
+at 1801 command time set 13000
+
+at 1821 command time set 13026
+
+at 1841 command time set 13027
+
+change 1858 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=7]
+change 1858 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=8]
+change 1858 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=9]
+change 1858 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 1858 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 1858 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 1858 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 1858 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 1858 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 1858 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 1858 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 1861 command time set 13057
+
+at 1881 command time set 13058
+
+change 1898 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 1898 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+
+at 1901 command time set 13187
+
+at 1921 command time set 13188
+
+change 1938 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=8]
+change 1938 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 1938 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=9]
+change 1938 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 1938 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 1938 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 1938 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 1938 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 1938 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 1938 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 1941 command time set 13218
+
+at 1961 command time set 13219
+
+change 1978 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+
+at 1981 command time set 13347
+
+at 2001 command time set 13348
+
+change 2018 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=9]
+change 2018 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 2018 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 2018 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 2018 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 2018 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 2018 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 2018 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 2021 command time set 13500
+
+change 2038 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+
+at 2041 command time set 13508
+
+at 2061 command time set 13509
+
+change 2078 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 2078 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 2078 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 2078 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 2078 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 2078 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 2078 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 2081 command time set 13669
+
+change 2098 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+
+at 2101 command time set 13670
+
+change 2118 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 2118 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 2118 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 2118 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 2118 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 2118 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 2121 command time set 14000
+
+at 2141 command time set 14500
+
+at 2161 command time set 15000
+
+at 2181 command time set 15500
+
+at 2201 command time set 16000
+
+at 2221 command time set 16500
+
+at 2241 command time set 17000
+
+at 2261 command time set 17500
+
+at 2281 command time set 18000
+
+at 2301 command time set 18500
+
+at 2321 command time set 19000
+
+at 2341 command time set 19500
+
+at 2361 command time set 20000
+
+at 2381 command time set 20500
+
+at 2401 command time set 21000
+
+at 2421 command time set 21500
+
+at 2441 command time set 22000
+
+at 2461 command time set 22330
+
+at 2481 command time set 22331
+
+change 2498 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 2498 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=10]
+change 2498 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=11]
+change 2498 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=12]
+change 2498 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=13]
+change 2498 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 2501 command time set 22491
+
+change 2518 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+
+at 2521 command time set 22492
+
+change 2538 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=9]
+change 2538 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=10]
+change 2538 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 2538 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=11]
+change 2538 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=12]
+change 2538 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=13]
+change 2538 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 2541 command time set 22500
+
+at 2561 command time set 22652
+
+change 2578 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+
+at 2581 command time set 22653
+
+change 2598 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=8]
+change 2598 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=9]
+change 2598 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=10]
+change 2598 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=11]
+change 2598 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 2598 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=12]
+change 2598 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=13]
+change 2598 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 2601 command time set 22781
+
+at 2621 command time set 22782
+
+change 2638 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+
+at 2641 command time set 22812
+
+at 2661 command time set 22813
+
+change 2678 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=7]
+change 2678 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 2678 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=8]
+change 2678 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=9]
+change 2678 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=10]
+change 2678 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=11]
+change 2678 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 2678 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=12]
+change 2678 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=13]
+change 2678 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 2681 command time set 22943
+
+at 2701 command time set 22944
+
+change 2718 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 2718 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+
+at 2721 command time set 22973
+
+at 2741 command time set 22974
+
+change 2758 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=6]
+change 2758 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=7]
+change 2758 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=8]
+change 2758 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 2758 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=9]
+change 2758 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=10]
+change 2758 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=11]
+change 2758 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=12]
+change 2758 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 2758 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=13]
+change 2758 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 2761 command time set 23000
+
+at 2781 command time set 23069
+
+at 2801 command time set 23070
+
+change 2818 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+
+at 2821 command time set 23134
+
+at 2841 command time set 23135
+
+change 2858 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=5]
+change 2858 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+change 2858 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=6]
+change 2858 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=7]
+change 2858 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=8]
+change 2858 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 2858 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=9]
+change 2858 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=10]
+change 2858 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=11]
+change 2858 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=12]
+change 2858 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 2858 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=13]
+change 2858 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 2861 command time set 23296
+
+change 2878 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+change 2878 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+
+at 2881 command time set 23297
+
+change 2898 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+change 2898 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=4]
+change 2898 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=5]
+change 2898 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=6]
+change 2898 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+change 2898 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=7]
+change 2898 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=8]
+change 2898 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=9]
+change 2898 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 2898 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=10]
+change 2898 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=11]
+change 2898 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=12]
+change 2898 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 2898 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=13]
+change 2898 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 2901 command time set 23459
+
+change 2918 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+change 2918 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+
+at 2921 command time set 23460
+
+change 2938 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=3]
+change 2938 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=4]
+change 2938 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+change 2938 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=5]
+change 2938 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=6]
+change 2938 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=7]
+change 2938 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+change 2938 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=8]
+change 2938 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=9]
+change 2938 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 2938 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=10]
+change 2938 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=11]
+change 2938 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=12]
+change 2938 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 2938 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=13]
+change 2938 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 2941 command time set 23500
+
+at 2961 command time set 23529
+
+at 2981 command time set 23530
+
+change 2998 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=5]
+change 2998 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+
+at 3001 command time set 23623
+
+change 3018 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+
+at 3021 command time set 23624
+
+change 3038 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=3] minecraft:daylight_detector[inverted=true,power=2]
+change 3038 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=5]
+change 3038 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=3]
+change 3038 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=4]
+change 3038 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=5]
+change 3038 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+change 3038 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=6]
+change 3038 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=7]
+change 3038 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+change 3038 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=8]
+change 3038 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=9]
+change 3038 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=10]
+change 3038 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 3038 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=11]
+change 3038 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=12]
+change 3038 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3038 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=13]
+change 3038 block_entities 12 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 3041 command time set 23767
+
+change 3058 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=5]
+change 3058 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+
+at 3061 command time set 23768
+
+change 3078 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=6]
+
+at 3081 command time set 23790
+
+at 3101 command time set 23791
+
+change 3118 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=2] minecraft:daylight_detector[inverted=true,power=1]
+change 3118 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=6]
+change 3118 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=3] minecraft:daylight_detector[inverted=true,power=2]
+change 3118 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=3]
+change 3118 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=5]
+change 3118 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=4]
+change 3118 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=5]
+change 3118 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+change 3118 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=6]
+change 3118 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=7]
+change 3118 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=8]
+change 3118 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+change 3118 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=9]
+change 3118 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=10]
+change 3118 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 3118 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=11]
+change 3118 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=12]
+change 3118 block_entities 12 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3118 block_entities 12 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=13]
+change 3118 block_entities 13 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 3121 command time set 23840
+
+at 3141 command time set 23841
+
+change 3158 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+
+at 3161 command time set 23960
+
+change 3178 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=6]
+change 3178 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=5]
+
+at 3181 command time set 23961
+
+change 3198 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=7]
+change 3198 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=1] minecraft:daylight_detector[inverted=true,power=0]
+change 3198 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=2] minecraft:daylight_detector[inverted=true,power=1]
+change 3198 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=3] minecraft:daylight_detector[inverted=true,power=2]
+change 3198 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=6]
+change 3198 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=3]
+change 3198 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=4]
+change 3198 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=5]
+change 3198 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=5]
+change 3198 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=6]
+change 3198 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+change 3198 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=7]
+change 3198 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=8]
+change 3198 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+change 3198 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=9]
+change 3198 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=10]
+change 3198 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 3198 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=11]
+change 3198 block_entities 12 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=12]
+change 3198 block_entities 13 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3198 block_entities 13 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=13]
+change 3198 block_entities 14 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 3201 command time set 6000
+
+change 3218 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=15]
+change 3218 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=14]
+change 3218 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=13]
+change 3218 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=12]
+change 3218 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=11]
+change 3218 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=10]
+change 3218 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=9]
+change 3218 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=8]
+change 3218 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=7]
+change 3218 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=6]
+change 3218 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=5]
+change 3218 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=4]
+change 3218 block_entities 12 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=3]
+change 3218 block_entities 13 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 3218 block_entities 14 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+
+at 3221 command weather rain 1000000
+
+change 3258 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=15] minecraft:daylight_detector[inverted=false,power=14]
+change 3258 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=1]
+change 3258 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=14] minecraft:daylight_detector[inverted=false,power=13]
+change 3258 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=1] minecraft:daylight_detector[inverted=true,power=2]
+change 3258 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=13] minecraft:daylight_detector[inverted=false,power=12]
+change 3258 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=2] minecraft:daylight_detector[inverted=true,power=3]
+change 3258 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=12] minecraft:daylight_detector[inverted=false,power=11]
+change 3258 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=3] minecraft:daylight_detector[inverted=true,power=4]
+change 3258 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=10]
+change 3258 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=5]
+change 3258 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=9]
+change 3258 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=6]
+change 3258 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=8]
+change 3258 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=7]
+change 3258 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=7]
+change 3258 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=8]
+change 3258 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=6]
+change 3258 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=9]
+change 3258 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=5]
+change 3258 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 3258 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=4]
+change 3258 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 3258 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+change 3258 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 3258 block_entities 12 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 3258 block_entities 12 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 3258 block_entities 13 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 3258 block_entities 13 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 3258 block_entities 14 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3258 block_entities 14 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+change 3298 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=14] minecraft:daylight_detector[inverted=false,power=13]
+change 3298 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=1] minecraft:daylight_detector[inverted=true,power=2]
+change 3298 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=13] minecraft:daylight_detector[inverted=false,power=12]
+change 3298 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=2] minecraft:daylight_detector[inverted=true,power=3]
+change 3298 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=12] minecraft:daylight_detector[inverted=false,power=11]
+change 3298 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=3] minecraft:daylight_detector[inverted=true,power=4]
+change 3298 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=10]
+change 3298 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=5]
+change 3298 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=9]
+change 3298 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=6]
+change 3298 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=8]
+change 3298 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=7]
+change 3298 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=7]
+change 3298 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=8]
+change 3298 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=6]
+change 3298 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=9]
+change 3298 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=5]
+change 3298 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 3298 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=4]
+change 3298 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 3298 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+change 3298 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 3298 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 3298 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 3298 block_entities 12 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 3298 block_entities 12 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 3298 block_entities 13 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3298 block_entities 13 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+change 3318 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=13] minecraft:daylight_detector[inverted=false,power=12]
+change 3318 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=2] minecraft:daylight_detector[inverted=true,power=3]
+change 3318 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=12] minecraft:daylight_detector[inverted=false,power=11]
+change 3318 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=3] minecraft:daylight_detector[inverted=true,power=4]
+change 3318 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=10]
+change 3318 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=5]
+change 3318 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=9]
+change 3318 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=6]
+change 3318 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=8]
+change 3318 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=7]
+change 3318 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=7]
+change 3318 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=8]
+change 3318 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=6]
+change 3318 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=9]
+change 3318 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=5]
+change 3318 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 3318 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=4]
+change 3318 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 3318 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+change 3318 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 3318 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 3318 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 3318 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 3318 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 3318 block_entities 12 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3318 block_entities 12 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 3341 command time set 12000
+
+change 3358 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=12] minecraft:daylight_detector[inverted=false,power=6]
+change 3358 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=5]
+change 3358 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=5]
+change 3358 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=4]
+change 3358 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=4]
+change 3358 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=3]
+change 3358 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=3]
+change 3358 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=2]
+change 3358 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=2]
+change 3358 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=1]
+change 3358 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 3358 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+
+at 3361 command time set 12600
+
+change 3378 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=3]
+change 3378 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=3] minecraft:daylight_detector[inverted=true,power=6]
+change 3378 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=3]
+change 3378 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=7]
+change 3378 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=2]
+change 3378 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=8]
+change 3378 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=2]
+change 3378 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=9]
+change 3378 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=2]
+change 3378 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=10]
+change 3378 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=1]
+change 3378 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=11]
+change 3378 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=1]
+change 3378 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=12]
+change 3378 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 3378 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=13]
+change 3378 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=0]
+change 3378 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=14]
+change 3378 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3378 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=15]
+change 3378 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3378 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=15]
+change 3378 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 3381 command time set 13000
+
+change 3398 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 3398 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=8]
+change 3398 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 3398 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=9]
+change 3398 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 3398 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=10]
+change 3398 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 3398 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=11]
+change 3398 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 3398 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=12]
+change 3398 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=13]
+change 3398 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3398 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=14]
+change 3398 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3398 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=15]
+change 3398 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 3401 command time set 18000
+
+change 3418 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=0]
+change 3418 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=11]
+change 3418 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=0]
+change 3418 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=12]
+change 3418 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3418 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=13]
+change 3418 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3418 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=14]
+change 3418 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3418 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=15]
+change 3418 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3418 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=15]
+change 3418 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 3421 command time set 23000
+
+change 3438 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=2]
+change 3438 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=8]
+change 3438 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=2]
+change 3438 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=9]
+change 3438 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3438 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=10]
+change 3438 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3438 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=11]
+change 3438 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3438 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=12]
+change 3438 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3438 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=13]
+change 3438 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 3441 command time set 23500
+
+change 3458 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+change 3458 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=6]
+change 3458 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+change 3458 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=7]
+change 3458 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=3]
+change 3458 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=8]
+change 3458 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 3458 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=9]
+change 3458 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 3458 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=10]
+change 3458 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=11]
+change 3458 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3458 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=12]
+change 3458 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3458 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=13]
+change 3458 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 3461 command time set 0
+
+change 3478 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=6]
+change 3478 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=3]
+change 3478 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=5]
+change 3478 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=4]
+change 3478 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=5]
+change 3478 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=5]
+change 3478 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=4]
+change 3478 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=6]
+change 3478 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=4]
+change 3478 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=7]
+change 3478 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=3]
+change 3478 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=8]
+change 3478 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=3]
+change 3478 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=9]
+change 3478 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 3478 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=10]
+change 3478 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=2]
+change 3478 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=11]
+change 3478 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3478 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=12]
+change 3478 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3478 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=13]
+change 3478 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 3481 command time set 6000
+
+change 3498 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=12]
+change 3498 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=11]
+change 3498 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=10]
+change 3498 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=9]
+change 3498 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=8]
+change 3498 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=7]
+change 3498 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=6]
+change 3498 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=5]
+change 3498 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=4]
+change 3498 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=3]
+change 3498 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 3498 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+
+at 3501 command weather thunder 1000000
+
+change 3538 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=12] minecraft:daylight_detector[inverted=false,power=11]
+change 3538 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=3] minecraft:daylight_detector[inverted=true,power=4]
+change 3538 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=10]
+change 3538 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=5]
+change 3538 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=9]
+change 3538 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=6]
+change 3538 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=8]
+change 3538 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=7]
+change 3538 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=7]
+change 3538 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=8]
+change 3538 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=6]
+change 3538 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=9]
+change 3538 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=5]
+change 3538 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 3538 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=4]
+change 3538 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 3538 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+change 3538 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 3538 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 3538 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 3538 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 3538 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 3538 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3538 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+change 3578 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=10]
+change 3578 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=5]
+change 3578 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=9]
+change 3578 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=6]
+change 3578 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=8]
+change 3578 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=7]
+change 3578 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=7]
+change 3578 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=8]
+change 3578 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=6]
+change 3578 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=9]
+change 3578 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=5]
+change 3578 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 3578 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=4]
+change 3578 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 3578 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+change 3578 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 3578 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 3578 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 3578 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 3578 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 3578 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3578 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 3621 command time set 12000
+
+change 3638 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=4]
+change 3638 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=6]
+change 3638 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=4]
+change 3638 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=7]
+change 3638 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=3]
+change 3638 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=8]
+change 3638 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=3]
+change 3638 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=9]
+change 3638 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=2]
+change 3638 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 3638 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=2]
+change 3638 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 3638 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=1]
+change 3638 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 3638 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=1]
+change 3638 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 3638 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=0]
+change 3638 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 3638 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3638 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 3641 command time set 12600
+
+change 3658 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=3]
+change 3658 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=7]
+change 3658 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=2]
+change 3658 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=8]
+change 3658 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 3658 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=9]
+change 3658 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 3658 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=10]
+change 3658 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 3658 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=11]
+change 3658 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 3658 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=12]
+change 3658 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=13]
+change 3658 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3658 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=14]
+change 3658 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 3661 command time set 13000
+
+change 3678 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=2]
+change 3678 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=9]
+change 3678 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 3678 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=10]
+change 3678 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 3678 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=11]
+change 3678 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=1]
+change 3678 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=12]
+change 3678 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=13]
+change 3678 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3678 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=14]
+change 3678 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3678 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=15]
+change 3678 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 3681 command time set 18000
+
+change 3698 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=0]
+change 3698 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=11]
+change 3698 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3698 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=12]
+change 3698 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3698 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=13]
+change 3698 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3698 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=14]
+change 3698 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=0]
+change 3698 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=15]
+change 3698 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=15]
+
+at 3701 command time set 23000
+
+change 3718 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=2]
+change 3718 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=9]
+change 3718 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3718 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=10]
+change 3718 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3718 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=11]
+change 3718 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3718 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=12]
+change 3718 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3718 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=13]
+change 3718 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 3721 command time set 23500
+
+change 3738 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+change 3738 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=7]
+change 3738 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=3]
+change 3738 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=8]
+change 3738 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 3738 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=9]
+change 3738 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 3738 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=10]
+change 3738 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=11]
+change 3738 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3738 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=12]
+change 3738 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3738 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=13]
+change 3738 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 3741 command time set 0
+
+change 3758 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+change 3758 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=6]
+change 3758 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+change 3758 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=7]
+change 3758 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+change 3758 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=8]
+change 3758 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+change 3758 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=9]
+change 3758 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 3758 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=10]
+change 3758 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 3758 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=11]
+change 3758 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=12]
+change 3758 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3758 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=13]
+change 3758 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 3761 command time set 6000
+
+change 3778 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=10]
+change 3778 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=5]
+change 3778 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=9]
+change 3778 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=6]
+change 3778 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=8]
+change 3778 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=7]
+change 3778 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=7]
+change 3778 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=8]
+change 3778 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=6]
+change 3778 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=9]
+change 3778 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=5]
+change 3778 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=10]
+change 3778 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=4]
+change 3778 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=11]
+change 3778 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=3]
+change 3778 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=12]
+change 3778 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=2]
+change 3778 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=13]
+change 3778 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3778 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+at 3781 command weather clear 1000000
+
+change 3798 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=11]
+change 3798 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=4]
+change 3798 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=10]
+change 3798 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=5]
+change 3798 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=9]
+change 3798 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=6]
+change 3798 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=8]
+change 3798 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=7]
+change 3798 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=7]
+change 3798 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=8]
+change 3798 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=6]
+change 3798 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=9]
+change 3798 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=5]
+change 3798 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=10]
+change 3798 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+change 3798 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=11]
+change 3798 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+change 3798 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=12]
+change 3798 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 3798 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=13]
+change 3798 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3798 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+change 3818 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=12]
+change 3818 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=3]
+change 3818 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=11]
+change 3818 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=4]
+change 3818 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=10]
+change 3818 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=5]
+change 3818 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=9]
+change 3818 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=6]
+change 3818 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=8]
+change 3818 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=7]
+change 3818 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=7]
+change 3818 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=8]
+change 3818 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=6]
+change 3818 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=9]
+change 3818 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=5]
+change 3818 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=10]
+change 3818 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+change 3818 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=11]
+change 3818 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+change 3818 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=12]
+change 3818 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 3818 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=13]
+change 3818 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3818 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+change 3838 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=12] minecraft:daylight_detector[inverted=false,power=14]
+change 3838 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=3] minecraft:daylight_detector[inverted=true,power=1]
+change 3838 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=13]
+change 3838 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=2]
+change 3838 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=12]
+change 3838 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=3]
+change 3838 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=11]
+change 3838 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=4]
+change 3838 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=10]
+change 3838 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=5]
+change 3838 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=9]
+change 3838 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=6]
+change 3838 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=8]
+change 3838 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=7]
+change 3838 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=7]
+change 3838 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=8]
+change 3838 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=6]
+change 3838 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=9]
+change 3838 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=5]
+change 3838 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=10]
+change 3838 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=4]
+change 3838 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=11]
+change 3838 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=3]
+change 3838 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=12]
+change 3838 block_entities 12 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=2]
+change 3838 block_entities 12 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=13]
+change 3838 block_entities 13 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3838 block_entities 13 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]
+
+change 3858 block_entities 0 1 3 minecraft:daylight_detector[inverted=false,power=14] minecraft:daylight_detector[inverted=false,power=15]
+change 3858 block_entities 0 1 5 minecraft:daylight_detector[inverted=true,power=1] minecraft:daylight_detector[inverted=true,power=0]
+change 3858 block_entities 1 1 3 minecraft:daylight_detector[inverted=false,power=13] minecraft:daylight_detector[inverted=false,power=14]
+change 3858 block_entities 1 1 5 minecraft:daylight_detector[inverted=true,power=2] minecraft:daylight_detector[inverted=true,power=1]
+change 3858 block_entities 2 1 3 minecraft:daylight_detector[inverted=false,power=12] minecraft:daylight_detector[inverted=false,power=13]
+change 3858 block_entities 2 1 5 minecraft:daylight_detector[inverted=true,power=3] minecraft:daylight_detector[inverted=true,power=2]
+change 3858 block_entities 3 1 3 minecraft:daylight_detector[inverted=false,power=11] minecraft:daylight_detector[inverted=false,power=12]
+change 3858 block_entities 3 1 5 minecraft:daylight_detector[inverted=true,power=4] minecraft:daylight_detector[inverted=true,power=3]
+change 3858 block_entities 4 1 3 minecraft:daylight_detector[inverted=false,power=10] minecraft:daylight_detector[inverted=false,power=11]
+change 3858 block_entities 4 1 5 minecraft:daylight_detector[inverted=true,power=5] minecraft:daylight_detector[inverted=true,power=4]
+change 3858 block_entities 5 1 3 minecraft:daylight_detector[inverted=false,power=9] minecraft:daylight_detector[inverted=false,power=10]
+change 3858 block_entities 5 1 5 minecraft:daylight_detector[inverted=true,power=6] minecraft:daylight_detector[inverted=true,power=5]
+change 3858 block_entities 6 1 3 minecraft:daylight_detector[inverted=false,power=8] minecraft:daylight_detector[inverted=false,power=9]
+change 3858 block_entities 6 1 5 minecraft:daylight_detector[inverted=true,power=7] minecraft:daylight_detector[inverted=true,power=6]
+change 3858 block_entities 7 1 3 minecraft:daylight_detector[inverted=false,power=7] minecraft:daylight_detector[inverted=false,power=8]
+change 3858 block_entities 7 1 5 minecraft:daylight_detector[inverted=true,power=8] minecraft:daylight_detector[inverted=true,power=7]
+change 3858 block_entities 8 1 3 minecraft:daylight_detector[inverted=false,power=6] minecraft:daylight_detector[inverted=false,power=7]
+change 3858 block_entities 8 1 5 minecraft:daylight_detector[inverted=true,power=9] minecraft:daylight_detector[inverted=true,power=8]
+change 3858 block_entities 9 1 3 minecraft:daylight_detector[inverted=false,power=5] minecraft:daylight_detector[inverted=false,power=6]
+change 3858 block_entities 9 1 5 minecraft:daylight_detector[inverted=true,power=10] minecraft:daylight_detector[inverted=true,power=9]
+change 3858 block_entities 10 1 3 minecraft:daylight_detector[inverted=false,power=4] minecraft:daylight_detector[inverted=false,power=5]
+change 3858 block_entities 10 1 5 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=10]
+change 3858 block_entities 11 1 3 minecraft:daylight_detector[inverted=false,power=3] minecraft:daylight_detector[inverted=false,power=4]
+change 3858 block_entities 11 1 5 minecraft:daylight_detector[inverted=true,power=12] minecraft:daylight_detector[inverted=true,power=11]
+change 3858 block_entities 12 1 3 minecraft:daylight_detector[inverted=false,power=2] minecraft:daylight_detector[inverted=false,power=3]
+change 3858 block_entities 12 1 5 minecraft:daylight_detector[inverted=true,power=13] minecraft:daylight_detector[inverted=true,power=12]
+change 3858 block_entities 13 1 3 minecraft:daylight_detector[inverted=false,power=1] minecraft:daylight_detector[inverted=false,power=2]
+change 3858 block_entities 13 1 5 minecraft:daylight_detector[inverted=true,power=14] minecraft:daylight_detector[inverted=true,power=13]
+change 3858 block_entities 14 1 3 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=1]
+change 3858 block_entities 14 1 5 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=14]

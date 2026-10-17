@@ -475,7 +475,7 @@
           ],
           "note": "The world's day time advances after each tick's commands while doDaylightCycle is on, persists and goes through Anvil import and export; /time sets and queries it with the official parser and replies; set_time goes to players on joining, every 20 ticks and on changes, as on both official servers",
           "deviations": [
-            "sleeping, daylight detectors and other behavior that depends on the time of day are not modeled"
+            "sleeping and the other behavior that depends on the time of day, except daylight detectors, is not modeled"
           ]
         },
         {
@@ -1055,8 +1055,17 @@
           "id": "sensors",
           "name": "Daylight detectors, sculk sensors, lightning rods and other sources",
           "milestone": "C4",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/daylight_basics",
+            "trace/daylight_cycle",
+            "trace/daylight_more"
+          ],
+          "deviations": [
+            "sculk sensors, lightning rods and the other sensors are not modeled"
+          ],
+          "note": "Daylight detectors, normal and inverted, set their output every 20 game ticks from the sky light in their cell, the time of day, rain and thunder; using one inverts it at once"
         },
         {
           "id": "consumers",

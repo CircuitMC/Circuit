@@ -1709,6 +1709,45 @@ int main() {
                 std::format("sliding down the honey at {}", slider.velocity.y));
     });
 
+    suite.run("daylight detectors follow the sky every 20 ticks", [] {
+        using circuit::contracts::SetDayTime;
+        using circuit::contracts::SetWeather;
+        using circuit::contracts::UseBlock;
+        using circuit::contracts::WeatherKind;
+        Sim s;
+        std::vector<CommandBody> build = floor(-2, 6, -1, 3);
+        build.push_back(place({0, 0, 0}, blocks::daylight_detector()));
+        build.push_back(place({0, 0, 1}, blocks::lamp()));
+        build.push_back(place({2, 0, 0}, blocks::daylight_detector(true)));
+        // Under a roof the sky light is 14.
+        build.push_back(place({4, 0, 0}, blocks::daylight_detector()));
+        build.push_back(place({4, 1, 0}, blocks::stone()));
+        build.push_back(SetGameRule{"doDaylightCycle", 0});
+        build.push_back(SetDayTime{6000});
+        s.tick(build);
+        s.until(19);
+        require(s.at({0, 0, 0}) == blocks::daylight_detector() && !s.at({0, 0, 1}).flag(), "nothing before a multiple of 20");
+        s.tick();
+        require(s.at({0, 0, 0}) == blocks::daylight_detector(false, 15) && s.at({0, 0, 1}).flag(), "15 at noon, the lamp lit");
+        require(s.at({2, 0, 0}) == blocks::daylight_detector(true, 0) && s.at({4, 0, 0}) == blocks::daylight_detector(false, 14),
+                "inverted 0, roofed 14");
+        // At midnight the sky darkens by 11: the sun is down, an inverted
+        // detector gives 15 - (15 - 11).
+        s.tick({SetDayTime{18000}});
+        s.until(40);
+        require(s.at({0, 0, 0}) == blocks::daylight_detector() && s.at({2, 0, 0}) == blocks::daylight_detector(true, 11)
+                    && s.at({4, 0, 0}) == blocks::daylight_detector(),
+                "midnight");
+        // Using a detector inverts it and sets its output at once.
+        s.tick({UseBlock{{4, 0, 0}}});
+        require(s.at({4, 0, 0}) == blocks::daylight_detector(true, 12), "inverted under the roof: 15 - (14 - 11)");
+        // Rain darkens the noon sky by 3 once its level is full.
+        s.tick({SetDayTime{6000}, SetWeather{WeatherKind::rain, 100000}});
+        s.until(160);
+        require(s.at({0, 0, 0}) == blocks::daylight_detector(false, 12) && s.at({2, 0, 0}) == blocks::daylight_detector(true, 3),
+                std::format("noon in the rain: {} and {}", s.at({0, 0, 0}).level(), s.at({2, 0, 0}).level()));
+    });
+
     suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {
         using circuit::contracts::UseBlock;
         Sim s;

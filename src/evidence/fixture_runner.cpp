@@ -157,11 +157,32 @@ std::expected<std::vector<contracts::CommandBody>, std::string> forceload(const 
         w.push_back(command.substr(i, end - i));
         i = end + 1;
     }
-    const auto unsupported = std::format("command `{}`: only forceload add and remove, gamerule randomTickSpeed and summon are modeled", command);
+    const auto unsupported = std::format(
+        "command `{}`: only forceload add and remove, gamerule randomTickSpeed, summon, time set and weather with a duration are modeled",
+        command);
     if (!w.empty() && w[0] == "summon") {
         auto c = summon(command);
         if (!c) return std::unexpected(c.error());
         return std::vector<contracts::CommandBody>{std::move(*c)};
+    }
+    // Times in ticks, as the commands read a number without a unit.
+    const auto ticks = [](const std::string& word) -> std::optional<std::int64_t> {
+        std::int64_t v{};
+        const auto [end, ec] = std::from_chars(word.data(), word.data() + word.size(), v);
+        if (ec != std::errc{} || end != word.data() + word.size() || v < 0 || v > INT32_MAX) return std::nullopt;
+        return v;
+    };
+    if (w.size() == 3 && w[0] == "time" && w[1] == "set") {
+        static const std::map<std::string, std::int64_t> named{{"day", 1000}, {"noon", 6000}, {"night", 13000}, {"midnight", 18000}};
+        const auto time = named.contains(w[2]) ? std::optional(named.at(w[2])) : ticks(w[2]);
+        if (!time) return std::unexpected(unsupported);
+        return std::vector<contracts::CommandBody>{contracts::SetDayTime{*time}};
+    }
+    if (w.size() == 3 && w[0] == "weather" && (w[1] == "clear" || w[1] == "rain" || w[1] == "thunder")) {
+        const auto duration = ticks(w[2]);
+        if (!duration || *duration == 0) return std::unexpected(unsupported);
+        const auto kind = w[1] == "clear" ? contracts::WeatherKind::clear : w[1] == "rain" ? contracts::WeatherKind::rain : contracts::WeatherKind::thunder;
+        return std::vector<contracts::CommandBody>{contracts::SetWeather{kind, static_cast<std::int32_t>(*duration)}};
     }
     if (w.size() == 3 && w[0] == "gamerule" && w[1] == "randomTickSpeed") {
         std::int32_t v{};
@@ -217,9 +238,10 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
             return std::unexpected(report(Outcome::invalid, std::format("game rule {} does not exist in {}", name, f.game_version)));
         const auto expected = rule->type == contracts::GameRuleType::boolean ? std::string(rule->default_value ? "true" : "false")
                                                                              : std::to_string(rule->default_value);
-        // randomTickSpeed and tntExplodes are world state the rules read;
-        // other rules are modeled only at their defaults.
-        if (name == "randomTickSpeed" || name == "tntExplodes") continue;
+        // randomTickSpeed, tntExplodes and the day and weather cycles are
+        // world state the rules read; other rules are modeled only at their
+        // defaults.
+        if (name == "randomTickSpeed" || name == "tntExplodes" || name == "doDaylightCycle" || name == "doWeatherCycle") continue;
         if (value != expected)
             return std::unexpected(report(Outcome::unsupported, std::format("game rule {}: the rules model only its default, {}", name, expected)));
     }
@@ -241,8 +263,12 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
 
     std::uint64_t admission = 1;
     if (f.load_area) p.inputs[1].push_back({admission++, contracts::AddTicket{1, center, static_cast<std::uint8_t>(radius)}});
-    // Random ticks are off unless the fixture sets their speed.
+    // Random ticks are off unless the fixture sets their speed; the day and
+    // the weather stand still unless it turns their cycles on (the harness
+    // turns them off).
     p.inputs[1].push_back({admission++, contracts::SetGameRule{"randomTickSpeed", static_cast<std::int32_t>(f.random_tick_speed)}});
+    p.inputs[1].push_back({admission++, contracts::SetGameRule{"doDaylightCycle", 0}});
+    p.inputs[1].push_back({admission++, contracts::SetGameRule{"doWeatherCycle", 0}});
     for (const auto& [name, value] : f.gamerules)
         if (name == "randomTickSpeed") {
             std::int32_t v{};
@@ -250,8 +276,9 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
             if (ec != std::errc{} || end != value.data() + value.size())
                 return std::unexpected(report(Outcome::invalid, "game rule randomTickSpeed needs an integer"));
             p.inputs[1].push_back({admission++, contracts::SetGameRule{name, v}});
-        } else if (name == "tntExplodes") {
-            if (value != "true" && value != "false") return std::unexpected(report(Outcome::invalid, "game rule tntExplodes needs true or false"));
+        } else if (name == "tntExplodes" || name == "doDaylightCycle" || name == "doWeatherCycle") {
+            if (value != "true" && value != "false")
+                return std::unexpected(report(Outcome::invalid, std::format("game rule {} needs true or false", name)));
             p.inputs[1].push_back({admission++, contracts::SetGameRule{name, value == "true" ? 1 : 0}});
         }
     const auto fail_line = [](std::size_t line, const std::string& message) {

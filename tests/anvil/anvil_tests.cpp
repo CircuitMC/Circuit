@@ -295,6 +295,34 @@ int main() {
         require(state_at(end, {4, 0, 5}) == blocks::wall_torch(Direction::east) && state_at(end, {6, 0, 6}) == blocks::torch(), "the torches");
     });
 
+    suite.run("daylight detectors round-trip through Anvil with their block entities", [&] {
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine.advance(admit({circuit::contracts::SetDayTime{6000}, place({3, 0, 3}, blocks::daylight_detector()),
+                              place({5, 0, 3}, blocks::daylight_detector(true))}));
+        while (engine.dump().time % 20 != 0) engine.advance({});
+        const auto state = engine.dump();
+        require(state_at(state, {3, 0, 3}) == blocks::daylight_detector(false, 15), "the detector saw the noon sky");
+        const auto target = root / "daylight";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "daylight", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        const auto diff = describe(kept(state), kept(back->state));
+        require(diff.empty(), diff);
+        const auto& entities = back->state.overworld().block_entities;
+        require(std::ranges::count_if(entities, [](const auto& e) { return e.second.kind == BlockType::daylight_detector; }) == 2,
+                "both block entities");
+        // The imported detectors keep ticking: at midnight the inverted one gives 11.
+        Engine resumed(bundle(), 5, back->state);
+        Admissions again;
+        resumed.advance(again({ticket(1, {0, 0}, 1), circuit::contracts::SetDayTime{18000}}));
+        for (int i = 0; i < 20; ++i) resumed.advance({});
+        const auto end = resumed.dump();
+        require(state_at(end, {3, 0, 3}) == blocks::daylight_detector() && state_at(end, {5, 0, 3}) == blocks::daylight_detector(true, 11),
+                "midnight after the import");
+    });
+
     suite.run("primed TNT round-trips through Anvil with its fuse", [&] {
         Engine engine(bundle(), 5);
         Admissions admit;

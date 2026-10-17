@@ -793,6 +793,25 @@ int main() {
                 "the cobblestone that destroyed the dandelion");
     });
 
+    suite.run("daylight detectors follow the sky across chunk edges", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("daylight"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the daylight scenario");
+        const auto& ref = references[index];
+        const auto at = [&](Tick t, BlockPos p) { return state_at(ref.dumps.at(t), p); };
+        // Evening (day time 12539 at tick 40): darkened by 3, the normal
+        // detector gives 4 to the dust, the inverted one 3 to the lamp.
+        require(at(50, {15, 0, 0}).level() == 4 && at(50, {16, 0, 0}).level() == 3 && at(50, {17, 0, 0}).flag()
+                    && at(50, {14, 0, 0}).level() == 4,
+                "the evening");
+        // Midnight: the normal ones give nothing; the roofed one, used,
+        // gives 15 - (14 - 11).
+        require(at(100, {15, 0, 0}).level() == 0 && at(100, {16, 0, 0}) == blocks::daylight_detector(true, 11)
+                    && at(100, {15, 0, 2}) == blocks::daylight_detector(true, 12) && at(100, {14, 0, 0}).level() == 0,
+                "midnight");
+        // Noon in a thunderstorm whose levels reach 0.81 by tick 200: darkened by 4.
+        require(at(200, {15, 0, 0}).level() == 11 && at(200, {16, 0, 0}).level() == 4, "noon in the storm");
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");

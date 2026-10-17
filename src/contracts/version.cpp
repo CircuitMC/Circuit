@@ -218,6 +218,11 @@ constexpr std::array reference_v4_mechanisms{
         "slide down it, TNT drawing twice from the level random as it does; honey moving sideways carries what "
         "stands on it (honey_basics, honey_slide, honey_entry, honey_more). Gaps: entities other than items and primed "
         "TNT do not slide; jumping is not modeled."},
+    MechanismEntry{"daylight_detector", l0_exact, l2_declared_deviation, harness_trace,
+        "Daylight detectors set their output every 20 game ticks from the sky light in their cell less the sky's "
+        "darkening by the day time, rain and thunder; inverted ones give 15 less that, normal ones scale it by the "
+        "sun's angle; using one inverts it and sets its output at once (daylight_basics, daylight_cycle, "
+        "daylight_more). Gaps: none known."},
     MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, harness_trace,
         "Entities tick in ascending id order once per tick; one merged away before its turn does not tick "
         "(item_hopper_pickup, item_water_current, item_merge, item_merge_moving). Gap: compared for item "

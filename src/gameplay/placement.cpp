@@ -65,6 +65,7 @@ std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Directio
     case items::light_weighted_pressure_plate: return blocks::weighted_plate(false);
     case items::heavy_weighted_pressure_plate: return blocks::weighted_plate(true);
     case items::target: return blocks::target();
+    case items::daylight_detector: return blocks::daylight_detector();
     default: return std::nullopt;
     }
 }

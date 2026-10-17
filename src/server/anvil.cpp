@@ -731,6 +731,8 @@ private:
         } else if (id == "minecraft:comparator" && expect(BlockType::comparator)) {
             out = {BlockType::comparator, 0, {}, 0};
             out.signal = static_cast<std::uint8_t>(std::clamp<std::int64_t>(integer(be, "OutputSignal").value_or(0), 0, 15));
+        } else if (id == "minecraft:daylight_detector" && expect(BlockType::daylight_detector)) {
+            out = {BlockType::daylight_detector, 0, {}, 0};
         } else if (id == "minecraft:piston" && expect(BlockType::moving_piston)) {
             out = {BlockType::moving_piston, 0, {}, 0};
             const auto* moved = child(be, "blockState", TagType::compound);
@@ -1167,6 +1169,7 @@ private:
             t.set("id", Tag::string("minecraft:comparator"));
             t.set("OutputSignal", Tag::int_(be.signal));
             break;
+        case BlockType::daylight_detector: t.set("id", Tag::string("minecraft:daylight_detector")); break;
         case BlockType::moving_piston: {
             const auto motion = gameplay::Motion::unpack(be.motion);
             t.set("id", Tag::string("minecraft:piston"));

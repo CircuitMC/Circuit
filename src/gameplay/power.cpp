@@ -104,7 +104,7 @@ std::uint8_t emitted(RuleContext& ctx, BlockPos pos, BlockState s, Direction tow
         return s.flag() && toward != attachment(s) ? 15 : 0;
     case BlockType::redstone_block: return 15;
     case BlockType::pressure_plate: case BlockType::weighted_plate: return plate_output(s);
-    case BlockType::target: return s.level();
+    case BlockType::target: case BlockType::daylight_detector: return s.level();
     case BlockType::repeater: return s.flag() && toward == s.facing() ? 15 : 0;
     case BlockType::comparator: {
         if (!s.flag() || toward != s.facing()) return 0;

@@ -657,6 +657,10 @@
           "of the projectiles only arrows and snowballs hit it"
         ]
       },
+      "daylight_detector": {
+        "impl": "implemented",
+        "evidence": "compared"
+      },
       "oak_door": {
         "impl": "partial",
         "evidence": "compared",
@@ -1418,6 +1422,11 @@
         "note": "Placed"
       },
       "target": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed"
+      },
+      "daylight_detector": {
         "impl": "partial",
         "evidence": "none",
         "note": "Placed"

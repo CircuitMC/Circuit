@@ -93,9 +93,19 @@ std::int32_t RegionContext::game_rule(std::string_view name) {
 
 std::uint8_t RegionContext::light(BlockPos pos) {
     const auto* field = world_.light[static_cast<std::size_t>(dimension())];
-    if (!field) throw std::logic_error("runtime: light read outside the random-tick phase");
+    if (!field) throw std::logic_error("runtime: light read outside the phases that read it");
     return std::max(field->get(gameplay::LightKind::block, pos), field->get(gameplay::LightKind::sky, pos));
 }
+
+std::uint8_t RegionContext::sky_light(BlockPos pos) {
+    const auto* field = world_.light[static_cast<std::size_t>(dimension())];
+    if (!field) throw std::logic_error("runtime: light read outside the phases that read it");
+    return field->get(gameplay::LightKind::sky, pos);
+}
+
+// The day time and weather change only in the command phase and between the
+// command phase and the levels' phases.
+gameplay::RuleContext::Sky RegionContext::sky() { return {world_.day_time, world_.sky_darken}; }
 
 std::optional<contracts::Generation> RegionContext::chunk_generation(ChunkPos chunk) {
     // Loading state and generations are fixed while a phase runs: no ownership needed.

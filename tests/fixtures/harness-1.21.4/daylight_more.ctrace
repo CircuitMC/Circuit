@@ -1,0 +1,211 @@
+circuit-trace 2
+title Daylight detectors used, roofed, set, read by a lamp and dust, and held against a piston
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.10.0+mc1.21.4
+mechanisms daylight_detector
+area 0 0 0 16 2 4
+ticks 218
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 0 1 minecraft:stone
+at 0 set 16 0 2 minecraft:stone
+at 0 set 16 0 3 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 command time set 6000
+at 0 set 2 1 2 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 2 1 3 minecraft:redstone_lamp[lit=false]
+at 0 set 2 1 1 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 5 1 2 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 7 1 2 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 14 1 2 minecraft:daylight_detector[inverted=false,power=0]
+at 0 set 13 1 2 minecraft:piston[extended=false,facing=east]
+at 0 set 13 1 3 minecraft:lever[face=floor,facing=north,powered=false]
+
+light 1 2 1 2 0 15
+
+change 18 block_entities 2 1 2 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=15]
+change 18 block_entities 2 1 1 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:redstone_wire[east=none,north=none,power=15,south=none,west=none]
+change 18 block_entities 2 1 3 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+change 18 block_entities 2 1 1 minecraft:redstone_wire[east=none,north=none,power=15,south=none,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 18 block_entities 5 1 2 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=15]
+change 18 block_entities 7 1 2 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=15]
+change 18 block_entities 14 1 2 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=15]
+
+at 63 use 2 1 2
+change 63 commands 2 1 2 minecraft:daylight_detector[inverted=false,power=15] minecraft:daylight_detector[inverted=true,power=15]
+change 63 commands 2 1 2 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=0]
+change 63 commands 2 1 1 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+
+change 66 block_ticks 2 1 3 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+
+light 76 5 1 2 0 15
+light 76 7 1 2 0 15
+
+at 77 set 7 2 2 minecraft:stone
+change 77 commands 7 2 2 minecraft:air minecraft:stone
+light 77 5 1 2 0 15
+light 77 7 1 2 0 15
+
+at 78 use 2 1 2
+change 78 commands 2 1 2 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=false,power=0]
+change 78 commands 2 1 2 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=15]
+change 78 commands 2 1 1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 78 commands 2 1 3 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+at 78 set 5 2 2 minecraft:stone
+change 78 commands 5 2 2 minecraft:air minecraft:stone
+change 78 block_entities 7 1 2 minecraft:daylight_detector[inverted=false,power=15] minecraft:daylight_detector[inverted=false,power=14]
+light 78 5 1 2 0 15
+light 78 7 1 2 0 14
+
+light 79 5 1 2 11 14
+light 79 7 1 2 9 14
+
+change 98 block_entities 5 1 2 minecraft:daylight_detector[inverted=false,power=15] minecraft:daylight_detector[inverted=false,power=14]
+
+at 105 use 2 1 2
+change 105 commands 2 1 2 minecraft:daylight_detector[inverted=false,power=15] minecraft:daylight_detector[inverted=true,power=15]
+change 105 commands 2 1 2 minecraft:daylight_detector[inverted=true,power=15] minecraft:daylight_detector[inverted=true,power=0]
+change 105 commands 2 1 1 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+
+change 108 block_ticks 2 1 3 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+
+light 116 5 1 2 0 14
+light 116 7 1 2 0 14
+
+at 117 set 7 2 2 minecraft:air
+change 117 commands 7 2 2 minecraft:stone minecraft:air
+light 117 5 1 2 0 14
+light 117 7 1 2 0 14
+
+at 118 set 5 2 2 minecraft:air
+change 118 commands 5 2 2 minecraft:stone minecraft:air
+change 118 block_entities 7 1 2 minecraft:daylight_detector[inverted=false,power=14] minecraft:daylight_detector[inverted=false,power=15]
+light 118 5 1 2 0 14
+light 118 7 1 2 0 15
+
+light 119 5 1 2 0 15
+light 119 7 1 2 0 15
+
+at 138 set 9 1 2 minecraft:daylight_detector[inverted=false,power=0]
+change 138 commands 9 1 2 minecraft:air minecraft:daylight_detector[inverted=false,power=0]
+change 138 block_entities 5 1 2 minecraft:daylight_detector[inverted=false,power=14] minecraft:daylight_detector[inverted=false,power=15]
+change 138 block_entities 9 1 2 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=15]
+
+at 139 set 11 1 2 minecraft:daylight_detector[inverted=true,power=0]
+change 139 commands 11 1 2 minecraft:air minecraft:daylight_detector[inverted=true,power=0]
+
+at 148 use 13 1 3
+change 148 commands 13 1 3 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+
+at 158 command time set 18000
+change 158 block_entities 2 1 2 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=11]
+change 158 block_entities 2 1 1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none]
+change 158 block_entities 2 1 3 minecraft:redstone_lamp[lit=false] minecraft:redstone_lamp[lit=true]
+change 158 block_entities 5 1 2 minecraft:daylight_detector[inverted=false,power=15] minecraft:daylight_detector[inverted=false,power=0]
+change 158 block_entities 7 1 2 minecraft:daylight_detector[inverted=false,power=15] minecraft:daylight_detector[inverted=false,power=0]
+change 158 block_entities 14 1 2 minecraft:daylight_detector[inverted=false,power=15] minecraft:daylight_detector[inverted=false,power=0]
+change 158 block_entities 9 1 2 minecraft:daylight_detector[inverted=false,power=15] minecraft:daylight_detector[inverted=false,power=0]
+change 158 block_entities 11 1 2 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=11]
+
+at 163 use 9 1 2
+change 163 commands 9 1 2 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=true,power=0]
+change 163 commands 9 1 2 minecraft:daylight_detector[inverted=true,power=0] minecraft:daylight_detector[inverted=true,power=11]
+
+at 188 set 2 1 2 minecraft:air
+change 188 commands 2 1 2 minecraft:daylight_detector[inverted=true,power=11] minecraft:air
+change 188 commands 2 1 1 minecraft:redstone_wire[east=none,north=side,power=11,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+change 188 commands 2 1 1 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
+
+at 189 command time set 6000
+
+change 191 block_ticks 2 1 3 minecraft:redstone_lamp[lit=true] minecraft:redstone_lamp[lit=false]
+
+change 198 block_entities 5 1 2 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=15]
+change 198 block_entities 7 1 2 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=15]
+change 198 block_entities 14 1 2 minecraft:daylight_detector[inverted=false,power=0] minecraft:daylight_detector[inverted=false,power=15]
+change 198 block_entities 9 1 2 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=0]
+change 198 block_entities 11 1 2 minecraft:daylight_detector[inverted=true,power=11] minecraft:daylight_detector[inverted=true,power=0]

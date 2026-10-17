@@ -68,6 +68,7 @@ Plan plan(RuleContext& ctx, const contracts::UseBlock& c) {
             detail::set_block_quiet(ctx, pos, toggled);
             detail::refresh_comparator(ctx, pos, toggled);
         };
+    case BlockType::daylight_detector: return [&ctx, pos = c.pos, s] { detail::use_daylight_detector(ctx, pos, s); };
     default: return std::unexpected(ErrorCode::not_usable);
     }
 }
@@ -149,7 +150,7 @@ Plan plan(RuleContext& ctx, const contracts::RemoveEntity& c) {
 bool replaceable(BlockState s) { return s.is_air() || s.is(BlockType::water); }
 bool usable(BlockState s) {
     return s.is(BlockType::lever) || s.is(BlockType::button) || s.is(BlockType::repeater) || s.is(BlockType::comparator)
-        || detail::is_dot(s) || detail::is_cross(s) || (is_opening(s.type()) && opens_by_hand(s));
+        || s.is(BlockType::daylight_detector) || detail::is_dot(s) || detail::is_cross(s) || (is_opening(s.type()) && opens_by_hand(s));
 }
 
 Plan plan(RuleContext& ctx, const contracts::UseBlock& c);

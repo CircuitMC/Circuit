@@ -74,7 +74,7 @@ private:
     void apply_levels(contracts::DimensionId level);
     // Light as a tick sees it (gameplay::RuleContext::light), computed from
     // scratch from the blocks at the start of the tick.
-    std::uint8_t light(contracts::DimensionId level, contracts::BlockPos pos);
+    std::uint8_t light(contracts::DimensionId level, contracts::BlockPos pos, bool sky_only = false);
     struct LightSnapshot;
     void run_tick_list(contracts::DimensionId level, contracts::TickList list);
     void run_random_ticks(contracts::DimensionId level);
@@ -91,6 +91,7 @@ private:
     std::map<std::string, std::int32_t> game_rules_;
     std::int64_t day_time_{};
     gameplay::Weather weather_;
+    std::uint8_t sky_darken_{}; // as the overworld's last tick computed it
     bool failed_{};
     std::array<Level, contracts::dimension_count> levels_;
     gameplay::TicketSet tickets_;

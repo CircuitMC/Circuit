@@ -909,13 +909,39 @@ inline Scenario push_class_scenario() {
     }, 5};
 }
 
+// Daylight detectors across the x=16 chunk edge through an evening, a night
+// and rain: a normal one with dust and an inverted one with a lamp on either
+// side, and a roofed one used at night.
+inline Scenario daylight_scenario() {
+    return {"daylight", 116, 200, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        if (t == 2) {
+            for (int x = 10; x <= 22; ++x)
+                for (int z = -3; z <= 4; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            c.push_back(place({15, 0, 0}, blocks::daylight_detector()));
+            c.push_back(place({14, 0, 0}, blocks::wire()));
+            c.push_back(place({16, 0, 0}, blocks::daylight_detector(true)));
+            c.push_back(place({17, 0, 0}, blocks::lamp()));
+            c.push_back(place({15, 0, 2}, blocks::daylight_detector()));
+            c.push_back(place({15, 1, 2}, blocks::stone()));
+            c.push_back(SetDayTime{12500});
+        }
+        if (t == 60) c.push_back(SetDayTime{18000});
+        if (t == 70) c.push_back(UseBlock{{15, 0, 2}});
+        if (t == 110) c.push_back(SetDayTime{6000});
+        if (t == 120) c.push_back(SetWeather{WeatherKind::thunder, 100000});
+        return c;
+    }, 10};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
-            plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario()};
+            plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario()};
 }
 
 } // namespace circuit::test

@@ -85,8 +85,18 @@ public:
     virtual std::int32_t game_rule(std::string_view name) = 0;
     // The light at a position as the tick sees it: the most of its block
     // light and sky light, from the blocks at the end of the previous tick
-    // (gameplay/light.hpp). Available in the random-tick phase.
+    // (gameplay/light.hpp). Available in the command, random-tick and
+    // block-entity phases.
     virtual std::uint8_t light(BlockPos pos) = 0;
+    // The sky light alone, from the same light.
+    virtual std::uint8_t sky_light(BlockPos pos) = 0;
+    // The overworld's day time, and the darkening of its sky (0-11) as its
+    // last tick computed it (gameplay/sky.hpp).
+    struct Sky {
+        std::int64_t day_time{};
+        std::uint8_t darken{};
+    };
+    virtual Sky sky() = 0;
     // Generation of a loaded chunk; nullopt when unloaded. Loading state is
     // fixed for the duration of a phase.
     virtual std::optional<contracts::Generation> chunk_generation(ChunkPos chunk) = 0;
