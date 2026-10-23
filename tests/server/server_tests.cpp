@@ -707,6 +707,42 @@ int main() {
         require(f.at({6, -60, 2}) == "minecraft:glass", "placed where a block was broken in the same tick");
     });
 
+    suite.run("players place building blocks by the clicked face and half, with their neighbors' shapes", [] {
+        // As both official servers do (circuit-clienttest/place-families.js).
+        using I = server::Intent;
+        const auto use = [](protocol::WirePosition pos, std::int32_t face, float y, std::int32_t seq) {
+            return I{server::intent::UseOn{0, pos, face, 0.5f, y, 0.5f, false, seq}};
+        };
+        // Away from the player, who stands at the spawn (0, -60, 0).
+        GameFixture f;
+        f.join(1, "Builder");
+        const auto place = [&](std::string_view item, I click) {
+            f.hold(1, item);
+            f.game->submit(1, std::move(click));
+            f.game->tick();
+        };
+        place("minecraft:oak_log", use({0, -61, 3}, 1, 1.0f, 1));
+        place("minecraft:stone", use({2, -61, 3}, 1, 1.0f, 2));
+        place("minecraft:oak_log", use({2, -60, 3}, 2, 0.5f, 3));        // the stone's north face
+        place("minecraft:oak_stairs", use({2, -60, 3}, 5, 0.75f, 4));    // its east face, upper half
+        place("minecraft:oak_stairs", use({2, -60, 3}, 3, 0.25f, 5));    // its south face, lower half
+        place("minecraft:cobblestone_wall", use({1, -61, 3}, 1, 1.0f, 6)); // between the log and the stone
+        place("minecraft:stone_slab", use({-2, -61, 3}, 1, 1.0f, 7));
+        place("minecraft:stone_slab", use({-2, -60, 3}, 1, 0.5f, 8));     // the slab's top: doubled
+        place("minecraft:stone_slab", use({0, -61, -3}, 1, 1.0f, 9));
+        place("minecraft:stone_slab", use({0, -60, -3}, 2, 0.25f, 10));   // its north face, lower half: beside it
+        for (int i = 0; i < 4; ++i) f.game->tick();
+        require(f.at({0, -60, 3}) == "minecraft:oak_log[axis=y]" && f.at({2, -60, 2}) == "minecraft:oak_log[axis=z]",
+                "logs along the face: " + f.at({0, -60, 3}) + " " + f.at({2, -60, 2}) + " " + f.at({2, -60, 3}));
+        require(f.at({3, -60, 3}).contains("half=top") && f.at({2, -60, 4}).contains("half=bottom"), f.at({3, -60, 3}) + " " + f.at({2, -60, 4}));
+        require(f.at({1, -60, 3}) == "minecraft:cobblestone_wall[east=low,north=none,south=none,up=false,waterlogged=false,west=low]",
+                "the wall joins the log and the stone: " + f.at({1, -60, 3}));
+        require(f.at({-2, -60, 3}) == "minecraft:stone_slab[type=double,waterlogged=false]", "doubled: " + f.at({-2, -60, 3}));
+        require(f.at({0, -60, -3}) == "minecraft:stone_slab[type=bottom,waterlogged=false]"
+                    && f.at({0, -60, -4}) == "minecraft:stone_slab[type=bottom,waterlogged=false]",
+                "a lower-half side click places beside: " + f.at({0, -60, -4}));
+    });
+
     suite.run("players pair chests as they place them", [] {
         GameFixture f;
         f.join(1, "Chests");

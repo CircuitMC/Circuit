@@ -1382,6 +1382,12 @@ struct Game::Impl final : GameServices {
                                  p.game_mode == survival,
                                  1,
                                  0};
+        // Where the click hit the block, as the client reports it (0 to 1 on
+        // each axis; an unusable value counts as the middle).
+        const auto within = [](float v) { return std::isfinite(v) ? std::clamp(v, 0.0f, 1.0f) : 0.5f; };
+        use.cursor_x = within(u.cursor_x);
+        use.cursor_y = within(u.cursor_y);
+        use.cursor_z = within(u.cursor_z);
         if (gameplay::in_world(bundle, beside) && in_reach(p, beside)) use.reach |= 2;
         if (!occupied_by_player(b)) use.free |= 1;
         if (!occupied_by_player(beside)) use.free |= 2;

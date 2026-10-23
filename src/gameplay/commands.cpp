@@ -156,6 +156,31 @@ bool usable(BlockState s) {
 
 Plan plan(RuleContext& ctx, const contracts::UseBlock& c);
 
+// A building block without rules of its own placed by a player: into the
+// clicked cell when it is replaceable or a slab the click doubles, else
+// beside it.
+Plan plan_building(RuleContext& ctx, const contracts::PlayerUse& c, const ItemStack& held, BlockState clicked, std::uint32_t block) {
+    const bool replace = replaceable(clicked) || detail::doubles_slab(block, clicked, c, true);
+    const auto target = replace ? c.pos : c.pos.relative(c.face);
+    const std::uint8_t bit = replace ? 1 : 2;
+    if ((c.reach & bit) == 0) return std::unexpected(ErrorCode::out_of_reach);
+    if (auto ok = check_loaded(ctx, target); !ok) return std::unexpected(ok.error());
+    const auto here = ctx.block(target);
+    if (!replaceable(here) && !(target == c.pos ? replace : detail::doubles_slab(block, here, c, false)))
+        return std::unexpected(ErrorCode::occupied);
+    const auto state = detail::placed_building(ctx, block, c, target);
+    if (detail::has_collision(state) && (c.free & bit) == 0) return std::unexpected(ErrorCode::occupied);
+    return [&ctx, target, state, c, held] {
+        if (c.survival) {
+            auto& inv = ctx.player(c.player);
+            auto& slot = inv.slots[c.slot];
+            if (--slot.count == 0) slot = {};
+            detail::record_slot(ctx, inv, c.slot);
+        }
+        set_block(ctx, target, state);
+    };
+}
+
 Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
     if (c.slot < contracts::hotbar_first || c.slot >= contracts::player_slots) return std::unexpected(ErrorCode::invalid_slot);
     if (auto ok = check_loaded(ctx, c.pos); !ok) return std::unexpected(ok.error());
@@ -179,6 +204,8 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
     }
     auto state = held.empty() ? std::nullopt : detail::placed_by(held.item, c.face, c.horizontal, c.look);
     if (!state && held.item == items::tnt) state = detail::tnt_block(ctx);
+    if (!state && !held.empty())
+        if (const auto building = detail::building_block(ctx, held.item)) return plan_building(ctx, c, held, clicked, *building);
     if (!state) return std::unexpected(ErrorCode::not_usable);
     const bool replace = replaceable(clicked);
     const auto target = replace ? c.pos : c.pos.relative(c.face);

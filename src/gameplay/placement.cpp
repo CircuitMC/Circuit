@@ -2,6 +2,9 @@
 // Blocks that items place, as the server's placement used them since M4,
 // oriented by the player and the clicked face.
 #include "internal.hpp"
+#include <algorithm>
+#include <string>
+#include <vector>
 
 namespace circuit::gameplay::detail {
 namespace {
@@ -151,6 +154,120 @@ ItemStack add_to_player(RuleContext& ctx, PlayerInventory& inv, ItemStack stack,
 
 bool player_has_room(const PlayerInventory& inv, ItemStack stack, std::uint8_t selected) {
     return free_slot(inv) >= 0 || (stack.damage == 0 && slot_with_room(inv, stack, selected) >= 0);
+}
+
+} // namespace circuit::gameplay::detail
+
+// ---- building blocks without rules of their own ----
+//
+// A block item places the block of its name, as both official servers do
+// (compared through a protocol client): a full cube without properties (not
+// spawners, beacons or sponges), soul sand and mud as they are; a pillar
+// along the clicked face's axis; stairs facing the player's way; stairs and a
+// single slab in the top half when the click is on a bottom face or in the
+// upper half of a side, the bottom half otherwise; fences, panes, bars, walls
+// and stairs with the shapes their neighbors give them; waterlogged in a
+// water source. A slab clicked on its free half (the top face of a bottom
+// slab, the bottom face of a top one, the other half of a side), or placed
+// into a slab of its kind, doubles it.
+namespace circuit::gameplay::detail {
+namespace {
+enum class Building { none, plain, pillar, stairs, slab, connector };
+
+Building building_kind(std::uint32_t block) {
+    const auto info = registry::block(block);
+    const std::string_view name = info.name;
+    if (name == "spawner" || name == "beacon" || name == "sponge" || name == "wet_sponge") return Building::none;
+    std::vector<std::string> keys;
+    for (const auto& [k, _] : registry::properties(info.default_state)) keys.push_back(k);
+    const auto only = [&](std::initializer_list<std::string_view> allowed) {
+        return std::ranges::all_of(keys, [&](const std::string& k) { return std::ranges::find(allowed, k) != allowed.end(); });
+    };
+    const auto has = [&](std::string_view k) { return std::ranges::find(keys, k) != keys.end(); };
+    if (name.ends_with("_stairs") && has("shape")) return Building::stairs;
+    if (name.ends_with("_slab") && has("type") && only({"type", "waterlogged"})) return Building::slab;
+    if (registry::connector(info.default_state) != registry::Connector::none) return Building::connector;
+    if (has("axis") && only({"axis", "waterlogged"})) return Building::pillar;
+    if (keys.empty() && (registry::collision(info.default_state) == registry::Collision::full || name == "soul_sand" || name == "mud"))
+        return Building::plain;
+    return Building::none;
+}
+
+std::string value_of(BlockState s, std::string_view key) {
+    for (const auto& [k, v] : registry::properties(s.registry_state()))
+        if (k == key) return v;
+    return {};
+}
+
+BlockState with(BlockState s, const std::vector<registry::Property>& changes) {
+    auto props = registry::properties(s.registry_state());
+    for (auto& [k, v] : props)
+        for (const auto& [ck, cv] : changes)
+            if (k == ck) v = cv;
+    const auto block = registry::block_of(s.registry_state());
+    const auto state = block ? registry::state_of(*block, props) : std::nullopt;
+    return state ? BlockState::registered(*state) : s;
+}
+
+bool single_slab_of(std::uint32_t block, BlockState s) {
+    return s.is(BlockType::other) && registry::block_of(s.registry_state()) == block && value_of(s, "type") != "double";
+}
+
+// The upper half: a click on a bottom face or in the upper half of a side.
+bool top_half(const contracts::PlayerUse& c) {
+    return c.face == Direction::down || (contracts::is_horizontal(c.face) && c.cursor_y > 0.5f);
+}
+
+std::string_view axis_of(Direction d) {
+    switch (d) {
+    case Direction::down: case Direction::up: return "y";
+    case Direction::north: case Direction::south: return "z";
+    default: return "x";
+    }
+}
+
+std::string_view name_of(Direction d) {
+    switch (d) {
+    case Direction::north: return "north";
+    case Direction::south: return "south";
+    case Direction::west: return "west";
+    default: return "east";
+    }
+}
+} // namespace
+
+std::optional<std::uint32_t> building_block(RuleContext& ctx, std::uint16_t item) {
+    const auto* info = items::info(item);
+    if (!info) return std::nullopt;
+    const auto block = registry::find_block(ctx.bundle().schema.content_release, info->name);
+    if (!block || !BlockState::decode(BlockState::registered(registry::block(*block).default_state).raw())) return std::nullopt;
+    if (building_kind(*block) == Building::none) return std::nullopt;
+    return block;
+}
+
+bool doubles_slab(std::uint32_t block, BlockState s, const contracts::PlayerUse& c, bool clicked) {
+    if (building_kind(block) != Building::slab || !single_slab_of(block, s)) return false;
+    if (!clicked) return true;
+    const bool bottom = value_of(s, "type") == "bottom";
+    const bool horizontal = contracts::is_horizontal(c.face);
+    return bottom ? c.face == Direction::up || (horizontal && c.cursor_y > 0.5f) : c.face == Direction::down || (horizontal && c.cursor_y <= 0.5f);
+}
+
+BlockState placed_building(RuleContext& ctx, std::uint32_t block, const contracts::PlayerUse& c, BlockPos target) {
+    const auto here = ctx.block(target);
+    auto s = BlockState::registered(registry::block(block).default_state);
+    const std::string water = here == blocks::water_source() ? "true" : "false";
+    switch (building_kind(block)) {
+    case Building::pillar: return with(s, {{"axis", std::string(axis_of(c.face))}, {"waterlogged", water}});
+    case Building::stairs:
+        s = with(s, {{"facing", std::string(name_of(c.horizontal))}, {"half", top_half(c) ? "top" : "bottom"}, {"waterlogged", water}});
+        return shaped_stairs(ctx, target, s);
+    case Building::slab:
+        if (single_slab_of(block, here)) return with(s, {{"type", "double"}, {"waterlogged", "false"}});
+        return with(s, {{"type", top_half(c) ? "top" : "bottom"}, {"waterlogged", water}});
+    case Building::connector: return joined_state(ctx, target, with(s, {{"waterlogged", water}}));
+    default: return s;
+    }
 }
 
 } // namespace circuit::gameplay::detail

@@ -200,6 +200,32 @@ int main() {
             require(encoded && decode_replay(*encoded).error() == ErrorCode::malformed_record, "player use fields range-checked");
         }
 
+        // Where a use clicked (tag 24) round-trips; a tag 7 use, which has
+        // none, reads as the middle of the block; a point outside is refused.
+        {
+            ReplayLog one{"java-1.21.8", "circuit-reference-rules-v5", 1, {}, "circuit-blocks-1"};
+            PlayerUse use{alex, 36, {0, 0, 0}, Direction::north, Direction::south, Direction::south, false, false, 3, 3};
+            use.cursor_x = 0.0f;
+            use.cursor_y = 0.8125f;
+            use.cursor_z = 1.0f;
+            one.ticks.push_back({1, {{1, use}}});
+            const auto current = encode_replay(one).value();
+            require(decode_replay(current).value() == one, "a use with where it clicked round-trips");
+            const std::size_t tag =
+                4 + 2 + 2 + one.bundle_id.size() + 2 + one.rules_id.size() + 2 + one.block_registry_id.size() + 8 + 4 + 8 + 4 + 8;
+            require(current[tag] == std::byte{24}, "uses are written with tag 24");
+            auto seven = current;
+            seven[tag] = std::byte{7};
+            seven.resize(seven.size() - 12);
+            auto middle = one;
+            std::get<PlayerUse>(middle.ticks[0].commands[0].body).cursor_x = 0.5f;
+            std::get<PlayerUse>(middle.ticks[0].commands[0].body).cursor_y = 0.5f;
+            std::get<PlayerUse>(middle.ticks[0].commands[0].body).cursor_z = 0.5f;
+            require(decode_replay(seven).value() == middle, "a tag 7 use reads as a click in the middle");
+            std::get<PlayerUse>(one.ticks[0].commands[0].body).cursor_y = 1.5f;
+            require(decode_replay(encode_replay(one).value()).error() == ErrorCode::malformed_record, "a click outside the block is refused");
+        }
+
         // Radius tickets of earlier records (tag 9 with a load radius, tag 5
         // without) read as forced squares; typed tickets round-trip.
         {

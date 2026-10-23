@@ -7,6 +7,7 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
+// 14: player uses carry where they clicked (tag 24; tag 7 reads as the middle of the block);
 // 13: summoned entities (tag 23);
 // 12: spawned items may carry a pickup delay and an age (tag 22);
 // 11: positions and velocities are doubles (before: 1/4096 block units);
@@ -15,7 +16,7 @@ constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
 // block registry id; 3: stacks carry damage, player commands carry their
 // player. Commands of versions before 6 are the overworld's. Tickets of
 // versions before 7 (tags 5 and 9) read as forced squares.
-constexpr std::uint16_t format_version = 13;
+constexpr std::uint16_t format_version = 14;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -117,9 +118,10 @@ private:
 // 14 CloseContainer, 15 PlayerDeath, 16 AddTicket, 17 PlayerPresence,
 // 18 LevelsStarted, 19 SetGameRule, 20 SetDayTime, 21 SetWeather,
 // 22 SpawnItem with a pickup delay or an age (tag 3 has neither),
-// 23 SummonEntity.
+// 23 SummonEntity, 24 PlayerUse with where it clicked (tag 7 has none).
 std::uint8_t tag_of(const CommandBody& body) {
     if (std::holds_alternative<SummonEntity>(body)) return 23;
+    if (std::holds_alternative<PlayerUse>(body)) return 24;
     if (const auto* spawn = std::get_if<SpawnItem>(&body); spawn && (spawn->pickup_delay != 0 || spawn->age != 0)) return 22;
     if (std::holds_alternative<SetGameRule>(body)) return 19;
     if (std::holds_alternative<SetDayTime>(body)) return 20;
@@ -200,6 +202,9 @@ void encode_command(Writer& w, const Command& c) {
             w.put(static_cast<std::uint8_t>(body.survival));
             w.put(body.reach);
             w.put(body.free);
+            w.put(std::bit_cast<std::uint32_t>(body.cursor_x));
+            w.put(std::bit_cast<std::uint32_t>(body.cursor_y));
+            w.put(std::bit_cast<std::uint32_t>(body.cursor_z));
         } else if constexpr (std::is_same_v<T, PlayerBreak>) {
             w.player(body.player);
             w.pos(body.pos);
@@ -289,13 +294,22 @@ bool decode_command(Reader& r, Command& c) {
         return true;
     }
     case 6: { RemoveTicket b; if (!r.get(b.ticket)) return false; c.body = b; return true; }
-    case 7: {
+    case 7: case 24: {
         PlayerUse b;
         std::uint8_t face{}, horizontal{}, look{}, sneaking{}, survival{};
         if (!r.player(b.player) || !r.get(b.slot) || !r.pos(b.pos) || !r.get(face) || !r.get(horizontal) || !r.get(look)
             || !r.get(sneaking) || !r.get(survival) || !r.get(b.reach) || !r.get(b.free))
             return false;
         if (face > 5 || horizontal > 5 || look > 5 || sneaking > 1 || survival > 1 || b.reach > 3 || b.free > 3) return false;
+        if (tag == 24) {
+            std::uint32_t x{}, y{}, z{};
+            if (!r.get(x) || !r.get(y) || !r.get(z)) return false;
+            b.cursor_x = std::bit_cast<float>(x);
+            b.cursor_y = std::bit_cast<float>(y);
+            b.cursor_z = std::bit_cast<float>(z);
+            for (const float v : {b.cursor_x, b.cursor_y, b.cursor_z})
+                if (!(v >= 0.0f && v <= 1.0f)) return false;
+        }
         b.face = static_cast<Direction>(face);
         b.horizontal = static_cast<Direction>(horizontal);
         b.look = static_cast<Direction>(look);

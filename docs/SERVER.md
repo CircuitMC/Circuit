@@ -69,6 +69,7 @@ When the command is applied:
   - dust, repeaters and comparators need a solid block below, and levers and buttons a solid block to attach to; a redstone torch goes on the side of the clicked block, or on top of it when the top or bottom was clicked, and needs its support there; pressure plates need a block below to stand on; a door needs a sturdy top below it and room for its upper half, and takes the left hinge;
   - TNT placed where redstone reaches it is primed at once;
   - a chest joins a neighboring single chest as the official server does: next to one of the same facing, clockwise first, unless the player sneaks; when sneaking, the chest whose side was clicked, taking its facing.
+  - building blocks place the block of their item as both official servers do: full blocks without properties (not spawners, beacons or sponges), soul sand and mud as they are; logs and other pillars along the clicked face's axis; stairs facing the player's way, and stairs and slabs in the top half for a click on a bottom face or in the upper half of a side; a slab clicked on its free half, or placed into a slab of its kind, becomes a double slab; fences, panes, bars, walls and stairs take their shapes from their neighbors; all are waterlogged in a water source. The client reports where its click hit the block.
 - **Breaking:** any block but air and moving pistons; a piston head takes its base along.
 
 A refused action is answered with the current state of the affected blocks, or, for a command refused when applied, restored by the client when the action is acknowledged. Every block action is acknowledged with its sequence number.
@@ -168,7 +169,7 @@ Each version bundle names its registry set (`circuit-server --compatibility` pri
 | `server_tests` | An in-process server and a small client built on Circuit's codec. It covers: status; offline and online login (encryption and a mock session service); default deny; version, name and frame errors; connection, rate and login-time limits; movement and reach; placement, with player actions grouped into ticks in different ways and chest pairing; survival placement, digging time, drops, pickups and item conservation; container windows and their incremental synchronization; movement against block shapes with step-up, the floating kick, falls, regeneration, death, respawn and the void; view loading without ticking; a lever lighting a lamp; a client that stops reading; one owner per world; graceful stop; saving and restoring a world and a player; the server binary killed and recovered. |
 
 Two clients outside this repository give independent evidence:
-- **Protocol library:** mineflayer suites run against both Circuit and the vanilla server: building and redstone, chest placement, container windows, vitals and collision.
+- **Protocol library:** mineflayer suites run against both Circuit and the vanilla server: building and redstone, chest placement, building blocks (`place-families.js`, both versions), container windows, vitals and collision.
 - **Real client:** a Fabric client mod drives the real 1.21.8 or 1.21.4 client from step scripts and checks the blocks and entities the client shows.
 
 The [verification guide](DEVELOPMENT.md#client-testing) describes how to run them.

@@ -750,8 +750,16 @@
           "id": "orientation_and_shapes",
           "name": "Placement orientation and shapes: stairs, slabs, walls, fences, panes, doors, beds",
           "milestone": "C5",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "client/building"
+          ],
+          "deviations": [
+            "only full cubes without properties, soul sand and mud, pillars, stairs, slabs, fences, panes, bars and walls are placed from their items; other orientations (facing blocks, doors, beds) and blocks that need support are not",
+            "spawners, beacons and sponges are not placed"
+          ],
+          "note": "Pillars along the clicked face's axis, stairs facing the player and in the clicked half, slabs in the clicked half and doubled, connectors and stairs with their neighbors' shapes, waterlogged in water sources, as both official servers do"
         },
         {
           "id": "connection_shapes",
@@ -766,7 +774,6 @@
             "trace/tnt_duper_wall"
           ],
           "deviations": [
-            "players do not place them yet (placement orientation and shapes)",
             "water does not flow out of waterlogged ones"
           ],
           "note": "On shape updates and when a piston sets them down, as both official servers do; every state beside and above them compared"
@@ -782,7 +789,6 @@
             "trace/stairs_shapes"
           ],
           "deviations": [
-            "players do not place them yet (placement orientation and shapes)",
             "water does not flow out of waterlogged ones"
           ],
           "note": "On shape updates from the sides and when a piston sets them down, as both official servers do; every combination of stairs around them compared"
@@ -1991,10 +1997,11 @@
             "java-1.21.8": "compared"
           },
           "cases": [
+            "client/building",
             "client/chests",
             "client/redstone"
           ],
-          "note": "17 item cases"
+          "note": "17 item cases, and building blocks on both versions (client/building)"
         },
         {
           "id": "tools",

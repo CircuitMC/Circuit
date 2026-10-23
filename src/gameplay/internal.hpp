@@ -83,6 +83,12 @@ std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Directio
 // The item of a button's or a pressure plate's kind.
 std::uint16_t button_item(BlockState s);
 std::uint16_t plate_item(BlockState s);
+// Building blocks without rules of their own (placement.cpp): the block an
+// item places, if it is one; whether a slab click doubles the slab `s` (the
+// clicked block, or the cell beside it); the state placed at `target`.
+std::optional<std::uint32_t> building_block(RuleContext& ctx, std::uint16_t item);
+bool doubles_slab(std::uint32_t block, BlockState s, const contracts::PlayerUse& c, bool clicked);
+BlockState placed_building(RuleContext& ctx, std::uint32_t block, const contracts::PlayerUse& c, BlockPos target);
 // Whether a block obstructs players standing in its cell.
 bool has_collision(BlockState s);
 // Records a player slot (contracts::player_slots: the cursor) after a change.

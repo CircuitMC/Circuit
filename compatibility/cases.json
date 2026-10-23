@@ -56,6 +56,17 @@
       "description": "Player placement of dust, levers, a step, a wall lever and repeaters"
     },
     {
+      "id": "client/building",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/place-families.js; tests/server/server_tests.cpp",
+      "status": "passing",
+      "description": "Player placement of full blocks, soul sand and mud, pillars on every face, stairs facing four ways and in both halves, slabs in both halves and doubled from the clicked slab and beside it, fences, panes, bars and walls beside blocks and each other, and five of them into water sources: 71 placed states identical with both official servers"
+    },
+    {
       "id": "client/suite",
       "kind": "black_box",
       "versions": [

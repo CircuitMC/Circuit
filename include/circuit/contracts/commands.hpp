@@ -135,6 +135,10 @@ struct PlayerUse {
     bool survival{};
     std::uint8_t reach{};                 // bit 0: `pos`, bit 1: its neighbor on `face`
     std::uint8_t free{};                  // bit 0: `pos`, bit 1: its neighbor, free of players
+    // Where the click hit `pos`, within the block (0 to 1 on each axis).
+    float cursor_x{0.5f};
+    float cursor_y{0.5f};
+    float cursor_z{0.5f};
     bool operator==(const PlayerUse&) const = default;
 };
 // A player breaks a block, resolved when applied: air and piston parts

@@ -1353,7 +1353,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors on shape updates and when a piston sets it down, as both official servers do for every state beside it"
@@ -1365,7 +1364,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors on shape updates and when a piston sets it down, as both official servers do for every state beside it"
@@ -1377,7 +1375,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
@@ -1389,7 +1386,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
@@ -1401,7 +1397,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
@@ -1413,7 +1408,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
@@ -1425,7 +1419,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
@@ -1437,7 +1430,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
@@ -1449,7 +1441,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
@@ -1461,7 +1452,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
@@ -1473,7 +1463,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
@@ -1485,7 +1474,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
@@ -1497,7 +1485,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
@@ -1509,7 +1496,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors on shape updates and when a piston sets it down, as both official servers do for every state beside it"
@@ -1521,7 +1507,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors on shape updates and when a piston sets it down, as both official servers do for every state beside it"
@@ -1533,7 +1518,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
@@ -1545,7 +1529,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
@@ -1557,7 +1540,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
@@ -1569,7 +1551,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
@@ -1581,7 +1562,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
@@ -1593,7 +1573,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
@@ -1605,7 +1584,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
@@ -1617,7 +1595,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
@@ -1629,7 +1606,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
@@ -1641,7 +1617,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
@@ -1653,7 +1628,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
@@ -1665,7 +1639,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
@@ -1677,7 +1650,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
@@ -1689,7 +1661,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
@@ -1701,7 +1672,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
@@ -1713,7 +1683,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
@@ -1725,7 +1694,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1737,7 +1705,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors on shape updates and when a piston sets it down, as both official servers do for every state beside and above it"
@@ -1749,7 +1716,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1761,7 +1727,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1773,7 +1738,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1785,7 +1749,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1797,7 +1760,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1809,7 +1771,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1821,7 +1782,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1833,7 +1793,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1845,7 +1804,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1857,7 +1815,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1869,7 +1826,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1881,7 +1837,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1893,7 +1848,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1905,7 +1859,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1917,7 +1870,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1929,7 +1881,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1941,7 +1892,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1953,7 +1903,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1965,7 +1914,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1977,7 +1925,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -1989,7 +1936,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -2001,7 +1947,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -2013,7 +1958,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -2025,7 +1969,6 @@
           "collision/connection"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
@@ -2037,7 +1980,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it, as both official servers do for every combination of stairs around it"
@@ -2049,7 +1991,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it, as both official servers do for every combination of stairs around it"
@@ -2061,7 +2002,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2073,7 +2013,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2085,7 +2024,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2097,7 +2035,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2109,7 +2046,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2121,7 +2057,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2133,7 +2068,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2145,7 +2079,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2157,7 +2090,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2169,7 +2101,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2181,7 +2112,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2193,7 +2123,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2205,7 +2134,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2217,7 +2145,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2229,7 +2156,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2241,7 +2167,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2253,7 +2178,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2265,7 +2189,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2277,7 +2200,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2289,7 +2211,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2301,7 +2222,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2313,7 +2233,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2325,7 +2244,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2337,7 +2255,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2349,7 +2266,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2361,7 +2277,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2373,7 +2288,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2385,7 +2299,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2397,7 +2310,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2409,7 +2321,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2421,7 +2332,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2433,7 +2343,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2445,7 +2354,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2457,7 +2365,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2469,7 +2376,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2481,7 +2387,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2493,7 +2398,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2505,7 +2409,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2517,7 +2420,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2529,7 +2431,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2541,7 +2442,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2553,7 +2453,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2565,7 +2464,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2577,7 +2475,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2589,7 +2486,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2601,7 +2497,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2613,7 +2508,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2625,7 +2519,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2637,7 +2530,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2649,7 +2541,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2661,7 +2552,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2673,7 +2563,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2685,7 +2574,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2697,7 +2585,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2709,7 +2596,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
@@ -2721,7 +2607,6 @@
           "collision/stairs"
         ],
         "deviations": [
-          "players do not place it yet",
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"

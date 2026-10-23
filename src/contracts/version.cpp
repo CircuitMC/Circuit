@@ -253,13 +253,13 @@ constexpr std::array reference_v4_mechanisms{
         "walls, walls walls and panes; fences and walls join fence gates turned across the side; all join a whole "
         "support face except of leaves, barriers, shulker boxes, pumpkins, melons and chorus flowers; walls rise "
         "under blocks covering their sides and keep or lose their post (connections, connections_moved; every state "
-        "beside and above them in tests/fixtures/collision/connection-*.txt). Gaps: water does not flow out of "
-        "waterlogged ones; players do not place them yet."},
+        "beside and above them in tests/fixtures/collision/connection-*.txt); players place them with their shapes "
+        "(client/building). Gaps: water does not flow out of waterlogged ones."},
     MechanismEntry{"stairs", l0_exact, l2_declared_deviation, harness_trace,
         "Stairs of any material take straight, inner and outer corner shapes from the stairs of the same half beside "
         "them on shape updates from the sides and when a piston sets them down (stairs_shapes; every combination of "
-        "stairs on their four sides in tests/fixtures/collision/stairs.txt). Gaps: players do not place them yet, and "
-        "water does not flow out of waterlogged ones."},
+        "stairs on their four sides in tests/fixtures/collision/stairs.txt); players place them facing their way, in the "
+        "clicked half, with their shape (client/building). Gaps: water does not flow out of waterlogged ones."},
     MechanismEntry{"note_block", l0_exact, l2_declared_deviation, harness_trace,
         "Note blocks take the instrument of a mob head above them or else of the block below, when placed, moved "
         "and on a shape update from above or below; they play on a rising signal and when used (the next note), "

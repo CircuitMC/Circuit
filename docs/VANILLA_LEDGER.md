@@ -34,7 +34,7 @@ Feature counts per implementation state, then the number of features with compar
 | V08 Terrain and biomes | C7 | 70 | 0 / 0 | 2 / 2 | 64 / 64 | 4 / 4 | 0 / 0 | 0 / 0 |
 | V09 Structures and decoration | C7, C5 | 6 | 0 / 0 | 0 / 0 | 0 / 0 | 6 / 6 | 0 / 0 | 0 / 0 |
 | V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 1 / 1 | 39 / 39 | 3 / 3 | 0 / 0 | 1 / 1 |
-| V11 Common building blocks | C5 | 1346 | 0 / 0 | 233 / 233 | 1111 / 1111 | 2 / 2 | 0 / 0 | 24 / 24 |
+| V11 Common building blocks | C5 | 1346 | 0 / 0 | 234 / 234 | 1111 / 1111 | 1 / 1 | 0 / 0 | 25 / 25 |
 | V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 24 / 24 | 54 / 54 | 4 / 4 | 0 / 0 | 8 / 8 |
 | V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 23 / 23 | 278 / 292 | 5 / 5 | 14 / 0 | 21 / 21 |
 | V14 Redstone sources and signal consumers | C4, C5 | 138 | 7 / 7 | 95 / 95 | 35 / 35 | 1 / 1 | 0 / 0 | 37 / 39 |
@@ -127,7 +127,7 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 34 |
+| black_box | passing | 35 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
 | official_trace | passing | 135 |
@@ -248,9 +248,9 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Placement orientation and shapes: stairs, slabs, walls, fences, panes, doors, beds | C5 | missing, none | missing, none |  |
-| Fences, panes, bars and walls joining their neighbors | C5 | partial, compared | partial, compared | `collision/connection`, `trace/connections`, `trace/connections_moved`, `trace/tnt_duper_wall`; players do not place them yet (placement orientation and shapes); water does not flow out of waterlogged ones; On shape updates and when a piston sets them down, as both official servers do; every state beside and above them compared |
-| Stairs taking corner shapes from the stairs beside them | C5 | partial, compared | partial, compared | `collision/stairs`, `trace/stairs_shapes`; players do not place them yet (placement orientation and shapes); water does not flow out of waterlogged ones; On shape updates from the sides and when a piston sets them down, as both official servers do; every combination of stairs around them compared |
+| Placement orientation and shapes: stairs, slabs, walls, fences, panes, doors, beds | C5 | partial, compared | partial, compared | `client/building`; only full cubes without properties, soul sand and mud, pillars, stairs, slabs, fences, panes, bars and walls are placed from their items; other orientations (facing blocks, doors, beds) and blocks that need support are not; spawners, beacons and sponges are not placed; Pillars along the clicked face's axis, stairs facing the player and in the clicked half, slabs in the clicked half and doubled, connectors and stairs with their neighbors' shapes, waterlogged in water sources, as both official servers do |
+| Fences, panes, bars and walls joining their neighbors | C5 | partial, compared | partial, compared | `collision/connection`, `trace/connections`, `trace/connections_moved`, `trace/tnt_duper_wall`; water does not flow out of waterlogged ones; On shape updates and when a piston sets them down, as both official servers do; every state beside and above them compared |
+| Stairs taking corner shapes from the stairs beside them | C5 | partial, compared | partial, compared | `collision/stairs`, `trace/stairs_shapes`; water does not flow out of waterlogged ones; On shape updates from the sides and when a piston sets them down, as both official servers do; every combination of stairs around them compared |
 | Two-part blocks: doors, beds, tall plants | C5 | partial, compared | partial, compared | `trace/door_basics`, `trace/door_more`; beds and tall plants are not modeled; Doors: the halves follow each other, and a half without the other breaks (the lower one with the drop) |
 | Signs, banners, heads, pots and other block-entity data | C5 | data_only, none | data_only, reference_only | `anvil/components`; Block entities of blocks without rules of their own keep their saved data through checkpoints and Anvil interchange; nothing interprets it, and clients do not receive it |
 | Copper weathering, waxing and scraping | C5 | missing, none | missing, none |  |
@@ -399,7 +399,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Placing blocks from items | C5 | partial, none | partial, compared | `client/chests`, `client/redstone`; 17 item cases |
+| Placing blocks from items | C5 | partial, none | partial, compared | `client/building`, `client/chests`, `client/redstone`; 17 item cases, and building blocks on both versions (client/building) |
 | Tools, durability and harvest rules | C5 | partial, documented | partial, documented | Pickaxes and axes |
 | Eating and drinking | C6 | missing, none | missing, none |  |
 | Bows, crossbows and tridents | C6 | missing, none | missing, none |  |
