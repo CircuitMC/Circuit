@@ -65,7 +65,9 @@ constexpr std::array reference_v4_mechanisms{
         "they stand, moving slime blocks launching entities (item_piston_push, item_drop_piston, "
         "piston_entities, slime_entities); honey blocks as sticky blocks that do not hold slime, carrying what stands "
         "on them sideways, and a head's removal taking its base (honey_basics, honey_more); every block moved, "
-        "destroyed, pushed only or left in place as the official servers do, arriving without its water "
+        "destroyed, pushed only or left in place as the official servers do, arriving without its water and "
+        "breaking at once where it cannot stay (moved_arrivals); documented pulse circuits built on pistons "
+        "(pulse_generators, pulse_limiters) "
         "(push_classes). Gaps: neighbor updates "
         "after a move in first-change "
         "order are not compared."},

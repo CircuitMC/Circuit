@@ -484,6 +484,33 @@ std::vector<registry::Box> moving_block_boxes(RuleContext& ctx, BlockPos pos) {
     return out;
 }
 
+namespace {
+// The block a neighbor of an arriving block stands for: a moving piston whose
+// move is complete has its carried block's shape by then.
+BlockState as_settled(RuleContext& ctx, BlockPos p) {
+    const auto s = ctx.block(p);
+    if (!s.is(BlockType::moving_piston)) return s;
+    const auto* be = ctx.peek_block_entity(p);
+    if (!be || be->progress < move_ticks) return s;
+    return BlockState::decode(be->moving).value_or(s);
+}
+
+// Whether a block a piston set down can stay where it arrived: a head needs
+// its base, a coral fan and a rail their support (both official servers;
+// moved_arrivals).
+bool stays(RuleContext& ctx, BlockPos pos, BlockState s) {
+    switch (s.type()) {
+    case BlockType::piston_head: return head_has_base(ctx, pos, s);
+    case BlockType::coral_fan: case BlockType::coral_wall_fan: {
+        const auto side = s.is(BlockType::coral_fan) ? Direction::down : contracts::opposite(s.facing());
+        return face_sturdy(as_settled(ctx, pos.relative(side)), contracts::opposite(side));
+    }
+    case BlockType::rail: return supports_dust(as_settled(ctx, pos.relative(Direction::down)));
+    default: return true;
+    }
+}
+} // namespace
+
 void tick_moving_piston(RuleContext& ctx, BlockPos pos) {
     auto* be = ctx.block_entity(pos);
     if (!be) return;
@@ -495,7 +522,17 @@ void tick_moving_piston(RuleContext& ctx, BlockPos pos) {
         return;
     }
     const auto carried = BlockState::decode(be->moving).value_or(blocks::air());
-    set_block(ctx, pos, settled(ctx, pos, dried(carried))); // Removes the moving piston's block entity.
+    const auto arrived = settled(ctx, pos, dried(carried));
+    if (!stays(ctx, pos, arrived)) {
+        // Set down without updates, then broken with its drops.
+        const auto previous = ctx.block(pos);
+        ctx.remove_block_entity(pos);
+        ctx.write_block(pos, arrived);
+        ctx.record(TraceKind::block_changed, pos, previous.raw(), arrived.raw());
+        destroy_block(ctx, pos);
+        return;
+    }
+    set_block(ctx, pos, arrived); // Removes the moving piston's block entity.
 }
 
 } // namespace circuit::gameplay::detail

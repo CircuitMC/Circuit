@@ -130,7 +130,7 @@ Their counts are unknown, not zero.
 | black_box | passing | 31 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 128 |
+| official_trace | passing | 131 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -337,7 +337,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Chunk loaders | C7 | missing, none | missing, none |  |
 | Gravity-block machines and duplication | C4 | partial, compared | partial, compared | `trace/gravity_machines`; gravity-block duplication needs end portals and is not supported; Sand and gravel in piston machines (carried by slime, pushed off ledges, dropped by pulled supports, landing on moving pistons) as both official servers do |
 | Bedrock breaking | C4 | missing, none | missing, none |  |
-| Item sorters, clocks and pulse circuits | C4 | partial, compared | partial, compared | `trace/hopper_chained`, `trace/item_sorter`, `trace/item_sorter_overflow`, `trace/observer_clock`; other sorter designs and clock circuits are not established as machines; The documented basic hopper item sorter as a whole machine (sorting across a chunk edge, overflow protection); clocks and pulse circuits as component cases |
+| Item sorters, clocks and pulse circuits | C4 | partial, compared | partial, compared | `trace/hopper_chained`, `trace/item_sorter`, `trace/item_sorter_overflow`, `trace/observer_clock`, `trace/pulse_generators`, `trace/pulse_limiters`; other sorter designs, clocks, pulse extenders and edge detectors are not established as machines; The documented basic hopper item sorter as a whole machine (sorting across a chunk edge, overflow protection); documented pulse generators and limiters; clocks as component cases |
 
 ### V19 General entity lifecycle
 

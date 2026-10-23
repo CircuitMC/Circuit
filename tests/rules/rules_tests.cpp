@@ -2140,6 +2140,30 @@ int main() {
         require(seen == 2, "both landed");
     });
 
+    suite.run("blocks a piston sets down where they cannot stay break at once", [] {
+        using circuit::gameplay::EntityKind;
+        using circuit::gameplay::blocks::CoralKind;
+        using circuit::gameplay::blocks::RailKind;
+        using circuit::gameplay::blocks::RailShape;
+        Sim s;
+        // A rail pushed off its block over air, one pushed onto stone, and a
+        // dead coral fan pushed away from its wall.
+        s.tick(with_floor(floor(-2, 8, -1, 6),
+                          {place({0, 1, 0}, blocks::piston(D::east)), place({1, 0, 0}, blocks::stone()), place({1, 1, 0}, blocks::rail(RailKind::rail, RailShape::east_west)),
+                           place({0, 1, 2}, blocks::piston(D::east)), place({1, 0, 2}, blocks::stone()), place({2, 0, 2}, blocks::stone()),
+                           place({1, 1, 2}, blocks::rail(RailKind::rail, RailShape::east_west)), place({0, 0, 4}, blocks::piston(D::east)),
+                           place({1, 0, 3}, blocks::stone()), place({1, 0, 4}, blocks::coral_wall_fan(CoralKind::tube, D::south, true))}));
+        s.tick({place({-1, 1, 0}, blocks::redstone_block()), place({-1, 1, 2}, blocks::redstone_block()), place({-1, 0, 4}, blocks::redstone_block())});
+        for (int i = 0; i < 4; ++i) s.tick();
+        require(s.at({2, 1, 0}).is_air(), "the rail over air broke");
+        require(s.at({2, 1, 2}).is(BlockType::rail), "the rail on stone stays");
+        require(s.at({2, 0, 4}).is_air(), "the fan away from its wall broke");
+        std::size_t rails = 0;
+        const auto d = s.oracle.dump();
+        for (const auto& e : d.overworld().entities) rails += e.kind == EntityKind::item && e.stack.item == items::rail;
+        require(rails == 1, std::format("the broken rail dropped itself ({} rail items)", rails));
+    });
+
     suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {
         using circuit::contracts::UseBlock;
         Sim s;

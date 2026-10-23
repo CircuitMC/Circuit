@@ -1535,11 +1535,13 @@
             "trace/observer_clock",
             "trace/hopper_chained",
             "trace/item_sorter",
-            "trace/item_sorter_overflow"
+            "trace/item_sorter_overflow",
+            "trace/pulse_generators",
+            "trace/pulse_limiters"
           ],
-          "note": "The documented basic hopper item sorter as a whole machine (sorting across a chunk edge, overflow protection); clocks and pulse circuits as component cases",
+          "note": "The documented basic hopper item sorter as a whole machine (sorting across a chunk edge, overflow protection); documented pulse generators and limiters; clocks as component cases",
           "deviations": [
-            "other sorter designs and clock circuits are not established as machines"
+            "other sorter designs, clocks, pulse extenders and edge detectors are not established as machines"
           ]
         }
       ]

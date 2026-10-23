@@ -6,11 +6,11 @@ The Part I core runs headless: shared contracts, a set of reference rules, a seq
 
 The rules are **circuit-reference-rules-v11**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
 
-Two version bundles run them: `java-1.21.8` and `java-1.21.4`. 1.21.8 has 128 traces and 1.21.4 has 126 recorded on the unmodified server (1.21.4 lacks the tntExplodes game rule, so `tnt_explodes_disabled` and `dispenser_tnt_rule` are 1.21.8's only):
+Two version bundles run them: `java-1.21.8` and `java-1.21.4`. 1.21.8 has 131 traces and 1.21.4 has 129 recorded on the unmodified server (1.21.4 lacks the tntExplodes game rule, so `tnt_explodes_disabled` and `dispenser_tnt_rule` are 1.21.8's only):
 - 1.21.8 traces are in `tests/fixtures/harness/`;
 - 1.21.4 traces are in `tests/fixtures/harness-1.21.4/`.
 
-The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 254 pass on both the parallel runtime and the oracle.
+The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 260 pass on both the parallel runtime and the oracle.
 
 The compatibility table is part of the version bundle (`src/contracts/version.cpp`). `circuit-server --compatibility` prints it. Each row states a target tier, a claimed tier, the evidence source, and its limitations:
 
@@ -40,7 +40,7 @@ The tiers are defined in the architecture: L0 exact, L1 region-equivalent, L2 de
 | `game_rules` | L2 | 45 `/gamerule` commands give the official replies on both versions. The other rules change nothing yet; compared through a protocol client, not traces. |
 | `day_time` | L2 | 59 `/time` commands give the official replies and `set_time` packets on both versions, compared through a protocol client; daylight detectors read the time of day (below). Nothing else does yet. |
 | `weather` | L2 | 16 `/weather` commands give 1,348 identical replies and events on both versions. Durations come from Circuit's own stream; no lightning, snow or other effects of rain. |
-| `piston` | L2 | Harness traces pass, including the level-random draws of piston sounds (piston_draws) and entities pushed, carried and launched by moving blocks (item_piston_push, item_drop_piston, piston_entities, slime_entities, honey_more); honey in structures (honey_basics); how pistons treat every block (push_classes, and every block's class against both official servers in tests/fixtures/collision/push-*.txt); blocks moving north push the entities ahead of them only, as in the other directions (tnt_duper_turns). |
+| `piston` | L2 | Harness traces pass, including the level-random draws of piston sounds (piston_draws) and entities pushed, carried and launched by moving blocks (item_piston_push, item_drop_piston, piston_entities, slime_entities, honey_more); honey in structures (honey_basics); how pistons treat every block (push_classes, and every block's class against both official servers in tests/fixtures/collision/push-*.txt); blocks moving north push the entities ahead of them only, as in the other directions (tnt_duper_turns); a block set down where it cannot stay (a head without its base, coral fans and rails without support) breaks at once (moved_arrivals); minecraft.wiki's circuit-breaker and dust-cut pulse generators and limiters (pulse_generators, pulse_limiters). |
 | `honey` | L2 | honey_basics, honey_slide, honey_entry, honey_more: honey holding its neighbors but not slime, slowing items and primed TNT on it (and soul sand doing so), items and primed TNT sliding down its sides at every entry speed and distance, carrying what stands on it sideways, and a slime-honey flying machine. Entities other than items and primed TNT do not slide. |
 | `redstone_torch` | L2 | torch_basics, torch_button_piston, water_torch_button: floor and wall torches lighting lamps beside them and through the block above them, turned off through their block by a lever, a redstone block and dust, burning out on their eighth turn-off within 60 ticks and relighting 160 ticks later, dropping without support, destroyed by pistons and washed away by water, with every update in the official order. Players place torches on the clicked face; no burnout sound or smoke. |
 | `button` | L2 | button_basics, torch_button_piston, water_torch_button: stone, polished blackstone, oak and crimson buttons on floors, walls and ceilings, used and pressed by flying and stuck arrows, their timing, their power, their drops and their washing away. Only arrows press wooden buttons. |
