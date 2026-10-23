@@ -57,7 +57,7 @@ BlockInfo block(std::uint32_t index) noexcept {
     const auto& b = data::blocks[index];
     return {b.name, b.first_state, b.state_count, b.first_state + b.default_offset, b.hardness, b.opaque != 0,
             static_cast<Tool>(b.tool), b.tier, b.resistance, static_cast<PushClass>(b.push),
-            static_cast<Instrument>(b.instrument), static_cast<Conductor>(b.conductor)};
+            static_cast<Instrument>(b.instrument), static_cast<Conductor>(b.conductor), static_cast<Connector>(b.connector & 7)};
 }
 
 std::optional<std::uint32_t> block_of(std::uint32_t state) noexcept {
@@ -155,6 +155,21 @@ bool conducts(std::uint32_t state) noexcept {
 bool face_covered(std::uint32_t state, contracts::Direction face) noexcept {
     if (state < 1 || state > data::state_count) return false;
     return (data::shapes[state - 1] >> (2 + static_cast<unsigned>(face))) & 1;
+}
+
+bool joins_face(std::uint32_t state, contracts::Direction face) noexcept {
+    if (state < 1 || state > data::state_count) return false;
+    return (data::join_faces[state - 1] >> static_cast<unsigned>(face)) & 1;
+}
+
+Connector connector(std::uint32_t state) noexcept {
+    const auto b = block_of(state);
+    return b ? static_cast<Connector>(data::blocks[*b].connector & 7) : Connector::none;
+}
+
+bool keeps_wall_post(std::uint32_t state) noexcept {
+    const auto b = block_of(state);
+    return b && (data::blocks[*b].connector & 8) != 0;
 }
 
 std::uint8_t light_emission(std::uint32_t state) noexcept {

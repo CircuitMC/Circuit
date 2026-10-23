@@ -23,6 +23,7 @@ struct BlockData {
     std::uint8_t push;       // registry::PushClass
     std::uint8_t instrument; // registry::Instrument
     std::uint8_t conductor;  // registry::Conductor
+    std::uint8_t connector;  // bits 0-2 registry::Connector; bit 3 walls keep their post under it
 };
 struct PropertyData {
     const char* name;
@@ -63,6 +64,7 @@ extern const std::uint32_t state_count;
 extern const PropertyData properties[];
 extern const char* const values[];
 extern const std::uint8_t shapes[];
+extern const std::uint8_t join_faces[];
 extern const std::uint8_t light[];
 extern const std::uint16_t light_shape[];
 extern const LightFaces light_faces[];

@@ -34,7 +34,7 @@ Feature counts per implementation state, then the number of features with compar
 | V08 Terrain and biomes | C7 | 70 | 0 / 0 | 2 / 2 | 64 / 64 | 4 / 4 | 0 / 0 | 0 / 0 |
 | V09 Structures and decoration | C7, C5 | 6 | 0 / 0 | 0 / 0 | 0 / 0 | 6 / 6 | 0 / 0 | 0 / 0 |
 | V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 1 / 1 | 39 / 39 | 3 / 3 | 0 / 0 | 1 / 1 |
-| V11 Common building blocks | C5 | 1344 | 0 / 0 | 116 / 116 | 1226 / 1226 | 2 / 2 | 0 / 0 | 15 / 15 |
+| V11 Common building blocks | C5 | 1345 | 0 / 0 | 174 / 174 | 1169 / 1169 | 2 / 2 | 0 / 0 | 21 / 21 |
 | V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 24 / 24 | 54 / 54 | 4 / 4 | 0 / 0 | 8 / 8 |
 | V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 23 / 23 | 278 / 292 | 5 / 5 | 14 / 0 | 21 / 21 |
 | V14 Redstone sources and signal consumers | C4, C5 | 138 | 7 / 7 | 95 / 95 | 35 / 35 | 1 / 1 | 0 / 0 | 37 / 39 |
@@ -67,7 +67,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 155 / 155 | 936 / 946 | 0 / 0 |
+| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 212 / 212 | 879 / 889 | 0 / 0 |
 | item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 128 / 128 | 1256 / 1287 | 0 / 0 |
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 17 / 17 | 0 / 0 | 132 / 134 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
@@ -127,10 +127,10 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 32 |
+| black_box | passing | 33 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 131 |
+| official_trace | passing | 134 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -249,6 +249,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
 | Placement orientation and shapes: stairs, slabs, walls, fences, panes, doors, beds | C5 | missing, none | missing, none |  |
+| Fences, panes, bars and walls joining their neighbors | C5 | partial, compared | partial, compared | `collision/connection`, `trace/connections`, `trace/connections_moved`, `trace/tnt_duper_wall`; players do not place them yet (placement orientation and shapes); water does not flow out of waterlogged ones; On shape updates and when a piston sets them down, as both official servers do; every state beside and above them compared |
 | Two-part blocks: doors, beds, tall plants | C5 | partial, compared | partial, compared | `trace/door_basics`, `trace/door_more`; beds and tall plants are not modeled; Doors: the halves follow each other, and a half without the other breaks (the lower one with the drop) |
 | Signs, banners, heads, pots and other block-entity data | C5 | data_only, none | data_only, reference_only | `anvil/components`; Block entities of blocks without rules of their own keep their saved data through checkpoints and Anvil interchange; nothing interprets it, and clients do not receive it |
 | Copper weathering, waxing and scraping | C5 | missing, none | missing, none |  |
@@ -332,7 +333,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| TNT duplication with a named design | C4 | partial, compared | partial, compared | `TNT-07`, `TNT-08`, `trace/tnt_duper`, `trace/tnt_duper_corners`, `trace/tnt_duper_edges`, `trace/tnt_duper_turns`; its cobblestone wall is replaced by stone (wall shapes are not modeled); only the Mytteri push duper is established; other designs are untested; reloading its chunk follows the chunk unload timing deviation (open trace tnt_duper_reload); The Mytteri push duper primes its TNT on every push after the first while the block moves on, as both official servers do, over eight pushes, in each horizontal direction and across chunk edges and corners; restored engines continue it exactly |
+| TNT duplication with a named design | C4 | partial, compared | partial, compared | `TNT-07`, `TNT-08`, `trace/tnt_duper`, `trace/tnt_duper_corners`, `trace/tnt_duper_edges`, `trace/tnt_duper_turns`, `trace/tnt_duper_wall`; only the Mytteri push duper is established; other designs are untested; reloading its chunk follows the chunk unload timing deviation (open trace tnt_duper_reload); The Mytteri push duper primes its TNT on every push after the first while the block moves on, as both official servers do, over eight pushes, in each horizontal direction and across chunk edges and corners, with its documented cobblestone wall (tnt_duper_wall; the earlier traces use stone); restored engines continue it exactly |
 | Flying machines | C4 | partial, compared | partial, compared | `trace/flying_engine`, `trace/flying_engine_more`, `trace/honey_more`; only two-way engine A and the vertical two-way slim engine are established; docks and larger machines are untested; Two documented engines fly in all six directions with cargo, across chunk edges and into obstacles, as both official servers do |
 | Chunk loaders | C7 | missing, none | missing, none |  |
 | Gravity-block machines and duplication | C4 | partial, compared | partial, compared | `trace/gravity_machines`; gravity-block duplication needs end portals and is not supported; Sand and gravel in piston machines (carried by slime, pushed off ledges, dropped by pulled supports, landing on moving pistons) as both official servers do |

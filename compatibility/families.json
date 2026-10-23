@@ -754,6 +754,24 @@
           "evidence": "none"
         },
         {
+          "id": "connection_shapes",
+          "name": "Fences, panes, bars and walls joining their neighbors",
+          "milestone": "C5",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "collision/connection",
+            "trace/connections",
+            "trace/connections_moved",
+            "trace/tnt_duper_wall"
+          ],
+          "deviations": [
+            "players do not place them yet (placement orientation and shapes)",
+            "water does not flow out of waterlogged ones"
+          ],
+          "note": "On shape updates and when a piston sets them down, as both official servers do; every state beside and above them compared"
+        },
+        {
           "id": "multi_block",
           "name": "Two-part blocks: doors, beds, tall plants",
           "milestone": "C5",
@@ -1475,14 +1493,14 @@
             "trace/tnt_duper",
             "trace/tnt_duper_turns",
             "trace/tnt_duper_edges",
-            "trace/tnt_duper_corners"
+            "trace/tnt_duper_corners",
+            "trace/tnt_duper_wall"
           ],
           "deviations": [
             "only the Mytteri push duper is established; other designs are untested",
-            "its cobblestone wall is replaced by stone (wall shapes are not modeled)",
             "reloading its chunk follows the chunk unload timing deviation (open trace tnt_duper_reload)"
           ],
-          "note": "The Mytteri push duper primes its TNT on every push after the first while the block moves on, as both official servers do, over eight pushes, in each horizontal direction and across chunk edges and corners; restored engines continue it exactly"
+          "note": "The Mytteri push duper primes its TNT on every push after the first while the block moves on, as both official servers do, over eight pushes, in each horizontal direction and across chunk edges and corners, with its documented cobblestone wall (tnt_duper_wall; the earlier traces use stone); restored engines continue it exactly"
         },
         {
           "id": "flying_machines",

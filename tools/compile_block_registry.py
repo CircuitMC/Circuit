@@ -14,9 +14,11 @@ Each version maps its states to internal ids and back. Per internal block the
 table keeps the data the rules use for blocks without rules of their own:
 hardness, opacity, the effective tool and the lowest tier that harvests the
 block, every block's blast resistance, how pistons treat it (push_class), the note block instrument it gives (instrument) and
-whether it is a redstone conductor (conductor). Per
+whether it is a redstone conductor (conductor), and what fences, panes and walls
+make of it (connector). Per
 state it keeps the collision class (empty, partial, full cube),
-which faces the collision shape covers completely, its light: emission,
+which faces the collision shape covers completely, the faces fences, panes and
+walls join (join_faces), its light: emission,
 dampening and, for states whose shape occludes light, the parts of each face
 the occlusion shape covers (light_of below; minecraft-data gives light per
 block and describes its default state, so the state rules are Circuit's), and
@@ -331,6 +333,40 @@ def conductor(name):
     return 0 if NEVER_CONDUCTS.match(name) else 2
 
 
+# Fences, panes and walls (both official servers report how each joins every
+# state beside and above it; see tests/fixtures/collision/connection-*.tsv).
+# Connector kinds: 1 wooden fence, 2 nether brick fence, 3 pane or bars, 4
+# wall; bit 3 marks the blocks over which a wall always keeps its post.
+WALL_POST_OVERRIDE = re.compile(r"^(.*_banner|(?!.*hanging).*_sign|.*_pressure_plate|torch|soul_torch|redstone_torch|tripwire|"
+                                r"cactus_flower)$")
+# They join a state through a face that its support shape covers whole: its
+# collision shape's, except that soul sand, mud and eight snow layers count
+# as full cubes. They never join the blocks below.
+NEVER_JOINED = re.compile(r"^(.*_leaves|barrier|(.*_)?shulker_box|carved_pumpkin|jack_o_lantern|melon|pumpkin|chorus_flower)$")
+FULL_SUPPORT = {"soul_sand", "mud"}
+
+
+def connector(name, sch):
+    kind = 0
+    props = dict(sch)
+    if name.endswith("_fence"):
+        kind = 2 if name == "nether_brick_fence" else 1
+    elif name == "iron_bars" or name.endswith("glass_pane"):
+        kind = 3
+    elif name.endswith("_wall") and props.get("east") == ("none", "low", "tall"):
+        kind = 4
+    return kind | (8 if WALL_POST_OVERRIDE.match(name) else 0)
+
+
+def join_faces(name, props, shape):
+    """Bits 0-5 (down, up, north, south, west, east): the faces fences, panes and walls join."""
+    if NEVER_JOINED.match(name):
+        return 0
+    if name in FULL_SUPPORT or (name == "snow" and props.get("layers") == "8"):
+        return 63
+    return shape_byte(shape) >> 2
+
+
 def previous_blocks(path):
     text = open(path, encoding="utf-8").read()
     body = text.split("const BlockData blocks[] = {", 1)[1].split("};", 1)[0]
@@ -381,7 +417,8 @@ def main():
         "",
         "// name, first property, property count, first internal state, state count, default state offset,",
         "// hardness (negative: unbreakable), opaque, effective tool, harvest tier, blast resistance,",
-        "// push class (0 move, 1 destroy, 2 push only, 3 immovable), note block instrument",
+        "// push class (0 move, 1 destroy, 2 push only, 3 immovable), note block instrument, conductor,",
+        "// connector (bits 0-2: 1 wooden fence, 2 nether brick fence, 3 pane, 4 wall; bit 3: walls keep their post under it)",
         "const BlockData blocks[] = {",
     ]
     properties = []  # (name, first value, count)
@@ -405,6 +442,7 @@ def main():
 
     intern_collision([])  # shape 0: no collision
     light_bytes = []
+    join_bytes = []
     occlusion_ids = []
     occlusion_shapes = {}  # face masks -> id (from 1)
     first_state = 1
@@ -440,6 +478,7 @@ def main():
         names = [pname for pname, _ in sch]
         default = dict(zip(names, combos[b["defaultState"] - b["minStateId"]]))
         for combo, i in zip(combos, ids):
+            join_bytes.append(join_faces(b["name"], dict(zip(names, combo)), shapes["shapes"][str(i)]))
             boxes16 = [tuple(round(c * 16) for c in box) for box in shapes["shapes"][str(i)]]
             e, d, occlusion = light_of(b["name"], dict(zip(names, combo)), b, boxes16, default)
             motion = 1 if motion_blocking(b["name"], dict(zip(names, combo)), boxes16) else 0
@@ -476,7 +515,8 @@ def main():
             if other is not None and instrument(other["name"], other.get("material")) != sound:
                 sys.exit(f"{name}: instrument differs in {release}")
         out.append(f'    {{"{name}", {first_prop}, {len(sch)}, {first_state}, {count}, {b["defaultState"] - b["minStateId"]}, '
-                   f'{hardness!r}f, {opaque}, {tool}, {tier_of(b, tool, items)}, {resistance!r}f, {push}, {sound}, {conducts}}},')
+                   f'{hardness!r}f, {opaque}, {tool}, {tier_of(b, tool, items)}, {resistance!r}f, {push}, {sound}, {conducts}, '
+                   f'{connector(b["name"], sch)}}},')
         first_state += count
     out += ["};", f"const std::uint32_t block_count = {len(internal)};", f"const std::uint32_t state_count = {first_state - 1};", ""]
     out.append("const PropertyData properties[] = {")
@@ -490,6 +530,12 @@ def main():
             "const std::uint8_t shapes[] = {"]
     for i in range(0, len(shape_bytes), 32):
         out.append("    " + ", ".join(str(c) for c in shape_bytes[i:i + 32]) + ",")
+    out.append("};")
+    out += ["// Per internal state (from 1): the faces fences, panes and walls join (bits 0-5: down, up, north, south,",
+            "// west, east).",
+            "const std::uint8_t join_faces[] = {"]
+    for i in range(0, len(join_bytes), 32):
+        out.append("    " + ", ".join(str(c) for c in join_bytes[i:i + 32]) + ",")
     out.append("};")
     out += ["// Per internal state (from 1): bits 0-3 light emission, bits 4-5 dampening (0: 0, 1: 1, 2: 15),",
             "// bit 6 counts for the MOTION_BLOCKING heightmap.",

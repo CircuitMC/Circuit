@@ -566,6 +566,77 @@ int main(int argc, char** argv) {
         require(blocks == 1105 + 1095 && states > 50000, std::format("{} blocks, {} states", blocks, states));
     });
 
+    suite.run("fences, panes and walls join every state as both official servers do", [&] {
+        // tests/fixtures/collision/connection-*.txt: ten codes per state (or
+        // per block when all its states agree); 1.21.4 as 1.21.8 except the
+        // states its own file lists.
+        namespace registry = circuit::gameplay::registry;
+        using circuit::contracts::Direction;
+        using circuit::gameplay::BlockState;
+        const auto table = [&](const char* file) {
+            std::map<std::string, std::string> out;
+            std::istringstream lines(read_text(fixtures / "collision" / file));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto space = line.find(' ');
+                out[line.substr(0, space)] = line.substr(space + 1);
+            }
+            return out;
+        };
+        const auto newest = table("connection-1.21.8.txt");
+        const auto older = table("connection-1.21.4-only.txt");
+        const auto value = [](BlockState s, std::string_view key) {
+            for (const auto& [k, v] : registry::properties(s.registry_state()))
+                if (k == key) return v == "true" ? '1' : v == "false" ? '0' : v == "none" ? 'n' : v == "low" ? 'l' : 't';
+            return '?';
+        };
+        std::size_t checked = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            const auto* mapping = ContentMapping::for_game_version(release);
+            const auto make = [&](std::string_view name) {
+                const auto block = registry::find_block(release, name);
+                require(block.has_value(), std::format("{} {}", release, name));
+                return BlockState::registered(registry::block(*block).default_state);
+            };
+            const auto oak = make("oak_fence"), nether = make("nether_brick_fence"), pane = make("glass_pane"), bars = make("iron_bars"),
+                       wall = make("cobblestone_wall");
+            std::size_t states = 0;
+            std::set<std::uint32_t> seen;
+            for (const auto& [key, _] : newest) {
+                const auto name = key.substr(0, key.find('['));
+                const auto block = registry::find_block(release, name.substr(std::string("minecraft:").size()));
+                if (!block) continue;
+                const auto info = registry::block(*block);
+                for (auto state = info.first_state; state < info.first_state + info.state_count; ++state) {
+                    const auto notation = registry::notation(state);
+                    if (!seen.insert(state).second) continue;
+                    const auto find = [&](const std::map<std::string, std::string>& t) -> const std::string* {
+                        for (const auto& k : {notation, name})
+                            if (const auto it = t.find(k); it != t.end()) return &it->second;
+                        return nullptr;
+                    };
+                    const std::string* row = release == std::string_view("1.21.4") ? find(older) : nullptr;
+                    if (!row) row = find(newest);
+                    require(row && row->size() == 10, std::format("{} {}: a row", release, notation));
+                    const auto s = mapping->block(notation);
+                    require(s.has_value(), std::format("{} {}: maps", release, notation));
+                    std::string got;
+                    for (const auto c : {oak, nether, pane, bars}) got += circuit::gameplay::connector_joins(c, *s, Direction::east) ? '1' : '0';
+                    got += circuit::gameplay::connector_joins(wall, *s, Direction::east) ? 'l' : 'n';
+                    const auto joined = circuit::gameplay::wall_under(wall, {false, true, false, true}, *s, release);
+                    const auto east = circuit::gameplay::wall_under(wall, {false, true, false, false}, *s, release);
+                    const auto alone = circuit::gameplay::wall_under(wall, {false, false, false, false}, *s, release);
+                    got += {value(joined, "east"), value(joined, "up"), value(east, "east"), value(east, "up"), value(alone, "up")};
+                    require(got == *row, std::format("{} {}: official {}, Circuit {}", release, notation, *row, got));
+                    ++states;
+                }
+            }
+            require(states == (release == std::string_view("1.21.8") ? 27946u : 27866u), std::format("{}: {} states", release, states));
+            checked += states;
+        }
+        require(checked == 27946 + 27866, std::format("{} states", checked));
+    });
+
     suite.run("light properties match both official servers", [&] {
         // tests/fixtures/light: every state's emission, dampening and
         // occlusion shape as the official servers report them.

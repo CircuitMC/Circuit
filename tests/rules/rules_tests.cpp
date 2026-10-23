@@ -2164,6 +2164,39 @@ int main() {
         require(rails == 1, std::format("the broken rail dropped itself ({} rail items)", rails));
     });
 
+    suite.run("fences, panes and walls join what is set beside and above them, and where a piston sets them down", [] {
+        namespace registry = circuit::gameplay::registry;
+        using circuit::gameplay::blocks::DoorKind;
+        const auto named = [](std::string_view name, std::vector<registry::Property> props = {}) {
+            return BlockState::registered(registry::state_of(registry::find_block("1.21.8", name).value(), props).value());
+        };
+        const auto wall = named("cobblestone_wall"), fence = named("oak_fence"), pane = named("glass_pane");
+        Sim s;
+        s.tick(with_floor(floor(-2, 12, -1, 8), {place({2, 1, 0}, wall), place({6, 1, 0}, fence), place({10, 1, 0}, pane),
+                                                   place({0, 1, 4}, blocks::piston(D::east)), place({1, 1, 4}, fence)}));
+        // Neighbors set after them: a wall between two stones, a fence beside a
+        // nether brick fence and a fence gate turned across, a pane beside a
+        // melon and soul sand.
+        s.tick({place({1, 1, 0}, blocks::stone()), place({3, 1, 0}, blocks::stone()), place({5, 1, 0}, named("nether_brick_fence")),
+                place({7, 1, 0}, blocks::fence_gate(DoorKind::oak, D::north)), place({9, 1, 0}, named("melon")), place({11, 1, 0}, named("soul_sand")),
+                place({2, 1, 5}, blocks::stone()), place({2, 1, 3}, named("nether_brick_fence"))});
+        require(s.at({2, 1, 0}) == named("cobblestone_wall", {{"east", "low"}, {"west", "low"}, {"up", "false"}}),
+                std::format("a straight wall without a post: {}", circuit::gameplay::block_notation(s.at({2, 1, 0}))));
+        require(s.at({6, 1, 0}) == named("oak_fence", {{"east", "true"}}), "the fence joins the gate, not the nether brick fence");
+        require(s.at({10, 1, 0}) == named("glass_pane", {{"east", "true"}}), "the pane joins soul sand, not the melon");
+        // A slab on the wall raises both sides; a torch gives it its post back.
+        s.tick({place({2, 2, 0}, named("stone_slab", {{"type", "bottom"}}))});
+        require(s.at({2, 1, 0}) == named("cobblestone_wall", {{"east", "tall"}, {"west", "tall"}, {"up", "false"}}), "tall under a slab");
+        s.tick({place({2, 2, 0}, named("torch"))});
+        require(s.at({2, 1, 0}) == named("cobblestone_wall", {{"east", "low"}, {"west", "low"}, {"up", "true"}}), "a post under a torch");
+        // The pushed fence takes its sides from where it arrives: stone to the
+        // south, the piston head behind it; not the nether brick fence.
+        s.tick({place({-1, 1, 4}, blocks::redstone_block())});
+        for (int i = 0; i < 4; ++i) s.tick();
+        require(s.at({2, 1, 4}) == named("oak_fence", {{"south", "true"}, {"west", "true"}}),
+                std::format("the pushed fence: {}", circuit::gameplay::block_notation(s.at({2, 1, 4}))));
+    });
+
     suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {
         using circuit::contracts::UseBlock;
         Sim s;

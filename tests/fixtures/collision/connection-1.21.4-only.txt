@@ -1,0 +1,7 @@
+# How fences, panes, bars and walls join every block state, as the official servers' shape updates decide it (harness
+# 0.13.0 connection report). After each state (a bare block name: all its states), ten codes (1 true, 0 false, n none,
+# l low, t tall): the east side of an oak fence, a nether brick fence, a glass pane, iron bars and a cobblestone wall
+# with the state east of them (air above); a cobblestone wall under the state joined to stone west and east (east
+# side, post), joined east only (east side, post) and joined nowhere (post).
+# Java Edition 1.21.4: the states whose codes connection-1.21.8.txt does not give; every other state as there.
+minecraft:pitcher_crop[age=0,half=upper] 0000nl1l11

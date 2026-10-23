@@ -16,7 +16,8 @@ bool sticky(BlockState s) { return s.is(BlockType::slime_block) || s.is(BlockTyp
 // A moved block set down takes the state its new neighbors give it (a note
 // block's instrument).
 BlockState settled(RuleContext& ctx, BlockPos pos, BlockState s) {
-    return s.is(BlockType::note_block) ? tuned_note_block(ctx, pos, s) : s;
+    if (s.is(BlockType::note_block)) return tuned_note_block(ctx, pos, s);
+    return is_connector(s) ? joined_state(ctx, pos, s) : s;
 }
 
 // A moved block arrives without its water (both official servers; push_classes).
@@ -484,9 +485,6 @@ std::vector<registry::Box> moving_block_boxes(RuleContext& ctx, BlockPos pos) {
     return out;
 }
 
-namespace {
-// The block a neighbor of an arriving block stands for: a moving piston whose
-// move is complete has its carried block's shape by then.
 BlockState as_settled(RuleContext& ctx, BlockPos p) {
     const auto s = ctx.block(p);
     if (!s.is(BlockType::moving_piston)) return s;
@@ -495,6 +493,7 @@ BlockState as_settled(RuleContext& ctx, BlockPos p) {
     return BlockState::decode(be->moving).value_or(s);
 }
 
+namespace {
 // Whether a block a piston set down can stay where it arrived: a head needs
 // its base, a coral fan and a rail their support (both official servers;
 // moved_arrivals).

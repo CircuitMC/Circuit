@@ -74,7 +74,7 @@ Every block state of both versions is represented, with its official name and pr
 
 ### Technical machines
 
-Block and item registration do not provide behavior. Coral fans die without water and break, but coral blocks and plants are inert. Rails take their shapes and pass power, minecarts ride them and meet each other, and detector rails sense minecarts. Common building blocks such as cobblestone, dirt and oak logs are inert too; sand, gravel and concrete powder fall, and TNT is primed and explodes (below). Survival inventories and container screens therefore do not constitute complete vanilla survival support.
+Block and item registration do not provide behavior. Coral fans die without water and break, but coral blocks and plants are inert. Rails take their shapes and pass power, minecarts ride them and meet each other, and detector rails sense minecarts. Common building blocks such as cobblestone, dirt and oak logs are inert too, but fences, glass panes, iron bars and walls join their neighbors as both official servers do; sand, gravel and concrete powder fall, and TNT is primed and explodes (below). Survival inventories and container screens therefore do not constitute complete vanilla survival support.
 
 | Mechanism or machine | Current support |
 | --- | --- |
@@ -82,7 +82,7 @@ Block and item registration do not provide behavior. Coral fans die without wate
 | Sticky-piston block dropping on a short pulse | The one-game-tick pulse scenario passes recorded traces for both versions. |
 | Slime structures, the 12-block push limit and observers watching piston writes | Implemented with rule, trace and cross-chunk simulation checks. Pistons remain L2 because item pushing, drops and some update ordering have gaps. |
 | TNT ignition, fuse, motion and explosions | Redstone and explosions prime TNT (placed by commands, players or pistons); primed TNT's motion and fuse and its explosions (blocks, drops, chain reactions, item damage and knockback) match recorded traces of both versions. Burning arrows prime TNT, and dispensers prime TNT items; fire and flint and steel do not, and explosions do not hurt players. |
-| TNT duplication machines | One named design is established: the Mytteri push duper (below) duplicates TNT exactly as both official servers do over eight pushes, pushed in each horizontal direction and across chunk edges and corners, with stone in place of its cobblestone wall (wall shapes are not modeled). Reloading its chunk is an open trace (chunk unload timing). Other designs are untested and unsupported until they have their own evidence. |
+| TNT duplication machines | One named design is established: the Mytteri push duper (below) duplicates TNT exactly as both official servers do over eight pushes, pushed in each horizontal direction and across chunk edges and corners, with its documented cobblestone wall (`tnt_duper_wall`; the earlier fixtures use stone in its place). Reloading its chunk is an open trace (chunk unload timing). Other designs are untested and unsupported until they have their own evidence. |
 | Pulse circuits | minecraft.wiki's sticky and sand circuit breakers, dust-cut and NOR-gate pulse generators and its circuit-breaker, dust-cut and NOR-gate pulse limiters give the pulses recorded on both versions. Other pulse circuits, clocks and edge detectors have no acceptance evidence yet. |
 | Item sorters | The basic hopper item sorter (minecraft.wiki "Tutorial:Hopper") sorts a mixed stream across a chunk edge and keeps its overflow protection as recorded on both versions. Other sorter designs have no acceptance evidence yet. |
 | Flying machines | Two documented engines, two-way engine A and the vertical two-way slim engine (minecraft.wiki's flying machine gallery), fly as recorded on both versions in all six directions, with cargo, across chunk edges and into obstacles. Engine A in flight keeps flying across a server restart and when a world of the previous rule set is migrated. Honey blocks, their separation from slime and the entities they carry match recorded traces of both versions, including a small slime-honey flying machine. Other designs, docks and larger machines have no acceptance evidence yet. |
@@ -104,12 +104,12 @@ The established TNT duplicator, as minecraft.wiki ("Tutorial:Block and item dupl
 | slime block (pushed by the piston) | (0, 0, 2) |
 | detector rail along the travel, with a minecart on it | (1, 0, 2) |
 | slime blocks | (0, 0, 1), (1, 0, 1) |
-| cobblestone wall (stone in the fixtures) | (2, 0, 1) |
+| cobblestone wall (stone in the fixtures before `tnt_duper_wall`) | (2, 0, 1) |
 | TNT | (2, 0, 0) |
 | dead coral wall fan, facing away from the side slice | (3, 0, 0) |
 | side slice: slime blocks | (2, 1, 1), (2, 1, 0), (3, 1, 0) |
 
-The first push moves the top part over the TNT, which it grabs; every later push primes the TNT at its old cell while the block moves on. The fixtures push with a fresh piston behind the top slime block each time (`tnt_duper`, `tnt_duper_turns`, `tnt_duper_edges`; `tnt_duper_reload` is open).
+The first push moves the top part over the TNT, which it grabs; every later push primes the TNT at its old cell while the block moves on. The fixtures push with a fresh piston behind the top slime block each time (`tnt_duper`, `tnt_duper_turns`, `tnt_duper_edges`, `tnt_duper_corners`, `tnt_duper_wall`; `tnt_duper_reload` is open).
 
 Importing an unsupported machine with substitution does not preserve its mechanism. Default Anvil import rejects unrepresentable content; explicit substitution can replace blocks or discard entities and reports those losses.
 

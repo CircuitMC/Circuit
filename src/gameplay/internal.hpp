@@ -199,6 +199,9 @@ void record_spawn(RuleContext& ctx, EntityId id, const Entity& e);
 // Spawns an item a player dropped.
 void spawn_dropped(RuleContext& ctx, BlockPos cell, contracts::Vec3 position, contracts::Vec3 velocity, ItemStack stack,
                    std::uint16_t pickup_delay);
+// The block at `p`, or the block a moving piston there carries once its move
+// is complete (its shape by then).
+BlockState as_settled(RuleContext& ctx, BlockPos p);
 // Whether a piston head still has its base (or the moving piston taking its place).
 bool head_has_base(RuleContext& ctx, BlockPos pos, BlockState head);
 // Block-entity tick of a moving piston: completes the move after two ticks.
@@ -230,6 +233,15 @@ void detector_entity_inside(RuleContext& ctx, BlockPos pos, BlockState s);
 // A rail's scheduled tick: a powered detector rail looks again.
 void tick_rail(RuleContext& ctx, BlockPos pos, BlockState s);
 bool is_detector_rail(BlockState s) noexcept;
+
+// ---- fences, panes and walls (connect.cpp) ----
+bool is_connector(BlockState s);
+// The state a fence, pane or wall takes from all its neighbors (a block a
+// piston sets down).
+BlockState joined_state(RuleContext& ctx, BlockPos pos, BlockState s);
+// A shape update from `d`: a fence or pane joins or leaves the neighbor on
+// that side, a wall also takes its heights and post from the block above.
+void connector_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d);
 
 // ---- note blocks (note.cpp) ----
 // The state with the instrument its neighbors give it.

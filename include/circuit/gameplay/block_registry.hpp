@@ -52,6 +52,13 @@ constexpr bool head_instrument(Instrument i) noexcept { return i >= Instrument::
 // in the states whose collision shape is a full cube.
 enum class Conductor : std::uint8_t { never = 0, always = 1, full_cube = 2 };
 
+// What fences, panes and walls make of a block (tools/compile_block_registry.py,
+// checked against both official servers for every state beside and above
+// them): a wooden fence joins wooden fences, a nether brick fence nether
+// brick fences, panes (and iron bars) join panes and walls, walls join walls
+// and panes.
+enum class Connector : std::uint8_t { none = 0, wooden_fence = 1, nether_brick_fence = 2, pane = 3, wall = 4 };
+
 struct BlockInfo {
     std::string_view name; // without namespace, e.g. "oak_log"
     std::uint32_t first_state;
@@ -65,6 +72,7 @@ struct BlockInfo {
     PushClass push;    // how pistons treat it
     Instrument instrument;
     Conductor conductor;
+    Connector connector;
 };
 
 // A box of a collision shape, in block coordinates (0 to 1; fences, walls
@@ -100,6 +108,14 @@ Collision collision(std::uint32_t state) noexcept;
 bool conducts(std::uint32_t state) noexcept;
 // Whether the collision shape covers the whole face on that side of the cell.
 bool face_covered(std::uint32_t state, contracts::Direction face) noexcept;
+// Whether fences, panes and walls join the state through its face on that
+// side: its support shape covers the face, and it is not a block they never
+// join (leaves, barriers, shulker boxes, pumpkins, melons, chorus flowers).
+bool joins_face(std::uint32_t state, contracts::Direction face) noexcept;
+Connector connector(std::uint32_t state) noexcept;
+// Whether a wall under the state keeps its post whatever the state's shape
+// (banners, signs, pressure plates, standing torches, tripwire).
+bool keeps_wall_post(std::uint32_t state) noexcept;
 
 // Light, by the rules of tools/compile_block_registry.py (checked against a
 // report of every state of both official servers): the light a state emits,

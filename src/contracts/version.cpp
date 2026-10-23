@@ -247,6 +247,14 @@ constexpr std::array reference_v4_mechanisms{
         "later with a level-random draw when placed and on every shape update, and dies dry unless water came back; "
         "fans need a sturdy top or face and break without it, a waterlogged one leaving its water; pistons break "
         "living fans and move dead ones (coral_fans). Gaps: water does not flow out of waterlogged fans."},
+    MechanismEntry{"connections", l0_exact, l2_declared_deviation, harness_trace,
+        "Fences, glass panes, iron bars and walls join their neighbors on shape updates and when a piston sets them "
+        "down: wooden fences join wooden fences, nether brick fences their own kind, panes and bars each other and "
+        "walls, walls walls and panes; fences and walls join fence gates turned across the side; all join a whole "
+        "support face except of leaves, barriers, shulker boxes, pumpkins, melons and chorus flowers; walls rise "
+        "under blocks covering their sides and keep or lose their post (connections, connections_moved; every state "
+        "beside and above them in tests/fixtures/collision/connection-*.txt). Gaps: water does not flow out of "
+        "waterlogged ones; players do not place them yet."},
     MechanismEntry{"note_block", l0_exact, l2_declared_deviation, harness_trace,
         "Note blocks take the instrument of a mob head above them or else of the block below, when placed, moved "
         "and on a shape update from above or below; they play on a rising signal and when used (the next note), "

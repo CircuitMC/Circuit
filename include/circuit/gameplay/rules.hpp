@@ -3,6 +3,8 @@
 #include <circuit/contracts/commands.hpp>
 #include <circuit/gameplay/context.hpp>
 #include <circuit/gameplay/rng.hpp>
+#include <array>
+#include <string_view>
 
 // Entry points of circuit-reference-rules-v0. Each function is one root: an
 // executor calls it in the phase's serial order with a context whose updater
@@ -29,6 +31,12 @@ bool block_replaceable(BlockState s);
 float blast_resistance(BlockState s);
 // Whether power reaches the blocks beside a block through it.
 bool redstone_conductor(BlockState s) noexcept;
+// Fences, panes and walls (for checks against the official servers): whether
+// the connector `connector` joins `neighbor` beside it on `side`, and the
+// state a wall with sides joined as given (north, east, south, west) takes
+// under `above` in `release`.
+bool connector_joins(BlockState connector, BlockState neighbor, contracts::Direction side);
+BlockState wall_under(BlockState wall, std::array<bool, 4> joined, BlockState above, std::string_view release);
 std::uint8_t received_power(RuleContext& ctx, BlockPos pos);
 
 // Positions outside the level's height or the border are never loaded.

@@ -1345,6 +1345,690 @@
         "deviations": [
           "water does not flow out of it when waterlogged"
         ]
+      },
+      "oak_fence": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors on shape updates and when a piston sets it down, as both official servers do for every state beside it"
+      },
+      "nether_brick_fence": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors on shape updates and when a piston sets it down, as both official servers do for every state beside it"
+      },
+      "spruce_fence": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
+      },
+      "birch_fence": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
+      },
+      "jungle_fence": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
+      },
+      "acacia_fence": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
+      },
+      "cherry_fence": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
+      },
+      "dark_oak_fence": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
+      },
+      "pale_oak_fence": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
+      },
+      "mangrove_fence": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
+      },
+      "bamboo_fence": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
+      },
+      "crimson_fence": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
+      },
+      "warped_fence": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for oak_fence"
+      },
+      "iron_bars": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors on shape updates and when a piston sets it down, as both official servers do for every state beside it"
+      },
+      "glass_pane": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors on shape updates and when a piston sets it down, as both official servers do for every state beside it"
+      },
+      "white_stained_glass_pane": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
+      },
+      "orange_stained_glass_pane": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
+      },
+      "magenta_stained_glass_pane": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
+      },
+      "light_blue_stained_glass_pane": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
+      },
+      "yellow_stained_glass_pane": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
+      },
+      "lime_stained_glass_pane": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
+      },
+      "pink_stained_glass_pane": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
+      },
+      "gray_stained_glass_pane": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
+      },
+      "light_gray_stained_glass_pane": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
+      },
+      "cyan_stained_glass_pane": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
+      },
+      "purple_stained_glass_pane": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
+      },
+      "blue_stained_glass_pane": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
+      },
+      "brown_stained_glass_pane": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
+      },
+      "green_stained_glass_pane": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
+      },
+      "red_stained_glass_pane": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
+      },
+      "black_stained_glass_pane": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for glass_pane"
+      },
+      "resin_brick_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "cobblestone_wall": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors on shape updates and when a piston sets it down, as both official servers do for every state beside and above it"
+      },
+      "mossy_cobblestone_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "brick_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "prismarine_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "red_sandstone_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "mossy_stone_brick_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "granite_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "stone_brick_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "mud_brick_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "nether_brick_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "andesite_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "red_nether_brick_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "sandstone_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "end_stone_brick_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "diorite_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "blackstone_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "polished_blackstone_brick_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "polished_blackstone_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "tuff_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "polished_tuff_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "tuff_brick_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "cobbled_deepslate_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "polished_deepslate_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "deepslate_tile_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "deepslate_brick_wall": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/connection"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
       }
     },
     "item": {
