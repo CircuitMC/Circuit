@@ -357,7 +357,7 @@ physics::Aabb sweep(const physics::Aabb& b, Direction dir, double length) {
     case Direction::up: return {b.min_x, b.max_y, b.min_z, b.max_x, b.max_y + length, b.max_z};
     case Direction::down: return {b.min_x, b.min_y - length, b.min_z, b.max_x, b.min_y, b.max_z};
     case Direction::south: return {b.min_x, b.min_y, b.max_z, b.max_x, b.max_y, b.max_z + length};
-    case Direction::north: return {b.min_x, b.min_y, b.min_z - length, b.max_x, b.max_y, b.max_z};
+    case Direction::north: return {b.min_x, b.min_y, b.min_z - length, b.max_x, b.max_y, b.min_z};
     }
     return b;
 }

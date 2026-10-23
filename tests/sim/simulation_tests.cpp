@@ -946,6 +946,26 @@ int main() {
         require(state_at(end, {13, 0, 3}).level() == 1, std::format("dust at {}", state_at(end, {13, 0, 3}).level()));
     });
 
+    suite.run("a TNT duplicator works across a chunk edge", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("tnt_duper"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the TNT duplicator scenario");
+        const auto& ref = references[index];
+        const auto primed = [&](Tick t) {
+            std::size_t n = 0;
+            for (const auto& e : ref.dumps.at(t).overworld().entities) n += e.kind == circuit::gameplay::EntityKind::primed_tnt;
+            return n;
+        };
+        const auto tnt_blocks = [&](Tick t) {
+            std::size_t n = 0;
+            for (const auto& [pos, raw] : ref.dumps.at(t).overworld().blocks) n += raw == registry_block("tnt").raw();
+            return n;
+        };
+        // Pushes at 10 (grabbing the TNT), 30, 50, 70 and 90 (each priming it):
+        // four primed TNT by tick 100, none before the second push.
+        require(primed(20) == 0 && primed(100) == 4, std::format("{} and {} primed", primed(20), primed(100)));
+        require(tnt_blocks(100) == 1 && tnt_blocks(220) == 1, "the TNT block stays in the machine");
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");

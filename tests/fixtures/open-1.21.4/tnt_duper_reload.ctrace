@@ -1,0 +1,933 @@
+circuit-trace 2
+title The Mytteri push duper unloaded and reloaded after it grabbed its TNT, then duplicating
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.12.0+mc1.21.4
+mechanisms piston tnt rails vehicle coral_fan chunk_tickets
+area 416 -64 0 431 10 12
+ticks 240
+changes ordered
+entities observed
+rng observed
+chunks none
+load none
+
+at 1 command forceload add 416 0
+
+at 10 set 428 5 5 minecraft:stone
+change 10 commands 428 5 5 minecraft:air minecraft:stone
+at 10 set 429 5 5 minecraft:slime_block
+change 10 commands 429 5 5 minecraft:air minecraft:slime_block
+at 10 set 430 5 5 minecraft:slime_block
+change 10 commands 430 5 5 minecraft:air minecraft:slime_block
+at 10 set 429 6 5 minecraft:detector_rail[powered=false,shape=east_west,waterlogged=false]
+change 10 commands 429 6 5 minecraft:air minecraft:detector_rail[powered=false,shape=east_west,waterlogged=false]
+at 10 set 430 6 5 minecraft:slime_block
+change 10 commands 430 6 5 minecraft:air minecraft:slime_block
+at 10 set 428 4 5 minecraft:tnt
+change 10 commands 428 4 5 minecraft:air minecraft:tnt[unstable=false]
+at 10 set 428 5 4 minecraft:slime_block
+change 10 commands 428 5 4 minecraft:air minecraft:slime_block
+at 10 set 427 4 4 minecraft:slime_block
+change 10 commands 427 4 4 minecraft:air minecraft:slime_block
+at 10 set 428 4 4 minecraft:slime_block
+change 10 commands 428 4 4 minecraft:air minecraft:slime_block
+at 10 set 427 4 5 minecraft:dead_tube_coral_wall_fan[facing=south,waterlogged=false]
+change 10 commands 427 4 5 minecraft:air minecraft:dead_tube_coral_wall_fan[facing=south,waterlogged=false]
+
+at 11 command summon minecraft:minecart 429.5 6.0625 5.5
+entity-added 11 commands e1 minecraft:minecart 429.5 6.0625 5.5 0 0 0
+change 11 entities 429 6 5 minecraft:detector_rail[powered=false,shape=east_west,waterlogged=false] minecraft:detector_rail[powered=true,shape=east_west,waterlogged=false]
+entity-order 11 entities e1
+entity 11 e1 429.5 6.0625 5.5 0 0 0 on-ground=false
+
+entity-order 12 entities e1
+entity 12 e1 429.5 6.0625 5.5 0 0 0 on-ground=false
+
+entity-order 13 entities e1
+entity 13 e1 429.5 6.0625 5.5 0 0 0 on-ground=false
+
+entity-order 14 entities e1
+entity 14 e1 429.5 6.0625 5.5 0 0 0 on-ground=false
+
+entity-order 15 entities e1
+entity 15 e1 429.5 6.0625 5.5 0 0 0 on-ground=false
+
+entity-order 16 entities e1
+entity 16 e1 429.5 6.0625 5.5 0 0 0 on-ground=false
+
+entity-order 17 entities e1
+entity 17 e1 429.5 6.0625 5.5 0 0 0 on-ground=false
+
+entity-order 18 entities e1
+entity 18 e1 429.5 6.0625 5.5 0 0 0 on-ground=false
+
+entity-order 19 entities e1
+entity 19 e1 429.5 6.0625 5.5 0 0 0 on-ground=false
+
+at 20 set 431 7 5 minecraft:redstone_block
+change 20 commands 431 7 5 minecraft:air minecraft:redstone_block
+entity-order 20 entities e1
+entity 20 e1 429.5 6.0625 5.5 0 0 0 on-ground=false
+
+at 21 set 431 6 5 minecraft:piston[extended=false,facing=west]
+change 21 commands 431 6 5 minecraft:air minecraft:piston[extended=false,facing=west]
+change 21 block_events 427 5 5 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 21 block_events 428 5 5 minecraft:stone minecraft:moving_piston[facing=west,type=normal]
+change 21 block_events 429 5 5 minecraft:slime_block minecraft:moving_piston[facing=west,type=normal]
+change 21 block_events 428 6 5 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 21 block_events 429 6 5 minecraft:detector_rail[powered=true,shape=east_west,waterlogged=false] minecraft:moving_piston[facing=west,type=normal]
+change 21 block_events 430 6 5 minecraft:slime_block minecraft:moving_piston[facing=west,type=normal]
+change 21 block_events 430 5 5 minecraft:slime_block minecraft:air
+change 21 block_events 431 6 5 minecraft:piston[extended=false,facing=west] minecraft:piston[extended=true,facing=west]
+draws 21 block_events level 1
+entity-order 21 entities e1
+entity 21 e1 428.99999999046327 6.0225 5.5 -1.0 -0.038 0 on-ground=false
+
+entity-order 22 entities e1
+entity 22 e1 428.49999999046327 6.0 5.5 -1.0 0 0 on-ground=false
+
+change 23 block_entities 427 5 5 minecraft:moving_piston[facing=west,type=normal] minecraft:stone
+change 23 block_entities 428 5 5 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 23 block_entities 429 5 5 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 23 block_entities 428 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:detector_rail[powered=true,shape=east_west,waterlogged=false]
+change 23 block_entities 429 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 23 block_entities 430 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:piston_head[facing=west,short=false,type=normal]
+entity-order 23 entities e1
+entity 23 e1 428.0999999904633 6.0 5.5 -0.4 0 0 on-ground=true
+
+entity-order 24 entities e1
+entity 24 e1 427.6999999904633 6.0 5.5 -0.384 0 0 on-ground=false
+
+entity-order 25 entities e1
+entity 25 e1 427.3159999904633 6.0 5.5 -0.384 0 0 on-ground=true
+
+entity-order 26 entities e1
+entity 26 e1 427.1239999904633 6.0 5.5 -0.192 0 0 on-ground=true
+
+entity-order 27 entities e1
+entity 27 e1 427.0279999904633 6.0 5.5 -0.096 0 0 on-ground=true
+
+entity-order 28 entities e1
+entity 28 e1 426.9799999904633 6.0 5.5 -0.048 0 0 on-ground=true
+
+entity-order 29 entities e1
+entity 29 e1 426.9559999904633 6.0 5.5 -0.024 0 0 on-ground=true
+
+at 30 set 431 7 5 minecraft:air
+change 30 commands 431 7 5 minecraft:redstone_block minecraft:air
+change 30 block_events 431 6 5 minecraft:piston[extended=true,facing=west] minecraft:moving_piston[facing=west,type=normal]
+change 30 block_events 430 6 5 minecraft:piston_head[facing=west,short=false,type=normal] minecraft:air
+draws 30 block_events level 1
+entity-order 30 entities e1
+entity 30 e1 426.9439999904633 6.0 5.5 -0.012 0 0 on-ground=true
+
+entity-order 31 entities e1
+entity 31 e1 426.9379999904633 6.0 5.5 -0.006 0 0 on-ground=true
+
+change 32 block_entities 431 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:piston[extended=false,facing=west]
+entity-order 32 entities e1
+entity 32 e1 426.9349999904633 6.0 5.5 -0.003 0 0 on-ground=true
+
+entity-order 33 entities e1
+entity 33 e1 426.9334999904633 6.0 5.5 -0.0015 0 0 on-ground=true
+
+entity-order 34 entities e1
+entity 34 e1 426.9327499904633 6.0 5.5 -7.5E-4 0 0 on-ground=true
+
+at 35 command forceload remove 416 0
+entity 35 e1 426.9327499904633 6.0 5.5 -7.5E-4 0 0 on-ground=true
+
+entity-removed 36 other e1 unloaded_to_chunk
+
+at 55 command forceload add 416 0
+
+entity-loaded 56 other e1 minecraft:minecart 426.9327499904633 6.0 5.5 -7.5E-4 0 0
+entity 56 e1 426.9327499904633 6.0 5.5 -7.5E-4 0 0 on-ground=true
+
+entity-order 57 entities e1
+entity 57 e1 426.9323749904633 6.0 5.5 -3.75E-4 0 0 on-ground=true
+
+entity-order 58 entities e1
+entity 58 e1 426.9323749904633 6.0 5.5 -1.875E-4 0 0 on-ground=true
+
+entity-order 59 entities e1
+entity 59 e1 426.9323749904633 6.0 5.5 -9.375E-5 0 0 on-ground=true
+
+entity-order 60 entities e1
+entity 60 e1 426.9323749904633 6.0 5.5 -4.6875E-5 0 0 on-ground=true
+
+entity-order 61 entities e1
+entity 61 e1 426.9323749904633 6.0 5.5 -2.34375E-5 0 0 on-ground=true
+
+change 62 block_ticks 428 6 5 minecraft:detector_rail[powered=true,shape=east_west,waterlogged=false] minecraft:detector_rail[powered=false,shape=east_west,waterlogged=false]
+entity-order 62 entities e1
+entity 62 e1 426.9323749904633 6.0 5.5 -1.171875E-5 0 0 on-ground=true
+
+entity-order 63 entities e1
+entity 63 e1 426.9323749904633 6.0 5.5 -5.859375E-6 0 0 on-ground=true
+
+entity-order 64 entities e1
+entity 64 e1 426.9323749904633 6.0 5.5 -2.9296875E-6 0 0 on-ground=true
+
+entity-order 65 entities e1
+entity 65 e1 426.9323749904633 6.0 5.5 -1.46484375E-6 0 0 on-ground=true
+
+entity-order 66 entities e1
+entity 66 e1 426.9323749904633 6.0 5.5 -7.32421875E-7 0 0 on-ground=true
+
+entity-order 67 entities e1
+entity 67 e1 426.9323749904633 6.0 5.5 -3.662109375E-7 0 0 on-ground=true
+
+entity-order 68 entities e1
+entity 68 e1 426.9323749904633 6.0 5.5 -1.8310546875E-7 0 0 on-ground=true
+
+entity-order 69 entities e1
+entity 69 e1 426.9323749904633 6.0 5.5 -9.1552734375E-8 0 0 on-ground=true
+
+at 70 set 430 7 5 minecraft:redstone_block
+change 70 commands 430 7 5 minecraft:air minecraft:redstone_block
+entity-order 70 entities e1
+entity 70 e1 426.9323749904633 6.0 5.5 -4.57763671875E-8 0 0 on-ground=true
+
+at 71 set 430 6 5 minecraft:piston[extended=false,facing=west]
+change 71 commands 430 6 5 minecraft:air minecraft:piston[extended=false,facing=west]
+change 71 block_events 426 4 4 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 71 block_events 427 4 4 minecraft:slime_block minecraft:moving_piston[facing=west,type=normal]
+change 71 block_events 427 4 5 minecraft:dead_tube_coral_wall_fan[facing=south,waterlogged=false] minecraft:air
+change 71 block_events 427 5 4 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 71 block_events 426 4 5 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 71 block_events 427 4 5 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 71 block_events 426 5 5 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 71 block_events 427 5 5 minecraft:stone minecraft:moving_piston[facing=west,type=normal]
+change 71 block_events 428 5 5 minecraft:slime_block minecraft:moving_piston[facing=west,type=normal]
+change 71 block_events 427 6 5 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 71 block_events 428 6 5 minecraft:detector_rail[powered=false,shape=east_west,waterlogged=false] minecraft:moving_piston[facing=west,type=normal]
+change 71 block_events 429 6 5 minecraft:slime_block minecraft:moving_piston[facing=west,type=normal]
+change 71 block_events 428 5 4 minecraft:slime_block minecraft:air
+change 71 block_events 428 4 4 minecraft:slime_block minecraft:air
+change 71 block_events 429 5 5 minecraft:slime_block minecraft:air
+change 71 block_events 428 4 5 minecraft:tnt[unstable=false] minecraft:air
+change 71 block_events 430 6 5 minecraft:piston[extended=false,facing=west] minecraft:piston[extended=true,facing=west]
+draws 71 block_events level 1
+entity-order 71 entities e1
+entity 71 e1 426.9323749904633 6.0 5.5 -2.288818359375E-8 0 0 on-ground=true
+
+entity-order 72 entities e1
+entity 72 e1 426.9323749904633 6.0 5.5 -1.1444091796875E-8 0 0 on-ground=true
+
+change 73 block_entities 426 4 4 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 73 block_entities 427 4 4 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 73 block_entities 427 5 4 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 73 block_entities 426 4 5 minecraft:moving_piston[facing=west,type=normal] minecraft:dead_tube_coral_wall_fan[facing=south,waterlogged=false]
+change 73 block_entities 427 4 5 minecraft:moving_piston[facing=west,type=normal] minecraft:tnt[unstable=false]
+change 73 block_entities 426 5 5 minecraft:moving_piston[facing=west,type=normal] minecraft:stone
+change 73 block_entities 427 5 5 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 73 block_entities 428 5 5 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 73 block_entities 427 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:detector_rail[powered=false,shape=east_west,waterlogged=false]
+change 73 block_entities 427 6 5 minecraft:detector_rail[powered=false,shape=east_west,waterlogged=false] minecraft:detector_rail[powered=true,shape=east_west,waterlogged=false]
+entity-added 73 block_entities e3 minecraft:tnt 427.5 4.0 5.5 0.012391274904460356 0.20000000298023224 0.015698926913712635 fuse=80
+change 73 block_entities 427 4 5 minecraft:tnt[unstable=false] minecraft:air
+change 73 block_entities 428 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 73 block_entities 429 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:piston_head[facing=west,short=false,type=normal]
+draws 73 block_entities level 2
+entity-order 73 entities e1
+entity 73 e1 426.9323749904633 6.0 5.5 -5.7220458984375E-9 0 0 on-ground=true
+entity 73 e3 427.5 4.0 5.5 0.012391274904460356 0.20000000298023224 0.015698926913712635 fuse=80 on-ground=false
+
+entity-order 74 entities e1 e3
+entity 74 e1 426.9323749904633 6.0 5.5 -2.86102294921875E-9 0 0 on-ground=true
+entity 74 e3 427.5123912749045 4.019999980926514 5.515698926913712 0.01214344940637115 0 0.015384948375438382 fuse=79 on-ground=false
+
+entity-order 75 entities e1 e3
+entity 75 e1 426.9323749904633 6.0 5.5 -1.430511474609375E-9 0 0 on-ground=true
+entity 75 e3 427.52453472431085 3.9799999809265136 5.531083875289151 0.011900580418243725 -0.0392 0.015077249407929615 fuse=78 on-ground=false
+
+entity-order 76 entities e1 e3
+entity 76 e1 426.9323749904633 6.0 5.5 -7.152557373046875E-10 0 0 on-ground=true
+entity 76 e3 427.5364353047291 3.9007999809265135 5.546161124697081 0.011662568809878851 -0.07761599999999999 0.014775704419771022 fuse=77 on-ground=false
+
+entity-order 77 entities e1 e3
+entity 77 e1 426.9323749904633 6.0 5.5 -3.5762786865234376E-10 0 0 on-ground=true
+entity 77 e3 427.54809787353895 3.7831839809265135 5.5609368291168515 0.011429317433681275 -0.11526368 0.014480190331375601 fuse=76 on-ground=false
+
+entity-order 78 entities e1 e3
+entity 78 e1 426.9323749904633 6.0 5.5 -1.7881393432617188E-10 0 0 on-ground=true
+entity 78 e3 427.55952719097263 3.6279203009265135 5.575417019448227 0.011200731085007649 -0.15215840639999997 0.014190586524748089 fuse=75 on-ground=false
+
+entity-order 79 entities e1 e3
+entity 79 e1 426.9323749904633 6.0 5.5 -8.940696716308594E-11 0 0 on-ground=true
+entity 79 e3 427.57072792205764 3.4357618945265136 5.589607605972975 0.010976716463307496 -0.18831523827199997 0.013906774794253127 fuse=74 on-ground=false
+
+at 80 set 430 7 5 minecraft:air
+change 80 commands 430 7 5 minecraft:redstone_block minecraft:air
+change 80 block_events 430 6 5 minecraft:piston[extended=true,facing=west] minecraft:moving_piston[facing=west,type=normal]
+change 80 block_events 429 6 5 minecraft:piston_head[facing=west,short=false,type=normal] minecraft:air
+draws 80 block_events level 1
+entity-order 80 entities e1 e3
+entity 80 e1 426.9323749904633 6.0 5.5 -4.470348358154297E-11 0 0 on-ground=true
+entity 80 e3 427.58170463852093 3.2074466562545134 5.603514380767228 0.010757182134041346 -0.22374893350655997 0.013628639298368064 fuse=73 on-ground=false
+
+entity-order 81 entities e1 e3
+entity 81 e1 426.9323749904633 6.0 5.5 -2.2351741790771485E-11 0 0 on-ground=true
+entity 81 e3 427.592461820655 2.9436977227479533 5.617143020065596 0.010542038491360518 -0.25847395483642877 0.013356066512400703 fuse=72 on-ground=false
+
+change 82 block_entities 430 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:piston[extended=false,facing=west]
+entity-order 82 entities e1 e3
+entity 82 e1 426.9323749904633 6.0 5.5 -1.1175870895385742E-11 0 0 on-ground=true
+entity 82 e3 427.6030038591463 2.6452237679115247 5.630499086577997 0.010331197721533307 -0.2925044757397002 0.013088945182152688 fuse=71 on-ground=false
+
+entity-order 83 entities e1 e3
+entity 83 e1 426.9323749904633 6.0 5.5 -5.587935447692871E-12 0 0 on-ground=true
+entity 83 e3 427.61333505686787 2.3127192921718245 5.6435880317601494 0.010124573767102641 -0.32585438622490615 0.012827166278509635 fuse=70 on-ground=false
+
+entity-order 84 entities e1 e3
+entity 84 e1 426.9323749904633 6.0 5.5 -2.7939677238464356E-12 0 0 on-ground=true
+entity 84 e3 427.62345963063495 1.9468649059469183 5.656415198038659 0.009922082291760588 -0.358537298500408 0.012570622952939441 fuse=69 on-ground=false
+
+entity-order 85 entities e1 e3
+entity 85 e1 426.9323749904633 6.0 5.5 -1.3969838619232178E-12 0 0 on-ground=true
+entity 85 e3 427.63338171292673 1.5483276074465104 5.668985820991598 0.009723640645925376 -0.3905665525303998 0.012319210493880652 fuse=68 on-ground=false
+
+entity-order 86 entities e1 e3
+entity 86 e1 426.9323749904633 6.0 5.5 -6.984919309616089E-13 0 0 on-ground=true
+entity 86 e3 427.64310535357265 1.1177610549161106 5.681305031485479 0.009529167833006868 -0.42195522147979175 0.012072826284003038 fuse=67 on-ground=false
+
+entity-order 87 entities e1 e3
+entity 87 e1 426.9323749904633 6.0 5.5 -3.4924596548080445E-13 0 0 on-ground=true
+entity 87 e3 427.6526345214057 0.6558058334363188 5.693377857769482 0.00933858447634673 -0.4527161170501959 0.011831369758322977 fuse=66 on-ground=false
+
+entity-order 88 entities e1 e3
+entity 88 e1 426.9323749904633 6.0 5.5 -1.7462298274040223E-13 0 0 on-ground=true
+entity 88 e3 427.661973105882 0.16308971638612296 5.705209227527805 0.009151812786819796 -0.48286179470919194 0.011594742363156517 fuse=65 on-ground=false
+
+entity-order 89 entities e1 e3
+entity 89 e1 426.9323749904633 6.0 5.5 -8.731149137020111E-14 0 0 on-ground=true
+entity 89 e3 427.6711249186688 -0.35977207832306896 5.716803969890961 0.008968776531083399 -0.512404558815008 0.011362847515893386 fuse=64 on-ground=false
+
+at 90 set 429 7 5 minecraft:redstone_block
+change 90 commands 429 7 5 minecraft:air minecraft:redstone_block
+entity-order 90 entities e1 e3
+entity 90 e1 426.9323749904633 6.0 5.5 -4.3655745685100556E-14 0 0 on-ground=true
+entity 90 e3 427.6800936951999 -0.9121766371380771 5.728166817406854 0.00878940100046173 -0.5413564676387079 0.011135590565575518 fuse=63 on-ground=false
+
+at 91 set 429 6 5 minecraft:piston[extended=false,facing=west]
+change 91 commands 429 6 5 minecraft:air minecraft:piston[extended=false,facing=west]
+change 91 block_events 425 4 5 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 91 block_events 425 4 4 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 91 block_events 426 4 4 minecraft:slime_block minecraft:moving_piston[facing=west,type=normal]
+change 91 block_events 426 4 5 minecraft:dead_tube_coral_wall_fan[facing=south,waterlogged=false] minecraft:air
+change 91 block_events 426 5 4 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 91 block_events 425 5 5 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 91 block_events 426 5 5 minecraft:stone minecraft:moving_piston[facing=west,type=normal]
+change 91 block_events 427 5 5 minecraft:slime_block minecraft:moving_piston[facing=west,type=normal]
+change 91 block_events 426 6 5 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 91 block_events 427 6 5 minecraft:detector_rail[powered=true,shape=east_west,waterlogged=false] minecraft:moving_piston[facing=west,type=normal]
+change 91 block_events 428 6 5 minecraft:slime_block minecraft:moving_piston[facing=west,type=normal]
+change 91 block_events 427 5 4 minecraft:slime_block minecraft:air
+change 91 block_events 427 4 4 minecraft:slime_block minecraft:air
+change 91 block_events 428 5 5 minecraft:slime_block minecraft:air
+change 91 block_events 429 6 5 minecraft:piston[extended=false,facing=west] minecraft:piston[extended=true,facing=west]
+draws 91 block_events level 1
+entity-order 91 entities e1 e3
+entity 91 e1 426.9323749904633 6.0 5.5 -2.1827872842550278E-14 0 0 on-ground=true
+entity 91 e3 427.68888309620036 -1.493533104776785 5.7393024079724295 0.008613612980452495 -0.5697293382859338 0.010912878754264008 fuse=62 on-ground=false
+
+entity-order 92 entities e1 e3
+entity 92 e1 426.49999999046327 6.0 5.5 -1.0 0 0 on-ground=false
+entity 92 e3 427.6974967091808 -2.103262443062719 5.750215286726694 0.008441340720843444 -0.5975347515202151 0.010694621179178727 fuse=61 on-ground=false
+
+change 93 block_entities 425 4 5 minecraft:moving_piston[facing=west,type=normal] minecraft:dead_tube_coral_wall_fan[facing=south,waterlogged=false]
+change 93 block_entities 425 4 4 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 93 block_entities 426 4 4 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 93 block_entities 426 5 4 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 93 block_entities 425 5 5 minecraft:moving_piston[facing=west,type=normal] minecraft:stone
+change 93 block_entities 426 5 5 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 93 block_entities 427 5 5 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 93 block_entities 426 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:detector_rail[powered=true,shape=east_west,waterlogged=false]
+change 93 block_entities 427 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 93 block_entities 428 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:piston_head[facing=west,short=false,type=normal]
+entity-order 93 entities e1 e3
+entity 93 e1 426.0999999904633 6.0 5.5 -0.4 0 0 on-ground=true
+entity 93 e3 427.70593804990165 -2.740797194582934 5.760909907905872 0.008272513906426575 -0.6247840564898108 0.010480728755595152 fuse=60 on-ground=false
+
+entity-order 94 entities e1 e3
+entity 94 e1 425.6999999904633 6.0 5.5 -0.384 0 0 on-ground=false
+entity 94 e3 427.7142105638081 -3.4055812510727446 5.771390636661467 0.008107063628298043 -0.6514883753600147 0.01027111418048325 fuse=59 on-ground=false
+
+entity-order 95 entities e1 e3
+entity 95 e1 425.3159999904633 6.0 5.5 -0.384 0 0 on-ground=true
+entity 95 e3 427.7223176274364 -4.097069626432759 5.78166175084195 0.007944922355732083 -0.6776586078528144 0.010065691896873584 fuse=58 on-ground=false
+
+entity-order 96 entities e1 e3
+entity 96 e1 425.1239999904633 6.0 5.5 -0.192 0 0 on-ground=true
+entity 96 e3 427.7302625497921 -4.814728234285574 5.791727442738824 0.007786023908617441 -0.7033054356957581 0.009864378058936111 fuse=57 on-ground=false
+
+entity-order 97 entities e1 e3
+entity 97 e1 425.0279999904633 6.0 5.5 -0.096 0 0 on-ground=true
+entity 97 e3 427.7380485737007 -5.558033669981332 5.801591820797761 0.0076303034304450925 -0.728439326981843 0.009667090497757389 fuse=56 on-ground=false
+
+entity-order 98 entities e1 e3
+entity 98 e1 424.9799999904633 6.0 5.5 -0.048 0 0 on-ground=true
+entity 98 e3 427.7456788771312 -6.326472996963175 5.811258911295518 0.0074776973618361905 -0.7530705404422061 0.009473748687802241 fuse=55 on-ground=false
+
+entity-order 99 entities e1 e3
+entity 99 e1 424.9559999904633 6.0 5.5 -0.024 0 0 on-ground=true
+entity 99 e3 427.753156574493 -7.119543537405381 5.82073265998332 0.007328143414599466 -0.777209129633362 0.009284273714046196 fuse=54 on-ground=false
+
+at 100 set 429 7 5 minecraft:air
+change 100 commands 429 7 5 minecraft:redstone_block minecraft:air
+change 100 block_events 429 6 5 minecraft:piston[extended=true,facing=west] minecraft:moving_piston[facing=west,type=normal]
+change 100 block_events 428 6 5 minecraft:piston_head[facing=west,short=false,type=normal] minecraft:air
+draws 100 block_events level 1
+entity-order 100 entities e1 e3
+entity 100 e1 424.9439999904633 6.0 5.5 -0.012 0 0 on-ground=true
+entity 100 e3 427.7604847179076 -7.936752667038743 5.830016933697366 0.007181580546307477 -0.8008649470406948 0.009098588239765273 fuse=53 on-ground=false
+
+entity-order 101 entities e1 e3
+entity 101 e1 424.9379999904633 6.0 5.5 -0.006 0 0 on-ground=true
+entity 101 e3 427.76766629845395 -8.777617614079437 5.839115521937131 0.007037948935381327 -0.8240476480998808 0.008916616474969967 fuse=52 on-ground=false
+
+change 102 block_entities 429 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:piston[extended=false,facing=west]
+entity-order 102 entities e1 e3
+entity 102 e1 424.9349999904633 6.0 5.5 -0.003 0 0 on-ground=true
+entity 102 e3 427.7747042473893 -9.641665262179318 5.848032138412101 0.0068971899566737 -0.8467666951378833 0.008738284145470567 fuse=51 on-ground=false
+
+entity-order 103 entities e1 e3
+entity 103 e1 424.9334999904633 6.0 5.5 -0.0015 0 0 on-ground=true
+entity 103 e3 427.78160143734596 -10.528431957317201 5.856770422557572 0.006759246157540226 -0.8690313612351256 0.008563518462561155 fuse=50 on-ground=false
+
+entity-order 104 entities e1 e3
+entity 104 e1 424.9327499904633 6.0 5.5 -7.5E-4 0 0 on-ground=true
+entity 104 e3 427.78836068350347 -11.437463318552327 5.8653339410201335 0.006624061234389421 -0.8908507340104231 0.008392248093309932 fuse=49 on-ground=false
+
+entity-order 105 entities e1 e3
+entity 105 e1 424.9323749904633 6.0 5.5 -3.75E-4 0 0 on-ground=true
+entity 105 e3 427.79498474473786 -12.36831405256275 5.873726189113444 0.006491580009701632 -0.9122337193302147 0.008224403131443734 fuse=48 on-ground=false
+
+entity-order 106 entities e1 e3
+entity 106 e1 424.9323749904633 6.0 5.5 -1.875E-4 0 0 on-ground=true
+entity 106 e3 427.80147632474757 -13.320547771892965 5.881950592244888 0.006361748409507599 -0.9331890449436104 0.00805991506881486 fuse=47 on-ground=false
+
+entity-order 107 entities e1 e3
+entity 107 e1 424.9323749904633 6.0 5.5 -9.375E-5 0 0 on-ground=true
+entity 107 e3 427.8078380731571 -14.293736816836576 5.890010507313702 0.0062345134413174476 -0.9537252640447382 0.007898716767438562 fuse=46 on-ground=false
+
+entity-order 108 entities e1 e3
+entity 108 e1 424.9323749904633 6.0 5.5 -4.6875E-5 0 0 on-ground=true
+entity 108 e3 427.8140725865984 -15.287462080881314 5.897909224081141 0.006109823172491098 -0.9738507587638435 0.007740742432089791 fuse=45 on-ground=false
+
+entity-order 109 entities e1 e3
+entity 109 e1 424.9323749904633 6.0 5.5 -2.34375E-5 0 0 on-ground=true
+entity 109 e3 427.8201824097709 -16.301312839645156 5.905649966513231 0.0059876267090412764 -0.9935737435885665 0.007585927583447995 fuse=44 on-ground=false
+
+at 110 set 428 7 5 minecraft:redstone_block
+change 110 commands 428 7 5 minecraft:air minecraft:redstone_block
+entity-order 110 entities e1 e3
+entity 110 e1 424.9323749904633 6.0 5.5 -1.171875E-5 0 0 on-ground=true
+entity 110 e3 427.82617003647994 -17.334886583233722 5.913235894096679 0.005867874174860451 -1.0129022687167952 0.007434209031779035 fuse=43 on-ground=false
+
+at 111 set 428 6 5 minecraft:piston[extended=false,facing=west]
+change 111 commands 428 6 5 minecraft:air minecraft:piston[extended=false,facing=west]
+change 111 block_events 424 4 5 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 111 block_events 424 4 4 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 111 block_events 425 4 4 minecraft:slime_block minecraft:moving_piston[facing=west,type=normal]
+change 111 block_events 425 4 5 minecraft:dead_tube_coral_wall_fan[facing=south,waterlogged=false] minecraft:air
+change 111 block_events 425 5 4 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 111 block_events 424 5 5 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 111 block_events 425 5 5 minecraft:stone minecraft:moving_piston[facing=west,type=normal]
+change 111 block_events 426 5 5 minecraft:slime_block minecraft:moving_piston[facing=west,type=normal]
+change 111 block_events 425 6 5 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 111 block_events 426 6 5 minecraft:detector_rail[powered=true,shape=east_west,waterlogged=false] minecraft:moving_piston[facing=west,type=normal]
+change 111 block_events 427 6 5 minecraft:slime_block minecraft:moving_piston[facing=west,type=normal]
+change 111 block_events 426 5 4 minecraft:slime_block minecraft:air
+change 111 block_events 426 4 4 minecraft:slime_block minecraft:air
+change 111 block_events 427 5 5 minecraft:slime_block minecraft:air
+change 111 block_events 428 6 5 minecraft:piston[extended=false,facing=west] minecraft:piston[extended=true,facing=west]
+draws 111 block_events level 1
+entity-order 111 entities e1 e3
+entity 111 e1 424.9323749904633 6.0 5.5 -5.859375E-6 0 0 on-ground=true
+entity 111 e3 427.8320379106548 -18.387788851950518 5.920670103128458 0.005750516691363242 -1.0318442233424594 0.007285524851143454 fuse=42 on-ground=false
+
+entity-order 112 entities e1 e3
+entity 112 e1 424.9323749904633 6.0 5.5 -2.9296875E-6 0 0 on-ground=true
+entity 112 e3 427.83778842734614 -19.459633075292977 5.9279556279796015 0.005635506357535977 -1.0504073388756103 0.007139814354120585 fuse=41 on-ground=false
+
+change 113 block_entities 424 4 5 minecraft:moving_piston[facing=west,type=normal] minecraft:dead_tube_coral_wall_fan[facing=south,waterlogged=false]
+change 113 block_entities 424 4 4 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 113 block_entities 425 4 4 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 113 block_entities 425 5 4 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 113 block_entities 424 5 5 minecraft:moving_piston[facing=west,type=normal] minecraft:stone
+change 113 block_entities 425 5 5 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 113 block_entities 426 5 5 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 113 block_entities 425 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:detector_rail[powered=true,shape=east_west,waterlogged=false]
+change 113 block_entities 426 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 113 block_entities 427 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:piston_head[facing=west,short=false,type=normal]
+entity-order 113 entities e1 e3
+entity 113 e1 424.9323749904633 6.0 5.5 -1.46484375E-6 0 0 on-ground=true
+entity 113 e3 427.84342393370366 -20.55004041416859 5.935095442333722 0.005522796230385257 -1.0685991920980982 0.006997018067038173 fuse=40 on-ground=false
+
+entity-order 114 entities e1 e3
+entity 114 e1 424.9323749904633 6.0 5.5 -7.32421875E-7 0 0 on-ground=true
+entity 114 e3 427.848946729934 -21.658639606266686 5.94209246040076 0.005412340305777552 -1.0864272082561361 0.006857077705697409 fuse=39 on-ground=false
+
+entity-order 115 entities e1 e3
+entity 115 e1 424.9323749904633 6.0 5.5 -3.662109375E-7 0 0 on-ground=true
+entity 115 e3 427.8543590702398 -22.78506681452282 5.948949538106457 0.005304093499662 -1.1038986640910133 0.00671993615158346 fuse=38 on-ground=false
+
+entity-order 116 entities e1 e3
+entity 116 e1 424.9323749904633 6.0 5.5 -1.8310546875E-7 0 0 on-ground=true
+entity 116 e3 427.85966316373947 -23.928965478613833 5.95566947425804 0.0051980116296687605 -1.121020690809193 0.006585537428551791 fuse=37 on-ground=false
+
+entity-order 117 entities e1 e3
+entity 117 e1 424.9323749904633 6.0 5.5 -9.1552734375E-8 0 0 on-ground=true
+entity 117 e3 427.86486117536913 -25.089986169423025 5.962255011686592 0.005094051397075385 -1.1378002769930093 0.006453826679980755 fuse=36 on-ground=false
+
+entity-order 118 entities e1 e3
+entity 118 e1 424.9323749904633 6.0 5.5 -4.57763671875E-8 0 0 on-ground=true
+entity 118 e3 427.8699552267662 -26.267786446416032 5.968708838366573 0.004992170369133878 -1.1542442714531491 0.0063247501463811395 fuse=35 on-ground=false
+
+entity-order 119 entities e1 e3
+entity 119 e1 424.9323749904633 6.0 5.5 -2.288818359375E-8 0 0 on-ground=true
+entity 119 e3 427.8749473971353 -27.462030717869183 5.975033588512954 0.0048923269617512 -1.1703593860240862 0.006198255143453516 fuse=34 on-ground=false
+
+at 120 set 428 7 5 minecraft:air
+change 120 commands 428 7 5 minecraft:redstone_block minecraft:air
+change 120 block_events 428 6 5 minecraft:piston[extended=true,facing=west] minecraft:moving_piston[facing=west,type=normal]
+change 120 block_events 427 6 5 minecraft:piston_head[facing=west,short=false,type=normal] minecraft:air
+draws 120 block_events level 1
+entity-order 120 entities e1 e3
+entity 120 e1 424.9323749904633 6.0 5.5 -1.1444091796875E-8 0 0 on-ground=true
+entity 120 e3 427.87983972409705 -28.67239010389327 5.981231843656407 0.004794480422516176 -1.1861521983036045 0.006074290040584446 fuse=33 on-ground=false
+
+entity-order 121 entities e1 e3
+entity 121 e1 424.9323749904633 6.0 5.5 -5.7220458984375E-9 0 0 on-ground=true
+entity 121 e3 427.88463420451956 -29.898542302196876 5.9873061336969915 0.004698590814065852 -1.2016291543375324 0.005952804239772757 fuse=32 on-ground=false
+
+change 122 block_entities 428 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:piston[extended=false,facing=west]
+entity-order 122 entities e1 e3
+entity 122 e1 424.9323749904633 6.0 5.5 -2.86102294921875E-9 0 0 on-ground=true
+entity 122 e3 427.88933279533364 -31.140171456534407 5.993258937936765 0.004604618997784535 -1.2167965712507818 0.0058337481549773015 fuse=31 on-ground=false
+
+entity-order 123 entities e1 e3
+entity 123 e1 424.9323749904633 6.0 5.5 -1.430511474609375E-9 0 0 on-ground=true
+entity 123 e3 427.89393741433145 -32.39696802778519 5.999092686091742 0.004512526617828845 -1.2316606398257661 0.0057170731918777555 fuse=30 on-ground=false
+
+entity-order 124 entities e1 e3
+entity 124 e1 424.9323749904633 6.0 5.5 -7.152557373046875E-10 0 0 on-ground=true
+entity 124 e3 427.89844994094926 -33.66862866761096 6.00480975928362 0.0044222760854722674 -1.2462274270292508 0.0056027317280402 fuse=29 on-ground=false
+
+entity-order 125 entities e1 e3
+entity 125 e1 424.9323749904633 6.0 5.5 -3.5762786865234376E-10 0 0 on-ground=true
+entity 125 e3 427.9028722170347 -34.95485609464021 6.01041249101166 0.004333830563762822 -1.2605028784886658 0.0054906770934793955 fuse=28 on-ground=false
+
+entity-order 126 entities e1 e3
+entity 126 e1 424.9323749904633 6.0 5.5 -1.7881393432617188E-10 0 0 on-ground=true
+entity 126 e3 427.9072060475985 -36.25535897312888 6.015903168105139 0.004247153952487565 -1.2744928209188926 0.005380863551609808 fuse=27 on-ground=false
+
+entity-order 127 entities e1 e3
+entity 127 e1 424.9323749904633 6.0 5.5 -8.940696716308594E-11 0 0 on-ground=true
+entity 127 e3 427.91145320155096 -37.56985179404777 6.021284031656749 0.004162210873437814 -1.2882029645005149 0.005273246280577611 fuse=26 on-ground=false
+
+entity-order 128 entities e1 e3
+entity 128 e1 424.9323749904633 6.0 5.5 -4.470348358154297E-11 0 0 on-ground=true
+entity 128 e3 427.9156154124244 -38.898054758548284 6.026557277937327 0.0040789666559690576 -1.3016389052105046 0.005167781354966059 fuse=25 on-ground=false
+
+entity-order 129 entities e1 e3
+entity 129 e1 424.9323749904633 6.0 5.5 -2.2351741790771485E-11 0 0 on-ground=true
+entity 129 e3 427.9196943790804 -40.239693663758786 6.031725059292293 0.0039973873228496765 -1.3148061271062945 0.005064425727866737 fuse=24 on-ground=false
+
+at 130 set 427 7 5 minecraft:redstone_block
+change 130 commands 427 7 5 minecraft:air minecraft:redstone_block
+entity-order 130 entities e1 e3
+entity 130 e1 424.9323749904633 6.0 5.5 -1.1175870895385742E-11 0 0 on-ground=true
+entity 130 e3 427.92369176640324 -41.59449979086508 6.03678948502016 0.003917439576392683 -1.3277100045641685 0.0049631372133094025 fuse=23 on-ground=false
+
+at 131 set 427 6 5 minecraft:piston[extended=false,facing=west]
+change 131 commands 427 6 5 minecraft:air minecraft:piston[extended=false,facing=west]
+change 131 block_events 423 4 5 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 131 block_events 423 4 4 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 131 block_events 424 4 4 minecraft:slime_block minecraft:moving_piston[facing=west,type=normal]
+change 131 block_events 424 4 5 minecraft:dead_tube_coral_wall_fan[facing=south,waterlogged=false] minecraft:air
+change 131 block_events 424 5 4 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 131 block_events 423 5 5 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 131 block_events 424 5 5 minecraft:stone minecraft:moving_piston[facing=west,type=normal]
+change 131 block_events 425 5 5 minecraft:slime_block minecraft:moving_piston[facing=west,type=normal]
+change 131 block_events 424 6 5 minecraft:air minecraft:moving_piston[facing=west,type=normal]
+change 131 block_events 425 6 5 minecraft:detector_rail[powered=true,shape=east_west,waterlogged=false] minecraft:moving_piston[facing=west,type=normal]
+change 131 block_events 426 6 5 minecraft:slime_block minecraft:moving_piston[facing=west,type=normal]
+change 131 block_events 425 5 4 minecraft:slime_block minecraft:air
+change 131 block_events 425 4 4 minecraft:slime_block minecraft:air
+change 131 block_events 426 5 5 minecraft:slime_block minecraft:air
+change 131 block_events 427 6 5 minecraft:piston[extended=false,facing=west] minecraft:piston[extended=true,facing=west]
+draws 131 block_events level 1
+entity-order 131 entities e1 e3
+entity 131 e1 424.9323749904633 6.0 5.5 -5.587935447692871E-12 0 0 on-ground=true
+entity 131 e3 427.92760920597965 -42.962209795429246 6.041752622233469 0.003839090784864829 -1.3403558044728852 0.004863874469043215 fuse=22 on-ground=false
+
+entity-order 132 entities e1 e3
+entity 132 e1 424.49999999046327 6.0 5.5 -1.0 0 0 on-ground=false
+entity 132 e3 427.93144829676453 -44.34256559990213 6.046616496702512 0.003762308969167532 -1.3527486883834274 0.00476659697966235 fuse=21 on-ground=false
+
+change 133 block_entities 423 4 5 minecraft:moving_piston[facing=west,type=normal] minecraft:dead_tube_coral_wall_fan[facing=south,waterlogged=false]
+change 133 block_entities 423 4 4 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 133 block_entities 424 4 4 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 133 block_entities 424 5 4 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 133 block_entities 423 5 5 minecraft:moving_piston[facing=west,type=normal] minecraft:stone
+change 133 block_entities 424 5 5 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 133 block_entities 425 5 5 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 133 block_entities 424 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:detector_rail[powered=true,shape=east_west,waterlogged=false]
+change 133 block_entities 425 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:slime_block
+change 133 block_entities 426 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:piston_head[facing=west,short=false,type=normal]
+entity-order 133 entities e1 e3
+entity 133 e1 424.0999999904633 6.0 5.5 -0.4 0 0 on-ground=true
+entity 133 e3 427.9352106057337 -45.73531428828556 6.051383093682174 0.0036870627897841813 -1.364893714615759 0.004671265040069103 fuse=20 on-ground=false
+
+entity-order 134 entities e1 e3
+entity 134 e1 423.6999999904633 6.0 5.5 -0.384 0 0 on-ground=false
+entity 134 e3 427.93889766852345 -47.14020800290132 6.0560543587222435 0.0036133215339884976 -1.3767958403234437 0.004577839739267721 fuse=19 on-ground=false
+
+entity-order 135 entities e1 e3
+entity 135 e1 423.3159999904633 6.0 5.5 -0.384 0 0 on-ground=true
+entity 135 e3 427.94251099005743 -48.55700384322476 6.060632198461511 0.0035410551033087274 -1.3884599235169748 0.004486282944482367 fuse=18 on-ground=false
+
+entity-order 136 entities e1 e3
+entity 136 e1 423.1239999904633 6.0 5.5 -0.192 0 0 on-ground=true
+entity 136 e3 427.94605204516074 -49.98546376674174 6.065118481405993 0.003470234001242553 -1.3998907250466353 0.004396557285592719 fuse=17 on-ground=false
+
+entity-order 137 entities e1 e3
+entity 137 e1 423.0279999904633 6.0 5.5 -0.096 0 0 on-ground=true
+entity 137 e3 427.949522279162 -51.425354491788376 6.069515038691586 0.003400829321217702 -1.4110929105457026 0.004308626139880865 fuse=16 on-ground=false
+
+entity-order 138 entities e1 e3
+entity 138 e1 422.9799999904633 6.0 5.5 -0.048 0 0 on-ground=true
+entity 138 e3 427.9529231084832 -52.87644740233408 6.073823664831467 0.003332812734793348 -1.4220710523347886 0.0042224536170832475 fuse=15 on-ground=false
+
+entity-order 139 entities e1 e3
+entity 139 e1 422.9559999904633 6.0 5.5 -0.024 0 0 on-ground=true
+entity 139 e3 427.95625592121803 -54.338518454668865 6.07804611844855 0.003266156480097481 -1.4328296312880928 0.004138004544741582 fuse=14 on-ground=false
+
+at 140 set 427 7 5 minecraft:air
+change 140 commands 427 7 5 minecraft:redstone_block minecraft:air
+change 140 block_events 427 6 5 minecraft:piston[extended=true,facing=west] minecraft:moving_piston[facing=west,type=normal]
+change 140 block_events 426 6 5 minecraft:piston_head[facing=west,short=false,type=normal] minecraft:air
+draws 140 block_events level 1
+entity-order 140 entities e1 e3
+entity 140 e1 422.9439999904633 6.0 5.5 -0.012 0 0 on-ground=true
+entity 140 e3 427.9595220776981 -55.81134808595696 6.082184122993292 0.003200833350495531 -1.443373038662331 0.0040552444538467505 fuse=13 on-ground=false
+
+entity-order 141 entities e1 e3
+entity 141 e1 422.9379999904633 6.0 5.5 -0.006 0 0 on-ground=true
+entity 141 e3 427.9627229110486 -57.29472112461929 6.0862393674471384 0.0031368166834856207 -1.4537055778890844 0.003974139564769816 fuse=12 on-ground=false
+
+change 142 block_entities 427 6 5 minecraft:moving_piston[facing=west,type=normal] minecraft:piston[extended=false,facing=west]
+entity-order 142 entities e1 e3
+entity 142 e1 422.9349999904633 6.0 5.5 -0.003 0 0 on-ground=true
+entity 142 e3 427.9658597277321 -58.788426702508374 6.090213507011908 0.0030740803498159083 -1.4638314663313028 0.0038946567734744193 fuse=11 on-ground=false
+
+entity-order 143 entities e1 e3
+entity 143 e1 422.9334999904633 6.0 5.5 -0.0015 0 0 on-ground=true
+entity 143 e3 427.9689338080819 -60.29225816883968 6.094108163785383 0.00301259874281959 -1.4737548370046767 0.003816763638004931 fuse=10 on-ground=false
+
+entity-order 144 entities e1 e3
+entity 144 e1 422.9327499904633 6.0 5.5 -7.5E-4 0 0 on-ground=true
+entity 144 e3 427.9719464068247 -61.806013005844356 6.097924927423388 0.0029523467679631985 -1.4834797402645832 0.0037404283652448323 fuse=9 on-ground=false
+
+entity-order 145 entities e1 e3
+entity 145 e1 422.9323749904633 6.0 5.5 -3.75E-4 0 0 on-ground=true
+entity 145 e3 427.9748987535927 -63.32949274610894 6.101665355788633 0.0028932998326039344 -1.4930101454592914 0.0036656197979399356 fuse=8 on-ground=false
+
+entity-order 146 entities e1 e3
+entity 146 e1 422.9323749904633 6.0 5.5 -1.875E-4 0 0 on-ground=true
+entity 146 e3 427.9777920534253 -64.86250289156823 6.105330975586573 0.0028354338359518555 -1.5023499425501057 0.003592307401981137 fuse=7 on-ground=false
+
+entity-order 147 entities e1 e3
+entity 147 e1 422.9323749904633 6.0 5.5 -9.375E-5 0 0 on-ground=true
+entity 147 e3 427.98062748726124 -66.40485283411833 6.108923282988554 0.0027787251592328185 -1.5115029436991037 0.0035204612539415144 fuse=6 on-ground=false
+
+entity-order 148 entities e1 e3
+entity 148 e1 422.9323749904633 6.0 5.5 -4.6875E-5 0 0 on-ground=true
+entity 148 e3 427.9834062124205 -67.95635577781744 6.112443744242496 0.002723150656048162 -1.5204728848251217 0.0034500520288626843 fuse=5 on-ground=false
+
+entity-order 149 entities e1 e3
+entity 149 e1 422.9323749904633 6.0 5.5 -2.34375E-5 0 0 on-ground=true
+entity 149 e3 427.98612936307654 -69.51682866264255 6.115893796271359 0.0026686876429271988 -1.5292634271286192 0.0033810509882854305 fuse=4 on-ground=false
+
+entity-order 150 entities e1 e3
+entity 150 e1 422.9323749904633 6.0 5.5 -1.171875E-5 0 0 on-ground=true
+entity 150 e3 427.9887980507195 -71.08609208977117 6.1192748472596445 0.002615313890068655 -1.5378781585860468 0.003313429968519722 fuse=3 on-ground=false
+
+entity-order 151 entities e1 e3
+entity 151 e1 422.9323749904633 6.0 5.5 -5.859375E-6 0 0 on-ground=true
+entity 151 e3 427.99141336460957 -72.66397024835722 6.122588277228164 0.0025630076122672815 -1.546320595414326 0.0032471613691493276 fuse=2 on-ground=false
+
+entity-order 152 entities e1 e3
+entity 152 e1 422.9323749904633 6.0 5.5 -2.9296875E-6 0 0 on-ground=true
+entity 152 e3 427.9939763722218 -74.25029084377154 6.1258354385973135 0.002511747460021936 -1.5545941835060395 0.003182218141766341 fuse=1 on-ground=false
+
+change 153 block_ticks 424 6 5 minecraft:detector_rail[powered=true,shape=east_west,waterlogged=false] minecraft:detector_rail[powered=false,shape=east_west,waterlogged=false]
+entity-removed 153 entities e3 discarded
+draws 153 entities level 1352
+entity-order 153 entities e1 e3
+entity 153 e1 422.9323749904633 6.0 5.5 -1.46484375E-6 0 0 on-ground=true
+
+entity-order 154 entities e1
+entity 154 e1 422.9323749904633 6.0 5.5 -7.32421875E-7 0 0 on-ground=true
+
+entity-order 155 entities e1
+entity 155 e1 422.9323749904633 6.0 5.5 -3.662109375E-7 0 0 on-ground=true
+
+entity-order 156 entities e1
+entity 156 e1 422.9323749904633 6.0 5.5 -1.8310546875E-7 0 0 on-ground=true
+
+entity-order 157 entities e1
+entity 157 e1 422.9323749904633 6.0 5.5 -9.1552734375E-8 0 0 on-ground=true
+
+entity-order 158 entities e1
+entity 158 e1 422.9323749904633 6.0 5.5 -4.57763671875E-8 0 0 on-ground=true
+
+entity-order 159 entities e1
+entity 159 e1 422.9323749904633 6.0 5.5 -2.288818359375E-8 0 0 on-ground=true
+
+entity-order 160 entities e1
+entity 160 e1 422.9323749904633 6.0 5.5 -1.1444091796875E-8 0 0 on-ground=true
+
+entity-order 161 entities e1
+entity 161 e1 422.9323749904633 6.0 5.5 -5.7220458984375E-9 0 0 on-ground=true
+
+entity-order 162 entities e1
+entity 162 e1 422.9323749904633 6.0 5.5 -2.86102294921875E-9 0 0 on-ground=true
+
+entity-order 163 entities e1
+entity 163 e1 422.9323749904633 6.0 5.5 -1.430511474609375E-9 0 0 on-ground=true
+
+entity-order 164 entities e1
+entity 164 e1 422.9323749904633 6.0 5.5 -7.152557373046875E-10 0 0 on-ground=true
+
+entity-order 165 entities e1
+entity 165 e1 422.9323749904633 6.0 5.5 -3.5762786865234376E-10 0 0 on-ground=true
+
+entity-order 166 entities e1
+entity 166 e1 422.9323749904633 6.0 5.5 -1.7881393432617188E-10 0 0 on-ground=true
+
+entity-order 167 entities e1
+entity 167 e1 422.9323749904633 6.0 5.5 -8.940696716308594E-11 0 0 on-ground=true
+
+entity-order 168 entities e1
+entity 168 e1 422.9323749904633 6.0 5.5 -4.470348358154297E-11 0 0 on-ground=true
+
+entity-order 169 entities e1
+entity 169 e1 422.9323749904633 6.0 5.5 -2.2351741790771485E-11 0 0 on-ground=true
+
+entity-order 170 entities e1
+entity 170 e1 422.9323749904633 6.0 5.5 -1.1175870895385742E-11 0 0 on-ground=true
+
+entity-order 171 entities e1
+entity 171 e1 422.9323749904633 6.0 5.5 -5.587935447692871E-12 0 0 on-ground=true
+
+entity-order 172 entities e1
+entity 172 e1 422.9323749904633 6.0 5.5 -2.7939677238464356E-12 0 0 on-ground=true
+
+entity-order 173 entities e1
+entity 173 e1 422.9323749904633 6.0 5.5 -1.3969838619232178E-12 0 0 on-ground=true
+
+entity-order 174 entities e1
+entity 174 e1 422.9323749904633 6.0 5.5 -6.984919309616089E-13 0 0 on-ground=true
+
+entity-order 175 entities e1
+entity 175 e1 422.9323749904633 6.0 5.5 -3.4924596548080445E-13 0 0 on-ground=true
+
+entity-order 176 entities e1
+entity 176 e1 422.9323749904633 6.0 5.5 -1.7462298274040223E-13 0 0 on-ground=true
+
+entity-order 177 entities e1
+entity 177 e1 422.9323749904633 6.0 5.5 -8.731149137020111E-14 0 0 on-ground=true
+
+entity-order 178 entities e1
+entity 178 e1 422.9323749904633 6.0 5.5 -4.3655745685100556E-14 0 0 on-ground=true
+
+entity-order 179 entities e1
+entity 179 e1 422.9323749904633 6.0 5.5 -2.1827872842550278E-14 0 0 on-ground=true
+
+entity-order 180 entities e1
+entity 180 e1 422.9323749904633 6.0 5.5 -1.0913936421275139E-14 0 0 on-ground=true
+
+entity-order 181 entities e1
+entity 181 e1 422.9323749904633 6.0 5.5 -5.4569682106375695E-15 0 0 on-ground=true
+
+entity-order 182 entities e1
+entity 182 e1 422.9323749904633 6.0 5.5 -2.7284841053187848E-15 0 0 on-ground=true
+
+entity-order 183 entities e1
+entity 183 e1 422.9323749904633 6.0 5.5 -1.3642420526593924E-15 0 0 on-ground=true
+
+entity-order 184 entities e1
+entity 184 e1 422.9323749904633 6.0 5.5 -6.821210263296962E-16 0 0 on-ground=true
+
+entity-order 185 entities e1
+entity 185 e1 422.9323749904633 6.0 5.5 -3.410605131648481E-16 0 0 on-ground=true
+
+entity-order 186 entities e1
+entity 186 e1 422.9323749904633 6.0 5.5 -1.7053025658242405E-16 0 0 on-ground=true
+
+entity-order 187 entities e1
+entity 187 e1 422.9323749904633 6.0 5.5 -8.526512829121202E-17 0 0 on-ground=true
+
+entity-order 188 entities e1
+entity 188 e1 422.9323749904633 6.0 5.5 -4.263256414560601E-17 0 0 on-ground=true
+
+entity-order 189 entities e1
+entity 189 e1 422.9323749904633 6.0 5.5 -2.1316282072803006E-17 0 0 on-ground=true
+
+entity-order 190 entities e1
+entity 190 e1 422.9323749904633 6.0 5.5 -1.0658141036401503E-17 0 0 on-ground=true
+
+entity-order 191 entities e1
+entity 191 e1 422.9323749904633 6.0 5.5 -5.3290705182007515E-18 0 0 on-ground=true
+
+entity-order 192 entities e1
+entity 192 e1 422.9323749904633 6.0 5.5 -2.6645352591003758E-18 0 0 on-ground=true
+
+entity-order 193 entities e1
+entity 193 e1 422.9323749904633 6.0 5.5 -1.3322676295501879E-18 0 0 on-ground=true
+
+entity-order 194 entities e1
+entity 194 e1 422.9323749904633 6.0 5.5 -6.661338147750939E-19 0 0 on-ground=true
+
+entity-order 195 entities e1
+entity 195 e1 422.9323749904633 6.0 5.5 -3.3306690738754697E-19 0 0 on-ground=true
+
+entity-order 196 entities e1
+entity 196 e1 422.9323749904633 6.0 5.5 -1.6653345369377348E-19 0 0 on-ground=true
+
+entity-order 197 entities e1
+entity 197 e1 422.9323749904633 6.0 5.5 -8.326672684688674E-20 0 0 on-ground=true
+
+entity-order 198 entities e1
+entity 198 e1 422.9323749904633 6.0 5.5 -4.163336342344337E-20 0 0 on-ground=true
+
+entity-order 199 entities e1
+entity 199 e1 422.9323749904633 6.0 5.5 -2.0816681711721686E-20 0 0 on-ground=true
+
+entity-order 200 entities e1
+entity 200 e1 422.9323749904633 6.0 5.5 -1.0408340855860843E-20 0 0 on-ground=true
+
+entity-order 201 entities e1
+entity 201 e1 422.9323749904633 6.0 5.5 -5.2041704279304214E-21 0 0 on-ground=true
+
+entity-order 202 entities e1
+entity 202 e1 422.9323749904633 6.0 5.5 -2.6020852139652107E-21 0 0 on-ground=true
+
+entity-order 203 entities e1
+entity 203 e1 422.9323749904633 6.0 5.5 -1.3010426069826053E-21 0 0 on-ground=true
+
+entity-order 204 entities e1
+entity 204 e1 422.9323749904633 6.0 5.5 -6.505213034913027E-22 0 0 on-ground=true
+
+entity-order 205 entities e1
+entity 205 e1 422.9323749904633 6.0 5.5 -3.2526065174565134E-22 0 0 on-ground=true
+
+entity-order 206 entities e1
+entity 206 e1 422.9323749904633 6.0 5.5 -1.6263032587282567E-22 0 0 on-ground=true
+
+entity-order 207 entities e1
+entity 207 e1 422.9323749904633 6.0 5.5 -8.131516293641283E-23 0 0 on-ground=true
+
+entity-order 208 entities e1
+entity 208 e1 422.9323749904633 6.0 5.5 -4.065758146820642E-23 0 0 on-ground=true
+
+entity-order 209 entities e1
+entity 209 e1 422.9323749904633 6.0 5.5 -2.032879073410321E-23 0 0 on-ground=true
+
+entity-order 210 entities e1
+entity 210 e1 422.9323749904633 6.0 5.5 -1.0164395367051604E-23 0 0 on-ground=true
+
+entity-order 211 entities e1
+entity 211 e1 422.9323749904633 6.0 5.5 -5.082197683525802E-24 0 0 on-ground=true
+
+entity-order 212 entities e1
+entity 212 e1 422.9323749904633 6.0 5.5 -2.541098841762901E-24 0 0 on-ground=true
+
+entity-order 213 entities e1
+entity 213 e1 422.9323749904633 6.0 5.5 -1.2705494208814505E-24 0 0 on-ground=true
+
+entity-order 214 entities e1
+entity 214 e1 422.9323749904633 6.0 5.5 -6.352747104407253E-25 0 0 on-ground=true
+
+entity-order 215 entities e1
+entity 215 e1 422.9323749904633 6.0 5.5 -3.1763735522036263E-25 0 0 on-ground=true
+
+entity-order 216 entities e1
+entity 216 e1 422.9323749904633 6.0 5.5 -1.5881867761018132E-25 0 0 on-ground=true
+
+entity-order 217 entities e1
+entity 217 e1 422.9323749904633 6.0 5.5 -7.940933880509066E-26 0 0 on-ground=true
+
+entity-order 218 entities e1
+entity 218 e1 422.9323749904633 6.0 5.5 -3.970466940254533E-26 0 0 on-ground=true
+
+entity-order 219 entities e1
+entity 219 e1 422.9323749904633 6.0 5.5 -1.9852334701272665E-26 0 0 on-ground=true
+
+entity-order 220 entities e1
+entity 220 e1 422.9323749904633 6.0 5.5 -9.926167350636332E-27 0 0 on-ground=true
+
+entity-order 221 entities e1
+entity 221 e1 422.9323749904633 6.0 5.5 -4.963083675318166E-27 0 0 on-ground=true
+
+entity-order 222 entities e1
+entity 222 e1 422.9323749904633 6.0 5.5 -2.481541837659083E-27 0 0 on-ground=true
+
+entity-order 223 entities e1
+entity 223 e1 422.9323749904633 6.0 5.5 -1.2407709188295415E-27 0 0 on-ground=true
+
+entity-order 224 entities e1
+entity 224 e1 422.9323749904633 6.0 5.5 -6.203854594147708E-28 0 0 on-ground=true
+
+entity-order 225 entities e1
+entity 225 e1 422.9323749904633 6.0 5.5 -3.101927297073854E-28 0 0 on-ground=true
+
+entity-order 226 entities e1
+entity 226 e1 422.9323749904633 6.0 5.5 -1.550963648536927E-28 0 0 on-ground=true
+
+entity-order 227 entities e1
+entity 227 e1 422.9323749904633 6.0 5.5 -7.754818242684635E-29 0 0 on-ground=true
+
+entity-order 228 entities e1
+entity 228 e1 422.9323749904633 6.0 5.5 -3.8774091213423173E-29 0 0 on-ground=true
+
+entity-order 229 entities e1
+entity 229 e1 422.9323749904633 6.0 5.5 -1.9387045606711587E-29 0 0 on-ground=true
+
+entity-order 230 entities e1
+entity 230 e1 422.9323749904633 6.0 5.5 -9.693522803355793E-30 0 0 on-ground=true
+
+entity-order 231 entities e1
+entity 231 e1 422.9323749904633 6.0 5.5 -4.8467614016778966E-30 0 0 on-ground=true
+
+entity-order 232 entities e1
+entity 232 e1 422.9323749904633 6.0 5.5 -2.4233807008389483E-30 0 0 on-ground=true
+
+entity-order 233 entities e1
+entity 233 e1 422.9323749904633 6.0 5.5 -1.2116903504194742E-30 0 0 on-ground=true
+
+entity-order 234 entities e1
+entity 234 e1 422.9323749904633 6.0 5.5 -6.058451752097371E-31 0 0 on-ground=true
+
+entity-order 235 entities e1
+entity 235 e1 422.9323749904633 6.0 5.5 -3.0292258760486854E-31 0 0 on-ground=true
+
+entity-order 236 entities e1
+entity 236 e1 422.9323749904633 6.0 5.5 -1.5146129380243427E-31 0 0 on-ground=true
+
+entity-order 237 entities e1
+entity 237 e1 422.9323749904633 6.0 5.5 -7.573064690121713E-32 0 0 on-ground=true
+
+entity-order 238 entities e1
+entity 238 e1 422.9323749904633 6.0 5.5 -3.786532345060857E-32 0 0 on-ground=true
+
+entity-order 239 entities e1
+entity 239 e1 422.9323749904633 6.0 5.5 -1.8932661725304284E-32 0 0 on-ground=true
+
+entity-order 240 entities e1
+entity 240 e1 422.9323749904633 6.0 5.5 -9.466330862652142E-33 0 0 on-ground=true

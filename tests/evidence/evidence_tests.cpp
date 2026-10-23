@@ -529,6 +529,43 @@ int main(int argc, char** argv) {
         require(blocks == 1105 + 1095, std::format("{} blocks", blocks));
     });
 
+    suite.run("redstone conductors match both official servers in every state", [&] {
+        // tests/fixtures/collision/conductor-*.txt: whether each block conducts
+        // in every state, in none, or in the states with one property value.
+        namespace registry = circuit::gameplay::registry;
+        std::size_t blocks = 0, states = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            const auto* mapping = ContentMapping::for_game_version(release);
+            std::istringstream lines(read_text(fixtures / "collision" / std::format("conductor-{}.txt", release)));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto space = line.find(' ');
+                const auto id = line.substr(0, space);
+                const auto expected = line.substr(space + 1);
+                const auto block = registry::find_block(release, id.substr(std::string("minecraft:").size()));
+                require(block.has_value(), std::format("{} {}: in the registry", release, id));
+                const auto info = registry::block(*block);
+                for (auto state = info.first_state; state < info.first_state + info.state_count; ++state) {
+                    bool official = expected == "1";
+                    if (expected.find('=') != std::string::npos) {
+                        const auto eq = expected.find('=');
+                        for (const auto& [key, value] : registry::properties(state))
+                            if (key == expected.substr(0, eq)) official = value == expected.substr(eq + 1);
+                    }
+                    const auto notation = registry::notation(state);
+                    require(registry::conducts(state) == official, std::format("{} {}: compiled {}", release, notation, !official));
+                    // The rules agree, modeled or not.
+                    const auto s = mapping->block(notation);
+                    require(s.has_value(), std::format("{} {}: maps", release, notation));
+                    require(circuit::gameplay::redstone_conductor(*s) == official, std::format("{} {}: the rules say {}", release, notation, !official));
+                    ++states;
+                }
+                ++blocks;
+            }
+        }
+        require(blocks == 1105 + 1095 && states > 50000, std::format("{} blocks, {} states", blocks, states));
+    });
+
     suite.run("light properties match both official servers", [&] {
         // tests/fixtures/light: every state's emission, dampening and
         // occlusion shape as the official servers report them.

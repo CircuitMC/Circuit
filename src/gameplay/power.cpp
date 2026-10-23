@@ -16,15 +16,18 @@
 
 namespace circuit::gameplay::detail {
 
-// Blocks without rules of their own conduct when they are opaque; their faces
+// Redstone conductors as both official servers report them for every state:
+// blocks without rules of their own by the registry's rule (full-cube
+// collision, with named exceptions); slime blocks conduct, glass, honey, the
+// redstone block, observers and pistons do not. Faces of blocks without rules
 // are sturdy when opaque or when the collision shape covers the face (an
 // approximation of support shapes from collision data).
 bool is_conductor(BlockState s) noexcept {
     switch (s.type()) {
     case BlockType::stone: case BlockType::obsidian: case BlockType::redstone_lamp: case BlockType::target: case BlockType::note_block:
-    case BlockType::dispenser:
+    case BlockType::dispenser: case BlockType::slime_block:
         return true;
-    case BlockType::other: return other_opaque(s);
+    case BlockType::other: return registry::conducts(s.registry_state());
     default: return false;
     }
 }
@@ -168,3 +171,7 @@ std::uint8_t best_neighbor_signal(RuleContext& ctx, BlockPos pos, bool wires) {
 bool has_neighbor_signal(RuleContext& ctx, BlockPos pos) { return best_neighbor_signal(ctx, pos, true) > 0; }
 
 } // namespace circuit::gameplay::detail
+
+namespace circuit::gameplay {
+bool redstone_conductor(BlockState s) noexcept { return detail::is_conductor(s); }
+} // namespace circuit::gameplay

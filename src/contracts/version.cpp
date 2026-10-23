@@ -39,8 +39,9 @@ constexpr std::array reference_v4_mechanisms{
         "power that sources give conductors strongly, powers the block below it and the blocks it points "
         "into, and keeps its shape as stored state, dots included; a change updates the neighbors of a "
         "7-position set in hash order (vertical_slice, chain_limit, strong_power, weak_power, dust_shape, "
-        "dust_steps). Players' placement and dot toggling were compared with the official server through a "
-        "protocol client. Not covered: dust on hoppers."},
+        "dust_steps). Conductors are the blocks both official servers report for every state (full-cube collision "
+        "with named exceptions; tests/fixtures/collision/conductor-*.txt). Players' placement and dot toggling were "
+        "compared with the official server through a protocol client. Not covered: dust on hoppers."},
     MechanismEntry{"repeater", l0_exact, l0_exact, harness_trace,
         "Delay 2-8 game ticks, pulse extension, quiet state change and front updates; strong power into the "
         "block in front; locked while a powered diode faces into either side (vertical_slice, observer_pulse, "
@@ -58,7 +59,8 @@ constexpr std::array reference_v4_mechanisms{
         "base changes (block_event_order), block dropping, destruction (piston_timing, "
         "piston_slime, piston_destroys, piston_observed, quasi_connectivity, door_more); a draw from the level random after each "
         "extension and retraction (piston_draws); entities pushed out of the space a moving block sweeps "
-        "through each step (0.01 beyond it, at most 0.51 a tick on each axis), moving blocks colliding where "
+        "through each step in every direction (0.01 beyond it, at most 0.51 a tick on each axis; tnt_duper_turns), "
+        "moving blocks colliding where "
         "they stand, moving slime blocks launching entities (item_piston_push, item_drop_piston, "
         "piston_entities, slime_entities); honey blocks as sticky blocks that do not hold slime, carrying what stands "
         "on them sideways, and a head's removal taking its base (honey_basics, honey_more); every block moved, "
@@ -152,7 +154,10 @@ constexpr std::array reference_v4_mechanisms{
         "health), then blocks cleared in order with their drops merged into stacks of 16 and TNT primed with a "
         "random fuse (tnt_ignition, tnt_motion, tnt_water_current, tnt_reload, tnt_explodes_disabled, "
         "tnt_redstone_ignition, tnt_obsidian, tnt_drops, tnt_void, tnt_entity_order, tnt_knockback, tnt_items, "
-        "tnt_chain_edge, tnt_water, tnt_power). Gaps: fire, players, projectiles and dispensers do not ignite TNT; "
+        "tnt_chain_edge, tnt_water, tnt_power). A named TNT duplicator, the Mytteri push duper, primes its TNT on "
+        "every push while the block moves on, over eight pushes, in each direction and across chunk edges "
+        "(tnt_duper, tnt_duper_turns, tnt_duper_edges). Gaps: fire, players and projectiles other than burning "
+        "arrows do not ignite TNT; other duplicator designs are untested; "
         "entities of one chunk section are hurt in id order rather than the order they entered it; explosions "
         "do not hurt players yet."},
     MechanismEntry{"projectile", l0_exact, l2_declared_deviation, harness_trace,

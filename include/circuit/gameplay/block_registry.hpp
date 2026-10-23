@@ -47,6 +47,11 @@ inline constexpr std::uint8_t instrument_count = 23;
 // Mob heads play from above a note block.
 constexpr bool head_instrument(Instrument i) noexcept { return i >= Instrument::zombie; }
 
+// Whether a block is a redstone conductor (tools/compile_block_registry.py,
+// checked against both official servers for every state): never, always, or
+// in the states whose collision shape is a full cube.
+enum class Conductor : std::uint8_t { never = 0, always = 1, full_cube = 2 };
+
 struct BlockInfo {
     std::string_view name; // without namespace, e.g. "oak_log"
     std::uint32_t first_state;
@@ -59,6 +64,7 @@ struct BlockInfo {
     float resistance;  // blast resistance
     PushClass push;    // how pistons treat it
     Instrument instrument;
+    Conductor conductor;
 };
 
 // A box of a collision shape, in block coordinates (0 to 1; fences, walls
@@ -90,6 +96,8 @@ std::string notation(std::uint32_t state);
 std::optional<std::uint32_t> state_of(std::uint32_t block, std::span<const Property> properties);
 
 Collision collision(std::uint32_t state) noexcept;
+// Whether the state is a redstone conductor (its block's Conductor rule).
+bool conducts(std::uint32_t state) noexcept;
 // Whether the collision shape covers the whole face on that side of the cell.
 bool face_covered(std::uint32_t state, contracts::Direction face) noexcept;
 

@@ -1156,6 +1156,42 @@ inline Scenario dispenser_scenario() {
     }, 10};
 }
 
+// The Mytteri push duper (TNT duplication; minecraft.wiki "Tutorial:Block and
+// item duplication") at the x=16 chunk edge, pushed west over it six times by
+// a piston set behind it each time: every push after the first primes the
+// TNT while its block moves on, and the primed TNT falls out of the world.
+inline Scenario tnt_duper_scenario() {
+    using blocks::CoralKind;
+    using blocks::RailKind;
+    using blocks::RailShape;
+    return {"tnt_duper", 124, 220, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        constexpr int x0 = 19, z = 2; // the top slime's column
+        if (t == 2) {
+            c.push_back(place({x0 - 2, 1, z}, blocks::stone()));
+            c.push_back(place({x0 - 1, 1, z}, blocks::slime()));
+            c.push_back(place({x0, 1, z}, blocks::slime()));
+            c.push_back(place({x0 - 1, 2, z}, blocks::rail(RailKind::detector, RailShape::east_west)));
+            c.push_back(place({x0, 2, z}, blocks::slime()));
+            c.push_back(place({x0 - 2, 0, z}, registry_block("tnt")));
+            c.push_back(place({x0 - 2, 1, z - 1}, blocks::slime()));
+            c.push_back(place({x0 - 3, 0, z - 1}, blocks::slime()));
+            c.push_back(place({x0 - 2, 0, z - 1}, blocks::slime()));
+            c.push_back(place({x0 - 3, 0, z}, blocks::coral_wall_fan(CoralKind::tube, Direction::south, true)));
+        }
+        if (t == 3) c.push_back(SummonEntity{"minecraft:minecart", {x0 - 0.5, 2.0625, z + 0.5}, {}, 0, 0});
+        for (int k = 0; k < 6; ++k) {
+            const Tick at = 10 + 20 * static_cast<Tick>(k);
+            const int x = x0 + 1 - k;
+            if (t == at - 1) c.push_back(place({x, 3, z}, blocks::redstone_block()));
+            if (t == at) c.push_back(place({x, 2, z}, blocks::piston(Direction::west)));
+            if (t == at + 9) c.push_back(place({x, 3, z}, blocks::air()));
+        }
+        return c;
+    }, 10};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
@@ -1163,7 +1199,7 @@ inline std::vector<Scenario> all_scenarios() {
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
             plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario(), rail_scenario(), minecart_rail_scenario(), minecart_meeting_scenario(), detector_rail_scenario(), coral_scenario(),
-            dispenser_scenario()};
+            dispenser_scenario(), tnt_duper_scenario()};
 }
 
 } // namespace circuit::test

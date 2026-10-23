@@ -27,6 +27,8 @@ bool set_block(RuleContext& ctx, BlockPos pos, BlockState state);
 bool block_replaceable(BlockState s);
 // A block's blast resistance (its water's, 100, when waterlogged).
 float blast_resistance(BlockState s);
+// Whether power reaches the blocks beside a block through it.
+bool redstone_conductor(BlockState s) noexcept;
 std::uint8_t received_power(RuleContext& ctx, BlockPos pos);
 
 // Positions outside the level's height or the border are never loaded.

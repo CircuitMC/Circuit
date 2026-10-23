@@ -1,0 +1,43 @@
+circuit-trace 2
+title The Mytteri push duper unloaded and reloaded after it grabbed its TNT, then duplicating
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms piston tnt rails vehicle coral_fan chunk_tickets
+area 416 -64 0 431 10 12
+ticks 240
+changes ordered
+entities observed
+rng observed
+chunks none
+load none
+
+at 1 command forceload add 416 0
+at 10 set 428 5 5 minecraft:stone
+at 10 set 429 5 5 minecraft:slime_block
+at 10 set 430 5 5 minecraft:slime_block
+at 10 set 429 6 5 minecraft:detector_rail[powered=false,shape=east_west,waterlogged=false]
+at 10 set 430 6 5 minecraft:slime_block
+at 10 set 428 4 5 minecraft:tnt
+at 10 set 428 5 4 minecraft:slime_block
+at 10 set 427 4 4 minecraft:slime_block
+at 10 set 428 4 4 minecraft:slime_block
+at 10 set 427 4 5 minecraft:dead_tube_coral_wall_fan[facing=south,waterlogged=false]
+at 11 command summon minecraft:minecart 429.5 6.0625 5.5
+at 20 set 431 7 5 minecraft:redstone_block
+at 21 set 431 6 5 minecraft:piston[extended=false,facing=west]
+at 30 set 431 7 5 minecraft:air
+at 35 command forceload remove 416 0
+at 55 command forceload add 416 0
+at 70 set 430 7 5 minecraft:redstone_block
+at 71 set 430 6 5 minecraft:piston[extended=false,facing=west]
+at 80 set 430 7 5 minecraft:air
+at 90 set 429 7 5 minecraft:redstone_block
+at 91 set 429 6 5 minecraft:piston[extended=false,facing=west]
+at 100 set 429 7 5 minecraft:air
+at 110 set 428 7 5 minecraft:redstone_block
+at 111 set 428 6 5 minecraft:piston[extended=false,facing=west]
+at 120 set 428 7 5 minecraft:air
+at 130 set 427 7 5 minecraft:redstone_block
+at 131 set 427 6 5 minecraft:piston[extended=false,facing=west]
+at 140 set 427 7 5 minecraft:air

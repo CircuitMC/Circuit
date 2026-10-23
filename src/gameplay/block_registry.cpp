@@ -57,7 +57,7 @@ BlockInfo block(std::uint32_t index) noexcept {
     const auto& b = data::blocks[index];
     return {b.name, b.first_state, b.state_count, b.first_state + b.default_offset, b.hardness, b.opaque != 0,
             static_cast<Tool>(b.tool), b.tier, b.resistance, static_cast<PushClass>(b.push),
-            static_cast<Instrument>(b.instrument)};
+            static_cast<Instrument>(b.instrument), static_cast<Conductor>(b.conductor)};
 }
 
 std::optional<std::uint32_t> block_of(std::uint32_t state) noexcept {
@@ -140,6 +140,16 @@ std::optional<std::uint32_t> state_of(std::uint32_t block, std::span<const Prope
 Collision collision(std::uint32_t state) noexcept {
     if (state < 1 || state > data::state_count) return Collision::empty;
     return static_cast<Collision>(data::shapes[state - 1] & 3);
+}
+
+bool conducts(std::uint32_t state) noexcept {
+    const auto b = block_of(state);
+    if (!b) return false;
+    switch (static_cast<Conductor>(data::blocks[*b].conductor)) {
+    case Conductor::always: return true;
+    case Conductor::full_cube: return collision(state) == Collision::full;
+    default: return false;
+    }
 }
 
 bool face_covered(std::uint32_t state, contracts::Direction face) noexcept {

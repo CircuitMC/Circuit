@@ -1464,12 +1464,23 @@
           "id": "tnt_duplication",
           "name": "TNT duplication with a named design",
           "milestone": "C4",
-          "impl": "missing",
-          "evidence": "none",
+          "impl": "partial",
+          "evidence": "compared",
           "cases_planned": [
-            "TNT-07",
             "TNT-08"
-          ]
+          ],
+          "cases": [
+            "TNT-07",
+            "trace/tnt_duper",
+            "trace/tnt_duper_turns",
+            "trace/tnt_duper_edges"
+          ],
+          "deviations": [
+            "only the Mytteri push duper is established; other designs are untested",
+            "its cobblestone wall is replaced by stone (wall shapes are not modeled)",
+            "reloading its chunk follows the chunk unload timing deviation (open trace tnt_duper_reload)"
+          ],
+          "note": "The Mytteri push duper primes its TNT on every push after the first while the block moves on, as both official servers do, over eight pushes, in each horizontal direction and across chunk edges"
         },
         {
           "id": "flying_machines",

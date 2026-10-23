@@ -82,7 +82,7 @@ Block and item registration do not provide behavior. Coral fans die without wate
 | Sticky-piston block dropping on a short pulse | The one-game-tick pulse scenario passes recorded traces for both versions. |
 | Slime structures, the 12-block push limit and observers watching piston writes | Implemented with rule, trace and cross-chunk simulation checks. Pistons remain L2 because item pushing, drops and some update ordering have gaps. |
 | TNT ignition, fuse, motion and explosions | Redstone and explosions prime TNT (placed by commands, players or pistons); primed TNT's motion and fuse and its explosions (blocks, drops, chain reactions, item damage and knockback) match recorded traces of both versions. Burning arrows prime TNT, and dispensers prime TNT items; fire and flint and steel do not, and explosions do not hurt players. |
-| TNT duplication machines | Not supported. Primed TNT, explosions, rails, minecarts on them, coral fans, dispensers and droppers exist, but minecarts carry nothing and TNT duplication itself is not modeled. No TNT-duplication reference fixture exists. |
+| TNT duplication machines | One named design is established: the Mytteri push duper (below) duplicates TNT exactly as both official servers do over eight pushes, pushed in each horizontal direction and across chunk edges, with stone in place of its cobblestone wall (wall shapes are not modeled). Reloading its chunk is an open trace (chunk unload timing). Other designs are untested and unsupported until they have their own evidence. |
 | Honey-based flying machines | Honey blocks, their separation from slime and the entities they carry match recorded traces of both versions, including a small slime-honey flying machine. Larger flying-machine designs have no acceptance evidence yet. |
 | Redstone torches, buttons, pressure plates and target blocks | Torch inverters, towers and burnout, buttons pressed by players and arrows, pressure plates sensing items and arrows (weighted ones counting them) and target blocks grading hits match recorded traces of both versions, including the update order of the dust they drive. Mobs and players do not press plates yet, and tripwire is not modeled. |
 | Daylight detectors | Normal and inverted detectors follow the sky light, the time of day, rain and thunder every 20 game ticks, and invert when used, as in recorded traces of both versions over a day, with and without the daylight cycle. Sculk sensors, lightning rods and the other sensors are not modeled. |
@@ -91,6 +91,22 @@ Block and item registration do not provide behavior. Coral fans die without wate
 | Note blocks | Their instruments from the block below or a head above, playing by power and by use as block events with the sound's draw, silenced by a block above, and retuned when pistons move them, as in recorded traces of both versions. Player heads with a sound of their own play nothing. |
 | Dispensers and droppers | Fired by power at them or above them, with the 4-tick delay, the random slot and its draws; droppers fill the container in front or eject; dispensers eject items (position, motion and draws exact), prime TNT, pour and fill water buckets, set minecarts on rails and eject equipment, as recorded on both versions. Dispensed projectiles, fire, bone meal, shears, boats, bottles, honeycomb and other uses with a target are not modeled: those items stay in the dispenser. |
 | Portal chunk loaders, sand duplication and bedrock-breaking machines | No compatibility claim. Dimensions/portals and the required block/interaction coverage are absent; falling blocks exist but are not duplicated. |
+
+#### The Mytteri push duper
+
+The established TNT duplicator, as minecraft.wiki ("Tutorial:Block and item duplication", Piston-based TNT duplication) and random-j-farmer's "TNT dupers" (Mytteri push duper) document it. Positions are relative to the column of the top slime block that the piston pushes, with *f* blocks forward (the direction of travel), *s* one block to either side, and *y* from the TNT's level:
+
+| Block | Position (*f*, *s*, *y*) |
+| --- | --- |
+| slime block (pushed by the piston) | (0, 0, 2) |
+| detector rail along the travel, with a minecart on it | (1, 0, 2) |
+| slime blocks | (0, 0, 1), (1, 0, 1) |
+| cobblestone wall (stone in the fixtures) | (2, 0, 1) |
+| TNT | (2, 0, 0) |
+| dead coral wall fan, facing away from the side slice | (3, 0, 0) |
+| side slice: slime blocks | (2, 1, 1), (2, 1, 0), (3, 1, 0) |
+
+The first push moves the top part over the TNT, which it grabs; every later push primes the TNT at its old cell while the block moves on. The fixtures push with a fresh piston behind the top slime block each time (`tnt_duper`, `tnt_duper_turns`, `tnt_duper_edges`; `tnt_duper_reload` is open).
 
 Importing an unsupported machine with substitution does not preserve its mechanism. Default Anvil import rejects unrepresentable content; explicit substitution can replace blocks or discard entities and reports those losses.
 

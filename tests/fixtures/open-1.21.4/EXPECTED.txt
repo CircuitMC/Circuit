@@ -3,3 +3,4 @@
 tnt_reload_pending.ctrace FAIL tick 45
 arrow_reload.ctrace FAIL tick 30
 boat_motion.ctrace FAIL tick 7 entity probe (line 626)
+tnt_duper_reload.ctrace FAIL tick 35

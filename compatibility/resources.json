@@ -5,7 +5,7 @@
     "block": {
       "impl": "data_only",
       "evidence": "none",
-      "note": "A registry state without rules of its own: represented, stored, sent, imported and exported; solid when it has a collision shape, a conductor when opaque, moved, destroyed or left in place by pistons as the official servers do, with no drops"
+      "note": "A registry state without rules of its own: represented, stored, sent, imported and exported; solid when it has a collision shape, a redstone conductor as both official servers report, moved, destroyed or left in place by pistons as the official servers do, with no drops"
     },
     "item": {
       "impl": "data_only",
@@ -94,7 +94,8 @@
         "evidence": "compared",
         "deviations": [
           "bouncing entities"
-        ]
+        ],
+        "note": "A redstone conductor, as both official servers report"
       },
       "lever": {
         "impl": "partial",

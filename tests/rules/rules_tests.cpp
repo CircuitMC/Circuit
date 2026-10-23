@@ -2087,6 +2087,31 @@ int main() {
         require(wire_level(s, {2, 0, 0}) == 5, std::format("dust at {}", wire_level(s, {2, 0, 0})));
     });
 
+    suite.run("redstone conductors: full cubes with named exceptions, and soul sand", [] {
+        // A repeater powers the block in front strongly; a lamp beyond lights
+        // when that block conducts.
+        const std::array<std::pair<BlockState, bool>, 8> lanes{{
+            {blocks::slime(), true}, {registry_block("oak_slab", {{"type", "double"}}), true}, {registry_block("soul_sand"), true},
+            {registry_block("shulker_box"), true}, {registry_block("oak_slab", {{"type", "bottom"}}), false},
+            {registry_block("glowstone"), false}, {blocks::glass(), false}, {registry_block("sea_lantern"), false}}};
+        Sim s;
+        std::vector<CommandBody> build = floor(-2, 6, -1, 2 * static_cast<int>(lanes.size()));
+        for (std::size_t i = 0; i < lanes.size(); ++i) {
+            const int z = 2 * static_cast<int>(i);
+            build.push_back(place({1, 0, z}, blocks::repeater(D::east)));
+            build.push_back(place({2, 0, z}, lanes[i].first));
+            build.push_back(place({3, 0, z}, blocks::lamp()));
+        }
+        s.tick(build);
+        std::vector<CommandBody> power;
+        for (std::size_t i = 0; i < lanes.size(); ++i) power.push_back(place({0, 0, 2 * static_cast<int>(i)}, blocks::redstone_block()));
+        s.tick(power);
+        for (int i = 0; i < 6; ++i) s.tick();
+        for (std::size_t i = 0; i < lanes.size(); ++i)
+            require(s.at({3, 0, 2 * static_cast<int>(i)}).flag() == lanes[i].second,
+                    std::format("{}: the lamp {}", circuit::gameplay::block_notation(lanes[i].first), lanes[i].second ? "lights" : "stays off"));
+    });
+
     suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {
         using circuit::contracts::UseBlock;
         Sim s;

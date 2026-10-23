@@ -165,14 +165,14 @@
     },
     {
       "id": "TNT-07",
-      "kind": "planned",
+      "kind": "black_box",
       "versions": [
         "java-1.21.4",
         "java-1.21.8"
       ],
-      "location": "planned",
-      "status": "planned",
-      "description": "A named TNT duplication design over repeated cycles"
+      "location": "trace/tnt_duper",
+      "status": "passing",
+      "description": "A named TNT duplication design (the Mytteri push duper) over repeated cycles"
     },
     {
       "id": "TNT-08",

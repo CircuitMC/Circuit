@@ -13,7 +13,8 @@ the committed table.
 Each version maps its states to internal ids and back. Per internal block the
 table keeps the data the rules use for blocks without rules of their own:
 hardness, opacity, the effective tool and the lowest tier that harvests the
-block, every block's blast resistance, how pistons treat it (push_class) and the note block instrument it gives (instrument). Per
+block, every block's blast resistance, how pistons treat it (push_class), the note block instrument it gives (instrument) and
+whether it is a redstone conductor (conductor). Per
 state it keeps the collision class (empty, partial, full cube),
 which faces the collision shape covers completely, its light: emission,
 dampening and, for states whose shape occludes light, the parts of each face
@@ -315,6 +316,21 @@ def instrument(name, material):
     return INSTRUMENTS.index("harp")
 
 
+# Redstone conductors (both official servers report them for every state; see
+# tests/fixtures/collision/conductor-*.txt): a state conducts when its
+# collision shape is a full cube, except the blocks below that never do, and
+# soul sand and mud conduct anyway. 0 never, 1 always, 2 in full-cube states.
+NEVER_CONDUCTS = re.compile(r"^(.*_leaves|glass|.*_stained_glass|tinted_glass|ice|frosted_ice|beacon|chorus_flower|"
+                            r"(waxed_)?((exposed|weathered|oxidized)_)?copper_(grate|bulb)|glowstone|sea_lantern|observer|"
+                            r"piston|sticky_piston|redstone_block|tnt)$")
+ALWAYS_CONDUCTS = {"soul_sand", "mud"}
+
+def conductor(name):
+    if name in ALWAYS_CONDUCTS:
+        return 1
+    return 0 if NEVER_CONDUCTS.match(name) else 2
+
+
 def previous_blocks(path):
     text = open(path, encoding="utf-8").read()
     body = text.split("const BlockData blocks[] = {", 1)[1].split("};", 1)[0]
@@ -443,12 +459,24 @@ def main():
                 sys.exit(f"{name}: blast resistance differs in {release}")
         push = push_class(b["name"], b.get("hardness"))
         sound = instrument(b["name"], b.get("material"))
+        conducts = conductor(b["name"])
+        # The full-cube rule must give each state the same answer in every release.
+        if conducts == 2:
+            for release, other_blocks, other_shapes, _ in versions:
+                other = next((ob for ob in other_blocks if ob["name"] == b["name"] and schema(ob) == sch), None)
+                if other is None or other_shapes is shapes:
+                    continue
+                other_ids = other_shapes["blocks"].get(b["name"], 0)
+                other_ids = other_ids if isinstance(other_ids, list) else [other_ids] * count
+                for mine, theirs in zip(ids, other_ids):
+                    if (shapes["shapes"][str(mine)] == [[0, 0, 0, 1, 1, 1]]) != (other_shapes["shapes"][str(theirs)] == [[0, 0, 0, 1, 1, 1]]):
+                        sys.exit(f"{name}: a state is a full cube in one release only")
         for release, other_blocks, _, _ in versions:
             other = next((ob for ob in other_blocks if ob["name"] == b["name"] and schema(ob) == sch), None)
             if other is not None and instrument(other["name"], other.get("material")) != sound:
                 sys.exit(f"{name}: instrument differs in {release}")
         out.append(f'    {{"{name}", {first_prop}, {len(sch)}, {first_state}, {count}, {b["defaultState"] - b["minStateId"]}, '
-                   f'{hardness!r}f, {opaque}, {tool}, {tier_of(b, tool, items)}, {resistance!r}f, {push}, {sound}}},')
+                   f'{hardness!r}f, {opaque}, {tool}, {tier_of(b, tool, items)}, {resistance!r}f, {push}, {sound}, {conducts}}},')
         first_state += count
     out += ["};", f"const std::uint32_t block_count = {len(internal)};", f"const std::uint32_t state_count = {first_state - 1};", ""]
     out.append("const PropertyData properties[] = {")

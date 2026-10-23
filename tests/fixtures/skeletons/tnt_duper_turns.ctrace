@@ -1,0 +1,90 @@
+circuit-trace 2
+title The Mytteri push duper pushed east, north and south five times
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms piston tnt rails vehicle coral_fan
+area 0 -64 0 40 10 40
+ticks 220
+changes ordered
+entities observed
+rng observed
+
+at 0 set 12 5 5 minecraft:stone
+at 0 set 11 5 5 minecraft:slime_block
+at 0 set 10 5 5 minecraft:slime_block
+at 0 set 11 6 5 minecraft:detector_rail[powered=false,shape=east_west,waterlogged=false]
+at 0 set 10 6 5 minecraft:slime_block
+at 0 set 12 4 5 minecraft:tnt
+at 0 set 12 5 4 minecraft:slime_block
+at 0 set 13 4 4 minecraft:slime_block
+at 0 set 12 4 4 minecraft:slime_block
+at 0 set 13 4 5 minecraft:dead_tube_coral_wall_fan[facing=south,waterlogged=false]
+at 0 set 10 5 28 minecraft:stone
+at 0 set 10 5 29 minecraft:slime_block
+at 0 set 10 5 30 minecraft:slime_block
+at 0 set 10 6 29 minecraft:detector_rail[powered=false,shape=north_south,waterlogged=false]
+at 0 set 10 6 30 minecraft:slime_block
+at 0 set 10 4 28 minecraft:tnt
+at 0 set 11 5 28 minecraft:slime_block
+at 0 set 11 4 27 minecraft:slime_block
+at 0 set 11 4 28 minecraft:slime_block
+at 0 set 10 4 27 minecraft:dead_tube_coral_wall_fan[facing=west,waterlogged=false]
+at 0 set 30 5 12 minecraft:stone
+at 0 set 30 5 11 minecraft:slime_block
+at 0 set 30 5 10 minecraft:slime_block
+at 0 set 30 6 11 minecraft:detector_rail[powered=false,shape=north_south,waterlogged=false]
+at 0 set 30 6 10 minecraft:slime_block
+at 0 set 30 4 12 minecraft:tnt
+at 0 set 29 5 12 minecraft:slime_block
+at 0 set 29 4 13 minecraft:slime_block
+at 0 set 29 4 12 minecraft:slime_block
+at 0 set 30 4 13 minecraft:dead_tube_coral_wall_fan[facing=east,waterlogged=false]
+at 1 command summon minecraft:minecart 11.5 6.0625 5.5
+at 1 command summon minecraft:minecart 10.5 6.0625 29.5
+at 1 command summon minecraft:minecart 30.5 6.0625 11.5
+at 10 set 9 7 5 minecraft:redstone_block
+at 10 set 10 7 31 minecraft:redstone_block
+at 10 set 30 7 9 minecraft:redstone_block
+at 11 set 9 6 5 minecraft:piston[extended=false,facing=east]
+at 11 set 10 6 31 minecraft:piston[extended=false,facing=north]
+at 11 set 30 6 9 minecraft:piston[extended=false,facing=south]
+at 20 set 9 7 5 minecraft:air
+at 20 set 10 7 31 minecraft:air
+at 20 set 30 7 9 minecraft:air
+at 30 set 10 7 5 minecraft:redstone_block
+at 30 set 10 7 30 minecraft:redstone_block
+at 30 set 30 7 10 minecraft:redstone_block
+at 31 set 10 6 5 minecraft:piston[extended=false,facing=east]
+at 31 set 10 6 30 minecraft:piston[extended=false,facing=north]
+at 31 set 30 6 10 minecraft:piston[extended=false,facing=south]
+at 40 set 10 7 5 minecraft:air
+at 40 set 10 7 30 minecraft:air
+at 40 set 30 7 10 minecraft:air
+at 50 set 11 7 5 minecraft:redstone_block
+at 50 set 10 7 29 minecraft:redstone_block
+at 50 set 30 7 11 minecraft:redstone_block
+at 51 set 11 6 5 minecraft:piston[extended=false,facing=east]
+at 51 set 10 6 29 minecraft:piston[extended=false,facing=north]
+at 51 set 30 6 11 minecraft:piston[extended=false,facing=south]
+at 60 set 11 7 5 minecraft:air
+at 60 set 10 7 29 minecraft:air
+at 60 set 30 7 11 minecraft:air
+at 70 set 12 7 5 minecraft:redstone_block
+at 70 set 10 7 28 minecraft:redstone_block
+at 70 set 30 7 12 minecraft:redstone_block
+at 71 set 12 6 5 minecraft:piston[extended=false,facing=east]
+at 71 set 10 6 28 minecraft:piston[extended=false,facing=north]
+at 71 set 30 6 12 minecraft:piston[extended=false,facing=south]
+at 80 set 12 7 5 minecraft:air
+at 80 set 10 7 28 minecraft:air
+at 80 set 30 7 12 minecraft:air
+at 90 set 13 7 5 minecraft:redstone_block
+at 90 set 10 7 27 minecraft:redstone_block
+at 90 set 30 7 13 minecraft:redstone_block
+at 91 set 13 6 5 minecraft:piston[extended=false,facing=east]
+at 91 set 10 6 27 minecraft:piston[extended=false,facing=north]
+at 91 set 30 6 13 minecraft:piston[extended=false,facing=south]
+at 100 set 13 7 5 minecraft:air
+at 100 set 10 7 27 minecraft:air
+at 100 set 30 7 13 minecraft:air

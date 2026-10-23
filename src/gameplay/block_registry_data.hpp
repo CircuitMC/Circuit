@@ -22,6 +22,7 @@ struct BlockData {
     float resistance;
     std::uint8_t push;       // registry::PushClass
     std::uint8_t instrument; // registry::Instrument
+    std::uint8_t conductor;  // registry::Conductor
 };
 struct PropertyData {
     const char* name;
