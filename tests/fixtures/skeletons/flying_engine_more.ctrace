@@ -1,0 +1,99 @@
+circuit-trace 2
+title Flying engines: the vertical 2-way engine up and down, engine A with cargo and an item, and across chunk edges
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms piston observer item_entity falling_block
+area 0 8 0 60 40 45
+ticks 260
+changes ordered
+entities observed
+rng observed
+
+at 0 set 5 10 5 minecraft:slime_block
+at 0 set 5 11 5 minecraft:slime_block
+at 0 set 5 12 5 minecraft:sticky_piston[extended=false,facing=down]
+at 0 set 5 13 5 minecraft:observer[facing=up,powered=false]
+at 0 set 6 10 5 minecraft:observer[facing=down,powered=false]
+at 0 set 6 11 5 minecraft:sticky_piston[extended=false,facing=up]
+at 0 set 6 12 5 minecraft:slime_block
+at 0 set 6 13 5 minecraft:slime_block
+at 0 set 4 34 4 minecraft:obsidian
+at 0 set 4 34 5 minecraft:obsidian
+at 0 set 4 34 6 minecraft:obsidian
+at 0 set 5 34 4 minecraft:obsidian
+at 0 set 5 34 5 minecraft:obsidian
+at 0 set 5 34 6 minecraft:obsidian
+at 0 set 6 34 4 minecraft:obsidian
+at 0 set 6 34 5 minecraft:obsidian
+at 0 set 6 34 6 minecraft:obsidian
+at 0 set 7 34 4 minecraft:obsidian
+at 0 set 7 34 5 minecraft:obsidian
+at 0 set 7 34 6 minecraft:obsidian
+at 0 set 15 30 5 minecraft:slime_block
+at 0 set 15 31 5 minecraft:slime_block
+at 0 set 15 32 5 minecraft:sticky_piston[extended=false,facing=down]
+at 0 set 15 33 5 minecraft:observer[facing=up,powered=false]
+at 0 set 16 30 5 minecraft:observer[facing=down,powered=false]
+at 0 set 16 31 5 minecraft:sticky_piston[extended=false,facing=up]
+at 0 set 16 32 5 minecraft:slime_block
+at 0 set 16 33 5 minecraft:slime_block
+at 0 set 14 18 4 minecraft:obsidian
+at 0 set 14 18 5 minecraft:obsidian
+at 0 set 14 18 6 minecraft:obsidian
+at 0 set 15 18 4 minecraft:obsidian
+at 0 set 15 18 5 minecraft:obsidian
+at 0 set 15 18 6 minecraft:obsidian
+at 0 set 16 18 4 minecraft:obsidian
+at 0 set 16 18 5 minecraft:obsidian
+at 0 set 16 18 6 minecraft:obsidian
+at 0 set 17 18 4 minecraft:obsidian
+at 0 set 17 18 5 minecraft:obsidian
+at 0 set 17 18 6 minecraft:obsidian
+at 0 set 5 20 20 minecraft:slime_block
+at 0 set 6 20 21 minecraft:slime_block
+at 0 set 6 20 20 minecraft:sticky_piston[extended=false,facing=west]
+at 0 set 5 20 21 minecraft:sticky_piston[extended=false,facing=east]
+at 0 set 5 21 20 minecraft:observer[facing=up,powered=false]
+at 0 set 6 21 21 minecraft:observer[facing=up,powered=false]
+at 0 set 5 20 19 minecraft:slime_block
+at 0 set 4 20 19 minecraft:slime_block
+at 0 set 4 21 19 minecraft:sand
+at 0 set 5 21 19 minecraft:stone
+at 0 set 4 19 19 minecraft:stone
+at 0 set 21 20 19 minecraft:obsidian
+at 0 set 21 21 19 minecraft:obsidian
+at 0 set 21 20 20 minecraft:obsidian
+at 0 set 21 21 20 minecraft:obsidian
+at 0 set 21 20 21 minecraft:obsidian
+at 0 set 21 21 21 minecraft:obsidian
+at 0 set 10 20 26 minecraft:slime_block
+at 0 set 11 20 27 minecraft:slime_block
+at 0 set 11 20 26 minecraft:sticky_piston[extended=false,facing=west]
+at 0 set 10 20 27 minecraft:sticky_piston[extended=false,facing=east]
+at 0 set 10 21 26 minecraft:observer[facing=up,powered=false]
+at 0 set 11 21 27 minecraft:observer[facing=up,powered=false]
+at 0 set 36 20 25 minecraft:obsidian
+at 0 set 36 21 25 minecraft:obsidian
+at 0 set 36 20 26 minecraft:obsidian
+at 0 set 36 21 26 minecraft:obsidian
+at 0 set 36 20 27 minecraft:obsidian
+at 0 set 36 21 27 minecraft:obsidian
+at 0 set 40 20 26 minecraft:slime_block
+at 0 set 39 20 27 minecraft:slime_block
+at 0 set 40 20 27 minecraft:sticky_piston[extended=false,facing=north]
+at 0 set 39 20 26 minecraft:sticky_piston[extended=false,facing=south]
+at 0 set 40 21 26 minecraft:observer[facing=up,powered=false]
+at 0 set 39 21 27 minecraft:observer[facing=up,powered=false]
+at 0 set 41 20 38 minecraft:obsidian
+at 0 set 41 21 38 minecraft:obsidian
+at 0 set 40 20 38 minecraft:obsidian
+at 0 set 40 21 38 minecraft:obsidian
+at 0 set 39 20 38 minecraft:obsidian
+at 0 set 39 21 38 minecraft:obsidian
+at 5 spawn-item 4.5 22 19.5 0 0 0 minecraft:stone 3
+at 10 set 6 9 5 minecraft:stone
+at 10 set 15 34 5 minecraft:stone
+at 10 set 10 22 26 minecraft:stone
+at 10 set 40 22 26 minecraft:stone
+at 20 set 5 22 20 minecraft:stone

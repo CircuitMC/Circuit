@@ -1192,6 +1192,30 @@ inline Scenario tnt_duper_scenario() {
     }, 10};
 }
 
+// Two-way flying engine A (minecraft.wiki "Tutorial:Flying machines/Java
+// Engine Gallery") flying east over the x=16 chunk edge into an obsidian wall:
+// slime blocks with observers on top that power them, and two sticky pistons
+// facing each other's slime block.
+inline Scenario flying_engine_scenario() {
+    return {"flying_engine", 125, 220, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        if (t == 2) {
+            c.push_back(place({10, 0, 2}, blocks::slime()));
+            c.push_back(place({11, 0, 3}, blocks::slime()));
+            c.push_back(place({11, 0, 2}, blocks::piston(Direction::west, true)));
+            c.push_back(place({10, 0, 3}, blocks::piston(Direction::east, true)));
+            c.push_back(place({10, 1, 2}, blocks::observer(Direction::up)));
+            c.push_back(place({11, 1, 3}, blocks::observer(Direction::up)));
+            for (int z = 1; z <= 4; ++z)
+                for (int y = 0; y <= 1; ++y) c.push_back(place({24, y, z}, blocks::obsidian()));
+        }
+        // A block set above the first observer starts it eastward.
+        if (t == 10) c.push_back(place({10, 2, 2}, blocks::stone()));
+        return c;
+    }, 10};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
@@ -1199,7 +1223,7 @@ inline std::vector<Scenario> all_scenarios() {
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
             plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario(), rail_scenario(), minecart_rail_scenario(), minecart_meeting_scenario(), detector_rail_scenario(), coral_scenario(),
-            dispenser_scenario(), tnt_duper_scenario()};
+            dispenser_scenario(), tnt_duper_scenario(), flying_engine_scenario()};
 }
 
 } // namespace circuit::test

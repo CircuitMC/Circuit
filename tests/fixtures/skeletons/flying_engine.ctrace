@@ -1,0 +1,62 @@
+circuit-trace 2
+title Two-way flying engine A flying east, west (its other observer), south and north into obsidian
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms piston observer
+area 0 3 0 70 9 40
+ticks 240
+changes ordered
+
+at 0 set 5 5 2 minecraft:slime_block
+at 0 set 6 5 3 minecraft:slime_block
+at 0 set 6 5 2 minecraft:sticky_piston[extended=false,facing=west]
+at 0 set 5 5 3 minecraft:sticky_piston[extended=false,facing=east]
+at 0 set 5 6 2 minecraft:observer[facing=up,powered=false]
+at 0 set 6 6 3 minecraft:observer[facing=up,powered=false]
+at 0 set 19 5 1 minecraft:obsidian
+at 0 set 19 6 1 minecraft:obsidian
+at 0 set 19 5 2 minecraft:obsidian
+at 0 set 19 6 2 minecraft:obsidian
+at 0 set 19 5 3 minecraft:obsidian
+at 0 set 19 6 3 minecraft:obsidian
+at 0 set 40 5 8 minecraft:slime_block
+at 0 set 41 5 9 minecraft:slime_block
+at 0 set 41 5 8 minecraft:sticky_piston[extended=false,facing=west]
+at 0 set 40 5 9 minecraft:sticky_piston[extended=false,facing=east]
+at 0 set 40 6 8 minecraft:observer[facing=up,powered=false]
+at 0 set 41 6 9 minecraft:observer[facing=up,powered=false]
+at 0 set 30 5 7 minecraft:obsidian
+at 0 set 30 6 7 minecraft:obsidian
+at 0 set 30 5 8 minecraft:obsidian
+at 0 set 30 6 8 minecraft:obsidian
+at 0 set 30 5 9 minecraft:obsidian
+at 0 set 30 6 9 minecraft:obsidian
+at 0 set 5 5 20 minecraft:slime_block
+at 0 set 4 5 21 minecraft:slime_block
+at 0 set 5 5 21 minecraft:sticky_piston[extended=false,facing=north]
+at 0 set 4 5 20 minecraft:sticky_piston[extended=false,facing=south]
+at 0 set 5 6 20 minecraft:observer[facing=up,powered=false]
+at 0 set 4 6 21 minecraft:observer[facing=up,powered=false]
+at 0 set 6 5 32 minecraft:obsidian
+at 0 set 6 6 32 minecraft:obsidian
+at 0 set 5 5 32 minecraft:obsidian
+at 0 set 5 6 32 minecraft:obsidian
+at 0 set 4 5 32 minecraft:obsidian
+at 0 set 4 6 32 minecraft:obsidian
+at 0 set 60 5 30 minecraft:slime_block
+at 0 set 61 5 29 minecraft:slime_block
+at 0 set 60 5 29 minecraft:sticky_piston[extended=false,facing=south]
+at 0 set 61 5 30 minecraft:sticky_piston[extended=false,facing=north]
+at 0 set 60 6 30 minecraft:observer[facing=up,powered=false]
+at 0 set 61 6 29 minecraft:observer[facing=up,powered=false]
+at 0 set 59 5 20 minecraft:obsidian
+at 0 set 59 6 20 minecraft:obsidian
+at 0 set 60 5 20 minecraft:obsidian
+at 0 set 60 6 20 minecraft:obsidian
+at 0 set 61 5 20 minecraft:obsidian
+at 0 set 61 6 20 minecraft:obsidian
+at 10 set 5 7 2 minecraft:stone
+at 10 set 41 7 9 minecraft:stone
+at 10 set 5 7 20 minecraft:stone
+at 10 set 60 7 30 minecraft:stone

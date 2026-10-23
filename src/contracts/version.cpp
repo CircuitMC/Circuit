@@ -52,7 +52,8 @@ constexpr std::array reference_v4_mechanisms{
     MechanismEntry{"observer", l0_exact, l0_exact, harness_trace,
         "Fires 2 ticks after a shape update from its observed side, including piston writes, and after being "
         "moved by a piston; 2-tick pulse; output updates at its back (observer_pulse, observer_clock, "
-        "observer_moved, piston_observed). Not covered: observers moved while powered."},
+        "observer_moved, piston_observed); flying engines whose moved observers power the slime blocks under them "
+        "(flying_engine, flying_engine_more). Not covered: observers moved while powered."},
     MechanismEntry{"piston", l0_exact, l2_declared_deviation, harness_trace,
         "Two-tick moves through moving pistons; structure discovery and placement order, vacated cells in hash "
         "order, shape updates after every write but a destruction, the moved blocks' neighbor updates before an extending "

@@ -41,7 +41,7 @@ Feature counts per implementation state, then the number of features with compar
 | V15 Pistons and moving structures | C3, C4 | 16 | 2 / 2 | 14 / 14 | 0 / 0 | 0 / 0 | 0 / 0 | 12 / 12 |
 | V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 9 / 9 | 48 / 48 | 2 / 2 | 0 / 0 | 9 / 9 |
 | V17 TNT and explosions | C3, C4 | 11 | 0 / 1 | 8 / 8 | 0 / 0 | 2 / 2 | 1 / 0 | 8 / 9 |
-| V18 Technical machines and vanilla quirks | C4, C7 | 6 | 0 / 0 | 2 / 2 | 0 / 0 | 4 / 4 | 0 / 0 | 2 / 2 |
+| V18 Technical machines and vanilla quirks | C4, C7 | 6 | 0 / 0 | 3 / 3 | 0 / 0 | 3 / 3 | 0 / 0 | 3 / 3 |
 | V19 General entity lifecycle | C3 | 17 | 0 / 0 | 4 / 4 | 0 / 0 | 13 / 13 | 0 / 0 | 3 / 3 |
 | V20 Item entities and experience | C3, C6 | 7 | 2 / 2 | 3 / 3 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
 | V21 Projectiles, vehicles and mounts | C3, C6 | 109 | 0 / 0 | 17 / 17 | 38 / 56 | 33 / 35 | 21 / 1 | 8 / 8 |
@@ -130,7 +130,7 @@ Their counts are unknown, not zero.
 | black_box | passing | 30 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 121 |
+| official_trace | passing | 123 |
 | planned | planned | 1 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
@@ -334,7 +334,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
 | TNT duplication with a named design | C4 | partial, compared | partial, compared | `TNT-07`, `TNT-08`, `trace/tnt_duper`, `trace/tnt_duper_edges`, `trace/tnt_duper_turns`; its cobblestone wall is replaced by stone (wall shapes are not modeled); only the Mytteri push duper is established; other designs are untested; reloading its chunk follows the chunk unload timing deviation (open trace tnt_duper_reload); The Mytteri push duper primes its TNT on every push after the first while the block moves on, as both official servers do, over eight pushes, in each horizontal direction and across chunk edges |
-| Flying machines | C4 | missing, none | missing, none |  |
+| Flying machines | C4 | partial, compared | partial, compared | `trace/flying_engine`, `trace/flying_engine_more`, `trace/honey_more`; only two-way engine A and the vertical two-way slim engine are established; docks and larger machines are untested; Two documented engines fly in all six directions with cargo, across chunk edges and into obstacles, as both official servers do |
 | Chunk loaders | C7 | missing, none | missing, none |  |
 | Gravity-block machines and duplication | C4 | missing, none | missing, none |  |
 | Bedrock breaking | C4 | missing, none | missing, none |  |

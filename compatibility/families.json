@@ -1486,8 +1486,17 @@
           "id": "flying_machines",
           "name": "Flying machines",
           "milestone": "C4",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/flying_engine",
+            "trace/flying_engine_more",
+            "trace/honey_more"
+          ],
+          "deviations": [
+            "only two-way engine A and the vertical two-way slim engine are established; docks and larger machines are untested"
+          ],
+          "note": "Two documented engines fly in all six directions with cargo, across chunk edges and into obstacles, as both official servers do"
         },
         {
           "id": "chunk_loaders",

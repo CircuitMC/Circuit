@@ -966,6 +966,19 @@ int main() {
         require(tnt_blocks(100) == 1 && tnt_blocks(220) == 1, "the TNT block stays in the machine");
     });
 
+    suite.run("a flying engine crosses a chunk edge and stops at a wall", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("flying_engine"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the flying engine scenario");
+        const auto& ref = references[index];
+        const auto at = [&](Tick t, BlockPos p) { return state_at(ref.dumps.at(t), p); };
+        // It moves one block a step until its front column meets the wall at
+        // x=24, then stays: slime A at x=22, slime B at x=23, observers on top.
+        require(at(220, {22, 0, 2}) == blocks::slime() && at(220, {23, 0, 3}) == blocks::slime(), "stopped against the wall");
+        require(at(220, {22, 1, 2}).is(BlockType::observer) && at(220, {23, 1, 3}).is(BlockType::observer), "with its observers");
+        require(at(220, {10, 0, 2}).is_air() && at(220, {10, 2, 2}) == blocks::stone(), "it left its start, and the block that started it");
+        require(ref.dumps.at(200).overworld().blocks == ref.dumps.at(220).overworld().blocks, "at rest");
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");
