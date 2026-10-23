@@ -2,7 +2,7 @@ circuit-trace 2
 title Pistons destroy torches and a pressed button, and push away a torch's block
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms redstone_torch button piston
 area -3 0 -2 6 3 12
 ticks 50

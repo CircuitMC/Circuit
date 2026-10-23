@@ -2,7 +2,7 @@ circuit-trace 2
 title A burning arrow primes TNT, a cold one does not, and a snowball breaks on a wall
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms projectile tnt
 area -2 0 -4 13 5 4
 ticks 40

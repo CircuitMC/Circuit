@@ -2,7 +2,7 @@ circuit-trace 2
 title Moving slime blocks launch items; an item lands on a slime block
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms piston item_entity
 area -6 0 -4 6 8 4
 ticks 40

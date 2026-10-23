@@ -317,6 +317,17 @@
       "description": "The blast resistance of every block, reported by both official servers (1,105 blocks of 1.21.8, 1,095 of 1.21.4); Circuit's registry matches every one"
     },
     {
+      "id": "collision/conductor",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "tests/fixtures/collision/conductor-*.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness conductor report",
+      "status": "passing",
+      "description": "Whether each state is a redstone conductor, reported by both official servers (27,946 states of 1.21.8, 27,866 of 1.21.4); Circuit's registry and rules match every one"
+    },
+    {
       "id": "collision/push",
       "kind": "black_box",
       "versions": [

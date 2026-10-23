@@ -2,7 +2,7 @@ circuit-trace 2
 title Detector rails pressed by minecarts, lamps, dust, powered rails and a comparator beside them, and activator rails
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms rails vehicle
 area 0 -1 0 39 4 39
 ticks 110

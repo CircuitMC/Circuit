@@ -2,7 +2,7 @@ circuit-trace 2
 title TNT falls out of the world, and TNT explodes on a pillar at the bottom of the world
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms tnt
 area -4 -64 -4 9 -58 4
 ticks 95

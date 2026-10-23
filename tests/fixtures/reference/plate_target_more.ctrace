@@ -2,7 +2,7 @@ circuit-trace 2
 title Water over plates, targets hit twice and from above, plates under resting items
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms pressure_plate target water
 area -4 0 -2 10 5 16
 ticks 70

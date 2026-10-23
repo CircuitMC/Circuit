@@ -2,7 +2,7 @@ circuit-trace 2
 title Daylight detectors with the daylight cycle on, at the transitions of their outputs
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms daylight_detector
 area 0 0 0 18 2 6
 ticks 2261

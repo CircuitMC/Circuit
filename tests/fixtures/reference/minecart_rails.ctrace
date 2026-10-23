@@ -2,7 +2,7 @@ circuit-trace 2
 title Minecarts on rails: at rest and moving, off a line's end, on slopes, a curve, powered rails, and meeting
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms vehicle rails
 area 0 -1 0 43 7 39
 ticks 120

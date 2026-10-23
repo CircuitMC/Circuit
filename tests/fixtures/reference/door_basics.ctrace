@@ -2,7 +2,7 @@ circuit-trace 2
 title Doors, trapdoors and fence gates opened by power and by hand
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms door trapdoor fence_gate
 area -3 0 -2 6 4 20
 ticks 70

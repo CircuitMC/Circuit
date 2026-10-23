@@ -2,7 +2,7 @@ circuit-trace 2
 title A sticky piston pushes and pulls blocks of every push class of both versions
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms piston
 area -2 0 -1 85 3 80
 ticks 25

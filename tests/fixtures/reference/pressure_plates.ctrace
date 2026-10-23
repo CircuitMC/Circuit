@@ -2,7 +2,7 @@ circuit-trace 2
 title Pressure plates pressed by items and arrows, weighted plates counting items
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms pressure_plate item_entity projectile
 area -4 0 -2 6 4 20
 ticks 80

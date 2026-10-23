@@ -2,7 +2,7 @@ circuit-trace 2
 title Stone and wooden buttons pressed by use and by arrows, their timing and support
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms button redstone_lamp projectile
 area -6 0 -6 8 4 16
 ticks 80

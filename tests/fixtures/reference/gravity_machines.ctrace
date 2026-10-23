@@ -2,7 +2,7 @@ circuit-trace 2
 title Gravity blocks in machines: carried by slime, pushed off a ledge, dropped when a sticky piston pulls their support down, landing on an extending piston
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms falling_block piston
 area 0 0 0 20 12 24
 ticks 120

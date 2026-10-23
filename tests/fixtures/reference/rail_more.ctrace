@@ -2,7 +2,7 @@ circuit-trace 2
 title Rails moved by pistons, junctions beside redstone blocks, rails on partial blocks, and power between kinds
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms rails piston
 area 0 0 0 39 3 19
 ticks 92

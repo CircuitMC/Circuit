@@ -2,7 +2,7 @@ circuit-trace 2
 title Arrows fly, stick in a wall and the floor, slow down in water and fall when their block goes
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms projectile
 area -2 0 -6 14 8 6
 ticks 80

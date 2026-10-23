@@ -2,7 +2,7 @@ circuit-trace 2
 title The Mytteri push duper crossing chunk corners: west over x = 16 astride z = 16, north over z = 16 astride x = 32
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms piston tnt rails vehicle coral_fan
 area 2 -64 2 40 10 26
 ticks 240

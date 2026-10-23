@@ -2561,5 +2561,106 @@ int main() {
         std::filesystem::remove_all(dir);
     });
 
+    // tests/fixtures/storage/v11world-*: a world the last
+    // circuit-reference-rules-v11 server wrote and stopped cleanly, 3 seconds
+    // after a player started two-way flying engine A (minecraft.wiki's flying
+    // machine gallery) eastward at y -56, z 4 and 5, in forced chunks
+    // (/forceload add 0 0 47 15), toward an obsidian wall at x 30.
+    const auto migrated_v11 = [](const std::filesystem::path& dir) {
+        auto config = offline_config();
+        config.world_directory = dir / "v11";
+        std::filesystem::create_directories(config.world_directory);
+        for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::path(CIRCUIT_SOURCE_DIR) / "tests/fixtures/storage")) {
+            const auto name = entry.path().filename().string();
+            if (name.starts_with("v11world-")) std::filesystem::copy_file(entry.path(), config.world_directory / name.substr(9));
+        }
+        std::string error;
+        try {
+            server::Server s(config);
+        } catch (const std::runtime_error& e) {
+            error = e.what();
+        }
+        require(error.find("circuit-reference-rules-v11") != std::string::npos && error.find("--migrate-world") != std::string::npos, error);
+        const auto tick = server::migrate_world(config.world_directory, dir / "current", "java-1.21.8");
+        require(tick == 496, std::format("migration: {}", tick ? std::to_string(*tick) : tick.error()));
+        config.world_directory = dir / "current";
+        return config;
+    };
+    // The engine's blocks from x 0 to 31, the wall included.
+    const auto engine_blocks = [](const GameFixture& f) {
+        std::string blocks;
+        for (std::int32_t x = 0; x < 32; ++x)
+            for (std::int32_t y = -57; y <= -54; ++y)
+                for (std::int32_t z = 4; z <= 5; ++z)
+                    if (const auto s = f.at({x, y, z}); s != "minecraft:air") blocks += std::format("{} {} {} {}\n", x, y, z, s);
+        return blocks;
+    };
+    const auto slime_x = [](const GameFixture& f) {
+        for (std::int32_t x = 0; x < 32; ++x)
+            if (f.at({x, -56, 4}) == "minecraft:slime_block") return x;
+        return -1;
+    };
+
+    suite.run("a world of the previous rule set migrates with a flying machine in flight", [&] {
+        const auto dir = temporary_directory();
+        {
+            GameFixture f(migrated_v11(dir));
+            const auto start = slime_x(f);
+            require(start > 4 && start < 28, std::format("the engine carried over in flight: slime at x {}", start));
+            // It flies on until the wall stops it, its front column against
+            // the wall: slime A and the west-facing piston at z 4, the
+            // east-facing piston and slime B at z 5, an observer on each slime.
+            int ticks = 0;
+            int still = 0;
+            for (auto last = start; ticks < 600 && still < 100; ++ticks) {
+                f.game->tick();
+                const auto now = slime_x(f);
+                still = now == last ? still + 1 : 0;
+                last = now;
+            }
+            require(still == 100 && slime_x(f) == 28, std::format("stopped at the wall: slime at x {} after {} ticks", slime_x(f), ticks));
+            require(f.at({29, -56, 4}).starts_with("minecraft:sticky_piston[") && f.at({29, -56, 4}).contains("facing=west")
+                        && f.at({28, -56, 5}).starts_with("minecraft:sticky_piston[") && f.at({28, -56, 5}).contains("facing=east")
+                        && f.at({29, -56, 5}) == "minecraft:slime_block" && f.at({28, -55, 4}).starts_with("minecraft:observer[")
+                        && f.at({29, -55, 5}).starts_with("minecraft:observer[") && f.at({30, -56, 4}) == "minecraft:obsidian",
+                    engine_blocks(f));
+        }
+        std::filesystem::remove_all(dir);
+    });
+
+    suite.run("a flying machine survives a server restart", [&] {
+        // One migrated copy runs 40 ticks, stops and starts again; another runs
+        // without stopping. The machine is the same after the restart and at
+        // every later tick.
+        const auto dir = temporary_directory();
+        const auto restarted = migrated_v11(dir / "restarted");
+        const auto straight = migrated_v11(dir / "straight");
+        {
+            GameFixture through(straight);
+            std::string stopped;
+            {
+                GameFixture f(restarted);
+                for (int i = 0; i < 40; ++i) {
+                    f.game->tick();
+                    through.game->tick();
+                }
+                stopped = engine_blocks(f);
+                require(stopped == engine_blocks(through), "the same before the restart");
+            }
+            GameFixture f(restarted);
+            require(f.game->engine().dump().time == through.game->engine().dump().time && engine_blocks(f) == stopped,
+                    std::format("the machine as it was saved:\n{}", engine_blocks(f)));
+            for (int i = 0; i < 300; ++i) {
+                f.game->tick();
+                through.game->tick();
+                const auto a = engine_blocks(f);
+                const auto b = engine_blocks(through);
+                require(a == b, std::format("tick {} after the restart:\n{}\nwithout it:\n{}", i + 1, a, b));
+            }
+            require(slime_x(f) == 28, std::format("stopped at the wall: slime at x {}", slime_x(f)));
+        }
+        std::filesystem::remove_all(dir);
+    });
+
     return suite.finish();
 }

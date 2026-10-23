@@ -2,7 +2,7 @@ circuit-trace 1
 title Water spread along a channel
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms water scheduled_ticks
 area -1 0 -1 10 1 1
 ticks 40

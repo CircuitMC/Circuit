@@ -89,7 +89,7 @@
     }
   ],
   "circuit_schemas": {
-    "rule_set": "circuit-reference-rules-v11",
+    "rule_set": "circuit-reference-rules-v12",
     "trace_format": "circuit-trace 1 and 2",
     "replay_format": 3,
     "checkpoint_format": 4,

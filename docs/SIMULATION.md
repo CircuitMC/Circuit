@@ -4,7 +4,7 @@
 
 The Part I core runs headless: shared contracts, a set of reference rules, a sequential scheduling oracle, and a region-parallel runtime checked against the oracle. The oracle shares gameplay rules with the runtime; it checks scheduling equivalence, while external reference observations and hand-derived expectations check the rules themselves. The [network server](SERVER.md) and [persistence](PERSISTENCE.md) are built on it.
 
-The rules are **circuit-reference-rules-v11**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
+The rules are **circuit-reference-rules-v12**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
 
 Two version bundles run them: `java-1.21.8` and `java-1.21.4`. 1.21.8 has 131 traces and 1.21.4 has 129 recorded on the unmodified server (1.21.4 lacks the tntExplodes game rule, so `tnt_explodes_disabled` and `dispenser_tnt_rule` are 1.21.8's only):
 - 1.21.8 traces are in `tests/fixtures/harness/`;
@@ -126,7 +126,7 @@ Every observable action produces a trace record keyed by (tick, level, phase, ro
 
 ## Reference rules v10
 
-v10 is v9 with what C2.3 and C2.4 added to the rules: crops that need light, game rules as world state, the day time and the weather. Worlds of v9 move to v10 with `--migrate-world` ([persistence](PERSISTENCE.md#migrating-between-versions)).
+v10 is v9 with what C2.3 and C2.4 added to the rules: crops that need light, game rules as world state, the day time and the weather. v11 adds C3's entities, TNT and explosions, and v12 C4's components and machines: moving blocks and entities, redstone torches, buttons, plates, targets, daylight detectors, doors, note blocks, honey, every block's push class and conductor, rails and minecarts on them, coral fans, dispensers and droppers. Worlds of an earlier rule set move to the current one with `--migrate-world` ([persistence](PERSISTENCE.md#migrating-between-versions)).
 
 - **Update queue:** neighbor updates and shape updates are queued entries.
   - **Entries:**

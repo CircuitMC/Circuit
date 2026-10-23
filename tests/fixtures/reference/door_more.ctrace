@@ -2,7 +2,7 @@ circuit-trace 2
 title Fence gates in walls, doors used while powered, broken, pressed open, shot at and pushed
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms door trapdoor fence_gate piston
 area -4 0 -2 8 4 20
 ticks 50

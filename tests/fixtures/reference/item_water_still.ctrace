@@ -2,7 +2,7 @@ circuit-trace 2
 title Items in a still pool
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms item_entity water
 area -3 0 -3 3 5 3
 ticks 80

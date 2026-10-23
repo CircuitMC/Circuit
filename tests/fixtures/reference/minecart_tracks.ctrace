@@ -2,7 +2,7 @@ circuit-trace 2
 title Minecarts on rails: slopes up and down, curves, line ends, and braking and boosting powered rails
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms vehicle rails
 area 0 -1 0 39 7 71
 ticks 80

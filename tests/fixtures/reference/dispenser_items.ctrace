@@ -2,7 +2,7 @@ circuit-trace 2
 title Dispensers with items that act on entities or blocks, facing air with nothing in front
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms dispenser item_entity
 area 0 0 0 11 3 106
 ticks 30

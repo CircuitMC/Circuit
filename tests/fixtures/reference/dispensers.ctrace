@@ -2,7 +2,7 @@ circuit-trace 2
 title Droppers and dispensers fired by levers: items, the random slot, into a chest, empty, TNT, a water bucket, a minecart
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms dispenser item_entity tnt
 area 0 0 0 39 4 29
 ticks 60

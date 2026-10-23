@@ -2,7 +2,7 @@ circuit-trace 2
 title Items on ice under flowing water, and around a corner
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms item_entity water
 area -2 0 -2 9 3 8
 ticks 120

@@ -2,7 +2,7 @@ circuit-trace 2
 title Items inside a hopper's bowl: cooldown, a powered hopper and an open one
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms item_entity hopper
 area -2 0 -2 8 3 2
 ticks 30

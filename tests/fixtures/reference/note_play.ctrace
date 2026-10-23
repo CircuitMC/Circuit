@@ -2,7 +2,7 @@ circuit-trace 2
 title Note blocks played by power and by use, silenced by a block above, and moved by pistons
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms note_block piston
 area 0 0 0 23 4 11
 ticks 70

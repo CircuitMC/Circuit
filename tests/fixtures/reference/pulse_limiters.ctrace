@@ -2,7 +2,7 @@ circuit-trace 2
 title Pulse limiters from minecraft.wiki: circuit breaker, dust-cut and 1-wide NOR gate, fed by levers
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms piston redstone_wire repeater redstone_torch
 area 0 0 0 10 6 9
 ticks 110

@@ -2,7 +2,7 @@ circuit-trace 2
 title Primed TNT keeps its fuse and motion while its chunk unloads and reloads
 game-version 1.21.8
 source circuit_reference
-harness circuit-reference-rules-v11
+harness circuit-reference-rules-v12
 mechanisms tnt chunk_tickets
 area 328 0 -1 343 5 2
 ticks 88
