@@ -979,6 +979,27 @@ int main() {
         require(ref.dumps.at(200).overworld().blocks == ref.dumps.at(220).overworld().blocks, "at rest");
     });
 
+    suite.run("an item sorter sorts across a chunk edge", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("item_sorter"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the item sorter scenario");
+        const auto& end = references[index].dumps.rbegin()->second;
+        const auto count = [&](BlockPos p, std::uint16_t item) {
+            unsigned n = 0;
+            if (const auto* be = block_entity_at(end, p))
+                for (const auto& s : be->slots) n += s.item == item ? s.count : 0;
+            return n;
+        };
+        // Every sorted item stays in its slice: its chest, its filter hopper or
+        // its bottom hopper (which may hold one it pulled before the torch
+        // locked it again); nothing else reaches the chests; cobblestone overflows.
+        const auto kept = [&](int z, std::uint16_t item) { return count({9, 3, z}, item) + count({8, 4, z}, item) + count({8, 3, z}, item); };
+        require(kept(15, items::diamond) == 41 + 6, "diamonds kept by their slice");
+        require(kept(16, items::iron_ingot) == 41 + 6, "iron kept by its slice");
+        require(count({9, 3, 15}, items::diamond) >= 5 && count({9, 3, 16}, items::iron_ingot) >= 5, "most of them sorted");
+        require(count({9, 3, 15}, items::iron_ingot) == 0 && count({9, 3, 16}, items::diamond) == 0, "no item in the wrong chest");
+        require(count({8, 5, 17}, items::cobblestone) == 4, "cobblestone reaches the overflow chest");
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");

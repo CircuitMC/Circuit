@@ -130,7 +130,7 @@ Their counts are unknown, not zero.
 | black_box | passing | 30 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 123 |
+| official_trace | passing | 125 |
 | planned | planned | 1 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
@@ -338,7 +338,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Chunk loaders | C7 | missing, none | missing, none |  |
 | Gravity-block machines and duplication | C4 | missing, none | missing, none |  |
 | Bedrock breaking | C4 | missing, none | missing, none |  |
-| Item sorters, clocks and pulse circuits | C4 | partial, compared | partial, compared | `trace/hopper_chained`, `trace/observer_clock`; Component cases, not whole machines |
+| Item sorters, clocks and pulse circuits | C4 | partial, compared | partial, compared | `trace/hopper_chained`, `trace/item_sorter`, `trace/item_sorter_overflow`, `trace/observer_clock`; other sorter designs and clock circuits are not established as machines; The documented basic hopper item sorter as a whole machine (sorting across a chunk edge, overflow protection); clocks and pulse circuits as component cases |
 
 ### V19 General entity lifecycle
 

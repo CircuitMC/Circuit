@@ -77,8 +77,9 @@ constexpr std::array reference_v4_mechanisms{
         "a hopper receiving into an empty inventory from another hopper waits 8 game ticks, or 7 when it "
         "already ticked in that tick (hopper_chain, hopper_competition, double_chest, hopper_chained); items "
         "collected from the cell above and the bowl, and taken when they move inside the hopper "
-        "(item_hopper_pickup, item_hopper_area, item_hopper_inside). Not covered: blocks above other than "
-        "air, stone and containers."},
+        "(item_hopper_pickup, item_hopper_area, item_hopper_inside); the documented basic item sorter sorting a "
+        "mixed stream across a chunk edge and overflowing (item_sorter, item_sorter_overflow). Not covered: "
+        "blocks above other than air, stone and containers."},
     MechanismEntry{"double_chest", l0_exact, l0_exact, harness_trace,
         "A left half pairs clockwise of its facing; a half claims a same-facing single chest; pairing changes "
         "are shape-only; hoppers and comparators see the right half's slots first (double_chest, "

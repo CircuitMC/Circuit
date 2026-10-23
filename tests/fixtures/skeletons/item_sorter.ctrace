@@ -1,0 +1,96 @@
+circuit-trace 2
+title The basic hopper item sorter, three slices across z = 16 sorting diamonds, iron and gold from a mixed chest
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms hopper comparator repeater redstone_torch redstone_wire
+area 0 0 10 15 8 22
+ticks 600
+changes ordered
+
+at 0 set 5 1 15 minecraft:stone
+at 0 set 4 2 15 minecraft:stone
+at 0 set 6 2 15 minecraft:stone
+at 0 set 5 3 15 minecraft:stone
+at 0 set 6 3 15 minecraft:stone
+at 0 set 7 3 15 minecraft:stone
+at 0 set 5 2 15 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+at 0 set 7 2 15 minecraft:redstone_wall_torch[facing=east,lit=true]
+at 0 set 4 3 15 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 5 4 15 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 6 4 15 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 7 4 15 minecraft:comparator[facing=east,mode=compare,powered=false]
+at 0 set 8 3 15 minecraft:hopper[enabled=true,facing=east]
+at 0 set 9 3 15 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 0 set 8 4 15 minecraft:hopper[enabled=true,facing=west]
+at 0 set 5 1 16 minecraft:stone
+at 0 set 4 2 16 minecraft:stone
+at 0 set 6 2 16 minecraft:stone
+at 0 set 5 3 16 minecraft:stone
+at 0 set 6 3 16 minecraft:stone
+at 0 set 7 3 16 minecraft:stone
+at 0 set 5 2 16 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+at 0 set 7 2 16 minecraft:redstone_wall_torch[facing=east,lit=true]
+at 0 set 4 3 16 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 5 4 16 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 6 4 16 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 7 4 16 minecraft:comparator[facing=east,mode=compare,powered=false]
+at 0 set 8 3 16 minecraft:hopper[enabled=true,facing=east]
+at 0 set 9 3 16 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 0 set 8 4 16 minecraft:hopper[enabled=true,facing=west]
+at 0 set 5 1 17 minecraft:stone
+at 0 set 4 2 17 minecraft:stone
+at 0 set 6 2 17 minecraft:stone
+at 0 set 5 3 17 minecraft:stone
+at 0 set 6 3 17 minecraft:stone
+at 0 set 7 3 17 minecraft:stone
+at 0 set 5 2 17 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+at 0 set 7 2 17 minecraft:redstone_wall_torch[facing=east,lit=true]
+at 0 set 4 3 17 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 5 4 17 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 6 4 17 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 7 4 17 minecraft:comparator[facing=east,mode=compare,powered=false]
+at 0 set 8 3 17 minecraft:hopper[enabled=true,facing=east]
+at 0 set 9 3 17 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 0 set 8 4 17 minecraft:hopper[enabled=true,facing=west]
+at 0 set 8 5 15 minecraft:hopper[enabled=true,facing=south]
+at 0 set 8 5 16 minecraft:hopper[enabled=true,facing=south]
+at 0 set 8 5 17 minecraft:hopper[enabled=true,facing=south]
+at 0 set 8 6 15 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 0 set 8 5 18 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 1 insert 8 4 15 0 minecraft:diamond 41
+at 1 insert 8 4 15 1 minecraft:stick 1
+at 1 insert 8 4 15 2 minecraft:stick 1
+at 1 insert 8 4 15 3 minecraft:stick 1
+at 1 insert 8 4 15 4 minecraft:stick 1
+at 1 insert 8 4 16 0 minecraft:iron_ingot 41
+at 1 insert 8 4 16 1 minecraft:stick 1
+at 1 insert 8 4 16 2 minecraft:stick 1
+at 1 insert 8 4 16 3 minecraft:stick 1
+at 1 insert 8 4 16 4 minecraft:stick 1
+at 1 insert 8 4 17 0 minecraft:gold_ingot 41
+at 1 insert 8 4 17 1 minecraft:stick 1
+at 1 insert 8 4 17 2 minecraft:stick 1
+at 1 insert 8 4 17 3 minecraft:stick 1
+at 1 insert 8 4 17 4 minecraft:stick 1
+at 5 insert 8 6 15 0 minecraft:diamond 10
+at 5 insert 8 6 15 1 minecraft:cobblestone 5
+at 5 insert 8 6 15 2 minecraft:iron_ingot 10
+at 5 insert 8 6 15 3 minecraft:gold_ingot 10
+at 5 insert 8 6 15 4 minecraft:diamond 3
+at 5 insert 8 6 15 5 minecraft:stick 2
+slot 600 9 3 15 0 ?
+slot 600 9 3 15 1 ?
+slot 600 9 3 15 2 ?
+slot 600 8 4 15 0 ?
+slot 600 9 3 16 0 ?
+slot 600 9 3 16 1 ?
+slot 600 9 3 16 2 ?
+slot 600 8 4 16 0 ?
+slot 600 9 3 17 0 ?
+slot 600 9 3 17 1 ?
+slot 600 9 3 17 2 ?
+slot 600 8 4 17 0 ?
+slot 600 8 5 18 0 ?
+slot 600 8 5 18 1 ?
+slot 600 8 5 18 2 ?

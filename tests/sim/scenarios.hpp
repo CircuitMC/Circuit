@@ -1216,6 +1216,52 @@ inline Scenario flying_engine_scenario() {
     }, 10};
 }
 
+// Two slices of the basic hopper item sorter (minecraft.wiki "Tutorial:Hopper")
+// on either side of the z=16 chunk edge, sorting diamonds and iron from a chest
+// through a hopper line that ends in an overflow chest.
+inline Scenario item_sorter_scenario() {
+    return {"item_sorter", 126, 420, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        constexpr std::array<int, 2> zs{15, 16};
+        if (t == 2) {
+            for (const int z : zs) {
+                // Columns x = 4..8 as the wiki's side view, rows y = 1..4.
+                c.push_back(place({5, 1, z}, blocks::stone()));
+                c.push_back(place({4, 2, z}, blocks::stone()));
+                c.push_back(place({6, 2, z}, blocks::stone()));
+                c.push_back(place({5, 3, z}, blocks::stone()));
+                c.push_back(place({6, 3, z}, blocks::stone()));
+                c.push_back(place({7, 3, z}, blocks::stone()));
+                c.push_back(place({5, 2, z}, blocks::repeater(Direction::east)));
+                c.push_back(place({7, 2, z}, blocks::wall_torch(Direction::east)));
+                c.push_back(place({4, 3, z}, blocks::wire()));
+                c.push_back(place({5, 4, z}, blocks::wire()));
+                c.push_back(place({6, 4, z}, blocks::wire()));
+                c.push_back(place({7, 4, z}, blocks::comparator(Direction::west)));
+                c.push_back(place({8, 3, z}, blocks::hopper(Direction::east)));
+                c.push_back(place({9, 3, z}, blocks::chest()));
+                c.push_back(place({8, 4, z}, blocks::hopper(Direction::west)));
+                c.push_back(place({8, 5, z}, blocks::hopper(Direction::south)));
+            }
+            c.push_back(place({8, 6, zs[0]}, blocks::chest()));
+            c.push_back(place({8, 5, zs[1] + 1}, blocks::chest()));
+        }
+        if (t == 3) {
+            c.push_back(insert({8, 4, zs[0]}, 0, items::diamond, 41));
+            c.push_back(insert({8, 4, zs[1]}, 0, items::iron_ingot, 41));
+            for (std::uint8_t s = 1; s < 5; ++s)
+                for (const int z : zs) c.push_back(insert({8, 4, z}, s, items::stick, 1));
+        }
+        if (t == 5) {
+            c.push_back(insert({8, 6, zs[0]}, 0, items::diamond, 6));
+            c.push_back(insert({8, 6, zs[0]}, 1, items::cobblestone, 4));
+            c.push_back(insert({8, 6, zs[0]}, 2, items::iron_ingot, 6));
+        }
+        return c;
+    }, 10};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
@@ -1223,7 +1269,7 @@ inline std::vector<Scenario> all_scenarios() {
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
             plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario(), rail_scenario(), minecart_rail_scenario(), minecart_meeting_scenario(), detector_rail_scenario(), coral_scenario(),
-            dispenser_scenario(), tnt_duper_scenario(), flying_engine_scenario()};
+            dispenser_scenario(), tnt_duper_scenario(), flying_engine_scenario(), item_sorter_scenario()};
 }
 
 } // namespace circuit::test

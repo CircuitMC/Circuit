@@ -1527,9 +1527,14 @@
           "evidence": "compared",
           "cases": [
             "trace/observer_clock",
-            "trace/hopper_chained"
+            "trace/hopper_chained",
+            "trace/item_sorter",
+            "trace/item_sorter_overflow"
           ],
-          "note": "Component cases, not whole machines"
+          "note": "The documented basic hopper item sorter as a whole machine (sorting across a chunk edge, overflow protection); clocks and pulse circuits as component cases",
+          "deviations": [
+            "other sorter designs and clock circuits are not established as machines"
+          ]
         }
       ]
     },
