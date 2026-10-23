@@ -16,6 +16,7 @@
 #include <circuit/gameplay/recipes.hpp>
 #include <circuit/gameplay/rules.hpp>
 #include <circuit/gameplay/survival.hpp>
+#include <bit>
 #include <cmath>
 #include <limits>
 #include <format>
@@ -1933,6 +1934,157 @@ int main() {
         // Without support the waterlogged fan breaks and leaves its water.
         s.tick({place({2, -1, 0}, blocks::air())});
         require(s.at({2, 0, 0}) == blocks::water_source(), "its water stays");
+    });
+
+    suite.run("dispensers fire 3 ticks after the tick power reaches them or the block above them", [] {
+        using circuit::gameplay::EntityKind;
+        Sim s;
+        s.tick(floor(-3, 8, -1, 6));
+        // A dispenser placed beside a powered block is not triggered until an update reaches it.
+        s.tick({place({-2, 0, 4}, blocks::redstone_block()), place({0, 0, 0}, blocks::dispenser(D::east)),
+                insert({0, 0, 0}, 0, items::stone, 2)});
+        s.tick({place({-1, 0, 4}, blocks::dispenser(D::east))});
+        require(!s.at({-1, 0, 4}).flag(), "not triggered when placed beside power");
+        s.tick({place({-1, 0, 5}, blocks::stone())});
+        require(s.at({-1, 0, 4}).flag(), "triggered by the update");
+        // Power at the block: triggered at once, one item 3 ticks later.
+        const auto ejected = [&] {
+            std::size_t n = 0;
+            const auto d = s.oracle.dump();
+            for (const auto& e : d.overworld().entities) n += e.kind == EntityKind::item ? e.stack.count : 0;
+            return n;
+        };
+        s.tick({place({-1, 0, 0}, blocks::redstone_block())});
+        const auto powered = s.oracle.time();
+        require(s.at({0, 0, 0}).flag(), "triggered");
+        while (ejected() == 0 && s.oracle.time() < powered + 10) s.tick();
+        require(s.oracle.time() == powered + 3, std::format("fired after {} ticks", s.oracle.time() - powered));
+        const auto spawned = s.last;
+        bool found = false;
+        for (const auto& r : of_kind(spawned, TraceKind::entity_spawn_position))
+            found = found || (std::bit_cast<double>(r.a) == 1.2 && std::bit_cast<double>(r.b) == 0.5 - 0.15625 && std::bit_cast<double>(r.c) == 0.5);
+        require(found, "ejected from 0.7 out of the center, 0.15625 lower");
+        for (const auto& r : of_kind(spawned, TraceKind::entity_spawn_velocity)) {
+            const auto vx = std::bit_cast<double>(r.a), vy = std::bit_cast<double>(r.b);
+            require(vx >= 0.2 - 0.103365 && vx <= 0.3 + 0.103365 && vy >= 0.2 - 0.103365 && vy <= 0.2 + 0.103365, "ejection speed");
+        }
+        // Staying powered, it does not fire again.
+        for (int i = 0; i < 8; ++i) s.tick();
+        require(ejected() == 1, "one item while powered");
+        // Power two above reaches it only through the block above it, when an update comes.
+        s.tick({place({-1, 0, 0}, blocks::air())});
+        require(!s.at({0, 0, 0}).flag(), "no longer triggered");
+        s.tick({place({0, 2, 0}, blocks::redstone_block())});
+        require(!s.at({0, 0, 0}).flag(), "no update reached it");
+        s.tick({place({0, 0, 1}, blocks::stone())});
+        require(s.at({0, 0, 0}).flag(), "the block above it is powered");
+    });
+
+    suite.run("droppers fill the container in front; dispensers pour and take water and set minecarts", [] {
+        using circuit::gameplay::EntityKind;
+        using circuit::gameplay::blocks::RailKind;
+        using circuit::gameplay::blocks::RailShape;
+        Sim s;
+        std::vector<CommandBody> build = floor(-3, 12, -1, 14);
+        // z=0: a dropper into an empty hopper; z=2: into a full chest.
+        build.push_back(place({0, 0, 0}, blocks::dispenser(D::east, true)));
+        build.push_back(place({1, 0, 0}, blocks::hopper(D::down)));
+        build.push_back(place({0, 0, 2}, blocks::dispenser(D::east, true)));
+        build.push_back(place({1, 0, 2}, blocks::chest()));
+        // z=4: a water bucket into air; z=6: into dust; z=8: at a stone pressure plate.
+        for (const int z : {4, 6, 8}) build.push_back(place({0, 0, z}, blocks::dispenser(D::east)));
+        build.push_back(place({1, 0, 6}, blocks::wire()));
+        build.push_back(place({1, 0, 8}, blocks::pressure_plate(blocks::ButtonKind::stone)));
+        // z=10: two buckets at a source; z=12: a minecart at a rail; z=14: TNT.
+        build.push_back(place({0, 0, 10}, blocks::dispenser(D::east)));
+        build.push_back(place({1, 0, 10}, blocks::water_source()));
+        build.push_back(place({2, 0, 10}, blocks::stone()));
+        build.push_back(place({1, 0, 9}, blocks::stone()));
+        build.push_back(place({1, 0, 11}, blocks::stone()));
+        build.push_back(place({0, 0, 12}, blocks::dispenser(D::east)));
+        build.push_back(place({1, 0, 12}, blocks::rail(RailKind::rail, RailShape::east_west)));
+        build.push_back(place({0, 0, 14}, blocks::dispenser(D::east)));
+        s.tick(build);
+        std::vector<CommandBody> fill{insert({0, 0, 0}, 0, items::stone, 3), insert({0, 0, 2}, 0, items::dirt, 1),
+                                      insert({0, 0, 4}, 0, items::water_bucket, 1), insert({0, 0, 6}, 0, items::water_bucket, 1),
+                                      insert({0, 0, 8}, 0, items::water_bucket, 1), insert({0, 0, 10}, 0, items::bucket, 2),
+                                      insert({0, 0, 12}, 0, items::minecart, 1), insert({0, 0, 14}, 0, items::tnt, 1)};
+        for (std::uint8_t i = 0; i < 27; ++i) fill.push_back(insert({1, 0, 2}, i, items::stone, 64));
+        s.tick(fill);
+        std::vector<CommandBody> fire;
+        for (int z = 0; z <= 14; z += 2) fire.push_back(place({-1, 0, z}, blocks::redstone_block()));
+        s.tick(fire);
+        for (int i = 0; i < 3; ++i) s.tick();
+        const auto d = s.oracle.dump();
+        const auto slots = [&](BlockPos p) {
+            for (const auto& [pos, be] : d.overworld().block_entities)
+                if (pos == p) return be.slots;
+            return std::vector<ItemStack>{};
+        };
+        const auto hopper = slots({1, 0, 0});
+        require(hopper[0] == ItemStack{items::stone, 1} && slots({0, 0, 0})[0] == ItemStack{items::stone, 2}, "one item into the hopper");
+        for (const auto& [pos, be] : d.overworld().block_entities)
+            // 8, less one for its own tick, which follows block ticks.
+            if (pos == BlockPos{1, 0, 0}) require(be.cooldown == 7, std::format("the hopper waits 8 ticks, at {}", be.cooldown));
+        require(slots({0, 0, 2})[0] == ItemStack{items::dirt, 1}, "a full chest leaves the dropper's item");
+        require(state_at(d, {1, 0, 4}) == blocks::water_source() && slots({0, 0, 4})[0] == ItemStack{items::bucket, 1}, "poured into air");
+        require(state_at(d, {1, 0, 6}) == blocks::water_source(), "the dust washed away");
+        require(slots({0, 0, 8})[0].empty() && state_at(d, {1, 0, 8}).is(BlockType::pressure_plate), "the plate refuses it: ejected");
+        require(state_at(d, {1, 0, 10}).is_air() && slots({0, 0, 10})[0] == ItemStack{items::bucket, 1}
+                    && slots({0, 0, 10})[1] == ItemStack{items::water_bucket, 1},
+                "the filled bucket goes to the next free slot");
+        std::size_t carts = 0, tnt = 0, buckets = 0, redstone = 0;
+        for (const auto& e : d.overworld().entities) {
+            if (e.kind == EntityKind::minecart) {
+                ++carts;
+                require(e.position.x == 1.625 && e.position.z == 12.5, "the minecart is set 1.125 out on the rail");
+            }
+            if (e.kind == EntityKind::primed_tnt) tnt += std::abs(e.position.x - 1.5) < 0.1 && std::abs(e.position.z - 14.5) < 0.1;
+            if (e.kind == EntityKind::item && e.stack.item == items::water_bucket) ++buckets;
+            if (e.kind == EntityKind::item && e.stack.item == items::redstone) ++redstone;
+        }
+        require(carts == 1 && tnt == 1 && buckets == 1 && redstone == 1, std::format("{} carts, {} TNT, {} buckets, {} dust", carts, tnt, buckets, redstone));
+    });
+
+    suite.run("dispensers eject equipment and keep items whose use is not modeled", [] {
+        using circuit::gameplay::EntityKind;
+        Sim s;
+        std::vector<CommandBody> build = floor(-3, 6, -1, 8);
+        const std::array<std::pair<std::uint16_t, bool>, 5> lanes{{{items::iron_helmet, true}, {items::shears, false}, {items::saddle, true},
+                                                                   {items::arrow, false}, {items::glass_bottle, true}}};
+        for (std::size_t i = 0; i < lanes.size(); ++i) build.push_back(place({0, 0, static_cast<int>(2 * i)}, blocks::dispenser(D::east)));
+        s.tick(build);
+        std::vector<CommandBody> fill, fire;
+        for (std::size_t i = 0; i < lanes.size(); ++i) {
+            fill.push_back(insert({0, 0, static_cast<int>(2 * i)}, 0, lanes[i].first, 1));
+            fire.push_back(place({-1, 0, static_cast<int>(2 * i)}, blocks::redstone_block()));
+        }
+        s.tick(fill);
+        s.tick(fire);
+        for (int i = 0; i < 3; ++i) s.tick();
+        const auto d = s.oracle.dump();
+        for (std::size_t i = 0; i < lanes.size(); ++i) {
+            bool ejected = false;
+            for (const auto& e : d.overworld().entities) ejected = ejected || (e.kind == EntityKind::item && e.stack.item == lanes[i].first);
+            require(ejected == lanes[i].second, std::format("item {} ejected: {}", lanes[i].first, ejected));
+        }
+        Sim t;
+        t.tick(with_floor(floor(-3, 3, -1, 1), {SetGameRule{"tntExplodes", 0}, place({0, 0, 0}, blocks::dispenser(D::east))}));
+        t.tick({insert({0, 0, 0}, 0, items::tnt, 1)});
+        t.tick({place({-1, 0, 0}, blocks::redstone_block())});
+        for (int i = 0; i < 4; ++i) t.tick();
+        const auto td = t.oracle.dump();
+        require(td.overworld().entities.empty(), "with tntExplodes off the TNT stays");
+    });
+
+    suite.run("comparators read dispensers as containers of nine slots", [] {
+        Sim s;
+        s.tick(with_floor(floor(-3, 6, -1, 2), {place({0, 0, 0}, blocks::dispenser(D::up)), place({1, 0, 0}, blocks::comparator(D::east)),
+                                                 place({2, 0, 0}, blocks::wire())}));
+        s.tick({insert({0, 0, 0}, 0, items::minecart, 1), insert({0, 0, 0}, 1, items::minecart, 1), insert({0, 0, 0}, 2, items::minecart, 1)});
+        for (int i = 0; i < 4; ++i) s.tick();
+        // Three of nine slots full: 1 + floor(14 * 3 / 9) = 5.
+        require(wire_level(s, {2, 0, 0}) == 5, std::format("dust at {}", wire_level(s, {2, 0, 0})));
     });
 
     suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {

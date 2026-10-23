@@ -1,0 +1,1678 @@
+circuit-trace 2
+title Dispensers: power when placed and from two above, pistons, removal, water into chests, trapdoors, rails, levers and plates
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.11.0+mc1.21.4
+mechanisms dispenser item_entity water hopper piston repeater
+area 0 0 0 13 4 59
+ticks 60
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 0 0 10 minecraft:stone
+at 0 set 0 0 11 minecraft:stone
+at 0 set 0 0 12 minecraft:stone
+at 0 set 0 0 13 minecraft:stone
+at 0 set 0 0 14 minecraft:stone
+at 0 set 0 0 15 minecraft:stone
+at 0 set 0 0 16 minecraft:stone
+at 0 set 0 0 17 minecraft:stone
+at 0 set 0 0 18 minecraft:stone
+at 0 set 0 0 19 minecraft:stone
+at 0 set 0 0 20 minecraft:stone
+at 0 set 0 0 21 minecraft:stone
+at 0 set 0 0 22 minecraft:stone
+at 0 set 0 0 23 minecraft:stone
+at 0 set 0 0 24 minecraft:stone
+at 0 set 0 0 25 minecraft:stone
+at 0 set 0 0 26 minecraft:stone
+at 0 set 0 0 27 minecraft:stone
+at 0 set 0 0 28 minecraft:stone
+at 0 set 0 0 29 minecraft:stone
+at 0 set 0 0 30 minecraft:stone
+at 0 set 0 0 31 minecraft:stone
+at 0 set 0 0 32 minecraft:stone
+at 0 set 0 0 33 minecraft:stone
+at 0 set 0 0 34 minecraft:stone
+at 0 set 0 0 35 minecraft:stone
+at 0 set 0 0 36 minecraft:stone
+at 0 set 0 0 37 minecraft:stone
+at 0 set 0 0 38 minecraft:stone
+at 0 set 0 0 39 minecraft:stone
+at 0 set 0 0 40 minecraft:stone
+at 0 set 0 0 41 minecraft:stone
+at 0 set 0 0 42 minecraft:stone
+at 0 set 0 0 43 minecraft:stone
+at 0 set 0 0 44 minecraft:stone
+at 0 set 0 0 45 minecraft:stone
+at 0 set 0 0 46 minecraft:stone
+at 0 set 0 0 47 minecraft:stone
+at 0 set 0 0 48 minecraft:stone
+at 0 set 0 0 49 minecraft:stone
+at 0 set 0 0 50 minecraft:stone
+at 0 set 0 0 51 minecraft:stone
+at 0 set 0 0 52 minecraft:stone
+at 0 set 0 0 53 minecraft:stone
+at 0 set 0 0 54 minecraft:stone
+at 0 set 0 0 55 minecraft:stone
+at 0 set 0 0 56 minecraft:stone
+at 0 set 0 0 57 minecraft:stone
+at 0 set 0 0 58 minecraft:stone
+at 0 set 0 0 59 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:stone
+at 0 set 1 0 11 minecraft:stone
+at 0 set 1 0 12 minecraft:stone
+at 0 set 1 0 13 minecraft:stone
+at 0 set 1 0 14 minecraft:stone
+at 0 set 1 0 15 minecraft:stone
+at 0 set 1 0 16 minecraft:stone
+at 0 set 1 0 17 minecraft:stone
+at 0 set 1 0 18 minecraft:stone
+at 0 set 1 0 19 minecraft:stone
+at 0 set 1 0 20 minecraft:stone
+at 0 set 1 0 21 minecraft:stone
+at 0 set 1 0 22 minecraft:stone
+at 0 set 1 0 23 minecraft:stone
+at 0 set 1 0 24 minecraft:stone
+at 0 set 1 0 25 minecraft:stone
+at 0 set 1 0 26 minecraft:stone
+at 0 set 1 0 27 minecraft:stone
+at 0 set 1 0 28 minecraft:stone
+at 0 set 1 0 29 minecraft:stone
+at 0 set 1 0 30 minecraft:stone
+at 0 set 1 0 31 minecraft:stone
+at 0 set 1 0 32 minecraft:stone
+at 0 set 1 0 33 minecraft:stone
+at 0 set 1 0 34 minecraft:stone
+at 0 set 1 0 35 minecraft:stone
+at 0 set 1 0 36 minecraft:stone
+at 0 set 1 0 37 minecraft:stone
+at 0 set 1 0 38 minecraft:stone
+at 0 set 1 0 39 minecraft:stone
+at 0 set 1 0 40 minecraft:stone
+at 0 set 1 0 41 minecraft:stone
+at 0 set 1 0 42 minecraft:stone
+at 0 set 1 0 43 minecraft:stone
+at 0 set 1 0 44 minecraft:stone
+at 0 set 1 0 45 minecraft:stone
+at 0 set 1 0 46 minecraft:stone
+at 0 set 1 0 47 minecraft:stone
+at 0 set 1 0 48 minecraft:stone
+at 0 set 1 0 49 minecraft:stone
+at 0 set 1 0 50 minecraft:stone
+at 0 set 1 0 51 minecraft:stone
+at 0 set 1 0 52 minecraft:stone
+at 0 set 1 0 53 minecraft:stone
+at 0 set 1 0 54 minecraft:stone
+at 0 set 1 0 55 minecraft:stone
+at 0 set 1 0 56 minecraft:stone
+at 0 set 1 0 57 minecraft:stone
+at 0 set 1 0 58 minecraft:stone
+at 0 set 1 0 59 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 2 0 10 minecraft:stone
+at 0 set 2 0 11 minecraft:stone
+at 0 set 2 0 12 minecraft:stone
+at 0 set 2 0 13 minecraft:stone
+at 0 set 2 0 14 minecraft:stone
+at 0 set 2 0 15 minecraft:stone
+at 0 set 2 0 16 minecraft:stone
+at 0 set 2 0 17 minecraft:stone
+at 0 set 2 0 18 minecraft:stone
+at 0 set 2 0 19 minecraft:stone
+at 0 set 2 0 20 minecraft:stone
+at 0 set 2 0 21 minecraft:stone
+at 0 set 2 0 22 minecraft:stone
+at 0 set 2 0 23 minecraft:stone
+at 0 set 2 0 24 minecraft:stone
+at 0 set 2 0 25 minecraft:stone
+at 0 set 2 0 26 minecraft:stone
+at 0 set 2 0 27 minecraft:stone
+at 0 set 2 0 28 minecraft:stone
+at 0 set 2 0 29 minecraft:stone
+at 0 set 2 0 30 minecraft:stone
+at 0 set 2 0 31 minecraft:stone
+at 0 set 2 0 32 minecraft:stone
+at 0 set 2 0 33 minecraft:stone
+at 0 set 2 0 34 minecraft:stone
+at 0 set 2 0 35 minecraft:stone
+at 0 set 2 0 36 minecraft:stone
+at 0 set 2 0 37 minecraft:stone
+at 0 set 2 0 38 minecraft:stone
+at 0 set 2 0 39 minecraft:stone
+at 0 set 2 0 40 minecraft:stone
+at 0 set 2 0 41 minecraft:stone
+at 0 set 2 0 42 minecraft:stone
+at 0 set 2 0 43 minecraft:stone
+at 0 set 2 0 44 minecraft:stone
+at 0 set 2 0 45 minecraft:stone
+at 0 set 2 0 46 minecraft:stone
+at 0 set 2 0 47 minecraft:stone
+at 0 set 2 0 48 minecraft:stone
+at 0 set 2 0 49 minecraft:stone
+at 0 set 2 0 50 minecraft:stone
+at 0 set 2 0 51 minecraft:stone
+at 0 set 2 0 52 minecraft:stone
+at 0 set 2 0 53 minecraft:stone
+at 0 set 2 0 54 minecraft:stone
+at 0 set 2 0 55 minecraft:stone
+at 0 set 2 0 56 minecraft:stone
+at 0 set 2 0 57 minecraft:stone
+at 0 set 2 0 58 minecraft:stone
+at 0 set 2 0 59 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 3 0 10 minecraft:stone
+at 0 set 3 0 11 minecraft:stone
+at 0 set 3 0 12 minecraft:stone
+at 0 set 3 0 13 minecraft:stone
+at 0 set 3 0 14 minecraft:stone
+at 0 set 3 0 15 minecraft:stone
+at 0 set 3 0 16 minecraft:stone
+at 0 set 3 0 17 minecraft:stone
+at 0 set 3 0 18 minecraft:stone
+at 0 set 3 0 19 minecraft:stone
+at 0 set 3 0 20 minecraft:stone
+at 0 set 3 0 21 minecraft:stone
+at 0 set 3 0 22 minecraft:stone
+at 0 set 3 0 23 minecraft:stone
+at 0 set 3 0 24 minecraft:stone
+at 0 set 3 0 25 minecraft:stone
+at 0 set 3 0 26 minecraft:stone
+at 0 set 3 0 27 minecraft:stone
+at 0 set 3 0 28 minecraft:stone
+at 0 set 3 0 29 minecraft:stone
+at 0 set 3 0 30 minecraft:stone
+at 0 set 3 0 31 minecraft:stone
+at 0 set 3 0 32 minecraft:stone
+at 0 set 3 0 33 minecraft:stone
+at 0 set 3 0 34 minecraft:stone
+at 0 set 3 0 35 minecraft:stone
+at 0 set 3 0 36 minecraft:stone
+at 0 set 3 0 37 minecraft:stone
+at 0 set 3 0 38 minecraft:stone
+at 0 set 3 0 39 minecraft:stone
+at 0 set 3 0 40 minecraft:stone
+at 0 set 3 0 41 minecraft:stone
+at 0 set 3 0 42 minecraft:stone
+at 0 set 3 0 43 minecraft:stone
+at 0 set 3 0 44 minecraft:stone
+at 0 set 3 0 45 minecraft:stone
+at 0 set 3 0 46 minecraft:stone
+at 0 set 3 0 47 minecraft:stone
+at 0 set 3 0 48 minecraft:stone
+at 0 set 3 0 49 minecraft:stone
+at 0 set 3 0 50 minecraft:stone
+at 0 set 3 0 51 minecraft:stone
+at 0 set 3 0 52 minecraft:stone
+at 0 set 3 0 53 minecraft:stone
+at 0 set 3 0 54 minecraft:stone
+at 0 set 3 0 55 minecraft:stone
+at 0 set 3 0 56 minecraft:stone
+at 0 set 3 0 57 minecraft:stone
+at 0 set 3 0 58 minecraft:stone
+at 0 set 3 0 59 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 4 0 11 minecraft:stone
+at 0 set 4 0 12 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 4 0 14 minecraft:stone
+at 0 set 4 0 15 minecraft:stone
+at 0 set 4 0 16 minecraft:stone
+at 0 set 4 0 17 minecraft:stone
+at 0 set 4 0 18 minecraft:stone
+at 0 set 4 0 19 minecraft:stone
+at 0 set 4 0 20 minecraft:stone
+at 0 set 4 0 21 minecraft:stone
+at 0 set 4 0 22 minecraft:stone
+at 0 set 4 0 23 minecraft:stone
+at 0 set 4 0 24 minecraft:stone
+at 0 set 4 0 25 minecraft:stone
+at 0 set 4 0 26 minecraft:stone
+at 0 set 4 0 27 minecraft:stone
+at 0 set 4 0 28 minecraft:stone
+at 0 set 4 0 29 minecraft:stone
+at 0 set 4 0 30 minecraft:stone
+at 0 set 4 0 31 minecraft:stone
+at 0 set 4 0 32 minecraft:stone
+at 0 set 4 0 33 minecraft:stone
+at 0 set 4 0 34 minecraft:stone
+at 0 set 4 0 35 minecraft:stone
+at 0 set 4 0 36 minecraft:stone
+at 0 set 4 0 37 minecraft:stone
+at 0 set 4 0 38 minecraft:stone
+at 0 set 4 0 39 minecraft:stone
+at 0 set 4 0 40 minecraft:stone
+at 0 set 4 0 41 minecraft:stone
+at 0 set 4 0 42 minecraft:stone
+at 0 set 4 0 43 minecraft:stone
+at 0 set 4 0 44 minecraft:stone
+at 0 set 4 0 45 minecraft:stone
+at 0 set 4 0 46 minecraft:stone
+at 0 set 4 0 47 minecraft:stone
+at 0 set 4 0 48 minecraft:stone
+at 0 set 4 0 49 minecraft:stone
+at 0 set 4 0 50 minecraft:stone
+at 0 set 4 0 51 minecraft:stone
+at 0 set 4 0 52 minecraft:stone
+at 0 set 4 0 53 minecraft:stone
+at 0 set 4 0 54 minecraft:stone
+at 0 set 4 0 55 minecraft:stone
+at 0 set 4 0 56 minecraft:stone
+at 0 set 4 0 57 minecraft:stone
+at 0 set 4 0 58 minecraft:stone
+at 0 set 4 0 59 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 5 0 10 minecraft:stone
+at 0 set 5 0 11 minecraft:stone
+at 0 set 5 0 12 minecraft:stone
+at 0 set 5 0 13 minecraft:stone
+at 0 set 5 0 14 minecraft:stone
+at 0 set 5 0 15 minecraft:stone
+at 0 set 5 0 16 minecraft:stone
+at 0 set 5 0 17 minecraft:stone
+at 0 set 5 0 18 minecraft:stone
+at 0 set 5 0 19 minecraft:stone
+at 0 set 5 0 20 minecraft:stone
+at 0 set 5 0 21 minecraft:stone
+at 0 set 5 0 22 minecraft:stone
+at 0 set 5 0 23 minecraft:stone
+at 0 set 5 0 24 minecraft:stone
+at 0 set 5 0 25 minecraft:stone
+at 0 set 5 0 26 minecraft:stone
+at 0 set 5 0 27 minecraft:stone
+at 0 set 5 0 28 minecraft:stone
+at 0 set 5 0 29 minecraft:stone
+at 0 set 5 0 30 minecraft:stone
+at 0 set 5 0 31 minecraft:stone
+at 0 set 5 0 32 minecraft:stone
+at 0 set 5 0 33 minecraft:stone
+at 0 set 5 0 34 minecraft:stone
+at 0 set 5 0 35 minecraft:stone
+at 0 set 5 0 36 minecraft:stone
+at 0 set 5 0 37 minecraft:stone
+at 0 set 5 0 38 minecraft:stone
+at 0 set 5 0 39 minecraft:stone
+at 0 set 5 0 40 minecraft:stone
+at 0 set 5 0 41 minecraft:stone
+at 0 set 5 0 42 minecraft:stone
+at 0 set 5 0 43 minecraft:stone
+at 0 set 5 0 44 minecraft:stone
+at 0 set 5 0 45 minecraft:stone
+at 0 set 5 0 46 minecraft:stone
+at 0 set 5 0 47 minecraft:stone
+at 0 set 5 0 48 minecraft:stone
+at 0 set 5 0 49 minecraft:stone
+at 0 set 5 0 50 minecraft:stone
+at 0 set 5 0 51 minecraft:stone
+at 0 set 5 0 52 minecraft:stone
+at 0 set 5 0 53 minecraft:stone
+at 0 set 5 0 54 minecraft:stone
+at 0 set 5 0 55 minecraft:stone
+at 0 set 5 0 56 minecraft:stone
+at 0 set 5 0 57 minecraft:stone
+at 0 set 5 0 58 minecraft:stone
+at 0 set 5 0 59 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 6 0 10 minecraft:stone
+at 0 set 6 0 11 minecraft:stone
+at 0 set 6 0 12 minecraft:stone
+at 0 set 6 0 13 minecraft:stone
+at 0 set 6 0 14 minecraft:stone
+at 0 set 6 0 15 minecraft:stone
+at 0 set 6 0 16 minecraft:stone
+at 0 set 6 0 17 minecraft:stone
+at 0 set 6 0 18 minecraft:stone
+at 0 set 6 0 19 minecraft:stone
+at 0 set 6 0 20 minecraft:stone
+at 0 set 6 0 21 minecraft:stone
+at 0 set 6 0 22 minecraft:stone
+at 0 set 6 0 23 minecraft:stone
+at 0 set 6 0 24 minecraft:stone
+at 0 set 6 0 25 minecraft:stone
+at 0 set 6 0 26 minecraft:stone
+at 0 set 6 0 27 minecraft:stone
+at 0 set 6 0 28 minecraft:stone
+at 0 set 6 0 29 minecraft:stone
+at 0 set 6 0 30 minecraft:stone
+at 0 set 6 0 31 minecraft:stone
+at 0 set 6 0 32 minecraft:stone
+at 0 set 6 0 33 minecraft:stone
+at 0 set 6 0 34 minecraft:stone
+at 0 set 6 0 35 minecraft:stone
+at 0 set 6 0 36 minecraft:stone
+at 0 set 6 0 37 minecraft:stone
+at 0 set 6 0 38 minecraft:stone
+at 0 set 6 0 39 minecraft:stone
+at 0 set 6 0 40 minecraft:stone
+at 0 set 6 0 41 minecraft:stone
+at 0 set 6 0 42 minecraft:stone
+at 0 set 6 0 43 minecraft:stone
+at 0 set 6 0 44 minecraft:stone
+at 0 set 6 0 45 minecraft:stone
+at 0 set 6 0 46 minecraft:stone
+at 0 set 6 0 47 minecraft:stone
+at 0 set 6 0 48 minecraft:stone
+at 0 set 6 0 49 minecraft:stone
+at 0 set 6 0 50 minecraft:stone
+at 0 set 6 0 51 minecraft:stone
+at 0 set 6 0 52 minecraft:stone
+at 0 set 6 0 53 minecraft:stone
+at 0 set 6 0 54 minecraft:stone
+at 0 set 6 0 55 minecraft:stone
+at 0 set 6 0 56 minecraft:stone
+at 0 set 6 0 57 minecraft:stone
+at 0 set 6 0 58 minecraft:stone
+at 0 set 6 0 59 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 7 0 10 minecraft:stone
+at 0 set 7 0 11 minecraft:stone
+at 0 set 7 0 12 minecraft:stone
+at 0 set 7 0 13 minecraft:stone
+at 0 set 7 0 14 minecraft:stone
+at 0 set 7 0 15 minecraft:stone
+at 0 set 7 0 16 minecraft:stone
+at 0 set 7 0 17 minecraft:stone
+at 0 set 7 0 18 minecraft:stone
+at 0 set 7 0 19 minecraft:stone
+at 0 set 7 0 20 minecraft:stone
+at 0 set 7 0 21 minecraft:stone
+at 0 set 7 0 22 minecraft:stone
+at 0 set 7 0 23 minecraft:stone
+at 0 set 7 0 24 minecraft:stone
+at 0 set 7 0 25 minecraft:stone
+at 0 set 7 0 26 minecraft:stone
+at 0 set 7 0 27 minecraft:stone
+at 0 set 7 0 28 minecraft:stone
+at 0 set 7 0 29 minecraft:stone
+at 0 set 7 0 30 minecraft:stone
+at 0 set 7 0 31 minecraft:stone
+at 0 set 7 0 32 minecraft:stone
+at 0 set 7 0 33 minecraft:stone
+at 0 set 7 0 34 minecraft:stone
+at 0 set 7 0 35 minecraft:stone
+at 0 set 7 0 36 minecraft:stone
+at 0 set 7 0 37 minecraft:stone
+at 0 set 7 0 38 minecraft:stone
+at 0 set 7 0 39 minecraft:stone
+at 0 set 7 0 40 minecraft:stone
+at 0 set 7 0 41 minecraft:stone
+at 0 set 7 0 42 minecraft:stone
+at 0 set 7 0 43 minecraft:stone
+at 0 set 7 0 44 minecraft:stone
+at 0 set 7 0 45 minecraft:stone
+at 0 set 7 0 46 minecraft:stone
+at 0 set 7 0 47 minecraft:stone
+at 0 set 7 0 48 minecraft:stone
+at 0 set 7 0 49 minecraft:stone
+at 0 set 7 0 50 minecraft:stone
+at 0 set 7 0 51 minecraft:stone
+at 0 set 7 0 52 minecraft:stone
+at 0 set 7 0 53 minecraft:stone
+at 0 set 7 0 54 minecraft:stone
+at 0 set 7 0 55 minecraft:stone
+at 0 set 7 0 56 minecraft:stone
+at 0 set 7 0 57 minecraft:stone
+at 0 set 7 0 58 minecraft:stone
+at 0 set 7 0 59 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 8 0 10 minecraft:stone
+at 0 set 8 0 11 minecraft:stone
+at 0 set 8 0 12 minecraft:stone
+at 0 set 8 0 13 minecraft:stone
+at 0 set 8 0 14 minecraft:stone
+at 0 set 8 0 15 minecraft:stone
+at 0 set 8 0 16 minecraft:stone
+at 0 set 8 0 17 minecraft:stone
+at 0 set 8 0 18 minecraft:stone
+at 0 set 8 0 19 minecraft:stone
+at 0 set 8 0 20 minecraft:stone
+at 0 set 8 0 21 minecraft:stone
+at 0 set 8 0 22 minecraft:stone
+at 0 set 8 0 23 minecraft:stone
+at 0 set 8 0 24 minecraft:stone
+at 0 set 8 0 25 minecraft:stone
+at 0 set 8 0 26 minecraft:stone
+at 0 set 8 0 27 minecraft:stone
+at 0 set 8 0 28 minecraft:stone
+at 0 set 8 0 29 minecraft:stone
+at 0 set 8 0 30 minecraft:stone
+at 0 set 8 0 31 minecraft:stone
+at 0 set 8 0 32 minecraft:stone
+at 0 set 8 0 33 minecraft:stone
+at 0 set 8 0 34 minecraft:stone
+at 0 set 8 0 35 minecraft:stone
+at 0 set 8 0 36 minecraft:stone
+at 0 set 8 0 37 minecraft:stone
+at 0 set 8 0 38 minecraft:stone
+at 0 set 8 0 39 minecraft:stone
+at 0 set 8 0 40 minecraft:stone
+at 0 set 8 0 41 minecraft:stone
+at 0 set 8 0 42 minecraft:stone
+at 0 set 8 0 43 minecraft:stone
+at 0 set 8 0 44 minecraft:stone
+at 0 set 8 0 45 minecraft:stone
+at 0 set 8 0 46 minecraft:stone
+at 0 set 8 0 47 minecraft:stone
+at 0 set 8 0 48 minecraft:stone
+at 0 set 8 0 49 minecraft:stone
+at 0 set 8 0 50 minecraft:stone
+at 0 set 8 0 51 minecraft:stone
+at 0 set 8 0 52 minecraft:stone
+at 0 set 8 0 53 minecraft:stone
+at 0 set 8 0 54 minecraft:stone
+at 0 set 8 0 55 minecraft:stone
+at 0 set 8 0 56 minecraft:stone
+at 0 set 8 0 57 minecraft:stone
+at 0 set 8 0 58 minecraft:stone
+at 0 set 8 0 59 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 9 0 10 minecraft:stone
+at 0 set 9 0 11 minecraft:stone
+at 0 set 9 0 12 minecraft:stone
+at 0 set 9 0 13 minecraft:stone
+at 0 set 9 0 14 minecraft:stone
+at 0 set 9 0 15 minecraft:stone
+at 0 set 9 0 16 minecraft:stone
+at 0 set 9 0 17 minecraft:stone
+at 0 set 9 0 18 minecraft:stone
+at 0 set 9 0 19 minecraft:stone
+at 0 set 9 0 20 minecraft:stone
+at 0 set 9 0 21 minecraft:stone
+at 0 set 9 0 22 minecraft:stone
+at 0 set 9 0 23 minecraft:stone
+at 0 set 9 0 24 minecraft:stone
+at 0 set 9 0 25 minecraft:stone
+at 0 set 9 0 26 minecraft:stone
+at 0 set 9 0 27 minecraft:stone
+at 0 set 9 0 28 minecraft:stone
+at 0 set 9 0 29 minecraft:stone
+at 0 set 9 0 30 minecraft:stone
+at 0 set 9 0 31 minecraft:stone
+at 0 set 9 0 32 minecraft:stone
+at 0 set 9 0 33 minecraft:stone
+at 0 set 9 0 34 minecraft:stone
+at 0 set 9 0 35 minecraft:stone
+at 0 set 9 0 36 minecraft:stone
+at 0 set 9 0 37 minecraft:stone
+at 0 set 9 0 38 minecraft:stone
+at 0 set 9 0 39 minecraft:stone
+at 0 set 9 0 40 minecraft:stone
+at 0 set 9 0 41 minecraft:stone
+at 0 set 9 0 42 minecraft:stone
+at 0 set 9 0 43 minecraft:stone
+at 0 set 9 0 44 minecraft:stone
+at 0 set 9 0 45 minecraft:stone
+at 0 set 9 0 46 minecraft:stone
+at 0 set 9 0 47 minecraft:stone
+at 0 set 9 0 48 minecraft:stone
+at 0 set 9 0 49 minecraft:stone
+at 0 set 9 0 50 minecraft:stone
+at 0 set 9 0 51 minecraft:stone
+at 0 set 9 0 52 minecraft:stone
+at 0 set 9 0 53 minecraft:stone
+at 0 set 9 0 54 minecraft:stone
+at 0 set 9 0 55 minecraft:stone
+at 0 set 9 0 56 minecraft:stone
+at 0 set 9 0 57 minecraft:stone
+at 0 set 9 0 58 minecraft:stone
+at 0 set 9 0 59 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 10 0 10 minecraft:stone
+at 0 set 10 0 11 minecraft:stone
+at 0 set 10 0 12 minecraft:stone
+at 0 set 10 0 13 minecraft:stone
+at 0 set 10 0 14 minecraft:stone
+at 0 set 10 0 15 minecraft:stone
+at 0 set 10 0 16 minecraft:stone
+at 0 set 10 0 17 minecraft:stone
+at 0 set 10 0 18 minecraft:stone
+at 0 set 10 0 19 minecraft:stone
+at 0 set 10 0 20 minecraft:stone
+at 0 set 10 0 21 minecraft:stone
+at 0 set 10 0 22 minecraft:stone
+at 0 set 10 0 23 minecraft:stone
+at 0 set 10 0 24 minecraft:stone
+at 0 set 10 0 25 minecraft:stone
+at 0 set 10 0 26 minecraft:stone
+at 0 set 10 0 27 minecraft:stone
+at 0 set 10 0 28 minecraft:stone
+at 0 set 10 0 29 minecraft:stone
+at 0 set 10 0 30 minecraft:stone
+at 0 set 10 0 31 minecraft:stone
+at 0 set 10 0 32 minecraft:stone
+at 0 set 10 0 33 minecraft:stone
+at 0 set 10 0 34 minecraft:stone
+at 0 set 10 0 35 minecraft:stone
+at 0 set 10 0 36 minecraft:stone
+at 0 set 10 0 37 minecraft:stone
+at 0 set 10 0 38 minecraft:stone
+at 0 set 10 0 39 minecraft:stone
+at 0 set 10 0 40 minecraft:stone
+at 0 set 10 0 41 minecraft:stone
+at 0 set 10 0 42 minecraft:stone
+at 0 set 10 0 43 minecraft:stone
+at 0 set 10 0 44 minecraft:stone
+at 0 set 10 0 45 minecraft:stone
+at 0 set 10 0 46 minecraft:stone
+at 0 set 10 0 47 minecraft:stone
+at 0 set 10 0 48 minecraft:stone
+at 0 set 10 0 49 minecraft:stone
+at 0 set 10 0 50 minecraft:stone
+at 0 set 10 0 51 minecraft:stone
+at 0 set 10 0 52 minecraft:stone
+at 0 set 10 0 53 minecraft:stone
+at 0 set 10 0 54 minecraft:stone
+at 0 set 10 0 55 minecraft:stone
+at 0 set 10 0 56 minecraft:stone
+at 0 set 10 0 57 minecraft:stone
+at 0 set 10 0 58 minecraft:stone
+at 0 set 10 0 59 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 11 0 10 minecraft:stone
+at 0 set 11 0 11 minecraft:stone
+at 0 set 11 0 12 minecraft:stone
+at 0 set 11 0 13 minecraft:stone
+at 0 set 11 0 14 minecraft:stone
+at 0 set 11 0 15 minecraft:stone
+at 0 set 11 0 16 minecraft:stone
+at 0 set 11 0 17 minecraft:stone
+at 0 set 11 0 18 minecraft:stone
+at 0 set 11 0 19 minecraft:stone
+at 0 set 11 0 20 minecraft:stone
+at 0 set 11 0 21 minecraft:stone
+at 0 set 11 0 22 minecraft:stone
+at 0 set 11 0 23 minecraft:stone
+at 0 set 11 0 24 minecraft:stone
+at 0 set 11 0 25 minecraft:stone
+at 0 set 11 0 26 minecraft:stone
+at 0 set 11 0 27 minecraft:stone
+at 0 set 11 0 28 minecraft:stone
+at 0 set 11 0 29 minecraft:stone
+at 0 set 11 0 30 minecraft:stone
+at 0 set 11 0 31 minecraft:stone
+at 0 set 11 0 32 minecraft:stone
+at 0 set 11 0 33 minecraft:stone
+at 0 set 11 0 34 minecraft:stone
+at 0 set 11 0 35 minecraft:stone
+at 0 set 11 0 36 minecraft:stone
+at 0 set 11 0 37 minecraft:stone
+at 0 set 11 0 38 minecraft:stone
+at 0 set 11 0 39 minecraft:stone
+at 0 set 11 0 40 minecraft:stone
+at 0 set 11 0 41 minecraft:stone
+at 0 set 11 0 42 minecraft:stone
+at 0 set 11 0 43 minecraft:stone
+at 0 set 11 0 44 minecraft:stone
+at 0 set 11 0 45 minecraft:stone
+at 0 set 11 0 46 minecraft:stone
+at 0 set 11 0 47 minecraft:stone
+at 0 set 11 0 48 minecraft:stone
+at 0 set 11 0 49 minecraft:stone
+at 0 set 11 0 50 minecraft:stone
+at 0 set 11 0 51 minecraft:stone
+at 0 set 11 0 52 minecraft:stone
+at 0 set 11 0 53 minecraft:stone
+at 0 set 11 0 54 minecraft:stone
+at 0 set 11 0 55 minecraft:stone
+at 0 set 11 0 56 minecraft:stone
+at 0 set 11 0 57 minecraft:stone
+at 0 set 11 0 58 minecraft:stone
+at 0 set 11 0 59 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 12 0 8 minecraft:stone
+at 0 set 12 0 9 minecraft:stone
+at 0 set 12 0 10 minecraft:stone
+at 0 set 12 0 11 minecraft:stone
+at 0 set 12 0 12 minecraft:stone
+at 0 set 12 0 13 minecraft:stone
+at 0 set 12 0 14 minecraft:stone
+at 0 set 12 0 15 minecraft:stone
+at 0 set 12 0 16 minecraft:stone
+at 0 set 12 0 17 minecraft:stone
+at 0 set 12 0 18 minecraft:stone
+at 0 set 12 0 19 minecraft:stone
+at 0 set 12 0 20 minecraft:stone
+at 0 set 12 0 21 minecraft:stone
+at 0 set 12 0 22 minecraft:stone
+at 0 set 12 0 23 minecraft:stone
+at 0 set 12 0 24 minecraft:stone
+at 0 set 12 0 25 minecraft:stone
+at 0 set 12 0 26 minecraft:stone
+at 0 set 12 0 27 minecraft:stone
+at 0 set 12 0 28 minecraft:stone
+at 0 set 12 0 29 minecraft:stone
+at 0 set 12 0 30 minecraft:stone
+at 0 set 12 0 31 minecraft:stone
+at 0 set 12 0 32 minecraft:stone
+at 0 set 12 0 33 minecraft:stone
+at 0 set 12 0 34 minecraft:stone
+at 0 set 12 0 35 minecraft:stone
+at 0 set 12 0 36 minecraft:stone
+at 0 set 12 0 37 minecraft:stone
+at 0 set 12 0 38 minecraft:stone
+at 0 set 12 0 39 minecraft:stone
+at 0 set 12 0 40 minecraft:stone
+at 0 set 12 0 41 minecraft:stone
+at 0 set 12 0 42 minecraft:stone
+at 0 set 12 0 43 minecraft:stone
+at 0 set 12 0 44 minecraft:stone
+at 0 set 12 0 45 minecraft:stone
+at 0 set 12 0 46 minecraft:stone
+at 0 set 12 0 47 minecraft:stone
+at 0 set 12 0 48 minecraft:stone
+at 0 set 12 0 49 minecraft:stone
+at 0 set 12 0 50 minecraft:stone
+at 0 set 12 0 51 minecraft:stone
+at 0 set 12 0 52 minecraft:stone
+at 0 set 12 0 53 minecraft:stone
+at 0 set 12 0 54 minecraft:stone
+at 0 set 12 0 55 minecraft:stone
+at 0 set 12 0 56 minecraft:stone
+at 0 set 12 0 57 minecraft:stone
+at 0 set 12 0 58 minecraft:stone
+at 0 set 12 0 59 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 13 0 8 minecraft:stone
+at 0 set 13 0 9 minecraft:stone
+at 0 set 13 0 10 minecraft:stone
+at 0 set 13 0 11 minecraft:stone
+at 0 set 13 0 12 minecraft:stone
+at 0 set 13 0 13 minecraft:stone
+at 0 set 13 0 14 minecraft:stone
+at 0 set 13 0 15 minecraft:stone
+at 0 set 13 0 16 minecraft:stone
+at 0 set 13 0 17 minecraft:stone
+at 0 set 13 0 18 minecraft:stone
+at 0 set 13 0 19 minecraft:stone
+at 0 set 13 0 20 minecraft:stone
+at 0 set 13 0 21 minecraft:stone
+at 0 set 13 0 22 minecraft:stone
+at 0 set 13 0 23 minecraft:stone
+at 0 set 13 0 24 minecraft:stone
+at 0 set 13 0 25 minecraft:stone
+at 0 set 13 0 26 minecraft:stone
+at 0 set 13 0 27 minecraft:stone
+at 0 set 13 0 28 minecraft:stone
+at 0 set 13 0 29 minecraft:stone
+at 0 set 13 0 30 minecraft:stone
+at 0 set 13 0 31 minecraft:stone
+at 0 set 13 0 32 minecraft:stone
+at 0 set 13 0 33 minecraft:stone
+at 0 set 13 0 34 minecraft:stone
+at 0 set 13 0 35 minecraft:stone
+at 0 set 13 0 36 minecraft:stone
+at 0 set 13 0 37 minecraft:stone
+at 0 set 13 0 38 minecraft:stone
+at 0 set 13 0 39 minecraft:stone
+at 0 set 13 0 40 minecraft:stone
+at 0 set 13 0 41 minecraft:stone
+at 0 set 13 0 42 minecraft:stone
+at 0 set 13 0 43 minecraft:stone
+at 0 set 13 0 44 minecraft:stone
+at 0 set 13 0 45 minecraft:stone
+at 0 set 13 0 46 minecraft:stone
+at 0 set 13 0 47 minecraft:stone
+at 0 set 13 0 48 minecraft:stone
+at 0 set 13 0 49 minecraft:stone
+at 0 set 13 0 50 minecraft:stone
+at 0 set 13 0 51 minecraft:stone
+at 0 set 13 0 52 minecraft:stone
+at 0 set 13 0 53 minecraft:stone
+at 0 set 13 0 54 minecraft:stone
+at 0 set 13 0 55 minecraft:stone
+at 0 set 13 0 56 minecraft:stone
+at 0 set 13 0 57 minecraft:stone
+at 0 set 13 0 58 minecraft:stone
+at 0 set 13 0 59 minecraft:stone
+at 0 set 4 1 1 minecraft:redstone_block
+at 0 set 5 1 5 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 9 minecraft:piston[extended=false,facing=east]
+at 0 set 5 1 9 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 3 1 9 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 13 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 5 1 17 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 17 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 21 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 21 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 7 1 21 minecraft:stone
+at 0 set 6 1 20 minecraft:stone
+at 0 set 6 1 22 minecraft:stone
+at 0 set 6 1 21 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 0 set 5 1 25 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 25 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 7 1 25 minecraft:stone
+at 0 set 6 1 24 minecraft:stone
+at 0 set 6 1 26 minecraft:stone
+at 0 set 6 1 25 minecraft:oak_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=false]
+at 0 set 5 1 29 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 29 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 7 1 29 minecraft:stone
+at 0 set 6 1 28 minecraft:stone
+at 0 set 6 1 30 minecraft:stone
+at 0 set 6 1 29 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 33 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 33 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 7 1 33 minecraft:stone
+at 0 set 6 1 32 minecraft:stone
+at 0 set 6 1 34 minecraft:stone
+at 0 set 6 1 33 minecraft:stone_pressure_plate[powered=false]
+at 0 set 5 1 37 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 37 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 7 1 37 minecraft:stone
+at 0 set 6 1 36 minecraft:stone
+at 0 set 6 1 38 minecraft:stone
+at 0 set 6 1 37 minecraft:oak_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=true]
+at 0 set 5 1 41 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 41 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 7 1 41 minecraft:stone
+at 0 set 6 1 40 minecraft:stone
+at 0 set 6 1 42 minecraft:stone
+at 0 set 6 1 41 minecraft:rail[shape=north_south,waterlogged=true]
+at 0 set 5 1 45 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 45 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 49 minecraft:dropper[facing=east,triggered=false]
+at 0 set 4 1 49 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 6 1 49 minecraft:hopper[enabled=true,facing=south]
+at 0 set 6 1 50 minecraft:chest[facing=north,type=single,waterlogged=false]
+at 0 set 5 1 53 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 53 minecraft:stone
+at 0 set 3 1 53 minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+at 0 set 2 1 53 minecraft:lever[face=floor,facing=north,powered=false]
+
+at 1 insert 5 1 5 0 minecraft:stone 2
+at 1 insert 5 1 9 0 minecraft:stone 2
+at 1 insert 5 1 13 0 minecraft:stone 5
+at 1 insert 5 1 13 4 minecraft:glass 3
+at 1 insert 5 1 17 0 minecraft:stone 2
+at 1 insert 5 1 21 0 minecraft:water_bucket 1
+at 1 insert 5 1 25 0 minecraft:water_bucket 1
+at 1 insert 5 1 29 0 minecraft:water_bucket 1
+at 1 insert 5 1 33 0 minecraft:water_bucket 1
+at 1 insert 5 1 37 0 minecraft:water_bucket 1
+at 1 insert 5 1 41 0 minecraft:water_bucket 1
+at 1 insert 5 1 45 0 minecraft:water_bucket 1
+at 1 insert 5 1 49 0 minecraft:stone 3
+at 1 insert 5 1 53 0 minecraft:stone 2
+
+at 5 set 5 1 1 minecraft:dispenser[facing=east,triggered=false]
+change 5 commands 5 1 1 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+
+at 6 insert 5 1 1 0 minecraft:stone 2
+
+at 10 set 5 3 5 minecraft:redstone_block
+change 10 commands 5 3 5 minecraft:air minecraft:redstone_block
+at 10 use 3 1 9
+change 10 commands 3 1 9 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+at 10 set 5 1 13 minecraft:air
+change 10 commands 5 1 13 minecraft:dispenser[facing=east,triggered=false] minecraft:air
+entity-added 10 commands e1 minecraft:item 5.673225840532493 1.1804023117536144 13.603063069012581 -0.041375815845219606 0.31022587332647317 -0.015729760123120762 item=minecraft:stone count=5
+entity-added 10 commands e2 minecraft:item 5.641175886473427 1.6507590012204802 13.86070887446201 -0.042797196656939075 0.20584327434234467 0.029426548265629914 item=minecraft:glass count=3
+at 10 use 4 1 17
+change 10 commands 4 1 17 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 17 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 21
+change 10 commands 4 1 21 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 21 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 25
+change 10 commands 4 1 25 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 25 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 29
+change 10 commands 4 1 29 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 29 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 33
+change 10 commands 4 1 33 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 33 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 37
+change 10 commands 4 1 37 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 37 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 41
+change 10 commands 4 1 41 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 41 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 45
+change 10 commands 4 1 45 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 45 minecraft:dispenser[facing=up,triggered=false] minecraft:dispenser[facing=up,triggered=true]
+at 10 use 4 1 49
+change 10 commands 4 1 49 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 49 minecraft:dropper[facing=east,triggered=false] minecraft:dropper[facing=east,triggered=true]
+at 10 use 2 1 53
+change 10 commands 2 1 53 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+draws 10 commands level 88
+entity-order 10 entities e1 e2
+entity 10 e1 5.631850024687274 1.4506281850800877 13.58733330888946 -0.040548300317496275 0.2648213558599437 -0.015415165220679712 item=minecraft:stone count=5 age=1 pickup-delay=0 on-ground=false
+entity 10 e2 5.598378689816488 1.8166022755628248 13.890135422727639 -0.04194125354009204 0.16252640885549777 0.028838017861584183 item=minecraft:glass count=3 age=1 pickup-delay=0 on-ground=false
+
+change 11 block_ticks 3 1 53 minecraft:repeater[delay=1,facing=west,locked=false,powered=false] minecraft:repeater[delay=1,facing=west,locked=false,powered=true]
+change 11 block_ticks 5 1 53 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+entity-order 11 entities e1 e2
+entity 11 e1 5.591301724369777 1.6754495409400314 13.571918143668782 -0.0397373350845438 0.2203249287427448 -0.01510686221028706 item=minecraft:stone count=5 age=2 pickup-delay=0 on-ground=false
+entity 11 e2 5.556437436276395 1.9391286844183226 13.918973440589223 -0.04110242926925612 0.1200758806783878 0.02826125805439404 item=minecraft:glass count=3 age=2 pickup-delay=0 on-ground=false
+
+at 12 set 5 1 17 minecraft:air
+change 12 commands 5 1 17 minecraft:dispenser[facing=east,triggered=true] minecraft:air
+entity-added 12 commands e3 minecraft:item 5.288177809157265 1.640865375281718 17.13225512297573 0.07370836682365205 0.15718228913573576 7.875282757570686E-4 item=minecraft:stone count=2
+draws 12 commands level 71
+entity-order 12 entities e1 e2 e3
+entity 12 e1 5.551564389285233 1.8557744696827763 13.556811281458495 -0.03894258914078244 0.1767184301678899 -0.01480472525422185 item=minecraft:stone count=5 age=3 pickup-delay=0 on-ground=false
+entity 12 e2 5.515335007007139 2.0192045650967105 13.947234698643618 -0.04028038146783762 0.07847436306482004 0.027696033432346875 item=minecraft:glass count=3 age=3 pickup-delay=0 on-ground=false
+entity 12 e3 5.361886175980917 1.7580476644174536 17.13304265125149 0.07223420089305453 0.11483864335302103 7.71777725262837E-4 item=minecraft:stone count=2 age=1 pickup-delay=0 on-ground=false
+
+change 13 block_ticks 6 1 21 minecraft:chest[facing=north,type=single,waterlogged=false] minecraft:chest[facing=north,type=single,waterlogged=true]
+change 13 block_ticks 6 1 25 minecraft:oak_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=false] minecraft:oak_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=true]
+entity-added 13 block_ticks e4 minecraft:item 6.674140250136171 1.1510422690869917 29.255087727268116 -0.02922940605825762 0.2 -0.0826524289668545 item=minecraft:lever count=1
+change 13 block_ticks 6 1 29 minecraft:lever[face=floor,facing=north,powered=false] minecraft:air
+change 13 block_ticks 6 1 29 minecraft:air minecraft:water[level=0]
+entity-added 13 block_ticks e5 minecraft:item 6.2 1.34375 33.5 0.2703060906015377 0.21743223054375813 0.041122370271350746 item=minecraft:water_bucket count=1
+change 13 block_ticks 5 2 45 minecraft:air minecraft:water[level=0]
+draws 13 block_ticks level 36
+entity-order 13 entities e1 e2 e3 e4 e5
+entity 13 e1 5.5126218001444505 1.9924928998506661 13.542006556204273 -0.03816373810073773 0.1339840615645321 -0.014508631031515137 item=minecraft:stone count=5 age=4 pickup-delay=0 on-ground=false
+entity 13 e2 5.475054625539301 2.0576789281615304 13.974930732075965 -0.039474774606768175 0.03770487580352364 0.027142113291959855 item=minecraft:glass count=3 age=4 pickup-delay=0 on-ground=false
+entity 13 e3 5.434120376873971 1.8328863077704747 17.133814428976752 0.07078951825295149 0.07334187048596062 7.563421854780722E-4 item=minecraft:stone count=2 age=2 pickup-delay=0 on-ground=false
+entity 13 e4 6.645203137859743 1.3510422690869917 29.173261821802694 -0.02835837058283143 0.196 -0.08018938891681782 item=minecraft:lever count=1 age=1 pickup-delay=9 on-ground=false
+entity 13 e5 6.470306090601538 1.5211822305437581 33.54112237027135 0.2648999739451865 0.17388358593288294 0.0402999236502707 item=minecraft:water_bucket count=1 age=1 pickup-delay=0 on-ground=false
+
+at 14 use 4 1 17
+change 14 commands 4 1 17 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+at 14 use 4 1 21
+change 14 commands 4 1 21 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 21 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 25
+change 14 commands 4 1 25 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 25 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 29
+change 14 commands 4 1 29 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 29 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 33
+change 14 commands 4 1 33 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 33 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 37
+change 14 commands 4 1 37 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 37 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 41
+change 14 commands 4 1 41 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 41 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 45
+change 14 commands 4 1 45 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 45 minecraft:dispenser[facing=up,triggered=true] minecraft:dispenser[facing=up,triggered=false]
+at 14 use 4 1 49
+change 14 commands 4 1 49 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 49 minecraft:dropper[facing=east,triggered=true] minecraft:dropper[facing=east,triggered=false]
+entity-order 14 entities e1 e2 e3 e4 e5
+entity 14 e1 5.474458062043713 2.0864769614151983 13.527497925172758 -0.037400464066638515 0.09210438033324145 -0.01421845868761501 item=minecraft:stone count=5 age=5 pickup-delay=0 on-ground=false
+entity 14 e2 5.435579850932533 2.055383803965054 14.002072845367925 -0.038685279867554385 -0.0022492217125468315 0.026599271543815386 item=minecraft:glass count=3 age=5 pickup-delay=0 on-ground=false
+entity 14 e3 5.504909895126922 1.8662281782564354 17.13457077116223 0.06937372923809537 0.03267503307624141 7.412153561945931E-4 item=minecraft:stone count=2 age=3 pickup-delay=0 on-ground=false
+entity 14 e4 6.617128350712293 1.5470422690869916 29.125 -0.02751329193998469 0.19208 0 item=minecraft:lever count=1 age=2 pickup-delay=8 on-ground=false
+entity 14 e5 6.735206064546724 1.655065816476641 33.58142229392163 0.2596019795188488 0.13120591421422528 0.03949392594592533 item=minecraft:water_bucket count=1 age=2 pickup-delay=0 on-ground=false
+
+entity-added 15 block_ticks e6 minecraft:item 6.2 1.34375 53.5 0.21324118524241237 0.23215819110695524 -0.004580508569148409 item=minecraft:stone count=1
+draws 15 block_ticks level 19
+entity-order 15 entities e1 e2 e3 e4 e5 e6
+entity 15 e1 5.437057597977074 2.1385813417484396 13.513279466485143 -0.036652455498662986 0.05106229272657662 -0.013934089785058288 item=minecraft:stone count=5 age=6 pickup-delay=0 on-ground=false
+entity 15 e2 5.396894571064979 2.013134582252507 14.028672116911741 -0.03791157500806645 -0.04140423727829589 0.02606728662027992 item=minecraft:glass count=3 age=6 pickup-delay=0 on-ground=false
+entity 15 e3 5.574283624365018 1.8589032113326769 17.135311986518424 0.06798625597653234 -0.007178467585283421 7.263910632082621E-4 item=minecraft:stone count=2 age=4 pickup-delay=0 on-ground=false
+entity 15 e4 6.589890191429321 1.7391222690869916 29.125 -0.02669339661683926 0.1882384 0 item=minecraft:lever count=1 age=3 pickup-delay=7 on-ground=false
+entity 15 e5 6.875 1.7462717306908662 33.62091621986755 0 0.08938179592994076 0.03870404818029368 item=minecraft:water_bucket count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e6 6.413241185242413 1.5359081911069552 53.49541949143085 0.20897636560481694 0.1883150272848161 -0.004488898485131708 item=minecraft:stone count=1 age=1 pickup-delay=0 on-ground=false
+
+entity-order 16 entities e1 e2 e3 e4 e5 e6
+entity 16 e1 5.400405142478411 2.1496436344750163 13.499345376700084 -0.03591940708777983 0.010841046872045087 -0.013655408255128792 item=minecraft:stone count=5 age=7 pickup-delay=0 on-ground=false
+entity 16 e2 5.358982996056913 1.9317303449742111 14.054739403532022 -0.037153344231011035 -0.07977615253272997 0.025545941385068355 item=minecraft:glass count=3 age=7 pickup-delay=0 on-ground=false
+entity 16 e3 5.6422698803415505 1.8117247437473936 17.13603837758163 0.06662653215373661 -0.04623489823357775 7.118632557989069E-4 item=minecraft:stone count=2 age=5 pickup-delay=0 on-ground=false
+entity 16 e4 6.5634637285240816 1.9273606690869916 29.125 -0.02589793415117894 0.184473632 0 item=minecraft:lever count=1 age=4 pickup-delay=6 on-ground=false
+entity 16 e5 6.875 1.795653526620807 33.659620268047846 0 0.04839416001134195 0.03792996795490894 item=minecraft:water_bucket count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e6 6.62221755084723 1.6842232183917714 53.49093059294572 0.20479684227862846 0.14534872673911978 -0.004399120601048018 item=minecraft:stone count=1 age=2 pickup-delay=0 on-ground=false
+
+entity-order 17 entities e1 e2 e3 e4 e5 e6
+entity 17 e1 5.364485735390631 2.1204846813470613 13.485689968444955 -0.035201019631132556 -0.028575774065395812 -0.013382300350482459 item=minecraft:stone count=5 age=8 pickup-delay=0 on-ground=false
+entity 17 e2 5.321829651825902 1.8119541924414813 14.08028534491709 -0.03641027805503462 -0.11738062948207537 0.02503502304461715 item=minecraft:glass count=3 age=8 pickup-delay=0 on-ground=false
+entity 17 e3 5.708896412495287 1.725489845513816 17.13675024083743 0.06529400278146212 -0.08451020026890618 6.976260042606429E-4 item=minecraft:stone count=2 age=6 pickup-delay=0 on-ground=false
+entity 17 e4 6.537565794372902 2.0718343010869917 29.125 -0.02537997596211925 0.14158415936 0 item=minecraft:lever count=1 age=5 pickup-delay=5 on-ground=false
+entity 17 e5 6.875 1.8040476866321489 33.697550236002755 0 0.008226276811115107 0.03717136931926748 item=minecraft:water_bucket count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e6 6.827014393125858 1.7895719451308911 53.48653147234467 0.20070090933924567 0.10324175220433737 -0.0043111382729336244 item=minecraft:stone count=1 age=3 pickup-delay=0 on-ground=false
+
+change 18 fluid_ticks 5 2 44 minecraft:air minecraft:water[level=1]
+change 18 fluid_ticks 5 2 46 minecraft:air minecraft:water[level=1]
+change 18 fluid_ticks 4 2 45 minecraft:air minecraft:water[level=1]
+change 18 fluid_ticks 6 2 45 minecraft:air minecraft:water[level=1]
+entity-order 18 entities e1 e2 e3 e4 e5 e6
+entity 18 e1 5.329284715759498 2.0519089072816654 13.472307668094473 -0.03449699990991607 -0.06720425858408789 -0.013114654598719933 item=minecraft:stone count=5 age=9 pickup-delay=0 on-ground=false
+entity 18 e2 5.285419373770867 1.6545735629594058 14.105320367961708 -0.03568207318840487 -0.15423301689243385 0.024534323061229976 item=minecraft:glass count=3 age=9 pickup-delay=0 on-ground=false
+entity 18 e3 5.774190415276749 1.6009796452449097 17.13744786684169 0.06398812397121714 -0.12201999626352807 6.836734974815901E-4 item=minecraft:stone count=2 age=7 pickup-delay=0 on-ground=false
+entity 18 e4 6.512185818410783 2.1734184604469915 29.125 -0.024872376926961492 0.09955247617279998 0 item=minecraft:lever count=1 age=6 pickup-delay=4 on-ground=false
+entity 18 e5 6.875 1.772273963443264 33.73472160532202 0 -0.0311382487251072 0.036427942641869736 item=minecraft:water_bucket count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e6 7.027715302465104 1.8528136973352285 53.48222033407174 0.1966868949805268 0.06197691716025062 -0.004224915589703389 item=minecraft:stone count=1 age=4 pickup-delay=0 on-ground=false
+
+entity-order 19 entities e1 e2 e3 e4 e5 e6
+entity 19 e1 5.294787715849582 1.9447046486975776 13.459193013495753 -0.03380706056969581 -0.10506017341240613 -0.012852361756887719 item=minecraft:stone count=5 age=10 pickup-delay=0 on-ground=false
+entity 19 e2 5.249737300582462 1.460340546066972 14.129854691022938 -0.034968432405218304 -0.19034835655458518 0.024043637067960453 item=minecraft:glass count=3 age=10 pickup-delay=0 on-ground=false
+entity 19 e3 5.838178539247966 1.4389596489813816 17.13813154033917 0.06270836271226941 -0.1587795963382575 6.700000405719954E-4 item=minecraft:stone count=2 age=8 pickup-delay=0 on-ground=false
+entity 19 e4 6.487313441483821 2.2329709366197914 29.125 -0.024374929862825204 0.05836142664934398 0 item=minecraft:lever count=1 age=7 pickup-delay=3 on-ground=false
+entity 19 e5 6.875 1.701135714718157 33.771149547963894 0 -0.06971548375060506 0.035699384483840205 item=minecraft:water_bucket count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e6 7.224402197445631 1.8747906144954791 53.47799541848204 0.19275316083242106 0.021537378817045604 -0.00414041735849319 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=false
+
+at 20 set 5 1 2 minecraft:stone
+change 20 commands 5 1 2 minecraft:air minecraft:stone
+change 20 commands 5 1 1 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 20 set 4 1 5 minecraft:stone
+change 20 commands 4 1 5 minecraft:air minecraft:stone
+change 20 commands 5 1 5 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 20 use 4 1 17
+change 20 commands 4 1 17 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+at 20 use 4 1 21
+change 20 commands 4 1 21 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 20 commands 5 1 21 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 20 use 4 1 25
+change 20 commands 4 1 25 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 20 commands 5 1 25 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 20 use 4 1 29
+change 20 commands 4 1 29 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 20 commands 5 1 29 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 20 use 4 1 33
+change 20 commands 4 1 33 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 20 commands 5 1 33 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 20 use 4 1 37
+change 20 commands 4 1 37 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 20 commands 5 1 37 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 20 use 4 1 41
+change 20 commands 4 1 41 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 20 commands 5 1 41 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 20 use 4 1 45
+change 20 commands 4 1 45 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 20 commands 5 1 45 minecraft:dispenser[facing=up,triggered=false] minecraft:dispenser[facing=up,triggered=true]
+at 20 use 4 1 49
+change 20 commands 4 1 49 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 20 commands 5 1 49 minecraft:dropper[facing=east,triggered=false] minecraft:dropper[facing=east,triggered=true]
+at 20 use 2 1 53
+change 20 commands 2 1 53 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+entity-order 20 entities e1 e2 e3 e4 e5 e6
+entity 20 e1 5.260980655279886 1.7996444752851715 13.446340651738865 -0.0331309200031204 -0.142158969944158 -0.01259531476688931 item=minecraft:stone count=5 age=11 pickup-delay=0 on-ground=false
+entity 20 e2 5.214768868177243 1.2299921895123869 14.153898328090898 -0.03426906442408385 -0.22574138942349348 0.023562764785197227 item=minecraft:glass count=3 age=11 pickup-delay=0 on-ground=false
+entity 20 e3 5.900886901960236 1.2401800526431241 17.138801540379742 0.061454196654091124 -0.19480400441149234 6.566000525397921E-4 item=minecraft:stone count=2 age=9 pickup-delay=0 on-ground=false
+entity 20 e4 6.4629385116209965 2.2513323632691353 29.125 -0.02388743173048359 0.0179941981163571 0 item=minecraft:lever count=1 age=8 pickup-delay=2 on-ground=false
+entity 20 e5 6.875 1.5914202309675518 33.806848932447735 0 -0.10752117407559295 0.03498539747507512 item=minecraft:water_bucket count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e6 7.417155358278052 1.8563279933125247 53.473855001123546 0.1888981012922474 -0.01809336875929531 -0.00405760909029552 item=minecraft:stone count=1 age=6 pickup-delay=0 on-ground=false
+
+change 21 block_ticks 3 1 53 minecraft:repeater[delay=1,facing=west,locked=false,powered=true] minecraft:repeater[delay=1,facing=west,locked=false,powered=false]
+change 21 block_ticks 5 1 53 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+entity-order 21 entities e1 e2 e3 e4 e5 e6
+entity 21 e1 5.227849735276766 1.6174855053410135 13.433745336971976 -0.032468302234980144 -0.17851579054527483 -0.012343408711788089 item=minecraft:stone count=5 age=12 pickup-delay=0 on-ground=false
+entity 21 e2 5.180499803753159 1.0 14.177461092876095 -0.020150211907615956 0 0.013854907086910593 item=minecraft:glass count=3 age=12 pickup-delay=0 on-ground=true
+entity 21 e3 5.962341098614327 1.0053760482316318 17.139458140432282 0.06022511389315508 -0.2301079243232625 6.434680640126484E-4 item=minecraft:stone count=2 age=10 pickup-delay=0 on-ground=false
+entity 21 e4 6.439051079890513 2.2293265613854922 29.125 -0.02340968355149052 -0.02156568584597004 0 item=minecraft:lever count=1 age=9 pickup-delay=1 on-ground=false
+entity 21 e5 6.875 1.4438990568919587 33.84183432992281 0 -0.1445707505940811 0.03428569019286712 item=minecraft:water_bucket count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e6 7.606053459570299 1.7982346245532295 53.46979739203325 0.1851201428693478 -0.056931501384109406 -0.003976456985882362 item=minecraft:stone count=1 age=7 pickup-delay=0 on-ground=false
+
+entity-order 22 entities e1 e2 e3 e4 e5 e6
+entity 22 e1 5.195381433041786 1.3989697147957387 13.421401928260188 -0.03181893680956426 -0.21414547473436935 -0.012096540772984164 item=minecraft:stone count=5 age=13 pickup-delay=0 on-ground=false
+entity 22 e2 5.160349591845543 1.0 14.191315999963006 -0.011848325793116034 0 0.00814668618631371 item=minecraft:glass count=3 age=13 pickup-delay=0 on-ground=true
+entity 22 e3 6.022566212507482 1.0 17.140101608496295 0.035412370530154134 0 3.783592596862931E-4 item=minecraft:stone count=2 age=11 pickup-delay=0 on-ground=true
+entity 22 e4 6.415641396339023 2.167760875539522 29.125 -0.022941490326964988 -0.060334372129050635 0 item=minecraft:lever count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e5 6.875 1.2593283062978777 33.875 0 -0.18087933558219946 0 item=minecraft:water_bucket count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e6 7.791173602439647 1.70130312316912 53.46582093504737 0.18141774354284737 -0.09499287135642723 -0.0038969279220096124 item=minecraft:stone count=1 age=8 pickup-delay=0 on-ground=false
+
+entity-added 23 block_ticks e7 minecraft:item 6.2 1.34375 1.5 0.18412894773586821 0.25532875458359616 0.05520462591379036 item=minecraft:stone count=1
+entity-added 23 block_ticks e8 minecraft:item 6.2 1.34375 5.5 0.22820835244570337 0.23250596071353238 0.020547488326690514 item=minecraft:stone count=1
+change 23 block_ticks 6 1 21 minecraft:chest[facing=north,type=single,waterlogged=true] minecraft:chest[facing=north,type=single,waterlogged=false]
+change 23 block_ticks 6 1 25 minecraft:oak_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=true] minecraft:oak_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=false]
+change 23 block_ticks 6 1 29 minecraft:water[level=0] minecraft:air
+change 23 block_ticks 6 1 37 minecraft:oak_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=true] minecraft:oak_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=false]
+change 23 block_ticks 6 1 41 minecraft:rail[shape=north_south,waterlogged=true] minecraft:rail[shape=north_south,waterlogged=false]
+change 23 block_ticks 5 2 45 minecraft:water[level=0] minecraft:air
+change 23 fluid_ticks 5 2 44 minecraft:water[level=1] minecraft:air
+change 23 fluid_ticks 5 2 46 minecraft:water[level=1] minecraft:air
+change 23 fluid_ticks 4 2 45 minecraft:water[level=1] minecraft:air
+change 23 fluid_ticks 6 2 45 minecraft:water[level=1] minecraft:air
+draws 23 block_ticks level 45
+entity-order 23 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 23 e1 5.163562496232221 1.1448242400613693 13.409305387487205 -0.031182558680271033 -0.24906256523968193 -0.011854610188247686 item=minecraft:stone count=5 age=14 pickup-delay=0 on-ground=false
+entity 23 e2 5.148501266052428 1.0 14.19946268614932 -0.006966816266917756 0 0.004790251959248155 item=minecraft:glass count=3 age=14 pickup-delay=0 on-ground=true
+entity 23 e3 6.057978583037636 1.0 17.14047996775598 0.02082247596558646 0 2.2247526706709386E-4 item=minecraft:stone count=2 age=12 pickup-delay=0 on-ground=true
+entity 23 e4 6.392699906012058 2.0674265034104713 29.125 -0.02248266095799989 -0.09832768468646962 0 item=minecraft:lever count=1 age=11 pickup-delay=0 on-ground=false
+entity 23 e5 6.875 1.0384489707156783 33.875 0 -0.21646174887055547 0 item=minecraft:water_bucket count=1 age=11 pickup-delay=0 on-ground=false
+entity 23 e6 7.972591345982495 1.5663102518126928 53.46192400712536 0.17778939213225928 -0.13229301392929868 -0.0038189894378974215 item=minecraft:stone count=1 age=9 pickup-delay=0 on-ground=false
+entity 23 e7 6.384128947735868 1.5590787545835962 1.5552046259137904 0.18044637229313182 0.21102217949192423 0.054100534448459234 item=minecraft:stone count=1 age=1 pickup-delay=0 on-ground=false
+entity 23 e8 6.428208352445703 1.5362559607135324 5.520547488326691 0.2236441897495182 0.18865584149926173 0.02013653895206894 item=minecraft:stone count=1 age=1 pickup-delay=0 on-ground=false
+
+at 24 use 4 1 17
+change 24 commands 4 1 17 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+at 24 use 4 1 21
+change 24 commands 4 1 21 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 24 commands 5 1 21 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 24 use 4 1 25
+change 24 commands 4 1 25 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 24 commands 5 1 25 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 24 use 4 1 29
+change 24 commands 4 1 29 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 24 commands 5 1 29 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 24 use 4 1 33
+change 24 commands 4 1 33 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 24 commands 5 1 33 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 24 use 4 1 37
+change 24 commands 4 1 37 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 24 commands 5 1 37 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 24 use 4 1 41
+change 24 commands 4 1 41 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 24 commands 5 1 41 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 24 use 4 1 45
+change 24 commands 4 1 45 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 24 commands 5 1 45 minecraft:dispenser[facing=up,triggered=true] minecraft:dispenser[facing=up,triggered=false]
+at 24 use 4 1 49
+change 24 commands 4 1 49 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 24 commands 5 1 49 minecraft:dropper[facing=east,triggered=true] minecraft:dropper[facing=east,triggered=false]
+entity-order 24 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 24 e1 5.13237993755195 1.0 13.397450777298957 -0.018335346347755698 0 -0.00697051149162675 item=minecraft:stone count=5 age=15 pickup-delay=0 on-ground=true
+entity 24 e2 5.14153444978551 1.0 14.204252938108567 -0.0040964883768802125 0 0.0028166684352750114 item=minecraft:glass count=3 age=15 pickup-delay=0 on-ground=true
+entity 24 e3 6.078801059003223 1.0 17.140702443023045 0.012243617098952192 0 1.3081547018992598E-4 item=minecraft:stone count=2 age=13 pickup-delay=0 on-ground=true
+entity 24 e4 6.370217245054058 1.9290988187240017 29.125 -0.022033008167662616 -0.13556113099274023 0 item=minecraft:lever count=1 age=12 pickup-delay=0 on-ground=false
+entity 24 e5 6.875 1.0 33.875 0 0 0 item=minecraft:water_bucket count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e6 8.150380738114753 1.3940172378833942 53.458105017687465 0.17423360768067764 -0.1688471536507127 -0.003742609721980916 item=minecraft:stone count=1 age=10 pickup-delay=0 on-ground=false
+entity 24 e7 6.564575320029 1.7301009340755205 1.6093051603622497 0.1768374482890106 0.16760173590208574 0.05301852479137585 item=minecraft:stone count=1 age=2 pickup-delay=0 on-ground=false
+entity 24 e8 6.651852542195222 1.6849118022127942 5.540684027278759 0.21917131022020223 0.14568272466927648 0.01973380855710156 item=minecraft:stone count=1 age=2 pickup-delay=0 on-ground=false
+
+entity-order 25 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 25 e1 5.114044591204195 1.0 13.39048026580733 -0.010781184736609183 0 -0.004098661169227592 item=minecraft:stone count=5 age=16 pickup-delay=0 on-ground=true
+entity 25 e2 5.13743796140863 1.0 14.207069606543842 -0.0024087354078219415 0 0.001656201206485136 item=minecraft:glass count=3 age=16 pickup-delay=0 on-ground=true
+entity 25 e3 6.091044676102175 1.0 17.140833258493235 0.0071992475781221255 0 7.691950420650843E-5 item=minecraft:stone count=2 age=14 pickup-delay=0 on-ground=true
+entity 25 e4 6.348184236886396 1.7535376877312614 29.125 -0.021592348424555645 -0.17204990837288542 0 item=minecraft:lever count=1 age=13 pickup-delay=0 on-ground=false
+entity 25 e5 6.875 1.0 33.875 0 -0.04 0 item=minecraft:water_bucket count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e6 8.324614345795432 1.1851700842326816 53.45436240796548 0.17074893885030643 -0.20467021057769846 -0.003667757598925913 item=minecraft:stone count=1 age=11 pickup-delay=0 on-ground=false
+entity 25 e7 6.7414127683180105 1.8577026699776062 1.6623236851536256 0.17330070269613704 0.12504970118404402 0.05195815530679644 item=minecraft:stone count=1 age=3 pickup-delay=0 on-ground=false
+entity 25 e8 6.871023852415425 1.7905945268820707 5.560417835835861 0.21478788819615918 0.10356907017589094 0.01933913276235206 item=minecraft:stone count=1 age=3 pickup-delay=0 on-ground=false
+
+entity-order 26 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 26 e1 5.103263406467586 1.0 13.386381604638103 -0.006339337262594016 0 -0.002410013009850673 item=minecraft:stone count=5 age=17 pickup-delay=0 on-ground=true
+entity 26 e2 5.13743796140863 1.0 14.207069606543842 -0.0024087354078219415 -0.04 0.001656201206485136 item=minecraft:glass count=3 age=17 pickup-delay=0 on-ground=true
+entity 26 e3 6.098243923680298 1.0 17.14091017799744 0.0042331580016115354 0 4.52286730215086E-5 item=minecraft:stone count=2 age=15 pickup-delay=0 on-ground=true
+entity 26 e4 6.32659188846184 1.5414877793583759 29.125 -0.021160501867905895 -0.20780891020542772 0 item=minecraft:lever count=1 age=14 pickup-delay=0 on-ground=false
+entity 26 e5 6.875 1.0 33.875 0 -0.08 0 item=minecraft:water_bucket count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e6 8.495363284645737 1.0 53.45069465036656 0.10040038613999058 0 -0.0021566416850349024 item=minecraft:stone count=1 age=12 pickup-delay=0 on-ground=true
+entity 26 e7 6.914713471014148 1.9427523711616503 1.714281840460422 0.16983469194766287 0.08334870716036312 0.05091899319168368 item=minecraft:stone count=1 age=4 pickup-delay=0 on-ground=false
+entity 26 e8 7.085811740611584 1.8541635970579615 5.579756968598213 0.21049213452898985 0.06229768877237313 0.0189523504759697 item=minecraft:stone count=1 age=4 pickup-delay=0 on-ground=false
+
+entity-order 27 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 27 e1 5.0969240692049915 1.0 13.383971591628253 -0.0037275306852363956 0 -0.0014170877922909813 item=minecraft:stone count=5 age=18 pickup-delay=0 on-ground=true
+entity 27 e2 5.135029226000809 1.0 14.208725807750326 -0.0014163365622225455 0 9.738464073408063E-4 item=minecraft:glass count=3 age=18 pickup-delay=0 on-ground=true
+entity 27 e3 6.10247708168191 1.0 17.14095540667046 0.002489097155244935 0 2.6594462410919336E-5 item=minecraft:stone count=2 age=16 pickup-delay=0 on-ground=true
+entity 27 e4 6.305431386593934 1.2936788691529482 29.125 -0.02073729223415232 -0.24285273200131915 0 item=minecraft:lever count=1 age=15 pickup-delay=0 on-ground=false
+entity 27 e5 6.875 1.0 33.875 0 0 0 item=minecraft:water_bucket count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e6 8.595763670785727 1.0 53.448538008681524 0.05903543298676918 0 -0.0012681054383180174 item=minecraft:stone count=1 age=13 pickup-delay=0 on-ground=true
+entity 27 e7 7.08454816296181 1.9861010783220134 1.7652008336521057 0.16643800134804929 0.042481733017155854 0.04990061429905272 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=false
+entity 27 e8 7.296303875140574 1.8764612858303347 5.598709319074183 0.2062822958532289 0.021851734996925665 0.018573303827937704 item=minecraft:stone count=1 age=5 pickup-delay=0 on-ground=false
+
+entity-order 28 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 28 e1 5.093196538519755 1.0 13.382554503835962 -0.0021917882633197177 0 -8.332477056563914E-4 item=minecraft:stone count=5 age=19 pickup-delay=0 on-ground=true
+entity 28 e2 5.135029226000809 1.0 14.208725807750326 -0.0014163365622225455 -0.04 9.738464073408063E-4 item=minecraft:glass count=3 age=19 pickup-delay=0 on-ground=true
+entity 28 e3 6.104966178837155 1.0 17.140982001132873 0.0014635892744588794 0 1.5637545470092827E-5 item=minecraft:stone count=2 age=17 pickup-delay=0 on-ground=true
+entity 28 e4 6.284694094359782 1.010826137151629 29.125 -0.020322546785001734 -0.27719567736129275 0 item=minecraft:lever count=1 age=16 pickup-delay=0 on-ground=false
+entity 28 e5 6.875 1.0 33.875 0 -0.04 0 item=minecraft:water_bucket count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e6 8.654799103772497 1.0 53.4472699032432 0.034712838086856004 0 -7.456460727112886E-4 item=minecraft:stone count=1 age=14 pickup-delay=0 on-ground=true
+entity 28 e7 7.250986164309859 1.9885828113391693 1.8151014479511585 0.16310924449564124 0.0024320983568127358 0.048902602964850356 item=minecraft:stone count=1 age=6 pickup-delay=0 on-ground=false
+entity 28 e8 7.502586170993803 1.8583130208272602 5.61728262290212 0.20215665387068688 -0.01778529970301285 0.018201838105636605 item=minecraft:stone count=1 age=6 pickup-delay=0 on-ground=false
+
+entity-order 29 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 29 e1 5.093196538519755 1.0 13.382554503835962 -0.0021917882633197177 -0.04 -8.332477056563914E-4 item=minecraft:stone count=5 age=20 pickup-delay=0 on-ground=true
+entity 29 e2 5.135029226000809 1.0 14.208725807750326 -0.0014163365622225455 -0.08 9.738464073408063E-4 item=minecraft:glass count=3 age=20 pickup-delay=0 on-ground=true
+entity 29 e3 6.104966178837155 1.0 17.140982001132873 0.0014635892744588794 -0.04 1.5637545470092827E-5 item=minecraft:stone count=2 age=18 pickup-delay=0 on-ground=true
+entity 29 e4 6.264371547574781 1.0 29.125 -0.011949658711208656 0 0 item=minecraft:lever count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e5 6.875 1.0 33.875 0 -0.08 0 item=minecraft:water_bucket count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e6 8.689511941859353 1.0 53.446524257170495 0.020411150847565344 0 -4.384399348426552E-4 item=minecraft:stone count=1 age=15 pickup-delay=0 on-ground=true
+entity 29 e7 7.4140954088055 1.951014909695982 1.8640040509160087 0.15984706271679036 -0.03681654361032352 0.04792455183829648 item=minecraft:stone count=1 age=7 pickup-delay=0 on-ground=false
+entity 29 e8 7.70474282486449 1.8005277211242474 5.635484461007757 0.1981135246491053 -0.0566295937089526 0.017837801690696382 item=minecraft:stone count=1 age=7 pickup-delay=0 on-ground=false
+
+at 30 use 4 1 17
+change 30 commands 4 1 17 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+at 30 use 4 1 21
+change 30 commands 4 1 21 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 30 commands 5 1 21 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 30 use 4 1 25
+change 30 commands 4 1 25 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 30 commands 5 1 25 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 30 use 4 1 29
+change 30 commands 4 1 29 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 30 commands 5 1 29 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 30 use 4 1 33
+change 30 commands 4 1 33 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 30 commands 5 1 33 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 30 use 4 1 37
+change 30 commands 4 1 37 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 30 commands 5 1 37 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 30 use 4 1 41
+change 30 commands 4 1 41 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 30 commands 5 1 41 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 30 use 4 1 45
+change 30 commands 4 1 45 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 30 commands 5 1 45 minecraft:dispenser[facing=up,triggered=false] minecraft:dispenser[facing=up,triggered=true]
+at 30 use 4 1 49
+change 30 commands 4 1 49 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 30 commands 5 1 49 minecraft:dropper[facing=east,triggered=false] minecraft:dropper[facing=east,triggered=true]
+entity-order 30 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 30 e1 5.093196538519755 1.0 13.382554503835962 -0.0021917882633197177 -0.08 -8.332477056563914E-4 item=minecraft:stone count=5 age=21 pickup-delay=0 on-ground=true
+entity 30 e2 5.135029226000809 1.0 14.208725807750326 -0.0014163365622225455 -0.12 9.738464073408063E-4 item=minecraft:glass count=3 age=21 pickup-delay=0 on-ground=true
+entity 30 e3 6.104966178837155 1.0 17.140982001132873 0.0014635892744588794 -0.08 1.5637545470092827E-5 item=minecraft:stone count=2 age=19 pickup-delay=0 on-ground=true
+entity 30 e4 6.252421888863572 1.0 29.125 -0.007026400028747811 0 0 item=minecraft:lever count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e5 6.875 1.0 33.875 0 -0.12 0 item=minecraft:water_bucket count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e6 8.709923092706918 1.0 53.446085817235655 0.012001757905235022 0 -2.578027076114734E-4 item=minecraft:stone count=1 age=16 pickup-delay=0 on-ground=true
+entity 30 e7 7.57394247152229 1.8741983660856585 1.9119286027543052 0.1566501245112953 -0.07528021273811705 0.04696606171561883 item=minecraft:stone count=1 age=8 pickup-delay=0 on-ground=false
+entity 30 e8 7.902856349513596 1.703898127415295 5.653322262698453 0.1941512579348388 -0.09469700183477354 0.017481045997111522 item=minecraft:stone count=1 age=8 pickup-delay=0 on-ground=false
+
+entity-order 31 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 31 e1 5.093196538519755 1.0 13.382554503835962 -0.0021917882633197177 -0.12 -8.332477056563914E-4 item=minecraft:stone count=5 age=22 pickup-delay=0 on-ground=true
+entity 31 e2 5.133612889438586 1.0 14.209699654157667 -8.328059823317325E-4 0 5.726217450977971E-4 item=minecraft:glass count=3 age=22 pickup-delay=0 on-ground=true
+entity 31 e3 6.104966178837155 1.0 17.140982001132873 0.0014635892744588794 -0.12 1.5637545470092827E-5 item=minecraft:stone count=2 age=20 pickup-delay=0 on-ground=true
+entity 31 e4 6.245395488834824 1.0 29.125 -0.004131523632359342 0 0 item=minecraft:lever count=1 age=19 pickup-delay=0 on-ground=true
+entity 31 e5 6.875 1.0 33.875 0 0 0 item=minecraft:water_bucket count=1 age=19 pickup-delay=0 on-ground=true
+entity 31 e6 8.721924850612153 1.0 53.44582801452805 0.007057034357915826 0 -1.5158800731885524E-4 item=minecraft:stone count=1 age=17 pickup-delay=0 on-ground=true
+entity 31 e7 7.730592596033586 1.7589181533475413 1.958894664469924 0.1535171250089334 -0.11297460848335472 0.04602674137711299 item=minecraft:stone count=1 age=9 pickup-delay=0 on-ground=false
+entity 31 e8 8.097007607448434 1.5692011255805214 5.6708033086955645 0.1902682364792834 -0.13200306179807805 0.017131425410593783 item=minecraft:stone count=1 age=9 pickup-delay=0 on-ground=false
+
+entity-order 32 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 32 e1 5.0910047502564355 1.0 13.381721256130305 -0.0012887716284276287 0 -4.899497001940681E-4 item=minecraft:stone count=5 age=23 pickup-delay=0 on-ground=true
+entity 32 e2 5.133612889438586 1.0 14.209699654157667 -8.328059823317325E-4 -0.04 5.726217450977971E-4 item=minecraft:glass count=3 age=23 pickup-delay=0 on-ground=true
+entity 32 e3 6.106429768111614 1.0 17.140997638678343 8.605905799206462E-4 0 9.194877661028362E-6 item=minecraft:stone count=2 age=21 pickup-delay=0 on-ground=true
+entity 32 e4 6.2412639652024655 1.0 29.125 -0.0024293361401152274 0 0 item=minecraft:lever count=1 age=20 pickup-delay=0 on-ground=true
+entity 32 e5 6.875 1.0 33.875 0 -0.04 0 item=minecraft:water_bucket count=1 age=20 pickup-delay=0 on-ground=true
+entity 32 e6 8.728981884970068 1.0 53.44567642652073 0.004149536619721475 0 -8.913375726655341E-5 item=minecraft:stone count=1 age=18 pickup-delay=0 on-ground=true
+entity 32 e7 7.8841097210425195 1.6059435448641866 2.0049214058470373 0.15044678543686152 -0.14991511631368762 0.04510620742746115 item=minecraft:stone count=1 age=10 pickup-delay=0 on-ground=false
+entity 32 e8 8.287275843927718 1.3971980637824433 5.687934734106158 0.18646287537877634 -0.16856300056211648 0.016788797229137915 item=minecraft:stone count=1 age=10 pickup-delay=0 on-ground=false
+
+change 33 block_ticks 6 1 21 minecraft:chest[facing=north,type=single,waterlogged=false] minecraft:chest[facing=north,type=single,waterlogged=true]
+change 33 block_ticks 6 1 25 minecraft:oak_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=false] minecraft:oak_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=true]
+change 33 block_ticks 6 1 29 minecraft:air minecraft:water[level=0]
+change 33 block_ticks 6 1 37 minecraft:oak_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=false] minecraft:oak_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=true]
+change 33 block_ticks 6 1 41 minecraft:rail[shape=north_south,waterlogged=false] minecraft:rail[shape=north_south,waterlogged=true]
+change 33 block_ticks 5 2 45 minecraft:air minecraft:water[level=0]
+draws 33 block_ticks level 7
+entity-order 33 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 33 e1 5.0910047502564355 1.0 13.381721256130305 -0.0012887716284276287 -0.04 -4.899497001940681E-4 item=minecraft:stone count=5 age=24 pickup-delay=0 on-ground=true
+entity 33 e2 5.133612889438586 1.0 14.209699654157667 -8.328059823317325E-4 -0.08 5.726217450977971E-4 item=minecraft:glass count=3 age=24 pickup-delay=0 on-ground=true
+entity 33 e3 6.106429768111614 1.0 17.140997638678343 8.605905799206462E-4 -0.04 9.194877661028362E-6 item=minecraft:stone count=2 age=22 pickup-delay=0 on-ground=true
+entity 33 e4 6.2412639652024655 1.0 29.125 -0.00240504280188203 5.000000237487257E-4 0 item=minecraft:lever count=1 age=21 pickup-delay=0 on-ground=true
+entity 33 e5 6.875 1.0 33.875 0 -0.08 0 item=minecraft:water_bucket count=1 age=21 pickup-delay=0 on-ground=true
+entity 33 e6 8.733131421589789 1.0 53.44558729276346 0.00243992777774923 0 -5.241065454301706E-5 item=minecraft:stone count=1 age=19 pickup-delay=0 on-ground=true
+entity 33 e7 8.034556506479381 1.416028428550499 2.0500276132744983 0.147437852597669 -0.18611681398741386 0.04420408413924456 item=minecraft:stone count=1 age=11 pickup-delay=0 on-ground=false
+entity 33 e8 8.473738719306494 1.1886350632203269 5.704723531335296 0.18273362142769792 -0.20439174055087417 0.01645302160477605 item=minecraft:stone count=1 age=11 pickup-delay=0 on-ground=false
+
+at 34 use 4 1 17
+change 34 commands 4 1 17 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+at 34 use 4 1 21
+change 34 commands 4 1 21 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 34 commands 5 1 21 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 34 use 4 1 25
+change 34 commands 4 1 25 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 34 commands 5 1 25 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 34 use 4 1 29
+change 34 commands 4 1 29 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 34 commands 5 1 29 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 34 use 4 1 33
+change 34 commands 4 1 33 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 34 commands 5 1 33 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 34 use 4 1 37
+change 34 commands 4 1 37 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 34 commands 5 1 37 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 34 use 4 1 41
+change 34 commands 4 1 41 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 34 commands 5 1 41 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 34 use 4 1 45
+change 34 commands 4 1 45 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 34 commands 5 1 45 minecraft:dispenser[facing=up,triggered=true] minecraft:dispenser[facing=up,triggered=false]
+at 34 use 4 1 49
+change 34 commands 4 1 49 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 34 commands 5 1 49 minecraft:dropper[facing=east,triggered=true] minecraft:dropper[facing=east,triggered=false]
+entity-order 34 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 34 e1 5.0910047502564355 1.0 13.381721256130305 -0.0012887716284276287 -0.08 -4.899497001940681E-4 item=minecraft:stone count=5 age=25 pickup-delay=0 on-ground=true
+entity 34 e2 5.133612889438586 1.0 14.209699654157667 -8.328059823317325E-4 -0.12 5.726217450977971E-4 item=minecraft:glass count=3 age=25 pickup-delay=0 on-ground=true
+entity 34 e3 6.106429768111614 1.0 17.140997638678343 8.605905799206462E-4 -0.08 9.194877661028362E-6 item=minecraft:stone count=2 age=23 pickup-delay=0 on-ground=true
+entity 34 e4 6.2412639652024655 1.0 29.125 -0.0023809923967994854 0.0010000000474974513 0 item=minecraft:lever count=1 age=22 pickup-delay=0 on-ground=true
+entity 34 e5 6.875 1.0 33.875 0 -0.12 0 item=minecraft:water_bucket count=1 age=22 pickup-delay=0 on-ground=true
+entity 34 e6 8.733131421589789 1.0 53.44558729276346 0.00243992777774923 -0.04 -5.241065454301706E-5 item=minecraft:stone count=1 age=20 pickup-delay=0 on-ground=true
+entity 34 e7 8.18199435907705 1.189911614563085 2.094231697413743 0.1444890983578695 -0.2215944777076656 0.043320003299585665 item=minecraft:stone count=1 age=12 pickup-delay=0 on-ground=false
+entity 34 e8 8.656472340734192 1.0 5.721176552940072 0.10744738020412478 0 0.009674377676439415 item=minecraft:stone count=1 age=12 pickup-delay=0 on-ground=true
+
+entity-order 35 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 35 e1 5.0910047502564355 1.0 13.381721256130305 -0.0012887716284276287 -0.12 -4.899497001940681E-4 item=minecraft:stone count=5 age=26 pickup-delay=0 on-ground=true
+entity 35 e2 5.132780083456255 1.0 14.210272275902765 -4.896899668530506E-4 0 3.367016199753731E-4 item=minecraft:glass count=3 age=26 pickup-delay=0 on-ground=true
+entity 35 e3 6.106429768111614 1.0 17.140997638678343 8.605905799206462E-4 -0.12 9.194877661028362E-6 item=minecraft:stone count=2 age=24 pickup-delay=0 on-ground=true
+entity 35 e4 6.2412639652024655 1.0 29.125 -0.0023571824955384035 0.001500000071246177 0 item=minecraft:lever count=1 age=23 pickup-delay=0 on-ground=true
+entity 35 e5 6.875 1.0 33.875 0 0 0 item=minecraft:water_bucket count=1 age=23 pickup-delay=0 on-ground=true
+entity 35 e6 8.733131421589789 1.0 53.44558729276346 0.00243992777774923 -0.08 -5.241065454301706E-5 item=minecraft:stone count=1 age=21 pickup-delay=0 on-ground=true
+entity 35 e7 8.32648345743492 1.0 2.1375517007133285 0.08495959837775087 0 0.02547216450157319 item=minecraft:stone count=1 age=13 pickup-delay=0 on-ground=true
+entity 35 e8 8.763919720938317 1.0 5.730850930616511 0.06317906591315339 0 0.0056885346457711174 item=minecraft:stone count=1 age=13 pickup-delay=0 on-ground=true
+
+entity-order 36 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 36 e1 5.089715978628008 1.0 13.381231306430111 -7.577977937176866E-4 0 -2.880904526837637E-4 item=minecraft:stone count=5 age=27 pickup-delay=0 on-ground=true
+entity 36 e2 5.132780083456255 1.0 14.210272275902765 -4.896899668530506E-4 -0.04 3.367016199753731E-4 item=minecraft:glass count=3 age=27 pickup-delay=0 on-ground=true
+entity 36 e3 6.107290358691534 1.0 17.141006833556002 5.060273118781742E-4 0 5.4065886083576345E-6 item=minecraft:stone count=2 age=25 pickup-delay=0 on-ground=true
+entity 36 e4 6.238930354509403 1.002000000094995 29.125 -0.002286938523711698 0.0019600000930950047 0 item=minecraft:lever count=1 age=24 pickup-delay=0 on-ground=false
+entity 36 e5 6.875 1.0 33.875 0 -0.04 0 item=minecraft:water_bucket count=1 age=24 pickup-delay=0 on-ground=true
+entity 36 e6 8.735571349367538 1.0 53.44553488210892 0.0014346776775841276 0 -3.081746797022113E-5 item=minecraft:stone count=1 age=22 pickup-delay=0 on-ground=true
+entity 36 e7 8.41144305581267 1.0 2.1630238652149014 0.0499562488695923 0 0.014977634233038278 item=minecraft:stone count=1 age=14 pickup-delay=0 on-ground=true
+entity 36 e8 8.82709878685147 1.0 5.7365394652622825 0.03714929449257385 0 0.0033448587080639994 item=minecraft:stone count=1 age=14 pickup-delay=0 on-ground=true
+
+entity-order 37 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 37 e1 5.089715978628008 1.0 13.381231306430111 -7.577977937176866E-4 -0.04 -2.880904526837637E-4 item=minecraft:stone count=5 age=28 pickup-delay=0 on-ground=true
+entity 37 e2 5.132780083456255 1.0 14.210272275902765 -4.896899668530506E-4 -0.08 3.367016199753731E-4 item=minecraft:glass count=3 age=28 pickup-delay=0 on-ground=true
+entity 37 e3 6.107290358691534 1.0 17.141006833556002 5.060273118781742E-4 -0.04 5.4065886083576345E-6 item=minecraft:stone count=2 age=26 pickup-delay=0 on-ground=true
+entity 37 e4 6.236666285349118 1.0044600002118387 29.125 -0.002218787820262528 0.0024108001145068557 0 item=minecraft:lever count=1 age=25 pickup-delay=0 on-ground=false
+entity 37 e5 6.875 1.0 33.875 0 -0.08 0 item=minecraft:water_bucket count=1 age=25 pickup-delay=0 on-ground=true
+entity 37 e6 8.735571349367538 1.0 53.44553488210892 0.0014346776775841276 -0.04 -3.081746797022113E-5 item=minecraft:stone count=1 age=23 pickup-delay=0 on-ground=true
+entity 37 e7 8.461399304682262 1.0 2.1780014994479395 0.029374277289123746 0 0.008806849814621183 item=minecraft:stone count=1 age=15 pickup-delay=0 on-ground=true
+entity 37 e8 8.864248081344044 1.0 5.7398843239703465 0.021843787358189762 0 0.001966777118115794 item=minecraft:stone count=1 age=15 pickup-delay=0 on-ground=true
+
+change 38 fluid_ticks 5 2 44 minecraft:air minecraft:water[level=1]
+change 38 fluid_ticks 5 2 46 minecraft:air minecraft:water[level=1]
+change 38 fluid_ticks 4 2 45 minecraft:air minecraft:water[level=1]
+change 38 fluid_ticks 6 2 45 minecraft:air minecraft:water[level=1]
+entity-order 38 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 38 e1 5.089715978628008 1.0 13.381231306430111 -7.577977937176866E-4 -0.08 -2.880904526837637E-4 item=minecraft:stone count=5 age=29 pickup-delay=0 on-ground=true
+entity 38 e2 5.132780083456255 1.0 14.210272275902765 -4.896899668530506E-4 -0.12 3.367016199753731E-4 item=minecraft:glass count=3 age=29 pickup-delay=0 on-ground=true
+entity 38 e3 6.107290358691534 1.0 17.141006833556002 5.060273118781742E-4 -0.08 5.4065886083576345E-6 item=minecraft:stone count=2 age=27 pickup-delay=0 on-ground=true
+entity 38 e4 6.234469685385898 1.0073708003500943 29.125 -0.0021526680058523333 0.0028525841354904696 0 item=minecraft:lever count=1 age=26 pickup-delay=0 on-ground=false
+entity 38 e5 6.875 1.0 33.875 0 -0.12 0 item=minecraft:water_bucket count=1 age=26 pickup-delay=0 on-ground=true
+entity 38 e6 8.735571349367538 1.0 53.44553488210892 0.0014346776775841276 -0.08 -3.081746797022113E-5 item=minecraft:stone count=1 age=24 pickup-delay=0 on-ground=true
+entity 38 e7 8.490773581971386 1.0 2.1868083492625607 0.01727207678284138 0 0.005178428211726978 item=minecraft:stone count=1 age=16 pickup-delay=0 on-ground=true
+entity 38 e8 8.886091868702234 1.0 5.7418511010884625 0.012844148258190836 0 0.001156465061743306 item=minecraft:stone count=1 age=16 pickup-delay=0 on-ground=true
+
+entity-order 39 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 39 e1 5.089715978628008 1.0 13.381231306430111 -7.577977937176866E-4 -0.12 -2.880904526837637E-4 item=minecraft:stone count=5 age=30 pickup-delay=0 on-ground=true
+entity 39 e2 5.132290393489401 1.0 14.21060897752274 -2.879377294638879E-4 0 1.9798057245394799E-4 item=minecraft:glass count=3 age=30 pickup-delay=0 on-ground=true
+entity 39 e3 6.107290358691534 1.0 17.141006833556002 5.060273118781742E-4 -0.12 5.4065886083576345E-6 item=minecraft:stone count=2 age=28 pickup-delay=0 on-ground=true
+entity 39 e4 6.232338544039575 1.0107233845093335 29.125 -0.002088518560045082 0.0032855324760544115 0 item=minecraft:lever count=1 age=27 pickup-delay=0 on-ground=false
+entity 39 e5 6.875 1.0 33.875 0 0 0 item=minecraft:water_bucket count=1 age=27 pickup-delay=0 on-ground=true
+entity 39 e6 8.735571349367538 1.0 53.44553488210892 0.0014346776775841276 -0.12 -3.081746797022113E-5 item=minecraft:stone count=1 age=25 pickup-delay=0 on-ground=true
+entity 39 e7 8.508045658754227 1.0 2.1919867774742876 0.010155982169570765 0 0.00304491609468457 item=minecraft:stone count=1 age=17 pickup-delay=0 on-ground=true
+entity 39 e8 8.898936016960425 1.0 5.743007566150206 0.007552359935262539 0 6.800015246843076E-4 item=minecraft:stone count=1 age=17 pickup-delay=0 on-ground=true
+
+entity-order 40 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 40 e1 5.0889581808342905 1.0 13.380943215977428 -4.455851475129219E-4 0 -1.6939720321220992E-4 item=minecraft:stone count=5 age=31 pickup-delay=0 on-ground=true
+entity 40 e2 5.132290393489401 1.0 14.21060897752274 -2.879377294638879E-4 -0.04 1.9798057245394799E-4 item=minecraft:glass count=3 age=31 pickup-delay=0 on-ground=true
+entity 40 e3 6.107796386003412 1.0 17.14101224014461 2.9754408930465195E-4 0 3.1790744213940203E-6 item=minecraft:stone count=2 age=29 pickup-delay=0 on-ground=true
+entity 40 e4 6.2302709106452125 1.0145089170091366 29.125 -0.002026280765912028 0.0037098218498070744 0 item=minecraft:lever count=1 age=28 pickup-delay=0 on-ground=false
+entity 40 e5 6.875 1.0 33.875 0 -0.04 0 item=minecraft:water_bucket count=1 age=28 pickup-delay=0 on-ground=true
+entity 40 e6 8.737006027045123 1.0 53.44550406464095 8.435905592488127E-4 0 -1.812067298865934E-5 item=minecraft:stone count=1 age=26 pickup-delay=0 on-ground=true
+entity 40 e7 8.518201640923799 1.0 2.195031693568972 0.00597171811620857 0 0.0017904108437137402 item=minecraft:stone count=1 age=18 pickup-delay=0 on-ground=true
+entity 40 e8 8.906488376895688 1.0 5.743687567674891 0.004440788088488858 0 3.998409367213722E-4 item=minecraft:stone count=1 age=18 pickup-delay=0 on-ground=true
+
+entity-order 41 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 41 e1 5.0889581808342905 1.0 13.380943215977428 -4.455851475129219E-4 -0.04 -1.6939720321220992E-4 item=minecraft:stone count=5 age=32 pickup-delay=0 on-ground=true
+entity 41 e2 5.132290393489401 1.0 14.21060897752274 -2.879377294638879E-4 -0.08 1.9798057245394799E-4 item=minecraft:glass count=3 age=32 pickup-delay=0 on-ground=true
+entity 41 e3 6.107796386003412 1.0 17.14101224014461 2.9754408930465195E-4 -0.04 3.1790744213940203E-6 item=minecraft:stone count=2 age=30 pickup-delay=0 on-ground=true
+entity 41 e4 6.228264892667635 1.0187187388826924 29.125 -0.0019658976562872427 0.004125625436084684 0 item=minecraft:lever count=1 age=29 pickup-delay=0 on-ground=false
+entity 41 e5 6.875 1.0 33.875 0 -0.08 0 item=minecraft:water_bucket count=1 age=29 pickup-delay=0 on-ground=true
+entity 41 e6 8.737006027045123 1.0 53.44550406464095 8.435905592488127E-4 -0.04 -1.812067298865934E-5 item=minecraft:stone count=1 age=27 pickup-delay=0 on-ground=true
+entity 41 e7 8.524173359040008 1.0 2.196822104412686 0.003511370605425239 0 0.0010527616819667471 item=minecraft:stone count=1 age=19 pickup-delay=0 on-ground=true
+entity 41 e8 8.910929164984177 1.0 5.744087408611612 0.002611183658605512 0 2.3510649443388482E-4 item=minecraft:stone count=1 age=19 pickup-delay=0 on-ground=true
+
+entity-order 42 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 42 e1 5.0889581808342905 1.0 13.380943215977428 -4.455851475129219E-4 -0.08 -1.6939720321220992E-4 item=minecraft:stone count=5 age=33 pickup-delay=0 on-ground=true
+entity 42 e2 5.132290393489401 1.0 14.21060897752274 -2.879377294638879E-4 -0.12 1.9798057245394799E-4 item=minecraft:glass count=3 age=33 pickup-delay=0 on-ground=true
+entity 42 e3 6.107796386003412 1.0 17.14101224014461 2.9754408930465195E-4 -0.08 3.1790744213940203E-6 item=minecraft:stone count=2 age=31 pickup-delay=0 on-ground=true
+entity 42 e4 6.226318653969162 1.0233443643425257 29.125 -0.001907313961624736 0.004533112950636741 0 item=minecraft:lever count=1 age=30 pickup-delay=0 on-ground=false
+entity 42 e5 6.875 1.0 33.875 0 -0.12 0 item=minecraft:water_bucket count=1 age=30 pickup-delay=0 on-ground=true
+entity 42 e6 8.737006027045123 1.0 53.44550406464095 8.435905592488127E-4 -0.08 -1.812067298865934E-5 item=minecraft:stone count=1 age=28 pickup-delay=0 on-ground=true
+entity 42 e7 8.527684729645433 1.0 2.197874866094653 0.002064686123609686 0 6.190239312439376E-4 item=minecraft:stone count=1 age=20 pickup-delay=0 on-ground=true
+entity 42 e8 8.913540348642782 1.0 5.744322515106045 0.0015353761456536061 0 1.3824263262845584E-4 item=minecraft:stone count=1 age=20 pickup-delay=0 on-ground=true
+
+change 43 fluid_ticks 5 1 44 minecraft:air minecraft:water[level=8]
+change 43 fluid_ticks 5 1 46 minecraft:air minecraft:water[level=8]
+entity-added 43 fluid_ticks e9 minecraft:item 4.620559173217237 1.4407150403659394 45.407446174254474 0.05007032758898952 0.2 -0.061956052748275495 item=minecraft:lever count=1
+change 43 fluid_ticks 4 1 45 minecraft:lever[face=floor,facing=north,powered=false] minecraft:water[level=8]
+change 43 fluid_ticks 6 1 45 minecraft:air minecraft:water[level=8]
+draws 43 fluid_ticks level 10
+entity-order 43 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 43 e1 5.0889581808342905 1.0 13.380943215977428 -4.455851475129219E-4 -0.12 -1.6939720321220992E-4 item=minecraft:stone count=5 age=34 pickup-delay=0 on-ground=true
+entity 43 e2 5.132002455759937 1.0 14.210806958095194 -1.6930740194989275E-4 0 1.1641258830907861E-4 item=minecraft:glass count=3 age=34 pickup-delay=0 on-ground=true
+entity 43 e3 6.107796386003412 1.0 17.14101224014461 2.9754408930465195E-4 -0.12 3.1790744213940203E-6 item=minecraft:stone count=2 age=32 pickup-delay=0 on-ground=true
+entity 43 e4 6.224430413128965 1.0283774773169112 29.125 -0.0018504760594094268 0.004932450714897757 0 item=minecraft:lever count=1 age=31 pickup-delay=0 on-ground=false
+entity 43 e5 6.875 1.0 33.875 0 0 0 item=minecraft:water_bucket count=1 age=31 pickup-delay=0 on-ground=true
+entity 43 e6 8.737006027045123 1.0 53.44550406464095 8.435905592488127E-4 -0.12 -1.812067298865934E-5 item=minecraft:stone count=1 age=29 pickup-delay=0 on-ground=true
+entity 43 e7 8.529749415769043 1.0 2.198493890025897 0.0012140355627628591 0 3.639861081729632E-4 item=minecraft:stone count=1 age=21 pickup-delay=0 on-ground=true
+entity 43 e8 8.913540348642782 1.0 5.744322515106045 0.0015353761456536061 -0.04 1.3824263262845584E-4 item=minecraft:stone count=1 age=21 pickup-delay=0 on-ground=true
+entity 43 e9 4.670128798007845 1.6267150403659394 45.346109681442826 0.04857823324026089 0.16827999999999999 -0.060109764125319425 item=minecraft:lever count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 44 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 44 e1 5.088512595686778 1.0 13.380773818774216 -2.620040930840709E-4 0 -9.960556550486468E-5 item=minecraft:stone count=5 age=35 pickup-delay=0 on-ground=true
+entity 44 e2 5.132002455759937 1.0 14.210806958095194 -1.6930740194989275E-4 -0.04 1.1641258830907861E-4 item=minecraft:glass count=3 age=35 pickup-delay=0 on-ground=true
+entity 44 e3 6.107796386003412 1.0 17.14101224014461 1.74955942104265E-4 0 1.8692959477513848E-6 item=minecraft:stone count=2 age=33 pickup-delay=0 on-ground=true
+entity 44 e4 6.222598441812502 1.0338099280555577 29.125 -0.0017953319250756704 0.005323801723873553 0 item=minecraft:lever count=1 age=32 pickup-delay=0 on-ground=false
+entity 44 e5 6.875 1.0 33.875 0 -0.04 0 item=minecraft:water_bucket count=1 age=32 pickup-delay=0 on-ground=true
+entity 44 e6 8.737849617604372 1.0 53.44548594396796 4.960312987179621E-4 0 -1.0654956788767358E-5 item=minecraft:stone count=1 age=30 pickup-delay=0 on-ground=true
+entity 44 e7 8.529749415769043 1.0 2.198493890025897 0.0012140355627628591 -0.04 3.639861081729632E-4 item=minecraft:stone count=1 age=22 pickup-delay=0 on-ground=true
+entity 44 e8 8.913540348642782 1.0 5.744322515106045 0.0015353761456536061 -0.08 1.3824263262845584E-4 item=minecraft:stone count=1 age=22 pickup-delay=0 on-ground=true
+entity 44 e9 4.718221249378981 1.7809950403659394 45.28660101438551 0.03345187895538277 0.1482123702599075 -0.058318494851209005 item=minecraft:lever count=1 age=2 pickup-delay=8 on-ground=false
+
+entity-order 45 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 45 e1 5.088512595686778 1.0 13.380773818774216 -2.620040930840709E-4 -0.04 -9.960556550486468E-5 item=minecraft:stone count=5 age=36 pickup-delay=0 on-ground=true
+entity 45 e2 5.132002455759937 1.0 14.210806958095194 -1.6930740194989275E-4 -0.08 1.1641258830907861E-4 item=minecraft:glass count=3 age=36 pickup-delay=0 on-ground=true
+entity 45 e3 6.107796386003412 1.0 17.14101224014461 1.74955942104265E-4 -0.04 1.8692959477513848E-6 item=minecraft:stone count=2 age=34 pickup-delay=0 on-ground=true
+entity 45 e4 6.220821063189555 1.03963372980318 29.125 -0.0017418310843884093 0.005707325712669833 0 item=minecraft:lever count=1 age=33 pickup-delay=0 on-ground=false
+entity 45 e5 6.875 1.0 33.875 0 -0.08 0 item=minecraft:water_bucket count=1 age=33 pickup-delay=0 on-ground=true
+entity 45 e6 8.737849617604372 1.0 53.44548594396796 4.960312987179621E-4 -0.04 -1.0654956788767358E-5 item=minecraft:stone count=1 age=31 pickup-delay=0 on-ground=true
+entity 45 e7 8.529749415769043 1.0 2.198493890025897 0.0012140355627628591 -0.08 3.639861081729632E-4 item=minecraft:stone count=1 age=23 pickup-delay=0 on-ground=true
+entity 45 e8 8.913540348642782 1.0 5.744322515106045 0.0015353761456536061 -0.12 1.3824263262845584E-4 item=minecraft:stone count=1 age=23 pickup-delay=0 on-ground=true
+entity 45 e9 4.737796672670816 1.9262253808857543 45.228865703926644 0.005220841604541978 0.14130957634689092 -0.05658060535090177 item=minecraft:lever count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 46 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 46 e1 5.088512595686778 1.0 13.380773818774216 -2.620040930840709E-4 -0.08 -9.960556550486468E-5 item=minecraft:stone count=5 age=37 pickup-delay=0 on-ground=true
+entity 46 e2 5.132002455759937 1.0 14.210806958095194 -1.6930740194989275E-4 -0.12 1.1641258830907861E-4 item=minecraft:glass count=3 age=37 pickup-delay=0 on-ground=true
+entity 46 e3 6.107796386003412 1.0 17.14101224014461 1.74955942104265E-4 -0.08 1.8692959477513848E-6 item=minecraft:stone count=2 age=35 pickup-delay=0 on-ground=true
+entity 46 e4 6.219096650399399 1.0458410555395985 29.125 -0.0016899245672433664 0.006083179221690187 0 item=minecraft:lever count=1 age=34 pickup-delay=0 on-ground=false
+entity 46 e5 6.875 1.0 33.875 0 -0.12 0 item=minecraft:water_bucket count=1 age=34 pickup-delay=0 on-ground=true
+entity 46 e6 8.737849617604372 1.0 53.44548594396796 4.960312987179621E-4 -0.08 -1.0654956788767358E-5 item=minecraft:stone count=1 age=32 pickup-delay=0 on-ground=true
+entity 46 e7 8.529749415769043 1.0 2.198493890025897 0.0012140355627628591 -0.12 3.639861081729632E-4 item=minecraft:stone count=1 age=24 pickup-delay=0 on-ground=true
+entity 46 e8 8.915075724788435 1.0 5.744460757738674 9.028012644277457E-4 0 8.128667615951582E-5 item=minecraft:stone count=1 age=24 pickup-delay=0 on-ground=true
+entity 46 e9 4.729141862917061 2.0665187998701176 45.17285090408966 -0.02248171372375779 0.13748755060467588 -0.054894504908645225 item=minecraft:lever count=1 age=4 pickup-delay=6 on-ground=false
+
+entity-order 47 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 47 e1 5.088512595686778 1.0 13.380773818774216 -2.620040930840709E-4 -0.12 -9.960556550486468E-5 item=minecraft:stone count=5 age=38 pickup-delay=0 on-ground=true
+entity 47 e2 5.132002455759937 1.0 14.210806958095194 -9.955276235731242E-5 0 6.845060880895935E-5 item=minecraft:glass count=3 age=38 pickup-delay=0 on-ground=true
+entity 47 e3 6.107796386003412 1.0 17.14101224014461 1.74955942104265E-4 -0.12 1.8692959477513848E-6 item=minecraft:stone count=2 age=36 pickup-delay=0 on-ground=true
+entity 47 e4 6.217423625061712 1.0524242347850374 29.125 -0.0016395648628439892 0.006451515660530135 0 item=minecraft:lever count=1 age=35 pickup-delay=0 on-ground=false
+entity 47 e5 6.875 1.0 33.875 0 0 0 item=minecraft:water_bucket count=1 age=35 pickup-delay=0 on-ground=true
+entity 47 e6 8.737849617604372 1.0 53.44548594396796 4.960312987179621E-4 -0.12 -1.0654956788767358E-5 item=minecraft:stone count=1 age=33 pickup-delay=0 on-ground=true
+entity 47 e7 8.530963451331806 1.0 2.19885787613407 7.138529826878223E-4 0 2.1402385312740296E-4 item=minecraft:stone count=1 age=25 pickup-delay=0 on-ground=true
+entity 47 e8 8.915075724788435 1.0 5.744460757738674 9.028012644277457E-4 -0.04 8.128667615951582E-5 item=minecraft:stone count=1 age=25 pickup-delay=0 on-ground=true
+entity 47 e9 4.693024965982624 2.2040063504747933 45.11850534370658 -0.04939455968462335 0.13473779959258236 -0.053258650211971396 item=minecraft:lever count=1 age=5 pickup-delay=5 on-ground=false
+
+change 48 fluid_ticks 5 1 43 minecraft:air minecraft:water[level=1]
+change 48 fluid_ticks 4 1 44 minecraft:air minecraft:water[level=1]
+change 48 fluid_ticks 6 1 44 minecraft:air minecraft:water[level=1]
+change 48 fluid_ticks 5 1 47 minecraft:air minecraft:water[level=1]
+change 48 fluid_ticks 4 1 46 minecraft:air minecraft:water[level=1]
+change 48 fluid_ticks 6 1 46 minecraft:air minecraft:water[level=1]
+change 48 fluid_ticks 3 1 45 minecraft:air minecraft:water[level=1]
+change 48 fluid_ticks 7 1 45 minecraft:air minecraft:water[level=1]
+entity-order 48 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 48 e1 5.088512595686778 1.0 13.380773818774216 -1.5405842222516132E-4 0 -5.856807840631914E-5 item=minecraft:stone count=5 age=39 pickup-delay=0 on-ground=true
+entity 48 e2 5.132002455759937 1.0 14.210806958095194 -9.955276235731242E-5 -0.04 6.845060880895935E-5 item=minecraft:glass count=3 age=39 pickup-delay=0 on-ground=true
+entity 48 e3 6.107796386003412 1.0 17.14101224014461 1.0287410430206912E-4 0 1.0991461278051854E-6 item=minecraft:stone count=2 age=37 pickup-delay=0 on-ground=true
+entity 48 e4 6.21580045583186 1.0593757504693162 29.125 -0.0015907058762141212 0.006812485370593283 0 item=minecraft:lever count=1 age=36 pickup-delay=0 on-ground=false
+entity 48 e5 6.875 1.0 33.875 0 -0.04 0 item=minecraft:water_bucket count=1 age=36 pickup-delay=0 on-ground=true
+entity 48 e6 8.73834564890309 1.0 53.44547528901117 2.9166643297540493E-4 0 -6.265115221799442E-6 item=minecraft:stone count=1 age=34 pickup-delay=0 on-ground=true
+entity 48 e7 8.530963451331806 1.0 2.19885787613407 7.138529826878223E-4 -0.04 2.1402385312740296E-4 item=minecraft:stone count=1 age=26 pickup-delay=0 on-ground=true
+entity 48 e8 8.915075724788435 1.0 5.744460757738674 9.028012644277457E-4 -0.08 8.128667615951582E-5 item=minecraft:stone count=1 age=26 pickup-delay=0 on-ground=true
+entity 48 e9 4.630264351290269 2.3387441500673756 45.065779279488815 -0.07550540359557138 0.13204304360073071 -0.0516715439390803 item=minecraft:lever count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 49 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 49 e1 5.088512595686778 1.0 13.380773818774216 -1.5405842222516132E-4 -0.04 -5.856807840631914E-5 item=minecraft:stone count=5 age=40 pickup-delay=0 on-ground=true
+entity 49 e2 5.132002455759937 1.0 14.210806958095194 -9.955276235731242E-5 -0.08 6.845060880895935E-5 item=minecraft:glass count=3 age=40 pickup-delay=0 on-ground=true
+entity 49 e3 6.107796386003412 1.0 17.14101224014461 1.0287410430206912E-4 -0.04 1.0991461278051854E-6 item=minecraft:stone count=2 age=38 pickup-delay=0 on-ground=true
+entity 49 e4 6.214225656999238 1.0666882358636582 29.125 -0.0015433028860065948 0.007166235686455168 0 item=minecraft:lever count=1 age=37 pickup-delay=0 on-ground=false
+entity 49 e5 6.875 1.0 33.875 0 -0.08 0 item=minecraft:water_bucket count=1 age=37 pickup-delay=0 on-ground=true
+entity 49 e6 8.73834564890309 1.0 53.44547528901117 2.9166643297540493E-4 -0.04 -6.265115221799442E-6 item=minecraft:stone count=1 age=35 pickup-delay=0 on-ground=true
+entity 49 e7 8.530963451331806 1.0 2.19885787613407 7.138529826878223E-4 -0.08 2.1402385312740296E-4 item=minecraft:stone count=1 age=27 pickup-delay=0 on-ground=true
+entity 49 e8 8.915075724788435 1.0 5.744460757738674 9.028012644277457E-4 -0.12 8.128667615951582E-5 item=minecraft:stone count=1 age=27 pickup-delay=0 on-ground=true
+entity 49 e9 4.541654000877063 2.470787193668106 45.01462445049635 -0.1008381450950499 0.1294021827287161 -0.05013173338831932 item=minecraft:lever count=1 age=7 pickup-delay=3 on-ground=false
+
+entity-order 50 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 50 e1 5.088512595686778 1.0 13.380773818774216 -1.5405842222516132E-4 -0.08 -5.856807840631914E-5 item=minecraft:stone count=5 age=41 pickup-delay=0 on-ground=true
+entity 50 e2 5.132002455759937 1.0 14.210806958095194 -9.955276235731242E-5 -0.12 6.845060880895935E-5 item=minecraft:glass count=3 age=41 pickup-delay=0 on-ground=true
+entity 50 e3 6.107796386003412 1.0 17.14101224014461 1.0287410430206912E-4 -0.08 1.0991461278051854E-6 item=minecraft:stone count=2 age=39 pickup-delay=0 on-ground=true
+entity 50 e4 6.212697787127373 1.0743544715738622 29.125 -0.001497312503569125 0.007512910995999816 0 item=minecraft:lever count=1 age=38 pickup-delay=0 on-ground=false
+entity 50 e5 6.875 1.0 33.875 0 -0.12 0 item=minecraft:water_bucket count=1 age=38 pickup-delay=0 on-ground=true
+entity 50 e6 8.73834564890309 1.0 53.44547528901117 2.9166643297540493E-4 -0.08 -6.265115221799442E-6 item=minecraft:stone count=1 age=36 pickup-delay=0 on-ground=true
+entity 50 e7 8.530963451331806 1.0 2.19885787613407 7.138529826878223E-4 -0.12 2.1402385312740296E-4 item=minecraft:stone count=1 age=28 pickup-delay=0 on-ground=true
+entity 50 e8 8.915978526052863 1.0 5.744542044414834 5.308471968641739E-4 0 4.779657038809825E-5 item=minecraft:stone count=1 age=28 pickup-delay=0 on-ground=true
+entity 50 e9 4.427964236137782 2.600189376396822 44.96499403396382 -0.12541597161295587 0.12681413907414177 -0.048637809148504074 item=minecraft:lever count=1 age=8 pickup-delay=2 on-ground=false
+
+entity-order 51 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 51 e1 5.088512595686778 1.0 13.380773818774216 -1.5405842222516132E-4 -0.12 -5.856807840631914E-5 item=minecraft:stone count=5 age=42 pickup-delay=0 on-ground=true
+entity 51 e2 5.132002455759937 1.0 14.210806958095194 -5.8537030152436285E-5 0 4.0248962027002526E-5 item=minecraft:glass count=3 age=42 pickup-delay=0 on-ground=true
+entity 51 e3 6.107796386003412 1.0 17.14101224014461 1.0287410430206912E-4 -0.12 1.0991461278051854E-6 item=minecraft:stone count=2 age=40 pickup-delay=0 on-ground=true
+entity 51 e4 6.211215447734561 1.0823673825936106 29.125 -0.0014526926332300402 0.00785265279935357 0 item=minecraft:lever count=1 age=39 pickup-delay=0 on-ground=false
+entity 51 e5 6.875 1.0 33.875 0 0 0 item=minecraft:water_bucket count=1 age=39 pickup-delay=0 on-ground=true
+entity 51 e6 8.73834564890309 1.0 53.44547528901117 2.9166643297540493E-4 -0.12 -6.265115221799442E-6 item=minecraft:stone count=1 age=37 pickup-delay=0 on-ground=true
+entity 51 e7 8.531677304314494 1.0 2.199071899987197 4.1974559602900134E-4 0 1.2584603829367415E-4 item=minecraft:stone count=1 age=29 pickup-delay=0 on-ground=true
+entity 51 e8 8.915978526052863 1.0 5.744542044414834 5.308471968641739E-4 -0.04 4.779657038809825E-5 item=minecraft:stone count=1 age=29 pickup-delay=0 on-ground=true
+entity 51 e9 4.2899424229113805 2.727003515470964 44.916842602442955 -0.1492613795944298 0.12427785629265893 -0.04718840380886369 item=minecraft:lever count=1 age=9 pickup-delay=1 on-ground=false
+
+entity-order 52 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 52 e1 5.088512595686778 1.0 13.380773818774216 -9.058636137753161E-5 0 -3.443803356591773E-5 item=minecraft:stone count=5 age=43 pickup-delay=0 on-ground=true
+entity 52 e2 5.132002455759937 1.0 14.210806958095194 -5.8537030152436285E-5 -0.04 4.0248962027002526E-5 item=minecraft:glass count=3 age=43 pickup-delay=0 on-ground=true
+entity 52 e3 6.107796386003412 1.0 17.14101224014461 6.048997941233689E-5 0 6.462979881395498E-7 item=minecraft:stone count=2 age=41 pickup-delay=0 on-ground=true
+entity 52 e4 6.209777282013809 1.090720035416713 29.125 -0.0014094024337674967 0.00818559976664025 0 item=minecraft:lever count=1 age=40 pickup-delay=0 on-ground=false
+entity 52 e5 6.875 1.0 33.875 0 -0.04 0 item=minecraft:water_bucket count=1 age=40 pickup-delay=0 on-ground=true
+entity 52 e6 8.73834564890309 1.0 53.44547528901117 1.7149987983513485E-4 0 -3.6838881208605996E-6 item=minecraft:stone count=1 age=38 pickup-delay=0 on-ground=true
+entity 52 e7 8.531677304314494 1.0 2.199071899987197 4.1974559602900134E-4 -0.04 1.2584603829367415E-4 item=minecraft:stone count=1 age=30 pickup-delay=0 on-ground=true
+entity 52 e8 8.915978526052863 1.0 5.744542044414834 5.308471968641739E-4 -0.08 4.779657038809825E-5 item=minecraft:stone count=1 age=30 pickup-delay=0 on-ground=true
+entity 52 e9 4.1266810433169505 2.8112813717636227 44.869654198634095 -0.15999615511650492 0.08259229916680576 -0.04624463663273379 item=minecraft:lever count=1 age=10 pickup-delay=0 on-ground=false
+
+change 53 fluid_ticks 5 1 42 minecraft:air minecraft:water[level=2]
+change 53 fluid_ticks 4 1 43 minecraft:air minecraft:water[level=2]
+change 53 fluid_ticks 6 1 43 minecraft:air minecraft:water[level=2]
+change 53 fluid_ticks 3 1 44 minecraft:air minecraft:water[level=2]
+change 53 fluid_ticks 7 1 44 minecraft:air minecraft:water[level=2]
+change 53 fluid_ticks 5 1 48 minecraft:air minecraft:water[level=2]
+change 53 fluid_ticks 4 1 47 minecraft:air minecraft:water[level=2]
+change 53 fluid_ticks 6 1 47 minecraft:air minecraft:water[level=2]
+change 53 fluid_ticks 3 1 46 minecraft:air minecraft:water[level=2]
+change 53 fluid_ticks 7 1 46 minecraft:air minecraft:water[level=2]
+change 53 fluid_ticks 2 1 45 minecraft:air minecraft:water[level=2]
+change 53 fluid_ticks 8 1 45 minecraft:air minecraft:water[level=2]
+entity-order 53 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 53 e1 5.088512595686778 1.0 13.380773818774216 -9.058636137753161E-5 -0.04 -3.443803356591773E-5 item=minecraft:stone count=5 age=44 pickup-delay=0 on-ground=true
+entity 53 e2 5.132002455759937 1.0 14.210806958095194 -5.8537030152436285E-5 -0.08 4.0248962027002526E-5 item=minecraft:glass count=3 age=44 pickup-delay=0 on-ground=true
+entity 53 e3 6.107796386003412 1.0 17.14101224014461 6.048997941233689E-5 -0.04 6.462979881395498E-7 item=minecraft:stone count=2 age=42 pickup-delay=0 on-ground=true
+entity 53 e4 6.208381973590938 1.099405635207102 29.125 -0.0013674022810269083 0.008511887794581195 0 item=minecraft:lever count=1 age=41 pickup-delay=0 on-ground=false
+entity 53 e5 6.875 1.0 33.875 0 -0.08 0 item=minecraft:water_bucket count=1 age=41 pickup-delay=0 on-ground=true
+entity 53 e6 8.73834564890309 1.0 53.44547528901117 1.7149987983513485E-4 -0.04 -3.6838881208605996E-6 item=minecraft:stone count=1 age=39 pickup-delay=0 on-ground=true
+entity 53 e7 8.531677304314494 1.0 2.199071899987197 4.1974559602900134E-4 -0.08 1.2584603829367415E-4 item=minecraft:stone count=1 age=31 pickup-delay=0 on-ground=true
+entity 53 e8 8.915978526052863 1.0 5.744542044414834 5.308471968641739E-4 -0.12 4.779657038809825E-5 item=minecraft:stone count=1 age=31 pickup-delay=0 on-ground=true
+entity 53 e9 3.9666848882004455 2.8538736709304287 44.82340956200136 -0.1567962350658593 0.04174045318346964 -0.045319744782125554 item=minecraft:lever count=1 age=11 pickup-delay=0 on-ground=false
+
+entity-order 54 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 54 e1 5.088512595686778 1.0 13.380773818774216 -9.058636137753161E-5 -0.08 -3.443803356591773E-5 item=minecraft:stone count=5 age=45 pickup-delay=0 on-ground=true
+entity 54 e2 5.132002455759937 1.0 14.210806958095194 -5.8537030152436285E-5 -0.12 4.0248962027002526E-5 item=minecraft:glass count=3 age=45 pickup-delay=0 on-ground=true
+entity 54 e3 6.107796386003412 1.0 17.14101224014461 6.048997941233689E-5 -0.08 6.462979881395498E-7 item=minecraft:stone count=2 age=43 pickup-delay=0 on-ground=true
+entity 54 e4 6.20702824531968 1.1084175230254318 29.125 -0.0013266537316523773 0.008831650061963322 0 item=minecraft:lever count=1 age=42 pickup-delay=0 on-ground=false
+entity 54 e5 6.875 1.0 33.875 0 -0.12 0 item=minecraft:water_bucket count=1 age=42 pickup-delay=0 on-ground=true
+entity 54 e6 8.73834564890309 1.0 53.44547528901117 1.7149987983513485E-4 -0.08 -3.6838881208605996E-6 item=minecraft:stone count=1 age=40 pickup-delay=0 on-ground=true
+entity 54 e7 8.531677304314494 1.0 2.199071899987197 4.1974559602900134E-4 -0.12 1.2584603829367415E-4 item=minecraft:stone count=1 age=32 pickup-delay=0 on-ground=true
+entity 54 e8 8.916509373249728 1.0 5.744589840985221 3.121381831439652E-4 0 2.8104386214308192E-5 item=minecraft:stone count=1 age=32 pickup-delay=0 on-ground=true
+entity 54 e9 3.8098886531345864 2.8556141241138984 44.77808981721923 -0.15366031335519295 0.0017056441198002453 -0.04441335075088858 item=minecraft:lever count=1 age=12 pickup-delay=0 on-ground=false
+
+entity-order 55 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 55 e1 5.088512595686778 1.0 13.380773818774216 -9.058636137753161E-5 -0.12 -3.443803356591773E-5 item=minecraft:stone count=5 age=46 pickup-delay=0 on-ground=true
+entity 55 e2 5.132002455759937 1.0 14.210806958095194 -3.4419777190798795E-5 0 2.3666392051710368E-5 item=minecraft:glass count=3 age=46 pickup-delay=0 on-ground=true
+entity 55 e3 6.107796386003412 1.0 17.14101224014461 6.048997941233689E-5 -0.12 6.462979881395498E-7 item=minecraft:stone count=2 age=44 pickup-delay=0 on-ground=true
+entity 55 e4 6.205714858112692 1.117749173111144 29.125 -0.001287119487898926 0.009145017083997805 0 item=minecraft:lever count=1 age=43 pickup-delay=0 on-ground=false
+entity 55 e5 6.875 1.0 33.875 0 0 0 item=minecraft:water_bucket count=1 age=43 pickup-delay=0 on-ground=true
+entity 55 e6 8.73834564890309 1.0 53.44547528901117 1.7149987983513485E-4 -0.12 -3.6838881208605996E-6 item=minecraft:stone count=1 age=41 pickup-delay=0 on-ground=true
+entity 55 e7 8.532097049910522 1.0 2.199197746025491 2.4681043528368966E-4 0 7.399747795768075E-5 item=minecraft:stone count=1 age=33 pickup-delay=0 on-ground=true
+entity 55 e8 8.916509373249728 1.0 5.744589840985221 3.121381831439652E-4 -0.04 2.8104386214308192E-5 item=minecraft:stone count=1 age=33 pickup-delay=0 on-ground=true
+entity 55 e9 3.6562283397793935 2.817319768233699 44.733676466468346 -0.15058711001892697 -0.03752846876259576 -0.04352508458298825 item=minecraft:lever count=1 age=13 pickup-delay=0 on-ground=false
+
+entity-order 56 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 56 e1 5.088512595686778 1.0 13.380773818774216 -5.326478584616153E-5 0 -2.0249565773005047E-5 item=minecraft:stone count=5 age=47 pickup-delay=0 on-ground=true
+entity 56 e2 5.132002455759937 1.0 14.210806958095194 -3.4419777190798795E-5 -0.04 2.3666392051710368E-5 item=minecraft:glass count=3 age=47 pickup-delay=0 on-ground=true
+entity 56 e3 6.107796386003412 1.0 17.14101224014461 3.5568111471093954E-5 0 3.800232552402384E-7 item=minecraft:stone count=2 age=45 pickup-delay=0 on-ground=true
+entity 56 e4 6.204440609807397 1.1273941902188904 29.125 -0.0012487633634933252 0.0094521167655916 0 item=minecraft:lever count=1 age=44 pickup-delay=0 on-ground=false
+entity 56 e5 6.875 1.0 33.875 0 -0.04 0 item=minecraft:water_bucket count=1 age=44 pickup-delay=0 on-ground=true
+entity 56 e6 8.73834564890309 1.0 53.44547528901117 1.008419394834712E-4 0 -2.166126432886261E-6 item=minecraft:stone count=1 age=42 pickup-delay=0 on-ground=true
+entity 56 e7 8.532097049910522 1.0 2.199197746025491 2.4681043528368966E-4 -0.04 7.399747795768075E-5 item=minecraft:stone count=1 age=34 pickup-delay=0 on-ground=true
+entity 56 e8 8.916509373249728 1.0 5.744589840985221 3.121381831439652E-4 -0.08 2.8104386214308192E-5 item=minecraft:stone count=1 age=34 pickup-delay=0 on-ground=true
+entity 56 e9 3.5056412297604664 2.739791299471103 44.69015138188536 -0.14757537069076962 -0.07597789938734384 -0.04265458372150359 item=minecraft:lever count=1 age=14 pickup-delay=0 on-ground=false
+
+entity-order 57 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 57 e1 5.088512595686778 1.0 13.380773818774216 -5.326478584616153E-5 -0.04 -2.0249565773005047E-5 item=minecraft:stone count=5 age=48 pickup-delay=0 on-ground=true
+entity 57 e2 5.132002455759937 1.0 14.210806958095194 -3.4419777190798795E-5 -0.08 2.3666392051710368E-5 item=minecraft:glass count=3 age=48 pickup-delay=0 on-ground=true
+entity 57 e3 6.107796386003412 1.0 17.14101224014461 3.5568111471093954E-5 -0.04 3.800232552402384E-7 item=minecraft:stone count=2 age=46 pickup-delay=0 on-ground=true
+entity 57 e4 6.20320433406563 1.1373463070082308 29.125 -0.0012115502505122653 0.00975307445355352 0 item=minecraft:lever count=1 age=45 pickup-delay=0 on-ground=false
+entity 57 e5 6.875 1.0 33.875 0 -0.08 0 item=minecraft:water_bucket count=1 age=45 pickup-delay=0 on-ground=true
+entity 57 e6 8.73834564890309 1.0 53.44547528901117 1.008419394834712E-4 -0.04 -2.166126432886261E-6 item=minecraft:stone count=1 age=43 pickup-delay=0 on-ground=true
+entity 57 e7 8.532097049910522 1.0 2.199197746025491 2.4681043528368966E-4 -0.08 7.399747795768075E-5 item=minecraft:stone count=1 age=35 pickup-delay=0 on-ground=true
+entity 57 e8 8.916509373249728 1.0 5.744589840985221 3.121381831439652E-4 -0.12 2.8104386214308192E-5 item=minecraft:stone count=1 age=35 pickup-delay=0 on-ground=true
+entity 57 e9 3.358065859069697 2.623813400083759 44.64749679816386 -0.14462386609173103 -0.11365834139959696 -0.041801492860645134 item=minecraft:lever count=1 age=15 pickup-delay=0 on-ground=false
+
+change 58 fluid_ticks 4 1 42 minecraft:air minecraft:water[level=3]
+change 58 fluid_ticks 3 1 43 minecraft:air minecraft:water[level=3]
+change 58 fluid_ticks 7 1 43 minecraft:air minecraft:water[level=3]
+change 58 fluid_ticks 2 1 44 minecraft:air minecraft:water[level=3]
+change 58 fluid_ticks 8 1 44 minecraft:air minecraft:water[level=3]
+change 58 fluid_ticks 4 1 48 minecraft:air minecraft:water[level=3]
+change 58 fluid_ticks 6 1 48 minecraft:air minecraft:water[level=3]
+change 58 fluid_ticks 3 1 47 minecraft:air minecraft:water[level=3]
+change 58 fluid_ticks 7 1 47 minecraft:air minecraft:water[level=3]
+change 58 fluid_ticks 2 1 46 minecraft:air minecraft:water[level=3]
+change 58 fluid_ticks 8 1 46 minecraft:air minecraft:water[level=3]
+change 58 fluid_ticks 1 1 45 minecraft:air minecraft:water[level=3]
+change 58 fluid_ticks 9 1 45 minecraft:air minecraft:water[level=3]
+entity-order 58 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 58 e1 5.088512595686778 1.0 13.380773818774216 -5.326478584616153E-5 -0.08 -2.0249565773005047E-5 item=minecraft:stone count=5 age=49 pickup-delay=0 on-ground=true
+entity 58 e2 5.132002455759937 1.0 14.210806958095194 -3.4419777190798795E-5 -0.12 2.3666392051710368E-5 item=minecraft:glass count=3 age=49 pickup-delay=0 on-ground=true
+entity 58 e3 6.107796386003412 1.0 17.14101224014461 3.5568111471093954E-5 -0.08 3.800232552402384E-7 item=minecraft:stone count=2 age=47 pickup-delay=0 on-ground=true
+entity 58 e4 6.202004899306068 1.147599381485533 29.125 -0.0011754460872475609 0.0100480129877562 0 item=minecraft:lever count=1 age=46 pickup-delay=0 on-ground=false
+entity 58 e5 6.875 1.0 33.875 0 -0.12 0 item=minecraft:water_bucket count=1 age=46 pickup-delay=0 on-ground=true
+entity 58 e6 8.73834564890309 1.0 53.44547528901117 1.008419394834712E-4 -0.08 -2.166126432886261E-6 item=minecraft:stone count=1 age=44 pickup-delay=0 on-ground=true
+entity 58 e7 8.532097049910522 1.0 2.199197746025491 2.4681043528368966E-4 -0.12 7.399747795768075E-5 item=minecraft:stone count=1 age=36 pickup-delay=0 on-ground=true
+entity 58 e8 8.916509373249728 1.0 5.744589840985221 1.8353727014469798E-4 0 1.652538075576396E-5 item=minecraft:stone count=1 age=36 pickup-delay=0 on-ground=true
+entity 58 e9 3.213441992977966 2.470155058684162 44.605695305303215 -0.14173139152837774 -0.15058517457160503 -0.04096546380073243 item=minecraft:lever count=1 age=16 pickup-delay=0 on-ground=false
+
+entity-order 59 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 59 e1 5.088512595686778 1.0 13.380773818774216 -5.326478584616153E-5 -0.12 -2.0249565773005047E-5 item=minecraft:stone count=5 age=50 pickup-delay=0 on-ground=true
+entity 59 e2 5.132002455759937 1.0 14.210806958095194 -2.0238831023355654E-5 0 1.3915839925747573E-5 item=minecraft:glass count=3 age=50 pickup-delay=0 on-ground=true
+entity 59 e3 6.107796386003412 1.0 17.14101224014461 3.5568111471093954E-5 -0.12 3.800232552402384E-7 item=minecraft:stone count=2 age=48 pickup-delay=0 on-ground=true
+entity 59 e4 6.200841207668483 1.158147394497038 29.125 -0.0011404178270289689 0.010337052751274826 0 item=minecraft:lever count=1 age=47 pickup-delay=0 on-ground=false
+entity 59 e5 6.875 1.0 33.875 0 0 0 item=minecraft:water_bucket count=1 age=47 pickup-delay=0 on-ground=true
+entity 59 e6 8.73834564890309 1.0 53.44547528901117 1.008419394834712E-4 -0.12 -2.166126432886261E-6 item=minecraft:stone count=1 age=45 pickup-delay=0 on-ground=true
+entity 59 e7 8.532097049910522 1.0 2.199197746025491 1.4512455054016944E-4 0 4.351052141442492E-5 item=minecraft:stone count=1 age=37 pickup-delay=0 on-ground=true
+entity 59 e8 8.916509373249728 1.0 5.744589840985221 1.8353727014469798E-4 -0.04 1.652538075576396E-5 item=minecraft:stone count=1 age=37 pickup-delay=0 on-ground=true
+entity 59 e9 3.0717106014495883 2.279569884112557 44.56472984150248 -0.13889676640112195 -0.18677347108017292 -0.040146155306072 item=minecraft:lever count=1 age=17 pickup-delay=0 on-ground=false
+
+entity-order 60 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 60 e1 5.088512595686778 1.0 13.380773818774216 -3.131969722697299E-5 0 -1.1906745871839397E-5 item=minecraft:stone count=5 age=51 pickup-delay=0 on-ground=true
+entity 60 e2 5.132002455759937 1.0 14.210806958095194 -2.0238831023355654E-5 -0.04 1.3915839925747573E-5 item=minecraft:glass count=3 age=51 pickup-delay=0 on-ground=true
+entity 60 e3 6.107796386003412 1.0 17.14101224014461 2.0914051648067696E-5 0 2.234536965512021E-7 item=minecraft:stone count=2 age=49 pickup-delay=0 on-ground=true
+entity 60 e4 6.199712194008848 1.1689844472720614 29.125 -0.0011064334079760867 0.01062031171952308 0 item=minecraft:lever count=1 age=48 pickup-delay=0 on-ground=false
+entity 60 e5 6.875 1.0 33.875 0 -0.04 0 item=minecraft:water_bucket count=1 age=48 pickup-delay=0 on-ground=true
+entity 60 e6 8.73834564890309 1.0 53.44547528901117 5.929506637884386E-5 0 -1.2736824706154284E-6 item=minecraft:stone count=1 age=46 pickup-delay=0 on-ground=true
+entity 60 e7 8.532097049910522 1.0 2.199197746025491 1.4512455054016944E-4 -0.04 4.351052141442492E-5 item=minecraft:stone count=1 age=38 pickup-delay=0 on-ground=true
+entity 60 e8 8.916509373249728 1.0 5.744589840985221 1.8353727014469798E-4 -0.08 1.652538075576396E-5 item=minecraft:stone count=1 age=38 pickup-delay=0 on-ground=true
+entity 60 e9 2.9328138350484663 2.052796413032384 44.524583686196415 -0.1361188337223451 -0.22223800165856947 -0.0393432329656777 item=minecraft:lever count=1 age=18 pickup-delay=0 on-ground=false
+slot 60 6 1 50 0 minecraft:stone 3
+slot 60 6 1 49 0 empty 0

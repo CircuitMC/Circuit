@@ -214,6 +214,8 @@ void tick_coral(RuleContext& ctx, BlockPos pos, BlockState s);
 // and bubble columns.
 bool waterlogged(BlockState s);
 bool holds_water_fluid(BlockState s);
+// Blocks flowing water replaces, dropping their items (nature.cpp).
+bool washed_away(BlockType t) noexcept;
 
 // ---- rails (rail.cpp) ----
 // A rail appeared (placed, set or moved in): its shape and its neighbors'.
@@ -249,6 +251,16 @@ void use_daylight_detector(RuleContext& ctx, BlockPos pos, BlockState s);
 
 void check_hopper(RuleContext& ctx, BlockPos pos);
 void tick_hopper(RuleContext& ctx, BlockPos pos);
+// One item of the kind of `stack` into the container at `pos`, at the first
+// slot that takes it (in combined order); an empty hopper that receives it
+// waits 8 ticks. Returns whether it went in.
+bool insert_one(RuleContext& ctx, BlockPos pos, const ItemStack& stack);
+
+// ---- dispensers and droppers (dispenser.cpp) ----
+// A neighbor update: triggered by power at the block or above it.
+void check_dispenser(RuleContext& ctx, BlockPos pos);
+// Its scheduled tick: one item from a random slot.
+void tick_dispenser(RuleContext& ctx, BlockPos pos, BlockState s);
 // An item that moved inside a hopper's cell: the hopper takes what it can of
 // it when it is enabled, not cooling down, and the item reaches the space it
 // collects from. Returns whether the item was taken whole (it is removed).
@@ -273,6 +285,9 @@ void check_tnt(RuleContext& ctx, BlockPos pos);
 void prime_by_explosion(RuleContext& ctx, BlockPos pos);
 // TNT a burning projectile hit: primed as by redstone.
 void prime_by_fire(RuleContext& ctx, BlockPos pos);
+// TNT a dispenser primes in the cell `pos`, as by redstone; false when the
+// game rule tntExplodes is off (the dispenser keeps it).
+bool prime_dispensed(RuleContext& ctx, BlockPos pos);
 // Arrows and snowballs (projectile.cpp).
 void run_arrow(RuleContext& ctx, EntityId id, Entity& e);
 void run_snowball(RuleContext& ctx, EntityId id, Entity& e);

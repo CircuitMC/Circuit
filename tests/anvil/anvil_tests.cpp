@@ -323,6 +323,36 @@ int main() {
                 "midnight after the import");
     });
 
+    suite.run("dispensers and droppers round-trip through Anvil with their contents and pending ticks", [&] {
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine.advance(admit({place({3, 0, 3}, blocks::dispenser(Direction::up)), place({5, 0, 3}, blocks::dispenser(Direction::north, true))}));
+        engine.advance(admit({insert({3, 0, 3}, 4, items::stone, 7), insert({5, 0, 3}, 8, items::glass, 2)}));
+        // Triggered, with the dispense tick pending at the export.
+        engine.advance(admit({place({3, 0, 2}, blocks::redstone_block())}));
+        const auto state = engine.dump();
+        require(state_at(state, {3, 0, 3}) == blocks::dispenser(Direction::up, false, true), "triggered");
+        const auto target = root / "dispensers";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "dispensers", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        const auto diff = describe(kept(state), kept(back->state));
+        require(diff.empty(), diff);
+        const auto* dropper = block_entity_at(back->state, {5, 0, 3});
+        require(dropper && dropper->kind == BlockType::dispenser && dropper->slots.size() == 9 && dropper->slots[8] == ItemStack{items::glass, 2},
+                "the dropper's slots");
+        // The imported dispenser fires its pending tick.
+        Engine resumed(bundle(), 5, back->state);
+        Admissions again;
+        resumed.advance(again({ticket(1, {0, 0}, 1)}));
+        // Its chunk ticks again once loaded; then the pending tick runs.
+        for (int i = 0; i < 40; ++i) resumed.advance({});
+        const auto end = resumed.dump();
+        const auto* dispenser = block_entity_at(end, {3, 0, 3});
+        require(dispenser && dispenser->slots[4] == ItemStack{items::stone, 6}, "one stone dispensed after the import");
+    });
+
     suite.run("primed TNT round-trips through Anvil with its fuse", [&] {
         Engine engine(bundle(), 5);
         Admissions admit;

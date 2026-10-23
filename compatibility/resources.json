@@ -179,6 +179,36 @@
           "opening animation"
         ]
       },
+      "dispenser": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Fired 4 ticks after power reaches it or the block above it, from a random filled slot; ejects items, primes TNT, pours and fills water buckets, sets minecarts on rails, ejects equipment; read by comparators, filled and emptied by hoppers",
+        "cases": [
+          "trace/dispensers",
+          "trace/dispensers_more",
+          "trace/dispenser_cases",
+          "trace/dispenser_items",
+          "trace/dispenser_tnt_rule"
+        ],
+        "deviations": [
+          "projectiles, fire, bone meal, shears, boats, bottles, honeycomb, glowstone and water bottles at their targets, golem and wither heads, other fluids, minecarts other than the empty one, spawn eggs, armor stands and shulker boxes are not dispensed: they stay",
+          "does not equip players",
+          "water does not flow out of the blocks it waterlogs"
+        ]
+      },
+      "dropper": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Fired as dispensers are; puts one item into the container in front or ejects it",
+        "cases": [
+          "trace/dispensers",
+          "trace/dispensers_more",
+          "trace/dispenser_cases"
+        ],
+        "deviations": [
+          "containers that are entities (chest and hopper minecarts) are not modeled"
+        ]
+      },
       "water": {
         "impl": "partial",
         "evidence": "compared",
@@ -204,7 +234,7 @@
           "trace/arrow_tnt"
         ],
         "deviations": [
-          "fire, players and dispensers do not ignite it yet"
+          "fire, flint and steel and players do not ignite it yet"
         ]
       },
       "sand": {
@@ -1425,10 +1455,73 @@
           "client/windows"
         ]
       },
-      "water_bucket": {
+      "dispenser": {
         "impl": "partial",
         "evidence": "none",
-        "note": "Places water and leaves a bucket"
+        "note": "Placed facing away from the player's view"
+      },
+      "dropper": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "Placed facing away from the player's view"
+      },
+      "water_bucket": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Places water and leaves a bucket; dispensers pour it into air, water, blocks that hold water and blocks water washes away",
+        "cases": [
+          "trace/dispensers",
+          "trace/dispensers_more",
+          "trace/dispenser_cases",
+          "trace/dispenser_items",
+          "trace/dispenser_tnt_rule"
+        ],
+        "deviations": [
+          "water does not flow out of the blocks it waterlogs"
+        ]
+      },
+      "bucket": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Dispensers fill it from water sources and blocks holding water",
+        "cases": [
+          "trace/dispensers",
+          "trace/dispensers_more",
+          "trace/dispenser_cases",
+          "trace/dispenser_items",
+          "trace/dispenser_tnt_rule"
+        ],
+        "deviations": [
+          "players do not use it",
+          "lava and powder snow are not taken"
+        ]
+      },
+      "minecart": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Dispensers set it on rails",
+        "cases": [
+          "trace/dispensers",
+          "trace/dispensers_more",
+          "trace/dispenser_cases",
+          "trace/dispenser_items",
+          "trace/dispenser_tnt_rule"
+        ],
+        "deviations": [
+          "players do not place it"
+        ]
+      },
+      "tnt": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed as TNT; dispensers prime it unless tntExplodes is off",
+        "cases": [
+          "trace/dispensers",
+          "trace/dispensers_more",
+          "trace/dispenser_cases",
+          "trace/dispenser_items",
+          "trace/dispenser_tnt_rule"
+        ]
       },
       "wheat_seeds": {
         "impl": "partial",

@@ -247,6 +247,17 @@ constexpr std::array reference_v4_mechanisms{
         "darkening by the day time, rain and thunder; inverted ones give 15 less that, normal ones scale it by the "
         "sun's angle; using one inverts it and sets its output at once (daylight_basics, daylight_cycle, "
         "daylight_more). Gaps: none known."},
+    MechanismEntry{"dispenser", l0_exact, l2_declared_deviation, harness_trace,
+        "Dispensers and droppers facing any side: a neighbor update that finds power at the block or above it "
+        "triggers one 4 ticks later, which picks a random filled slot with level-random int draws; droppers fill "
+        "the container in front or eject the item; dispensers eject items without a use, with the observed "
+        "position, motion and draws, prime TNT (keep it when tntExplodes is off), empty and fill buckets of water "
+        "into cells, blocks that hold water and blocks water washes away, set minecarts on rails, and eject "
+        "equipment, as there are no entities to equip; comparators read them and hoppers fill and empty them "
+        "(dispensers, dispensers_more, dispenser_cases, dispenser_items, dispenser_tnt_rule). Gaps: projectiles, fire, "
+        "bone meal, shears, boats on water, bottles, honeycomb, glowstone and water bottles at their targets, "
+        "golem and wither heads, other fluids, minecarts and mobs, and equipping players are not modeled: those "
+        "items stay; water does not flow out of the blocks it waterlogs."},
     MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, harness_trace,
         "Entities tick in ascending id order once per tick; one merged away before its turn does not tick "
         "(item_hopper_pickup, item_water_current, item_merge, item_merge_moving). Gap: compared for item "

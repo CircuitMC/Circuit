@@ -199,6 +199,12 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
         CIRCUIT_TRY(powered, p.flag("powered"));
         return simple(blocks::observer(facing, powered));
     }
+    if (id == "minecraft:dispenser" || id == "minecraft:dropper") {
+        // Absent properties take the default state's (facing north, not triggered).
+        CIRCUIT_TRY(facing, p.direction_or("facing", Direction::north));
+        CIRCUIT_TRY(triggered, p.choice("triggered", {"false", "true"}, 0));
+        return simple(blocks::dispenser(facing, id == "minecraft:dropper", triggered == 1));
+    }
     if (id == "minecraft:piston" || id == "minecraft:sticky_piston") {
         CIRCUIT_TRY(facing, p.direction("facing"));
         CIRCUIT_TRY(extended, p.flag("extended"));

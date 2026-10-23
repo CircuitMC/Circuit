@@ -1,0 +1,2255 @@
+circuit-trace 2
+title Dispensers with items that act on entities or blocks, facing air with nothing in front
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.11.0+mc1.21.8
+mechanisms dispenser item_entity
+area 0 0 0 11 3 106
+ticks 30
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 0 0 10 minecraft:stone
+at 0 set 0 0 11 minecraft:stone
+at 0 set 0 0 12 minecraft:stone
+at 0 set 0 0 13 minecraft:stone
+at 0 set 0 0 14 minecraft:stone
+at 0 set 0 0 15 minecraft:stone
+at 0 set 0 0 16 minecraft:stone
+at 0 set 0 0 17 minecraft:stone
+at 0 set 0 0 18 minecraft:stone
+at 0 set 0 0 19 minecraft:stone
+at 0 set 0 0 20 minecraft:stone
+at 0 set 0 0 21 minecraft:stone
+at 0 set 0 0 22 minecraft:stone
+at 0 set 0 0 23 minecraft:stone
+at 0 set 0 0 24 minecraft:stone
+at 0 set 0 0 25 minecraft:stone
+at 0 set 0 0 26 minecraft:stone
+at 0 set 0 0 27 minecraft:stone
+at 0 set 0 0 28 minecraft:stone
+at 0 set 0 0 29 minecraft:stone
+at 0 set 0 0 30 minecraft:stone
+at 0 set 0 0 31 minecraft:stone
+at 0 set 0 0 32 minecraft:stone
+at 0 set 0 0 33 minecraft:stone
+at 0 set 0 0 34 minecraft:stone
+at 0 set 0 0 35 minecraft:stone
+at 0 set 0 0 36 minecraft:stone
+at 0 set 0 0 37 minecraft:stone
+at 0 set 0 0 38 minecraft:stone
+at 0 set 0 0 39 minecraft:stone
+at 0 set 0 0 40 minecraft:stone
+at 0 set 0 0 41 minecraft:stone
+at 0 set 0 0 42 minecraft:stone
+at 0 set 0 0 43 minecraft:stone
+at 0 set 0 0 44 minecraft:stone
+at 0 set 0 0 45 minecraft:stone
+at 0 set 0 0 46 minecraft:stone
+at 0 set 0 0 47 minecraft:stone
+at 0 set 0 0 48 minecraft:stone
+at 0 set 0 0 49 minecraft:stone
+at 0 set 0 0 50 minecraft:stone
+at 0 set 0 0 51 minecraft:stone
+at 0 set 0 0 52 minecraft:stone
+at 0 set 0 0 53 minecraft:stone
+at 0 set 0 0 54 minecraft:stone
+at 0 set 0 0 55 minecraft:stone
+at 0 set 0 0 56 minecraft:stone
+at 0 set 0 0 57 minecraft:stone
+at 0 set 0 0 58 minecraft:stone
+at 0 set 0 0 59 minecraft:stone
+at 0 set 0 0 60 minecraft:stone
+at 0 set 0 0 61 minecraft:stone
+at 0 set 0 0 62 minecraft:stone
+at 0 set 0 0 63 minecraft:stone
+at 0 set 0 0 64 minecraft:stone
+at 0 set 0 0 65 minecraft:stone
+at 0 set 0 0 66 minecraft:stone
+at 0 set 0 0 67 minecraft:stone
+at 0 set 0 0 68 minecraft:stone
+at 0 set 0 0 69 minecraft:stone
+at 0 set 0 0 70 minecraft:stone
+at 0 set 0 0 71 minecraft:stone
+at 0 set 0 0 72 minecraft:stone
+at 0 set 0 0 73 minecraft:stone
+at 0 set 0 0 74 minecraft:stone
+at 0 set 0 0 75 minecraft:stone
+at 0 set 0 0 76 minecraft:stone
+at 0 set 0 0 77 minecraft:stone
+at 0 set 0 0 78 minecraft:stone
+at 0 set 0 0 79 minecraft:stone
+at 0 set 0 0 80 minecraft:stone
+at 0 set 0 0 81 minecraft:stone
+at 0 set 0 0 82 minecraft:stone
+at 0 set 0 0 83 minecraft:stone
+at 0 set 0 0 84 minecraft:stone
+at 0 set 0 0 85 minecraft:stone
+at 0 set 0 0 86 minecraft:stone
+at 0 set 0 0 87 minecraft:stone
+at 0 set 0 0 88 minecraft:stone
+at 0 set 0 0 89 minecraft:stone
+at 0 set 0 0 90 minecraft:stone
+at 0 set 0 0 91 minecraft:stone
+at 0 set 0 0 92 minecraft:stone
+at 0 set 0 0 93 minecraft:stone
+at 0 set 0 0 94 minecraft:stone
+at 0 set 0 0 95 minecraft:stone
+at 0 set 0 0 96 minecraft:stone
+at 0 set 0 0 97 minecraft:stone
+at 0 set 0 0 98 minecraft:stone
+at 0 set 0 0 99 minecraft:stone
+at 0 set 0 0 100 minecraft:stone
+at 0 set 0 0 101 minecraft:stone
+at 0 set 0 0 102 minecraft:stone
+at 0 set 0 0 103 minecraft:stone
+at 0 set 0 0 104 minecraft:stone
+at 0 set 0 0 105 minecraft:stone
+at 0 set 0 0 106 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:stone
+at 0 set 1 0 11 minecraft:stone
+at 0 set 1 0 12 minecraft:stone
+at 0 set 1 0 13 minecraft:stone
+at 0 set 1 0 14 minecraft:stone
+at 0 set 1 0 15 minecraft:stone
+at 0 set 1 0 16 minecraft:stone
+at 0 set 1 0 17 minecraft:stone
+at 0 set 1 0 18 minecraft:stone
+at 0 set 1 0 19 minecraft:stone
+at 0 set 1 0 20 minecraft:stone
+at 0 set 1 0 21 minecraft:stone
+at 0 set 1 0 22 minecraft:stone
+at 0 set 1 0 23 minecraft:stone
+at 0 set 1 0 24 minecraft:stone
+at 0 set 1 0 25 minecraft:stone
+at 0 set 1 0 26 minecraft:stone
+at 0 set 1 0 27 minecraft:stone
+at 0 set 1 0 28 minecraft:stone
+at 0 set 1 0 29 minecraft:stone
+at 0 set 1 0 30 minecraft:stone
+at 0 set 1 0 31 minecraft:stone
+at 0 set 1 0 32 minecraft:stone
+at 0 set 1 0 33 minecraft:stone
+at 0 set 1 0 34 minecraft:stone
+at 0 set 1 0 35 minecraft:stone
+at 0 set 1 0 36 minecraft:stone
+at 0 set 1 0 37 minecraft:stone
+at 0 set 1 0 38 minecraft:stone
+at 0 set 1 0 39 minecraft:stone
+at 0 set 1 0 40 minecraft:stone
+at 0 set 1 0 41 minecraft:stone
+at 0 set 1 0 42 minecraft:stone
+at 0 set 1 0 43 minecraft:stone
+at 0 set 1 0 44 minecraft:stone
+at 0 set 1 0 45 minecraft:stone
+at 0 set 1 0 46 minecraft:stone
+at 0 set 1 0 47 minecraft:stone
+at 0 set 1 0 48 minecraft:stone
+at 0 set 1 0 49 minecraft:stone
+at 0 set 1 0 50 minecraft:stone
+at 0 set 1 0 51 minecraft:stone
+at 0 set 1 0 52 minecraft:stone
+at 0 set 1 0 53 minecraft:stone
+at 0 set 1 0 54 minecraft:stone
+at 0 set 1 0 55 minecraft:stone
+at 0 set 1 0 56 minecraft:stone
+at 0 set 1 0 57 minecraft:stone
+at 0 set 1 0 58 minecraft:stone
+at 0 set 1 0 59 minecraft:stone
+at 0 set 1 0 60 minecraft:stone
+at 0 set 1 0 61 minecraft:stone
+at 0 set 1 0 62 minecraft:stone
+at 0 set 1 0 63 minecraft:stone
+at 0 set 1 0 64 minecraft:stone
+at 0 set 1 0 65 minecraft:stone
+at 0 set 1 0 66 minecraft:stone
+at 0 set 1 0 67 minecraft:stone
+at 0 set 1 0 68 minecraft:stone
+at 0 set 1 0 69 minecraft:stone
+at 0 set 1 0 70 minecraft:stone
+at 0 set 1 0 71 minecraft:stone
+at 0 set 1 0 72 minecraft:stone
+at 0 set 1 0 73 minecraft:stone
+at 0 set 1 0 74 minecraft:stone
+at 0 set 1 0 75 minecraft:stone
+at 0 set 1 0 76 minecraft:stone
+at 0 set 1 0 77 minecraft:stone
+at 0 set 1 0 78 minecraft:stone
+at 0 set 1 0 79 minecraft:stone
+at 0 set 1 0 80 minecraft:stone
+at 0 set 1 0 81 minecraft:stone
+at 0 set 1 0 82 minecraft:stone
+at 0 set 1 0 83 minecraft:stone
+at 0 set 1 0 84 minecraft:stone
+at 0 set 1 0 85 minecraft:stone
+at 0 set 1 0 86 minecraft:stone
+at 0 set 1 0 87 minecraft:stone
+at 0 set 1 0 88 minecraft:stone
+at 0 set 1 0 89 minecraft:stone
+at 0 set 1 0 90 minecraft:stone
+at 0 set 1 0 91 minecraft:stone
+at 0 set 1 0 92 minecraft:stone
+at 0 set 1 0 93 minecraft:stone
+at 0 set 1 0 94 minecraft:stone
+at 0 set 1 0 95 minecraft:stone
+at 0 set 1 0 96 minecraft:stone
+at 0 set 1 0 97 minecraft:stone
+at 0 set 1 0 98 minecraft:stone
+at 0 set 1 0 99 minecraft:stone
+at 0 set 1 0 100 minecraft:stone
+at 0 set 1 0 101 minecraft:stone
+at 0 set 1 0 102 minecraft:stone
+at 0 set 1 0 103 minecraft:stone
+at 0 set 1 0 104 minecraft:stone
+at 0 set 1 0 105 minecraft:stone
+at 0 set 1 0 106 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 2 0 10 minecraft:stone
+at 0 set 2 0 11 minecraft:stone
+at 0 set 2 0 12 minecraft:stone
+at 0 set 2 0 13 minecraft:stone
+at 0 set 2 0 14 minecraft:stone
+at 0 set 2 0 15 minecraft:stone
+at 0 set 2 0 16 minecraft:stone
+at 0 set 2 0 17 minecraft:stone
+at 0 set 2 0 18 minecraft:stone
+at 0 set 2 0 19 minecraft:stone
+at 0 set 2 0 20 minecraft:stone
+at 0 set 2 0 21 minecraft:stone
+at 0 set 2 0 22 minecraft:stone
+at 0 set 2 0 23 minecraft:stone
+at 0 set 2 0 24 minecraft:stone
+at 0 set 2 0 25 minecraft:stone
+at 0 set 2 0 26 minecraft:stone
+at 0 set 2 0 27 minecraft:stone
+at 0 set 2 0 28 minecraft:stone
+at 0 set 2 0 29 minecraft:stone
+at 0 set 2 0 30 minecraft:stone
+at 0 set 2 0 31 minecraft:stone
+at 0 set 2 0 32 minecraft:stone
+at 0 set 2 0 33 minecraft:stone
+at 0 set 2 0 34 minecraft:stone
+at 0 set 2 0 35 minecraft:stone
+at 0 set 2 0 36 minecraft:stone
+at 0 set 2 0 37 minecraft:stone
+at 0 set 2 0 38 minecraft:stone
+at 0 set 2 0 39 minecraft:stone
+at 0 set 2 0 40 minecraft:stone
+at 0 set 2 0 41 minecraft:stone
+at 0 set 2 0 42 minecraft:stone
+at 0 set 2 0 43 minecraft:stone
+at 0 set 2 0 44 minecraft:stone
+at 0 set 2 0 45 minecraft:stone
+at 0 set 2 0 46 minecraft:stone
+at 0 set 2 0 47 minecraft:stone
+at 0 set 2 0 48 minecraft:stone
+at 0 set 2 0 49 minecraft:stone
+at 0 set 2 0 50 minecraft:stone
+at 0 set 2 0 51 minecraft:stone
+at 0 set 2 0 52 minecraft:stone
+at 0 set 2 0 53 minecraft:stone
+at 0 set 2 0 54 minecraft:stone
+at 0 set 2 0 55 minecraft:stone
+at 0 set 2 0 56 minecraft:stone
+at 0 set 2 0 57 minecraft:stone
+at 0 set 2 0 58 minecraft:stone
+at 0 set 2 0 59 minecraft:stone
+at 0 set 2 0 60 minecraft:stone
+at 0 set 2 0 61 minecraft:stone
+at 0 set 2 0 62 minecraft:stone
+at 0 set 2 0 63 minecraft:stone
+at 0 set 2 0 64 minecraft:stone
+at 0 set 2 0 65 minecraft:stone
+at 0 set 2 0 66 minecraft:stone
+at 0 set 2 0 67 minecraft:stone
+at 0 set 2 0 68 minecraft:stone
+at 0 set 2 0 69 minecraft:stone
+at 0 set 2 0 70 minecraft:stone
+at 0 set 2 0 71 minecraft:stone
+at 0 set 2 0 72 minecraft:stone
+at 0 set 2 0 73 minecraft:stone
+at 0 set 2 0 74 minecraft:stone
+at 0 set 2 0 75 minecraft:stone
+at 0 set 2 0 76 minecraft:stone
+at 0 set 2 0 77 minecraft:stone
+at 0 set 2 0 78 minecraft:stone
+at 0 set 2 0 79 minecraft:stone
+at 0 set 2 0 80 minecraft:stone
+at 0 set 2 0 81 minecraft:stone
+at 0 set 2 0 82 minecraft:stone
+at 0 set 2 0 83 minecraft:stone
+at 0 set 2 0 84 minecraft:stone
+at 0 set 2 0 85 minecraft:stone
+at 0 set 2 0 86 minecraft:stone
+at 0 set 2 0 87 minecraft:stone
+at 0 set 2 0 88 minecraft:stone
+at 0 set 2 0 89 minecraft:stone
+at 0 set 2 0 90 minecraft:stone
+at 0 set 2 0 91 minecraft:stone
+at 0 set 2 0 92 minecraft:stone
+at 0 set 2 0 93 minecraft:stone
+at 0 set 2 0 94 minecraft:stone
+at 0 set 2 0 95 minecraft:stone
+at 0 set 2 0 96 minecraft:stone
+at 0 set 2 0 97 minecraft:stone
+at 0 set 2 0 98 minecraft:stone
+at 0 set 2 0 99 minecraft:stone
+at 0 set 2 0 100 minecraft:stone
+at 0 set 2 0 101 minecraft:stone
+at 0 set 2 0 102 minecraft:stone
+at 0 set 2 0 103 minecraft:stone
+at 0 set 2 0 104 minecraft:stone
+at 0 set 2 0 105 minecraft:stone
+at 0 set 2 0 106 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 3 0 10 minecraft:stone
+at 0 set 3 0 11 minecraft:stone
+at 0 set 3 0 12 minecraft:stone
+at 0 set 3 0 13 minecraft:stone
+at 0 set 3 0 14 minecraft:stone
+at 0 set 3 0 15 minecraft:stone
+at 0 set 3 0 16 minecraft:stone
+at 0 set 3 0 17 minecraft:stone
+at 0 set 3 0 18 minecraft:stone
+at 0 set 3 0 19 minecraft:stone
+at 0 set 3 0 20 minecraft:stone
+at 0 set 3 0 21 minecraft:stone
+at 0 set 3 0 22 minecraft:stone
+at 0 set 3 0 23 minecraft:stone
+at 0 set 3 0 24 minecraft:stone
+at 0 set 3 0 25 minecraft:stone
+at 0 set 3 0 26 minecraft:stone
+at 0 set 3 0 27 minecraft:stone
+at 0 set 3 0 28 minecraft:stone
+at 0 set 3 0 29 minecraft:stone
+at 0 set 3 0 30 minecraft:stone
+at 0 set 3 0 31 minecraft:stone
+at 0 set 3 0 32 minecraft:stone
+at 0 set 3 0 33 minecraft:stone
+at 0 set 3 0 34 minecraft:stone
+at 0 set 3 0 35 minecraft:stone
+at 0 set 3 0 36 minecraft:stone
+at 0 set 3 0 37 minecraft:stone
+at 0 set 3 0 38 minecraft:stone
+at 0 set 3 0 39 minecraft:stone
+at 0 set 3 0 40 minecraft:stone
+at 0 set 3 0 41 minecraft:stone
+at 0 set 3 0 42 minecraft:stone
+at 0 set 3 0 43 minecraft:stone
+at 0 set 3 0 44 minecraft:stone
+at 0 set 3 0 45 minecraft:stone
+at 0 set 3 0 46 minecraft:stone
+at 0 set 3 0 47 minecraft:stone
+at 0 set 3 0 48 minecraft:stone
+at 0 set 3 0 49 minecraft:stone
+at 0 set 3 0 50 minecraft:stone
+at 0 set 3 0 51 minecraft:stone
+at 0 set 3 0 52 minecraft:stone
+at 0 set 3 0 53 minecraft:stone
+at 0 set 3 0 54 minecraft:stone
+at 0 set 3 0 55 minecraft:stone
+at 0 set 3 0 56 minecraft:stone
+at 0 set 3 0 57 minecraft:stone
+at 0 set 3 0 58 minecraft:stone
+at 0 set 3 0 59 minecraft:stone
+at 0 set 3 0 60 minecraft:stone
+at 0 set 3 0 61 minecraft:stone
+at 0 set 3 0 62 minecraft:stone
+at 0 set 3 0 63 minecraft:stone
+at 0 set 3 0 64 minecraft:stone
+at 0 set 3 0 65 minecraft:stone
+at 0 set 3 0 66 minecraft:stone
+at 0 set 3 0 67 minecraft:stone
+at 0 set 3 0 68 minecraft:stone
+at 0 set 3 0 69 minecraft:stone
+at 0 set 3 0 70 minecraft:stone
+at 0 set 3 0 71 minecraft:stone
+at 0 set 3 0 72 minecraft:stone
+at 0 set 3 0 73 minecraft:stone
+at 0 set 3 0 74 minecraft:stone
+at 0 set 3 0 75 minecraft:stone
+at 0 set 3 0 76 minecraft:stone
+at 0 set 3 0 77 minecraft:stone
+at 0 set 3 0 78 minecraft:stone
+at 0 set 3 0 79 minecraft:stone
+at 0 set 3 0 80 minecraft:stone
+at 0 set 3 0 81 minecraft:stone
+at 0 set 3 0 82 minecraft:stone
+at 0 set 3 0 83 minecraft:stone
+at 0 set 3 0 84 minecraft:stone
+at 0 set 3 0 85 minecraft:stone
+at 0 set 3 0 86 minecraft:stone
+at 0 set 3 0 87 minecraft:stone
+at 0 set 3 0 88 minecraft:stone
+at 0 set 3 0 89 minecraft:stone
+at 0 set 3 0 90 minecraft:stone
+at 0 set 3 0 91 minecraft:stone
+at 0 set 3 0 92 minecraft:stone
+at 0 set 3 0 93 minecraft:stone
+at 0 set 3 0 94 minecraft:stone
+at 0 set 3 0 95 minecraft:stone
+at 0 set 3 0 96 minecraft:stone
+at 0 set 3 0 97 minecraft:stone
+at 0 set 3 0 98 minecraft:stone
+at 0 set 3 0 99 minecraft:stone
+at 0 set 3 0 100 minecraft:stone
+at 0 set 3 0 101 minecraft:stone
+at 0 set 3 0 102 minecraft:stone
+at 0 set 3 0 103 minecraft:stone
+at 0 set 3 0 104 minecraft:stone
+at 0 set 3 0 105 minecraft:stone
+at 0 set 3 0 106 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 4 0 11 minecraft:stone
+at 0 set 4 0 12 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 4 0 14 minecraft:stone
+at 0 set 4 0 15 minecraft:stone
+at 0 set 4 0 16 minecraft:stone
+at 0 set 4 0 17 minecraft:stone
+at 0 set 4 0 18 minecraft:stone
+at 0 set 4 0 19 minecraft:stone
+at 0 set 4 0 20 minecraft:stone
+at 0 set 4 0 21 minecraft:stone
+at 0 set 4 0 22 minecraft:stone
+at 0 set 4 0 23 minecraft:stone
+at 0 set 4 0 24 minecraft:stone
+at 0 set 4 0 25 minecraft:stone
+at 0 set 4 0 26 minecraft:stone
+at 0 set 4 0 27 minecraft:stone
+at 0 set 4 0 28 minecraft:stone
+at 0 set 4 0 29 minecraft:stone
+at 0 set 4 0 30 minecraft:stone
+at 0 set 4 0 31 minecraft:stone
+at 0 set 4 0 32 minecraft:stone
+at 0 set 4 0 33 minecraft:stone
+at 0 set 4 0 34 minecraft:stone
+at 0 set 4 0 35 minecraft:stone
+at 0 set 4 0 36 minecraft:stone
+at 0 set 4 0 37 minecraft:stone
+at 0 set 4 0 38 minecraft:stone
+at 0 set 4 0 39 minecraft:stone
+at 0 set 4 0 40 minecraft:stone
+at 0 set 4 0 41 minecraft:stone
+at 0 set 4 0 42 minecraft:stone
+at 0 set 4 0 43 minecraft:stone
+at 0 set 4 0 44 minecraft:stone
+at 0 set 4 0 45 minecraft:stone
+at 0 set 4 0 46 minecraft:stone
+at 0 set 4 0 47 minecraft:stone
+at 0 set 4 0 48 minecraft:stone
+at 0 set 4 0 49 minecraft:stone
+at 0 set 4 0 50 minecraft:stone
+at 0 set 4 0 51 minecraft:stone
+at 0 set 4 0 52 minecraft:stone
+at 0 set 4 0 53 minecraft:stone
+at 0 set 4 0 54 minecraft:stone
+at 0 set 4 0 55 minecraft:stone
+at 0 set 4 0 56 minecraft:stone
+at 0 set 4 0 57 minecraft:stone
+at 0 set 4 0 58 minecraft:stone
+at 0 set 4 0 59 minecraft:stone
+at 0 set 4 0 60 minecraft:stone
+at 0 set 4 0 61 minecraft:stone
+at 0 set 4 0 62 minecraft:stone
+at 0 set 4 0 63 minecraft:stone
+at 0 set 4 0 64 minecraft:stone
+at 0 set 4 0 65 minecraft:stone
+at 0 set 4 0 66 minecraft:stone
+at 0 set 4 0 67 minecraft:stone
+at 0 set 4 0 68 minecraft:stone
+at 0 set 4 0 69 minecraft:stone
+at 0 set 4 0 70 minecraft:stone
+at 0 set 4 0 71 minecraft:stone
+at 0 set 4 0 72 minecraft:stone
+at 0 set 4 0 73 minecraft:stone
+at 0 set 4 0 74 minecraft:stone
+at 0 set 4 0 75 minecraft:stone
+at 0 set 4 0 76 minecraft:stone
+at 0 set 4 0 77 minecraft:stone
+at 0 set 4 0 78 minecraft:stone
+at 0 set 4 0 79 minecraft:stone
+at 0 set 4 0 80 minecraft:stone
+at 0 set 4 0 81 minecraft:stone
+at 0 set 4 0 82 minecraft:stone
+at 0 set 4 0 83 minecraft:stone
+at 0 set 4 0 84 minecraft:stone
+at 0 set 4 0 85 minecraft:stone
+at 0 set 4 0 86 minecraft:stone
+at 0 set 4 0 87 minecraft:stone
+at 0 set 4 0 88 minecraft:stone
+at 0 set 4 0 89 minecraft:stone
+at 0 set 4 0 90 minecraft:stone
+at 0 set 4 0 91 minecraft:stone
+at 0 set 4 0 92 minecraft:stone
+at 0 set 4 0 93 minecraft:stone
+at 0 set 4 0 94 minecraft:stone
+at 0 set 4 0 95 minecraft:stone
+at 0 set 4 0 96 minecraft:stone
+at 0 set 4 0 97 minecraft:stone
+at 0 set 4 0 98 minecraft:stone
+at 0 set 4 0 99 minecraft:stone
+at 0 set 4 0 100 minecraft:stone
+at 0 set 4 0 101 minecraft:stone
+at 0 set 4 0 102 minecraft:stone
+at 0 set 4 0 103 minecraft:stone
+at 0 set 4 0 104 minecraft:stone
+at 0 set 4 0 105 minecraft:stone
+at 0 set 4 0 106 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 5 0 10 minecraft:stone
+at 0 set 5 0 11 minecraft:stone
+at 0 set 5 0 12 minecraft:stone
+at 0 set 5 0 13 minecraft:stone
+at 0 set 5 0 14 minecraft:stone
+at 0 set 5 0 15 minecraft:stone
+at 0 set 5 0 16 minecraft:stone
+at 0 set 5 0 17 minecraft:stone
+at 0 set 5 0 18 minecraft:stone
+at 0 set 5 0 19 minecraft:stone
+at 0 set 5 0 20 minecraft:stone
+at 0 set 5 0 21 minecraft:stone
+at 0 set 5 0 22 minecraft:stone
+at 0 set 5 0 23 minecraft:stone
+at 0 set 5 0 24 minecraft:stone
+at 0 set 5 0 25 minecraft:stone
+at 0 set 5 0 26 minecraft:stone
+at 0 set 5 0 27 minecraft:stone
+at 0 set 5 0 28 minecraft:stone
+at 0 set 5 0 29 minecraft:stone
+at 0 set 5 0 30 minecraft:stone
+at 0 set 5 0 31 minecraft:stone
+at 0 set 5 0 32 minecraft:stone
+at 0 set 5 0 33 minecraft:stone
+at 0 set 5 0 34 minecraft:stone
+at 0 set 5 0 35 minecraft:stone
+at 0 set 5 0 36 minecraft:stone
+at 0 set 5 0 37 minecraft:stone
+at 0 set 5 0 38 minecraft:stone
+at 0 set 5 0 39 minecraft:stone
+at 0 set 5 0 40 minecraft:stone
+at 0 set 5 0 41 minecraft:stone
+at 0 set 5 0 42 minecraft:stone
+at 0 set 5 0 43 minecraft:stone
+at 0 set 5 0 44 minecraft:stone
+at 0 set 5 0 45 minecraft:stone
+at 0 set 5 0 46 minecraft:stone
+at 0 set 5 0 47 minecraft:stone
+at 0 set 5 0 48 minecraft:stone
+at 0 set 5 0 49 minecraft:stone
+at 0 set 5 0 50 minecraft:stone
+at 0 set 5 0 51 minecraft:stone
+at 0 set 5 0 52 minecraft:stone
+at 0 set 5 0 53 minecraft:stone
+at 0 set 5 0 54 minecraft:stone
+at 0 set 5 0 55 minecraft:stone
+at 0 set 5 0 56 minecraft:stone
+at 0 set 5 0 57 minecraft:stone
+at 0 set 5 0 58 minecraft:stone
+at 0 set 5 0 59 minecraft:stone
+at 0 set 5 0 60 minecraft:stone
+at 0 set 5 0 61 minecraft:stone
+at 0 set 5 0 62 minecraft:stone
+at 0 set 5 0 63 minecraft:stone
+at 0 set 5 0 64 minecraft:stone
+at 0 set 5 0 65 minecraft:stone
+at 0 set 5 0 66 minecraft:stone
+at 0 set 5 0 67 minecraft:stone
+at 0 set 5 0 68 minecraft:stone
+at 0 set 5 0 69 minecraft:stone
+at 0 set 5 0 70 minecraft:stone
+at 0 set 5 0 71 minecraft:stone
+at 0 set 5 0 72 minecraft:stone
+at 0 set 5 0 73 minecraft:stone
+at 0 set 5 0 74 minecraft:stone
+at 0 set 5 0 75 minecraft:stone
+at 0 set 5 0 76 minecraft:stone
+at 0 set 5 0 77 minecraft:stone
+at 0 set 5 0 78 minecraft:stone
+at 0 set 5 0 79 minecraft:stone
+at 0 set 5 0 80 minecraft:stone
+at 0 set 5 0 81 minecraft:stone
+at 0 set 5 0 82 minecraft:stone
+at 0 set 5 0 83 minecraft:stone
+at 0 set 5 0 84 minecraft:stone
+at 0 set 5 0 85 minecraft:stone
+at 0 set 5 0 86 minecraft:stone
+at 0 set 5 0 87 minecraft:stone
+at 0 set 5 0 88 minecraft:stone
+at 0 set 5 0 89 minecraft:stone
+at 0 set 5 0 90 minecraft:stone
+at 0 set 5 0 91 minecraft:stone
+at 0 set 5 0 92 minecraft:stone
+at 0 set 5 0 93 minecraft:stone
+at 0 set 5 0 94 minecraft:stone
+at 0 set 5 0 95 minecraft:stone
+at 0 set 5 0 96 minecraft:stone
+at 0 set 5 0 97 minecraft:stone
+at 0 set 5 0 98 minecraft:stone
+at 0 set 5 0 99 minecraft:stone
+at 0 set 5 0 100 minecraft:stone
+at 0 set 5 0 101 minecraft:stone
+at 0 set 5 0 102 minecraft:stone
+at 0 set 5 0 103 minecraft:stone
+at 0 set 5 0 104 minecraft:stone
+at 0 set 5 0 105 minecraft:stone
+at 0 set 5 0 106 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 6 0 10 minecraft:stone
+at 0 set 6 0 11 minecraft:stone
+at 0 set 6 0 12 minecraft:stone
+at 0 set 6 0 13 minecraft:stone
+at 0 set 6 0 14 minecraft:stone
+at 0 set 6 0 15 minecraft:stone
+at 0 set 6 0 16 minecraft:stone
+at 0 set 6 0 17 minecraft:stone
+at 0 set 6 0 18 minecraft:stone
+at 0 set 6 0 19 minecraft:stone
+at 0 set 6 0 20 minecraft:stone
+at 0 set 6 0 21 minecraft:stone
+at 0 set 6 0 22 minecraft:stone
+at 0 set 6 0 23 minecraft:stone
+at 0 set 6 0 24 minecraft:stone
+at 0 set 6 0 25 minecraft:stone
+at 0 set 6 0 26 minecraft:stone
+at 0 set 6 0 27 minecraft:stone
+at 0 set 6 0 28 minecraft:stone
+at 0 set 6 0 29 minecraft:stone
+at 0 set 6 0 30 minecraft:stone
+at 0 set 6 0 31 minecraft:stone
+at 0 set 6 0 32 minecraft:stone
+at 0 set 6 0 33 minecraft:stone
+at 0 set 6 0 34 minecraft:stone
+at 0 set 6 0 35 minecraft:stone
+at 0 set 6 0 36 minecraft:stone
+at 0 set 6 0 37 minecraft:stone
+at 0 set 6 0 38 minecraft:stone
+at 0 set 6 0 39 minecraft:stone
+at 0 set 6 0 40 minecraft:stone
+at 0 set 6 0 41 minecraft:stone
+at 0 set 6 0 42 minecraft:stone
+at 0 set 6 0 43 minecraft:stone
+at 0 set 6 0 44 minecraft:stone
+at 0 set 6 0 45 minecraft:stone
+at 0 set 6 0 46 minecraft:stone
+at 0 set 6 0 47 minecraft:stone
+at 0 set 6 0 48 minecraft:stone
+at 0 set 6 0 49 minecraft:stone
+at 0 set 6 0 50 minecraft:stone
+at 0 set 6 0 51 minecraft:stone
+at 0 set 6 0 52 minecraft:stone
+at 0 set 6 0 53 minecraft:stone
+at 0 set 6 0 54 minecraft:stone
+at 0 set 6 0 55 minecraft:stone
+at 0 set 6 0 56 minecraft:stone
+at 0 set 6 0 57 minecraft:stone
+at 0 set 6 0 58 minecraft:stone
+at 0 set 6 0 59 minecraft:stone
+at 0 set 6 0 60 minecraft:stone
+at 0 set 6 0 61 minecraft:stone
+at 0 set 6 0 62 minecraft:stone
+at 0 set 6 0 63 minecraft:stone
+at 0 set 6 0 64 minecraft:stone
+at 0 set 6 0 65 minecraft:stone
+at 0 set 6 0 66 minecraft:stone
+at 0 set 6 0 67 minecraft:stone
+at 0 set 6 0 68 minecraft:stone
+at 0 set 6 0 69 minecraft:stone
+at 0 set 6 0 70 minecraft:stone
+at 0 set 6 0 71 minecraft:stone
+at 0 set 6 0 72 minecraft:stone
+at 0 set 6 0 73 minecraft:stone
+at 0 set 6 0 74 minecraft:stone
+at 0 set 6 0 75 minecraft:stone
+at 0 set 6 0 76 minecraft:stone
+at 0 set 6 0 77 minecraft:stone
+at 0 set 6 0 78 minecraft:stone
+at 0 set 6 0 79 minecraft:stone
+at 0 set 6 0 80 minecraft:stone
+at 0 set 6 0 81 minecraft:stone
+at 0 set 6 0 82 minecraft:stone
+at 0 set 6 0 83 minecraft:stone
+at 0 set 6 0 84 minecraft:stone
+at 0 set 6 0 85 minecraft:stone
+at 0 set 6 0 86 minecraft:stone
+at 0 set 6 0 87 minecraft:stone
+at 0 set 6 0 88 minecraft:stone
+at 0 set 6 0 89 minecraft:stone
+at 0 set 6 0 90 minecraft:stone
+at 0 set 6 0 91 minecraft:stone
+at 0 set 6 0 92 minecraft:stone
+at 0 set 6 0 93 minecraft:stone
+at 0 set 6 0 94 minecraft:stone
+at 0 set 6 0 95 minecraft:stone
+at 0 set 6 0 96 minecraft:stone
+at 0 set 6 0 97 minecraft:stone
+at 0 set 6 0 98 minecraft:stone
+at 0 set 6 0 99 minecraft:stone
+at 0 set 6 0 100 minecraft:stone
+at 0 set 6 0 101 minecraft:stone
+at 0 set 6 0 102 minecraft:stone
+at 0 set 6 0 103 minecraft:stone
+at 0 set 6 0 104 minecraft:stone
+at 0 set 6 0 105 minecraft:stone
+at 0 set 6 0 106 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 7 0 10 minecraft:stone
+at 0 set 7 0 11 minecraft:stone
+at 0 set 7 0 12 minecraft:stone
+at 0 set 7 0 13 minecraft:stone
+at 0 set 7 0 14 minecraft:stone
+at 0 set 7 0 15 minecraft:stone
+at 0 set 7 0 16 minecraft:stone
+at 0 set 7 0 17 minecraft:stone
+at 0 set 7 0 18 minecraft:stone
+at 0 set 7 0 19 minecraft:stone
+at 0 set 7 0 20 minecraft:stone
+at 0 set 7 0 21 minecraft:stone
+at 0 set 7 0 22 minecraft:stone
+at 0 set 7 0 23 minecraft:stone
+at 0 set 7 0 24 minecraft:stone
+at 0 set 7 0 25 minecraft:stone
+at 0 set 7 0 26 minecraft:stone
+at 0 set 7 0 27 minecraft:stone
+at 0 set 7 0 28 minecraft:stone
+at 0 set 7 0 29 minecraft:stone
+at 0 set 7 0 30 minecraft:stone
+at 0 set 7 0 31 minecraft:stone
+at 0 set 7 0 32 minecraft:stone
+at 0 set 7 0 33 minecraft:stone
+at 0 set 7 0 34 minecraft:stone
+at 0 set 7 0 35 minecraft:stone
+at 0 set 7 0 36 minecraft:stone
+at 0 set 7 0 37 minecraft:stone
+at 0 set 7 0 38 minecraft:stone
+at 0 set 7 0 39 minecraft:stone
+at 0 set 7 0 40 minecraft:stone
+at 0 set 7 0 41 minecraft:stone
+at 0 set 7 0 42 minecraft:stone
+at 0 set 7 0 43 minecraft:stone
+at 0 set 7 0 44 minecraft:stone
+at 0 set 7 0 45 minecraft:stone
+at 0 set 7 0 46 minecraft:stone
+at 0 set 7 0 47 minecraft:stone
+at 0 set 7 0 48 minecraft:stone
+at 0 set 7 0 49 minecraft:stone
+at 0 set 7 0 50 minecraft:stone
+at 0 set 7 0 51 minecraft:stone
+at 0 set 7 0 52 minecraft:stone
+at 0 set 7 0 53 minecraft:stone
+at 0 set 7 0 54 minecraft:stone
+at 0 set 7 0 55 minecraft:stone
+at 0 set 7 0 56 minecraft:stone
+at 0 set 7 0 57 minecraft:stone
+at 0 set 7 0 58 minecraft:stone
+at 0 set 7 0 59 minecraft:stone
+at 0 set 7 0 60 minecraft:stone
+at 0 set 7 0 61 minecraft:stone
+at 0 set 7 0 62 minecraft:stone
+at 0 set 7 0 63 minecraft:stone
+at 0 set 7 0 64 minecraft:stone
+at 0 set 7 0 65 minecraft:stone
+at 0 set 7 0 66 minecraft:stone
+at 0 set 7 0 67 minecraft:stone
+at 0 set 7 0 68 minecraft:stone
+at 0 set 7 0 69 minecraft:stone
+at 0 set 7 0 70 minecraft:stone
+at 0 set 7 0 71 minecraft:stone
+at 0 set 7 0 72 minecraft:stone
+at 0 set 7 0 73 minecraft:stone
+at 0 set 7 0 74 minecraft:stone
+at 0 set 7 0 75 minecraft:stone
+at 0 set 7 0 76 minecraft:stone
+at 0 set 7 0 77 minecraft:stone
+at 0 set 7 0 78 minecraft:stone
+at 0 set 7 0 79 minecraft:stone
+at 0 set 7 0 80 minecraft:stone
+at 0 set 7 0 81 minecraft:stone
+at 0 set 7 0 82 minecraft:stone
+at 0 set 7 0 83 minecraft:stone
+at 0 set 7 0 84 minecraft:stone
+at 0 set 7 0 85 minecraft:stone
+at 0 set 7 0 86 minecraft:stone
+at 0 set 7 0 87 minecraft:stone
+at 0 set 7 0 88 minecraft:stone
+at 0 set 7 0 89 minecraft:stone
+at 0 set 7 0 90 minecraft:stone
+at 0 set 7 0 91 minecraft:stone
+at 0 set 7 0 92 minecraft:stone
+at 0 set 7 0 93 minecraft:stone
+at 0 set 7 0 94 minecraft:stone
+at 0 set 7 0 95 minecraft:stone
+at 0 set 7 0 96 minecraft:stone
+at 0 set 7 0 97 minecraft:stone
+at 0 set 7 0 98 minecraft:stone
+at 0 set 7 0 99 minecraft:stone
+at 0 set 7 0 100 minecraft:stone
+at 0 set 7 0 101 minecraft:stone
+at 0 set 7 0 102 minecraft:stone
+at 0 set 7 0 103 minecraft:stone
+at 0 set 7 0 104 minecraft:stone
+at 0 set 7 0 105 minecraft:stone
+at 0 set 7 0 106 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 8 0 10 minecraft:stone
+at 0 set 8 0 11 minecraft:stone
+at 0 set 8 0 12 minecraft:stone
+at 0 set 8 0 13 minecraft:stone
+at 0 set 8 0 14 minecraft:stone
+at 0 set 8 0 15 minecraft:stone
+at 0 set 8 0 16 minecraft:stone
+at 0 set 8 0 17 minecraft:stone
+at 0 set 8 0 18 minecraft:stone
+at 0 set 8 0 19 minecraft:stone
+at 0 set 8 0 20 minecraft:stone
+at 0 set 8 0 21 minecraft:stone
+at 0 set 8 0 22 minecraft:stone
+at 0 set 8 0 23 minecraft:stone
+at 0 set 8 0 24 minecraft:stone
+at 0 set 8 0 25 minecraft:stone
+at 0 set 8 0 26 minecraft:stone
+at 0 set 8 0 27 minecraft:stone
+at 0 set 8 0 28 minecraft:stone
+at 0 set 8 0 29 minecraft:stone
+at 0 set 8 0 30 minecraft:stone
+at 0 set 8 0 31 minecraft:stone
+at 0 set 8 0 32 minecraft:stone
+at 0 set 8 0 33 minecraft:stone
+at 0 set 8 0 34 minecraft:stone
+at 0 set 8 0 35 minecraft:stone
+at 0 set 8 0 36 minecraft:stone
+at 0 set 8 0 37 minecraft:stone
+at 0 set 8 0 38 minecraft:stone
+at 0 set 8 0 39 minecraft:stone
+at 0 set 8 0 40 minecraft:stone
+at 0 set 8 0 41 minecraft:stone
+at 0 set 8 0 42 minecraft:stone
+at 0 set 8 0 43 minecraft:stone
+at 0 set 8 0 44 minecraft:stone
+at 0 set 8 0 45 minecraft:stone
+at 0 set 8 0 46 minecraft:stone
+at 0 set 8 0 47 minecraft:stone
+at 0 set 8 0 48 minecraft:stone
+at 0 set 8 0 49 minecraft:stone
+at 0 set 8 0 50 minecraft:stone
+at 0 set 8 0 51 minecraft:stone
+at 0 set 8 0 52 minecraft:stone
+at 0 set 8 0 53 minecraft:stone
+at 0 set 8 0 54 minecraft:stone
+at 0 set 8 0 55 minecraft:stone
+at 0 set 8 0 56 minecraft:stone
+at 0 set 8 0 57 minecraft:stone
+at 0 set 8 0 58 minecraft:stone
+at 0 set 8 0 59 minecraft:stone
+at 0 set 8 0 60 minecraft:stone
+at 0 set 8 0 61 minecraft:stone
+at 0 set 8 0 62 minecraft:stone
+at 0 set 8 0 63 minecraft:stone
+at 0 set 8 0 64 minecraft:stone
+at 0 set 8 0 65 minecraft:stone
+at 0 set 8 0 66 minecraft:stone
+at 0 set 8 0 67 minecraft:stone
+at 0 set 8 0 68 minecraft:stone
+at 0 set 8 0 69 minecraft:stone
+at 0 set 8 0 70 minecraft:stone
+at 0 set 8 0 71 minecraft:stone
+at 0 set 8 0 72 minecraft:stone
+at 0 set 8 0 73 minecraft:stone
+at 0 set 8 0 74 minecraft:stone
+at 0 set 8 0 75 minecraft:stone
+at 0 set 8 0 76 minecraft:stone
+at 0 set 8 0 77 minecraft:stone
+at 0 set 8 0 78 minecraft:stone
+at 0 set 8 0 79 minecraft:stone
+at 0 set 8 0 80 minecraft:stone
+at 0 set 8 0 81 minecraft:stone
+at 0 set 8 0 82 minecraft:stone
+at 0 set 8 0 83 minecraft:stone
+at 0 set 8 0 84 minecraft:stone
+at 0 set 8 0 85 minecraft:stone
+at 0 set 8 0 86 minecraft:stone
+at 0 set 8 0 87 minecraft:stone
+at 0 set 8 0 88 minecraft:stone
+at 0 set 8 0 89 minecraft:stone
+at 0 set 8 0 90 minecraft:stone
+at 0 set 8 0 91 minecraft:stone
+at 0 set 8 0 92 minecraft:stone
+at 0 set 8 0 93 minecraft:stone
+at 0 set 8 0 94 minecraft:stone
+at 0 set 8 0 95 minecraft:stone
+at 0 set 8 0 96 minecraft:stone
+at 0 set 8 0 97 minecraft:stone
+at 0 set 8 0 98 minecraft:stone
+at 0 set 8 0 99 minecraft:stone
+at 0 set 8 0 100 minecraft:stone
+at 0 set 8 0 101 minecraft:stone
+at 0 set 8 0 102 minecraft:stone
+at 0 set 8 0 103 minecraft:stone
+at 0 set 8 0 104 minecraft:stone
+at 0 set 8 0 105 minecraft:stone
+at 0 set 8 0 106 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 9 0 10 minecraft:stone
+at 0 set 9 0 11 minecraft:stone
+at 0 set 9 0 12 minecraft:stone
+at 0 set 9 0 13 minecraft:stone
+at 0 set 9 0 14 minecraft:stone
+at 0 set 9 0 15 minecraft:stone
+at 0 set 9 0 16 minecraft:stone
+at 0 set 9 0 17 minecraft:stone
+at 0 set 9 0 18 minecraft:stone
+at 0 set 9 0 19 minecraft:stone
+at 0 set 9 0 20 minecraft:stone
+at 0 set 9 0 21 minecraft:stone
+at 0 set 9 0 22 minecraft:stone
+at 0 set 9 0 23 minecraft:stone
+at 0 set 9 0 24 minecraft:stone
+at 0 set 9 0 25 minecraft:stone
+at 0 set 9 0 26 minecraft:stone
+at 0 set 9 0 27 minecraft:stone
+at 0 set 9 0 28 minecraft:stone
+at 0 set 9 0 29 minecraft:stone
+at 0 set 9 0 30 minecraft:stone
+at 0 set 9 0 31 minecraft:stone
+at 0 set 9 0 32 minecraft:stone
+at 0 set 9 0 33 minecraft:stone
+at 0 set 9 0 34 minecraft:stone
+at 0 set 9 0 35 minecraft:stone
+at 0 set 9 0 36 minecraft:stone
+at 0 set 9 0 37 minecraft:stone
+at 0 set 9 0 38 minecraft:stone
+at 0 set 9 0 39 minecraft:stone
+at 0 set 9 0 40 minecraft:stone
+at 0 set 9 0 41 minecraft:stone
+at 0 set 9 0 42 minecraft:stone
+at 0 set 9 0 43 minecraft:stone
+at 0 set 9 0 44 minecraft:stone
+at 0 set 9 0 45 minecraft:stone
+at 0 set 9 0 46 minecraft:stone
+at 0 set 9 0 47 minecraft:stone
+at 0 set 9 0 48 minecraft:stone
+at 0 set 9 0 49 minecraft:stone
+at 0 set 9 0 50 minecraft:stone
+at 0 set 9 0 51 minecraft:stone
+at 0 set 9 0 52 minecraft:stone
+at 0 set 9 0 53 minecraft:stone
+at 0 set 9 0 54 minecraft:stone
+at 0 set 9 0 55 minecraft:stone
+at 0 set 9 0 56 minecraft:stone
+at 0 set 9 0 57 minecraft:stone
+at 0 set 9 0 58 minecraft:stone
+at 0 set 9 0 59 minecraft:stone
+at 0 set 9 0 60 minecraft:stone
+at 0 set 9 0 61 minecraft:stone
+at 0 set 9 0 62 minecraft:stone
+at 0 set 9 0 63 minecraft:stone
+at 0 set 9 0 64 minecraft:stone
+at 0 set 9 0 65 minecraft:stone
+at 0 set 9 0 66 minecraft:stone
+at 0 set 9 0 67 minecraft:stone
+at 0 set 9 0 68 minecraft:stone
+at 0 set 9 0 69 minecraft:stone
+at 0 set 9 0 70 minecraft:stone
+at 0 set 9 0 71 minecraft:stone
+at 0 set 9 0 72 minecraft:stone
+at 0 set 9 0 73 minecraft:stone
+at 0 set 9 0 74 minecraft:stone
+at 0 set 9 0 75 minecraft:stone
+at 0 set 9 0 76 minecraft:stone
+at 0 set 9 0 77 minecraft:stone
+at 0 set 9 0 78 minecraft:stone
+at 0 set 9 0 79 minecraft:stone
+at 0 set 9 0 80 minecraft:stone
+at 0 set 9 0 81 minecraft:stone
+at 0 set 9 0 82 minecraft:stone
+at 0 set 9 0 83 minecraft:stone
+at 0 set 9 0 84 minecraft:stone
+at 0 set 9 0 85 minecraft:stone
+at 0 set 9 0 86 minecraft:stone
+at 0 set 9 0 87 minecraft:stone
+at 0 set 9 0 88 minecraft:stone
+at 0 set 9 0 89 minecraft:stone
+at 0 set 9 0 90 minecraft:stone
+at 0 set 9 0 91 minecraft:stone
+at 0 set 9 0 92 minecraft:stone
+at 0 set 9 0 93 minecraft:stone
+at 0 set 9 0 94 minecraft:stone
+at 0 set 9 0 95 minecraft:stone
+at 0 set 9 0 96 minecraft:stone
+at 0 set 9 0 97 minecraft:stone
+at 0 set 9 0 98 minecraft:stone
+at 0 set 9 0 99 minecraft:stone
+at 0 set 9 0 100 minecraft:stone
+at 0 set 9 0 101 minecraft:stone
+at 0 set 9 0 102 minecraft:stone
+at 0 set 9 0 103 minecraft:stone
+at 0 set 9 0 104 minecraft:stone
+at 0 set 9 0 105 minecraft:stone
+at 0 set 9 0 106 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 10 0 10 minecraft:stone
+at 0 set 10 0 11 minecraft:stone
+at 0 set 10 0 12 minecraft:stone
+at 0 set 10 0 13 minecraft:stone
+at 0 set 10 0 14 minecraft:stone
+at 0 set 10 0 15 minecraft:stone
+at 0 set 10 0 16 minecraft:stone
+at 0 set 10 0 17 minecraft:stone
+at 0 set 10 0 18 minecraft:stone
+at 0 set 10 0 19 minecraft:stone
+at 0 set 10 0 20 minecraft:stone
+at 0 set 10 0 21 minecraft:stone
+at 0 set 10 0 22 minecraft:stone
+at 0 set 10 0 23 minecraft:stone
+at 0 set 10 0 24 minecraft:stone
+at 0 set 10 0 25 minecraft:stone
+at 0 set 10 0 26 minecraft:stone
+at 0 set 10 0 27 minecraft:stone
+at 0 set 10 0 28 minecraft:stone
+at 0 set 10 0 29 minecraft:stone
+at 0 set 10 0 30 minecraft:stone
+at 0 set 10 0 31 minecraft:stone
+at 0 set 10 0 32 minecraft:stone
+at 0 set 10 0 33 minecraft:stone
+at 0 set 10 0 34 minecraft:stone
+at 0 set 10 0 35 minecraft:stone
+at 0 set 10 0 36 minecraft:stone
+at 0 set 10 0 37 minecraft:stone
+at 0 set 10 0 38 minecraft:stone
+at 0 set 10 0 39 minecraft:stone
+at 0 set 10 0 40 minecraft:stone
+at 0 set 10 0 41 minecraft:stone
+at 0 set 10 0 42 minecraft:stone
+at 0 set 10 0 43 minecraft:stone
+at 0 set 10 0 44 minecraft:stone
+at 0 set 10 0 45 minecraft:stone
+at 0 set 10 0 46 minecraft:stone
+at 0 set 10 0 47 minecraft:stone
+at 0 set 10 0 48 minecraft:stone
+at 0 set 10 0 49 minecraft:stone
+at 0 set 10 0 50 minecraft:stone
+at 0 set 10 0 51 minecraft:stone
+at 0 set 10 0 52 minecraft:stone
+at 0 set 10 0 53 minecraft:stone
+at 0 set 10 0 54 minecraft:stone
+at 0 set 10 0 55 minecraft:stone
+at 0 set 10 0 56 minecraft:stone
+at 0 set 10 0 57 minecraft:stone
+at 0 set 10 0 58 minecraft:stone
+at 0 set 10 0 59 minecraft:stone
+at 0 set 10 0 60 minecraft:stone
+at 0 set 10 0 61 minecraft:stone
+at 0 set 10 0 62 minecraft:stone
+at 0 set 10 0 63 minecraft:stone
+at 0 set 10 0 64 minecraft:stone
+at 0 set 10 0 65 minecraft:stone
+at 0 set 10 0 66 minecraft:stone
+at 0 set 10 0 67 minecraft:stone
+at 0 set 10 0 68 minecraft:stone
+at 0 set 10 0 69 minecraft:stone
+at 0 set 10 0 70 minecraft:stone
+at 0 set 10 0 71 minecraft:stone
+at 0 set 10 0 72 minecraft:stone
+at 0 set 10 0 73 minecraft:stone
+at 0 set 10 0 74 minecraft:stone
+at 0 set 10 0 75 minecraft:stone
+at 0 set 10 0 76 minecraft:stone
+at 0 set 10 0 77 minecraft:stone
+at 0 set 10 0 78 minecraft:stone
+at 0 set 10 0 79 minecraft:stone
+at 0 set 10 0 80 minecraft:stone
+at 0 set 10 0 81 minecraft:stone
+at 0 set 10 0 82 minecraft:stone
+at 0 set 10 0 83 minecraft:stone
+at 0 set 10 0 84 minecraft:stone
+at 0 set 10 0 85 minecraft:stone
+at 0 set 10 0 86 minecraft:stone
+at 0 set 10 0 87 minecraft:stone
+at 0 set 10 0 88 minecraft:stone
+at 0 set 10 0 89 minecraft:stone
+at 0 set 10 0 90 minecraft:stone
+at 0 set 10 0 91 minecraft:stone
+at 0 set 10 0 92 minecraft:stone
+at 0 set 10 0 93 minecraft:stone
+at 0 set 10 0 94 minecraft:stone
+at 0 set 10 0 95 minecraft:stone
+at 0 set 10 0 96 minecraft:stone
+at 0 set 10 0 97 minecraft:stone
+at 0 set 10 0 98 minecraft:stone
+at 0 set 10 0 99 minecraft:stone
+at 0 set 10 0 100 minecraft:stone
+at 0 set 10 0 101 minecraft:stone
+at 0 set 10 0 102 minecraft:stone
+at 0 set 10 0 103 minecraft:stone
+at 0 set 10 0 104 minecraft:stone
+at 0 set 10 0 105 minecraft:stone
+at 0 set 10 0 106 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 11 0 10 minecraft:stone
+at 0 set 11 0 11 minecraft:stone
+at 0 set 11 0 12 minecraft:stone
+at 0 set 11 0 13 minecraft:stone
+at 0 set 11 0 14 minecraft:stone
+at 0 set 11 0 15 minecraft:stone
+at 0 set 11 0 16 minecraft:stone
+at 0 set 11 0 17 minecraft:stone
+at 0 set 11 0 18 minecraft:stone
+at 0 set 11 0 19 minecraft:stone
+at 0 set 11 0 20 minecraft:stone
+at 0 set 11 0 21 minecraft:stone
+at 0 set 11 0 22 minecraft:stone
+at 0 set 11 0 23 minecraft:stone
+at 0 set 11 0 24 minecraft:stone
+at 0 set 11 0 25 minecraft:stone
+at 0 set 11 0 26 minecraft:stone
+at 0 set 11 0 27 minecraft:stone
+at 0 set 11 0 28 minecraft:stone
+at 0 set 11 0 29 minecraft:stone
+at 0 set 11 0 30 minecraft:stone
+at 0 set 11 0 31 minecraft:stone
+at 0 set 11 0 32 minecraft:stone
+at 0 set 11 0 33 minecraft:stone
+at 0 set 11 0 34 minecraft:stone
+at 0 set 11 0 35 minecraft:stone
+at 0 set 11 0 36 minecraft:stone
+at 0 set 11 0 37 minecraft:stone
+at 0 set 11 0 38 minecraft:stone
+at 0 set 11 0 39 minecraft:stone
+at 0 set 11 0 40 minecraft:stone
+at 0 set 11 0 41 minecraft:stone
+at 0 set 11 0 42 minecraft:stone
+at 0 set 11 0 43 minecraft:stone
+at 0 set 11 0 44 minecraft:stone
+at 0 set 11 0 45 minecraft:stone
+at 0 set 11 0 46 minecraft:stone
+at 0 set 11 0 47 minecraft:stone
+at 0 set 11 0 48 minecraft:stone
+at 0 set 11 0 49 minecraft:stone
+at 0 set 11 0 50 minecraft:stone
+at 0 set 11 0 51 minecraft:stone
+at 0 set 11 0 52 minecraft:stone
+at 0 set 11 0 53 minecraft:stone
+at 0 set 11 0 54 minecraft:stone
+at 0 set 11 0 55 minecraft:stone
+at 0 set 11 0 56 minecraft:stone
+at 0 set 11 0 57 minecraft:stone
+at 0 set 11 0 58 minecraft:stone
+at 0 set 11 0 59 minecraft:stone
+at 0 set 11 0 60 minecraft:stone
+at 0 set 11 0 61 minecraft:stone
+at 0 set 11 0 62 minecraft:stone
+at 0 set 11 0 63 minecraft:stone
+at 0 set 11 0 64 minecraft:stone
+at 0 set 11 0 65 minecraft:stone
+at 0 set 11 0 66 minecraft:stone
+at 0 set 11 0 67 minecraft:stone
+at 0 set 11 0 68 minecraft:stone
+at 0 set 11 0 69 minecraft:stone
+at 0 set 11 0 70 minecraft:stone
+at 0 set 11 0 71 minecraft:stone
+at 0 set 11 0 72 minecraft:stone
+at 0 set 11 0 73 minecraft:stone
+at 0 set 11 0 74 minecraft:stone
+at 0 set 11 0 75 minecraft:stone
+at 0 set 11 0 76 minecraft:stone
+at 0 set 11 0 77 minecraft:stone
+at 0 set 11 0 78 minecraft:stone
+at 0 set 11 0 79 minecraft:stone
+at 0 set 11 0 80 minecraft:stone
+at 0 set 11 0 81 minecraft:stone
+at 0 set 11 0 82 minecraft:stone
+at 0 set 11 0 83 minecraft:stone
+at 0 set 11 0 84 minecraft:stone
+at 0 set 11 0 85 minecraft:stone
+at 0 set 11 0 86 minecraft:stone
+at 0 set 11 0 87 minecraft:stone
+at 0 set 11 0 88 minecraft:stone
+at 0 set 11 0 89 minecraft:stone
+at 0 set 11 0 90 minecraft:stone
+at 0 set 11 0 91 minecraft:stone
+at 0 set 11 0 92 minecraft:stone
+at 0 set 11 0 93 minecraft:stone
+at 0 set 11 0 94 minecraft:stone
+at 0 set 11 0 95 minecraft:stone
+at 0 set 11 0 96 minecraft:stone
+at 0 set 11 0 97 minecraft:stone
+at 0 set 11 0 98 minecraft:stone
+at 0 set 11 0 99 minecraft:stone
+at 0 set 11 0 100 minecraft:stone
+at 0 set 11 0 101 minecraft:stone
+at 0 set 11 0 102 minecraft:stone
+at 0 set 11 0 103 minecraft:stone
+at 0 set 11 0 104 minecraft:stone
+at 0 set 11 0 105 minecraft:stone
+at 0 set 11 0 106 minecraft:stone
+at 0 set 5 1 1 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 1 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 4 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 4 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 7 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 7 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 10 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 10 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 13 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 13 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 16 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 16 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 19 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 19 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 22 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 22 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 25 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 25 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 28 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 28 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 31 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 31 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 34 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 34 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 37 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 37 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 40 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 40 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 43 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 43 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 46 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 46 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 49 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 49 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 52 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 52 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 55 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 55 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 58 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 58 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 61 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 61 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 64 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 64 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 67 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 67 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 70 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 70 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 73 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 73 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 76 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 76 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 79 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 79 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 82 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 82 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 85 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 85 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 88 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 88 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 91 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 91 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 94 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 94 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 97 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 97 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 100 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 100 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 1 103 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 103 minecraft:lever[face=floor,facing=north,powered=false]
+
+at 1 insert 5 1 1 0 minecraft:chest 1
+at 1 insert 5 1 4 0 minecraft:saddle 1
+at 1 insert 5 1 7 0 minecraft:white_carpet 1
+at 1 insert 5 1 10 0 minecraft:iron_helmet 1
+at 1 insert 5 1 13 0 minecraft:elytra 1
+at 1 insert 5 1 16 0 minecraft:shield 1
+at 1 insert 5 1 19 0 minecraft:shears 1
+at 1 insert 5 1 22 0 minecraft:bone_meal 1
+at 1 insert 5 1 25 0 minecraft:glass_bottle 1
+at 1 insert 5 1 28 0 minecraft:honeycomb 1
+at 1 insert 5 1 31 0 minecraft:carved_pumpkin 1
+at 1 insert 5 1 34 0 minecraft:skeleton_skull 1
+at 1 insert 5 1 37 0 minecraft:iron_horse_armor 1
+at 1 insert 5 1 40 0 minecraft:brush 1
+at 1 insert 5 1 43 0 minecraft:glowstone 1
+at 1 insert 5 1 46 0 minecraft:potion 1
+at 1 insert 5 1 49 0 minecraft:oak_boat 1
+at 1 insert 5 1 52 0 minecraft:wolf_armor 1
+at 1 insert 5 1 55 0 minecraft:lead 1
+at 1 insert 5 1 58 0 minecraft:trident 1
+at 1 insert 5 1 61 0 minecraft:wither_skeleton_skull 1
+at 1 insert 5 1 64 0 minecraft:zombie_head 1
+at 1 insert 5 1 67 0 minecraft:player_head 1
+at 1 insert 5 1 70 0 minecraft:creeper_head 1
+at 1 insert 5 1 73 0 minecraft:dragon_head 1
+at 1 insert 5 1 76 0 minecraft:piglin_head 1
+at 1 insert 5 1 79 0 minecraft:turtle_helmet 1
+at 1 insert 5 1 82 0 minecraft:leather_chestplate 1
+at 1 insert 5 1 85 0 minecraft:chainmail_leggings 1
+at 1 insert 5 1 88 0 minecraft:golden_boots 1
+at 1 insert 5 1 91 0 minecraft:diamond_horse_armor 1
+at 1 insert 5 1 94 0 minecraft:black_carpet 1
+at 1 insert 5 1 97 0 minecraft:oak_chest_boat 1
+at 1 insert 5 1 100 0 minecraft:bamboo_raft 1
+at 1 insert 5 1 103 0 minecraft:jack_o_lantern 1
+
+at 10 use 4 1 1
+change 10 commands 4 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 1 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 4
+change 10 commands 4 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 4 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 7
+change 10 commands 4 1 7 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 7 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 10
+change 10 commands 4 1 10 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 10 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 13
+change 10 commands 4 1 13 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 13 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 16
+change 10 commands 4 1 16 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 16 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 19
+change 10 commands 4 1 19 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 19 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 22
+change 10 commands 4 1 22 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 22 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 25
+change 10 commands 4 1 25 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 25 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 28
+change 10 commands 4 1 28 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 28 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 31
+change 10 commands 4 1 31 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 31 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 34
+change 10 commands 4 1 34 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 34 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 37
+change 10 commands 4 1 37 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 37 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 40
+change 10 commands 4 1 40 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 40 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 43
+change 10 commands 4 1 43 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 43 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 46
+change 10 commands 4 1 46 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 46 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 49
+change 10 commands 4 1 49 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 49 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 52
+change 10 commands 4 1 52 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 52 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 55
+change 10 commands 4 1 55 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 55 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 58
+change 10 commands 4 1 58 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 58 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 61
+change 10 commands 4 1 61 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 61 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 64
+change 10 commands 4 1 64 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 64 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 67
+change 10 commands 4 1 67 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 67 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 70
+change 10 commands 4 1 70 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 70 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 73
+change 10 commands 4 1 73 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 73 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 76
+change 10 commands 4 1 76 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 76 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 79
+change 10 commands 4 1 79 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 79 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 82
+change 10 commands 4 1 82 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 82 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 85
+change 10 commands 4 1 85 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 85 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 88
+change 10 commands 4 1 88 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 88 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 91
+change 10 commands 4 1 91 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 91 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 94
+change 10 commands 4 1 94 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 94 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 97
+change 10 commands 4 1 97 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 97 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 100
+change 10 commands 4 1 100 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 100 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+at 10 use 4 1 103
+change 10 commands 4 1 103 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 10 commands 5 1 103 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+
+entity-added 13 block_ticks e1 minecraft:item 6.2 1.34375 1.5 0.16221611769796682 0.16276176629419528 0.0992032845155817 item=minecraft:chest count=1
+entity-added 13 block_ticks e2 minecraft:item 6.2 1.34375 4.5 0.16054841929237967 0.28889350456953095 0.02215630511268394 item=minecraft:saddle count=1
+entity-added 13 block_ticks e3 minecraft:item 6.2 1.34375 7.5 0.32924166771309804 0.15871487242198906 -0.026761123558728825 item=minecraft:white_carpet count=1
+entity-added 13 block_ticks e4 minecraft:item 6.2 1.34375 10.5 0.331340917538943 0.24738998063159984 -0.02862403373485515 item=minecraft:iron_helmet count=1
+entity-added 13 block_ticks e5 minecraft:item 6.2 1.34375 13.5 0.3249810494889757 0.21116080780021995 -0.03431605227602967 item=minecraft:elytra count=1
+entity-added 13 block_ticks e6 minecraft:item 6.2 1.34375 16.5 0.20435352245271207 0.1607246906124618 0.007002805561272715 item=minecraft:shield count=1
+entity-added 13 block_ticks e7 minecraft:item 6.2 1.34375 25.5 0.28285523833845383 0.23474964320964148 -0.03879821993983757 item=minecraft:glass_bottle count=1
+entity-added 13 block_ticks e8 minecraft:item 6.2 1.34375 28.5 0.23279286795278878 0.15301412885225824 -0.001774470035035154 item=minecraft:honeycomb count=1
+entity-added 13 block_ticks e9 minecraft:item 6.2 1.34375 34.5 0.31321461434711567 0.16447577364419635 -0.07892679137608953 item=minecraft:skeleton_skull count=1
+entity-added 13 block_ticks e10 minecraft:item 6.2 1.34375 37.5 0.1655029352314341 0.22313226748703288 -0.08566604884274072 item=minecraft:iron_horse_armor count=1
+entity-added 13 block_ticks e11 minecraft:item 6.2 1.34375 43.5 0.202071640391442 0.19380586929676222 0.020223925544239463 item=minecraft:glowstone count=1
+entity-added 13 block_ticks e12 minecraft:item 6.2 1.34375 46.5 0.31581607243573584 0.17302356488762433 0.06152788107394615 item=minecraft:potion count=1
+entity-added 13 block_ticks e13 minecraft:item 6.2 1.34375 49.5 0.249770825157141 0.2009349312491113 -0.003926218795441251 item=minecraft:oak_boat count=1
+entity-added 13 block_ticks e14 minecraft:item 6.2 1.34375 52.5 0.19295179494223755 0.18061407719273168 0.01133792758434876 item=minecraft:wolf_armor count=1
+entity-added 13 block_ticks e15 minecraft:item 6.2 1.34375 55.5 0.3133940755129643 0.2071994375630856 -0.05328992756063282 item=minecraft:lead count=1
+entity-added 13 block_ticks e16 minecraft:item 6.2 1.34375 58.5 0.30125702776841057 0.1876442665120007 -0.05013245794352605 item=minecraft:trident count=1
+entity-added 13 block_ticks e17 minecraft:item 6.2 1.34375 64.5 0.3033599090625186 0.11667177512996324 0.04641051729274579 item=minecraft:zombie_head count=1
+entity-added 13 block_ticks e18 minecraft:item 6.2 1.34375 67.5 0.29079636756855415 0.19673393411903226 0.03626564694746308 item=minecraft:player_head count=1
+entity-added 13 block_ticks e19 minecraft:item 6.2 1.34375 70.5 0.26464009364019014 0.2393734532333443 -0.016773009598138985 item=minecraft:creeper_head count=1
+entity-added 13 block_ticks e20 minecraft:item 6.2 1.34375 73.5 0.2904385124004235 0.19758172385355585 -0.0908193890189555 item=minecraft:dragon_head count=1
+entity-added 13 block_ticks e21 minecraft:item 6.2 1.34375 76.5 0.27813021895416395 0.15082385428123782 0.005853857755278169 item=minecraft:piglin_head count=1
+entity-added 13 block_ticks e22 minecraft:item 6.2 1.34375 79.5 0.2432475607479248 0.2674420503985002 0.052514519994508416 item=minecraft:turtle_helmet count=1
+entity-added 13 block_ticks e23 minecraft:item 6.2 1.34375 82.5 0.20674749383517832 0.1953623828134768 0.023050827445063902 item=minecraft:leather_chestplate count=1
+entity-added 13 block_ticks e24 minecraft:item 6.2 1.34375 85.5 0.23152658357153166 0.1900372614124562 -0.012538304681168046 item=minecraft:chainmail_leggings count=1
+entity-added 13 block_ticks e25 minecraft:item 6.2 1.34375 88.5 0.35469356865741386 0.15907017475788277 -0.01883110276822181 item=minecraft:golden_boots count=1
+entity-added 13 block_ticks e26 minecraft:item 6.2 1.34375 91.5 0.27214356726132277 0.22769481207901607 0.0075577910547425155 item=minecraft:diamond_horse_armor count=1
+entity-added 13 block_ticks e27 minecraft:item 6.2 1.34375 94.5 0.18098077766130763 0.25806092359589994 0.00623536607526032 item=minecraft:black_carpet count=1
+entity-added 13 block_ticks e28 minecraft:item 6.2 1.34375 97.5 0.31225713711877695 0.18904316382873412 -0.016170271215918994 item=minecraft:oak_chest_boat count=1
+entity-added 13 block_ticks e29 minecraft:item 6.2 1.34375 100.5 0.19299854705510983 0.19926427223315654 -0.03712836101493267 item=minecraft:bamboo_raft count=1
+entity-added 13 block_ticks e30 minecraft:item 6.2 1.34375 103.5 0.1867691857985478 0.23202496812827397 -0.005777181867151128 item=minecraft:jack_o_lantern count=1
+draws 13 block_ticks level 575
+entity-order 13 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 13 e1 6.362216117697967 1.4665117662941953 1.5992032845155817 0.15897179843803438 0.12030653096831137 0.09721922071742256 item=minecraft:chest count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e2 6.36054841929238 1.5926435045695309 4.522156305112684 0.15733745396875015 0.24391563447814033 0.021713179433028244 item=minecraft:saddle count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e3 6.529241667713098 1.462464872421989 7.473238876441271 0.32265684063862254 0.11634057497354927 -0.026225901597982174 item=minecraft:white_carpet count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e4 6.531340917538943 1.5511399806315997 10.471375966265144 0.3247141055079906 0.20324218101896782 -0.028051553606118163 item=minecraft:iron_helmet count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e5 6.524981049488976 1.51491080780022 13.46568394772397 0.3184814346977178 0.16773759164421553 -0.03362973188503583 item=minecraft:elytra count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e6 6.404353522452713 1.4644746906124617 16.50700280556127 0.20026645590139194 0.11831019680021256 0.006862749583615177 item=minecraft:shield count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e7 6.482855238338454 1.5384996432096414 25.46120178006016 0.2771981389667203 0.19085465034544863 -0.03802225628105814 item=minecraft:glass_bottle count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e8 6.432792867952789 1.4567641288522581 28.498225529964966 0.2281370150339046 0.11075384627521306 -0.0017389806681797808 item=minecraft:honeycomb count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e9 6.513214614347116 1.4682257736441964 34.42107320862391 0.306950328034268 0.12198625817131242 -0.07734825705397681 item=minecraft:skeleton_skull count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e10 6.365502935231435 1.5268822674870328 37.41433395115726 0.1621928796835234 0.1794696221372922 -0.08395272949983612 item=minecraft:iron_horse_armor count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e11 6.402071640391442 1.4975558692967623 43.52022392554424 0.19803021143782382 0.15072975191082696 0.01981944741909544 item=minecraft:glowstone count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e12 6.515816072435736 1.4767735648876243 46.56152788107395 0.3094997570107347 0.13036309358987183 0.060297324626018424 item=minecraft:potion count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e13 6.449770825157141 1.5046849312491113 49.49607378120456 0.2447754134179986 0.15771623262412907 -0.003847694494419106 item=minecraft:oak_boat count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e14 6.392951794942237 1.4843640771927316 52.51133792758435 0.18909276272365622 0.13780179564887704 0.011111169248915592 item=minecraft:wolf_armor count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e15 6.513394075512965 1.5109494375630856 55.446710072439366 0.3071261999802226 0.16385544881182387 -0.05222413002584487 item=minecraft:lead count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e16 6.5012570277684105 1.4913942665120006 58.449867542056474 0.29523189295906416 0.14469138118176067 -0.049129809740856276 item=minecraft:trident count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e17 6.503359909062519 1.4204217751299633 64.54641051729274 0.2972927166673993 0.07513833962736396 0.04548230783210124 item=minecraft:zombie_head count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e18 6.490796367568555 1.5004839341190324 67.53626564694747 0.2849804457636836 0.1535992554366516 0.03554033470022614 item=minecraft:player_head count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e19 6.46464009364019 1.5431234532333442 70.48322699040186 0.2593472968149956 0.19538598416867742 -0.016437549726095974 item=minecraft:creeper_head count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e20 6.490438512400424 1.5013317238535557 73.40918061098104 0.28462974769209004 0.15443008937648472 -0.08900300297081877 item=minecraft:dragon_head count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e21 6.478130218954164 1.4545738542812379 76.50585385775528 0.2725676198799936 0.10860737719561306 0.005736780711826081 item=minecraft:piglin_head count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e22 6.443247560747925 1.5711920503985002 79.5525145199945 0.23838261417254533 0.2228932093905302 0.05146423059625323 item=minecraft:turtle_helmet count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e23 6.406747493835178 1.4991123828134767 82.52305082744506 0.20261254790187025 0.15225513515720723 0.022589811335822267 item=minecraft:leather_chestplate count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e24 6.431526583571532 1.493787261412456 85.48746169531883 0.22689605631612014 0.14703651618420707 -0.012287538826693869 item=minecraft:chainmail_leggings count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e25 6.554693568657414 1.4628201747578828 88.48116889723178 0.3475997040495085 0.1166887712627251 -0.018454481072032156 item=minecraft:golden_boots count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e26 6.472143567261323 1.531444812079016 91.50755779105474 0.2667007011068229 0.18394091583743574 0.00740663537780109 item=minecraft:diamond_horse_armor count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e27 6.380980777661308 1.5618109235959 94.50623536607526 0.17736116556001585 0.21369970512398193 0.006110658872685283 item=minecraft:black_carpet count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e28 6.512257137118777 1.4927931638287342 97.48382972878409 0.30601200033223364 0.14606230055215944 -0.015846866100024063 item=minecraft:oak_chest_boat count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e29 6.39299854705511 1.5030142722331565 100.46287163898506 0.18913857979516277 0.1560789867884934 -0.03638579450280131 item=minecraft:bamboo_raft count=1 age=1 pickup-delay=0 on-ground=false
+entity 13 e30 6.386769185798548 1.535774968128274 103.49422281813285 0.18303380564491634 0.1881844687657085 -0.0056616383399991045 item=minecraft:jack_o_lantern count=1 age=1 pickup-delay=0 on-ground=false
+
+at 14 use 4 1 1
+change 14 commands 4 1 1 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 1 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 4
+change 14 commands 4 1 4 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 4 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 7
+change 14 commands 4 1 7 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 7 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 10
+change 14 commands 4 1 10 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 10 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 13
+change 14 commands 4 1 13 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 13 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 16
+change 14 commands 4 1 16 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 16 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 19
+change 14 commands 4 1 19 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 19 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 22
+change 14 commands 4 1 22 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 22 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 25
+change 14 commands 4 1 25 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 25 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 28
+change 14 commands 4 1 28 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 28 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 31
+change 14 commands 4 1 31 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 31 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 34
+change 14 commands 4 1 34 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 34 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 37
+change 14 commands 4 1 37 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 37 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 40
+change 14 commands 4 1 40 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 40 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 43
+change 14 commands 4 1 43 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 43 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 46
+change 14 commands 4 1 46 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 46 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 49
+change 14 commands 4 1 49 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 49 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 52
+change 14 commands 4 1 52 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 52 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 55
+change 14 commands 4 1 55 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 55 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 58
+change 14 commands 4 1 58 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 58 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 61
+change 14 commands 4 1 61 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 61 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 64
+change 14 commands 4 1 64 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 64 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 67
+change 14 commands 4 1 67 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 67 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 70
+change 14 commands 4 1 70 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 70 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 73
+change 14 commands 4 1 73 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 73 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 76
+change 14 commands 4 1 76 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 76 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 79
+change 14 commands 4 1 79 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 79 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 82
+change 14 commands 4 1 82 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 82 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 85
+change 14 commands 4 1 85 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 85 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 88
+change 14 commands 4 1 88 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 88 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 91
+change 14 commands 4 1 91 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 91 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 94
+change 14 commands 4 1 94 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 94 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 97
+change 14 commands 4 1 97 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 97 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 100
+change 14 commands 4 1 100 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 100 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+at 14 use 4 1 103
+change 14 commands 4 1 103 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 14 commands 5 1 103 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+entity-order 14 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 14 e1 6.521187916136001 1.5468182972625066 1.6964225052330042 0.15579236550142012 0.07870040034894514 0.09527483815738359 item=minecraft:chest count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e2 6.51788587326113 1.7965591390476712 4.543869484545713 0.15419070789034892 0.19983732178857752 0.02127891625851371 item=minecraft:saddle count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e3 6.85189850835172 1.5388054473955384 7.447012974843289 0.31620370998004094 0.07481376347407828 -0.025701384066241905 item=minecraft:white_carpet count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e4 6.856055023046934 1.7143821616505677 10.443324412659026 0.3182198295912609 0.15997733739858847 -0.027490523069036724 item=minecraft:iron_helmet count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e5 6.843462484186694 1.6426483994444356 13.432054215838935 0.31211181207831473 0.12518283981133121 -0.032957137888771346 item=minecraft:elytra count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e6 6.604619978354105 1.5427848874126742 16.513865555144886 0.19626113060314362 0.07674399286420831 0.0067254947228394335 item=minecraft:shield count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e7 6.760053377305174 1.68935429355509 25.423179523779105 0.2716541814745208 0.14783755733853965 -0.037261811880653965 item=minecraft:glass_bottle count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e8 6.660929882986693 1.5275179751274712 28.496486549296787 0.22357427908459473 0.0693387693497088 -0.0017042010879846092 item=minecraft:honeycomb count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e9 6.820164942381384 1.5502120318155088 34.34372495156993 0.30081132732819554 0.08034653300788616 -0.0758012933881982 item=minecraft:skeleton_skull count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e10 6.527695814914958 1.666351889624325 37.330381221657426 0.1589490251834366 0.13668022969454635 -0.08227367651111063 item=minecraft:iron_horse_armor count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e11 6.600101851829266 1.6082856212075893 43.54004337296333 0.19406961098619388 0.10851515687261042 0.01942305884873949 item=minecraft:glowstone count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e12 6.82531582944647 1.5671366584774962 46.62182520569997 0.30330976777375934 0.08855583171807438 0.05909137928357825 item=minecraft:potion count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e13 6.694546238575139 1.6224011638732403 49.49222608671014 0.23987990981835913 0.11536190797164647 -0.003770740677919672 item=minecraft:oak_boat count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e14 6.582044557665894 1.5821658728416086 52.52244909683326 0.18531091107584133 0.0958457597358995 0.010888946075866015 item=minecraft:wolf_armor count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e15 6.8205202754931875 1.6348048863749094 55.394485942413525 0.30098368183858554 0.12137833983558738 -0.0511796484214242 item=minecraft:lead count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e16 6.796488920727475 1.5960856476937613 58.40073773231562 0.28932726073098436 0.10259755355812544 -0.0481472144831159 item=minecraft:trident count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e17 6.800652625729919 1.4555601147573272 64.59189282512484 0.2913468680044599 0.034435572834816686 0.044572662542965394 item=minecraft:zombie_head count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e18 6.7757768133322385 1.614083189555684 67.5718059816477 0.27928084228398053 0.11132727032791855 0.034829528684099706 item=minecraft:player_head count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e19 6.723987390455186 1.6985094374020215 70.46678944067577 0.2541603558253528 0.15227826448530385 -0.016108799045095434 item=minecraft:creeper_head count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e20 6.775068260092514 1.6157618132300404 73.32017760801023 0.27893715816712983 0.11214148758895502 -0.08722294460899996 item=minecraft:dragon_head count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e21 6.750697838834158 1.523181231476851 76.51159063846711 0.2671162726812085 0.06723522965170078 0.005622045207009968 item=minecraft:piglin_head count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e22 6.68163017492047 1.7540852597890304 79.60397875059076 0.23361496643588195 0.17923534520271958 0.05043494696593046 item=minecraft:turtle_helmet count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e23 6.609360041737048 1.611367517970684 82.54564063878088 0.1985603008083605 0.11001003245406307 0.02213801553997228 item=minecraft:leather_chestplate count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e24 6.658422639887652 1.6008237775966632 85.47517415649213 0.22235813951749656 0.10489578586052292 -0.012041788284526195 item=minecraft:chainmail_leggings count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e25 6.902293272706922 1.539508946020608 88.46271441615976 0.34064771659845655 0.07515499583747061 -0.018085391802582805 item=minecraft:golden_boots count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e26 6.738844268368146 1.675385727916452 91.51496442643254 0.26136669217159864 0.14106209752068702 0.007258502811515427 item=minecraft:diamond_horse_armor count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e27 6.558341943221324 1.7355106287198818 94.51234602494795 0.1738139456317113 0.17022571102150227 0.005988445811783146 item=minecraft:black_carpet count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e28 6.8182691374510105 1.5988554643808937 97.46798286268407 0.2998917661623047 0.10394105454111624 -0.015529929080278566 item=minecraft:oak_chest_boat count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e29 6.582137126850273 1.61909325902165 100.42648584448226 0.18535581180679164 0.11375740705272354 -0.03565807930674923 item=minecraft:bamboo_raft count=1 age=2 pickup-delay=0 on-ground=false
+entity 14 e30 6.569802991443464 1.6839594368939825 103.48856117979285 0.1793731330231108 0.14522077939039432 -0.005548405681186304 item=minecraft:jack_o_lantern count=1 age=2 pickup-delay=0 on-ground=false
+
+entity-order 15 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 15 e1 6.676980281637421 1.5855186976114517 1.7916973433903878 0.15267652116289526 0.037926392341966236 0.09336934321145925 item=minecraft:chest count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e2 6.672076581151479 1.9563964608362487 4.565148400804227 0.1511068966734963 0.15664057535280596 0.020853338339206554 item=minecraft:saddle count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e3 7.168102218331761 1.5736192108696168 7.421311590777047 0.30987964181154726 0.034117488204596716 -0.025187356875132065 item=minecraft:white_carpet count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e4 7.174274852638194 1.834359499049156 10.415833889589988 0.3118554390689972 0.11757779065061669 -0.026940713131996107 item=minecraft:iron_helmet count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e5 7.155574296265009 1.7278312392557669 13.399097077950163 0.30586958178980883 0.08347918301510458 -0.03229799575960344 item=minecraft:elytra count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e6 6.800881108957248 1.5795288802768825 16.520591049867726 0.19233591173446474 0.036009113006924144 0.0065909849566612765 item=minecraft:shield count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e7 7.0317075587796944 1.7971918508936298 25.38591771189845 0.2662211030264227 0.10568080619176885 -0.03651657635375354 item=minecraft:glass_bottle count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e8 6.884504162071288 1.55685674447718 28.4947823482088 0.21910279776724378 0.02875199396271462 -0.0016701170987299732 item=minecraft:honeycomb count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e9 7.120976269709579 1.590558564823395 34.267923658181736 0.29479510651915236 0.039539602347728436 -0.07428526896622917 item=minecraft:skeleton_skull count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e10 6.686644840098395 1.7630321193188714 37.24810754514632 0.15577004771147993 0.09474662510065542 -0.08062820455013427 item=minecraft:iron_horse_armor count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e11 6.79417146281546 1.6768007780801997 43.55946643181207 0.19018822246805409 0.06714485373515822 0.019034598042230146 item=minecraft:glowstone count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e12 7.12862559722023 1.6156924901955705 46.68091658498355 0.29724357820345887 0.04758471508371289 0.0579095528249853 item=minecraft:potion count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e13 6.934426148393499 1.6977630718448868 49.48845534603222 0.23508231619733813 0.07385466981221353 -0.0036953259362824493 item=minecraft:oak_boat count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e14 6.767355468741735 1.638011632577508 52.53333804290913 0.18160469638884963 0.05472884454118151 0.01067116736203886 item=minecraft:wolf_armor count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e15 7.121503957331773 1.7161832262104968 55.3433062939921 0.29496401394262195 0.07975077303887562 -0.050156056429170044 item=minecraft:lead count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e16 7.085816181458459 1.6586832012518866 58.3525905178325 0.28354072103484423 0.06134560248696293 -0.04718427111178882 item=minecraft:trident count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e17 7.091999493734379 1.4499956875921438 64.6364654876678 0.2855199362013712 -0.005453138621879649 0.04368121014226216 item=minecraft:zombie_head count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e18 7.055057655616219 1.6854104598836026 67.6066355103318 0.2736952307651602 0.06990072492136018 0.034132938774738254 item=minecraft:player_head count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e19 6.978147746280539 1.8107877018873253 70.45068064163067 0.2490771535565698 0.11003269919559776 -0.015786623371444482 item=minecraft:creeper_head count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e20 7.054005418259644 1.6879033008189954 73.23295466340123 0.2733584203240913 0.07069865783717592 -0.0854784873804656 item=minecraft:dragon_head count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e21 7.017814111515367 1.5504164611285518 76.51721268367412 0.26177395232242295 0.026690525058666766 0.0055096044101017715 item=minecraft:piglin_head count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e22 6.915245141356352 1.89332060499175 79.65441369755669 0.22894267156301618 0.1364506382986652 0.049426248988582125 item=minecraft:turtle_helmet count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e23 6.807920342545408 1.681377550424747 82.56777865432085 0.1945890985794305 0.0686098318049818 0.021695255651421972 item=minecraft:leather_chestplate count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e24 6.880780779405149 1.665719563457186 85.46313236820761 0.21791098096829156 0.06359787014331246 -0.011800952748514556 item=minecraft:chainmail_leggings count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e25 7.242940989305379 1.5746639418580786 88.44462902435717 0.333834768763827 0.0344518959207212 -0.01772368431148262 item=minecraft:golden_boots count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e26 7.000210960539745 1.776447825437139 91.52222292924405 0.2561393633133407 0.09904085557027327 0.007113332893730073 item=minecraft:diamond_horse_armor count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e27 6.732155888853035 1.865736339741384 94.51833447075973 0.170337670034315 0.12762119680107223 0.005868677009768022 item=minecraft:black_carpet count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e28 7.118160903613315 1.66279651892201 97.4524529336038 0.29389393655904006 0.06266223345029391 -0.015219330794882885 item=minecraft:oak_chest_boat count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e29 6.767492938657065 1.6928506660743736 100.39082776517552 0.18164869910603734 0.07228225891166908 -0.034944918400738136 item=minecraft:bamboo_raft count=1 age=3 pickup-delay=0 on-ground=false
+entity 15 e30 6.749176124466575 1.7891802162843768 103.48301277411167 0.1757856737839196 0.10311636380258643 -0.005437437673390017 item=minecraft:jack_o_lantern count=1 age=3 pickup-delay=0 on-ground=false
+
+entity-order 16 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 16 e1 6.829656802800317 1.583445089953418 1.885066686601847 0.1496229936517109 -0.002032135504873089 0.09150195812810895 item=minecraft:chest count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e2 6.8231834778249745 2.0730370361890547 4.586001739143433 0.14808476162216172 0.11430776384574982 0.02043627197016829 item=minecraft:saddle count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e3 7.477981860143308 1.5677366990742134 7.396124233901915 0.3036820548858014 -0.005764861559495219 -0.02468361021804013 item=minecraft:white_carpet count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e4 7.486130291707192 1.9119372896997728 10.388893176457993 0.3056183362357877 0.07602623483760435 -0.02640189938320951 item=minecraft:iron_helmet count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e5 7.461443878054817 1.7713104222708715 13.36679908219056 0.29975219598801195 0.04260959935480249 -0.03165203646044675 item=minecraft:elytra count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e6 6.993217020691713 1.5755379932838067 16.52718203482439 0.18848919716829182 -0.00391106925321434 0.006459165383241113 item=minecraft:shield count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e7 7.297928661806117 1.8628726570853986 25.349401135544696 0.26089668604365884 0.06436719006793348 -0.03578624552317689 item=minecraft:glass_bottle count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e8 7.103606959838531 1.5456087384398944 28.49311223111007 0.21472074599095312 -0.011023045916539673 -0.0016367147886103294 item=minecraft:honeycomb count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e9 7.415771376228731 1.5900981671711236 34.19363838921551 0.28889921001153973 -4.511896992261331E-4 -0.07279956500378365 item=minecraft:skeleton_skull count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e10 6.842414887809874 1.8177787444195268 37.16747934059618 0.1526546497283282 0.0536516925986423 -0.07901564199699254 item=minecraft:iron_horse_armor count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e11 6.984359685283514 1.7039456318153579 43.5785010298543 0.18638446164624548 0.02660195666045505 0.01865390644444169 item=minecraft:glowstone count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e12 7.425869175423689 1.6232772052792834 46.73882613780854 0.291298712308861 0.007433020782038632 0.056751362873022654 item=minecraft:potion count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e13 7.1695084645908365 1.7316177416571004 49.48476002009593 0.23038067435723072 0.03317757641596926 -0.003621419488039549 item=minecraft:oak_boat count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e14 6.948960165130585 1.6527404771186895 52.54400921027117 0.17797260592490732 0.014434267650357878 0.010457744218334447 item=minecraft:wolf_armor count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e15 7.416467971274395 1.7559339992493723 55.293150237562934 0.2890647392897616 0.038955757578098105 -0.049152936257237496 item=minecraft:lead count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e16 7.369356902493304 1.6800288037388496 58.305406246720715 0.2778699120222574 0.020918690437223667 -0.04624058658952159 item=minecraft:trident count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e17 7.3775194299357505 1.404542548970264 64.68014669781007 0.2798095429232044 -0.044544075849442054 0.04280758677256988 item=minecraft:zombie_head count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e18 7.328752886381379 1.7153111848049627 67.64076844910653 0.2682213313701793 0.029302710422932976 0.03345028065027763 item=minecraft:player_head count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e19 7.2272248998371085 1.880820401082923 70.43489401825923 0.2440956152362081 0.06863204521168581 -0.015470891205121538 item=minecraft:creeper_head count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e20 7.327363838583735 1.7186019586561714 73.14747617602076 0.2678912571315076 0.030084684680432405 -0.08376891926322905 item=minecraft:dragon_head count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e21 7.279588063837791 1.5371069861872186 76.52272228808422 0.2565384782689164 -0.01304328544250657 0.0053994124269871 item=minecraft:piglin_head count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e22 7.144187812919368 1.989771243290415 79.70383994654527 0.22436382249849077 0.09452162553269187 0.04843772495154137 item=minecraft:turtle_helmet count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e23 7.002509441124839 1.709987382229729 82.58947390997227 0.1906973203193344 0.028037635168882163 0.021261350952197694 item=minecraft:leather_chestplate count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e24 7.09869176037344 1.6893174336004984 85.4513314154591 0.21355276550524785 0.02312591274044621 -0.011564933918629576 item=minecraft:chainmail_leggings count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e25 7.576775758069206 1.5691158377787997 88.42690534004569 0.32715807975594335 -0.005437141997693228 -0.017369210963305418 item=minecraft:golden_boots count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e26 7.256350323853085 1.8354886810074122 91.52933626213778 0.25101658093254453 0.0578600384588678 0.006971066371531529 item=minecraft:diamond_horse_armor count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e27 6.90249355888735 1.9533575365424563 94.5242031477695 0.16693091988256192 0.08586877286505078 0.005751303581508793 item=minecraft:black_carpet count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e28 7.412054840172355 1.685458752372304 97.43723360280892 0.2880160634334412 0.022208988781288033 -0.014914944469270925 item=minecraft:oak_chest_boat count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e29 6.949141637763102 1.7251329249860428 100.35588284677478 0.17801572858859058 0.031636613733435695 -0.034246020699244796 item=minecraft:bamboo_raft count=1 age=4 pickup-delay=0 on-ground=false
+entity 16 e30 6.924961798250495 1.8522965800869633 103.47757533643828 0.17226996366108685 0.06185403652653469 -0.00532868902363311 item=minecraft:jack_o_lantern count=1 age=4 pickup-delay=0 on-ground=false
+
+entity-order 17 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 17 e1 6.979279796452028 1.5414129544485449 1.976568644729956 0.1466305366325088 -0.04119149279477563 0.08967192071080812 item=minecraft:chest count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e2 6.971268239447136 2.1473448000348045 4.606438011113601 0.14512306921421117 0.07282160856883484 0.02002754692055588 item=minecraft:saddle count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e3 7.781663915029109 1.5219718375147182 7.371440623683875 0.2976084195803609 -0.044849564328305315 -0.024189938484481827 item=minecraft:white_carpet count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e4 7.7917486279429795 1.9479635245373772 10.362491277074783 0.2995059753402791 0.03530571014085226 -0.025873861899121584 item=minecraft:iron_helmet count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e5 7.76119607404283 1.773920021625674 13.335147045730114 0.2937571577855711 0.00255740736770644 -0.0310189963349525 item=minecraft:elytra count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e6 7.181706217860005 1.5316269240305924 16.53364120020763 0.18471941682007212 -0.04303284786815006 0.006329982198775093 item=minecraft:shield count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e7 7.558825347849776 1.887239847153332 25.31361489002152 0.25567875729899503 0.02387984626657481 -0.03507052129528182 item=minecraft:glass_bottle count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e8 7.318327705829485 1.4945856925233547 28.49147551632146 0.21042633516660728 -0.05000258499820888 -0.00160398052405598 item=minecraft:honeycomb count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e9 7.704670586240271 1.5496469774718975 34.120838824211724 0.2831212313216241 -0.03964216590524161 -0.07134357509224949 item=minecraft:skeleton_skull count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e10 6.995069537538202 1.831430437018169 37.088463698599185 0.14960155964541802 0.013378658746669455 -0.07743533066415646 item=minecraft:iron_horse_armor count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e11 7.170744146929759 1.690547588475813 43.59715493629874 0.18265677596832205 -0.01313008247275405 0.018280828671347886 item=minecraft:glowstone count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e12 7.7171678877325505 1.5907102260613222 46.79557750068156 0.2854727436187658 -0.03191563963360214 0.05561633669800854 item=minecraft:potion count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e13 7.399889138948067 1.7247953180730695 49.48113860060789 0.22577306526424876 -0.006685975112350127 -0.0035489911673518533 item=minecraft:oak_boat count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e14 7.126932771055492 1.6271747447690474 52.554466954489506 0.17441315720096726 -0.025054417702649278 0.0102485895334334 item=minecraft:wolf_armor count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e15 7.705532710564157 1.7548897568274704 55.2439973013057 0.28328345001743876 -0.0010233575734638581 -0.04816987846961061 item=minecraft:lead count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e16 7.6472268145155615 1.6609474941760731 58.259165660131195 0.27231251908176024 -0.018699683371520805 -0.04531577573970036 item=minecraft:trident count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e17 7.657328972858955 1.319998473120822 64.72295428458264 0.27421335740168384 -0.08285319433245321 0.0419514358536084 item=minecraft:zombie_head count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e18 7.596974217751558 1.7046138952278957 67.6742187297568 0.2628569098586916 -0.010483343785525684 0.03278127567528555 item=minecraft:player_head count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e19 7.471320515073317 1.9094524462946088 70.4194231270541 0.2392137075872383 0.02805940430745209 -0.01516147367610294 item=minecraft:creeper_head count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e20 7.595255095715243 1.7086866433366037 73.06370725675752 0.26253343709849764 -0.009717009013176243 -0.08209354247572981 item=minecraft:dragon_head count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e21 7.536126542106707 1.4840637007447122 76.5281217005112 0.25140771359662123 -0.051982419733656436 0.005291424281432977 item=minecraft:piglin_head count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e22 7.368551635417859 2.044292868823107 79.75227767149681 0.21987655032792125 0.05343119302203803 0.04746897137638682 item=minecraft:turtle_helmet count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e23 7.1932067614441735 1.6980250173986111 82.61073526092447 0.18688337755021045 -0.01172311753449548 0.020836124338681827 item=minecraft:leather_chestplate count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e24 7.312244525878688 1.6724433463409445 85.43976648154046 0.20928171426833864 -0.016536605514362715 -0.011333635460840593 item=minecraft:chainmail_leggings count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e25 7.903933837825149 1.5236786957811064 88.40953612908238 0.32061492440086964 -0.04452839915773936 -0.017021827075330717 item=minecraft:golden_boots count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e26 7.50736690478563 1.85334871946628 91.53630732850931 0.24599625410165496 0.017502837689690444 0.006831645177063438 item=minecraft:diamond_horse_armor count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e27 7.069424478769912 1.9992263094075071 94.529954451351 0.1635923046688653 0.04495139740774976 0.005636277619576027 item=minecraft:black_carpet count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e28 7.700070903605797 1.6676677411535918 97.42231865833965 0.28225574765824285 -0.017435190994337726 -0.014616645864365497 item=minecraft:oak_chest_boat count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e29 7.1271573663516925 1.7167695387194783 100.32163682607553 0.17445541741219933 -0.008196118541233019 -0.03356110093845091 item=minecraft:bamboo_raft count=1 age=5 pickup-delay=0 on-ground=false
+entity 17 e30 7.097231761911582 1.874150616613498 103.47224664741465 0.16882456767365392 0.021416955796003997 -0.005222115344797125 item=minecraft:jack_o_lantern count=1 age=5 pickup-delay=0 on-ground=false
+
+entity-order 18 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 18 e1 7.125910333084537 1.4602214616537692 2.066240565440764 0.14369792869661416 -0.07956766293888012 0.08787848400694812 item=minecraft:chest count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e2 7.116391308661347 2.180166408603639 4.626465558034157 0.14222061059792981 0.03216517639745814 0.019626996364139903 item=minecraft:saddle count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e3 8.07927233460947 1.4371222731864128 7.347250685199393 0.29165625686518376 -0.0831525730417392 -0.023706140176178652 item=minecraft:white_carpet count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e4 8.091254603283259 1.9432692346782294 10.336617415175661 0.29351586154609666 -0.004600404061964788 -0.025356385154643904 item=minecraft:iron_helmet count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e5 8.054953231828401 1.7364774289933804 13.304128049395162 0.2878820202328328 -0.03669374077964769 -0.03039861699989385 item=minecraft:elytra count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e6 7.366425634680077 1.4485940761624423 16.539971182406404 0.18102503200691394 -0.08137219091078705 0.00620338267553442 item=minecraft:shield count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e7 7.814504105148771 1.8711196934199068 25.278544368726237 0.25056518702970043 -0.015797750658756687 -0.03436911153829329 item=minecraft:glass_bottle count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e8 7.528754040996092 1.4045831075251458 28.489871535797405 0.20621781247683896 -0.08820253329824469 -0.0015719009441683609 item=minecraft:honeycomb count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e9 7.987791817561895 1.470004811566656 34.049495249119474 0.27745881209530054 -0.07804932258713679 -0.0699167049511752 item=minecraft:skeleton_skull count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e10 7.14467109718362 1.8048090957648386 37.011028367935026 0.14660953130593296 -0.026088914428263933 -0.07588662552783505 item=minecraft:iron_horse_armor count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e11 7.353400922898081 1.637417506003059 43.615435764970094 0.17900364393285714 -0.05206748082329897 0.017915212446600062 item=minecraft:glowstone count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e12 8.002640631351316 1.51879458642772 46.85119383737957 0.27976329419135093 -0.0704773268409301 0.05450401102484581 item=minecraft:potion count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e13 7.625662204212316 1.6781093429607195 49.47758960944054 0.22125760826524327 -0.045752255610103126 -0.003478011411696451 item=minecraft:oak_boat count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e14 7.30134592825646 1.5621203270663981 52.56471554402294 0.17092489738361488 -0.06375332934859629 0.010043617938241064 item=minecraft:wolf_armor count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e15 7.988816160581595 1.7138663992540066 55.19582742283609 0.277617786420293 -0.040202890421994576 -0.047206481818985915 item=minecraft:lead count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e16 7.919539333597322 1.6022478108045524 58.21384988439149 0.26686627389407414 -0.05752568970409039 -0.04440946108923618 item=minecraft:trident count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e17 7.931542330260639 1.197145278788369 64.76490572043625 0.2687290954838549 -0.12039613044580413 0.04111240793669637 item=minecraft:zombie_head count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e18 7.859831127610249 1.65413055144237 67.70700000543209 0.2575997766751154 -0.04947367690981517 0.03212565078703305 item=minecraft:player_head count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e19 7.710534222660555 1.8975118506020607 70.404261653378 0.23442943799813293 -0.011701783778696951 -0.014858244491763041 item=minecraft:creeper_head count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e20 7.85778853281374 1.6589696343234275 72.98161371428179 0.2572827733639556 -0.04872266883291272 -0.08045167319202527 item=minecraft:dragon_head count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e21 7.787534255703329 1.3920812810110557 76.53341312479265 0.24637956411991038 -0.09014277133898331 0.005185595896730226 item=minecraft:piglin_head count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e22 7.58842818574578 2.057724061845145 79.7997466428732 0.2154790235151752 0.013162569161597271 0.046519592854257864 item=minecraft:turtle_helmet count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e23 7.380090138994384 1.6463018998641157 82.63157138526316 0.18314571356372378 -0.050688655183805574 0.020419402249325723 item=minecraft:leather_chestplate count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e24 7.521526240147026 1.6159067408265817 85.42843284607962 0.20509608397470377 -0.05540587340407546 -0.011106962967795722 item=minecraft:chainmail_leggings count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e25 8.22454876222602 1.439150296623367 88.39251430200706 0.3142026320280966 -0.08283783117458457 -0.01668139085848969 item=minecraft:golden_boots count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e26 7.753363158887285 1.8308515571559705 91.54313897368637 0.24107633371162804 -0.022047219064103365 0.006695012403825459 item=minecraft:diamond_horse_armor count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e27 7.233016783438778 2.004177706815257 94.53559072897058 0.16032046169576358 0.0048523694595947655 0.005523552174687971 item=minecraft:black_carpet count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e28 7.98232665126404 1.610232550159254 97.40770201247528 0.27661063808867914 -0.05628648717445097 -0.014324313225868582 item=minecraft:oak_chest_boat count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e29 7.301612783763892 1.6685734201782454 100.28807572513708 0.17096631239142837 -0.04723219617040836 -0.03288987955980909 item=minecraft:bamboo_raft count=1 age=6 pickup-delay=0 on-ground=false
+entity 18 e30 7.266056329585235 1.855567572409502 103.46702453206986 0.16544807954025392 -0.018211383319916084 -0.0051176731375051285 item=minecraft:jack_o_lantern count=1 age=6 pickup-delay=0 on-ground=false
+
+entity-order 19 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 19 e1 7.269608261781151 1.340653798714889 2.1541190494477123 0.14082397286350234 -0.11717630968010252 0.08612091600295822 item=minecraft:chest count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e2 7.258611919259277 2.172331585001097 4.646092554398297 0.1393762010986141 -0.007678127130491024 0.01923445681121235 item=minecraft:saddle count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e3 8.370928591474653 1.3139697001446735 7.323544545023214 0.28582313729078174 -0.12068952158090443 -0.02323201782481382 item=minecraft:white_carpet count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e4 8.384770464829355 1.8986688306162647 10.311261030021017 0.2876455499135455 -0.04370839598072549 -0.024849257935185692 item=minecraft:iron_helmet count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e5 8.342835252061233 1.6597836882137327 13.273729432395267 0.28212438531908995 -0.07515986596405473 -0.02979064523970358 item=minecraft:elytra count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e6 7.5474506666869905 1.3272218852516553 16.546174565081937 0.17740453481955415 -0.1189447470925713 0.006079315140343867 item=minecraft:shield count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e7 8.065069292178471 1.8153219427611502 25.244175257187944 0.2455538880682581 -0.05468179564558155 -0.033681729963066204 item=minecraft:glass_bottle count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e8 7.734971853472931 1.2763805742269012 28.488299634853238 0.20209346016059482 -0.12563848263227978 -0.0015404629552666247 item=minecraft:honeycomb count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e9 8.265250629657196 1.3519554889795191 33.9795785441683 0.27190964114550137 -0.11568833613539406 -0.06851837218570701 item=minecraft:skeleton_skull count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e10 7.291280628489553 1.7387201813365747 36.93514174240719 0.1436773434761692 -0.06476713613969866 -0.07436889446470087 item=minecraft:iron_horse_armor count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e11 7.532404566830938 1.54535002517976 43.6333509774167 0.17542357446842355 -0.09022613120683298 0.01755690853937362 item=minecraft:glowstone count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e12 8.282403925542667 1.4083172595867899 46.905697848404415 0.2741680336435853 -0.10826778030411148 0.0534139318439304 item=minecraft:potion count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e13 7.846919812477559 1.5923570873506163 49.47411159802885 0.21683246032009237 -0.08403721049790107 -0.003408451249800325 item=minecraft:oak_boat count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e14 7.4722708256400745 1.4583669977178018 52.57475916196118 0.16750640269607628 -0.10167826276162437 0.009842745771043052 item=minecraft:wolf_armor count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e15 8.266433947001888 1.633663508832012 55.1486209410171 0.2720654359870262 -0.07859883261355469 -0.046262353082998385 item=minecraft:lead count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e16 8.186405607491396 1.504722121100462 58.169440423302255 0.2615289535062629 -0.09557517591000858 -0.043521272714494706 item=minecraft:trident count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e17 8.200271425744493 1.0367491483425648 64.80601812837294 0.2633545186997785 -0.15718820783688806 0.04029016056211939 item=minecraft:zombie_head count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e18 8.117430904285365 1.5646568745325549 67.73912565621913 0.2524477860549389 -0.08768420337161886 0.03148313838404055 item=minecraft:player_head count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e19 7.944963660658688 1.8458100668233637 70.38940340888624 0.22974085370955696 -0.050667748103123016 -0.014561079885326303 item=minecraft:creeper_head count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e20 8.115071306177695 1.5702469654905147 72.90116204108976 0.25213712280395595 -0.08694821545625446 -0.07884264126267866 item=minecraft:dragon_head count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e21 8.033913819823239 1.2619385096720723 76.53859872068938 0.24145197753682943 -0.12753991591220362 0.005081884077703014 item=minecraft:piglin_head count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e22 7.803907209260955 2.030886631006742 79.84626623572746 0.2111694471548079 -0.026300682221634678 0.045589201884463526 item=minecraft:turtle_helmet count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e23 7.563235852558108 1.5556132446803101 82.65199078751249 0.17948280278567658 -0.08887488208012946 0.0200110145938084 item=minecraft:leather_chestplate count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e24 7.72662232412173 1.5205008674225062 85.41732588311181 0.20099416620710706 -0.09349775593599396 -0.010884823920288314 item=minecraft:chainmail_leggings count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e25 8.538751394254117 1.3163124654487823 88.37583291114856 0.3079185853804743 -0.12038107455109288 -0.016347763359492177 item=minecraft:golden_boots count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e26 7.994439492598913 1.7688043380918672 91.54983398609019 0.23625481163556164 -0.06080627468282129 0.006561112283446178 item=minecraft:diamond_horse_armor count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e27 7.393337245134542 1.9690300762748516 94.54111428114527 0.15711405551971844 -0.03444467792959713 0.005413081236547608 item=minecraft:black_carpet count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e28 8.258937289352719 1.5139460629848032 97.39337769924941 0.27107843060283476 -0.09436075743096195 -0.014037827234565804 item=minecraft:oak_chest_boat count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e29 7.47257909615532 1.581341224007837 100.25518584557727 0.16754698940452342 -0.08548755224700019 -0.03223208259593758 item=minecraft:bamboo_raft count=1 age=7 pickup-delay=0 on-ground=false
+entity 19 e30 7.431504409125489 1.797356189089586 103.46190685893235 0.16213912110512052 -0.05704715565351776 -0.005015319772366894 item=minecraft:jack_o_lantern count=1 age=7 pickup-delay=0 on-ground=false
+
+entity-order 20 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 20 e1 7.410432234644654 1.1834774890347866 2.2402399654506704 0.13800749609223642 -0.15403278348650046 0.08439849932552518 item=minecraft:chest count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e2 7.3979881203578906 2.124653457870606 4.665327011209509 0.1365886797350319 -0.0467245645878812 0.018849768041856254 item=minecraft:saddle count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e3 8.656751728765435 1.1532801785637692 7.3003125271984 0.2801066799966098 -0.15747573114928634 -0.022767377911433115 item=minecraft:white_carpet count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e4 8.6724160147429 1.8149604346355392 10.286411772085831 0.28189264440167805 -0.08203422806111098 -0.02435227325044396 item=minecraft:iron_helmet count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e5 8.624959637380323 1.544623822249678 13.243938787155564 0.27648190299380376 -0.11285666864477363 -0.029194832903120974 item=minecraft:elytra count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e6 7.724855201506545 1.168277138159084 16.55225388022228 0.17385644750688603 -0.1557658521507199 0.005957728953490724 item=minecraft:shield count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e7 8.31062318024673 1.7206401471155686 25.210493527224877 0.24064281499046167 -0.09278815973266992 -0.0330080960062329 item=minecraft:glass_bottle count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e8 7.937065313633526 1.1107420915946213 28.486759171897972 0.19805159481200976 -0.1623257129796342 -0.0015096537255432914 item=minecraft:honeycomb count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e9 8.537160270802698 1.196267152844125 33.91106017198259 0.26647145350885615 -0.15257456941268618 -0.0671480060488771 item=minecraft:skeleton_skull count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e10 7.434957971965723 1.633953045196876 36.86077284794249 0.14080379934707365 -0.10267179341690467 -0.07288151799388094 item=minecraft:iron_horse_armor count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e11 7.707828141299362 1.4151238939729271 43.65090788595607 0.17191510632499424 -0.12762160858269633 0.017205770703457603 item=minecraft:glowstone count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e12 8.556571959186252 1.2600494792826784 46.95911178024834 0.2686846782000538 -0.14530242469802923 0.05234565422584169 item=minecraft:potion count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e13 8.06375227279765 1.4683198768527153 49.47070314677905 0.2124958152494415 -0.12155646628794303 -0.0033402822898153666 item=minecraft:oak_boat count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e14 7.6397772283361505 1.3166887349561773 52.58460190773223 0.16415627783708583 -0.1388446975063919 0.009645891043357668 item=minecraft:wolf_armor count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e15 8.538499382988913 1.5150646762184572 55.1023585879341 0.26662413245652206 -0.1162268559612836 -0.04533710690372278 item=minecraft:lead count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e16 8.447934560997659 1.3691469451904534 58.12591915058776 0.25629837942440653 -0.1328636723918084 -0.04265084809030721 item=minecraft:trident count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e17 8.46362594444427 1.0 64.84630828893506 0.15485247256704507 0 0.023690616792795063 item=minecraft:zombie_head count=1 age=8 pickup-delay=0 on-ground=true
+entity 20 e18 8.369878690340304 1.436972671160936 67.77060879460318 0.24739883514889952 -0.12513051930418648 0.03085347621685295 item=minecraft:player_head count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e19 8.174704514368246 1.7551423187202406 70.37484232900091 0.22514604101732485 -0.08885439314106056 -0.014269858565350336 item=minecraft:creeper_head count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e20 8.367208428981652 1.4432987500342602 72.82231939982708 0.2470943851570108 -0.12440925114712936 -0.07726578994122912 item=minecraft:dragon_head count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e21 8.275365797360068 1.0943985937598688 76.54368060476708 0.23662294259142383 -0.16418911759395954 0.0049802464930782005 item=minecraft:piglin_head count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e22 8.015076656415763 1.9645859487851074 79.89185543761192 0.2069460622394493 -0.064974668577202 0.04467741871631927 item=minecraft:turtle_helmet count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e23 7.742718655343785 1.4267383626001806 82.6720018021063 0.17589315015332582 -0.12629738443852687 0.019610794683612043 item=minecraft:leather_chestplate count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e24 7.9276164903288375 1.3870031114865122 85.40644105919152 0.1969742867166244 -0.1308278008172741 -0.010667127649494089 item=minecraft:chainmail_leggings count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e25 8.84666997963459 1.1559313908976894 88.35948514778907 0.30176021954594573 -0.15717345306007102 -0.016020808404111173 item=minecraft:golden_boots count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e26 8.230694304234474 1.6679980634090459 91.55639509837364 0.23152971990905333 -0.09879014918916487 0.00642989016292054 item=minecraft:diamond_horse_armor count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e27 7.55045130065426 1.8945853983452545 94.54652736238182 0.15397177740603685 -0.0729557843710052 0.005304819715062987 item=minecraft:black_carpet count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e28 8.530015719955554 1.3795853055538412 97.37933987201485 0.2656568671611888 -0.1316735422823427 -0.013757070957624793 item=minecraft:oak_chest_boat count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e29 7.640126085559843 1.4558536717608368 100.22295376298133 0.16419605281213817 -0.1229778012020602 -0.031587441558797016 item=minecraft:bamboo_raft count=1 age=8 pickup-delay=0 on-ground=false
+entity 20 e30 7.59364353023061 1.7003090334360682 103.45689153915998 0.15889634177557643 -0.0951062125404474 -0.0049150134725791895 item=minecraft:jack_o_lantern count=1 age=8 pickup-delay=0 on-ground=false
+
+entity-order 21 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 21 e1 7.548439730736891 1.0 2.3246384647761955 0.08114841586231569 0 0.049626322593707035 item=minecraft:chest count=1 age=9 pickup-delay=0 on-ground=true
+entity 21 e2 7.534576800092922 2.037928893282725 4.6841767792513656 0.13385690874555356 -0.08499007329612357 0.018472773040549922 item=minecraft:saddle count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e3 8.936858408762046 1.0 7.277545149286968 0.16470274440010046 0 -0.013387219558107812 item=minecraft:white_carpet count=1 age=9 pickup-delay=0 on-ground=true
+entity 21 e4 8.954308659144578 1.6929262065744282 10.262059498835388 0.27625479689032 -0.11959354349988875 -0.02386522824991783 item=minecraft:iron_helmet count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e5 8.901441540374128 1.3917671536049043 13.214743954252443 0.2709522702074015 -0.14979953527187814 -0.028610936801905802 item=minecraft:elytra count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e6 7.898711649013431 1.0 16.55821160917577 0.10222760141379957 0 0.003503144976919997 item=minecraft:shield count=1 age=9 pickup-delay=0 on-ground=true
+entity 21 e7 8.551265995237191 1.5878519873828987 25.177485431218642 0.23582996328054986 -0.1301323965380165 -0.032347934715687705 item=minecraft:glass_bottle count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e8 8.135116908445536 1.0 28.48524951817243 0.11645434945981833 0 -8.876764798819704E-4 item=minecraft:honeycomb count=1 age=9 pickup-delay=0 on-ground=true
+entity 21 e9 8.803631724311554 1.003692583431439 33.843912165933716 0.2611420295212187 -0.18872307802443247 -0.06580504720864613 item=minecraft:skeleton_skull count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e10 7.575761771312797 1.4912812517799714 36.787891329948614 0.13798772604575152 -0.13981835754856659 -0.07142388902410796 item=minecraft:iron_horse_armor count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e11 7.879743247624356 1.247502285390231 43.66811365665953 0.16847680747751478 -0.1642691764110424 0.016861655617562483 item=minecraft:glowstone count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e12 8.825256637386307 1.0747470545846491 47.01145743447418 0.2633109897608063 -0.18159637620406865 0.05129874213973898 item=minecraft:potion count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e13 8.276248088047092 1.3067634105647723 49.46736286448924 0.20824590299748869 -0.15832533696218418 -0.0032734767077298877 item=minecraft:oak_boat count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e14 7.8039335061732364 1.1378440374497854 52.594247798775584 0.16087315541137664 -0.17526780355626406 0.009452973406471285 item=minecraft:wolf_armor count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e15 8.805123515445436 1.3588378202571736 55.057021481030375 0.26129165489284334 -0.15310231884205794 -0.044430365630385014 item=minecraft:lead count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e16 8.704232940422065 1.196283272798645 58.08326830249746 0.25117241672442203 -0.16940639894397225 -0.041797831942001436 item=minecraft:trident count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e17 8.618478417011316 1.0 64.86999890572785 0.0910532630255097 0 0.013930084074937728 item=minecraft:zombie_head count=1 age=9 pickup-delay=0 on-ground=true
+entity 21 e18 8.617277525489204 1.2718421518567495 67.80146227082002 0.24245086316467981 -0.16182790891810275 0.030236407280999248 item=minecraft:player_head count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e19 8.399850555385571 1.62628792557918 70.36057247043556 0.2206431244912983 -0.12627730527823935 -0.013984461666219281 item=minecraft:creeper_head count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e20 8.614302814138663 1.2788894988871309 72.74505360988586 0.24215250216682196 -0.16112106612418678 -0.07572047561613253 item=minecraft:dragon_head count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e21 8.511988739951493 1.0 76.54866085126015 0.13913430423475304 0 0.0029283852324010384 item=minecraft:piglin_head count=1 age=9 pickup-delay=0 on-ground=true
+entity 21 e22 8.222022718655213 1.8596112802079054 79.93653285632824 0.2028071449418432 -0.10287517520565796 0.04378387119414702 item=minecraft:turtle_helmet count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e23 7.91861180549711 1.2604409781616537 82.69161259678991 0.1723752905051549 -0.16297143674975634 0.019218579163986026 item=minecraft:leather_chestplate count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e24 8.124590777045462 1.2161753106692381 85.39577393154202 0.19303480473927828 -0.16741124480092862 -0.010453785299963521 item=minecraft:chainmail_leggings count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e25 9.148430199180536 1.0 88.34346433938497 0.1774350269354363 0 -0.009420236288892646 item=minecraft:golden_boots count=1 age=9 pickup-delay=0 on-ground=true
+entity 21 e26 8.462224024143527 1.5292079142198811 91.56282498853656 0.22689912992695122 -0.13601434620538158 0.006301292482302551 item=minecraft:diamond_horse_armor count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e27 7.704423078060297 1.7816296139742493 94.55183218209689 0.1508923447946947 -0.11069666868358509 0.005198723421943134 item=minecraft:black_carpet count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e28 8.795672587116742 1.2079117632714984 97.36558280105723 0.26034373488496765 -0.16824007143669586 -0.013481929800867602 item=minecraft:oak_chest_boat count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e29 7.804322138371981 1.2928758705587766 100.19136632142254 0.16091213488768658 -0.159718245178019 -0.03095569333010371 item=minecraft:bamboo_raft count=1 age=9 pickup-delay=0 on-ground=false
+entity 21 e30 7.752539872006186 1.5652028208956208 103.4519765256874 0.1557184179707721 -0.13240408828963846 -0.004816713296874048 item=minecraft:jack_o_lantern count=1 age=9 pickup-delay=0 on-ground=false
+
+entity-order 22 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 22 e1 7.629588146599207 1.0 2.3742647873699028 0.04771527332516955 0 0.029180280619395392 item=minecraft:chest count=1 age=10 pickup-delay=0 on-ground=true
+entity 22 e2 7.668433708838475 1.9129388199866015 4.702649552291915 0.13117977312376042 -0.1224902718302011 0.01810331793207911 item=minecraft:saddle count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e3 9.101561153162146 1.0 7.26415792972886 0.09684522344577126 0 -0.007871685891724337 item=minecraft:white_carpet count=1 age=10 pickup-delay=0 on-ground=true
+entity 22 e4 9.230563456034899 1.5333326630745394 10.23819427058547 0.2707297062216557 -0.15640167262989096 -0.02338792414011258 item=minecraft:iron_helmet count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e5 9.172393810581529 1.2019676183330261 13.186133017450537 0.2655332299712579 -0.18600354456644058 -0.028038718611577997 item=minecraft:elytra count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e6 8.00093925042723 1.0 16.561714754152693 0.0601098356758081 0 0.0020598494535622406 item=minecraft:shield count=1 age=10 pickup-delay=0 on-ground=true
+entity 22 e7 8.78709595851774 1.417719590844882 25.145137496502954 0.23111336851303846 -0.16672974860725617 -0.03170097663836184 item=minecraft:glass_bottle count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e8 8.251571257905354 1.0 28.48436184169255 0.06847516436806356 0 -5.219538226569628E-4 item=minecraft:honeycomb count=1 age=10 pickup-delay=0 on-ground=true
+entity 22 e9 9.064773753832773 1.0 33.77810711872507 0.15355152879923226 0 -0.0386933716495921 item=minecraft:skeleton_skull count=1 age=10 pickup-delay=0 on-ground=true
+entity 22 e10 7.713749497358548 1.3114628942314048 36.716467440924504 0.1352279741567435 -0.17622199039759526 -0.06999541260592837 item=minecraft:iron_horse_armor count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e11 8.04822005510187 1.0432331089791884 43.68497531227709 0.1651072745414046 -0.20018379288282157 0.016524422826821792 item=minecraft:glowstone count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e12 9.088567627147112 1.0 47.06275617661392 0.15482687754835564 0 0.030163663411348674 item=minecraft:potion count=1 age=10 pickup-delay=0 on-ground=true
+entity 22 e13 8.48449399104458 1.108438073602588 49.464089387781506 0.2040809889095143 -0.1943588302229405 -0.0032080072360119033 item=minecraft:oak_boat count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e14 7.964806661584613 1.0 52.60370077218205 0.09459342489396645 0 0.005558348921938709 item=minecraft:wolf_armor count=1 age=10 pickup-delay=0 on-ground=true
+entity 22 e15 9.06641517033828 1.1657355014151156 55.01259111539999 0.2560658267787293 -0.1892402724652168 -0.04354175916521929 item=minecraft:lead count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e16 8.955405357146487 1.0 58.04147047055546 0.1476893958852345 0 -0.02457712765331101 item=minecraft:trident count=1 age=10 pickup-delay=0 on-ground=true
+entity 22 e17 8.709531680036825 1.0 64.8839289898028 0.05353932404277952 0 0.008190890259718716 item=minecraft:zombie_head count=1 age=10 pickup-delay=0 on-ground=true
+entity 22 e18 8.859728388653883 1.0700142429386468 67.83169867810102 0.23760185052576943 -0.1977913507397407 0.029631679712092966 item=minecraft:player_head count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e19 8.62049367987687 1.4600106203009406 70.34658800876933 0.21623026620990596 -0.16295175917267457 -0.013704772699627334 item=minecraft:creeper_head count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e20 8.856455316305485 1.077768432762944 72.66933313426972 0.23730945674217796 -0.19709864480170305 -0.07420606754806333 item=minecraft:dragon_head count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e21 8.651123044186246 1.0 76.55158923649255 0.08181097911674116 0 0.0017218906898008094 item=minecraft:piglin_head count=1 age=10 pickup-delay=0 on-ground=true
+entity 22 e22 8.424829863597056 1.7167361050022474 79.98031672752239 0.19875100591124564 -0.1400176717015448 0.04290819460537515 item=minecraft:turtle_helmet count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e23 8.090987096002266 1.0574695414118973 82.7108311759539 0.16892778798284955 -0.19891200801476122 0.01883420794727161 item=minecraft:leather_chestplate count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e24 8.31762558178474 1.0087640658683095 85.38532014624207 0.18917411232633943 -0.20326301990491005 -0.010244709793354382 item=minecraft:chainmail_leggings count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e25 9.325865226115972 1.0 88.33404410309608 0.10433180632938069 0 -0.005539099494866795 item=minecraft:golden_boots count=1 age=10 pickup-delay=0 on-ground=true
+entity 22 e26 8.689123154070478 1.3531935680144995 91.56912628101887 0.22236115165616965 -0.17249405928127395 0.0061752667528441165 item=minecraft:diamond_horse_armor count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e27 7.855315422854992 1.6309329452906642 94.55703090551883 0.1478745007768439 -0.14768273530991338 0.005094749052662051 item=minecraft:black_carpet count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e28 9.05601632200171 1.0 97.35210087125637 0.15308213150591524 0 -0.007927375520067101 item=minecraft:oak_chest_boat count=1 age=10 pickup-delay=0 on-ground=true
+entity 22 e29 7.965234273259668 1.0931576253807576 100.16041062809244 0.15769389525908825 -0.1957238802744586 -0.03033658005393463 item=minecraft:bamboo_raft count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e30 7.908258289976958 1.3927987326059823 103.44715981239052 0.15260405258144977 -0.16895600652384568 -0.0047203791228080825 item=minecraft:jack_o_lantern count=1 age=10 pickup-delay=0 on-ground=false
+
+entity-order 23 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 23 e1 7.677303419924376 1.0 2.4034450679892982 0.028056583536499195 0 0.017158006729570508 item=minecraft:chest count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e2 7.799613481962235 1.7504485481564005 4.720752870223994 0.1285561801633408 -0.15924046639359707 0.017741251918730914 item=minecraft:saddle count=1 age=11 pickup-delay=0 on-ground=false
+entity 23 e3 9.198406376607917 1.0 7.256286243837136 0.056944997112359244 0 -0.004628551769769439 item=minecraft:white_carpet count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e4 9.501293162256555 1.3369309904446485 10.214806346445357 0.26531511726098195 -0.19247363917729315 -0.02292016610339958 item=minecraft:iron_helmet count=1 age=11 pickup-delay=0 on-ground=false
+entity 23 e5 9.437927040552786 1.0 13.158094298838959 0.15613355492349737 0 -0.01648676820147582 item=minecraft:elytra count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e6 8.061049086103038 1.0 16.563774603606255 0.03534458693153796 0 0.0012111916004889796 item=minecraft:shield count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e7 9.01820932703078 1.210989842237626 25.113436519864592 0.22649110555091537 -0.20259515363511105 -0.03106695771024275 item=minecraft:glass_bottle count=1 age=11 pickup-delay=0 on-ground=false
+entity 23 e8 8.320046422273418 1.0 28.483839887869895 0.04026340069720772 0 -3.0690887858427933E-4 item=minecraft:honeycomb count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e9 9.218325282632005 1.0 33.739413747075474 0.09028830801311383 0 -0.02275170481781439 item=minecraft:skeleton_skull count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e10 7.848977471515291 1.0952409038338096 36.64647202831858 0.13252341725287756 -0.21189755058964335 -0.06859550568886635 item=minecraft:iron_horse_armor count=1 age=11 pickup-delay=0 on-ground=false
+entity 23 e11 8.213327329643274 1.0 43.70149973510391 0.09708308719277706 0 0.009716361599224108 item=minecraft:glowstone count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e12 9.243394504695468 1.0 47.09291984002527 0.09103821315300695 0 0.017736235869384307 item=minecraft:potion count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e13 8.688574979954094 1.0 49.460881380545494 0.11999963354565585 0 -0.001886308444457434 item=minecraft:oak_boat count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e14 8.059400086478579 1.0 52.60925912110399 0.0556209394307541 0 0.0032683094947529466 item=minecraft:wolf_armor count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e15 9.322480997117008 1.0 54.96904935623477 0.15056672128650378 0 -0.025602556963677702 item=minecraft:lead count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e16 9.103094753031721 1.0 58.01689334290215 0.08684137351306807 0 -0.01445135251333855 item=minecraft:trident count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e17 8.763071004079604 1.0 64.89211988006251 0.03148112570281721 0 0.004816243957023988 item=minecraft:zombie_head count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e18 9.097330239179652 1.0 67.86133035781312 0.13970990215802892 0 0.01742342942276692 item=minecraft:player_head count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e19 8.836723946086774 1.257058861128266 70.3328832360697 0.21190566500997288 -0.1988927239892211 -0.013430677507032583 item=minecraft:creeper_head count=1 age=11 pickup-delay=0 on-ground=false
+entity 23 e20 9.093764773047663 1.0 72.59512706672166 0.13953797459598855 0 -0.043633172105903326 item=minecraft:dragon_head count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e21 8.732934023302986 1.0 76.55331112718234 0.04810486055794764 0 0.0010124718274144974 item=minecraft:piglin_head count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e22 8.623580869508302 1.5367184333007025 80.02322492212777 0.19477598958389533 -0.17641731826751392 0.04205003153167651 item=minecraft:turtle_helmet count=1 age=11 pickup-delay=0 on-ground=false
+entity 23 e23 8.259914883985115 1.0 82.72966538390116 0.09932954932224529 0 0.011074515386621131 item=minecraft:leather_chestplate count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e24 8.50679969411108 1.0 85.37507543644871 0.1112343892333381 0 -0.006023889964239606 item=minecraft:chainmail_leggings count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e25 9.430197032445353 1.0 88.32850500360121 0.061347108290586816 0 -0.0032569908304964845 item=minecraft:golden_boots count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e26 8.911484305726647 1.1406995087332255 91.57530154777172 0.21791393286424865 -0.2082441780956485 0.0060517615355711 item=minecraft:diamond_horse_armor count=1 age=11 pickup-delay=0 on-ground=false
+entity 23 e27 8.003189923631837 1.443250209980751 94.56212565457149 0.14491701358178927 -0.18392908060371513 0.004992854168783437 item=minecraft:black_carpet count=1 age=11 pickup-delay=0 on-ground=false
+entity 23 e28 9.209098453507625 1.0 97.3441734957363 0.09001230237688898 0 -0.00466129727452779 item=minecraft:oak_chest_boat count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e29 8.122928168518756 1.0 100.1300740480385 0.09272401973643819 0 -0.01783791086544903 item=minecraft:bamboo_raft count=1 age=11 pickup-delay=0 on-ground=true
+entity 23 e30 8.060862342558408 1.1838427260821367 103.44243943326772 0.14955197444051208 -0.20477688639336877 -0.004625971630386008 item=minecraft:jack_o_lantern count=1 age=11 pickup-delay=0 on-ground=false
+
+entity-order 24 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 24 e1 7.705360003460876 1.0 2.4206030747188687 0.0164972727783858 0 0.01008890897150278 item=minecraft:chest count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e2 7.928169662125576 1.5512080817628033 4.7384941221427255 0.12598505901208853 -0.19525565706572512 0.01738642721874382 item=minecraft:saddle count=1 age=12 pickup-delay=0 on-ground=false
+entity 24 e3 9.255351373720275 1.0 7.251657692067366 0.03348366166910007 0 -0.002721588714300549 item=minecraft:white_carpet count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e4 9.766608279517538 1.1044573512673552 10.191886180341957 0.2600088199762466 -0.2278241663937473 -0.022461763218499062 item=minecraft:iron_helmet count=1 age=12 pickup-delay=0 on-ground=false
+entity 24 e5 9.594060595476284 1.0 13.141607530637483 0.09180653952685125 0 -0.009694220677294241 item=minecraft:elytra count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e6 8.096393673034576 1.0 16.564985795206745 0.020782619205592257 0 7.121807327026239E-4 item=minecraft:shield count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e7 9.244700432581695 1.0 25.082369562154348 0.13317678345586076 0 -0.018267372970543837 item=minecraft:glass_bottle count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e8 8.360309822970626 1.0 28.48353297899131 0.02367488199064475 0 -1.8046243875440536E-4 item=minecraft:honeycomb count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e9 9.30861359064512 1.0 33.71666204225766 0.05308953045026064 0 -0.013378003778133286 item=minecraft:skeleton_skull count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e10 7.981500888768169 1.0 36.57787652262971 0.07792377718051112 0 -0.04033416140095528 item=minecraft:iron_horse_armor count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e11 8.310410416836051 1.0 43.71121609670313 0.057084861009663014 0 0.005713221194850935 item=minecraft:glowstone count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e12 9.334432717848475 1.0 47.11065607589465 0.05353047471685804 0 0.010428907739902715 item=minecraft:potion count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e13 8.808574613499749 1.0 49.45899507210104 0.07055979162016089 0 -0.0011091494768742539 item=minecraft:oak_boat count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e14 8.115021025909334 1.0 52.61252743059874 0.03270511567402762 0 0.0019217661761627076 item=minecraft:wolf_armor count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e15 9.473047718403512 1.0 54.94344679927109 0.08853324101914435 0 -0.015054305008465552 item=minecraft:lead count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e16 9.189936126544788 1.0 58.00244199038881 0.05106273276042406 0 -0.008497396132319859 item=minecraft:trident count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e17 8.79455212978242 1.0 64.89693612401953 0.018510903774666465 0 0.0028319517315040514 item=minecraft:zombie_head count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e18 9.23704014133768 1.0 67.87875378723588 0.08214943072966122 0 0.010244977530796132 item=minecraft:player_head count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e19 9.048629611096747 1.018166137139045 70.31945255856267 0.2076675557515532 -0.23411486950943666 -0.013162064213061774 item=minecraft:creeper_head count=1 age=12 pickup-delay=0 on-ground=false
+entity 24 e20 9.233302747643652 1.0 72.55149389461576 0.08204833731301578 0 -0.025656307778204962 item=minecraft:dragon_head count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e21 8.781038883860933 1.0 76.55432359900975 0.02828566085240815 0 5.953334943849639E-4 item=minecraft:piglin_head count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e22 8.818356859092198 1.3203011150331885 80.06527495365944 0.1908804735072746 -0.21208897190216364 0.04120903170308368 item=minecraft:turtle_helmet count=1 age=12 pickup-delay=0 on-ground=false
+entity 24 e23 8.35924443330736 1.0 82.74073989928779 0.058405780874618715 0 0.006511815702145041 item=minecraft:leather_chestplate count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e24 8.61803408334442 1.0 85.36905154648447 0.06540582744624837 0 -0.0035420476551522953 item=minecraft:chainmail_leggings count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e25 9.49154414073594 1.0 88.32524801277071 0.03607210330218506 0 -0.00191511080091066 item=minecraft:golden_boots count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e26 9.129398238590896 1.0 91.58135330930729 0.1281334054089513 0 0.0035584361407431987 item=minecraft:diamond_horse_armor count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e27 8.148106937213626 1.2193211293770359 94.56711850874028 0.14201867607422616 -0.21945049899164082 0.004892997180638904 item=minecraft:black_carpet count=1 age=12 pickup-delay=0 on-ground=false
+entity 24 e28 9.299110755884515 1.0 97.33951219846178 0.05292723911984082 0 -0.0027408430730346293 item=minecraft:oak_chest_boat count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e29 8.215652188255195 1.0 100.11223613717304 0.05452172908759366 0 -0.010488692643600592 item=minecraft:bamboo_raft count=1 age=12 pickup-delay=0 on-ground=true
+entity 24 e30 8.210414316998921 1.0 103.43781346163733 0.08793656981370147 0 -0.0027200715921905333 item=minecraft:jack_o_lantern count=1 age=12 pickup-delay=0 on-ground=true
+
+entity-order 25 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 25 e1 7.721857276239262 1.0 2.4306919836903713 0.009700397369138422 0 0.005932279071778703 item=minecraft:chest count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e2 8.054154721137664 1.3159524246970782 4.7558805493614695 0.12346536023482106 -0.23055054392441063 0.017038699005988728 item=minecraft:saddle count=1 age=13 pickup-delay=0 on-ground=false
+entity 25 e3 9.288835035389376 1.0 7.248936103353065 0.019688395041246348 0 -0.0016002943249302966 item=minecraft:white_carpet count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e4 10.026617099493784 1.0 10.169424417123457 0.1528852015197845 0 -0.013207518100592263 item=minecraft:iron_helmet count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e5 9.685867135003136 1.0 13.131913309960188 0.053982250670107944 0 -0.005700202331447029 item=minecraft:elytra count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e6 8.117176292240169 1.0 16.565697975939447 0.012220181321718957 0 4.187623129388282E-4 item=minecraft:shield count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e7 9.377877216037556 1.0 25.064102189183803 0.07830795654649736 0 -0.01074121638678949 item=minecraft:glass_bottle count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e8 8.383984704961271 1.0 28.483352516552554 0.01392083201034298 0 -1.0611192465793872E-4 item=minecraft:honeycomb count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e9 9.361703121095381 1.0 33.703284038479524 0.031216647043820798 0 -0.007866267012554407 item=minecraft:skeleton_skull count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e10 8.05942466594868 1.0 36.53754236122875 0.04581918558960264 0 -0.023716489288632243 item=minecraft:iron_horse_armor count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e11 8.367495277845714 1.0 43.716929317897986 0.033565901648984535 0 0.0033593744003825934 item=minecraft:glowstone count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e12 9.387963192565334 1.0 47.12108498363455 0.03147592229865214 0 0.006132198367701247 item=minecraft:potion count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e13 8.87913440511991 1.0 49.457885922624165 0.04148916164470039 0 -6.521799579836382E-4 item=minecraft:oak_boat count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e14 8.14772614158336 1.0 52.6144491967749 0.019230609950110028 0 0.0011299986252134929 item=minecraft:wolf_armor count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e15 9.561580959422656 1.0 54.92839249426263 0.05205755095403332 0 -0.008851932235105794 item=minecraft:lead count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e16 9.240998859305213 1.0 57.99394459425649 0.030024889882356784 0 -0.004996469428236481 item=minecraft:trident count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e17 8.813063033557087 1.0 64.89976807575104 0.010884412514013038 0 0.0016651877855714794 item=minecraft:zombie_head count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e18 9.31918957206734 1.0 67.88899876476668 0.04830387012635653 0 0.006024047393871186 item=minecraft:player_head count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e19 9.2562971668483 1.0 70.30629049434961 0.12210853506084057 0 -0.0077392945355243235 item=minecraft:creeper_head count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e20 9.315351084956667 1.0 72.52583758683755 0.04824442719139158 0 -0.015085910490585748 item=minecraft:dragon_head count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e21 8.809324544713341 1.0 76.55491893250414 0.016631970253685107 0 3.500561298991231E-4 item=minecraft:piglin_head count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e22 9.009237332599472 1.0682121431310247 80.10648398536253 0.18706286767788521 -0.24704719246412035 0.040384851855021914 item=minecraft:turtle_helmet count=1 age=13 pickup-delay=0 on-ground=false
+entity 25 e23 8.417650214181979 1.0 82.74725171498993 0.03434260260768158 0 0.00382894801789067 item=minecraft:leather_chestplate count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e24 8.683439910790668 1.0 85.36550949882931 0.038458630405697226 0 -0.0020827242306630618 item=minecraft:chainmail_leggings count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e25 9.527616244038125 1.0 88.3233329019698 0.021210398874549202 0 -0.0011260852641717712 item=minecraft:golden_boots count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e26 9.257531643999847 1.0 91.58491174544804 0.0753424499567107 0 0.0020923606611595283 item=minecraft:diamond_horse_armor count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e27 8.290125613287852 1.0 94.57201150592091 0.08350698992889793 0 0.0028770826315278712 item=minecraft:black_carpet count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e28 9.352037995004356 1.0 97.33677135538875 0.031121219731938012 0 -0.001611615889004404 item=minecraft:oak_chest_boat count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e29 8.270173917342788 1.0 100.10174744452944 0.03205877992725538 0 -0.006167351894610549 item=minecraft:bamboo_raft count=1 age=13 pickup-delay=0 on-ground=true
+entity 25 e30 8.298350886812623 1.0 103.43509339004514 0.05170670824995305 0 -0.0015994022570399035 item=minecraft:jack_o_lantern count=1 age=13 pickup-delay=0 on-ground=true
+
+entity-order 26 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 26 e1 7.7315576736084 1.0 2.43662426276215 0.005703834226616622 0 0.003488180444968533 item=minecraft:chest count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e2 8.177620081372485 1.0454018807726675 4.772919248367458 0.1209960553850395 -0.2651395330459224 0.016697925350856346 item=minecraft:saddle count=1 age=14 pickup-delay=0 on-ground=false
+entity 26 e3 9.308523430430622 1.0 7.247335809028135 0.011576777448384487 0 -9.409731576809093E-4 item=minecraft:white_carpet count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e4 10.179502301013569 1.0 10.156216899022864 0.08989650753340006 0 -0.00776602142407984 item=minecraft:iron_helmet count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e5 9.739849385673244 1.0 13.126213107628741 0.031741566585875604 0 -0.00335171930793132 item=minecraft:elytra count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e6 8.129396473561888 1.0 16.566116738252386 0.007185467339723277 0 2.462322647685285E-4 item=minecraft:shield count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e7 9.456185172584053 1.0 25.053360972797012 0.04604508307951824 0 -0.006315835870536797 item=minecraft:glass_bottle count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e8 8.397905536971614 1.0 28.483246404627895 0.00818545004518995 0 -6.239381797303343E-5 item=minecraft:honeycomb count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e9 9.392919768139201 1.0 33.69541777146697 0.01835539030753853 0 -0.004625365468497114 item=minecraft:skeleton_skull count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e10 8.105243851538281 1.0 36.51382587194012 0.026941683835874346 0 -0.013945297104019774 item=minecraft:iron_horse_armor count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e11 8.401061179494699 1.0 43.72028869229837 0.01973675215428108 0 0.0019753123460574083 item=minecraft:glowstone count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e12 9.419439114863986 1.0 47.127217182002255 0.018507844172709738 0 0.003605733002791779 item=minecraft:potion count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e13 8.92062356676461 1.0 49.45723374266618 0.024395629500246995 0 -3.8348185385635034E-4 item=minecraft:oak_boat count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e14 8.166956751533471 1.0 52.615579195400116 0.011307599787728502 0 6.644392584398751E-4 item=minecraft:wolf_armor count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e15 9.61363851037669 1.0 54.91954056202753 0.030609843039020448 0 -0.005204936677637553 item=minecraft:lead count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e16 9.27102374918757 1.0 57.988948124828255 0.017654637026131702 0 -0.002937924319233334 item=minecraft:trident count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e17 8.8239474460711 1.0 64.90143326353662 0.006400035201811116 0 9.79130516374933E-4 item=minecraft:zombie_head count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e18 9.367493442193698 1.0 67.89502281216055 0.02840267849039958 0 0.003542140223784973 item=minecraft:player_head count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e19 9.378405701909141 1.0 70.29855119981409 0.07179982583578423 0 -0.004550705644495821 item=minecraft:creeper_head count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e20 9.36359551214806 1.0 72.51075167634697 0.02836772604112546 0 -0.008870516260461233 item=minecraft:dragon_head count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e21 8.825956514967027 1.0 76.55526898863404 0.00977959949257878 0 2.0583302507873587E-4 item=minecraft:piglin_head count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e22 9.196300200277358 1.0 80.14686883721755 0.10999297725521376 0 0.023746295278620638 item=minecraft:turtle_helmet count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e23 8.45199281678966 1.0 82.75108066300783 0.02019345236391957 0 0.0022514216609170155 item=minecraft:leather_chestplate count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e24 8.721898541196365 1.0 85.36342677459865 0.022613676952524468 0 -0.001224641970776798 item=minecraft:chainmail_leggings count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e25 9.548826642912674 1.0 88.32220681670563 0.012471715792359315 0 -6.621382019159544E-4 item=minecraft:golden_boots count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e26 9.332874093956558 1.0 91.5870041061092 0.04430136502937978 0 0.0012303081924785013 item=minecraft:diamond_horse_armor count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e27 8.37363260321675 1.0 94.57488858855244 0.04910211501577722 0 0.0016917247574539766 item=minecraft:black_carpet count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e28 9.383159214736294 1.0 97.33515973949974 0.018299279042509043 0 -9.476302380259038E-4 item=minecraft:oak_chest_boat count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e29 8.302232697270044 1.0 100.09558009263483 0.018850564492791533 0 -0.003626403278692999 item=minecraft:bamboo_raft count=1 age=14 pickup-delay=0 on-ground=true
+entity 26 e30 8.350057595062575 1.0 103.4334939877881 0.03040354750827669 0 -9.404486217086122E-4 item=minecraft:jack_o_lantern count=1 age=14 pickup-delay=0 on-ground=true
+
+entity-order 27 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 27 e1 7.737261507835016 1.0 2.4401124432071186 0.0033538548625057863 0 0.0020510503078899596 item=minecraft:chest count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e2 8.298616136757524 1.0 4.789617173718314 0.07114568772063472 0 0.00981838109361525 item=minecraft:saddle count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e3 9.320100207879007 1.0 7.246394835870454 0.0068071458241595485 0 -5.532922723540545E-4 item=minecraft:white_carpet count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e4 10.269398808546969 1.0 10.148450877598783 0.05285915174502264 0 -0.004566421056546767 item=minecraft:iron_helmet count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e5 9.77159095225912 1.0 13.12286138832081 0.0186640430293041 0 -0.001970811151243431 item=minecraft:elytra count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e6 8.136581940901612 1.0 16.566362970517154 0.004225055220618217 0 1.4478458624306873E-4 item=minecraft:shield count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e7 9.502230255663571 1.0 25.047045136926474 0.02707451157330154 0 -0.003713711865317165 item=minecraft:glass_bottle count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e8 8.406090987016803 1.0 28.48318401080992 0.0048130451105594056 0 -3.6687568657353326E-5 item=minecraft:honeycomb count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e9 9.41127515844674 1.0 33.69079240599847 0.010792970586146642 0 -0.0027197151689640226 item=minecraft:skeleton_skull count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e10 8.132185535374155 1.0 36.4998805748361 0.015841711688496813 0 -0.008199835521718471 item=minecraft:iron_horse_armor count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e11 8.42079793164898 1.0 43.72226400464442 0.01160521143370816 0 0.0011614837762776444 item=minecraft:glowstone count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e12 9.437946959036696 1.0 47.13082291500505 0.010882613467881575 0 0.002120171218840653 item=minecraft:potion count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e13 8.945019196264857 1.0 49.456850260812324 0.01434463158860532 0 -2.2548735274197527E-4 item=minecraft:oak_boat count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e14 8.1782643513212 1.0 52.61624363465856 0.0066488693437779444 0 3.9069032324948324E-4 item=minecraft:wolf_armor count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e15 9.64424835341571 1.0 54.91433562534989 0.017998589516836933 0 -0.003060503074207376 item=minecraft:lead count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e16 9.288678386213702 1.0 57.98601020050902 0.010380927615245422 0 -0.0017274996734222244 item=minecraft:trident count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e17 8.830347481272911 1.0 64.90241239405299 0.003763221077084986 0 5.757288015223014E-4 item=minecraft:zombie_head count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e18 9.395896120684098 1.0 67.89856495238433 0.01670077663174306 0 0.0020827786610245497 item=minecraft:player_head count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e19 9.450205527744926 1.0 70.2940004941696 0.042218301836807415 0 -0.0026758151880367904 item=minecraft:creeper_head count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e20 9.391963238189184 1.0 72.50188116008651 0.016680224589503218 0 -0.005215864085645384 item=minecraft:dragon_head count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e21 8.835736114459605 1.0 76.55547482165912 0.0057504050798826 0 1.210298309167522E-4 item=minecraft:piglin_head count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e22 9.306293177532572 1.0 80.17061513249618 0.06467587712970929 0 0.013962823027895314 item=minecraft:turtle_helmet count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e23 8.47218626915358 1.0 82.75333208466874 0.011873751183979273 0 0.001323836069740832 item=minecraft:leather_chestplate count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e24 8.74451221814889 1.0 85.36220213262787 0.013296843385181528 0 -7.200895512271521E-4 item=minecraft:chainmail_leggings count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e25 9.561298358705034 1.0 88.32154467850371 0.007333369623332489 0 -3.893373018773614E-4 item=minecraft:golden_boots count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e26 9.377175458985938 1.0 91.58823441430168 0.0260492052567179 0 7.234212899227849E-4 item=minecraft:diamond_horse_armor count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e27 8.422734718232528 1.0 94.57658031330989 0.028872046532577418 0 9.947342574109144E-4 item=minecraft:black_carpet count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e28 9.401458493778803 1.0 97.33421210926171 0.010759977158991569 0 -5.572066359905299E-4 item=minecraft:oak_chest_boat count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e29 8.321083261762835 1.0 100.09195368935615 0.011084133036353973 0 -0.002132325342292759 item=minecraft:bamboo_raft count=1 age=15 pickup-delay=0 on-ground=true
+entity 27 e30 8.380461142570852 1.0 103.43255353916639 0.0178772877325618 0 -5.529838451713291E-4 item=minecraft:jack_o_lantern count=1 age=15 pickup-delay=0 on-ground=true
+
+entity-order 28 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 28 e1 7.740615362697522 1.0 2.4421634935150087 0.0019720668574594873 0 0.0012060177023134042 item=minecraft:chest count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e2 8.369761824478159 1.0 4.79943555481193 0.04183366858642175 0 0.005773208663585116 item=minecraft:saddle count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e3 9.326907353703167 1.0 7.2458415435981 0.004002602147097423 0 -3.253358888591431E-4 item=minecraft:white_carpet count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e4 10.322257960291992 1.0 10.143884456542237 0.03108118435151907 0 -0.0026850558512519643 item=minecraft:iron_helmet count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e5 9.790254995288423 1.0 13.120890577169567 0.010974458404794756 0 -0.00115883707346088 item=minecraft:elytra count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e6 8.14080699612223 1.0 16.566507755103398 0.002484332719541764 0 8.513334527171957E-5 item=minecraft:shield count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e7 9.529304767236873 1.0 25.043331425061158 0.015919814405957817 0 -0.002183662796390134 item=minecraft:glass_bottle count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e8 8.410904032127362 1.0 28.483147323241266 0.002830070809593736 0 -2.1572292539779255E-5 item=minecraft:honeycomb count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e9 9.422068129032887 1.0 33.68807269082951 0.006346267342818914 0 -0.0015991926801616405 item=minecraft:skeleton_skull count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e10 8.148027247062652 1.0 36.49168073931438 0.009314927409521808 0 -0.004821503771608758 item=minecraft:iron_horse_armor count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e11 8.432403143082688 1.0 43.7234254884207 0.006823865009211108 0 6.829525291272442E-4 item=minecraft:glowstone count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e12 9.448829572504577 1.0 47.13294308622389 0.0063989773625794414 0 0.00124666080203938 item=minecraft:potion count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e13 8.959363827853462 1.0 49.45662477345958 0.008434644222266545 0 -1.3258657674485426E-4 item=minecraft:oak_boat count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e14 8.184913220664978 1.0 52.61663432498181 0.003909535567274499 0 2.2972593317135842E-4 item=minecraft:wolf_armor count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e15 9.662246942932548 1.0 54.91127512227568 0.010583171700117255 0 -0.001799575988594774 item=minecraft:lead count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e16 9.299059313828947 1.0 57.9842827008356 0.006103986051565799 0 -0.0010157699101155362 item=minecraft:trident count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e17 8.834110702349996 1.0 64.90298812285451 0.0022127742158369835 0 3.38528569336695E-4 item=minecraft:zombie_head count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e18 9.41259689731584 1.0 67.90064773104535 0.009820057646945228 0 0.0012246739758325711 item=minecraft:player_head count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e19 9.492423829581734 1.0 70.29132467898155 0.02482436397631839 0 -0.0015733794887807183 item=minecraft:creeper_head count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e20 9.408643462778688 1.0 72.49666529600087 0.009807973044893002 0 -0.0030669283907620937 item=minecraft:dragon_head count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e21 8.841486519539488 1.0 76.55559585149004 0.003381238526979814 0 7.116554773527886E-5 item=minecraft:piglin_head count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e22 9.37096905466228 1.0 80.18457795552408 0.038029419576411885 0 0.008210140765993558 item=minecraft:turtle_helmet count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e23 8.484060020337559 1.0 82.75465592073849 0.006981766398248688 0 7.784156872831336E-4 item=minecraft:leather_chestplate count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e24 8.75780906153407 1.0 85.36148204307665 0.007818544696699936 0 -4.2341269869888186E-4 item=minecraft:chainmail_leggings count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e25 9.568631728328366 1.0 88.32115534120183 0.004312021772125572 0 -2.289303565245496E-4 item=minecraft:golden_boots count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e26 9.403224664242657 1.0 91.5889578355916 0.015316934231182522 0 4.253717612489124E-4 item=minecraft:diamond_horse_armor count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e27 8.451606764765105 1.0 94.57757504756731 0.016976765068296335 0 5.849038021740735E-4 item=minecraft:black_carpet count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e28 9.412218470937795 1.0 97.33365490262572 0.0063268672057009015 0 -3.2763753490883834E-4 item=minecraft:oak_chest_boat count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e29 8.332167394799189 1.0 100.08982136401386 0.006517470880756622 0 -0.0012538074273478648 item=minecraft:bamboo_raft count=1 age=16 pickup-delay=0 on-ground=true
+entity 28 e30 8.398338430303413 1.0 103.43200055532122 0.01051184624379117 0 -3.2515453365746395E-4 item=minecraft:jack_o_lantern count=1 age=16 pickup-delay=0 on-ground=true
+
+entity-order 29 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 29 e1 7.740615362697522 1.0 2.4421634935150087 0.0019720668574594873 -0.04 0.0012060177023134042 item=minecraft:chest count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e2 8.411595493064581 1.0 4.805208763475515 0.024598199602349095 0 0.0033946470355452193 item=minecraft:saddle count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e3 9.330909955850265 1.0 7.245516207709241 0.0023535302991583742 0 -1.9129752188557398E-4 item=minecraft:white_carpet count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e4 10.353339144643511 1.0 10.141199400690985 0.0182757382364555 0 -0.0015788129992976207 item=minecraft:iron_helmet count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e5 9.801229453693217 1.0 13.119731740096105 0.006452982190914982 0 -6.81396267714493E-4 item=minecraft:elytra count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e6 8.14080699612223 1.0 16.566507755103398 0.002484332719541764 -0.04 8.513334527171957E-5 item=minecraft:shield count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e7 9.545224581642831 1.0 25.041147762264767 0.00936085181200692 0 -0.0012839938533925925 item=minecraft:glass_bottle count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e8 8.410904032127362 1.0 28.483147323241266 0.002830070809593736 -0.04 -2.1572292539779255E-5 item=minecraft:honeycomb count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e9 9.428414396375706 1.0 33.68647349814935 0.003731605572818396 0 -9.403253904918018E-4 item=minecraft:skeleton_skull count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e10 8.157342174472173 1.0 36.486859235542774 0.005477177867570059 0 -0.002835044502790897 item=minecraft:iron_horse_armor count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e11 8.4392270080919 1.0 43.72410844094983 0.004012433028896309 0 4.0157612750830535E-4 item=minecraft:glowstone count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e12 9.455228549867156 1.0 47.13418974702593 0.003762599067554214 0 7.330366253114755E-4 item=minecraft:potion count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e13 8.967798472075728 1.0 49.45649218688283 0.004959571301414749 0 -7.796091496552791E-5 item=minecraft:oak_boat count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e14 8.188822756232252 1.0 52.616864050914984 0.002298807144719672 0 1.3507886228794952E-4 item=minecraft:wolf_armor count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e15 9.672830114632665 1.0 54.90947554628709 0.006222905585428686 0 -0.00105815078769871 item=minecraft:lead count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e16 9.305163299880512 1.0 57.98326693092548 0.0035891441592360027 0 -5.972727672081831E-4 item=minecraft:trident count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e17 8.834110702349996 1.0 64.90298812285451 0.0022127742158369835 -0.04 3.38528569336695E-4 item=minecraft:zombie_head count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e18 9.422416954962785 1.0 67.90187240502118 0.005774194477042274 0 7.20108370201839E-4 item=minecraft:player_head count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e19 9.517248193558052 1.0 70.28975129949278 0.014596727485885431 0 -9.251472324335421E-4 item=minecraft:creeper_head count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e20 9.418451435823581 1.0 72.4935983676101 0.0057670887303210286 0 -0.001803354075108863 item=minecraft:dragon_head count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e21 8.844867758066469 1.0 76.55566701703778 0.001988168453789352 0 4.184534627620678E-5 item=minecraft:piglin_head count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e22 9.408998474238693 1.0 80.19278809629007 0.022361300959526393 0 0.004827563255851836 item=minecraft:turtle_helmet count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e23 8.491041786735808 1.0 82.75543433642576 0.0041052790549867685 0 4.577084701484956E-4 item=minecraft:leather_chestplate count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e24 8.76562760623077 1.0 85.36105863037795 0.004597304743952969 0 -2.4896669187040714E-4 item=minecraft:chainmail_leggings count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e25 9.572943750100492 1.0 88.3209264108453 0.00253546905697023 0 -1.3461106317258525E-4 item=minecraft:golden_boots count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e26 9.41854159847384 1.0 91.58938320735285 0.009006358233592063 0 2.5011862076566014E-4 item=minecraft:diamond_horse_armor count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e27 8.468583529833401 1.0 94.57815995136949 0.009982338863957144 0 3.4392347026243467E-4 item=minecraft:black_carpet count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e28 9.418545338143495 1.0 97.33332726509082 0.003720198291045917 0 -1.9265088989888607E-4 item=minecraft:oak_chest_boat count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e29 8.338684865679946 1.0 100.08856755658651 0.0038322732632486583 0 -7.372388414154288E-4 item=minecraft:bamboo_raft count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e30 8.408850276547204 1.0 103.43167540078757 0.00618096621289163 0 -1.9119088501626353E-4 item=minecraft:jack_o_lantern count=1 age=17 pickup-delay=0 on-ground=true
+
+entity-order 30 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 e14 e15 e16 e17 e18 e19 e20 e21 e22 e23 e24 e25 e26 e27 e28 e29 e30
+entity 30 e1 7.740615362697522 1.0 2.4421634935150087 0.0019720668574594873 -0.08 0.0012060177023134042 item=minecraft:chest count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e2 8.436193692666931 1.0 4.80860341051106 0.014463742820618882 0 0.0019960526576186257 item=minecraft:saddle count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e3 9.330909955850265 1.0 7.245516207709241 0.0023535302991583742 -0.04 -1.9129752188557398E-4 item=minecraft:white_carpet count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e4 10.371614882879967 1.0 10.139620587691686 0.01074613516364017 0 -9.283421369387523E-4 item=minecraft:iron_helmet count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e5 9.807682435884132 1.0 13.119050343828391 0.003794353909808699 0 -4.006610457055893E-4 item=minecraft:elytra count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e6 8.143291328841771 1.0 16.56659288844867 0.0014607877859837044 0 5.005841205351917E-5 item=minecraft:shield count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e7 9.554585433454838 1.0 25.039863768411376 0.005504181418946714 0 -7.549884617145859E-4 item=minecraft:glass_bottle count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e8 8.410904032127362 1.0 28.483147323241266 0.002830070809593736 -0.08 -2.1572292539779255E-5 item=minecraft:honeycomb count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e9 9.432146001948524 1.0 33.68553317275885 0.002194184297458873 0 -5.529113852085582E-4 item=minecraft:skeleton_skull count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e10 8.162819352339744 1.0 36.484024191039985 0.0032205809099847137 0 -0.0016670063352710134 item=minecraft:iron_horse_armor count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e11 8.443239441120795 1.0 43.724510017077336 0.002359310858237398 0 2.3612678671919955E-4 item=minecraft:glowstone count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e12 9.458991148934711 1.0 47.13492278365124 0.0022124084741961115 0 4.310255790259962E-4 item=minecraft:potion count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e13 8.972758043377143 1.0 49.45641422596787 0.00291622821848045 0 -4.584102260938839E-5 item=minecraft:oak_boat count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e14 8.191121563376973 1.0 52.61699912977727 0.0013516987370185936 0 7.94263790122313E-5 item=minecraft:wolf_armor count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e15 9.679053020218094 1.0 54.90841739549939 0.003659068852178832 0 -6.221927257329777E-4 item=minecraft:lead count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e16 9.308752444039747 1.0 57.98266965815827 0.002110416977848995 0 -3.511964224338409E-4 item=minecraft:trident count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e17 8.834110702349996 1.0 64.90298812285451 0.0022127742158369835 -0.08 3.38528569336695E-4 item=minecraft:zombie_head count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e18 9.428191149439828 1.0 67.90259251339138 0.003395226693916317 0 4.2342376425711053E-4 item=minecraft:player_head count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e19 9.531844921043938 1.0 70.28882615226034 0.008582876624773129 0 -5.439866273728504E-4 item=minecraft:creeper_head count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e20 9.424218524553902 1.0 72.491795013535 0.003391048514424078 0 -0.0010603723027923842 item=minecraft:dragon_head count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e21 8.844867758066469 1.0 76.55566701703778 0.001988168453789352 -0.04 4.184534627620678E-5 item=minecraft:piglin_head count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e22 9.431359775198219 1.0 80.19761565954593 0.01314844628637622 0 0.002838607479884111 item=minecraft:turtle_helmet count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e23 8.495147065790794 1.0 82.75589204489592 0.00241390432706837 0 2.6913260751061375E-4 item=minecraft:leather_chestplate count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e24 8.770224910974724 1.0 85.36080966368608 0.002703215461272896 0 -1.4639242954065407E-4 item=minecraft:chainmail_leggings count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e25 9.572943750100492 1.0 88.3209264108453 0.00253546905697023 -0.04 -1.3461106317258525E-4 item=minecraft:golden_boots count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e26 9.427547956707432 1.0 91.58963332597362 0.00529573917387835 0 1.4706976379917386E-4 item=minecraft:diamond_horse_armor count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e27 8.478565868697357 1.0 94.57850387483975 0.005869615842240612 0 2.0222702084975237E-4 item=minecraft:black_carpet count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e28 9.42226553643454 1.0 97.33313461420092 0.002187476815102168 0 -1.1327873465156977E-4 item=minecraft:oak_chest_boat count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e29 8.342517138943196 1.0 100.0878303177451 0.002253376905384127 0 -4.3349648234358853E-4 item=minecraft:bamboo_raft count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e30 8.415031242760096 1.0 103.43148420990255 0.0036344084986472598 0 -1.1242025169426082E-4 item=minecraft:jack_o_lantern count=1 age=18 pickup-delay=0 on-ground=true
+slot 30 5 1 1 0 empty 0
+slot 30 5 1 4 0 empty 0
+slot 30 5 1 7 0 empty 0
+slot 30 5 1 10 0 empty 0
+slot 30 5 1 13 0 empty 0
+slot 30 5 1 16 0 empty 0
+slot 30 5 1 19 0 minecraft:shears 1
+slot 30 5 1 22 0 minecraft:bone_meal 1
+slot 30 5 1 25 0 empty 0
+slot 30 5 1 28 0 empty 0
+slot 30 5 1 31 0 minecraft:carved_pumpkin 1
+slot 30 5 1 34 0 empty 0
+slot 30 5 1 37 0 empty 0
+slot 30 5 1 40 0 minecraft:brush 1
+slot 30 5 1 43 0 empty 0
+slot 30 5 1 46 0 empty 0
+slot 30 5 1 49 0 empty 0
+slot 30 5 1 52 0 empty 0
+slot 30 5 1 55 0 empty 0
+slot 30 5 1 58 0 empty 0
+slot 30 5 1 61 0 minecraft:wither_skeleton_skull 1
+slot 30 5 1 64 0 empty 0
+slot 30 5 1 67 0 empty 0
+slot 30 5 1 70 0 empty 0
+slot 30 5 1 73 0 empty 0
+slot 30 5 1 76 0 empty 0
+slot 30 5 1 79 0 empty 0
+slot 30 5 1 82 0 empty 0
+slot 30 5 1 85 0 empty 0
+slot 30 5 1 88 0 empty 0
+slot 30 5 1 91 0 empty 0
+slot 30 5 1 94 0 empty 0
+slot 30 5 1 97 0 empty 0
+slot 30 5 1 100 0 empty 0
+slot 30 5 1 103 0 empty 0

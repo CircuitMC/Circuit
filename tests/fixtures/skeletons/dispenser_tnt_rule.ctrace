@@ -1,0 +1,94 @@
+circuit-trace 2
+title A dispenser with TNT while tntExplodes is off
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms dispenser tnt
+area 0 0 0 11 3 5
+ticks 40
+changes ordered
+entities observed
+rng observed
+gamerule tntExplodes false
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 5 1 1 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 1 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 insert 5 1 1 0 minecraft:tnt 2
+at 10 use 4 1 1
+at 14 use 4 1 1
+at 20 use 4 1 1
+at 24 use 4 1 1
+at 30 use 4 1 1
+at 34 use 4 1 1

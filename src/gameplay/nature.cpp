@@ -16,11 +16,6 @@ int amount(BlockState s) {
     if (!s.is(BlockType::water)) return 0;
     return s.level() == 0 ? 8 : 8 - s.level(); // sources and falling water: 8
 }
-// Blocks flowing water replaces, dropping their items.
-bool washed_away(BlockType t) {
-    return t == BlockType::redstone_wire || t == BlockType::lever || t == BlockType::repeater || t == BlockType::comparator
-        || t == BlockType::wheat || t == BlockType::redstone_torch || t == BlockType::redstone_wall_torch || t == BlockType::button;
-}
 // Water may flow into the block: it holds water and is no source.
 bool passable(BlockState s) { return holds_water(s) && !is_source(s); }
 // Only cells without water take new flowing water from a side; flowing water
@@ -105,6 +100,11 @@ void spread(RuleContext& ctx, BlockPos pos, BlockState s) {
     if (is_source(s) || !is_hole(ctx, pos)) spread_to_sides(ctx, pos, s);
 }
 } // namespace
+
+bool washed_away(BlockType t) noexcept {
+    return t == BlockType::redstone_wire || t == BlockType::lever || t == BlockType::repeater || t == BlockType::comparator
+        || t == BlockType::wheat || t == BlockType::redstone_torch || t == BlockType::redstone_wall_torch || t == BlockType::button;
+}
 
 bool holds_water(BlockState s) { return s.is_air() || s.is(BlockType::water) || washed_away(s.type()); }
 

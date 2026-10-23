@@ -278,6 +278,22 @@ void tick_hopper(RuleContext& ctx, BlockPos pos) {
     if (moved) self_entity->cooldown = hopper_cooldown;
 }
 
+bool insert_one(RuleContext& ctx, BlockPos pos, const ItemStack& stack) {
+    const auto to = Inventory::open(ctx, pos);
+    if (!to.valid() || stack.empty()) return false;
+    const auto target = to.insert_slot(stack);
+    if (!target) return false;
+    BlockEntity* receiving_hopper = nullptr;
+    if (to.parts.size() == 1 && ctx.block(to.parts[0]).is(BlockType::hopper) && all_empty(*to.entities[0])) receiving_hopper = to.entities[0];
+    auto& slot = to.entities[target->first]->slots[target->second];
+    const auto before = slot;
+    add_one(slot, stack);
+    ctx.record(TraceKind::inventory_changed, to.parts[target->first], target->second, pack_stack(before), pack_stack(slot));
+    if (receiving_hopper) receiving_hopper->cooldown = hopper_cooldown;
+    to.changed(ctx);
+    return true;
+}
+
 bool hopper_takes_item(RuleContext& ctx, BlockPos pos, EntityId item) {
     const auto s = ctx.block(pos);
     if (!s.is(BlockType::hopper) || !s.flag()) return false;

@@ -81,6 +81,14 @@ void prime_by_fire(RuleContext& ctx, BlockPos pos) {
     if (tnt_explodes(ctx)) prime(ctx, pos);
 }
 
+bool prime_dispensed(RuleContext& ctx, BlockPos pos) {
+    if (!tnt_explodes(ctx)) return false;
+    auto e = primed_at(ctx, pos);
+    e.fuse = redstone_fuse;
+    record_spawn(ctx, ctx.spawn_entity(e), e);
+    return true;
+}
+
 void prime_by_explosion(RuleContext& ctx, BlockPos pos) {
     if (!tnt_explodes(ctx)) return;
     auto e = primed_at(ctx, pos);

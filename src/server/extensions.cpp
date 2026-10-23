@@ -112,6 +112,10 @@ struct Extensions::Impl {
                 const auto& mapping = impl_.game.content_mapping();
                 plugin::BlockEntityInfo info;
                 info.kind = protocol_name((*be)->kind);
+                if ((*be)->kind == gameplay::BlockType::dispenser) {
+                    const auto s = impl_.game.simulation().view().block(contracts::DimensionId::overworld, {p.x, p.y, p.z});
+                    if (s && s->variant() == 1) info.kind = "minecraft:dropper";
+                }
                 for (const auto& s : (*be)->slots) info.slots.push_back(stack_of(mapping, s));
                 info.signal = (*be)->signal;
                 return info;
@@ -225,6 +229,7 @@ struct Extensions::Impl {
             case gameplay::BlockType::comparator: return "minecraft:comparator";
             case gameplay::BlockType::daylight_detector: return "minecraft:daylight_detector";
             case gameplay::BlockType::moving_piston: return "minecraft:piston";
+            case gameplay::BlockType::dispenser: return "minecraft:dispenser";
             default: return "unknown";
             }
         }

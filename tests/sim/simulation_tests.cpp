@@ -920,6 +920,32 @@ int main() {
         require(at(70, {15, 0, 5}).is(BlockType::piston_head), "the piston broke the living fan");
     });
 
+    suite.run("dispensers and droppers work across chunk edges", [&] {
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("dispensers"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the dispenser scenario");
+        const auto& ref = references[index];
+        const auto& end = ref.dumps.rbegin()->second;
+        const auto count = [&](BlockPos p) {
+            unsigned n = 0;
+            if (const auto* be = block_entity_at(end, p))
+                for (const auto& stack : be->slots) n += stack.count;
+            return n;
+        };
+        // Three pulses (rising at 10, 30 and 50) fire each three times.
+        require(count({16, 0, 1}) == 3 && count({15, 0, 0}) == 0, "the dropper's stone reached the chest through the hopper");
+        require(count({15, 0, 3}) == 1, "three of four items ejected");
+        std::size_t carts = 0, items = 0;
+        for (const auto& e : end.overworld().entities) {
+            carts += e.kind == circuit::gameplay::EntityKind::minecart;
+            items += e.kind == circuit::gameplay::EntityKind::item ? e.stack.count : 0;
+        }
+        require(carts == 1 && items == 3, std::format("{} minecarts, {} items", carts, items));
+        // Poured, taken back and poured again.
+        require(state_at(end, {16, 0, 6}) == blocks::water_source(), "the water is back");
+        // One item of nine slots left: the comparator gives 1 to the dust beside it.
+        require(state_at(end, {13, 0, 3}).level() == 1, std::format("dust at {}", state_at(end, {13, 0, 3}).level()));
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");

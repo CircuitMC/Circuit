@@ -728,6 +728,10 @@ private:
             out = {BlockType::hopper, 0, std::vector<contracts::ItemStack>(5), 0};
             read_items(be, out, "hopper");
             out.cooldown = static_cast<std::uint8_t>(std::clamp<std::int64_t>(integer(be, "TransferCooldown").value_or(0), 0, 8));
+        } else if ((id == "minecraft:dispenser" || id == "minecraft:dropper") && expect(BlockType::dispenser)
+                   && (block->variant() == 1) == (id == "minecraft:dropper")) {
+            out = {BlockType::dispenser, 0, std::vector<contracts::ItemStack>(9), 0};
+            read_items(be, out, id == "minecraft:dropper" ? "dropper" : "dispenser");
         } else if (id == "minecraft:comparator" && expect(BlockType::comparator)) {
             out = {BlockType::comparator, 0, {}, 0};
             out.signal = static_cast<std::uint8_t>(std::clamp<std::int64_t>(integer(be, "OutputSignal").value_or(0), 0, 15));
@@ -1169,6 +1173,10 @@ private:
             t.set("id", Tag::string("minecraft:hopper"));
             t.set("Items", items(be.slots));
             t.set("TransferCooldown", Tag::int_(be.cooldown));
+            break;
+        case BlockType::dispenser:
+            t.set("id", Tag::string(at(pos).variant() == 1 ? "minecraft:dropper" : "minecraft:dispenser"));
+            t.set("Items", items(be.slots));
             break;
         case BlockType::comparator:
             t.set("id", Tag::string("minecraft:comparator"));

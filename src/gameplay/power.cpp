@@ -22,6 +22,7 @@ namespace circuit::gameplay::detail {
 bool is_conductor(BlockState s) noexcept {
     switch (s.type()) {
     case BlockType::stone: case BlockType::obsidian: case BlockType::redstone_lamp: case BlockType::target: case BlockType::note_block:
+    case BlockType::dispenser:
         return true;
     case BlockType::other: return other_opaque(s);
     default: return false;
@@ -38,7 +39,7 @@ bool face_sturdy(BlockState s, Direction face) noexcept {
     }
     case BlockType::stone: case BlockType::glass: case BlockType::obsidian: case BlockType::redstone_block:
     case BlockType::slime_block: case BlockType::redstone_lamp: case BlockType::observer: case BlockType::target:
-    case BlockType::honey_block: case BlockType::note_block:
+    case BlockType::honey_block: case BlockType::note_block: case BlockType::dispenser:
         return true;
     case BlockType::piston: case BlockType::sticky_piston:
         // An extended base keeps only its back face whole.
@@ -95,6 +96,7 @@ bool can_survive(RuleContext& ctx, BlockPos pos, BlockState s) {
     // A door's lower half needs a sturdy top below it; the upper one its lower half.
     case BlockType::door: return upper_half(s) || face_sturdy(ctx.block(pos.relative(Direction::down)), Direction::up);
     case BlockType::rail: return rail_supported(ctx, pos);
+    case BlockType::coral_fan: case BlockType::coral_wall_fan: return coral_supported(ctx, pos, s);
     default: return true;
     }
 }

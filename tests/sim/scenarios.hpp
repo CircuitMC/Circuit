@@ -1115,13 +1115,55 @@ inline Scenario coral_scenario() {
     }, 10};
 }
 
+// Dispensers and droppers at the x=16 chunk edge, fired by levers: a dropper
+// into a hopper over the edge that feeds a chest, a dispenser ejecting stone
+// over the edge read by a comparator, one pouring water and taking it back
+// over the edge, and one setting a minecart on a rail over the edge.
+inline Scenario dispenser_scenario() {
+    using blocks::RailKind;
+    using blocks::RailShape;
+    return {"dispensers", 123, 120, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        if (t == 2) {
+            for (int x = 8; x <= 24; ++x)
+                for (int z = -2; z <= 10; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            c.push_back(place({15, 0, 0}, blocks::dispenser(Direction::east, true)));
+            c.push_back(place({16, 0, 0}, blocks::hopper(Direction::south)));
+            c.push_back(place({16, 0, 1}, blocks::chest()));
+            c.push_back(place({15, 0, 3}, blocks::dispenser(Direction::east)));
+            c.push_back(place({14, 0, 3}, blocks::comparator(Direction::west)));
+            c.push_back(place({13, 0, 3}, blocks::wire()));
+            c.push_back(place({15, 0, 6}, blocks::dispenser(Direction::east)));
+            for (const BlockPos p : {BlockPos{17, 0, 6}, BlockPos{16, 0, 5}, BlockPos{16, 0, 7}}) c.push_back(place(p, blocks::stone()));
+            c.push_back(place({17, 0, 9}, blocks::dispenser(Direction::west)));
+            c.push_back(place({16, 0, 9}, blocks::rail(RailKind::rail, RailShape::east_west)));
+            c.push_back(place({15, 0, 9}, blocks::stone()));
+            for (const int z : {0, 6}) c.push_back(place({14, 0, z}, blocks::lever(false)));
+            c.push_back(place({15, 0, 4}, blocks::lever(false)));
+            c.push_back(place({18, 0, 9}, blocks::lever(false)));
+        }
+        if (t == 3) {
+            c.push_back(insert({15, 0, 0}, 0, items::stone, 3));
+            c.push_back(insert({15, 0, 3}, 0, items::stone, 2));
+            c.push_back(insert({15, 0, 3}, 4, items::glass, 2));
+            c.push_back(insert({15, 0, 6}, 0, items::water_bucket, 1));
+            c.push_back(insert({17, 0, 9}, 0, items::minecart, 1));
+        }
+        if (t % 10 == 0 && t >= 10 && t <= 60)
+            for (const BlockPos p : {BlockPos{14, 0, 0}, BlockPos{15, 0, 4}, BlockPos{14, 0, 6}, BlockPos{18, 0, 9}}) c.push_back(UseBlock{p});
+        return c;
+    }, 10};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
-            plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario(), rail_scenario(), minecart_rail_scenario(), minecart_meeting_scenario(), detector_rail_scenario(), coral_scenario()};
+            plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario(), rail_scenario(), minecart_rail_scenario(), minecart_meeting_scenario(), detector_rail_scenario(), coral_scenario(),
+            dispenser_scenario()};
 }
 
 } // namespace circuit::test

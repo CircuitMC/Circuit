@@ -53,6 +53,8 @@ std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Directio
     case items::observer: return blocks::observer(contracts::opposite(look));
     case items::piston: return blocks::piston(contracts::opposite(look));
     case items::sticky_piston: return blocks::piston(contracts::opposite(look), true);
+    case items::dispenser: return blocks::dispenser(contracts::opposite(look));
+    case items::dropper: return blocks::dispenser(contracts::opposite(look), true);
     case items::hopper:
         return blocks::hopper(face == Direction::up || face == Direction::down ? Direction::down : contracts::opposite(face));
     case items::chest: return blocks::chest(contracts::opposite(horizontal));

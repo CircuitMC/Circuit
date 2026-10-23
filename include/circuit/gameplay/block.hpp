@@ -51,6 +51,7 @@ enum class BlockType : std::uint8_t {
     rail,                // level: RailShape; flag: powered (not plain rails); extra: waterlogged (stored); variant: RailKind
     coral_fan,           // flag: waterlogged; variant: CoralKind, + 5 when dead
     coral_wall_fan,      // facing: away from the block it hangs on (horizontal); flag: waterlogged; variant: as coral_fan
+    dispenser,           // facing: front (any side); flag: triggered; variant: 0 dispenser, 1 dropper. Block entity: nine slots
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -244,6 +245,10 @@ constexpr BlockState coral_wall_fan(CoralKind kind, Direction facing, bool dead 
         .with_variant(static_cast<std::uint8_t>(static_cast<std::uint8_t>(kind) + (dead ? coral_kinds : 0)))
         .with_facing(facing).with_flag(waterlogged);
 }
+// A dispenser, or with `dropper` a dropper, facing `front`.
+constexpr BlockState dispenser(Direction front, bool dropper = false, bool triggered = false) {
+    return BlockState::of(BlockType::dispenser).with_facing(front).with_variant(dropper ? 1 : 0).with_flag(triggered);
+}
 // A note block; `instrument` is a registry::Instrument.
 constexpr BlockState note_block(std::uint8_t instrument = 0, std::uint8_t note = 0, bool powered = false) {
     return BlockState::of(BlockType::note_block).with_variant(instrument).with_level(static_cast<std::uint8_t>(note & 15))
@@ -295,7 +300,7 @@ inline constexpr std::uint8_t note_instruments = 23;
 constexpr bool has_variant(BlockType t) noexcept {
     return t == BlockType::button || t == BlockType::pressure_plate || t == BlockType::weighted_plate || t == BlockType::door
         || t == BlockType::trapdoor || t == BlockType::fence_gate || t == BlockType::rail || t == BlockType::coral_fan
-        || t == BlockType::coral_wall_fan;
+        || t == BlockType::coral_wall_fan || t == BlockType::dispenser;
 }
 constexpr bool is_coral_fan(BlockType t) noexcept { return t == BlockType::coral_fan || t == BlockType::coral_wall_fan; }
 constexpr bool dead_coral(BlockState s) noexcept { return s.variant() >= blocks::coral_kinds; }
@@ -306,6 +311,7 @@ constexpr std::uint8_t variant_count(BlockType t) noexcept {
     case BlockType::fence_gate: return blocks::fence_gate_kinds;
     case BlockType::rail: return blocks::rail_kinds;
     case BlockType::coral_fan: case BlockType::coral_wall_fan: return 2 * blocks::coral_kinds;
+    case BlockType::dispenser: return 2;
     default: return has_variant(t) ? blocks::button_kinds : 1;
     }
 }
@@ -336,7 +342,7 @@ constexpr bool repeater_locked(BlockState s) noexcept { return s.is(BlockType::r
 // in internal order.
 template <class F>
 void for_each_block_state(F&& f);
-constexpr bool is_container(BlockType t) noexcept { return t == BlockType::hopper || t == BlockType::chest; }
+constexpr bool is_container(BlockType t) noexcept { return t == BlockType::hopper || t == BlockType::chest || t == BlockType::dispenser; }
 // Block entities hold container slots, hopper cooldowns, comparator output
 // signals and moving blocks; a daylight detector's ticks it.
 constexpr bool has_block_entity(BlockType t) noexcept {
@@ -351,7 +357,7 @@ constexpr std::optional<Direction> chest_partner(BlockState s) noexcept {
     return std::nullopt;
 }
 constexpr std::uint8_t container_size(BlockType t) noexcept {
-    return t == BlockType::hopper ? 5 : t == BlockType::chest ? 27 : 0;
+    return t == BlockType::hopper ? 5 : t == BlockType::chest ? 27 : t == BlockType::dispenser ? 9 : 0;
 }
 // Blocks whose random tick can change something (see run_random_ticks).
 constexpr bool reacts_to_random_ticks(BlockType t) noexcept { return t == BlockType::wheat; }
@@ -363,7 +369,7 @@ inline bool is_solid(BlockState s) noexcept {
     case BlockType::redstone_lamp: case BlockType::observer: case BlockType::piston: case BlockType::sticky_piston:
     case BlockType::piston_head: case BlockType::slime_block: case BlockType::hopper: case BlockType::chest:
     case BlockType::moving_piston: case BlockType::target: case BlockType::honey_block: case BlockType::daylight_detector:
-    case BlockType::note_block:
+    case BlockType::note_block: case BlockType::dispenser:
         return true;
     case BlockType::other: return other_has_collision(s);
     default:

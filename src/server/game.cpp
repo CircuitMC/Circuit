@@ -823,11 +823,14 @@ struct Game::Impl final : GameServices {
         const auto slots = container_slot_count(pos);
         // Menu types of the protocol's menu registry (minecraft.wiki, Java
         // Edition protocol/Inventory, and observed from the target version):
-        // generic_9x3 2, generic_9x6 5, hopper 16.
-        const std::int32_t type = slots == 54 ? 5 : slots == 5 ? 16 : 2;
+        // generic_9x3 2, generic_9x6 5, generic_3x3 6, hopper 16.
+        const std::int32_t type = slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
         // A container's custom name is its title (for a double chest, the
         // first named half's).
-        auto title = protocol::nbt::text(slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper" : "Chest");
+        const auto block = at(pos);
+        auto title = protocol::nbt::text(slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper"
+                                         : block.is(BlockType::dispenser) ? (block.variant() == 1 ? "Dropper" : "Dispenser")
+                                                                          : "Chest");
         const auto view = engine->view();
         const auto name_type = wire.components().type_id("custom_name");
         for (const auto part : container_parts_of(pos)) {

@@ -1262,8 +1262,21 @@
           "id": "dispensers_droppers",
           "name": "Dispensers and droppers with dispense behaviors",
           "milestone": "C4",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/dispensers",
+            "trace/dispensers_more",
+            "trace/dispenser_cases",
+            "trace/dispenser_items",
+            "trace/dispenser_tnt_rule"
+          ],
+          "deviations": [
+            "dispensed projectiles, fire, bone meal, shears, boats, bottles, honeycomb, glowstone and water bottles at their targets, golem and wither heads, other fluids, other minecarts, spawn eggs, armor stands and shulker boxes are not modeled: those items stay",
+            "equipping players is not modeled",
+            "water does not flow out of the blocks it waterlogs"
+          ],
+          "note": "Fired 4 ticks after power reaches them or the block above them, from a random filled slot (level-random draws); droppers fill the container in front or eject; dispensers eject items (position, motion and draws exact), prime TNT, pour and fill water buckets, set minecarts on rails and eject equipment"
         },
         {
           "id": "crafter",
@@ -1328,11 +1341,12 @@
             "trace/tnt_explodes_disabled",
             "trace/tnt_chain_edge",
             "trace/tnt_power",
-            "trace/arrow_tnt"
+            "trace/arrow_tnt",
+            "trace/dispensers"
           ],
-          "note": "Redstone: a signal from any neighbor when TNT is placed, moved in by a piston or updated (blocks, levers, diodes, observers, dust, strongly powered blocks); explosions prime TNT with a fuse of 10 to 29 ticks; a burning arrow primes the TNT it hits",
+          "note": "Redstone: a signal from any neighbor when TNT is placed, moved in by a piston or updated (blocks, levers, diodes, observers, dust, strongly powered blocks); explosions prime TNT with a fuse of 10 to 29 ticks; a burning arrow primes the TNT it hits; dispensers prime TNT items",
           "deviations": [
-            "fire, flint and steel, fire charges and dispensers do not ignite TNT yet; of the burning projectiles only arrows are modeled"
+            "fire, flint and steel (also in dispensers) and fire charges do not ignite TNT yet; of the burning projectiles only arrows are modeled"
           ]
         },
         {

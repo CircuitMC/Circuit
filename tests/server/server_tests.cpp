@@ -1310,6 +1310,8 @@ int main() {
         };
         f.hold(1, "minecraft:chest");
         f.game->submit(1, GameFixture::click({2, -61, 1}, 1));
+        f.hold(1, "minecraft:dropper");
+        f.game->submit(1, GameFixture::click({2, -61, 3}, 1));
         f.game->submit(1, I{server::intent::CreativeSlot{37, 64, content().item_id("minecraft:redstone").value()}});
         f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
         f.game->tick();
@@ -1352,15 +1354,23 @@ int main() {
         bool returned = false;
         for (const auto& st : inventory().slots) returned |= st == contracts::ItemStack{gameplay::items::redstone, 32, 0};
         require(returned, "into the inventory");
-        // A window whose container goes out of reach closes, and the client is told.
-        f.game->submit(1, GameFixture::click({2, -60, 1}, 3));
+        // A dropper opens a generic_3x3 window: 9 slots, then the 36 inventory slots.
+        require(f.at({2, -60, 3}).starts_with("minecraft:dropper"), "dropper placed");
+        f.game->submit(1, GameFixture::click({2, -60, 3}, 3));
         f.game->tick();
         packets = window_packets();
-        require(has(packets, "open", 2, 2), "the next window has the next id");
+        require(has(packets, "open", 2, 6) && has(packets, "content", 2, 45), "a generic_3x3 window opened");
+        f.game->submit(1, I{server::intent::ContainerClose{2}});
+        f.game->tick();
+        // A window whose container goes out of reach closes, and the client is told.
+        f.game->submit(1, GameFixture::click({2, -60, 1}, 4));
+        f.game->tick();
+        packets = window_packets();
+        require(has(packets, "open", 3, 2), "the next window has the next id");
         f.game->submit(1, I{server::intent::Command{"tp 20.5 -60 20.5"}});
         f.game->tick();
         f.game->tick();
-        require(has(window_packets(), "close", 2, 0), "closed out of reach");
+        require(has(window_packets(), "close", 3, 0), "closed out of reach");
     });
 
     suite.run("survival movement is replayed against block shapes", [] {
@@ -2296,9 +2306,10 @@ int main() {
         // rules v11 also the redstone torch's, the 14 buttons', the 16
         // pressure plates', the target block's, the 54 doors', trapdoors'
         // and fence gates', the honey block's, the daylight detector's, the
-        // note block's, the four rails' and the ten coral fans'.
-        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 904, 810, 1407, 984},
-                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 896, 802, 1370, 948}}) {
+        // note block's, the four rails', the ten coral fans' and the
+        // dispenser's and dropper's.
+        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 902, 810, 1407, 984},
+                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 894, 802, 1370, 948}}) {
             const char* jar = std::getenv(e.variable);
             if (!jar || !*jar) continue;
             const auto& bundle = **contracts::BundleRegistry::find(e.bundle);
