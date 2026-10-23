@@ -127,7 +127,7 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 35 |
+| black_box | passing | 36 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
 | official_trace | passing | 135 |
@@ -248,7 +248,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Placement orientation and shapes: stairs, slabs, walls, fences, panes, doors, beds | C5 | partial, compared | partial, compared | `client/building`; only full cubes without properties, soul sand and mud, pillars, stairs, slabs, fences, panes, bars and walls are placed from their items; other orientations (facing blocks, doors, beds) and blocks that need support are not; spawners, beacons and sponges are not placed; Pillars along the clicked face's axis, stairs facing the player and in the clicked half, slabs in the clicked half and doubled, connectors and stairs with their neighbors' shapes, waterlogged in water sources, as both official servers do |
+| Placement orientation and shapes: stairs, slabs, walls, fences, panes, doors, beds | C5 | partial, compared | partial, compared | `client/building`, `placement/official_items`; only full cubes without properties, soul sand and mud, pillars, stairs, slabs, fences, panes, bars, walls, carved pumpkins, jack o'lanterns, glazed terracotta, looms, stonecutters, end portal frames, end rods and lightning rods are placed from their items besides the blocks with rules of their own; blocks with block entities, blocks that need support and two-block blocks other than doors are not; spawners, beacons, sponges and test instance blocks are not placed; Pillars along the clicked face's axis, stairs facing the player and in the clicked half, slabs in the clicked half and doubled, facing blocks toward the player or out of the clicked face, connectors and stairs with their neighbors' shapes, waterlogged in water sources, as both official servers do; every placed state checked against a report of every block item |
 | Fences, panes, bars and walls joining their neighbors | C5 | partial, compared | partial, compared | `collision/connection`, `trace/connections`, `trace/connections_moved`, `trace/tnt_duper_wall`; water does not flow out of waterlogged ones; On shape updates and when a piston sets them down, as both official servers do; every state beside and above them compared |
 | Stairs taking corner shapes from the stairs beside them | C5 | partial, compared | partial, compared | `collision/stairs`, `trace/stairs_shapes`; water does not flow out of waterlogged ones; On shape updates from the sides and when a piston sets them down, as both official servers do; every combination of stairs around them compared |
 | Two-part blocks: doors, beds, tall plants | C5 | partial, compared | partial, compared | `trace/door_basics`, `trace/door_more`; beds and tall plants are not modeled; Doors: the halves follow each other, and a half without the other breaks (the lower one with the drop) |
@@ -399,7 +399,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Placing blocks from items | C5 | partial, none | partial, compared | `client/building`, `client/chests`, `client/redstone`; 17 item cases, and building blocks on both versions (client/building) |
+| Placing blocks from items | C5 | partial, none | partial, compared | `client/building`, `client/chests`, `client/redstone`, `placement/official_items`; 17 item cases, building blocks on both versions (client/building), and every placed state of every block item in fifteen contexts (placement/official_items) |
 | Tools, durability and harvest rules | C5 | partial, documented | partial, documented | Pickaxes and axes |
 | Eating and drinking | C6 | missing, none | missing, none |  |
 | Bows, crossbows and tridents | C6 | missing, none | missing, none |  |

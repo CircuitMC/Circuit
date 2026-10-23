@@ -125,15 +125,15 @@ std::uint16_t opening_item(BlockState s) {
     return table[t][s.variant() % blocks::door_kinds];
 }
 
-std::optional<BlockState> placed_opening_by(std::uint16_t item, Direction face, Direction horizontal) {
+std::optional<BlockState> placed_opening_by(std::uint16_t item, Direction face, Direction horizontal, bool upper) {
     for (std::uint8_t k = 0; k < blocks::door_kinds; ++k) {
         const auto kind = static_cast<blocks::DoorKind>(k);
         if (item == opening_item(blocks::door(kind, Direction::north, false))) return blocks::door(kind, horizontal, false);
-        // On a side, the trapdoor hangs from the clicked block (bottom half:
-        // the official choice by the hit height is not modeled); on a top or
-        // bottom it faces the player and lies on that side.
+        // On a side, the trapdoor hangs from the clicked block, in the half
+        // the click hit; on a top or bottom it faces the player and lies on
+        // that side.
         if (item == opening_item(blocks::trapdoor(kind, Direction::north))) {
-            if (contracts::is_horizontal(face)) return blocks::trapdoor(kind, face);
+            if (contracts::is_horizontal(face)) return blocks::trapdoor(kind, face, upper);
             return blocks::trapdoor(kind, contracts::opposite(horizontal), face == Direction::down);
         }
         if (k < blocks::fence_gate_kinds && item == opening_item(blocks::fence_gate(kind, Direction::north)))

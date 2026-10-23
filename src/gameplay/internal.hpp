@@ -79,7 +79,7 @@ bool has_neighbor_signal(RuleContext& ctx, BlockPos pos);
 // ---- players (placement.cpp) ----
 // The block a player places with `item`, oriented by the player's facing and
 // the clicked face; nullopt for items that place no block.
-std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Direction horizontal, Direction look);
+std::optional<BlockState> placed_by(std::uint16_t item, const contracts::PlayerUse& use);
 // The item of a button's or a pressure plate's kind.
 std::uint16_t button_item(BlockState s);
 std::uint16_t plate_item(BlockState s);
@@ -180,7 +180,7 @@ void opening_shape_update(RuleContext& ctx, BlockPos pos, Direction d);
 BlockState placed_opening(RuleContext& ctx, BlockPos pos, BlockState s);
 // The item of a door, trapdoor or fence gate, and the one an item places.
 std::uint16_t opening_item(BlockState s);
-std::optional<BlockState> placed_opening_by(std::uint16_t item, Direction face, Direction horizontal);
+std::optional<BlockState> placed_opening_by(std::uint16_t item, Direction face, Direction horizontal, bool upper);
 // Registry data of the state a modeled block of several kinds stands for.
 std::optional<registry::BlockInfo> modeled_info(BlockState s);
 

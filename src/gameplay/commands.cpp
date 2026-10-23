@@ -202,7 +202,7 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
             return [&ctx, c] { ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo); };
         }
     }
-    auto state = held.empty() ? std::nullopt : detail::placed_by(held.item, c.face, c.horizontal, c.look);
+    auto state = held.empty() ? std::nullopt : detail::placed_by(held.item, c);
     if (!state && held.item == items::tnt) state = detail::tnt_block(ctx);
     if (!state && !held.empty())
         if (const auto building = detail::building_block(ctx, held.item)) return plan_building(ctx, c, held, clicked, *building);

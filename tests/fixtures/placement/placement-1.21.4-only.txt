@@ -1,0 +1,14 @@
+# The state every block item places (none: nothing) in fifteen contexts, as both official servers decide it (harness
+# 0.15.0 placement report: the item's own placement and survival check, a grass block below the target). Contexts, in
+# order (clicked face, click height in the block, player yaw: 0 south, 90 west; pitch: 60 down):
+#   up 1.0 0.0 0.0; up 1.0 90.0 0.0; up 1.0 180.0 0.0; up 1.0 270.0 0.0; up 1.0 180.0 60.0
+#   up 1.0 180.0 -60.0; down 0.0 180.0 0.0; north 0.25 0.0 0.0; north 0.75 0.0 0.0; east 0.25 90.0 0.0
+#   east 0.75 90.0 0.0; south 0.25 180.0 0.0; south 0.75 180.0 0.0; west 0.25 270.0 0.0; west 0.75 270.0 0.0
+# The top face is a grass block's under the target, the other faces a stone's. '"' repeats the state before.
+# Java Edition 1.21.4: the items whose states placement-1.21.8.txt does not give, then the items it does not have;
+# the others as there.
+minecraft:weeping_vines none " " " " " minecraft:weeping_vines[age=22] none " " " " " " "
+minecraft:twisting_vines minecraft:twisting_vines[age=15] minecraft:twisting_vines[age=14] minecraft:twisting_vines[age=19] minecraft:twisting_vines[age=4] minecraft:twisting_vines[age=17] minecraft:twisting_vines[age=23] minecraft:twisting_vines[age=4] " minecraft:twisting_vines[age=22] minecraft:twisting_vines[age=8] minecraft:twisting_vines[age=19] minecraft:twisting_vines[age=9] minecraft:twisting_vines[age=0] minecraft:twisting_vines[age=6] minecraft:twisting_vines[age=17]
+minecraft:creaking_heart minecraft:creaking_heart[active=false,axis=y,natural=false] " " " " " " minecraft:creaking_heart[active=false,axis=z,natural=false] " minecraft:creaking_heart[active=false,axis=x,natural=false] " minecraft:creaking_heart[active=false,axis=z,natural=false] " minecraft:creaking_heart[active=false,axis=x,natural=false] "
+minecraft:glow_berries none " " " " " minecraft:cave_vines[age=6,berries=false] none " " " " " " "
+absent minecraft:bush minecraft:cactus_flower minecraft:dried_ghast minecraft:firefly_bush minecraft:leaf_litter minecraft:short_dry_grass minecraft:tall_dry_grass minecraft:test_block minecraft:test_instance_block minecraft:wildflowers

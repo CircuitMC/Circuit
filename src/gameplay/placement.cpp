@@ -25,8 +25,9 @@ std::uint16_t plate_item(BlockState s) {
     return plate_items[s.variant() % blocks::button_kinds];
 }
 
-std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Direction horizontal, Direction look) {
-    if (const auto opening = placed_opening_by(item, face, horizontal)) return opening;
+std::optional<BlockState> placed_by(std::uint16_t item, const contracts::PlayerUse& use) {
+    const auto face = use.face, horizontal = use.horizontal, look = use.look;
+    if (const auto opening = placed_opening_by(item, face, horizontal, use.cursor_y > 0.5f)) return opening;
     // Mounted on the clicked face as levers are.
     if (const auto it = std::ranges::find(button_items, item); it != button_items.end()) {
         const auto kind = static_cast<blocks::ButtonKind>(it - button_items.begin());
@@ -53,7 +54,8 @@ std::optional<BlockState> placed_by(std::uint16_t item, Direction face, Directio
         return blocks::lever(false, face, blocks::LeverFace::wall);
     case items::repeater: return blocks::repeater(horizontal);
     case items::comparator: return blocks::comparator(horizontal);
-    case items::observer: return blocks::observer(contracts::opposite(look));
+    // Its face looks the player's way (both official servers; tests/fixtures/placement).
+    case items::observer: return blocks::observer(look);
     case items::piston: return blocks::piston(contracts::opposite(look));
     case items::sticky_piston: return blocks::piston(contracts::opposite(look), true);
     case items::dispenser: return blocks::dispenser(contracts::opposite(look));
@@ -161,9 +163,14 @@ bool player_has_room(const PlayerInventory& inv, ItemStack stack, std::uint8_t s
 // ---- building blocks without rules of their own ----
 //
 // A block item places the block of its name, as both official servers do
-// (compared through a protocol client): a full cube without properties (not
-// spawners, beacons or sponges), soul sand and mud as they are; a pillar
-// along the clicked face's axis; stairs facing the player's way; stairs and a
+// (compared through a protocol client and with a report of every block item
+// in fifteen contexts, tests/fixtures/placement): a full cube without
+// properties (not spawners, beacons, sponges or test instance blocks), soul
+// sand and mud as they are; a pillar along the clicked face's axis; carved
+// pumpkins, jack o'lanterns, glazed terracotta, looms, stonecutters and end
+// portal frames facing the player; end rods and lightning rods pointing out of
+// the clicked face (an end rod set on one pointing at it points back); stairs
+// facing the player's way; stairs and a
 // single slab in the top half when the click is on a bottom face or in the
 // upper half of a side, the bottom half otherwise; fences, panes, bars, walls
 // and stairs with the shapes their neighbors give them; waterlogged in a
@@ -172,12 +179,14 @@ bool player_has_room(const PlayerInventory& inv, ItemStack stack, std::uint8_t s
 // into a slab of its kind, doubles it.
 namespace circuit::gameplay::detail {
 namespace {
-enum class Building { none, plain, pillar, stairs, slab, connector };
+enum class Building { none, plain, pillar, stairs, slab, connector, toward_player, clicked_face };
 
 Building building_kind(std::uint32_t block) {
     const auto info = registry::block(block);
     const std::string_view name = info.name;
-    if (name == "spawner" || name == "beacon" || name == "sponge" || name == "wet_sponge") return Building::none;
+    // Not spawners and beacons (their block entities), sponges (they soak up
+    // water), or test instance blocks (operators' blocks).
+    if (name == "spawner" || name == "beacon" || name == "sponge" || name == "wet_sponge" || name == "test_instance_block") return Building::none;
     std::vector<std::string> keys;
     for (const auto& [k, _] : registry::properties(info.default_state)) keys.push_back(k);
     const auto only = [&](std::initializer_list<std::string_view> allowed) {
@@ -185,6 +194,11 @@ Building building_kind(std::uint32_t block) {
     };
     const auto has = [&](std::string_view k) { return std::ranges::find(keys, k) != keys.end(); };
     if (name.ends_with("_stairs") && has("shape")) return Building::stairs;
+    // Blocks without block entities that face the player, or the clicked face.
+    if (name == "carved_pumpkin" || name == "jack_o_lantern" || name == "loom" || name == "stonecutter" || name == "end_portal_frame"
+        || name.ends_with("_glazed_terracotta"))
+        return Building::toward_player;
+    if (name == "end_rod" || name == "lightning_rod") return Building::clicked_face;
     if (name.ends_with("_slab") && has("type") && only({"type", "waterlogged"})) return Building::slab;
     if (registry::connector(info.default_state) != registry::Connector::none) return Building::connector;
     if (has("axis") && only({"axis", "waterlogged"})) return Building::pillar;
@@ -228,6 +242,8 @@ std::string_view axis_of(Direction d) {
 
 std::string_view name_of(Direction d) {
     switch (d) {
+    case Direction::down: return "down";
+    case Direction::up: return "up";
     case Direction::north: return "north";
     case Direction::south: return "south";
     case Direction::west: return "west";
@@ -266,6 +282,14 @@ BlockState placed_building(RuleContext& ctx, std::uint32_t block, const contract
         if (single_slab_of(block, here)) return with(s, {{"type", "double"}, {"waterlogged", "false"}});
         return with(s, {{"type", top_half(c) ? "top" : "bottom"}, {"waterlogged", water}});
     case Building::connector: return joined_state(ctx, target, with(s, {{"waterlogged", water}}));
+    case Building::toward_player: return with(s, {{"facing", std::string(name_of(contracts::opposite(c.horizontal)))}});
+    case Building::clicked_face: {
+        // An end rod set on an end rod pointing at it points back.
+        const auto behind = ctx.block(target.relative(contracts::opposite(c.face)));
+        const bool back = registry::block(block).name == "end_rod" && behind.is(BlockType::other)
+                       && registry::block_of(behind.registry_state()) == block && value_of(behind, "facing") == name_of(c.face);
+        return with(s, {{"facing", std::string(name_of(back ? contracts::opposite(c.face) : c.face))}, {"waterlogged", water}});
+    }
     default: return s;
     }
 }

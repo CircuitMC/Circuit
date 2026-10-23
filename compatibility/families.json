@@ -753,13 +753,14 @@
           "impl": "partial",
           "evidence": "compared",
           "cases": [
-            "client/building"
+            "client/building",
+            "placement/official_items"
           ],
           "deviations": [
-            "only full cubes without properties, soul sand and mud, pillars, stairs, slabs, fences, panes, bars and walls are placed from their items; other orientations (facing blocks, doors, beds) and blocks that need support are not",
-            "spawners, beacons and sponges are not placed"
+            "only full cubes without properties, soul sand and mud, pillars, stairs, slabs, fences, panes, bars, walls, carved pumpkins, jack o'lanterns, glazed terracotta, looms, stonecutters, end portal frames, end rods and lightning rods are placed from their items besides the blocks with rules of their own; blocks with block entities, blocks that need support and two-block blocks other than doors are not",
+            "spawners, beacons, sponges and test instance blocks are not placed"
           ],
-          "note": "Pillars along the clicked face's axis, stairs facing the player and in the clicked half, slabs in the clicked half and doubled, connectors and stairs with their neighbors' shapes, waterlogged in water sources, as both official servers do"
+          "note": "Pillars along the clicked face's axis, stairs facing the player and in the clicked half, slabs in the clicked half and doubled, facing blocks toward the player or out of the clicked face, connectors and stairs with their neighbors' shapes, waterlogged in water sources, as both official servers do; every placed state checked against a report of every block item"
         },
         {
           "id": "connection_shapes",
@@ -1999,9 +2000,10 @@
           "cases": [
             "client/building",
             "client/chests",
-            "client/redstone"
+            "client/redstone",
+            "placement/official_items"
           ],
-          "note": "17 item cases, and building blocks on both versions (client/building)"
+          "note": "17 item cases, building blocks on both versions (client/building), and every placed state of every block item in fifteen contexts (placement/official_items)"
         },
         {
           "id": "tools",

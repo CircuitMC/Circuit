@@ -100,6 +100,12 @@ bool can_survive(RuleContext& ctx, BlockPos pos, BlockState s) {
     case BlockType::door: return upper_half(s) || face_sturdy(ctx.block(pos.relative(Direction::down)), Direction::up);
     case BlockType::rail: return rail_supported(ctx, pos);
     case BlockType::coral_fan: case BlockType::coral_wall_fan: return coral_supported(ctx, pos, s);
+    // Wheat is planted on farmland (both official servers; tests/fixtures/placement).
+    case BlockType::wheat: {
+        const auto below = ctx.block(pos.relative(Direction::down));
+        const auto block = below.is(BlockType::other) ? registry::block_of(below.registry_state()) : std::nullopt;
+        return block && registry::block(*block).name == "farmland";
+    }
     default: return true;
     }
 }

@@ -64,7 +64,7 @@
       ],
       "location": "external: circuit-clienttest/place-families.js; tests/server/server_tests.cpp",
       "status": "passing",
-      "description": "Player placement of full blocks, soul sand and mud, pillars on every face, stairs facing four ways and in both halves, slabs in both halves and doubled from the clicked slab and beside it, fences, panes, bars and walls beside blocks and each other, and five of them into water sources: 71 placed states identical with both official servers"
+      "description": "Player placement of full blocks, soul sand and mud, pillars on every face, stairs facing four ways and in both halves, slabs in both halves and doubled from the clicked slab and beside it, fences, panes, bars and walls beside blocks and each other, blocks facing the player, end rods and lightning rods (an end rod on an end rod), observers looking each way, trapdoors on a side's halves, and six of them into water sources: 98 placed states identical with both official servers"
     },
     {
       "id": "client/suite",
@@ -359,6 +359,17 @@
       "location": "tests/fixtures/collision/stairs.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness stairs report",
       "status": "passing",
       "description": "The shape oak stairs of each facing and half take with air or oak or cobblestone stairs of each facing and half on each of their four sides (104,976 combinations), reported identically by both official servers; Circuit's rules match every one"
+    },
+    {
+      "id": "placement/official_items",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "tests/fixtures/placement/placement-*.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness placement report",
+      "status": "passing",
+      "description": "The state every block item places in fifteen contexts (each face, both halves of a side, four player facings, looking up and down), reported by both official servers (965 items of 1.21.8, 955 of 1.21.4); every state Circuit places is the official one (635 items on each version); the items it does not place yet are counted"
     },
     {
       "id": "collision/push",

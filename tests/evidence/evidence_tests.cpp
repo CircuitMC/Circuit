@@ -18,6 +18,7 @@
 #include <filesystem>
 #include <format>
 #include <fstream>
+#include <iostream>
 #include <iterator>
 #include <map>
 #include <set>
@@ -675,6 +676,124 @@ int main(int argc, char** argv) {
             }
         }
         require(checked == 2 * 104976, std::format("{} combinations", checked));
+    });
+
+    suite.run("players place blocks from items as both official servers do", [&] {
+        // tests/fixtures/placement: every block item in fifteen contexts. Each
+        // state Circuit places must be the official one; items Circuit does not
+        // place yet are counted.
+        using namespace circuit::test;
+        using circuit::contracts::Direction;
+        using circuit::contracts::PlayerUse;
+        struct Context {
+            Direction face;
+            float y;
+            Direction horizontal;
+            Direction look;
+        };
+        constexpr auto S = Direction::south, W = Direction::west, N = Direction::north, E = Direction::east;
+        const std::array<Context, 15> contexts{{{Direction::up, 1.0f, S, S}, {Direction::up, 1.0f, W, W}, {Direction::up, 1.0f, N, N},
+                                                {Direction::up, 1.0f, E, E}, {Direction::up, 1.0f, N, Direction::down},
+                                                {Direction::up, 1.0f, N, Direction::up}, {Direction::down, 0.0f, N, N},
+                                                {N, 0.25f, S, S}, {N, 0.75f, S, S}, {E, 0.25f, W, W}, {E, 0.75f, W, W},
+                                                {S, 0.25f, N, N}, {S, 0.75f, N, N}, {W, 0.25f, E, E}, {W, 0.75f, E, E}}};
+        const auto read = [&](const char* file, std::set<std::string>* absent) {
+            std::map<std::string, std::array<std::string, 15>> out;
+            std::istringstream lines(read_text(fixtures / "placement" / file));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                std::istringstream fields(line);
+                std::string item;
+                fields >> item;
+                if (item == "absent") {
+                    for (std::string a; fields >> a;) absent->insert(a);
+                    continue;
+                }
+                std::array<std::string, 15> states;
+                for (std::size_t i = 0; i < 15; ++i) {
+                    fields >> states[i];
+                    if (states[i] == "\"") states[i] = states[i - 1];
+                }
+                out[item] = states;
+            }
+            return out;
+        };
+        // Properties in key order, for comparing notations.
+        const auto canonical = [](std::string notation) {
+            const auto open = notation.find('[');
+            if (open == std::string::npos) return notation;
+            std::vector<std::string> props;
+            std::istringstream in(notation.substr(open + 1, notation.size() - open - 2));
+            for (std::string p; std::getline(in, p, ',');) props.push_back(p);
+            std::ranges::sort(props);
+            std::string out = notation.substr(0, open + 1);
+            for (std::size_t i = 0; i < props.size(); ++i) out += (i ? "," : "") + props[i];
+            return out + "]";
+        };
+        std::set<std::string> absent;
+        const auto newest = read("placement-1.21.8.txt", nullptr);
+        const auto older = read("placement-1.21.4-only.txt", &absent);
+        std::size_t compared = 0;
+        std::vector<std::string> mismatches;
+        for (const auto release : {"java-1.21.8", "java-1.21.4"}) {
+            const bool old = release == std::string_view("java-1.21.4");
+            const auto& bundle = **circuit::contracts::BundleRegistry::select_for_simulation(release);
+            Oracle oracle(bundle, 7);
+            Admissions admit;
+            oracle.advance(admit({ticket(1, {2, 0}, 4)}));
+            const circuit::contracts::PlayerKey alex{1, 2};
+            const auto grass = registry_block("grass_block", {{"snowy", "false"}});
+            std::set<std::string> placed_items, unplaced;
+            for (const auto& [item, official_8] : newest) {
+                if (old && absent.contains(item)) continue;
+                const auto& official = old && older.contains(item) ? older.at(item) : official_8;
+                const auto id = circuit::gameplay::items::by_name(item);
+                require(id.has_value(), item + ": in the item registry");
+                // The cells are cleared in a tick of their own; what earlier items
+                // left (the drop of a door half left without the other) goes.
+                std::vector<CommandBody> clear;
+                for (std::size_t k = 0; k < contexts.size(); ++k)
+                    for (int dx = -1; dx <= 1; ++dx)
+                        for (int dy = -1; dy <= 1; ++dy)
+                            for (int dz = -1; dz <= 1; ++dz) clear.push_back(place({static_cast<std::int32_t>(k) * 4 + dx, 1 + dy, dz}, blocks::air()));
+                oracle.advance(admit(std::move(clear)));
+                std::vector<CommandBody> commands;
+                const auto before = oracle.dump();
+                for (const auto& e : before.overworld().entities) commands.push_back(circuit::contracts::RemoveEntity{e.id});
+                commands.push_back(circuit::contracts::SetPlayerSlot{alex, 36, {*id, 1, 0}});
+                for (std::size_t k = 0; k < contexts.size(); ++k) {
+                    const BlockPos target{static_cast<std::int32_t>(k) * 4, 1, 0};
+                    commands.push_back(place(target.relative(Direction::down), grass));
+                    const auto& c = contexts[k];
+                    const auto clicked = target.relative(circuit::contracts::opposite(c.face));
+                    if (c.face != Direction::up) commands.push_back(place(clicked, blocks::stone()));
+                    PlayerUse use{alex, 36, clicked, c.face, c.horizontal, c.look, false, false, 3, 3};
+                    const auto step = [](Direction d, int axis) { return d == (axis == 0 ? E : S) ? 1.0f : d == (axis == 0 ? W : N) ? 0.0f : 0.5f; };
+                    use.cursor_x = step(c.face, 0);
+                    use.cursor_y = c.y;
+                    use.cursor_z = step(c.face, 2);
+                    commands.push_back(use);
+                }
+                oracle.advance(admit(std::move(commands)));
+                const auto dump = oracle.dump();
+
+
+                for (std::size_t k = 0; k < contexts.size(); ++k) {
+                    const auto s = state_at(dump, {static_cast<std::int32_t>(k) * 4, 1, 0});
+                    if (s.is_air()) {
+                        if (official[k] != "none") unplaced.insert(item);
+                        continue;
+                    }
+                    placed_items.insert(item);
+                    const auto got = canonical(circuit::gameplay::block_notation(s));
+                    if (got != canonical(official[k])) mismatches.push_back(std::format("{} {} context {}: official {}, Circuit {}", release, item, k, official[k], got));
+                    ++compared;
+                }
+            }
+            std::cout << std::format("{}: {} items placed, {} items not placed yet\n", release, placed_items.size(), unplaced.size());
+        }
+        for (const auto& m : mismatches) std::cout << m << '\n';
+        require(mismatches.empty(), std::format("{} placements differ", mismatches.size()));
     });
 
     suite.run("light properties match both official servers", [&] {
