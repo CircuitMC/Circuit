@@ -2112,6 +2112,34 @@ int main() {
                     std::format("{}: the lamp {}", circuit::gameplay::block_notation(lanes[i].first), lanes[i].second ? "lights" : "stays off"));
     });
 
+    suite.run("entities landing on slime blocks keep less horizontal speed, minecarts twice", [] {
+        using circuit::gameplay::EntityKind;
+        Sim s;
+        std::vector<CommandBody> build;
+        for (int x = -2; x <= 8; ++x)
+            for (int z = -1; z <= 4; ++z) build.push_back(place({x, -1, z}, blocks::slime()));
+        s.tick(build);
+        // Their first tick: falling 0.04, each lands and bounces back up at
+        // 0.032; with less than 0.1 left it keeps 0.4 + 0.032 * 0.2 of its
+        // horizontal speed (an item then loses 0.8 * 0.98 to friction on slime).
+        s.tick({SpawnItem{{0.5, 0.0, 0.5}, {0.3, 0.0, 0.0}, ItemStack{items::stone, 1}, 0, 0},
+                SummonEntity{"minecraft:minecart", {0.5, 0.0, 3.5}, {0.4, 0.0, 0.0}, 0, 0}});
+        const double keep = 0.4 + 0.04 * 0.8 * 0.2;
+        const auto d = s.oracle.dump();
+        std::size_t seen = 0;
+        for (const auto& e : d.overworld().entities) {
+            if (e.kind == EntityKind::item) {
+                require(e.velocity.x == 0.3 * keep * static_cast<double>(0.8f * 0.98f), std::format("the item keeps {}", e.velocity.x));
+                ++seen;
+            }
+            if (e.kind == EntityKind::minecart) {
+                require(e.velocity.x == 0.4 * keep * keep, std::format("the minecart keeps {}", e.velocity.x));
+                ++seen;
+            }
+        }
+        require(seen == 2, "both landed");
+    });
+
     suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {
         using circuit::contracts::UseBlock;
         Sim s;

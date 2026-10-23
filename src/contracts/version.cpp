@@ -143,7 +143,8 @@ constexpr std::array reference_v4_mechanisms{
         "Sand, red sand, gravel and concrete powders fall two ticks after they are placed or a neighbor changes, "
         "when the block below can be replaced; the falling block moves like an item in the air and becomes its "
         "block where it lands if that cell can be replaced and the one below cannot, or drops its item; concrete "
-        "powder becomes concrete when it falls into water (falling_drop, falling_column, falling_onto). Gaps: "
+        "powder becomes concrete when it falls into water (falling_drop, falling_column, falling_onto); in machines "
+        "they ride slime, fall off ledges and from pulled supports and land on moving pistons (gravity_machines). Gaps: "
         "concrete powder beside water, anvils, pointed dripstone, scaffolding and suspicious blocks; falling "
         "blocks hurt nothing."},
     MechanismEntry{"tnt", l0_exact, l2_declared_deviation, harness_trace,
@@ -158,7 +159,7 @@ constexpr std::array reference_v4_mechanisms{
         "tnt_redstone_ignition, tnt_obsidian, tnt_drops, tnt_void, tnt_entity_order, tnt_knockback, tnt_items, "
         "tnt_chain_edge, tnt_water, tnt_power). A named TNT duplicator, the Mytteri push duper, primes its TNT on "
         "every push while the block moves on, over eight pushes, in each direction and across chunk edges "
-        "(tnt_duper, tnt_duper_turns, tnt_duper_edges). Gaps: fire, players and projectiles other than burning "
+        "(tnt_duper, tnt_duper_turns, tnt_duper_edges, tnt_duper_corners). Gaps: fire, players and projectiles other than burning "
         "arrows do not ignite TNT; other duplicator designs are untested; "
         "entities of one chunk section are hurt in id order rather than the order they entered it; explosions "
         "do not hurt players yet."},
@@ -174,7 +175,8 @@ constexpr std::array reference_v4_mechanisms{
         "0.4 a tick, keep 96% of their speed, gain speed down slopes and lose it up them, turn through curves, stop at blocks, "
         "are braked by unpowered powered rails and boosted by powered ones (minecart_rails, minecart_tracks); minecarts collide with minecarts' and "
         "boats' boxes, items, primed TNT and falling blocks with boats', and minecarts push minecarts by their yaw (minecart_meeting, "
-        "minecart_meeting_more); off rails they fall, keep within 0.4 a tick, halve "
+        "minecart_meeting_more); off rails they fall, keep within 0.4 a tick, slow on slime blocks they land on "
+        "(slime_landing), halve "
         "their speed on the ground and lose 5% in the air; boats float on water at a depth proportional "
         "buoyancy, sink under it, slide on land with the slipperiness of the blocks under them, are pushed by "
         "currents and land on the surface when they fall into water (minecart_ground, minecart_water, "

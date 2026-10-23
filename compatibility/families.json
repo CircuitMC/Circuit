@@ -1466,21 +1466,20 @@
           "milestone": "C4",
           "impl": "partial",
           "evidence": "compared",
-          "cases_planned": [
-            "TNT-08"
-          ],
           "cases": [
             "TNT-07",
+            "TNT-08",
             "trace/tnt_duper",
             "trace/tnt_duper_turns",
-            "trace/tnt_duper_edges"
+            "trace/tnt_duper_edges",
+            "trace/tnt_duper_corners"
           ],
           "deviations": [
             "only the Mytteri push duper is established; other designs are untested",
             "its cobblestone wall is replaced by stone (wall shapes are not modeled)",
             "reloading its chunk follows the chunk unload timing deviation (open trace tnt_duper_reload)"
           ],
-          "note": "The Mytteri push duper primes its TNT on every push after the first while the block moves on, as both official servers do, over eight pushes, in each horizontal direction and across chunk edges"
+          "note": "The Mytteri push duper primes its TNT on every push after the first while the block moves on, as both official servers do, over eight pushes, in each horizontal direction and across chunk edges and corners; restored engines continue it exactly"
         },
         {
           "id": "flying_machines",
@@ -1509,8 +1508,15 @@
           "id": "gravity_block_machines",
           "name": "Gravity-block machines and duplication",
           "milestone": "C4",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "trace/gravity_machines"
+          ],
+          "deviations": [
+            "gravity-block duplication needs end portals and is not supported"
+          ],
+          "note": "Sand and gravel in piston machines (carried by slime, pushed off ledges, dropped by pulled supports, landing on moving pistons) as both official servers do"
         },
         {
           "id": "bedrock_breaking",

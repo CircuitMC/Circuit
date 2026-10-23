@@ -176,14 +176,14 @@
     },
     {
       "id": "TNT-08",
-      "kind": "planned",
+      "kind": "black_box",
       "versions": [
         "java-1.21.4",
         "java-1.21.8"
       ],
-      "location": "planned",
-      "status": "planned",
-      "description": "The duplication machine at chunk edges and corners, across region changes and restarts"
+      "location": "trace/tnt_duper_corners",
+      "status": "passing",
+      "description": "The duplication machine at chunk edges and corners (official traces), across region layouts and restarts (restored engines continue exactly)"
     },
     {
       "id": "components/official_stacks",

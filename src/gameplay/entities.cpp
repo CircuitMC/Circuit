@@ -259,6 +259,14 @@ bool move_entity_by(RuleContext& ctx, Vec3& position, Vec3& velocity, Vec3 movem
         const auto under = contracts::block_of(Vec3{position.x, position.y - 0.2, position.z});
         const bool slime = landed && ctx.world().contains_y(under.y) && ctx.block(under).is(BlockType::slime_block);
         velocity.y = slime && velocity.y < 0.0 ? -velocity.y * 0.8 : 0.0;
+        // Landed on it with less than 0.1 of vertical speed left, the entity
+        // also loses horizontal speed: it keeps 0.4 plus a fifth of that
+        // speed (both official servers; slime_landing).
+        if (slime && std::abs(velocity.y) < 0.1) {
+            const double keep = 0.4 + std::abs(velocity.y) * 0.2;
+            velocity.x *= keep;
+            velocity.z *= keep;
+        }
     }
     return landed;
 }

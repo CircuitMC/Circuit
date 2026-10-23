@@ -389,6 +389,14 @@ void run_minecart(RuleContext& ctx, EntityId id, Entity& e) {
         if (e.on_ground) v = {v.x * 0.5, v.y * 0.5, v.z * 0.5};
         e.on_ground = move_entity(ctx, p, v, static_cast<double>(0.98f), static_cast<double>(0.7f), &e);
         if (!e.on_ground) v = {v.x * 0.95, v.y * 0.95, v.z * 0.95};
+        // A minecart that landed on a slime block loses horizontal speed
+        // there once more than other entities do (both official servers;
+        // slime_landing).
+        const auto under = contracts::block_of(Vec3{p.x, p.y - 0.2, p.z});
+        if (e.on_ground && std::abs(v.y) < 0.1 && ctx.world().contains_y(under.y) && ctx.block(under).is(BlockType::slime_block)) {
+            const double keep = 0.4 + std::abs(v.y) * 0.2;
+            v = {v.x * keep, v.y, v.z * keep};
+        }
     }
     e.velocity = v;
     e.in_water = water_at(ctx, physics::box_at(p, static_cast<double>(0.98f), static_cast<double>(0.7f))).inside;
