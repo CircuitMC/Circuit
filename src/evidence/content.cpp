@@ -289,6 +289,17 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
         CIRCUIT_TRY(power, p.integer_or("power", 0, 15, 0));
         return simple(blocks::target(static_cast<std::uint8_t>(power)));
     }
+    for (std::uint8_t v = 0; v < 2 * blocks::coral_kinds; ++v)
+        for (const bool wall : {false, true}) {
+            if (id != "minecraft:" + gameplay::coral_fan_name(v, wall)) continue;
+            CIRCUIT_TRY(waterlogged, p.choice("waterlogged", {"false", "true"}, 1));
+            const auto kind = static_cast<blocks::CoralKind>(v % blocks::coral_kinds);
+            const bool dead = v >= blocks::coral_kinds;
+            if (!wall) return simple(blocks::coral_fan(kind, dead, waterlogged == 1));
+            CIRCUIT_TRY(facing, p.direction_or("facing", Direction::north));
+            if (!contracts::is_horizontal(facing)) return std::unexpected(std::format("{}: facing must be horizontal", id));
+            return simple(blocks::coral_wall_fan(kind, facing, dead, waterlogged == 1));
+        }
     for (std::uint8_t k = 0; k < blocks::rail_kinds; ++k) {
         constexpr std::array<std::string_view, 4> names{"minecraft:rail", "minecraft:powered_rail", "minecraft:activator_rail",
                                                          "minecraft:detector_rail"};

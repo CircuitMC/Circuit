@@ -231,6 +231,11 @@ constexpr std::array reference_v4_mechanisms{
         "rail_power); minecarts ride them (vehicle); detector rails sense minecarts in the middle of their cell, look again every "
         "20 ticks and power their ends, neighbors and the block below (detector_rails, detector_rails_more). Gaps: comparators read "
         "0 from detector rails and activator rails act on nothing, as only empty minecarts exist."},
+    MechanismEntry{"coral_fan", l0_exact, l2_declared_deviation, harness_trace,
+        "Coral fans and wall fans of every kind: a living fan without water near it schedules its death 60 to 99 ticks "
+        "later with a level-random draw when placed and on every shape update, and dies dry unless water came back; "
+        "fans need a sturdy top or face and break without it, a waterlogged one leaving its water; pistons break "
+        "living fans and move dead ones (coral_fans). Gaps: water does not flow out of waterlogged fans."},
     MechanismEntry{"note_block", l0_exact, l2_declared_deviation, harness_trace,
         "Note blocks take the instrument of a mob head above them or else of the block below, when placed, moved "
         "and on a shape update from above or below; they play on a rising signal and when used (the next note), "

@@ -21,7 +21,14 @@ LightInfo registry_light(std::uint32_t state) noexcept {
 // depends only on the low 18 bits (type, facing, level, flag and the two bits
 // of a delay or an extra property, a rail's water): wire sides and kinds do
 // not change it, which building the table checks.
-// So does whether they count for the MOTION_BLOCKING heightmap.
+// So does whether they count for the MOTION_BLOCKING heightmap, but for
+// coral fans, where dead ones count and living ones do not: their key takes
+// the unused lowest level bit for it.
+std::uint32_t key(BlockState s) noexcept {
+    auto k = s.raw() & 0x3FFFF;
+    if (is_coral_fan(s.type()) && dead_coral(s)) k |= 1u << 11;
+    return k;
+}
 struct ModeledLight {
     std::vector<LightInfo> by_bits = std::vector<LightInfo>(1u << 18, LightInfo{0, 15, 0});
     std::vector<bool> motion = std::vector<bool>(1u << 18);
@@ -34,9 +41,9 @@ const ModeledLight& modeled_light() {
             const auto state = registry_equivalent(s);
             const auto info = state ? registry_light(*state) : LightInfo{0, 15, 0};
             const bool motion = state && registry::motion_blocking(*state);
-            const auto bits = s.raw() & 0x3FFFF;
+            const auto bits = key(s);
             if (seen[bits] && (!(out.by_bits[bits] == info) || out.motion[bits] != motion))
-                throw std::logic_error("light: modeled states differ beyond their low bits");
+                throw std::logic_error("light: modeled states differ beyond their low bits: " + block_notation(s));
             seen[bits] = true;
             out.by_bits[bits] = info;
             out.motion[bits] = motion;
@@ -53,13 +60,13 @@ constexpr std::array<Direction, 6> directions{Direction::down, Direction::up, Di
 LightInfo light_info(BlockState s) noexcept {
     if (s.is(BlockType::other)) return registry_light(s.registry_state());
     if (s.is_unloaded()) return {0, 15, 0};
-    return modeled_light().by_bits[s.raw() & 0x3FFFF];
+    return modeled_light().by_bits[key(s)];
 }
 
 bool motion_blocking(BlockState s) noexcept {
     if (s.is(BlockType::other)) return registry::motion_blocking(s.registry_state());
     if (s.is_unloaded()) return false;
-    return modeled_light().motion[s.raw() & 0x3FFFF];
+    return modeled_light().motion[key(s)];
 }
 
 bool motion_blocking_no_leaves(BlockState s) noexcept {

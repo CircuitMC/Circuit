@@ -204,6 +204,17 @@ bool head_has_base(RuleContext& ctx, BlockPos pos, BlockState head);
 // Block-entity tick of a moving piston: completes the move after two ticks.
 void tick_moving_piston(RuleContext& ctx, BlockPos pos);
 
+// ---- coral fans (coral.cpp) ----
+bool coral_supported(RuleContext& ctx, BlockPos pos, BlockState s);
+// A living fan placed, or a shape update from `d`: its death without water, or its fall.
+void coral_placed(RuleContext& ctx, BlockPos pos, BlockState s);
+void coral_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d);
+void tick_coral(RuleContext& ctx, BlockPos pos, BlockState s);
+// Whether a state holds water: waterlogged, or water itself, kelp, seagrass
+// and bubble columns.
+bool waterlogged(BlockState s);
+bool holds_water_fluid(BlockState s);
+
 // ---- rails (rail.cpp) ----
 // A rail appeared (placed, set or moved in): its shape and its neighbors'.
 void rail_placed(RuleContext& ctx, BlockPos pos);

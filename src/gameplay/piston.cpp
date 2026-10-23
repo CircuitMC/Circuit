@@ -22,6 +22,8 @@ BlockState settled(RuleContext& ctx, BlockPos pos, BlockState s) {
 // A moved block arrives without its water (both official servers; push_classes).
 BlockState dried(BlockState s) {
     if (s.is(BlockType::trapdoor)) return s.with_level(static_cast<std::uint8_t>(s.level() & 1));
+    if (is_coral_fan(s.type())) return s.with_flag(false);
+    if (s.is(BlockType::rail)) return s.with_extra(0);
     if (!s.is(BlockType::other)) return s;
     auto props = registry::properties(s.registry_state());
     bool wet = false;

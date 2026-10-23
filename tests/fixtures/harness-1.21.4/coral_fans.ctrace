@@ -1,0 +1,826 @@
+circuit-trace 2
+title Coral fans and wall fans, living and dead, dry, waterlogged and beside water, unsupported and pushed
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.11.0+mc1.21.4
+mechanisms coral_fan support piston water
+area 0 0 0 31 3 19
+ticks 220
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 0 0 10 minecraft:stone
+at 0 set 0 0 11 minecraft:stone
+at 0 set 0 0 12 minecraft:stone
+at 0 set 0 0 13 minecraft:stone
+at 0 set 0 0 14 minecraft:stone
+at 0 set 0 0 15 minecraft:stone
+at 0 set 0 0 16 minecraft:stone
+at 0 set 0 0 17 minecraft:stone
+at 0 set 0 0 18 minecraft:stone
+at 0 set 0 0 19 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:stone
+at 0 set 1 0 11 minecraft:stone
+at 0 set 1 0 12 minecraft:stone
+at 0 set 1 0 13 minecraft:stone
+at 0 set 1 0 14 minecraft:stone
+at 0 set 1 0 15 minecraft:stone
+at 0 set 1 0 16 minecraft:stone
+at 0 set 1 0 17 minecraft:stone
+at 0 set 1 0 18 minecraft:stone
+at 0 set 1 0 19 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 2 0 10 minecraft:stone
+at 0 set 2 0 11 minecraft:stone
+at 0 set 2 0 12 minecraft:stone
+at 0 set 2 0 13 minecraft:stone
+at 0 set 2 0 14 minecraft:stone
+at 0 set 2 0 15 minecraft:stone
+at 0 set 2 0 16 minecraft:stone
+at 0 set 2 0 17 minecraft:stone
+at 0 set 2 0 18 minecraft:stone
+at 0 set 2 0 19 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 3 0 10 minecraft:stone
+at 0 set 3 0 11 minecraft:stone
+at 0 set 3 0 12 minecraft:stone
+at 0 set 3 0 13 minecraft:stone
+at 0 set 3 0 14 minecraft:stone
+at 0 set 3 0 15 minecraft:stone
+at 0 set 3 0 16 minecraft:stone
+at 0 set 3 0 17 minecraft:stone
+at 0 set 3 0 18 minecraft:stone
+at 0 set 3 0 19 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 4 0 11 minecraft:stone
+at 0 set 4 0 12 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 4 0 14 minecraft:stone
+at 0 set 4 0 15 minecraft:stone
+at 0 set 4 0 16 minecraft:stone
+at 0 set 4 0 17 minecraft:stone
+at 0 set 4 0 18 minecraft:stone
+at 0 set 4 0 19 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 5 0 10 minecraft:stone
+at 0 set 5 0 11 minecraft:stone
+at 0 set 5 0 12 minecraft:stone
+at 0 set 5 0 13 minecraft:stone
+at 0 set 5 0 14 minecraft:stone
+at 0 set 5 0 15 minecraft:stone
+at 0 set 5 0 16 minecraft:stone
+at 0 set 5 0 17 minecraft:stone
+at 0 set 5 0 18 minecraft:stone
+at 0 set 5 0 19 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 6 0 10 minecraft:stone
+at 0 set 6 0 11 minecraft:stone
+at 0 set 6 0 12 minecraft:stone
+at 0 set 6 0 13 minecraft:stone
+at 0 set 6 0 14 minecraft:stone
+at 0 set 6 0 15 minecraft:stone
+at 0 set 6 0 16 minecraft:stone
+at 0 set 6 0 17 minecraft:stone
+at 0 set 6 0 18 minecraft:stone
+at 0 set 6 0 19 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 7 0 10 minecraft:stone
+at 0 set 7 0 11 minecraft:stone
+at 0 set 7 0 12 minecraft:stone
+at 0 set 7 0 13 minecraft:stone
+at 0 set 7 0 14 minecraft:stone
+at 0 set 7 0 15 minecraft:stone
+at 0 set 7 0 16 minecraft:stone
+at 0 set 7 0 17 minecraft:stone
+at 0 set 7 0 18 minecraft:stone
+at 0 set 7 0 19 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 8 0 10 minecraft:stone
+at 0 set 8 0 11 minecraft:stone
+at 0 set 8 0 12 minecraft:stone
+at 0 set 8 0 13 minecraft:stone
+at 0 set 8 0 14 minecraft:stone
+at 0 set 8 0 15 minecraft:stone
+at 0 set 8 0 16 minecraft:stone
+at 0 set 8 0 17 minecraft:stone
+at 0 set 8 0 18 minecraft:stone
+at 0 set 8 0 19 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 9 0 10 minecraft:stone
+at 0 set 9 0 11 minecraft:stone
+at 0 set 9 0 12 minecraft:stone
+at 0 set 9 0 13 minecraft:stone
+at 0 set 9 0 14 minecraft:stone
+at 0 set 9 0 15 minecraft:stone
+at 0 set 9 0 16 minecraft:stone
+at 0 set 9 0 17 minecraft:stone
+at 0 set 9 0 18 minecraft:stone
+at 0 set 9 0 19 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 10 0 10 minecraft:stone
+at 0 set 10 0 11 minecraft:stone
+at 0 set 10 0 12 minecraft:stone
+at 0 set 10 0 13 minecraft:stone
+at 0 set 10 0 14 minecraft:stone
+at 0 set 10 0 15 minecraft:stone
+at 0 set 10 0 16 minecraft:stone
+at 0 set 10 0 17 minecraft:stone
+at 0 set 10 0 18 minecraft:stone
+at 0 set 10 0 19 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 11 0 10 minecraft:stone
+at 0 set 11 0 11 minecraft:stone
+at 0 set 11 0 12 minecraft:stone
+at 0 set 11 0 13 minecraft:stone
+at 0 set 11 0 14 minecraft:stone
+at 0 set 11 0 15 minecraft:stone
+at 0 set 11 0 16 minecraft:stone
+at 0 set 11 0 17 minecraft:stone
+at 0 set 11 0 18 minecraft:stone
+at 0 set 11 0 19 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 12 0 8 minecraft:stone
+at 0 set 12 0 9 minecraft:stone
+at 0 set 12 0 10 minecraft:stone
+at 0 set 12 0 11 minecraft:stone
+at 0 set 12 0 12 minecraft:stone
+at 0 set 12 0 13 minecraft:stone
+at 0 set 12 0 14 minecraft:stone
+at 0 set 12 0 15 minecraft:stone
+at 0 set 12 0 16 minecraft:stone
+at 0 set 12 0 17 minecraft:stone
+at 0 set 12 0 18 minecraft:stone
+at 0 set 12 0 19 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 13 0 8 minecraft:stone
+at 0 set 13 0 9 minecraft:stone
+at 0 set 13 0 10 minecraft:stone
+at 0 set 13 0 11 minecraft:stone
+at 0 set 13 0 12 minecraft:stone
+at 0 set 13 0 13 minecraft:stone
+at 0 set 13 0 14 minecraft:stone
+at 0 set 13 0 15 minecraft:stone
+at 0 set 13 0 16 minecraft:stone
+at 0 set 13 0 17 minecraft:stone
+at 0 set 13 0 18 minecraft:stone
+at 0 set 13 0 19 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 14 0 8 minecraft:stone
+at 0 set 14 0 9 minecraft:stone
+at 0 set 14 0 10 minecraft:stone
+at 0 set 14 0 11 minecraft:stone
+at 0 set 14 0 12 minecraft:stone
+at 0 set 14 0 13 minecraft:stone
+at 0 set 14 0 14 minecraft:stone
+at 0 set 14 0 15 minecraft:stone
+at 0 set 14 0 16 minecraft:stone
+at 0 set 14 0 17 minecraft:stone
+at 0 set 14 0 18 minecraft:stone
+at 0 set 14 0 19 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 15 0 8 minecraft:stone
+at 0 set 15 0 9 minecraft:stone
+at 0 set 15 0 10 minecraft:stone
+at 0 set 15 0 11 minecraft:stone
+at 0 set 15 0 12 minecraft:stone
+at 0 set 15 0 13 minecraft:stone
+at 0 set 15 0 14 minecraft:stone
+at 0 set 15 0 15 minecraft:stone
+at 0 set 15 0 16 minecraft:stone
+at 0 set 15 0 17 minecraft:stone
+at 0 set 15 0 18 minecraft:stone
+at 0 set 15 0 19 minecraft:stone
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 0 1 minecraft:stone
+at 0 set 16 0 2 minecraft:stone
+at 0 set 16 0 3 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 set 16 0 5 minecraft:stone
+at 0 set 16 0 6 minecraft:stone
+at 0 set 16 0 7 minecraft:stone
+at 0 set 16 0 8 minecraft:stone
+at 0 set 16 0 9 minecraft:stone
+at 0 set 16 0 10 minecraft:stone
+at 0 set 16 0 11 minecraft:stone
+at 0 set 16 0 12 minecraft:stone
+at 0 set 16 0 13 minecraft:stone
+at 0 set 16 0 14 minecraft:stone
+at 0 set 16 0 15 minecraft:stone
+at 0 set 16 0 16 minecraft:stone
+at 0 set 16 0 17 minecraft:stone
+at 0 set 16 0 18 minecraft:stone
+at 0 set 16 0 19 minecraft:stone
+at 0 set 17 0 0 minecraft:stone
+at 0 set 17 0 1 minecraft:stone
+at 0 set 17 0 2 minecraft:stone
+at 0 set 17 0 3 minecraft:stone
+at 0 set 17 0 4 minecraft:stone
+at 0 set 17 0 5 minecraft:stone
+at 0 set 17 0 6 minecraft:stone
+at 0 set 17 0 7 minecraft:stone
+at 0 set 17 0 8 minecraft:stone
+at 0 set 17 0 9 minecraft:stone
+at 0 set 17 0 10 minecraft:stone
+at 0 set 17 0 11 minecraft:stone
+at 0 set 17 0 12 minecraft:stone
+at 0 set 17 0 13 minecraft:stone
+at 0 set 17 0 14 minecraft:stone
+at 0 set 17 0 15 minecraft:stone
+at 0 set 17 0 16 minecraft:stone
+at 0 set 17 0 17 minecraft:stone
+at 0 set 17 0 18 minecraft:stone
+at 0 set 17 0 19 minecraft:stone
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 0 1 minecraft:stone
+at 0 set 18 0 2 minecraft:stone
+at 0 set 18 0 3 minecraft:stone
+at 0 set 18 0 4 minecraft:stone
+at 0 set 18 0 5 minecraft:stone
+at 0 set 18 0 6 minecraft:stone
+at 0 set 18 0 7 minecraft:stone
+at 0 set 18 0 8 minecraft:stone
+at 0 set 18 0 9 minecraft:stone
+at 0 set 18 0 10 minecraft:stone
+at 0 set 18 0 11 minecraft:stone
+at 0 set 18 0 12 minecraft:stone
+at 0 set 18 0 13 minecraft:stone
+at 0 set 18 0 14 minecraft:stone
+at 0 set 18 0 15 minecraft:stone
+at 0 set 18 0 16 minecraft:stone
+at 0 set 18 0 17 minecraft:stone
+at 0 set 18 0 18 minecraft:stone
+at 0 set 18 0 19 minecraft:stone
+at 0 set 19 0 0 minecraft:stone
+at 0 set 19 0 1 minecraft:stone
+at 0 set 19 0 2 minecraft:stone
+at 0 set 19 0 3 minecraft:stone
+at 0 set 19 0 4 minecraft:stone
+at 0 set 19 0 5 minecraft:stone
+at 0 set 19 0 6 minecraft:stone
+at 0 set 19 0 7 minecraft:stone
+at 0 set 19 0 8 minecraft:stone
+at 0 set 19 0 9 minecraft:stone
+at 0 set 19 0 10 minecraft:stone
+at 0 set 19 0 11 minecraft:stone
+at 0 set 19 0 12 minecraft:stone
+at 0 set 19 0 13 minecraft:stone
+at 0 set 19 0 14 minecraft:stone
+at 0 set 19 0 15 minecraft:stone
+at 0 set 19 0 16 minecraft:stone
+at 0 set 19 0 17 minecraft:stone
+at 0 set 19 0 18 minecraft:stone
+at 0 set 19 0 19 minecraft:stone
+at 0 set 20 0 0 minecraft:stone
+at 0 set 20 0 1 minecraft:stone
+at 0 set 20 0 2 minecraft:stone
+at 0 set 20 0 3 minecraft:stone
+at 0 set 20 0 4 minecraft:stone
+at 0 set 20 0 5 minecraft:stone
+at 0 set 20 0 6 minecraft:stone
+at 0 set 20 0 7 minecraft:stone
+at 0 set 20 0 8 minecraft:stone
+at 0 set 20 0 9 minecraft:stone
+at 0 set 20 0 10 minecraft:stone
+at 0 set 20 0 11 minecraft:stone
+at 0 set 20 0 12 minecraft:stone
+at 0 set 20 0 13 minecraft:stone
+at 0 set 20 0 14 minecraft:stone
+at 0 set 20 0 15 minecraft:stone
+at 0 set 20 0 16 minecraft:stone
+at 0 set 20 0 17 minecraft:stone
+at 0 set 20 0 18 minecraft:stone
+at 0 set 20 0 19 minecraft:stone
+at 0 set 21 0 0 minecraft:stone
+at 0 set 21 0 1 minecraft:stone
+at 0 set 21 0 2 minecraft:stone
+at 0 set 21 0 3 minecraft:stone
+at 0 set 21 0 4 minecraft:stone
+at 0 set 21 0 5 minecraft:stone
+at 0 set 21 0 6 minecraft:stone
+at 0 set 21 0 7 minecraft:stone
+at 0 set 21 0 8 minecraft:stone
+at 0 set 21 0 9 minecraft:stone
+at 0 set 21 0 10 minecraft:stone
+at 0 set 21 0 11 minecraft:stone
+at 0 set 21 0 12 minecraft:stone
+at 0 set 21 0 13 minecraft:stone
+at 0 set 21 0 14 minecraft:stone
+at 0 set 21 0 15 minecraft:stone
+at 0 set 21 0 16 minecraft:stone
+at 0 set 21 0 17 minecraft:stone
+at 0 set 21 0 18 minecraft:stone
+at 0 set 21 0 19 minecraft:stone
+at 0 set 22 0 0 minecraft:stone
+at 0 set 22 0 1 minecraft:stone
+at 0 set 22 0 2 minecraft:stone
+at 0 set 22 0 3 minecraft:stone
+at 0 set 22 0 4 minecraft:stone
+at 0 set 22 0 5 minecraft:stone
+at 0 set 22 0 6 minecraft:stone
+at 0 set 22 0 7 minecraft:stone
+at 0 set 22 0 8 minecraft:stone
+at 0 set 22 0 9 minecraft:stone
+at 0 set 22 0 10 minecraft:stone
+at 0 set 22 0 11 minecraft:stone
+at 0 set 22 0 12 minecraft:stone
+at 0 set 22 0 13 minecraft:stone
+at 0 set 22 0 14 minecraft:stone
+at 0 set 22 0 15 minecraft:stone
+at 0 set 22 0 16 minecraft:stone
+at 0 set 22 0 17 minecraft:stone
+at 0 set 22 0 18 minecraft:stone
+at 0 set 22 0 19 minecraft:stone
+at 0 set 23 0 0 minecraft:stone
+at 0 set 23 0 1 minecraft:stone
+at 0 set 23 0 2 minecraft:stone
+at 0 set 23 0 3 minecraft:stone
+at 0 set 23 0 4 minecraft:stone
+at 0 set 23 0 5 minecraft:stone
+at 0 set 23 0 6 minecraft:stone
+at 0 set 23 0 7 minecraft:stone
+at 0 set 23 0 8 minecraft:stone
+at 0 set 23 0 9 minecraft:stone
+at 0 set 23 0 10 minecraft:stone
+at 0 set 23 0 11 minecraft:stone
+at 0 set 23 0 12 minecraft:stone
+at 0 set 23 0 13 minecraft:stone
+at 0 set 23 0 14 minecraft:stone
+at 0 set 23 0 15 minecraft:stone
+at 0 set 23 0 16 minecraft:stone
+at 0 set 23 0 17 minecraft:stone
+at 0 set 23 0 18 minecraft:stone
+at 0 set 23 0 19 minecraft:stone
+at 0 set 24 0 0 minecraft:stone
+at 0 set 24 0 1 minecraft:stone
+at 0 set 24 0 2 minecraft:stone
+at 0 set 24 0 3 minecraft:stone
+at 0 set 24 0 4 minecraft:stone
+at 0 set 24 0 5 minecraft:stone
+at 0 set 24 0 6 minecraft:stone
+at 0 set 24 0 7 minecraft:stone
+at 0 set 24 0 8 minecraft:stone
+at 0 set 24 0 9 minecraft:stone
+at 0 set 24 0 10 minecraft:stone
+at 0 set 24 0 11 minecraft:stone
+at 0 set 24 0 12 minecraft:stone
+at 0 set 24 0 13 minecraft:stone
+at 0 set 24 0 14 minecraft:stone
+at 0 set 24 0 15 minecraft:stone
+at 0 set 24 0 16 minecraft:stone
+at 0 set 24 0 17 minecraft:stone
+at 0 set 24 0 18 minecraft:stone
+at 0 set 24 0 19 minecraft:stone
+at 0 set 25 0 0 minecraft:stone
+at 0 set 25 0 1 minecraft:stone
+at 0 set 25 0 2 minecraft:stone
+at 0 set 25 0 3 minecraft:stone
+at 0 set 25 0 4 minecraft:stone
+at 0 set 25 0 5 minecraft:stone
+at 0 set 25 0 6 minecraft:stone
+at 0 set 25 0 7 minecraft:stone
+at 0 set 25 0 8 minecraft:stone
+at 0 set 25 0 9 minecraft:stone
+at 0 set 25 0 10 minecraft:stone
+at 0 set 25 0 11 minecraft:stone
+at 0 set 25 0 12 minecraft:stone
+at 0 set 25 0 13 minecraft:stone
+at 0 set 25 0 14 minecraft:stone
+at 0 set 25 0 15 minecraft:stone
+at 0 set 25 0 16 minecraft:stone
+at 0 set 25 0 17 minecraft:stone
+at 0 set 25 0 18 minecraft:stone
+at 0 set 25 0 19 minecraft:stone
+at 0 set 26 0 0 minecraft:stone
+at 0 set 26 0 1 minecraft:stone
+at 0 set 26 0 2 minecraft:stone
+at 0 set 26 0 3 minecraft:stone
+at 0 set 26 0 4 minecraft:stone
+at 0 set 26 0 5 minecraft:stone
+at 0 set 26 0 6 minecraft:stone
+at 0 set 26 0 7 minecraft:stone
+at 0 set 26 0 8 minecraft:stone
+at 0 set 26 0 9 minecraft:stone
+at 0 set 26 0 10 minecraft:stone
+at 0 set 26 0 11 minecraft:stone
+at 0 set 26 0 12 minecraft:stone
+at 0 set 26 0 13 minecraft:stone
+at 0 set 26 0 14 minecraft:stone
+at 0 set 26 0 15 minecraft:stone
+at 0 set 26 0 16 minecraft:stone
+at 0 set 26 0 17 minecraft:stone
+at 0 set 26 0 18 minecraft:stone
+at 0 set 26 0 19 minecraft:stone
+at 0 set 27 0 0 minecraft:stone
+at 0 set 27 0 1 minecraft:stone
+at 0 set 27 0 2 minecraft:stone
+at 0 set 27 0 3 minecraft:stone
+at 0 set 27 0 4 minecraft:stone
+at 0 set 27 0 5 minecraft:stone
+at 0 set 27 0 6 minecraft:stone
+at 0 set 27 0 7 minecraft:stone
+at 0 set 27 0 8 minecraft:stone
+at 0 set 27 0 9 minecraft:stone
+at 0 set 27 0 10 minecraft:stone
+at 0 set 27 0 11 minecraft:stone
+at 0 set 27 0 12 minecraft:stone
+at 0 set 27 0 13 minecraft:stone
+at 0 set 27 0 14 minecraft:stone
+at 0 set 27 0 15 minecraft:stone
+at 0 set 27 0 16 minecraft:stone
+at 0 set 27 0 17 minecraft:stone
+at 0 set 27 0 18 minecraft:stone
+at 0 set 27 0 19 minecraft:stone
+at 0 set 28 0 0 minecraft:stone
+at 0 set 28 0 1 minecraft:stone
+at 0 set 28 0 2 minecraft:stone
+at 0 set 28 0 3 minecraft:stone
+at 0 set 28 0 4 minecraft:stone
+at 0 set 28 0 5 minecraft:stone
+at 0 set 28 0 6 minecraft:stone
+at 0 set 28 0 7 minecraft:stone
+at 0 set 28 0 8 minecraft:stone
+at 0 set 28 0 9 minecraft:stone
+at 0 set 28 0 10 minecraft:stone
+at 0 set 28 0 11 minecraft:stone
+at 0 set 28 0 12 minecraft:stone
+at 0 set 28 0 13 minecraft:stone
+at 0 set 28 0 14 minecraft:stone
+at 0 set 28 0 15 minecraft:stone
+at 0 set 28 0 16 minecraft:stone
+at 0 set 28 0 17 minecraft:stone
+at 0 set 28 0 18 minecraft:stone
+at 0 set 28 0 19 minecraft:stone
+at 0 set 29 0 0 minecraft:stone
+at 0 set 29 0 1 minecraft:stone
+at 0 set 29 0 2 minecraft:stone
+at 0 set 29 0 3 minecraft:stone
+at 0 set 29 0 4 minecraft:stone
+at 0 set 29 0 5 minecraft:stone
+at 0 set 29 0 6 minecraft:stone
+at 0 set 29 0 7 minecraft:stone
+at 0 set 29 0 8 minecraft:stone
+at 0 set 29 0 9 minecraft:stone
+at 0 set 29 0 10 minecraft:stone
+at 0 set 29 0 11 minecraft:stone
+at 0 set 29 0 12 minecraft:stone
+at 0 set 29 0 13 minecraft:stone
+at 0 set 29 0 14 minecraft:stone
+at 0 set 29 0 15 minecraft:stone
+at 0 set 29 0 16 minecraft:stone
+at 0 set 29 0 17 minecraft:stone
+at 0 set 29 0 18 minecraft:stone
+at 0 set 29 0 19 minecraft:stone
+at 0 set 30 0 0 minecraft:stone
+at 0 set 30 0 1 minecraft:stone
+at 0 set 30 0 2 minecraft:stone
+at 0 set 30 0 3 minecraft:stone
+at 0 set 30 0 4 minecraft:stone
+at 0 set 30 0 5 minecraft:stone
+at 0 set 30 0 6 minecraft:stone
+at 0 set 30 0 7 minecraft:stone
+at 0 set 30 0 8 minecraft:stone
+at 0 set 30 0 9 minecraft:stone
+at 0 set 30 0 10 minecraft:stone
+at 0 set 30 0 11 minecraft:stone
+at 0 set 30 0 12 minecraft:stone
+at 0 set 30 0 13 minecraft:stone
+at 0 set 30 0 14 minecraft:stone
+at 0 set 30 0 15 minecraft:stone
+at 0 set 30 0 16 minecraft:stone
+at 0 set 30 0 17 minecraft:stone
+at 0 set 30 0 18 minecraft:stone
+at 0 set 30 0 19 minecraft:stone
+at 0 set 31 0 0 minecraft:stone
+at 0 set 31 0 1 minecraft:stone
+at 0 set 31 0 2 minecraft:stone
+at 0 set 31 0 3 minecraft:stone
+at 0 set 31 0 4 minecraft:stone
+at 0 set 31 0 5 minecraft:stone
+at 0 set 31 0 6 minecraft:stone
+at 0 set 31 0 7 minecraft:stone
+at 0 set 31 0 8 minecraft:stone
+at 0 set 31 0 9 minecraft:stone
+at 0 set 31 0 10 minecraft:stone
+at 0 set 31 0 11 minecraft:stone
+at 0 set 31 0 12 minecraft:stone
+at 0 set 31 0 13 minecraft:stone
+at 0 set 31 0 14 minecraft:stone
+at 0 set 31 0 15 minecraft:stone
+at 0 set 31 0 16 minecraft:stone
+at 0 set 31 0 17 minecraft:stone
+at 0 set 31 0 18 minecraft:stone
+at 0 set 31 0 19 minecraft:stone
+at 0 set 1 1 8 minecraft:stone
+at 0 set 1 2 8 minecraft:stone
+at 0 set 3 1 8 minecraft:stone
+at 0 set 3 2 8 minecraft:stone
+at 0 set 5 1 8 minecraft:stone
+at 0 set 5 2 8 minecraft:stone
+at 0 set 7 1 8 minecraft:stone
+at 0 set 7 2 8 minecraft:stone
+at 0 set 9 1 8 minecraft:stone
+at 0 set 9 2 8 minecraft:stone
+at 0 set 14 1 1 minecraft:glass
+at 0 set 14 1 3 minecraft:glass
+at 0 set 13 1 2 minecraft:glass
+at 0 set 14 2 2 minecraft:glass
+at 0 set 14 1 2 minecraft:water[level=0]
+at 0 set 17 1 1 minecraft:glass
+at 0 set 17 1 3 minecraft:glass
+at 0 set 16 1 2 minecraft:glass
+at 0 set 17 2 2 minecraft:glass
+at 0 set 17 1 2 minecraft:water[level=0]
+at 0 set 20 1 1 minecraft:glass
+at 0 set 20 1 3 minecraft:glass
+at 0 set 19 1 2 minecraft:glass
+at 0 set 20 2 2 minecraft:glass
+at 0 set 20 1 2 minecraft:water[level=0]
+at 0 set 23 1 1 minecraft:glass
+at 0 set 23 1 3 minecraft:glass
+at 0 set 22 1 2 minecraft:glass
+at 0 set 23 2 2 minecraft:glass
+at 0 set 23 1 2 minecraft:water[level=0]
+at 0 set 26 1 1 minecraft:glass
+at 0 set 26 1 3 minecraft:glass
+at 0 set 25 1 2 minecraft:glass
+at 0 set 26 2 2 minecraft:glass
+at 0 set 26 1 2 minecraft:water[level=0]
+at 0 set 4 1 12 minecraft:stone
+at 0 set 8 1 12 minecraft:piston[extended=false,facing=east]
+at 0 set 7 1 12 minecraft:lever[face=floor,facing=north,powered=false]
+
+at 1 set 1 1 1 minecraft:tube_coral_fan[waterlogged=false]
+change 1 commands 1 1 1 minecraft:air minecraft:tube_coral_fan[waterlogged=false]
+at 1 set 1 1 3 minecraft:tube_coral_fan[waterlogged=true]
+change 1 commands 1 1 3 minecraft:air minecraft:tube_coral_fan[waterlogged=true]
+at 1 set 1 1 5 minecraft:dead_tube_coral_fan[waterlogged=false]
+change 1 commands 1 1 5 minecraft:air minecraft:dead_tube_coral_fan[waterlogged=false]
+at 1 set 3 1 1 minecraft:brain_coral_fan[waterlogged=false]
+change 1 commands 3 1 1 minecraft:air minecraft:brain_coral_fan[waterlogged=false]
+at 1 set 3 1 3 minecraft:brain_coral_fan[waterlogged=true]
+change 1 commands 3 1 3 minecraft:air minecraft:brain_coral_fan[waterlogged=true]
+at 1 set 3 1 5 minecraft:dead_brain_coral_fan[waterlogged=false]
+change 1 commands 3 1 5 minecraft:air minecraft:dead_brain_coral_fan[waterlogged=false]
+at 1 set 5 1 1 minecraft:bubble_coral_fan[waterlogged=false]
+change 1 commands 5 1 1 minecraft:air minecraft:bubble_coral_fan[waterlogged=false]
+at 1 set 5 1 3 minecraft:bubble_coral_fan[waterlogged=true]
+change 1 commands 5 1 3 minecraft:air minecraft:bubble_coral_fan[waterlogged=true]
+at 1 set 5 1 5 minecraft:dead_bubble_coral_fan[waterlogged=false]
+change 1 commands 5 1 5 minecraft:air minecraft:dead_bubble_coral_fan[waterlogged=false]
+at 1 set 7 1 1 minecraft:fire_coral_fan[waterlogged=false]
+change 1 commands 7 1 1 minecraft:air minecraft:fire_coral_fan[waterlogged=false]
+at 1 set 7 1 3 minecraft:fire_coral_fan[waterlogged=true]
+change 1 commands 7 1 3 minecraft:air minecraft:fire_coral_fan[waterlogged=true]
+at 1 set 7 1 5 minecraft:dead_fire_coral_fan[waterlogged=false]
+change 1 commands 7 1 5 minecraft:air minecraft:dead_fire_coral_fan[waterlogged=false]
+at 1 set 9 1 1 minecraft:horn_coral_fan[waterlogged=false]
+change 1 commands 9 1 1 minecraft:air minecraft:horn_coral_fan[waterlogged=false]
+at 1 set 9 1 3 minecraft:horn_coral_fan[waterlogged=true]
+change 1 commands 9 1 3 minecraft:air minecraft:horn_coral_fan[waterlogged=true]
+at 1 set 9 1 5 minecraft:dead_horn_coral_fan[waterlogged=false]
+change 1 commands 9 1 5 minecraft:air minecraft:dead_horn_coral_fan[waterlogged=false]
+at 1 set 15 1 2 minecraft:tube_coral_fan[waterlogged=false]
+change 1 commands 15 1 2 minecraft:air minecraft:tube_coral_fan[waterlogged=false]
+at 1 set 18 1 2 minecraft:brain_coral_fan[waterlogged=false]
+change 1 commands 18 1 2 minecraft:air minecraft:brain_coral_fan[waterlogged=false]
+at 1 set 21 1 2 minecraft:bubble_coral_fan[waterlogged=false]
+change 1 commands 21 1 2 minecraft:air minecraft:bubble_coral_fan[waterlogged=false]
+at 1 set 24 1 2 minecraft:fire_coral_fan[waterlogged=false]
+change 1 commands 24 1 2 minecraft:air minecraft:fire_coral_fan[waterlogged=false]
+at 1 set 27 1 2 minecraft:horn_coral_fan[waterlogged=false]
+change 1 commands 27 1 2 minecraft:air minecraft:horn_coral_fan[waterlogged=false]
+at 1 set 1 1 12 minecraft:tube_coral_fan[waterlogged=true]
+change 1 commands 1 1 12 minecraft:air minecraft:tube_coral_fan[waterlogged=true]
+at 1 set 9 1 12 minecraft:fire_coral_fan[waterlogged=true]
+change 1 commands 9 1 12 minecraft:air minecraft:fire_coral_fan[waterlogged=true]
+draws 1 commands level 5
+
+at 2 set 1 1 9 minecraft:tube_coral_wall_fan[facing=south,waterlogged=false]
+change 2 commands 1 1 9 minecraft:air minecraft:tube_coral_wall_fan[facing=south,waterlogged=false]
+at 2 set 1 2 9 minecraft:tube_coral_wall_fan[facing=south,waterlogged=true]
+change 2 commands 1 2 9 minecraft:air minecraft:tube_coral_wall_fan[facing=south,waterlogged=true]
+at 2 set 3 1 9 minecraft:brain_coral_wall_fan[facing=south,waterlogged=false]
+change 2 commands 3 1 9 minecraft:air minecraft:brain_coral_wall_fan[facing=south,waterlogged=false]
+at 2 set 3 2 9 minecraft:brain_coral_wall_fan[facing=south,waterlogged=true]
+change 2 commands 3 2 9 minecraft:air minecraft:brain_coral_wall_fan[facing=south,waterlogged=true]
+at 2 set 5 1 9 minecraft:bubble_coral_wall_fan[facing=south,waterlogged=false]
+change 2 commands 5 1 9 minecraft:air minecraft:bubble_coral_wall_fan[facing=south,waterlogged=false]
+at 2 set 5 2 9 minecraft:bubble_coral_wall_fan[facing=south,waterlogged=true]
+change 2 commands 5 2 9 minecraft:air minecraft:bubble_coral_wall_fan[facing=south,waterlogged=true]
+at 2 set 7 1 9 minecraft:fire_coral_wall_fan[facing=south,waterlogged=false]
+change 2 commands 7 1 9 minecraft:air minecraft:fire_coral_wall_fan[facing=south,waterlogged=false]
+at 2 set 7 2 9 minecraft:fire_coral_wall_fan[facing=south,waterlogged=true]
+change 2 commands 7 2 9 minecraft:air minecraft:fire_coral_wall_fan[facing=south,waterlogged=true]
+at 2 set 9 1 9 minecraft:horn_coral_wall_fan[facing=south,waterlogged=false]
+change 2 commands 9 1 9 minecraft:air minecraft:horn_coral_wall_fan[facing=south,waterlogged=false]
+at 2 set 9 2 9 minecraft:horn_coral_wall_fan[facing=south,waterlogged=true]
+change 2 commands 9 2 9 minecraft:air minecraft:horn_coral_wall_fan[facing=south,waterlogged=true]
+at 2 set 4 1 13 minecraft:brain_coral_wall_fan[facing=south,waterlogged=true]
+change 2 commands 4 1 13 minecraft:air minecraft:brain_coral_wall_fan[facing=south,waterlogged=true]
+draws 2 commands level 5
+
+at 30 set 1 0 12 minecraft:air
+change 30 commands 1 0 12 minecraft:stone minecraft:air
+change 30 commands 1 1 12 minecraft:tube_coral_fan[waterlogged=true] minecraft:water[level=0]
+
+at 32 set 4 1 12 minecraft:air
+change 32 commands 4 1 12 minecraft:stone minecraft:air
+change 32 commands 4 1 13 minecraft:brain_coral_wall_fan[facing=south,waterlogged=true] minecraft:water[level=0]
+
+at 34 use 7 1 12
+change 34 commands 7 1 12 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 34 fluid_ticks 1 0 12 minecraft:air minecraft:water[level=8]
+change 34 block_events 9 1 12 minecraft:fire_coral_fan[waterlogged=true] minecraft:air
+change 34 block_events 9 1 12 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 34 block_events 8 1 12 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
+draws 34 block_events level 1
+
+change 36 fluid_ticks 3 1 13 minecraft:air minecraft:water[level=1]
+change 36 block_entities 9 1 12 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+
+change 39 fluid_ticks 0 1 12 minecraft:air minecraft:water[level=1]
+
+at 40 set 14 1 2 minecraft:glass
+change 40 commands 14 1 2 minecraft:water[level=0] minecraft:glass
+draws 40 commands level 1
+
+change 41 fluid_ticks 2 1 13 minecraft:air minecraft:water[level=2]
+
+change 46 fluid_ticks 1 1 13 minecraft:air minecraft:water[level=1]
+
+at 50 set 17 1 2 minecraft:glass
+change 50 commands 17 1 2 minecraft:water[level=0] minecraft:glass
+draws 50 commands level 1
+
+change 51 fluid_ticks 0 1 13 minecraft:air minecraft:water[level=2]
+
+at 60 set 20 1 2 minecraft:glass
+change 60 commands 20 1 2 minecraft:water[level=0] minecraft:glass
+change 60 block_ticks 1 1 1 minecraft:tube_coral_fan[waterlogged=false] minecraft:dead_tube_coral_fan[waterlogged=false]
+draws 60 commands level 1
+
+change 67 block_ticks 7 1 1 minecraft:fire_coral_fan[waterlogged=false] minecraft:dead_fire_coral_fan[waterlogged=false]
+
+at 70 set 23 1 2 minecraft:glass
+change 70 commands 23 1 2 minecraft:water[level=0] minecraft:glass
+draws 70 commands level 1
+
+at 80 set 26 1 2 minecraft:glass
+change 80 commands 26 1 2 minecraft:water[level=0] minecraft:glass
+draws 80 commands level 1
+
+change 88 block_ticks 3 1 1 minecraft:brain_coral_fan[waterlogged=false] minecraft:dead_brain_coral_fan[waterlogged=false]
+
+change 89 block_ticks 5 1 1 minecraft:bubble_coral_fan[waterlogged=false] minecraft:dead_bubble_coral_fan[waterlogged=false]
+
+change 95 block_ticks 9 1 1 minecraft:horn_coral_fan[waterlogged=false] minecraft:dead_horn_coral_fan[waterlogged=false]
+
+change 136 block_ticks 15 1 2 minecraft:tube_coral_fan[waterlogged=false] minecraft:dead_tube_coral_fan[waterlogged=false]
+
+change 141 block_ticks 21 1 2 minecraft:bubble_coral_fan[waterlogged=false] minecraft:dead_bubble_coral_fan[waterlogged=false]
+
+change 142 block_ticks 18 1 2 minecraft:brain_coral_fan[waterlogged=false] minecraft:dead_brain_coral_fan[waterlogged=false]
+
+change 143 block_ticks 27 1 2 minecraft:horn_coral_fan[waterlogged=false] minecraft:dead_horn_coral_fan[waterlogged=false]
+
+change 144 block_ticks 24 1 2 minecraft:fire_coral_fan[waterlogged=false] minecraft:dead_fire_coral_fan[waterlogged=false]

@@ -36,7 +36,7 @@ Feature counts per implementation state, then the number of features with compar
 | V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 1 / 1 | 39 / 39 | 3 / 3 | 0 / 0 | 1 / 1 |
 | V11 Common building blocks | C5 | 1344 | 0 / 0 | 116 / 116 | 1226 / 1226 | 2 / 2 | 0 / 0 | 15 / 15 |
 | V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 24 / 24 | 54 / 54 | 4 / 4 | 0 / 0 | 8 / 8 |
-| V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 2 / 2 | 298 / 312 | 6 / 6 | 14 / 0 | 0 / 0 |
+| V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 23 / 23 | 278 / 292 | 5 / 5 | 14 / 0 | 21 / 21 |
 | V14 Redstone sources and signal consumers | C4 | 138 | 6 / 6 | 96 / 96 | 35 / 35 | 1 / 1 | 0 / 0 | 37 / 39 |
 | V15 Pistons and moving structures | C3, C4 | 16 | 2 / 2 | 14 / 14 | 0 / 0 | 0 / 0 | 0 / 0 | 12 / 12 |
 | V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 4 / 4 | 52 / 52 | 3 / 3 | 0 / 0 | 6 / 6 |
@@ -67,7 +67,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 133 / 133 | 958 / 968 | 0 / 0 |
+| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 153 / 153 | 938 / 948 | 0 / 0 |
 | item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 123 / 123 | 1261 / 1292 | 0 / 0 |
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 17 / 17 | 0 / 0 | 132 / 134 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
@@ -130,7 +130,7 @@ Their counts are unknown, not zero.
 | black_box | passing | 29 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 3 |
-| official_trace | passing | 112 |
+| official_trace | passing | 113 |
 | planned | planned | 2 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
@@ -276,7 +276,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Saplings, trees and leaf decay | C5 | missing, none | missing, none |  |
 | Grass, mycelium, nylium, moss and sculk spread | C5 | missing, none | missing, none |  |
 | Bone meal | C5 | missing, none | missing, none |  |
-| Coral dying without water | C4 | missing, none | missing, none |  |
+| Coral dying without water | C4 | partial, compared | partial, compared | `trace/coral_fans`; coral blocks and plants (not fans) are inert; water does not flow out of waterlogged fans; Coral fans and wall fans of every kind die 60 to 99 ticks (a level-random draw) after they are left without water, when placed or updated; they need a sturdy top or face and leave their water when they break; pistons break living fans and move dead ones |
 
 ### V14 Redstone sources and signal consumers
 

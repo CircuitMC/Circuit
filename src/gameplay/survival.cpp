@@ -125,7 +125,7 @@ float hardness(BlockState s) noexcept {
     case BlockType::target:
         return 0.5f;
     case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: case BlockType::daylight_detector:
-    case BlockType::note_block: case BlockType::rail: {
+    case BlockType::note_block: case BlockType::rail: case BlockType::coral_fan: case BlockType::coral_wall_fan: {
         const auto info = detail::modeled_info(s);
         return info ? info->hardness : -1.0f;
     }

@@ -1114,6 +1114,206 @@
         "deviations": [
           "no bubble columns, no soul fire"
         ]
+      },
+      "tube_coral_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "tube_coral_wall_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "dead_tube_coral_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "dead_tube_coral_wall_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "brain_coral_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "brain_coral_wall_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "dead_brain_coral_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "dead_brain_coral_wall_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "bubble_coral_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "bubble_coral_wall_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "dead_bubble_coral_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "dead_bubble_coral_wall_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "fire_coral_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "fire_coral_wall_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "dead_fire_coral_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "dead_fire_coral_wall_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "horn_coral_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "horn_coral_wall_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "dead_horn_coral_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
+      },
+      "dead_horn_coral_wall_fan": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/coral_fans"
+        ],
+        "deviations": [
+          "water does not flow out of it when waterlogged"
+        ]
       }
     },
     "item": {

@@ -1912,6 +1912,29 @@ int main() {
         require(!s.at({10, 0, 0}).flag(), "the check 20 ticks later finds no cart");
     });
 
+    suite.run("coral fans die without water and leave their water when they break", [] {
+        using circuit::gameplay::blocks::CoralKind;
+        Sim s;
+        s.tick(floor(-2, 8, -1, 4));
+        const auto draws = [&] {
+            std::uint64_t n = 0;
+            for (const auto& r : of_kind(s.last, TraceKind::level_random_draw)) n += r.a;
+            return n;
+        };
+        s.tick({place({0, 0, 0}, blocks::coral_fan(CoralKind::tube)), place({2, 0, 0}, blocks::coral_fan(CoralKind::fire, false, true)),
+                place({4, 0, 0}, blocks::coral_fan(CoralKind::horn, true))});
+        require(draws() == 1, "only the dry living fan draws its death's delay");
+        const auto placed = s.oracle.time();
+        while (s.oracle.time() < placed + 100 && s.at({0, 0, 0}) == blocks::coral_fan(CoralKind::tube)) s.tick();
+        const auto died = s.oracle.time() - placed;
+        require(s.at({0, 0, 0}) == blocks::coral_fan(CoralKind::tube, true) && died >= 60 && died < 100,
+                std::format("dead after {} ticks", died));
+        require(s.at({2, 0, 0}) == blocks::coral_fan(CoralKind::fire, false, true), "the waterlogged one lives");
+        // Without support the waterlogged fan breaks and leaves its water.
+        s.tick({place({2, -1, 0}, blocks::air())});
+        require(s.at({2, 0, 0}) == blocks::water_source(), "its water stays");
+    });
+
     suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {
         using circuit::contracts::UseBlock;
         Sim s;

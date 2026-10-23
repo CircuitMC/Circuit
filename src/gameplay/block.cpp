@@ -53,6 +53,8 @@ constexpr Properties properties(BlockType t) noexcept {
     case BlockType::daylight_detector: return {false, true, true, false};
     case BlockType::note_block: return {false, true, true, true};
     case BlockType::rail: return {false, true, true, true};
+    case BlockType::coral_fan: return {false, false, true, false};
+    case BlockType::coral_wall_fan: return {true, false, true, false};
     default: return {false, false, false, false};
     }
 }
@@ -69,6 +71,10 @@ const std::vector<bool>& modeled_blocks() {
             mark(std::string(kind) + "_pressure_plate");
         }
         for (const auto name : {"rail", "powered_rail", "activator_rail", "detector_rail"}) mark(name);
+        for (std::uint8_t v = 0; v < 2 * blocks::coral_kinds; ++v) {
+            mark(std::string(coral_fan_name(v, false)));
+            mark(std::string(coral_fan_name(v, true)));
+        }
         for (std::size_t k = 0; k < door_names.size(); ++k) {
             mark(std::string(door_names[k]) + "_door");
             mark(std::string(door_names[k]) + "_trapdoor");
@@ -82,6 +88,12 @@ const std::vector<bool>& modeled_blocks() {
 
 std::string_view button_kind_name(std::uint8_t variant) noexcept {
     return variant < button_names.size() ? button_names[variant] : std::string_view{};
+}
+
+std::string coral_fan_name(std::uint8_t variant, bool wall) {
+    constexpr std::array<std::string_view, blocks::coral_kinds> kinds{"tube", "brain", "bubble", "fire", "horn"};
+    const bool dead = variant >= blocks::coral_kinds;
+    return std::format("{}{}_coral_{}fan", dead ? "dead_" : "", kinds[variant % blocks::coral_kinds], wall ? "wall_" : "");
 }
 
 std::string_view rail_shape_name(std::uint8_t shape) noexcept {
@@ -172,7 +184,7 @@ contracts::Result<BlockState> BlockState::decode(std::uint32_t raw) noexcept {
     case BlockType::lever: case BlockType::button:
         if (!contracts::is_horizontal(s.facing()) || s.level() > 2) return invalid;
         break;
-    case BlockType::redstone_wall_torch:
+    case BlockType::redstone_wall_torch: case BlockType::coral_wall_fan:
         if (!contracts::is_horizontal(s.facing())) return invalid;
         break;
     // Powered is one bit; a fence gate's level only says whether it is in a wall.
@@ -296,6 +308,9 @@ std::string block_notation(BlockState s) {
         return std::format("minecraft:daylight_detector[inverted={},power={}]", b(s.flag()), s.level());
     case BlockType::note_block:
         return std::format("minecraft:note_block[instrument={},note={},powered={}]", instrument_name(s.variant()), note_of(s), b(s.flag()));
+    case BlockType::coral_fan: return std::format("minecraft:{}[waterlogged={}]", coral_fan_name(s.variant(), false), b(s.flag()));
+    case BlockType::coral_wall_fan:
+        return std::format("minecraft:{}[facing={},waterlogged={}]", coral_fan_name(s.variant(), true), direction_name(s.facing()), b(s.flag()));
     case BlockType::rail: {
         if (s.variant() == 0) return std::format("minecraft:rail[shape={},waterlogged={}]", rail_shape_name(s.level()), b(s.extra() != 0));
         constexpr std::array<std::string_view, 4> kinds{"rail", "powered_rail", "activator_rail", "detector_rail"};

@@ -54,6 +54,7 @@ Every block state of both versions is represented, with its official name and pr
 | `target` | `power` | — |
 | `daylight_detector` | `inverted`, `power` | — |
 | `note_block` | `instrument`, `note`, `powered` | — |
+| the ten `*_coral_fan` and ten `*_coral_wall_fan` blocks | `waterlogged`, `facing` (wall fans) | — |
 | `rail` | `shape` | `waterlogged` (stored) |
 | `powered_rail`, `activator_rail`, `detector_rail` | `powered`, `shape` | `waterlogged` (stored) |
 | `*_door`, `*_trapdoor`, `*_fence_gate` (every kind) | `facing`, `half`, `hinge`, `in_wall`, `open`, `powered` | a trapdoor's `waterlogged` (stored, not simulated) |
@@ -72,7 +73,7 @@ Every block state of both versions is represented, with its official name and pr
 
 ### Technical machines
 
-Block and item registration do not provide behavior. Coral fans exist as inert blocks (pistons destroy them as the official servers do), and their items cannot be placed by the current rules. Rails take their shapes and pass power, minecarts ride them and meet each other, and detector rails sense minecarts. Common building blocks such as cobblestone, dirt and oak logs are inert too; sand, gravel and concrete powder fall, and TNT is primed and explodes (below). Survival inventories and container screens therefore do not constitute complete vanilla survival support.
+Block and item registration do not provide behavior. Coral fans die without water and break, but coral blocks and plants are inert. Rails take their shapes and pass power, minecarts ride them and meet each other, and detector rails sense minecarts. Common building blocks such as cobblestone, dirt and oak logs are inert too; sand, gravel and concrete powder fall, and TNT is primed and explodes (below). Survival inventories and container screens therefore do not constitute complete vanilla survival support.
 
 | Mechanism or machine | Current support |
 | --- | --- |
@@ -80,7 +81,7 @@ Block and item registration do not provide behavior. Coral fans exist as inert b
 | Sticky-piston block dropping on a short pulse | The one-game-tick pulse scenario passes recorded traces for both versions. |
 | Slime structures, the 12-block push limit and observers watching piston writes | Implemented with rule, trace and cross-chunk simulation checks. Pistons remain L2 because item pushing, drops and some update ordering have gaps. |
 | TNT ignition, fuse, motion and explosions | Redstone and explosions prime TNT (placed by commands, players or pistons); primed TNT's motion and fuse and its explosions (blocks, drops, chain reactions, item damage and knockback) match recorded traces of both versions. Burning arrows prime TNT; fire, flint and steel and dispensers do not, and explosions do not hurt players. |
-| TNT duplication machines | Not supported. Primed TNT, explosions, rails and minecarts on them exist, but coral fans are inert, minecarts carry nothing, and TNT duplication itself is not modeled. No TNT-duplication reference fixture exists. |
+| TNT duplication machines | Not supported. Primed TNT, explosions, rails, minecarts on them and coral fans exist, but minecarts carry nothing, dispensers and droppers are missing, and TNT duplication itself is not modeled. No TNT-duplication reference fixture exists. |
 | Honey-based flying machines | Honey blocks, their separation from slime and the entities they carry match recorded traces of both versions, including a small slime-honey flying machine. Larger flying-machine designs have no acceptance evidence yet. |
 | Redstone torches, buttons, pressure plates and target blocks | Torch inverters, towers and burnout, buttons pressed by players and arrows, pressure plates sensing items and arrows (weighted ones counting them) and target blocks grading hits match recorded traces of both versions, including the update order of the dust they drive. Mobs and players do not press plates yet, and tripwire is not modeled. |
 | Daylight detectors | Normal and inverted detectors follow the sky light, the time of day, rain and thunder every 20 game ticks, and invert when used, as in recorded traces of both versions over a day, with and without the daylight cycle. Sculk sensors, lightning rods and the other sensors are not modeled. |

@@ -1089,13 +1089,39 @@ inline Scenario detector_rail_scenario() {
     }, 10};
 }
 
+// Coral fans at the x=16 chunk edge: living fans dying dry on either side,
+// one kept alive by water in the other chunk until the water goes, and a
+// piston breaking a living fan over the edge.
+inline Scenario coral_scenario() {
+    using blocks::CoralKind;
+    return {"coral_fans", 122, 240, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        if (t == 2) {
+            for (int x = 8; x <= 24; ++x)
+                for (int z = -2; z <= 6; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            c.push_back(place({15, 0, 0}, blocks::coral_fan(CoralKind::brain)));
+            c.push_back(place({16, 0, 0}, blocks::coral_fan(CoralKind::bubble)));
+            c.push_back(place({16, 0, 3}, blocks::water_source()));
+            for (const BlockPos p : {BlockPos{17, 0, 3}, BlockPos{16, 0, 2}, BlockPos{16, 0, 4}, BlockPos{16, 1, 3}}) c.push_back(place(p, blocks::glass()));
+            c.push_back(place({15, 0, 3}, blocks::coral_fan(CoralKind::horn)));
+            c.push_back(place({14, 0, 5}, blocks::piston(Direction::east)));
+            c.push_back(place({15, 0, 5}, blocks::coral_fan(CoralKind::fire, false, true)));
+            c.push_back(place({13, 0, 5}, blocks::lever(false)));
+        }
+        if (t == 50) c.push_back(place({16, 0, 3}, blocks::glass()));
+        if (t == 60) c.push_back(UseBlock{{13, 0, 5}});
+        return c;
+    }, 10};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
             comparator_chest_scenario(), piston_pulse_scenario(), drops_scenario(), observed_piston_scenario(),
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
-            plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario(), rail_scenario(), minecart_rail_scenario(), minecart_meeting_scenario(), detector_rail_scenario()};
+            plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario(), rail_scenario(), minecart_rail_scenario(), minecart_meeting_scenario(), detector_rail_scenario(), coral_scenario()};
 }
 
 } // namespace circuit::test

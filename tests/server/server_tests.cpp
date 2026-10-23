@@ -2296,9 +2296,9 @@ int main() {
         // rules v11 also the redstone torch's, the 14 buttons', the 16
         // pressure plates', the target block's, the 54 doors', trapdoors'
         // and fence gates', the honey block's, the daylight detector's, the
-        // note block's and the four rails'.
-        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 914, 820, 1407, 984},
-                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 906, 812, 1370, 948}}) {
+        // note block's, the four rails' and the ten coral fans'.
+        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 904, 810, 1407, 984},
+                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 896, 802, 1370, 948}}) {
             const char* jar = std::getenv(e.variable);
             if (!jar || !*jar) continue;
             const auto& bundle = **contracts::BundleRegistry::find(e.bundle);

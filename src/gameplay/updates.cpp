@@ -147,9 +147,10 @@ void set_block_quiet(RuleContext& ctx, BlockPos pos, BlockState next) {
 void destroy_block(RuleContext& ctx, BlockPos pos) {
     const auto s = ctx.block(pos);
     if (s.is_air() || s.is_unloaded()) return;
-    // Drops first, then the block goes with full updates.
+    // Drops first, then the block goes with full updates, leaving its water
+    // when waterlogged.
     drop_items(ctx, pos, s);
-    set_block(ctx, pos, blocks::air());
+    set_block(ctx, pos, waterlogged(s) ? blocks::water_source() : blocks::air());
 }
 
 bool head_has_base(RuleContext& ctx, BlockPos pos, BlockState head) {
@@ -187,6 +188,7 @@ void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
         break;
     case BlockType::door: case BlockType::fence_gate: opening_shape_update(ctx, target, *d); break;
     case BlockType::note_block: note_block_shape_update(ctx, target, s, *d); break;
+    case BlockType::coral_fan: case BlockType::coral_wall_fan: coral_shape_update(ctx, target, s, *d); break;
     case BlockType::piston_head:
         // A head without its base disappears.
         if (*d == contracts::opposite(s.facing()) && !head_has_base(ctx, target, s)) set_block(ctx, target, blocks::air());
@@ -228,6 +230,9 @@ void on_placed(RuleContext& ctx, BlockPos pos, BlockState state, BlockState prev
         // An observer moved by a piston fires at its new position (observed in
         // target-version traces); other placements do not.
         if (moved_in) schedule(ctx, TickList::block, pos, BlockType::observer, 2, 0);
+        break;
+    case BlockType::coral_fan: case BlockType::coral_wall_fan:
+        if (!same_block(previous, state)) coral_placed(ctx, pos, state);
         break;
     // A rail of another block or moved in takes its shape.
     case BlockType::rail:

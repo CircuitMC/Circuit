@@ -49,6 +49,8 @@ enum class BlockType : std::uint8_t {
     daylight_detector,   // level: power 0-15; flag: inverted. Block entity: ticks it every 20 game ticks
     note_block,          // level and extra bit 0: note 0-24 (note_of); flag: powered; variant: registry::Instrument
     rail,                // level: RailShape; flag: powered (not plain rails); extra: waterlogged (stored); variant: RailKind
+    coral_fan,           // flag: waterlogged; variant: CoralKind, + 5 when dead
+    coral_wall_fan,      // facing: away from the block it hangs on (horizontal); flag: waterlogged; variant: as coral_fan
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -229,6 +231,19 @@ constexpr BlockState rail(RailKind kind = RailKind::rail, RailShape shape = Rail
     return BlockState::of(BlockType::rail).with_variant(static_cast<std::uint8_t>(kind)).with_level(static_cast<std::uint8_t>(shape))
         .with_flag(powered);
 }
+// Coral fans: the kinds, living (variant 0-4) and dead (5-9). Registry names:
+// "<kind>_coral_fan", "dead_<kind>_coral_fan", "<kind>_coral_wall_fan".
+enum class CoralKind : std::uint8_t { tube, brain, bubble, fire, horn };
+inline constexpr std::uint8_t coral_kinds = 5;
+constexpr BlockState coral_fan(CoralKind kind, bool dead = false, bool waterlogged = false) {
+    return BlockState::of(BlockType::coral_fan).with_variant(static_cast<std::uint8_t>(static_cast<std::uint8_t>(kind) + (dead ? coral_kinds : 0)))
+        .with_flag(waterlogged);
+}
+constexpr BlockState coral_wall_fan(CoralKind kind, Direction facing, bool dead = false, bool waterlogged = false) {
+    return BlockState::of(BlockType::coral_wall_fan)
+        .with_variant(static_cast<std::uint8_t>(static_cast<std::uint8_t>(kind) + (dead ? coral_kinds : 0)))
+        .with_facing(facing).with_flag(waterlogged);
+}
 // A note block; `instrument` is a registry::Instrument.
 constexpr BlockState note_block(std::uint8_t instrument = 0, std::uint8_t note = 0, bool powered = false) {
     return BlockState::of(BlockType::note_block).with_variant(instrument).with_level(static_cast<std::uint8_t>(note & 15))
@@ -257,6 +272,8 @@ constexpr BlockState fence_gate(DoorKind kind, Direction facing, bool open = fal
         .with_level(in_wall ? 1 : 0).with_flag(open).with_extra(powered ? 1 : 0);
 }
 } // namespace blocks
+// "dead_tube_coral_fan" for a dead tube coral fan's variant; with `wall`, its wall fan.
+std::string coral_fan_name(std::uint8_t variant, bool wall);
 // "north_south" for RailShape::north_south.
 std::string_view rail_shape_name(std::uint8_t shape) noexcept;
 // "harp" for a note block's instrument 0 (registry::Instrument).
@@ -277,14 +294,18 @@ inline constexpr std::uint8_t note_instruments = 23;
 // Blocks of several kinds that share a BlockType and keep the kind as their variant.
 constexpr bool has_variant(BlockType t) noexcept {
     return t == BlockType::button || t == BlockType::pressure_plate || t == BlockType::weighted_plate || t == BlockType::door
-        || t == BlockType::trapdoor || t == BlockType::fence_gate || t == BlockType::rail;
+        || t == BlockType::trapdoor || t == BlockType::fence_gate || t == BlockType::rail || t == BlockType::coral_fan
+        || t == BlockType::coral_wall_fan;
 }
+constexpr bool is_coral_fan(BlockType t) noexcept { return t == BlockType::coral_fan || t == BlockType::coral_wall_fan; }
+constexpr bool dead_coral(BlockState s) noexcept { return s.variant() >= blocks::coral_kinds; }
 constexpr std::uint8_t variant_count(BlockType t) noexcept {
     switch (t) {
     case BlockType::weighted_plate: return 2;
     case BlockType::door: case BlockType::trapdoor: return blocks::door_kinds;
     case BlockType::fence_gate: return blocks::fence_gate_kinds;
     case BlockType::rail: return blocks::rail_kinds;
+    case BlockType::coral_fan: case BlockType::coral_wall_fan: return 2 * blocks::coral_kinds;
     default: return has_variant(t) ? blocks::button_kinds : 1;
     }
 }
@@ -363,6 +384,8 @@ inline bool is_movable(BlockState s) noexcept {
         return true;
     case BlockType::piston: case BlockType::sticky_piston:
         return !s.flag();
+    case BlockType::coral_fan: case BlockType::coral_wall_fan:
+        return dead_coral(s);
     case BlockType::other:
         return other_movable(s);
     default:
@@ -381,8 +404,10 @@ constexpr bool destroyed_by_piston(BlockType t) noexcept {
         return false;
     }
 }
-// The same for any state, registry blocks by their push class.
+// The same for any state, registry blocks by their push class; living coral
+// fans break, dead ones move.
 inline bool destroyed_by_piston(BlockState s) noexcept {
+    if (is_coral_fan(s.type())) return !dead_coral(s);
     return s.is(BlockType::other) ? other_destroyed_by_piston(s) : destroyed_by_piston(s.type());
 }
 // Blocks pistons push but never pull (glazed terracotta).

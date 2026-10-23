@@ -906,6 +906,20 @@ int main() {
         require(at(90, {15, 0, 4}).flag() && at(90, {16, 0, 4}).flag() && at(90, {20, 0, 4}).flag(), "the cart at rest");
     });
 
+    suite.run("coral fans die across chunk edges", [&] {
+        using circuit::gameplay::blocks::CoralKind;
+        const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("coral_fans"), &Scenario::name) - scenarios.begin());
+        require(index < scenarios.size(), "the coral fan scenario");
+        const auto& ref = references[index];
+        const auto at = [&](Tick t, BlockPos p) { return state_at(ref.dumps.at(t), p); };
+        require(at(40, {15, 0, 0}) == blocks::coral_fan(CoralKind::brain) && at(110, {15, 0, 0}) == blocks::coral_fan(CoralKind::brain, true)
+                    && at(110, {16, 0, 0}) == blocks::coral_fan(CoralKind::bubble, true),
+                "the dry fans died between 60 and 100 ticks");
+        require(at(100, {15, 0, 3}) == blocks::coral_fan(CoralKind::horn) && at(160, {15, 0, 3}) == blocks::coral_fan(CoralKind::horn, true),
+                "the fan beside water lived until the water went, then died");
+        require(at(70, {15, 0, 5}).is(BlockType::piston_head), "the piston broke the living fan");
+    });
+
     suite.run("chunk levels decide what runs", [&] {
         const auto index = static_cast<std::size_t>(std::ranges::find(scenarios, std::string("chunk_levels"), &Scenario::name) - scenarios.begin());
         require(index < scenarios.size(), "the chunk level scenario");
