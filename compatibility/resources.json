@@ -2029,6 +2029,702 @@
           "water does not flow out of it when waterlogged"
         ],
         "note": "Joins its neighbors by the rules of its kind, compared for cobblestone_wall"
+      },
+      "oak_stairs": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it, as both official servers do for every combination of stairs around it"
+      },
+      "cobblestone_stairs": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it, as both official servers do for every combination of stairs around it"
+      },
+      "brick_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "stone_brick_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "mud_brick_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "resin_brick_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "nether_brick_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "sandstone_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "spruce_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "birch_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "jungle_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "quartz_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "acacia_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "cherry_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "dark_oak_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "pale_oak_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "mangrove_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "bamboo_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "bamboo_mosaic_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "prismarine_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "prismarine_brick_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "dark_prismarine_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "red_sandstone_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "purpur_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "polished_granite_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "smooth_red_sandstone_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "mossy_stone_brick_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "polished_diorite_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "mossy_cobblestone_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "end_stone_brick_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "stone_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "smooth_sandstone_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "smooth_quartz_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "granite_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "andesite_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "red_nether_brick_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "polished_andesite_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "diorite_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "crimson_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "warped_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "blackstone_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "polished_blackstone_brick_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "polished_blackstone_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "tuff_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "polished_tuff_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "tuff_brick_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "oxidized_cut_copper_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "weathered_cut_copper_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "exposed_cut_copper_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "cut_copper_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "waxed_oxidized_cut_copper_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "waxed_weathered_cut_copper_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "waxed_exposed_cut_copper_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "waxed_cut_copper_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "cobbled_deepslate_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "polished_deepslate_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "deepslate_tile_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "deepslate_brick_stairs": {
+        "impl": "partial",
+        "evidence": "documented",
+        "cases": [
+          "collision/stairs"
+        ],
+        "deviations": [
+          "players do not place it yet",
+          "water does not flow out of it when waterlogged"
+        ],
+        "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
       }
     },
     "item": {

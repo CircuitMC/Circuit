@@ -17,6 +17,7 @@ bool sticky(BlockState s) { return s.is(BlockType::slime_block) || s.is(BlockTyp
 // block's instrument).
 BlockState settled(RuleContext& ctx, BlockPos pos, BlockState s) {
     if (s.is(BlockType::note_block)) return tuned_note_block(ctx, pos, s);
+    if (is_stairs(s)) return shaped_stairs(ctx, pos, s);
     return is_connector(s) ? joined_state(ctx, pos, s) : s;
 }
 

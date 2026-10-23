@@ -772,6 +772,22 @@
           "note": "On shape updates and when a piston sets them down, as both official servers do; every state beside and above them compared"
         },
         {
+          "id": "stair_shapes",
+          "name": "Stairs taking corner shapes from the stairs beside them",
+          "milestone": "C5",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "collision/stairs",
+            "trace/stairs_shapes"
+          ],
+          "deviations": [
+            "players do not place them yet (placement orientation and shapes)",
+            "water does not flow out of waterlogged ones"
+          ],
+          "note": "On shape updates from the sides and when a piston sets them down, as both official servers do; every combination of stairs around them compared"
+        },
+        {
           "id": "multi_block",
           "name": "Two-part blocks: doors, beds, tall plants",
           "milestone": "C5",

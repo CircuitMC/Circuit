@@ -196,6 +196,7 @@ void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
     case BlockType::other:
         if (falls(s)) schedule_fall(ctx, target);
         else if (is_connector(s)) connector_shape_update(ctx, target, s, *d);
+        else if (is_stairs(s)) stairs_shape_update(ctx, target, s, *d);
         break;
     default: break;
     }

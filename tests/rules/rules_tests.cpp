@@ -2197,6 +2197,29 @@ int main() {
                 std::format("the pushed fence: {}", circuit::gameplay::block_notation(s.at({2, 1, 4}))));
     });
 
+    suite.run("stairs take corner shapes from the stairs beside them", [] {
+        namespace registry = circuit::gameplay::registry;
+        const auto stairs = [](std::string_view facing, std::string_view shape = "straight", std::string_view half = "bottom") {
+            const std::vector<registry::Property> props{{"facing", std::string(facing)}, {"half", std::string(half)}, {"shape", std::string(shape)}};
+            return BlockState::registered(registry::state_of(registry::find_block("1.21.8", "oak_stairs").value(), props).value());
+        };
+        Sim s;
+        s.tick(with_floor(floor(-2, 12, -1, 8), {place({2, 1, 2}, stairs("north")), place({6, 1, 2}, stairs("north")), place({10, 1, 2}, stairs("north")),
+                                                   place({0, 1, 6}, blocks::piston(D::east)), place({1, 1, 6}, stairs("north"))}));
+        // A stair turned west in front makes an outer corner, one turned east
+        // behind an inner corner; an upside-down one changes nothing.
+        s.tick({place({2, 1, 1}, stairs("west")), place({6, 1, 3}, stairs("east")), place({10, 1, 1}, stairs("west", "straight", "top")),
+                place({2, 1, 5}, stairs("west"))});
+        require(s.at({2, 1, 2}) == stairs("north", "outer_left"), std::format("outer: {}", circuit::gameplay::block_notation(s.at({2, 1, 2}))));
+        require(s.at({6, 1, 2}) == stairs("north", "inner_right"), std::format("inner: {}", circuit::gameplay::block_notation(s.at({6, 1, 2}))));
+        require(s.at({10, 1, 2}) == stairs("north"), "halves do not join");
+        // Removed, the corner straightens; pushed into a corner, a stair takes it.
+        s.tick({place({2, 1, 1}, BlockState::of(BlockType::air)), place({-1, 1, 6}, blocks::redstone_block())});
+        require(s.at({2, 1, 2}) == stairs("north"), "straight again");
+        for (int i = 0; i < 4; ++i) s.tick();
+        require(s.at({2, 1, 6}) == stairs("north", "outer_left"), std::format("pushed: {}", circuit::gameplay::block_notation(s.at({2, 1, 6}))));
+    });
+
     suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {
         using circuit::contracts::UseBlock;
         Sim s;

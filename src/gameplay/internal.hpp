@@ -243,6 +243,13 @@ BlockState joined_state(RuleContext& ctx, BlockPos pos, BlockState s);
 // that side, a wall also takes its heights and post from the block above.
 void connector_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d);
 
+// ---- stairs (stairs.cpp) ----
+bool is_stairs(BlockState s);
+// The shape stairs take from the stairs beside them.
+BlockState shaped_stairs(RuleContext& ctx, BlockPos pos, BlockState s);
+// A shape update from `d`: from a side, their shape again.
+void stairs_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d);
+
 // ---- note blocks (note.cpp) ----
 // The state with the instrument its neighbors give it.
 BlockState tuned_note_block(RuleContext& ctx, BlockPos pos, BlockState s);

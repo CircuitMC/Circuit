@@ -637,6 +637,46 @@ int main(int argc, char** argv) {
         require(checked == 27946 + 27866, std::format("{} states", checked));
     });
 
+    suite.run("stairs take their shapes from the stairs beside them as both official servers do", [&] {
+        // tests/fixtures/collision/stairs.txt: every combination of air and
+        // stairs of each facing and half on the four sides of oak stairs.
+        namespace registry = circuit::gameplay::registry;
+        using circuit::gameplay::BlockState;
+        constexpr std::array<std::string_view, 4> facings{"north", "east", "south", "west"};
+        constexpr std::array<std::string_view, 5> shapes{"straight", "inner_left", "inner_right", "outer_left", "outer_right"};
+        std::size_t checked = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            const auto stairs = [&](std::string_view kind, std::string_view facing, std::string_view half, std::string_view shape = "straight") {
+                const auto block = registry::find_block(release, kind);
+                require(block.has_value(), std::format("{} {}", release, kind));
+                const std::vector<registry::Property> props{{"facing", std::string(facing)}, {"half", std::string(half)}, {"shape", std::string(shape)}};
+                return BlockState::registered(registry::state_of(*block, props).value());
+            };
+            std::istringstream lines(read_text(fixtures / "collision" / "stairs.txt"));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                std::istringstream fields(line);
+                std::string facing, half, kind, codes;
+                fields >> facing >> half >> kind >> codes;
+                require(codes.size() == 6561, line.substr(0, 40));
+                std::array<BlockState, 9> options{BlockState::of(circuit::gameplay::BlockType::air)};
+                for (std::size_t f = 0; f < 4; ++f)
+                    for (std::size_t h = 0; h < 2; ++h) options[1 + 2 * f + h] = stairs(kind, facings[f], h == 0 ? "bottom" : "top");
+                const auto center = stairs("oak_stairs", facing, half);
+                for (std::size_t i = 0; i < codes.size(); ++i) {
+                    std::array<BlockState, 4> around{};
+                    for (std::size_t k = i, d = 0; d < 4; ++d, k /= 9) around[d] = options[k % 9];
+                    const auto got = circuit::gameplay::stairs_with_neighbors(center, around);
+                    const auto want = stairs("oak_stairs", facing, half, shapes[static_cast<std::size_t>(codes[i] - '0')]);
+                    require(got == want, std::format("{} {} {} {} neighbors #{}: official {}, Circuit {}", release, facing, half, kind, i,
+                                                     circuit::gameplay::block_notation(want), circuit::gameplay::block_notation(got)));
+                    ++checked;
+                }
+            }
+        }
+        require(checked == 2 * 104976, std::format("{} combinations", checked));
+    });
+
     suite.run("light properties match both official servers", [&] {
         // tests/fixtures/light: every state's emission, dampening and
         // occlusion shape as the official servers report them.

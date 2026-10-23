@@ -34,7 +34,7 @@ Feature counts per implementation state, then the number of features with compar
 | V08 Terrain and biomes | C7 | 70 | 0 / 0 | 2 / 2 | 64 / 64 | 4 / 4 | 0 / 0 | 0 / 0 |
 | V09 Structures and decoration | C7, C5 | 6 | 0 / 0 | 0 / 0 | 0 / 0 | 6 / 6 | 0 / 0 | 0 / 0 |
 | V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 1 / 1 | 39 / 39 | 3 / 3 | 0 / 0 | 1 / 1 |
-| V11 Common building blocks | C5 | 1345 | 0 / 0 | 174 / 174 | 1169 / 1169 | 2 / 2 | 0 / 0 | 21 / 21 |
+| V11 Common building blocks | C5 | 1346 | 0 / 0 | 233 / 233 | 1111 / 1111 | 2 / 2 | 0 / 0 | 24 / 24 |
 | V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 24 / 24 | 54 / 54 | 4 / 4 | 0 / 0 | 8 / 8 |
 | V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 23 / 23 | 278 / 292 | 5 / 5 | 14 / 0 | 21 / 21 |
 | V14 Redstone sources and signal consumers | C4, C5 | 138 | 7 / 7 | 95 / 95 | 35 / 35 | 1 / 1 | 0 / 0 | 37 / 39 |
@@ -67,7 +67,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 212 / 212 | 879 / 889 | 0 / 0 |
+| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 270 / 270 | 821 / 831 | 0 / 0 |
 | item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 128 / 128 | 1256 / 1287 | 0 / 0 |
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 17 / 17 | 0 / 0 | 132 / 134 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
@@ -127,10 +127,10 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 33 |
+| black_box | passing | 34 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 134 |
+| official_trace | passing | 135 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -250,6 +250,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | --- | --- | --- | --- | --- |
 | Placement orientation and shapes: stairs, slabs, walls, fences, panes, doors, beds | C5 | missing, none | missing, none |  |
 | Fences, panes, bars and walls joining their neighbors | C5 | partial, compared | partial, compared | `collision/connection`, `trace/connections`, `trace/connections_moved`, `trace/tnt_duper_wall`; players do not place them yet (placement orientation and shapes); water does not flow out of waterlogged ones; On shape updates and when a piston sets them down, as both official servers do; every state beside and above them compared |
+| Stairs taking corner shapes from the stairs beside them | C5 | partial, compared | partial, compared | `collision/stairs`, `trace/stairs_shapes`; players do not place them yet (placement orientation and shapes); water does not flow out of waterlogged ones; On shape updates from the sides and when a piston sets them down, as both official servers do; every combination of stairs around them compared |
 | Two-part blocks: doors, beds, tall plants | C5 | partial, compared | partial, compared | `trace/door_basics`, `trace/door_more`; beds and tall plants are not modeled; Doors: the halves follow each other, and a half without the other breaks (the lower one with the drop) |
 | Signs, banners, heads, pots and other block-entity data | C5 | data_only, none | data_only, reference_only | `anvil/components`; Block entities of blocks without rules of their own keep their saved data through checkpoints and Anvil interchange; nothing interprets it, and clients do not receive it |
 | Copper weathering, waxing and scraping | C5 | missing, none | missing, none |  |

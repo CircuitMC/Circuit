@@ -37,6 +37,9 @@ bool redstone_conductor(BlockState s) noexcept;
 // under `above` in `release`.
 bool connector_joins(BlockState connector, BlockState neighbor, contracts::Direction side);
 BlockState wall_under(BlockState wall, std::array<bool, 4> joined, BlockState above, std::string_view release);
+// The shape stairs take with `around` on their north, east, south and west
+// (for checks against the official servers).
+BlockState stairs_with_neighbors(BlockState stairs, std::array<BlockState, 4> around);
 std::uint8_t received_power(RuleContext& ctx, BlockPos pos);
 
 // Positions outside the level's height or the border are never loaded.
