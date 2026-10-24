@@ -378,6 +378,9 @@ inline bool is_solid(BlockState s) noexcept {
 bool is_lava(BlockState s);
 bool is_lava_source(BlockState s);
 BlockState lava_source();
+// Whether a block other than water holds water as a property (waterlogged):
+// its water has fluid ticks of the block's type (nature.cpp).
+bool waterlogged_block(BlockState s);
 // How pistons treat a registry block without rules of its own: its push
 // class (block_registry.hpp; observed on both official servers).
 bool other_movable(BlockState s) noexcept;

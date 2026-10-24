@@ -170,6 +170,9 @@ void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
     const auto s = ctx.block(target);
     const auto d = direction_to(target, from);
     if (!d) return;
+    // The water of a waterlogged block moves after any shape update, before
+    // the block takes its new shape (waterlogged_flow).
+    if (!s.is(BlockType::water) && waterlogged(s)) schedule(ctx, TickList::fluid, target, s.type(), 5, 0);
     switch (s.type()) {
     case BlockType::observer:
         if (s.facing() == *d) schedule(ctx, TickList::block, target, BlockType::observer, 2, 0);

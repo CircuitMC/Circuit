@@ -59,14 +59,28 @@ int lava_level(BlockState s) {
 }
 BlockState lava_state(int level) { return BlockState::registered(lava_states().by_level[static_cast<std::size_t>(level)]); }
 
-bool is_of(const Fluid& f, BlockState s) { return f.lava ? lava_level(s) >= 0 : s.is(BlockType::water); }
-bool is_source(const Fluid& f, BlockState s) { return f.lava ? lava_level(s) == 0 : s.is(BlockType::water) && s.level() == 0 && !s.flag(); }
+// A waterlogged block holds a source of water (waterlogged_flow).
+bool water_in_block(BlockState s) { return !s.is(BlockType::water) && waterlogged(s); }
+bool is_of(const Fluid& f, BlockState s) { return f.lava ? lava_level(s) >= 0 : s.is(BlockType::water) || water_in_block(s); }
+bool is_source(const Fluid& f, BlockState s) {
+    return f.lava ? lava_level(s) == 0 : (s.is(BlockType::water) && s.level() == 0 && !s.flag()) || water_in_block(s);
+}
 bool is_falling(const Fluid& f, BlockState s) { return f.lava ? lava_level(s) >= 8 : s.is(BlockType::water) && s.flag(); }
 int amount(const Fluid& f, BlockState s) {
     if (!is_of(f, s)) return 0;
+    if (water_in_block(s)) return 8;
     const int level = f.lava ? lava_level(s) : (s.flag() ? 8 : s.level());
     return level == 0 || level >= 8 ? 8 : 8 - level; // sources and falling fluid: 8
 }
+
+// Fluid passes between two cells unless the collision shape of either covers
+// its whole face between them (waterlogged_flow: a stair's back, an open
+// trapdoor, a full waterlogged block).
+bool covered(BlockState s, Direction face) {
+    const auto state = physics::registry_state_of(s);
+    return state && registry::face_covered(*state, face);
+}
+bool passes(BlockState from, Direction d, BlockState to) { return !covered(from, d) && !covered(to, contracts::opposite(d)); }
 BlockState source(const Fluid& f) { return f.lava ? lava_state(0) : blocks::water_source(); }
 BlockState falling(const Fluid& f) { return f.lava ? lava_state(8) : blocks::water_falling(); }
 BlockState flowing(const Fluid& f, int k) {
@@ -118,9 +132,10 @@ bool replaceable_by_flow(const Fluid& f, BlockState s) { return !is_of(f, s); }
 // fluid below the fluid, else its strongest neighbor's less the drop.
 BlockState new_liquid(RuleContext& ctx, const Fluid& f, BlockPos pos) {
     int best = 0, sources = 0;
+    const auto here = ctx.block(pos);
     for (const auto d : plane) {
         const auto n = ctx.block(pos.relative(d));
-        if (!is_of(f, n)) continue;
+        if (!is_of(f, n) || !passes(here, d, n)) continue;
         if (is_source(f, n)) ++sources;
         best = std::max(best, amount(f, n));
     }
@@ -130,7 +145,7 @@ BlockState new_liquid(RuleContext& ctx, const Fluid& f, BlockPos pos) {
         const auto below = ctx.block(pos.relative(Direction::down));
         if (is_solid(below) || is_source(f, below)) return source(f);
     }
-    if (is_of(f, ctx.block(pos.relative(Direction::up)))) return falling(f);
+    if (const auto above = ctx.block(pos.relative(Direction::up)); is_of(f, above) && passes(here, Direction::up, above)) return falling(f);
     const int k = best - f.drop;
     if (k <= 0) return blocks::air();
     return flowing(f, k);
@@ -139,7 +154,7 @@ BlockState new_liquid(RuleContext& ctx, const Fluid& f, BlockPos pos) {
 // The fluid could flow down from `pos`.
 bool is_hole(RuleContext& ctx, const Fluid& f, BlockPos pos) {
     const auto below = ctx.block(pos.relative(Direction::down));
-    return holds(f, below) || (f.lava && below.is(BlockType::water));
+    return (holds(f, below) || (f.lava && below.is(BlockType::water))) && passes(ctx.block(pos), Direction::down, below);
 }
 
 // Steps from `pos` to the nearest hole within reach, not going back the way it came.
@@ -148,7 +163,8 @@ int slope_distance(RuleContext& ctx, const Fluid& f, BlockPos pos, int depth, Di
     for (const auto d : plane) {
         if (d == from) continue;
         const auto next = pos.relative(d);
-        if (!passable(f, ctx.block(next))) continue;
+        const auto there = ctx.block(next);
+        if (!passable(f, there) || !passes(ctx.block(pos), d, there)) continue;
         if (is_hole(ctx, f, next)) return depth;
         if (depth >= f.slope_find_distance) continue;
         best = std::min(best, slope_distance(ctx, f, next, depth + 1, contracts::opposite(d)));
@@ -176,7 +192,7 @@ void spread_to_sides(RuleContext& ctx, const Fluid& f, BlockPos pos, BlockState 
     for (const auto d : plane) {
         const auto p = pos.relative(d);
         const auto there = ctx.block(p);
-        if (!passable(f, there)) continue;
+        if (!passable(f, there) || !passes(s, d, there)) continue;
         const auto fresh = new_liquid(ctx, f, p);
         const int j = is_hole(ctx, f, p) ? 0 : slope_distance(ctx, f, p, 1, contracts::opposite(d));
         if (j < best) out.clear();
@@ -191,10 +207,13 @@ void spread_to_sides(RuleContext& ctx, const Fluid& f, BlockPos pos, BlockState 
 void spread(RuleContext& ctx, const Fluid& f, BlockPos pos, BlockState s) {
     const auto below = pos.relative(Direction::down);
     const auto under = ctx.block(below);
-    if (passable(f, under, true) && replaceable_by_flow(f, under)) {
+    if (passable(f, under, true) && replaceable_by_flow(f, under) && passes(s, Direction::down, under)) {
         spread_to(ctx, f, below, new_liquid(ctx, f, below));
         int sources = 0;
-        for (const auto d : plane) sources += is_source(f, ctx.block(pos.relative(d)));
+        for (const auto d : plane) {
+            const auto n = ctx.block(pos.relative(d));
+            sources += is_source(f, n) && passes(s, d, n);
+        }
         if (sources >= 3) spread_to_sides(ctx, f, pos, s);
         return;
     }
@@ -223,7 +242,8 @@ bool washed_away(BlockType t) noexcept {
         || t == BlockType::wheat || t == BlockType::redstone_torch || t == BlockType::redstone_wall_torch || t == BlockType::button;
 }
 
-bool holds_water(BlockState s) { return holds(water, s); }
+// Entities' currents do not see the water of waterlogged blocks yet.
+bool holds_water(BlockState s) { return holds(water, s) && !water_in_block(s); }
 
 void tick_water(RuleContext& ctx, BlockPos pos, BlockState s) { tick_fluid(ctx, water, pos, s); }
 void tick_lava(RuleContext& ctx, BlockPos pos, BlockState s) { tick_fluid(ctx, lava, pos, s); }
@@ -258,6 +278,7 @@ void wheat_random_tick(RuleContext& ctx, BlockPos pos, BlockState s, Rng& stream
 } // namespace circuit::gameplay::detail
 
 namespace circuit::gameplay {
+bool waterlogged_block(BlockState s) { return detail::water_in_block(s); }
 bool fluid_flows_into(BlockState s, bool lava) { return detail::holds(lava ? detail::lava : detail::water, s) && !detail::is_of(lava ? detail::lava : detail::water, s); }
 bool is_lava(BlockState s) { return detail::lava_level(s) >= 0; }
 bool is_lava_source(BlockState s) { return detail::lava_level(s) == 0; }

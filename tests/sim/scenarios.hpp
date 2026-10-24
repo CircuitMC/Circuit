@@ -1279,6 +1279,27 @@ inline Scenario lava_scenario() {
     }};
 }
 
+// Waterlogged blocks giving their water to their open sides after shape
+// updates, which come again just before each quarter of the run.
+inline Scenario waterlogged_scenario() {
+    return {"waterlogged", 43, 120, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 2)};
+        if (t == 2) {
+            std::vector<CommandBody> b;
+            for (int x = 8; x < 24; ++x)
+                for (int z = 8; z < 24; ++z) b.push_back(place({x, 0, z}, blocks::stone()));
+            return b;
+        }
+        if (t == 3)
+            return {place({12, 1, 12}, registry_block("oak_slab", {{"type", "bottom"}, {"waterlogged", "true"}})),
+                    place({19, 1, 19}, registry_block("oak_stairs", {{"facing", "north"}, {"waterlogged", "true"}})),
+                    place({16, 1, 20}, blocks::trapdoor(blocks::DoorKind::oak, D::north, false, false).with_level(2))};
+        if (t % 30 == 28) return {place({12, 1, 13}, blocks::glass()), place({19, 1, 20}, blocks::glass()), place({16, 1, 21}, blocks::glass())};
+        if (t % 30 == 29) return {place({12, 1, 13}, blocks::air()), place({19, 1, 20}, blocks::air()), place({16, 1, 21}, blocks::air())};
+        return {};
+    }};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
@@ -1286,7 +1307,7 @@ inline std::vector<Scenario> all_scenarios() {
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
             plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario(), rail_scenario(), minecart_rail_scenario(), minecart_meeting_scenario(), detector_rail_scenario(), coral_scenario(),
-            dispenser_scenario(), tnt_duper_scenario(), flying_engine_scenario(), item_sorter_scenario(), lava_scenario()};
+            dispenser_scenario(), tnt_duper_scenario(), flying_engine_scenario(), item_sorter_scenario(), lava_scenario(), waterlogged_scenario()};
 }
 
 } // namespace circuit::test

@@ -773,11 +773,14 @@ private:
         const BlockPos pos{static_cast<std::int32_t>(*x), static_cast<std::int32_t>(*y), static_cast<std::int32_t>(*z)};
         if (contracts::chunk_of(pos) != chunk) return std::unexpected(std::format("{}: scheduled tick outside its chunk", where));
         std::optional<BlockType> type;
-        // Lava, a registry block, ticks as one.
-        if (fluid)
+        // Lava, a registry block, ticks as one; the water of a waterlogged
+        // block ticks as the block.
+        if (fluid) {
             type = id == "minecraft:water" || id == "minecraft:flowing_water" ? std::optional(BlockType::water)
                  : id == "minecraft:lava" || id == "minecraft:flowing_lava"   ? std::optional(BlockType::other)
                                                                               : std::nullopt;
+            if (const auto here = block_at(pos); type == BlockType::water && here && gameplay::waterlogged_block(*here)) type = here->type();
+        }
         else type = content_.tick_type(id);
         if (!type) {
             unsupported(std::format("scheduled tick of {}", id));
@@ -1078,8 +1081,9 @@ private:
             // a stale tick leaves alone.
             const auto here = at(t->tick.pos);
             if (!fluid && here.type() != t->tick.block && t->tick.block == BlockType::other) continue;
-            const bool lava = t->tick.block == BlockType::other;
-            const bool source = lava ? gameplay::is_lava_source(here) : here.is(BlockType::water) && here.level() == 0 && !here.flag();
+            const bool lava = t->tick.block == BlockType::other && gameplay::is_lava(here);
+            const bool source = lava ? gameplay::is_lava_source(here)
+                                     : !here.is(BlockType::water) || (here.level() == 0 && !here.flag()); // a waterlogged block holds a source
             tag.set("i", Tag::string(fluid ? (lava ? (source ? "minecraft:lava" : "minecraft:flowing_lava") : (source ? "minecraft:water" : "minecraft:flowing_water"))
                                            : content_.block_name(here.type() == t->tick.block ? here : BlockState::of(t->tick.block))));
             tag.set("p", Tag::int_(t->tick.priority));

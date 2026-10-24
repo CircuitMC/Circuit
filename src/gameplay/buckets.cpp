@@ -9,8 +9,9 @@
 // lava go into air and into the blocks fluids replace: replaceable blocks
 // and those that are not solid (registry::solid), but end portals and end
 // gateways. What they replace breaks with its drops first, unless it is a
-// fluid. An empty bucket takes a water or lava source, a bubble column or
-// powder snow, leaving air, or the water of a waterlogged block.
+// fluid. Water poured into a block moves on from it five ticks later
+// (waterlogged_flow). An empty bucket takes a water or lava source, a bubble
+// column or powder snow, leaving air, or the water of a waterlogged block.
 //
 // A player's empty bucket follows the view through the fluid sources before
 // the block it meets: water and lava sources, waterlogged blocks, bubble
@@ -189,7 +190,13 @@ bool pour_fluid(RuleContext& ctx, BlockPos pos, bool lava) {
     switch (pour_of(s, lava)) {
     case Pour::refused: return false;
     case Pour::keep: return true;
-    case Pour::wet: set_block(ctx, pos, *with_water(s, true)); return true;
+    case Pour::wet: {
+        // The block's new water moves on its next fluid tick (waterlogged_flow).
+        const auto wet = *with_water(s, true);
+        set_block(ctx, pos, wet);
+        schedule(ctx, TickList::fluid, pos, wet.type(), 5, 0);
+        return true;
+    }
     case Pour::replace:
         if (!s.is_air() && !s.is(BlockType::water) && !is_lava(s)) destroy_block(ctx, pos);
         set_block(ctx, pos, lava ? lava_source() : blocks::water_source());

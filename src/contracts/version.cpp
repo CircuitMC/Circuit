@@ -97,8 +97,10 @@ constexpr std::array reference_v4_mechanisms{
         "nearest drops within reach when there are any; a new source between two sources on solid ground "
         "while waterSourceConversion is on; dust, levers, buttons, redstone torches, repeaters and comparators "
         "washed away with their drops, and registry blocks that do not block motion and hold no water but portals "
-        "and structure voids (water_channel, water_drop, water_washes, water_torch_button, fluid_sources, fluid_washes; "
-        "every state in tests/fixtures/collision/flows-*.txt). Not covered: sources above flowing water and three sources beside falling water."},
+        "and structure voids; waterlogged blocks give their water, as sources, to the sides their collision shapes "
+        "leave open after shape updates and once water is poured into them (water_channel, water_drop, water_washes, "
+        "water_torch_button, fluid_sources, fluid_washes, waterlogged_flow; every state in "
+        "tests/fixtures/collision/flows-*.txt). Not covered: sources above flowing water and three sources beside falling water."},
     MechanismEntry{"lava", l0_exact, l0_exact, harness_trace,
         "Lava as a registry block: 30-tick fluid ticks; water's spread, losing 2 levels a block and looking 2 blocks ahead for "
         "drops, water below counting as one; sources only with lavaSourceConversion (water's with waterSourceConversion); "
@@ -256,7 +258,7 @@ constexpr std::array reference_v4_mechanisms{
         "Coral fans and wall fans of every kind: a living fan without water near it schedules its death 60 to 99 ticks "
         "later with a level-random draw when placed and on every shape update, and dies dry unless water came back; "
         "fans need a sturdy top or face and break without it, a waterlogged one leaving its water; pistons break "
-        "living fans and move dead ones (coral_fans). Gaps: water does not flow out of waterlogged fans."},
+        "living fans and move dead ones (coral_fans). Gaps: currents that push entities do not see waterlogged fans' water."},
     MechanismEntry{"connections", l0_exact, l2_declared_deviation, harness_trace,
         "Fences, glass panes, iron bars and walls join their neighbors on shape updates and when a piston sets them "
         "down: wooden fences join wooden fences, nether brick fences their own kind, panes and bars each other and "
@@ -264,12 +266,12 @@ constexpr std::array reference_v4_mechanisms{
         "support face except of leaves, barriers, shulker boxes, pumpkins, melons and chorus flowers; walls rise "
         "under blocks covering their sides and keep or lose their post (connections, connections_moved; every state "
         "beside and above them in tests/fixtures/collision/connection-*.txt); players place them with their shapes "
-        "(client/building). Gaps: water does not flow out of waterlogged ones."},
+        "(client/building). Gaps: currents that push entities do not see waterlogged ones' water."},
     MechanismEntry{"stairs", l0_exact, l2_declared_deviation, harness_trace,
         "Stairs of any material take straight, inner and outer corner shapes from the stairs of the same half beside "
         "them on shape updates from the sides and when a piston sets them down (stairs_shapes; every combination of "
         "stairs on their four sides in tests/fixtures/collision/stairs.txt); players place them facing their way, in the "
-        "clicked half, with their shape (client/building). Gaps: water does not flow out of waterlogged ones."},
+        "clicked half, with their shape (client/building). Gaps: currents that push entities do not see waterlogged ones' water."},
     MechanismEntry{"note_block", l0_exact, l2_declared_deviation, harness_trace,
         "Note blocks take the instrument of a mob head above them or else of the block below, when placed, moved "
         "and on a shape update from above or below; they play on a rising signal and when used (the next note), "
@@ -293,7 +295,7 @@ constexpr std::array reference_v4_mechanisms{
         "bone meal, shears, boats on water, bottles, honeycomb, glowstone and water bottles at their targets, "
         "golem and wither heads, buckets of fish, axolotls, tadpoles and powder snow, minecarts and mobs, and "
         "equipping players are not modeled: those "
-        "items stay; water does not flow out of the blocks it waterlogs."},
+        "items stay."},
     MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, harness_trace,
         "Entities tick in ascending id order once per tick; one merged away before its turn does not tick "
         "(item_hopper_pickup, item_water_current, item_merge, item_merge_moving). Gap: compared for item "

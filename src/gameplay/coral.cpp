@@ -9,8 +9,8 @@
 // turns it into the dead fan of its kind, dry, quietly, unless water came
 // back. A fan needs a sturdy top below it, a wall fan a sturdy face behind
 // it; a shape update from there that finds none destroys it, leaving its
-// water. Water does not flow out of waterlogged fans (waterlogging is
-// stored only).
+// water. A waterlogged fan's water moves as other waterlogged blocks' do
+// (nature.cpp).
 #include "internal.hpp"
 #include <string_view>
 

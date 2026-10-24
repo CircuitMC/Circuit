@@ -775,7 +775,7 @@
             "trace/tnt_duper_wall"
           ],
           "deviations": [
-            "water does not flow out of waterlogged ones"
+            "currents that push entities do not see waterlogged ones' water"
           ],
           "note": "On shape updates and when a piston sets them down, as both official servers do; every state beside and above them compared"
         },
@@ -790,7 +790,7 @@
             "trace/stairs_shapes"
           ],
           "deviations": [
-            "water does not flow out of waterlogged ones"
+            "currents that push entities do not see waterlogged ones' water"
           ],
           "note": "On shape updates from the sides and when a piston sets them down, as both official servers do; every combination of stairs around them compared"
         },
@@ -899,8 +899,15 @@
           "id": "waterlogging",
           "name": "Waterlogged blocks",
           "milestone": "C5",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "tier": "L0",
+          "cases": [
+            "trace/waterlogged_flow",
+            "client/building",
+            "client/buckets"
+          ],
+          "note": "Blocks waterlogged by placement in water, buckets and dispensers; their water moves to the sides their collision shapes leave open after shape updates and once poured; entities' currents do not see it yet"
         },
         {
           "id": "buckets",
@@ -1016,7 +1023,7 @@
           ],
           "deviations": [
             "coral blocks and plants (not fans) are inert",
-            "water does not flow out of waterlogged fans"
+            "currents that push entities do not see waterlogged fans' water"
           ],
           "note": "Coral fans and wall fans of every kind die 60 to 99 ticks (a level-random draw) after they are left without water, when placed or updated; they need a sturdy top or face and leave their water when they break; pistons break living fans and move dead ones"
         }
@@ -1357,10 +1364,9 @@
           ],
           "deviations": [
             "dispensed projectiles, fire, bone meal, shears, boats, bottles, honeycomb, glowstone and water bottles at their targets, golem and wither heads, other fluids, other minecarts, spawn eggs, armor stands and shulker boxes are not modeled: those items stay",
-            "equipping players is not modeled",
-            "water does not flow out of the blocks it waterlogs"
+            "equipping players is not modeled"
           ],
-          "note": "Fired 4 ticks after power reaches them or the block above them, from a random filled slot (level-random draws); droppers fill the container in front or eject; dispensers eject items (position, motion and draws exact), prime TNT, pour and fill water buckets, set minecarts on rails and eject equipment"
+          "note": "Fired 4 ticks after power reaches them or the block above them, from a random filled slot (level-random draws); droppers fill the container in front or eject; dispensers eject items (position, motion and draws exact), prime TNT, pour and fill water and lava buckets, set minecarts on rails and eject equipment"
         },
         {
           "id": "crafter",
