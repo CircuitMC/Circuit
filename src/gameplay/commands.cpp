@@ -171,6 +171,10 @@ Plan plan_building(RuleContext& ctx, const contracts::PlayerUse& c, const ItemSt
     const auto placed = detail::placed_building(ctx, block, c, target);
     if (!placed) return std::unexpected(ErrorCode::unsupported);
     const auto state = *placed;
+    // Its block entity would not keep an item's components (contents, a
+    // name, patterns): such an item places nothing.
+    if (!held.components.empty() && state.is(BlockType::other) && !registry::block_entity_type(state.registry_state()).empty())
+        return std::unexpected(ErrorCode::unsupported);
     if (detail::has_collision(state) && (c.free & bit) == 0) return std::unexpected(ErrorCode::occupied);
     // A tall flower needs room for its upper half.
     const auto upper = detail::upper_half_of(state);
@@ -184,6 +188,10 @@ Plan plan_building(RuleContext& ctx, const contracts::PlayerUse& c, const ItemSt
             detail::record_slot(ctx, inv, c.slot);
         }
         set_block(ctx, target, state);
+        // A block entity of a block without rules of its own starts empty
+        // (written out as its type's defaults).
+        if (state.is(BlockType::other) && !registry::block_entity_type(state.registry_state()).empty() && !ctx.peek_block_entity(target))
+            ctx.create_block_entity(target, BlockType::other);
         if (upper) set_block(ctx, above, *upper);
     };
 }

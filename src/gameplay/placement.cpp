@@ -182,14 +182,14 @@ bool player_has_room(const PlayerInventory& inv, ItemStack stack, std::uint8_t s
 // each only where it is supported (support.cpp), replacing water.
 namespace circuit::gameplay::detail {
 namespace {
-enum class Building { none, plain, pillar, stairs, slab, connector, toward_player, clicked_face, torch, lantern, ladder, resting, tall };
+enum class Building { none, plain, pillar, stairs, slab, connector, toward_player, toward_look, clicked_face, fixed, torch, lantern, ladder, resting, tall };
 
 Building building_kind(std::uint32_t block) {
     const auto info = registry::block(block);
     const std::string_view name = info.name;
-    // Not spawners and beacons (their block entities), sponges (they soak up
-    // water), or test instance blocks (operators' blocks).
-    if (name == "spawner" || name == "beacon" || name == "sponge" || name == "wet_sponge" || name == "test_instance_block") return Building::none;
+    // Not spawners (their block entity), sponges (they soak up water), or
+    // test instance blocks (operators' blocks).
+    if (name == "spawner" || name == "sponge" || name == "wet_sponge" || name == "test_instance_block") return Building::none;
     std::vector<std::string> keys;
     for (const auto& [k, _] : registry::properties(info.default_state)) keys.push_back(k);
     const auto only = [&](std::initializer_list<std::string_view> allowed) {
@@ -197,11 +197,16 @@ Building building_kind(std::uint32_t block) {
     };
     const auto has = [&](std::string_view k) { return std::ranges::find(keys, k) != keys.end(); };
     if (name.ends_with("_stairs") && has("shape")) return Building::stairs;
-    // Blocks without block entities that face the player, or the clicked face.
+    // Blocks that face the player, look back at them, or face the clicked face,
+    // and blocks placed as they are (those with block entities keep an empty
+    // one).
     if (name == "carved_pumpkin" || name == "jack_o_lantern" || name == "loom" || name == "stonecutter" || name == "end_portal_frame"
-        || name.ends_with("_glazed_terracotta"))
+        || name.ends_with("_glazed_terracotta") || name == "furnace" || name == "smoker" || name == "blast_furnace" || name == "lectern"
+        || name == "bee_nest" || name == "beehive" || name == "ender_chest" || name == "chiseled_bookshelf")
         return Building::toward_player;
-    if (name == "end_rod" || name == "lightning_rod") return Building::clicked_face;
+    if (name == "barrel") return Building::toward_look;
+    if (name == "end_rod" || name == "lightning_rod" || name.ends_with("shulker_box")) return Building::clicked_face;
+    if (name == "beacon" || name == "enchanting_table" || name == "jukebox" || name == "brewing_stand") return Building::fixed;
     // Blocks that need support (support.cpp).
     if (name == "torch" || name == "soul_torch") return Building::torch;
     if (name == "lantern" || name == "soul_lantern") return Building::lantern;
@@ -331,7 +336,8 @@ std::optional<BlockState> placed_building(RuleContext& ctx, std::uint32_t block,
         if (single_slab_of(block, here)) return with(s, {{"type", "double"}, {"waterlogged", "false"}});
         return with(s, {{"type", top_half(c) ? "top" : "bottom"}, {"waterlogged", water}});
     case Building::connector: return joined_state(ctx, target, with(s, {{"waterlogged", water}}));
-    case Building::toward_player: return with(s, {{"facing", std::string(name_of(contracts::opposite(c.horizontal)))}});
+    case Building::toward_player: return with(s, {{"facing", std::string(name_of(contracts::opposite(c.horizontal)))}, {"waterlogged", water}});
+    case Building::toward_look: return with(s, {{"facing", std::string(name_of(contracts::opposite(c.look)))}});
     case Building::clicked_face: {
         // An end rod set on an end rod pointing at it points back.
         const auto behind = ctx.block(target.relative(contracts::opposite(c.face)));

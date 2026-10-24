@@ -128,6 +128,10 @@ bool sturdy_face(std::uint32_t state, contracts::Direction face, std::string_vie
 // Whether flowers and saplings grow on the state (dirt, grass, moss, mud and
 // their kinds, and farmland).
 bool soil(std::uint32_t state) noexcept;
+// The type of the state's block entity ("furnace", "sign", ...), empty for a
+// block without one (tools/compile_block_registry.py, checked against both
+// official servers).
+std::string_view block_entity_type(std::uint32_t state) noexcept;
 
 // Light, by the rules of tools/compile_block_registry.py (checked against a
 // report of every state of both official servers): the light a state emits,

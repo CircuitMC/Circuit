@@ -127,7 +127,7 @@ The body holds:
 - per level (overworld, Nether, End; only those with columns, players or an active tick): its counters, the last tick it had players or forced chunks, the state of its level random, the players in it (position and whether a spectator), columns with their load and simulation levels, the tick a saved column dropped and the tick a reloaded column resumes, palette-packed sections, block entities, entities (their kind, tick count, position and velocity as doubles, an item's stack, age, pickup delay and health, a falling block's state and fall time, primed TNT's fuse, an arrow's being stuck, life and fire, a boat's wood, last state and last vertical move, a minecart's water, the tick and amount of its last push by moving blocks, and for an entity of a reloaded chunk the tick it comes back), scheduled ticks, pending block events and the recent turn-offs of its redstone torches (position and tick, for their burnout);
 - chunk tickets: type, level, square radius, the tick their lifetime ends and their level (dimension);
 - player inventories: the 46 slots, the carried stack and a drag in progress; item stacks carry their damage and their other data components;
-- block entities' components (a container's name) and the saved data of block entities of blocks without rules of their own;
+- block entities' components (a container's name) and the saved data of block entities of blocks without rules of their own (empty for one a player placed: an Anvil export writes the official defaults of its type);
 - named extras, such as the server's metadata and player positions.
 
 Light is not saved: it is a function of the blocks, and the engine computes it again after a restart.

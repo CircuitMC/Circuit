@@ -3099,6 +3099,366 @@
           "does not grow or spread"
         ],
         "note": "Placed by players with both halves where the lower one has soil; both halves go when either half or the soil goes, the lower one dropping the flower, as both official servers do"
+      },
+      "furnace": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "smoker": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "blast_furnace": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "lectern": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "bee_nest": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "beehive": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "ender_chest": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "chiseled_bookshelf": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "barrel": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "beacon": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "jukebox": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "brewing_stand": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "enchanting_table": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "white_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "orange_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "magenta_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "light_blue_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "yellow_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "lime_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "pink_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "gray_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "light_gray_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "cyan_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "purple_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "blue_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "brown_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "green_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "red_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "black_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "its block entity and menu have no behavior"
+        ],
+        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
       }
     },
     "item": {

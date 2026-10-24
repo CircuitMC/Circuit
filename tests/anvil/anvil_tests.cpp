@@ -18,6 +18,10 @@
 #include <set>
 #include <filesystem>
 #include <optional>
+#include <numeric>
+#include <functional>
+#include <format>
+#include <circuit/gameplay/block_registry.hpp>
 #include <fstream>
 #include <unistd.h>
 #include <zlib.h>
@@ -208,6 +212,77 @@ int main() {
     const auto root = temporary_directory();
     const char* keep = std::getenv("CIRCUIT_ANVIL_EXPORT_DIR");
 
+    suite.run("placed block entities save what both official servers save", [&] {
+        // tests/fixtures/collision/block-entities-*.txt: every block with a
+        // block entity and the data it saves when just placed, as SNBT. The
+        // registry gives each its type; default_block_entity its data.
+        namespace registry = circuit::gameplay::registry;
+        // SNBT as the target versions print it: keys in order, numbers with
+        // their suffixes, strings in double quotes unless they hold one.
+        std::function<std::string(const Tag&)> snbt = [&](const Tag& t) -> std::string {
+            switch (t.type()) {
+            case TagType::byte_: return std::format("{}b", t.integer());
+            case TagType::short_: return std::format("{}s", t.integer());
+            case TagType::int_: return std::format("{}", t.integer());
+            case TagType::long_: return std::format("{}L", t.integer());
+            case TagType::float_: return std::format("{:.1f}f", t.real());
+            case TagType::double_: return std::format("{:.1f}d", t.real());
+            case TagType::string: {
+                const char q = t.text().find('"') != std::string::npos ? '\'' : '"';
+                return q + t.text() + q;
+            }
+            case TagType::int_array: {
+                std::string out = "[I;";
+                for (std::size_t i = 0; i < t.array().size(); ++i) out += (i ? "," : "") + std::to_string(t.array()[i]);
+                return out + "]";
+            }
+            case TagType::list: {
+                std::string out = "[";
+                for (std::size_t i = 0; i < t.items().size(); ++i) out += (i ? "," : "") + snbt(t.items()[i]);
+                return out + "]";
+            }
+            case TagType::compound: {
+                std::vector<std::size_t> order(t.keys().size());
+                std::iota(order.begin(), order.end(), std::size_t{0});
+                std::ranges::sort(order, [&](std::size_t a, std::size_t b) { return t.keys()[a] < t.keys()[b]; });
+                std::string out = "{";
+                for (std::size_t i = 0; i < order.size(); ++i) out += (i ? "," : "") + t.keys()[order[i]] + ":" + snbt(t.items()[order[i]]);
+                return out + "}";
+            }
+            default: return "?";
+            }
+        };
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            std::ifstream in(fs::path(CIRCUIT_SOURCE_DIR) / "tests/fixtures/collision" / std::format("block-entities-{}.txt", release));
+            std::set<std::uint32_t> with_entities;
+            std::size_t blocks = 0;
+            for (std::string line; std::getline(in, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto tab = line.find('\t');
+                const auto name = line.substr(0, tab), saved = line.substr(tab + 1);
+                const auto block = registry::find_block(release, name);
+                require(block.has_value(), std::format("{} {}", release, name));
+                with_entities.insert(*block);
+                const auto type = registry::block_entity_type(registry::block(*block).default_state);
+                if (saved == "none") {
+                    // A moving piston's block entity exists only while it moves.
+                    require(name == "minecraft:moving_piston" && type.empty(), name);
+                    continue;
+                }
+                require(!type.empty(), std::format("{} {}: a type", release, name));
+                const auto got = snbt(anvil::default_block_entity(registry::block(*block).default_state, release));
+                require(got == saved, std::format("{} {}: official {}, Circuit {}", release, name, saved, got));
+                ++blocks;
+            }
+            require(blocks > 160, std::format("{}: {} blocks", release, blocks));
+            // Blocks the report does not list have none.
+            for (std::uint32_t b = 0; b < registry::block_count(); ++b)
+                if (!with_entities.contains(b) && registry::find_block(release, registry::game_name(b)) == b)
+                    require(registry::block_entity_type(registry::block(b).default_state).empty(),
+                            std::format("{} {}: no block entity", release, registry::game_name(b)));
+        }
+    });
+
     suite.run("scenario states round-trip through Anvil", [&] {
         std::size_t exported = 0, with_ticks = 0, with_entities = 0, with_moving = 0;
         for (const auto& s : all_scenarios()) {
@@ -293,6 +368,42 @@ int main() {
         require(!state_at(end, {4, 0, 3}).flag() && !state_at(end, {2, 0, 5}).flag(), "both released");
         require(state_at(end, {2, 0, 5}).variant() == static_cast<std::uint8_t>(ButtonKind::warped), "the warped button kept its kind");
         require(state_at(end, {4, 0, 5}) == blocks::wall_torch(Direction::east) && state_at(end, {6, 0, 6}) == blocks::torch(), "the torches");
+    });
+
+    suite.run("blocks with block entities that players place export their official defaults", [&] {
+        // A furnace, a shulker box and a barrel placed on stone: each keeps an
+        // empty block entity, written out as its type's defaults and read back
+        // as saved data.
+        namespace registry = circuit::gameplay::registry;
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        const circuit::contracts::PlayerKey alex{1, 2};
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        std::vector<CommandBody> commands;
+        for (const auto& [x, item] : {std::pair{1, "minecraft:furnace"}, std::pair{3, "minecraft:red_shulker_box"}, std::pair{5, "minecraft:barrel"}}) {
+            commands.push_back(place({x, 0, 3}, blocks::stone()));
+            commands.push_back(circuit::contracts::SetPlayerSlot{alex, 36, {circuit::gameplay::items::by_name(item).value(), 1, 0}});
+            commands.push_back(circuit::contracts::PlayerUse{alex, 36, {x, 0, 3}, Direction::up, Direction::north, Direction::north, false, false, 3, 3});
+        }
+        engine.advance(admit(std::move(commands)));
+        const auto state = engine.dump();
+        for (const int x : {1, 3, 5}) {
+            const auto* be = block_entity_at(state, {x, 1, 3});
+            require(be && be->kind == BlockType::other && be->saved.bytes().empty(), std::format("an empty block entity at {}", x));
+        }
+        const auto target = root / "placed-entities";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "placed", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        for (const auto& [x, saved] : {std::pair{1, "furnace"}, std::pair{3, "shulker_box"}, std::pair{5, "barrel"}}) {
+            const auto* be = block_entity_at(back->state, {x, 1, 3});
+            require(be && be->kind == BlockType::other, std::format("{}: imported", saved));
+            circuit::protocol::Reader r(be->saved.bytes());
+            const auto tag = nbt::read_network(r);
+            const auto block = state_at(state, {x, 1, 3});
+            require(tag && *tag == nbt::canonical(anvil::default_block_entity(block.registry_state(), "1.21.8")),
+                    std::format("{}: the official defaults", saved));
+        }
     });
 
     suite.run("daylight detectors round-trip through Anvil with their block entities", [&] {

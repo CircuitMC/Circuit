@@ -2244,6 +2244,25 @@ int main() {
         require(drops == std::multiset<std::uint16_t>{items::torch, items::ladder, items::poppy, items::white_carpet}, "each dropped itself");
     });
 
+    suite.run("a block entity block placed from an item with components places nothing", [] {
+        // A named shulker box would lose its name: nothing is placed, and the
+        // item stays; an unnamed one is placed with an empty block entity.
+        const circuit::contracts::PlayerKey alex{1, 2};
+        Sim s;
+        s.tick(with_floor(floor(-1, 4, -1, 1), {}));
+        s.tick({circuit::contracts::SetPlayerSlot{alex, 36, named(items::red_shulker_box, 1, "Box")},
+                circuit::contracts::PlayerUse{alex, 36, {0, -1, 0}, D::up, D::north, D::north, false, true, 3, 3},
+                circuit::contracts::SetPlayerSlot{alex, 37, {items::red_shulker_box, 1, 0}},
+                circuit::contracts::PlayerUse{alex, 37, {2, -1, 0}, D::up, D::north, D::north, false, true, 3, 3}});
+        require(s.at({0, 0, 0}).is_air(), "the named box is not placed");
+        const auto d = s.oracle.dump();
+        const auto inventory = std::ranges::find(d.players, alex, &PlayerInventory::player);
+        require(inventory != d.players.end() && inventory->slots[36] == named(items::red_shulker_box, 1, "Box") && inventory->slots[37].empty(),
+                "the named box stays in the hand, the other was used");
+        const auto* be = block_entity_at(d, {2, 0, 0});
+        require(s.at({2, 0, 0}).is(BlockType::other) && be && be->kind == BlockType::other, "the unnamed box is placed with its block entity");
+    });
+
     suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {
         using circuit::contracts::UseBlock;
         Sim s;

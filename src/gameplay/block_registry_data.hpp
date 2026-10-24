@@ -24,6 +24,7 @@ struct BlockData {
     std::uint8_t instrument; // registry::Instrument
     std::uint8_t conductor;  // registry::Conductor
     std::uint8_t connector;  // bits 0-2 registry::Connector; bit 3 walls keep their post under it; bit 4 soil
+    const char* block_entity; // its block entity type ("furnace"), or nullptr
 };
 struct PropertyData {
     const char* name;

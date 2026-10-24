@@ -192,6 +192,11 @@ bool sturdy_face(std::uint32_t state, contracts::Direction face, std::string_vie
     return (support_of(state, release) >> (2 + static_cast<unsigned>(face))) & 1;
 }
 
+std::string_view block_entity_type(std::uint32_t state) noexcept {
+    const auto b = block_of(state);
+    return b && data::blocks[*b].block_entity ? std::string_view(data::blocks[*b].block_entity) : std::string_view{};
+}
+
 bool soil(std::uint32_t state) noexcept {
     const auto b = block_of(state);
     return b && (data::blocks[*b].connector & 16) != 0;

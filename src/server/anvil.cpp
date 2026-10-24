@@ -1143,9 +1143,15 @@ private:
     Tag block_entity_tag(BlockPos pos, const BlockEntity& be) {
         auto t = Tag::compound();
         if (be.kind == BlockType::other) {
-            // Saved data of a block without rules of its own, as imported.
+            // Saved data of a block without rules of its own, as imported, or
+            // for one a player placed, what its type saves when just placed.
             protocol::Reader r(be.saved.bytes());
-            if (auto saved = protocol::nbt::read_network(r); saved && saved->type() == TagType::compound) t = std::move(*saved);
+            if (auto saved = protocol::nbt::read_network(r); saved && saved->type() == TagType::compound) {
+                t = std::move(*saved);
+            } else if (const auto state = at(pos); state.is(BlockType::other)) {
+                if (!gameplay::registry::block_entity_type(state.registry_state()).empty())
+                    t = default_block_entity(state.registry_state(), bundle_.schema.content_release);
+            }
             t.set("x", Tag::int_(pos.x));
             t.set("y", Tag::int_(pos.y));
             t.set("z", Tag::int_(pos.z));
@@ -1440,6 +1446,133 @@ private:
 };
 
 } // namespace
+
+Tag default_block_entity(std::uint32_t state, std::string_view release) {
+    const auto type = gameplay::registry::block_entity_type(state);
+    const auto block = gameplay::registry::block_of(state);
+    const auto name = block ? gameplay::registry::game_name(*block) : std::string_view{};
+    auto t = Tag::compound();
+    t.set("id", Tag::string("minecraft:" + std::string(type)));
+    if (release != "1.21.4") t.set("components", Tag::compound());
+    const auto is = [&](std::initializer_list<std::string_view> kinds) { return std::ranges::find(kinds, type) != kinds.end(); };
+    if (is({"dispenser", "dropper", "chest", "trapped_chest", "furnace", "smoker", "blast_furnace", "brewing_stand", "hopper", "barrel",
+            "chiseled_bookshelf", "campfire", "crafter"}))
+        t.set("Items", Tag::list(TagType::end));
+    if (is({"furnace", "smoker", "blast_furnace"})) {
+        t.set("RecipesUsed", Tag::compound());
+        for (const auto* field : {"cooking_time_spent", "cooking_total_time", "lit_time_remaining", "lit_total_time"}) t.set(field, Tag::short_(0));
+    }
+    // Sign texts: empty lines, plain strings from 1.21.5, JSON text before.
+    if (is({"sign", "hanging_sign"})) {
+        for (const auto* side : {"front_text", "back_text"}) {
+            auto text = Tag::compound();
+            text.set("color", Tag::string("black"));
+            text.set("has_glowing_text", Tag::byte(0));
+            auto lines = Tag::list(TagType::string);
+            for (int i = 0; i < 4; ++i) lines.push(Tag::string(release == "1.21.4" ? "\"\"" : ""));
+            text.set("messages", std::move(lines));
+            t.set(side, std::move(text));
+        }
+        t.set("is_waxed", Tag::byte(0));
+    }
+    if (type == "chiseled_bookshelf") t.set("last_interacted_slot", Tag::int_(-1));
+    if (type == "mob_spawner") {
+        for (const auto& [field, value] : std::initializer_list<std::pair<const char*, std::int16_t>>{
+                 {"Delay", 20}, {"MaxNearbyEntities", 6}, {"MaxSpawnDelay", 800}, {"MinSpawnDelay", 200}, {"RequiredPlayerRange", 16},
+                 {"SpawnCount", 4}, {"SpawnRange", 4}})
+            t.set(field, Tag::short_(value));
+        t.set("SpawnPotentials", Tag::list(TagType::end));
+    }
+    if (type == "brewing_stand") {
+        t.set("BrewTime", Tag::short_(0));
+        t.set("Fuel", Tag::byte(0));
+    }
+    if (type == "beacon") t.set("Levels", Tag::int_(0));
+    if (type == "comparator") t.set("OutputSignal", Tag::int_(0));
+    if (type == "hopper") t.set("TransferCooldown", Tag::int_(-1));
+    if (type == "end_gateway") t.set("Age", Tag::long_(0));
+    if (type == "campfire") {
+        t.set("CookingTimes", Tag::int_array({0, 0, 0, 0}));
+        t.set("CookingTotalTimes", Tag::int_array({0, 0, 0, 0}));
+    }
+    if (type == "beehive") t.set("bees", Tag::list(TagType::end));
+    if (type == "sculk_catalyst") t.set("cursors", Tag::list(TagType::end));
+    const auto listener = [] {
+        auto selector = Tag::compound();
+        selector.set("tick", Tag::long_(-1));
+        auto l = Tag::compound();
+        l.set("event_delay", Tag::int_(0));
+        l.set("selector", std::move(selector));
+        return l;
+    };
+    if (is({"sculk_sensor", "calibrated_sculk_sensor"})) {
+        t.set("last_vibration_frequency", Tag::int_(0));
+        t.set("listener", listener());
+    }
+    if (type == "sculk_shrieker") {
+        t.set("listener", listener());
+        t.set("warning_level", Tag::int_(0));
+    }
+    if (type == "crafter") {
+        t.set("crafting_ticks_remaining", Tag::int_(0));
+        t.set("disabled_slots", Tag::int_array({}));
+        t.set("triggered", Tag::int_(0));
+    }
+    if (type == "vault") {
+        auto key = Tag::compound();
+        key.set("count", Tag::int_(1));
+        key.set("id", Tag::string("minecraft:trial_key"));
+        auto config = Tag::compound();
+        config.set("key_item", std::move(key));
+        t.set("config", std::move(config));
+        t.set("server_data", Tag::compound());
+        t.set("shared_data", Tag::compound());
+    }
+    if (type == "command_block") {
+        t.set("Command", Tag::string(""));
+        t.set("SuccessCount", Tag::int_(0));
+        t.set("TrackOutput", Tag::byte(1));
+        t.set("UpdateLastExecution", Tag::byte(1));
+        t.set("auto", Tag::byte(name == "chain_command_block" ? 1 : 0)); // chain command blocks start always active
+        t.set("conditionMet", Tag::byte(0));
+        t.set("powered", Tag::byte(0));
+    }
+    if (type == "structure_block") {
+        for (const auto& [field, value] : std::initializer_list<std::pair<const char*, const char*>>{
+                 {"author", ""}, {"metadata", ""}, {"mirror", "NONE"}, {"mode", "LOAD"}, {"name", ""}, {"rotation", "NONE"}})
+            t.set(field, Tag::string(value));
+        t.set("ignoreEntities", Tag::byte(1));
+        t.set("integrity", Tag::float_(1.0f));
+        for (const auto* field : {"posX", "posZ", "sizeX", "sizeY", "sizeZ"}) t.set(field, Tag::int_(0));
+        t.set("posY", Tag::int_(1));
+        for (const auto* field : {"powered", "showair"}) t.set(field, Tag::byte(0));
+        t.set("showboundingbox", Tag::byte(1));
+        t.set("seed", Tag::long_(0));
+        if (release != "1.21.4") t.set("strict", Tag::byte(0));
+    }
+    if (type == "jigsaw") {
+        for (const auto& [field, value] : std::initializer_list<std::pair<const char*, const char*>>{
+                 {"final_state", "minecraft:air"}, {"joint", "rollable"}, {"name", "minecraft:empty"}, {"pool", "minecraft:empty"},
+                 {"target", "minecraft:empty"}})
+            t.set(field, Tag::string(value));
+        t.set("placement_priority", Tag::int_(0));
+        t.set("selection_priority", Tag::int_(0));
+    }
+    if (type == "test_block") {
+        t.set("message", Tag::string(""));
+        t.set("mode", Tag::string("start"));
+        t.set("powered", Tag::byte(0));
+    }
+    if (type == "test_instance_block") {
+        auto data = Tag::compound();
+        data.set("ignore_entities", Tag::byte(0));
+        data.set("rotation", Tag::string("none"));
+        data.set("size", Tag::int_array({0, 0, 0}));
+        data.set("status", Tag::string("cleared"));
+        t.set("data", std::move(data));
+    }
+    return t;
+}
 
 std::expected<ImportResult, std::string> import_world(const fs::path& source, const contracts::VersionBundle& bundle,
                                                       const ImportOptions& options) {

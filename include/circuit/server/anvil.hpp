@@ -3,6 +3,7 @@
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/world_types.hpp>
 #include <circuit/protocol/components.hpp>
+#include <circuit/protocol/nbt.hpp>
 #include <optional>
 #include <cstdint>
 #include <expected>
@@ -27,6 +28,14 @@
 namespace circuit::server::anvil {
 
 inline constexpr std::int32_t supported_data_version = 4440; // Java Edition 1.21.8
+
+// The data the block entity of a registry state's block saves when the block
+// has just been placed, as both official servers write it (`release` "1.21.8"
+// or "1.21.4"; checked against their reports for every block): its id
+// (registry::block_entity_type), from 1.21.5 an empty component map, and the
+// empty fields of its type. A block without rules of its own that a player
+// places keeps an empty block entity, written out as this.
+protocol::nbt::Tag default_block_entity(std::uint32_t state, std::string_view release);
 
 enum class Unsupported : std::uint8_t {
     reject,     // fail and report every kind of unsupported content

@@ -411,6 +411,33 @@ def support_byte(name, props, shape):
     return int(top) | int(bottom) << 1 | faces << 2
 
 
+# Block entity types (both official servers report every block that has one
+# and the data it saves; see tests/fixtures/collision/block-entities-*.txt).
+BLOCK_ENTITY_TYPES = [
+    (r"(suspicious_sand|suspicious_gravel)", "brushable_block"), (r"dispenser", "dispenser"), (r"dropper", "dropper"),
+    (r".*_bed", "bed"), (r"chiseled_bookshelf", "chiseled_bookshelf"), (r"spawner", "mob_spawner"),
+    (r"creaking_heart", "creaking_heart"), (r"chest", "chest"), (r"trapped_chest", "trapped_chest"), (r"ender_chest", "ender_chest"),
+    (r"furnace", "furnace"), (r"smoker", "smoker"), (r"blast_furnace", "blast_furnace"), (r".*_hanging_sign", "hanging_sign"),
+    (r".*_sign", "sign"), (r"jukebox", "jukebox"), (r"enchanting_table", "enchanting_table"), (r"brewing_stand", "brewing_stand"),
+    (r"end_portal", "end_portal"), (r"end_gateway", "end_gateway"), (r"(repeating_|chain_)?command_block", "command_block"),
+    (r"beacon", "beacon"), (r"(?!piston).*_(head|skull)", "skull"), (r"comparator", "comparator"),
+    (r"daylight_detector", "daylight_detector"), (r"hopper", "hopper"), (r".*_banner", "banner"), (r"(.*_)?shulker_box", "shulker_box"),
+    (r"conduit", "conduit"), (r"barrel", "barrel"), (r"lectern", "lectern"), (r"bell", "bell"), (r"(soul_)?campfire", "campfire"),
+    (r"structure_block", "structure_block"), (r"jigsaw", "jigsaw"), (r"test_block", "test_block"),
+    (r"test_instance_block", "test_instance_block"), (r"(bee_nest|beehive)", "beehive"), (r"sculk_sensor", "sculk_sensor"),
+    (r"calibrated_sculk_sensor", "calibrated_sculk_sensor"), (r"sculk_catalyst", "sculk_catalyst"),
+    (r"sculk_shrieker", "sculk_shrieker"), (r"decorated_pot", "decorated_pot"), (r"crafter", "crafter"),
+    (r"trial_spawner", "trial_spawner"), (r"vault", "vault"),
+]
+
+
+def block_entity_type(name):
+    for pattern, kind in BLOCK_ENTITY_TYPES:
+        if re.fullmatch(pattern, name):
+            return kind
+    return None
+
+
 def previous_blocks(path):
     text = open(path, encoding="utf-8").read()
     body = text.split("const BlockData blocks[] = {", 1)[1].split("};", 1)[0]
@@ -463,7 +490,7 @@ def main():
         "// hardness (negative: unbreakable), opaque, effective tool, harvest tier, blast resistance,",
         "// push class (0 move, 1 destroy, 2 push only, 3 immovable), note block instrument, conductor,",
         "// connector (bits 0-2: 1 wooden fence, 2 nether brick fence, 3 pane, 4 wall; bit 3: walls keep their post under it;",
-        "// bit 4: flowers and saplings grow on it)",
+        "// bit 4: flowers and saplings grow on it), block entity type",
         "const BlockData blocks[] = {",
     ]
     properties = []  # (name, first value, count)
@@ -575,7 +602,8 @@ def main():
                 sys.exit(f"{name}: instrument differs in {release}")
         out.append(f'    {{"{name}", {first_prop}, {len(sch)}, {first_state}, {count}, {b["defaultState"] - b["minStateId"]}, '
                    f'{hardness!r}f, {opaque}, {tool}, {tier_of(b, tool, items)}, {resistance!r}f, {push}, {sound}, {conducts}, '
-                   f'{connector(b["name"], sch) | (16 if b["name"] in SOIL else 0)}}},')
+                   f'{connector(b["name"], sch) | (16 if b["name"] in SOIL else 0)}, '
+                   + (f'"{block_entity_type(b["name"])}"' if block_entity_type(b["name"]) else "nullptr") + "},")
         first_state += count
     out += ["};", f"const std::uint32_t block_count = {len(internal)};", f"const std::uint32_t state_count = {first_state - 1};", ""]
     out.append("const PropertyData properties[] = {")

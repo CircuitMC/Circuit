@@ -757,8 +757,8 @@
             "placement/official_items"
           ],
           "deviations": [
-            "only full cubes without properties, soul sand and mud, pillars, stairs, slabs, fences, panes, bars, walls, carved pumpkins, jack o'lanterns, glazed terracotta, looms, stonecutters, end portal frames, end rods and lightning rods are placed from their items besides the blocks with rules of their own; blocks with block entities, blocks that need support and two-block blocks other than doors are not",
-            "spawners, beacons, sponges and test instance blocks are not placed"
+            "only full cubes without properties, soul sand and mud, pillars, stairs, slabs, fences, panes, bars, walls, blocks facing the player, the clicked face or back along the view, rods, torches, lanterns, ladders, carpets, flowers, saplings, tall flowers and the blocks with block entities that use these rules (furnaces, smokers, blast furnaces, lecterns, beehives, ender chests, chiseled bookshelves, shulker boxes, barrels, beacons, jukeboxes, brewing stands, enchanting tables) are placed from their items besides the blocks with rules of their own; beds, signs, banners, heads and other blocks are not",
+            "spawners, sponges and test instance blocks are not placed"
           ],
           "note": "Pillars along the clicked face's axis, stairs facing the player and in the clicked half, slabs in the clicked half and doubled, facing blocks toward the player or out of the clicked face, connectors and stairs with their neighbors' shapes, waterlogged in water sources, as both official servers do; every placed state checked against a report of every block item"
         },
@@ -835,15 +835,12 @@
           "id": "block_entity_data",
           "name": "Signs, banners, heads, pots and other block-entity data",
           "milestone": "C5",
-          "impl": "data_only",
-          "evidence": {
-            "java-1.21.4": "none",
-            "java-1.21.8": "reference_only"
-          },
+          "impl": "partial",
+          "evidence": "compared",
           "cases": [
-            "anvil/components"
+            "collision/block_entities"
           ],
-          "note": "Block entities of blocks without rules of their own keep their saved data through checkpoints and Anvil interchange; nothing interprets it, and clients do not receive it"
+          "note": "Block entities of blocks without rules of their own keep their saved data through checkpoints and Anvil interchange; one a player places starts empty and is written out as the official defaults of its type (every block's checked); nothing interprets the data, and clients do not receive it"
         },
         {
           "id": "weathering",

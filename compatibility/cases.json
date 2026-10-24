@@ -64,7 +64,7 @@
       ],
       "location": "external: circuit-clienttest/place-families.js; tests/server/server_tests.cpp",
       "status": "passing",
-      "description": "Player placement of full blocks, soul sand and mud, pillars on every face, stairs facing four ways and in both halves, slabs in both halves and doubled from the clicked slab and beside it, fences, panes, bars and walls beside blocks and each other, blocks facing the player, end rods and lightning rods (an end rod on an end rod), observers looking each way, trapdoors on a side's halves, torches, lanterns, ladders, carpets, flowers and a sapling where supported and a flower where not, doors clicked in either half, beside stone and beside another door, tall flowers on dirt and where they have no soil, and nine of them into water sources: 123 placed states identical with both official servers"
+      "description": "Player placement of full blocks, soul sand and mud, pillars on every face, stairs facing four ways and in both halves, slabs in both halves and doubled from the clicked slab and beside it, fences, panes, bars and walls beside blocks and each other, blocks facing the player, end rods and lightning rods (an end rod on an end rod), observers looking each way, trapdoors on a side's halves, torches, lanterns, ladders, carpets, flowers and a sapling where supported and a flower where not, doors clicked in either half, beside stone and beside another door, tall flowers on dirt and where they have no soil, furnaces, barrels, shulker boxes and eleven other blocks with block entities, and nine of them into water sources: 137 placed states identical with both official servers"
     },
     {
       "id": "client/suite",
@@ -370,6 +370,17 @@
       "location": "tests/fixtures/collision/support-*.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness support and survival reports",
       "status": "passing",
       "description": "Whether 23 flowers and saplings, torches, carpets, lanterns standing and hanging, wall torches and ladders stay with every state as their support, reported by both official servers (52,010 states compared; rails, redstone wire and fire removed themselves in the report); Circuit's registry and rules match every one"
+    },
+    {
+      "id": "collision/block_entities",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "tests/fixtures/collision/block-entities-*.txt, checked by tests/anvil/anvil_tests.cpp; external: circuit-harness block entity report",
+      "status": "passing",
+      "description": "Every block with a block entity and the data it saves right after its default state is set, reported by both official servers (173 blocks of 1.21.8, 171 of 1.21.4); Circuit's registry gives each its type and its defaults match every one"
     },
     {
       "id": "placement/official_items",
