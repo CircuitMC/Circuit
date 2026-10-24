@@ -465,7 +465,8 @@ std::string removal_reason(std::uint64_t reason) {
     case gameplay::RemovalReason::fell_out_of_world:
     case gameplay::RemovalReason::picked_up:
     case gameplay::RemovalReason::merged:
-    case gameplay::RemovalReason::exploded: return "discarded";
+    case gameplay::RemovalReason::exploded:
+    case gameplay::RemovalReason::hurt: return "discarded";
     case gameplay::RemovalReason::command: return "killed";
     case gameplay::RemovalReason::unloaded: return "unloaded_to_chunk";
     }

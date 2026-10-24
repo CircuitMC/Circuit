@@ -4719,15 +4719,16 @@
       "cactus": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Stands on a cactus or sand with nothing solid or lava beside it and no liquid above, and breaks with its drop a tick after an update finds it unsupported, as both official servers do; placed by players where it stands",
+        "note": "Stands on a cactus or sand with nothing solid or lava beside it and no liquid above, and breaks with its drop a tick after an update finds it unsupported, as both official servers do; placed by players where it stands; hurts the items whose boxes reach into its cell, a point of health at each move",
         "cases": [
           "collision/plants",
           "collision/plant_contexts",
-          "trace/plant_supports"
+          "trace/plant_supports",
+          "trace/cactus_damage"
         ],
         "deviations": [
           "does not grow",
-          "does not hurt entities"
+          "hurts only items"
         ]
       },
       "lily_pad": {

@@ -1,0 +1,952 @@
+circuit-trace 2
+title Entities touching cacti
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.25.0+mc1.21.8
+mechanisms support item_entity
+area 0 0 0 33 6 7
+ticks 80
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 0
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 0 1 minecraft:stone
+at 0 set 16 0 2 minecraft:stone
+at 0 set 16 0 3 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 set 16 0 5 minecraft:stone
+at 0 set 16 0 6 minecraft:stone
+at 0 set 16 0 7 minecraft:stone
+at 0 set 17 0 0 minecraft:stone
+at 0 set 17 0 1 minecraft:stone
+at 0 set 17 0 2 minecraft:stone
+at 0 set 17 0 3 minecraft:stone
+at 0 set 17 0 4 minecraft:stone
+at 0 set 17 0 5 minecraft:stone
+at 0 set 17 0 6 minecraft:stone
+at 0 set 17 0 7 minecraft:stone
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 0 1 minecraft:stone
+at 0 set 18 0 2 minecraft:stone
+at 0 set 18 0 3 minecraft:stone
+at 0 set 18 0 4 minecraft:stone
+at 0 set 18 0 5 minecraft:stone
+at 0 set 18 0 6 minecraft:stone
+at 0 set 18 0 7 minecraft:stone
+at 0 set 19 0 0 minecraft:stone
+at 0 set 19 0 1 minecraft:stone
+at 0 set 19 0 2 minecraft:stone
+at 0 set 19 0 3 minecraft:stone
+at 0 set 19 0 4 minecraft:stone
+at 0 set 19 0 5 minecraft:stone
+at 0 set 19 0 6 minecraft:stone
+at 0 set 19 0 7 minecraft:stone
+at 0 set 20 0 0 minecraft:stone
+at 0 set 20 0 1 minecraft:stone
+at 0 set 20 0 2 minecraft:stone
+at 0 set 20 0 3 minecraft:stone
+at 0 set 20 0 4 minecraft:stone
+at 0 set 20 0 5 minecraft:stone
+at 0 set 20 0 6 minecraft:stone
+at 0 set 20 0 7 minecraft:stone
+at 0 set 21 0 0 minecraft:stone
+at 0 set 21 0 1 minecraft:stone
+at 0 set 21 0 2 minecraft:stone
+at 0 set 21 0 3 minecraft:stone
+at 0 set 21 0 4 minecraft:stone
+at 0 set 21 0 5 minecraft:stone
+at 0 set 21 0 6 minecraft:stone
+at 0 set 21 0 7 minecraft:stone
+at 0 set 22 0 0 minecraft:stone
+at 0 set 22 0 1 minecraft:stone
+at 0 set 22 0 2 minecraft:stone
+at 0 set 22 0 3 minecraft:stone
+at 0 set 22 0 4 minecraft:stone
+at 0 set 22 0 5 minecraft:stone
+at 0 set 22 0 6 minecraft:stone
+at 0 set 22 0 7 minecraft:stone
+at 0 set 23 0 0 minecraft:stone
+at 0 set 23 0 1 minecraft:stone
+at 0 set 23 0 2 minecraft:stone
+at 0 set 23 0 3 minecraft:stone
+at 0 set 23 0 4 minecraft:stone
+at 0 set 23 0 5 minecraft:stone
+at 0 set 23 0 6 minecraft:stone
+at 0 set 23 0 7 minecraft:stone
+at 0 set 24 0 0 minecraft:stone
+at 0 set 24 0 1 minecraft:stone
+at 0 set 24 0 2 minecraft:stone
+at 0 set 24 0 3 minecraft:stone
+at 0 set 24 0 4 minecraft:stone
+at 0 set 24 0 5 minecraft:stone
+at 0 set 24 0 6 minecraft:stone
+at 0 set 24 0 7 minecraft:stone
+at 0 set 25 0 0 minecraft:stone
+at 0 set 25 0 1 minecraft:stone
+at 0 set 25 0 2 minecraft:stone
+at 0 set 25 0 3 minecraft:stone
+at 0 set 25 0 4 minecraft:stone
+at 0 set 25 0 5 minecraft:stone
+at 0 set 25 0 6 minecraft:stone
+at 0 set 25 0 7 minecraft:stone
+at 0 set 26 0 0 minecraft:stone
+at 0 set 26 0 1 minecraft:stone
+at 0 set 26 0 2 minecraft:stone
+at 0 set 26 0 3 minecraft:stone
+at 0 set 26 0 4 minecraft:stone
+at 0 set 26 0 5 minecraft:stone
+at 0 set 26 0 6 minecraft:stone
+at 0 set 26 0 7 minecraft:stone
+at 0 set 27 0 0 minecraft:stone
+at 0 set 27 0 1 minecraft:stone
+at 0 set 27 0 2 minecraft:stone
+at 0 set 27 0 3 minecraft:stone
+at 0 set 27 0 4 minecraft:stone
+at 0 set 27 0 5 minecraft:stone
+at 0 set 27 0 6 minecraft:stone
+at 0 set 27 0 7 minecraft:stone
+at 0 set 28 0 0 minecraft:stone
+at 0 set 28 0 1 minecraft:stone
+at 0 set 28 0 2 minecraft:stone
+at 0 set 28 0 3 minecraft:stone
+at 0 set 28 0 4 minecraft:stone
+at 0 set 28 0 5 minecraft:stone
+at 0 set 28 0 6 minecraft:stone
+at 0 set 28 0 7 minecraft:stone
+at 0 set 29 0 0 minecraft:stone
+at 0 set 29 0 1 minecraft:stone
+at 0 set 29 0 2 minecraft:stone
+at 0 set 29 0 3 minecraft:stone
+at 0 set 29 0 4 minecraft:stone
+at 0 set 29 0 5 minecraft:stone
+at 0 set 29 0 6 minecraft:stone
+at 0 set 29 0 7 minecraft:stone
+at 0 set 30 0 0 minecraft:stone
+at 0 set 30 0 1 minecraft:stone
+at 0 set 30 0 2 minecraft:stone
+at 0 set 30 0 3 minecraft:stone
+at 0 set 30 0 4 minecraft:stone
+at 0 set 30 0 5 minecraft:stone
+at 0 set 30 0 6 minecraft:stone
+at 0 set 30 0 7 minecraft:stone
+at 0 set 31 0 0 minecraft:stone
+at 0 set 31 0 1 minecraft:stone
+at 0 set 31 0 2 minecraft:stone
+at 0 set 31 0 3 minecraft:stone
+at 0 set 31 0 4 minecraft:stone
+at 0 set 31 0 5 minecraft:stone
+at 0 set 31 0 6 minecraft:stone
+at 0 set 31 0 7 minecraft:stone
+at 0 set 32 0 0 minecraft:stone
+at 0 set 32 0 1 minecraft:stone
+at 0 set 32 0 2 minecraft:stone
+at 0 set 32 0 3 minecraft:stone
+at 0 set 32 0 4 minecraft:stone
+at 0 set 32 0 5 minecraft:stone
+at 0 set 32 0 6 minecraft:stone
+at 0 set 32 0 7 minecraft:stone
+at 0 set 33 0 0 minecraft:stone
+at 0 set 33 0 1 minecraft:stone
+at 0 set 33 0 2 minecraft:stone
+at 0 set 33 0 3 minecraft:stone
+at 0 set 33 0 4 minecraft:stone
+at 0 set 33 0 5 minecraft:stone
+at 0 set 33 0 6 minecraft:stone
+at 0 set 33 0 7 minecraft:stone
+
+at 1 set 3 1 3 minecraft:sand
+change 1 commands 3 1 3 minecraft:air minecraft:sand
+at 1 set 6 1 3 minecraft:sand
+change 1 commands 6 1 3 minecraft:air minecraft:sand
+at 1 set 10 1 3 minecraft:sand
+change 1 commands 10 1 3 minecraft:air minecraft:sand
+at 1 set 16 1 3 minecraft:sand
+change 1 commands 16 1 3 minecraft:air minecraft:sand
+at 1 set 14 2 3 minecraft:piston[facing=east,extended=false]
+change 1 commands 14 2 3 minecraft:air minecraft:piston[extended=false,facing=east]
+at 1 set 18 1 3 minecraft:sand
+change 1 commands 18 1 3 minecraft:air minecraft:sand
+at 1 set 23 1 3 minecraft:sand
+change 1 commands 23 1 3 minecraft:air minecraft:sand
+at 1 set 27 1 3 minecraft:sand
+change 1 commands 27 1 3 minecraft:air minecraft:sand
+at 1 set 26 1 3 minecraft:stone
+change 1 commands 26 1 3 minecraft:air minecraft:stone
+at 1 set 27 1 6 minecraft:sand
+change 1 commands 27 1 6 minecraft:air minecraft:sand
+at 1 set 26 1 6 minecraft:stone
+change 1 commands 26 1 6 minecraft:air minecraft:stone
+
+at 2 set 3 2 3 minecraft:cactus[age=0]
+change 2 commands 3 2 3 minecraft:air minecraft:cactus[age=0]
+at 2 set 6 2 3 minecraft:cactus[age=0]
+change 2 commands 6 2 3 minecraft:air minecraft:cactus[age=0]
+at 2 set 10 2 3 minecraft:cactus[age=0]
+change 2 commands 10 2 3 minecraft:air minecraft:cactus[age=0]
+at 2 set 16 2 3 minecraft:cactus[age=0]
+change 2 commands 16 2 3 minecraft:air minecraft:cactus[age=0]
+at 2 set 18 2 3 minecraft:cactus[age=0]
+change 2 commands 18 2 3 minecraft:air minecraft:cactus[age=0]
+at 2 set 23 2 3 minecraft:cactus[age=0]
+change 2 commands 23 2 3 minecraft:air minecraft:cactus[age=0]
+at 2 set 27 2 3 minecraft:cactus[age=0]
+change 2 commands 27 2 3 minecraft:air minecraft:cactus[age=0]
+at 2 set 27 2 6 minecraft:cactus[age=0]
+change 2 commands 27 2 6 minecraft:air minecraft:cactus[age=0]
+
+at 10 spawn-item 2.5 2.0 3.5 0.2 0 0 minecraft:stick 1 pickup-delay=32767
+entity-added 10 commands e1 minecraft:item 2.5 2.0 3.5 0.2 0 0 item=minecraft:stick count=1
+at 10 spawn-item 6.5 4.0 3.5 0 0 0 minecraft:stick 1 pickup-delay=32767
+entity-added 10 commands e2 minecraft:item 6.5 4.0 3.5 0 0 0 item=minecraft:stick count=1
+at 10 spawn-item 11.129999999999999 2.0 3.5 0 0 0 minecraft:stick 1 pickup-delay=32767
+entity-added 10 commands e3 minecraft:item 11.129999999999999 2.0 3.5 0 0 0 item=minecraft:stick count=1
+at 10 spawn-item 15.5 2.0 3.5 0 0 0 minecraft:stick 4 pickup-delay=32767
+entity-added 10 commands e4 minecraft:item 15.5 2.0 3.5 0 0 0 item=minecraft:stick count=4
+at 10 command summon minecraft:tnt 18.5 4.0 3.5 {fuse:200}
+entity-added 10 commands e5 minecraft:tnt 18.5 4.0 3.5 0 0 0 fuse=200
+at 10 command summon minecraft:minecart 22.3 1.0 3.5 {Motion:[0.2d,0.0d,0.0d]}
+entity-added 10 commands e6 minecraft:minecart 22.3 1.0 3.5 0.2 0 0
+at 10 spawn-item 26.9 2.2 3.5 0 0 0 minecraft:stick 1 pickup-delay=32767
+entity-added 10 commands e7 minecraft:item 26.9 2.2 3.5 0 0 0 item=minecraft:stick count=1
+at 10 spawn-item 26.9 2.2 6.5 0.1 0 0 minecraft:stick 1 pickup-delay=32767
+entity-added 10 commands e8 minecraft:item 26.9 2.2 6.5 0.1 0 0 item=minecraft:stick count=1
+entity-order 10 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 10 e1 2.7 1.96 3.5 0.1960000038146973 -0.0392 0 item=minecraft:stick count=1 age=1 pickup-delay=32767 on-ground=false
+entity 10 e2 6.5 3.96 3.5 0 -0.0392 0 item=minecraft:stick count=1 age=1 pickup-delay=32767 on-ground=false
+entity 10 e3 11.129999999999999 1.96 3.5 0 -0.0392 0 item=minecraft:stick count=1 age=1 pickup-delay=32767 on-ground=false
+entity 10 e4 15.5 1.96 3.5 0 -0.0392 0 item=minecraft:stick count=4 age=1 pickup-delay=32767 on-ground=false
+entity 10 e5 18.5 3.96 3.5 0 -0.0392 0 fuse=199 on-ground=false
+entity 10 e6 22.5 1.0 3.5 0.2 0 0 on-ground=true
+entity 10 e7 26.9 2.16 3.5 0 -0.0392 0 item=minecraft:stick count=1 age=1 pickup-delay=32767 on-ground=false
+entity 10 e8 26.9375 2.16 6.5 0 -0.0392 0 item=minecraft:stick count=1 age=1 pickup-delay=32767 on-ground=false
+
+entity-order 11 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 11 e1 2.875 1.8808 3.5 0 -0.07761599999999999 0 item=minecraft:stick count=1 age=2 pickup-delay=32767 on-ground=false
+entity 11 e2 6.5 3.8808 3.5 0 -0.07761599999999999 0 item=minecraft:stick count=1 age=2 pickup-delay=32767 on-ground=false
+entity 11 e3 11.129999999999999 1.8808 3.5 0 -0.07761599999999999 0 item=minecraft:stick count=1 age=2 pickup-delay=32767 on-ground=false
+entity 11 e4 15.5 1.8808 3.5 0 -0.07761599999999999 0 item=minecraft:stick count=4 age=2 pickup-delay=32767 on-ground=false
+entity 11 e5 18.5 3.8808 3.5 0 -0.07761599999999999 0 fuse=198 on-ground=false
+entity 11 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 11 e7 26.9 2.0808 3.5 0 -0.07761599999999999 0 item=minecraft:stick count=1 age=2 pickup-delay=32767 on-ground=false
+entity 11 e8 26.9375 2.0808 6.5 0 -0.07761599999999999 0 item=minecraft:stick count=1 age=2 pickup-delay=32767 on-ground=false
+
+entity-order 12 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 12 e1 2.875 1.763184 3.5 0 -0.11526368 0 item=minecraft:stick count=1 age=3 pickup-delay=32767 on-ground=false
+entity 12 e2 6.5 3.763184 3.5 0 -0.11526368 0 item=minecraft:stick count=1 age=3 pickup-delay=32767 on-ground=false
+entity 12 e3 11.129999999999999 1.763184 3.5 0 -0.11526368 0 item=minecraft:stick count=1 age=3 pickup-delay=32767 on-ground=false
+entity 12 e4 15.5 1.763184 3.5 0 -0.11526368 0 item=minecraft:stick count=4 age=3 pickup-delay=32767 on-ground=false
+entity 12 e5 18.5 3.763184 3.5 0 -0.11526368 0 fuse=197 on-ground=false
+entity 12 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 12 e7 26.9 2.0 3.5 0 0 0 item=minecraft:stick count=1 age=3 pickup-delay=32767 on-ground=true
+entity 12 e8 26.9375 2.0 6.5 0 0 0 item=minecraft:stick count=1 age=3 pickup-delay=32767 on-ground=true
+
+entity-order 13 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 13 e1 2.875 1.60792032 3.5 0 -0.15215840639999997 0 item=minecraft:stick count=1 age=4 pickup-delay=32767 on-ground=false
+entity 13 e2 6.5 3.60792032 3.5 0 -0.15215840639999997 0 item=minecraft:stick count=1 age=4 pickup-delay=32767 on-ground=false
+entity 13 e3 11.129999999999999 1.60792032 3.5 0 -0.15215840639999997 0 item=minecraft:stick count=1 age=4 pickup-delay=32767 on-ground=false
+entity 13 e4 15.5 1.60792032 3.5 0 -0.15215840639999997 0 item=minecraft:stick count=4 age=4 pickup-delay=32767 on-ground=false
+entity 13 e5 18.5 3.60792032 3.5 0 -0.15215840639999997 0 fuse=196 on-ground=false
+entity 13 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 13 e7 26.9 2.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=4 pickup-delay=32767 on-ground=true
+entity 13 e8 26.9375 2.0 6.5 0 0 0 item=minecraft:stick count=1 age=4 pickup-delay=32767 on-ground=true
+
+at 14 set 14 3 3 minecraft:redstone_block
+change 14 commands 14 3 3 minecraft:air minecraft:redstone_block
+change 14 block_events 15 2 3 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+change 14 block_events 14 2 3 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
+draws 14 block_events level 1
+entity-order 14 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 14 e1 2.875 1.4157619136000001 3.5 0 -0.18831523827199997 0 item=minecraft:stick count=1 age=5 pickup-delay=32767 on-ground=false
+entity 14 e2 6.5 3.4157619136 3.5 0 -0.18831523827199997 0 item=minecraft:stick count=1 age=5 pickup-delay=32767 on-ground=false
+entity 14 e3 11.129999999999999 1.4157619136000001 3.5 0 -0.18831523827199997 0 item=minecraft:stick count=1 age=5 pickup-delay=32767 on-ground=false
+entity 14 e4 15.5 1.4157619136000001 3.5 0 -0.18831523827199997 0 item=minecraft:stick count=4 age=5 pickup-delay=32767 on-ground=false
+entity 14 e5 18.5 3.4157619136 3.5 0 -0.18831523827199997 0 fuse=195 on-ground=false
+entity 14 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 14 e7 26.9 2.0 3.5 0 0 0 item=minecraft:stick count=1 age=5 pickup-delay=32767 on-ground=true
+entity 14 e8 26.9375 2.0 6.5 0 -0.04 0 item=minecraft:stick count=1 age=5 pickup-delay=32767 on-ground=true
+
+entity-added 15 block_ticks e9 minecraft:item 16.66572049439353 2.42817260799868 3.4045252840998548 -0.07659867823855498 0.2 0.05630692640906096 item=minecraft:cactus count=1
+change 15 block_ticks 16 2 3 minecraft:cactus[age=0] minecraft:air
+draws 15 block_ticks level 10
+entity-order 15 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 15 e1 2.875 1.1874466753280002 3.5 0 -0.22374893350655997 0 item=minecraft:stick count=1 age=6 pickup-delay=32767 on-ground=false
+entity 15 e2 6.5 3.1874466753279997 3.5 0 -0.22374893350655997 0 item=minecraft:stick count=1 age=6 pickup-delay=32767 on-ground=false
+entity 15 e3 11.129999999999999 1.1874466753280002 3.5 0 -0.22374893350655997 0 item=minecraft:stick count=1 age=6 pickup-delay=32767 on-ground=false
+entity 15 e4 15.5 1.1874466753280002 3.5 0 -0.22374893350655997 0 item=minecraft:stick count=4 age=6 pickup-delay=32767 on-ground=false
+entity 15 e5 18.5 3.1874466753279997 3.5 0 -0.22374893350655997 0 fuse=194 on-ground=false
+entity 15 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 15 e7 26.9 2.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=6 pickup-delay=32767 on-ground=true
+entity 15 e8 26.9375 2.0 6.5 0 -0.08 0 item=minecraft:stick count=1 age=6 pickup-delay=32767 on-ground=true
+entity 15 e9 16.589121816154975 2.58817260799868 3.4608322105089155 -0.07506670613478773 0.1568 0.05518078895484913 item=minecraft:cactus count=1 age=1 pickup-delay=9 on-ground=false
+
+change 16 block_entities 15 2 3 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+entity-order 16 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 16 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=7 pickup-delay=32767 on-ground=true
+entity 16 e2 6.5 2.9375 3.5 0 0 0 item=minecraft:stick count=1 age=7 pickup-delay=32767 on-ground=true
+entity 16 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=7 pickup-delay=32767 on-ground=true
+entity 16 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=7 pickup-delay=32767 on-ground=true
+entity 16 e5 18.5 2.9375 3.5 0 0 0 fuse=193 on-ground=true
+entity 16 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 16 e7 26.9 2.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=7 pickup-delay=32767 on-ground=true
+entity 16 e8 26.9375 2.0 6.5 0 -0.12 0 item=minecraft:stick count=1 age=7 pickup-delay=32767 on-ground=true
+entity 16 e9 16.514055110020188 2.70497260799868 3.5160129994637646 -0.07356537344387577 0.11446399999999998 0.054077174228242174 item=minecraft:cactus count=1 age=2 pickup-delay=8 on-ground=false
+
+entity-removed 17 entities e8 discarded
+entity-order 17 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 17 e1 2.875 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=8 pickup-delay=32767 on-ground=true
+entity 17 e2 6.5 2.9375 3.5 0 -0.04 0 item=minecraft:stick count=1 age=8 pickup-delay=32767 on-ground=true
+entity 17 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=8 pickup-delay=32767 on-ground=true
+entity 17 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=8 pickup-delay=32767 on-ground=true
+entity 17 e5 18.5 2.9375 3.5 0 0 0 fuse=192 on-ground=true
+entity 17 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 17 e7 26.9 2.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=8 pickup-delay=32767 on-ground=true
+entity 17 e9 16.44048973657631 2.77943660799868 3.5700901736920065 -0.0720940673781464 0.07297471999999998 0.052995631775117576 item=minecraft:cactus count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-removed 18 entities e7 discarded
+entity-order 18 entities e1 e2 e3 e4 e5 e6 e7 e9
+entity 18 e1 2.875 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=9 pickup-delay=32767 on-ground=true
+entity 18 e2 6.5 2.9375 3.5 0 -0.08 0 item=minecraft:stick count=1 age=9 pickup-delay=32767 on-ground=true
+entity 18 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=9 pickup-delay=32767 on-ground=true
+entity 18 e4 15.5 1.0 3.5 0 -0.04 0 item=minecraft:stick count=4 age=9 pickup-delay=32767 on-ground=true
+entity 18 e5 18.5 2.9375 3.5 0 0 0 fuse=191 on-ground=true
+entity 18 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 18 e9 16.368395669198165 2.8124113279986798 3.623085805467124 -0.07065218740566868 0.032315225599999976 0.05193572015042668 item=minecraft:cactus count=1 age=4 pickup-delay=6 on-ground=false
+
+entity-order 19 entities e1 e2 e3 e4 e5 e6 e9
+entity 19 e1 2.875 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=10 pickup-delay=32767 on-ground=true
+entity 19 e2 6.5 2.9375 3.5 0 0 0 item=minecraft:stick count=1 age=10 pickup-delay=32767 on-ground=true
+entity 19 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=10 pickup-delay=32767 on-ground=true
+entity 19 e4 15.5 1.0 3.5 0 -0.08 0 item=minecraft:stick count=4 age=10 pickup-delay=32767 on-ground=true
+entity 19 e5 18.5 2.9375 3.5 0 0 0 fuse=190 on-ground=true
+entity 19 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 19 e9 16.297743481792498 2.80472655359868 3.675021525617551 -0.06923914500513884 -0.007531078912000024 0.050897006738013395 item=minecraft:cactus count=1 age=5 pickup-delay=5 on-ground=false
+
+entity-order 20 entities e1 e2 e3 e4 e5 e6 e9
+entity 20 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=11 pickup-delay=32767 on-ground=true
+entity 20 e2 6.5 2.9375 3.5 0 -0.04 0 item=minecraft:stick count=1 age=11 pickup-delay=32767 on-ground=true
+entity 20 e3 11.129999999999999 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=11 pickup-delay=32767 on-ground=true
+entity 20 e4 15.5 1.0 3.5 0 -0.12 0 item=minecraft:stick count=4 age=11 pickup-delay=32767 on-ground=true
+entity 20 e5 18.5 2.9375 3.5 0 0 0 fuse=189 on-ground=true
+entity 20 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 20 e9 16.22850433678736 2.75719547468668 3.725918532355564 -0.06785436342566795 -0.04658045733376002 0.04987906757403649 item=minecraft:cactus count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 21 entities e1 e2 e3 e4 e5 e6 e9
+entity 21 e1 2.875 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=12 pickup-delay=32767 on-ground=true
+entity 21 e2 6.5 2.9375 3.5 0 -0.08 0 item=minecraft:stick count=1 age=12 pickup-delay=32767 on-ground=true
+entity 21 e3 11.129999999999999 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=12 pickup-delay=32767 on-ground=true
+entity 21 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=12 pickup-delay=32767 on-ground=true
+entity 21 e5 18.5 2.9375 3.5 0 0 0 fuse=188 on-ground=true
+entity 21 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 21 e9 16.160649973361693 2.67061501735292 3.7757975999296005 -0.06649727745137386 -0.08484884818708481 0.048881487173923474 item=minecraft:cactus count=1 age=7 pickup-delay=3 on-ground=false
+
+entity-order 22 entities e1 e2 e3 e4 e5 e6 e9
+entity 22 e1 2.875 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=13 pickup-delay=32767 on-ground=true
+entity 22 e2 6.5 2.9375 3.5 0 -0.12 0 item=minecraft:stick count=1 age=13 pickup-delay=32767 on-ground=true
+entity 22 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=13 pickup-delay=32767 on-ground=true
+entity 22 e4 15.5 1.0 3.5 0 -0.04 0 item=minecraft:stick count=4 age=13 pickup-delay=32767 on-ground=true
+entity 22 e5 18.5 2.9375 3.5 0 0 0 fuse=187 on-ground=true
+entity 22 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 22 e9 16.125 2.5457661691658355 3.824679087103524 0 -0.12235187122334311 0.04790385836278538 item=minecraft:cactus count=1 age=8 pickup-delay=2 on-ground=false
+
+entity-order 23 entities e1 e2 e3 e4 e5 e6 e9
+entity 23 e1 2.875 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=14 pickup-delay=32767 on-ground=true
+entity 23 e2 6.5 2.9375 3.5 0 0 0 item=minecraft:stick count=1 age=14 pickup-delay=32767 on-ground=true
+entity 23 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=14 pickup-delay=32767 on-ground=true
+entity 23 e4 15.5 1.0 3.5 0 -0.08 0 item=minecraft:stick count=4 age=14 pickup-delay=32767 on-ground=true
+entity 23 e5 18.5 2.9375 3.5 0 0 0 fuse=186 on-ground=true
+entity 23 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 23 e9 16.125 2.3834142979424926 3.8725829454663097 0 -0.15910483379887624 0.04694578210922326 item=minecraft:cactus count=1 age=9 pickup-delay=1 on-ground=false
+
+entity-order 24 entities e1 e2 e3 e4 e5 e6 e9
+entity 24 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=15 pickup-delay=32767 on-ground=true
+entity 24 e2 6.5 2.9375 3.5 0 -0.04 0 item=minecraft:stick count=1 age=15 pickup-delay=32767 on-ground=true
+entity 24 e3 11.129999999999999 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=15 pickup-delay=32767 on-ground=true
+entity 24 e4 15.5 1.0 3.5 0 -0.12 0 item=minecraft:stick count=4 age=15 pickup-delay=32767 on-ground=true
+entity 24 e5 18.5 2.9375 3.5 0 0 0 fuse=185 on-ground=true
+entity 24 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 24 e9 16.125 2.1843094641436163 3.919528727575533 0 -0.1951227371228987 0.04600686736245853 item=minecraft:cactus count=1 age=10 pickup-delay=0 on-ground=false
+
+entity-order 25 entities e1 e2 e3 e4 e5 e6 e9
+entity 25 e1 2.875 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=16 pickup-delay=32767 on-ground=true
+entity 25 e2 6.5 2.9375 3.5 0 -0.08 0 item=minecraft:stick count=1 age=16 pickup-delay=32767 on-ground=true
+entity 25 e3 11.129999999999999 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=16 pickup-delay=32767 on-ground=true
+entity 25 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=16 pickup-delay=32767 on-ground=true
+entity 25 e5 18.5 2.9375 3.5 0 0 0 fuse=184 on-ground=true
+entity 25 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 25 e9 16.125 2.0 3.9655355949379913 0 0 0.027052040729410816 item=minecraft:cactus count=1 age=11 pickup-delay=0 on-ground=true
+
+entity-order 26 entities e1 e2 e3 e4 e5 e6 e9
+entity 26 e1 2.875 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=17 pickup-delay=32767 on-ground=true
+entity 26 e2 6.5 2.9375 3.5 0 -0.12 0 item=minecraft:stick count=1 age=17 pickup-delay=32767 on-ground=true
+entity 26 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=17 pickup-delay=32767 on-ground=true
+entity 26 e4 15.5 1.0 3.5 0 -0.04 0 item=minecraft:stick count=4 age=17 pickup-delay=32767 on-ground=true
+entity 26 e5 18.5 2.9375 3.5 0 0 0 fuse=183 on-ground=true
+entity 26 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 26 e9 16.125 2.0 3.992587635667402 0 0 0.01590660154842142 item=minecraft:cactus count=1 age=12 pickup-delay=0 on-ground=true
+
+entity-order 27 entities e1 e2 e3 e4 e5 e6 e9
+entity 27 e1 2.875 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=18 pickup-delay=32767 on-ground=true
+entity 27 e2 6.5 2.9375 3.5 0 0 0 item=minecraft:stick count=1 age=18 pickup-delay=32767 on-ground=true
+entity 27 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=18 pickup-delay=32767 on-ground=true
+entity 27 e4 15.5 1.0 3.5 0 -0.08 0 item=minecraft:stick count=4 age=18 pickup-delay=32767 on-ground=true
+entity 27 e5 18.5 2.9375 3.5 0 0 0 fuse=182 on-ground=true
+entity 27 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 27 e9 16.125 2.0 4.008494237215824 0 0 0.009353082650994271 item=minecraft:cactus count=1 age=13 pickup-delay=0 on-ground=true
+
+entity-order 28 entities e1 e2 e3 e4 e5 e6 e9
+entity 28 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=19 pickup-delay=32767 on-ground=true
+entity 28 e2 6.5 2.9375 3.5 0 -0.04 0 item=minecraft:stick count=1 age=19 pickup-delay=32767 on-ground=true
+entity 28 e3 11.129999999999999 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=19 pickup-delay=32767 on-ground=true
+entity 28 e4 15.5 1.0 3.5 0 -0.12 0 item=minecraft:stick count=4 age=19 pickup-delay=32767 on-ground=true
+entity 28 e5 18.5 2.9375 3.5 0 0 0 fuse=181 on-ground=true
+entity 28 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 28 e9 16.125 2.0 4.017847319866818 0 0 0.005499613151811903 item=minecraft:cactus count=1 age=14 pickup-delay=0 on-ground=true
+
+entity-order 29 entities e1 e2 e3 e4 e5 e6 e9
+entity 29 e1 2.875 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=20 pickup-delay=32767 on-ground=true
+entity 29 e2 6.5 2.9375 3.5 0 -0.08 0 item=minecraft:stick count=1 age=20 pickup-delay=32767 on-ground=true
+entity 29 e3 11.129999999999999 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=20 pickup-delay=32767 on-ground=true
+entity 29 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=20 pickup-delay=32767 on-ground=true
+entity 29 e5 18.5 2.9375 3.5 0 0 0 fuse=180 on-ground=true
+entity 29 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 29 e9 16.125 2.0 4.02334693301863 0 0 0.0032337728584454673 item=minecraft:cactus count=1 age=15 pickup-delay=0 on-ground=true
+
+entity-order 30 entities e1 e2 e3 e4 e5 e6 e9
+entity 30 e1 2.875 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=21 pickup-delay=32767 on-ground=true
+entity 30 e2 6.5 2.9375 3.5 0 -0.12 0 item=minecraft:stick count=1 age=21 pickup-delay=32767 on-ground=true
+entity 30 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=21 pickup-delay=32767 on-ground=true
+entity 30 e4 15.5 1.0 3.5 0 -0.04 0 item=minecraft:stick count=4 age=21 pickup-delay=32767 on-ground=true
+entity 30 e5 18.5 2.9375 3.5 0 0 0 fuse=179 on-ground=true
+entity 30 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 30 e9 16.125 2.0 4.026580705877075 0 0 0.0019014586319718342 item=minecraft:cactus count=1 age=16 pickup-delay=0 on-ground=true
+
+entity-removed 31 entities e2 discarded
+entity-order 31 entities e1 e2 e3 e4 e5 e6 e9
+entity 31 e1 2.875 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=22 pickup-delay=32767 on-ground=true
+entity 31 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=22 pickup-delay=32767 on-ground=true
+entity 31 e4 15.5 1.0 3.5 0 -0.08 0 item=minecraft:stick count=4 age=22 pickup-delay=32767 on-ground=true
+entity 31 e5 18.5 2.9375 3.5 0 0 0 fuse=178 on-ground=true
+entity 31 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 31 e9 16.125 2.0 4.026580705877075 0 -0.04 0.0019014586319718342 item=minecraft:cactus count=1 age=17 pickup-delay=0 on-ground=true
+
+entity-order 32 entities e1 e3 e4 e5 e6 e9
+entity 32 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=23 pickup-delay=32767 on-ground=true
+entity 32 e3 11.129999999999999 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=23 pickup-delay=32767 on-ground=true
+entity 32 e4 15.5 1.0 3.5 0 -0.12 0 item=minecraft:stick count=4 age=23 pickup-delay=32767 on-ground=true
+entity 32 e5 18.5 2.9375 3.5 0 0 0 fuse=177 on-ground=true
+entity 32 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 32 e9 16.125 2.0 4.026580705877075 0 -0.08 0.0019014586319718342 item=minecraft:cactus count=1 age=18 pickup-delay=0 on-ground=true
+
+entity-order 33 entities e1 e3 e4 e5 e6 e9
+entity 33 e1 2.875 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=24 pickup-delay=32767 on-ground=true
+entity 33 e3 11.129999999999999 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=24 pickup-delay=32767 on-ground=true
+entity 33 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=24 pickup-delay=32767 on-ground=true
+entity 33 e5 18.5 2.9375 3.5 0 0 0 fuse=176 on-ground=true
+entity 33 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 33 e9 16.125 2.0 4.028482164509047 0 0 0.0011180577880285187 item=minecraft:cactus count=1 age=19 pickup-delay=0 on-ground=true
+
+entity-order 34 entities e1 e3 e4 e5 e6 e9
+entity 34 e1 2.875 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=25 pickup-delay=32767 on-ground=true
+entity 34 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=25 pickup-delay=32767 on-ground=true
+entity 34 e4 15.5 1.0 3.5 0 -0.04 0 item=minecraft:stick count=4 age=25 pickup-delay=32767 on-ground=true
+entity 34 e5 18.5 2.9375 3.5 0 0 0 fuse=175 on-ground=true
+entity 34 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 34 e9 16.125 2.0 4.028482164509047 0 -0.04 0.0011180577880285187 item=minecraft:cactus count=1 age=20 pickup-delay=0 on-ground=true
+
+entity-order 35 entities e1 e3 e4 e5 e6 e9
+entity 35 e1 2.875 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=26 pickup-delay=32767 on-ground=true
+entity 35 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=26 pickup-delay=32767 on-ground=true
+entity 35 e4 15.5 1.0 3.5 0 -0.08 0 item=minecraft:stick count=4 age=26 pickup-delay=32767 on-ground=true
+entity 35 e5 18.5 2.9375 3.5 0 0 0 fuse=174 on-ground=true
+entity 35 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 35 e9 16.125 2.0 4.028482164509047 0 -0.08 0.0011180577880285187 item=minecraft:cactus count=1 age=21 pickup-delay=0 on-ground=true
+
+entity-order 36 entities e1 e3 e4 e5 e6 e9
+entity 36 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=27 pickup-delay=32767 on-ground=true
+entity 36 e3 11.129999999999999 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=27 pickup-delay=32767 on-ground=true
+entity 36 e4 15.5 1.0 3.5 0 -0.12 0 item=minecraft:stick count=4 age=27 pickup-delay=32767 on-ground=true
+entity 36 e5 18.5 2.9375 3.5 0 0 0 fuse=173 on-ground=true
+entity 36 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 36 e9 16.125 2.0 4.028482164509047 0 -0.12 0.0011180577880285187 item=minecraft:cactus count=1 age=22 pickup-delay=0 on-ground=true
+
+entity-order 37 entities e1 e3 e4 e5 e6 e9
+entity 37 e1 2.875 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=28 pickup-delay=32767 on-ground=true
+entity 37 e3 11.129999999999999 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=28 pickup-delay=32767 on-ground=true
+entity 37 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=28 pickup-delay=32767 on-ground=true
+entity 37 e5 18.5 2.9375 3.5 0 0 0 fuse=172 on-ground=true
+entity 37 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 37 e9 16.125 2.0 4.029600222297075 0 0 6.574180454690748E-4 item=minecraft:cactus count=1 age=23 pickup-delay=0 on-ground=true
+
+entity-order 38 entities e1 e3 e4 e5 e6 e9
+entity 38 e1 2.875 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=29 pickup-delay=32767 on-ground=true
+entity 38 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=29 pickup-delay=32767 on-ground=true
+entity 38 e4 15.5 1.0 3.5 0 -0.04 0 item=minecraft:stick count=4 age=29 pickup-delay=32767 on-ground=true
+entity 38 e5 18.5 2.9375 3.5 0 0 0 fuse=171 on-ground=true
+entity 38 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 38 e9 16.125 2.0 4.029600222297075 0 -0.04 6.574180454690748E-4 item=minecraft:cactus count=1 age=24 pickup-delay=0 on-ground=true
+
+entity-order 39 entities e1 e3 e4 e5 e6 e9
+entity 39 e1 2.875 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=30 pickup-delay=32767 on-ground=true
+entity 39 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=30 pickup-delay=32767 on-ground=true
+entity 39 e4 15.5 1.0 3.5 0 -0.08 0 item=minecraft:stick count=4 age=30 pickup-delay=32767 on-ground=true
+entity 39 e5 18.5 2.9375 3.5 0 0 0 fuse=170 on-ground=true
+entity 39 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 39 e9 16.125 2.0 4.029600222297075 0 -0.08 6.574180454690748E-4 item=minecraft:cactus count=1 age=25 pickup-delay=0 on-ground=true
+
+entity-order 40 entities e1 e3 e4 e5 e6 e9
+entity 40 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=31 pickup-delay=32767 on-ground=true
+entity 40 e3 11.129999999999999 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=31 pickup-delay=32767 on-ground=true
+entity 40 e4 15.5 1.0 3.5 0 -0.12 0 item=minecraft:stick count=4 age=31 pickup-delay=32767 on-ground=true
+entity 40 e5 18.5 2.9375 3.5 0 0 0 fuse=169 on-ground=true
+entity 40 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 40 e9 16.125 2.0 4.029600222297075 0 -0.12 6.574180454690748E-4 item=minecraft:cactus count=1 age=26 pickup-delay=0 on-ground=true
+
+entity-order 41 entities e1 e3 e4 e5 e6 e9
+entity 41 e1 2.875 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=32 pickup-delay=32767 on-ground=true
+entity 41 e3 11.129999999999999 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=32 pickup-delay=32767 on-ground=true
+entity 41 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=32 pickup-delay=32767 on-ground=true
+entity 41 e5 18.5 2.9375 3.5 0 0 0 fuse=168 on-ground=true
+entity 41 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 41 e9 16.125 2.0 4.030257640342544 0 0 3.865618496075037E-4 item=minecraft:cactus count=1 age=27 pickup-delay=0 on-ground=true
+
+entity-order 42 entities e1 e3 e4 e5 e6 e9
+entity 42 e1 2.875 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=33 pickup-delay=32767 on-ground=true
+entity 42 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=33 pickup-delay=32767 on-ground=true
+entity 42 e4 15.5 1.0 3.5 0 -0.04 0 item=minecraft:stick count=4 age=33 pickup-delay=32767 on-ground=true
+entity 42 e5 18.5 2.9375 3.5 0 0 0 fuse=167 on-ground=true
+entity 42 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 42 e9 16.125 2.0 4.030257640342544 0 -0.04 3.865618496075037E-4 item=minecraft:cactus count=1 age=28 pickup-delay=0 on-ground=true
+
+entity-order 43 entities e1 e3 e4 e5 e6 e9
+entity 43 e1 2.875 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=34 pickup-delay=32767 on-ground=true
+entity 43 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=34 pickup-delay=32767 on-ground=true
+entity 43 e4 15.5 1.0 3.5 0 -0.08 0 item=minecraft:stick count=4 age=34 pickup-delay=32767 on-ground=true
+entity 43 e5 18.5 2.9375 3.5 0 0 0 fuse=166 on-ground=true
+entity 43 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 43 e9 16.125 2.0 4.030257640342544 0 -0.08 3.865618496075037E-4 item=minecraft:cactus count=1 age=29 pickup-delay=0 on-ground=true
+
+entity-order 44 entities e1 e3 e4 e5 e6 e9
+entity 44 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=35 pickup-delay=32767 on-ground=true
+entity 44 e3 11.129999999999999 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=35 pickup-delay=32767 on-ground=true
+entity 44 e4 15.5 1.0 3.5 0 -0.12 0 item=minecraft:stick count=4 age=35 pickup-delay=32767 on-ground=true
+entity 44 e5 18.5 2.9375 3.5 0 0 0 fuse=165 on-ground=true
+entity 44 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 44 e9 16.125 2.0 4.030257640342544 0 -0.12 3.865618496075037E-4 item=minecraft:cactus count=1 age=30 pickup-delay=0 on-ground=true
+
+entity-order 45 entities e1 e3 e4 e5 e6 e9
+entity 45 e1 2.875 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=36 pickup-delay=32767 on-ground=true
+entity 45 e3 11.129999999999999 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=36 pickup-delay=32767 on-ground=true
+entity 45 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=36 pickup-delay=32767 on-ground=true
+entity 45 e5 18.5 2.9375 3.5 0 0 0 fuse=164 on-ground=true
+entity 45 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 45 e9 16.125 2.0 4.030644202192152 0 0 2.2729839042576685E-4 item=minecraft:cactus count=1 age=31 pickup-delay=0 on-ground=true
+
+entity-order 46 entities e1 e3 e4 e5 e6 e9
+entity 46 e1 2.875 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=37 pickup-delay=32767 on-ground=true
+entity 46 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=37 pickup-delay=32767 on-ground=true
+entity 46 e4 15.5 1.0 3.5 0 -0.04 0 item=minecraft:stick count=4 age=37 pickup-delay=32767 on-ground=true
+entity 46 e5 18.5 2.9375 3.5 0 0 0 fuse=163 on-ground=true
+entity 46 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 46 e9 16.125 2.0 4.030644202192152 0 -0.04 2.2729839042576685E-4 item=minecraft:cactus count=1 age=32 pickup-delay=0 on-ground=true
+
+entity-order 47 entities e1 e3 e4 e5 e6 e9
+entity 47 e1 2.875 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=38 pickup-delay=32767 on-ground=true
+entity 47 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=38 pickup-delay=32767 on-ground=true
+entity 47 e4 15.5 1.0 3.5 0 -0.08 0 item=minecraft:stick count=4 age=38 pickup-delay=32767 on-ground=true
+entity 47 e5 18.5 2.9375 3.5 0 0 0 fuse=162 on-ground=true
+entity 47 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 47 e9 16.125 2.0 4.030644202192152 0 -0.08 2.2729839042576685E-4 item=minecraft:cactus count=1 age=33 pickup-delay=0 on-ground=true
+
+entity-order 48 entities e1 e3 e4 e5 e6 e9
+entity 48 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=39 pickup-delay=32767 on-ground=true
+entity 48 e3 11.129999999999999 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=39 pickup-delay=32767 on-ground=true
+entity 48 e4 15.5 1.0 3.5 0 -0.12 0 item=minecraft:stick count=4 age=39 pickup-delay=32767 on-ground=true
+entity 48 e5 18.5 2.9375 3.5 0 0 0 fuse=161 on-ground=true
+entity 48 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 48 e9 16.125 2.0 4.030644202192152 0 -0.12 2.2729839042576685E-4 item=minecraft:cactus count=1 age=34 pickup-delay=0 on-ground=true
+
+entity-order 49 entities e1 e3 e4 e5 e6 e9
+entity 49 e1 2.875 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=40 pickup-delay=32767 on-ground=true
+entity 49 e3 11.129999999999999 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=40 pickup-delay=32767 on-ground=true
+entity 49 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=40 pickup-delay=32767 on-ground=true
+entity 49 e5 18.5 2.9375 3.5 0 0 0 fuse=160 on-ground=true
+entity 49 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 49 e9 16.125 2.0 4.030644202192152 0 0 1.3365146701000642E-4 item=minecraft:cactus count=1 age=35 pickup-delay=0 on-ground=true
+
+entity-order 50 entities e1 e3 e4 e5 e6 e9
+entity 50 e1 2.875 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=41 pickup-delay=32767 on-ground=true
+entity 50 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=41 pickup-delay=32767 on-ground=true
+entity 50 e4 15.5 1.0 3.5 0 -0.04 0 item=minecraft:stick count=4 age=41 pickup-delay=32767 on-ground=true
+entity 50 e5 18.5 2.9375 3.5 0 0 0 fuse=159 on-ground=true
+entity 50 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 50 e9 16.125 2.0 4.030644202192152 0 -0.04 1.3365146701000642E-4 item=minecraft:cactus count=1 age=36 pickup-delay=0 on-ground=true
+
+entity-order 51 entities e1 e3 e4 e5 e6 e9
+entity 51 e1 2.875 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=42 pickup-delay=32767 on-ground=true
+entity 51 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=42 pickup-delay=32767 on-ground=true
+entity 51 e4 15.5 1.0 3.5 0 -0.08 0 item=minecraft:stick count=4 age=42 pickup-delay=32767 on-ground=true
+entity 51 e5 18.5 2.9375 3.5 0 0 0 fuse=158 on-ground=true
+entity 51 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 51 e9 16.125 2.0 4.030644202192152 0 -0.08 1.3365146701000642E-4 item=minecraft:cactus count=1 age=37 pickup-delay=0 on-ground=true
+
+entity-order 52 entities e1 e3 e4 e5 e6 e9
+entity 52 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=43 pickup-delay=32767 on-ground=true
+entity 52 e3 11.129999999999999 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=43 pickup-delay=32767 on-ground=true
+entity 52 e4 15.5 1.0 3.5 0 -0.12 0 item=minecraft:stick count=4 age=43 pickup-delay=32767 on-ground=true
+entity 52 e5 18.5 2.9375 3.5 0 0 0 fuse=157 on-ground=true
+entity 52 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 52 e9 16.125 2.0 4.030644202192152 0 -0.12 1.3365146701000642E-4 item=minecraft:cactus count=1 age=38 pickup-delay=0 on-ground=true
+
+entity-order 53 entities e1 e3 e4 e5 e6 e9
+entity 53 e1 2.875 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=44 pickup-delay=32767 on-ground=true
+entity 53 e3 11.129999999999999 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=44 pickup-delay=32767 on-ground=true
+entity 53 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=44 pickup-delay=32767 on-ground=true
+entity 53 e5 18.5 2.9375 3.5 0 0 0 fuse=156 on-ground=true
+entity 53 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 53 e9 16.125 2.0 4.030644202192152 0 0 7.8587070504402E-5 item=minecraft:cactus count=1 age=39 pickup-delay=0 on-ground=true
+
+entity-order 54 entities e1 e3 e4 e5 e6 e9
+entity 54 e1 2.875 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=45 pickup-delay=32767 on-ground=true
+entity 54 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=45 pickup-delay=32767 on-ground=true
+entity 54 e4 15.5 1.0 3.5 0 -0.04 0 item=minecraft:stick count=4 age=45 pickup-delay=32767 on-ground=true
+entity 54 e5 18.5 2.9375 3.5 0 0 0 fuse=155 on-ground=true
+entity 54 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 54 e9 16.125 2.0 4.030644202192152 0 -0.04 7.8587070504402E-5 item=minecraft:cactus count=1 age=40 pickup-delay=0 on-ground=true
+
+entity-order 55 entities e1 e3 e4 e5 e6 e9
+entity 55 e1 2.875 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=46 pickup-delay=32767 on-ground=true
+entity 55 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=46 pickup-delay=32767 on-ground=true
+entity 55 e4 15.5 1.0 3.5 0 -0.08 0 item=minecraft:stick count=4 age=46 pickup-delay=32767 on-ground=true
+entity 55 e5 18.5 2.9375 3.5 0 0 0 fuse=154 on-ground=true
+entity 55 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 55 e9 16.125 2.0 4.030644202192152 0 -0.08 7.8587070504402E-5 item=minecraft:cactus count=1 age=41 pickup-delay=0 on-ground=true
+
+entity-order 56 entities e1 e3 e4 e5 e6 e9
+entity 56 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=47 pickup-delay=32767 on-ground=true
+entity 56 e3 11.129999999999999 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=47 pickup-delay=32767 on-ground=true
+entity 56 e4 15.5 1.0 3.5 0 -0.12 0 item=minecraft:stick count=4 age=47 pickup-delay=32767 on-ground=true
+entity 56 e5 18.5 2.9375 3.5 0 0 0 fuse=153 on-ground=true
+entity 56 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 56 e9 16.125 2.0 4.030644202192152 0 -0.12 7.8587070504402E-5 item=minecraft:cactus count=1 age=42 pickup-delay=0 on-ground=true
+
+entity-order 57 entities e1 e3 e4 e5 e6 e9
+entity 57 e1 2.875 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=48 pickup-delay=32767 on-ground=true
+entity 57 e3 11.129999999999999 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=48 pickup-delay=32767 on-ground=true
+entity 57 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=48 pickup-delay=32767 on-ground=true
+entity 57 e5 18.5 2.9375 3.5 0 0 0 fuse=152 on-ground=true
+entity 57 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 57 e9 16.125 2.0 4.030644202192152 0 0 4.620920210326956E-5 item=minecraft:cactus count=1 age=43 pickup-delay=0 on-ground=true
+
+entity-order 58 entities e1 e3 e4 e5 e6 e9
+entity 58 e1 2.875 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=49 pickup-delay=32767 on-ground=true
+entity 58 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=49 pickup-delay=32767 on-ground=true
+entity 58 e4 15.5 1.0 3.5 0 -0.04 0 item=minecraft:stick count=4 age=49 pickup-delay=32767 on-ground=true
+entity 58 e5 18.5 2.9375 3.5 0 0 0 fuse=151 on-ground=true
+entity 58 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 58 e9 16.125 2.0 4.030644202192152 0 -0.04 4.620920210326956E-5 item=minecraft:cactus count=1 age=44 pickup-delay=0 on-ground=true
+
+entity-order 59 entities e1 e3 e4 e5 e6 e9
+entity 59 e1 2.875 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=50 pickup-delay=32767 on-ground=true
+entity 59 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=50 pickup-delay=32767 on-ground=true
+entity 59 e4 15.5 1.0 3.5 0 -0.08 0 item=minecraft:stick count=4 age=50 pickup-delay=32767 on-ground=true
+entity 59 e5 18.5 2.9375 3.5 0 0 0 fuse=150 on-ground=true
+entity 59 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 59 e9 16.125 2.0 4.030644202192152 0 -0.08 4.620920210326956E-5 item=minecraft:cactus count=1 age=45 pickup-delay=0 on-ground=true
+
+entity-order 60 entities e1 e3 e4 e5 e6 e9
+entity 60 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=51 pickup-delay=32767 on-ground=true
+entity 60 e3 11.129999999999999 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=51 pickup-delay=32767 on-ground=true
+entity 60 e4 15.5 1.0 3.5 0 -0.12 0 item=minecraft:stick count=4 age=51 pickup-delay=32767 on-ground=true
+entity 60 e5 18.5 2.9375 3.5 0 0 0 fuse=149 on-ground=true
+entity 60 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 60 e9 16.125 2.0 4.030644202192152 0 -0.12 4.620920210326956E-5 item=minecraft:cactus count=1 age=46 pickup-delay=0 on-ground=true
+
+entity-order 61 entities e1 e3 e4 e5 e6 e9
+entity 61 e1 2.875 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=52 pickup-delay=32767 on-ground=true
+entity 61 e3 11.129999999999999 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=52 pickup-delay=32767 on-ground=true
+entity 61 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=52 pickup-delay=32767 on-ground=true
+entity 61 e5 18.5 2.9375 3.5 0 0 0 fuse=148 on-ground=true
+entity 61 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 61 e9 16.125 2.0 4.030644202192152 0 0 2.7171013568971316E-5 item=minecraft:cactus count=1 age=47 pickup-delay=0 on-ground=true
+
+entity-order 62 entities e1 e3 e4 e5 e6 e9
+entity 62 e1 2.875 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=53 pickup-delay=32767 on-ground=true
+entity 62 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=53 pickup-delay=32767 on-ground=true
+entity 62 e4 15.5 1.0 3.5 0 -0.04 0 item=minecraft:stick count=4 age=53 pickup-delay=32767 on-ground=true
+entity 62 e5 18.5 2.9375 3.5 0 0 0 fuse=147 on-ground=true
+entity 62 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 62 e9 16.125 2.0 4.030644202192152 0 -0.04 2.7171013568971316E-5 item=minecraft:cactus count=1 age=48 pickup-delay=0 on-ground=true
+
+entity-order 63 entities e1 e3 e4 e5 e6 e9
+entity 63 e1 2.875 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=54 pickup-delay=32767 on-ground=true
+entity 63 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=54 pickup-delay=32767 on-ground=true
+entity 63 e4 15.5 1.0 3.5 0 -0.08 0 item=minecraft:stick count=4 age=54 pickup-delay=32767 on-ground=true
+entity 63 e5 18.5 2.9375 3.5 0 0 0 fuse=146 on-ground=true
+entity 63 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 63 e9 16.125 2.0 4.030644202192152 0 -0.08 2.7171013568971316E-5 item=minecraft:cactus count=1 age=49 pickup-delay=0 on-ground=true
+
+entity-order 64 entities e1 e3 e4 e5 e6 e9
+entity 64 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=55 pickup-delay=32767 on-ground=true
+entity 64 e3 11.129999999999999 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=55 pickup-delay=32767 on-ground=true
+entity 64 e4 15.5 1.0 3.5 0 -0.12 0 item=minecraft:stick count=4 age=55 pickup-delay=32767 on-ground=true
+entity 64 e5 18.5 2.9375 3.5 0 0 0 fuse=145 on-ground=true
+entity 64 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 64 e9 16.125 2.0 4.030644202192152 0 -0.12 2.7171013568971316E-5 item=minecraft:cactus count=1 age=50 pickup-delay=0 on-ground=true
+
+entity-order 65 entities e1 e3 e4 e5 e6 e9
+entity 65 e1 2.875 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=56 pickup-delay=32767 on-ground=true
+entity 65 e3 11.129999999999999 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=56 pickup-delay=32767 on-ground=true
+entity 65 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=56 pickup-delay=32767 on-ground=true
+entity 65 e5 18.5 2.9375 3.5 0 0 0 fuse=144 on-ground=true
+entity 65 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 65 e9 16.125 2.0 4.030644202192152 0 0 1.5976557585117598E-5 item=minecraft:cactus count=1 age=51 pickup-delay=0 on-ground=true
+
+entity-order 66 entities e1 e3 e4 e5 e6 e9
+entity 66 e1 2.875 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=57 pickup-delay=32767 on-ground=true
+entity 66 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=57 pickup-delay=32767 on-ground=true
+entity 66 e4 15.5 1.0 3.5 0 -0.04 0 item=minecraft:stick count=4 age=57 pickup-delay=32767 on-ground=true
+entity 66 e5 18.5 2.9375 3.5 0 0 0 fuse=143 on-ground=true
+entity 66 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 66 e9 16.125 2.0 4.030644202192152 0 -0.04 1.5976557585117598E-5 item=minecraft:cactus count=1 age=52 pickup-delay=0 on-ground=true
+
+entity-order 67 entities e1 e3 e4 e5 e6 e9
+entity 67 e1 2.875 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=58 pickup-delay=32767 on-ground=true
+entity 67 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=58 pickup-delay=32767 on-ground=true
+entity 67 e4 15.5 1.0 3.5 0 -0.08 0 item=minecraft:stick count=4 age=58 pickup-delay=32767 on-ground=true
+entity 67 e5 18.5 2.9375 3.5 0 0 0 fuse=142 on-ground=true
+entity 67 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 67 e9 16.125 2.0 4.030644202192152 0 -0.08 1.5976557585117598E-5 item=minecraft:cactus count=1 age=53 pickup-delay=0 on-ground=true
+
+entity-order 68 entities e1 e3 e4 e5 e6 e9
+entity 68 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=59 pickup-delay=32767 on-ground=true
+entity 68 e3 11.129999999999999 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=59 pickup-delay=32767 on-ground=true
+entity 68 e4 15.5 1.0 3.5 0 -0.12 0 item=minecraft:stick count=4 age=59 pickup-delay=32767 on-ground=true
+entity 68 e5 18.5 2.9375 3.5 0 0 0 fuse=141 on-ground=true
+entity 68 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 68 e9 16.125 2.0 4.030644202192152 0 -0.12 1.5976557585117598E-5 item=minecraft:cactus count=1 age=54 pickup-delay=0 on-ground=true
+
+entity-order 69 entities e1 e3 e4 e5 e6 e9
+entity 69 e1 2.875 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=60 pickup-delay=32767 on-ground=true
+entity 69 e3 11.129999999999999 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=60 pickup-delay=32767 on-ground=true
+entity 69 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=60 pickup-delay=32767 on-ground=true
+entity 69 e5 18.5 2.9375 3.5 0 0 0 fuse=140 on-ground=true
+entity 69 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 69 e9 16.125 2.0 4.030644202192152 0 0 9.39421680470797E-6 item=minecraft:cactus count=1 age=55 pickup-delay=0 on-ground=true
+
+entity-order 70 entities e1 e3 e4 e5 e6 e9
+entity 70 e1 2.875 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=61 pickup-delay=32767 on-ground=true
+entity 70 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=61 pickup-delay=32767 on-ground=true
+entity 70 e4 15.5 1.0 3.5 0 -0.04 0 item=minecraft:stick count=4 age=61 pickup-delay=32767 on-ground=true
+entity 70 e5 18.5 2.9375 3.5 0 0 0 fuse=139 on-ground=true
+entity 70 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 70 e9 16.125 2.0 4.030644202192152 0 -0.04 9.39421680470797E-6 item=minecraft:cactus count=1 age=56 pickup-delay=0 on-ground=true
+
+entity-order 71 entities e1 e3 e4 e5 e6 e9
+entity 71 e1 2.875 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=62 pickup-delay=32767 on-ground=true
+entity 71 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=62 pickup-delay=32767 on-ground=true
+entity 71 e4 15.5 1.0 3.5 0 -0.08 0 item=minecraft:stick count=4 age=62 pickup-delay=32767 on-ground=true
+entity 71 e5 18.5 2.9375 3.5 0 0 0 fuse=138 on-ground=true
+entity 71 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 71 e9 16.125 2.0 4.030644202192152 0 -0.08 9.39421680470797E-6 item=minecraft:cactus count=1 age=57 pickup-delay=0 on-ground=true
+
+entity-order 72 entities e1 e3 e4 e5 e6 e9
+entity 72 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=63 pickup-delay=32767 on-ground=true
+entity 72 e3 11.129999999999999 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=63 pickup-delay=32767 on-ground=true
+entity 72 e4 15.5 1.0 3.5 0 -0.12 0 item=minecraft:stick count=4 age=63 pickup-delay=32767 on-ground=true
+entity 72 e5 18.5 2.9375 3.5 0 0 0 fuse=137 on-ground=true
+entity 72 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 72 e9 16.125 2.0 4.030644202192152 0 -0.12 9.39421680470797E-6 item=minecraft:cactus count=1 age=58 pickup-delay=0 on-ground=true
+
+entity-order 73 entities e1 e3 e4 e5 e6 e9
+entity 73 e1 2.875 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=64 pickup-delay=32767 on-ground=true
+entity 73 e3 11.129999999999999 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=64 pickup-delay=32767 on-ground=true
+entity 73 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=64 pickup-delay=32767 on-ground=true
+entity 73 e5 18.5 2.9375 3.5 0 0 0 fuse=136 on-ground=true
+entity 73 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 73 e9 16.125 2.0 4.030644202192152 0 0 5.52380003662773E-6 item=minecraft:cactus count=1 age=59 pickup-delay=0 on-ground=true
+
+entity-order 74 entities e1 e3 e4 e5 e6 e9
+entity 74 e1 2.875 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=65 pickup-delay=32767 on-ground=true
+entity 74 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=65 pickup-delay=32767 on-ground=true
+entity 74 e4 15.5 1.0 3.5 0 -0.04 0 item=minecraft:stick count=4 age=65 pickup-delay=32767 on-ground=true
+entity 74 e5 18.5 2.9375 3.5 0 0 0 fuse=135 on-ground=true
+entity 74 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 74 e9 16.125 2.0 4.030644202192152 0 -0.04 5.52380003662773E-6 item=minecraft:cactus count=1 age=60 pickup-delay=0 on-ground=true
+
+entity-order 75 entities e1 e3 e4 e5 e6 e9
+entity 75 e1 2.875 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=66 pickup-delay=32767 on-ground=true
+entity 75 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=66 pickup-delay=32767 on-ground=true
+entity 75 e4 15.5 1.0 3.5 0 -0.08 0 item=minecraft:stick count=4 age=66 pickup-delay=32767 on-ground=true
+entity 75 e5 18.5 2.9375 3.5 0 0 0 fuse=134 on-ground=true
+entity 75 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 75 e9 16.125 2.0 4.030644202192152 0 -0.08 5.52380003662773E-6 item=minecraft:cactus count=1 age=61 pickup-delay=0 on-ground=true
+
+entity-order 76 entities e1 e3 e4 e5 e6 e9
+entity 76 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=67 pickup-delay=32767 on-ground=true
+entity 76 e3 11.129999999999999 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=67 pickup-delay=32767 on-ground=true
+entity 76 e4 15.5 1.0 3.5 0 -0.12 0 item=minecraft:stick count=4 age=67 pickup-delay=32767 on-ground=true
+entity 76 e5 18.5 2.9375 3.5 0 0 0 fuse=133 on-ground=true
+entity 76 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 76 e9 16.125 2.0 4.030644202192152 0 -0.12 5.52380003662773E-6 item=minecraft:cactus count=1 age=62 pickup-delay=0 on-ground=true
+
+entity-order 77 entities e1 e3 e4 e5 e6 e9
+entity 77 e1 2.875 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=68 pickup-delay=32767 on-ground=true
+entity 77 e3 11.129999999999999 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=68 pickup-delay=32767 on-ground=true
+entity 77 e4 15.5 1.0 3.5 0 0 0 item=minecraft:stick count=4 age=68 pickup-delay=32767 on-ground=true
+entity 77 e5 18.5 2.9375 3.5 0 0 0 fuse=132 on-ground=true
+entity 77 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 77 e9 16.125 2.0 4.030644202192152 0 0 3.2479947481472915E-6 item=minecraft:cactus count=1 age=63 pickup-delay=0 on-ground=true
+
+entity-order 78 entities e1 e3 e4 e5 e6 e9
+entity 78 e1 2.875 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=69 pickup-delay=32767 on-ground=true
+entity 78 e3 11.129999999999999 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=69 pickup-delay=32767 on-ground=true
+entity 78 e4 15.5 1.0 3.5 0 -0.04 0 item=minecraft:stick count=4 age=69 pickup-delay=32767 on-ground=true
+entity 78 e5 18.5 2.9375 3.5 0 0 0 fuse=131 on-ground=true
+entity 78 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 78 e9 16.125 2.0 4.030644202192152 0 -0.04 3.2479947481472915E-6 item=minecraft:cactus count=1 age=64 pickup-delay=0 on-ground=true
+
+entity-order 79 entities e1 e3 e4 e5 e6 e9
+entity 79 e1 2.875 1.0 3.5 0 -0.12 0 item=minecraft:stick count=1 age=70 pickup-delay=32767 on-ground=true
+entity 79 e3 11.129999999999999 1.0 3.5 0 -0.04 0 item=minecraft:stick count=1 age=70 pickup-delay=32767 on-ground=true
+entity 79 e4 15.5 1.0 3.5 0 -0.08 0 item=minecraft:stick count=4 age=70 pickup-delay=32767 on-ground=true
+entity 79 e5 18.5 2.9375 3.5 0 0 0 fuse=130 on-ground=true
+entity 79 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 79 e9 16.125 2.0 4.030644202192152 0 -0.08 3.2479947481472915E-6 item=minecraft:cactus count=1 age=65 pickup-delay=0 on-ground=true
+
+entity-order 80 entities e1 e3 e4 e5 e6 e9
+entity 80 e1 2.875 1.0 3.5 0 0 0 item=minecraft:stick count=1 age=71 pickup-delay=32767 on-ground=true
+entity 80 e3 11.129999999999999 1.0 3.5 0 -0.08 0 item=minecraft:stick count=1 age=71 pickup-delay=32767 on-ground=true
+entity 80 e4 15.5 1.0 3.5 0 -0.12 0 item=minecraft:stick count=4 age=71 pickup-delay=32767 on-ground=true
+entity 80 e5 18.5 2.9375 3.5 0 0 0 fuse=129 on-ground=true
+entity 80 e6 22.509999990463257 1.0 3.5 0 0 0 on-ground=true
+entity 80 e9 16.125 2.0 4.030644202192152 0 -0.12 3.2479947481472915E-6 item=minecraft:cactus count=1 age=66 pickup-delay=0 on-ground=true

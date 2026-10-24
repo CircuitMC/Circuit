@@ -272,6 +272,11 @@ void support_tick(RuleContext& ctx, BlockPos pos, BlockState s);
 // Its own item, its drop when no data packs give its loot table.
 std::optional<ItemStack> supported_drop(BlockState s);
 
+// ---- cacti (farmland.cpp) ----
+// After an item's move: each cactus whose cell its box reaches takes a point
+// of its health; true when that leaves none and it is gone.
+bool cactus_hurts(RuleContext& ctx, EntityId id);
+
 // ---- farmland (farmland.cpp) ----
 bool is_farmland(BlockState s);
 // After an entity's move to `position` by `moved`: its fall, and the block it

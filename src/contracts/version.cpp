@@ -133,7 +133,7 @@ constexpr std::array reference_v4_mechanisms{
         "rest move every fourth tick; currents and buoyancy in water; merging with the target versions' timing, "
         "reach and results; block drops and container scatter placed and launched with level-random draws; "
         "despawns at age 6000; pushed by moving blocks; falls counted, landing on the block that supports them "
-        "(farmland draws) (item_hopper_pickup, item_water_current, item_merge, "
+        "(farmland draws); hurt by cacti (item_hopper_pickup, item_water_current, item_water_spread, cactus_damage, item_merge, "
         "item_merge_moving, item_merge_crossing, item_merge_vertical, item_merge_timers, item_chest_scatter, "
         "item_water_still, item_water_channel, item_water_ice_corner, item_water_falling, item_water_fall); "
         "entities leave with an unloading chunk and come back a tick after it reloads, under new ids "

@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
 
+// Cacti hurt the items whose boxes reach into their cells (not only their
+// shapes), a point of health for each cactus at every move (cactus_damage);
+// other entities are not hurt.
 // Farmland and what falls on it (both official servers; farmland):
 // - an entity counts how far it has fallen while it moves down off the
 //   ground, and when a move lands it, the block under its feet (0.2 below
@@ -38,6 +41,28 @@ void entity_fell(RuleContext& ctx, Entity& e, Vec3 position, Vec3 moved, bool on
         if (ctx.world().contains_y(under.y) && is_farmland(ctx.block(under))) (void)ctx.random_float(); // the trampling check
     }
     e.fall_distance = 0.0;
+}
+
+bool cactus_hurts(RuleContext& ctx, EntityId id) {
+    auto* e = ctx.entity(id);
+    if (!e || e->kind != EntityKind::item) return false;
+    const auto box = entity_box(*e).deflate(1.0e-5);
+    const auto cell = [](double v) { return static_cast<std::int32_t>(std::floor(v)); };
+    int hits = 0;
+    for (auto x = cell(box.min_x); x <= cell(box.max_x); ++x)
+        for (auto y = cell(box.min_y); y <= cell(box.max_y); ++y)
+            for (auto z = cell(box.min_z); z <= cell(box.max_z); ++z) {
+                if (!ctx.world().contains_y(y)) continue;
+                const auto s = ctx.block({x, y, z});
+                const auto block = s.is(BlockType::other) ? registry::block_of(s.registry_state()) : std::nullopt;
+                if (block && registry::game_name(*block) == "cactus") ++hits;
+            }
+    if (hits == 0) return false;
+    e->health -= hits;
+    if (e->health > 0) return false;
+    ctx.record(TraceKind::entity_removed, contracts::block_of(e->position), id.value, static_cast<std::uint64_t>(RemovalReason::hurt));
+    ctx.remove_entity(id);
+    return true;
 }
 
 namespace {

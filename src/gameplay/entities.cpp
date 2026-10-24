@@ -151,7 +151,8 @@ InWater water_at(RuleContext& ctx, const physics::Aabb& entity) {
                 if (!ctx.world().contains_y(p.y)) continue;
                 const auto s = ctx.block(p);
                 if (!s.is(BlockType::water)) continue;
-                const double top = static_cast<double>(y) + static_cast<double>(fluid_height(s, ctx.block(p.relative(Direction::up))));
+                // The surface's height in single precision, as the target versions add it.
+                const double top = static_cast<double>(static_cast<float>(y) + fluid_height(s, ctx.block(p.relative(Direction::up))));
                 if (top < box.min_y) continue;
                 out.inside = true;
                 out.depth = std::max(out.depth, top - box.min_y);
@@ -409,8 +410,10 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
         ctx.relocate_entity(id, p); // `e` must not be used after relocation.
     }
     if (moves) {
-        // Plates and buttons in the cells its box reaches react to the move.
+        // Plates and buttons in the cells its box reaches react to the move;
+        // cacti there hurt it.
         if (const auto* self = ctx.peek_entity(id)) detail::entity_inside(ctx, *self);
+        if (detail::cactus_hurts(ctx, id)) return;
         if (enter_hoppers(ctx, id)) return;
     }
     const bool changed_block = contracts::block_of(start) != contracts::block_of(p);

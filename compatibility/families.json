@@ -1010,12 +1010,13 @@
             "trace/plant_supports",
             "trace/vines",
             "trace/dripleaves",
-            "trace/mushrooms"
+            "trace/mushrooms",
+            "trace/cactus_damage"
           ],
           "note": "Carrots, potatoes, beetroots, stems, torchflower crops, nether wart, sweet berry bushes and bamboo grow on their ground only and break when it goes; sugar cane needs water beside its ground and cacti nothing solid beside them, both breaking a tick after an update finds them unsupported",
           "deviations": [
             "they do not grow",
-            "cacti do not hurt entities",
+            "cacti hurt only items",
             "kelp, cocoa, chorus and pitcher crops are not supported yet",
             "without data packs, plants whose loot rolls random numbers drop nothing"
           ]
@@ -1764,9 +1765,11 @@
             "trace/item_water_fall",
             "trace/item_water_falling",
             "trace/item_water_ice_corner",
-            "trace/item_water_still"
+            "trace/item_water_spread",
+            "trace/item_water_still",
+            "trace/cactus_damage"
           ],
-          "note": "Double-precision gravity, drag, collision with every state's collision boxes, bouncing, the resting rule, currents and buoyancy in water, identical with both official servers in the passing traces"
+          "note": "Double-precision gravity, drag, collision with every state's collision boxes, bouncing, the resting rule, currents and buoyancy in water (water surfaces in single precision), damage from cacti, identical with both official servers in the passing traces"
         },
         {
           "id": "merging",

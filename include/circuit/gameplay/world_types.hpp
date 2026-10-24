@@ -160,7 +160,9 @@ inline constexpr std::array<std::string_view, 10> boat_types{"minecraft:oak_boat
 [[nodiscard]] constexpr bool valid_item_age(std::int64_t age) noexcept { return age >= item_age_never && age <= 32767; }
 
 // `unloaded`: saved with its chunk, which may load it again (entity_loaded).
-enum class RemovalReason : std::uint8_t { despawned = 1, fell_out_of_world = 2, picked_up = 3, command = 4, merged = 5, unloaded = 6, exploded = 7 };
+enum class RemovalReason : std::uint8_t {
+    despawned = 1, fell_out_of_world = 2, picked_up = 3, command = 4, merged = 5, unloaded = 6, exploded = 7, hurt = 8 // out of health (cacti)
+};
 
 // A player's inventory in the simulation: the slots of the player's own window
 // (see contracts::player_slots) and the stack carried by the cursor. Only
