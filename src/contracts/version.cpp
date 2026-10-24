@@ -145,8 +145,8 @@ constexpr std::array reference_v4_mechanisms{
         "(ring_blocks, unload_reload). Gaps: new chunks load at once, dropped chunks unload at once."},
     MechanismEntry{"light", l0_exact, l0_exact, harness_trace,
         "Block light and sky light from each state's emission, dampening and occlusion shape, following the "
-        "blocks as they stood at the end of the previous tick (light_spread, sky_light, light_shapes, "
-        "light_timing). Not covered: columns at the edge of the loaded area."},
+        "blocks as they stood at the end of the previous tick, read by rules in every phase (light_spread, sky_light, "
+        "light_shapes, light_timing, mushrooms). Not covered: columns at the edge of the loaded area."},
     MechanismEntry{"game_rules", l0_exact, l2_declared_deviation, controlled_experiment,
         "The version's game rules are world state, set by a logged command within the bounds both official "
         "servers enforce (booleans 0 or 1, spawnChunkRadius 0-32, other integers unbounded); random ticks "
@@ -327,7 +327,7 @@ constexpr std::array reference_v4_mechanisms{
         "breaking a tick after an update (plant_supports; tests/fixtures/collision/plant-contexts-*.txt); vines, hanging "
         "roots, spore blossoms, pale hanging moss and hanging propagules what holds them, vines turning between heads and "
         "bodies (vines, with the operator's data packs); small and big dripleaves and stems, big dripleaves tilting under "
-        "entities and back with a signal (dripleaves). Support shapes "
+        "entities and back with a signal (dripleaves); mushrooms their ground or darkness (mushrooms). Support shapes "
         "and solidity of every state come from the registry (tests/fixtures/collision/support-*.txt). The drops' "
         "positions follow item_entity; without data packs, plants whose loot rolls random numbers drop nothing (with "
         "them, see loot)."},

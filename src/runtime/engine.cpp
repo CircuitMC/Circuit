@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <chrono>
 #include <deque>
+#include <mutex>
 #include <set>
 #include <stdexcept>
 #include <unordered_map>
@@ -81,6 +82,7 @@ struct Engine::Impl {
     std::array<std::optional<gameplay::LightField>, contracts::dimension_count> light;
     Sections lit;
     std::array<Tick, contracts::dimension_count> lit_time{};
+    std::mutex light_mutex; // light brought up to date for rules of parallel phases
     void update_light(DimensionId level);
 };
 
@@ -236,6 +238,15 @@ Engine::Impl::Impl(const contracts::VersionBundle& b, std::uint64_t s, EngineOpt
         region_for_new_chunk(random_key(level));
     }
     world.sequence_seed = options.sequence_seed.value_or(static_cast<std::int64_t>(seed));
+    // Rules of the phases that do not publish the light bring it up to date
+    // when they first read it; the result depends only on the blocks at the
+    // start of the tick, whichever root asks first.
+    world.light_now = [this](DimensionId level) -> const gameplay::LightField* {
+        const std::lock_guard lock(light_mutex);
+        update_light(level);
+        const auto& field = light[static_cast<std::size_t>(level)];
+        return field ? &*field : nullptr;
+    };
 }
 
 void Engine::Impl::advance(const std::vector<Command>& commands) {

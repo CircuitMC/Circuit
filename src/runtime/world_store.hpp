@@ -2,6 +2,7 @@
 #pragma once
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/light.hpp>
+#include <functional>
 #include <circuit/gameplay/level_random.hpp>
 #include <circuit/gameplay/world_types.hpp>
 #include <array>
@@ -130,8 +131,12 @@ struct WorldStore {
     std::uint64_t next_entity_id{1};
     std::array<LevelCounters, contracts::dimension_count> levels{};
     // Each level's light while the command, random-tick and block-entity
-    // phases read it (up to date for the tick); null otherwise.
+    // phases read it (up to date for the tick); null otherwise, when rules of
+    // the other phases get it from `light_now`, which brings it up to date for
+    // the tick (once, serially: it is computed from the blocks at the start
+    // of the tick) and returns it.
     std::array<const gameplay::LightField*, contracts::dimension_count> light{};
+    std::function<const gameplay::LightField*(contracts::DimensionId)> light_now;
     gameplay::TicketSet tickets;
     std::map<contracts::PlayerKey, gameplay::PlayerInventory> players; // changed in the command phase only
 

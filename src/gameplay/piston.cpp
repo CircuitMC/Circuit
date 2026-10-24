@@ -509,7 +509,8 @@ bool stays(RuleContext& ctx, BlockPos pos, BlockState s) {
     case BlockType::other:
         // Sugar cane and cacti stay until their tick (updates.cpp).
         return !needs_support(s) || checks_later(s)
-            || supported(s, [&](BlockPos o) { return as_settled(ctx, {pos.x + o.x, pos.y + o.y, pos.z + o.z}); }, ctx.bundle().schema.content_release);
+            || supported(s, [&](BlockPos o) { return as_settled(ctx, {pos.x + o.x, pos.y + o.y, pos.z + o.z}); }, ctx.bundle().schema.content_release,
+                         [&] { return ctx.light(pos); });
     default: return true;
     }
 }

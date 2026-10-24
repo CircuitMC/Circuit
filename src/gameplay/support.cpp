@@ -41,7 +41,9 @@
 //   leaves;
 // - small dripleaves on clay or moss (waterlogged also on soil and clay), as
 //   tall flowers; big dripleaves on soil and clay, stems or big dripleaves,
-//   stems also under a stem or big dripleaf (dripleaf.cpp tilts them).
+//   stems also under a stem or big dripleaf (dripleaf.cpp tilts them);
+// - mushrooms on mycelium, podzol and nylium, or below light 13 on a block
+//   that occludes light whole (the light as of the start of the tick).
 // A shape update that finds one unsupported (torches, lanterns and ladders:
 // from their support's side) breaks it with its drops, and a piston that
 // sets one down where it cannot stay breaks it at once; sugar cane, cacti,
@@ -55,10 +57,12 @@ namespace circuit::gameplay::detail {
 namespace {
 enum class Need : std::uint8_t {
     none, standing, wall, lantern, ladder, carpet, plant, tall_plant, standing_sign, wall_sign, bed, cane, cactus, lily_pad, sea_pickle,
-    vine, hanging_roots, spore_blossom, hanging_moss, small_dripleaf, big_dripleaf, dripleaf_stem
+    vine, hanging_roots, spore_blossom, hanging_moss, small_dripleaf, big_dripleaf, dripleaf_stem, mushroom
 };
 // The ground a plant grows on: one bit each in a block's grounds.
-enum class Ground : std::uint8_t { soil, dry, nether, wither, clay, farmland, soul_sand, bamboo, cane, cactus, small_dripleaf, big_dripleaf };
+enum class Ground : std::uint8_t {
+    soil, dry, nether, wither, clay, farmland, soul_sand, bamboo, cane, cactus, small_dripleaf, big_dripleaf, mushroom
+};
 constexpr std::uint16_t bit(Ground g) { return static_cast<std::uint16_t>(1u << static_cast<unsigned>(g)); }
 
 struct Kind {
@@ -107,6 +111,7 @@ const std::vector<Kind>& kinds() {
             else if (name == "small_dripleaf") v[b] = {Need::small_dripleaf, Ground::small_dripleaf};
             else if (name == "big_dripleaf") v[b] = {Need::big_dripleaf, Ground::big_dripleaf};
             else if (name == "big_dripleaf_stem") v[b] = {Need::dripleaf_stem, Ground::big_dripleaf};
+            else if (name == "brown_mushroom" || name == "red_mushroom") v[b] = {Need::mushroom, Ground::mushroom};
             else if (name == "sunflower" || name == "lilac" || name == "rose_bush" || name == "peony" || name == "tall_grass"
                      || name == "large_fern")
                 v[b].need = Need::tall_plant;
@@ -148,6 +153,8 @@ const std::vector<std::uint16_t>& grounds() {
             // dripleaves: soil and clay, and their stems and heads.
             if (name == "clay" || name == "moss_block") g |= bit(Ground::small_dripleaf);
             if (soil || name == "clay" || name == "big_dripleaf" || name == "big_dripleaf_stem") g |= bit(Ground::big_dripleaf);
+            // Mushrooms grow on these at any light.
+            if (name == "mycelium" || name == "podzol" || name == "crimson_nylium" || name == "warped_nylium") g |= bit(Ground::mushroom);
             v[b] = g;
         }
         return v;
@@ -218,6 +225,18 @@ bool top_reached(BlockState s, std::string_view release) {
     });
 }
 
+// Whether the state's shape occludes light on all six faces (a full
+// occluding block, as mushrooms need below them in the dark).
+bool occludes_whole(std::uint32_t state) {
+    if (registry::light_dampening(state) != 15) return false;
+    const auto shape = registry::light_shape(state);
+    // A block that blocks light whole, but tinted glass, which is see-through.
+    if (shape == 0) return registry::game_name(*registry::block_of(state)) != "tinted_glass";
+    return std::ranges::all_of(contracts::all_directions, [&](Direction d) {
+        return std::ranges::all_of(registry::light_face(shape, d), [](std::uint64_t bits) { return bits == ~std::uint64_t{0}; });
+    });
+}
+
 // Weeping, twisting and cave vines: a head and its body, the way they grow.
 struct Vine {
     std::string_view head, body;
@@ -250,7 +269,7 @@ bool sturdy(BlockState s, Direction face, std::string_view release) {
 
 bool needs_support(BlockState s) { return need_of(s) != Need::none; }
 
-bool supported(BlockState s, const Near& near, std::string_view release) {
+bool supported(BlockState s, const Near& near, std::string_view release, const std::function<std::uint8_t()>& light) {
     const auto around = [&](Direction d) { return near(BlockPos{}.relative(d)); };
     switch (need_of(s)) {
     case Need::standing: return middle(around(Direction::down), Direction::up, release);
@@ -344,6 +363,14 @@ bool supported(BlockState s, const Near& near, std::string_view release) {
         return grows_on(Ground::big_dripleaf, around(Direction::down), release) && !named(around(Direction::down), "big_dripleaf")
             && (named(above, "big_dripleaf") || named(above, "big_dripleaf_stem"));
     }
+    // Mushrooms grow on their ground at any light, on a block whose shape
+    // occludes light whole below light 13.
+    case Need::mushroom: {
+        const auto below = around(Direction::down);
+        if (grows_on(Ground::mushroom, below, release)) return true;
+        const auto state = physics::registry_state_of(below);
+        return (light ? light() : 15) < 13 && state && occludes_whole(*state);
+    }
     // A sea pickle sits on a top its collision shape reaches, or a sturdy one.
     case Need::sea_pickle: return top_reached(around(Direction::down), release) || sturdy(around(Direction::down), Direction::up, release);
     default: return true;
@@ -351,7 +378,8 @@ bool supported(BlockState s, const Near& near, std::string_view release) {
 }
 
 bool supported_at(RuleContext& ctx, BlockPos pos, BlockState s) {
-    return supported(s, [&](BlockPos o) { return ctx.block({pos.x + o.x, pos.y + o.y, pos.z + o.z}); }, ctx.bundle().schema.content_release);
+    return supported(s, [&](BlockPos o) { return ctx.block({pos.x + o.x, pos.y + o.y, pos.z + o.z}); }, ctx.bundle().schema.content_release,
+                     [&] { return ctx.light(pos); });
 }
 
 bool checks_later(BlockState s) {
@@ -500,7 +528,8 @@ bool block_supported(BlockState s, const std::function<BlockState(contracts::Dir
         release);
 }
 bool block_ticks_scheduled(BlockState s) { return detail::falls(s) || detail::checks_later(s); }
-bool block_supported_near(BlockState s, const std::function<BlockState(contracts::BlockPos offset)>& near, std::string_view release) {
-    return detail::supported(s, near, release);
+bool block_supported_near(BlockState s, const std::function<BlockState(contracts::BlockPos offset)>& near, std::string_view release,
+                          std::uint8_t light) {
+    return detail::supported(s, near, release, [light] { return light; });
 }
 } // namespace circuit::gameplay

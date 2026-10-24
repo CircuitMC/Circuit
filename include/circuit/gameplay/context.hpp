@@ -88,8 +88,7 @@ public:
     virtual std::int32_t game_rule(std::string_view name) = 0;
     // The light at a position as the tick sees it: the most of its block
     // light and sky light, from the blocks at the end of the previous tick
-    // (gameplay/light.hpp). Available in the command, random-tick and
-    // block-entity phases.
+    // (gameplay/light.hpp), in every phase.
     virtual std::uint8_t light(BlockPos pos) = 0;
     // The sky light alone, from the same light.
     virtual std::uint8_t sky_light(BlockPos pos) = 0;

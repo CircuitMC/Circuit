@@ -93,17 +93,20 @@ std::int32_t RegionContext::game_rule(std::string_view name) {
     return gameplay::game_rule_value(bundle(), world_.game_rules, name);
 }
 
-std::uint8_t RegionContext::light(BlockPos pos) {
-    const auto* field = world_.light[static_cast<std::size_t>(dimension())];
-    if (!field) throw std::logic_error("runtime: light read outside the phases that read it");
-    return std::max(field->get(gameplay::LightKind::block, pos), field->get(gameplay::LightKind::sky, pos));
+const gameplay::LightField& RegionContext::light_field() {
+    const auto level = static_cast<std::size_t>(dimension());
+    if (const auto* field = world_.light[level]) return *field;
+    if (!light_seen_[level] && world_.light_now) light_seen_[level] = world_.light_now(dimension());
+    if (!light_seen_[level]) throw std::logic_error("runtime: the level has no light");
+    return *light_seen_[level];
 }
 
-std::uint8_t RegionContext::sky_light(BlockPos pos) {
-    const auto* field = world_.light[static_cast<std::size_t>(dimension())];
-    if (!field) throw std::logic_error("runtime: light read outside the phases that read it");
-    return field->get(gameplay::LightKind::sky, pos);
+std::uint8_t RegionContext::light(BlockPos pos) {
+    const auto& field = light_field();
+    return std::max(field.get(gameplay::LightKind::block, pos), field.get(gameplay::LightKind::sky, pos));
 }
+
+std::uint8_t RegionContext::sky_light(BlockPos pos) { return light_field().get(gameplay::LightKind::sky, pos); }
 
 // The day time and weather change only in the command phase and between the
 // command phase and the levels' phases.

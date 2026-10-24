@@ -59,8 +59,9 @@ bool block_supported(BlockState s, const std::function<BlockState(contracts::Dir
 // falling blocks fall in them, sugar cane and cacti break.
 bool block_ticks_scheduled(BlockState s);
 // The same with `near(offset)` the block at any offset from it (sugar cane
-// reads the blocks beside its ground).
-bool block_supported_near(BlockState s, const std::function<BlockState(contracts::BlockPos offset)>& near, std::string_view release);
+// reads the blocks beside its ground) and the light at its cell (mushrooms).
+bool block_supported_near(BlockState s, const std::function<BlockState(contracts::BlockPos offset)>& near, std::string_view release,
+                          std::uint8_t light = 15);
 // Whether a door a player places takes its hinge on the right (for checks
 // against the official servers): `sides` are the blocks to its left, above
 // them, to its right and above them (as one faces the door's way), `along`

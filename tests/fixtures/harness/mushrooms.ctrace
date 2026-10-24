@@ -1,0 +1,589 @@
+circuit-trace 2
+title Mushrooms losing their darkness or their ground
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.25.0+mc1.21.8
+mechanisms support light
+area 0 0 0 33 5 7
+ticks 40
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 0
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 0 1 minecraft:stone
+at 0 set 16 0 2 minecraft:stone
+at 0 set 16 0 3 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 set 16 0 5 minecraft:stone
+at 0 set 16 0 6 minecraft:stone
+at 0 set 16 0 7 minecraft:stone
+at 0 set 17 0 0 minecraft:stone
+at 0 set 17 0 1 minecraft:stone
+at 0 set 17 0 2 minecraft:stone
+at 0 set 17 0 3 minecraft:stone
+at 0 set 17 0 4 minecraft:stone
+at 0 set 17 0 5 minecraft:stone
+at 0 set 17 0 6 minecraft:stone
+at 0 set 17 0 7 minecraft:stone
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 0 1 minecraft:stone
+at 0 set 18 0 2 minecraft:stone
+at 0 set 18 0 3 minecraft:stone
+at 0 set 18 0 4 minecraft:stone
+at 0 set 18 0 5 minecraft:stone
+at 0 set 18 0 6 minecraft:stone
+at 0 set 18 0 7 minecraft:stone
+at 0 set 19 0 0 minecraft:stone
+at 0 set 19 0 1 minecraft:stone
+at 0 set 19 0 2 minecraft:stone
+at 0 set 19 0 3 minecraft:stone
+at 0 set 19 0 4 minecraft:stone
+at 0 set 19 0 5 minecraft:stone
+at 0 set 19 0 6 minecraft:stone
+at 0 set 19 0 7 minecraft:stone
+at 0 set 20 0 0 minecraft:stone
+at 0 set 20 0 1 minecraft:stone
+at 0 set 20 0 2 minecraft:stone
+at 0 set 20 0 3 minecraft:stone
+at 0 set 20 0 4 minecraft:stone
+at 0 set 20 0 5 minecraft:stone
+at 0 set 20 0 6 minecraft:stone
+at 0 set 20 0 7 minecraft:stone
+at 0 set 21 0 0 minecraft:stone
+at 0 set 21 0 1 minecraft:stone
+at 0 set 21 0 2 minecraft:stone
+at 0 set 21 0 3 minecraft:stone
+at 0 set 21 0 4 minecraft:stone
+at 0 set 21 0 5 minecraft:stone
+at 0 set 21 0 6 minecraft:stone
+at 0 set 21 0 7 minecraft:stone
+at 0 set 22 0 0 minecraft:stone
+at 0 set 22 0 1 minecraft:stone
+at 0 set 22 0 2 minecraft:stone
+at 0 set 22 0 3 minecraft:stone
+at 0 set 22 0 4 minecraft:stone
+at 0 set 22 0 5 minecraft:stone
+at 0 set 22 0 6 minecraft:stone
+at 0 set 22 0 7 minecraft:stone
+at 0 set 23 0 0 minecraft:stone
+at 0 set 23 0 1 minecraft:stone
+at 0 set 23 0 2 minecraft:stone
+at 0 set 23 0 3 minecraft:stone
+at 0 set 23 0 4 minecraft:stone
+at 0 set 23 0 5 minecraft:stone
+at 0 set 23 0 6 minecraft:stone
+at 0 set 23 0 7 minecraft:stone
+at 0 set 24 0 0 minecraft:stone
+at 0 set 24 0 1 minecraft:stone
+at 0 set 24 0 2 minecraft:stone
+at 0 set 24 0 3 minecraft:stone
+at 0 set 24 0 4 minecraft:stone
+at 0 set 24 0 5 minecraft:stone
+at 0 set 24 0 6 minecraft:stone
+at 0 set 24 0 7 minecraft:stone
+at 0 set 25 0 0 minecraft:stone
+at 0 set 25 0 1 minecraft:stone
+at 0 set 25 0 2 minecraft:stone
+at 0 set 25 0 3 minecraft:stone
+at 0 set 25 0 4 minecraft:stone
+at 0 set 25 0 5 minecraft:stone
+at 0 set 25 0 6 minecraft:stone
+at 0 set 25 0 7 minecraft:stone
+at 0 set 26 0 0 minecraft:stone
+at 0 set 26 0 1 minecraft:stone
+at 0 set 26 0 2 minecraft:stone
+at 0 set 26 0 3 minecraft:stone
+at 0 set 26 0 4 minecraft:stone
+at 0 set 26 0 5 minecraft:stone
+at 0 set 26 0 6 minecraft:stone
+at 0 set 26 0 7 minecraft:stone
+at 0 set 27 0 0 minecraft:stone
+at 0 set 27 0 1 minecraft:stone
+at 0 set 27 0 2 minecraft:stone
+at 0 set 27 0 3 minecraft:stone
+at 0 set 27 0 4 minecraft:stone
+at 0 set 27 0 5 minecraft:stone
+at 0 set 27 0 6 minecraft:stone
+at 0 set 27 0 7 minecraft:stone
+at 0 set 28 0 0 minecraft:stone
+at 0 set 28 0 1 minecraft:stone
+at 0 set 28 0 2 minecraft:stone
+at 0 set 28 0 3 minecraft:stone
+at 0 set 28 0 4 minecraft:stone
+at 0 set 28 0 5 minecraft:stone
+at 0 set 28 0 6 minecraft:stone
+at 0 set 28 0 7 minecraft:stone
+at 0 set 29 0 0 minecraft:stone
+at 0 set 29 0 1 minecraft:stone
+at 0 set 29 0 2 minecraft:stone
+at 0 set 29 0 3 minecraft:stone
+at 0 set 29 0 4 minecraft:stone
+at 0 set 29 0 5 minecraft:stone
+at 0 set 29 0 6 minecraft:stone
+at 0 set 29 0 7 minecraft:stone
+at 0 set 30 0 0 minecraft:stone
+at 0 set 30 0 1 minecraft:stone
+at 0 set 30 0 2 minecraft:stone
+at 0 set 30 0 3 minecraft:stone
+at 0 set 30 0 4 minecraft:stone
+at 0 set 30 0 5 minecraft:stone
+at 0 set 30 0 6 minecraft:stone
+at 0 set 30 0 7 minecraft:stone
+at 0 set 31 0 0 minecraft:stone
+at 0 set 31 0 1 minecraft:stone
+at 0 set 31 0 2 minecraft:stone
+at 0 set 31 0 3 minecraft:stone
+at 0 set 31 0 4 minecraft:stone
+at 0 set 31 0 5 minecraft:stone
+at 0 set 31 0 6 minecraft:stone
+at 0 set 31 0 7 minecraft:stone
+at 0 set 32 0 0 minecraft:stone
+at 0 set 32 0 1 minecraft:stone
+at 0 set 32 0 2 minecraft:stone
+at 0 set 32 0 3 minecraft:stone
+at 0 set 32 0 4 minecraft:stone
+at 0 set 32 0 5 minecraft:stone
+at 0 set 32 0 6 minecraft:stone
+at 0 set 32 0 7 minecraft:stone
+at 0 set 33 0 0 minecraft:stone
+at 0 set 33 0 1 minecraft:stone
+at 0 set 33 0 2 minecraft:stone
+at 0 set 33 0 3 minecraft:stone
+at 0 set 33 0 4 minecraft:stone
+at 0 set 33 0 5 minecraft:stone
+at 0 set 33 0 6 minecraft:stone
+at 0 set 33 0 7 minecraft:stone
+
+at 1 set 2 1 3 minecraft:stone
+change 1 commands 2 1 3 minecraft:air minecraft:stone
+at 1 set 3 2 3 minecraft:stone
+change 1 commands 3 2 3 minecraft:air minecraft:stone
+at 1 set 1 2 3 minecraft:stone
+change 1 commands 1 2 3 minecraft:air minecraft:stone
+at 1 set 2 2 4 minecraft:stone
+change 1 commands 2 2 4 minecraft:air minecraft:stone
+at 1 set 2 2 2 minecraft:stone
+change 1 commands 2 2 2 minecraft:air minecraft:stone
+at 1 set 2 3 3 minecraft:stone
+change 1 commands 2 3 3 minecraft:air minecraft:stone
+at 1 set 6 1 3 minecraft:stone
+change 1 commands 6 1 3 minecraft:air minecraft:stone
+at 1 set 7 2 3 minecraft:stone
+change 1 commands 7 2 3 minecraft:air minecraft:stone
+at 1 set 5 2 3 minecraft:stone
+change 1 commands 5 2 3 minecraft:air minecraft:stone
+at 1 set 6 2 4 minecraft:stone
+change 1 commands 6 2 4 minecraft:air minecraft:stone
+at 1 set 6 2 2 minecraft:stone
+change 1 commands 6 2 2 minecraft:air minecraft:stone
+at 1 set 6 3 3 minecraft:stone
+change 1 commands 6 3 3 minecraft:air minecraft:stone
+at 1 set 10 1 3 minecraft:stone
+change 1 commands 10 1 3 minecraft:air minecraft:stone
+at 1 set 11 2 3 minecraft:stone
+change 1 commands 11 2 3 minecraft:air minecraft:stone
+at 1 set 9 2 3 minecraft:stone
+change 1 commands 9 2 3 minecraft:air minecraft:stone
+at 1 set 10 2 4 minecraft:stone
+change 1 commands 10 2 4 minecraft:air minecraft:stone
+at 1 set 10 2 2 minecraft:stone
+change 1 commands 10 2 2 minecraft:air minecraft:stone
+at 1 set 10 3 3 minecraft:stone
+change 1 commands 10 3 3 minecraft:air minecraft:stone
+at 1 set 14 1 3 minecraft:mycelium
+change 1 commands 14 1 3 minecraft:air minecraft:mycelium[snowy=false]
+at 1 set 14 1 5 minecraft:podzol
+change 1 commands 14 1 5 minecraft:air minecraft:podzol[snowy=false]
+at 1 set 18 1 3 minecraft:stone
+change 1 commands 18 1 3 minecraft:air minecraft:stone
+at 1 set 22 1 3 minecraft:stone
+change 1 commands 22 1 3 minecraft:air minecraft:stone
+at 1 set 23 2 3 minecraft:stone
+change 1 commands 23 2 3 minecraft:air minecraft:stone
+at 1 set 21 2 3 minecraft:stone
+change 1 commands 21 2 3 minecraft:air minecraft:stone
+at 1 set 22 2 4 minecraft:stone
+change 1 commands 22 2 4 minecraft:air minecraft:stone
+at 1 set 22 2 2 minecraft:stone
+change 1 commands 22 2 2 minecraft:air minecraft:stone
+at 1 set 22 3 3 minecraft:stone
+change 1 commands 22 3 3 minecraft:air minecraft:stone
+at 1 set 26 1 3 minecraft:stone
+change 1 commands 26 1 3 minecraft:air minecraft:stone
+at 1 set 27 2 5 minecraft:piston[facing=north,extended=false]
+change 1 commands 27 2 5 minecraft:air minecraft:piston[extended=false,facing=north]
+at 1 set 27 2 4 minecraft:stone
+change 1 commands 27 2 4 minecraft:air minecraft:stone
+
+at 3 set 2 2 3 minecraft:brown_mushroom
+change 3 commands 2 2 3 minecraft:air minecraft:brown_mushroom
+at 3 set 6 2 3 minecraft:brown_mushroom
+change 3 commands 6 2 3 minecraft:air minecraft:brown_mushroom
+at 3 set 10 2 3 minecraft:red_mushroom
+change 3 commands 10 2 3 minecraft:air minecraft:red_mushroom
+at 3 set 14 2 3 minecraft:brown_mushroom
+change 3 commands 14 2 3 minecraft:air minecraft:brown_mushroom
+at 3 set 14 2 5 minecraft:red_mushroom
+change 3 commands 14 2 5 minecraft:air minecraft:red_mushroom
+at 3 set 18 2 3 minecraft:brown_mushroom
+change 3 commands 18 2 3 minecraft:air minecraft:brown_mushroom
+at 3 set 22 2 3 minecraft:brown_mushroom
+change 3 commands 22 2 3 minecraft:air minecraft:brown_mushroom
+at 3 set 26 2 3 minecraft:red_mushroom
+change 3 commands 26 2 3 minecraft:air minecraft:red_mushroom
+
+at 10 set 2 3 3 minecraft:air
+change 10 commands 2 3 3 minecraft:stone minecraft:air
+
+at 12 set 3 2 3 minecraft:air
+change 12 commands 3 2 3 minecraft:stone minecraft:air
+entity-added 12 commands e1 minecraft:item 2.6154838936883285 2.245268207835743 3.568708712675054 0.010087401023526787 0.2 0.019509055559440353 item=minecraft:brown_mushroom count=1
+change 12 commands 2 2 3 minecraft:brown_mushroom minecraft:air
+draws 12 commands level 10
+entity-order 12 entities e1
+entity 12 e1 2.6255712947118552 2.4052682078357432 3.5882177682344945 0.009885653195458158 0.1568 0.01911887482035725 item=minecraft:brown_mushroom count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 13 entities e1
+entity 13 e1 2.6354569479073136 2.5220682078357433 3.6073366430548517 0.009687940320102865 0.11446399999999998 0.018736497688613702 item=minecraft:brown_mushroom count=1 age=2 pickup-delay=8 on-ground=false
+
+at 14 set 6 3 3 minecraft:air
+change 14 commands 6 3 3 minecraft:stone minecraft:air
+at 14 set 7 2 3 minecraft:air
+change 14 commands 7 2 3 minecraft:stone minecraft:air
+entity-order 14 entities e1
+entity 14 e1 2.6451448882274162 2.596532207835743 3.626073140743465 0.009494181698483605 0.07297471999999998 0.01836176809221176 item=minecraft:brown_mushroom count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 15 entities e1
+entity 15 e1 2.6546390699258997 2.629506927835743 3.644434908835677 0.009304298245601078 0.032315225599999976 0.017994533080590458 item=minecraft:brown_mushroom count=1 age=4 pickup-delay=6 on-ground=false
+
+at 16 set 5 2 3 minecraft:air
+change 16 commands 5 2 3 minecraft:stone minecraft:air
+entity-added 16 commands e2 minecraft:item 6.416609199738325 2.317594592370359 3.7424207700999044 0.07583650357449603 0.2 0.08824983589642288 item=minecraft:brown_mushroom count=1
+change 16 commands 6 2 3 minecraft:brown_mushroom minecraft:air
+draws 16 commands level 10
+entity-order 16 entities e1 e2
+entity 16 e1 2.6639433681715006 2.621822153435743 3.6624294419162675 0.009118212458154463 -0.007531078912000024 0.01763464276219713 item=minecraft:brown_mushroom count=1 age=5 pickup-delay=5 on-ground=false
+entity 16 e2 6.4924457033128204 2.4775945923703593 3.8306706059963274 0.07431977494947263 0.1568 0.08648484086172646 item=minecraft:brown_mushroom count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 17 entities e1 e2
+entity 17 e1 2.673061580629655 2.5742910745237433 3.6800640846784645 0.008935848382907475 -0.04658045733376002 0.017281950243307306 item=minecraft:brown_mushroom count=1 age=6 pickup-delay=4 on-ground=false
+entity 17 e2 6.566765478262293 2.5943945923703593 3.875 0.0728333808680204 0.11446399999999998 0 item=minecraft:brown_mushroom count=1 age=2 pickup-delay=8 on-ground=false
+
+at 18 set 11 2 3 minecraft:glowstone
+change 18 commands 11 2 3 minecraft:stone minecraft:glowstone
+entity-order 18 entities e1 e2
+entity 18 e1 2.6819974290125628 2.4877106171899834 3.6973460349217717 0.008757131585687108 -0.08484884818708481 0.016936311568068203 item=minecraft:brown_mushroom count=1 age=7 pickup-delay=3 on-ground=false
+entity 18 e2 6.639598859130314 2.668858592370359 3.875 0.07137671463984648 0.07297471999999998 0 item=minecraft:brown_mushroom count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 19 entities e1 e2
+entity 19 e1 2.6907545605982497 2.362861769002899 3.71428234648984 0.008581989121002396 -0.12235187122334311 0.016597585659741346 item=minecraft:brown_mushroom count=1 age=8 pickup-delay=2 on-ground=false
+entity 19 e2 6.710975573770161 2.701833312370359 3.875 0.06994918170845234 0.032315225599999976 0 item=minecraft:brown_mushroom count=1 age=4 pickup-delay=6 on-ground=false
+
+at 20 set 9 2 3 minecraft:air
+change 20 commands 9 2 3 minecraft:stone minecraft:air
+entity-added 20 commands e3 minecraft:item 10.387476983017743 2.1894485754368884 3.323300828823259 -0.09535237550322212 0.2 0.009347951439693108 item=minecraft:red_mushroom count=1
+change 20 commands 10 2 3 minecraft:red_mushroom minecraft:air
+draws 20 commands level 10
+entity-order 20 entities e1 e2 e3
+entity 20 e1 2.699336549719252 2.200509897779556 3.7308799321495814 0.0084103495022708 -0.15910483379887624 0.016265634263120343 item=minecraft:brown_mushroom count=1 age=9 pickup-delay=1 on-ground=false
+entity 20 e2 6.780924755478613 2.694148537970359 3.875 0.06855019940845805 -0.007531078912000024 0 item=minecraft:brown_mushroom count=1 age=5 pickup-delay=5 on-ground=false
+entity 20 e3 10.292124607514522 2.3494485754368886 3.3326487802629523 -0.0934453298118599 0.1568 0.00916099258919727 item=minecraft:red_mushroom count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 21 entities e1 e2 e3
+entity 21 e1 2.707746899221523 2.0014050639806795 3.747145566412702 0.008242142672640071 -0.1951227371228987 0.015940321888100288 item=minecraft:brown_mushroom count=1 age=10 pickup-delay=0 on-ground=false
+entity 21 e2 6.849474954887071 2.6466174590583593 3.875 0.06717919672778018 -0.04658045733376002 0 item=minecraft:brown_mushroom count=1 age=6 pickup-delay=4 on-ground=false
+entity 21 e3 10.198679277702661 2.4662485754368886 3.3418097728521494 -0.09157642499795093 0.11446399999999998 0.008977772912145392 item=minecraft:red_mushroom count=1 age=2 pickup-delay=8 on-ground=false
+
+at 22 set 15 2 3 minecraft:stone
+change 22 commands 15 2 3 minecraft:air minecraft:stone
+at 22 set 15 2 5 minecraft:stone
+change 22 commands 15 2 5 minecraft:air minecraft:stone
+entity-order 22 entities e1 e2 e3
+entity 22 e1 2.715989041894163 2.0 3.763085888300802 0.004846380378852188 0 0.009372910212719255 item=minecraft:brown_mushroom count=1 age=11 pickup-delay=0 on-ground=true
+entity 22 e2 6.916654151614851 2.5600370017245995 3.875 0.06583561407456606 -0.08484884818708481 0 item=minecraft:brown_mushroom count=1 age=7 pickup-delay=3 on-ground=false
+entity 22 e3 10.10710285270471 2.5407125754368884 3.3507875457642946 -0.0897448982446736 0.07297471999999998 0.008798217625139913 item=minecraft:red_mushroom count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 23 entities e1 e2 e3
+entity 23 e1 2.720835422273015 2.0 3.7724587985135214 0.0028496719493209333 0 0.005511271759278554 item=minecraft:brown_mushroom count=1 age=12 pickup-delay=0 on-ground=true
+entity 23 e2 6.982489765689417 2.435188153537515 3.875 0.06451890304878942 -0.12235187122334311 0 item=minecraft:brown_mushroom count=1 age=8 pickup-delay=2 on-ground=false
+entity 23 e3 10.017357954460037 2.5736872954368883 3.3595857633894344 -0.08795000199152822 0.032315225599999976 0.008622253440449798 item=minecraft:red_mushroom count=1 age=4 pickup-delay=6 on-ground=false
+
+at 24 set 19 2 3 minecraft:stone
+change 24 commands 19 2 3 minecraft:air minecraft:stone
+entity-added 24 commands e4 minecraft:item 18.732243430338425 2.177245343125486 3.5625731817327795 -0.017840760901787656 0.2 0.05526245825498652 item=minecraft:brown_mushroom count=1
+change 24 commands 18 2 3 minecraft:brown_mushroom minecraft:air
+draws 24 commands level 10
+entity-order 24 entities e1 e2 e3 e4
+entity 24 e1 2.723685094222336 2.0 3.7779700702728 0.0016756072746955636 0 0.003240628120325206 item=minecraft:brown_mushroom count=1 age=13 pickup-delay=0 on-ground=true
+entity 24 e2 7.047008668738206 2.272836282314172 3.875 0.06322852621841404 -0.15910483379887624 0 item=minecraft:brown_mushroom count=1 age=9 pickup-delay=1 on-ground=false
+entity 24 e3 9.929407952468509 2.5660025210368884 3.3682080168298842 -0.08619100362921081 -0.007531078912000024 0.008449808536097236 item=minecraft:red_mushroom count=1 age=5 pickup-delay=5 on-ground=false
+entity 24 e4 18.714402669436637 2.337245343125486 3.617835639987766 -0.01748394602403741 0.1568 0.05415721014393453 item=minecraft:brown_mushroom count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 25 entities e1 e2 e3 e4
+entity 25 e1 2.7253607014970314 2.0 3.781210698393125 9.85257176595976E-4 0 0.0019054895263624573 item=minecraft:brown_mushroom count=1 age=14 pickup-delay=0 on-ground=true
+entity 25 e2 7.11023719495662 2.0737314485152956 3.875 0.061963956900034194 -0.1951227371228987 0 item=minecraft:brown_mushroom count=1 age=10 pickup-delay=0 on-ground=false
+entity 25 e3 9.843216948839299 2.5184714421248886 3.3766578253659816 -0.08446718520058952 -0.04658045733376002 0.008280812526542598 item=minecraft:red_mushroom count=1 age=6 pickup-delay=4 on-ground=false
+entity 25 e4 18.6969187234126 2.454045343125486 3.6719928501317005 -0.017134267437036468 0.11446399999999998 0.05307406697402264 item=minecraft:brown_mushroom count=1 age=2 pickup-delay=8 on-ground=false
+
+at 26 set 22 1 3 minecraft:glass
+change 26 commands 22 1 3 minecraft:stone minecraft:glass
+entity-added 26 commands e5 minecraft:item 22.74536139285739 2.3686164235150713 3.6231207026611654 0.04663041403899876 0.2 0.06345941428186488 item=minecraft:brown_mushroom count=1
+change 26 commands 22 2 3 minecraft:brown_mushroom minecraft:air
+draws 26 commands level 10
+entity-order 26 entities e1 e2 e3 e4 e5
+entity 26 e1 2.7263459586736274 2.0 3.7831161879194872 5.793312780945307E-4 0 0.001120427954168543 item=minecraft:brown_mushroom count=1 age=15 pickup-delay=0 on-ground=true
+entity 26 e2 7.172201151856655 2.0 3.875 0.03643481032101303 0 0 item=minecraft:brown_mushroom count=1 age=11 pickup-delay=0 on-ground=true
+entity 26 e3 9.75874976363871 2.4318909847911288 3.384938637892524 -0.08277784310766143 -0.08484884818708481 0.00811519643395571 item=minecraft:red_mushroom count=1 age=7 pickup-delay=3 on-ground=false
+entity 26 e4 18.679784455975565 2.528509343125486 3.7250669171057234 -0.016791582415105952 0.07297471999999998 0.052012586646849684 item=minecraft:brown_mushroom count=1 age=3 pickup-delay=7 on-ground=false
+entity 26 e5 22.791991806896387 2.5286164235150714 3.68658011694303 0.045697806647623344 0.1568 0.062190227206619854 item=minecraft:brown_mushroom count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 27 entities e1 e2 e3 e4 e5
+entity 27 e1 2.7263459586736274 2.0 3.7831161879194872 5.793312780945307E-4 -0.04 0.001120427954168543 item=minecraft:brown_mushroom count=1 age=16 pickup-delay=0 on-ground=true
+entity 27 e2 7.2086359621776674 1.96 3.875 0.03570611480953162 -0.0392 0 item=minecraft:brown_mushroom count=1 age=12 pickup-delay=0 on-ground=false
+entity 27 e3 9.675971920531047 2.307042136604044 3.39305383432648 -0.08112228782437025 -0.12235187122334311 0.007952892660061684 item=minecraft:red_mushroom count=1 age=8 pickup-delay=2 on-ground=false
+entity 27 e4 18.66299287356046 2.561484063125486 3.777079503752573 -0.01645575108707785 0.032315225599999976 0.05097233590597405 item=minecraft:brown_mushroom count=1 age=4 pickup-delay=6 on-ground=false
+entity 27 e5 22.83768961354401 2.6454164235150714 3.74877034414965 0.04478385138628737 0.11446399999999998 0.0609464238486719 item=minecraft:brown_mushroom count=1 age=2 pickup-delay=8 on-ground=false
+
+at 28 set 27 2 6 minecraft:redstone_block
+change 28 commands 27 2 6 minecraft:air minecraft:redstone_block
+change 28 block_events 27 2 3 minecraft:air minecraft:moving_piston[facing=north,type=normal]
+entity-added 28 block_events e6 minecraft:item 26.669445175023508 2.3883497173024333 3.699667505805747 -0.07321203188262156 0.2 -0.08338752035501702 item=minecraft:red_mushroom count=1
+change 28 block_events 26 2 3 minecraft:red_mushroom minecraft:air
+change 28 block_events 27 2 4 minecraft:stone minecraft:moving_piston[facing=north,type=normal]
+change 28 block_events 27 2 5 minecraft:piston[extended=false,facing=north] minecraft:piston[extended=true,facing=north]
+draws 28 block_events level 11
+entity-order 28 entities e1 e2 e3 e4 e5 e6
+entity 28 e1 2.7263459586736274 2.0 3.7831161879194872 5.793312780945307E-4 -0.08 0.001120427954168543 item=minecraft:brown_mushroom count=1 age=17 pickup-delay=0 on-ground=true
+entity 28 e2 7.244342076987199 1.8808 3.875 0.03499199319438108 -0.07761599999999999 0 item=minecraft:brown_mushroom count=1 age=13 pickup-delay=0 on-ground=false
+entity 28 e3 9.594849632706676 2.144690265380701 3.401006726986542 -0.0794998436151677 -0.15910483379887624 0.00779383495854984 item=minecraft:red_mushroom count=1 age=9 pickup-delay=1 on-ground=false
+entity 28 e4 18.64653712247338 2.553799288725486 3.828051839658547 -0.016126636379204837 -0.007531078912000024 0.049952890160074724 item=minecraft:brown_mushroom count=1 age=5 pickup-delay=5 on-ground=false
+entity 28 e5 22.875 2.7198804235150713 3.809716767998322 0 0.07297471999999998 0.05972749653415925 item=minecraft:brown_mushroom count=1 age=3 pickup-delay=7 on-ground=false
+entity 28 e6 26.596233143140886 2.5483497173024334 3.61627998545073 -0.07174779264137782 0.1568 -0.08171977153840741 item=minecraft:red_mushroom count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 29 entities e1 e2 e3 e4 e5 e6
+entity 29 e1 2.7263459586736274 2.0 3.7831161879194872 5.793312780945307E-4 -0.12 0.001120427954168543 item=minecraft:brown_mushroom count=1 age=18 pickup-delay=0 on-ground=true
+entity 29 e2 7.27933407018158 1.763184 3.875 0.034292153997912765 -0.11526368 0 item=minecraft:brown_mushroom count=1 age=14 pickup-delay=0 on-ground=false
+entity 29 e3 9.515349789091509 1.9455854315818248 3.4088005619450916 -0.07790984825920352 -0.1951227371228987 0.007637958408034448 item=minecraft:red_mushroom count=1 age=10 pickup-delay=0 on-ground=false
+entity 29 e4 18.630410486094174 2.506268209813486 3.8780047298186218 -0.015804103959211918 -0.04658045733376002 0.048953833309648996 item=minecraft:brown_mushroom count=1 age=6 pickup-delay=4 on-ground=false
+entity 29 e5 22.875 2.75 3.8694442645324814 0 0 0.058532947742687656 item=minecraft:brown_mushroom count=1 age=4 pickup-delay=6 on-ground=false
+entity 29 e6 26.524485350499507 2.6651497173024334 3.5345602139123224 -0.07031283815703081 0.11446399999999998 -0.0800853776663202 item=minecraft:red_mushroom count=1 age=2 pickup-delay=8 on-ground=false
+
+change 30 block_entities 27 2 3 minecraft:moving_piston[facing=north,type=normal] minecraft:stone
+change 30 block_entities 27 2 4 minecraft:moving_piston[facing=north,type=normal] minecraft:piston_head[facing=north,short=false,type=normal]
+entity-order 30 entities e1 e2 e3 e4 e5 e6
+entity 30 e1 2.726925289951722 2.0 3.7842366158736556 3.406468257741724E-4 0 6.588117032995518E-4 item=minecraft:brown_mushroom count=1 age=19 pickup-delay=0 on-ground=true
+entity 30 e2 7.313626224179493 1.60792032 3.875 0.03360631157202544 -0.15215840639999997 0 item=minecraft:brown_mushroom count=1 age=15 pickup-delay=0 on-ground=false
+entity 30 e3 9.437439940832306 1.710462694458926 3.4164385203531262 -0.07635165278003188 -0.23042028238044074 0.007485199385556254 item=minecraft:red_mushroom count=1 age=11 pickup-delay=0 on-ground=false
+entity 30 e4 18.614606382134962 2.4196877524797262 3.9269585631282706 -0.01548802218146704 -0.08484884818708481 0.047974757577176286 item=minecraft:brown_mushroom count=1 age=7 pickup-delay=3 on-ground=false
+entity 30 e5 22.875 2.71 3.875 0 -0.0392 0 item=minecraft:brown_mushroom count=1 age=5 pickup-delay=5 on-ground=false
+entity 30 e6 26.454172512342478 2.7396137173024333 3.454474836246002 -0.06890658273500115 0.07297471999999998 -0.07848367164050116 item=minecraft:red_mushroom count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 31 entities e1 e2 e3 e4 e5 e6
+entity 31 e1 2.726925289951722 2.0 3.7842366158736556 3.406468257741724E-4 -0.04 6.588117032995518E-4 item=minecraft:brown_mushroom count=1 age=20 pickup-delay=0 on-ground=true
+entity 31 e2 7.347232535751519 1.4157619136000001 3.875 0.03293418598157446 -0.18831523827199997 0 item=minecraft:brown_mushroom count=1 age=16 pickup-delay=0 on-ground=false
+entity 31 e3 9.361088288052274 1.4400424120784854 3.4239237197386827 -0.07482462118072344 -0.26501187673283194 0.007335495540613977 item=minecraft:red_mushroom count=1 age=12 pickup-delay=0 on-ground=false
+entity 31 e4 18.599118359953493 2.2948389042926416 3.974933320705447 -0.015178262033248279 -0.12235187122334311 0.04701526334067864 item=minecraft:brown_mushroom count=1 age=8 pickup-delay=2 on-ground=false
+entity 31 e5 22.875 2.6308 3.875 0 -0.07761599999999999 0 item=minecraft:brown_mushroom count=1 age=6 pickup-delay=4 on-ground=false
+entity 31 e6 26.385265929607478 2.772588437302433 3.3759911646055007 -0.06752845239458989 0.032315225599999976 -0.07691399970464838 item=minecraft:red_mushroom count=1 age=4 pickup-delay=6 on-ground=false
+
+entity-order 32 entities e1 e2 e3 e4 e5 e6
+entity 32 e1 2.726925289951722 2.0 3.7842366158736556 3.406468257741724E-4 -0.08 6.588117032995518E-4 item=minecraft:brown_mushroom count=1 age=21 pickup-delay=0 on-ground=true
+entity 32 e2 7.380166721733093 1.1874466753280002 3.875 0.03227550289011272 -0.22374893350655997 0 item=minecraft:brown_mushroom count=1 age=17 pickup-delay=0 on-ground=false
+entity 32 e3 9.28626366687155 1.1350305353456536 3.431259215279297 -0.07332813018427536 -0.29891163919817526 0.007188785769715171 item=minecraft:red_mushroom count=1 age=13 pickup-delay=0 on-ground=false
+entity 32 e4 18.583940097920244 2.1324870330692987 4.021948584046126 -0.014874697082085686 -0.15910483379887624 0.04607495897061005 item=minecraft:brown_mushroom count=1 age=9 pickup-delay=1 on-ground=false
+entity 32 e5 22.875 2.513184 3.875 0 -0.11526368 0 item=minecraft:brown_mushroom count=1 age=7 pickup-delay=3 on-ground=false
+entity 32 e6 26.317737477212887 2.7649036629024333 3.2990771649008526 -0.0661778846347011 -0.007531078912000024 -0.07537572117757353 item=minecraft:red_mushroom count=1 age=5 pickup-delay=5 on-ground=false
+
+entity-order 33 entities e1 e2 e3 e4 e5 e6
+entity 33 e1 2.726925289951722 2.0 3.7842366158736556 3.406468257741724E-4 -0.12 6.588117032995518E-4 item=minecraft:brown_mushroom count=1 age=22 pickup-delay=0 on-ground=true
+entity 33 e2 7.412442224623206 1.0 3.875 0.018977997607766004 0 0 item=minecraft:brown_mushroom count=1 age=18 pickup-delay=0 on-ground=true
+entity 33 e3 9.212935536687274 1.0 3.438448001049012 -0.04311694488408549 0 0.004227006457649663 item=minecraft:red_mushroom count=1 age=14 pickup-delay=0 on-ground=true
+entity 33 e4 18.56906540083816 2.0 4.068023543016737 -0.00874632276377461 0 0.02709207859903002 item=minecraft:brown_mushroom count=1 age=10 pickup-delay=0 on-ground=true
+entity 33 e5 22.875 2.35792032 3.875 0 -0.15215840639999997 0 item=minecraft:brown_mushroom count=1 age=8 pickup-delay=2 on-ground=false
+entity 33 e6 26.251559592578186 2.7173725839904335 3.223701443723279 -0.06485432820425006 -0.04658045733376002 -0.07386820819169986 item=minecraft:red_mushroom count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 34 entities e1 e2 e3 e4 e5 e6
+entity 34 e1 2.727265936777496 2.0 3.7848954275769553 2.0030035369691335E-4 0 3.8738132049422806E-4 item=minecraft:brown_mushroom count=1 age=23 pickup-delay=0 on-ground=true
+entity 34 e2 7.4314202222309715 1.0 3.875 0.011159063715493802 0 0 item=minecraft:brown_mushroom count=1 age=19 pickup-delay=0 on-ground=true
+entity 34 e3 9.169818591803189 1.0 3.442675007506662 -0.02535276614125269 0 0.0024854800470316264 item=minecraft:red_mushroom count=1 age=15 pickup-delay=0 on-ground=true
+entity 34 e4 18.560319078074386 2.0 4.095115621615767 -0.00514283830225036 0 0.015930143818124864 item=minecraft:brown_mushroom count=1 age=11 pickup-delay=0 on-ground=true
+entity 34 e5 22.875 2.1657619136 3.875 0 -0.18831523827199997 0 item=minecraft:brown_mushroom count=1 age=9 pickup-delay=1 on-ground=false
+entity 34 e6 26.186705264373934 2.6307921266566736 3.1498332355315792 -0.0635572428771632 -0.08484884818708481 -0.07239084543679011 item=minecraft:red_mushroom count=1 age=7 pickup-delay=3 on-ground=false
+
+entity-order 35 entities e1 e2 e3 e4 e5 e6
+entity 35 e1 2.727265936777496 2.0 3.7848954275769553 2.0030035369691335E-4 -0.04 3.8738132049422806E-4 item=minecraft:brown_mushroom count=1 age=24 pickup-delay=0 on-ground=true
+entity 35 e2 7.442579285946465 1.0 3.875 0.006561530124521328 0 0 item=minecraft:brown_mushroom count=1 age=20 pickup-delay=0 on-ground=true
+entity 35 e3 9.144465825661936 1.0 3.4451604875536934 -0.01490742799011006 0 0.0014614624146155823 item=minecraft:red_mushroom count=1 age=16 pickup-delay=0 on-ground=true
+entity 35 e4 18.555176239772134 2.0 4.111045765433891 -0.0030239892258079656 0 0.009366925506971898 item=minecraft:brown_mushroom count=1 age=12 pickup-delay=0 on-ground=true
+entity 35 e5 22.875 2.0 3.875 0 0 0 item=minecraft:brown_mushroom count=1 age=10 pickup-delay=0 on-ground=true
+entity 35 e6 26.12314802149677 2.505943278469589 3.077442390094789 -0.06228609923187814 -0.12235187122334311 -0.07094302990880011 item=minecraft:red_mushroom count=1 age=8 pickup-delay=2 on-ground=false
+
+entity-order 36 entities e1 e2 e3 e4 e5 e6
+entity 36 e1 2.727265936777496 2.0 3.7848954275769553 2.0030035369691335E-4 -0.08 3.8738132049422806E-4 item=minecraft:brown_mushroom count=1 age=25 pickup-delay=0 on-ground=true
+entity 36 e2 7.449140816070987 1.0 3.875 0.0038581801011874314 0 0 item=minecraft:brown_mushroom count=1 age=21 pickup-delay=0 on-ground=true
+entity 36 e3 9.129558397671826 1.0 3.446621949968309 -0.00876556853962825 0 8.593399862070308E-4 item=minecraft:red_mushroom count=1 age=17 pickup-delay=0 on-ground=true
+entity 36 e4 18.552152250546325 2.0 4.120412690940863 -0.001778105843576937 0 0.005507752751945246 item=minecraft:brown_mushroom count=1 age=13 pickup-delay=0 on-ground=true
+entity 36 e5 22.875 2.0 3.875 0 0 0 item=minecraft:brown_mushroom count=1 age=11 pickup-delay=0 on-ground=true
+entity 36 e6 26.06086192226489 2.343591407246246 3.006499360185989 -0.06104037843525364 -0.15910483379887624 -0.06952417066375502 item=minecraft:red_mushroom count=1 age=9 pickup-delay=1 on-ground=false
+
+entity-order 37 entities e1 e2 e3 e4 e5 e6
+entity 37 e1 2.727265936777496 2.0 3.7848954275769553 2.0030035369691335E-4 -0.12 3.8738132049422806E-4 item=minecraft:brown_mushroom count=1 age=26 pickup-delay=0 on-ground=true
+entity 37 e2 7.452998996172174 1.0 3.875 0.0022686101276239404 0 0 item=minecraft:brown_mushroom count=1 age=22 pickup-delay=0 on-ground=true
+entity 37 e3 9.120792829132197 1.0 3.4474812899545157 -0.005154154819590261 0 5.052919627006235E-4 item=minecraft:red_mushroom count=1 age=18 pickup-delay=0 on-ground=true
+entity 37 e4 18.550374144702747 2.0 4.125920443692808 -0.0010455263411587392 0 0.00323855894380515 item=minecraft:brown_mushroom count=1 age=14 pickup-delay=0 on-ground=true
+entity 37 e5 22.875 2.0 3.875 0 -0.04 0 item=minecraft:brown_mushroom count=1 age=12 pickup-delay=0 on-ground=true
+entity 37 e6 25.999821543829636 2.1444865734473697 2.936975189522234 -0.05981957203080139 -0.1951227371228987 -0.06813368857654824 item=minecraft:red_mushroom count=1 age=10 pickup-delay=0 on-ground=false
+
+entity-order 38 entities e1 e2 e3 e4 e5 e6
+entity 38 e1 2.727466237131193 2.0 3.7852828088974495 1.1777661981710584E-4 0 2.2778023935561429E-4 item=minecraft:brown_mushroom count=1 age=27 pickup-delay=0 on-ground=true
+entity 38 e2 7.452998996172174 1.0 3.875 0.0022686101276239404 -0.04 0 item=minecraft:brown_mushroom count=1 age=23 pickup-delay=0 on-ground=true
+entity 38 e3 9.115638674312606 1.0 3.4479865819172164 -0.003030643338672948 0 2.9711170394477256E-4 item=minecraft:red_mushroom count=1 age=19 pickup-delay=0 on-ground=true
+entity 38 e4 18.54932861836159 1.96 4.129159002636613 -0.001024615834277397 -0.0392 0.0031737878266996566 item=minecraft:brown_mushroom count=1 age=15 pickup-delay=0 on-ground=false
+entity 38 e5 22.875 2.0 3.875 0 -0.08 0 item=minecraft:brown_mushroom count=1 age=13 pickup-delay=0 on-ground=true
+entity 38 e6 25.940001971798836 2.0 2.8688415009456856 -0.03517391189111137 0 -0.040062612911605996 item=minecraft:red_mushroom count=1 age=11 pickup-delay=0 on-ground=true
+
+entity-order 39 entities e1 e2 e3 e4 e5 e6
+entity 39 e1 2.727466237131193 2.0 3.7852828088974495 1.1777661981710584E-4 -0.04 2.2778023935561429E-4 item=minecraft:brown_mushroom count=1 age=28 pickup-delay=0 on-ground=true
+entity 39 e2 7.452998996172174 1.0 3.875 0.0022686101276239404 -0.08 0 item=minecraft:brown_mushroom count=1 age=24 pickup-delay=0 on-ground=true
+entity 39 e3 9.115638674312606 1.0 3.4479865819172164 -0.003030643338672948 -0.04 2.9711170394477256E-4 item=minecraft:red_mushroom count=1 age=20 pickup-delay=0 on-ground=true
+entity 39 e4 18.54830400252731 1.8808 4.1323327904633125 -0.001004123537134845 -0.07761599999999999 0.003110312130700862 item=minecraft:brown_mushroom count=1 age=16 pickup-delay=0 on-ground=false
+entity 39 e5 22.875 2.0 3.875 0 -0.12 0 item=minecraft:brown_mushroom count=1 age=14 pickup-delay=0 on-ground=true
+entity 39 e6 25.904828059907725 1.96 2.8287788880340794 -0.03447043432417827 -0.0392 -0.03926136141750758 item=minecraft:red_mushroom count=1 age=12 pickup-delay=0 on-ground=false
+
+entity-order 40 entities e1 e2 e3 e4 e5 e6
+entity 40 e1 2.727466237131193 2.0 3.7852828088974495 1.1777661981710584E-4 -0.08 2.2778023935561429E-4 item=minecraft:brown_mushroom count=1 age=29 pickup-delay=0 on-ground=true
+entity 40 e2 7.452998996172174 1.0 3.875 0.0022686101276239404 -0.12 0 item=minecraft:brown_mushroom count=1 age=25 pickup-delay=0 on-ground=true
+entity 40 e3 9.112608030973933 1.0 3.4482836936211614 -0.0017820184623349898 0 1.7470169948708995E-4 item=minecraft:red_mushroom count=1 age=21 pickup-delay=0 on-ground=true
+entity 40 e4 18.547299878990174 1.763184 4.135443102594014 -9.840410855442847E-4 -0.11526368 0.003048105947411341 item=minecraft:brown_mushroom count=1 age=17 pickup-delay=0 on-ground=false
+entity 40 e5 22.875 2.0 3.875 0 0 0 item=minecraft:brown_mushroom count=1 age=15 pickup-delay=0 on-ground=true
+entity 40 e6 25.870357625583548 1.8808 2.7895175266165717 -0.033781026295166064 -0.07761599999999999 -0.038476134938008465 item=minecraft:red_mushroom count=1 age=13 pickup-delay=0 on-ground=false

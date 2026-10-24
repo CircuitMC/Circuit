@@ -1001,7 +1001,8 @@
             "trace/plant_grounds",
             "trace/plant_supports",
             "trace/vines",
-            "trace/dripleaves"
+            "trace/dripleaves",
+            "trace/mushrooms"
           ],
           "note": "Carrots, potatoes, beetroots, stems, torchflower crops, nether wart, sweet berry bushes and bamboo grow on their ground only and break when it goes; sugar cane needs water beside its ground and cacti nothing solid beside them, both breaking a tick after an update finds them unsupported",
           "deviations": [

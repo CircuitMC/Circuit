@@ -800,8 +800,8 @@ int main(int argc, char** argv) {
     suite.run("plants grow on the ground both official servers let them", [&] {
         // tests/fixtures/collision/plants-*.txt: for every state as support,
         // whether each plant stays on it with nothing else around. The rules
-        // model the plants that need only the block below or above, sugar cane
-        // and cacti (more below); the mushrooms wait.
+        // model them all: those that need only the block below or above, sugar
+        // cane and cacti (more below), mushrooms in full light.
         namespace registry = circuit::gameplay::registry;
         using circuit::contracts::Direction;
         using circuit::gameplay::BlockState;
@@ -829,7 +829,7 @@ int main(int argc, char** argv) {
             {35, {"bamboo", {}}}, {36, {"sugar_cane", {}}}, {37, {"cactus", {}}}, {38, {"lily_pad", {}}}, {39, {"sea_pickle", {}}},
             {33, {"twisting_vines", {}}}, {42, {"weeping_vines", {}}}, {43, {"hanging_roots", {}}}, {44, {"spore_blossom", {}}},
             {45, {"cave_vines", {}}}, {46, {"pale_hanging_moss", {}}}, {31, {"small_dripleaf", {{"half", "lower"}}}},
-            {32, {"big_dripleaf", {}}}};
+            {32, {"big_dripleaf", {}}}, {40, {"brown_mushroom", {}}}, {41, {"red_mushroom", {}}}};
         // The last five columns hang under the state.
         constexpr std::size_t first_hanging = 42;
         std::size_t checked = 0, grows = 0;
@@ -868,13 +868,14 @@ int main(int argc, char** argv) {
         require(grows > 0, "plants grow somewhere");
     });
 
-    suite.run("sugar cane, cacti and small dripleaves stay where both official servers keep them", [&] {
+    suite.run("sugar cane, cacti, mushrooms and small dripleaves stay where both official servers keep them", [&] {
         // tests/fixtures/collision/plant-contexts-*.txt: sugar cane on every
         // state with a water source beside it, and on sand with every state
         // beside the sand; a cactus on sand with every state beside it and
-        // above it; a small dripleaf's waterlogged lower half on every state.
-        // States that did not stay where they were set (?) are left out; the
-        // mushroom columns wait.
+        // above it; mushrooms on every state at light 0 (but states that emit
+        // light, whose own light the report did not reliably see); a small
+        // dripleaf's waterlogged lower half on every state. States that did
+        // not stay where they were set (?) are left out.
         namespace registry = circuit::gameplay::registry;
         using circuit::contracts::BlockPos;
         using circuit::gameplay::BlockState;
@@ -897,6 +898,7 @@ int main(int argc, char** argv) {
                 return BlockState::registered(registry::block(*registry::find_block(release, name)).default_state);
             };
             const auto cane = plant("sugar_cane"), cactus = plant("cactus"), sand = plant("sand");
+            const auto brown = plant("brown_mushroom"), red = plant("red_mushroom");
             const auto wet_dripleaf = BlockState::registered(
                 registry::state_of(*registry::find_block(release, "small_dripleaf"), {{{"half", "lower"}, {"waterlogged", "true"}}}).value());
             const auto water = circuit::gameplay::blocks::water_source();
@@ -913,22 +915,26 @@ int main(int argc, char** argv) {
                 require(row != nullptr && row->size() == 7, std::format("{} {}: a row", release, notation));
                 const auto state = mapping->block(notation).value();
                 // The plant, and what stands where around it.
-                const std::array<std::tuple<BlockState, std::vector<std::pair<BlockPos, BlockState>>, const char*>, 5> contexts{{
-                    {cane, {{{0, -1, 0}, state}, {{1, -1, 0}, water}}, "sugar cane on it, water beside"},
-                    {cane, {{{0, -1, 0}, sand}, {{1, -1, 0}, state}}, "sugar cane on sand, it beside the sand"},
-                    {cactus, {{{0, -1, 0}, sand}, {{1, 0, 0}, state}}, "a cactus on sand, it beside"},
-                    {cactus, {{{0, -1, 0}, sand}, {{0, 1, 0}, state}}, "a cactus on sand, it above"},
-                    {wet_dripleaf, {{{0, -1, 0}, state}}, "a small dripleaf in water on it"}}};
-                for (std::size_t column = 0; column < contexts.size(); ++column) {
-                    const char want = (*row)[column == 4 ? 6 : column];
-                    if (want == '?') continue;
-                    const auto& [what, around, label] = contexts[column];
+                // The plant, what stands where around it, the light at its
+                // cell, the report's column.
+                const bool emits = registry::light_emission(registry::from_wire(release, static_cast<std::int32_t>(wire)).value()) > 0;
+                const std::array<std::tuple<BlockState, std::vector<std::pair<BlockPos, BlockState>>, const char*, std::uint8_t, std::size_t>, 7> contexts{{
+                    {cane, {{{0, -1, 0}, state}, {{1, -1, 0}, water}}, "sugar cane on it, water beside", 15, 0},
+                    {cane, {{{0, -1, 0}, sand}, {{1, -1, 0}, state}}, "sugar cane on sand, it beside the sand", 15, 1},
+                    {cactus, {{{0, -1, 0}, sand}, {{1, 0, 0}, state}}, "a cactus on sand, it beside", 15, 2},
+                    {cactus, {{{0, -1, 0}, sand}, {{0, 1, 0}, state}}, "a cactus on sand, it above", 15, 3},
+                    {brown, {{{0, -1, 0}, state}}, "a brown mushroom on it in the dark", 0, 4},
+                    {red, {{{0, -1, 0}, state}}, "a red mushroom on it in the dark", 0, 5},
+                    {wet_dripleaf, {{{0, -1, 0}, state}}, "a small dripleaf in water on it", 15, 6}}};
+                for (const auto& [what, around, label, light, column] : contexts) {
+                    const char want = (*row)[column];
+                    if (want == '?' || (light == 0 && emits)) continue;
                     const auto near = [&](BlockPos o) {
                         for (const auto& [at, s] : around)
                             if (at == o) return s;
                         return BlockState::of(circuit::gameplay::BlockType::air);
                     };
-                    const char got = circuit::gameplay::block_supported_near(what, near, release) ? '1' : '0';
+                    const char got = circuit::gameplay::block_supported_near(what, near, release, light) ? '1' : '0';
                     require(want == got, std::format("{} {} ({}): official {}, Circuit {}", release, notation, label, want, got));
                     ++checked;
                     stays += got == '1' ? 1 : 0;

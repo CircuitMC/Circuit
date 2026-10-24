@@ -256,9 +256,10 @@ void connector_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direct
 // ---- blocks that need support (support.cpp) ----
 // Torches, wall torches, lanterns, ladders, carpets, flowers and saplings.
 bool needs_support(BlockState s);
-// Whether it can stay with `near(offset)` the block at an offset from it.
+// Whether it can stay with `near(offset)` the block at an offset from it and
+// `light()` the light at its cell (mushrooms; none: full light).
 using Near = std::function<BlockState(BlockPos offset)>;
-bool supported(BlockState s, const Near& near, std::string_view release);
+bool supported(BlockState s, const Near& near, std::string_view release, const std::function<std::uint8_t()>& light = {});
 bool supported_at(RuleContext& ctx, BlockPos pos, BlockState s);
 // A shape update from `d`: unsupported, it breaks with its drops (sugar cane
 // and cacti a tick later, in their block tick).

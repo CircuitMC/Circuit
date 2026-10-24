@@ -128,6 +128,10 @@ private:
     // this attempt first drew from them.
     std::array<std::optional<gameplay::LevelRandom>, contracts::dimension_count> random_snapshots_;
     std::array<std::optional<std::map<std::string, gameplay::RandomSequence>>, contracts::dimension_count> sequence_snapshots_;
+    // Each level's light as this context first read it outside the phases
+    // that publish it (WorldStore::light_now).
+    std::array<const gameplay::LightField*, contracts::dimension_count> light_seen_{};
+    const gameplay::LightField& light_field();
 };
 
 } // namespace circuit::runtime::detail
