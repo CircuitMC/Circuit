@@ -182,7 +182,7 @@ bool player_has_room(const PlayerInventory& inv, ItemStack stack, std::uint8_t s
 // each only where it is supported (support.cpp), replacing water.
 namespace circuit::gameplay::detail {
 namespace {
-enum class Building { none, plain, pillar, stairs, slab, connector, toward_player, clicked_face, torch, lantern, ladder, resting };
+enum class Building { none, plain, pillar, stairs, slab, connector, toward_player, clicked_face, torch, lantern, ladder, resting, tall };
 
 Building building_kind(std::uint32_t block) {
     const auto info = registry::block(block);
@@ -206,6 +206,7 @@ Building building_kind(std::uint32_t block) {
     if (name == "torch" || name == "soul_torch") return Building::torch;
     if (name == "lantern" || name == "soul_lantern") return Building::lantern;
     if (name == "ladder") return Building::ladder;
+    if (name == "sunflower" || name == "lilac" || name == "rose_bush" || name == "peony") return Building::tall;
     if (needs_support(BlockState::registered(info.default_state))) return Building::resting;
     if (name.ends_with("_slab") && has("type") && only({"type", "waterlogged"})) return Building::slab;
     if (registry::connector(info.default_state) != registry::Connector::none) return Building::connector;
@@ -269,6 +270,13 @@ std::optional<std::uint32_t> building_block(RuleContext& ctx, std::uint16_t item
     return block;
 }
 
+std::optional<BlockState> upper_half_of(BlockState lower) {
+    if (!lower.is(BlockType::other)) return std::nullopt;
+    const auto block = registry::block_of(lower.registry_state());
+    if (!block || building_kind(*block) != Building::tall) return std::nullopt;
+    return with(lower, {{"half", "upper"}});
+}
+
 bool doubles_slab(std::uint32_t block, BlockState s, const contracts::PlayerUse& c, bool clicked) {
     if (building_kind(block) != Building::slab || !single_slab_of(block, s)) return false;
     if (!clicked) return true;
@@ -311,8 +319,10 @@ std::optional<BlockState> placed_building(RuleContext& ctx, std::uint32_t block,
     case Building::ladder:
         if (!contracts::is_horizontal(c.face)) return std::nullopt;
         return stays(with(s, {{"facing", std::string(name_of(c.face))}, {"waterlogged", water}}));
-    // Carpets, flowers and saplings rest on what is below.
+    // Carpets, flowers and saplings rest on what is below; a tall flower's
+    // lower half too (its upper half goes above it, which must be free).
     case Building::resting: return stays(s);
+    case Building::tall: return stays(with(s, {{"half", "lower"}}));
     case Building::pillar: return with(s, {{"axis", std::string(axis_of(c.face))}, {"waterlogged", water}});
     case Building::stairs:
         s = with(s, {{"facing", std::string(name_of(c.horizontal))}, {"half", top_half(c) ? "top" : "bottom"}, {"waterlogged", water}});

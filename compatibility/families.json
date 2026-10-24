@@ -801,10 +801,11 @@
           "impl": "partial",
           "evidence": "compared",
           "cases": [
+            "client/building",
             "collision/support",
-            "trace/supported_blocks",
             "placement/official_items",
-            "client/building"
+            "trace/supported_blocks",
+            "trace/tall_flowers"
           ],
           "deviations": [
             "flowers and saplings do not grow or spread (no random ticks for them)",
@@ -820,13 +821,15 @@
           "impl": "partial",
           "evidence": "compared",
           "cases": [
+            "placement/hinges",
             "trace/door_basics",
-            "trace/door_more"
+            "trace/door_more",
+            "trace/tall_flowers"
           ],
           "deviations": [
-            "beds and tall plants are not modeled"
+            "beds and tall grass, large ferns and other tall plants are not modeled"
           ],
-          "note": "Doors: the halves follow each other, and a half without the other breaks (the lower one with the drop)"
+          "note": "Doors: the halves follow each other, a half without the other breaks (the lower one with the drop), and placed doors take their hinges as both official servers do; sunflowers, lilacs, rose bushes and peonies: placed with both halves, the lower one on soil, and both gone when either half or the soil goes (the lower one with the drop)"
         },
         {
           "id": "block_entity_data",

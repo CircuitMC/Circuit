@@ -90,6 +90,8 @@ std::uint16_t plate_item(BlockState s);
 std::optional<std::uint32_t> building_block(RuleContext& ctx, std::uint16_t item);
 bool doubles_slab(std::uint32_t block, BlockState s, const contracts::PlayerUse& c, bool clicked);
 std::optional<BlockState> placed_building(RuleContext& ctx, std::uint32_t block, const contracts::PlayerUse& c, BlockPos target);
+// The upper half a placed tall flower's lower half takes above it.
+std::optional<BlockState> upper_half_of(BlockState lower);
 // Whether a block obstructs players standing in its cell.
 bool has_collision(BlockState s);
 // Records a player slot (contracts::player_slots: the cursor) after a change.
@@ -178,7 +180,7 @@ void use_opening(RuleContext& ctx, BlockPos pos, BlockState s, Direction player)
 void opening_shape_update(RuleContext& ctx, BlockPos pos, Direction d);
 // The state a player places at `pos`: powered and open where power reaches
 // it, and a fence gate in a wall between walls.
-BlockState placed_opening(RuleContext& ctx, BlockPos pos, BlockState s);
+BlockState placed_opening(RuleContext& ctx, BlockPos pos, BlockState s, const contracts::PlayerUse& use);
 // The item of a door, trapdoor or fence gate, and the one an item places.
 std::uint16_t opening_item(BlockState s);
 std::optional<BlockState> placed_opening_by(std::uint16_t item, Direction face, Direction horizontal, bool upper);

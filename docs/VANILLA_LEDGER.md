@@ -36,7 +36,7 @@ Feature counts per implementation state, then the number of features with compar
 | V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 1 / 1 | 39 / 39 | 3 / 3 | 0 / 0 | 1 / 1 |
 | V11 Common building blocks | C5 | 1347 | 0 / 0 | 258 / 258 | 1088 / 1088 | 1 / 1 | 0 / 0 | 49 / 49 |
 | V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 24 / 24 | 54 / 54 | 4 / 4 | 0 / 0 | 8 / 8 |
-| V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 47 / 47 | 254 / 268 | 5 / 5 | 14 / 0 | 45 / 45 |
+| V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 51 / 51 | 250 / 264 | 5 / 5 | 14 / 0 | 49 / 49 |
 | V14 Redstone sources and signal consumers | C4, C5 | 138 | 7 / 7 | 95 / 95 | 35 / 35 | 1 / 1 | 0 / 0 | 37 / 39 |
 | V15 Pistons and moving structures | C3, C4 | 16 | 2 / 2 | 14 / 14 | 0 / 0 | 0 / 0 | 0 / 0 | 12 / 12 |
 | V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 9 / 9 | 48 / 48 | 2 / 2 | 0 / 0 | 9 / 9 |
@@ -67,7 +67,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 317 / 317 | 774 / 784 | 0 / 0 |
+| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 321 / 321 | 770 / 780 | 0 / 0 |
 | item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 128 / 128 | 1256 / 1287 | 0 / 0 |
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 17 / 17 | 0 / 0 | 132 / 134 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
@@ -127,10 +127,10 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 37 |
+| black_box | passing | 38 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 136 |
+| official_trace | passing | 137 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -251,8 +251,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Placement orientation and shapes: stairs, slabs, walls, fences, panes, doors, beds | C5 | partial, compared | partial, compared | `client/building`, `placement/official_items`; only full cubes without properties, soul sand and mud, pillars, stairs, slabs, fences, panes, bars, walls, carved pumpkins, jack o'lanterns, glazed terracotta, looms, stonecutters, end portal frames, end rods and lightning rods are placed from their items besides the blocks with rules of their own; blocks with block entities, blocks that need support and two-block blocks other than doors are not; spawners, beacons, sponges and test instance blocks are not placed; Pillars along the clicked face's axis, stairs facing the player and in the clicked half, slabs in the clicked half and doubled, facing blocks toward the player or out of the clicked face, connectors and stairs with their neighbors' shapes, waterlogged in water sources, as both official servers do; every placed state checked against a report of every block item |
 | Fences, panes, bars and walls joining their neighbors | C5 | partial, compared | partial, compared | `collision/connection`, `trace/connections`, `trace/connections_moved`, `trace/tnt_duper_wall`; water does not flow out of waterlogged ones; On shape updates and when a piston sets them down, as both official servers do; every state beside and above them compared |
 | Stairs taking corner shapes from the stairs beside them | C5 | partial, compared | partial, compared | `collision/stairs`, `trace/stairs_shapes`; water does not flow out of waterlogged ones; On shape updates from the sides and when a piston sets them down, as both official servers do; every combination of stairs around them compared |
-| Torches, lanterns, ladders, carpets, flowers and saplings on their supports | C5 | partial, compared | partial, compared | `client/building`, `collision/support`, `placement/official_items`, `trace/supported_blocks`; a torch whose clicked side and floor both fail is not placed (the official servers also try the player's other looking directions); flowers and saplings do not grow or spread (no random ticks for them); other plants (grass, ferns, roots, fungi, wither roses, azaleas, tall and double plants, dripleaves, berry bushes, petals) and other attached blocks (signs, banners, vines, lichen, amethyst) are not modeled; Placed by players where supported, and broken with their drops when the support goes (torches, lanterns and ladders on updates from their support's side, carpets, flowers and saplings on any update), as both official servers do |
-| Two-part blocks: doors, beds, tall plants | C5 | partial, compared | partial, compared | `trace/door_basics`, `trace/door_more`; beds and tall plants are not modeled; Doors: the halves follow each other, and a half without the other breaks (the lower one with the drop) |
+| Torches, lanterns, ladders, carpets, flowers and saplings on their supports | C5 | partial, compared | partial, compared | `client/building`, `collision/support`, `placement/official_items`, `trace/supported_blocks`, `trace/tall_flowers`; a torch whose clicked side and floor both fail is not placed (the official servers also try the player's other looking directions); flowers and saplings do not grow or spread (no random ticks for them); other plants (grass, ferns, roots, fungi, wither roses, azaleas, tall and double plants, dripleaves, berry bushes, petals) and other attached blocks (signs, banners, vines, lichen, amethyst) are not modeled; Placed by players where supported, and broken with their drops when the support goes (torches, lanterns and ladders on updates from their support's side, carpets, flowers and saplings on any update), as both official servers do |
+| Two-part blocks: doors, beds, tall plants | C5 | partial, compared | partial, compared | `placement/hinges`, `trace/door_basics`, `trace/door_more`, `trace/tall_flowers`; beds and tall grass, large ferns and other tall plants are not modeled; Doors: the halves follow each other, a half without the other breaks (the lower one with the drop), and placed doors take their hinges as both official servers do; sunflowers, lilacs, rose bushes and peonies: placed with both halves, the lower one on soil, and both gone when either half or the soil goes (the lower one with the drop) |
 | Signs, banners, heads, pots and other block-entity data | C5 | data_only, none | data_only, reference_only | `anvil/components`; Block entities of blocks without rules of their own keep their saved data through checkpoints and Anvil interchange; nothing interprets it, and clients do not receive it |
 | Copper weathering, waxing and scraping | C5 | missing, none | missing, none |  |
 

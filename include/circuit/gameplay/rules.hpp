@@ -45,6 +45,13 @@ BlockState stairs_with_neighbors(BlockState stairs, std::array<BlockState, 4> ar
 // flowers, saplings) can stay with `around(d)` on each side (for checks
 // against the official servers); blocks that need none always can.
 bool block_supported(BlockState s, const std::function<BlockState(contracts::Direction)>& around, std::string_view release);
+// Whether a door a player places takes its hinge on the right (for checks
+// against the official servers): `sides` are the blocks to its left, above
+// them, to its right and above them (as one faces the door's way), `along`
+// how far the click hit right of the middle. A door of its kind on one side
+// only puts the hinge on the other; else the side with more full blocks
+// gets it; else the click's side, left for the middle.
+bool door_right_hinge(BlockState door, std::array<BlockState, 4> sides, double along);
 std::uint8_t received_power(RuleContext& ctx, BlockPos pos);
 
 // Positions outside the level's height or the border are never loaded.

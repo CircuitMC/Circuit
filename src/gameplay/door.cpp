@@ -148,12 +148,40 @@ std::optional<registry::BlockInfo> modeled_info(BlockState s) {
     return block ? std::optional(registry::block(*block)) : std::nullopt;
 }
 
-BlockState placed_opening(RuleContext& ctx, BlockPos pos, BlockState s) {
+BlockState placed_opening(RuleContext& ctx, BlockPos pos, BlockState s, const contracts::PlayerUse& use) {
     const bool on = s.is(BlockType::door) ? has_neighbor_signal(ctx, pos) || has_neighbor_signal(ctx, pos.relative(Direction::up))
                                           : has_neighbor_signal(ctx, pos);
     auto out = with_powered(s, on).with_flag(on);
     if (s.is(BlockType::fence_gate)) out = out.with_level(gate_in_wall(ctx, pos, s) ? 1 : 0);
+    if (s.is(BlockType::door)) {
+        // Where the click hit, across the door's cell toward its right.
+        const auto right = contracts::clockwise(s.facing());
+        const auto step = [](Direction d, int axis) { return axis == 0 ? (d == Direction::east) - (d == Direction::west) : (d == Direction::south) - (d == Direction::north); };
+        const double x = use.cursor_x + (use.pos.x - pos.x), z = use.cursor_z + (use.pos.z - pos.z);
+        const double along = (x - 0.5) * step(right, 0) + (z - 0.5) * step(right, 2);
+        const auto left = contracts::counter_clockwise(s.facing());
+        const std::array<BlockState, 4> sides{ctx.block(pos.relative(left)), ctx.block(pos.relative(left).relative(Direction::up)),
+                                              ctx.block(pos.relative(right)), ctx.block(pos.relative(right).relative(Direction::up))};
+        out = out.with_level(static_cast<std::uint8_t>(door_right_hinge(s, sides, along) ? 2 : 0));
+    }
     return out;
 }
 
 } // namespace circuit::gameplay::detail
+
+namespace circuit::gameplay {
+
+bool door_right_hinge(BlockState door, std::array<BlockState, 4> sides, double along) {
+    const auto full = [](BlockState s) {
+        const auto state = physics::registry_state_of(s);
+        return state && registry::collision(*state) == registry::Collision::full;
+    };
+    const auto lower_door = [&](BlockState s) { return s.is(BlockType::door) && s.variant() == door.variant() && !upper_half(s); };
+    const int lean = static_cast<int>(full(sides[2])) + static_cast<int>(full(sides[3])) - static_cast<int>(full(sides[0])) - static_cast<int>(full(sides[1]));
+    const bool left_door = lower_door(sides[0]), right_door = lower_door(sides[2]);
+    if ((left_door && !right_door) || lean > 0) return true;
+    if ((right_door && !left_door) || lean < 0) return false;
+    return along > 0.0;
+}
+
+} // namespace circuit::gameplay

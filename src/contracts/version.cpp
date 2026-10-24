@@ -218,8 +218,9 @@ constexpr std::array reference_v4_mechanisms{
         "Doors of every kind open and close at once when an update finds power around either half different from "
         "their powered state, and by hand unless iron; the change is quiet and the other half follows through its "
         "shape update; each opening and closing draws a float from the level random; a half without its other half "
-        "or a lower half without a sturdy top below breaks, the lower one with the door's drop (door_basics). Gaps: "
-        "players place doors with the left hinge; copper doors do not weather."},
+        "or a lower half without a sturdy top below breaks, the lower one with the door's drop (door_basics). Players "
+        "place doors with the hinge both official servers give them (tests/fixtures/placement/hinge.txt). Gaps: copper "
+        "doors do not weather."},
     MechanismEntry{"trapdoor", l0_exact, l2_declared_deviation, harness_trace,
         "Trapdoors of every kind follow the power around them and open by hand unless iron, quietly, with a draw "
         "for the sound; entities collide with their open and closed shapes (door_basics). Gaps: waterlogging is "

@@ -172,7 +172,11 @@ Plan plan_building(RuleContext& ctx, const contracts::PlayerUse& c, const ItemSt
     if (!placed) return std::unexpected(ErrorCode::unsupported);
     const auto state = *placed;
     if (detail::has_collision(state) && (c.free & bit) == 0) return std::unexpected(ErrorCode::occupied);
-    return [&ctx, target, state, c, held] {
+    // A tall flower needs room for its upper half.
+    const auto upper = detail::upper_half_of(state);
+    const auto above = target.relative(Direction::up);
+    if (upper && (!in_world(ctx.world(), above) || !replaceable(ctx.block(above)))) return std::unexpected(ErrorCode::occupied);
+    return [&ctx, target, state, upper, above, c, held] {
         if (c.survival) {
             auto& inv = ctx.player(c.player);
             auto& slot = inv.slots[c.slot];
@@ -180,6 +184,7 @@ Plan plan_building(RuleContext& ctx, const contracts::PlayerUse& c, const ItemSt
             detail::record_slot(ctx, inv, c.slot);
         }
         set_block(ctx, target, state);
+        if (upper) set_block(ctx, above, *upper);
     };
 }
 
@@ -230,7 +235,7 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
     case BlockType::redstone_wire: state = detail::fresh_wire_shape(ctx, target, *state, false); break;
     case BlockType::repeater: state = state->with_level(detail::repeater_locked_now(ctx, target, *state) ? 1 : 0); break;
     case BlockType::redstone_lamp: state = state->with_flag(detail::has_neighbor_signal(ctx, target)); break;
-    case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: state = detail::placed_opening(ctx, target, *state); break;
+    case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: state = detail::placed_opening(ctx, target, *state, c); break;
     case BlockType::note_block: state = detail::tuned_note_block(ctx, target, *state); break;
     default: break;
     }

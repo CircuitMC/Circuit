@@ -15,14 +15,16 @@
 //   them;
 // - ladders hang on the whole face behind them;
 // - carpets lie on anything but air;
-// - flowers and saplings grow on soil (registry::soil).
+// - flowers and saplings grow on soil (registry::soil); the lower half of a
+//   tall flower (sunflower, lilac, rose bush, peony) too, and goes when the
+//   block above is not its upper half, which stands on it.
 // A shape update that finds one unsupported (torches, lanterns and ladders:
 // from their support's side) breaks it with its drops, and a
 // piston that sets one down where it cannot stay breaks it at once. Without
 // data packs they drop themselves (their loot tables do the same).
 namespace circuit::gameplay::detail {
 namespace {
-enum class Need : std::uint8_t { none, standing, wall, lantern, ladder, carpet, plant };
+enum class Need : std::uint8_t { none, standing, wall, lantern, ladder, carpet, plant, tall_plant };
 
 const std::vector<Need>& needs() {
     static const std::vector<Need> out = [] {
@@ -40,6 +42,7 @@ const std::vector<Need>& needs() {
             else if (name == "ladder") v[b] = Need::ladder;
             else if (name == "moss_carpet" || (name.ends_with("_carpet") && name != "pale_moss_carpet")) v[b] = Need::carpet;
             else if (std::ranges::find(plants, name) != plants.end()) v[b] = Need::plant;
+            else if (name == "sunflower" || name == "lilac" || name == "rose_bush" || name == "peony") v[b] = Need::tall_plant;
         }
         return v;
     }();
@@ -61,6 +64,12 @@ std::string value_of(BlockState s, std::string_view key) {
 Direction facing_of(BlockState s) {
     const auto f = value_of(s, "facing");
     return f == "north" ? Direction::north : f == "south" ? Direction::south : f == "west" ? Direction::west : Direction::east;
+}
+
+// The other half of a tall flower: the same block's other half beside it.
+bool other_half_of(BlockState s, BlockState other, bool upper) {
+    return other.is(BlockType::other) && registry::block_of(other.registry_state()) == registry::block_of(s.registry_state())
+        && (value_of(other, "half") == "upper") == upper;
 }
 
 bool middle(BlockState s, Direction face, std::string_view release) {
@@ -92,6 +101,12 @@ bool supported(BlockState s, const std::function<BlockState(Direction)>& around,
         const auto below = physics::registry_state_of(around(Direction::down));
         return below && registry::soil(*below);
     }
+    // A tall flower's lower half grows on soil, its upper half on its lower half.
+    case Need::tall_plant: {
+        if (value_of(s, "half") == "upper") return other_half_of(s, around(Direction::down), false);
+        const auto below = physics::registry_state_of(around(Direction::down));
+        return below && registry::soil(*below);
+    }
     default: return true;
     }
 }
@@ -111,11 +126,16 @@ void support_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Directio
     default: break;
     }
     if (side && *side != d) return;
-    if (!supported_at(ctx, pos, s)) destroy_block(ctx, pos);
+    // A tall flower's lower half also goes when the block above is not its upper half.
+    const bool lost_top = need_of(s) == Need::tall_plant && d == Direction::up && value_of(s, "half") == "lower"
+                       && !other_half_of(s, ctx.block(pos.relative(Direction::up)), true);
+    if (lost_top || !supported_at(ctx, pos, s)) destroy_block(ctx, pos);
 }
 
 std::optional<ItemStack> supported_drop(BlockState s) {
     if (need_of(s) == Need::none) return std::nullopt;
+    // A tall flower drops from its lower half.
+    if (need_of(s) == Need::tall_plant && value_of(s, "half") == "upper") return std::nullopt;
     auto name = std::string("minecraft:") + std::string(registry::game_name(*registry::block_of(s.registry_state())));
     if (name == "minecraft:wall_torch") name = "minecraft:torch";
     if (name == "minecraft:soul_wall_torch") name = "minecraft:soul_torch";

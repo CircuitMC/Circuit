@@ -756,6 +756,39 @@ int main(int argc, char** argv) {
         require(checked == 52010, std::format("{} states", checked));
     });
 
+    suite.run("placed doors take their hinges as both official servers give them", [&] {
+        // tests/fixtures/placement/hinge.txt: every combination of air, stone,
+        // glass and door halves beside a door, for each facing and click side.
+        using circuit::contracts::Direction;
+        using circuit::gameplay::BlockState;
+        namespace blocks = circuit::gameplay::blocks;
+        const std::map<std::string, Direction> facings{{"north", Direction::north}, {"east", Direction::east}, {"south", Direction::south}, {"west", Direction::west}};
+        std::istringstream lines(read_text(fixtures / "placement" / "hinge.txt"));
+        std::size_t checked = 0;
+        for (std::string line; std::getline(lines, line);) {
+            if (line.empty() || line.front() == '#') continue;
+            std::istringstream fields(line);
+            std::string facing_name, codes;
+            double side{};
+            fields >> facing_name >> side >> codes;
+            require(codes.size() == 2401, line.substr(0, 20));
+            const auto facing = facings.at(facing_name);
+            const auto door = blocks::door(blocks::DoorKind::oak, facing, false);
+            const std::array<BlockState, 7> options{BlockState::of(circuit::gameplay::BlockType::air), blocks::stone(),
+                                                    blocks::door(blocks::DoorKind::oak, facing, false, false), blocks::door(blocks::DoorKind::oak, facing, false, true),
+                                                    blocks::door(blocks::DoorKind::oak, facing, true, false), blocks::door(blocks::DoorKind::oak, facing, true, true),
+                                                    blocks::glass()};
+            for (std::size_t i = 0; i < codes.size(); ++i) {
+                std::array<BlockState, 4> sides{};
+                for (std::size_t k = i, c = 0; c < 4; ++c, k /= 7) sides[c] = options[k % 7];
+                const bool right = circuit::gameplay::door_right_hinge(door, sides, side - 0.5);
+                require((right ? 'R' : 'L') == codes[i], std::format("{} {} #{}: official {}", facing_name, side, i, codes[i]));
+                ++checked;
+            }
+        }
+        require(checked == 8 * 2401, std::format("{} placements", checked));
+    });
+
     suite.run("players place blocks from items as both official servers do", [&] {
         // tests/fixtures/placement: every block item in fifteen contexts. Each
         // state Circuit places must be the official one; items Circuit does not
