@@ -358,6 +358,35 @@ int main() {
         require(state_at(resumed.dump(), {3, 0, 3}) == registry_block("gravel"), "landed");
     });
 
+    suite.run("cacti waiting to break round-trip through Anvil with their ticks", [&] {
+        // Two cacti, stone set beside the lower: it breaks in its block tick
+        // (plant_supports), and the upper one waits for its own, a tick
+        // later; that tick is saved and read back.
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        const auto cactus = registry_block("cactus", {{"age", "0"}});
+        engine.advance(admit({place({3, -1, 3}, registry_block("sand")), place({3, 0, 3}, cactus), place({3, 1, 3}, cactus)}));
+        engine.advance(admit({place({4, 0, 3}, blocks::stone())}));
+        const auto state = engine.dump();
+        require(state_at(state, {3, 0, 3}).is_air() && state_at(state, {3, 1, 3}) == cactus
+                    && std::ranges::any_of(state.overworld().ticks, [](const auto& t) { return t.tick.pos == BlockPos{3, 1, 3}; }),
+                "the upper cactus's tick");
+        const auto target = root / "cactus";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "cactus", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value() && back->report.unsupported.empty(), back ? "unsupported content" : back.error());
+        const auto diff = describe(kept(state), kept(back->state));
+        require(diff.empty(), diff);
+        Engine resumed(bundle(), 5, back->state);
+        Admissions again;
+        // Its tick runs once its chunk is loaded again.
+        resumed.advance(again({ticket(1, {0, 0}, 1)}));
+        for (int i = 0; i < 10; ++i) resumed.advance({});
+        const auto after = resumed.dump();
+        require(state_at(after, {3, 1, 3}).is_air() && after.overworld().ticks.empty(), "broken in its tick");
+    });
+
     suite.run("buttons and torches round-trip through Anvil with their ticks", [&] {
         using circuit::gameplay::blocks::ButtonKind;
         Engine engine(bundle(), 5);

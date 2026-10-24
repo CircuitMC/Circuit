@@ -6,6 +6,7 @@
 #include <charconv>
 #include <circuit/evidence/content.hpp>
 #include <circuit/gameplay/block_registry.hpp>
+#include <circuit/gameplay/rules.hpp>
 #include <circuit/protocol/content.hpp>
 #include <circuit/protocol/framing.hpp>
 #include <circuit/protocol/nbt.hpp>
@@ -395,9 +396,11 @@ public:
     std::optional<BlockType> tick_type(const std::string& name) {
         const auto id = tables_->default_state(name);
         if (!id) return std::nullopt;
-        // Blocks without rules of their own have no scheduled behavior to resume.
+        // Blocks without rules of their own have no scheduled behavior to
+        // resume, but falling blocks, sugar cane and cacti.
         const auto s = block(*tables_->notation(*id));
-        return s && !s->is(BlockType::other) ? std::optional<BlockType>(s->type()) : std::nullopt;
+        if (s && s->is(BlockType::other)) return gameplay::block_ticks_scheduled(*s) ? std::optional(BlockType::other) : std::nullopt;
+        return s ? std::optional<BlockType>(s->type()) : std::nullopt;
     }
     std::optional<std::uint16_t> item(const std::string& name) const {
         const auto i = mapping_->item(name);

@@ -27,7 +27,10 @@ void run_scheduled_tick(RuleContext& ctx, TickList list, const ScheduledTick& ti
     case BlockType::rail: tick_rail(ctx, tick.pos, s); break;
     case BlockType::coral_fan: case BlockType::coral_wall_fan: tick_coral(ctx, tick.pos, s); break;
     case BlockType::dispenser: tick_dispenser(ctx, tick.pos, s); break;
-    case BlockType::other: tick_falling_block(ctx, tick.pos, s); break;
+    case BlockType::other:
+        if (checks_later(s)) support_tick(ctx, tick.pos, s);
+        else tick_falling_block(ctx, tick.pos, s);
+        break;
     default: break;
     }
 }

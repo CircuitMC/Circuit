@@ -38,10 +38,12 @@
 // is random (grasses, ferns, dead bushes, stems) nothing.
 namespace circuit::gameplay::detail {
 namespace {
-enum class Need : std::uint8_t { none, standing, wall, lantern, ladder, carpet, plant, tall_plant, standing_sign, wall_sign, bed };
+enum class Need : std::uint8_t {
+    none, standing, wall, lantern, ladder, carpet, plant, tall_plant, standing_sign, wall_sign, bed, cane, cactus, lily_pad, sea_pickle
+};
 // The ground a plant grows on: one bit each in a block's grounds.
-enum class Ground : std::uint8_t { soil, dry, nether, wither, clay, farmland, soul_sand, bamboo };
-constexpr std::uint8_t bit(Ground g) { return static_cast<std::uint8_t>(1u << static_cast<unsigned>(g)); }
+enum class Ground : std::uint8_t { soil, dry, nether, wither, clay, farmland, soul_sand, bamboo, cane, cactus };
+constexpr std::uint16_t bit(Ground g) { return static_cast<std::uint16_t>(1u << static_cast<unsigned>(g)); }
 
 struct Kind {
     Need need = Need::none;
@@ -76,6 +78,10 @@ const std::vector<Kind>& kinds() {
             else if (const auto it = std::ranges::find(other_plants, name, &std::pair<std::string_view, Ground>::first); it != other_plants.end())
                 v[b] = {Need::plant, it->second};
             else if (name == "bamboo_sapling" || name == "bamboo") v[b] = {Need::plant, Ground::bamboo};
+            else if (name == "sugar_cane") v[b] = {Need::cane, Ground::cane};
+            else if (name == "cactus") v[b] = {Need::cactus, Ground::cactus};
+            else if (name == "lily_pad") v[b].need = Need::lily_pad;
+            else if (name == "sea_pickle") v[b].need = Need::sea_pickle;
             else if (name == "sunflower" || name == "lilac" || name == "rose_bush" || name == "peony" || name == "tall_grass"
                      || name == "large_fern")
                 v[b].need = Need::tall_plant;
@@ -89,9 +95,9 @@ const std::vector<Kind>& kinds() {
 }
 
 // The grounds each block is (plants of those kinds grow on it).
-const std::vector<std::uint8_t>& grounds() {
-    static const std::vector<std::uint8_t> out = [] {
-        std::vector<std::uint8_t> v(registry::block_count());
+const std::vector<std::uint16_t>& grounds() {
+    static const std::vector<std::uint16_t> out = [] {
+        std::vector<std::uint16_t> v(registry::block_count());
         for (std::uint32_t b = 0; b < v.size(); ++b) {
             const auto name = registry::game_name(b);
             const bool soil = name == "dirt" || name == "coarse_dirt" || name == "grass_block" || name == "podzol" || name == "mycelium"
@@ -99,7 +105,7 @@ const std::vector<std::uint8_t>& grounds() {
                            || name == "muddy_mangrove_roots" || name == "farmland";
             const bool sand = name == "sand" || name == "red_sand" || name == "suspicious_sand";
             const bool terracotta = name == "terracotta" || (name.ends_with("_terracotta") && !name.ends_with("glazed_terracotta"));
-            std::uint8_t g = 0;
+            std::uint16_t g = 0;
             if (soil) g |= bit(Ground::soil) | bit(Ground::dry) | bit(Ground::nether) | bit(Ground::wither) | bit(Ground::clay);
             if (soil && name != "farmland") g |= bit(Ground::bamboo);
             if (sand || terracotta) g |= bit(Ground::dry);
@@ -109,6 +115,10 @@ const std::vector<std::uint8_t>& grounds() {
             if (name == "clay") g |= bit(Ground::clay);
             if (name == "farmland") g |= bit(Ground::farmland);
             if (name == "soul_sand") g |= bit(Ground::soul_sand);
+            // Sugar cane: soil but farmland, and sand (and itself, by its rule);
+            // cacti: sand (and themselves).
+            if ((soil && name != "farmland") || sand || name == "sugar_cane") g |= bit(Ground::cane);
+            if (sand || name == "cactus") g |= bit(Ground::cactus);
             v[b] = g;
         }
         return v;
@@ -154,6 +164,25 @@ bool solid_block(BlockState s) {
     return state && registry::solid(*state);
 }
 
+bool named(BlockState s, std::string_view name) {
+    const auto block = s.is(BlockType::other) ? registry::block_of(s.registry_state()) : std::nullopt;
+    return block && registry::game_name(*block) == name;
+}
+// Water or frosted ice, beside sugar cane's ground: any water, a waterlogged
+// block's among them.
+bool waters_cane(BlockState s) {
+    const auto fluid = fluid_state(s);
+    return (fluid && (fluid->first == "water" || fluid->first == "flowing_water")) || named(s, "frosted_ice");
+}
+// Water, lava and bubble columns (not waterlogged blocks).
+bool liquid(BlockState s) { return s.is(BlockType::water) || is_lava(s) || named(s, "bubble_column"); }
+// Whether the state's collision shape reaches the top of its cell.
+bool top_reached(BlockState s, std::string_view release) {
+    return std::ranges::any_of(physics::collision_boxes(s, release), [](const registry::Box& b) {
+        return b.min_y < 1.0 && b.max_y >= 1.0 && b.max_x > b.min_x && b.max_z > b.min_z;
+    });
+}
+
 // Toward a bed's other half: its head is ahead of its foot.
 Direction toward_other_half(BlockState bed) {
     return value_of(bed, "part") == "foot" ? facing_of(bed) : contracts::opposite(facing_of(bed));
@@ -171,7 +200,8 @@ bool sturdy(BlockState s, Direction face, std::string_view release) {
 
 bool needs_support(BlockState s) { return need_of(s) != Need::none; }
 
-bool supported(BlockState s, const std::function<BlockState(Direction)>& around, std::string_view release) {
+bool supported(BlockState s, const Near& near, std::string_view release) {
+    const auto around = [&](Direction d) { return near(BlockPos{}.relative(d)); };
     switch (need_of(s)) {
     case Need::standing: return middle(around(Direction::down), Direction::up, release);
     case Need::lantern:
@@ -205,15 +235,56 @@ bool supported(BlockState s, const std::function<BlockState(Direction)>& around,
         const auto below = physics::registry_state_of(around(Direction::down));
         return below && registry::soil(*below);
     }
+    // Sugar cane stands on sugar cane, or on its ground with water (or
+    // frosted ice) beside the ground.
+    case Need::cane: {
+        const auto below = around(Direction::down);
+        if (same_block(below, s)) return true;
+        if (!grows_on(Ground::cane, below, release)) return false;
+        return std::ranges::any_of(contracts::horizontal_directions, [&](Direction d) {
+            return waters_cane(near(BlockPos{0, -1, 0}.relative(d)));
+        });
+    }
+    // A cactus stands on a cactus or sand, with nothing solid or lava beside
+    // it and no liquid above it.
+    case Need::cactus:
+        for (const auto d : contracts::horizontal_directions) {
+            const auto side = around(d);
+            if (solid_block(side) || is_lava(side)) return false;
+        }
+        return !liquid(around(Direction::up)) && grows_on(Ground::cactus, around(Direction::down), release);
+    // A lily pad lies on a water source or ice.
+    case Need::lily_pad: {
+        const auto below = around(Direction::down);
+        const auto fluid = fluid_state(below);
+        return (fluid && fluid->first == "water") || named(below, "ice") || named(below, "frosted_ice");
+    }
+    // A sea pickle sits on a top its collision shape reaches, or a sturdy one.
+    case Need::sea_pickle: return top_reached(around(Direction::down), release) || sturdy(around(Direction::down), Direction::up, release);
     default: return true;
     }
 }
 
 bool supported_at(RuleContext& ctx, BlockPos pos, BlockState s) {
-    return supported(s, [&](Direction d) { return ctx.block(pos.relative(d)); }, ctx.bundle().schema.content_release);
+    return supported(s, [&](BlockPos o) { return ctx.block({pos.x + o.x, pos.y + o.y, pos.z + o.z}); }, ctx.bundle().schema.content_release);
+}
+
+bool checks_later(BlockState s) { return need_of(s) == Need::cane || need_of(s) == Need::cactus; }
+
+void check_support_later(RuleContext& ctx, BlockPos pos, BlockState s) {
+    if (checks_later(s) && !supported_at(ctx, pos, s)) schedule(ctx, TickList::block, pos, BlockType::other, 1, 0);
+}
+
+void support_tick(RuleContext& ctx, BlockPos pos, BlockState s) {
+    if (checks_later(s) && !supported_at(ctx, pos, s)) destroy_block(ctx, pos);
 }
 
 void support_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d) {
+    // Sugar cane and cacti look again a tick after any update.
+    if (checks_later(s)) {
+        check_support_later(ctx, pos, s);
+        return;
+    }
     // Torches, lanterns and ladders look again only when their support's side
     // changes, carpets, flowers and saplings on any update.
     std::optional<Direction> side;
@@ -257,9 +328,10 @@ std::optional<ItemStack> supported_drop(BlockState s) {
         "minecraft:short_dry_grass", "minecraft:tall_dry_grass", "minecraft:nether_sprouts", "minecraft:melon_stem", "minecraft:pumpkin_stem",
         "minecraft:sweet_berry_bush"};
     if (std::ranges::find(nothing, name) != nothing.end()) return std::nullopt;
-    if (name == "minecraft:pink_petals" || name == "minecraft:wildflowers") {
+    if (name == "minecraft:pink_petals" || name == "minecraft:wildflowers" || name == "minecraft:sea_pickle") {
         const auto item = items::by_name(name);
-        return item ? std::optional(ItemStack{*item, static_cast<std::uint8_t>(std::stoi(value_of(s, "flower_amount")))}) : std::nullopt;
+        const auto count = std::stoi(value_of(s, name == "minecraft:sea_pickle" ? "pickles" : "flower_amount"));
+        return item ? std::optional(ItemStack{*item, static_cast<std::uint8_t>(count)}) : std::nullopt;
     }
     const auto item = items::by_name(name);
     return item ? std::optional(ItemStack{*item, 1}) : std::nullopt;
@@ -269,6 +341,17 @@ std::optional<ItemStack> supported_drop(BlockState s) {
 
 namespace circuit::gameplay {
 bool block_supported(BlockState s, const std::function<BlockState(contracts::Direction)>& around, std::string_view release) {
-    return detail::supported(s, around, release);
+    return detail::supported(
+        s,
+        [&](contracts::BlockPos o) {
+            for (const auto d : contracts::all_directions)
+                if (contracts::BlockPos{}.relative(d) == o) return around(d);
+            return blocks::air();
+        },
+        release);
+}
+bool block_ticks_scheduled(BlockState s) { return detail::falls(s) || detail::checks_later(s); }
+bool block_supported_near(BlockState s, const std::function<BlockState(contracts::BlockPos offset)>& near, std::string_view release) {
+    return detail::supported(s, near, release);
 }
 } // namespace circuit::gameplay

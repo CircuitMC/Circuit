@@ -254,6 +254,8 @@ void on_placed(RuleContext& ctx, BlockPos pos, BlockState state, BlockState prev
         else if (falls(state)) schedule_fall(ctx, pos);
         // TNT placed or moved in where redstone reaches it is primed.
         else if (is_tnt(state) && !is_tnt(previous)) check_tnt(ctx, pos);
+        // Sugar cane or a cactus moved in where it cannot stay breaks a tick later.
+        else if (moved_in) check_support_later(ctx, pos, state);
         break;
     default: break;
     }

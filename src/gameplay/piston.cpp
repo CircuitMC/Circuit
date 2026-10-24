@@ -507,7 +507,9 @@ bool stays(RuleContext& ctx, BlockPos pos, BlockState s) {
     }
     case BlockType::rail: return supports_dust(as_settled(ctx, pos.relative(Direction::down)));
     case BlockType::other:
-        return !needs_support(s) || supported(s, [&](Direction d) { return as_settled(ctx, pos.relative(d)); }, ctx.bundle().schema.content_release);
+        // Sugar cane and cacti stay until their tick (updates.cpp).
+        return !needs_support(s) || checks_later(s)
+            || supported(s, [&](BlockPos o) { return as_settled(ctx, {pos.x + o.x, pos.y + o.y, pos.z + o.z}); }, ctx.bundle().schema.content_release);
     default: return true;
     }
 }

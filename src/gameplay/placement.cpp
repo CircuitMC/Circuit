@@ -221,6 +221,8 @@ Building building_kind(std::uint32_t block) {
         return Building::sign;
     if ((name.ends_with("_head") || name.ends_with("_skull")) && !name.contains("_wall_") && name != "piston_head") return Building::head;
     if (name.ends_with("_bed")) return Building::bed;
+    // A lily pad is placed on water by using it on the water, not on a block's face.
+    if (name == "lily_pad") return Building::none;
     if (needs_support(BlockState::registered(info.default_state))) return Building::resting;
     if (name.ends_with("_slab") && has("type") && only({"type", "waterlogged"})) return Building::slab;
     if (registry::connector(info.default_state) != registry::Connector::none) return Building::connector;
@@ -363,6 +365,7 @@ std::optional<BlockState> placed_building(RuleContext& ctx, std::uint32_t block,
         const auto block_name = registry::block(block).name;
         if (block_name == "pink_petals" || block_name == "wildflowers") s = with(s, {{"facing", std::string(name_of(contracts::opposite(c.horizontal)))}});
         if (block_name == "mangrove_propagule") s = with(s, {{"age", "4"}});
+        if (block_name == "sea_pickle") s = with(s, {{"waterlogged", water}});
         return stays(s);
     }
     case Building::tall: return stays(with(s, {{"half", "lower"}}));

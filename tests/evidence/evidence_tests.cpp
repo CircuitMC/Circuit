@@ -799,8 +799,9 @@ int main(int argc, char** argv) {
 
     suite.run("plants grow on the ground both official servers let them", [&] {
         // tests/fixtures/collision/plants-*.txt: for every state as support,
-        // whether each plant stays on it. The rules model the plants that
-        // need only the block below of their ground; the other columns wait.
+        // whether each plant stays on it with nothing else around. The rules
+        // model the plants that need only the block below, sugar cane and
+        // cacti (more below); the other columns wait.
         namespace registry = circuit::gameplay::registry;
         using circuit::contracts::Direction;
         using circuit::gameplay::BlockState;
@@ -825,7 +826,7 @@ int main(int argc, char** argv) {
             {17, {"wildflowers", {}}}, {19, {"azalea", {}}}, {20, {"flowering_azalea", {}}}, {22, {"nether_wart", {}}},
             {23, {"sweet_berry_bush", {}}}, {24, {"carrots", {}}}, {25, {"potatoes", {}}}, {26, {"beetroots", {}}},
             {27, {"melon_stem", {}}}, {28, {"pumpkin_stem", {}}}, {29, {"torchflower_crop", {}}}, {34, {"bamboo_sapling", {}}},
-            {35, {"bamboo", {}}}};
+            {35, {"bamboo", {}}}, {36, {"sugar_cane", {}}}, {37, {"cactus", {}}}, {38, {"lily_pad", {}}}, {39, {"sea_pickle", {}}}};
         std::size_t checked = 0, grows = 0;
         for (const auto release : {"1.21.8", "1.21.4"}) {
             const auto* mapping = ContentMapping::for_game_version(release);
@@ -859,6 +860,73 @@ int main(int argc, char** argv) {
         }
         std::cout << std::format("  {} plant and support pairs, {} where the plant grows\n", checked, grows);
         require(grows > 0, "plants grow somewhere");
+    });
+
+    suite.run("sugar cane and cacti stay where both official servers keep them", [&] {
+        // tests/fixtures/collision/plant-contexts-*.txt: sugar cane on every
+        // state with a water source beside it, and on sand with every state
+        // beside the sand; a cactus on sand with every state beside it and
+        // above it. States that did not stay where they were set (?) are
+        // left out; the mushroom and dripleaf columns wait.
+        namespace registry = circuit::gameplay::registry;
+        using circuit::contracts::BlockPos;
+        using circuit::gameplay::BlockState;
+        const auto table = [&](const char* file) {
+            std::map<std::string, std::string> out;
+            std::istringstream lines(read_text(fixtures / "collision" / file));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto space = line.find(' ');
+                out[line.substr(0, space)] = line.substr(space + 1);
+            }
+            return out;
+        };
+        const auto newest = table("plant-contexts-1.21.8.txt");
+        const auto older = table("plant-contexts-1.21.4-only.txt");
+        std::size_t checked = 0, stays = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            const auto* mapping = ContentMapping::for_game_version(release);
+            const auto plant = [&](std::string_view name) {
+                return BlockState::registered(registry::block(*registry::find_block(release, name)).default_state);
+            };
+            const auto cane = plant("sugar_cane"), cactus = plant("cactus"), sand = plant("sand");
+            const auto water = circuit::gameplay::blocks::water_source();
+            for (std::uint32_t wire = 0; wire < registry::wire_state_count(release); ++wire) {
+                const auto notation = registry::notation(registry::from_wire(release, static_cast<std::int32_t>(wire)).value());
+                const auto name = notation.substr(0, notation.find('['));
+                const auto find = [&](const std::map<std::string, std::string>& t) -> const std::string* {
+                    for (const auto& k : {notation, name})
+                        if (const auto it = t.find(k); it != t.end()) return &it->second;
+                    return nullptr;
+                };
+                const std::string* row = release == std::string_view("1.21.4") ? find(older) : nullptr;
+                if (!row) row = find(newest);
+                require(row != nullptr && row->size() == 7, std::format("{} {}: a row", release, notation));
+                const auto state = mapping->block(notation).value();
+                // The plant, and what stands where around it.
+                const std::array<std::tuple<BlockState, std::vector<std::pair<BlockPos, BlockState>>, const char*>, 4> contexts{{
+                    {cane, {{{0, -1, 0}, state}, {{1, -1, 0}, water}}, "sugar cane on it, water beside"},
+                    {cane, {{{0, -1, 0}, sand}, {{1, -1, 0}, state}}, "sugar cane on sand, it beside the sand"},
+                    {cactus, {{{0, -1, 0}, sand}, {{1, 0, 0}, state}}, "a cactus on sand, it beside"},
+                    {cactus, {{{0, -1, 0}, sand}, {{0, 1, 0}, state}}, "a cactus on sand, it above"}}};
+                for (std::size_t column = 0; column < contexts.size(); ++column) {
+                    const char want = (*row)[column];
+                    if (want == '?') continue;
+                    const auto& [what, around, label] = contexts[column];
+                    const auto near = [&](BlockPos o) {
+                        for (const auto& [at, s] : around)
+                            if (at == o) return s;
+                        return BlockState::of(circuit::gameplay::BlockType::air);
+                    };
+                    const char got = circuit::gameplay::block_supported_near(what, near, release) ? '1' : '0';
+                    require(want == got, std::format("{} {} ({}): official {}, Circuit {}", release, notation, label, want, got));
+                    ++checked;
+                    stays += got == '1' ? 1 : 0;
+                }
+            }
+        }
+        std::cout << std::format("  {} pairs, {} where the plant stays\n", checked, stays);
+        require(stays > 0, "they stay somewhere");
     });
 
     suite.run("blocks that need support stay where both official servers keep them", [&] {

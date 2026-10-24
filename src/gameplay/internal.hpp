@@ -256,11 +256,18 @@ void connector_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direct
 // ---- blocks that need support (support.cpp) ----
 // Torches, wall torches, lanterns, ladders, carpets, flowers and saplings.
 bool needs_support(BlockState s);
-// Whether it can stay with `around(d)` the block on side `d`.
-bool supported(BlockState s, const std::function<BlockState(Direction)>& around, std::string_view release);
+// Whether it can stay with `near(offset)` the block at an offset from it.
+using Near = std::function<BlockState(BlockPos offset)>;
+bool supported(BlockState s, const Near& near, std::string_view release);
 bool supported_at(RuleContext& ctx, BlockPos pos, BlockState s);
-// A shape update from `d`: unsupported, it breaks with its drops.
+// A shape update from `d`: unsupported, it breaks with its drops (sugar cane
+// and cacti a tick later, in their block tick).
 void support_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d);
+// Sugar cane and cacti: whether they break in a block tick, its scheduling
+// when unsupported (as after an update), and the tick.
+bool checks_later(BlockState s);
+void check_support_later(RuleContext& ctx, BlockPos pos, BlockState s);
+void support_tick(RuleContext& ctx, BlockPos pos, BlockState s);
 // Its own item, its drop when no data packs give its loot table.
 std::optional<ItemStack> supported_drop(BlockState s);
 

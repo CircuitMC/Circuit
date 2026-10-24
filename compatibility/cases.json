@@ -405,6 +405,17 @@
       "description": "Whether 47 plants stay on every block state as support, as both official servers decide it; Circuit's rules match the 30 that need only the ground below them for every state of both versions (1,535,030 pairs)"
     },
     {
+      "id": "collision/plant_contexts",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "tests/fixtures/collision/plant-contexts-*.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness plant context report",
+      "status": "passing",
+      "description": "Whether sugar cane stays on every block state with water beside it and on sand with every state beside the sand, and whether a cactus stays on sand with every state beside it and above it, as both official servers decide it; Circuit's rules match every pair of both versions (204,164) but the states that do not stay where they are set. The mushroom and dripleaf columns are not modeled yet"
+    },
+    {
       "id": "collision/flows",
       "kind": "black_box",
       "versions": [

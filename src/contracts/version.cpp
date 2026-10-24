@@ -322,7 +322,9 @@ constexpr std::array reference_v4_mechanisms{
         "torch_basics, button_basics, pressure_plates). Torches, lanterns, ladders, carpets, flowers and saplings "
         "need theirs too and break when it goes (supported_blocks); signs and banners need a solid block (signs_beds); "
         "grasses, ferns, bushes, petals, fungi, roots, wither roses, azaleas, crops, nether wart and bamboo need the "
-        "ground of their kind (plant_grounds; every state in tests/fixtures/collision/plants-*.txt). Support shapes "
+        "ground of their kind (plant_grounds; every state in tests/fixtures/collision/plants-*.txt); sugar cane water beside "
+        "its ground, cacti nothing solid beside them, lily pads water or ice and sea pickles a top, sugar cane and cacti "
+        "breaking a tick after an update (plant_supports; tests/fixtures/collision/plant-contexts-*.txt). Support shapes "
         "and solidity of every state come from the registry (tests/fixtures/collision/support-*.txt). The drops' "
         "positions follow item_entity; without data packs, plants whose loot rolls random numbers drop nothing (with "
         "them, see loot)."},

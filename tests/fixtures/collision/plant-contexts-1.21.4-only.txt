@@ -1,0 +1,45 @@
+# Whether plants stay with every block state in a place beyond the block below them, as both official servers decide
+# it (harness 0.25.0 plant context report): sugar cane on the state with a water source beside it (cane_ground), on
+# sand with the state beside the sand (cane_water); a cactus on sand with the state beside it (cactus_side) and above it
+# (cactus_above); brown and red mushrooms on the state at light 0 (brown_dark, red_dark; in a stone box whose light
+# settled first, so the light of states that emit it is not certain to be seen); a small dripleaf's lower half on the
+# state in a water source (dripleaf_wet). One code per column, 1 or 0, ? when the state did not stay where it was set,
+# - when the version lacks the plant. A bare block name stands for all its states.
+# Columns: cane_ground cane_water cactus_side cactus_above brown_dark red_dark dripleaf_wet
+# Java Edition 1.21.4: the states whose codes plant-contexts-1.21.8.txt does not give; every other state as there.
+minecraft:powered_rail[powered=true,shape=north_south,waterlogged=true] ???????
+minecraft:powered_rail[powered=true,shape=north_south,waterlogged=false] ???????
+minecraft:powered_rail[powered=true,shape=east_west,waterlogged=true] ???????
+minecraft:powered_rail[powered=true,shape=east_west,waterlogged=false] ???????
+minecraft:powered_rail[powered=true,shape=ascending_east,waterlogged=true] ???????
+minecraft:powered_rail[powered=true,shape=ascending_east,waterlogged=false] ???????
+minecraft:powered_rail[powered=true,shape=ascending_west,waterlogged=true] ???????
+minecraft:powered_rail[powered=true,shape=ascending_west,waterlogged=false] ???????
+minecraft:powered_rail[powered=true,shape=ascending_north,waterlogged=true] ???????
+minecraft:powered_rail[powered=true,shape=ascending_north,waterlogged=false] ???????
+minecraft:powered_rail[powered=true,shape=ascending_south,waterlogged=true] ???????
+minecraft:powered_rail[powered=true,shape=ascending_south,waterlogged=false] ???????
+minecraft:creaking_heart[active=true,axis=x,natural=true] 0001110
+minecraft:creaking_heart[active=true,axis=x,natural=false] 0001110
+minecraft:creaking_heart[active=true,axis=y,natural=true] 0001110
+minecraft:creaking_heart[active=true,axis=y,natural=false] 0001110
+minecraft:creaking_heart[active=true,axis=z,natural=true] 0001110
+minecraft:creaking_heart[active=true,axis=z,natural=false] 0001110
+minecraft:creaking_heart[active=false,axis=x,natural=true] 0001110
+minecraft:creaking_heart[active=false,axis=x,natural=false] 0001110
+minecraft:creaking_heart[active=false,axis=y,natural=true] 0001110
+minecraft:creaking_heart[active=false,axis=y,natural=false] 0001110
+minecraft:creaking_heart[active=false,axis=z,natural=true] 0001110
+minecraft:creaking_heart[active=false,axis=z,natural=false] 0001110
+minecraft:activator_rail[powered=true,shape=north_south,waterlogged=true] ???????
+minecraft:activator_rail[powered=true,shape=north_south,waterlogged=false] ???????
+minecraft:activator_rail[powered=true,shape=east_west,waterlogged=true] ???????
+minecraft:activator_rail[powered=true,shape=east_west,waterlogged=false] ???????
+minecraft:activator_rail[powered=true,shape=ascending_east,waterlogged=true] ???????
+minecraft:activator_rail[powered=true,shape=ascending_east,waterlogged=false] ???????
+minecraft:activator_rail[powered=true,shape=ascending_west,waterlogged=true] ???????
+minecraft:activator_rail[powered=true,shape=ascending_west,waterlogged=false] ???????
+minecraft:activator_rail[powered=true,shape=ascending_north,waterlogged=true] ???????
+minecraft:activator_rail[powered=true,shape=ascending_north,waterlogged=false] ???????
+minecraft:activator_rail[powered=true,shape=ascending_south,waterlogged=true] ???????
+minecraft:activator_rail[powered=true,shape=ascending_south,waterlogged=false] ???????

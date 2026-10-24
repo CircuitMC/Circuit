@@ -55,6 +55,12 @@ BlockState stairs_with_neighbors(BlockState stairs, std::array<BlockState, 4> ar
 // flowers, saplings) can stay with `around(d)` on each side (for checks
 // against the official servers); blocks that need none always can.
 bool block_supported(BlockState s, const std::function<BlockState(contracts::Direction)>& around, std::string_view release);
+// Whether a block without rules of its own runs scheduled block ticks:
+// falling blocks fall in them, sugar cane and cacti break.
+bool block_ticks_scheduled(BlockState s);
+// The same with `near(offset)` the block at any offset from it (sugar cane
+// reads the blocks beside its ground).
+bool block_supported_near(BlockState s, const std::function<BlockState(contracts::BlockPos offset)>& near, std::string_view release);
 // Whether a door a player places takes its hinge on the right (for checks
 // against the official servers): `sides` are the blocks to its left, above
 // them, to its right and above them (as one faces the door's way), `along`
