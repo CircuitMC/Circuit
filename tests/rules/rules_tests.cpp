@@ -18,6 +18,7 @@
 #include <circuit/gameplay/survival.hpp>
 #include <bit>
 #include <cmath>
+#include <numbers>
 #include <limits>
 #include <format>
 #include <map>
@@ -675,13 +676,16 @@ int main() {
         require(s.oracle.dump().overworld().entities.size() == 1, "the lever dropped");
         require(s.at({2, 1, 1}).is(BlockType::stone), "sneaking placed instead of using");
 
-        // Survival placement uses the item up; a water bucket leaves a bucket.
+        // Survival placement uses the item up; a water bucket, used along the
+        // view, leaves a bucket (a click on a block with it does nothing).
         const circuit::contracts::PlayerKey sam{3, 4};
         s.tick({SetBlock{{8, 0, 8}, blocks::stone().raw(), {}}, SetBlock{{9, 0, 9}, blocks::stone().raw(), {}},
                 circuit::contracts::SetPlayerSlot{sam, 36, {items::stone, 2, 0}},
                 circuit::contracts::SetPlayerSlot{sam, 37, {items::water_bucket, 1, 0}},
                 circuit::contracts::PlayerUse{sam, 36, {8, 0, 8}, D::up, D::south, D::south, false, true, 3, 3},
                 circuit::contracts::PlayerUse{sam, 37, {9, 0, 9}, D::up, D::south, D::south, false, true, 3, 3},
+                circuit::contracts::PlayerUseItem{sam, 37, {9.5, 2.62, 10.5}, 0.0f, 60.0f, 4.5, true,
+                                                  circuit::contracts::BlockHit{{9, 0, 9}, D::up, 0.5f, 1.0f, 0.5f}},
                 circuit::contracts::PlayerUse{sam, 38, {9, 0, 9}, D::up, D::south, D::south, false, true, 3, 3}});
         const auto d = s.oracle.dump();
         const auto inventory = std::ranges::find(d.players, sam, &PlayerInventory::player);
@@ -2261,6 +2265,82 @@ int main() {
                 "the named box stays in the hand, the other was used");
         const auto* be = block_entity_at(d, {2, 0, 0});
         require(s.at({2, 0, 0}).is(BlockType::other) && be && be->kind == BlockType::other, "the unnamed box is placed with its block entity");
+    });
+
+    suite.run("buckets take and pour fluids along the player's view as both official servers do", [] {
+        // circuit-clienttest/buckets.js: each use looks down from the south at
+        // its cell, clicking the block its view meets.
+        using circuit::contracts::BlockHit;
+        using circuit::contracts::PlayerUseItem;
+        using circuit::contracts::SetPlayerSlot;
+        const circuit::contracts::PlayerKey alex{1, 2}, sam{3, 4};
+        const auto look = [](circuit::contracts::Vec3 eye, circuit::contracts::Vec3 at) {
+            const double dx = at.x - eye.x, dy = at.y - eye.y, dz = at.z - eye.z;
+            const double yaw = std::atan2(-dx, dz) * 180.0 / std::numbers::pi;
+            const double pitch = -std::atan2(dy, std::sqrt(dx * dx + dz * dz)) * 180.0 / std::numbers::pi;
+            return std::pair{static_cast<float>(yaw), static_cast<float>(pitch)};
+        };
+        // A use from above the stone south of the cell at `x`, toward `at`.
+        const auto use = [&](circuit::contracts::PlayerKey who, std::int32_t x, circuit::contracts::Vec3 at, std::optional<BlockHit> hit,
+                             bool survival = false) {
+            const circuit::contracts::Vec3 eye{x + 0.5, 2.62, 1.5};
+            const auto [yaw, pitch] = look(eye, at);
+            return PlayerUseItem{who, 36, eye, yaw, pitch, survival ? 4.5 : 5.0, survival, hit};
+        };
+        const auto floor_hit = [](std::int32_t x) { return BlockHit{{x, -1, 0}, D::up, 0.5f, 1.0f, 0.3f}; };
+        const auto lava = registry_block("lava", {{"level", "0"}});
+        const auto slab = [](std::string_view type, bool wet) {
+            return registry_block("oak_slab", {{"type", std::string(type)}, {"waterlogged", wet ? "true" : "false"}});
+        };
+        Sim s;
+        auto build = floor(-1, 40, -1, 1);
+        build.push_back(place({0, 0, 0}, blocks::water_source()));
+        build.push_back(place({3, 0, 0}, blocks::water_source()));
+        build.push_back(place({6, 0, 0}, blocks::water_flowing(2)));
+        build.push_back(place({9, 0, 0}, lava));
+        build.push_back(place({12, 0, 0}, slab("bottom", true)));
+        build.push_back(place({15, 0, 0}, slab("bottom", false)));
+        build.push_back(place({18, 0, 0}, slab("double", false)));
+        build.push_back(place({21, 0, 0}, slab("bottom", false)));
+        build.push_back(place({24, 0, 0}, lava));
+        build.push_back(place({30, 0, 0}, blocks::water_source()));
+        s.tick(with_floor(build, {}));
+        const auto held = [&](circuit::contracts::PlayerKey who, std::uint16_t item, std::uint8_t count = 1) {
+            return SetPlayerSlot{who, 36, {item, count, 0}};
+        };
+        s.tick({held(alex, items::bucket), use(alex, 0, {0.5, 0.4, 0.3}, floor_hit(0)), use(alex, 3, {3.5, 0.4, 0.3}, floor_hit(3)),
+                use(alex, 6, {6.5, 0.1, 0.3}, floor_hit(6)), use(alex, 9, {9.5, 0.4, 0.3}, floor_hit(9)),
+                use(alex, 12, {12.5, 0.5, 0.3}, BlockHit{{12, 0, 0}, D::up, 0.5f, 0.5f, 0.3f}),
+                held(alex, items::water_bucket), use(alex, 15, {15.5, 0.5, 0.3}, BlockHit{{15, 0, 0}, D::up, 0.5f, 0.5f, 0.3f}),
+                use(alex, 18, {18.5, 1.0, 0.3}, BlockHit{{18, 0, 0}, D::up, 0.5f, 1.0f, 0.3f}),
+                held(alex, items::lava_bucket), use(alex, 21, {21.5, 0.5, 0.3}, BlockHit{{21, 0, 0}, D::up, 0.5f, 0.5f, 0.3f}),
+                held(alex, items::water_bucket), use(alex, 24, {24.5, 0.0, 0.3}, floor_hit(24)),
+                use(alex, 27, {27.5, 0.0, 0.3}, std::nullopt),
+                held(sam, items::bucket, 2), use(sam, 30, {30.5, 0.4, 0.3}, floor_hit(30), true)});
+        std::vector<std::uint64_t> outcomes;
+        for (const auto& r : s.last) {
+            if (r.kind == TraceKind::command_applied) outcomes.push_back(0);
+            if (r.kind == TraceKind::command_rejected) outcomes.push_back(r.b);
+        }
+        const auto no = static_cast<std::uint64_t>(ErrorCode::not_usable);
+        require(outcomes == std::vector<std::uint64_t>{0, 0, 0, no, 0, 0, 0, 0, 0, 0, 0, 0, 0, no, 0, 0}, "the uses that act");
+        require(s.at({0, 0, 0}).is_air() && s.at({3, 0, 0}).is_air(), "the sources are taken");
+        require(s.at({6, 0, 0}) == blocks::water_flowing(2), "flowing water is not");
+        require(s.at({9, 0, 0}).is_air(), "the lava source is taken");
+        require(s.at({12, 0, 0}) == slab("bottom", false), "the slab's water is taken");
+        require(s.at({15, 0, 0}) == slab("bottom", true), "water poured into a slab");
+        require(s.at({18, 0, 0}) == slab("double", false) && s.at({18, 1, 0}) == blocks::water_source(), "water above a double slab");
+        require(s.at({21, 0, 0}) == slab("bottom", false) && s.at({21, 1, 0}) == lava, "lava above a slab");
+        require(s.at({24, 0, 0}) == blocks::water_source(), "water replaces lava");
+        require(s.at({30, 0, 0}).is_air(), "the survival player takes the source");
+        const auto d = s.oracle.dump();
+        const auto slots = [&](circuit::contracts::PlayerKey who) { return std::ranges::find(d.players, who, &PlayerInventory::player)->slots; };
+        // The creative player got one water bucket and one lava bucket, beside the buckets used.
+        const auto a = slots(alex);
+        require(std::ranges::count(a, ItemStack{items::water_bucket, 1, 0}) == 2 && std::ranges::count(a, ItemStack{items::lava_bucket, 1, 0}) == 1,
+                "the creative player's buckets");
+        const auto b = slots(sam);
+        require(b[36] == ItemStack{items::bucket, 1, 0} && b[37] == ItemStack{items::water_bucket, 1, 0}, "one of two buckets filled");
     });
 
     suite.run("players place blocks into lava but cannot break it", [] {

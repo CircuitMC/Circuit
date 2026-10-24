@@ -76,6 +76,7 @@ struct UseOn {
 struct Use {
     std::int32_t hand{};
     std::int32_t sequence{};
+    float yaw{}, pitch{}; // the view the item is used along
 };
 struct HeldSlot {
     std::int16_t slot{};

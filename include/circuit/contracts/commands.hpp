@@ -144,6 +144,35 @@ struct PlayerUse {
     float yaw{};
     bool operator==(const PlayerUse&) const = default;
 };
+// The block a player's view meets first: the block, the face it enters and
+// where it hits it (0 to 1 on each axis).
+struct BlockHit {
+    BlockPos pos;
+    Direction face{};
+    float cursor_x{};
+    float cursor_y{};
+    float cursor_z{};
+    bool operator==(const BlockHit&) const = default;
+};
+// A player uses the held item along their view rather than on a block (a
+// bucket), resolved when applied. The view starts at `eye` and goes `reach`
+// blocks along `yaw` and `pitch` (degrees: yaw 0 south and 90 west, pitch 90
+// straight down); `hit` is the block it meets first, as the client reported
+// clicking it, absent when it meets none within reach. An empty bucket
+// takes the first fluid source on the view before that block, or from the
+// block; a filled one pours into the block or beside it. In survival the
+// bucket changes in the hand.
+struct PlayerUseItem {
+    PlayerKey player;
+    std::uint8_t slot{}; // the using hand's inventory slot (36-44 or 45)
+    Vec3 eye;
+    float yaw{};
+    float pitch{};
+    double reach{};
+    bool survival{};
+    std::optional<BlockHit> hit;
+    bool operator==(const PlayerUseItem&) const = default;
+};
 // A player breaks a block, resolved when applied: air and piston parts
 // cannot be broken. In survival the block drops what the held tool harvests,
 // containers drop their contents, and the tool wears.
@@ -268,7 +297,7 @@ struct SetWeather {
 
 using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket,
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
-                                 PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity>;
+                                 PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity, PlayerUseItem>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.

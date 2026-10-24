@@ -44,17 +44,18 @@ constexpr double eject_spread = 0.0172275 * 6;
 // they act on, which the rules do not model either: boats on water,
 // bottles at water or a full hive, honeycomb at copper that is not waxed,
 // glowstone at a respawn anchor, a potion with data at dirt.
-enum class Use : std::uint8_t { eject, keep, tnt, water, bucket, minecart, boat, bottle, honeycomb, glowstone, potion };
+enum class Use : std::uint8_t { eject, keep, tnt, water, lava, bucket, minecart, boat, bottle, honeycomb, glowstone, potion };
 
 Use classify(std::string_view name) {
-    static constexpr std::array<std::string_view, 33> kept{
+    static constexpr std::array<std::string_view, 32> kept{
         "shears", "bone_meal", "carved_pumpkin", "brush", "wither_skeleton_skull", "flint_and_steel", "arrow", "spectral_arrow",
         "tipped_arrow", "snowball", "egg", "blue_egg", "brown_egg", "experience_bottle", "splash_potion", "lingering_potion",
-        "fire_charge", "firework_rocket", "wind_charge", "armor_stand", "lava_bucket", "powder_snow_bucket", "cod_bucket",
+        "fire_charge", "firework_rocket", "wind_charge", "armor_stand", "powder_snow_bucket", "cod_bucket",
         "salmon_bucket", "pufferfish_bucket", "tropical_fish_bucket", "axolotl_bucket", "tadpole_bucket", "chest_minecart",
         "furnace_minecart", "tnt_minecart", "hopper_minecart", "command_block_minecart"};
     if (name == "tnt") return Use::tnt;
     if (name == "water_bucket") return Use::water;
+    if (name == "lava_bucket") return Use::lava;
     if (name == "bucket") return Use::bucket;
     if (name == "minecart") return Use::minecart;
     if (name == "glass_bottle") return Use::bottle;
@@ -94,70 +95,7 @@ std::string registry_property(BlockState s, std::string_view key) {
     return {};
 }
 
-// The state with water in it or without, for blocks that hold water as a
-// property; nullopt for the others.
-std::optional<BlockState> with_water(BlockState s, bool wet) {
-    switch (s.type()) {
-    case BlockType::coral_fan: case BlockType::coral_wall_fan: case BlockType::chest: return s.with_flag(wet);
-    case BlockType::trapdoor: return s.with_level(static_cast<std::uint8_t>((s.level() & 1) | (wet ? 2 : 0)));
-    case BlockType::rail: return s.with_extra(wet ? 1 : 0);
-    case BlockType::other: {
-        auto props = registry::properties(s.registry_state());
-        bool found = false;
-        for (auto& [key, value] : props)
-            if (key == "waterlogged") value = wet ? "true" : "false", found = true;
-        if (!found) return std::nullopt;
-        const auto block = registry::block_of(s.registry_state());
-        const auto state = block ? registry::state_of(*block, props) : std::nullopt;
-        if (!state) return std::nullopt;
-        return BlockState::registered(*state);
-    }
-    default: return std::nullopt;
-    }
-}
-
 bool loaded_in_world(RuleContext& ctx, BlockPos pos) { return ctx.world().contains_y(pos.y) && !ctx.block(pos).is_unloaded(); }
-
-// A water bucket emptied into the cell: a block that holds water takes it
-// (it stays as it is when it already has water), air and water become a
-// source, and blocks that flowing water washes away, and registry blocks
-// without a collision shape, break with their drops first. Returns whether
-// it was emptied; other blocks refuse it.
-bool pour_water(RuleContext& ctx, BlockPos pos) {
-    if (!loaded_in_world(ctx, pos)) return false;
-    const auto s = ctx.block(pos);
-    if (const auto wet = with_water(s, true)) {
-        set_block(ctx, pos, *wet);
-        return true;
-    }
-    if (s.is_air() || s.is(BlockType::water)) {
-        set_block(ctx, pos, blocks::water_source());
-        return true;
-    }
-    if (s.is(BlockType::other) && holds_water_fluid(s)) return true; // kelp, seagrass: no change
-    if (washed_away(s.type()) || (s.is(BlockType::other) && !other_has_collision(s))) {
-        destroy_block(ctx, pos);
-        set_block(ctx, pos, blocks::water_source());
-        return true;
-    }
-    return false;
-}
-
-// A bucket filled from the cell: a water source becomes air, a block that
-// holds water loses it, both with neighbor updates. Returns whether it filled.
-bool take_water(RuleContext& ctx, BlockPos pos) {
-    if (!loaded_in_world(ctx, pos)) return false;
-    const auto s = ctx.block(pos);
-    if ((s.is(BlockType::water) && s.level() == 0 && !s.flag()) || registry_name(s) == "bubble_column") {
-        set_block(ctx, pos, blocks::air());
-        return true;
-    }
-    if (!waterlogged(s)) return false;
-    const auto dry = with_water(s, false);
-    if (!dry) return false;
-    set_block(ctx, pos, *dry);
-    return true;
-}
 
 bool waxable(BlockState s) {
     std::string_view name;
@@ -292,14 +230,16 @@ void dispense_from(RuleContext& ctx, BlockPos pos, Direction facing, std::size_t
     case Use::tnt:
         if (prime_dispensed(ctx, front)) set_slot(ctx, pos, slot, less_one(stack));
         return;
-    case Use::water:
-        if (!pour_water(ctx, front)) break;
+    case Use::water: case Use::lava:
+        if (!pour_fluid(ctx, front, use == Use::lava)) break;
         use_with_remainder(ctx, pos, facing, slot, stack, ItemStack{items::bucket, 1});
         return;
     case Use::bucket:
-        if (!take_water(ctx, front)) break;
-        use_with_remainder(ctx, pos, facing, slot, stack, ItemStack{items::water_bucket, 1});
-        return;
+        if (const auto filled = take_fluid(ctx, front)) {
+            use_with_remainder(ctx, pos, facing, slot, stack, ItemStack{*filled, 1});
+            return;
+        }
+        break;
     case Use::minecart: set_minecart(ctx, pos, facing, slot, stack); return;
     case Use::boat: case Use::bottle: case Use::honeycomb: case Use::glowstone: case Use::potion:
         if (has_target(ctx, use, front, stack)) return;

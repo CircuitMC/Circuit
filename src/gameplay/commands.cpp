@@ -254,12 +254,11 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
     default: break;
     }
     return [&ctx, target, s = *state, c, held] {
-        // In survival the item is used up; a water bucket leaves a bucket.
+        // In survival the item is used up.
         if (c.survival) {
             auto& inv = ctx.player(c.player);
             auto& slot = inv.slots[c.slot];
-            if (held.item == items::water_bucket) slot = ItemStack{items::bucket, 1, 0};
-            else if (--slot.count == 0) slot = {};
+            if (--slot.count == 0) slot = {};
             detail::record_slot(ctx, inv, c.slot);
         }
         set_block(ctx, target, s);
@@ -368,6 +367,7 @@ Plan plan(RuleContext& ctx, const contracts::DropItem& c) {
 Plan plan(RuleContext& ctx, const contracts::PlayerDeath& c) { return detail::plan_death(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::ContainerClick& c) { return detail::plan_click(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::CloseContainer& c) { return detail::plan_close(ctx, c); }
+Plan plan(RuleContext& ctx, const contracts::PlayerUseItem& c) { return detail::plan_use_item(ctx, c); }
 
 Plan plan(RuleContext&, const contracts::AddTicket&) { return std::unexpected(ErrorCode::unknown_command); }
 Plan plan(RuleContext&, const contracts::RemoveTicket&) { return std::unexpected(ErrorCode::unknown_command); }

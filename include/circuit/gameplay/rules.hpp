@@ -28,6 +28,13 @@ bool set_block(RuleContext& ctx, BlockPos pos, BlockState state);
 // Whether a block can be replaced, by a falling block that lands in it (and
 // so falls into it): air, water, grass, snow and others (falling.cpp).
 bool block_replaceable(BlockState s);
+// How buckets and fluids treat a block (buckets.cpp; for checks against the
+// official servers): whether it takes poured water, whether water and lava
+// replace it, and the fluid it holds ("water", "flowing_water", "lava" or
+// "flowing_lava", with its amount from 1 to 8), if any.
+bool takes_poured_water(BlockState s);
+bool fluids_replace(BlockState s);
+std::optional<std::pair<std::string_view, int>> fluid_state(BlockState s);
 // A block's blast resistance (its water's, 100, when waterlogged).
 float blast_resistance(BlockState s);
 // Whether power reaches the blocks beside a block through it.

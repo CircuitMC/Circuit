@@ -235,6 +235,26 @@ int main() {
             require(decode_replay(encode_replay(one).value()).error() == ErrorCode::malformed_record, "a click outside the block is refused");
         }
 
+        // A use of an item along the view (tag 26) round-trips with and
+        // without the block it met; a view out of range is refused.
+        {
+            ReplayLog one{"java-1.21.8", "circuit-reference-rules-v5", 1, {}, "circuit-blocks-1"};
+            PlayerUseItem use{alex, 37, {0.5, 2.62, 1.5}, -12.5f, 61.25f, 4.5, true, BlockHit{{0, -1, 0}, Direction::up, 0.5f, 1.0f, 0.3f}};
+            one.ticks.push_back({1, {{1, use}, {2, PlayerUseItem{alex, 36, {3.0, 4.0, 5.0}, 180.0f, -90.0f, 5.0, false, std::nullopt}}}});
+            const auto current = encode_replay(one).value();
+            require(decode_replay(current).value() == one, "uses of items along the view round-trip");
+            const std::size_t tag =
+                4 + 2 + 2 + one.bundle_id.size() + 2 + one.rules_id.size() + 2 + one.block_registry_id.size() + 8 + 4 + 8 + 4 + 8;
+            require(current[tag] == std::byte{26}, "uses of items are written with tag 26");
+            for (const auto& bad : {PlayerUseItem{alex, 36, {0, 0, 0}, 0.0f, 91.0f, 4.5, false, std::nullopt},
+                                    PlayerUseItem{alex, 36, {0, 0, 0}, 0.0f, 0.0f, 65.0, false, std::nullopt},
+                                    PlayerUseItem{alex, 36, {0, 0, 0}, 0.0f, 0.0f, 4.5, false, BlockHit{{0, 0, 0}, Direction::up, 0.5f, 1.5f, 0.5f}}}) {
+                ReplayLog wrong{"java-1.21.8", "circuit-reference-rules-v5", 1, {}, "circuit-blocks-1"};
+                wrong.ticks.push_back({1, {{1, bad}}});
+                require(decode_replay(encode_replay(wrong).value()).error() == ErrorCode::malformed_record, "a use out of range is refused");
+            }
+        }
+
         // Radius tickets of earlier records (tag 9 with a load radius, tag 5
         // without) read as forced squares; typed tickets round-trip.
         {

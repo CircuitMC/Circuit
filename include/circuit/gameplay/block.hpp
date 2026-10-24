@@ -377,6 +377,7 @@ inline bool is_solid(BlockState s) noexcept {
 // is its source.
 bool is_lava(BlockState s);
 bool is_lava_source(BlockState s);
+BlockState lava_source();
 // How pistons treat a registry block without rules of its own: its push
 // class (block_registry.hpp; observed on both official servers).
 bool other_movable(BlockState s) noexcept;

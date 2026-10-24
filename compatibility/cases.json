@@ -383,6 +383,28 @@
       "description": "Every block with a block entity and the data it saves right after its default state is set, reported by both official servers (173 blocks of 1.21.8, 171 of 1.21.4); Circuit's registry gives each its type and its defaults match every one"
     },
     {
+      "id": "collision/fluids",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "tests/fixtures/collision/fluids-*.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness shape report",
+      "status": "passing",
+      "description": "The fluid of every block state, whether it takes poured water and whether water and lava replace it, reported by both official servers; Circuit's rules match all 55,812 states"
+    },
+    {
+      "id": "client/buckets",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/buckets.js; tests/server/server_tests.cpp, tests/rules/rules_tests.cpp",
+      "status": "passing",
+      "description": "Empty buckets used along the player's view on a water source, flowing water, a lava source and a waterlogged slab; water buckets on the floor, a bottom slab, a double slab and into a lava source; lava buckets on the floor, a bottom slab and into a water source; a bucket used looking at the sky; creative and survival inventories, one and two buckets: 32 results identical with both official servers"
+    },
+    {
       "id": "placement/official_items",
       "kind": "black_box",
       "versions": [

@@ -903,8 +903,13 @@
           "name": "Filling and emptying buckets",
           "milestone": "C5",
           "impl": "partial",
-          "evidence": "none",
-          "note": "Placing water from a bucket"
+          "evidence": "compared",
+          "cases": [
+            "client/buckets",
+            "trace/dispenser_buckets",
+            "collision/fluids"
+          ],
+          "note": "Water and lava buckets filled and poured by players along their view and by dispensers; fish, axolotl and tadpole buckets, milk and placing powder snow are not modeled"
         },
         {
           "id": "fire",

@@ -64,7 +64,6 @@ std::optional<BlockState> placed_by(std::uint16_t item, const contracts::PlayerU
     case items::hopper:
         return blocks::hopper(face == Direction::up || face == Direction::down ? Direction::down : contracts::opposite(face));
     case items::chest: return blocks::chest(contracts::opposite(horizontal));
-    case items::water_bucket: return blocks::water_source();
     case items::wheat_seeds: return blocks::wheat();
     // On the side of the clicked block, or standing (torches do not hang
     // under blocks; an approximation of the official choice by the

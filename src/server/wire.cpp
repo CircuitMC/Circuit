@@ -462,7 +462,9 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
     if (id == i.sb_use_item) {
         TRY(hand, r.varint());
         TRY(seq, r.varint());
-        return done(intent::Use{*hand, *seq});
+        TRY(yaw, r.f32());
+        TRY(pitch, r.f32());
+        return done(intent::Use{*hand, *seq, *yaw, *pitch});
     }
     if (id == i.sb_set_carried_item) {
         TRY(slot, r.i16());

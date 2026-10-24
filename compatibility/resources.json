@@ -227,7 +227,7 @@
           "trace/fluid_sources"
         ],
         "deviations": [
-          "the Nether's lava, the fire it starts, entities in lava and lava buckets are not modeled"
+          "the Nether's lava, the fire it starts and entities in lava are not modeled"
         ],
         "note": "Spreads, falls, recedes and hardens into obsidian, cobblestone, stone and basalt as both official servers do"
       },
@@ -4629,13 +4629,15 @@
       "water_bucket": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Places water and leaves a bucket; dispensers pour it into air, water, blocks that hold water and blocks water washes away",
+        "note": "Players pour it along their view, and dispensers in front of them, into blocks that hold water and into air and what fluids replace; it leaves a bucket",
         "cases": [
           "trace/dispensers",
           "trace/dispensers_more",
           "trace/dispenser_cases",
           "trace/dispenser_items",
-          "trace/dispenser_tnt_rule"
+          "trace/dispenser_tnt_rule",
+          "trace/dispenser_buckets",
+          "client/buckets"
         ],
         "deviations": [
           "water does not flow out of the blocks it waterlogs"
@@ -4644,17 +4646,18 @@
       "bucket": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Dispensers fill it from water sources and blocks holding water",
+        "note": "Players fill it along their view, and dispensers in front of them, from water and lava sources, bubble columns, powder snow and blocks holding water",
         "cases": [
           "trace/dispensers",
           "trace/dispensers_more",
           "trace/dispenser_cases",
           "trace/dispenser_items",
-          "trace/dispenser_tnt_rule"
+          "trace/dispenser_tnt_rule",
+          "trace/dispenser_buckets",
+          "client/buckets"
         ],
         "deviations": [
-          "players do not use it",
-          "lava and powder snow are not taken"
+          "milk from cows and fish from water are not taken"
         ]
       },
       "minecart": {
@@ -5221,6 +5224,26 @@
         "impl": "partial",
         "evidence": "none",
         "note": "Placed"
+      },
+      "lava_bucket": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Players pour it along their view, and dispensers in front of them, into air and what fluids replace; it leaves a bucket",
+        "cases": [
+          "trace/dispenser_buckets",
+          "client/buckets"
+        ]
+      },
+      "powder_snow_bucket": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Filled from powder snow by players and dispensers",
+        "cases": [
+          "trace/dispenser_buckets"
+        ],
+        "deviations": [
+          "placing powder snow from it is not modeled"
+        ]
       }
     },
     "entity": {

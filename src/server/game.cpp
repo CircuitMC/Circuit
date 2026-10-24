@@ -41,6 +41,8 @@ constexpr double max_move_squared = 100.0; // per accepted movement packet
 // Block interaction range plus 1, to the nearest point of the block: 5 + 1 in
 // creative, 4.5 + 1 otherwise.
 constexpr double creative_reach = 6.0, survival_reach = 5.5;
+// How far the view of an item's use goes: the block interaction range.
+constexpr double creative_view = 5.0, survival_view = 4.5;
 constexpr std::size_t chunks_per_tick = 32; // per player
 constexpr std::uint32_t spawn_ticket = 1;
 constexpr std::size_t inventory_slots = contracts::player_slots;
@@ -79,6 +81,14 @@ struct Player {
         bool delayed{};
     };
     std::optional<Digging> digging;
+    // The block the player last clicked in this tick, with the hand: a use of
+    // the item that follows (a bucket) goes along a view that met it.
+    struct UsedOn {
+        std::uint64_t tick{};
+        std::int32_t hand{};
+        contracts::BlockHit hit;
+    };
+    std::optional<UsedOn> used_on;
     // The container window the player has open, if any (window ids 1-100).
     struct Window {
         std::int32_t id{};
@@ -1392,10 +1402,32 @@ struct Game::Impl final : GameServices {
         if (gameplay::in_world(bundle, beside) && in_reach(p, beside)) use.reach |= 2;
         if (!occupied_by_player(b)) use.free |= 1;
         if (!occupied_by_player(beside)) use.free |= 2;
+        p.used_on = Player::UsedOn{tick_count.load(), u.hand, {b, face, use.cursor_x, use.cursor_y, use.cursor_z}};
         admit(use);
     }
 
-    void handle(Player& p, intent::Use& u) { p.acks.push_back(u.sequence); }
+    // A use of the held item along the player's view: buckets. The client
+    // sends it after a click on the block its view meets, if any, in the
+    // same tick, as both official servers expect.
+    void handle(Player& p, intent::Use& u) {
+        p.acks.push_back(u.sequence);
+        const auto used_on = std::exchange(p.used_on, std::nullopt);
+        if (p.dead || p.game_mode == spectator) return;
+        const auto slot = static_cast<std::uint8_t>(u.hand == 0 ? contracts::hotbar_first + p.held : contracts::offhand_slot);
+        const auto item = slot_of(p, slot).item;
+        if (item != gameplay::items::bucket && item != gameplay::items::water_bucket && item != gameplay::items::lava_bucket) return;
+        if (std::isfinite(u.yaw) && std::isfinite(u.pitch)) {
+            p.yaw = std::fmod(u.yaw, 360.0f);
+            p.pitch = std::clamp(u.pitch, -90.0f, 90.0f);
+        }
+        contracts::PlayerUseItem use{key_of(p), slot, {p.pos.x, p.pos.y + (p.sneaking ? 1.27 : 1.62), p.pos.z}, p.yaw, p.pitch,
+                                     p.game_mode == creative ? creative_view : survival_view, p.game_mode == survival, std::nullopt};
+        if (used_on && used_on->tick == tick_count.load() && used_on->hand == u.hand) use.hit = used_on->hit;
+        // The client changes the bucket in its hand as it expects; the slot is
+        // sent again whatever the use does.
+        if (!p.window && slot < p.remote.size()) p.remote[slot] = std::nullopt;
+        admit(use);
+    }
 
     void handle(Player& p, intent::HeldSlot& h) {
         if (h.slot < 0 || h.slot > 8) {

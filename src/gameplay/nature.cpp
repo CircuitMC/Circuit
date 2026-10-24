@@ -233,4 +233,5 @@ void wheat_random_tick(RuleContext& ctx, BlockPos pos, BlockState s, Rng& stream
 namespace circuit::gameplay {
 bool is_lava(BlockState s) { return detail::lava_level(s) >= 0; }
 bool is_lava_source(BlockState s) { return detail::lava_level(s) == 0; }
+BlockState lava_source() { return detail::lava_state(0); }
 } // namespace circuit::gameplay

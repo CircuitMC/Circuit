@@ -35,7 +35,7 @@ Feature counts per implementation state, then the number of features with compar
 | V09 Structures and decoration | C7, C5 | 6 | 0 / 0 | 0 / 0 | 0 / 0 | 6 / 6 | 0 / 0 | 0 / 0 |
 | V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 17 / 17 | 23 / 23 | 3 / 3 | 0 / 0 | 17 / 17 |
 | V11 Common building blocks | C5 | 1347 | 0 / 0 | 329 / 329 | 1017 / 1017 | 1 / 1 | 0 / 0 | 120 / 120 |
-| V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 26 / 26 | 53 / 53 | 3 / 3 | 0 / 0 | 10 / 10 |
+| V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 26 / 26 | 53 / 53 | 3 / 3 | 0 / 0 | 11 / 11 |
 | V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 51 / 51 | 250 / 264 | 5 / 5 | 14 / 0 | 49 / 49 |
 | V14 Redstone sources and signal consumers | C4, C5 | 138 | 7 / 7 | 97 / 97 | 33 / 33 | 1 / 1 | 0 / 0 | 39 / 41 |
 | V15 Pistons and moving structures | C3, C4 | 16 | 2 / 2 | 14 / 14 | 0 / 0 | 0 / 0 | 0 / 0 | 12 / 12 |
@@ -47,7 +47,7 @@ Feature counts per implementation state, then the number of features with compar
 | V21 Projectiles, vehicles and mounts | C3, C6 | 109 | 0 / 0 | 17 / 17 | 38 / 56 | 33 / 35 | 21 / 1 | 8 / 8 |
 | V22 Movement and player modes | C6 | 7 | 3 / 3 | 2 / 2 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
 | V23 Combat, attributes and effects | C6 | 219 | 1 / 1 | 6 / 6 | 91 / 91 | 118 / 121 | 3 / 0 | 6 / 6 |
-| V24 Food, equipment and item use | C5, C6 | 143 | 0 / 0 | 17 / 17 | 120 / 122 | 4 / 4 | 2 / 0 | 3 / 4 |
+| V24 Food, equipment and item use | C5, C6 | 143 | 0 / 0 | 19 / 19 | 118 / 120 | 4 / 4 | 2 / 0 | 5 / 6 |
 | V25 Menus, recipes and production | C5 | 186 | 1 / 1 | 10 / 10 | 171 / 171 | 4 / 4 | 0 / 0 | 9 / 10 |
 | V26 Mob AI and navigation | C8 | 94 | 0 / 0 | 2 / 2 | 12 / 14 | 77 / 78 | 3 / 0 | 2 / 2 |
 | V27 Spawning and farms | C8 | 104 | 0 / 0 | 0 / 0 | 99 / 100 | 4 / 4 | 1 / 0 | 0 / 0 |
@@ -68,7 +68,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 438 / 438 | 653 / 663 | 0 / 0 |
-| item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 128 / 128 | 1256 / 1287 | 0 / 0 |
+| item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 130 / 130 | 1254 / 1285 | 0 / 0 |
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 17 / 17 | 0 / 0 | 132 / 134 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
 | enchantment | approximate: minecraft-data pc/1.21.1/enchantments.json / minecraft-data pc/1.21.8/enchantments.json | 42 / 42 | 0 / 0 | 0 / 0 | 0 / 0 | 42 / 42 |
@@ -127,10 +127,10 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 39 |
+| black_box | passing | 41 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 142 |
+| official_trace | passing | 143 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -263,7 +263,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Water flow, sources and washing away | C5 | partial, compared | partial, compared | `trace/fluid_sources`, `trace/water_channel`, `trace/water_drop`, `trace/water_torch_button`, `trace/water_washes` |
 | Lava flow and lava-water interactions | C5 | partial, compared | partial, compared | `trace/fluid_sources`, `trace/lava_edges`, `trace/lava_flow`, `trace/lava_water`; The overworld's lava; the Nether's, fire from lava and entities in lava are not modeled |
 | Waterlogged blocks | C5 | missing, none | missing, none |  |
-| Filling and emptying buckets | C5 | partial, none | partial, none | Placing water from a bucket |
+| Filling and emptying buckets | C5 | partial, compared | partial, compared | `client/buckets`, `collision/fluids`, `trace/dispenser_buckets`; Water and lava buckets filled and poured by players along their view and by dispensers; fish, axolotl and tadpole buckets, milk and placing powder snow are not modeled |
 | Fire spread, burning and extinguishing | C5 | missing, none | missing, none |  |
 | Snow, ice, freezing and melting | C5 | missing, none | missing, none |  |
 | Falling blocks: sand, gravel, concrete powder, anvils, dripstone, scaffolding | C3 | partial, compared | partial, compared | `collision/replaceable`, `trace/falling_column`, `trace/falling_drop`, `trace/falling_onto`, `trace/falling_void`; anvils, pointed dripstone, scaffolding and suspicious sand and gravel do not fall; concrete powder placed beside water or reached by flowing water does not become concrete; falling blocks hurt nothing; Sand, red sand, gravel and the concrete powders: when they fall, the falling block's motion, landing, breaking into items, concrete powder in water, and the 100- and 600-tick limits |

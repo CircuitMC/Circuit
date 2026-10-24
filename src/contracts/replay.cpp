@@ -7,6 +7,7 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
+// 16: players use items along their view (tag 26);
 // 15: player uses carry the player's yaw (tag 25; tags 7 and 24 read it from the horizontal facing);
 // 14: player uses carry where they clicked (tag 24; tag 7 reads as the middle of the block);
 // 13: summoned entities (tag 23);
@@ -17,7 +18,7 @@ constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
 // block registry id; 3: stacks carry damage, player commands carry their
 // player. Commands of versions before 6 are the overworld's. Tickets of
 // versions before 7 (tags 5 and 9) read as forced squares.
-constexpr std::uint16_t format_version = 15;
+constexpr std::uint16_t format_version = 16;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -120,10 +121,11 @@ private:
 // 18 LevelsStarted, 19 SetGameRule, 20 SetDayTime, 21 SetWeather,
 // 22 SpawnItem with a pickup delay or an age (tag 3 has neither),
 // 23 SummonEntity, 24 PlayerUse with where it clicked (tag 7 has none),
-// 25 PlayerUse with where it clicked and the player's yaw.
+// 25 PlayerUse with where it clicked and the player's yaw, 26 PlayerUseItem.
 std::uint8_t tag_of(const CommandBody& body) {
     if (std::holds_alternative<SummonEntity>(body)) return 23;
     if (std::holds_alternative<PlayerUse>(body)) return 25;
+    if (std::holds_alternative<PlayerUseItem>(body)) return 26;
     if (const auto* spawn = std::get_if<SpawnItem>(&body); spawn && (spawn->pickup_delay != 0 || spawn->age != 0)) return 22;
     if (std::holds_alternative<SetGameRule>(body)) return 19;
     if (std::holds_alternative<SetDayTime>(body)) return 20;
@@ -208,6 +210,22 @@ void encode_command(Writer& w, const Command& c) {
             w.put(std::bit_cast<std::uint32_t>(body.cursor_y));
             w.put(std::bit_cast<std::uint32_t>(body.cursor_z));
             w.put(std::bit_cast<std::uint32_t>(body.yaw));
+        } else if constexpr (std::is_same_v<T, PlayerUseItem>) {
+            w.player(body.player);
+            w.put(body.slot);
+            w.vec(body.eye);
+            w.put(std::bit_cast<std::uint32_t>(body.yaw));
+            w.put(std::bit_cast<std::uint32_t>(body.pitch));
+            w.put(std::bit_cast<std::uint64_t>(body.reach));
+            w.put(static_cast<std::uint8_t>(body.survival));
+            w.put(static_cast<std::uint8_t>(body.hit.has_value()));
+            if (body.hit) {
+                w.pos(body.hit->pos);
+                w.put(static_cast<std::uint8_t>(body.hit->face));
+                w.put(std::bit_cast<std::uint32_t>(body.hit->cursor_x));
+                w.put(std::bit_cast<std::uint32_t>(body.hit->cursor_y));
+                w.put(std::bit_cast<std::uint32_t>(body.hit->cursor_z));
+            }
         } else if constexpr (std::is_same_v<T, PlayerBreak>) {
             w.player(body.player);
             w.pos(body.pos);
@@ -328,6 +346,37 @@ bool decode_command(Reader& r, Command& c) {
             b.yaw = b.horizontal == Direction::south ? 0.0f : b.horizontal == Direction::west ? 90.0f : b.horizontal == Direction::north ? 180.0f : 270.0f;
         b.sneaking = sneaking == 1;
         b.survival = survival == 1;
+        c.body = b;
+        return true;
+    }
+    case 26: {
+        PlayerUseItem b;
+        std::uint32_t yaw{}, pitch{};
+        std::uint64_t reach{};
+        std::uint8_t survival{}, hit{};
+        if (!r.player(b.player) || !r.get(b.slot) || !r.vec(b.eye) || !r.get(yaw) || !r.get(pitch) || !r.get(reach) || !r.get(survival)
+            || !r.get(hit))
+            return false;
+        b.yaw = std::bit_cast<float>(yaw);
+        b.pitch = std::bit_cast<float>(pitch);
+        b.reach = std::bit_cast<double>(reach);
+        if (!(b.yaw >= -360.0f && b.yaw <= 360.0f) || !(b.pitch >= -90.0f && b.pitch <= 90.0f) || !(b.reach >= 0.0 && b.reach <= 64.0)
+            || survival > 1 || hit > 1)
+            return false;
+        b.survival = survival == 1;
+        if (hit == 1) {
+            BlockHit h;
+            std::uint8_t face{};
+            std::uint32_t x{}, y{}, z{};
+            if (!r.pos(h.pos) || !r.get(face) || face > 5 || !r.get(x) || !r.get(y) || !r.get(z)) return false;
+            h.face = static_cast<Direction>(face);
+            h.cursor_x = std::bit_cast<float>(x);
+            h.cursor_y = std::bit_cast<float>(y);
+            h.cursor_z = std::bit_cast<float>(z);
+            for (const float v : {h.cursor_x, h.cursor_y, h.cursor_z})
+                if (!(v >= 0.0f && v <= 1.0f)) return false;
+            b.hit = h;
+        }
         c.body = b;
         return true;
     }

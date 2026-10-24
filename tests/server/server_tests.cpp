@@ -21,6 +21,7 @@
 #include <circuit/server/server.hpp>
 #include <circuit/storage/world_directory.hpp>
 #include <cmath>
+#include <numbers>
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
@@ -741,6 +742,33 @@ int main() {
         require(f.at({0, -60, -3}) == "minecraft:stone_slab[type=bottom,waterlogged=false]"
                     && f.at({0, -60, -4}) == "minecraft:stone_slab[type=bottom,waterlogged=false]",
                 "a lower-half side click places beside: " + f.at({0, -60, -4}));
+    });
+
+    suite.run("players pour and fill buckets along the view of the click before the use", [] {
+        // As a real client sends a bucket's use: a click on the block its view
+        // meets, then the use of the item with its view, in the same tick
+        // (circuit-clienttest/buckets.js). The player stands at the spawn
+        // (0, -60, 0) and looks at the floor's top at (2.5, -60, 2.5).
+        GameFixture f;
+        f.join(1, "Builder");
+        const double dx = 2.5, dy = -1.62, dz = 2.5;
+        const auto yaw = static_cast<float>(std::atan2(-dx, dz) * 180.0 / std::numbers::pi);
+        const auto pitch = static_cast<float>(-std::atan2(dy, std::sqrt(dx * dx + dz * dz)) * 180.0 / std::numbers::pi);
+        const auto use = [&](std::string_view item, bool click, std::int32_t seq) {
+            f.hold(1, item);
+            f.game->tick(); // the server looks at the held item as the last tick left it
+            if (click) f.game->submit(1, server::intent::UseOn{0, {2, -61, 2}, 1, 0.5f, 1.0f, 0.5f, false, seq});
+            f.game->submit(1, server::intent::Use{0, seq + 1, yaw, pitch});
+            f.game->tick();
+        };
+        use("minecraft:water_bucket", true, 1);
+        require(f.at({2, -60, 2}) == "minecraft:water[level=0]", "the water bucket pours on the clicked floor: " + f.at({2, -60, 2}));
+        use("minecraft:bucket", true, 3);
+        require(f.at({2, -60, 2}) == "minecraft:air", "the bucket takes the source the view enters: " + f.at({2, -60, 2}));
+        use("minecraft:lava_bucket", false, 5);
+        require(f.at({2, -60, 2}) == "minecraft:air", "without a click the view met no block: " + f.at({2, -60, 2}));
+        use("minecraft:lava_bucket", true, 7);
+        require(f.at({2, -60, 2}) == "minecraft:lava[level=0]", "the lava bucket pours: " + f.at({2, -60, 2}));
     });
 
     suite.run("players turn signs and heads by their yaw and place beds with both halves", [] {

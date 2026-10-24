@@ -412,6 +412,14 @@ void tick_comparator(RuleContext& ctx, BlockPos pos, BlockState state);
 void refresh_comparator(RuleContext& ctx, BlockPos pos, BlockState state);
 
 void tick_water(RuleContext& ctx, BlockPos pos, BlockState state);
+// Buckets (buckets.cpp): the state with water in it or without, for blocks
+// that hold water as a property (nullopt for the others); a filled bucket
+// emptied into a cell (whether it took it); what an empty bucket takes from
+// a cell (the bucket it fills); a player's use of a bucket along their view.
+std::optional<BlockState> with_water(BlockState s, bool wet);
+bool pour_fluid(RuleContext& ctx, BlockPos pos, bool lava);
+std::optional<std::uint16_t> take_fluid(RuleContext& ctx, BlockPos pos);
+contracts::Result<std::function<void()>> plan_use_item(RuleContext& ctx, const contracts::PlayerUseItem& c);
 // Lava's fluid tick, and a change of it or beside it (hardening or a fluid
 // tick; nature.cpp).
 void tick_lava(RuleContext& ctx, BlockPos pos, BlockState state);

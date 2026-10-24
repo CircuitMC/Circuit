@@ -1,0 +1,5 @@
+# The fluid of every block state and how buckets and fluids treat it, as both official servers decide it (harness 0.21.0
+# shape report): its fluid state (type and amount, or -), 1 when it takes poured water, and 1 when water and lava
+# replace it (they replace the same states; nothing takes poured lava). Each block's rows give only the properties
+# that decide them.
+# Java Edition 1.21.4: the blocks whose rows fluids-1.21.8.txt does not give; every other block as there.
