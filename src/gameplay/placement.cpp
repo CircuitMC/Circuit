@@ -221,8 +221,9 @@ Building building_kind(std::uint32_t block) {
         return Building::sign;
     if ((name.ends_with("_head") || name.ends_with("_skull")) && !name.contains("_wall_") && name != "piston_head") return Building::head;
     if (name.ends_with("_bed")) return Building::bed;
-    // A lily pad is placed on water by using it on the water, not on a block's face.
-    if (name == "lily_pad") return Building::none;
+    // A lily pad is placed on water by using it on the water, not on a block's
+    // face; small dripleaves (two halves) and dripleaf stems are not placed yet.
+    if (name == "lily_pad" || name == "small_dripleaf" || name == "big_dripleaf_stem") return Building::none;
     if (needs_support(BlockState::registered(info.default_state))) return Building::resting;
     if (name.ends_with("_slab") && has("type") && only({"type", "waterlogged"})) return Building::slab;
     if (registry::connector(info.default_state) != registry::Connector::none) return Building::connector;
@@ -368,6 +369,9 @@ std::optional<BlockState> placed_building(RuleContext& ctx, std::uint32_t block,
         if (block_name == "pink_petals" || block_name == "wildflowers") s = with(s, {{"facing", std::string(name_of(contracts::opposite(c.horizontal)))}});
         if (block_name == "mangrove_propagule") s = with(s, {{"age", "4"}});
         if (block_name == "sea_pickle") s = with(s, {{"waterlogged", water}});
+        // A big dripleaf faces the player (tests/fixtures/placement).
+        if (block_name == "big_dripleaf")
+            s = with(s, {{"facing", std::string(name_of(contracts::opposite(c.horizontal)))}, {"waterlogged", water}});
         // A vine is placed as a body where its kind grows on from it, else as
         // a head of a random age (a level-random draw).
         if (block_name == "weeping_vines" || block_name == "twisting_vines" || block_name == "cave_vines") {

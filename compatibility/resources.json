@@ -4861,6 +4861,42 @@
         "deviations": [
           "does not grow"
         ]
+      },
+      "small_dripleaf": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Its lower half grows on clay or moss, or waterlogged on soil and clay, its upper half on its lower half, and both break at once when an update finds them unsupported, as both official servers do",
+        "cases": [
+          "collision/plants",
+          "collision/plant_contexts",
+          "trace/dripleaves"
+        ],
+        "deviations": [
+          "players cannot place it yet",
+          "does not grow"
+        ]
+      },
+      "big_dripleaf": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Stands on soil and clay, a stem or a big dripleaf, breaks at once after an update from below, turns into a stem under a big dripleaf, and tilts under entities (unstable, partial, full, back, with level-random sound draws) and back with a signal, as both official servers do; placed by players facing them",
+        "cases": [
+          "collision/plants",
+          "placement/official_items",
+          "trace/dripleaves"
+        ],
+        "deviations": [
+          "arrows do not tilt it",
+          "does not grow"
+        ]
+      },
+      "big_dripleaf_stem": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Stands on soil, clay or a stem under a stem or big dripleaf, and breaks with its drop a tick after an update from above or below finds it unsupported, as both official servers do",
+        "cases": [
+          "trace/dripleaves"
+        ]
       }
     },
     "item": {

@@ -38,11 +38,15 @@
 //   twisting vines stand), hanging roots under a sturdy face, spore blossoms
 //   under a bottom whose middle holds them, pale hanging moss under itself,
 //   leaves or either shape's whole bottom, hanging propagules under mangrove
-//   leaves.
+//   leaves;
+// - small dripleaves on clay or moss (waterlogged also on soil and clay), as
+//   tall flowers; big dripleaves on soil and clay, stems or big dripleaves,
+//   stems also under a stem or big dripleaf (dripleaf.cpp tilts them).
 // A shape update that finds one unsupported (torches, lanterns and ladders:
 // from their support's side) breaks it with its drops, and a piston that
 // sets one down where it cannot stay breaks it at once; sugar cane, cacti,
-// vines and pale hanging moss break a tick later instead, in a block tick.
+// vines, pale hanging moss and dripleaf stems break a tick later instead, in
+// a block tick.
 // Without data packs they drop themselves (their loot tables do the same),
 // young crops and bamboo shoots what their loot tables give, and plants whose
 // loot is random or needs shears (grasses, ferns, dead bushes, stems, vines,
@@ -51,10 +55,10 @@ namespace circuit::gameplay::detail {
 namespace {
 enum class Need : std::uint8_t {
     none, standing, wall, lantern, ladder, carpet, plant, tall_plant, standing_sign, wall_sign, bed, cane, cactus, lily_pad, sea_pickle,
-    vine, hanging_roots, spore_blossom, hanging_moss
+    vine, hanging_roots, spore_blossom, hanging_moss, small_dripleaf, big_dripleaf, dripleaf_stem
 };
 // The ground a plant grows on: one bit each in a block's grounds.
-enum class Ground : std::uint8_t { soil, dry, nether, wither, clay, farmland, soul_sand, bamboo, cane, cactus };
+enum class Ground : std::uint8_t { soil, dry, nether, wither, clay, farmland, soul_sand, bamboo, cane, cactus, small_dripleaf, big_dripleaf };
 constexpr std::uint16_t bit(Ground g) { return static_cast<std::uint16_t>(1u << static_cast<unsigned>(g)); }
 
 struct Kind {
@@ -100,6 +104,9 @@ const std::vector<Kind>& kinds() {
             else if (name == "hanging_roots") v[b].need = Need::hanging_roots;
             else if (name == "spore_blossom") v[b].need = Need::spore_blossom;
             else if (name == "pale_hanging_moss") v[b].need = Need::hanging_moss;
+            else if (name == "small_dripleaf") v[b] = {Need::small_dripleaf, Ground::small_dripleaf};
+            else if (name == "big_dripleaf") v[b] = {Need::big_dripleaf, Ground::big_dripleaf};
+            else if (name == "big_dripleaf_stem") v[b] = {Need::dripleaf_stem, Ground::big_dripleaf};
             else if (name == "sunflower" || name == "lilac" || name == "rose_bush" || name == "peony" || name == "tall_grass"
                      || name == "large_fern")
                 v[b].need = Need::tall_plant;
@@ -137,6 +144,10 @@ const std::vector<std::uint16_t>& grounds() {
             // cacti: sand (and themselves).
             if ((soil && name != "farmland") || sand || name == "sugar_cane") g |= bit(Ground::cane);
             if (sand || name == "cactus") g |= bit(Ground::cactus);
+            // Small dripleaves: clay and moss (in water also on soil); big
+            // dripleaves: soil and clay, and their stems and heads.
+            if (name == "clay" || name == "moss_block") g |= bit(Ground::small_dripleaf);
+            if (soil || name == "clay" || name == "big_dripleaf" || name == "big_dripleaf_stem") g |= bit(Ground::big_dripleaf);
             v[b] = g;
         }
         return v;
@@ -156,8 +167,10 @@ bool grows_on(Ground g, BlockState below, std::string_view release) {
     if (!below.is(BlockType::other)) return false;
     const auto block = registry::block_of(below.registry_state());
     if (!block || (grounds()[*block] & bit(g)) == 0) return false;
-    // Dead bushes and dry grass grow on farmland from 1.21.5.
-    return !(g == Ground::dry && release == "1.21.4" && registry::game_name(*block) == "farmland");
+    // Dead bushes and dry grass grow on farmland from 1.21.5; big dripleaves
+    // on pale moss until then.
+    if (g == Ground::dry && release == "1.21.4" && registry::game_name(*block) == "farmland") return false;
+    return !(g == Ground::big_dripleaf && release != "1.21.4" && registry::game_name(*block) == "pale_moss_block");
 }
 
 std::string value_of(BlockState s, std::string_view key) {
@@ -314,6 +327,23 @@ bool supported(BlockState s, const Near& near, std::string_view release) {
         return same_block(above, s) || leaves(above) || sturdy(above, Direction::down, release)
             || (state && registry::face_covered(*state, Direction::down));
     }
+    // A small dripleaf's lower half grows on clay or moss, or in water on
+    // soil and clay; its upper half on its lower half (dripleaves).
+    case Need::small_dripleaf: {
+        if (value_of(s, "half") == "upper") return other_half_of(s, around(Direction::down), false);
+        const auto below = around(Direction::down);
+        if (grows_on(Ground::small_dripleaf, below, release)) return true;
+        const auto state = physics::registry_state_of(below);
+        return value_of(s, "waterlogged") == "true" && (named(below, "clay") || (state && registry::soil(*state)));
+    }
+    // A big dripleaf stands on its ground, a stem or a big dripleaf; a stem
+    // also needs a stem or a big dripleaf above it.
+    case Need::big_dripleaf: return grows_on(Ground::big_dripleaf, around(Direction::down), release);
+    case Need::dripleaf_stem: {
+        const auto above = around(Direction::up);
+        return grows_on(Ground::big_dripleaf, around(Direction::down), release) && !named(around(Direction::down), "big_dripleaf")
+            && (named(above, "big_dripleaf") || named(above, "big_dripleaf_stem"));
+    }
     // A sea pickle sits on a top its collision shape reaches, or a sturdy one.
     case Need::sea_pickle: return top_reached(around(Direction::down), release) || sturdy(around(Direction::down), Direction::up, release);
     default: return true;
@@ -326,7 +356,7 @@ bool supported_at(RuleContext& ctx, BlockPos pos, BlockState s) {
 
 bool checks_later(BlockState s) {
     const auto n = need_of(s);
-    return n == Need::cane || n == Need::cactus || n == Need::vine || n == Need::hanging_moss;
+    return n == Need::cane || n == Need::cactus || n == Need::vine || n == Need::hanging_moss || n == Need::dripleaf_stem;
 }
 
 void check_support_later(RuleContext& ctx, BlockPos pos, BlockState s) {
@@ -371,6 +401,23 @@ void support_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Directio
         }
         return;
     }
+    // A big dripleaf's stem looks again a tick after an update from above or
+    // below; a big dripleaf at once after one from below, and becomes a stem
+    // when a big dripleaf is set on it (dripleaves).
+    if (need_of(s) == Need::dripleaf_stem) {
+        if (d == Direction::up || d == Direction::down) check_support_later(ctx, pos, s);
+        return;
+    }
+    if (need_of(s) == Need::big_dripleaf) {
+        if (d == Direction::up && named(ctx.block(pos.relative(d)), "big_dripleaf")) {
+            const auto stem = registry::find_block(ctx.bundle().schema.content_release, "big_dripleaf_stem");
+            const std::vector<registry::Property> props{{"facing", value_of(s, "facing")}, {"waterlogged", value_of(s, "waterlogged")}};
+            set_block_quiet(ctx, pos, BlockState::registered(registry::state_of(*stem, props).value()));
+        } else if (d == Direction::down && !supported_at(ctx, pos, s)) {
+            destroy_block(ctx, pos);
+        }
+        return;
+    }
     // Sugar cane and cacti look again a tick after any update.
     if (checks_later(s)) {
         check_support_later(ctx, pos, s);
@@ -388,9 +435,10 @@ void support_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Directio
     default: break;
     }
     if (side && *side != d) return;
-    // A tall flower's lower half also goes when the block above is not its upper half.
-    const bool lost_top = need_of(s) == Need::tall_plant && d == Direction::up && value_of(s, "half") == "lower"
-                       && !other_half_of(s, ctx.block(pos.relative(Direction::up)), true);
+    // A tall flower's (or small dripleaf's) lower half also goes when the block
+    // above is not its upper half.
+    const bool lost_top = (need_of(s) == Need::tall_plant || need_of(s) == Need::small_dripleaf) && d == Direction::up
+                       && value_of(s, "half") == "lower" && !other_half_of(s, ctx.block(pos.relative(Direction::up)), true);
     if (lost_top || !supported_at(ctx, pos, s)) destroy_block(ctx, pos);
 }
 
@@ -398,6 +446,9 @@ std::optional<ItemStack> supported_drop(BlockState s) {
     if (need_of(s) == Need::none) return std::nullopt;
     // A tall flower drops from its lower half, a bed from its head.
     if (need_of(s) == Need::tall_plant && value_of(s, "half") == "upper") return std::nullopt;
+    // A small dripleaf drops only for shears; a stem drops its big dripleaf.
+    if (need_of(s) == Need::small_dripleaf) return std::nullopt;
+    if (need_of(s) == Need::dripleaf_stem) return ItemStack{*items::by_name("minecraft:big_dripleaf"), 1};
     if (need_of(s) == Need::bed && value_of(s, "part") == "foot") return std::nullopt;
     // A wall torch, sign or banner drops the item of the standing one; young
     // crops and a bamboo shoot drop what their loot tables give them.

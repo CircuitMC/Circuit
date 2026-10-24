@@ -271,6 +271,15 @@ void support_tick(RuleContext& ctx, BlockPos pos, BlockState s);
 // Its own item, its drop when no data packs give its loot table.
 std::optional<ItemStack> supported_drop(BlockState s);
 
+// ---- big dripleaves tilting (dripleaf.cpp) ----
+bool is_big_dripleaf(BlockState s);
+// An entity in the cell: on the leaf, it tilts it.
+void dripleaf_entity_inside(RuleContext& ctx, BlockPos pos, BlockState s, const Entity& e);
+// Its block tick: the next tilt, or back when powered.
+void tick_dripleaf(RuleContext& ctx, BlockPos pos, BlockState s);
+// A neighbor update: back when powered.
+void dripleaf_neighbor_changed(RuleContext& ctx, BlockPos pos, BlockState s);
+
 // ---- stairs (stairs.cpp) ----
 bool is_stairs(BlockState s);
 // The shape stairs take from the stairs beside them.

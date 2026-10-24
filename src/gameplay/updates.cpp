@@ -316,6 +316,7 @@ void on_neighbor_changed(RuleContext& ctx, BlockPos target, BlockPos from, Block
     case BlockType::other:
         if (is_lava(s)) lava_changed(ctx, target, s);
         else if (is_tnt(s)) check_tnt(ctx, target);
+        else if (is_big_dripleaf(s)) dripleaf_neighbor_changed(ctx, target, s);
         break;
     default: break;
     }

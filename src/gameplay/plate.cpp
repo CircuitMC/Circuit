@@ -88,6 +88,7 @@ void entity_inside(RuleContext& ctx, const Entity& entity) {
                 if (is_plate(s.type()) && output(s) == 0) check_plate(ctx, pos, s);
                 else if (s.is(BlockType::button)) entity_at_button(ctx, pos, s);
                 else if (s.is(BlockType::rail)) detector_entity_inside(ctx, pos, s);
+                else if (is_big_dripleaf(s)) dripleaf_entity_inside(ctx, pos, s, entity);
             }
 }
 

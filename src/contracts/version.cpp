@@ -326,7 +326,8 @@ constexpr std::array reference_v4_mechanisms{
         "its ground, cacti nothing solid beside them, lily pads water or ice and sea pickles a top, sugar cane and cacti "
         "breaking a tick after an update (plant_supports; tests/fixtures/collision/plant-contexts-*.txt); vines, hanging "
         "roots, spore blossoms, pale hanging moss and hanging propagules what holds them, vines turning between heads and "
-        "bodies (vines, with the operator's data packs). Support shapes "
+        "bodies (vines, with the operator's data packs); small and big dripleaves and stems, big dripleaves tilting under "
+        "entities and back with a signal (dripleaves). Support shapes "
         "and solidity of every state come from the registry (tests/fixtures/collision/support-*.txt). The drops' "
         "positions follow item_entity; without data packs, plants whose loot rolls random numbers drop nothing (with "
         "them, see loot)."},

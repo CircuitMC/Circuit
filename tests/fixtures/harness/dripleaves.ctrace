@@ -1,0 +1,1655 @@
+circuit-trace 2
+title Dripleaves losing their supports, and a big dripleaf tilting under an item
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.25.0+mc1.21.8
+mechanisms support
+area 0 0 0 29 6 7
+ticks 160
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 0
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 0 1 minecraft:stone
+at 0 set 16 0 2 minecraft:stone
+at 0 set 16 0 3 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 set 16 0 5 minecraft:stone
+at 0 set 16 0 6 minecraft:stone
+at 0 set 16 0 7 minecraft:stone
+at 0 set 17 0 0 minecraft:stone
+at 0 set 17 0 1 minecraft:stone
+at 0 set 17 0 2 minecraft:stone
+at 0 set 17 0 3 minecraft:stone
+at 0 set 17 0 4 minecraft:stone
+at 0 set 17 0 5 minecraft:stone
+at 0 set 17 0 6 minecraft:stone
+at 0 set 17 0 7 minecraft:stone
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 0 1 minecraft:stone
+at 0 set 18 0 2 minecraft:stone
+at 0 set 18 0 3 minecraft:stone
+at 0 set 18 0 4 minecraft:stone
+at 0 set 18 0 5 minecraft:stone
+at 0 set 18 0 6 minecraft:stone
+at 0 set 18 0 7 minecraft:stone
+at 0 set 19 0 0 minecraft:stone
+at 0 set 19 0 1 minecraft:stone
+at 0 set 19 0 2 minecraft:stone
+at 0 set 19 0 3 minecraft:stone
+at 0 set 19 0 4 minecraft:stone
+at 0 set 19 0 5 minecraft:stone
+at 0 set 19 0 6 minecraft:stone
+at 0 set 19 0 7 minecraft:stone
+at 0 set 20 0 0 minecraft:stone
+at 0 set 20 0 1 minecraft:stone
+at 0 set 20 0 2 minecraft:stone
+at 0 set 20 0 3 minecraft:stone
+at 0 set 20 0 4 minecraft:stone
+at 0 set 20 0 5 minecraft:stone
+at 0 set 20 0 6 minecraft:stone
+at 0 set 20 0 7 minecraft:stone
+at 0 set 21 0 0 minecraft:stone
+at 0 set 21 0 1 minecraft:stone
+at 0 set 21 0 2 minecraft:stone
+at 0 set 21 0 3 minecraft:stone
+at 0 set 21 0 4 minecraft:stone
+at 0 set 21 0 5 minecraft:stone
+at 0 set 21 0 6 minecraft:stone
+at 0 set 21 0 7 minecraft:stone
+at 0 set 22 0 0 minecraft:stone
+at 0 set 22 0 1 minecraft:stone
+at 0 set 22 0 2 minecraft:stone
+at 0 set 22 0 3 minecraft:stone
+at 0 set 22 0 4 minecraft:stone
+at 0 set 22 0 5 minecraft:stone
+at 0 set 22 0 6 minecraft:stone
+at 0 set 22 0 7 minecraft:stone
+at 0 set 23 0 0 minecraft:stone
+at 0 set 23 0 1 minecraft:stone
+at 0 set 23 0 2 minecraft:stone
+at 0 set 23 0 3 minecraft:stone
+at 0 set 23 0 4 minecraft:stone
+at 0 set 23 0 5 minecraft:stone
+at 0 set 23 0 6 minecraft:stone
+at 0 set 23 0 7 minecraft:stone
+at 0 set 24 0 0 minecraft:stone
+at 0 set 24 0 1 minecraft:stone
+at 0 set 24 0 2 minecraft:stone
+at 0 set 24 0 3 minecraft:stone
+at 0 set 24 0 4 minecraft:stone
+at 0 set 24 0 5 minecraft:stone
+at 0 set 24 0 6 minecraft:stone
+at 0 set 24 0 7 minecraft:stone
+at 0 set 25 0 0 minecraft:stone
+at 0 set 25 0 1 minecraft:stone
+at 0 set 25 0 2 minecraft:stone
+at 0 set 25 0 3 minecraft:stone
+at 0 set 25 0 4 minecraft:stone
+at 0 set 25 0 5 minecraft:stone
+at 0 set 25 0 6 minecraft:stone
+at 0 set 25 0 7 minecraft:stone
+at 0 set 26 0 0 minecraft:stone
+at 0 set 26 0 1 minecraft:stone
+at 0 set 26 0 2 minecraft:stone
+at 0 set 26 0 3 minecraft:stone
+at 0 set 26 0 4 minecraft:stone
+at 0 set 26 0 5 minecraft:stone
+at 0 set 26 0 6 minecraft:stone
+at 0 set 26 0 7 minecraft:stone
+at 0 set 27 0 0 minecraft:stone
+at 0 set 27 0 1 minecraft:stone
+at 0 set 27 0 2 minecraft:stone
+at 0 set 27 0 3 minecraft:stone
+at 0 set 27 0 4 minecraft:stone
+at 0 set 27 0 5 minecraft:stone
+at 0 set 27 0 6 minecraft:stone
+at 0 set 27 0 7 minecraft:stone
+at 0 set 28 0 0 minecraft:stone
+at 0 set 28 0 1 minecraft:stone
+at 0 set 28 0 2 minecraft:stone
+at 0 set 28 0 3 minecraft:stone
+at 0 set 28 0 4 minecraft:stone
+at 0 set 28 0 5 minecraft:stone
+at 0 set 28 0 6 minecraft:stone
+at 0 set 28 0 7 minecraft:stone
+at 0 set 29 0 0 minecraft:stone
+at 0 set 29 0 1 minecraft:stone
+at 0 set 29 0 2 minecraft:stone
+at 0 set 29 0 3 minecraft:stone
+at 0 set 29 0 4 minecraft:stone
+at 0 set 29 0 5 minecraft:stone
+at 0 set 29 0 6 minecraft:stone
+at 0 set 29 0 7 minecraft:stone
+
+at 1 set 2 1 2 minecraft:clay
+change 1 commands 2 1 2 minecraft:air minecraft:clay
+at 1 set 5 1 2 minecraft:dirt
+change 1 commands 5 1 2 minecraft:air minecraft:dirt
+at 1 set 6 2 2 minecraft:stone
+change 1 commands 6 2 2 minecraft:air minecraft:stone
+at 1 set 4 2 2 minecraft:stone
+change 1 commands 4 2 2 minecraft:air minecraft:stone
+at 1 set 5 2 3 minecraft:stone
+change 1 commands 5 2 3 minecraft:air minecraft:stone
+at 1 set 5 2 1 minecraft:stone
+change 1 commands 5 2 1 minecraft:air minecraft:stone
+at 1 set 8 1 2 minecraft:clay
+change 1 commands 8 1 2 minecraft:air minecraft:clay
+at 1 set 11 1 2 minecraft:clay
+change 1 commands 11 1 2 minecraft:air minecraft:clay
+at 1 set 14 1 2 minecraft:moss_block
+change 1 commands 14 1 2 minecraft:air minecraft:moss_block
+at 1 set 17 1 2 minecraft:moss_block
+change 1 commands 17 1 2 minecraft:air minecraft:moss_block
+
+at 2 set 2 2 2 minecraft:small_dripleaf[facing=north,half=lower,waterlogged=false]
+change 2 commands 2 2 2 minecraft:air minecraft:small_dripleaf[facing=north,half=lower,waterlogged=false]
+at 2 set 2 3 2 minecraft:small_dripleaf[facing=north,half=upper,waterlogged=false]
+change 2 commands 2 3 2 minecraft:air minecraft:small_dripleaf[facing=north,half=upper,waterlogged=false]
+at 2 set 5 2 2 minecraft:small_dripleaf[facing=east,half=lower,waterlogged=true]
+change 2 commands 5 2 2 minecraft:air minecraft:small_dripleaf[facing=east,half=lower,waterlogged=true]
+at 2 set 5 3 2 minecraft:small_dripleaf[facing=east,half=upper,waterlogged=false]
+change 2 commands 5 3 2 minecraft:air minecraft:small_dripleaf[facing=east,half=upper,waterlogged=false]
+at 2 set 8 2 2 minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+change 2 commands 8 2 2 minecraft:air minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+at 2 set 8 3 2 minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+change 2 commands 8 3 2 minecraft:air minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+at 2 set 8 4 2 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+change 2 commands 8 4 2 minecraft:air minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+at 2 set 11 2 2 minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+change 2 commands 11 2 2 minecraft:air minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+at 2 set 11 3 2 minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+change 2 commands 11 3 2 minecraft:air minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+at 2 set 11 4 2 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+change 2 commands 11 4 2 minecraft:air minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+at 2 set 14 2 2 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+change 2 commands 14 2 2 minecraft:air minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+at 2 set 17 2 2 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+change 2 commands 17 2 2 minecraft:air minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+
+at 10 set 2 1 2 minecraft:air
+change 10 commands 2 1 2 minecraft:clay minecraft:air
+change 10 commands 2 2 2 minecraft:small_dripleaf[facing=north,half=lower,waterlogged=false] minecraft:air
+change 10 commands 2 3 2 minecraft:small_dripleaf[facing=north,half=upper,waterlogged=false] minecraft:air
+
+at 12 set 5 1 2 minecraft:air
+change 12 commands 5 1 2 minecraft:dirt minecraft:air
+change 12 commands 5 2 2 minecraft:small_dripleaf[facing=east,half=lower,waterlogged=true] minecraft:water[level=0]
+change 12 commands 5 3 2 minecraft:small_dripleaf[facing=east,half=upper,waterlogged=false] minecraft:air
+
+at 14 set 8 1 2 minecraft:air
+change 14 commands 8 1 2 minecraft:clay minecraft:air
+entity-added 14 block_ticks e1 minecraft:item 8.615483893688328 2.245268207835743 2.568708712675054 0.010087401023526787 0.2 0.019509055559440353 item=minecraft:big_dripleaf count=1
+change 14 block_ticks 8 2 2 minecraft:big_dripleaf_stem[facing=north,waterlogged=false] minecraft:air
+draws 14 block_ticks level 10
+entity-order 14 entities e1
+entity 14 e1 8.625571294711854 2.4052682078357432 2.5882177682344945 0.009885653195458158 0.1568 0.01911887482035725 item=minecraft:big_dripleaf count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-added 15 block_ticks e2 minecraft:item 8.416609199738325 3.317594592370359 2.7424207700999044 0.07583650357449603 0.2 0.08824983589642288 item=minecraft:big_dripleaf count=1
+change 15 block_ticks 8 3 2 minecraft:big_dripleaf_stem[facing=north,waterlogged=false] minecraft:air
+entity-added 15 block_ticks e3 minecraft:item 8.387476983017743 4.189448575436888 2.323300828823259 -0.09535237550322212 0.2 0.009347951439693108 item=minecraft:big_dripleaf count=1
+change 15 block_ticks 8 4 2 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false] minecraft:air
+draws 15 block_ticks level 20
+entity-order 15 entities e1 e2 e3
+entity 15 e1 8.635456947907311 2.5220682078357433 2.6073366430548517 0.009687940320102865 0.11446399999999998 0.018736497688613702 item=minecraft:big_dripleaf count=1 age=2 pickup-delay=8 on-ground=false
+entity 15 e2 8.492445703312821 3.4775945923703593 2.8306706059963274 0.07431977494947263 0.1568 0.08648484086172646 item=minecraft:big_dripleaf count=1 age=1 pickup-delay=9 on-ground=false
+entity 15 e3 8.292124607514522 4.349448575436888 2.3326487802629523 -0.0934453298118599 0.1568 0.00916099258919727 item=minecraft:big_dripleaf count=1 age=1 pickup-delay=9 on-ground=false
+
+at 16 set 11 3 2 minecraft:air
+change 16 commands 11 3 2 minecraft:big_dripleaf_stem[facing=north,waterlogged=false] minecraft:air
+entity-added 16 commands e4 minecraft:item 11.732243430338425 4.1772453431254855 2.5625731817327795 -0.017840760901787656 0.2 0.05526245825498652 item=minecraft:big_dripleaf count=1
+change 16 commands 11 4 2 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false] minecraft:air
+entity-added 16 block_ticks e5 minecraft:item 11.745361392857392 2.3686164235150713 2.6231207026611654 0.04663041403899876 0.2 0.06345941428186488 item=minecraft:big_dripleaf count=1
+change 16 block_ticks 11 2 2 minecraft:big_dripleaf_stem[facing=north,waterlogged=false] minecraft:air
+change 16 fluid_ticks 5 1 2 minecraft:air minecraft:water[level=8]
+draws 16 commands level 10
+draws 16 block_ticks level 10
+entity-order 16 entities e1 e2 e3 e4 e5
+entity 16 e1 8.645144888227414 2.596532207835743 2.626073140743465 0.009494181698483605 0.07297471999999998 0.01836176809221176 item=minecraft:big_dripleaf count=1 age=3 pickup-delay=7 on-ground=false
+entity 16 e2 8.566765478262294 3.5943945923703593 2.917155446858054 0.0728333808680204 0.11446399999999998 0.08475514569405936 item=minecraft:big_dripleaf count=1 age=2 pickup-delay=8 on-ground=false
+entity 16 e3 8.198679277702661 4.466248575436888 2.3418097728521494 -0.09157642499795093 0.11446399999999998 0.008977772912145392 item=minecraft:big_dripleaf count=1 age=2 pickup-delay=8 on-ground=false
+entity 16 e4 11.714402669436637 4.337245343125486 2.617835639987766 -0.01748394602403741 0.1568 0.05415721014393453 item=minecraft:big_dripleaf count=1 age=1 pickup-delay=9 on-ground=false
+entity 16 e5 11.791991806896391 2.5286164235150714 2.68658011694303 0.045697806647623344 0.1568 0.062190227206619854 item=minecraft:big_dripleaf count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 17 entities e1 e2 e3 e4 e5
+entity 17 e1 8.654639069925897 2.629506927835743 2.644434908835677 0.009304298245601078 0.032315225599999976 0.017994533080590458 item=minecraft:big_dripleaf count=1 age=4 pickup-delay=6 on-ground=false
+entity 17 e2 8.639598859130315 3.668858592370359 3.0019105925521132 0.07137671463984648 0.07297471999999998 0.08306004439675428 item=minecraft:big_dripleaf count=1 age=3 pickup-delay=7 on-ground=false
+entity 17 e3 8.10710285270471 4.5407125754368876 2.3507875457642946 -0.0897448982446736 0.07297471999999998 0.008798217625139913 item=minecraft:big_dripleaf count=1 age=3 pickup-delay=7 on-ground=false
+entity 17 e4 11.6969187234126 4.454045343125485 2.6719928501317005 -0.017134267437036468 0.11446399999999998 0.05307406697402264 item=minecraft:big_dripleaf count=1 age=2 pickup-delay=8 on-ground=false
+entity 17 e5 11.837689613544015 2.6454164235150714 2.74877034414965 0.04478385138628737 0.11446399999999998 0.0609464238486719 item=minecraft:big_dripleaf count=1 age=2 pickup-delay=8 on-ground=false
+
+at 18 spawn-item 14.5 3.5 2.5 0 0 0 minecraft:stick 1 pickup-delay=32767
+entity-added 18 commands e6 minecraft:item 14.5 3.5 2.5 0 0 0 item=minecraft:stick count=1
+at 18 spawn-item 17.5 3.5 2.5 0 0 0 minecraft:stick 1 pickup-delay=32767
+entity-added 18 commands e7 minecraft:item 17.5 3.5 2.5 0 0 0 item=minecraft:stick count=1
+entity-order 18 entities e1 e2 e3 e4 e5 e6 e7
+entity 18 e1 8.663943368171498 2.621822153435743 2.6624294419162675 0.009118212458154463 -0.007531078912000024 0.01763464276219713 item=minecraft:big_dripleaf count=1 age=5 pickup-delay=5 on-ground=false
+entity 18 e2 8.710975573770162 3.701833312370359 3.0849706369488676 0.06994918170845234 0.032315225599999976 0.08139884509306382 item=minecraft:big_dripleaf count=1 age=4 pickup-delay=6 on-ground=false
+entity 18 e3 8.017357954460037 4.573687295436888 2.3595857633894344 -0.08795000199152822 0.032315225599999976 0.008622253440449798 item=minecraft:big_dripleaf count=1 age=4 pickup-delay=6 on-ground=false
+entity 18 e4 11.679784455975563 4.528509343125485 2.7250669171057234 -0.016791582415105952 0.07297471999999998 0.052012586646849684 item=minecraft:big_dripleaf count=1 age=3 pickup-delay=7 on-ground=false
+entity 18 e5 11.882473464930301 2.7198804235150713 2.809716767998322 0.0438881752127458 0.07297471999999998 0.05972749653415925 item=minecraft:big_dripleaf count=1 age=3 pickup-delay=7 on-ground=false
+entity 18 e6 14.5 3.46 2.5 0 -0.0392 0 item=minecraft:stick count=1 age=1 pickup-delay=32767 on-ground=false
+entity 18 e7 17.5 3.46 2.5 0 -0.0392 0 item=minecraft:stick count=1 age=1 pickup-delay=32767 on-ground=false
+
+entity-order 19 entities e1 e2 e3 e4 e5 e6 e7
+entity 19 e1 8.673061580629653 2.5742910745237433 2.6800640846784645 0.008935848382907475 -0.04658045733376002 0.017281950243307306 item=minecraft:big_dripleaf count=1 age=6 pickup-delay=4 on-ground=false
+entity 19 e2 8.780924755478614 3.694148537970359 3.1663694820419312 0.06855019940845805 -0.007531078912000024 0.0797708697437623 item=minecraft:big_dripleaf count=1 age=5 pickup-delay=5 on-ground=false
+entity 19 e3 7.929407952468509 4.5660025210368875 2.3682080168298842 -0.08619100362921081 -0.007531078912000024 0.008449808536097236 item=minecraft:big_dripleaf count=1 age=5 pickup-delay=5 on-ground=false
+entity 19 e4 11.662992873560457 4.561484063125485 2.777079503752573 -0.01645575108707785 0.032315225599999976 0.05097233590597405 item=minecraft:big_dripleaf count=1 age=4 pickup-delay=6 on-ground=false
+entity 19 e5 11.926361640143048 2.752855143515071 2.8694442645324814 0.043010412545591396 0.032315225599999976 0.058532947742687656 item=minecraft:big_dripleaf count=1 age=4 pickup-delay=6 on-ground=false
+entity 19 e6 14.5 3.3808 2.5 0 -0.07761599999999999 0 item=minecraft:stick count=1 age=2 pickup-delay=32767 on-ground=false
+entity 19 e7 17.5 3.3808 2.5 0 -0.07761599999999999 0 item=minecraft:stick count=1 age=2 pickup-delay=32767 on-ground=false
+
+entity-order 20 entities e1 e2 e3 e4 e5 e6 e7
+entity 20 e1 8.681997429012561 2.4877106171899834 2.6973460349217717 0.008757131585687108 -0.08484884818708481 0.016936311568068203 item=minecraft:big_dripleaf count=1 age=7 pickup-delay=3 on-ground=false
+entity 20 e2 8.849474954887071 3.6466174590583593 3.2461403517856935 0.06717919672778018 -0.04658045733376002 0.07817545387039565 item=minecraft:big_dripleaf count=1 age=6 pickup-delay=4 on-ground=false
+entity 20 e3 7.843216948839298 4.518471442124888 2.3766578253659816 -0.08446718520058952 -0.04658045733376002 0.008280812526542598 item=minecraft:big_dripleaf count=1 age=6 pickup-delay=4 on-ground=false
+entity 20 e4 11.64653712247338 4.553799288725485 2.828051839658547 -0.016126636379204837 -0.007531078912000024 0.049952890160074724 item=minecraft:big_dripleaf count=1 age=5 pickup-delay=5 on-ground=false
+entity 20 e5 11.96937205268864 2.7451703691150713 2.927977212275169 0.042150205115038086 -0.007531078912000024 0.05736228990426128 item=minecraft:big_dripleaf count=1 age=5 pickup-delay=5 on-ground=false
+entity 20 e6 14.5 3.263184 2.5 0 -0.11526368 0 item=minecraft:stick count=1 age=3 pickup-delay=32767 on-ground=false
+entity 20 e7 17.5 3.263184 2.5 0 -0.11526368 0 item=minecraft:stick count=1 age=3 pickup-delay=32767 on-ground=false
+
+change 21 fluid_ticks 5 1 1 minecraft:air minecraft:water[level=1]
+entity-order 21 entities e1 e2 e3 e4 e5 e6 e7
+entity 21 e1 8.690754560598249 2.362861769002899 2.71428234648984 0.008581989121002396 -0.12235187122334311 0.016597585659741346 item=minecraft:big_dripleaf count=1 age=8 pickup-delay=2 on-ground=false
+entity 21 e2 8.916654151614852 3.5600370017245995 3.3243158056560893 0.06583561407456606 -0.08484884818708481 0.07661194628406619 item=minecraft:big_dripleaf count=1 age=7 pickup-delay=3 on-ground=false
+entity 21 e3 7.758749763638709 4.431890984791128 2.384938637892524 -0.08277784310766143 -0.08484884818708481 0.00811519643395571 item=minecraft:big_dripleaf count=1 age=7 pickup-delay=3 on-ground=false
+entity 21 e4 11.630410486094174 4.506268209813485 2.8780047298186218 -0.015804103959211918 -0.04658045733376002 0.048953833309648996 item=minecraft:big_dripleaf count=1 age=6 pickup-delay=4 on-ground=false
+entity 21 e5 12.011522257803676 2.6976392902030715 2.9853395021794302 0.041307201816688684 -0.04658045733376002 0.056215045200274906 item=minecraft:big_dripleaf count=1 age=6 pickup-delay=4 on-ground=false
+entity 21 e6 14.5 3.10792032 2.5 0 -0.15215840639999997 0 item=minecraft:stick count=1 age=4 pickup-delay=32767 on-ground=false
+entity 21 e7 17.5 3.10792032 2.5 0 -0.15215840639999997 0 item=minecraft:stick count=1 age=4 pickup-delay=32767 on-ground=false
+
+change 22 entities 14 2 2 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false] minecraft:big_dripleaf[facing=north,tilt=unstable,waterlogged=false]
+change 22 entities 17 2 2 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false] minecraft:big_dripleaf[facing=north,tilt=unstable,waterlogged=false]
+entity-order 22 entities e1 e2 e3 e4 e5 e6 e7
+entity 22 e1 8.699336549719252 2.200509897779556 2.7308799321495814 0.0084103495022708 -0.15910483379887624 0.016265634263120343 item=minecraft:big_dripleaf count=1 age=9 pickup-delay=1 on-ground=false
+entity 22 e2 8.982489765689417 3.435188153537515 3.4009277519401553 0.06451890304878942 -0.12235187122334311 0.07507970881964178 item=minecraft:big_dripleaf count=1 age=8 pickup-delay=2 on-ground=false
+entity 22 e3 7.6759719205310475 4.307042136604043 2.39305383432648 -0.08112228782437025 -0.12235187122334311 0.007952892660061684 item=minecraft:big_dripleaf count=1 age=8 pickup-delay=2 on-ground=false
+entity 22 e4 11.614606382134962 4.419687752479725 2.9269585631282706 -0.01548802218146704 -0.08484884818708481 0.047974757577176286 item=minecraft:big_dripleaf count=1 age=7 pickup-delay=3 on-ground=false
+entity 22 e5 12.052829459620366 2.6110588328693116 3.041554547379705 0.04048105856822726 -0.08484884818708481 0.0550907453684863 item=minecraft:big_dripleaf count=1 age=7 pickup-delay=3 on-ground=false
+entity 22 e6 14.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=5 pickup-delay=32767 on-ground=true
+entity 22 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=5 pickup-delay=32767 on-ground=true
+
+entity-order 23 entities e1 e2 e3 e4 e5 e6 e7
+entity 23 e1 8.707746899221522 2.0014050639806795 2.747145566412702 0.008242142672640071 -0.1951227371228987 0.015940321888100288 item=minecraft:big_dripleaf count=1 age=10 pickup-delay=0 on-ground=false
+entity 23 e2 9.047008668738206 3.272836282314172 3.476007460759797 0.06322852621841404 -0.15910483379887624 0.07357811607528074 item=minecraft:big_dripleaf count=1 age=9 pickup-delay=1 on-ground=false
+entity 23 e3 7.594849632706677 4.144690265380699 2.401006726986542 -0.0794998436151677 -0.15910483379887624 0.00779383495854984 item=minecraft:big_dripleaf count=1 age=9 pickup-delay=1 on-ground=false
+entity 23 e4 11.599118359953495 4.29483890429264 2.974933320705447 -0.015178262033248279 -0.12235187122334311 0.04701526334067864 item=minecraft:big_dripleaf count=1 age=8 pickup-delay=2 on-ground=false
+entity 23 e5 12.093310518188593 2.486209984682227 3.0966452927481916 0.03967143816897763 -0.12235187122334311 0.05398893151188915 item=minecraft:big_dripleaf count=1 age=8 pickup-delay=2 on-ground=false
+entity 23 e6 14.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=6 pickup-delay=32767 on-ground=true
+entity 23 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=6 pickup-delay=32767 on-ground=true
+
+entity-order 24 entities e1 e2 e3 e4 e5 e6 e7
+entity 24 e1 8.715989041894163 1.7662823268577807 2.763085888300802 0.008077299976393665 -0.23042028238044074 0.015621515754375793 item=minecraft:big_dripleaf count=1 age=11 pickup-delay=0 on-ground=false
+entity 24 e2 9.11023719495662 3.0737314485152956 3.549585576835078 0.061963956900034194 -0.1951227371228987 0.07210655515716631 item=minecraft:big_dripleaf count=1 age=10 pickup-delay=0 on-ground=false
+entity 24 e3 7.51534978909151 3.945585431581823 2.4088005619450916 -0.07790984825920352 -0.1951227371228987 0.007637958408034448 item=minecraft:big_dripleaf count=1 age=10 pickup-delay=0 on-ground=false
+entity 24 e4 11.583940097920246 4.132487033069297 3.0219485840461258 -0.014874697082085686 -0.15910483379887624 0.04607495897061005 item=minecraft:big_dripleaf count=1 age=9 pickup-delay=1 on-ground=false
+entity 24 e5 12.13298195635757 2.323858113458884 3.150634224260081 0.03887801016227071 -0.15910483379887624 0.05290915391140852 item=minecraft:big_dripleaf count=1 age=9 pickup-delay=1 on-ground=false
+entity 24 e6 14.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=7 pickup-delay=32767 on-ground=true
+entity 24 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=7 pickup-delay=32767 on-ground=true
+
+entity-order 25 entities e1 e2 e3 e4 e5 e6 e7
+entity 25 e1 8.724066341870557 1.49586204447734 2.778707404055178 0.007915754130928062 -0.26501187673283194 0.015309085737245045 item=minecraft:big_dripleaf count=1 age=12 pickup-delay=0 on-ground=false
+entity 25 e2 9.172201151856653 2.838608711392397 3.621692131992244 0.0607246789439022 -0.23042028238044074 0.07066442542934638 item=minecraft:big_dripleaf count=1 age=11 pickup-delay=0 on-ground=false
+entity 25 e3 7.437439940832307 3.7104626944589243 2.4164385203531262 -0.07635165278003188 -0.23042028238044074 0.007485199385556254 item=minecraft:big_dripleaf count=1 age=11 pickup-delay=0 on-ground=false
+entity 25 e4 11.569065400838161 3.9333821992704205 3.0680235430167357 -0.014577203424156304 -0.1951227371228987 0.04515346067000795 item=minecraft:big_dripleaf count=1 age=10 pickup-delay=0 on-ground=false
+entity 25 e5 12.171859966519841 2.1247532796600077 3.2035433781714895 0.03810045070056449 -0.1951227371228987 0.05185097184234237 item=minecraft:big_dripleaf count=1 age=10 pickup-delay=0 on-ground=false
+entity 25 e6 14.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=8 pickup-delay=32767 on-ground=true
+entity 25 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=8 pickup-delay=32767 on-ground=true
+
+change 26 fluid_ticks 5 1 0 minecraft:air minecraft:water[level=2]
+entity-order 26 entities e1 e2 e3 e4 e5 e6 e7
+entity 26 e1 8.731982096001486 1.1908501677445082 2.794016489792423 0.007757439199290529 -0.29891163919817526 0.015002904314497781 item=minecraft:big_dripleaf count=1 age=13 pickup-delay=0 on-ground=false
+entity 26 e2 9.232925830800555 2.568188429011956 3.6923565574215904 0.05951018652325549 -0.26501187673283194 0.0692511382685764 item=minecraft:big_dripleaf count=1 age=12 pickup-delay=0 on-ground=false
+entity 26 e3 7.361088288052275 3.4400424120784834 2.4239237197386827 -0.07482462118072344 -0.26501187673283194 0.007335495540613977 item=minecraft:big_dripleaf count=1 age=12 pickup-delay=0 on-ground=false
+entity 26 e4 11.554488197414004 3.6982594621475218 3.1131770036867437 -0.014285659633711268 -0.23042028238044074 0.044250392317841704 item=minecraft:big_dripleaf count=1 age=11 pickup-delay=0 on-ground=false
+entity 26 e5 12.209960417220406 1.889630542537109 3.255394350013832 0.037338442413261626 -0.23042028238044074 0.05081395339447433 item=minecraft:big_dripleaf count=1 age=11 pickup-delay=0 on-ground=false
+entity 26 e6 14.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=9 pickup-delay=32767 on-ground=true
+entity 26 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=9 pickup-delay=32767 on-ground=true
+
+entity-order 27 entities e1 e2 e3 e4 e5 e6 e7
+entity 27 e1 8.739739535200776 1.0 2.809019394106921 0.004561374707863204 0 0.008821708624013535 item=minecraft:big_dripleaf count=1 age=14 pickup-delay=0 on-ground=true
+entity 27 e2 9.29243601732381 2.263176552279124 3.761607695690167 0.05831998392785711 -0.29891163919817526 0.06786611682406551 item=minecraft:big_dripleaf count=1 age=13 pickup-delay=0 on-ground=false
+entity 27 e3 7.286263666871552 3.1350305353456513 2.431259215279297 -0.07332813018427536 -0.29891163919817526 0.007188785769715171 item=minecraft:big_dripleaf count=1 age=13 pickup-delay=0 on-ground=false
+entity 27 e4 11.540202537780294 3.427839179767081 3.1574273960045853 -0.013999946713514377 -0.26501187673283194 0.04336538531549412 item=minecraft:big_dripleaf count=1 age=12 pickup-delay=0 on-ground=false
+entity 27 e5 12.247298859633668 1.6192102601566682 3.3062083034083063 0.036591674277170666 -0.26501187673283194 0.04979767529578409 item=minecraft:big_dripleaf count=1 age=12 pickup-delay=0 on-ground=false
+entity 27 e6 14.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=10 pickup-delay=32767 on-ground=true
+entity 27 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=10 pickup-delay=32767 on-ground=true
+
+entity-order 28 entities e1 e2 e3 e4 e5 e6 e7
+entity 28 e1 8.74430090990864 1.0 2.8178411027309345 0.00268208859792765 0 0.005187165192528249 item=minecraft:big_dripleaf count=1 age=15 pickup-delay=0 on-ground=true
+entity 28 e2 9.350756001251668 1.9242649130809486 3.8294738125142325 0.057153585361665385 -0.33213340641421174 0.06650879578202766 item=minecraft:big_dripleaf count=1 age=14 pickup-delay=0 on-ground=false
+entity 28 e3 7.212935536687277 2.796118896147476 2.438448001049012 -0.07186156897921295 -0.33213340641421174 0.007045010191436075 item=minecraft:big_dripleaf count=1 age=14 pickup-delay=0 on-ground=false
+entity 28 e4 11.52620259106678 3.122827303034249 3.2007927813200796 -0.013719948046271881 -0.29891163919817526 0.04249807843631333 item=minecraft:big_dripleaf count=1 age=13 pickup-delay=0 on-ground=false
+entity 28 e5 12.283890533910839 1.3141983834238364 3.3560059787040903 0.03585984148955805 -0.29891163919817526 0.04880172273968369 item=minecraft:big_dripleaf count=1 age=13 pickup-delay=0 on-ground=false
+entity 28 e6 14.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=11 pickup-delay=32767 on-ground=true
+entity 28 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=11 pickup-delay=32767 on-ground=true
+
+entity-order 29 entities e1 e2 e3 e4 e5 e6 e7
+entity 29 e1 8.746982998506567 1.0 2.823028267923463 0.0015770682541674768 0 0.003050053439912316 item=minecraft:big_dripleaf count=1 age=16 pickup-delay=0 on-ground=true
+entity 29 e2 9.407909586613334 1.552131506666737 3.89598260829626 0.056010514744550204 -0.36469073828592746 0.06517862113494172 item=minecraft:big_dripleaf count=1 age=15 pickup-delay=0 on-ground=false
+entity 29 e3 7.1410739677080635 2.423985489733264 2.445493011240448 -0.07042433897027935 -0.36469073828592746 0.006904110121980259 item=minecraft:big_dripleaf count=1 age=15 pickup-delay=0 on-ground=false
+entity 29 e4 11.512482643020507 2.7839156638360736 3.2432908597563928 -0.013445549347033686 -0.33213340641421174 0.04164811767817358 item=minecraft:big_dripleaf count=1 age=14 pickup-delay=0 on-ground=false
+entity 29 e5 12.319750375400396 1.0 3.404807701443774 0.02108558891617394 0 0.02869541585647288 item=minecraft:big_dripleaf count=1 age=14 pickup-delay=0 on-ground=true
+entity 29 e6 14.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=12 pickup-delay=32767 on-ground=true
+entity 29 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=12 pickup-delay=32767 on-ground=true
+
+entity-order 30 entities e1 e2 e3 e4 e5 e6 e7
+entity 30 e1 8.748560066760735 1.0 2.8260783213633753 9.273162266990647E-4 0 0.0017934316030114147 item=minecraft:big_dripleaf count=1 age=17 pickup-delay=0 on-ground=true
+entity 30 e2 9.463920101357884 1.1474407683808094 3.9611612294312017 0.05489030551797499 -0.39659692352020887 0.06387504995542642 item=minecraft:big_dripleaf count=1 age=16 pickup-delay=0 on-ground=false
+entity 30 e3 7.125 2.0192947514473367 2.4523971213624285 0 -0.39659692352020887 0.0067660280512261035 item=minecraft:big_dripleaf count=1 age=16 pickup-delay=0 on-ground=false
+entity 30 e4 11.499037093673472 2.4117822574218617 3.2849389774345665 -0.013176638616546514 -0.36469073828592746 0.04081515611898491 item=minecraft:big_dripleaf count=1 age=15 pickup-delay=0 on-ground=false
+entity 30 e5 12.34083596431657 1.0 3.433503117300247 0.012398327529454922 0 0.01687290622030308 item=minecraft:big_dripleaf count=1 age=15 pickup-delay=0 on-ground=true
+entity 30 e6 14.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=13 pickup-delay=32767 on-ground=true
+entity 30 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=13 pickup-delay=32767 on-ground=true
+
+entity-order 31 entities e1 e2 e3 e4 e5 e6 e7
+entity 31 e1 8.748560066760735 1.0 2.8260783213633753 9.273162266990647E-4 -0.04 0.0017934316030114147 item=minecraft:big_dripleaf count=1 age=18 pickup-delay=0 on-ground=true
+entity 31 e2 9.51881040687586 1.0 4.025036279386629 0.03227550289011272 0 0.0375585331505824 item=minecraft:big_dripleaf count=1 age=17 pickup-delay=0 on-ground=true
+entity 31 e3 7.125 1.5826978279271278 2.4591631494136545 0 -0.42786498504980464 0.006630707619253325 item=minecraft:big_dripleaf count=1 age=17 pickup-delay=0 on-ground=false
+entity 31 e4 11.485860455056926 2.007091519135934 3.3257541335535517 -0.012913106095540021 -0.39659692352020887 0.03999885377509253 item=minecraft:big_dripleaf count=1 age=16 pickup-delay=0 on-ground=false
+entity 31 e5 12.353234291846025 1.0 3.45037602352055 0.007290217320405419 0 0.009921269855196166 item=minecraft:big_dripleaf count=1 age=16 pickup-delay=0 on-ground=true
+entity 31 e6 14.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=14 pickup-delay=32767 on-ground=true
+entity 31 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=14 pickup-delay=32767 on-ground=true
+
+at 32 set 18 2 2 minecraft:redstone_block
+change 32 commands 18 2 2 minecraft:air minecraft:redstone_block
+change 32 commands 17 2 2 minecraft:big_dripleaf[facing=north,tilt=unstable,waterlogged=false] minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+change 32 block_ticks 14 2 2 minecraft:big_dripleaf[facing=north,tilt=unstable,waterlogged=false] minecraft:big_dripleaf[facing=north,tilt=partial,waterlogged=false]
+draws 32 commands level 1
+draws 32 block_ticks level 1
+entity-order 32 entities e1 e2 e3 e4 e5 e6 e7
+entity 32 e1 8.749487382987434 1.0 2.8278717529663866 5.452619961292254E-4 0 0.0010545378886123906 item=minecraft:big_dripleaf count=1 age=19 pickup-delay=0 on-ground=true
+entity 32 e2 9.551085909765971 1.0 4.062594812537211 0.018977997607766004 0 0.022084419713296173 item=minecraft:big_dripleaf count=1 age=18 pickup-delay=0 on-ground=true
+entity 32 e3 7.125 1.114832842877323 2.465793857032908 0 -0.45850768534880854 0.00649809359333897 item=minecraft:big_dripleaf count=1 age=18 pickup-delay=0 on-ground=false
+entity 32 e4 11.472947348961386 1.5704945956157252 3.3657529873286443 -0.012654844219927174 -0.42786498504980464 0.039198877462508275 item=minecraft:big_dripleaf count=1 age=17 pickup-delay=0 on-ground=false
+entity 32 e5 12.36052450916643 1.0 3.460297293375746 0.004286648215452954 0 0.0058337072614782805 item=minecraft:big_dripleaf count=1 age=17 pickup-delay=0 on-ground=true
+entity 32 e6 14.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=15 pickup-delay=32767 on-ground=true
+entity 32 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=15 pickup-delay=32767 on-ground=true
+
+entity-order 33 entities e1 e2 e3 e4 e5 e6 e7
+entity 33 e1 8.749487382987434 1.0 2.8278717529663866 5.452619961292254E-4 -0.04 0.0010545378886123906 item=minecraft:big_dripleaf count=1 age=20 pickup-delay=0 on-ground=true
+entity 33 e2 9.570063907373738 1.0 4.084679232250507 0.011159063715493802 0 0.01298564009722147 item=minecraft:big_dripleaf count=1 age=19 pickup-delay=0 on-ground=true
+entity 33 e3 7.125 1.0 2.472291950626247 0 0 0.0038208794171013423 item=minecraft:big_dripleaf count=1 age=19 pickup-delay=0 on-ground=true
+entity 33 e4 11.460292504741458 1.1026296105659206 3.4049518647911525 -0.012401747576900629 -0.45850768534880854 0.038414900660917364 item=minecraft:big_dripleaf count=1 age=18 pickup-delay=0 on-ground=false
+entity 33 e5 12.364811157381883 1.0 3.4661310006372243 0.0025205494041464476 0 0.0034302202146835495 item=minecraft:big_dripleaf count=1 age=18 pickup-delay=0 on-ground=true
+entity 33 e6 14.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=16 pickup-delay=32767 on-ground=true
+entity 33 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=16 pickup-delay=32767 on-ground=true
+
+entity-order 34 entities e1 e2 e3 e4 e5 e6 e7
+entity 34 e1 8.749487382987434 1.0 2.8278717529663866 5.452619961292254E-4 -0.08 0.0010545378886123906 item=minecraft:big_dripleaf count=1 age=21 pickup-delay=0 on-ground=true
+entity 34 e2 9.581222971089232 1.0 4.097664872347728 0.006561530124521328 0 0.0076355571449786535 item=minecraft:big_dripleaf count=1 age=20 pickup-delay=0 on-ground=true
+entity 34 e3 7.125 1.0 2.4761128300433484 0 0 0.0022466773231758124 item=minecraft:big_dripleaf count=1 age=20 pickup-delay=0 on-ground=true
+entity 34 e4 11.447890757164558 1.0 3.44336676545207 -0.0072922283085057145 0 0.022587963860008265 item=minecraft:big_dripleaf count=1 age=19 pickup-delay=0 on-ground=true
+entity 34 e5 12.367331706786029 1.0 3.469561220851908 0.0014820831986726716 0 0.002016969689055328 item=minecraft:big_dripleaf count=1 age=19 pickup-delay=0 on-ground=true
+entity 34 e6 14.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=17 pickup-delay=32767 on-ground=true
+entity 34 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=17 pickup-delay=32767 on-ground=true
+
+entity-order 35 entities e1 e2 e3 e4 e5 e6 e7
+entity 35 e1 8.749487382987434 1.0 2.8278717529663866 5.452619961292254E-4 -0.12 0.0010545378886123906 item=minecraft:big_dripleaf count=1 age=22 pickup-delay=0 on-ground=true
+entity 35 e2 9.587784501213754 1.0 4.105300429492707 0.0038581801011874314 0 0.004489708052721202 item=minecraft:big_dripleaf count=1 age=21 pickup-delay=0 on-ground=true
+entity 35 e3 7.125 1.0 2.478359507366524 0 0 0.0013210463988684823 item=minecraft:big_dripleaf count=1 age=21 pickup-delay=0 on-ground=true
+entity 35 e4 11.440598528856052 1.0 3.4659547293120783 -0.004287830676574833 0 0.013281724085261641 item=minecraft:big_dripleaf count=1 age=20 pickup-delay=0 on-ground=true
+entity 35 e5 12.367331706786029 1.0 3.469561220851908 0.0014820831986726716 -0.04 0.002016969689055328 item=minecraft:big_dripleaf count=1 age=20 pickup-delay=0 on-ground=true
+entity 35 e6 14.5 2.8125 2.5 0 0 0 item=minecraft:stick count=1 age=18 pickup-delay=32767 on-ground=true
+entity 35 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=18 pickup-delay=32767 on-ground=true
+
+entity-order 36 entities e1 e2 e3 e4 e5 e6 e7
+entity 36 e1 8.750032644983563 1.0 2.828926290854999 3.20614085964131E-4 0 6.200683408565991E-4 item=minecraft:big_dripleaf count=1 age=23 pickup-delay=0 on-ground=true
+entity 36 e2 9.59164268131494 1.0 4.109790137545428 0.0022686101276239404 0 0.002639948600466661 item=minecraft:big_dripleaf count=1 age=22 pickup-delay=0 on-ground=true
+entity 36 e3 7.125 1.0 2.478359507366524 0 -0.04 0.0013210463988684823 item=minecraft:big_dripleaf count=1 age=22 pickup-delay=0 on-ground=true
+entity 36 e4 11.436310698179478 1.0 3.47923645339734 -0.002521244691356029 0 0.007809654547453072 item=minecraft:big_dripleaf count=1 age=21 pickup-delay=0 on-ground=true
+entity 36 e5 12.367331706786029 1.0 3.469561220851908 0.0014820831986726716 -0.08 0.002016969689055328 item=minecraft:big_dripleaf count=1 age=21 pickup-delay=0 on-ground=true
+entity 36 e6 14.5 2.8125 2.5 0 -0.04 0 item=minecraft:stick count=1 age=19 pickup-delay=32767 on-ground=true
+entity 36 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=19 pickup-delay=32767 on-ground=true
+
+entity-order 37 entities e1 e2 e3 e4 e5 e6 e7
+entity 37 e1 8.750032644983563 1.0 2.828926290854999 3.20614085964131E-4 -0.04 6.200683408565991E-4 item=minecraft:big_dripleaf count=1 age=24 pickup-delay=0 on-ground=true
+entity 37 e2 9.593911291442565 1.0 4.112430086145895 0.0013339428891808202 0 0.0015522899331687696 item=minecraft:big_dripleaf count=1 age=23 pickup-delay=0 on-ground=true
+entity 37 e3 7.125 1.0 2.478359507366524 0 -0.08 0.0013210463988684823 item=minecraft:big_dripleaf count=1 age=23 pickup-delay=0 on-ground=true
+entity 37 e4 11.43378945348812 1.0 3.487046107944793 -0.0014824920275930162 0 0.004592077335670157 item=minecraft:big_dripleaf count=1 age=22 pickup-delay=0 on-ground=true
+entity 37 e5 12.367331706786029 1.0 3.469561220851908 0.0014820831986726716 -0.12 0.002016969689055328 item=minecraft:big_dripleaf count=1 age=22 pickup-delay=0 on-ground=true
+entity 37 e6 14.5 2.8125 2.5 0 -0.08 0 item=minecraft:stick count=1 age=20 pickup-delay=32767 on-ground=true
+entity 37 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=20 pickup-delay=32767 on-ground=true
+
+entity-order 38 entities e1 e2 e3 e4 e5 e6 e7
+entity 38 e1 8.750032644983563 1.0 2.828926290854999 3.20614085964131E-4 -0.08 6.200683408565991E-4 item=minecraft:big_dripleaf count=1 age=25 pickup-delay=0 on-ground=true
+entity 38 e2 9.593911291442565 1.0 4.112430086145895 0.0013339428891808202 -0.04 0.0015522899331687696 item=minecraft:big_dripleaf count=1 age=24 pickup-delay=0 on-ground=true
+entity 38 e3 7.125 1.0 2.478359507366524 0 -0.12 0.0013210463988684823 item=minecraft:big_dripleaf count=1 age=24 pickup-delay=0 on-ground=true
+entity 38 e4 11.432306961460528 1.0 3.491638185280463 -8.717053998811969E-4 0 0.002700141744893518 item=minecraft:big_dripleaf count=1 age=23 pickup-delay=0 on-ground=true
+entity 38 e5 12.368813789984701 1.0 3.4715781905409635 8.714650084518612E-4 0 0.0011859782964235286 item=minecraft:big_dripleaf count=1 age=23 pickup-delay=0 on-ground=true
+entity 38 e6 14.5 2.8125 2.5 0 -0.12 0 item=minecraft:stick count=1 age=21 pickup-delay=32767 on-ground=true
+entity 38 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=21 pickup-delay=32767 on-ground=true
+
+entity-order 39 entities e1 e2 e3 e4 e5 e6 e7
+entity 39 e1 8.750032644983563 1.0 2.828926290854999 3.20614085964131E-4 -0.12 6.200683408565991E-4 item=minecraft:big_dripleaf count=1 age=26 pickup-delay=0 on-ground=true
+entity 39 e2 9.593911291442565 1.0 4.112430086145895 0.0013339428891808202 -0.08 0.0015522899331687696 item=minecraft:big_dripleaf count=1 age=25 pickup-delay=0 on-ground=true
+entity 39 e3 7.125 1.0 2.4796805537653928 0 0 7.76775360645245E-4 item=minecraft:big_dripleaf count=1 age=25 pickup-delay=0 on-ground=true
+entity 39 e4 11.431435256060647 1.0 3.4943383270253565 -5.125628266721729E-4 0 0.0015876835056508503 item=minecraft:big_dripleaf count=1 age=24 pickup-delay=0 on-ground=true
+entity 39 e5 12.368813789984701 1.0 3.4715781905409635 8.714650084518612E-4 -0.04 0.0011859782964235286 item=minecraft:big_dripleaf count=1 age=24 pickup-delay=0 on-ground=true
+entity 39 e6 14.5 2.8125 2.5 0 0 0 item=minecraft:stick count=1 age=22 pickup-delay=32767 on-ground=true
+entity 39 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=22 pickup-delay=32767 on-ground=true
+
+entity-order 40 entities e1 e2 e3 e4 e5 e6 e7
+entity 40 e1 8.750353259069527 1.0 2.8295463591958554 1.8852110150411702E-4 0 3.6460022108696186E-4 item=minecraft:big_dripleaf count=1 age=27 pickup-delay=0 on-ground=true
+entity 40 e2 9.595245234331745 1.0 4.113982376079063 7.843584977114408E-4 0 9.12746572486737E-4 item=minecraft:big_dripleaf count=1 age=26 pickup-delay=0 on-ground=true
+entity 40 e3 7.125 1.0 2.4796805537653928 0 -0.04 7.76775360645245E-4 item=minecraft:big_dripleaf count=1 age=26 pickup-delay=0 on-ground=true
+entity 40 e4 11.431435256060647 1.0 3.4943383270253565 -5.125628266721729E-4 -0.04 0.0015876835056508503 item=minecraft:big_dripleaf count=1 age=25 pickup-delay=0 on-ground=true
+entity 40 e5 12.368813789984701 1.0 3.4715781905409635 8.714650084518612E-4 -0.08 0.0011859782964235286 item=minecraft:big_dripleaf count=1 age=25 pickup-delay=0 on-ground=true
+entity 40 e6 14.5 2.8125 2.5 0 -0.04 0 item=minecraft:stick count=1 age=23 pickup-delay=32767 on-ground=true
+entity 40 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=23 pickup-delay=32767 on-ground=true
+
+entity-order 41 entities e1 e2 e3 e4 e5 e6 e7
+entity 41 e1 8.750353259069527 1.0 2.8295463591958554 1.8852110150411702E-4 -0.04 3.6460022108696186E-4 item=minecraft:big_dripleaf count=1 age=28 pickup-delay=0 on-ground=true
+entity 41 e2 9.595245234331745 1.0 4.113982376079063 7.843584977114408E-4 -0.04 9.12746572486737E-4 item=minecraft:big_dripleaf count=1 age=27 pickup-delay=0 on-ground=true
+entity 41 e3 7.125 1.0 2.4796805537653928 0 -0.08 7.76775360645245E-4 item=minecraft:big_dripleaf count=1 age=27 pickup-delay=0 on-ground=true
+entity 41 e4 11.431435256060647 1.0 3.4943383270253565 -5.125628266721729E-4 -0.08 0.0015876835056508503 item=minecraft:big_dripleaf count=1 age=26 pickup-delay=0 on-ground=true
+entity 41 e5 12.368813789984701 1.0 3.4715781905409635 8.714650084518612E-4 -0.12 0.0011859782964235286 item=minecraft:big_dripleaf count=1 age=26 pickup-delay=0 on-ground=true
+entity 41 e6 14.5 2.8125 2.5 0 -0.08 0 item=minecraft:stick count=1 age=24 pickup-delay=32767 on-ground=true
+entity 41 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=24 pickup-delay=32767 on-ground=true
+
+change 42 block_ticks 14 2 2 minecraft:big_dripleaf[facing=north,tilt=partial,waterlogged=false] minecraft:big_dripleaf[facing=north,tilt=full,waterlogged=false]
+draws 42 block_ticks level 1
+entity-order 42 entities e1 e2 e3 e4 e5 e6 e7
+entity 42 e1 8.750353259069527 1.0 2.8295463591958554 1.8852110150411702E-4 -0.08 3.6460022108696186E-4 item=minecraft:big_dripleaf count=1 age=29 pickup-delay=0 on-ground=true
+entity 42 e2 9.595245234331745 1.0 4.113982376079063 7.843584977114408E-4 -0.08 9.12746572486737E-4 item=minecraft:big_dripleaf count=1 age=28 pickup-delay=0 on-ground=true
+entity 42 e3 7.125 1.0 2.4796805537653928 0 -0.12 7.76775360645245E-4 item=minecraft:big_dripleaf count=1 age=28 pickup-delay=0 on-ground=true
+entity 42 e4 11.431435256060647 1.0 3.4943383270253565 -5.125628266721729E-4 -0.12 0.0015876835056508503 item=minecraft:big_dripleaf count=1 age=27 pickup-delay=0 on-ground=true
+entity 42 e5 12.369685254993152 1.0 3.472764168837387 5.124214764975097E-4 0 6.973553084213313E-4 item=minecraft:big_dripleaf count=1 age=27 pickup-delay=0 on-ground=true
+entity 42 e6 14.5 2.8125 2.5 0 -0.12 0 item=minecraft:stick count=1 age=25 pickup-delay=32767 on-ground=true
+entity 42 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=25 pickup-delay=32767 on-ground=true
+
+entity-order 43 entities e1 e2 e3 e4 e5 e6 e7
+entity 43 e1 8.750353259069527 1.0 2.8295463591958554 1.8852110150411702E-4 -0.12 3.6460022108696186E-4 item=minecraft:big_dripleaf count=1 age=30 pickup-delay=0 on-ground=true
+entity 43 e2 9.595245234331745 1.0 4.113982376079063 7.843584977114408E-4 -0.12 9.12746572486737E-4 item=minecraft:big_dripleaf count=1 age=29 pickup-delay=0 on-ground=true
+entity 43 e3 7.125 1.0 2.480457329126038 0 0 4.5674395798842813E-4 item=minecraft:big_dripleaf count=1 age=29 pickup-delay=0 on-ground=true
+entity 43 e4 11.430922693233974 1.0 3.4959260105310075 -3.013869723899539E-4 0 9.335579951989449E-4 item=minecraft:big_dripleaf count=1 age=28 pickup-delay=0 on-ground=true
+entity 43 e5 12.369685254993152 1.0 3.472764168837387 5.124214764975097E-4 -0.04 6.973553084213313E-4 item=minecraft:big_dripleaf count=1 age=28 pickup-delay=0 on-ground=true
+entity 43 e6 14.5 2.6525 2.5 0 -0.1568 0 item=minecraft:stick count=1 age=26 pickup-delay=32767 on-ground=false
+entity 43 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=26 pickup-delay=32767 on-ground=true
+
+entity-order 44 entities e1 e2 e3 e4 e5 e6 e7
+entity 44 e1 8.750541780171032 1.0 2.8299109594169423 1.1085041883126023E-4 0 2.143849515571453E-4 item=minecraft:big_dripleaf count=1 age=31 pickup-delay=0 on-ground=true
+entity 44 e2 9.596029592829456 1.0 4.11489512265155 4.6120284303172556E-4 0 5.366950385909051E-4 item=minecraft:big_dripleaf count=1 age=30 pickup-delay=0 on-ground=true
+entity 44 e3 7.125 1.0 2.480457329126038 0 -0.04 4.5674395798842813E-4 item=minecraft:big_dripleaf count=1 age=30 pickup-delay=0 on-ground=true
+entity 44 e4 11.430922693233974 1.0 3.4959260105310075 -3.013869723899539E-4 -0.04 9.335579951989449E-4 item=minecraft:big_dripleaf count=1 age=29 pickup-delay=0 on-ground=true
+entity 44 e5 12.369685254993152 1.0 3.472764168837387 5.124214764975097E-4 -0.08 6.973553084213313E-4 item=minecraft:big_dripleaf count=1 age=29 pickup-delay=0 on-ground=true
+entity 44 e6 14.5 2.4556999999999998 2.5 0 -0.192864 0 item=minecraft:stick count=1 age=27 pickup-delay=32767 on-ground=false
+entity 44 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=27 pickup-delay=32767 on-ground=true
+
+entity-order 45 entities e1 e2 e3 e4 e5 e6 e7
+entity 45 e1 8.750541780171032 1.0 2.8299109594169423 1.1085041883126023E-4 -0.04 2.143849515571453E-4 item=minecraft:big_dripleaf count=1 age=32 pickup-delay=0 on-ground=true
+entity 45 e2 9.596029592829456 1.0 4.11489512265155 4.6120284303172556E-4 -0.04 5.366950385909051E-4 item=minecraft:big_dripleaf count=1 age=31 pickup-delay=0 on-ground=true
+entity 45 e3 7.125 1.0 2.480457329126038 0 -0.08 4.5674395798842813E-4 item=minecraft:big_dripleaf count=1 age=31 pickup-delay=0 on-ground=true
+entity 45 e4 11.430922693233974 1.0 3.4959260105310075 -3.013869723899539E-4 -0.08 9.335579951989449E-4 item=minecraft:big_dripleaf count=1 age=30 pickup-delay=0 on-ground=true
+entity 45 e5 12.369685254993152 1.0 3.472764168837387 5.124214764975097E-4 -0.12 6.973553084213313E-4 item=minecraft:big_dripleaf count=1 age=30 pickup-delay=0 on-ground=true
+entity 45 e6 14.5 2.2228359999999996 2.5 0 -0.22820672 0 item=minecraft:stick count=1 age=28 pickup-delay=32767 on-ground=false
+entity 45 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=28 pickup-delay=32767 on-ground=true
+
+entity-order 46 entities e1 e2 e3 e4 e5 e6 e7
+entity 46 e1 8.750541780171032 1.0 2.8299109594169423 1.1085041883126023E-4 -0.08 2.143849515571453E-4 item=minecraft:big_dripleaf count=1 age=33 pickup-delay=0 on-ground=true
+entity 46 e2 9.596029592829456 1.0 4.11489512265155 4.6120284303172556E-4 -0.08 5.366950385909051E-4 item=minecraft:big_dripleaf count=1 age=32 pickup-delay=0 on-ground=true
+entity 46 e3 7.125 1.0 2.480457329126038 0 -0.12 4.5674395798842813E-4 item=minecraft:big_dripleaf count=1 age=32 pickup-delay=0 on-ground=true
+entity 46 e4 11.430922693233974 1.0 3.4959260105310075 -3.013869723899539E-4 -0.12 9.335579951989449E-4 item=minecraft:big_dripleaf count=1 age=31 pickup-delay=0 on-ground=true
+entity 46 e5 12.37019767646965 1.0 3.4734615241458084 3.013038584788942E-4 0 4.100449625848333E-4 item=minecraft:big_dripleaf count=1 age=31 pickup-delay=0 on-ground=true
+entity 46 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=29 pickup-delay=32767 on-ground=true
+entity 46 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=29 pickup-delay=32767 on-ground=true
+
+entity-order 47 entities e1 e2 e3 e4 e5 e6 e7
+entity 47 e1 8.750541780171032 1.0 2.8299109594169423 1.1085041883126023E-4 -0.12 2.143849515571453E-4 item=minecraft:big_dripleaf count=1 age=34 pickup-delay=0 on-ground=true
+entity 47 e2 9.596029592829456 1.0 4.11489512265155 4.6120284303172556E-4 -0.12 5.366950385909051E-4 item=minecraft:big_dripleaf count=1 age=33 pickup-delay=0 on-ground=true
+entity 47 e3 7.125 1.0 2.4809140730840262 0 0 2.6856547430346463E-4 item=minecraft:big_dripleaf count=1 age=33 pickup-delay=0 on-ground=true
+entity 47 e4 11.430621306261584 1.0 3.4968595685262063 -1.772155575856438E-4 0 5.489321563762171E-4 item=minecraft:big_dripleaf count=1 age=32 pickup-delay=0 on-ground=true
+entity 47 e5 12.37019767646965 1.0 3.4734615241458084 3.013038584788942E-4 -0.04 4.100449625848333E-4 item=minecraft:big_dripleaf count=1 age=32 pickup-delay=0 on-ground=true
+entity 47 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=30 pickup-delay=32767 on-ground=true
+entity 47 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=30 pickup-delay=32767 on-ground=true
+
+entity-order 48 entities e1 e2 e3 e4 e5 e6 e7
+entity 48 e1 8.750541780171032 1.0 2.8299109594169423 6.518005282712325E-5 0 1.2605836419171362E-4 item=minecraft:big_dripleaf count=1 age=35 pickup-delay=0 on-ground=true
+entity 48 e2 9.596490795672487 1.0 4.1154318176901405 2.711872989725676E-4 0 3.155767144250532E-4 item=minecraft:big_dripleaf count=1 age=34 pickup-delay=0 on-ground=true
+entity 48 e3 7.125 1.0 2.4809140730840262 0 -0.04 2.6856547430346463E-4 item=minecraft:big_dripleaf count=1 age=34 pickup-delay=0 on-ground=true
+entity 48 e4 11.430621306261584 1.0 3.4968595685262063 -1.772155575856438E-4 -0.04 5.489321563762171E-4 item=minecraft:big_dripleaf count=1 age=33 pickup-delay=0 on-ground=true
+entity 48 e5 12.37019767646965 1.0 3.4734615241458084 3.013038584788942E-4 -0.08 4.100449625848333E-4 item=minecraft:big_dripleaf count=1 age=33 pickup-delay=0 on-ground=true
+entity 48 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=31 pickup-delay=32767 on-ground=true
+entity 48 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=31 pickup-delay=32767 on-ground=true
+
+entity-order 49 entities e1 e2 e3 e4 e5 e6 e7
+entity 49 e1 8.750541780171032 1.0 2.8299109594169423 6.518005282712325E-5 -0.04 1.2605836419171362E-4 item=minecraft:big_dripleaf count=1 age=36 pickup-delay=0 on-ground=true
+entity 49 e2 9.596490795672487 1.0 4.1154318176901405 2.711872989725676E-4 -0.04 3.155767144250532E-4 item=minecraft:big_dripleaf count=1 age=35 pickup-delay=0 on-ground=true
+entity 49 e3 7.125 1.0 2.4809140730840262 0 -0.08 2.6856547430346463E-4 item=minecraft:big_dripleaf count=1 age=35 pickup-delay=0 on-ground=true
+entity 49 e4 11.430621306261584 1.0 3.4968595685262063 -1.772155575856438E-4 -0.08 5.489321563762171E-4 item=minecraft:big_dripleaf count=1 age=34 pickup-delay=0 on-ground=true
+entity 49 e5 12.37019767646965 1.0 3.4734615241458084 3.013038584788942E-4 -0.12 4.100449625848333E-4 item=minecraft:big_dripleaf count=1 age=34 pickup-delay=0 on-ground=true
+entity 49 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=32 pickup-delay=32767 on-ground=true
+entity 49 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=32 pickup-delay=32767 on-ground=true
+
+entity-order 50 entities e1 e2 e3 e4 e5 e6 e7
+entity 50 e1 8.750541780171032 1.0 2.8299109594169423 6.518005282712325E-5 -0.08 1.2605836419171362E-4 item=minecraft:big_dripleaf count=1 age=37 pickup-delay=0 on-ground=true
+entity 50 e2 9.596490795672487 1.0 4.1154318176901405 2.711872989725676E-4 -0.08 3.155767144250532E-4 item=minecraft:big_dripleaf count=1 age=36 pickup-delay=0 on-ground=true
+entity 50 e3 7.125 1.0 2.4809140730840262 0 -0.12 2.6856547430346463E-4 item=minecraft:big_dripleaf count=1 age=36 pickup-delay=0 on-ground=true
+entity 50 e4 11.430621306261584 1.0 3.4968595685262063 -1.772155575856438E-4 -0.12 5.489321563762171E-4 item=minecraft:big_dripleaf count=1 age=35 pickup-delay=0 on-ground=true
+entity 50 e5 12.370498980328128 1.0 3.4738715691083932 1.7716668660102636E-4 0 2.4110646224494167E-4 item=minecraft:big_dripleaf count=1 age=35 pickup-delay=0 on-ground=true
+entity 50 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=33 pickup-delay=32767 on-ground=true
+entity 50 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=33 pickup-delay=32767 on-ground=true
+
+entity-order 51 entities e1 e2 e3 e4 e5 e6 e7
+entity 51 e1 8.750541780171032 1.0 2.8299109594169423 6.518005282712325E-5 -0.12 1.2605836419171362E-4 item=minecraft:big_dripleaf count=1 age=38 pickup-delay=0 on-ground=true
+entity 51 e2 9.596490795672487 1.0 4.1154318176901405 2.711872989725676E-4 -0.12 3.155767144250532E-4 item=minecraft:big_dripleaf count=1 age=37 pickup-delay=0 on-ground=true
+entity 51 e3 7.125 1.0 2.4809140730840262 0 0 1.579165147701249E-4 item=minecraft:big_dripleaf count=1 age=37 pickup-delay=0 on-ground=true
+entity 51 e4 11.430444090703999 1.0 3.4974085006825826 -1.0420275833872595E-4 0 3.227721404063706E-4 item=minecraft:big_dripleaf count=1 age=36 pickup-delay=0 on-ground=true
+entity 51 e5 12.370498980328128 1.0 3.4738715691083932 1.7716668660102636E-4 -0.04 2.4110646224494167E-4 item=minecraft:big_dripleaf count=1 age=36 pickup-delay=0 on-ground=true
+entity 51 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=34 pickup-delay=32767 on-ground=true
+entity 51 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=34 pickup-delay=32767 on-ground=true
+
+entity-order 52 entities e1 e2 e3 e4 e5 e6 e7
+entity 52 e1 8.750541780171032 1.0 2.8299109594169423 3.8325874916302096E-5 0 7.412232559828231E-5 item=minecraft:big_dripleaf count=1 age=39 pickup-delay=0 on-ground=true
+entity 52 e2 9.59676198297146 1.0 4.115747394404566 1.594581478305802E-4 0 1.8555912674129055E-4 item=minecraft:big_dripleaf count=1 age=38 pickup-delay=0 on-ground=true
+entity 52 e3 7.125 1.0 2.4809140730840262 0 -0.04 1.579165147701249E-4 item=minecraft:big_dripleaf count=1 age=38 pickup-delay=0 on-ground=true
+entity 52 e4 11.430444090703999 1.0 3.4974085006825826 -1.0420275833872595E-4 -0.04 3.227721404063706E-4 item=minecraft:big_dripleaf count=1 age=37 pickup-delay=0 on-ground=true
+entity 52 e5 12.370498980328128 1.0 3.4738715691083932 1.7716668660102636E-4 -0.08 2.4110646224494167E-4 item=minecraft:big_dripleaf count=1 age=37 pickup-delay=0 on-ground=true
+entity 52 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=35 pickup-delay=32767 on-ground=true
+entity 52 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=35 pickup-delay=32767 on-ground=true
+
+entity-order 53 entities e1 e2 e3 e4 e5 e6 e7
+entity 53 e1 8.750541780171032 1.0 2.8299109594169423 3.8325874916302096E-5 -0.04 7.412232559828231E-5 item=minecraft:big_dripleaf count=1 age=40 pickup-delay=0 on-ground=true
+entity 53 e2 9.59676198297146 1.0 4.115747394404566 1.594581478305802E-4 -0.04 1.8555912674129055E-4 item=minecraft:big_dripleaf count=1 age=39 pickup-delay=0 on-ground=true
+entity 53 e3 7.125 1.0 2.4809140730840262 0 -0.08 1.579165147701249E-4 item=minecraft:big_dripleaf count=1 age=39 pickup-delay=0 on-ground=true
+entity 53 e4 11.430444090703999 1.0 3.4974085006825826 -1.0420275833872595E-4 -0.08 3.227721404063706E-4 item=minecraft:big_dripleaf count=1 age=38 pickup-delay=0 on-ground=true
+entity 53 e5 12.370498980328128 1.0 3.4738715691083932 1.7716668660102636E-4 -0.12 2.4110646224494167E-4 item=minecraft:big_dripleaf count=1 age=38 pickup-delay=0 on-ground=true
+entity 53 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=36 pickup-delay=32767 on-ground=true
+entity 53 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=36 pickup-delay=32767 on-ground=true
+
+entity-order 54 entities e1 e2 e3 e4 e5 e6 e7
+entity 54 e1 8.750541780171032 1.0 2.8299109594169423 3.8325874916302096E-5 -0.08 7.412232559828231E-5 item=minecraft:big_dripleaf count=1 age=41 pickup-delay=0 on-ground=true
+entity 54 e2 9.59676198297146 1.0 4.115747394404566 1.594581478305802E-4 -0.08 1.8555912674129055E-4 item=minecraft:big_dripleaf count=1 age=40 pickup-delay=0 on-ground=true
+entity 54 e3 7.125 1.0 2.4809140730840262 0 -0.12 1.579165147701249E-4 item=minecraft:big_dripleaf count=1 age=40 pickup-delay=0 on-ground=true
+entity 54 e4 11.430444090703999 1.0 3.4974085006825826 -1.0420275833872595E-4 -0.12 3.227721404063706E-4 item=minecraft:big_dripleaf count=1 age=39 pickup-delay=0 on-ground=true
+entity 54 e5 12.370498980328128 1.0 3.4738715691083932 1.0417402219688126E-4 0 1.417706140561222E-4 item=minecraft:big_dripleaf count=1 age=39 pickup-delay=0 on-ground=true
+entity 54 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=37 pickup-delay=32767 on-ground=true
+entity 54 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=37 pickup-delay=32767 on-ground=true
+
+entity-order 55 entities e1 e2 e3 e4 e5 e6 e7
+entity 55 e1 8.750541780171032 1.0 2.8299109594169423 3.8325874916302096E-5 -0.12 7.412232559828231E-5 item=minecraft:big_dripleaf count=1 age=42 pickup-delay=0 on-ground=true
+entity 55 e2 9.59676198297146 1.0 4.115747394404566 1.594581478305802E-4 -0.12 1.8555912674129055E-4 item=minecraft:big_dripleaf count=1 age=41 pickup-delay=0 on-ground=true
+entity 55 e3 7.125 1.0 2.4809140730840262 0 0 9.285492002209075E-5 item=minecraft:big_dripleaf count=1 age=41 pickup-delay=0 on-ground=true
+entity 55 e4 11.43033988794566 1.0 3.497731272822989 -6.127122806445151E-5 0 1.8979003764375493E-4 item=minecraft:big_dripleaf count=1 age=40 pickup-delay=0 on-ground=true
+entity 55 e5 12.370498980328128 1.0 3.4738715691083932 1.0417402219688126E-4 -0.04 1.417706140561222E-4 item=minecraft:big_dripleaf count=1 age=40 pickup-delay=0 on-ground=true
+entity 55 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=38 pickup-delay=32767 on-ground=true
+entity 55 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=38 pickup-delay=32767 on-ground=true
+
+entity-order 56 entities e1 e2 e3 e4 e5 e6 e7
+entity 56 e1 8.750541780171032 1.0 2.8299109594169423 2.2535616716910593E-5 0 4.358393183448061E-5 item=minecraft:big_dripleaf count=1 age=43 pickup-delay=0 on-ground=true
+entity 56 e2 9.59676198297146 1.0 4.115747394404566 9.376140035279185E-5 0 1.0910877749558319E-4 item=minecraft:big_dripleaf count=1 age=42 pickup-delay=0 on-ground=true
+entity 56 e3 7.125 1.0 2.4809140730840262 0 -0.04 9.285492002209075E-5 item=minecraft:big_dripleaf count=1 age=42 pickup-delay=0 on-ground=true
+entity 56 e4 11.43033988794566 1.0 3.497731272822989 -6.127122806445151E-5 -0.04 1.8979003764375493E-4 item=minecraft:big_dripleaf count=1 age=41 pickup-delay=0 on-ground=true
+entity 56 e5 12.370498980328128 1.0 3.4738715691083932 1.0417402219688126E-4 -0.08 1.417706140561222E-4 item=minecraft:big_dripleaf count=1 age=41 pickup-delay=0 on-ground=true
+entity 56 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=39 pickup-delay=32767 on-ground=true
+entity 56 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=39 pickup-delay=32767 on-ground=true
+
+entity-order 57 entities e1 e2 e3 e4 e5 e6 e7
+entity 57 e1 8.750541780171032 1.0 2.8299109594169423 2.2535616716910593E-5 -0.04 4.358393183448061E-5 item=minecraft:big_dripleaf count=1 age=44 pickup-delay=0 on-ground=true
+entity 57 e2 9.59676198297146 1.0 4.115747394404566 9.376140035279185E-5 -0.04 1.0910877749558319E-4 item=minecraft:big_dripleaf count=1 age=43 pickup-delay=0 on-ground=true
+entity 57 e3 7.125 1.0 2.4809140730840262 0 -0.08 9.285492002209075E-5 item=minecraft:big_dripleaf count=1 age=43 pickup-delay=0 on-ground=true
+entity 57 e4 11.43033988794566 1.0 3.497731272822989 -6.127122806445151E-5 -0.08 1.8979003764375493E-4 item=minecraft:big_dripleaf count=1 age=42 pickup-delay=0 on-ground=true
+entity 57 e5 12.370498980328128 1.0 3.4738715691083932 1.0417402219688126E-4 -0.12 1.417706140561222E-4 item=minecraft:big_dripleaf count=1 age=42 pickup-delay=0 on-ground=true
+entity 57 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=40 pickup-delay=32767 on-ground=true
+entity 57 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=40 pickup-delay=32767 on-ground=true
+
+entity-order 58 entities e1 e2 e3 e4 e5 e6 e7
+entity 58 e1 8.750541780171032 1.0 2.8299109594169423 2.2535616716910593E-5 -0.08 4.358393183448061E-5 item=minecraft:big_dripleaf count=1 age=45 pickup-delay=0 on-ground=true
+entity 58 e2 9.59676198297146 1.0 4.115747394404566 9.376140035279185E-5 -0.08 1.0910877749558319E-4 item=minecraft:big_dripleaf count=1 age=44 pickup-delay=0 on-ground=true
+entity 58 e3 7.125 1.0 2.4809140730840262 0 -0.12 9.285492002209075E-5 item=minecraft:big_dripleaf count=1 age=44 pickup-delay=0 on-ground=true
+entity 58 e4 11.43033988794566 1.0 3.497731272822989 -6.127122806445151E-5 -0.12 1.8979003764375493E-4 item=minecraft:big_dripleaf count=1 age=43 pickup-delay=0 on-ground=true
+entity 58 e5 12.370498980328128 1.0 3.4738715691083932 6.125433121134773E-5 0 8.336112944758545E-5 item=minecraft:big_dripleaf count=1 age=43 pickup-delay=0 on-ground=true
+entity 58 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=41 pickup-delay=32767 on-ground=true
+entity 58 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=41 pickup-delay=32767 on-ground=true
+
+entity-order 59 entities e1 e2 e3 e4 e5 e6 e7
+entity 59 e1 8.750541780171032 1.0 2.8299109594169423 2.2535616716910593E-5 -0.12 4.358393183448061E-5 item=minecraft:big_dripleaf count=1 age=46 pickup-delay=0 on-ground=true
+entity 59 e2 9.59676198297146 1.0 4.115747394404566 9.376140035279185E-5 -0.12 1.0910877749558319E-4 item=minecraft:big_dripleaf count=1 age=45 pickup-delay=0 on-ground=true
+entity 59 e3 7.125 1.0 2.4809140730840262 0 0 5.459869846329721E-5 item=minecraft:big_dripleaf count=1 age=45 pickup-delay=0 on-ground=true
+entity 59 e4 11.43033988794566 1.0 3.497731272822989 -3.6027485724730876E-5 0 1.1159655335639674E-4 item=minecraft:big_dripleaf count=1 age=44 pickup-delay=0 on-ground=true
+entity 59 e5 12.370498980328128 1.0 3.4738715691083932 6.125433121134773E-5 -0.04 8.336112944758545E-5 item=minecraft:big_dripleaf count=1 age=44 pickup-delay=0 on-ground=true
+entity 59 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=42 pickup-delay=32767 on-ground=true
+entity 59 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=42 pickup-delay=32767 on-ground=true
+
+entity-order 60 entities e1 e2 e3 e4 e5 e6 e7
+entity 60 e1 8.750541780171032 1.0 2.8299109594169423 1.3250943962025039E-5 0 2.5627354495696934E-5 item=minecraft:big_dripleaf count=1 age=47 pickup-delay=0 on-ground=true
+entity 60 e2 9.59676198297146 1.0 4.115747394404566 5.513170895134765E-5 0 6.415596761876572E-5 item=minecraft:big_dripleaf count=1 age=46 pickup-delay=0 on-ground=true
+entity 60 e3 7.125 1.0 2.4809140730840262 0 -0.04 5.459869846329721E-5 item=minecraft:big_dripleaf count=1 age=46 pickup-delay=0 on-ground=true
+entity 60 e4 11.43033988794566 1.0 3.497731272822989 -3.6027485724730876E-5 -0.04 1.1159655335639674E-4 item=minecraft:big_dripleaf count=1 age=45 pickup-delay=0 on-ground=true
+entity 60 e5 12.370498980328128 1.0 3.4738715691083932 6.125433121134773E-5 -0.08 8.336112944758545E-5 item=minecraft:big_dripleaf count=1 age=45 pickup-delay=0 on-ground=true
+entity 60 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=43 pickup-delay=32767 on-ground=true
+entity 60 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=43 pickup-delay=32767 on-ground=true
+
+entity-order 61 entities e1 e2 e3 e4 e5 e6 e7
+entity 61 e1 8.750541780171032 1.0 2.8299109594169423 1.3250943962025039E-5 -0.04 2.5627354495696934E-5 item=minecraft:big_dripleaf count=1 age=48 pickup-delay=0 on-ground=true
+entity 61 e2 9.59676198297146 1.0 4.115747394404566 5.513170895134765E-5 -0.04 6.415596761876572E-5 item=minecraft:big_dripleaf count=1 age=47 pickup-delay=0 on-ground=true
+entity 61 e3 7.125 1.0 2.4809140730840262 0 -0.08 5.459869846329721E-5 item=minecraft:big_dripleaf count=1 age=47 pickup-delay=0 on-ground=true
+entity 61 e4 11.43033988794566 1.0 3.497731272822989 -3.6027485724730876E-5 -0.08 1.1159655335639674E-4 item=minecraft:big_dripleaf count=1 age=46 pickup-delay=0 on-ground=true
+entity 61 e5 12.370498980328128 1.0 3.4738715691083932 6.125433121134773E-5 -0.12 8.336112944758545E-5 item=minecraft:big_dripleaf count=1 age=46 pickup-delay=0 on-ground=true
+entity 61 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=44 pickup-delay=32767 on-ground=true
+entity 61 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=44 pickup-delay=32767 on-ground=true
+
+entity-order 62 entities e1 e2 e3 e4 e5 e6 e7
+entity 62 e1 8.750541780171032 1.0 2.8299109594169423 1.3250943962025039E-5 -0.08 2.5627354495696934E-5 item=minecraft:big_dripleaf count=1 age=49 pickup-delay=0 on-ground=true
+entity 62 e2 9.59676198297146 1.0 4.115747394404566 5.513170895134765E-5 -0.08 6.415596761876572E-5 item=minecraft:big_dripleaf count=1 age=48 pickup-delay=0 on-ground=true
+entity 62 e3 7.125 1.0 2.4809140730840262 0 -0.12 5.459869846329721E-5 item=minecraft:big_dripleaf count=1 age=48 pickup-delay=0 on-ground=true
+entity 62 e4 11.43033988794566 1.0 3.497731272822989 -3.6027485724730876E-5 -0.12 1.1159655335639674E-4 item=minecraft:big_dripleaf count=1 age=47 pickup-delay=0 on-ground=true
+entity 62 e5 12.370498980328128 1.0 3.4738715691083932 3.6017550374106774E-5 0 4.901634904414107E-5 item=minecraft:big_dripleaf count=1 age=47 pickup-delay=0 on-ground=true
+entity 62 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=45 pickup-delay=32767 on-ground=true
+entity 62 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=45 pickup-delay=32767 on-ground=true
+
+entity-order 63 entities e1 e2 e3 e4 e5 e6 e7
+entity 63 e1 8.750541780171032 1.0 2.8299109594169423 1.3250943962025039E-5 -0.12 2.5627354495696934E-5 item=minecraft:big_dripleaf count=1 age=50 pickup-delay=0 on-ground=true
+entity 63 e2 9.59676198297146 1.0 4.115747394404566 5.513170895134765E-5 -0.12 6.415596761876572E-5 item=minecraft:big_dripleaf count=1 age=49 pickup-delay=0 on-ground=true
+entity 63 e3 7.125 1.0 2.4809140730840262 0 0 3.2104037924720096E-5 item=minecraft:big_dripleaf count=1 age=49 pickup-delay=0 on-ground=true
+entity 63 e4 11.43033988794566 1.0 3.497731272822989 -2.1184163736368E-5 0 6.561877997202082E-5 item=minecraft:big_dripleaf count=1 age=48 pickup-delay=0 on-ground=true
+entity 63 e5 12.370498980328128 1.0 3.4738715691083932 3.6017550374106774E-5 -0.04 4.901634904414107E-5 item=minecraft:big_dripleaf count=1 age=48 pickup-delay=0 on-ground=true
+entity 63 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=46 pickup-delay=32767 on-ground=true
+entity 63 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=46 pickup-delay=32767 on-ground=true
+
+entity-order 64 entities e1 e2 e3 e4 e5 e6 e7
+entity 64 e1 8.750541780171032 1.0 2.8299109594169423 7.791555833169988E-6 0 1.5068885958759083E-5 item=minecraft:big_dripleaf count=1 age=51 pickup-delay=0 on-ground=true
+entity 64 e2 9.59676198297146 1.0 4.115747394404566 3.24174481232095E-5 0 3.772371275323595E-5 item=minecraft:big_dripleaf count=1 age=50 pickup-delay=0 on-ground=true
+entity 64 e3 7.125 1.0 2.4809140730840262 0 -0.04 3.2104037924720096E-5 item=minecraft:big_dripleaf count=1 age=50 pickup-delay=0 on-ground=true
+entity 64 e4 11.43033988794566 1.0 3.497731272822989 -2.1184163736368E-5 -0.04 6.561877997202082E-5 item=minecraft:big_dripleaf count=1 age=49 pickup-delay=0 on-ground=true
+entity 64 e5 12.370498980328128 1.0 3.4738715691083932 3.6017550374106774E-5 -0.08 4.901634904414107E-5 item=minecraft:big_dripleaf count=1 age=49 pickup-delay=0 on-ground=true
+entity 64 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=47 pickup-delay=32767 on-ground=true
+entity 64 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=47 pickup-delay=32767 on-ground=true
+
+entity-order 65 entities e1 e2 e3 e4 e5 e6 e7
+entity 65 e1 8.750541780171032 1.0 2.8299109594169423 7.791555833169988E-6 -0.04 1.5068885958759083E-5 item=minecraft:big_dripleaf count=1 age=52 pickup-delay=0 on-ground=true
+entity 65 e2 9.59676198297146 1.0 4.115747394404566 3.24174481232095E-5 -0.04 3.772371275323595E-5 item=minecraft:big_dripleaf count=1 age=51 pickup-delay=0 on-ground=true
+entity 65 e3 7.125 1.0 2.4809140730840262 0 -0.08 3.2104037924720096E-5 item=minecraft:big_dripleaf count=1 age=51 pickup-delay=0 on-ground=true
+entity 65 e4 11.43033988794566 1.0 3.497731272822989 -2.1184163736368E-5 -0.08 6.561877997202082E-5 item=minecraft:big_dripleaf count=1 age=50 pickup-delay=0 on-ground=true
+entity 65 e5 12.370498980328128 1.0 3.4738715691083932 3.6017550374106774E-5 -0.12 4.901634904414107E-5 item=minecraft:big_dripleaf count=1 age=50 pickup-delay=0 on-ground=true
+entity 65 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=48 pickup-delay=32767 on-ground=true
+entity 65 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=48 pickup-delay=32767 on-ground=true
+
+entity-order 66 entities e1 e2 e3 e4 e5 e6 e7
+entity 66 e1 8.750541780171032 1.0 2.8299109594169423 7.791555833169988E-6 -0.08 1.5068885958759083E-5 item=minecraft:big_dripleaf count=1 age=53 pickup-delay=0 on-ground=true
+entity 66 e2 9.59676198297146 1.0 4.115747394404566 3.24174481232095E-5 -0.08 3.772371275323595E-5 item=minecraft:big_dripleaf count=1 age=52 pickup-delay=0 on-ground=true
+entity 66 e3 7.125 1.0 2.4809140730840262 0 -0.12 3.2104037924720096E-5 item=minecraft:big_dripleaf count=1 age=52 pickup-delay=0 on-ground=true
+entity 66 e4 11.43033988794566 1.0 3.497731272822989 -2.1184163736368E-5 -0.12 6.561877997202082E-5 item=minecraft:big_dripleaf count=1 age=51 pickup-delay=0 on-ground=true
+entity 66 e5 12.370498980328128 1.0 3.4738715691083932 2.117832174961357E-5 0 2.8821616136184205E-5 item=minecraft:big_dripleaf count=1 age=51 pickup-delay=0 on-ground=true
+entity 66 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=49 pickup-delay=32767 on-ground=true
+entity 66 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=49 pickup-delay=32767 on-ground=true
+
+entity-order 67 entities e1 e2 e3 e4 e5 e6 e7
+entity 67 e1 8.750541780171032 1.0 2.8299109594169423 7.791555833169988E-6 -0.12 1.5068885958759083E-5 item=minecraft:big_dripleaf count=1 age=54 pickup-delay=0 on-ground=true
+entity 67 e2 9.59676198297146 1.0 4.115747394404566 3.24174481232095E-5 -0.12 3.772371275323595E-5 item=minecraft:big_dripleaf count=1 age=53 pickup-delay=0 on-ground=true
+entity 67 e3 7.125 1.0 2.4809140730840262 0 0 1.8877176197976794E-5 item=minecraft:big_dripleaf count=1 age=53 pickup-delay=0 on-ground=true
+entity 67 e4 11.43033988794566 1.0 3.497731272822989 -1.2456289529557541E-5 0 3.8583846503442835E-5 item=minecraft:big_dripleaf count=1 age=52 pickup-delay=0 on-ground=true
+entity 67 e5 12.370498980328128 1.0 3.4738715691083932 2.117832174961357E-5 -0.04 2.8821616136184205E-5 item=minecraft:big_dripleaf count=1 age=52 pickup-delay=0 on-ground=true
+entity 67 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=50 pickup-delay=32767 on-ground=true
+entity 67 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=50 pickup-delay=32767 on-ground=true
+
+entity-order 68 entities e1 e2 e3 e4 e5 e6 e7
+entity 68 e1 8.750541780171032 1.0 2.8299109594169423 4.581435290601568E-6 0 8.86050583474053E-6 item=minecraft:big_dripleaf count=1 age=55 pickup-delay=0 on-ground=true
+entity 68 e2 9.59676198297146 1.0 4.115747394404566 1.906146141321982E-5 0 2.2181545329423172E-5 item=minecraft:big_dripleaf count=1 age=54 pickup-delay=0 on-ground=true
+entity 68 e3 7.125 1.0 2.4809140730840262 0 -0.04 1.8877176197976794E-5 item=minecraft:big_dripleaf count=1 age=54 pickup-delay=0 on-ground=true
+entity 68 e4 11.43033988794566 1.0 3.497731272822989 -1.2456289529557541E-5 -0.04 3.8583846503442835E-5 item=minecraft:big_dripleaf count=1 age=53 pickup-delay=0 on-ground=true
+entity 68 e5 12.370498980328128 1.0 3.4738715691083932 2.117832174961357E-5 -0.08 2.8821616136184205E-5 item=minecraft:big_dripleaf count=1 age=53 pickup-delay=0 on-ground=true
+entity 68 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=51 pickup-delay=32767 on-ground=true
+entity 68 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=51 pickup-delay=32767 on-ground=true
+
+entity-order 69 entities e1 e2 e3 e4 e5 e6 e7
+entity 69 e1 8.750541780171032 1.0 2.8299109594169423 4.581435290601568E-6 -0.04 8.86050583474053E-6 item=minecraft:big_dripleaf count=1 age=56 pickup-delay=0 on-ground=true
+entity 69 e2 9.59676198297146 1.0 4.115747394404566 1.906146141321982E-5 -0.04 2.2181545329423172E-5 item=minecraft:big_dripleaf count=1 age=55 pickup-delay=0 on-ground=true
+entity 69 e3 7.125 1.0 2.4809140730840262 0 -0.08 1.8877176197976794E-5 item=minecraft:big_dripleaf count=1 age=55 pickup-delay=0 on-ground=true
+entity 69 e4 11.43033988794566 1.0 3.497731272822989 -1.2456289529557541E-5 -0.08 3.8583846503442835E-5 item=minecraft:big_dripleaf count=1 age=54 pickup-delay=0 on-ground=true
+entity 69 e5 12.370498980328128 1.0 3.4738715691083932 2.117832174961357E-5 -0.12 2.8821616136184205E-5 item=minecraft:big_dripleaf count=1 age=54 pickup-delay=0 on-ground=true
+entity 69 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=52 pickup-delay=32767 on-ground=true
+entity 69 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=52 pickup-delay=32767 on-ground=true
+
+entity-order 70 entities e1 e2 e3 e4 e5 e6 e7
+entity 70 e1 8.750541780171032 1.0 2.8299109594169423 4.581435290601568E-6 -0.08 8.86050583474053E-6 item=minecraft:big_dripleaf count=1 age=57 pickup-delay=0 on-ground=true
+entity 70 e2 9.59676198297146 1.0 4.115747394404566 1.906146141321982E-5 -0.08 2.2181545329423172E-5 item=minecraft:big_dripleaf count=1 age=56 pickup-delay=0 on-ground=true
+entity 70 e3 7.125 1.0 2.4809140730840262 0 -0.12 1.8877176197976794E-5 item=minecraft:big_dripleaf count=1 age=56 pickup-delay=0 on-ground=true
+entity 70 e4 11.43033988794566 1.0 3.497731272822989 -1.2456289529557541E-5 -0.12 3.8583846503442835E-5 item=minecraft:big_dripleaf count=1 age=55 pickup-delay=0 on-ground=true
+entity 70 e5 12.370498980328128 1.0 3.4738715691083932 1.2452854441000514E-5 0 1.6947111992235285E-5 item=minecraft:big_dripleaf count=1 age=55 pickup-delay=0 on-ground=true
+entity 70 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=53 pickup-delay=32767 on-ground=true
+entity 70 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=53 pickup-delay=32767 on-ground=true
+
+entity-order 71 entities e1 e2 e3 e4 e5 e6 e7
+entity 71 e1 8.750541780171032 1.0 2.8299109594169423 4.581435290601568E-6 -0.12 8.86050583474053E-6 item=minecraft:big_dripleaf count=1 age=58 pickup-delay=0 on-ground=true
+entity 71 e2 9.59676198297146 1.0 4.115747394404566 1.906146141321982E-5 -0.12 2.2181545329423172E-5 item=minecraft:big_dripleaf count=1 age=57 pickup-delay=0 on-ground=true
+entity 71 e3 7.125 1.0 2.4809140730840262 0 0 1.1099780720576397E-5 item=minecraft:big_dripleaf count=1 age=57 pickup-delay=0 on-ground=true
+entity 71 e4 11.43033988794566 1.0 3.497731272822989 -7.324298979892925E-6 0 2.268730402540264E-5 item=minecraft:big_dripleaf count=1 age=56 pickup-delay=0 on-ground=true
+entity 71 e5 12.370498980328128 1.0 3.4738715691083932 1.2452854441000514E-5 -0.04 1.6947111992235285E-5 item=minecraft:big_dripleaf count=1 age=56 pickup-delay=0 on-ground=true
+entity 71 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=54 pickup-delay=32767 on-ground=true
+entity 71 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=54 pickup-delay=32767 on-ground=true
+
+entity-order 72 entities e1 e2 e3 e4 e5 e6 e7
+entity 72 e1 8.750541780171032 1.0 2.8299109594169423 2.693884221763946E-6 0 5.209977954729716E-6 item=minecraft:big_dripleaf count=1 age=59 pickup-delay=0 on-ground=true
+entity 72 e2 9.59676198297146 1.0 4.115747394404566 1.1208140438035677E-5 0 1.304274996524697E-5 item=minecraft:big_dripleaf count=1 age=58 pickup-delay=0 on-ground=true
+entity 72 e3 7.125 1.0 2.4809140730840262 0 -0.04 1.1099780720576397E-5 item=minecraft:big_dripleaf count=1 age=58 pickup-delay=0 on-ground=true
+entity 72 e4 11.43033988794566 1.0 3.497731272822989 -7.324298979892925E-6 -0.04 2.268730402540264E-5 item=minecraft:big_dripleaf count=1 age=57 pickup-delay=0 on-ground=true
+entity 72 e5 12.370498980328128 1.0 3.4738715691083932 1.2452854441000514E-5 -0.08 1.6947111992235285E-5 item=minecraft:big_dripleaf count=1 age=57 pickup-delay=0 on-ground=true
+entity 72 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=55 pickup-delay=32767 on-ground=true
+entity 72 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=55 pickup-delay=32767 on-ground=true
+
+entity-order 73 entities e1 e2 e3 e4 e5 e6 e7
+entity 73 e1 8.750541780171032 1.0 2.8299109594169423 2.693884221763946E-6 -0.04 5.209977954729716E-6 item=minecraft:big_dripleaf count=1 age=60 pickup-delay=0 on-ground=true
+entity 73 e2 9.59676198297146 1.0 4.115747394404566 1.1208140438035677E-5 -0.04 1.304274996524697E-5 item=minecraft:big_dripleaf count=1 age=59 pickup-delay=0 on-ground=true
+entity 73 e3 7.125 1.0 2.4809140730840262 0 -0.08 1.1099780720576397E-5 item=minecraft:big_dripleaf count=1 age=59 pickup-delay=0 on-ground=true
+entity 73 e4 11.43033988794566 1.0 3.497731272822989 -7.324298979892925E-6 -0.08 2.268730402540264E-5 item=minecraft:big_dripleaf count=1 age=58 pickup-delay=0 on-ground=true
+entity 73 e5 12.370498980328128 1.0 3.4738715691083932 1.2452854441000514E-5 -0.12 1.6947111992235285E-5 item=minecraft:big_dripleaf count=1 age=58 pickup-delay=0 on-ground=true
+entity 73 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=56 pickup-delay=32767 on-ground=true
+entity 73 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=56 pickup-delay=32767 on-ground=true
+
+entity-order 74 entities e1 e2 e3 e4 e5 e6 e7
+entity 74 e1 8.750541780171032 1.0 2.8299109594169423 2.693884221763946E-6 -0.08 5.209977954729716E-6 item=minecraft:big_dripleaf count=1 age=61 pickup-delay=0 on-ground=true
+entity 74 e2 9.59676198297146 1.0 4.115747394404566 1.1208140438035677E-5 -0.08 1.304274996524697E-5 item=minecraft:big_dripleaf count=1 age=60 pickup-delay=0 on-ground=true
+entity 74 e3 7.125 1.0 2.4809140730840262 0 -0.12 1.1099780720576397E-5 item=minecraft:big_dripleaf count=1 age=60 pickup-delay=0 on-ground=true
+entity 74 e4 11.43033988794566 1.0 3.497731272822989 -7.324298979892925E-6 -0.12 2.268730402540264E-5 item=minecraft:big_dripleaf count=1 age=59 pickup-delay=0 on-ground=true
+entity 74 e5 12.370498980328128 1.0 3.4738715691083932 7.322279147618284E-6 0 9.964902853479926E-6 item=minecraft:big_dripleaf count=1 age=59 pickup-delay=0 on-ground=true
+entity 74 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=57 pickup-delay=32767 on-ground=true
+entity 74 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=57 pickup-delay=32767 on-ground=true
+
+entity-order 75 entities e1 e2 e3 e4 e5 e6 e7
+entity 75 e1 8.750541780171032 1.0 2.8299109594169423 2.693884221763946E-6 -0.12 5.209977954729716E-6 item=minecraft:big_dripleaf count=1 age=62 pickup-delay=0 on-ground=true
+entity 75 e2 9.59676198297146 1.0 4.115747394404566 1.1208140438035677E-5 -0.12 1.304274996524697E-5 item=minecraft:big_dripleaf count=1 age=61 pickup-delay=0 on-ground=true
+entity 75 e3 7.125 1.0 2.4809140730840262 0 0 6.52667172000462E-6 item=minecraft:big_dripleaf count=1 age=61 pickup-delay=0 on-ground=true
+entity 75 e4 11.43033988794566 1.0 3.497731272822989 -4.306688233246781E-6 0 1.33401361083873E-5 item=minecraft:big_dripleaf count=1 age=60 pickup-delay=0 on-ground=true
+entity 75 e5 12.370498980328128 1.0 3.4738715691083932 7.322279147618284E-6 -0.04 9.964902853479926E-6 item=minecraft:big_dripleaf count=1 age=60 pickup-delay=0 on-ground=true
+entity 75 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=58 pickup-delay=32767 on-ground=true
+entity 75 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=58 pickup-delay=32767 on-ground=true
+
+entity-order 76 entities e1 e2 e3 e4 e5 e6 e7
+entity 76 e1 8.750541780171032 1.0 2.8299109594169423 1.5840040816806683E-6 0 3.0634673454356473E-6 item=minecraft:big_dripleaf count=1 age=63 pickup-delay=0 on-ground=true
+entity 76 e2 9.59676198297146 1.0 4.115747394404566 6.59038724027775E-6 0 7.66913775075443E-6 item=minecraft:big_dripleaf count=1 age=62 pickup-delay=0 on-ground=true
+entity 76 e3 7.125 1.0 2.4809140730840262 0 -0.04 6.52667172000462E-6 item=minecraft:big_dripleaf count=1 age=62 pickup-delay=0 on-ground=true
+entity 76 e4 11.43033988794566 1.0 3.497731272822989 -4.306688233246781E-6 -0.04 1.33401361083873E-5 item=minecraft:big_dripleaf count=1 age=61 pickup-delay=0 on-ground=true
+entity 76 e5 12.370498980328128 1.0 3.4738715691083932 7.322279147618284E-6 -0.08 9.964902853479926E-6 item=minecraft:big_dripleaf count=1 age=61 pickup-delay=0 on-ground=true
+entity 76 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=59 pickup-delay=32767 on-ground=true
+entity 76 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=59 pickup-delay=32767 on-ground=true
+
+entity-order 77 entities e1 e2 e3 e4 e5 e6 e7
+entity 77 e1 8.750541780171032 1.0 2.8299109594169423 1.5840040816806683E-6 -0.04 3.0634673454356473E-6 item=minecraft:big_dripleaf count=1 age=64 pickup-delay=0 on-ground=true
+entity 77 e2 9.59676198297146 1.0 4.115747394404566 6.59038724027775E-6 -0.04 7.66913775075443E-6 item=minecraft:big_dripleaf count=1 age=63 pickup-delay=0 on-ground=true
+entity 77 e3 7.125 1.0 2.4809140730840262 0 -0.08 6.52667172000462E-6 item=minecraft:big_dripleaf count=1 age=63 pickup-delay=0 on-ground=true
+entity 77 e4 11.43033988794566 1.0 3.497731272822989 -4.306688233246781E-6 -0.08 1.33401361083873E-5 item=minecraft:big_dripleaf count=1 age=62 pickup-delay=0 on-ground=true
+entity 77 e5 12.370498980328128 1.0 3.4738715691083932 7.322279147618284E-6 -0.12 9.964902853479926E-6 item=minecraft:big_dripleaf count=1 age=62 pickup-delay=0 on-ground=true
+entity 77 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=60 pickup-delay=32767 on-ground=true
+entity 77 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=60 pickup-delay=32767 on-ground=true
+
+entity-order 78 entities e1 e2 e3 e4 e5 e6 e7
+entity 78 e1 8.750541780171032 1.0 2.8299109594169423 1.5840040816806683E-6 -0.08 3.0634673454356473E-6 item=minecraft:big_dripleaf count=1 age=65 pickup-delay=0 on-ground=true
+entity 78 e2 9.59676198297146 1.0 4.115747394404566 6.59038724027775E-6 -0.08 7.66913775075443E-6 item=minecraft:big_dripleaf count=1 age=64 pickup-delay=0 on-ground=true
+entity 78 e3 7.125 1.0 2.4809140730840262 0 -0.12 6.52667172000462E-6 item=minecraft:big_dripleaf count=1 age=64 pickup-delay=0 on-ground=true
+entity 78 e4 11.43033988794566 1.0 3.497731272822989 -4.306688233246781E-6 -0.12 1.33401361083873E-5 item=minecraft:big_dripleaf count=1 age=63 pickup-delay=0 on-ground=true
+entity 78 e5 12.370498980328128 1.0 3.4738715691083932 4.305500571749864E-6 0 5.859363467049055E-6 item=minecraft:big_dripleaf count=1 age=63 pickup-delay=0 on-ground=true
+entity 78 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=61 pickup-delay=32767 on-ground=true
+entity 78 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=61 pickup-delay=32767 on-ground=true
+
+entity-order 79 entities e1 e2 e3 e4 e5 e6 e7
+entity 79 e1 8.750541780171032 1.0 2.8299109594169423 1.5840040816806683E-6 -0.12 3.0634673454356473E-6 item=minecraft:big_dripleaf count=1 age=66 pickup-delay=0 on-ground=true
+entity 79 e2 9.59676198297146 1.0 4.115747394404566 6.59038724027775E-6 -0.12 7.66913775075443E-6 item=minecraft:big_dripleaf count=1 age=65 pickup-delay=0 on-ground=true
+entity 79 e3 7.125 1.0 2.4809140730840262 0 0 3.837683357270506E-6 item=minecraft:big_dripleaf count=1 age=65 pickup-delay=0 on-ground=true
+entity 79 e4 11.43033988794566 1.0 3.497731272822989 -2.5323329357941404E-6 0 7.844000820504734E-6 item=minecraft:big_dripleaf count=1 age=64 pickup-delay=0 on-ground=true
+entity 79 e5 12.370498980328128 1.0 3.4738715691083932 4.305500571749864E-6 -0.04 5.859363467049055E-6 item=minecraft:big_dripleaf count=1 age=64 pickup-delay=0 on-ground=true
+entity 79 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=62 pickup-delay=32767 on-ground=true
+entity 79 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=62 pickup-delay=32767 on-ground=true
+
+entity-order 80 entities e1 e2 e3 e4 e5 e6 e7
+entity 80 e1 8.750541780171032 1.0 2.8299109594169423 9.313944936869216E-7 0 1.8013189802522685E-6 item=minecraft:big_dripleaf count=1 age=67 pickup-delay=0 on-ground=true
+entity 80 e2 9.59676198297146 1.0 4.115747394404566 3.875148086958466E-6 0 4.509453450902906E-6 item=minecraft:big_dripleaf count=1 age=66 pickup-delay=0 on-ground=true
+entity 80 e3 7.125 1.0 2.4809140730840262 0 -0.04 3.837683357270506E-6 item=minecraft:big_dripleaf count=1 age=66 pickup-delay=0 on-ground=true
+entity 80 e4 11.43033988794566 1.0 3.497731272822989 -2.5323329357941404E-6 -0.04 7.844000820504734E-6 item=minecraft:big_dripleaf count=1 age=65 pickup-delay=0 on-ground=true
+entity 80 e5 12.370498980328128 1.0 3.4738715691083932 4.305500571749864E-6 -0.08 5.859363467049055E-6 item=minecraft:big_dripleaf count=1 age=65 pickup-delay=0 on-ground=true
+entity 80 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=63 pickup-delay=32767 on-ground=true
+entity 80 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=63 pickup-delay=32767 on-ground=true
+
+entity-order 81 entities e1 e2 e3 e4 e5 e6 e7
+entity 81 e1 8.750541780171032 1.0 2.8299109594169423 9.313944936869216E-7 -0.04 1.8013189802522685E-6 item=minecraft:big_dripleaf count=1 age=68 pickup-delay=0 on-ground=true
+entity 81 e2 9.59676198297146 1.0 4.115747394404566 3.875148086958466E-6 -0.04 4.509453450902906E-6 item=minecraft:big_dripleaf count=1 age=67 pickup-delay=0 on-ground=true
+entity 81 e3 7.125 1.0 2.4809140730840262 0 -0.08 3.837683357270506E-6 item=minecraft:big_dripleaf count=1 age=67 pickup-delay=0 on-ground=true
+entity 81 e4 11.43033988794566 1.0 3.497731272822989 -2.5323329357941404E-6 -0.08 7.844000820504734E-6 item=minecraft:big_dripleaf count=1 age=66 pickup-delay=0 on-ground=true
+entity 81 e5 12.370498980328128 1.0 3.4738715691083932 4.305500571749864E-6 -0.12 5.859363467049055E-6 item=minecraft:big_dripleaf count=1 age=66 pickup-delay=0 on-ground=true
+entity 81 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=64 pickup-delay=32767 on-ground=true
+entity 81 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=64 pickup-delay=32767 on-ground=true
+
+entity-order 82 entities e1 e2 e3 e4 e5 e6 e7
+entity 82 e1 8.750541780171032 1.0 2.8299109594169423 9.313944936869216E-7 -0.08 1.8013189802522685E-6 item=minecraft:big_dripleaf count=1 age=69 pickup-delay=0 on-ground=true
+entity 82 e2 9.59676198297146 1.0 4.115747394404566 3.875148086958466E-6 -0.08 4.509453450902906E-6 item=minecraft:big_dripleaf count=1 age=68 pickup-delay=0 on-ground=true
+entity 82 e3 7.125 1.0 2.4809140730840262 0 -0.12 3.837683357270506E-6 item=minecraft:big_dripleaf count=1 age=68 pickup-delay=0 on-ground=true
+entity 82 e4 11.43033988794566 1.0 3.497731272822989 -2.5323329357941404E-6 -0.12 7.844000820504734E-6 item=minecraft:big_dripleaf count=1 age=67 pickup-delay=0 on-ground=true
+entity 82 e5 12.370498980328128 1.0 3.4738715691083932 2.5316345907637297E-6 0 3.4453060650761603E-6 item=minecraft:big_dripleaf count=1 age=67 pickup-delay=0 on-ground=true
+entity 82 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=65 pickup-delay=32767 on-ground=true
+entity 82 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=65 pickup-delay=32767 on-ground=true
+
+entity-order 83 entities e1 e2 e3 e4 e5 e6 e7
+entity 83 e1 8.750541780171032 1.0 2.8299109594169423 9.313944936869216E-7 -0.12 1.8013189802522685E-6 item=minecraft:big_dripleaf count=1 age=70 pickup-delay=0 on-ground=true
+entity 83 e2 9.59676198297146 1.0 4.115747394404566 3.875148086958466E-6 -0.12 4.509453450902906E-6 item=minecraft:big_dripleaf count=1 age=69 pickup-delay=0 on-ground=true
+entity 83 e3 7.125 1.0 2.4809140730840262 0 0 2.256558040988861E-6 item=minecraft:big_dripleaf count=1 age=69 pickup-delay=0 on-ground=true
+entity 83 e4 11.43033988794566 1.0 3.497731272822989 -1.4890119159782491E-6 0 4.612272946255355E-6 item=minecraft:big_dripleaf count=1 age=68 pickup-delay=0 on-ground=true
+entity 83 e5 12.370498980328128 1.0 3.4738715691083932 2.5316345907637297E-6 -0.04 3.4453060650761603E-6 item=minecraft:big_dripleaf count=1 age=68 pickup-delay=0 on-ground=true
+entity 83 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=66 pickup-delay=32767 on-ground=true
+entity 83 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=66 pickup-delay=32767 on-ground=true
+
+entity-order 84 entities e1 e2 e3 e4 e5 e6 e7
+entity 84 e1 8.750541780171032 1.0 2.8299109594169423 5.476600173592243E-7 0 1.059175666896376E-6 item=minecraft:big_dripleaf count=1 age=71 pickup-delay=0 on-ground=true
+entity 84 e2 9.59676198297146 1.0 4.115747394404566 2.2785873042605886E-6 0 2.651558895765005E-6 item=minecraft:big_dripleaf count=1 age=70 pickup-delay=0 on-ground=true
+entity 84 e3 7.125 1.0 2.4809140730840262 0 -0.04 2.256558040988861E-6 item=minecraft:big_dripleaf count=1 age=70 pickup-delay=0 on-ground=true
+entity 84 e4 11.43033988794566 1.0 3.497731272822989 -1.4890119159782491E-6 -0.04 4.612272946255355E-6 item=minecraft:big_dripleaf count=1 age=69 pickup-delay=0 on-ground=true
+entity 84 e5 12.370498980328128 1.0 3.4738715691083932 2.5316345907637297E-6 -0.08 3.4453060650761603E-6 item=minecraft:big_dripleaf count=1 age=69 pickup-delay=0 on-ground=true
+entity 84 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=67 pickup-delay=32767 on-ground=true
+entity 84 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=67 pickup-delay=32767 on-ground=true
+
+entity-order 85 entities e1 e2 e3 e4 e5 e6 e7
+entity 85 e1 8.750541780171032 1.0 2.8299109594169423 5.476600173592243E-7 -0.04 1.059175666896376E-6 item=minecraft:big_dripleaf count=1 age=72 pickup-delay=0 on-ground=true
+entity 85 e2 9.59676198297146 1.0 4.115747394404566 2.2785873042605886E-6 -0.04 2.651558895765005E-6 item=minecraft:big_dripleaf count=1 age=71 pickup-delay=0 on-ground=true
+entity 85 e3 7.125 1.0 2.4809140730840262 0 -0.08 2.256558040988861E-6 item=minecraft:big_dripleaf count=1 age=71 pickup-delay=0 on-ground=true
+entity 85 e4 11.43033988794566 1.0 3.497731272822989 -1.4890119159782491E-6 -0.08 4.612272946255355E-6 item=minecraft:big_dripleaf count=1 age=70 pickup-delay=0 on-ground=true
+entity 85 e5 12.370498980328128 1.0 3.4738715691083932 2.5316345907637297E-6 -0.12 3.4453060650761603E-6 item=minecraft:big_dripleaf count=1 age=70 pickup-delay=0 on-ground=true
+entity 85 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=68 pickup-delay=32767 on-ground=true
+entity 85 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=68 pickup-delay=32767 on-ground=true
+
+entity-order 86 entities e1 e2 e3 e4 e5 e6 e7
+entity 86 e1 8.750541780171032 1.0 2.8299109594169423 5.476600173592243E-7 -0.08 1.059175666896376E-6 item=minecraft:big_dripleaf count=1 age=73 pickup-delay=0 on-ground=true
+entity 86 e2 9.59676198297146 1.0 4.115747394404566 2.2785873042605886E-6 -0.08 2.651558895765005E-6 item=minecraft:big_dripleaf count=1 age=72 pickup-delay=0 on-ground=true
+entity 86 e3 7.125 1.0 2.4809140730840262 0 -0.12 2.256558040988861E-6 item=minecraft:big_dripleaf count=1 age=72 pickup-delay=0 on-ground=true
+entity 86 e4 11.43033988794566 1.0 3.497731272822989 -1.4890119159782491E-6 -0.12 4.612272946255355E-6 item=minecraft:big_dripleaf count=1 age=71 pickup-delay=0 on-ground=true
+entity 86 e5 12.370498980328128 1.0 3.4738715691083932 1.488601289059076E-6 0 2.0258401699781766E-6 item=minecraft:big_dripleaf count=1 age=71 pickup-delay=0 on-ground=true
+entity 86 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=69 pickup-delay=32767 on-ground=true
+entity 86 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=69 pickup-delay=32767 on-ground=true
+
+entity-order 87 entities e1 e2 e3 e4 e5 e6 e7
+entity 87 e1 8.750541780171032 1.0 2.8299109594169423 5.476600173592243E-7 -0.12 1.059175666896376E-6 item=minecraft:big_dripleaf count=1 age=74 pickup-delay=0 on-ground=true
+entity 87 e2 9.59676198297146 1.0 4.115747394404566 2.2785873042605886E-6 -0.12 2.651558895765005E-6 item=minecraft:big_dripleaf count=1 age=73 pickup-delay=0 on-ground=true
+entity 87 e3 7.125 1.0 2.4809140730840262 0 0 1.32685626152678E-6 item=minecraft:big_dripleaf count=1 age=73 pickup-delay=0 on-ground=true
+entity 87 e4 11.43033988794566 1.0 3.497731272822989 -8.755390946372206E-7 0 2.712016765111736E-6 item=minecraft:big_dripleaf count=1 age=72 pickup-delay=0 on-ground=true
+entity 87 e5 12.370498980328128 1.0 3.4738715691083932 1.488601289059076E-6 -0.04 2.0258401699781766E-6 item=minecraft:big_dripleaf count=1 age=72 pickup-delay=0 on-ground=true
+entity 87 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=70 pickup-delay=32767 on-ground=true
+entity 87 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=70 pickup-delay=32767 on-ground=true
+
+entity-order 88 entities e1 e2 e3 e4 e5 e6 e7
+entity 88 e1 8.750541780171032 1.0 2.8299109594169423 3.2202412258916006E-7 0 6.227953547618041E-7 item=minecraft:big_dripleaf count=1 age=75 pickup-delay=0 on-ground=true
+entity 88 e2 9.59676198297146 1.0 4.115747394404566 1.3398094696330978E-6 0 1.559116787490687E-6 item=minecraft:big_dripleaf count=1 age=74 pickup-delay=0 on-ground=true
+entity 88 e3 7.125 1.0 2.4809140730840262 0 -0.04 1.32685626152678E-6 item=minecraft:big_dripleaf count=1 age=74 pickup-delay=0 on-ground=true
+entity 88 e4 11.43033988794566 1.0 3.497731272822989 -8.755390946372206E-7 -0.04 2.712016765111736E-6 item=minecraft:big_dripleaf count=1 age=73 pickup-delay=0 on-ground=true
+entity 88 e5 12.370498980328128 1.0 3.4738715691083932 1.488601289059076E-6 -0.08 2.0258401699781766E-6 item=minecraft:big_dripleaf count=1 age=73 pickup-delay=0 on-ground=true
+entity 88 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=71 pickup-delay=32767 on-ground=true
+entity 88 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=71 pickup-delay=32767 on-ground=true
+
+entity-order 89 entities e1 e2 e3 e4 e5 e6 e7
+entity 89 e1 8.750541780171032 1.0 2.8299109594169423 3.2202412258916006E-7 -0.04 6.227953547618041E-7 item=minecraft:big_dripleaf count=1 age=76 pickup-delay=0 on-ground=true
+entity 89 e2 9.59676198297146 1.0 4.115747394404566 1.3398094696330978E-6 -0.04 1.559116787490687E-6 item=minecraft:big_dripleaf count=1 age=75 pickup-delay=0 on-ground=true
+entity 89 e3 7.125 1.0 2.4809140730840262 0 -0.08 1.32685626152678E-6 item=minecraft:big_dripleaf count=1 age=75 pickup-delay=0 on-ground=true
+entity 89 e4 11.43033988794566 1.0 3.497731272822989 -8.755390946372206E-7 -0.08 2.712016765111736E-6 item=minecraft:big_dripleaf count=1 age=74 pickup-delay=0 on-ground=true
+entity 89 e5 12.370498980328128 1.0 3.4738715691083932 1.488601289059076E-6 -0.12 2.0258401699781766E-6 item=minecraft:big_dripleaf count=1 age=74 pickup-delay=0 on-ground=true
+entity 89 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=72 pickup-delay=32767 on-ground=true
+entity 89 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=72 pickup-delay=32767 on-ground=true
+
+entity-order 90 entities e1 e2 e3 e4 e5 e6 e7
+entity 90 e1 8.750541780171032 1.0 2.8299109594169423 3.2202412258916006E-7 -0.08 6.227953547618041E-7 item=minecraft:big_dripleaf count=1 age=77 pickup-delay=0 on-ground=true
+entity 90 e2 9.59676198297146 1.0 4.115747394404566 1.3398094696330978E-6 -0.08 1.559116787490687E-6 item=minecraft:big_dripleaf count=1 age=76 pickup-delay=0 on-ground=true
+entity 90 e3 7.125 1.0 2.4809140730840262 0 -0.12 1.32685626152678E-6 item=minecraft:big_dripleaf count=1 age=76 pickup-delay=0 on-ground=true
+entity 90 e4 11.43033988794566 1.0 3.497731272822989 -8.755390946372206E-7 -0.12 2.712016765111736E-6 item=minecraft:big_dripleaf count=1 age=75 pickup-delay=0 on-ground=true
+entity 90 e5 12.370498980328128 1.0 3.4738715691083932 8.752976459844674E-7 0 1.1911941397306556E-6 item=minecraft:big_dripleaf count=1 age=75 pickup-delay=0 on-ground=true
+entity 90 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=73 pickup-delay=32767 on-ground=true
+entity 90 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=73 pickup-delay=32767 on-ground=true
+
+entity-order 91 entities e1 e2 e3 e4 e5 e6 e7
+entity 91 e1 8.750541780171032 1.0 2.8299109594169423 3.2202412258916006E-7 -0.12 6.227953547618041E-7 item=minecraft:big_dripleaf count=1 age=78 pickup-delay=0 on-ground=true
+entity 91 e2 9.59676198297146 1.0 4.115747394404566 1.3398094696330978E-6 -0.12 1.559116787490687E-6 item=minecraft:big_dripleaf count=1 age=77 pickup-delay=0 on-ground=true
+entity 91 e3 7.125 1.0 2.4809140730840262 0 0 7.801915602318484E-7 item=minecraft:big_dripleaf count=1 age=77 pickup-delay=0 on-ground=true
+entity 91 e4 11.43033988794566 1.0 3.497731272822989 -5.148170394153929E-7 0 1.5946660182413063E-6 item=minecraft:big_dripleaf count=1 age=76 pickup-delay=0 on-ground=true
+entity 91 e5 12.370498980328128 1.0 3.4738715691083932 8.752976459844674E-7 -0.04 1.1911941397306556E-6 item=minecraft:big_dripleaf count=1 age=76 pickup-delay=0 on-ground=true
+entity 91 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=74 pickup-delay=32767 on-ground=true
+entity 91 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=74 pickup-delay=32767 on-ground=true
+
+entity-order 92 entities e1 e2 e3 e4 e5 e6 e7
+entity 92 e1 8.750541780171032 1.0 2.8299109594169423 1.8935020312300648E-7 0 3.6620370542446476E-7 item=minecraft:big_dripleaf count=1 age=79 pickup-delay=0 on-ground=true
+entity 92 e2 9.59676198297146 1.0 4.115747394404566 7.878080473642581E-7 0 9.167607632316814E-7 item=minecraft:big_dripleaf count=1 age=78 pickup-delay=0 on-ground=true
+entity 92 e3 7.125 1.0 2.4809140730840262 0 -0.04 7.801915602318484E-7 item=minecraft:big_dripleaf count=1 age=78 pickup-delay=0 on-ground=true
+entity 92 e4 11.43033988794566 1.0 3.497731272822989 -5.148170394153929E-7 -0.04 1.5946660182413063E-6 item=minecraft:big_dripleaf count=1 age=77 pickup-delay=0 on-ground=true
+entity 92 e5 12.370498980328128 1.0 3.4738715691083932 8.752976459844674E-7 -0.08 1.1911941397306556E-6 item=minecraft:big_dripleaf count=1 age=77 pickup-delay=0 on-ground=true
+entity 92 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=75 pickup-delay=32767 on-ground=true
+entity 92 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=75 pickup-delay=32767 on-ground=true
+
+entity-order 93 entities e1 e2 e3 e4 e5 e6 e7
+entity 93 e1 8.750541780171032 1.0 2.8299109594169423 1.8935020312300648E-7 -0.04 3.6620370542446476E-7 item=minecraft:big_dripleaf count=1 age=80 pickup-delay=0 on-ground=true
+entity 93 e2 9.59676198297146 1.0 4.115747394404566 7.878080473642581E-7 -0.04 9.167607632316814E-7 item=minecraft:big_dripleaf count=1 age=79 pickup-delay=0 on-ground=true
+entity 93 e3 7.125 1.0 2.4809140730840262 0 -0.08 7.801915602318484E-7 item=minecraft:big_dripleaf count=1 age=79 pickup-delay=0 on-ground=true
+entity 93 e4 11.43033988794566 1.0 3.497731272822989 -5.148170394153929E-7 -0.08 1.5946660182413063E-6 item=minecraft:big_dripleaf count=1 age=78 pickup-delay=0 on-ground=true
+entity 93 e5 12.370498980328128 1.0 3.4738715691083932 8.752976459844674E-7 -0.12 1.1911941397306556E-6 item=minecraft:big_dripleaf count=1 age=78 pickup-delay=0 on-ground=true
+entity 93 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=76 pickup-delay=32767 on-ground=true
+entity 93 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=76 pickup-delay=32767 on-ground=true
+
+entity-order 94 entities e1 e2 e3 e4 e5 e6 e7
+entity 94 e1 8.750541780171032 1.0 2.8299109594169423 1.8935020312300648E-7 -0.08 3.6620370542446476E-7 item=minecraft:big_dripleaf count=1 age=81 pickup-delay=0 on-ground=true
+entity 94 e2 9.59676198297146 1.0 4.115747394404566 7.878080473642581E-7 -0.08 9.167607632316814E-7 item=minecraft:big_dripleaf count=1 age=80 pickup-delay=0 on-ground=true
+entity 94 e3 7.125 1.0 2.4809140730840262 0 -0.12 7.801915602318484E-7 item=minecraft:big_dripleaf count=1 age=80 pickup-delay=0 on-ground=true
+entity 94 e4 11.43033988794566 1.0 3.497731272822989 -5.148170394153929E-7 -0.12 1.5946660182413063E-6 item=minecraft:big_dripleaf count=1 age=79 pickup-delay=0 on-ground=true
+entity 94 e5 12.370498980328128 1.0 3.4738715691083932 5.146750675932977E-7 0 7.004222245943235E-7 item=minecraft:big_dripleaf count=1 age=79 pickup-delay=0 on-ground=true
+entity 94 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=77 pickup-delay=32767 on-ground=true
+entity 94 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=77 pickup-delay=32767 on-ground=true
+
+entity-order 95 entities e1 e2 e3 e4 e5 e6 e7
+entity 95 e1 8.750541780171032 1.0 2.8299109594169423 1.8935020312300648E-7 -0.12 3.6620370542446476E-7 item=minecraft:big_dripleaf count=1 age=82 pickup-delay=0 on-ground=true
+entity 95 e2 9.59676198297146 1.0 4.115747394404566 7.878080473642581E-7 -0.12 9.167607632316814E-7 item=minecraft:big_dripleaf count=1 age=81 pickup-delay=0 on-ground=true
+entity 95 e3 7.125 1.0 2.4809140730840262 0 0 4.5875268354734337E-7 item=minecraft:big_dripleaf count=1 age=81 pickup-delay=0 on-ground=true
+entity 95 e4 11.43033988794566 1.0 3.497731272822989 -3.027124496162539E-7 0 9.376637130149937E-7 item=minecraft:big_dripleaf count=1 age=80 pickup-delay=0 on-ground=true
+entity 95 e5 12.370498980328128 1.0 3.4738715691083932 5.146750675932977E-7 -0.04 7.004222245943235E-7 item=minecraft:big_dripleaf count=1 age=80 pickup-delay=0 on-ground=true
+entity 95 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=78 pickup-delay=32767 on-ground=true
+entity 95 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=78 pickup-delay=32767 on-ground=true
+
+entity-order 96 entities e1 e2 e3 e4 e5 e6 e7
+entity 96 e1 8.750541780171032 1.0 2.8299109594169423 1.1133793063219019E-7 0 2.1532780044240753E-7 item=minecraft:big_dripleaf count=1 age=83 pickup-delay=0 on-ground=true
+entity 96 e2 9.59676198297146 1.0 4.115747394404566 4.6323117843154644E-7 0 5.390553829862827E-7 item=minecraft:big_dripleaf count=1 age=82 pickup-delay=0 on-ground=true
+entity 96 e3 7.125 1.0 2.4809140730840262 0 -0.04 4.5875268354734337E-7 item=minecraft:big_dripleaf count=1 age=82 pickup-delay=0 on-ground=true
+entity 96 e4 11.43033988794566 1.0 3.497731272822989 -3.027124496162539E-7 -0.04 9.376637130149937E-7 item=minecraft:big_dripleaf count=1 age=81 pickup-delay=0 on-ground=true
+entity 96 e5 12.370498980328128 1.0 3.4738715691083932 5.146750675932977E-7 -0.08 7.004222245943235E-7 item=minecraft:big_dripleaf count=1 age=81 pickup-delay=0 on-ground=true
+entity 96 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=79 pickup-delay=32767 on-ground=true
+entity 96 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=79 pickup-delay=32767 on-ground=true
+
+entity-order 97 entities e1 e2 e3 e4 e5 e6 e7
+entity 97 e1 8.750541780171032 1.0 2.8299109594169423 1.1133793063219019E-7 -0.04 2.1532780044240753E-7 item=minecraft:big_dripleaf count=1 age=84 pickup-delay=0 on-ground=true
+entity 97 e2 9.59676198297146 1.0 4.115747394404566 4.6323117843154644E-7 -0.04 5.390553829862827E-7 item=minecraft:big_dripleaf count=1 age=83 pickup-delay=0 on-ground=true
+entity 97 e3 7.125 1.0 2.4809140730840262 0 -0.08 4.5875268354734337E-7 item=minecraft:big_dripleaf count=1 age=83 pickup-delay=0 on-ground=true
+entity 97 e4 11.43033988794566 1.0 3.497731272822989 -3.027124496162539E-7 -0.08 9.376637130149937E-7 item=minecraft:big_dripleaf count=1 age=82 pickup-delay=0 on-ground=true
+entity 97 e5 12.370498980328128 1.0 3.4738715691083932 5.146750675932977E-7 -0.12 7.004222245943235E-7 item=minecraft:big_dripleaf count=1 age=82 pickup-delay=0 on-ground=true
+entity 97 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=80 pickup-delay=32767 on-ground=true
+entity 97 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=80 pickup-delay=32767 on-ground=true
+
+entity-order 98 entities e1 e2 e3 e4 e5 e6 e7
+entity 98 e1 8.750541780171032 1.0 2.8299109594169423 1.1133793063219019E-7 -0.08 2.1532780044240753E-7 item=minecraft:big_dripleaf count=1 age=85 pickup-delay=0 on-ground=true
+entity 98 e2 9.59676198297146 1.0 4.115747394404566 4.6323117843154644E-7 -0.08 5.390553829862827E-7 item=minecraft:big_dripleaf count=1 age=84 pickup-delay=0 on-ground=true
+entity 98 e3 7.125 1.0 2.4809140730840262 0 -0.12 4.5875268354734337E-7 item=minecraft:big_dripleaf count=1 age=84 pickup-delay=0 on-ground=true
+entity 98 e4 11.43033988794566 1.0 3.497731272822989 -3.027124496162539E-7 -0.12 9.376637130149937E-7 item=minecraft:big_dripleaf count=1 age=83 pickup-delay=0 on-ground=true
+entity 98 e5 12.370498980328128 1.0 3.4738715691083932 3.0262897017646743E-7 0 4.1184830947589274E-7 item=minecraft:big_dripleaf count=1 age=83 pickup-delay=0 on-ground=true
+entity 98 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=81 pickup-delay=32767 on-ground=true
+entity 98 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=81 pickup-delay=32767 on-ground=true
+
+entity-order 99 entities e1 e2 e3 e4 e5 e6 e7
+entity 99 e1 8.750541780171032 1.0 2.8299109594169423 1.1133793063219019E-7 -0.12 2.1532780044240753E-7 item=minecraft:big_dripleaf count=1 age=86 pickup-delay=0 on-ground=true
+entity 99 e2 9.59676198297146 1.0 4.115747394404566 4.6323117843154644E-7 -0.12 5.390553829862827E-7 item=minecraft:big_dripleaf count=1 age=85 pickup-delay=0 on-ground=true
+entity 99 e3 7.125 1.0 2.4809140730840262 0 0 2.697466050508783E-7 item=minecraft:big_dripleaf count=1 age=85 pickup-delay=0 on-ground=true
+entity 99 e4 11.43033988794566 1.0 3.497731272822989 -1.7799493827308076E-7 0 5.513463186948159E-7 item=minecraft:big_dripleaf count=1 age=84 pickup-delay=0 on-ground=true
+entity 99 e5 12.370498980328128 1.0 3.4738715691083932 3.0262897017646743E-7 -0.04 4.1184830947589274E-7 item=minecraft:big_dripleaf count=1 age=84 pickup-delay=0 on-ground=true
+entity 99 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=82 pickup-delay=32767 on-ground=true
+entity 99 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=82 pickup-delay=32767 on-ground=true
+
+entity-order 100 entities e1 e2 e3 e4 e5 e6 e7
+entity 100 e1 8.750541780171032 1.0 2.8299109594169423 6.546670979489557E-8 0 1.266127593919964E-7 item=minecraft:big_dripleaf count=1 age=87 pickup-delay=0 on-ground=true
+entity 100 e2 9.59676198297146 1.0 4.115747394404566 2.723799603075933E-7 0 3.1696459706909724E-7 item=minecraft:big_dripleaf count=1 age=86 pickup-delay=0 on-ground=true
+entity 100 e3 7.125 1.0 2.4809140730840262 0 -0.04 2.697466050508783E-7 item=minecraft:big_dripleaf count=1 age=86 pickup-delay=0 on-ground=true
+entity 100 e4 11.43033988794566 1.0 3.497731272822989 -1.7799493827308076E-7 -0.04 5.513463186948159E-7 item=minecraft:big_dripleaf count=1 age=85 pickup-delay=0 on-ground=true
+entity 100 e5 12.370498980328128 1.0 3.4738715691083932 3.0262897017646743E-7 -0.08 4.1184830947589274E-7 item=minecraft:big_dripleaf count=1 age=85 pickup-delay=0 on-ground=true
+entity 100 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=83 pickup-delay=32767 on-ground=true
+entity 100 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=83 pickup-delay=32767 on-ground=true
+
+entity-order 101 entities e1 e2 e3 e4 e5 e6 e7
+entity 101 e1 8.750541780171032 1.0 2.8299109594169423 6.546670979489557E-8 -0.04 1.266127593919964E-7 item=minecraft:big_dripleaf count=1 age=88 pickup-delay=0 on-ground=true
+entity 101 e2 9.59676198297146 1.0 4.115747394404566 2.723799603075933E-7 -0.04 3.1696459706909724E-7 item=minecraft:big_dripleaf count=1 age=87 pickup-delay=0 on-ground=true
+entity 101 e3 7.125 1.0 2.4809140730840262 0 -0.08 2.697466050508783E-7 item=minecraft:big_dripleaf count=1 age=87 pickup-delay=0 on-ground=true
+entity 101 e4 11.43033988794566 1.0 3.497731272822989 -1.7799493827308076E-7 -0.08 5.513463186948159E-7 item=minecraft:big_dripleaf count=1 age=86 pickup-delay=0 on-ground=true
+entity 101 e5 12.370498980328128 1.0 3.4738715691083932 3.0262897017646743E-7 -0.12 4.1184830947589274E-7 item=minecraft:big_dripleaf count=1 age=86 pickup-delay=0 on-ground=true
+entity 101 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=84 pickup-delay=32767 on-ground=true
+entity 101 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=84 pickup-delay=32767 on-ground=true
+
+entity-order 102 entities e1 e2 e3 e4 e5 e6 e7
+entity 102 e1 8.750541780171032 1.0 2.8299109594169423 6.546670979489557E-8 -0.08 1.266127593919964E-7 item=minecraft:big_dripleaf count=1 age=89 pickup-delay=0 on-ground=true
+entity 102 e2 9.59676198297146 1.0 4.115747394404566 2.723799603075933E-7 -0.08 3.1696459706909724E-7 item=minecraft:big_dripleaf count=1 age=88 pickup-delay=0 on-ground=true
+entity 102 e3 7.125 1.0 2.4809140730840262 0 -0.12 2.697466050508783E-7 item=minecraft:big_dripleaf count=1 age=88 pickup-delay=0 on-ground=true
+entity 102 e4 11.43033988794566 1.0 3.497731272822989 -1.7799493827308076E-7 -0.12 5.513463186948159E-7 item=minecraft:big_dripleaf count=1 age=87 pickup-delay=0 on-ground=true
+entity 102 e5 12.370498980328128 1.0 3.4738715691083932 1.7794585235755038E-7 0 2.4216683032351253E-7 item=minecraft:big_dripleaf count=1 age=87 pickup-delay=0 on-ground=true
+entity 102 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=85 pickup-delay=32767 on-ground=true
+entity 102 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=85 pickup-delay=32767 on-ground=true
+
+entity-order 103 entities e1 e2 e3 e4 e5 e6 e7
+entity 103 e1 8.750541780171032 1.0 2.8299109594169423 6.546670979489557E-8 -0.12 1.266127593919964E-7 item=minecraft:big_dripleaf count=1 age=90 pickup-delay=0 on-ground=true
+entity 103 e2 9.59676198297146 1.0 4.115747394404566 2.723799603075933E-7 -0.12 3.1696459706909724E-7 item=minecraft:big_dripleaf count=1 age=89 pickup-delay=0 on-ground=true
+entity 103 e3 7.125 1.0 2.4809140730840262 0 0 1.586110197194418E-7 item=minecraft:big_dripleaf count=1 age=89 pickup-delay=0 on-ground=true
+entity 103 e4 11.43033988794566 1.0 3.497731272822989 -1.0466103422902195E-7 0 3.2419166799245083E-7 item=minecraft:big_dripleaf count=1 age=88 pickup-delay=0 on-ground=true
+entity 103 e5 12.370498980328128 1.0 3.4738715691083932 1.7794585235755038E-7 -0.04 2.4216683032351253E-7 item=minecraft:big_dripleaf count=1 age=88 pickup-delay=0 on-ground=true
+entity 103 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=86 pickup-delay=32767 on-ground=true
+entity 103 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=86 pickup-delay=32767 on-ground=true
+
+entity-order 104 entities e1 e2 e3 e4 e5 e6 e7
+entity 104 e1 8.750541780171032 1.0 2.8299109594169423 3.8494429230301616E-8 0 7.444831000882876E-8 item=minecraft:big_dripleaf count=1 age=91 pickup-delay=0 on-ground=true
+entity 104 e2 9.59676198297146 1.0 4.115747394404566 1.6015943276609477E-7 0 1.863752018180509E-7 item=minecraft:big_dripleaf count=1 age=90 pickup-delay=0 on-ground=true
+entity 104 e3 7.125 1.0 2.4809140730840262 0 -0.04 1.586110197194418E-7 item=minecraft:big_dripleaf count=1 age=90 pickup-delay=0 on-ground=true
+entity 104 e4 11.43033988794566 1.0 3.497731272822989 -1.0466103422902195E-7 -0.04 3.2419166799245083E-7 item=minecraft:big_dripleaf count=1 age=89 pickup-delay=0 on-ground=true
+entity 104 e5 12.370498980328128 1.0 3.4738715691083932 1.7794585235755038E-7 -0.08 2.4216683032351253E-7 item=minecraft:big_dripleaf count=1 age=89 pickup-delay=0 on-ground=true
+entity 104 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=87 pickup-delay=32767 on-ground=true
+entity 104 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=87 pickup-delay=32767 on-ground=true
+
+entity-order 105 entities e1 e2 e3 e4 e5 e6 e7
+entity 105 e1 8.750541780171032 1.0 2.8299109594169423 3.8494429230301616E-8 -0.04 7.444831000882876E-8 item=minecraft:big_dripleaf count=1 age=92 pickup-delay=0 on-ground=true
+entity 105 e2 9.59676198297146 1.0 4.115747394404566 1.6015943276609477E-7 -0.04 1.863752018180509E-7 item=minecraft:big_dripleaf count=1 age=91 pickup-delay=0 on-ground=true
+entity 105 e3 7.125 1.0 2.4809140730840262 0 -0.08 1.586110197194418E-7 item=minecraft:big_dripleaf count=1 age=91 pickup-delay=0 on-ground=true
+entity 105 e4 11.43033988794566 1.0 3.497731272822989 -1.0466103422902195E-7 -0.08 3.2419166799245083E-7 item=minecraft:big_dripleaf count=1 age=90 pickup-delay=0 on-ground=true
+entity 105 e5 12.370498980328128 1.0 3.4738715691083932 1.7794585235755038E-7 -0.12 2.4216683032351253E-7 item=minecraft:big_dripleaf count=1 age=90 pickup-delay=0 on-ground=true
+entity 105 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=88 pickup-delay=32767 on-ground=true
+entity 105 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=88 pickup-delay=32767 on-ground=true
+
+entity-order 106 entities e1 e2 e3 e4 e5 e6 e7
+entity 106 e1 8.750541780171032 1.0 2.8299109594169423 3.8494429230301616E-8 -0.08 7.444831000882876E-8 item=minecraft:big_dripleaf count=1 age=93 pickup-delay=0 on-ground=true
+entity 106 e2 9.59676198297146 1.0 4.115747394404566 1.6015943276609477E-7 -0.08 1.863752018180509E-7 item=minecraft:big_dripleaf count=1 age=92 pickup-delay=0 on-ground=true
+entity 106 e3 7.125 1.0 2.4809140730840262 0 -0.12 1.586110197194418E-7 item=minecraft:big_dripleaf count=1 age=92 pickup-delay=0 on-ground=true
+entity 106 e4 11.43033988794566 1.0 3.497731272822989 -1.0466103422902195E-7 -0.12 3.2419166799245083E-7 item=minecraft:big_dripleaf count=1 age=91 pickup-delay=0 on-ground=true
+entity 106 e5 12.370498980328128 1.0 3.4738715691083932 1.0463217170778775E-7 0 1.4239411054901912E-7 item=minecraft:big_dripleaf count=1 age=91 pickup-delay=0 on-ground=true
+entity 106 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=89 pickup-delay=32767 on-ground=true
+entity 106 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=89 pickup-delay=32767 on-ground=true
+
+entity-order 107 entities e1 e2 e3 e4 e5 e6 e7
+entity 107 e1 8.750541780171032 1.0 2.8299109594169423 3.8494429230301616E-8 -0.12 7.444831000882876E-8 item=minecraft:big_dripleaf count=1 age=94 pickup-delay=0 on-ground=true
+entity 107 e2 9.59676198297146 1.0 4.115747394404566 1.6015943276609477E-7 -0.12 1.863752018180509E-7 item=minecraft:big_dripleaf count=1 age=93 pickup-delay=0 on-ground=true
+entity 107 e3 7.125 1.0 2.4809140730840262 0 0 9.326328897335365E-8 item=minecraft:big_dripleaf count=1 age=93 pickup-delay=0 on-ground=true
+entity 107 e4 11.43033988794566 1.0 3.497731272822989 -6.15406943150424E-8 0 1.9062471994830366E-7 item=minecraft:big_dripleaf count=1 age=92 pickup-delay=0 on-ground=true
+entity 107 e5 12.370498980328128 1.0 3.4738715691083932 1.0463217170778775E-7 -0.04 1.4239411054901912E-7 item=minecraft:big_dripleaf count=1 age=92 pickup-delay=0 on-ground=true
+entity 107 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=90 pickup-delay=32767 on-ground=true
+entity 107 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=90 pickup-delay=32767 on-ground=true
+
+entity-order 108 entities e1 e2 e3 e4 e5 e6 e7
+entity 108 e1 8.750541780171032 1.0 2.8299109594169423 2.2634726663508554E-8 0 4.3775610687156665E-8 item=minecraft:big_dripleaf count=1 age=95 pickup-delay=0 on-ground=true
+entity 108 e2 9.59676198297146 1.0 4.115747394404566 9.417375593633986E-8 0 1.0958862968897101E-7 item=minecraft:big_dripleaf count=1 age=94 pickup-delay=0 on-ground=true
+entity 108 e3 7.125 1.0 2.4809140730840262 0 -0.04 9.326328897335365E-8 item=minecraft:big_dripleaf count=1 age=94 pickup-delay=0 on-ground=true
+entity 108 e4 11.43033988794566 1.0 3.497731272822989 -6.15406943150424E-8 -0.04 1.9062471994830366E-7 item=minecraft:big_dripleaf count=1 age=93 pickup-delay=0 on-ground=true
+entity 108 e5 12.370498980328128 1.0 3.4738715691083932 1.0463217170778775E-7 -0.08 1.4239411054901912E-7 item=minecraft:big_dripleaf count=1 age=93 pickup-delay=0 on-ground=true
+entity 108 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=91 pickup-delay=32767 on-ground=true
+entity 108 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=91 pickup-delay=32767 on-ground=true
+
+entity-order 109 entities e1 e2 e3 e4 e5 e6 e7
+entity 109 e1 8.750541780171032 1.0 2.8299109594169423 2.2634726663508554E-8 -0.04 4.3775610687156665E-8 item=minecraft:big_dripleaf count=1 age=96 pickup-delay=0 on-ground=true
+entity 109 e2 9.59676198297146 1.0 4.115747394404566 9.417375593633986E-8 -0.04 1.0958862968897101E-7 item=minecraft:big_dripleaf count=1 age=95 pickup-delay=0 on-ground=true
+entity 109 e3 7.125 1.0 2.4809140730840262 0 -0.08 9.326328897335365E-8 item=minecraft:big_dripleaf count=1 age=95 pickup-delay=0 on-ground=true
+entity 109 e4 11.43033988794566 1.0 3.497731272822989 -6.15406943150424E-8 -0.08 1.9062471994830366E-7 item=minecraft:big_dripleaf count=1 age=94 pickup-delay=0 on-ground=true
+entity 109 e5 12.370498980328128 1.0 3.4738715691083932 1.0463217170778775E-7 -0.12 1.4239411054901912E-7 item=minecraft:big_dripleaf count=1 age=94 pickup-delay=0 on-ground=true
+entity 109 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=92 pickup-delay=32767 on-ground=true
+entity 109 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=92 pickup-delay=32767 on-ground=true
+
+entity-order 110 entities e1 e2 e3 e4 e5 e6 e7
+entity 110 e1 8.750541780171032 1.0 2.8299109594169423 2.2634726663508554E-8 -0.08 4.3775610687156665E-8 item=minecraft:big_dripleaf count=1 age=97 pickup-delay=0 on-ground=true
+entity 110 e2 9.59676198297146 1.0 4.115747394404566 9.417375593633986E-8 -0.08 1.0958862968897101E-7 item=minecraft:big_dripleaf count=1 age=96 pickup-delay=0 on-ground=true
+entity 110 e3 7.125 1.0 2.4809140730840262 0 -0.12 9.326328897335365E-8 item=minecraft:big_dripleaf count=1 age=96 pickup-delay=0 on-ground=true
+entity 110 e4 11.43033988794566 1.0 3.497731272822989 -6.15406943150424E-8 -0.12 1.9062471994830366E-7 item=minecraft:big_dripleaf count=1 age=95 pickup-delay=0 on-ground=true
+entity 110 e5 12.370498980328128 1.0 3.4738715691083932 6.152372315085011E-8 0 8.372774542227482E-8 item=minecraft:big_dripleaf count=1 age=95 pickup-delay=0 on-ground=true
+entity 110 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=93 pickup-delay=32767 on-ground=true
+entity 110 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=93 pickup-delay=32767 on-ground=true
+
+entity-order 111 entities e1 e2 e3 e4 e5 e6 e7
+entity 111 e1 8.750541780171032 1.0 2.8299109594169423 2.2634726663508554E-8 -0.12 4.3775610687156665E-8 item=minecraft:big_dripleaf count=1 age=98 pickup-delay=0 on-ground=true
+entity 111 e2 9.59676198297146 1.0 4.115747394404566 9.417375593633986E-8 -0.12 1.0958862968897101E-7 item=minecraft:big_dripleaf count=1 age=97 pickup-delay=0 on-ground=true
+entity 111 e3 7.125 1.0 2.4809140730840262 0 0 5.4838819430785754E-8 item=minecraft:big_dripleaf count=1 age=97 pickup-delay=0 on-ground=true
+entity 111 e4 11.43033988794566 1.0 3.497731272822989 -3.618593189601126E-8 0 1.1208734660082432E-7 item=minecraft:big_dripleaf count=1 age=96 pickup-delay=0 on-ground=true
+entity 111 e5 12.370498980328128 1.0 3.4738715691083932 6.152372315085011E-8 -0.04 8.372774542227482E-8 item=minecraft:big_dripleaf count=1 age=96 pickup-delay=0 on-ground=true
+entity 111 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=94 pickup-delay=32767 on-ground=true
+entity 111 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=94 pickup-delay=32767 on-ground=true
+
+entity-order 112 entities e1 e2 e3 e4 e5 e6 e7
+entity 112 e1 8.750541780171032 1.0 2.8299109594169423 1.3309220616484794E-8 0 2.5740061672404006E-8 item=minecraft:big_dripleaf count=1 age=99 pickup-delay=0 on-ground=true
+entity 112 e2 9.59676198297146 1.0 4.115747394404566 5.537417405885556E-8 0 6.443812073685037E-8 item=minecraft:big_dripleaf count=1 age=98 pickup-delay=0 on-ground=true
+entity 112 e3 7.125 1.0 2.4809140730840262 0 -0.04 5.4838819430785754E-8 item=minecraft:big_dripleaf count=1 age=98 pickup-delay=0 on-ground=true
+entity 112 e4 11.43033988794566 1.0 3.497731272822989 -3.618593189601126E-8 -0.04 1.1208734660082432E-7 item=minecraft:big_dripleaf count=1 age=97 pickup-delay=0 on-ground=true
+entity 112 e5 12.370498980328128 1.0 3.4738715691083932 6.152372315085011E-8 -0.08 8.372774542227482E-8 item=minecraft:big_dripleaf count=1 age=97 pickup-delay=0 on-ground=true
+entity 112 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=95 pickup-delay=32767 on-ground=true
+entity 112 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=95 pickup-delay=32767 on-ground=true
+
+entity-order 113 entities e1 e2 e3 e4 e5 e6 e7
+entity 113 e1 8.750541780171032 1.0 2.8299109594169423 1.3309220616484794E-8 -0.04 2.5740061672404006E-8 item=minecraft:big_dripleaf count=1 age=100 pickup-delay=0 on-ground=true
+entity 113 e2 9.59676198297146 1.0 4.115747394404566 5.537417405885556E-8 -0.04 6.443812073685037E-8 item=minecraft:big_dripleaf count=1 age=99 pickup-delay=0 on-ground=true
+entity 113 e3 7.125 1.0 2.4809140730840262 0 -0.08 5.4838819430785754E-8 item=minecraft:big_dripleaf count=1 age=99 pickup-delay=0 on-ground=true
+entity 113 e4 11.43033988794566 1.0 3.497731272822989 -3.618593189601126E-8 -0.08 1.1208734660082432E-7 item=minecraft:big_dripleaf count=1 age=98 pickup-delay=0 on-ground=true
+entity 113 e5 12.370498980328128 1.0 3.4738715691083932 6.152372315085011E-8 -0.12 8.372774542227482E-8 item=minecraft:big_dripleaf count=1 age=98 pickup-delay=0 on-ground=true
+entity 113 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=96 pickup-delay=32767 on-ground=true
+entity 113 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=96 pickup-delay=32767 on-ground=true
+
+entity-order 114 entities e1 e2 e3 e4 e5 e6 e7
+entity 114 e1 8.750541780171032 1.0 2.8299109594169423 1.3309220616484794E-8 -0.08 2.5740061672404006E-8 item=minecraft:big_dripleaf count=1 age=101 pickup-delay=0 on-ground=true
+entity 114 e2 9.59676198297146 1.0 4.115747394404566 5.537417405885556E-8 -0.08 6.443812073685037E-8 item=minecraft:big_dripleaf count=1 age=100 pickup-delay=0 on-ground=true
+entity 114 e3 7.125 1.0 2.4809140730840262 0 -0.12 5.4838819430785754E-8 item=minecraft:big_dripleaf count=1 age=100 pickup-delay=0 on-ground=true
+entity 114 e4 11.43033988794566 1.0 3.497731272822989 -3.618593189601126E-8 -0.12 1.1208734660082432E-7 item=minecraft:big_dripleaf count=1 age=99 pickup-delay=0 on-ground=true
+entity 114 e5 12.370498980328128 1.0 3.4738715691083932 3.617595285046273E-8 0 4.923191925893562E-8 item=minecraft:big_dripleaf count=1 age=99 pickup-delay=0 on-ground=true
+entity 114 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=97 pickup-delay=32767 on-ground=true
+entity 114 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=97 pickup-delay=32767 on-ground=true
+
+entity-order 115 entities e1 e2 e3 e4 e5 e6 e7
+entity 115 e1 8.750541780171032 1.0 2.8299109594169423 1.3309220616484794E-8 -0.12 2.5740061672404006E-8 item=minecraft:big_dripleaf count=1 age=102 pickup-delay=0 on-ground=true
+entity 115 e2 9.59676198297146 1.0 4.115747394404566 5.537417405885556E-8 -0.12 6.443812073685037E-8 item=minecraft:big_dripleaf count=1 age=101 pickup-delay=0 on-ground=true
+entity 115 e3 7.125 1.0 2.4809140730840262 0 0 3.224522906780119E-8 item=minecraft:big_dripleaf count=1 age=101 pickup-delay=0 on-ground=true
+entity 115 e4 11.43033988794566 1.0 3.497731272822989 -2.1277330094449443E-8 0 6.590736642876376E-8 item=minecraft:big_dripleaf count=1 age=100 pickup-delay=0 on-ground=true
+entity 115 e5 12.370498980328128 1.0 3.4738715691083932 3.617595285046273E-8 -0.04 4.923191925893562E-8 item=minecraft:big_dripleaf count=1 age=100 pickup-delay=0 on-ground=true
+entity 115 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=98 pickup-delay=32767 on-ground=true
+entity 115 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=98 pickup-delay=32767 on-ground=true
+
+entity-order 116 entities e1 e2 e3 e4 e5 e6 e7
+entity 116 e1 8.750541780171032 1.0 2.8299109594169423 7.825822509438096E-9 0 1.513515778532697E-8 item=minecraft:big_dripleaf count=1 age=103 pickup-delay=0 on-ground=true
+entity 116 e2 9.59676198297146 1.0 4.115747394404566 3.256001762076058E-8 0 3.788961880335282E-8 item=minecraft:big_dripleaf count=1 age=102 pickup-delay=0 on-ground=true
+entity 116 e3 7.125 1.0 2.4809140730840262 0 -0.04 3.224522906780119E-8 item=minecraft:big_dripleaf count=1 age=102 pickup-delay=0 on-ground=true
+entity 116 e4 11.43033988794566 1.0 3.497731272822989 -2.1277330094449443E-8 -0.04 6.590736642876376E-8 item=minecraft:big_dripleaf count=1 age=101 pickup-delay=0 on-ground=true
+entity 116 e5 12.370498980328128 1.0 3.4738715691083932 3.617595285046273E-8 -0.08 4.923191925893562E-8 item=minecraft:big_dripleaf count=1 age=101 pickup-delay=0 on-ground=true
+entity 116 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=99 pickup-delay=32767 on-ground=true
+entity 116 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=99 pickup-delay=32767 on-ground=true
+
+entity-order 117 entities e1 e2 e3 e4 e5 e6 e7
+entity 117 e1 8.750541780171032 1.0 2.8299109594169423 7.825822509438096E-9 -0.04 1.513515778532697E-8 item=minecraft:big_dripleaf count=1 age=104 pickup-delay=0 on-ground=true
+entity 117 e2 9.59676198297146 1.0 4.115747394404566 3.256001762076058E-8 -0.04 3.788961880335282E-8 item=minecraft:big_dripleaf count=1 age=103 pickup-delay=0 on-ground=true
+entity 117 e3 7.125 1.0 2.4809140730840262 0 -0.08 3.224522906780119E-8 item=minecraft:big_dripleaf count=1 age=103 pickup-delay=0 on-ground=true
+entity 117 e4 11.43033988794566 1.0 3.497731272822989 -2.1277330094449443E-8 -0.08 6.590736642876376E-8 item=minecraft:big_dripleaf count=1 age=102 pickup-delay=0 on-ground=true
+entity 117 e5 12.370498980328128 1.0 3.4738715691083932 3.617595285046273E-8 -0.12 4.923191925893562E-8 item=minecraft:big_dripleaf count=1 age=102 pickup-delay=0 on-ground=true
+entity 117 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=100 pickup-delay=32767 on-ground=true
+entity 117 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=100 pickup-delay=32767 on-ground=true
+
+entity-order 118 entities e1 e2 e3 e4 e5 e6 e7
+entity 118 e1 8.750541780171032 1.0 2.8299109594169423 7.825822509438096E-9 -0.08 1.513515778532697E-8 item=minecraft:big_dripleaf count=1 age=105 pickup-delay=0 on-ground=true
+entity 118 e2 9.59676198297146 1.0 4.115747394404566 3.256001762076058E-8 -0.08 3.788961880335282E-8 item=minecraft:big_dripleaf count=1 age=104 pickup-delay=0 on-ground=true
+entity 118 e3 7.125 1.0 2.4809140730840262 0 -0.12 3.224522906780119E-8 item=minecraft:big_dripleaf count=1 age=104 pickup-delay=0 on-ground=true
+entity 118 e4 11.43033988794566 1.0 3.497731272822989 -2.1277330094449443E-8 -0.12 6.590736642876376E-8 item=minecraft:big_dripleaf count=1 age=103 pickup-delay=0 on-ground=true
+entity 118 e5 12.370498980328128 1.0 3.4738715691083932 2.1271462415076866E-8 0 2.8948371435229594E-8 item=minecraft:big_dripleaf count=1 age=103 pickup-delay=0 on-ground=true
+entity 118 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=101 pickup-delay=32767 on-ground=true
+entity 118 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=101 pickup-delay=32767 on-ground=true
+
+entity-order 119 entities e1 e2 e3 e4 e5 e6 e7
+entity 119 e1 8.750541780171032 1.0 2.8299109594169423 7.825822509438096E-9 -0.12 1.513515778532697E-8 item=minecraft:big_dripleaf count=1 age=106 pickup-delay=0 on-ground=true
+entity 119 e2 9.59676198297146 1.0 4.115747394404566 3.256001762076058E-8 -0.12 3.788961880335282E-8 item=minecraft:big_dripleaf count=1 age=105 pickup-delay=0 on-ground=true
+entity 119 e3 7.125 1.0 2.4809140730840262 0 0 1.89601965984568E-8 item=minecraft:big_dripleaf count=1 age=105 pickup-delay=0 on-ground=true
+entity 119 e4 11.43033988794566 1.0 3.497731272822989 -1.2511071353618153E-8 0 3.875353535707118E-8 item=minecraft:big_dripleaf count=1 age=104 pickup-delay=0 on-ground=true
+entity 119 e5 12.370498980328128 1.0 3.4738715691083932 2.1271462415076866E-8 -0.04 2.8948371435229594E-8 item=minecraft:big_dripleaf count=1 age=104 pickup-delay=0 on-ground=true
+entity 119 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=102 pickup-delay=32767 on-ground=true
+entity 119 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=102 pickup-delay=32767 on-ground=true
+
+entity-order 120 entities e1 e2 e3 e4 e5 e6 e7
+entity 120 e1 8.750541780171032 1.0 2.8299109594169423 4.601584098273328E-9 0 8.899473672680957E-9 item=minecraft:big_dripleaf count=1 age=107 pickup-delay=0 on-ground=true
+entity 120 e2 9.59676198297146 1.0 4.115747394404566 1.9145292286209678E-8 0 2.227909809670155E-8 item=minecraft:big_dripleaf count=1 age=106 pickup-delay=0 on-ground=true
+entity 120 e3 7.125 1.0 2.4809140730840262 0 -0.04 1.89601965984568E-8 item=minecraft:big_dripleaf count=1 age=106 pickup-delay=0 on-ground=true
+entity 120 e4 11.43033988794566 1.0 3.497731272822989 -1.2511071353618153E-8 -0.04 3.875353535707118E-8 item=minecraft:big_dripleaf count=1 age=105 pickup-delay=0 on-ground=true
+entity 120 e5 12.370498980328128 1.0 3.4738715691083932 2.1271462415076866E-8 -0.08 2.8948371435229594E-8 item=minecraft:big_dripleaf count=1 age=105 pickup-delay=0 on-ground=true
+entity 120 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=103 pickup-delay=32767 on-ground=true
+entity 120 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=103 pickup-delay=32767 on-ground=true
+
+entity-order 121 entities e1 e2 e3 e4 e5 e6 e7
+entity 121 e1 8.750541780171032 1.0 2.8299109594169423 4.601584098273328E-9 -0.04 8.899473672680957E-9 item=minecraft:big_dripleaf count=1 age=108 pickup-delay=0 on-ground=true
+entity 121 e2 9.59676198297146 1.0 4.115747394404566 1.9145292286209678E-8 -0.04 2.227909809670155E-8 item=minecraft:big_dripleaf count=1 age=107 pickup-delay=0 on-ground=true
+entity 121 e3 7.125 1.0 2.4809140730840262 0 -0.08 1.89601965984568E-8 item=minecraft:big_dripleaf count=1 age=107 pickup-delay=0 on-ground=true
+entity 121 e4 11.43033988794566 1.0 3.497731272822989 -1.2511071353618153E-8 -0.08 3.875353535707118E-8 item=minecraft:big_dripleaf count=1 age=106 pickup-delay=0 on-ground=true
+entity 121 e5 12.370498980328128 1.0 3.4738715691083932 2.1271462415076866E-8 -0.12 2.8948371435229594E-8 item=minecraft:big_dripleaf count=1 age=106 pickup-delay=0 on-ground=true
+entity 121 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=104 pickup-delay=32767 on-ground=true
+entity 121 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=104 pickup-delay=32767 on-ground=true
+
+entity-order 122 entities e1 e2 e3 e4 e5 e6 e7
+entity 122 e1 8.750541780171032 1.0 2.8299109594169423 4.601584098273328E-9 -0.08 8.899473672680957E-9 item=minecraft:big_dripleaf count=1 age=109 pickup-delay=0 on-ground=true
+entity 122 e2 9.59676198297146 1.0 4.115747394404566 1.9145292286209678E-8 -0.08 2.227909809670155E-8 item=minecraft:big_dripleaf count=1 age=108 pickup-delay=0 on-ground=true
+entity 122 e3 7.125 1.0 2.4809140730840262 0 -0.12 1.89601965984568E-8 item=minecraft:big_dripleaf count=1 age=108 pickup-delay=0 on-ground=true
+entity 122 e4 11.43033988794566 1.0 3.497731272822989 -1.2511071353618153E-8 -0.12 3.875353535707118E-8 item=minecraft:big_dripleaf count=1 age=107 pickup-delay=0 on-ground=true
+entity 122 e5 12.370498980328128 1.0 3.4738715691083932 1.2507621157800136E-8 0 1.702164411556874E-8 item=minecraft:big_dripleaf count=1 age=107 pickup-delay=0 on-ground=true
+entity 122 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=105 pickup-delay=32767 on-ground=true
+entity 122 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=105 pickup-delay=32767 on-ground=true
+
+entity-order 123 entities e1 e2 e3 e4 e5 e6 e7
+entity 123 e1 8.750541780171032 1.0 2.8299109594169423 4.601584098273328E-9 -0.12 8.899473672680957E-9 item=minecraft:big_dripleaf count=1 age=110 pickup-delay=0 on-ground=true
+entity 123 e2 9.59676198297146 1.0 4.115747394404566 1.9145292286209678E-8 -0.12 2.227909809670155E-8 item=minecraft:big_dripleaf count=1 age=109 pickup-delay=0 on-ground=true
+entity 123 e3 7.125 1.0 2.4809140730840262 0 0 1.1148596720967455E-8 item=minecraft:big_dripleaf count=1 age=109 pickup-delay=0 on-ground=true
+entity 123 e4 11.43033988794566 1.0 3.497731272822989 -7.356510695679694E-9 0 2.2787081081369436E-8 item=minecraft:big_dripleaf count=1 age=108 pickup-delay=0 on-ground=true
+entity 123 e5 12.370498980328128 1.0 3.4738715691083932 1.2507621157800136E-8 -0.04 1.702164411556874E-8 item=minecraft:big_dripleaf count=1 age=108 pickup-delay=0 on-ground=true
+entity 123 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=106 pickup-delay=32767 on-ground=true
+entity 123 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=106 pickup-delay=32767 on-ground=true
+
+entity-order 124 entities e1 e2 e3 e4 e5 e6 e7
+entity 124 e1 8.750541780171032 1.0 2.8299109594169423 2.7057317218662958E-9 0 5.23289104574277E-9 item=minecraft:big_dripleaf count=1 age=111 pickup-delay=0 on-ground=true
+entity 124 e2 9.59676198297146 1.0 4.115747394404566 1.1257432996310449E-8 0 1.3100110998174739E-8 item=minecraft:big_dripleaf count=1 age=110 pickup-delay=0 on-ground=true
+entity 124 e3 7.125 1.0 2.4809140730840262 0 -0.04 1.1148596720967455E-8 item=minecraft:big_dripleaf count=1 age=110 pickup-delay=0 on-ground=true
+entity 124 e4 11.43033988794566 1.0 3.497731272822989 -7.356510695679694E-9 -0.04 2.2787081081369436E-8 item=minecraft:big_dripleaf count=1 age=109 pickup-delay=0 on-ground=true
+entity 124 e5 12.370498980328128 1.0 3.4738715691083932 1.2507621157800136E-8 -0.08 1.702164411556874E-8 item=minecraft:big_dripleaf count=1 age=109 pickup-delay=0 on-ground=true
+entity 124 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=107 pickup-delay=32767 on-ground=true
+entity 124 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=107 pickup-delay=32767 on-ground=true
+
+entity-order 125 entities e1 e2 e3 e4 e5 e6 e7
+entity 125 e1 8.750541780171032 1.0 2.8299109594169423 2.7057317218662958E-9 -0.04 5.23289104574277E-9 item=minecraft:big_dripleaf count=1 age=112 pickup-delay=0 on-ground=true
+entity 125 e2 9.59676198297146 1.0 4.115747394404566 1.1257432996310449E-8 -0.04 1.3100110998174739E-8 item=minecraft:big_dripleaf count=1 age=111 pickup-delay=0 on-ground=true
+entity 125 e3 7.125 1.0 2.4809140730840262 0 -0.08 1.1148596720967455E-8 item=minecraft:big_dripleaf count=1 age=111 pickup-delay=0 on-ground=true
+entity 125 e4 11.43033988794566 1.0 3.497731272822989 -7.356510695679694E-9 -0.08 2.2787081081369436E-8 item=minecraft:big_dripleaf count=1 age=110 pickup-delay=0 on-ground=true
+entity 125 e5 12.370498980328128 1.0 3.4738715691083932 1.2507621157800136E-8 -0.12 1.702164411556874E-8 item=minecraft:big_dripleaf count=1 age=110 pickup-delay=0 on-ground=true
+entity 125 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=108 pickup-delay=32767 on-ground=true
+entity 125 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=108 pickup-delay=32767 on-ground=true
+
+entity-order 126 entities e1 e2 e3 e4 e5 e6 e7
+entity 126 e1 8.750541780171032 1.0 2.8299109594169423 2.7057317218662958E-9 -0.08 5.23289104574277E-9 item=minecraft:big_dripleaf count=1 age=113 pickup-delay=0 on-ground=true
+entity 126 e2 9.59676198297146 1.0 4.115747394404566 1.1257432996310449E-8 -0.08 1.3100110998174739E-8 item=minecraft:big_dripleaf count=1 age=112 pickup-delay=0 on-ground=true
+entity 126 e3 7.125 1.0 2.4809140730840262 0 -0.12 1.1148596720967455E-8 item=minecraft:big_dripleaf count=1 age=112 pickup-delay=0 on-ground=true
+entity 126 e4 11.43033988794566 1.0 3.497731272822989 -7.356510695679694E-9 -0.12 2.2787081081369436E-8 item=minecraft:big_dripleaf count=1 age=111 pickup-delay=0 on-ground=true
+entity 126 e5 12.370498980328128 1.0 3.4738715691083932 7.354481980334697E-9 0 1.0008727746406917E-8 item=minecraft:big_dripleaf count=1 age=111 pickup-delay=0 on-ground=true
+entity 126 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=109 pickup-delay=32767 on-ground=true
+entity 126 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=109 pickup-delay=32767 on-ground=true
+
+entity-order 127 entities e1 e2 e3 e4 e5 e6 e7
+entity 127 e1 8.750541780171032 1.0 2.8299109594169423 2.7057317218662958E-9 -0.12 5.23289104574277E-9 item=minecraft:big_dripleaf count=1 age=114 pickup-delay=0 on-ground=true
+entity 127 e2 9.59676198297146 1.0 4.115747394404566 1.1257432996310449E-8 -0.12 1.3100110998174739E-8 item=minecraft:big_dripleaf count=1 age=113 pickup-delay=0 on-ground=true
+entity 127 e3 7.125 1.0 2.4809140730840262 0 0 6.5553755311209454E-9 item=minecraft:big_dripleaf count=1 age=113 pickup-delay=0 on-ground=true
+entity 127 e4 11.43033988794566 1.0 3.497731272822989 -4.325628724034009E-9 0 1.3398805023195374E-8 item=minecraft:big_dripleaf count=1 age=112 pickup-delay=0 on-ground=true
+entity 127 e5 12.370498980328128 1.0 3.4738715691083932 7.354481980334697E-9 -0.04 1.0008727746406917E-8 item=minecraft:big_dripleaf count=1 age=112 pickup-delay=0 on-ground=true
+entity 127 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=110 pickup-delay=32767 on-ground=true
+entity 127 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=110 pickup-delay=32767 on-ground=true
+
+entity-order 128 entities e1 e2 e3 e4 e5 e6 e7
+entity 128 e1 8.750541780171032 1.0 2.8299109594169423 1.5909704124413666E-9 0 3.0769402443061238E-9 item=minecraft:big_dripleaf count=1 age=115 pickup-delay=0 on-ground=true
+entity 128 e2 9.59676198297146 1.0 4.115747394404566 6.6193712674578764E-9 0 7.702866041507589E-9 item=minecraft:big_dripleaf count=1 age=114 pickup-delay=0 on-ground=true
+entity 128 e3 7.125 1.0 2.4809140730840262 0 -0.04 6.5553755311209454E-9 item=minecraft:big_dripleaf count=1 age=114 pickup-delay=0 on-ground=true
+entity 128 e4 11.43033988794566 1.0 3.497731272822989 -4.325628724034009E-9 -0.04 1.3398805023195374E-8 item=minecraft:big_dripleaf count=1 age=113 pickup-delay=0 on-ground=true
+entity 128 e5 12.370498980328128 1.0 3.4738715691083932 7.354481980334697E-9 -0.08 1.0008727746406917E-8 item=minecraft:big_dripleaf count=1 age=113 pickup-delay=0 on-ground=true
+entity 128 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=111 pickup-delay=32767 on-ground=true
+entity 128 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=111 pickup-delay=32767 on-ground=true
+
+entity-order 129 entities e1 e2 e3 e4 e5 e6 e7
+entity 129 e1 8.750541780171032 1.0 2.8299109594169423 1.5909704124413666E-9 -0.04 3.0769402443061238E-9 item=minecraft:big_dripleaf count=1 age=116 pickup-delay=0 on-ground=true
+entity 129 e2 9.59676198297146 1.0 4.115747394404566 6.6193712674578764E-9 -0.04 7.702866041507589E-9 item=minecraft:big_dripleaf count=1 age=115 pickup-delay=0 on-ground=true
+entity 129 e3 7.125 1.0 2.4809140730840262 0 -0.08 6.5553755311209454E-9 item=minecraft:big_dripleaf count=1 age=115 pickup-delay=0 on-ground=true
+entity 129 e4 11.43033988794566 1.0 3.497731272822989 -4.325628724034009E-9 -0.08 1.3398805023195374E-8 item=minecraft:big_dripleaf count=1 age=114 pickup-delay=0 on-ground=true
+entity 129 e5 12.370498980328128 1.0 3.4738715691083932 7.354481980334697E-9 -0.12 1.0008727746406917E-8 item=minecraft:big_dripleaf count=1 age=114 pickup-delay=0 on-ground=true
+entity 129 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=112 pickup-delay=32767 on-ground=true
+entity 129 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=112 pickup-delay=32767 on-ground=true
+
+entity-order 130 entities e1 e2 e3 e4 e5 e6 e7
+entity 130 e1 8.750541780171032 1.0 2.8299109594169423 1.5909704124413666E-9 -0.08 3.0769402443061238E-9 item=minecraft:big_dripleaf count=1 age=117 pickup-delay=0 on-ground=true
+entity 130 e2 9.59676198297146 1.0 4.115747394404566 6.6193712674578764E-9 -0.08 7.702866041507589E-9 item=minecraft:big_dripleaf count=1 age=116 pickup-delay=0 on-ground=true
+entity 130 e3 7.125 1.0 2.4809140730840262 0 -0.12 6.5553755311209454E-9 item=minecraft:big_dripleaf count=1 age=116 pickup-delay=0 on-ground=true
+entity 130 e4 11.43033988794566 1.0 3.497731272822989 -4.325628724034009E-9 -0.12 1.3398805023195374E-8 item=minecraft:big_dripleaf count=1 age=115 pickup-delay=0 on-ground=true
+entity 130 e5 12.370498980328128 1.0 3.4738715691083932 4.324435839291198E-9 0 5.885132506681395E-9 item=minecraft:big_dripleaf count=1 age=115 pickup-delay=0 on-ground=true
+entity 130 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=113 pickup-delay=32767 on-ground=true
+entity 130 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=113 pickup-delay=32767 on-ground=true
+
+entity-order 131 entities e1 e2 e3 e4 e5 e6 e7
+entity 131 e1 8.750541780171032 1.0 2.8299109594169423 1.5909704124413666E-9 -0.12 3.0769402443061238E-9 item=minecraft:big_dripleaf count=1 age=118 pickup-delay=0 on-ground=true
+entity 131 e2 9.59676198297146 1.0 4.115747394404566 6.6193712674578764E-9 -0.12 7.702866041507589E-9 item=minecraft:big_dripleaf count=1 age=117 pickup-delay=0 on-ground=true
+entity 131 e3 7.125 1.0 2.4809140730840262 0 0 3.8545611999040995E-9 item=minecraft:big_dripleaf count=1 age=117 pickup-delay=0 on-ground=true
+entity 131 e4 11.43033988794566 1.0 3.497731272822989 -2.5434699454969405E-9 0 7.878498145880846E-9 item=minecraft:big_dripleaf count=1 age=116 pickup-delay=0 on-ground=true
+entity 131 e5 12.370498980328128 1.0 3.4738715691083932 4.324435839291198E-9 -0.04 5.885132506681395E-9 item=minecraft:big_dripleaf count=1 age=116 pickup-delay=0 on-ground=true
+entity 131 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=114 pickup-delay=32767 on-ground=true
+entity 131 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=114 pickup-delay=32767 on-ground=true
+
+entity-order 132 entities e1 e2 e3 e4 e5 e6 e7
+entity 132 e1 8.750541780171032 1.0 2.8299109594169423 9.35490696586116E-10 0 1.8092410455847315E-9 item=minecraft:big_dripleaf count=1 age=119 pickup-delay=0 on-ground=true
+entity 132 e2 9.59676198297146 1.0 4.115747394404566 3.892190696654142E-9 0 4.529285687860044E-9 item=minecraft:big_dripleaf count=1 age=118 pickup-delay=0 on-ground=true
+entity 132 e3 7.125 1.0 2.4809140730840262 0 -0.04 3.8545611999040995E-9 item=minecraft:big_dripleaf count=1 age=118 pickup-delay=0 on-ground=true
+entity 132 e4 11.43033988794566 1.0 3.497731272822989 -2.5434699454969405E-9 -0.04 7.878498145880846E-9 item=minecraft:big_dripleaf count=1 age=117 pickup-delay=0 on-ground=true
+entity 132 e5 12.370498980328128 1.0 3.4738715691083932 4.324435839291198E-9 -0.08 5.885132506681395E-9 item=minecraft:big_dripleaf count=1 age=117 pickup-delay=0 on-ground=true
+entity 132 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=115 pickup-delay=32767 on-ground=true
+entity 132 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=115 pickup-delay=32767 on-ground=true
+
+entity-order 133 entities e1 e2 e3 e4 e5 e6 e7
+entity 133 e1 8.750541780171032 1.0 2.8299109594169423 9.35490696586116E-10 -0.04 1.8092410455847315E-9 item=minecraft:big_dripleaf count=1 age=120 pickup-delay=0 on-ground=true
+entity 133 e2 9.59676198297146 1.0 4.115747394404566 3.892190696654142E-9 -0.04 4.529285687860044E-9 item=minecraft:big_dripleaf count=1 age=119 pickup-delay=0 on-ground=true
+entity 133 e3 7.125 1.0 2.4809140730840262 0 -0.08 3.8545611999040995E-9 item=minecraft:big_dripleaf count=1 age=119 pickup-delay=0 on-ground=true
+entity 133 e4 11.43033988794566 1.0 3.497731272822989 -2.5434699454969405E-9 -0.08 7.878498145880846E-9 item=minecraft:big_dripleaf count=1 age=118 pickup-delay=0 on-ground=true
+entity 133 e5 12.370498980328128 1.0 3.4738715691083932 4.324435839291198E-9 -0.12 5.885132506681395E-9 item=minecraft:big_dripleaf count=1 age=118 pickup-delay=0 on-ground=true
+entity 133 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=116 pickup-delay=32767 on-ground=true
+entity 133 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=116 pickup-delay=32767 on-ground=true
+
+entity-order 134 entities e1 e2 e3 e4 e5 e6 e7
+entity 134 e1 8.750541780171032 1.0 2.8299109594169423 9.35490696586116E-10 -0.08 1.8092410455847315E-9 item=minecraft:big_dripleaf count=1 age=121 pickup-delay=0 on-ground=true
+entity 134 e2 9.59676198297146 1.0 4.115747394404566 3.892190696654142E-9 -0.08 4.529285687860044E-9 item=minecraft:big_dripleaf count=1 age=120 pickup-delay=0 on-ground=true
+entity 134 e3 7.125 1.0 2.4809140730840262 0 -0.12 3.8545611999040995E-9 item=minecraft:big_dripleaf count=1 age=120 pickup-delay=0 on-ground=true
+entity 134 e4 11.43033988794566 1.0 3.497731272822989 -2.5434699454969405E-9 -0.12 7.878498145880846E-9 item=minecraft:big_dripleaf count=1 age=119 pickup-delay=0 on-ground=true
+entity 134 e5 12.370498980328128 1.0 3.4738715691083932 2.5427685291976346E-9 0 3.4604582619036432E-9 item=minecraft:big_dripleaf count=1 age=119 pickup-delay=0 on-ground=true
+entity 134 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=117 pickup-delay=32767 on-ground=true
+entity 134 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=117 pickup-delay=32767 on-ground=true
+
+entity-order 135 entities e1 e2 e3 e4 e5 e6 e7
+entity 135 e1 8.750541780171032 1.0 2.8299109594169423 9.35490696586116E-10 -0.12 1.8092410455847315E-9 item=minecraft:big_dripleaf count=1 age=122 pickup-delay=0 on-ground=true
+entity 135 e2 9.59676198297146 1.0 4.115747394404566 3.892190696654142E-9 -0.12 4.529285687860044E-9 item=minecraft:big_dripleaf count=1 age=121 pickup-delay=0 on-ground=true
+entity 135 e3 7.125 1.0 2.4809140730840262 0 0 2.2664822134553637E-9 item=minecraft:big_dripleaf count=1 age=121 pickup-delay=0 on-ground=true
+entity 135 e4 11.43033988794566 1.0 3.497731272822989 -1.4955604783420027E-9 0 4.63255737561626E-9 item=minecraft:big_dripleaf count=1 age=120 pickup-delay=0 on-ground=true
+entity 135 e5 12.370498980328128 1.0 3.4738715691083932 2.5427685291976346E-9 -0.04 3.4604582619036432E-9 item=minecraft:big_dripleaf count=1 age=120 pickup-delay=0 on-ground=true
+entity 135 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=118 pickup-delay=32767 on-ground=true
+entity 135 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=118 pickup-delay=32767 on-ground=true
+
+entity-order 136 entities e1 e2 e3 e4 e5 e6 e7
+entity 136 e1 8.750541780171032 1.0 2.8299109594169423 5.500685849061502E-10 0 1.0638338417802786E-9 item=minecraft:big_dripleaf count=1 age=123 pickup-delay=0 on-ground=true
+entity 136 e2 9.59676198297146 1.0 4.115747394404566 2.288608359769338E-9 0 2.6632202522684385E-9 item=minecraft:big_dripleaf count=1 age=122 pickup-delay=0 on-ground=true
+entity 136 e3 7.125 1.0 2.4809140730840262 0 -0.04 2.2664822134553637E-9 item=minecraft:big_dripleaf count=1 age=122 pickup-delay=0 on-ground=true
+entity 136 e4 11.43033988794566 1.0 3.497731272822989 -1.4955604783420027E-9 -0.04 4.63255737561626E-9 item=minecraft:big_dripleaf count=1 age=121 pickup-delay=0 on-ground=true
+entity 136 e5 12.370498980328128 1.0 3.4738715691083932 2.5427685291976346E-9 -0.08 3.4604582619036432E-9 item=minecraft:big_dripleaf count=1 age=121 pickup-delay=0 on-ground=true
+entity 136 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=119 pickup-delay=32767 on-ground=true
+entity 136 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=119 pickup-delay=32767 on-ground=true
+
+entity-order 137 entities e1 e2 e3 e4 e5 e6 e7
+entity 137 e1 8.750541780171032 1.0 2.8299109594169423 5.500685849061502E-10 -0.04 1.0638338417802786E-9 item=minecraft:big_dripleaf count=1 age=124 pickup-delay=0 on-ground=true
+entity 137 e2 9.59676198297146 1.0 4.115747394404566 2.288608359769338E-9 -0.04 2.6632202522684385E-9 item=minecraft:big_dripleaf count=1 age=123 pickup-delay=0 on-ground=true
+entity 137 e3 7.125 1.0 2.4809140730840262 0 -0.08 2.2664822134553637E-9 item=minecraft:big_dripleaf count=1 age=123 pickup-delay=0 on-ground=true
+entity 137 e4 11.43033988794566 1.0 3.497731272822989 -1.4955604783420027E-9 -0.08 4.63255737561626E-9 item=minecraft:big_dripleaf count=1 age=122 pickup-delay=0 on-ground=true
+entity 137 e5 12.370498980328128 1.0 3.4738715691083932 2.5427685291976346E-9 -0.12 3.4604582619036432E-9 item=minecraft:big_dripleaf count=1 age=122 pickup-delay=0 on-ground=true
+entity 137 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=120 pickup-delay=32767 on-ground=true
+entity 137 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=120 pickup-delay=32767 on-ground=true
+
+entity-order 138 entities e1 e2 e3 e4 e5 e6 e7
+entity 138 e1 8.750541780171032 1.0 2.8299109594169423 5.500685849061502E-10 -0.08 1.0638338417802786E-9 item=minecraft:big_dripleaf count=1 age=125 pickup-delay=0 on-ground=true
+entity 138 e2 9.59676198297146 1.0 4.115747394404566 2.288608359769338E-9 -0.08 2.6632202522684385E-9 item=minecraft:big_dripleaf count=1 age=124 pickup-delay=0 on-ground=true
+entity 138 e3 7.125 1.0 2.4809140730840262 0 -0.12 2.2664822134553637E-9 item=minecraft:big_dripleaf count=1 age=124 pickup-delay=0 on-ground=true
+entity 138 e4 11.43033988794566 1.0 3.497731272822989 -1.4955604783420027E-9 -0.12 4.63255737561626E-9 item=minecraft:big_dripleaf count=1 age=123 pickup-delay=0 on-ground=true
+entity 138 e5 12.370498980328128 1.0 3.4738715691083932 1.4951480455165375E-9 0 2.0347496626086526E-9 item=minecraft:big_dripleaf count=1 age=123 pickup-delay=0 on-ground=true
+entity 138 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=121 pickup-delay=32767 on-ground=true
+entity 138 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=121 pickup-delay=32767 on-ground=true
+
+entity-order 139 entities e1 e2 e3 e4 e5 e6 e7
+entity 139 e1 8.750541780171032 1.0 2.8299109594169423 5.500685849061502E-10 -0.12 1.0638338417802786E-9 item=minecraft:big_dripleaf count=1 age=126 pickup-delay=0 on-ground=true
+entity 139 e2 9.59676198297146 1.0 4.115747394404566 2.288608359769338E-9 -0.12 2.6632202522684385E-9 item=minecraft:big_dripleaf count=1 age=125 pickup-delay=0 on-ground=true
+entity 139 e3 7.125 1.0 2.4809140730840262 0 0 1.332691675523878E-9 item=minecraft:big_dripleaf count=1 age=125 pickup-delay=0 on-ground=true
+entity 139 e4 11.43033988794566 1.0 3.497731272822989 -8.793896496943098E-10 0 2.7239440107753225E-9 item=minecraft:big_dripleaf count=1 age=124 pickup-delay=0 on-ground=true
+entity 139 e5 12.370498980328128 1.0 3.4738715691083932 1.4951480455165375E-9 -0.04 2.0347496626086526E-9 item=minecraft:big_dripleaf count=1 age=124 pickup-delay=0 on-ground=true
+entity 139 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=122 pickup-delay=32767 on-ground=true
+entity 139 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=122 pickup-delay=32767 on-ground=true
+
+entity-order 140 entities e1 e2 e3 e4 e5 e6 e7
+entity 140 e1 8.750541780171032 1.0 2.8299109594169423 3.2344036044916577E-10 0 6.255343618689665E-10 item=minecraft:big_dripleaf count=1 age=127 pickup-delay=0 on-ground=true
+entity 140 e2 9.59676198297146 1.0 4.115747394404566 1.3457018508647656E-9 0 1.5659736658042166E-9 item=minecraft:big_dripleaf count=1 age=126 pickup-delay=0 on-ground=true
+entity 140 e3 7.125 1.0 2.4809140730840262 0 -0.04 1.332691675523878E-9 item=minecraft:big_dripleaf count=1 age=126 pickup-delay=0 on-ground=true
+entity 140 e4 11.43033988794566 1.0 3.497731272822989 -8.793896496943098E-10 -0.04 2.7239440107753225E-9 item=minecraft:big_dripleaf count=1 age=125 pickup-delay=0 on-ground=true
+entity 140 e5 12.370498980328128 1.0 3.4738715691083932 1.4951480455165375E-9 -0.08 2.0347496626086526E-9 item=minecraft:big_dripleaf count=1 age=125 pickup-delay=0 on-ground=true
+entity 140 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=123 pickup-delay=32767 on-ground=true
+entity 140 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=123 pickup-delay=32767 on-ground=true
+
+entity-order 141 entities e1 e2 e3 e4 e5 e6 e7
+entity 141 e1 8.750541780171032 1.0 2.8299109594169423 3.2344036044916577E-10 -0.04 6.255343618689665E-10 item=minecraft:big_dripleaf count=1 age=128 pickup-delay=0 on-ground=true
+entity 141 e2 9.59676198297146 1.0 4.115747394404566 1.3457018508647656E-9 -0.04 1.5659736658042166E-9 item=minecraft:big_dripleaf count=1 age=127 pickup-delay=0 on-ground=true
+entity 141 e3 7.125 1.0 2.4809140730840262 0 -0.08 1.332691675523878E-9 item=minecraft:big_dripleaf count=1 age=127 pickup-delay=0 on-ground=true
+entity 141 e4 11.43033988794566 1.0 3.497731272822989 -8.793896496943098E-10 -0.08 2.7239440107753225E-9 item=minecraft:big_dripleaf count=1 age=126 pickup-delay=0 on-ground=true
+entity 141 e5 12.370498980328128 1.0 3.4738715691083932 1.4951480455165375E-9 -0.12 2.0347496626086526E-9 item=minecraft:big_dripleaf count=1 age=126 pickup-delay=0 on-ground=true
+entity 141 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=124 pickup-delay=32767 on-ground=true
+entity 141 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=124 pickup-delay=32767 on-ground=true
+
+change 142 block_ticks 14 2 2 minecraft:big_dripleaf[facing=north,tilt=full,waterlogged=false] minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+draws 142 block_ticks level 1
+entity-order 142 entities e1 e2 e3 e4 e5 e6 e7
+entity 142 e1 8.750541780171032 1.0 2.8299109594169423 3.2344036044916577E-10 -0.08 6.255343618689665E-10 item=minecraft:big_dripleaf count=1 age=129 pickup-delay=0 on-ground=true
+entity 142 e2 9.59676198297146 1.0 4.115747394404566 1.3457018508647656E-9 -0.08 1.5659736658042166E-9 item=minecraft:big_dripleaf count=1 age=128 pickup-delay=0 on-ground=true
+entity 142 e3 7.125 1.0 2.4809140730840262 0 -0.12 1.332691675523878E-9 item=minecraft:big_dripleaf count=1 age=128 pickup-delay=0 on-ground=true
+entity 142 e4 11.43033988794566 1.0 3.497731272822989 -8.793896496943098E-10 -0.12 2.7239440107753225E-9 item=minecraft:big_dripleaf count=1 age=127 pickup-delay=0 on-ground=true
+entity 142 e5 12.370498980328128 1.0 3.4738715691083932 8.791471391685501E-10 0 1.1964329219241743E-9 item=minecraft:big_dripleaf count=1 age=127 pickup-delay=0 on-ground=true
+entity 142 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=125 pickup-delay=32767 on-ground=true
+entity 142 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=125 pickup-delay=32767 on-ground=true
+
+entity-order 143 entities e1 e2 e3 e4 e5 e6 e7
+entity 143 e1 8.750541780171032 1.0 2.8299109594169423 3.2344036044916577E-10 -0.12 6.255343618689665E-10 item=minecraft:big_dripleaf count=1 age=130 pickup-delay=0 on-ground=true
+entity 143 e2 9.59676198297146 1.0 4.115747394404566 1.3457018508647656E-9 -0.12 1.5659736658042166E-9 item=minecraft:big_dripleaf count=1 age=129 pickup-delay=0 on-ground=true
+entity 143 e3 7.125 1.0 2.4809140730840262 0 0 7.836227840071773E-10 item=minecraft:big_dripleaf count=1 age=129 pickup-delay=0 on-ground=true
+entity 143 e4 11.43033988794566 1.0 3.497731272822989 -5.170811660166362E-10 0 1.601679239396727E-9 item=minecraft:big_dripleaf count=1 age=128 pickup-delay=0 on-ground=true
+entity 143 e5 12.370498980328128 1.0 3.4738715691083932 8.791471391685501E-10 -0.04 1.1964329219241743E-9 item=minecraft:big_dripleaf count=1 age=128 pickup-delay=0 on-ground=true
+entity 143 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=126 pickup-delay=32767 on-ground=true
+entity 143 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=126 pickup-delay=32767 on-ground=true
+
+entity-order 144 entities e1 e2 e3 e4 e5 e6 e7
+entity 144 e1 8.750541780171032 1.0 2.8299109594169423 1.901829510684289E-10 0 3.678142417654277E-10 item=minecraft:big_dripleaf count=1 age=131 pickup-delay=0 on-ground=true
+entity 144 e2 9.59676198297146 1.0 4.115747394404566 7.912727678768824E-10 0 9.20792608085469E-10 item=minecraft:big_dripleaf count=1 age=130 pickup-delay=0 on-ground=true
+entity 144 e3 7.125 1.0 2.4809140730840262 0 -0.04 7.836227840071773E-10 item=minecraft:big_dripleaf count=1 age=130 pickup-delay=0 on-ground=true
+entity 144 e4 11.43033988794566 1.0 3.497731272822989 -5.170811660166362E-10 -0.04 1.601679239396727E-9 item=minecraft:big_dripleaf count=1 age=129 pickup-delay=0 on-ground=true
+entity 144 e5 12.370498980328128 1.0 3.4738715691083932 8.791471391685501E-10 -0.08 1.1964329219241743E-9 item=minecraft:big_dripleaf count=1 age=129 pickup-delay=0 on-ground=true
+entity 144 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=127 pickup-delay=32767 on-ground=true
+entity 144 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=127 pickup-delay=32767 on-ground=true
+
+entity-order 145 entities e1 e2 e3 e4 e5 e6 e7
+entity 145 e1 8.750541780171032 1.0 2.8299109594169423 1.901829510684289E-10 -0.04 3.678142417654277E-10 item=minecraft:big_dripleaf count=1 age=132 pickup-delay=0 on-ground=true
+entity 145 e2 9.59676198297146 1.0 4.115747394404566 7.912727678768824E-10 -0.04 9.20792608085469E-10 item=minecraft:big_dripleaf count=1 age=131 pickup-delay=0 on-ground=true
+entity 145 e3 7.125 1.0 2.4809140730840262 0 -0.08 7.836227840071773E-10 item=minecraft:big_dripleaf count=1 age=131 pickup-delay=0 on-ground=true
+entity 145 e4 11.43033988794566 1.0 3.497731272822989 -5.170811660166362E-10 -0.08 1.601679239396727E-9 item=minecraft:big_dripleaf count=1 age=130 pickup-delay=0 on-ground=true
+entity 145 e5 12.370498980328128 1.0 3.4738715691083932 8.791471391685501E-10 -0.12 1.1964329219241743E-9 item=minecraft:big_dripleaf count=1 age=130 pickup-delay=0 on-ground=true
+entity 145 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=128 pickup-delay=32767 on-ground=true
+entity 145 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=128 pickup-delay=32767 on-ground=true
+
+entity-order 146 entities e1 e2 e3 e4 e5 e6 e7
+entity 146 e1 8.750541780171032 1.0 2.8299109594169423 1.901829510684289E-10 -0.08 3.678142417654277E-10 item=minecraft:big_dripleaf count=1 age=133 pickup-delay=0 on-ground=true
+entity 146 e2 9.59676198297146 1.0 4.115747394404566 7.912727678768824E-10 -0.08 9.20792608085469E-10 item=minecraft:big_dripleaf count=1 age=132 pickup-delay=0 on-ground=true
+entity 146 e3 7.125 1.0 2.4809140730840262 0 -0.12 7.836227840071773E-10 item=minecraft:big_dripleaf count=1 age=132 pickup-delay=0 on-ground=true
+entity 146 e4 11.43033988794566 1.0 3.497731272822989 -5.170811660166362E-10 -0.12 1.601679239396727E-9 item=minecraft:big_dripleaf count=1 age=131 pickup-delay=0 on-ground=true
+entity 146 e5 12.370498980328128 1.0 3.4738715691083932 5.169385698131504E-10 0 7.035026288338701E-10 item=minecraft:big_dripleaf count=1 age=131 pickup-delay=0 on-ground=true
+entity 146 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=129 pickup-delay=32767 on-ground=true
+entity 146 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=129 pickup-delay=32767 on-ground=true
+
+entity-order 147 entities e1 e2 e3 e4 e5 e6 e7
+entity 147 e1 8.750541780171032 1.0 2.8299109594169423 1.901829510684289E-10 -0.12 3.678142417654277E-10 item=minecraft:big_dripleaf count=1 age=134 pickup-delay=0 on-ground=true
+entity 147 e2 9.59676198297146 1.0 4.115747394404566 7.912727678768824E-10 -0.12 9.20792608085469E-10 item=minecraft:big_dripleaf count=1 age=133 pickup-delay=0 on-ground=true
+entity 147 e3 7.125 1.0 2.4809140730840262 0 0 4.6077024333011746E-10 item=minecraft:big_dripleaf count=1 age=133 pickup-delay=0 on-ground=true
+entity 147 e4 11.43033988794566 1.0 3.497731272822989 -3.040437561916578E-10 0 9.417874874690574E-10 item=minecraft:big_dripleaf count=1 age=132 pickup-delay=0 on-ground=true
+entity 147 e5 12.370498980328128 1.0 3.4738715691083932 5.169385698131504E-10 -0.04 7.035026288338701E-10 item=minecraft:big_dripleaf count=1 age=132 pickup-delay=0 on-ground=true
+entity 147 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=130 pickup-delay=32767 on-ground=true
+entity 147 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=130 pickup-delay=32767 on-ground=true
+
+entity-order 148 entities e1 e2 e3 e4 e5 e6 e7
+entity 148 e1 8.750541780171032 1.0 2.8299109594169423 1.1182758647333713E-10 0 2.1627479590612123E-10 item=minecraft:big_dripleaf count=1 age=135 pickup-delay=0 on-ground=true
+entity 148 e2 9.59676198297146 1.0 4.115747394404566 4.6526843429783083E-10 0 5.414261079987039E-10 item=minecraft:big_dripleaf count=1 age=134 pickup-delay=0 on-ground=true
+entity 148 e3 7.125 1.0 2.4809140730840262 0 -0.04 4.6077024333011746E-10 item=minecraft:big_dripleaf count=1 age=134 pickup-delay=0 on-ground=true
+entity 148 e4 11.43033988794566 1.0 3.497731272822989 -3.040437561916578E-10 -0.04 9.417874874690574E-10 item=minecraft:big_dripleaf count=1 age=133 pickup-delay=0 on-ground=true
+entity 148 e5 12.370498980328128 1.0 3.4738715691083932 5.169385698131504E-10 -0.08 7.035026288338701E-10 item=minecraft:big_dripleaf count=1 age=133 pickup-delay=0 on-ground=true
+entity 148 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=131 pickup-delay=32767 on-ground=true
+entity 148 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=131 pickup-delay=32767 on-ground=true
+
+entity-order 149 entities e1 e2 e3 e4 e5 e6 e7
+entity 149 e1 8.750541780171032 1.0 2.8299109594169423 1.1182758647333713E-10 -0.04 2.1627479590612123E-10 item=minecraft:big_dripleaf count=1 age=136 pickup-delay=0 on-ground=true
+entity 149 e2 9.59676198297146 1.0 4.115747394404566 4.6526843429783083E-10 -0.04 5.414261079987039E-10 item=minecraft:big_dripleaf count=1 age=135 pickup-delay=0 on-ground=true
+entity 149 e3 7.125 1.0 2.4809140730840262 0 -0.08 4.6077024333011746E-10 item=minecraft:big_dripleaf count=1 age=135 pickup-delay=0 on-ground=true
+entity 149 e4 11.43033988794566 1.0 3.497731272822989 -3.040437561916578E-10 -0.08 9.417874874690574E-10 item=minecraft:big_dripleaf count=1 age=134 pickup-delay=0 on-ground=true
+entity 149 e5 12.370498980328128 1.0 3.4738715691083932 5.169385698131504E-10 -0.12 7.035026288338701E-10 item=minecraft:big_dripleaf count=1 age=134 pickup-delay=0 on-ground=true
+entity 149 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=132 pickup-delay=32767 on-ground=true
+entity 149 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=132 pickup-delay=32767 on-ground=true
+
+entity-order 150 entities e1 e2 e3 e4 e5 e6 e7
+entity 150 e1 8.750541780171032 1.0 2.8299109594169423 1.1182758647333713E-10 -0.08 2.1627479590612123E-10 item=minecraft:big_dripleaf count=1 age=137 pickup-delay=0 on-ground=true
+entity 150 e2 9.59676198297146 1.0 4.115747394404566 4.6526843429783083E-10 -0.08 5.414261079987039E-10 item=minecraft:big_dripleaf count=1 age=136 pickup-delay=0 on-ground=true
+entity 150 e3 7.125 1.0 2.4809140730840262 0 -0.12 4.6077024333011746E-10 item=minecraft:big_dripleaf count=1 age=136 pickup-delay=0 on-ground=true
+entity 150 e4 11.43033988794566 1.0 3.497731272822989 -3.040437561916578E-10 -0.12 9.417874874690574E-10 item=minecraft:big_dripleaf count=1 age=135 pickup-delay=0 on-ground=true
+entity 150 e5 12.370498980328128 1.0 3.4738715691083932 3.039599096155767E-10 0 4.136595873508837E-10 item=minecraft:big_dripleaf count=1 age=135 pickup-delay=0 on-ground=true
+entity 150 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=133 pickup-delay=32767 on-ground=true
+entity 150 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=133 pickup-delay=32767 on-ground=true
+
+entity-order 151 entities e1 e2 e3 e4 e5 e6 e7
+entity 151 e1 8.750541780171032 1.0 2.8299109594169423 1.1182758647333713E-10 -0.12 2.1627479590612123E-10 item=minecraft:big_dripleaf count=1 age=138 pickup-delay=0 on-ground=true
+entity 151 e2 9.59676198297146 1.0 4.115747394404566 4.6526843429783083E-10 -0.12 5.414261079987039E-10 item=minecraft:big_dripleaf count=1 age=137 pickup-delay=0 on-ground=true
+entity 151 e3 7.125 1.0 2.4809140730840262 0 0 2.7093293032244337E-10 item=minecraft:big_dripleaf count=1 age=137 pickup-delay=0 on-ground=true
+entity 151 e4 11.43033988794566 1.0 3.497731272822989 -1.787777466181355E-10 0 5.537710983176351E-10 item=minecraft:big_dripleaf count=1 age=136 pickup-delay=0 on-ground=true
+entity 151 e5 12.370498980328128 1.0 3.4738715691083932 3.039599096155767E-10 -0.04 4.136595873508837E-10 item=minecraft:big_dripleaf count=1 age=136 pickup-delay=0 on-ground=true
+entity 151 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=134 pickup-delay=32767 on-ground=true
+entity 151 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=134 pickup-delay=32767 on-ground=true
+
+entity-order 152 entities e1 e2 e3 e4 e5 e6 e7
+entity 152 e1 8.750541780171032 1.0 2.8299109594169423 6.575462745844226E-11 0 1.271695927806538E-10 item=minecraft:big_dripleaf count=1 age=139 pickup-delay=0 on-ground=true
+entity 152 e2 9.59676198297146 1.0 4.115747394404566 2.73577866877427E-10 0 3.1835858351657666E-10 item=minecraft:big_dripleaf count=1 age=138 pickup-delay=0 on-ground=true
+entity 152 e3 7.125 1.0 2.4809140730840262 0 -0.04 2.7093293032244337E-10 item=minecraft:big_dripleaf count=1 age=138 pickup-delay=0 on-ground=true
+entity 152 e4 11.43033988794566 1.0 3.497731272822989 -1.787777466181355E-10 -0.04 5.537710983176351E-10 item=minecraft:big_dripleaf count=1 age=137 pickup-delay=0 on-ground=true
+entity 152 e5 12.370498980328128 1.0 3.4738715691083932 3.039599096155767E-10 -0.08 4.136595873508837E-10 item=minecraft:big_dripleaf count=1 age=137 pickup-delay=0 on-ground=true
+entity 152 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=135 pickup-delay=32767 on-ground=true
+entity 152 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=135 pickup-delay=32767 on-ground=true
+
+entity-order 153 entities e1 e2 e3 e4 e5 e6 e7
+entity 153 e1 8.750541780171032 1.0 2.8299109594169423 6.575462745844226E-11 -0.04 1.271695927806538E-10 item=minecraft:big_dripleaf count=1 age=140 pickup-delay=0 on-ground=true
+entity 153 e2 9.59676198297146 1.0 4.115747394404566 2.73577866877427E-10 -0.04 3.1835858351657666E-10 item=minecraft:big_dripleaf count=1 age=139 pickup-delay=0 on-ground=true
+entity 153 e3 7.125 1.0 2.4809140730840262 0 -0.08 2.7093293032244337E-10 item=minecraft:big_dripleaf count=1 age=139 pickup-delay=0 on-ground=true
+entity 153 e4 11.43033988794566 1.0 3.497731272822989 -1.787777466181355E-10 -0.08 5.537710983176351E-10 item=minecraft:big_dripleaf count=1 age=138 pickup-delay=0 on-ground=true
+entity 153 e5 12.370498980328128 1.0 3.4738715691083932 3.039599096155767E-10 -0.12 4.136595873508837E-10 item=minecraft:big_dripleaf count=1 age=138 pickup-delay=0 on-ground=true
+entity 153 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=136 pickup-delay=32767 on-ground=true
+entity 153 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=136 pickup-delay=32767 on-ground=true
+
+entity-order 154 entities e1 e2 e3 e4 e5 e6 e7
+entity 154 e1 8.750541780171032 1.0 2.8299109594169423 6.575462745844226E-11 -0.08 1.271695927806538E-10 item=minecraft:big_dripleaf count=1 age=141 pickup-delay=0 on-ground=true
+entity 154 e2 9.59676198297146 1.0 4.115747394404566 2.73577866877427E-10 -0.08 3.1835858351657666E-10 item=minecraft:big_dripleaf count=1 age=140 pickup-delay=0 on-ground=true
+entity 154 e3 7.125 1.0 2.4809140730840262 0 -0.12 2.7093293032244337E-10 item=minecraft:big_dripleaf count=1 age=140 pickup-delay=0 on-ground=true
+entity 154 e4 11.43033988794566 1.0 3.497731272822989 -1.787777466181355E-10 -0.12 5.537710983176351E-10 item=minecraft:big_dripleaf count=1 age=139 pickup-delay=0 on-ground=true
+entity 154 e5 12.370498980328128 1.0 3.4738715691083932 1.7872844482644217E-10 0 2.432318618211041E-10 item=minecraft:big_dripleaf count=1 age=139 pickup-delay=0 on-ground=true
+entity 154 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=137 pickup-delay=32767 on-ground=true
+entity 154 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=137 pickup-delay=32767 on-ground=true
+
+entity-order 155 entities e1 e2 e3 e4 e5 e6 e7
+entity 155 e1 8.750541780171032 1.0 2.8299109594169423 6.575462745844226E-11 -0.12 1.271695927806538E-10 item=minecraft:big_dripleaf count=1 age=142 pickup-delay=0 on-ground=true
+entity 155 e2 9.59676198297146 1.0 4.115747394404566 2.73577866877427E-10 -0.12 3.1835858351657666E-10 item=minecraft:big_dripleaf count=1 age=141 pickup-delay=0 on-ground=true
+entity 155 e3 7.125 1.0 2.4809140730840262 0 0 1.5930857904926688E-10 item=minecraft:big_dripleaf count=1 age=141 pickup-delay=0 on-ground=true
+entity 155 e4 11.43033988794566 1.0 3.497731272822989 -1.0512132558219988E-10 0 3.256174385540404E-10 item=minecraft:big_dripleaf count=1 age=140 pickup-delay=0 on-ground=true
+entity 155 e5 12.370498980328128 1.0 3.4738715691083932 1.7872844482644217E-10 -0.04 2.432318618211041E-10 item=minecraft:big_dripleaf count=1 age=140 pickup-delay=0 on-ground=true
+entity 155 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=138 pickup-delay=32767 on-ground=true
+entity 155 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=138 pickup-delay=32767 on-ground=true
+
+entity-order 156 entities e1 e2 e3 e4 e5 e6 e7
+entity 156 e1 8.750541780171032 1.0 2.8299109594169423 3.866372483349101E-11 0 7.477572807428365E-11 item=minecraft:big_dripleaf count=1 age=143 pickup-delay=0 on-ground=true
+entity 156 e2 9.59676198297146 1.0 4.115747394404566 1.6086380189998656E-10 0 1.8719486593159214E-10 item=minecraft:big_dripleaf count=1 age=142 pickup-delay=0 on-ground=true
+entity 156 e3 7.125 1.0 2.4809140730840262 0 -0.04 1.5930857904926688E-10 item=minecraft:big_dripleaf count=1 age=142 pickup-delay=0 on-ground=true
+entity 156 e4 11.43033988794566 1.0 3.497731272822989 -1.0512132558219988E-10 -0.04 3.256174385540404E-10 item=minecraft:big_dripleaf count=1 age=141 pickup-delay=0 on-ground=true
+entity 156 e5 12.370498980328128 1.0 3.4738715691083932 1.7872844482644217E-10 -0.08 2.432318618211041E-10 item=minecraft:big_dripleaf count=1 age=141 pickup-delay=0 on-ground=true
+entity 156 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=139 pickup-delay=32767 on-ground=true
+entity 156 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=139 pickup-delay=32767 on-ground=true
+
+entity-order 157 entities e1 e2 e3 e4 e5 e6 e7
+entity 157 e1 8.750541780171032 1.0 2.8299109594169423 3.866372483349101E-11 -0.04 7.477572807428365E-11 item=minecraft:big_dripleaf count=1 age=144 pickup-delay=0 on-ground=true
+entity 157 e2 9.59676198297146 1.0 4.115747394404566 1.6086380189998656E-10 -0.04 1.8719486593159214E-10 item=minecraft:big_dripleaf count=1 age=143 pickup-delay=0 on-ground=true
+entity 157 e3 7.125 1.0 2.4809140730840262 0 -0.08 1.5930857904926688E-10 item=minecraft:big_dripleaf count=1 age=143 pickup-delay=0 on-ground=true
+entity 157 e4 11.43033988794566 1.0 3.497731272822989 -1.0512132558219988E-10 -0.08 3.256174385540404E-10 item=minecraft:big_dripleaf count=1 age=142 pickup-delay=0 on-ground=true
+entity 157 e5 12.370498980328128 1.0 3.4738715691083932 1.7872844482644217E-10 -0.12 2.432318618211041E-10 item=minecraft:big_dripleaf count=1 age=142 pickup-delay=0 on-ground=true
+entity 157 e6 14.5 2.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=140 pickup-delay=32767 on-ground=true
+entity 157 e7 17.5 2.9375 2.5 0 -0.12 0 item=minecraft:stick count=1 age=140 pickup-delay=32767 on-ground=true
+
+entity-order 158 entities e1 e2 e3 e4 e5 e6 e7
+entity 158 e1 8.750541780171032 1.0 2.8299109594169423 3.866372483349101E-11 -0.08 7.477572807428365E-11 item=minecraft:big_dripleaf count=1 age=145 pickup-delay=0 on-ground=true
+entity 158 e2 9.59676198297146 1.0 4.115747394404566 1.6086380189998656E-10 -0.08 1.8719486593159214E-10 item=minecraft:big_dripleaf count=1 age=144 pickup-delay=0 on-ground=true
+entity 158 e3 7.125 1.0 2.4809140730840262 0 -0.12 1.5930857904926688E-10 item=minecraft:big_dripleaf count=1 age=144 pickup-delay=0 on-ground=true
+entity 158 e4 11.43033988794566 1.0 3.497731272822989 -1.0512132558219988E-10 -0.12 3.256174385540404E-10 item=minecraft:big_dripleaf count=1 age=143 pickup-delay=0 on-ground=true
+entity 158 e5 12.370498980328128 1.0 3.4738715691083932 1.0509233612576909E-10 0 1.4302034913257594E-10 item=minecraft:big_dripleaf count=1 age=143 pickup-delay=0 on-ground=true
+entity 158 e6 14.5 2.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=141 pickup-delay=32767 on-ground=true
+entity 158 e7 17.5 2.9375 2.5 0 0 0 item=minecraft:stick count=1 age=141 pickup-delay=32767 on-ground=true
+
+entity-order 159 entities e1 e2 e3 e4 e5 e6 e7
+entity 159 e1 8.750541780171032 1.0 2.8299109594169423 3.866372483349101E-11 -0.12 7.477572807428365E-11 item=minecraft:big_dripleaf count=1 age=146 pickup-delay=0 on-ground=true
+entity 159 e2 9.59676198297146 1.0 4.115747394404566 1.6086380189998656E-10 -0.12 1.8719486593159214E-10 item=minecraft:big_dripleaf count=1 age=145 pickup-delay=0 on-ground=true
+entity 159 e3 7.125 1.0 2.4809140730840262 0 0 9.367345390053594E-11 item=minecraft:big_dripleaf count=1 age=145 pickup-delay=0 on-ground=true
+entity 159 e4 11.43033988794566 1.0 3.497731272822989 -6.181134565792705E-11 0 1.91463073122821E-10 item=minecraft:big_dripleaf count=1 age=144 pickup-delay=0 on-ground=true
+entity 159 e5 12.370498980328128 1.0 3.4738715691083932 1.0509233612576909E-10 -0.04 1.4302034913257594E-10 item=minecraft:big_dripleaf count=1 age=144 pickup-delay=0 on-ground=true
+entity 159 e6 14.5 2.0 2.5 0 0 0 item=minecraft:stick count=1 age=142 pickup-delay=32767 on-ground=true
+entity 159 e7 17.5 2.9375 2.5 0 -0.04 0 item=minecraft:stick count=1 age=142 pickup-delay=32767 on-ground=true
+
+entity-order 160 entities e1 e2 e3 e4 e5 e6 e7
+entity 160 e1 8.750541780171032 1.0 2.8299109594169423 2.2734272488193997E-11 0 4.396813252900365E-11 item=minecraft:big_dripleaf count=1 age=147 pickup-delay=0 on-ground=true
+entity 160 e2 9.59676198297146 1.0 4.115747394404566 9.458792502871603E-11 0 1.100705922361982E-10 item=minecraft:big_dripleaf count=1 age=146 pickup-delay=0 on-ground=true
+entity 160 e3 7.125 1.0 2.4809140730840262 0 -0.04 9.367345390053594E-11 item=minecraft:big_dripleaf count=1 age=146 pickup-delay=0 on-ground=true
+entity 160 e4 11.43033988794566 1.0 3.497731272822989 -6.181134565792705E-11 -0.04 1.91463073122821E-10 item=minecraft:big_dripleaf count=1 age=145 pickup-delay=0 on-ground=true
+entity 160 e5 12.370498980328128 1.0 3.4738715691083932 1.0509233612576909E-10 -0.08 1.4302034913257594E-10 item=minecraft:big_dripleaf count=1 age=145 pickup-delay=0 on-ground=true
+entity 160 e6 14.5 2.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=143 pickup-delay=32767 on-ground=true
+entity 160 e7 17.5 2.9375 2.5 0 -0.08 0 item=minecraft:stick count=1 age=143 pickup-delay=32767 on-ground=true

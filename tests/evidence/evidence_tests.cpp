@@ -801,7 +801,7 @@ int main(int argc, char** argv) {
         // tests/fixtures/collision/plants-*.txt: for every state as support,
         // whether each plant stays on it with nothing else around. The rules
         // model the plants that need only the block below or above, sugar cane
-        // and cacti (more below); the dripleaves and mushrooms wait.
+        // and cacti (more below); the mushrooms wait.
         namespace registry = circuit::gameplay::registry;
         using circuit::contracts::Direction;
         using circuit::gameplay::BlockState;
@@ -828,7 +828,8 @@ int main(int argc, char** argv) {
             {27, {"melon_stem", {}}}, {28, {"pumpkin_stem", {}}}, {29, {"torchflower_crop", {}}}, {34, {"bamboo_sapling", {}}},
             {35, {"bamboo", {}}}, {36, {"sugar_cane", {}}}, {37, {"cactus", {}}}, {38, {"lily_pad", {}}}, {39, {"sea_pickle", {}}},
             {33, {"twisting_vines", {}}}, {42, {"weeping_vines", {}}}, {43, {"hanging_roots", {}}}, {44, {"spore_blossom", {}}},
-            {45, {"cave_vines", {}}}, {46, {"pale_hanging_moss", {}}}};
+            {45, {"cave_vines", {}}}, {46, {"pale_hanging_moss", {}}}, {31, {"small_dripleaf", {{"half", "lower"}}}},
+            {32, {"big_dripleaf", {}}}};
         // The last five columns hang under the state.
         constexpr std::size_t first_hanging = 42;
         std::size_t checked = 0, grows = 0;
@@ -867,12 +868,13 @@ int main(int argc, char** argv) {
         require(grows > 0, "plants grow somewhere");
     });
 
-    suite.run("sugar cane and cacti stay where both official servers keep them", [&] {
+    suite.run("sugar cane, cacti and small dripleaves stay where both official servers keep them", [&] {
         // tests/fixtures/collision/plant-contexts-*.txt: sugar cane on every
         // state with a water source beside it, and on sand with every state
         // beside the sand; a cactus on sand with every state beside it and
-        // above it. States that did not stay where they were set (?) are
-        // left out; the mushroom and dripleaf columns wait.
+        // above it; a small dripleaf's waterlogged lower half on every state.
+        // States that did not stay where they were set (?) are left out; the
+        // mushroom columns wait.
         namespace registry = circuit::gameplay::registry;
         using circuit::contracts::BlockPos;
         using circuit::gameplay::BlockState;
@@ -895,6 +897,8 @@ int main(int argc, char** argv) {
                 return BlockState::registered(registry::block(*registry::find_block(release, name)).default_state);
             };
             const auto cane = plant("sugar_cane"), cactus = plant("cactus"), sand = plant("sand");
+            const auto wet_dripleaf = BlockState::registered(
+                registry::state_of(*registry::find_block(release, "small_dripleaf"), {{{"half", "lower"}, {"waterlogged", "true"}}}).value());
             const auto water = circuit::gameplay::blocks::water_source();
             for (std::uint32_t wire = 0; wire < registry::wire_state_count(release); ++wire) {
                 const auto notation = registry::notation(registry::from_wire(release, static_cast<std::int32_t>(wire)).value());
@@ -909,13 +913,14 @@ int main(int argc, char** argv) {
                 require(row != nullptr && row->size() == 7, std::format("{} {}: a row", release, notation));
                 const auto state = mapping->block(notation).value();
                 // The plant, and what stands where around it.
-                const std::array<std::tuple<BlockState, std::vector<std::pair<BlockPos, BlockState>>, const char*>, 4> contexts{{
+                const std::array<std::tuple<BlockState, std::vector<std::pair<BlockPos, BlockState>>, const char*>, 5> contexts{{
                     {cane, {{{0, -1, 0}, state}, {{1, -1, 0}, water}}, "sugar cane on it, water beside"},
                     {cane, {{{0, -1, 0}, sand}, {{1, -1, 0}, state}}, "sugar cane on sand, it beside the sand"},
                     {cactus, {{{0, -1, 0}, sand}, {{1, 0, 0}, state}}, "a cactus on sand, it beside"},
-                    {cactus, {{{0, -1, 0}, sand}, {{0, 1, 0}, state}}, "a cactus on sand, it above"}}};
+                    {cactus, {{{0, -1, 0}, sand}, {{0, 1, 0}, state}}, "a cactus on sand, it above"},
+                    {wet_dripleaf, {{{0, -1, 0}, state}}, "a small dripleaf in water on it"}}};
                 for (std::size_t column = 0; column < contexts.size(); ++column) {
-                    const char want = (*row)[column];
+                    const char want = (*row)[column == 4 ? 6 : column];
                     if (want == '?') continue;
                     const auto& [what, around, label] = contexts[column];
                     const auto near = [&](BlockPos o) {
