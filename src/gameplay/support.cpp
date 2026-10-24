@@ -527,7 +527,9 @@ bool block_supported(BlockState s, const std::function<BlockState(contracts::Dir
         },
         release);
 }
-bool block_ticks_scheduled(BlockState s) { return detail::falls(s) || detail::checks_later(s); }
+bool block_ticks_scheduled(BlockState s) {
+    return detail::falls(s) || detail::checks_later(s) || detail::is_big_dripleaf(s) || detail::is_farmland(s);
+}
 bool block_supported_near(BlockState s, const std::function<BlockState(contracts::BlockPos offset)>& near, std::string_view release,
                           std::uint8_t light) {
     return detail::supported(s, near, release, [light] { return light; });

@@ -1187,6 +1187,8 @@ void Engine::Impl::restore(const WorldDump& state) {
             if (e.piston_tick > state.time || !contracts::finite(e.piston_push) || std::abs(e.piston_push.x) > 0.51 || std::abs(e.piston_push.y) > 0.51
                 || std::abs(e.piston_push.z) > 0.51)
                 bad("entity piston push");
+            // A fall within the heights an entity can reach.
+            if (!std::isfinite(e.fall_distance) || e.fall_distance < 0.0 || e.fall_distance > highest - lowest) bad("entity fall distance");
             // Each kind's own state, valid; the state of other kinds at its defaults.
             auto rest = e;
             switch (e.kind) {

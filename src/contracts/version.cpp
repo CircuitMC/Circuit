@@ -108,8 +108,9 @@ constexpr std::array reference_v4_mechanisms{
         "of its id, as minecraft.wiki \"Random sequence\" describes; fitted to every roll of loot_many, and the states "
         "left equal the official saved ones); a stack of none still takes its position from the level random (loot_rolls, "
         "loot_single, loot_many; ores, leaves, gravel and other blocks broken by players holding tools with fortune, silk "
-        "touch or shears in loot_tools and loot_bonus; with the operator's data packs). Gaps: weighted choices between "
-        "entries (no block table has them) drop nothing; fortune's binomial bonus above level 0 (crops) is not compared; "
+        "touch or shears in loot_tools and loot_bonus, crops with fortune in farmland; with the operator's data packs). Gaps: "
+        "weighted choices between "
+        "entries (no block table has them) drop nothing; "
         "tables that copy components, test entities or name dynamic entries do not compile; each level keeps its own "
         "sequences, where the official servers keep one set for the world."},
     MechanismEntry{"lava", l0_exact, l0_exact, harness_trace,
@@ -131,7 +132,8 @@ constexpr std::array reference_v4_mechanisms{
         "Double-precision gravity, drag, bouncing and collision with every state's collision boxes; items at "
         "rest move every fourth tick; currents and buoyancy in water; merging with the target versions' timing, "
         "reach and results; block drops and container scatter placed and launched with level-random draws; "
-        "despawns at age 6000; pushed by moving blocks (item_hopper_pickup, item_water_current, item_merge, "
+        "despawns at age 6000; pushed by moving blocks; falls counted, landing on the block that supports them "
+        "(farmland draws) (item_hopper_pickup, item_water_current, item_merge, "
         "item_merge_moving, item_merge_crossing, item_merge_vertical, item_merge_timers, item_chest_scatter, "
         "item_water_still, item_water_channel, item_water_ice_corner, item_water_falling, item_water_fall); "
         "entities leave with an unloading chunk and come back a tick after it reloads, under new ids "
@@ -327,7 +329,8 @@ constexpr std::array reference_v4_mechanisms{
         "breaking a tick after an update (plant_supports; tests/fixtures/collision/plant-contexts-*.txt); vines, hanging "
         "roots, spore blossoms, pale hanging moss and hanging propagules what holds them, vines turning between heads and "
         "bodies (vines, with the operator's data packs); small and big dripleaves and stems, big dripleaves tilting under "
-        "entities and back with a signal (dripleaves); mushrooms their ground or darkness (mushrooms). Support shapes "
+        "entities and back with a signal (dripleaves); mushrooms their ground or darkness (mushrooms); farmland turns to "
+        "dirt a tick after a solid block is set on it (farmland). Support shapes "
         "and solidity of every state come from the registry (tests/fixtures/collision/support-*.txt). The drops' "
         "positions follow item_entity; without data packs, plants whose loot rolls random numbers drop nothing (with "
         "them, see loot)."},

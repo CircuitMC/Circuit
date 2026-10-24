@@ -4923,6 +4923,19 @@
         "deviations": [
           "does not spread or grow"
         ]
+      },
+      "farmland": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Turns to dirt a tick after an update from above finds a solid block on it, and draws its trampling check for every entity that lands on it, as both official servers do; crops grow only on it",
+        "cases": [
+          "collision/plants",
+          "trace/farmland"
+        ],
+        "deviations": [
+          "moisture and drying are not modeled",
+          "nothing tramples it yet"
+        ]
       }
     },
     "item": {

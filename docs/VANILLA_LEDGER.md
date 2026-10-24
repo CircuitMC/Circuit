@@ -36,7 +36,7 @@ Feature counts per implementation state, then the number of features with compar
 | V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 17 / 17 | 23 / 23 | 3 / 3 | 0 / 0 | 17 / 17 |
 | V11 Common building blocks | C5 | 1347 | 0 / 0 | 339 / 339 | 1007 / 1007 | 1 / 1 | 0 / 0 | 130 / 130 |
 | V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 27 / 27 | 53 / 53 | 2 / 2 | 0 / 0 | 12 / 12 |
-| V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 107 / 112 | 195 / 204 | 4 / 4 | 14 / 0 | 106 / 111 |
+| V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 109 / 114 | 194 / 203 | 3 / 3 | 14 / 0 | 108 / 113 |
 | V14 Redstone sources and signal consumers | C4, C5 | 138 | 7 / 7 | 97 / 97 | 33 / 33 | 1 / 1 | 0 / 0 | 39 / 41 |
 | V15 Pistons and moving structures | C3, C4 | 16 | 2 / 2 | 14 / 14 | 0 / 0 | 0 / 0 | 0 / 0 | 12 / 12 |
 | V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 29 / 29 | 28 / 28 | 2 / 2 | 0 / 0 | 29 / 29 |
@@ -67,7 +67,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 503 / 508 | 588 / 593 | 0 / 0 |
+| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 504 / 509 | 587 / 592 | 0 / 0 |
 | item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 130 / 130 | 1254 / 1285 | 0 / 0 |
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 17 / 17 | 0 / 0 | 132 / 134 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
@@ -130,7 +130,7 @@ Their counts are unknown, not zero.
 | black_box | passing | 44 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 155 |
+| official_trace | passing | 156 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -273,7 +273,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
 | Wheat growth | C5 | partial, documented | partial, documented | `trace/loot_rolls`; does not break in darkness; grows with probability 1/3 per random tick, ignoring hydration and neighboring crops; Grows only with light 9 or more at its own cell (minecraft.wiki "Wheat Crops"), light as the tick sees it; planted on farmland, and broken with its drops by an update that finds no farmland below, as both official servers do |
-| Farmland, hydration and trampling | C5 | missing, none | missing, none |  |
+| Farmland, hydration and trampling | C5 | partial, compared | partial, compared | `trace/farmland`; moisture, drying and hydration (random ticks) are not modeled; nothing tramples it (there are no living entities yet), and entities are not pushed up when it turns; Farmland turns to dirt a tick after a solid block is set on it; entities count their falls and every landing on farmland draws its trampling check from the level random, as both official servers do |
 | Other crops and plants: carrots, potatoes, beetroots, stems, sugar cane, cactus, bamboo, kelp, cocoa, berries, nether wart, chorus | C5 | partial, compared | partial, compared | `collision/plant_contexts`, `collision/plants`, `trace/dripleaves`, `trace/mushrooms`, `trace/plant_grounds`, `trace/plant_supports`, `trace/vines`; cacti do not hurt entities; kelp, cocoa, chorus and pitcher crops are not supported yet; they do not grow; without data packs, plants whose loot rolls random numbers drop nothing; Carrots, potatoes, beetroots, stems, torchflower crops, nether wart, sweet berry bushes and bamboo grow on their ground only and break when it goes; sugar cane needs water beside its ground and cacti nothing solid beside them, both breaking a tick after an update finds them unsupported |
 | Saplings, trees and leaf decay | C5 | missing, none | missing, none |  |
 | Grass, mycelium, nylium, moss and sculk spread | C5 | missing, none | missing, none |  |
@@ -416,7 +416,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Crafting (2x2 and table) and the recipe book | C5 | partial, compared | partial, compared | `client/crafting`; special recipes (repairing, map and book cloning, fireworks, armor dye, banner copying, shield decoration, tipped arrows, decorated pots) and recipes whose results carry components (suspicious stew) make nothing; the crafting table's 3x3 grid is not modeled; the recipe book is not synchronized and recipe placement requests are ignored; the doLimitedCrafting rule is not applied; without the official data pack there are no recipes; The player's 2x2 grid crafts with the shaped, shapeless and transmute recipes of the loaded data packs: the result follows the grid, every click mode takes it, ingredients are used and remainders kept; 48 steps give the same windows as both official servers |
 | Furnaces, smokers, blast furnaces and campfires | C5 | missing, none | missing, none |  |
 | Brewing, enchanting, anvils, grindstones, stonecutters, smithing, looms, cartography, beacons, merchants, lecterns and mount inventories | C5 | missing, none | missing, none |  |
-| Loot tables for blocks, entities and containers | C5 | partial, compared | partial, compared | `data/block_drops`, `trace/loot_bonus`, `trace/loot_many`, `trace/loot_rolls`, `trace/loot_single`, `trace/loot_tools`; each level keeps its own random sequences; the official servers keep one set for the world; entity, container and archaeology tables are not used; modeled blocks ignore their tables, so silk touch does not change their drops; tables that choose between weighted entries drop nothing (no block table has them); fortune's binomial bonus above level 0 (crops) is not compared; tables that copy components or name dynamic contents (shulker boxes, banners, decorated pots) are not used; Blocks without rules of their own, and wheat, drop from their loot tables (888 of 952 tables in 1.21.8, 880 of 944 in 1.21.4; wall torches, signs, banners and heads by the standing ones' tables), with harvest tools, silk touch and shears; random counts, chances, table bonuses and fortune's ore, uniform and binomial bonuses roll from each table's random sequence, which checkpoints and Anvil worlds keep, as both official servers roll them; other modeled blocks keep fixed drops |
+| Loot tables for blocks, entities and containers | C5 | partial, compared | partial, compared | `data/block_drops`, `trace/farmland`, `trace/loot_bonus`, `trace/loot_many`, `trace/loot_rolls`, `trace/loot_single`, `trace/loot_tools`; each level keeps its own random sequences; the official servers keep one set for the world; entity, container and archaeology tables are not used; modeled blocks ignore their tables, so silk touch does not change their drops; tables that choose between weighted entries drop nothing (no block table has them); tables that copy components or name dynamic contents (shulker boxes, banners, decorated pots) are not used; Blocks without rules of their own, and wheat, drop from their loot tables (888 of 952 tables in 1.21.8, 880 of 944 in 1.21.4; wall torches, signs, banners and heads by the standing ones' tables), with harvest tools, silk touch and shears; random counts, chances, table bonuses and fortune's ore, uniform and binomial bonuses roll from each table's random sequence, which checkpoints and Anvil worlds keep, as both official servers roll them; other modeled blocks keep fixed drops |
 
 ### V26 Mob AI and navigation
 

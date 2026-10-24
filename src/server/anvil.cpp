@@ -952,6 +952,9 @@ private:
                 continue;
             }
             out.on_ground = integer(e, "OnGround").value_or(0) != 0;
+            // How far it has fallen (a double since 1.21.5), within what the rules keep.
+            const auto fell = real(e, "fall_distance").value_or(0.0);
+            out.fall_distance = std::isfinite(fell) ? std::clamp(fell, 0.0, 65536.0) : 0.0;
             out.last_tick = time_;
             entities_.push_back(out);
         }
@@ -1310,14 +1313,11 @@ private:
             rotation.push(Tag::float_(0.0f));
             t.set("Rotation", std::move(rotation));
             t.set("OnGround", Tag::boolean(e->on_ground));
+            t.set("fall_distance", Tag::double_(e->fall_distance));
             const auto hi = std::uint64_t{0x43697263756974ULL}, lo = e->id.value;
             if (e->kind == gameplay::EntityKind::minecart || e->kind == gameplay::EntityKind::boat) {
                 // As the target versions save an empty minecart or boat.
-                if (e->kind == gameplay::EntityKind::boat) {
-                    t.set("id", Tag::string(std::string(gameplay::boat_types.at(e->variant))));
-                } else {
-                    t.set("FallDistance", Tag::float_(0.0f));
-                }
+                if (e->kind == gameplay::EntityKind::boat) t.set("id", Tag::string(std::string(gameplay::boat_types.at(e->variant))));
                 t.set("Air", Tag::short_(300));
                 t.set("Fire", Tag::short_(-1));
                 t.set("Invulnerable", Tag::boolean(false));

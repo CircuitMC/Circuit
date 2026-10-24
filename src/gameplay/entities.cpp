@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
+#include <limits>
+#include <tuple>
 #include <circuit/gameplay/items.hpp>
 #include <circuit/gameplay/physics.hpp>
 #include <circuit/gameplay/survival.hpp>
@@ -175,12 +177,13 @@ bool is_soul_sand(BlockState s) {
 float speed_factor(BlockState s) { return s.is(BlockType::honey_block) || is_soul_sand(s) ? 0.4f : 1.0f; }
 } // namespace
 
-bool move_entity(RuleContext& ctx, Vec3& position, Vec3& velocity, double width, double height, const Entity* self) {
-    return move_entity(ctx, position, velocity, velocity, width, height, self);
+bool move_entity(RuleContext& ctx, Vec3& position, Vec3& velocity, double width, double height, const Entity* self, Vec3* moved) {
+    return move_entity(ctx, position, velocity, velocity, width, height, self, moved);
 }
 
-bool move_entity(RuleContext& ctx, Vec3& position, Vec3& velocity, Vec3 movement, double width, double height, const Entity* self) {
-    const bool landed = move_entity_by(ctx, position, velocity, movement, width, height, self);
+bool move_entity(RuleContext& ctx, Vec3& position, Vec3& velocity, Vec3 movement, double width, double height, const Entity* self,
+                 Vec3* moved) {
+    const bool landed = move_entity_by(ctx, position, velocity, movement, width, height, self, moved);
     // Honey and soul sand slow what moves in or on them: the block at its
     // feet, or the one half a block below (items and primed TNT observed).
     const auto at = [&](double dy) {
@@ -192,6 +195,28 @@ bool move_entity(RuleContext& ctx, Vec3& position, Vec3& velocity, Vec3 movement
     if (f == 1.0f && !here.is(BlockType::water)) f = speed_factor(at(-0.500001));
     velocity = {velocity.x * static_cast<double>(f), velocity.y, velocity.z * static_cast<double>(f)};
     return landed;
+}
+
+std::optional<BlockPos> supporting_block(RuleContext& ctx, const physics::Aabb& box, Vec3 position, Vec3 moved) {
+    // The nearest to the entity's position (ties: the lowest, then by z, then x).
+    const auto find = [&](const physics::Aabb& under) -> std::optional<BlockPos> {
+        std::optional<BlockPos> best;
+        double nearest = std::numeric_limits<double>::max();
+        for (const auto& c : physics::colliders(under, shapes(ctx))) {
+            const double dx = c.pos.x + 0.5 - position.x, dy = c.pos.y + 0.5 - position.y, dz = c.pos.z + 0.5 - position.z;
+            const double d = dx * dx + dy * dy + dz * dz;
+            const auto key = [](BlockPos p) { return std::tuple{p.y, p.z, p.x}; };
+            if (d < nearest || (d == nearest && key(c.pos) < key(*best))) {
+                best = c.pos;
+                nearest = d;
+            }
+        }
+        return best;
+    };
+    const physics::Aabb under{box.min_x, box.min_y - 1.0e-6, box.min_z, box.max_x, box.min_y, box.max_z};
+    if (auto found = find(under)) return found;
+    if (moved.x == 0.0 && moved.z == 0.0) return std::nullopt;
+    return find(under.move(-moved.x, 0.0, -moved.z));
 }
 
 bool honey_slide(RuleContext& ctx, Vec3 position, Vec3& velocity, double width, double height, bool on_ground) {
@@ -227,7 +252,8 @@ bool vehicle_collides(const Entity& mover, const Entity& other) noexcept {
     return solid_mover && other.kind == EntityKind::boat;
 }
 
-bool move_entity_by(RuleContext& ctx, Vec3& position, Vec3& velocity, Vec3 movement, double width, double height, const Entity* self) {
+bool move_entity_by(RuleContext& ctx, Vec3& position, Vec3& velocity, Vec3 movement, double width, double height, const Entity* self,
+                    Vec3* moved) {
     const auto box = physics::box_at(position, width, height);
     Vec3 done = movement;
     if (movement.x != 0.0 || movement.y != 0.0 || movement.z != 0.0) {
@@ -245,6 +271,7 @@ bool move_entity_by(RuleContext& ctx, Vec3& position, Vec3& velocity, Vec3 movem
     const double made = done.x * done.x + done.y * done.y + done.z * done.z;
     const double wanted = movement.x * movement.x + movement.y * movement.y + movement.z * movement.z;
     if (made > 1.0e-7 || wanted - made < 1.0e-7) position = {position.x + done.x, position.y + done.y, position.z + done.z};
+    if (moved) *moved = done;
     const bool landed = done.y != movement.y && movement.y < 0.0;
     // A horizontal component stops only when the collision shortened it by
     // 1e-5 or more (both official servers keep primed TNT's last 5e-8 of
@@ -349,6 +376,7 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
     // floats up by 0.0005 a tick (while slower than 0.06) and loses 1% of its
     // horizontal speed, instead of falling.
     if (const auto water = water_at(ctx, detail::entity_box(e)); water.inside) {
+        e.fall_distance = 0.0; // water breaks the fall
         v = {v.x + water.push.x, v.y + water.push.y, v.z + water.push.z};
         if (water.depth > 0.1) {
             constexpr double drag = 0.99f, rise = 0.0005f;
@@ -361,7 +389,9 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
     }
     const bool moves = !(e.on_ground && v.x * v.x + v.z * v.z <= 1.0e-5 && (ticks + id.value) % 4 != 0);
     if (moves) {
-        e.on_ground = detail::move_entity(ctx, p, v, item_size, item_size, &e);
+        Vec3 moved{};
+        e.on_ground = detail::move_entity(ctx, p, v, item_size, item_size, &e, &moved);
+        detail::entity_fell(ctx, e, p, moved, e.on_ground);
         detail::honey_slide(ctx, p, v, item_size, item_size, e.on_ground);
         float f = 0.98f;
         if (e.on_ground) f = slipperiness(ctx.block(contracts::block_of(Vec3{p.x, p.y - 0.5000001, p.z}))) * 0.98f;

@@ -272,6 +272,18 @@ void support_tick(RuleContext& ctx, BlockPos pos, BlockState s);
 // Its own item, its drop when no data packs give its loot table.
 std::optional<ItemStack> supported_drop(BlockState s);
 
+// ---- farmland (farmland.cpp) ----
+bool is_farmland(BlockState s);
+// After an entity's move to `position` by `moved`: its fall, and the block it
+// lands on taking it.
+void entity_fell(RuleContext& ctx, Entity& e, Vec3 position, Vec3 moved, bool on_ground);
+// The block an entity whose box is `box` stands on after a move by `moved`:
+// the nearest block whose collision shape meets the box's bottom, or, with
+// none, the one it met before the horizontal part of the move.
+std::optional<BlockPos> supporting_block(RuleContext& ctx, const physics::Aabb& box, Vec3 position, Vec3 moved);
+void farmland_shape_update(RuleContext& ctx, BlockPos pos, Direction d);
+void tick_farmland(RuleContext& ctx, BlockPos pos);
+
 // ---- big dripleaves tilting (dripleaf.cpp) ----
 bool is_big_dripleaf(BlockState s);
 // An entity in the cell: on the leaf, it tilts it.
@@ -375,18 +387,19 @@ void run_boat(RuleContext& ctx, EntityId id, Entity& e);
 // when it hit something. A move that a collision shortened to a squared
 // length below 1e-7 is not made (both official servers leave such entities
 // in place, while longer moves, from 1.8e-7, are made). Returns whether it
-// landed (hit something while falling).
+// landed (hit something while falling), and in `moved` the movement the
+// collisions left (made or not: what a fall counts).
 // `self`, the entity that moves, also collides with the boxes of the
 // entities it cannot pass (vehicle_collides).
 bool move_entity(RuleContext& ctx, contracts::Vec3& position, contracts::Vec3& velocity, double width, double height,
-                 const Entity* self = nullptr);
+                 const Entity* self = nullptr, contracts::Vec3* moved = nullptr);
 // The same moving by `movement`, which collisions stop in `velocity`.
 bool move_entity(RuleContext& ctx, contracts::Vec3& position, contracts::Vec3& velocity, contracts::Vec3 movement, double width,
-                 double height, const Entity* self = nullptr);
+                 double height, const Entity* self = nullptr, contracts::Vec3* moved = nullptr);
 // The same for a `movement` other than the velocity (a piston's push): the
 // velocity loses what the movement could not make.
 bool move_entity_by(RuleContext& ctx, contracts::Vec3& position, contracts::Vec3& velocity, contracts::Vec3 movement, double width,
-                    double height, const Entity* self = nullptr);
+                    double height, const Entity* self = nullptr, contracts::Vec3* moved = nullptr);
 // Whether a moving entity collides with another's box (both official
 // servers): boats and minecarts with boats and minecarts, items, primed TNT
 // and falling blocks with boats; minecarts are no obstacle to the others.

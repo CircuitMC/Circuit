@@ -56,7 +56,8 @@ BlockState stairs_with_neighbors(BlockState stairs, std::array<BlockState, 4> ar
 // against the official servers); blocks that need none always can.
 bool block_supported(BlockState s, const std::function<BlockState(contracts::Direction)>& around, std::string_view release);
 // Whether a block without rules of its own runs scheduled block ticks:
-// falling blocks fall in them, sugar cane and cacti break.
+// falling blocks fall in them, sugar cane, cacti, vines and dripleaf stems
+// break, big dripleaves tilt and farmland turns to dirt.
 bool block_ticks_scheduled(BlockState s);
 // The same with `near(offset)` the block at any offset from it (sugar cane
 // reads the blocks beside its ground) and the light at its cell (mushrooms).

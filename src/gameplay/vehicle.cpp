@@ -263,7 +263,9 @@ void along_rail(RuleContext& ctx, Entity& e, Vec3& v, Vec3& p, BlockPos pos, Blo
     p = {x0 + dx * t, y, z0 + dz * t};
     const double limit = in_water ? 0.2 : 0.4;
     Vec3 step{std::clamp(v.x, -limit, limit), 0.0, std::clamp(v.z, -limit, limit)};
-    e.on_ground = move_entity(ctx, p, v, step, static_cast<double>(0.98f), static_cast<double>(0.7f), &e);
+    Vec3 moved{};
+    e.on_ground = move_entity(ctx, p, v, step, static_cast<double>(0.98f), static_cast<double>(0.7f), &e, &moved);
+    entity_fell(ctx, e, p, moved, e.on_ground);
     // Reaching a raised end's cell, it climbs to it.
     const auto at_end = [&](const std::array<int, 3>& end) {
         return end[1] != 0 && static_cast<std::int32_t>(cell(p.x)) - pos.x == end[0] && static_cast<std::int32_t>(cell(p.z)) - pos.z == end[2];
@@ -387,7 +389,9 @@ void run_minecart(RuleContext& ctx, EntityId id, Entity& e) {
         v.x = std::clamp(v.x, -limit, limit);
         v.z = std::clamp(v.z, -limit, limit);
         if (e.on_ground) v = {v.x * 0.5, v.y * 0.5, v.z * 0.5};
-        e.on_ground = move_entity(ctx, p, v, static_cast<double>(0.98f), static_cast<double>(0.7f), &e);
+        Vec3 moved{};
+        e.on_ground = move_entity(ctx, p, v, static_cast<double>(0.98f), static_cast<double>(0.7f), &e, &moved);
+        entity_fell(ctx, e, p, moved, e.on_ground);
         if (!e.on_ground) v = {v.x * 0.95, v.y * 0.95, v.z * 0.95};
         // A minecart that landed on a slime block loses horizontal speed
         // there once more than other entities do (both official servers;

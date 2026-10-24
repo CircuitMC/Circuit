@@ -406,7 +406,9 @@ void piston_move(RuleContext& ctx, EntityId id, Vec3 push) {
     const auto start = e->position;
     auto p = start;
     auto v = e->velocity;
-    e->on_ground = move_entity_by(ctx, p, v, push, box.max_x - box.min_x, box.max_y - box.min_y, e);
+    Vec3 moved{};
+    e->on_ground = move_entity_by(ctx, p, v, push, box.max_x - box.min_x, box.max_y - box.min_y, e, &moved);
+    if (e->kind != EntityKind::boat) entity_fell(ctx, *e, p, moved, e->on_ground);
     e->velocity = v;
     if (p == start) return;
     const auto from = contracts::chunk_of(contracts::block_of(start));

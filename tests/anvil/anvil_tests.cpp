@@ -356,6 +356,13 @@ int main() {
         resumed.advance(again({ticket(1, {0, 0}, 1)}));
         for (int i = 0; i < 20; ++i) resumed.advance({});
         require(state_at(resumed.dump(), {3, 0, 3}) == registry_block("gravel"), "landed");
+        // How far it had fallen is saved (fall_distance) and read back.
+        const auto fall = [](const WorldDump& w) {
+            for (const auto& e : w.overworld().entities)
+                if (e.kind == circuit::gameplay::EntityKind::falling_block) return e.fall_distance;
+            return -1.0;
+        };
+        require(fall(state) > 0.0 && fall(back->state) == fall(state), "the fall distance");
     });
 
     suite.run("cacti waiting to break round-trip through Anvil with their ticks", [&] {

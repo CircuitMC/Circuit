@@ -100,6 +100,9 @@ struct Entity {
     std::uint32_t tick_count{};
     Tick last_tick{}; // Logical tick of the last basic advancement; prevents double ticking.
     bool on_ground{};
+    // How far it has fallen since it was last on the ground (what landing on
+    // farmland reads).
+    double fall_distance{};
     // Items: the stack, its age (a merge keeps the younger one's) and the
     // ticks until players may pick it up.
     ItemStack stack;

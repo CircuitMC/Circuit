@@ -986,8 +986,16 @@
           "id": "farmland",
           "name": "Farmland, hydration and trampling",
           "milestone": "C5",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "note": "Farmland turns to dirt a tick after a solid block is set on it; entities count their falls and every landing on farmland draws its trampling check from the level random, as both official servers do",
+          "cases": [
+            "trace/farmland"
+          ],
+          "deviations": [
+            "moisture, drying and hydration (random ticks) are not modeled",
+            "nothing tramples it (there are no living entities yet), and entities are not pushed up when it turns"
+          ]
         },
         {
           "id": "other_crops",
@@ -2183,10 +2191,11 @@
             "trace/loot_single",
             "trace/loot_many",
             "trace/loot_tools",
-            "trace/loot_bonus"
+            "trace/loot_bonus",
+            "trace/farmland"
           ],
           "deviations": [
-            "tables that choose between weighted entries drop nothing (no block table has them); fortune's binomial bonus above level 0 (crops) is not compared",
+            "tables that choose between weighted entries drop nothing (no block table has them)",
             "each level keeps its own random sequences; the official servers keep one set for the world",
             "tables that copy components or name dynamic contents (shulker boxes, banners, decorated pots) are not used",
             "modeled blocks ignore their tables, so silk touch does not change their drops",
