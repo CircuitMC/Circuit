@@ -135,6 +135,13 @@ public:
         return seq;
     }
 
+    gameplay::RandomSequence& random_sequence(const std::string& id, const gameplay::SequenceIdHash& hash) override {
+        auto it = lv().sequences.find(id);
+        if (it == lv().sequences.end())
+            it = lv().sequences.emplace(id, gameplay::RandomSequence::create(static_cast<std::int64_t>(o_.seed_), hash, {})).first;
+        return it->second;
+    }
+
 protected:
     gameplay::LevelRandom& level_random() override { return lv().random; }
 
@@ -483,6 +490,7 @@ WorldDump Oracle::dump() const {
         l.next_block_entity_order = lv.next_block_entity_order;
         l.last_active = lv.last_active;
         l.random = lv.random.state();
+        for (const auto& [id, sequence] : lv.sequences) l.sequences.emplace_back(id, sequence);
         for (const auto& [key, p] : lv.presences) l.presences.push_back(p);
         for (const auto& [c, info] : lv.chunks)
             l.chunks.push_back({c, info.generation.value, info.level,

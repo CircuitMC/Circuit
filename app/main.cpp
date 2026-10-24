@@ -130,10 +130,10 @@ int main(int argc, char** argv) {
         if (simulate && demo) throw std::invalid_argument("--simulate and --demo are exclusive");
         if (!record_fixture.empty()) {
             if (fixture_output.empty()) throw std::invalid_argument("--record-fixture requires --output");
-            return circuit::app::record_fixture_file(record_fixture, fixture_output, workers);
+            return circuit::app::record_fixture_file(record_fixture, fixture_output, workers, packs);
         }
         if (!diff_first.empty()) return circuit::app::diff_fixtures(diff_first, diff_second, tolerance);
-        if (!fixtures.empty()) return circuit::app::check_fixtures(fixtures, workers);
+        if (!fixtures.empty()) return circuit::app::check_fixtures(fixtures, workers, packs);
         if (!profile.empty()) return circuit::app::profile_fixture(profile, ticks_given ? ticks : 600, workers);
         if (compatibility) return circuit::app::print_compatibility(selected);
         if (data_report) {

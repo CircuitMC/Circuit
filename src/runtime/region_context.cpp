@@ -29,6 +29,8 @@ void RegionContext::rollback() {
     snapshots.clear();
     for (std::size_t level = 0; level < random_snapshots_.size(); ++level)
         if (random_snapshots_[level]) world_.levels[level].random = *std::exchange(random_snapshots_[level], std::nullopt);
+    for (std::size_t level = 0; level < sequence_snapshots_.size(); ++level)
+        if (sequence_snapshots_[level]) world_.levels[level].sequences = *std::exchange(sequence_snapshots_[level], std::nullopt);
     trace.clear();
     entity_moves.clear();
     interactions.clear();
@@ -295,6 +297,20 @@ gameplay::LevelRandom& RegionContext::level_random() {
     auto& snapshot = random_snapshots_[static_cast<std::size_t>(dimension())];
     if (!snapshot) snapshot = random;
     return random;
+}
+
+gameplay::RandomSequence& RegionContext::random_sequence(const std::string& id, const gameplay::SequenceIdHash& hash) {
+    // Drawing needs the level's random pseudo column, as the level random does.
+    const auto k = random_key(dimension());
+    if (!unchecked_ && region_ != all_regions && regions_.owner.at(k) != region_) throw ForeignAccess{k};
+    if (phase_ != Phase::commands) interactions.insert(std::minmax(key(home_), k));
+    auto& sequences = world_.counters(dimension()).sequences;
+    auto& snapshot = sequence_snapshots_[static_cast<std::size_t>(dimension())];
+    if (!snapshot) snapshot = sequences;
+    auto it = sequences.find(id);
+    if (it == sequences.end())
+        it = sequences.emplace(id, gameplay::RandomSequence::create(world_.sequence_seed, hash, world_.sequence_settings)).first;
+    return it->second;
 }
 
 void RegionContext::relocate_entity(EntityId id, contracts::Vec3 position) {

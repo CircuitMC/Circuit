@@ -19,6 +19,8 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 24: levels carry their loot tables' random sequences, the world the settings
+// new sequences start with;
 // 22: levels carry their redstone torches' recent turn-offs;
 // 21: entities carry how far pistons pushed them in their last pushed tick;
 // 20: boats carry their kind, last state and last vertical move, minecarts
@@ -50,7 +52,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 23;
+constexpr std::uint32_t version = 24;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -126,6 +128,9 @@ void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
     w.u8(static_cast<std::uint8_t>(l.dimension));
     w.varlong(static_cast<std::int64_t>(l.next_suborder)).varlong(static_cast<std::int64_t>(l.next_block_entity_order));
     w.varlong(static_cast<std::int64_t>(l.last_active)).varlong(static_cast<std::int64_t>(l.random));
+    w.varint(static_cast<std::int32_t>(l.sequences.size()));
+    for (const auto& [id, sequence] : l.sequences)
+        w.string(id, 256).i64(static_cast<std::int64_t>(sequence.low())).i64(static_cast<std::int64_t>(sequence.high()));
     w.varint(static_cast<std::int32_t>(l.presences.size()));
     for (const auto& p : l.presences)
         w.i64(static_cast<std::int64_t>(p.player.hi)).i64(static_cast<std::int64_t>(p.player.lo)).f64(p.position.x).f64(p.position.y)
@@ -199,6 +204,8 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
     w.varint(weather.clear_time).varint(weather.rain_time).varint(weather.thunder_time);
     w.u8(static_cast<std::uint8_t>(weather.raining) | static_cast<std::uint8_t>(weather.thundering) << 1);
     w.i32(std::bit_cast<std::int32_t>(weather.rain_level)).i32(std::bit_cast<std::int32_t>(weather.thunder_level));
+    w.i32(s.sequence_settings.salt)
+        .u8(static_cast<std::uint8_t>(s.sequence_settings.include_world_seed) | static_cast<std::uint8_t>(s.sequence_settings.include_sequence_id) << 1);
     w.varint(static_cast<std::int32_t>(s.levels.size()));
     for (std::size_t k = 0; k < s.levels.size(); ++k)
         encode_level(w, s.levels[k], [&](std::size_t i) { return blocks(k, i); });
@@ -491,6 +498,16 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
             weather.rain_level = std::bit_cast<float>(rain);
             weather.thunder_level = std::bit_cast<float>(thunder);
         }
+        if (b.version >= 24) {
+            std::uint8_t flags{};
+            if (!b.get(b.r.i32(), s.sequence_settings.salt) || !b.get(b.r.u8(), flags)) return false;
+            if (flags > 3) {
+                b.error = "invalid random sequence settings";
+                return false;
+            }
+            s.sequence_settings.include_world_seed = (flags & 1) != 0;
+            s.sequence_settings.include_sequence_id = (flags & 2) != 0;
+        }
         if (!b.count(levels, 4)) return false;
         for (std::size_t k = 0; k < levels; ++k) {
             std::uint8_t dimension{};
@@ -506,6 +523,20 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
                 std::size_t presences = 0;
                 if (!b.u64(l.last_active)) return false;
                 if (b.version >= 13 && !b.u64(l.random)) return false;
+                if (b.version >= 24) {
+                    std::size_t sequences = 0;
+                    if (!b.count(sequences, 17)) return false;
+                    for (std::size_t q = 0; q < sequences; ++q) {
+                        std::string id;
+                        std::int64_t low{}, high{};
+                        if (!b.get(b.r.string(256), id) || !b.get(b.r.i64(), low) || !b.get(b.r.i64(), high)) return false;
+                        if (id.empty() || (!l.sequences.empty() && l.sequences.back().first >= id)) {
+                            b.error = "invalid random sequence";
+                            return false;
+                        }
+                        l.sequences.emplace_back(std::move(id), gameplay::RandomSequence(static_cast<std::uint64_t>(low), static_cast<std::uint64_t>(high)));
+                    }
+                }
                 if (!b.count(presences, 41)) return false;
                 for (std::size_t p = 0; p < presences; ++p) {
                     gameplay::Presence presence;

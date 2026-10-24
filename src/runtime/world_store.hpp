@@ -54,6 +54,7 @@ struct LevelCounters {
     std::map<contracts::PlayerKey, gameplay::Presence> presences;
     Tick last_active{};
     gameplay::LevelRandom random; // see LevelDump::random
+    std::map<std::string, gameplay::RandomSequence> sequences; // see LevelDump::sequences
 };
 
 // The pseudo column that stands for a level's random sequence in the region
@@ -121,6 +122,8 @@ struct WorldStore {
     std::map<std::string, std::int32_t> game_rules; // see WorldDump::game_rules
     std::int64_t day_time{};                        // see WorldDump::day_time
     gameplay::Weather weather;                      // see WorldDump::weather
+    gameplay::SequenceSettings sequence_settings;   // see WorldDump::sequence_settings
+    std::int64_t sequence_seed{};                   // the world seed new random sequences start from
     // The darkening of the overworld's sky as its last tick computed it
     // (gameplay::sky_darken); derived from the weather and day time on a restore.
     std::uint8_t sky_darken{};

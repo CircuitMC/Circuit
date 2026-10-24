@@ -192,6 +192,10 @@ void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
     case BlockType::door: case BlockType::fence_gate: opening_shape_update(ctx, target, *d); break;
     case BlockType::note_block: note_block_shape_update(ctx, target, s, *d); break;
     case BlockType::coral_fan: case BlockType::coral_wall_fan: coral_shape_update(ctx, target, s, *d); break;
+    // Wheat off its farmland breaks with its drops, on an update from any side (loot_rolls).
+    case BlockType::wheat:
+        if (!can_survive(ctx, target, s)) destroy_block(ctx, target);
+        break;
     case BlockType::piston_head:
         // A head without its base disappears.
         if (*d == contracts::opposite(s.facing()) && !head_has_base(ctx, target, s)) set_block(ctx, target, blocks::air());

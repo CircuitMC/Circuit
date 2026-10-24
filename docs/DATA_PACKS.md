@@ -56,13 +56,15 @@ The tags of game events, points of interest, structures, world presets and the 1
   - Packs must define exactly the vanilla enchantments; packs that add or remove some are refused, since clients only know the vanilla definitions by name.
 - **Block tools:** the `mineable/*` and `needs_*_tool` block tags give the effective tool and harvest tier of blocks without rules of their own. A block that needs a tool of another kind (a sword or shears) keeps that from the public data.
   - With the official packs, 44 blocks of 1.21.4 and 2 of 1.21.8 get another tool or tier than the public data gave. Most are plants, which the official tags put in `mineable/axe`; the crafter needs a stone pickaxe.
-- **Block loot:** blocks without rules of their own drop from their loot tables (`data/<namespace>/loot_table/blocks/`) when the tool harvests them. Circuit compiles the deterministic subset (`gameplay/loot.hpp`):
-  - pools that roll once, without bonus rolls;
+- **Block loot:** blocks without rules of their own drop from their loot tables (`data/<namespace>/loot_table/blocks/`) when the tool harvests them; wheat drops from its table too. A wall torch, sign, hanging sign, banner or head uses the table of the standing one. Circuit compiles (`gameplay/loot.hpp`):
+  - pools with a constant number of rolls, without bonus rolls;
   - item, alternatives, group, sequence and empty entries;
-  - the conditions `survives_explosion`, `block_state_property`, `match_tool` (items, item tags and enchantment levels), `any_of`, `all_of` and `inverted`;
-  - the functions `set_count` and `limit_count` with constant numbers, `explosion_decay`, and `apply_bonus` with the `ore_drops` formula.
+  - the conditions `survives_explosion`, `block_state_property`, `match_tool` (items, item tags and enchantment levels), `random_chance`, `location_check` (the block at an offset, as the other half of a tall plant), `any_of`, `all_of` and `inverted`;
+  - the functions `set_count` with constant, uniform and binomial numbers, `limit_count`, `explosion_decay`, and `apply_bonus` with the `ore_drops`, `uniform_bonus_count` and `binomial_with_bonus_count` formulas.
 
-  A table with any other part is not used, and its block drops nothing; the report counts them by reason. With the official packs, 913 of the 1,007 tables of 1.21.8 blocks without rules are used, and 905 of 999 in 1.21.4. The others need random numbers (random counts, `table_bonus` and `random_chance` conditions, binomial bonuses), copy components (`copy_components`, as shulker boxes do), test entities, or name dynamic contents. A compiled table whose roll would need a random number (two candidate entries, or fortune at a level above zero) drops nothing either. Modeled blocks keep their fixed drops.
+  Random numbers come from the table's random sequence (`random_sequence`), as on the official servers: one Xoroshiro128++ generator per sequence id, started from the world seed and the MD5 of the id when first used (minecraft.wiki "Random sequence"), and drawn in the order the table lists its parts. The sequences are world state: checkpoints keep them, and an Anvil import or export reads and writes `data/random_sequences.dat`.
+
+  A table with any other part is not used, and its block drops nothing; the report counts them by reason. With the official packs, 871 of the 952 tables of 1.21.8 blocks without rules are used, and 863 of 944 in 1.21.4. The others copy components (`copy_components`, as shulker boxes and banners do), roll `table_bonus` conditions (leaves, gravel), test entities, or name dynamic contents. A compiled table whose roll chooses between weighted entries, or needs fortune's ore bonus at a level above zero, drops nothing either. Other modeled blocks keep their fixed drops.
 - **Recipes:** every recipe is checked against the target version's format (minecraft.wiki "Recipe") and item registry:
   - crafting (shaped, shapeless, transmute and the special types);
   - smelting, blasting, smoking and campfire cooking;
@@ -71,7 +73,7 @@ The tags of game events, points of interest, structures, world presets and the 1
 
   As in the target version, a recipe that fails is skipped; the report lists why. Transmute results are item ids in 1.21.4 and stack templates in 1.21.8, and 1.21.8 trims name their pattern. All 1,407 recipes of 1.21.8 and 1,370 of 1.21.4 are valid. The shaped, shapeless and transmute recipes are used by the player's 2x2 crafting grid (see [simulation](SIMULATION.md)): 984 in 1.21.8 and 948 in 1.21.4. Recipes whose results carry components (suspicious stews) and the special recipes are valid but make nothing yet.
 
-Both consumers were compared with the official servers of both versions. In a 48-step crafting scenario the windows were identical. Of 23 blocks broken with various tools, the 19 whose tables are deterministic dropped the same items. The observations are kept as test fixtures in `tests/fixtures/crafting/` and `tests/fixtures/loot/`; `server_tests` replays them when the official jars are given (`CIRCUIT_VANILLA_JAR_1_21_8`, `CIRCUIT_VANILLA_JAR_1_21_4`).
+Both consumers were compared with the official servers of both versions. In a 48-step crafting scenario the windows were identical. Of 23 blocks broken with various tools, the 19 whose tables are deterministic dropped the same items. Three recorded traces break grasses, ferns, dead bushes, sweet berry bushes, wheat and other plants with random loot: with the official packs, every drop and every draw matches both versions, and the sequences the official servers saved equal Circuit's. The observations are kept as test fixtures in `tests/fixtures/crafting/` and `tests/fixtures/loot/`; `server_tests` replays them when the official jars are given (`CIRCUIT_VANILLA_JAR_1_21_8`, `CIRCUIT_VANILLA_JAR_1_21_4`).
 
 ## The world's data
 

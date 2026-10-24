@@ -239,10 +239,15 @@
       },
       "wheat": {
         "impl": "partial",
-        "evidence": "documented",
+        "evidence": "compared",
         "deviations": [
-          "growth ignores light, farmland and hydration"
-        ]
+          "growth ignores hydration and neighboring crops"
+        ],
+        "cases": [
+          "trace/loot_rolls",
+          "trace/loot_single"
+        ],
+        "note": "Planted on farmland, broken with its drops by an update that finds no farmland below, and with data packs dropping what its loot table rolls, as both official servers do; grows only with light 9 or more"
       },
       "tnt": {
         "impl": "partial",
@@ -4112,12 +4117,14 @@
         "evidence": "compared",
         "cases": [
           "collision/plants",
-          "placement/official_items"
+          "placement/official_items",
+          "trace/loot_rolls",
+          "trace/loot_single"
         ],
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
           "does not spread or grow",
-          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+          "without data packs it drops nothing, since its loot rolls random numbers"
         ]
       },
       "short_grass": {
@@ -4125,12 +4132,15 @@
         "evidence": "compared",
         "cases": [
           "collision/plants",
-          "placement/official_items"
+          "placement/official_items",
+          "trace/loot_rolls",
+          "trace/loot_single",
+          "trace/loot_many"
         ],
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
           "does not spread or grow",
-          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+          "without data packs it drops nothing, since its loot rolls random numbers"
         ]
       },
       "tall_grass": {
@@ -4138,12 +4148,14 @@
         "evidence": "compared",
         "cases": [
           "collision/plants",
-          "placement/official_items"
+          "placement/official_items",
+          "trace/loot_rolls",
+          "trace/loot_single"
         ],
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
           "does not spread or grow",
-          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+          "without data packs it drops nothing, since its loot rolls random numbers"
         ]
       },
       "large_fern": {
@@ -4156,7 +4168,7 @@
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
           "does not spread or grow",
-          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+          "without data packs it drops nothing, since its loot rolls random numbers"
         ]
       },
       "dead_bush": {
@@ -4164,12 +4176,15 @@
         "evidence": "compared",
         "cases": [
           "collision/plants",
-          "placement/official_items"
+          "placement/official_items",
+          "trace/loot_rolls",
+          "trace/loot_single",
+          "trace/loot_many"
         ],
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
           "does not spread or grow",
-          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+          "without data packs it drops nothing, since its loot rolls random numbers"
         ]
       },
       "bush": {
@@ -4182,7 +4197,7 @@
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
           "does not spread or grow",
-          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+          "without data packs it drops nothing, since its loot rolls random numbers"
         ]
       },
       "short_dry_grass": {
@@ -4195,7 +4210,7 @@
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
           "does not spread or grow",
-          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+          "without data packs it drops nothing, since its loot rolls random numbers"
         ]
       },
       "tall_dry_grass": {
@@ -4208,7 +4223,7 @@
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
           "does not spread or grow",
-          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+          "without data packs it drops nothing, since its loot rolls random numbers"
         ]
       },
       "firefly_bush": {
@@ -4284,7 +4299,7 @@
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
           "does not spread or grow",
-          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+          "without data packs it drops nothing, since its loot rolls random numbers"
         ]
       },
       "wither_rose": {
@@ -4370,7 +4385,9 @@
         "cases": [
           "collision/plants",
           "placement/official_items",
-          "trace/plant_grounds"
+          "trace/plant_grounds",
+          "trace/loot_rolls",
+          "trace/loot_single"
         ],
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
@@ -4382,12 +4399,15 @@
         "evidence": "compared",
         "cases": [
           "collision/plants",
-          "placement/official_items"
+          "placement/official_items",
+          "trace/loot_rolls",
+          "trace/loot_single",
+          "trace/loot_many"
         ],
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
           "does not grow",
-          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+          "without data packs it drops nothing, since its loot rolls random numbers"
         ]
       },
       "carrots": {
@@ -4396,7 +4416,9 @@
         "cases": [
           "collision/plants",
           "placement/official_items",
-          "trace/plant_grounds"
+          "trace/plant_grounds",
+          "trace/loot_rolls",
+          "trace/loot_single"
         ],
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
@@ -4408,7 +4430,9 @@
         "evidence": "compared",
         "cases": [
           "collision/plants",
-          "placement/official_items"
+          "placement/official_items",
+          "trace/loot_rolls",
+          "trace/loot_single"
         ],
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
@@ -4420,7 +4444,9 @@
         "evidence": "compared",
         "cases": [
           "collision/plants",
-          "placement/official_items"
+          "placement/official_items",
+          "trace/loot_rolls",
+          "trace/loot_single"
         ],
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
@@ -4432,12 +4458,14 @@
         "evidence": "compared",
         "cases": [
           "collision/plants",
-          "placement/official_items"
+          "placement/official_items",
+          "trace/loot_rolls",
+          "trace/loot_single"
         ],
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
           "does not grow",
-          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+          "without data packs it drops nothing, since its loot rolls random numbers"
         ]
       },
       "pumpkin_stem": {
@@ -4445,12 +4473,13 @@
         "evidence": "compared",
         "cases": [
           "collision/plants",
-          "placement/official_items"
+          "placement/official_items",
+          "trace/loot_single"
         ],
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
           "does not grow",
-          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+          "without data packs it drops nothing, since its loot rolls random numbers"
         ]
       },
       "torchflower_crop": {

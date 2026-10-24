@@ -198,6 +198,13 @@ std::string describe(const ServerData& data) {
     return out;
 }
 
+std::expected<std::shared_ptr<const gameplay::GameData>, std::string> load_game_data(const contracts::VersionBundle& bundle,
+                                                                                      const data::PackOptions& options) {
+    auto loaded = load_server_data(bundle, options);
+    if (!loaded) return std::unexpected(loaded.error());
+    return loaded->game;
+}
+
 std::expected<std::string, std::string> data_report(const contracts::VersionBundle& bundle, const data::PackOptions& options) {
     auto data = load_server_data(bundle, options);
     if (!data) return std::unexpected(data.error());

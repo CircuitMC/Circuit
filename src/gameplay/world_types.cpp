@@ -257,6 +257,7 @@ std::string first_difference(const WorldDump& a, const WorldDump& b) {
         return "game rules: set only in the second";
     }
     if (a.day_time != b.day_time) return std::format("day time {} != {}", a.day_time, b.day_time);
+    if (a.sequence_settings != b.sequence_settings) return "random sequence settings";
     if (a.weather != b.weather) {
         const auto text = [](const Weather& w) {
             return std::format("clear {} rain {}{} thunder {}{} levels {} {}", w.clear_time, w.raining ? "on " : "off ", w.rain_time,
@@ -277,6 +278,7 @@ std::string first_difference(const WorldDump& a, const WorldDump& b) {
             return std::format("{} next_block_entity_order {} != {}", name, la.next_block_entity_order, lb.next_block_entity_order);
         if (la.last_active != lb.last_active) return std::format("{} last_active {} != {}", name, la.last_active, lb.last_active);
         if (la.random != lb.random) return std::format("{} level random {:#x} != {:#x}", name, la.random, lb.random);
+        if (la.sequences != lb.sequences) return std::format("{} random sequences ({} != {})", name, la.sequences.size(), lb.sequences.size());
         // The overworld's differences keep their short form.
         const auto prefix = la.dimension == contracts::DimensionId::overworld ? std::string{} : std::string(name) + " ";
         for (auto s : {compare("chunks", la.chunks, lb.chunks), compare("blocks", la.blocks, lb.blocks),
@@ -320,6 +322,8 @@ std::uint64_t digest(const WorldDump& d) {
         h.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(value)));
     }
     h.add(static_cast<std::uint64_t>(d.day_time));
+    h.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(d.sequence_settings.salt)));
+    h.add(static_cast<std::uint64_t>(d.sequence_settings.include_world_seed) | static_cast<std::uint64_t>(d.sequence_settings.include_sequence_id) << 1);
     const auto& w = d.weather;
     h.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(w.clear_time)));
     h.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(w.rain_time)));
@@ -334,6 +338,11 @@ std::uint64_t digest(const WorldDump& d) {
         h.add(l.next_block_entity_order);
         h.add(l.last_active);
         h.add(l.random);
+        h.add(l.sequences.size());
+        for (const auto& [id, sequence] : l.sequences) {
+            for (const char ch : id) h.add(static_cast<std::uint64_t>(static_cast<unsigned char>(ch)));
+            h.add(sequence.low()); h.add(sequence.high());
+        }
         for (const auto& c : l.chunks) {
             h.add(contracts::pack_chunk(c.pos)); h.add(c.generation); h.add(static_cast<std::uint64_t>(c.level)); h.add(c.load); h.add(c.simulation); h.add(c.saved_at); h.add(c.resumes);
         }

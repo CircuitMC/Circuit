@@ -7,6 +7,7 @@
 #include "../support/light_reference.hpp"
 #include "../support/scenario.hpp"
 #include <circuit/gameplay/level_random.hpp>
+#include <circuit/gameplay/random_sequence.hpp>
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/block_registry.hpp>
 #include <circuit/gameplay/game_data.hpp>
@@ -54,6 +55,13 @@ struct Sim {
 
 // A stone floor at y = -1 under x in [x0, x1] and z in [z0, z1]: dust and
 // diodes need support.
+// A loot table of one pool.
+circuit::gameplay::loot::Table one_pool(std::vector<circuit::gameplay::loot::Entry> entries) {
+    circuit::gameplay::loot::Table t;
+    t.pools.emplace_back().entries = std::move(entries);
+    return t;
+}
+
 std::vector<CommandBody> floor(std::int32_t x0, std::int32_t x1, std::int32_t z0, std::int32_t z1) {
     std::vector<CommandBody> out;
     for (auto x = x0; x <= x1; ++x)
@@ -417,7 +425,7 @@ int main() {
         Sim s;
         std::vector<CommandBody> build;
         for (int x = 0; x <= 6; ++x)
-            for (int z = 0; z <= 6; ++z) build.push_back(place({x, -1, z}, blocks::stone()));
+            for (int z = 0; z <= 6; ++z) build.push_back(place({x, -1, z}, x == 1 && z == 5 ? registry_block("farmland") : blocks::stone()));
         append(build, {place({1, 0, 0}, blocks::stone()), place({2, 0, 0}, blocks::wire()), place({0, 0, 0}, blocks::piston(D::east)),
                        place({1, 0, 3}, blocks::comparator(D::north)), place({0, 0, 3}, blocks::piston(D::east)),
                        place({1, 0, 5}, blocks::wheat(7)), place({0, 0, 5}, blocks::piston(D::east)),
@@ -606,10 +614,15 @@ int main() {
         const auto run = [](std::uint64_t seed, bool neighbor_activity) {
             Sim s(bundle(), seed, 1);
             std::vector<CommandBody> build;
+            // Wheat stays on farmland only.
+            const auto crop = [&](BlockPos p) {
+                build.push_back(place(p.relative(D::down), registry_block("farmland")));
+                build.push_back(place(p, blocks::wheat()));
+            };
             for (int x = 0; x < 16; ++x)
-                for (int z = 0; z < 16; ++z) build.push_back(place({x, 0, z}, blocks::wheat()));
+                for (int z = 0; z < 16; ++z) crop({x, 0, z});
             if (neighbor_activity)
-                for (int x = 16; x < 32; ++x) build.push_back(place({x, 0, 3}, blocks::wheat()));
+                for (int x = 16; x < 32; ++x) crop({x, 0, 3});
             s.tick(build);
             s.until(150);
             std::vector<std::uint8_t> ages;
@@ -1195,17 +1208,19 @@ int main() {
     });
 
     suite.run("crops grow only in light 9 or more", [] {
-        // 16x16 wheat sealed in stone (floor, walls and roof); with a
-        // glowstone in the middle, light 15 - distance reaches the crops.
+        // 16x16 wheat on farmland sealed in stone (floor, walls and roof);
+        // with a glowstone in the middle, light 15 - distance reaches the
+        // crops.
         for (const bool lit : {false, true}) {
             Sim s(bundle(), 5, 1);
             s.tick({SetGameRule{"randomTickSpeed", 200}});
             std::vector<CommandBody> box, crops;
             for (int x = -1; x <= 16; ++x)
                 for (int z = -1; z <= 16; ++z) {
-                    box.push_back(place({x, -1, z}, blocks::stone()));
+                    const bool wall = x == -1 || x == 16 || z == -1 || z == 16;
+                    box.push_back(place({x, -1, z}, wall ? blocks::stone() : registry_block("farmland")));
                     box.push_back(place({x, 1, z}, blocks::stone()));
-                    if (x == -1 || x == 16 || z == -1 || z == 16) box.push_back(place({x, 0, z}, blocks::stone()));
+                    if (wall) box.push_back(place({x, 0, z}, blocks::stone()));
                     else if (lit && x == 8 && z == 8) box.push_back(place({x, 0, z}, registry_block("glowstone")));
                     else crops.push_back(place({x, 0, z}, blocks::wheat()));
                 }
@@ -2343,6 +2358,37 @@ int main() {
         require(b[36] == ItemStack{items::bucket, 1, 0} && b[37] == ItemStack{items::water_bucket, 1, 0}, "one of two buckets filled");
     });
 
+    suite.run("random sequences roll as both official servers' loot tables do", [] {
+        // The loot_many skeleton: 96 short grasses, 64 dead bushes and 32 ripe
+        // sweet berry bushes broken in order on both versions (world seed 0).
+        // Their rolls give what they dropped, and the states they leave are the
+        // ones the official servers saved (data/random_sequences.dat).
+        using circuit::gameplay::RandomSequence;
+        const auto create = [](std::uint64_t a, std::uint64_t b) { return RandomSequence::create(0, {a, b}, {}); };
+        auto grass = create(0x8bbf3c7183e5ac1eULL, 0x0e588cdc9bfba209ULL);
+        std::string seeds;
+        for (int i = 0; i < 96; ++i) {
+            const bool drop = grass.next_float() < 0.125f;
+            if (drop) (void)grass.next_int(1); // fortune's bonus, at level 0
+            seeds += drop ? '1' : '0';
+        }
+        require(seeds == "000100010010001000100011010000000000000000000000110000000000000100000000000000100100000010000000", "grass seeds");
+        require(std::bit_cast<std::int64_t>(grass.low()) == 2022789406501655404 && std::bit_cast<std::int64_t>(grass.high()) == -468754072450410102,
+                "the grass sequence's saved state");
+        auto bush = create(0xa00e2b904f10208bULL, 0x61ced0c97606ee23ULL);
+        std::string sticks;
+        for (int i = 0; i < 64; ++i) sticks += static_cast<char>('0' + bush.next_int(3));
+        require(sticks == "0100020100111200120021010012212211022002122102021210121122201200", "dead bush sticks");
+        require(std::bit_cast<std::int64_t>(bush.low()) == 980453112882939729 && std::bit_cast<std::int64_t>(bush.high()) == 5313872344700270703,
+                "the dead bush sequence's saved state");
+        auto berry = create(0x43d91b9af92bc74bULL, 0x41420935cf122c3bULL);
+        std::string berries;
+        for (int i = 0; i < 32; ++i) berries += static_cast<char>('0' + berry.next_int(2) + 2 + berry.next_int(1));
+        require(berries == "22322222232333333322323332333322", "berries");
+        require(std::bit_cast<std::int64_t>(berry.low()) == 4585398311947135046 && std::bit_cast<std::int64_t>(berry.high()) == -4978303496063927502,
+                "the berry sequence's saved state");
+    });
+
     suite.run("players place blocks into lava but cannot break it", [] {
         // As water: a block placed into a lava source replaces it; lava
         // cannot be mined.
@@ -2658,20 +2704,20 @@ int main() {
         loot::Condition with_silk{.kind = loot::Condition::Kind::tool};
         with_silk.enchantments = {{silk_touch, 1, 255}};
         const Entry self{.kind = Entry::Kind::item, .item = items::bookshelf, .conditions = {with_silk}};
-        const Entry books{.kind = Entry::Kind::item, .item = items::book, .functions = {{.kind = Function::Kind::set_count, .count = 3}}};
-        data->block_loot[block_of("minecraft:bookshelf")] = {{{{{.kind = Entry::Kind::alternatives, .children = {self, books}}}}}};
+        const Entry books{.kind = Entry::Kind::item, .item = items::book, .functions = {{.kind = Function::Kind::set_count, .count = loot::Number{.value = 3}}}};
+        data->block_loot[block_of("minecraft:bookshelf")] = one_pool({{.kind = Entry::Kind::alternatives, .children = {self, books}}});
         // Coal ore gives coal, which fortune multiplies; it needs a pickaxe.
         const Entry coal{.kind = Entry::Kind::item, .item = items::coal, .functions = {{.kind = Function::Kind::ore_bonus, .enchantment = fortune}}};
-        data->block_loot[block_of("minecraft:coal_ore")] = {{{{coal}}}};
+        data->block_loot[block_of("minecraft:coal_ore")] = one_pool({coal});
         data->block_tools[block_of("minecraft:coal_ore")] = {registry::Tool::pickaxe, 1};
         // A double slab gives two.
         const loot::Condition is_double{.kind = loot::Condition::Kind::block_state, .properties = {{"type", "double", {}, {}}}};
         const Entry slab{.kind = Entry::Kind::item, .item = items::oak_slab,
-                         .functions = {{.kind = Function::Kind::set_count, .count = 2, .conditions = {is_double}}}};
-        data->block_loot[block_of("minecraft:oak_slab")] = {{{{slab}}}};
+                         .functions = {{.kind = Function::Kind::set_count, .count = loot::Number{.value = 2}, .conditions = {is_double}}}};
+        data->block_loot[block_of("minecraft:oak_slab")] = one_pool({slab});
         // More than a stack splits.
-        const Entry balls{.kind = Entry::Kind::item, .item = items::clay_ball, .functions = {{.kind = Function::Kind::set_count, .count = 100}}};
-        data->block_loot[block_of("minecraft:clay")] = {{{{balls}}}};
+        const Entry balls{.kind = Entry::Kind::item, .item = items::clay_ball, .functions = {{.kind = Function::Kind::set_count, .count = loot::Number{.value = 100}}}};
+        data->block_loot[block_of("minecraft:clay")] = one_pool({balls});
 
         const PlayerKey alex{9, 9};
         const std::vector<std::pair<BlockPos, BlockState>> blocks{
@@ -2722,8 +2768,8 @@ int main() {
         using Condition = loot::Condition;
         using Function = loot::Function;
         const auto item = [](std::uint16_t id, std::vector<Condition> c = {}) { return Entry{.kind = Entry::Kind::item, .item = id, .conditions = std::move(c)}; };
-        const auto table = [](std::vector<Entry> entries) { return loot::Table{{loot::Pool{std::move(entries)}}}; };
-        loot::BreakContext ctx{{{"age", "5"}, {"half", "lower"}}, {items::shears, 1}, {}};
+        const auto table = [](std::vector<Entry> entries) { return one_pool(std::move(entries)); };
+        loot::BreakContext ctx{{{"age", "5"}, {"half", "lower"}}, {items::shears, 1}, {}, nullptr, {}};
         const Condition age_3_to_6{.kind = Condition::Kind::block_state, .properties = {{"age", {}, 3, 6}}};
         const Condition age_7{.kind = Condition::Kind::block_state, .properties = {{"age", "7", {}, {}}}};
         const Condition shears{.kind = Condition::Kind::tool, .items = {items::shears}};
@@ -2743,13 +2789,19 @@ int main() {
         const Entry group{.kind = Entry::Kind::group, .children = {item(items::wheat), item(items::vine)}};
         require(!loot::drops(table({group}), ctx).has_value(), "two candidates need a random choice");
         require(loot::drops(table({Entry{.kind = Entry::Kind::empty}}), ctx)->empty(), "an empty entry");
-        // Counts: limits, and nothing for a count of zero.
+        // Counts: limits, and a stack of none for a count of zero (which drops
+        // no item, but as the official servers drop it: loot_rolls).
         Entry limited = item(items::wheat);
-        limited.functions = {{.kind = Function::Kind::set_count, .count = 9}, {.kind = Function::Kind::limit_count, .max = 4}};
+        limited.functions = {{.kind = Function::Kind::set_count, .count = loot::Number{.value = 9}}, {.kind = Function::Kind::limit_count, .max = 4}};
         require(loot::drops(table({limited}), ctx) == std::optional(std::vector<ItemStack>{{items::wheat, 4}}), "a limit");
         Entry none = item(items::wheat);
-        none.functions = {{.kind = Function::Kind::set_count, .count = 0}};
-        require(loot::drops(table({none}), ctx)->empty(), "a count of zero");
+        none.functions = {{.kind = Function::Kind::set_count, .count = loot::Number{.value = 0}}};
+        const auto zero = loot::drops(table({none}), ctx);
+        require(zero && zero->size() == 1 && zero->front().count == 0, "a count of zero");
+        // A roll that draws needs a random sequence.
+        Entry chance = item(items::wheat);
+        chance.conditions = {{.kind = loot::Condition::Kind::random_chance, .chance = 0.5}};
+        require(!loot::drops(table({chance}), ctx).has_value(), "a chance without a sequence");
     });
 
     suite.run("recipes match anywhere in the grid, mirrored, in any order", [] {

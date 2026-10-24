@@ -53,6 +53,9 @@ struct EngineOptions {
     // The seed of every level's random sequence in a new world (the reference
     // harness seeds the overworld's with 0); empty: derived from the world seed.
     std::optional<std::int64_t> level_random_seed;
+    // The world seed random sequences start from; empty: the engine's seed
+    // (the reference harness's worlds have the seed 0).
+    std::optional<std::int64_t> sequence_seed;
     // Deliberately unsafe test mode that skips ownership checks. It exists to
     // show that differential exploration detects missing isolation, and is
     // only accepted with a non-concurrent runner.

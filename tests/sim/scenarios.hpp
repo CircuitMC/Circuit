@@ -139,13 +139,18 @@ inline Scenario wheat_scenario() {
         if (t == 1) return {ticket(1, {0, 0}, 1)};
         if (t == 2) {
             std::vector<CommandBody> b;
+            // Wheat stays on farmland only.
             for (int x = 10; x <= 21; ++x) {
+                b.push_back(place({x, -1, 5}, registry_block("farmland")));
                 b.push_back(place({x, 0, 5}, blocks::wheat()));
                 b.push_back(place({x, 0, 7}, blocks::lamp()));
                 b.push_back(place({x, 0, 6}, blocks::observer(D::north)));
             }
             for (int z = 12; z < 20; ++z)
-                for (int x = 12; x < 20; ++x) b.push_back(place({x, 0, z}, blocks::wheat()));
+                for (int x = 12; x < 20; ++x) {
+                    b.push_back(place({x, -1, z}, registry_block("farmland")));
+                    b.push_back(place({x, 0, z}, blocks::wheat()));
+                }
             return b;
         }
         return {};
@@ -476,9 +481,10 @@ inline Scenario chunk_levels_scenario() {
     return s;
 }
 
-// Wheat in a stone box lit by a glowstone in its middle: only the crops
-// within light 9 grow (light follows the previous tick's blocks, so the
-// crops come a tick after the box). A lamp switched on later lights more.
+// Wheat on farmland in a stone box lit by a glowstone in its middle: only
+// the crops within light 9 grow (light follows the previous tick's blocks,
+// so the crops come a tick after the box). A lamp switched on later lights
+// more.
 inline Scenario crop_light_scenario() {
     return {"crop_light", 71, 240, [](Tick t) -> std::vector<CommandBody> {
         if (t == 1) return {ticket(1, {0, 0}, 1)};
@@ -487,7 +493,7 @@ inline Scenario crop_light_scenario() {
             for (int z = -1; z <= 16; ++z) {
                 const bool wall = x == -1 || x == 16 || z == -1 || z == 16;
                 if (t == 2) {
-                    c.push_back(place({x, -1, z}, blocks::stone()));
+                    c.push_back(place({x, -1, z}, wall ? blocks::stone() : registry_block("farmland")));
                     c.push_back(place({x, 1, z}, blocks::stone()));
                     if (wall) c.push_back(place({x, 0, z}, blocks::stone()));
                     if (x == 4 && z == 4) c.push_back(place({x, 0, z}, registry_block("glowstone")));

@@ -99,6 +99,7 @@ public:
 
 protected:
     gameplay::LevelRandom& level_random() override;
+    gameplay::RandomSequence& random_sequence(const std::string& id, const gameplay::SequenceIdHash& hash) override;
 
 private:
     Provisional stage(Counter counter, std::uint32_t seq, EntityId entity = {});
@@ -123,8 +124,10 @@ private:
     std::uint32_t creations_{}; // Block entities and entities created in the current root.
     std::uint32_t provisional_entities_{};
     ChunkPos home_{};
-    // Each level's random sequence before this attempt first drew from it.
+    // Each level's random sequence, and its loot tables' sequences, before
+    // this attempt first drew from them.
     std::array<std::optional<gameplay::LevelRandom>, contracts::dimension_count> random_snapshots_;
+    std::array<std::optional<std::map<std::string, gameplay::RandomSequence>>, contracts::dimension_count> sequence_snapshots_;
 };
 
 } // namespace circuit::runtime::detail

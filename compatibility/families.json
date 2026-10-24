@@ -586,7 +586,7 @@
           "impl": "partial",
           "evidence": "compared",
           "deviations": [
-            "only block drops, container scatter and piston sounds draw from it; random ticks and weather durations use Circuit's own derived streams, and other draws of the target versions are not made yet"
+            "only block drops (a stack of none included), container scatter and piston sounds draw from it; random ticks and weather durations use Circuit's own derived streams, and other draws of the target versions are not made yet"
           ],
           "cases": [
             "trace/item_chest_scatter",
@@ -812,7 +812,7 @@
           ],
           "deviations": [
             "flowers and saplings do not grow or spread (no random ticks for them)",
-            "other plants (grass, ferns, roots, fungi, wither roses, azaleas, tall and double plants, dripleaves, berry bushes, petals) and other attached blocks (signs, banners, vines, lichen, amethyst) are not modeled",
+            "other attached blocks (dripleaves, vines, lichen, amethyst) are not modeled",
             "a torch whose clicked side and floor both fail is not placed (the official servers also try the player's other looking directions)"
           ],
           "note": "Placed by players where supported, and broken with their drops when the support goes (torches, lanterns, ladders, signs and banners on updates from their support's side, carpets, flowers and saplings on any update), as both official servers do; signs and banners stand and hang on solid blocks"
@@ -973,10 +973,13 @@
           "milestone": "C5",
           "impl": "partial",
           "evidence": "documented",
-          "note": "Grows only with light 9 or more at its own cell (minecraft.wiki \"Wheat Crops\"), light as the tick sees it",
+          "note": "Grows only with light 9 or more at its own cell (minecraft.wiki \"Wheat Crops\"), light as the tick sees it; planted on farmland, and broken with its drops by an update that finds no farmland below, as both official servers do",
+          "cases": [
+            "trace/loot_rolls"
+          ],
           "deviations": [
-            "grows with probability 1/3 per random tick, ignoring farmland, hydration and neighboring crops",
-            "does not break in darkness and can be placed anywhere"
+            "grows with probability 1/3 per random tick, ignoring hydration and neighboring crops",
+            "does not break in darkness"
           ]
         },
         {
@@ -1000,7 +1003,7 @@
           "deviations": [
             "they do not grow",
             "sugar cane, cactus, kelp, cocoa, chorus, pitcher crops and dripleaves are not supported yet",
-            "loot rolls with random numbers are not drawn"
+            "without data packs, plants whose loot rolls random numbers drop nothing"
           ]
         },
         {
@@ -2167,12 +2170,16 @@
           "milestone": "C5",
           "impl": "partial",
           "evidence": "compared",
-          "note": "Blocks without rules of their own drop from the deterministic subset of their loot tables (913 of 1,007 tables in 1.21.8, 905 of 999 in 1.21.4), with harvest tools and silk touch; modeled blocks keep fixed drops",
+          "note": "Blocks without rules of their own, and wheat, drop from their loot tables (871 of 952 tables in 1.21.8, 863 of 944 in 1.21.4; wall torches, signs, banners and heads by the standing ones' tables), with harvest tools and silk touch; random counts, chances and fortune's uniform and binomial bonuses roll from each table's random sequence, which checkpoints and Anvil worlds keep, as both official servers roll them; other modeled blocks keep fixed drops",
           "cases": [
-            "data/block_drops"
+            "data/block_drops",
+            "trace/loot_rolls",
+            "trace/loot_single",
+            "trace/loot_many"
           ],
           "deviations": [
-            "tables with random parts (random counts, chances, fortune bonuses, weighted choices) drop nothing until random streams are modeled",
+            "tables that choose between weighted entries, or roll fortune's ore bonus above level 0, drop nothing; tables with table bonuses (leaves, gravel) are not used",
+            "each level keeps its own random sequences; the official servers keep one set for the world",
             "tables that copy components or name dynamic contents (shulker boxes, banners, decorated pots) are not used",
             "modeled blocks ignore their tables, so silk touch does not change their drops",
             "entity, container and archaeology tables are not used"

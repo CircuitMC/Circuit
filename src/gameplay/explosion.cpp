@@ -272,7 +272,9 @@ void explode(RuleContext& ctx, Vec3 center, float power) {
             prime_by_explosion(ctx, p);
             continue;
         }
-        for (auto& stack : block_drops(ctx, s, {}, true)) add_drop(drops, std::move(stack), p);
+        // Stacks of none are not compared yet in explosions: they drop nothing.
+        for (auto& stack : block_drops(ctx, p, s, {}, true))
+            if (stack.count > 0) add_drop(drops, std::move(stack), p);
         set_block(ctx, p, blocks::air());
     }
     for (auto& d : drops) pop_resource(ctx, d.pos, std::move(d.stack));

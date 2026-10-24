@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
 
+#include <array>
 #include <chrono>
+#include <cstdint>
 #include <cstddef>
 #include <expected>
 #include <span>
@@ -49,6 +51,9 @@ public:
 
 // Player names accepted at login: 1-16 characters of [A-Za-z0-9_].
 bool valid_player_name(std::string_view name) noexcept;
+
+// The MD5 digest of a text.
+std::array<std::uint8_t, 16> md5(std::string_view text);
 
 // UUID text of an offline player: the name-based (version 3, MD5) UUID of
 // "OfflinePlayer:" + name, the convention clients and vanilla servers use.

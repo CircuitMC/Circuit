@@ -2,8 +2,8 @@
 // Anvil import and export: round trips of every scenario's state, the
 // unsupported-content policies, malformed input, and the world tools.
 //
-// Set CIRCUIT_ANVIL_EXPORT_DIR to keep the exported scenario worlds, for
-// loading them in the game.
+// Set CIRCUIT_ANVIL_EXPORT_DIR to keep the exported scenario and random
+// sequence worlds, for loading them in the game.
 #include "../sim/scenarios.hpp"
 #include "../support/check.hpp"
 #include <circuit/gameplay/rng.hpp>
@@ -66,6 +66,19 @@ std::vector<std::byte> gzip_bytes(std::span<const std::byte> in) {
 void write(const fs::path& p, std::span<const std::byte> data) {
     fs::create_directories(p.parent_path());
     std::ofstream(p, std::ios::binary).write(reinterpret_cast<const char*>(data.data()), static_cast<std::streamsize>(data.size()));
+}
+std::vector<std::byte> gunzip_bytes(std::span<const std::byte> in) {
+    z_stream z{};
+    inflateInit2(&z, 31);
+    std::vector<std::byte> out(1 << 20);
+    z.next_in = reinterpret_cast<Bytef*>(const_cast<std::byte*>(in.data()));
+    z.avail_in = static_cast<uInt>(in.size());
+    z.next_out = reinterpret_cast<Bytef*>(out.data());
+    z.avail_out = static_cast<uInt>(out.size());
+    require(inflate(&z, Z_FINISH) == Z_STREAM_END, "gzip stream");
+    out.resize(out.size() - z.avail_out);
+    inflateEnd(&z);
+    return out;
 }
 std::vector<std::byte> read(const fs::path& p) {
     std::ifstream in(p, std::ios::binary);
@@ -168,13 +181,15 @@ struct Kept {
     std::vector<std::pair<BlockPos, BlockEntity>> block_entities;
     std::multiset<std::tuple<int, BlockPos, int, Tick, int>> ticks;
     std::multiset<std::tuple<Vec3, Vec3, std::uint16_t, int, std::uint32_t, bool, int, std::uint32_t, std::uint32_t, std::int32_t, std::int32_t>> entities;
+    std::vector<std::pair<std::string, circuit::gameplay::RandomSequence>> sequences;
+    circuit::gameplay::SequenceSettings sequence_settings;
     bool operator==(const Kept&) const = default;
 };
 Kept kept(const WorldDump& world) {
     const auto& d = world.overworld();
     const auto& w = world.weather;
     Kept k{world.time, world.day_time, world.game_rules, {w.clear_time, w.rain_time, w.thunder_time, w.raining, w.thundering},
-           {}, d.blocks, d.block_entities, {}, {}};
+           {}, d.blocks, d.block_entities, {}, {}, d.sequences, world.sequence_settings};
     for (const auto& c : d.chunks) k.chunks.push_back(c.pos);
     for (auto& [pos, be] : k.block_entities) {
         be.order = 0;
@@ -203,6 +218,8 @@ std::string describe(const Kept& a, const Kept& b) {
     if (a.block_entities != b.block_entities) return "block entities";
     if (a.ticks != b.ticks) return std::format("ticks {} vs {}", a.ticks.size(), b.ticks.size());
     if (a.entities != b.entities) return std::format("entities {} vs {}", a.entities.size(), b.entities.size());
+    if (a.sequences != b.sequences) return std::format("random sequences {} vs {}", a.sequences.size(), b.sequences.size());
+    if (a.sequence_settings != b.sequence_settings) return "random sequence settings";
     return {};
 }
 } // namespace
@@ -542,6 +559,112 @@ int main() {
         require(kept(state) == kept(back->state) && kept(state).size() == 2, "kinds, positions, velocities, the boat's wood and the yaw");
         require(std::ranges::any_of(state.overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::minecart && e.yaw == -90.0f; }),
                 "the minecart's yaw");
+    });
+
+    suite.run("random sequences round-trip through Anvil as the official server saves them", [&] {
+        // The loot_many skeleton's sequences as the official 1.21.8 server
+        // saved them, with the settings' flags absent (true).
+        using circuit::gameplay::RandomSequence;
+        const std::vector<std::tuple<std::string, std::int64_t, std::int64_t>> saved{
+            {"minecraft:blocks/dead_bush", 980453112882939729, 5313872344700270703},
+            {"minecraft:blocks/sweet_berry_bush", 4585398311947135046, -4978303496063927502},
+            {"minecraft:blocks/short_grass", 2022789406501655404, -468754072450410102}};
+        const auto sequences_file = [](const auto& entries, std::optional<std::pair<bool, bool>> flags, std::int32_t salt) {
+            auto list = Tag::compound();
+            for (const auto& [id, low, high] : entries) {
+                auto entry = Tag::compound();
+                entry.set("source", Tag::long_array({low, high}));
+                list.set(id, std::move(entry));
+            }
+            auto data = Tag::compound();
+            data.set("salt", Tag::int_(salt));
+            if (flags) {
+                data.set("include_world_seed", Tag::boolean(flags->first));
+                data.set("include_sequence_id", Tag::boolean(flags->second));
+            }
+            data.set("sequences", std::move(list));
+            auto root = Tag::compound();
+            root.set("data", std::move(data));
+            root.set("DataVersion", Tag::int_(anvil::supported_data_version));
+            return gzip_bytes(named(root));
+        };
+        const auto good = chunk({0, 0}, {block("minecraft:air"), block("minecraft:stone")});
+        const auto dir = hand_made_world(root / "sequences", {{{0, 0}, good}});
+        write(dir / "data" / "random_sequences.dat", sequences_file(saved, std::nullopt, 0));
+        const auto in = anvil::import_world(dir, bundle());
+        require(in.has_value(), in ? "" : in.error());
+        const auto& sequences = in->state.overworld().sequences;
+        require(sequences.size() == 3 && sequences[0].first == "minecraft:blocks/dead_bush" && sequences[2].first == "minecraft:blocks/sweet_berry_bush",
+                "every sequence, by id");
+        require(sequences[1].second == RandomSequence{2022789406501655404ULL, static_cast<std::uint64_t>(-468754072450410102LL)},
+                "the grass sequence's state");
+        require(in->state.sequence_settings == circuit::gameplay::SequenceSettings{}, "absent flags are true");
+        // The engine continues the sequences, and an export writes them as the
+        // official server does.
+        Engine resumed(bundle(), 42, in->state);
+        resumed.advance({});
+        const auto state = resumed.dump();
+        require(state.overworld().sequences == sequences, "the engine keeps the sequences");
+        const auto target = root / "sequences-out";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "sequences", .seed = 42}).has_value(), "export");
+        const auto raw = gunzip_bytes(read(target / "data" / "random_sequences.dat"));
+        circuit::protocol::Reader r(raw);
+        std::string name;
+        const auto file = nbt::read_named(r, name);
+        require(file.has_value(), "the exported file is NBT");
+        const auto* data = file->find("data");
+        require(file->find("DataVersion") && file->find("DataVersion")->integer() == anvil::supported_data_version && data, "DataVersion and data");
+        require(data->find("salt") && data->find("salt")->integer() == 0 && !data->find("include_world_seed") && !data->find("include_sequence_id"),
+                "the salt, and no flags while they are true");
+        const auto* list = data->find("sequences");
+        require(list && list->keys().size() == 3, "three sequences");
+        for (const auto& [id, low, high] : saved) {
+            const auto* entry = list->find(id);
+            require(entry && entry->find("source") && entry->find("source")->array() == std::vector<std::int64_t>{low, high},
+                    std::format("{}: its saved state", id));
+        }
+        if (keep) fs::copy(target, fs::path(keep) / target.filename(), fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        const auto diff = describe(kept(state), kept(back->state));
+        require(diff.empty(), diff);
+        // Settings that are not the defaults survive both ways; ids without a
+        // namespace are the game's.
+        const auto other = hand_made_world(root / "sequences-salted", {{{0, 0}, good}});
+        write(other / "data" / "random_sequences.dat",
+              sequences_file(std::vector<std::tuple<std::string, std::int64_t, std::int64_t>>{{"blocks/stone", 1, 2}}, std::pair{false, true}, -7));
+        const auto salted = anvil::import_world(other, bundle());
+        require(salted.has_value(), salted ? "" : salted.error());
+        require(salted->state.sequence_settings == circuit::gameplay::SequenceSettings{-7, false, true}, "the salt and the flags");
+        require(salted->state.overworld().sequences.size() == 1 && salted->state.overworld().sequences[0].first == "minecraft:blocks/stone",
+                "the namespace");
+        const auto salted_out = root / "sequences-salted-out";
+        require(anvil::export_world(salted->state, bundle(), salted_out, {.level_name = "salted", .seed = 42}).has_value(), "export");
+        if (keep) fs::copy(salted_out, fs::path(keep) / salted_out.filename(), fs::copy_options::recursive | fs::copy_options::overwrite_existing);
+        const auto salted_back = anvil::import_world(salted_out, bundle());
+        require(salted_back.has_value() && salted_back->state.sequence_settings == salted->state.sequence_settings
+                    && salted_back->state.overworld().sequences == salted->state.overworld().sequences,
+                "the settings round-trip");
+        // Malformed sequences fail the import.
+        const auto broken = [&](std::string label, std::vector<std::tuple<std::string, std::int64_t, std::int64_t>> entries, bool short_source) {
+            const auto d = hand_made_world(root / ("sequences-" + label), {{{0, 0}, good}});
+            auto list = Tag::compound();
+            for (const auto& [id, low, high] : entries) {
+                auto entry = Tag::compound();
+                entry.set("source", short_source ? Tag::long_array({low}) : Tag::long_array({low, high}));
+                list.set(id, std::move(entry));
+            }
+            auto data = Tag::compound();
+            data.set("sequences", std::move(list));
+            auto root_tag = Tag::compound();
+            root_tag.set("data", std::move(data));
+            root_tag.set("DataVersion", Tag::int_(anvil::supported_data_version));
+            write(d / "data" / "random_sequences.dat", gzip_bytes(named(root_tag)));
+            const auto r = anvil::import_world(d, bundle());
+            require(!r && r.error().find("random_sequences.dat") != std::string::npos, std::format("{}: {}", label, r ? "imported" : r.error()));
+        };
+        broken("short", {{"minecraft:blocks/stone", 1, 2}}, true);
+        broken("id", {{"Minecraft:Stone", 1, 2}}, false);
     });
 
     suite.run("unsupported content is rejected or substituted by policy", [&] {

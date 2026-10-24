@@ -101,6 +101,15 @@ constexpr std::array reference_v4_mechanisms{
         "leave open after shape updates and once water is poured into them (water_channel, water_drop, water_washes, "
         "water_torch_button, fluid_sources, fluid_washes, waterlogged_flow; every state in "
         "tests/fixtures/collision/flows-*.txt). Not covered: sources above flowing water and three sources beside falling water."},
+    MechanismEntry{"loot", l0_exact, l2_declared_deviation, harness_trace,
+        "Block loot tables from the data packs: pools, alternatives, groups and sequences, block state, tool, random "
+        "chance and location conditions, constant, uniform and binomial counts and fortune's uniform and binomial "
+        "bonuses, rolled from each table's random sequence (Xoroshiro128++ from the world seed and the MD5 of its id, "
+        "as minecraft.wiki \"Random sequence\" describes; fitted to every roll of loot_many, and the states left equal "
+        "the official saved ones); a stack of none still takes its position from the level random (loot_rolls, "
+        "loot_single, loot_many, with the operator's data packs). Gaps: weighted choices between entries, fortune's ore "
+        "bonus at levels above 0, table bonuses (leaves, gravel) and dynamic entries make tables that do not compile; "
+        "each level keeps its own sequences, where the official servers keep one set for the world."},
     MechanismEntry{"lava", l0_exact, l0_exact, harness_trace,
         "Lava as a registry block: 30-tick fluid ticks; water's spread, losing 2 levels a block and looking 2 blocks ahead for "
         "drops, water below counting as one; sources only with lavaSourceConversion (water's with waterSourceConversion); "
@@ -114,8 +123,8 @@ constexpr std::array reference_v4_mechanisms{
         "level-wide stream. Gaps: chunks run in coordinate order instead of a "
         "shuffled order; not compared with the target version."},
     MechanismEntry{"wheat", l0_exact, l2_declared_deviation, documented_behavior,
-        "Grows only with light 9 or more at its own cell. Gap: grows with probability 1/3 per random tick, ignoring "
-        "hydration and support."},
+        "Grows only with light 9 or more at its own cell; an update that finds no farmland below breaks it with its "
+        "drops (loot_rolls). Gap: grows with probability 1/3 per random tick, ignoring hydration."},
     MechanismEntry{"item_entity", l0_exact, l2_declared_deviation, harness_trace,
         "Double-precision gravity, drag, bouncing and collision with every state's collision boxes; items at "
         "rest move every fourth tick; currents and buoyancy in water; merging with the target versions' timing, "
@@ -313,8 +322,8 @@ constexpr std::array reference_v4_mechanisms{
         "grasses, ferns, bushes, petals, fungi, roots, wither roses, azaleas, crops, nether wart and bamboo need the "
         "ground of their kind (plant_grounds; every state in tests/fixtures/collision/plants-*.txt). Support shapes "
         "and solidity of every state come from the registry (tests/fixtures/collision/support-*.txt). The drops' "
-        "positions follow item_entity; loot rolls that draw random numbers are not modeled (those plants drop nothing "
-        "without data packs)."},
+        "positions follow item_entity; without data packs, plants whose loot rolls random numbers drop nothing (with "
+        "them, see loot)."},
     MechanismEntry{"container_menus", l0_exact, l2_declared_deviation, controlled_experiment,
         "Player windows and chest, double chest and hopper menus with every click mode, applied as commands. "
         "A 48-step client scenario (every click mode, double chests, hoppers, the own window, throws and "

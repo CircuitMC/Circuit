@@ -254,6 +254,25 @@ int main() {
         require(rules && weather, "a scenario sets a game rule and changes the weather");
     });
 
+    suite.run("checkpoints keep random sequences and their settings", [&] {
+        // A loot table's sequence as the official 1.21.8 server saved it (the
+        // loot_many skeleton's grass), one more, and settings that are not the
+        // defaults; ids are kept in ascending order.
+        auto c = checkpoint_at(histories[1], histories[1].ticks());
+        c.state.sequence_settings = {-7, false, true};
+        c.state.level(circuit::contracts::DimensionId::overworld).sequences = {
+            {"circuit:fresh", circuit::gameplay::RandomSequence{1, 2}},
+            {"minecraft:blocks/short_grass", circuit::gameplay::RandomSequence{2022789406501655404ULL, 17977990001259141514ULL}}};
+        const auto encoded = circuit::storage::encode_checkpoint(c);
+        const auto decoded = circuit::storage::decode_checkpoint(encoded);
+        require(decoded.has_value(), decoded ? "" : decoded.error());
+        require(*decoded == c && circuit::storage::encode_checkpoint(*decoded) == encoded, "the sequences and settings round-trip");
+        auto swapped = c;
+        auto& sequences = swapped.state.level(circuit::contracts::DimensionId::overworld).sequences;
+        std::swap(sequences[0], sequences[1]);
+        require(!circuit::storage::decode_checkpoint(circuit::storage::encode_checkpoint(swapped)), "ids out of order are rejected");
+    });
+
     suite.run("snapshots encode like dumps and stay fixed while the engine runs", [&] {
         circuit::storage::SectionCache cache;
         for (const auto& s : all_scenarios()) {

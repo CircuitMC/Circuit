@@ -164,6 +164,10 @@ public:
     std::invoke_result_t<F, LevelRandom&> random_draws(F&& f) {
         return draw(std::forward<F>(f));
     }
+    // The random sequence of a namespaced id (random_sequence.hpp; loot
+    // tables roll from theirs), started from the world seed when first used.
+    // Uses are serial as the level random's are.
+    virtual RandomSequence& random_sequence(const std::string& id, const SequenceIdHash& hash) = 0;
 
 protected:
     // The current level's random sequence.

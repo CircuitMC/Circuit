@@ -3,11 +3,39 @@
 #include <circuit/gameplay/loot.hpp>
 #include <algorithm>
 #include <charconv>
+#include <cmath>
 
 namespace circuit::gameplay::loot {
 namespace {
-// No value: the evaluation needs a random number.
+// No value: the evaluation needs a random number and has no source.
 struct Unresolved {};
+
+RandomSequence& random(const BreakContext& ctx) {
+    if (!ctx.random) throw Unresolved{};
+    return *ctx.random;
+}
+
+long level_of(const BreakContext& ctx, std::uint32_t enchantment) {
+    return ctx.tool.empty() || !ctx.enchantment_level ? 0 : ctx.enchantment_level(enchantment);
+}
+
+long number(const Number& n, const BreakContext& ctx) {
+    switch (n.kind) {
+    case Number::Kind::constant: return std::lround(n.value);
+    case Number::Kind::uniform: {
+        const auto lo = static_cast<long>(std::floor(n.min)), hi = static_cast<long>(std::floor(n.max));
+        if (hi < lo) return lo;
+        return random(ctx).next_int(static_cast<std::int32_t>(hi - lo + 1)) + lo;
+    }
+    case Number::Kind::binomial: {
+        long count = 0;
+        for (long i = 0; i < n.n; ++i)
+            if (random(ctx).next_float() < static_cast<float>(n.p)) ++count;
+        return count;
+    }
+    }
+    return 0;
+}
 
 bool test(const Condition& c, const BreakContext& ctx);
 bool all(const std::vector<Condition>& cs, const BreakContext& ctx) {
@@ -33,33 +61,46 @@ bool test(const Condition& c, const BreakContext& ctx) {
     case Condition::Kind::tool:
         if (!c.items.empty() && (ctx.tool.empty() || std::ranges::find(c.items, ctx.tool.item) == c.items.end())) return false;
         for (const auto& e : c.enchantments) {
-            const long level = ctx.tool.empty() || !ctx.enchantment_level ? 0 : ctx.enchantment_level(e.id);
+            const long level = level_of(ctx, e.id);
             if (level < e.min || level > e.max) return false;
         }
         return true;
     case Condition::Kind::any_of: return std::ranges::any_of(c.children, [&](const Condition& x) { return test(x, ctx); });
     case Condition::Kind::all_of: return all(c.children, ctx);
     case Condition::Kind::inverted: return !c.children.empty() && !test(c.children.front(), ctx);
+    case Condition::Kind::random_chance: return random(ctx).next_float() < static_cast<float>(c.chance);
+    case Condition::Kind::location: return ctx.location && ctx.location(c);
     }
     return false;
 }
 
-// Applies functions to a stack; throws Unresolved when one needs randomness.
 void apply(const std::vector<Function>& fs, long& count, const BreakContext& ctx) {
     for (const auto& f : fs) {
         if (!all(f.conditions, ctx)) continue;
         switch (f.kind) {
-        case Function::Kind::set_count: count = f.add ? count + f.count : f.count; break;
+        case Function::Kind::set_count: {
+            const long n = number(f.count, ctx);
+            count = f.add ? count + n : n;
+            break;
+        }
         case Function::Kind::limit_count:
             if (f.min) count = std::max(count, *f.min);
             if (f.max) count = std::min(count, *f.max);
             break;
         case Function::Kind::explosion_decay: break; // no explosion, or TNT's (no drop decay)
         case Function::Kind::ore_bonus: {
-            const long level = ctx.tool.empty() || !ctx.enchantment_level ? 0 : ctx.enchantment_level(f.enchantment);
-            if (level > 0) throw Unresolved{}; // fortune multiplies by a random factor
+            const long level = level_of(ctx, f.enchantment);
+            if (level > 0) throw Unresolved{}; // fortune multiplies by a random factor not fitted yet
             break;
         }
+        case Function::Kind::uniform_bonus:
+            // Drawn at level 0 too (loot_many).
+            count += random(ctx).next_int(static_cast<std::int32_t>(f.multiplier * level_of(ctx, f.enchantment) + 1));
+            break;
+        case Function::Kind::binomial_bonus:
+            for (long i = 0, n = level_of(ctx, f.enchantment) + f.extra; i < n; ++i)
+                if (random(ctx).next_float() < static_cast<float>(f.probability)) ++count;
+            break;
         }
     }
 }
@@ -90,24 +131,31 @@ std::optional<std::vector<contracts::ItemStack>> drops(const Table& table, const
     try {
         for (const auto& pool : table.pools) {
             if (!all(pool.conditions, ctx)) continue;
-            std::vector<const Entry*> candidates;
-            for (const auto& e : pool.entries) expand(e, ctx, candidates);
-            if (candidates.empty()) continue;
-            if (candidates.size() > 1) return std::nullopt; // a weighted random choice
-            const auto& chosen = *candidates.front();
-            if (chosen.kind != Entry::Kind::item) continue;
-            contracts::ItemStack stack{chosen.item, 1};
-            long count = 1;
-            apply(chosen.functions, count, ctx);
-            apply(pool.functions, count, ctx);
-            apply(table.functions, count, ctx);
-            // Stacks above the item's limit split, as the target version splits them.
-            const long limit = std::max<long>(1, items::max_stack(stack.item));
-            while (count > 0) {
-                const long n = std::min(count, limit);
-                stack.count = static_cast<std::uint8_t>(n);
-                out.push_back(stack);
-                count -= n;
+            for (long roll = 0; roll < pool.rolls; ++roll) {
+                std::vector<const Entry*> candidates;
+                for (const auto& e : pool.entries) expand(e, ctx, candidates);
+                if (candidates.empty()) continue;
+                if (candidates.size() > 1) return std::nullopt; // a weighted random choice
+                const auto& chosen = *candidates.front();
+                if (chosen.kind != Entry::Kind::item) continue;
+                contracts::ItemStack stack{chosen.item, 1};
+                long count = 1;
+                apply(chosen.functions, count, ctx);
+                apply(pool.functions, count, ctx);
+                apply(table.functions, count, ctx);
+                // Stacks above the item's limit split, as the target version
+                // splits them; one of none drops as it is.
+                const long limit = std::max<long>(1, items::max_stack(stack.item));
+                if (count <= 0) {
+                    stack.count = 0;
+                    out.push_back(stack);
+                }
+                while (count > 0) {
+                    const long n = std::min(count, limit);
+                    stack.count = static_cast<std::uint8_t>(n);
+                    out.push_back(stack);
+                    count -= n;
+                }
             }
         }
     } catch (const Unresolved&) {

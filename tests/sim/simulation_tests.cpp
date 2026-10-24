@@ -1096,7 +1096,10 @@ int main() {
             Admissions admit;
             std::vector<CommandBody> setup;
             for (int x = 0; x < 16; ++x)
-                for (int z = 0; z < 16; ++z) setup.push_back(place({x, 0, z}, blocks::wheat()));
+                for (int z = 0; z < 16; ++z) {
+                    setup.push_back(place({x, -1, z}, registry_block("farmland")));
+                    setup.push_back(place({x, 0, z}, blocks::wheat()));
+                }
             if (player) setup.push_back(*player);
             for (Tick t = 1; t <= 200; ++t) {
                 const auto commands = admit(t == 1 ? std::vector<CommandBody>{ticket(1, {0, 0}, 0)}
@@ -1106,7 +1109,7 @@ int main() {
                 oracle.advance(commands);
                 require(engine.trace() == oracle.trace(), std::format("{} tick {}: both executors agree", version, t));
             }
-            require(engine.dump() == oracle.dump() && oracle.dump().overworld().blocks.size() == 256, "both executors end alike");
+            require(engine.dump() == oracle.dump() && oracle.dump().overworld().blocks.size() == 512, "both executors end alike");
             unsigned ages = 0;
             for (int x = 0; x < 16; ++x)
                 for (int z = 0; z < 16; ++z) ages += state_at(oracle.dump(), {x, 0, z}).level();

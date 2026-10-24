@@ -440,7 +440,9 @@ public:
                 }
         }
         if (fs::exists(source / "playerdata")) note("player data is not imported");
-        if (fs::exists(source / "data")) note("saved data (maps, raids, scoreboards, world border) is not imported");
+        if (const auto file = source / "data" / "random_sequences.dat"; fs::exists(file))
+            if (auto ok = read_sequences(file); !ok) return std::unexpected(ok.error());
+        if (fs::exists(source / "data")) note("saved data other than random sequences (maps, raids, scoreboards, world border) is not imported");
         note("light and heightmaps are not imported; Circuit has no lighting engine");
         // Containers that lost their data to unsupported content still need a block entity.
         for (const auto& [pos, raw] : result_.state.level(contracts::DimensionId::overworld).blocks) {
@@ -465,6 +467,47 @@ private:
     ImportReport& report() { return result_.report; }
     void note(std::string text) { report().notes.push_back(std::move(text)); }
     void unsupported(const std::string& kind, std::size_t n = 1) { report().unsupported[kind] += n; }
+
+    // The overworld's random sequences of loot tables and the world's settings
+    // for new ones (minecraft.wiki "Random sequence"); the settings' flags are
+    // absent when they are true.
+    std::expected<void, std::string> read_sequences(const fs::path& file) {
+        const auto fail = [](std::string what) { return std::unexpected("data/random_sequences.dat: " + what); };
+        auto data = read_file(file, max_level_bytes);
+        if (!data) return std::unexpected(data.error());
+        auto raw = inflate_any(*data, max_level_bytes);
+        if (!raw) return fail(raw.error());
+        auto root = parse_nbt(*raw, max_level_bytes);
+        if (!root) return fail(root.error());
+        const auto version = integer(*root, "DataVersion");
+        if (version != supported_data_version) {
+            unsupported(std::format("random sequences of DataVersion {}", version ? std::to_string(*version) : "none"));
+            return {};
+        }
+        const auto* d = child(*root, "data", TagType::compound);
+        if (!d) return fail("no data compound");
+        gameplay::SequenceSettings settings;
+        settings.salt = static_cast<std::int32_t>(integer(*d, "salt").value_or(0));
+        settings.include_world_seed = integer(*d, "include_world_seed").value_or(1) != 0;
+        settings.include_sequence_id = integer(*d, "include_sequence_id").value_or(1) != 0;
+        static const std::regex id_pattern{"([a-z0-9_.-]+:)?[a-z0-9_./-]+"};
+        std::map<std::string, gameplay::RandomSequence> sequences;
+        if (const auto* list = child(*d, "sequences", TagType::compound))
+            for (std::size_t i = 0; i < list->keys().size(); ++i) {
+                const auto& key = list->keys()[i];
+                const auto id = key.contains(':') ? key : "minecraft:" + key;
+                if (id.size() > 256 || !std::regex_match(key, id_pattern)) return fail(std::format("invalid sequence id \"{}\"", key));
+                const auto* source = list->items()[i].type() == TagType::compound
+                                         ? child(list->items()[i], "source", TagType::long_array) : nullptr;
+                if (!source || source->array().size() != 2) return fail(std::format("sequence {} has no 128-bit source", key));
+                sequences.insert_or_assign(id, gameplay::RandomSequence{static_cast<std::uint64_t>(source->array()[0]),
+                                                                        static_cast<std::uint64_t>(source->array()[1])});
+            }
+        result_.state.sequence_settings = settings;
+        auto& level = result_.state.level(contracts::DimensionId::overworld).sequences;
+        level.assign(sequences.begin(), sequences.end());
+        return {};
+    }
 
     std::expected<void, std::string> read_level(const fs::path& file) {
         auto data = read_file(file, max_level_bytes);
@@ -975,7 +1018,8 @@ public:
         if (fs::exists(target, ec)) return std::unexpected(std::format("{} already exists", target.string()));
         const auto partial = fs::path(target.string() + ".partial");
         fs::remove_all(partial, ec);
-        if (!fs::create_directories(partial / "region", ec) || !fs::create_directories(partial / "entities", ec))
+        if (!fs::create_directories(partial / "region", ec) || !fs::create_directories(partial / "entities", ec) ||
+            !fs::create_directories(partial / "data", ec))
             return std::unexpected(std::format("cannot create {}", partial.string()));
         auto ok = write_all(partial);
         if (ok) {
@@ -1025,7 +1069,27 @@ private:
         report_.regions = regions.size();
         report_.notes.push_back("light and heightmaps are left for the game to compute");
         report_.notes.push_back("biomes are written as minecraft:plains");
+        if (auto ok = write_file(dir / "data" / "random_sequences.dat", gzip(named_nbt(sequences_tag()))); !ok) return ok;
         return write_file(dir / "level.dat", gzip(named_nbt(level_tag())));
+    }
+
+    // As the official server saves them: the flags only when they are false.
+    Tag sequences_tag() const {
+        auto data = Tag::compound();
+        data.set("salt", Tag::int_(world_.sequence_settings.salt));
+        if (!world_.sequence_settings.include_world_seed) data.set("include_world_seed", Tag::boolean(false));
+        if (!world_.sequence_settings.include_sequence_id) data.set("include_sequence_id", Tag::boolean(false));
+        auto sequences = Tag::compound();
+        for (const auto& [id, sequence] : state_.sequences) {
+            auto entry = Tag::compound();
+            entry.set("source", Tag::long_array({static_cast<std::int64_t>(sequence.low()), static_cast<std::int64_t>(sequence.high())}));
+            sequences.set(id, std::move(entry));
+        }
+        data.set("sequences", std::move(sequences));
+        auto root = Tag::compound();
+        root.set("data", std::move(data));
+        root.set("DataVersion", Tag::int_(supported_data_version));
+        return root;
     }
 
     Tag chunk_tag(ChunkPos pos, const std::vector<const std::pair<BlockPos, std::uint32_t>*>& blocks,

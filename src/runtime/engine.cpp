@@ -235,6 +235,7 @@ Engine::Impl::Impl(const contracts::VersionBundle& b, std::uint64_t s, EngineOpt
         world.counters(level).random = gameplay::initial_level_random(seed, level, options.level_random_seed);
         region_for_new_chunk(random_key(level));
     }
+    world.sequence_seed = options.sequence_seed.value_or(static_cast<std::int64_t>(seed));
 }
 
 void Engine::Impl::advance(const std::vector<Command>& commands) {
@@ -990,6 +991,7 @@ void fill_dump(const WorldStore& world, const contracts::VersionBundle& bundle, 
     d.game_rules = world.game_rules;
     d.day_time = world.day_time;
     d.weather = world.weather;
+    d.sequence_settings = world.sequence_settings;
     std::map<DimensionId, std::vector<std::pair<std::uint64_t, BlockEvent>>> events;
     const auto add = [&](const ChunkData& data, ChunkLevel level) {
         auto& l = d.level(data.dimension);
@@ -1036,6 +1038,7 @@ void fill_dump(const WorldStore& world, const contracts::VersionBundle& bundle, 
         l.next_suborder = world.counters(l.dimension).next_suborder;
         l.next_block_entity_order = world.counters(l.dimension).next_block_entity_order;
         l.random = world.counters(l.dimension).random.state();
+        for (const auto& [id, sequence] : world.counters(l.dimension).sequences) l.sequences.emplace_back(id, sequence);
         auto& list = events[l.dimension];
         std::ranges::sort(list, {}, [](const auto& p) { return p.first; });
         for (const auto& [seq, e] : list) l.block_events.push_back(e);
@@ -1086,6 +1089,7 @@ void Engine::Impl::restore(const WorldDump& state) {
     world.day_time = state.day_time;
     if (!gameplay::valid_weather(state.weather)) bad("weather");
     world.weather = state.weather;
+    world.sequence_settings = state.sequence_settings;
     // As the last tick computed it, from the day time before it advanced.
     world.sky_darken = gameplay::sky_darken(world.weather, world.day_time
                                                                - (gameplay::game_rule_value(bundle, world.game_rules, "doDaylightCycle") != 0 ? 1 : 0));
@@ -1105,6 +1109,9 @@ void Engine::Impl::restore(const WorldDump& state) {
         counters.last_active = l.last_active;
         if (l.random > gameplay::LevelRandom::mask) bad("level random");
         counters.random = gameplay::LevelRandom::from_state(l.random);
+        counters.sequences.clear();
+        for (const auto& [id, sequence] : l.sequences)
+            if (id.empty() || !counters.sequences.emplace(id, sequence).second) bad("random sequence");
         for (const auto& p : l.presences) {
             const bool elsewhere = std::ranges::any_of(world.levels, [&](const auto& other) { return other.presences.contains(p.player); });
             if (elsewhere || !counters.presences.emplace(p.player, p).second) bad("a player in two levels");

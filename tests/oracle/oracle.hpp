@@ -63,6 +63,7 @@ private:
         std::map<contracts::PlayerKey, gameplay::Presence> presences;
         contracts::Tick last_active{};
         gameplay::LevelRandom random;
+        std::map<std::string, gameplay::RandomSequence> sequences;
         std::uint64_t light_version{}; // changes whenever something light depends on changes
         [[nodiscard]] gameplay::ChunkLevel level(contracts::ChunkPos chunk) const;
         // The chunk's simulation level; none when unloaded.

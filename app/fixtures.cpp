@@ -4,6 +4,7 @@
 #include <circuit/evidence/fixture_runner.hpp>
 #include <circuit/evidence/trace_format.hpp>
 #include <circuit/runtime/engine.hpp>
+#include <circuit/server/data_report.hpp>
 #include <chrono>
 #include <format>
 #include <fstream>
@@ -19,11 +20,24 @@ std::string read_text(const std::string& path) {
     if (!in) throw std::runtime_error("cannot open fixture: " + path);
     return {std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>()};
 }
+
+// The data packs' data for each bundle, loaded once; none without packs.
+evidence::DataSource data_source(const data::PackOptions& packs) {
+    if (packs.vanilla_jar.empty() && packs.packs.empty()) return {};
+    auto cache = std::make_shared<std::map<std::string, std::shared_ptr<const gameplay::GameData>>>();
+    return [packs, cache](const contracts::VersionBundle& bundle) -> std::shared_ptr<const gameplay::GameData> {
+        const std::string id(bundle.id);
+        if (const auto it = cache->find(id); it != cache->end()) return it->second;
+        auto loaded = server::load_game_data(bundle, packs);
+        if (!loaded) throw std::runtime_error("data packs: " + loaded.error());
+        return cache->emplace(id, *loaded).first->second;
+    };
+}
 } // namespace
 
-int check_fixtures(const std::vector<std::string>& paths, unsigned workers) {
+int check_fixtures(const std::vector<std::string>& paths, unsigned workers, const data::PackOptions& packs) {
     int status = 0;
-    const auto executor = evidence::engine_executor(workers);
+    const auto executor = evidence::engine_executor(workers, data_source(packs));
     for (const auto& path : paths) {
         const auto parsed = evidence::parse_fixture(read_text(path));
         if (!parsed) {
@@ -97,10 +111,10 @@ int profile_fixture(const std::string& path, unsigned ticks, unsigned workers) {
     return 0;
 }
 
-int record_fixture_file(const std::string& skeleton, const std::string& output, unsigned workers) {
+int record_fixture_file(const std::string& skeleton, const std::string& output, unsigned workers, const data::PackOptions& packs) {
     const auto parsed = evidence::parse_fixture(read_text(skeleton));
     if (!parsed) throw std::runtime_error(std::format("{}:{}: {}", skeleton, parsed.error().line, parsed.error().message));
-    const auto recorded = evidence::record_fixture(*parsed, evidence::engine_executor(workers));
+    const auto recorded = evidence::record_fixture(*parsed, evidence::engine_executor(workers, data_source(packs)));
     if (!recorded) throw std::runtime_error(std::format("cannot record {}: {}", skeleton, recorded.error()));
     std::ofstream out(output, std::ios::binary | std::ios::trunc);
     out << evidence::write_fixture(*recorded);

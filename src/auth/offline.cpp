@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include <circuit/auth.hpp>
+#include <algorithm>
 #include <format>
 #include <openssl/evp.h>
 #include <stdexcept>
@@ -13,12 +14,18 @@ bool valid_player_name(std::string_view name) noexcept {
     return true;
 }
 
-std::string offline_uuid(std::string_view name) {
-    const std::string input = "OfflinePlayer:" + std::string(name);
+std::array<std::uint8_t, 16> md5(std::string_view text) {
     unsigned char digest[EVP_MAX_MD_SIZE];
     unsigned int length = 0;
-    if (EVP_Digest(input.data(), input.size(), digest, &length, EVP_md5(), nullptr) != 1 || length != 16)
+    if (EVP_Digest(text.data(), text.size(), digest, &length, EVP_md5(), nullptr) != 1 || length != 16)
         throw std::runtime_error("auth: MD5 unavailable");
+    std::array<std::uint8_t, 16> out{};
+    std::copy_n(digest, 16, out.begin());
+    return out;
+}
+
+std::string offline_uuid(std::string_view name) {
+    auto digest = md5("OfflinePlayer:" + std::string(name));
     digest[6] = static_cast<unsigned char>((digest[6] & 0x0F) | 0x30); // version 3
     digest[8] = static_cast<unsigned char>((digest[8] & 0x3F) | 0x80); // RFC 4122 variant
     std::string hex;

@@ -4,6 +4,7 @@
 #include <circuit/contracts/trace.hpp>
 #include <circuit/evidence/trace_format.hpp>
 #include <circuit/gameplay/block.hpp>
+#include <circuit/gameplay/game_data.hpp>
 #include <circuit/gameplay/world_types.hpp>
 #include <functional>
 #include <map>
@@ -32,11 +33,16 @@ public:
     // Block light and sky light at the end of the last tick; nullopt when the
     // executor does not compute light.
     [[nodiscard]] virtual std::optional<std::pair<std::uint8_t, std::uint8_t>> light(BlockPos) const { return std::nullopt; }
+    // Whether the rules run with data packs' data (loot tables): scenarios of
+    // the `loot` mechanism need it.
+    [[nodiscard]] virtual bool has_data() const { return false; }
 };
 using ExecutorFactory =
     std::function<std::unique_ptr<FixtureExecutor>(const contracts::VersionBundle& bundle, std::uint64_t seed)>;
+// The data packs' data for a bundle (null: none).
+using DataSource = std::function<std::shared_ptr<const gameplay::GameData>(const contracts::VersionBundle& bundle)>;
 
-ExecutorFactory engine_executor(unsigned workers = 1);
+ExecutorFactory engine_executor(unsigned workers = 1, DataSource data = {});
 
 struct FixtureReport {
     enum class Outcome : std::uint8_t {

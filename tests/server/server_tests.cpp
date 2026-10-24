@@ -17,6 +17,8 @@
 #include <circuit/protocol/content.hpp>
 #include <circuit/contracts/version.hpp>
 #include <circuit/runtime/engine.hpp>
+#include <circuit/evidence/fixture_runner.hpp>
+#include <circuit/evidence/trace_format.hpp>
 #include <circuit/server/anvil.hpp>
 #include <circuit/server/server.hpp>
 #include <circuit/storage/world_directory.hpp>
@@ -2345,10 +2347,9 @@ int main() {
         const auto& bundle = **contracts::BundleRegistry::find("java-1.21.8");
         const auto d = server::load_server_data(bundle, {{}, {dir / "pack"}});
         require(d.has_value(), d ? "" : d.error());
-        // Loot: three tables compile; the others name why not.
-        require(d->loot.blocks == 6 && d->game->block_loot.size() == 3, std::format("{} tables, {} used", d->loot.blocks, d->game->block_loot.size()));
-        require(d->loot.refused == std::map<std::string, std::size_t>{{"condition minecraft:table_bonus", 1}, {"entry minecraft:dynamic", 1},
-                                                                       {"random count", 1}},
+        // Loot: four tables compile; the others name why not.
+        require(d->loot.blocks == 6 && d->game->block_loot.size() == 4, std::format("{} tables, {} used", d->loot.blocks, d->game->block_loot.size()));
+        require(d->loot.refused == std::map<std::string, std::size_t>{{"condition minecraft:table_bonus", 1}, {"entry minecraft:dynamic", 1}},
                 "loot refusals by reason");
         // Recipes: every type checked; crafting recipes compiled; invalid ones skipped with a reason.
         std::vector<std::string> crafted;
@@ -2381,6 +2382,45 @@ int main() {
         std::filesystem::remove_all(dir);
     });
 
+    suite.run("every official trace passes with the official data packs", [] {
+        // With the operator's jars (CIRCUIT_VANILLA_JAR_1_21_8, _1_21_4), the
+        // rules run as a server with them does: every trace of the version
+        // passes, those of loot tables among them, and their skeletons record
+        // as the committed reference recordings.
+        namespace fs = std::filesystem;
+        const fs::path fixtures = std::string(CIRCUIT_SOURCE_DIR) + "/tests/fixtures";
+        for (const auto& [variable, bundle_id, directory] : {std::tuple{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "harness"},
+                                                              std::tuple{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "harness-1.21.4"}}) {
+            const char* jar = std::getenv(variable);
+            if (!jar || !*jar) continue;
+            const auto& bundle = **contracts::BundleRegistry::find(bundle_id);
+            const auto loaded = server::load_server_data(bundle, {jar, {}});
+            require(loaded.has_value(), loaded ? "" : loaded.error());
+            const auto game = loaded->game;
+            const auto executor = evidence::engine_executor(4, [game](const contracts::VersionBundle&) { return game; });
+            const auto text = [](const fs::path& p) {
+                std::ifstream in(p, std::ios::binary);
+                return std::string{std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>()};
+            };
+            std::size_t traces = 0, loot = 0;
+            for (const auto& entry : fs::directory_iterator(fixtures / directory)) {
+                const auto trace = evidence::parse_fixture(text(entry.path()));
+                require(trace.has_value(), entry.path().string());
+                const auto r = evidence::evaluate_fixture(*trace, executor);
+                require(r.outcome == evidence::FixtureReport::Outcome::passed, std::format("{}: {}", entry.path().string(), r.detail));
+                ++traces;
+                if (std::ranges::find(trace->mechanisms, "loot") == trace->mechanisms.end()) continue;
+                ++loot;
+                if (std::string_view(bundle_id) != "java-1.21.8") continue;
+                const auto skeleton = evidence::parse_fixture(text(fixtures / "skeletons" / entry.path().filename()));
+                const auto recorded = evidence::record_fixture(*skeleton, executor);
+                require(recorded && evidence::write_fixture(*recorded) == text(fixtures / "reference" / entry.path().filename()),
+                        std::format("{}: the reference recording no longer matches", entry.path().filename().string()));
+            }
+            require(traces >= 140 && loot >= 3, std::format("{}: {} traces, {} of loot", bundle_id, traces, loot));
+        }
+    });
+
     suite.run("loot tables and recipes of the official packs agree with the official servers", [] {
         // The operator's jars, when given (CIRCUIT_VANILLA_JAR_1_21_8, _1_21_4).
         struct Expected {
@@ -2395,9 +2435,12 @@ int main() {
         // pressure plates', the target block's, the 54 doors', trapdoors'
         // and fence gates', the honey block's, the daylight detector's, the
         // note block's, the four rails', the ten coral fans' and the
-        // dispenser's and dropper's.
-        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 902, 810, 1407, 984},
-                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 894, 802, 1370, 948}}) {
+        // dispenser's and dropper's; but wheat's, which its rules use. The 49
+        // wall torches, signs, hanging signs, banners and heads count with the
+        // standing ones' tables (the banners' and the player head's are
+        // refused: they copy components).
+        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 952, 871, 1407, 984},
+                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 944, 863, 1370, 948}}) {
             const char* jar = std::getenv(e.variable);
             if (!jar || !*jar) continue;
             const auto& bundle = **contracts::BundleRegistry::find(e.bundle);
@@ -2443,7 +2486,8 @@ int main() {
                 const auto table = block ? d->game->block_loot.find(*block) : d->game->block_loot.end();
                 if (gameplay::harvests(*state, tool, d->game.get()) && table != d->game->block_loot.end()) {
                     const gameplay::loot::BreakContext context{gameplay::registry::properties(state->registry_state()), tool,
-                                                               [&](std::uint32_t en) { return d->game->enchantment_level(tool, en); }};
+                                                               [&](std::uint32_t en) { return d->game->enchantment_level(tool, en); },
+                                                               nullptr, {}};
                     if (const auto made = gameplay::loot::drops(table->second, context))
                         for (const auto& s : *made) got += std::format("{}{}*{}", got.empty() ? "" : " ", gameplay::items::info(s.item)->name, s.count);
                 }

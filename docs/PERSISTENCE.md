@@ -101,7 +101,8 @@ The server fails closed on storage errors. If a log record cannot be written, th
 
 ## Checkpoint format
 
-A checkpoint file is `CIRCKPT\0`, a format version (23; versions 1–22 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+A checkpoint file is `CIRCKPT\0`, a format version (24; versions 1–23 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+- versions before 24 have no random sequences: each loot table's starts when it is first used, with the default settings;
 - versions before 23 have no minecart yaw (0, not flipped);
 - versions before 22 have no redstone torch turn-offs;
 - versions before 21 have no piston pushes: no entity was pushed in the tick;
@@ -123,8 +124,8 @@ A checkpoint file is `CIRCKPT\0`, a format version (23; versions 1–22 are stil
 - versions before 6 have item stacks without components.
 
 The body holds:
-- the time, the entity id counter, counted over all levels, the tick the levels last started, the game rules away from their defaults (name and value), the day time, and the weather (timers, flags and levels);
-- per level (overworld, Nether, End; only those with columns, players or an active tick): its counters, the last tick it had players or forced chunks, the state of its level random, the players in it (position and whether a spectator), columns with their load and simulation levels, the tick a saved column dropped and the tick a reloaded column resumes, palette-packed sections, block entities, entities (their kind, tick count, position and velocity as doubles, an item's stack, age, pickup delay and health, a falling block's state and fall time, primed TNT's fuse, an arrow's being stuck, life and fire, a boat's wood, last state and last vertical move, a minecart's water, the tick and amount of its last push by moving blocks, and for an entity of a reloaded chunk the tick it comes back), scheduled ticks, pending block events and the recent turn-offs of its redstone torches (position and tick, for their burnout);
+- the time, the entity id counter, counted over all levels, the tick the levels last started, the game rules away from their defaults (name and value), the day time, the weather (timers, flags and levels), and the settings new random sequences start with (salt and flags);
+- per level (overworld, Nether, End; only those with columns, players or an active tick): its counters, the last tick it had players or forced chunks, the state of its level random, the players in it (position and whether a spectator), columns with their load and simulation levels, the tick a saved column dropped and the tick a reloaded column resumes, palette-packed sections, block entities, entities (their kind, tick count, position and velocity as doubles, an item's stack, age, pickup delay and health, a falling block's state and fall time, primed TNT's fuse, an arrow's being stuck, life and fire, a boat's wood, last state and last vertical move, a minecart's water, the tick and amount of its last push by moving blocks, and for an entity of a reloaded chunk the tick it comes back), scheduled ticks, pending block events, the recent turn-offs of its redstone torches (position and tick, for their burnout) and its loot tables' random sequences (id and state, by id);
 - chunk tickets: type, level, square radius, the tick their lifetime ends and their level (dimension);
 - player inventories: the 46 slots, the carried stack and a drag in progress; item stacks carry their damage and their other data components;
 - block entities' components (a container's name) and the saved data of block entities of blocks without rules of their own (empty for one a player placed: an Anvil export writes the official defaults of its type);
@@ -169,6 +170,7 @@ Import reads the source world and never writes to it. It creates a new world dir
 | Entities | Item entities, with their age, pickup delay and health; falling blocks, with their block state and time; empty minecarts and boats (a boat's kind by its id; a minecart's yaw as its `Rotation`, whether it is flipped not saved, as the official servers do; their state before the tick is not saved); arrows and snowballs (`inGround`, `life`, `Fire`; their owner, damage and pickup rule are not kept); primed TNT, with its fuse (`fuse`, `block_state` TNT and `explosion_power` 4 when exported; other display states and powers are unsupported on import) |
 | Scheduled ticks | Block and fluid ticks of blocks with rules of their own, lava's fluid ticks among them, with their delay and priority |
 | Level data | Time, day time, weather (flags and timers; the levels follow the flags, as when the official servers load a world), game rules (rules the version lacks, or has only with experiments, are ignored with a note; invalid values are refused), seed, spawn point and level name. An exported world holds every rule of the version; the official 1.21.8 server read the day time and rules of one |
+| Random sequences | `data/random_sequences.dat`: the loot tables' random sequences (id and 128-bit state) and the settings new ones start with (salt, and the flags, written only when false as the official server writes them). The official 1.21.8 server continued the sequences of an exported world and started new ones with its settings |
 
 Every block property round-trips unchanged, including dust shapes, lever mounting, repeater locks, cave air and properties the rules only store, such as a chest's `waterlogged`.
 
@@ -190,11 +192,12 @@ The report lists every replacement. Substitution changes behavior: for example, 
 **Not kept.** Import keeps none of the following:
 - light, heightmaps and biomes;
 - structures and pending post-processing;
-- player data, maps, raids, scoreboards and the world border;
+- player data, maps, raids, scoreboards and the world border (of the saved data, only random sequences are read);
 - the order of creation of block entities and entities in the source world. Circuit orders them by chunk position.
 
 Positions and motion are kept as the doubles they are; motion is limited to 64 blocks per tick on each axis. Item ages are kept, -32768 (never) included; an entity's tick count, which the format does not save, starts again at 0. Export writes the following and leaves light and heightmaps to the game:
 - `level.dat`, with a superflat generator that matches the server's floor height;
+- `data/random_sequences.dat`;
 - region files, written with zlib compression, and entity region files;
 - `minecraft:plains` as the biome of every section.
 

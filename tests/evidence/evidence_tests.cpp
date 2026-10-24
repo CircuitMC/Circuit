@@ -98,6 +98,9 @@ std::string read_text(const fs::path& p) {
     return {std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>()};
 }
 
+// Scenarios whose drops come from loot tables run only with data packs.
+bool needs_data_packs(const Fixture& f) { return std::ranges::find(f.mechanisms, "loot") != f.mechanisms.end(); }
+
 Fixture parse(std::string_view text) {
     const auto f = parse_fixture(text);
     if (!f) throw std::runtime_error(std::format("parse error at line {}: {}", f.error().line, f.error().message));
@@ -1349,11 +1352,14 @@ int main(int argc, char** argv) {
                 const auto f = parse(read_text(entry.path()));
                 for (const auto& exec : {engine_executor(4), oracle_executor()}) {
                     const auto r = evaluate_fixture(f, exec);
-                    require(r.outcome == Outcome::passed, std::format("{}: {}", entry.path().string(), r.detail));
+                    require(r.outcome == (needs_data_packs(f) ? Outcome::unsupported : Outcome::passed),
+                            std::format("{}: {}", entry.path().string(), r.detail));
                 }
                 ++evaluated;
             }
         for (const auto& entry : fs::directory_iterator(fixtures / "skeletons")) {
+            // Scenarios of loot tables record only with the data packs (server_tests, with the operator's jars).
+            if (needs_data_packs(parse(read_text(entry.path())))) continue;
             const auto recorded = record_fixture(parse(read_text(entry.path())), engine_executor());
             require(recorded.has_value(), entry.path().string());
             const auto committed = fixtures / "reference" / entry.path().filename();
@@ -1384,7 +1390,10 @@ int main(int argc, char** argv) {
             require_recorded_from_skeleton(fixtures, entry.path(), trace, version);
             for (const auto& exec : {engine_executor(4), oracle_executor()}) {
                 const auto r = evaluate_fixture(trace, exec);
-                require(r.outcome == Outcome::passed, std::format("{}: {}", entry.path().string(), r.detail));
+                // Without the data packs, scenarios of loot tables wait for them
+                // (server_tests checks them with the operator's jars).
+                require(r.outcome == (needs_data_packs(trace) ? Outcome::unsupported : Outcome::passed),
+                        std::format("{}: {}", entry.path().string(), r.detail));
             }
             ++traces;
         }

@@ -9,6 +9,7 @@
 #include <circuit/contracts/trace.hpp>
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/block.hpp>
+#include <circuit/gameplay/random_sequence.hpp>
 #include <circuit/gameplay/weather.hpp>
 #include <compare>
 #include <cstdint>
@@ -387,6 +388,10 @@ struct LevelDump {
     Tick last_active{};
     // The state of the level's random sequence (LevelRandom::state).
     std::uint64_t random{};
+    // The random sequences of loot tables used so far, by id (ascending).
+    // The official servers keep one set for the world; Circuit keeps one per
+    // level, the same while only the overworld is reached.
+    std::vector<std::pair<std::string, RandomSequence>> sequences;
     bool operator==(const LevelDump&) const = default;
 };
 
@@ -406,6 +411,8 @@ struct WorldDump {
     std::int64_t day_time{};
     // The world's weather (contracts::SetWeather), as the overworld's: only it has weather.
     Weather weather;
+    // How new random sequences start (random_sequence.hpp).
+    SequenceSettings sequence_settings;
     std::vector<LevelDump> levels;        // ascending dimension; listed with a column, a presence or an active tick
     std::vector<Ticket> tickets;          // ascending id
     std::vector<PlayerInventory> players; // ascending player, non-empty only

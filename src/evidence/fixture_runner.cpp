@@ -21,13 +21,16 @@ using Outcome = FixtureReport::Outcome;
 namespace {
 class EngineExecutor final : public FixtureExecutor {
 public:
-    EngineExecutor(const contracts::VersionBundle& bundle, std::uint64_t seed, unsigned workers)
-        : engine_(bundle, seed, [workers] {
+    EngineExecutor(const contracts::VersionBundle& bundle, std::uint64_t seed, unsigned workers, std::shared_ptr<const gameplay::GameData> data)
+        : has_data_(data != nullptr), engine_(bundle, seed, [&] {
               runtime::EngineOptions o;
               o.workers = workers;
               o.level_random_seed = 0; // as the reference harness seeds the overworld's
+              o.sequence_seed = 0;     // the harness's worlds have the seed 0
+              o.data = std::move(data);
               return o;
           }()) {}
+    bool has_data() const override { return has_data_; }
     void advance(const std::vector<Command>& commands) override { engine_.advance(commands); }
     const std::vector<contracts::TraceRecord>& trace() const override { return engine_.trace(); }
     // Fixtures run in the overworld (the runner refuses other dimensions).
@@ -46,6 +49,7 @@ public:
     }
 
 private:
+    bool has_data_;
     runtime::Engine engine_;
 };
 
@@ -227,6 +231,10 @@ bool boolean_rule_read(std::string_view name) {
     return name == "tntExplodes" || name == "doDaylightCycle" || name == "doWeatherCycle" || name == "lavaSourceConversion"
         || name == "waterSourceConversion";
 }
+
+// Scenarios whose drops come from loot tables need the data packs' data.
+constexpr std::string_view no_data = "the scenario's loot tables need the official data packs (--vanilla-jar)";
+bool needs_data(const Fixture& f) { return std::ranges::find(f.mechanisms, "loot") != f.mechanisms.end(); }
 
 std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_observations) {
     Prepared p;
@@ -661,9 +669,9 @@ std::size_t stream_line(const StreamEvent& e) {
 }
 } // namespace
 
-ExecutorFactory engine_executor(unsigned workers) {
-    return [workers](const contracts::VersionBundle& bundle, std::uint64_t seed) -> std::unique_ptr<FixtureExecutor> {
-        return std::make_unique<EngineExecutor>(bundle, seed, workers);
+ExecutorFactory engine_executor(unsigned workers, DataSource data) {
+    return [workers, data](const contracts::VersionBundle& bundle, std::uint64_t seed) -> std::unique_ptr<FixtureExecutor> {
+        return std::make_unique<EngineExecutor>(bundle, seed, workers, data ? data(bundle) : nullptr);
     };
 }
 
@@ -688,6 +696,7 @@ FixtureReport evaluate_fixture(const Fixture& f, const ExecutorFactory& factory)
     if (!prepared) return prepared.error();
     const auto& p = *prepared;
     auto exec = factory(p.bundle, 0);
+    if (needs_data(f) && !exec->has_data()) return report(Outcome::unsupported, std::string(no_data));
     std::size_t changes = 0, probes = 0, events = 0;
     EntityTracker tracker(*p.mapping);
     const bool v2 = f.format >= 2;
@@ -894,6 +903,7 @@ std::expected<Fixture, std::string> record_fixture(const Fixture& skeleton, cons
     out.chunk_events.clear();
     out.rng.clear();
     auto exec = factory(p.bundle, 0);
+    if (needs_data(skeleton) && !exec->has_data()) return std::unexpected(std::string(no_data));
     EntityTracker tracker(*p.mapping);
     std::size_t seq = 0;
     const auto observe = [&](Tick t) -> std::optional<FixtureReport> {

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "loot_compiler.hpp"
+#include <circuit/auth.hpp>
 #include <circuit/auth/json.hpp>
 #include <circuit/gameplay/block.hpp>
 #include <circuit/gameplay/block_registry.hpp>
@@ -25,8 +26,9 @@ std::string with_namespace(std::string_view id) {
 
 class Compiler {
 public:
-    Compiler(const data::DataPacks& packs, const protocol::ContentTables& tables, const std::vector<RegistryEntries>& registries)
-        : packs_(packs), tables_(tables), registries_(registries) {}
+    Compiler(const data::DataPacks& packs, const protocol::ContentTables& tables, const std::vector<RegistryEntries>& registries,
+             std::string_view release)
+        : packs_(packs), tables_(tables), registries_(registries), release_(release) {}
 
     // The table of `block` ("minecraft:stone").
     loot::Table table(const Json& j, std::string block) {
@@ -35,6 +37,13 @@ public:
         expect_type(j, "minecraft:block");
         for (const auto& p : array(j, "pools")) t.pools.push_back(pool(p));
         t.functions = functions(j);
+        // Rolls draw from the table's random sequence (random_sequence.hpp).
+        if (const auto* sequence = j.string("random_sequence")) {
+            t.sequence = with_namespace(*sequence);
+            const auto digest = auth::md5(t.sequence);
+            for (int half = 0; half < 2; ++half)
+                for (int i = 0; i < 8; ++i) t.sequence_hash[half] = t.sequence_hash[half] << 8 | digest[half * 8 + i];
+        }
         return t;
     }
 
@@ -63,6 +72,35 @@ private:
         refuse(std::format("invalid {}", what));
     }
 
+    // A count: constant, uniform between constant bounds, or binomial with
+    // constant n and p.
+    static loot::Number number(const Json& j, std::string_view what) {
+        loot::Number n;
+        if (j.kind() == Json::Kind::object) {
+            const auto* type = j.string("type");
+            if (type && *type == "minecraft:uniform") {
+                const auto* min = j.find("min");
+                const auto* max = j.find("max");
+                if (!min || !max) refuse(std::format("uniform {} without bounds", what));
+                n.kind = loot::Number::Kind::uniform;
+                n.min = constant(*min, what);
+                n.max = constant(*max, what);
+                return n;
+            }
+            if (type && *type == "minecraft:binomial") {
+                const auto* trials = j.find("n");
+                const auto* p = j.find("p");
+                if (!trials || !p) refuse(std::format("binomial {} without n and p", what));
+                n.kind = loot::Number::Kind::binomial;
+                n.n = std::lround(constant(*trials, what));
+                n.p = constant(*p, what);
+                return n;
+            }
+        }
+        n.value = constant(j, what);
+        return n;
+    }
+
     // A bound of a state property range: an integer, as a number or a string.
     static long bound(const Json& j) {
         if (j.kind() == Json::Kind::number) return static_cast<long>(j.as_number());
@@ -74,9 +112,11 @@ private:
     }
 
     loot::Pool pool(const Json& j) {
-        if (const auto* rolls = j.find("rolls"); !rolls || constant(*rolls, "rolls") != 1.0) refuse("rolls other than 1");
+        const auto* rolls = j.find("rolls");
+        if (!rolls) refuse("pool without rolls");
         if (const auto* bonus = j.find("bonus_rolls"); bonus && constant(*bonus, "bonus rolls") != 0.0) refuse("bonus rolls");
         loot::Pool p;
+        p.rolls = std::lround(constant(*rolls, "rolls"));
         for (const auto& e : array(j, "entries")) p.entries.push_back(entry(e));
         p.conditions = conditions(j);
         p.functions = functions(j);
@@ -139,6 +179,39 @@ private:
         } else if (*kind == "minecraft:any_of" || *kind == "minecraft:all_of") {
             c.kind = *kind == "minecraft:any_of" ? loot::Condition::Kind::any_of : loot::Condition::Kind::all_of;
             for (const auto& t : array(j, "terms")) c.children.push_back(condition(t));
+        } else if (*kind == "minecraft:random_chance") {
+            c.kind = loot::Condition::Kind::random_chance;
+            const auto* chance = j.find("chance");
+            if (!chance) refuse("random_chance without a chance");
+            c.chance = constant(*chance, "chance");
+        } else if (*kind == "minecraft:location_check") {
+            // The block at an offset (a tall plant's other half): its id and
+            // exact state properties.
+            c.kind = loot::Condition::Kind::location;
+            const auto offset = [&](std::string_view key) {
+                const auto* v = j.find(key);
+                return v ? static_cast<std::int32_t>(std::lround(v->as_number())) : 0;
+            };
+            c.dx = offset("offsetX");
+            c.dy = offset("offsetY");
+            c.dz = offset("offsetZ");
+            const auto* predicate = j.find("predicate");
+            const auto* block = predicate ? predicate->find("block") : nullptr;
+            if (!predicate || !block || predicate->members().size() != 1) refuse("location_check other than a block");
+            for (const auto& [key, value] : block->members()) {
+                if (key == "blocks" && value.kind() == Json::Kind::string && !value.as_string().starts_with('#')) {
+                    const auto b = gameplay::registry::find_block(release_, with_namespace(value.as_string()));
+                    if (!b) refuse("location_check of an unknown block");
+                    c.block = *b;
+                } else if (key == "state") {
+                    for (const auto& [name, v] : value.members()) {
+                        if (v.kind() != Json::Kind::string) refuse("location_check state range");
+                        c.properties.push_back({name, v.as_string(), {}, {}});
+                    }
+                } else {
+                    refuse(std::format("location_check block {}", key));
+                }
+            }
         } else if (*kind == "minecraft:inverted") {
             c.kind = loot::Condition::Kind::inverted;
             const auto* term = j.find("term");
@@ -221,7 +294,7 @@ private:
                 fn.kind = loot::Function::Kind::set_count;
                 const auto* count = f.find("count");
                 if (!count) refuse("set_count without a count");
-                fn.count = static_cast<long>(std::lround(constant(*count, "count")));
+                fn.count = number(*count, "count");
                 if (const auto* add = f.find("add")) fn.add = add->as_bool();
             } else if (*kind == "minecraft:limit_count") {
                 fn.kind = loot::Function::Kind::limit_count;
@@ -237,8 +310,25 @@ private:
             } else if (*kind == "minecraft:apply_bonus") {
                 const auto* formula = f.string("formula");
                 const auto* name = f.string("enchantment");
-                if (!formula || *formula != "minecraft:ore_drops" || !name) refuse(std::format("apply_bonus {}", formula ? *formula : "?"));
-                fn.kind = loot::Function::Kind::ore_bonus;
+                if (!formula || !name) refuse("apply_bonus without a formula");
+                const auto* parameters = f.find("parameters");
+                const auto parameter = [&](std::string_view key) {
+                    const auto* v = parameters ? parameters->find(key) : nullptr;
+                    if (!v || v->kind() != Json::Kind::number) refuse(std::format("apply_bonus without {}", key));
+                    return v->as_number();
+                };
+                if (*formula == "minecraft:ore_drops") {
+                    fn.kind = loot::Function::Kind::ore_bonus;
+                } else if (*formula == "minecraft:uniform_bonus_count") {
+                    fn.kind = loot::Function::Kind::uniform_bonus;
+                    fn.multiplier = std::lround(parameter("bonusMultiplier"));
+                } else if (*formula == "minecraft:binomial_with_bonus_count") {
+                    fn.kind = loot::Function::Kind::binomial_bonus;
+                    fn.extra = std::lround(parameter("extra"));
+                    fn.probability = parameter("probability");
+                } else {
+                    refuse(std::format("apply_bonus {}", *formula));
+                }
                 fn.enchantment = enchantment(*name);
             } else {
                 refuse(std::format("function {}", *kind));
@@ -251,6 +341,7 @@ private:
     const data::DataPacks& packs_;
     const protocol::ContentTables& tables_;
     const std::vector<RegistryEntries>& registries_;
+    std::string_view release_;
     std::string block_;
 };
 } // namespace
@@ -263,13 +354,18 @@ LootCompilation compile_block_loot(const data::DataPacks& packs, const contracts
     const auto* content = protocol::ContentTables::for_protocol(bundle.protocol);
     if (!content) return out;
     const auto release = bundle.schema.content_release;
-    Compiler compiler(packs, *content, registries);
+    Compiler compiler(packs, *content, registries, release);
     for (std::uint32_t b = 0; b < registry::block_count(); ++b) {
-        if (gameplay::modeled_block(b)) continue;
+        // Blocks with rules of their own drop as their rules say, but wheat,
+        // which drops by its table.
+        if (gameplay::modeled_block(b) && registry::game_name(b) != "wheat") continue;
         const auto name = std::string(registry::game_name(b));
         if (registry::find_block(release, "minecraft:" + name) != b) continue;
         if (!tables) break;
-        const auto it = tables->find("minecraft:blocks/" + name);
+        auto it = tables->find("minecraft:blocks/" + name);
+        // A wall torch, sign, banner, head or coral fan drops as the standing one does.
+        if (const auto wall = name.find("wall_"); it == tables->end() && wall != std::string::npos)
+            it = tables->find("minecraft:blocks/" + name.substr(0, wall) + name.substr(wall + 5));
         if (it == tables->end()) continue; // no table: no drops
         ++out.blocks;
         const auto json = Json::parse(it->second);

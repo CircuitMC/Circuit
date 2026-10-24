@@ -195,9 +195,9 @@ void run_piston_event(RuleContext& ctx, const BlockEvent& event, BlockState stat
 // random offsets and velocities from the level random: what `tool` harvests
 // (nothing for blocks that need a tool when none is given).
 void drop_items(RuleContext& ctx, BlockPos pos, BlockState destroyed, ItemStack tool = {});
-// The stacks a block drops without random quantities: what `tool` harvests,
-// or, when it `exploded`, what it drops without a tool.
-std::vector<ItemStack> block_drops(RuleContext& ctx, BlockState destroyed, const ItemStack& tool, bool exploded);
+// The stacks a block drops (loot tables roll from their random sequences):
+// what `tool` harvests, or, when it `exploded`, what it drops without a tool.
+std::vector<ItemStack> block_drops(RuleContext& ctx, BlockPos pos, BlockState destroyed, const ItemStack& tool, bool exploded);
 // Spawns one stack as a block drop at `pos` (drawing its offset and velocity).
 void pop_resource(RuleContext& ctx, BlockPos pos, ItemStack stack);
 // Scatters a removed container's contents around its cell, as both target
