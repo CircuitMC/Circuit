@@ -73,6 +73,7 @@ extern const char* const values[];
 extern const std::uint8_t shapes[];
 extern const std::uint8_t join_faces[];
 extern const std::uint8_t support[];
+extern const std::uint8_t solid[];
 extern const std::uint8_t light[];
 extern const std::uint16_t light_shape[];
 extern const LightFaces light_faces[];

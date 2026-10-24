@@ -200,24 +200,33 @@ int main() {
             require(encoded && decode_replay(*encoded).error() == ErrorCode::malformed_record, "player use fields range-checked");
         }
 
-        // Where a use clicked (tag 24) round-trips; a tag 7 use, which has
-        // none, reads as the middle of the block; a point outside is refused.
+        // Where a use clicked and the player's yaw (tag 25) round-trip; a tag
+        // 24 use, which has no yaw, reads the yaw of its horizontal facing,
+        // and a tag 7 use, which has neither, also a click in the middle; a
+        // point outside the block is refused.
         {
             ReplayLog one{"java-1.21.8", "circuit-reference-rules-v5", 1, {}, "circuit-blocks-1"};
-            PlayerUse use{alex, 36, {0, 0, 0}, Direction::north, Direction::south, Direction::south, false, false, 3, 3};
+            PlayerUse use{alex, 36, {0, 0, 0}, Direction::north, Direction::west, Direction::west, false, false, 3, 3};
             use.cursor_x = 0.0f;
             use.cursor_y = 0.8125f;
             use.cursor_z = 1.0f;
+            use.yaw = 37.5f;
             one.ticks.push_back({1, {{1, use}}});
             const auto current = encode_replay(one).value();
-            require(decode_replay(current).value() == one, "a use with where it clicked round-trips");
+            require(decode_replay(current).value() == one, "a use with where it clicked and the yaw round-trips");
             const std::size_t tag =
                 4 + 2 + 2 + one.bundle_id.size() + 2 + one.rules_id.size() + 2 + one.block_registry_id.size() + 8 + 4 + 8 + 4 + 8;
-            require(current[tag] == std::byte{24}, "uses are written with tag 24");
+            require(current[tag] == std::byte{25}, "uses are written with tag 25");
+            auto facing_yaw = one;
+            std::get<PlayerUse>(facing_yaw.ticks[0].commands[0].body).yaw = 90.0f;
+            auto twenty_four = current;
+            twenty_four[tag] = std::byte{24};
+            twenty_four.resize(twenty_four.size() - 4);
+            require(decode_replay(twenty_four).value() == facing_yaw, "a tag 24 use has the yaw of its facing");
             auto seven = current;
             seven[tag] = std::byte{7};
-            seven.resize(seven.size() - 12);
-            auto middle = one;
+            seven.resize(seven.size() - 16);
+            auto middle = facing_yaw;
             std::get<PlayerUse>(middle.ticks[0].commands[0].body).cursor_x = 0.5f;
             std::get<PlayerUse>(middle.ticks[0].commands[0].body).cursor_y = 0.5f;
             std::get<PlayerUse>(middle.ticks[0].commands[0].body).cursor_z = 0.5f;

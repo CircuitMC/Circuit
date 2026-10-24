@@ -15,6 +15,9 @@
 //   them;
 // - ladders hang on the whole face behind them;
 // - carpets lie on anything but air;
+// - signs and banners stand on a solid block or hang on one behind them
+//   (registry::solid), and break when it goes; a bed's halves need each
+//   other, and only its head drops the bed;
 // - flowers and saplings grow on soil (registry::soil); the lower half of a
 //   tall flower (sunflower, lilac, rose bush, peony) too, and goes when the
 //   block above is not its upper half, which stands on it.
@@ -24,7 +27,7 @@
 // data packs they drop themselves (their loot tables do the same).
 namespace circuit::gameplay::detail {
 namespace {
-enum class Need : std::uint8_t { none, standing, wall, lantern, ladder, carpet, plant, tall_plant };
+enum class Need : std::uint8_t { none, standing, wall, lantern, ladder, carpet, plant, tall_plant, standing_sign, wall_sign, bed };
 
 const std::vector<Need>& needs() {
     static const std::vector<Need> out = [] {
@@ -43,6 +46,9 @@ const std::vector<Need>& needs() {
             else if (name == "moss_carpet" || (name.ends_with("_carpet") && name != "pale_moss_carpet")) v[b] = Need::carpet;
             else if (std::ranges::find(plants, name) != plants.end()) v[b] = Need::plant;
             else if (name == "sunflower" || name == "lilac" || name == "rose_bush" || name == "peony") v[b] = Need::tall_plant;
+            else if ((name.ends_with("_wall_sign") && !name.ends_with("_hanging_sign")) || name.ends_with("_wall_banner")) v[b] = Need::wall_sign;
+            else if ((name.ends_with("_sign") && !name.ends_with("_hanging_sign")) || name.ends_with("_banner")) v[b] = Need::standing_sign;
+            else if (name.ends_with("_bed")) v[b] = Need::bed;
         }
         return v;
     }();
@@ -70,6 +76,16 @@ Direction facing_of(BlockState s) {
 bool other_half_of(BlockState s, BlockState other, bool upper) {
     return other.is(BlockType::other) && registry::block_of(other.registry_state()) == registry::block_of(s.registry_state())
         && (value_of(other, "half") == "upper") == upper;
+}
+
+bool solid_block(BlockState s) {
+    const auto state = physics::registry_state_of(s);
+    return state && registry::solid(*state);
+}
+
+// Toward a bed's other half: its head is ahead of its foot.
+Direction toward_other_half(BlockState bed) {
+    return value_of(bed, "part") == "foot" ? facing_of(bed) : contracts::opposite(facing_of(bed));
 }
 
 bool middle(BlockState s, Direction face, std::string_view release) {
@@ -101,6 +117,15 @@ bool supported(BlockState s, const std::function<BlockState(Direction)>& around,
         const auto below = physics::registry_state_of(around(Direction::down));
         return below && registry::soil(*below);
     }
+    // Signs and banners stand on a solid block or hang on one behind them.
+    case Need::standing_sign: return solid_block(around(Direction::down));
+    case Need::wall_sign: return solid_block(around(contracts::opposite(facing_of(s))));
+    // A bed half needs its other half.
+    case Need::bed: {
+        const auto other = around(toward_other_half(s));
+        return other.is(BlockType::other) && registry::block_of(other.registry_state()) == registry::block_of(s.registry_state())
+            && value_of(other, "part") != value_of(s, "part");
+    }
     // A tall flower's lower half grows on soil, its upper half on its lower half.
     case Need::tall_plant: {
         if (value_of(s, "half") == "upper") return other_half_of(s, around(Direction::down), false);
@@ -122,7 +147,9 @@ void support_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Directio
     switch (need_of(s)) {
     case Need::standing: side = Direction::down; break;
     case Need::lantern: side = value_of(s, "hanging") == "true" ? Direction::up : Direction::down; break;
-    case Need::wall: case Need::ladder: side = contracts::opposite(facing_of(s)); break;
+    case Need::wall: case Need::ladder: case Need::wall_sign: side = contracts::opposite(facing_of(s)); break;
+    case Need::standing_sign: side = Direction::down; break;
+    case Need::bed: side = toward_other_half(s); break;
     default: break;
     }
     if (side && *side != d) return;
@@ -134,11 +161,12 @@ void support_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Directio
 
 std::optional<ItemStack> supported_drop(BlockState s) {
     if (need_of(s) == Need::none) return std::nullopt;
-    // A tall flower drops from its lower half.
+    // A tall flower drops from its lower half, a bed from its head.
     if (need_of(s) == Need::tall_plant && value_of(s, "half") == "upper") return std::nullopt;
+    if (need_of(s) == Need::bed && value_of(s, "part") == "foot") return std::nullopt;
+    // A wall torch, sign or banner drops the item of the standing one.
     auto name = std::string("minecraft:") + std::string(registry::game_name(*registry::block_of(s.registry_state())));
-    if (name == "minecraft:wall_torch") name = "minecraft:torch";
-    if (name == "minecraft:soul_wall_torch") name = "minecraft:soul_torch";
+    if (const auto wall = name.find("wall_"); wall != std::string::npos) name.erase(wall, 5);
     const auto item = items::by_name(name);
     return item ? std::optional(ItemStack{*item, 1}) : std::nullopt;
 }

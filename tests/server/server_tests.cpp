@@ -743,6 +743,30 @@ int main() {
                 "a lower-half side click places beside: " + f.at({0, -60, -4}));
     });
 
+    suite.run("players turn signs and heads by their yaw and place beds with both halves", [] {
+        // As both official servers do (circuit-clienttest/place-families.js).
+        GameFixture f;
+        f.join(1, "Builder");
+        const auto place = [&](std::string_view item, float yaw, protocol::WirePosition on, std::int32_t face) {
+            f.game->submit(1, server::intent::Move{std::nullopt, std::pair{yaw, 0.0f}, true});
+            f.hold(1, item);
+            f.game->submit(1, GameFixture::click(on, 1, face));
+            f.game->tick();
+        };
+        place("minecraft:oak_sign", 30.0f, {2, -61, 2}, 1);
+        place("minecraft:skeleton_skull", 30.0f, {3, -61, 2}, 1);
+        place("minecraft:red_bed", -90.0f, {-3, -61, 2}, 1);
+        place("minecraft:stone", 0.0f, {-2, -61, -2}, 1);
+        place("minecraft:blue_bed", -90.0f, {-3, -61, -2}, 1);
+        for (int i = 0; i < 4; ++i) f.game->tick();
+        require(f.at({2, -60, 2}) == "minecraft:oak_sign[rotation=9,waterlogged=false]", "the sign faces the player: " + f.at({2, -60, 2}));
+        require(f.at({3, -60, 2}) == "minecraft:skeleton_skull[powered=false,rotation=1]", "the skull faces away: " + f.at({3, -60, 2}));
+        require(f.at({-3, -60, 2}) == "minecraft:red_bed[facing=east,occupied=false,part=foot]"
+                    && f.at({-2, -60, 2}) == "minecraft:red_bed[facing=east,occupied=false,part=head]",
+                "the bed's head goes ahead of its foot: " + f.at({-3, -60, 2}) + " " + f.at({-2, -60, 2}));
+        require(f.at({-3, -60, -2}) == "minecraft:air", "a bed without room for its head is not placed: " + f.at({-3, -60, -2}));
+    });
+
     suite.run("players pair chests as they place them", [] {
         GameFixture f;
         f.join(1, "Chests");

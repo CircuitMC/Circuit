@@ -176,23 +176,29 @@ Plan plan_building(RuleContext& ctx, const contracts::PlayerUse& c, const ItemSt
     if (!held.components.empty() && state.is(BlockType::other) && !registry::block_entity_type(state.registry_state()).empty())
         return std::unexpected(ErrorCode::unsupported);
     if (detail::has_collision(state) && (c.free & bit) == 0) return std::unexpected(ErrorCode::occupied);
-    // A tall flower needs room for its upper half.
-    const auto upper = detail::upper_half_of(state);
-    const auto above = target.relative(Direction::up);
-    if (upper && (!in_world(ctx.world(), above) || !replaceable(ctx.block(above)))) return std::unexpected(ErrorCode::occupied);
-    return [&ctx, target, state, upper, above, c, held] {
+    // A tall flower needs room for its upper half, a bed for its head.
+    const auto second = detail::second_part(state, target);
+    if (second) {
+        if (!in_world(ctx.world(), second->first)) return std::unexpected(ErrorCode::occupied);
+        if (auto ok = check_loaded(ctx, second->first); !ok) return std::unexpected(ok.error());
+        if (!replaceable(ctx.block(second->first))) return std::unexpected(ErrorCode::occupied);
+    }
+    // A block entity of a block without rules of its own starts empty
+    // (written out as its type's defaults).
+    const auto with_entity = [&ctx](BlockPos pos, BlockState s) {
+        set_block(ctx, pos, s);
+        if (s.is(BlockType::other) && !registry::block_entity_type(s.registry_state()).empty() && !ctx.peek_block_entity(pos))
+            ctx.create_block_entity(pos, BlockType::other);
+    };
+    return [&ctx, target, state, second, with_entity, c, held] {
         if (c.survival) {
             auto& inv = ctx.player(c.player);
             auto& slot = inv.slots[c.slot];
             if (--slot.count == 0) slot = {};
             detail::record_slot(ctx, inv, c.slot);
         }
-        set_block(ctx, target, state);
-        // A block entity of a block without rules of its own starts empty
-        // (written out as its type's defaults).
-        if (state.is(BlockType::other) && !registry::block_entity_type(state.registry_state()).empty() && !ctx.peek_block_entity(target))
-            ctx.create_block_entity(target, BlockType::other);
-        if (upper) set_block(ctx, above, *upper);
+        with_entity(target, state);
+        if (second) with_entity(second->first, second->second);
     };
 }
 

@@ -197,6 +197,8 @@ std::string_view block_entity_type(std::uint32_t state) noexcept {
     return b && data::blocks[*b].block_entity ? std::string_view(data::blocks[*b].block_entity) : std::string_view{};
 }
 
+bool solid(std::uint32_t state) noexcept { return state >= 1 && state <= data::state_count && data::solid[state - 1] != 0; }
+
 bool soil(std::uint32_t state) noexcept {
     const auto b = block_of(state);
     return b && (data::blocks[*b].connector & 16) != 0;

@@ -681,7 +681,8 @@ int main(int argc, char** argv) {
     suite.run("blocks that need support stay where both official servers keep them", [&] {
         // tests/fixtures/collision/support-*.txt: for every state as support,
         // whether flowers and saplings (the poppy's column), torches, carpets,
-        // lanterns standing and hanging, wall torches and ladders stay.
+        // lanterns standing and hanging, wall torches, ladders, signs and
+        // banners standing and on walls, and skulls stay.
         namespace registry = circuit::gameplay::registry;
         using circuit::contracts::Direction;
         using circuit::gameplay::BlockState;
@@ -716,7 +717,8 @@ int main(int argc, char** argv) {
             for (const auto p : plants) plant_states.push_back(make(p));
             const auto torch = make("torch"), carpet = make("white_carpet"), lantern = make("lantern"),
                        hanging = make("lantern", {{"hanging", "true"}}), wall_torch = make("wall_torch", {{"facing", "north"}}),
-                       ladder = make("ladder", {{"facing", "north"}});
+                       ladder = make("ladder", {{"facing", "north"}}), sign = make("oak_sign"), wall_sign = make("oak_wall_sign", {{"facing", "north"}}),
+                       banner = make("white_banner"), wall_banner = make("white_wall_banner", {{"facing", "north"}}), skull = make("skeleton_skull");
             std::set<std::uint32_t> seen;
             for (const auto& [key, _] : newest) {
                 const auto name = key.substr(0, key.find('['));
@@ -734,7 +736,7 @@ int main(int argc, char** argv) {
                     };
                     const std::string* row = release == std::string_view("1.21.4") ? find(older) : nullptr;
                     if (!row) row = find(newest);
-                    require(row && row->size() == 10, std::format("{} {}: a row", release, notation));
+                    require(row && row->size() == 15, std::format("{} {}: a row", release, notation));
                     const auto x = mapping->block(notation);
                     require(x.has_value(), std::format("{} {}: maps", release, notation));
                     const auto air = BlockState::of(circuit::gameplay::BlockType::air);
@@ -742,11 +744,12 @@ int main(int argc, char** argv) {
                     const auto on = [&](BlockState s) { return circuit::gameplay::block_supported(s, with(Direction::down), release) ? '1' : '0'; };
                     for (const auto& p : plant_states)
                         require(on(p) == (*row)[0], std::format("{} {} under {}: official {}", release, notation, circuit::gameplay::block_notation(p), (*row)[0]));
+                    const auto behind = [&](BlockState s) { return circuit::gameplay::block_supported(s, with(Direction::south), release) ? '1' : '0'; };
                     const std::string got{on(plant_states[15]), on(torch), on(carpet), on(lantern),
                                           circuit::gameplay::block_supported(hanging, with(Direction::up), release) ? '1' : '0',
-                                          circuit::gameplay::block_supported(wall_torch, with(Direction::south), release) ? '1' : '0',
-                                          circuit::gameplay::block_supported(ladder, with(Direction::south), release) ? '1' : '0'};
-                    const std::string want{(*row)[1], (*row)[2], (*row)[3], (*row)[4], (*row)[7], (*row)[8], (*row)[9]};
+                                          behind(wall_torch), behind(ladder), on(sign), behind(wall_sign), on(banner), behind(wall_banner), on(skull)};
+                    const std::string want{(*row)[1], (*row)[2], (*row)[3], (*row)[4], (*row)[7], (*row)[8], (*row)[9],
+                                           (*row)[10], (*row)[11], (*row)[12], (*row)[13], (*row)[14]};
                     require(got == want, std::format("{} {}: official {}, Circuit {}", release, notation, want, got));
                     ++checked;
                 }
@@ -802,6 +805,7 @@ int main(int argc, char** argv) {
             Direction horizontal;
             Direction look;
         };
+        const auto yaw_of = [](Direction d) { return d == Direction::south ? 0.0f : d == Direction::west ? 90.0f : d == Direction::north ? 180.0f : 270.0f; };
         constexpr auto S = Direction::south, W = Direction::west, N = Direction::north, E = Direction::east;
         const std::array<Context, 15> contexts{{{Direction::up, 1.0f, S, S}, {Direction::up, 1.0f, W, W}, {Direction::up, 1.0f, N, N},
                                                 {Direction::up, 1.0f, E, E}, {Direction::up, 1.0f, N, Direction::down},
@@ -883,6 +887,7 @@ int main(int argc, char** argv) {
                     use.cursor_x = step(c.face, 0);
                     use.cursor_y = c.y;
                     use.cursor_z = step(c.face, 2);
+                    use.yaw = yaw_of(c.horizontal);
                     commands.push_back(use);
                 }
                 oracle.advance(admit(std::move(commands)));

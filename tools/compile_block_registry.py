@@ -411,6 +411,29 @@ def support_byte(name, props, shape):
     return int(top) | int(bottom) << 1 | faces << 2
 
 
+# Solid states (both official servers report what signs and banners stand and
+# hang on; see tests/fixtures/collision/support-*.txt): a collision shape
+# whose bounds average at least 0.7291666 blocks per side or are a full block
+# tall, except the blocks below, which always or never are.
+SOLID_ALWAYS = re.compile(r"^(.*_sign|.*_banner|.*_wall|.*_fence_gate|.*_pressure_plate|dead_.*_coral(_wall)?(_fan)?|cobweb|conduit|cake|"
+                          r"chain|bell|(soul_)?lantern|lightning_rod|(small|medium|large)_amethyst_bud|amethyst_cluster|pointed_dripstone|"
+                          r"sculk_vein|turtle_egg|bamboo_sapling|dried_ghast|moving_piston)$")
+SOLID_NEVER = {"azalea", "flowering_azalea", "big_dripleaf", "chorus_flower", "chorus_plant", "end_rod", "ladder", "scaffolding", "snow"}
+
+
+def solid(name, shape):
+    if name in SOLID_NEVER:
+        return False
+    # Resin brick walls are not among the walls that always are.
+    if SOLID_ALWAYS.match(name) and name != "resin_brick_wall":
+        return True
+    if not shape:
+        return False
+    lo = [min(b[i] for b in shape) for i in range(3)]
+    hi = [max(b[i + 3] for b in shape) for i in range(3)]
+    return sum(h - l for h, l in zip(hi, lo)) / 3 >= 0.7291666666666666 or hi[1] - lo[1] >= 1.0
+
+
 # Block entity types (both official servers report every block that has one
 # and the data it saves; see tests/fixtures/collision/block-entities-*.txt).
 BLOCK_ENTITY_TYPES = [
@@ -516,6 +539,7 @@ def main():
     light_bytes = []
     join_bytes = []
     support_bytes = []
+    solid_bytes = []
     support_overrides = []  # (release, internal state, support byte)
     occlusion_ids = []
     occlusion_shapes = {}  # face masks -> id (from 1)
@@ -554,6 +578,7 @@ def main():
         for combo, i in zip(combos, ids):
             join_bytes.append(join_faces(b["name"], dict(zip(names, combo)), shapes["shapes"][str(i)]))
             support_bytes.append(support_byte(b["name"], dict(zip(names, combo)), shapes["shapes"][str(i)]))
+            solid_bytes.append(1 if solid(b["name"], shapes["shapes"][str(i)]) else 0)
             boxes16 = [tuple(round(c * 16) for c in box) for box in shapes["shapes"][str(i)]]
             e, d, occlusion = light_of(b["name"], dict(zip(names, combo)), b, boxes16, default)
             motion = 1 if motion_blocking(b["name"], dict(zip(names, combo)), boxes16) else 0
@@ -629,6 +654,10 @@ def main():
             "const std::uint8_t support[] = {"]
     for i in range(0, len(support_bytes), 32):
         out.append("    " + ", ".join(str(c) for c in support_bytes[i:i + 32]) + ",")
+    out.append("};")
+    out += ["// Per internal state (from 1): 1 when solid (signs and banners stand and hang on it).", "const std::uint8_t solid[] = {"]
+    for i in range(0, len(solid_bytes), 32):
+        out.append("    " + ", ".join(str(c) for c in solid_bytes[i:i + 32]) + ",")
     out.append("};")
     out += ["// Per internal state (from 1): bits 0-3 light emission, bits 4-5 dampening (0: 0, 1: 1, 2: 15),",
             "// bit 6 counts for the MOTION_BLOCKING heightmap.",

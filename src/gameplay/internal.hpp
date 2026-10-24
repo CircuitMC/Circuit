@@ -90,8 +90,9 @@ std::uint16_t plate_item(BlockState s);
 std::optional<std::uint32_t> building_block(RuleContext& ctx, std::uint16_t item);
 bool doubles_slab(std::uint32_t block, BlockState s, const contracts::PlayerUse& c, bool clicked);
 std::optional<BlockState> placed_building(RuleContext& ctx, std::uint32_t block, const contracts::PlayerUse& c, BlockPos target);
-// The upper half a placed tall flower's lower half takes above it.
-std::optional<BlockState> upper_half_of(BlockState lower);
+// The other block a placed block brings: a tall flower's upper half above
+// it, a bed's head ahead of its foot.
+std::optional<std::pair<BlockPos, BlockState>> second_part(BlockState placed, BlockPos pos);
 // Whether a block obstructs players standing in its cell.
 bool has_collision(BlockState s);
 // Records a player slot (contracts::player_slots: the cursor) after a change.

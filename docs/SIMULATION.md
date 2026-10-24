@@ -6,11 +6,11 @@ The Part I core runs headless: shared contracts, a set of reference rules, a seq
 
 The rules are **circuit-reference-rules-v12**. They are Circuit's own definitions, written from public documentation and from traces recorded by an instrumented server outside this repository.
 
-Two version bundles run them: `java-1.21.8` and `java-1.21.4`. 1.21.8 has 137 traces and 1.21.4 has 135 recorded on the unmodified server (1.21.4 lacks the tntExplodes game rule, so `tnt_explodes_disabled` and `dispenser_tnt_rule` are 1.21.8's only):
+Two version bundles run them: `java-1.21.8` and `java-1.21.4`. 1.21.8 has 138 traces and 1.21.4 has 136 recorded on the unmodified server (1.21.4 lacks the tntExplodes game rule, so `tnt_explodes_disabled` and `dispenser_tnt_rule` are 1.21.8's only):
 - 1.21.8 traces are in `tests/fixtures/harness/`;
 - 1.21.4 traces are in `tests/fixtures/harness-1.21.4/`.
 
-The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 272 pass on both the parallel runtime and the oracle.
+The 1.21.4 traces equal the 1.21.8 traces apart from their headers. All 274 pass on both the parallel runtime and the oracle.
 
 The compatibility table is part of the version bundle (`src/contracts/version.cpp`). `circuit-server --compatibility` prints it. Each row states a target tier, a claimed tier, the evidence source, and its limitations:
 
@@ -28,7 +28,7 @@ The tiers are defined in the architecture: L0 exact, L1 region-equivalent, L2 de
 | `redstone_wire` | L0 | vertical_slice, chain_limit, strong_power, weak_power, dust_shape, dust_steps |
 | `repeater` | L0 | vertical_slice, observer_pulse, tick_priority, diode_priority, strong_power, repeater_lock |
 | `comparator` | L0 | comparator_signal, comparator_priority, diode_priority, double_chest, weak_power |
-| `support` | L0 | support, lever_attachment, torch_basics, button_basics, pressure_plates; supported_blocks: torches, wall torches, lanterns standing and hanging, ladders, carpets, flowers and saplings breaking with their drops when their support goes or is pushed away, and staying on updates from other sides; tall_flowers: sunflowers, lilacs, rose bushes and peonies losing their soil or a half, alone and pushed; every state as support (tests/fixtures/collision/support-*.txt) |
+| `support` | L0 | support, lever_attachment, torch_basics, button_basics, pressure_plates; supported_blocks: torches, wall torches, lanterns standing and hanging, ladders, carpets, flowers and saplings breaking with their drops when their support goes or is pushed away, and staying on updates from other sides; tall_flowers: sunflowers, lilacs, rose bushes and peonies losing their soil or a half, alone and pushed; signs_beds: signs and banners standing and on walls losing their support or set without it, heads, and beds losing a half or pushed; every state as support (tests/fixtures/collision/support-*.txt) |
 | `redstone_lamp` | L0 | lamp_timing, vertical_slice, tick_priority |
 | `observer` | L0 | observer_pulse, observer_clock, observer_moved, piston_observed; flying_engine, flying_engine_more: two documented flying engines flying east, west, north, south, up and down, carrying blocks, sand and an item, across chunk edges and into obsidian |
 | `block_events` | L0 | piston_observed, piston_slime, piston_timing, block_event_order, block_event_rings: events of the command phase, scheduled ticks and block entities in queue order, an equal event queued once, events whose block changed dropped, events queued while events run, and events of chunks that do not tick blocks waiting until a ticket makes them tick |
@@ -417,8 +417,9 @@ xmake run circuit-server --profile-fixture "$PWD/tests/fixtures/workloads/observ
 
 `--simulate` without `--replay` runs a built-in demonstration with machines that straddle chunk edges.
 
-- **Replay records:** records (format version 14) store the bundle, the rule-set id and the block registry id, whose encoding their block states use. Each command names its level. Item stacks carry their data components, which the simulator checks against the bundle's protocol. A record made under different reference rules or another block registry is refused with `rules_mismatch` instead of replaying with silently different behavior. Older records are still read:
-  - version 13: the same commands, with player uses that do not say where they clicked (read as the middle of the block);
+- **Replay records:** records (format version 15) store the bundle, the rule-set id and the block registry id, whose encoding their block states use. Each command names its level. Item stacks carry their data components, which the simulator checks against the bundle's protocol. A record made under different reference rules or another block registry is refused with `rules_mismatch` instead of replaying with silently different behavior. Older records are still read:
+  - version 14: the same commands, with player uses that do not give the player's yaw (read from their horizontal facing);
+  - version 13: also with player uses that do not say where they clicked (read as the middle of the block);
   - version 12: also without summoned entities;
   - version 11: also without the pickup delay and age of spawned items;
   - version 10: also with positions and velocities in 1/4096-block units, read exactly as doubles;

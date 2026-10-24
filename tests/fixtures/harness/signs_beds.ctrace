@@ -1,0 +1,1320 @@
+circuit-trace 2
+title Signs, banners, heads and beds losing their support or a half
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.20.0+mc1.21.8
+mechanisms support piston
+area 0 0 0 30 6 14
+ticks 100
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 0
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 0 0 10 minecraft:stone
+at 0 set 0 0 11 minecraft:stone
+at 0 set 0 0 12 minecraft:stone
+at 0 set 0 0 13 minecraft:stone
+at 0 set 0 0 14 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:stone
+at 0 set 1 0 11 minecraft:stone
+at 0 set 1 0 12 minecraft:stone
+at 0 set 1 0 13 minecraft:stone
+at 0 set 1 0 14 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 2 0 10 minecraft:stone
+at 0 set 2 0 11 minecraft:stone
+at 0 set 2 0 12 minecraft:stone
+at 0 set 2 0 13 minecraft:stone
+at 0 set 2 0 14 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 3 0 10 minecraft:stone
+at 0 set 3 0 11 minecraft:stone
+at 0 set 3 0 12 minecraft:stone
+at 0 set 3 0 13 minecraft:stone
+at 0 set 3 0 14 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 4 0 11 minecraft:stone
+at 0 set 4 0 12 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 4 0 14 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 5 0 10 minecraft:stone
+at 0 set 5 0 11 minecraft:stone
+at 0 set 5 0 12 minecraft:stone
+at 0 set 5 0 13 minecraft:stone
+at 0 set 5 0 14 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 6 0 10 minecraft:stone
+at 0 set 6 0 11 minecraft:stone
+at 0 set 6 0 12 minecraft:stone
+at 0 set 6 0 13 minecraft:stone
+at 0 set 6 0 14 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 7 0 10 minecraft:stone
+at 0 set 7 0 11 minecraft:stone
+at 0 set 7 0 12 minecraft:stone
+at 0 set 7 0 13 minecraft:stone
+at 0 set 7 0 14 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 8 0 10 minecraft:stone
+at 0 set 8 0 11 minecraft:stone
+at 0 set 8 0 12 minecraft:stone
+at 0 set 8 0 13 minecraft:stone
+at 0 set 8 0 14 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 9 0 10 minecraft:stone
+at 0 set 9 0 11 minecraft:stone
+at 0 set 9 0 12 minecraft:stone
+at 0 set 9 0 13 minecraft:stone
+at 0 set 9 0 14 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 10 0 10 minecraft:stone
+at 0 set 10 0 11 minecraft:stone
+at 0 set 10 0 12 minecraft:stone
+at 0 set 10 0 13 minecraft:stone
+at 0 set 10 0 14 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 11 0 10 minecraft:stone
+at 0 set 11 0 11 minecraft:stone
+at 0 set 11 0 12 minecraft:stone
+at 0 set 11 0 13 minecraft:stone
+at 0 set 11 0 14 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 12 0 8 minecraft:stone
+at 0 set 12 0 9 minecraft:stone
+at 0 set 12 0 10 minecraft:stone
+at 0 set 12 0 11 minecraft:stone
+at 0 set 12 0 12 minecraft:stone
+at 0 set 12 0 13 minecraft:stone
+at 0 set 12 0 14 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 13 0 8 minecraft:stone
+at 0 set 13 0 9 minecraft:stone
+at 0 set 13 0 10 minecraft:stone
+at 0 set 13 0 11 minecraft:stone
+at 0 set 13 0 12 minecraft:stone
+at 0 set 13 0 13 minecraft:stone
+at 0 set 13 0 14 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 14 0 8 minecraft:stone
+at 0 set 14 0 9 minecraft:stone
+at 0 set 14 0 10 minecraft:stone
+at 0 set 14 0 11 minecraft:stone
+at 0 set 14 0 12 minecraft:stone
+at 0 set 14 0 13 minecraft:stone
+at 0 set 14 0 14 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 15 0 8 minecraft:stone
+at 0 set 15 0 9 minecraft:stone
+at 0 set 15 0 10 minecraft:stone
+at 0 set 15 0 11 minecraft:stone
+at 0 set 15 0 12 minecraft:stone
+at 0 set 15 0 13 minecraft:stone
+at 0 set 15 0 14 minecraft:stone
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 0 1 minecraft:stone
+at 0 set 16 0 2 minecraft:stone
+at 0 set 16 0 3 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 set 16 0 5 minecraft:stone
+at 0 set 16 0 6 minecraft:stone
+at 0 set 16 0 7 minecraft:stone
+at 0 set 16 0 8 minecraft:stone
+at 0 set 16 0 9 minecraft:stone
+at 0 set 16 0 10 minecraft:stone
+at 0 set 16 0 11 minecraft:stone
+at 0 set 16 0 12 minecraft:stone
+at 0 set 16 0 13 minecraft:stone
+at 0 set 16 0 14 minecraft:stone
+at 0 set 17 0 0 minecraft:stone
+at 0 set 17 0 1 minecraft:stone
+at 0 set 17 0 2 minecraft:stone
+at 0 set 17 0 3 minecraft:stone
+at 0 set 17 0 4 minecraft:stone
+at 0 set 17 0 5 minecraft:stone
+at 0 set 17 0 6 minecraft:stone
+at 0 set 17 0 7 minecraft:stone
+at 0 set 17 0 8 minecraft:stone
+at 0 set 17 0 9 minecraft:stone
+at 0 set 17 0 10 minecraft:stone
+at 0 set 17 0 11 minecraft:stone
+at 0 set 17 0 12 minecraft:stone
+at 0 set 17 0 13 minecraft:stone
+at 0 set 17 0 14 minecraft:stone
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 0 1 minecraft:stone
+at 0 set 18 0 2 minecraft:stone
+at 0 set 18 0 3 minecraft:stone
+at 0 set 18 0 4 minecraft:stone
+at 0 set 18 0 5 minecraft:stone
+at 0 set 18 0 6 minecraft:stone
+at 0 set 18 0 7 minecraft:stone
+at 0 set 18 0 8 minecraft:stone
+at 0 set 18 0 9 minecraft:stone
+at 0 set 18 0 10 minecraft:stone
+at 0 set 18 0 11 minecraft:stone
+at 0 set 18 0 12 minecraft:stone
+at 0 set 18 0 13 minecraft:stone
+at 0 set 18 0 14 minecraft:stone
+at 0 set 19 0 0 minecraft:stone
+at 0 set 19 0 1 minecraft:stone
+at 0 set 19 0 2 minecraft:stone
+at 0 set 19 0 3 minecraft:stone
+at 0 set 19 0 4 minecraft:stone
+at 0 set 19 0 5 minecraft:stone
+at 0 set 19 0 6 minecraft:stone
+at 0 set 19 0 7 minecraft:stone
+at 0 set 19 0 8 minecraft:stone
+at 0 set 19 0 9 minecraft:stone
+at 0 set 19 0 10 minecraft:stone
+at 0 set 19 0 11 minecraft:stone
+at 0 set 19 0 12 minecraft:stone
+at 0 set 19 0 13 minecraft:stone
+at 0 set 19 0 14 minecraft:stone
+at 0 set 20 0 0 minecraft:stone
+at 0 set 20 0 1 minecraft:stone
+at 0 set 20 0 2 minecraft:stone
+at 0 set 20 0 3 minecraft:stone
+at 0 set 20 0 4 minecraft:stone
+at 0 set 20 0 5 minecraft:stone
+at 0 set 20 0 6 minecraft:stone
+at 0 set 20 0 7 minecraft:stone
+at 0 set 20 0 8 minecraft:stone
+at 0 set 20 0 9 minecraft:stone
+at 0 set 20 0 10 minecraft:stone
+at 0 set 20 0 11 minecraft:stone
+at 0 set 20 0 12 minecraft:stone
+at 0 set 20 0 13 minecraft:stone
+at 0 set 20 0 14 minecraft:stone
+at 0 set 21 0 0 minecraft:stone
+at 0 set 21 0 1 minecraft:stone
+at 0 set 21 0 2 minecraft:stone
+at 0 set 21 0 3 minecraft:stone
+at 0 set 21 0 4 minecraft:stone
+at 0 set 21 0 5 minecraft:stone
+at 0 set 21 0 6 minecraft:stone
+at 0 set 21 0 7 minecraft:stone
+at 0 set 21 0 8 minecraft:stone
+at 0 set 21 0 9 minecraft:stone
+at 0 set 21 0 10 minecraft:stone
+at 0 set 21 0 11 minecraft:stone
+at 0 set 21 0 12 minecraft:stone
+at 0 set 21 0 13 minecraft:stone
+at 0 set 21 0 14 minecraft:stone
+at 0 set 22 0 0 minecraft:stone
+at 0 set 22 0 1 minecraft:stone
+at 0 set 22 0 2 minecraft:stone
+at 0 set 22 0 3 minecraft:stone
+at 0 set 22 0 4 minecraft:stone
+at 0 set 22 0 5 minecraft:stone
+at 0 set 22 0 6 minecraft:stone
+at 0 set 22 0 7 minecraft:stone
+at 0 set 22 0 8 minecraft:stone
+at 0 set 22 0 9 minecraft:stone
+at 0 set 22 0 10 minecraft:stone
+at 0 set 22 0 11 minecraft:stone
+at 0 set 22 0 12 minecraft:stone
+at 0 set 22 0 13 minecraft:stone
+at 0 set 22 0 14 minecraft:stone
+at 0 set 23 0 0 minecraft:stone
+at 0 set 23 0 1 minecraft:stone
+at 0 set 23 0 2 minecraft:stone
+at 0 set 23 0 3 minecraft:stone
+at 0 set 23 0 4 minecraft:stone
+at 0 set 23 0 5 minecraft:stone
+at 0 set 23 0 6 minecraft:stone
+at 0 set 23 0 7 minecraft:stone
+at 0 set 23 0 8 minecraft:stone
+at 0 set 23 0 9 minecraft:stone
+at 0 set 23 0 10 minecraft:stone
+at 0 set 23 0 11 minecraft:stone
+at 0 set 23 0 12 minecraft:stone
+at 0 set 23 0 13 minecraft:stone
+at 0 set 23 0 14 minecraft:stone
+at 0 set 24 0 0 minecraft:stone
+at 0 set 24 0 1 minecraft:stone
+at 0 set 24 0 2 minecraft:stone
+at 0 set 24 0 3 minecraft:stone
+at 0 set 24 0 4 minecraft:stone
+at 0 set 24 0 5 minecraft:stone
+at 0 set 24 0 6 minecraft:stone
+at 0 set 24 0 7 minecraft:stone
+at 0 set 24 0 8 minecraft:stone
+at 0 set 24 0 9 minecraft:stone
+at 0 set 24 0 10 minecraft:stone
+at 0 set 24 0 11 minecraft:stone
+at 0 set 24 0 12 minecraft:stone
+at 0 set 24 0 13 minecraft:stone
+at 0 set 24 0 14 minecraft:stone
+at 0 set 25 0 0 minecraft:stone
+at 0 set 25 0 1 minecraft:stone
+at 0 set 25 0 2 minecraft:stone
+at 0 set 25 0 3 minecraft:stone
+at 0 set 25 0 4 minecraft:stone
+at 0 set 25 0 5 minecraft:stone
+at 0 set 25 0 6 minecraft:stone
+at 0 set 25 0 7 minecraft:stone
+at 0 set 25 0 8 minecraft:stone
+at 0 set 25 0 9 minecraft:stone
+at 0 set 25 0 10 minecraft:stone
+at 0 set 25 0 11 minecraft:stone
+at 0 set 25 0 12 minecraft:stone
+at 0 set 25 0 13 minecraft:stone
+at 0 set 25 0 14 minecraft:stone
+at 0 set 26 0 0 minecraft:stone
+at 0 set 26 0 1 minecraft:stone
+at 0 set 26 0 2 minecraft:stone
+at 0 set 26 0 3 minecraft:stone
+at 0 set 26 0 4 minecraft:stone
+at 0 set 26 0 5 minecraft:stone
+at 0 set 26 0 6 minecraft:stone
+at 0 set 26 0 7 minecraft:stone
+at 0 set 26 0 8 minecraft:stone
+at 0 set 26 0 9 minecraft:stone
+at 0 set 26 0 10 minecraft:stone
+at 0 set 26 0 11 minecraft:stone
+at 0 set 26 0 12 minecraft:stone
+at 0 set 26 0 13 minecraft:stone
+at 0 set 26 0 14 minecraft:stone
+at 0 set 27 0 0 minecraft:stone
+at 0 set 27 0 1 minecraft:stone
+at 0 set 27 0 2 minecraft:stone
+at 0 set 27 0 3 minecraft:stone
+at 0 set 27 0 4 minecraft:stone
+at 0 set 27 0 5 minecraft:stone
+at 0 set 27 0 6 minecraft:stone
+at 0 set 27 0 7 minecraft:stone
+at 0 set 27 0 8 minecraft:stone
+at 0 set 27 0 9 minecraft:stone
+at 0 set 27 0 10 minecraft:stone
+at 0 set 27 0 11 minecraft:stone
+at 0 set 27 0 12 minecraft:stone
+at 0 set 27 0 13 minecraft:stone
+at 0 set 27 0 14 minecraft:stone
+at 0 set 28 0 0 minecraft:stone
+at 0 set 28 0 1 minecraft:stone
+at 0 set 28 0 2 minecraft:stone
+at 0 set 28 0 3 minecraft:stone
+at 0 set 28 0 4 minecraft:stone
+at 0 set 28 0 5 minecraft:stone
+at 0 set 28 0 6 minecraft:stone
+at 0 set 28 0 7 minecraft:stone
+at 0 set 28 0 8 minecraft:stone
+at 0 set 28 0 9 minecraft:stone
+at 0 set 28 0 10 minecraft:stone
+at 0 set 28 0 11 minecraft:stone
+at 0 set 28 0 12 minecraft:stone
+at 0 set 28 0 13 minecraft:stone
+at 0 set 28 0 14 minecraft:stone
+at 0 set 29 0 0 minecraft:stone
+at 0 set 29 0 1 minecraft:stone
+at 0 set 29 0 2 minecraft:stone
+at 0 set 29 0 3 minecraft:stone
+at 0 set 29 0 4 minecraft:stone
+at 0 set 29 0 5 minecraft:stone
+at 0 set 29 0 6 minecraft:stone
+at 0 set 29 0 7 minecraft:stone
+at 0 set 29 0 8 minecraft:stone
+at 0 set 29 0 9 minecraft:stone
+at 0 set 29 0 10 minecraft:stone
+at 0 set 29 0 11 minecraft:stone
+at 0 set 29 0 12 minecraft:stone
+at 0 set 29 0 13 minecraft:stone
+at 0 set 29 0 14 minecraft:stone
+at 0 set 30 0 0 minecraft:stone
+at 0 set 30 0 1 minecraft:stone
+at 0 set 30 0 2 minecraft:stone
+at 0 set 30 0 3 minecraft:stone
+at 0 set 30 0 4 minecraft:stone
+at 0 set 30 0 5 minecraft:stone
+at 0 set 30 0 6 minecraft:stone
+at 0 set 30 0 7 minecraft:stone
+at 0 set 30 0 8 minecraft:stone
+at 0 set 30 0 9 minecraft:stone
+at 0 set 30 0 10 minecraft:stone
+at 0 set 30 0 11 minecraft:stone
+at 0 set 30 0 12 minecraft:stone
+at 0 set 30 0 13 minecraft:stone
+at 0 set 30 0 14 minecraft:stone
+at 0 set 9 1 9 minecraft:piston[extended=false,facing=east]
+
+at 1 set 1 1 1 minecraft:stone
+change 1 commands 1 1 1 minecraft:air minecraft:stone
+at 1 set 3 1 1 minecraft:stone
+change 1 commands 3 1 1 minecraft:air minecraft:stone
+at 1 set 5 1 1 minecraft:stone
+change 1 commands 5 1 1 minecraft:air minecraft:stone
+at 1 set 7 1 1 minecraft:stone
+change 1 commands 7 1 1 minecraft:air minecraft:stone
+at 1 set 9 1 1 minecraft:oak_fence[east=false,north=false,south=false,waterlogged=false,west=false]
+change 1 commands 9 1 1 minecraft:air minecraft:oak_fence[east=false,north=false,south=false,waterlogged=false,west=false]
+at 1 set 11 1 1 minecraft:stone
+change 1 commands 11 1 1 minecraft:air minecraft:stone
+at 1 set 13 1 1 minecraft:stone
+change 1 commands 13 1 1 minecraft:air minecraft:stone
+at 1 set 2 1 9 minecraft:red_bed[facing=east,occupied=false,part=foot]
+change 1 commands 2 1 9 minecraft:air minecraft:red_bed[facing=east,occupied=false,part=foot]
+at 1 set 3 1 9 minecraft:red_bed[facing=east,occupied=false,part=head]
+change 1 commands 3 1 9 minecraft:air minecraft:red_bed[facing=east,occupied=false,part=head]
+at 1 set 6 1 9 minecraft:blue_bed[facing=east,occupied=false,part=foot]
+change 1 commands 6 1 9 minecraft:air minecraft:blue_bed[facing=east,occupied=false,part=foot]
+at 1 set 7 1 9 minecraft:blue_bed[facing=east,occupied=false,part=head]
+change 1 commands 7 1 9 minecraft:air minecraft:blue_bed[facing=east,occupied=false,part=head]
+at 1 set 10 1 9 minecraft:white_bed[facing=north,occupied=false,part=foot]
+change 1 commands 10 1 9 minecraft:air minecraft:white_bed[facing=north,occupied=false,part=foot]
+at 1 set 10 1 8 minecraft:white_bed[facing=north,occupied=false,part=head]
+change 1 commands 10 1 8 minecraft:air minecraft:white_bed[facing=north,occupied=false,part=head]
+
+at 2 set 1 2 1 minecraft:oak_sign[rotation=5,waterlogged=false]
+change 2 commands 1 2 1 minecraft:air minecraft:oak_sign[rotation=5,waterlogged=false]
+at 2 set 3 1 2 minecraft:spruce_wall_sign[facing=south,waterlogged=false]
+change 2 commands 3 1 2 minecraft:air minecraft:spruce_wall_sign[facing=south,waterlogged=false]
+at 2 set 5 2 1 minecraft:white_banner[rotation=9]
+change 2 commands 5 2 1 minecraft:air minecraft:white_banner[rotation=9]
+at 2 set 7 1 2 minecraft:red_wall_banner[facing=south]
+change 2 commands 7 1 2 minecraft:air minecraft:red_wall_banner[facing=south]
+at 2 set 9 2 1 minecraft:birch_sign[rotation=0,waterlogged=false]
+change 2 commands 9 2 1 minecraft:air minecraft:birch_sign[rotation=0,waterlogged=false]
+at 2 set 11 2 1 minecraft:skeleton_skull[powered=false,rotation=3]
+change 2 commands 11 2 1 minecraft:air minecraft:skeleton_skull[powered=false,rotation=3]
+at 2 set 13 1 2 minecraft:zombie_wall_head[facing=south,powered=false]
+change 2 commands 13 1 2 minecraft:air minecraft:zombie_wall_head[facing=south,powered=false]
+at 2 set 1 2 5 minecraft:oak_sign[rotation=0,waterlogged=false]
+change 2 commands 1 2 5 minecraft:air minecraft:oak_sign[rotation=0,waterlogged=false]
+at 2 set 4 2 6 minecraft:oak_wall_sign[facing=south,waterlogged=false]
+change 2 commands 4 2 6 minecraft:air minecraft:oak_wall_sign[facing=south,waterlogged=false]
+at 2 set 7 2 5 minecraft:blue_banner[rotation=0]
+change 2 commands 7 2 5 minecraft:air minecraft:blue_banner[rotation=0]
+at 2 set 10 2 5 minecraft:creeper_head[powered=false,rotation=0]
+change 2 commands 10 2 5 minecraft:air minecraft:creeper_head[powered=false,rotation=0]
+
+at 20 set 1 1 1 minecraft:air
+change 20 commands 1 1 1 minecraft:stone minecraft:air
+entity-added 20 commands e1 minecraft:item 1.6154838936883285 2.245268207835743 1.568708712675054 0.010087401023526787 0.2 0.019509055559440353 item=minecraft:oak_sign count=1
+change 20 commands 1 2 1 minecraft:oak_sign[rotation=5,waterlogged=false] minecraft:air
+draws 20 commands level 10
+entity-order 20 entities e1
+entity 20 e1 1.6255712947118552 2.4052682078357432 1.5882177682344945 0.009885653195458158 0.1568 0.01911887482035725 item=minecraft:oak_sign count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 21 entities e1
+entity 21 e1 1.6354569479073133 2.5220682078357433 1.6073366430548517 0.009687940320102865 0.11446399999999998 0.018736497688613702 item=minecraft:oak_sign count=1 age=2 pickup-delay=8 on-ground=false
+
+at 22 set 3 1 1 minecraft:air
+change 22 commands 3 1 1 minecraft:stone minecraft:air
+entity-added 22 commands e2 minecraft:item 3.4166091997383248 1.3175945923703591 2.7424207700999044 0.07583650357449603 0.2 0.08824983589642288 item=minecraft:spruce_sign count=1
+change 22 commands 3 1 2 minecraft:spruce_wall_sign[facing=south,waterlogged=false] minecraft:air
+draws 22 commands level 10
+entity-order 22 entities e1 e2
+entity 22 e1 1.6451448882274162 2.596532207835743 1.6260731407434654 0.009494181698483605 0.07297471999999998 0.01836176809221176 item=minecraft:oak_sign count=1 age=3 pickup-delay=7 on-ground=false
+entity 22 e2 3.492445703312821 1.477594592370359 2.8306706059963274 0.07431977494947263 0.1568 0.08648484086172646 item=minecraft:spruce_sign count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 23 entities e1 e2
+entity 23 e1 1.6546390699259 2.629506927835743 1.6444349088356771 0.009304298245601078 0.032315225599999976 0.017994533080590458 item=minecraft:oak_sign count=1 age=4 pickup-delay=6 on-ground=false
+entity 23 e2 3.5667654782622935 1.594394592370359 2.917155446858054 0.0728333808680204 0.11446399999999998 0.08475514569405936 item=minecraft:spruce_sign count=1 age=2 pickup-delay=8 on-ground=false
+
+at 24 set 5 1 1 minecraft:air
+change 24 commands 5 1 1 minecraft:stone minecraft:air
+entity-added 24 commands e3 minecraft:item 5.387476983017742 2.1894485754368884 1.323300828823259 -0.09535237550322212 0.2 0.009347951439693108 item=minecraft:white_banner count=1
+change 24 commands 5 2 1 minecraft:white_banner[rotation=9] minecraft:air
+draws 24 commands level 10
+entity-order 24 entities e1 e2 e3
+entity 24 e1 1.663943368171501 2.621822153435743 1.6624294419162675 0.009118212458154463 -0.007531078912000024 0.01763464276219713 item=minecraft:oak_sign count=1 age=5 pickup-delay=5 on-ground=false
+entity 24 e2 3.639598859130314 1.6688585923703592 3.0019105925521132 0.07137671463984648 0.07297471999999998 0.08306004439675428 item=minecraft:spruce_sign count=1 age=3 pickup-delay=7 on-ground=false
+entity 24 e3 5.29212460751452 2.3494485754368886 1.332648780262952 -0.0934453298118599 0.1568 0.00916099258919727 item=minecraft:white_banner count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 25 entities e1 e2 e3
+entity 25 e1 1.6730615806296554 2.5742910745237433 1.6800640846784647 0.008935848382907475 -0.04658045733376002 0.017281950243307306 item=minecraft:oak_sign count=1 age=6 pickup-delay=4 on-ground=false
+entity 25 e2 3.71097557377016 1.701833312370359 3.0849706369488676 0.06994918170845234 0.032315225599999976 0.08139884509306382 item=minecraft:spruce_sign count=1 age=4 pickup-delay=6 on-ground=false
+entity 25 e3 5.19867927770266 2.4662485754368886 1.3418097728521494 -0.09157642499795093 0.11446399999999998 0.008977772912145392 item=minecraft:white_banner count=1 age=2 pickup-delay=8 on-ground=false
+
+at 26 set 7 1 1 minecraft:air
+change 26 commands 7 1 1 minecraft:stone minecraft:air
+entity-added 26 commands e4 minecraft:item 7.732243430338425 1.177245343125486 2.5625731817327795 -0.017840760901787656 0.2 0.05526245825498652 item=minecraft:red_banner count=1
+change 26 commands 7 1 2 minecraft:red_wall_banner[facing=south] minecraft:air
+draws 26 commands level 10
+entity-order 26 entities e1 e2 e3 e4
+entity 26 e1 1.6819974290125628 2.4877106171899834 1.697346034921772 0.008757131585687108 -0.08484884818708481 0.016936311568068203 item=minecraft:oak_sign count=1 age=7 pickup-delay=3 on-ground=false
+entity 26 e2 3.7809247554786127 1.6941485379703591 3.1663694820419312 0.06855019940845805 -0.007531078912000024 0.0797708697437623 item=minecraft:spruce_sign count=1 age=5 pickup-delay=5 on-ground=false
+entity 26 e3 5.10710285270471 2.5407125754368884 1.3507875457642948 -0.0897448982446736 0.07297471999999998 0.008798217625139913 item=minecraft:white_banner count=1 age=3 pickup-delay=7 on-ground=false
+entity 26 e4 7.714402669436637 1.3372453431254858 2.617835639987766 -0.01748394602403741 0.1568 0.05415721014393453 item=minecraft:red_banner count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 27 entities e1 e2 e3 e4
+entity 27 e1 1.69075456059825 2.362861769002899 1.7142823464898402 0.008581989121002396 -0.12235187122334311 0.016597585659741346 item=minecraft:oak_sign count=1 age=8 pickup-delay=2 on-ground=false
+entity 27 e2 3.8494749548870706 1.646617459058359 3.2461403517856935 0.06717919672778018 -0.04658045733376002 0.07817545387039565 item=minecraft:spruce_sign count=1 age=6 pickup-delay=4 on-ground=false
+entity 27 e3 5.017357954460036 2.5736872954368883 1.3595857633894348 -0.08795000199152822 0.032315225599999976 0.008622253440449798 item=minecraft:white_banner count=1 age=4 pickup-delay=6 on-ground=false
+entity 27 e4 7.6969187234126 1.4540453431254858 2.6719928501317005 -0.017134267437036468 0.11446399999999998 0.05307406697402264 item=minecraft:red_banner count=1 age=2 pickup-delay=8 on-ground=false
+
+at 28 set 9 1 1 minecraft:air
+change 28 commands 9 1 1 minecraft:oak_fence[east=false,north=false,south=false,waterlogged=false,west=false] minecraft:air
+entity-added 28 commands e5 minecraft:item 9.745361392857392 2.3686164235150713 1.6231207026611654 0.04663041403899876 0.2 0.06345941428186488 item=minecraft:birch_sign count=1
+change 28 commands 9 2 1 minecraft:birch_sign[rotation=0,waterlogged=false] minecraft:air
+draws 28 commands level 10
+entity-order 28 entities e1 e2 e3 e4 e5
+entity 28 e1 1.6993365497192523 2.200509897779556 1.7308799321495816 0.0084103495022708 -0.15910483379887624 0.016265634263120343 item=minecraft:oak_sign count=1 age=9 pickup-delay=1 on-ground=false
+entity 28 e2 3.9166541516148508 1.560037001724599 3.3243158056560893 0.06583561407456606 -0.08484884818708481 0.07661194628406619 item=minecraft:spruce_sign count=1 age=7 pickup-delay=3 on-ground=false
+entity 28 e3 4.929407952468508 2.5660025210368884 1.3682080168298847 -0.08619100362921081 -0.007531078912000024 0.008449808536097236 item=minecraft:white_banner count=1 age=5 pickup-delay=5 on-ground=false
+entity 28 e4 7.679784455975564 1.528509343125486 2.7250669171057234 -0.016791582415105952 0.07297471999999998 0.052012586646849684 item=minecraft:red_banner count=1 age=3 pickup-delay=7 on-ground=false
+entity 28 e5 9.791991806896391 2.5286164235150714 1.6865801169430303 0.045697806647623344 0.1568 0.062190227206619854 item=minecraft:birch_sign count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 29 entities e1 e2 e3 e4 e5
+entity 29 e1 1.707746899221523 2.0014050639806795 1.747145566412702 0.008242142672640071 -0.1951227371228987 0.015940321888100288 item=minecraft:oak_sign count=1 age=10 pickup-delay=0 on-ground=false
+entity 29 e2 3.982489765689417 1.4351881535375142 3.4009277519401553 0.06451890304878942 -0.12235187122334311 0.07507970881964178 item=minecraft:spruce_sign count=1 age=8 pickup-delay=2 on-ground=false
+entity 29 e3 4.843216948839297 2.5184714421248886 1.376657825365982 -0.08446718520058952 -0.04658045733376002 0.008280812526542598 item=minecraft:white_banner count=1 age=6 pickup-delay=4 on-ground=false
+entity 29 e4 7.662992873560458 1.5614840631254858 2.777079503752573 -0.01645575108707785 0.032315225599999976 0.05097233590597405 item=minecraft:red_banner count=1 age=4 pickup-delay=6 on-ground=false
+entity 29 e5 9.837689613544015 2.6454164235150714 1.7487703441496503 0.04478385138628737 0.11446399999999998 0.0609464238486719 item=minecraft:birch_sign count=1 age=2 pickup-delay=8 on-ground=false
+
+at 30 set 11 1 1 minecraft:air
+change 30 commands 11 1 1 minecraft:stone minecraft:air
+entity-order 30 entities e1 e2 e3 e4 e5
+entity 30 e1 1.715989041894163 1.7662823268577807 1.7630858883008023 0.008077299976393665 -0.23042028238044074 0.015621515754375793 item=minecraft:oak_sign count=1 age=11 pickup-delay=0 on-ground=false
+entity 30 e2 4.047008668738206 1.272836282314171 3.476007460759797 0.06322852621841404 -0.15910483379887624 0.07357811607528074 item=minecraft:spruce_sign count=1 age=9 pickup-delay=1 on-ground=false
+entity 30 e3 4.758749763638708 2.4318909847911288 1.3849386378925246 -0.08277784310766143 -0.08484884818708481 0.00811519643395571 item=minecraft:white_banner count=1 age=7 pickup-delay=3 on-ground=false
+entity 30 e4 7.64653712247338 1.553799288725486 2.828051839658547 -0.016126636379204837 -0.007531078912000024 0.049952890160074724 item=minecraft:red_banner count=1 age=5 pickup-delay=5 on-ground=false
+entity 30 e5 9.882473464930301 2.7198804235150713 1.8097167679983222 0.0438881752127458 0.07297471999999998 0.05972749653415925 item=minecraft:birch_sign count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 31 entities e1 e2 e3 e4 e5
+entity 31 e1 1.7240663418705566 1.49586204447734 1.778707404055178 0.007915754130928062 -0.26501187673283194 0.015309085737245045 item=minecraft:oak_sign count=1 age=12 pickup-delay=0 on-ground=false
+entity 31 e2 4.11023719495662 1.0737314485152947 3.549585576835078 0.061963956900034194 -0.1951227371228987 0.07210655515716631 item=minecraft:spruce_sign count=1 age=10 pickup-delay=0 on-ground=false
+entity 31 e3 4.675971920531047 2.307042136604044 1.3930538343264802 -0.08112228782437025 -0.12235187122334311 0.007952892660061684 item=minecraft:white_banner count=1 age=8 pickup-delay=2 on-ground=false
+entity 31 e4 7.630410486094175 1.5062682098134859 2.8780047298186218 -0.015804103959211918 -0.04658045733376002 0.048953833309648996 item=minecraft:red_banner count=1 age=6 pickup-delay=4 on-ground=false
+entity 31 e5 9.926361640143048 2.752855143515071 1.8694442645324814 0.043010412545591396 0.032315225599999976 0.058532947742687656 item=minecraft:birch_sign count=1 age=4 pickup-delay=6 on-ground=false
+
+at 32 set 13 1 1 minecraft:air
+change 32 commands 13 1 1 minecraft:stone minecraft:air
+entity-order 32 entities e1 e2 e3 e4 e5
+entity 32 e1 1.7319820960014847 1.1908501677445082 1.7940164897924231 0.007757439199290529 -0.29891163919817526 0.015002904314497781 item=minecraft:oak_sign count=1 age=13 pickup-delay=0 on-ground=false
+entity 32 e2 4.172201151856655 1.0 3.621692131992244 0.03643481032101303 0 0.04239865869591631 item=minecraft:spruce_sign count=1 age=11 pickup-delay=0 on-ground=true
+entity 32 e3 4.594849632706676 2.144690265380701 1.4010067269865418 -0.0794998436151677 -0.15910483379887624 0.00779383495854984 item=minecraft:white_banner count=1 age=9 pickup-delay=1 on-ground=false
+entity 32 e4 7.614606382134963 1.4196877524797258 2.9269585631282706 -0.01548802218146704 -0.08484884818708481 0.047974757577176286 item=minecraft:red_banner count=1 age=7 pickup-delay=3 on-ground=false
+entity 32 e5 9.96937205268864 2.7451703691150713 1.927977212275169 0.042150205115038086 -0.007531078912000024 0.05736228990426128 item=minecraft:birch_sign count=1 age=5 pickup-delay=5 on-ground=false
+
+entity-order 33 entities e1 e2 e3 e4 e5
+entity 33 e1 1.7397395352007752 1.0 1.8090193941069208 0.004561374707863204 0 0.008821708624013535 item=minecraft:oak_sign count=1 age=14 pickup-delay=0 on-ground=true
+entity 33 e2 4.2086359621776674 1.0 3.6640907906881606 0.021423670623066115 0 0.024930413820138525 item=minecraft:spruce_sign count=1 age=12 pickup-delay=0 on-ground=true
+entity 33 e3 4.515349789091509 1.9455854315818248 1.4088005619450916 -0.07790984825920352 -0.1951227371228987 0.007637958408034448 item=minecraft:white_banner count=1 age=10 pickup-delay=0 on-ground=false
+entity 33 e4 7.599118359953496 1.294838904292641 2.974933320705447 -0.015178262033248279 -0.12235187122334311 0.04701526334067864 item=minecraft:red_banner count=1 age=8 pickup-delay=2 on-ground=false
+entity 33 e5 10.011522257803676 2.6976392902030715 1.9853395021794302 0.041307201816688684 -0.04658045733376002 0.056215045200274906 item=minecraft:birch_sign count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 34 entities e1 e2 e3 e4 e5
+entity 34 e1 1.7443009099086384 1.0 1.8178411027309342 0.00268208859792765 0 0.005187165192528249 item=minecraft:oak_sign count=1 age=15 pickup-delay=0 on-ground=true
+entity 34 e2 4.230059632800733 1.0 3.689021204508299 0.01259711959309755 0 0.014659084800322165 item=minecraft:spruce_sign count=1 age=13 pickup-delay=0 on-ground=true
+entity 34 e3 4.437439940832306 1.710462694458926 1.416438520353126 -0.07635165278003188 -0.23042028238044074 0.007485199385556254 item=minecraft:white_banner count=1 age=11 pickup-delay=0 on-ground=false
+entity 34 e4 7.583940097920248 1.1324870330692978 3.0219485840461258 -0.014874697082085686 -0.15910483379887624 0.04607495897061005 item=minecraft:red_banner count=1 age=9 pickup-delay=1 on-ground=false
+entity 34 e5 10.052829459620366 2.6110588328693116 2.041554547379705 0.04048105856822726 -0.08484884818708481 0.0550907453684863 item=minecraft:birch_sign count=1 age=7 pickup-delay=3 on-ground=false
+
+entity-order 35 entities e1 e2 e3 e4 e5
+entity 35 e1 1.7469829985065661 1.0 1.8230282679234624 0.0015770682541674768 0 0.003050053439912316 item=minecraft:oak_sign count=1 age=16 pickup-delay=0 on-ground=true
+entity 35 e2 4.242656752393831 1.0 3.7036802893086214 0.0074071070655814236 0 0.00861954272934898 item=minecraft:spruce_sign count=1 age=14 pickup-delay=0 on-ground=true
+entity 35 e3 4.361088288052274 1.4400424120784854 1.4239237197386823 -0.07482462118072344 -0.26501187673283194 0.007335495540613977 item=minecraft:white_banner count=1 age=12 pickup-delay=0 on-ground=false
+entity 35 e4 7.569065400838162 1.0 3.0680235430167357 -0.00874632276377461 0 0.02709207859903002 item=minecraft:red_banner count=1 age=10 pickup-delay=0 on-ground=true
+entity 35 e5 10.093310518188593 2.486209984682227 2.0966452927481916 0.03967143816897763 -0.12235187122334311 0.05398893151188915 item=minecraft:birch_sign count=1 age=8 pickup-delay=2 on-ground=false
+
+entity-order 36 entities e1 e2 e3 e4 e5
+entity 36 e1 1.7485600667607335 1.0 1.8260783213633747 9.273162266990647E-4 0 0.0017934316030114147 item=minecraft:oak_sign count=1 age=17 pickup-delay=0 on-ground=true
+entity 36 e2 4.250063859459412 1.0 3.7122998320379703 0.004355379392527879 0 0.005068291634511864 item=minecraft:spruce_sign count=1 age=15 pickup-delay=0 on-ground=true
+entity 36 e3 4.286263666871551 1.1350305353456536 1.4312592152792962 -0.07332813018427536 -0.29891163919817526 0.007188785769715171 item=minecraft:white_banner count=1 age=13 pickup-delay=0 on-ground=false
+entity 36 e4 7.560319078074388 1.0 3.095115621615766 -0.00514283830225036 0 0.015930143818124864 item=minecraft:red_banner count=1 age=11 pickup-delay=0 on-ground=true
+entity 36 e5 10.13298195635757 2.323858113458884 2.150634224260081 0.03887801016227071 -0.15910483379887624 0.05290915391140852 item=minecraft:birch_sign count=1 age=9 pickup-delay=1 on-ground=false
+
+entity-order 37 entities e1 e2 e3 e4 e5
+entity 37 e1 1.7485600667607335 1.0 1.8260783213633747 9.273162266990647E-4 -0.04 0.0017934316030114147 item=minecraft:oak_sign count=1 age=18 pickup-delay=0 on-ground=true
+entity 37 e2 4.2544192388519395 1.0 3.717368123672482 0.0025609633403304273 0 0.0029801557807699487 item=minecraft:spruce_sign count=1 age=16 pickup-delay=0 on-ground=true
+entity 37 e3 4.212935536687276 1.0 1.4384480010490115 -0.04311694488408549 0 0.004227006457649663 item=minecraft:white_banner count=1 age=14 pickup-delay=0 on-ground=true
+entity 37 e4 7.555176239772138 1.0 3.1110457654338908 -0.0030239892258079656 0 0.009366925506971898 item=minecraft:red_banner count=1 age=12 pickup-delay=0 on-ground=true
+entity 37 e5 10.171859966519841 2.1247532796600077 2.2035433781714895 0.03810045070056449 -0.1951227371228987 0.05185097184234237 item=minecraft:birch_sign count=1 age=10 pickup-delay=0 on-ground=false
+
+entity-order 38 entities e1 e2 e3 e4 e5
+entity 38 e1 1.7494873829874327 1.0 1.8278717529663862 5.452619961292254E-4 0 0.0010545378886123906 item=minecraft:oak_sign count=1 age=19 pickup-delay=0 on-ground=true
+entity 38 e2 4.25698020219227 1.0 3.720348279453252 0.001505846595538439 0 0.0017523317753028074 item=minecraft:spruce_sign count=1 age=17 pickup-delay=0 on-ground=true
+entity 38 e3 4.169818591803191 1.0 1.4426750075066612 -0.02535276614125269 0 0.0024854800470316264 item=minecraft:white_banner count=1 age=15 pickup-delay=0 on-ground=true
+entity 38 e4 7.55215225054633 1.0 3.1204126909408627 -0.001778105843576937 0 0.005507752751945246 item=minecraft:red_banner count=1 age=13 pickup-delay=0 on-ground=true
+entity 38 e5 10.209960417220406 1.889630542537109 2.255394350013832 0.037338442413261626 -0.23042028238044074 0.05081395339447433 item=minecraft:birch_sign count=1 age=11 pickup-delay=0 on-ground=false
+
+entity-order 39 entities e1 e2 e3 e4 e5
+entity 39 e1 1.7494873829874327 1.0 1.8278717529663862 5.452619961292254E-4 -0.04 0.0010545378886123906 item=minecraft:oak_sign count=1 age=20 pickup-delay=0 on-ground=true
+entity 39 e2 4.258486048787808 1.0 3.722100611228555 8.854378872140099E-4 0 0.0010303711874895868 item=minecraft:spruce_sign count=1 age=18 pickup-delay=0 on-ground=true
+entity 39 e3 4.144465825661938 1.0 1.4451604875536928 -0.01490742799011006 0 0.0014614624146155823 item=minecraft:white_banner count=1 age=16 pickup-delay=0 on-ground=true
+entity 39 e4 7.550374144702753 1.0 3.125920443692808 -0.0010455263411587392 0 0.00323855894380515 item=minecraft:red_banner count=1 age=14 pickup-delay=0 on-ground=true
+entity 39 e5 10.247298859633668 1.6192102601566682 2.3062083034083063 0.036591674277170666 -0.26501187673283194 0.04979767529578409 item=minecraft:birch_sign count=1 age=12 pickup-delay=0 on-ground=false
+
+at 40 set 2 2 5 minecraft:stone
+change 40 commands 2 2 5 minecraft:air minecraft:stone
+entity-order 40 entities e1 e2 e3 e4 e5
+entity 40 e1 1.7494873829874327 1.0 1.8278717529663862 5.452619961292254E-4 -0.08 0.0010545378886123906 item=minecraft:oak_sign count=1 age=21 pickup-delay=0 on-ground=true
+entity 40 e2 4.258486048787808 1.0 3.722100611228555 8.854378872140099E-4 -0.04 0.0010303711874895868 item=minecraft:spruce_sign count=1 age=19 pickup-delay=0 on-ground=true
+entity 40 e3 4.129558397671828 1.0 1.4466219499683084 -0.00876556853962825 0 8.593399862070308E-4 item=minecraft:white_banner count=1 age=17 pickup-delay=0 on-ground=true
+entity 40 e4 7.549328618361594 1.0 3.129159002636613 -6.14769550421019E-4 0 0.0019042728504463182 item=minecraft:red_banner count=1 age=15 pickup-delay=0 on-ground=true
+entity 40 e5 10.283890533910839 1.3141983834238364 2.3560059787040903 0.03585984148955805 -0.29891163919817526 0.04880172273968369 item=minecraft:birch_sign count=1 age=13 pickup-delay=0 on-ground=false
+
+at 41 set 5 2 6 minecraft:stone
+change 41 commands 5 2 6 minecraft:air minecraft:stone
+entity-order 41 entities e1 e2 e3 e4 e5
+entity 41 e1 1.7494873829874327 1.0 1.8278717529663862 5.452619961292254E-4 -0.12 0.0010545378886123906 item=minecraft:oak_sign count=1 age=22 pickup-delay=0 on-ground=true
+entity 41 e2 4.258486048787808 1.0 3.722100611228555 8.854378872140099E-4 -0.08 0.0010303711874895868 item=minecraft:spruce_sign count=1 age=20 pickup-delay=0 on-ground=true
+entity 41 e3 4.1207928291322 1.0 1.4474812899545155 -0.005154154819590261 0 5.052919627006235E-4 item=minecraft:white_banner count=1 age=18 pickup-delay=0 on-ground=true
+entity 41 e4 7.548713848811173 1.0 3.1310632754870595 -3.614845319975349E-4 0 0.001119712548657914 item=minecraft:red_banner count=1 age=16 pickup-delay=0 on-ground=true
+entity 41 e5 10.319750375400396 1.0 2.404807701443774 0.02108558891617394 0 0.02869541585647288 item=minecraft:birch_sign count=1 age=14 pickup-delay=0 on-ground=true
+
+at 42 set 8 2 5 minecraft:stone
+change 42 commands 8 2 5 minecraft:air minecraft:stone
+entity-order 42 entities e1 e2 e3 e4 e5
+entity 42 e1 1.750032644983562 1.0 1.8289262908549986 3.20614085964131E-4 0 6.200683408565991E-4 item=minecraft:oak_sign count=1 age=23 pickup-delay=0 on-ground=true
+entity 42 e2 4.258486048787808 1.0 3.722100611228555 8.854378872140099E-4 -0.12 0.0010303711874895868 item=minecraft:spruce_sign count=1 age=21 pickup-delay=0 on-ground=true
+entity 42 e3 4.11563867431261 1.0 1.4479865819172162 -0.003030643338672948 0 2.9711170394477256E-4 item=minecraft:white_banner count=1 age=19 pickup-delay=0 on-ground=true
+entity 42 e4 7.548713848811173 1.0 3.1310632754870595 -3.614845319975349E-4 -0.04 0.001119712548657914 item=minecraft:red_banner count=1 age=17 pickup-delay=0 on-ground=true
+entity 42 e5 10.34083596431657 1.0 2.433503117300247 0.012398327529454922 0 0.01687290622030308 item=minecraft:birch_sign count=1 age=15 pickup-delay=0 on-ground=true
+
+at 43 set 11 2 5 minecraft:stone
+change 43 commands 11 2 5 minecraft:air minecraft:stone
+entity-order 43 entities e1 e2 e3 e4 e5
+entity 43 e1 1.750032644983562 1.0 1.8289262908549986 3.20614085964131E-4 -0.04 6.200683408565991E-4 item=minecraft:oak_sign count=1 age=24 pickup-delay=0 on-ground=true
+entity 43 e2 4.259371486675022 1.0 3.723130982416045 5.206375300358389E-4 0 6.058583191674664E-4 item=minecraft:spruce_sign count=1 age=22 pickup-delay=0 on-ground=true
+entity 43 e3 4.11563867431261 1.0 1.4479865819172162 -0.003030643338672948 -0.04 2.9711170394477256E-4 item=minecraft:white_banner count=1 age=20 pickup-delay=0 on-ground=true
+entity 43 e4 7.548713848811173 1.0 3.1310632754870595 -3.614845319975349E-4 -0.08 0.001119712548657914 item=minecraft:red_banner count=1 age=18 pickup-delay=0 on-ground=true
+entity 43 e5 10.353234291846025 1.0 2.45037602352055 0.007290217320405419 0 0.009921269855196166 item=minecraft:birch_sign count=1 age=16 pickup-delay=0 on-ground=true
+
+entity-order 44 entities e1 e2 e3 e4 e5
+entity 44 e1 1.750032644983562 1.0 1.8289262908549986 3.20614085964131E-4 -0.08 6.200683408565991E-4 item=minecraft:oak_sign count=1 age=25 pickup-delay=0 on-ground=true
+entity 44 e2 4.259371486675022 1.0 3.723130982416045 5.206375300358389E-4 -0.04 6.058583191674664E-4 item=minecraft:spruce_sign count=1 age=23 pickup-delay=0 on-ground=true
+entity 44 e3 4.112608030973937 1.0 1.448283693621161 -0.0017820184623349898 0 1.7470169948708995E-4 item=minecraft:white_banner count=1 age=21 pickup-delay=0 on-ground=true
+entity 44 e4 7.548713848811173 1.0 3.1310632754870595 -3.614845319975349E-4 -0.12 0.001119712548657914 item=minecraft:red_banner count=1 age=19 pickup-delay=0 on-ground=true
+entity 44 e5 10.36052450916643 1.0 2.460297293375746 0.004286648215452954 0 0.0058337072614782805 item=minecraft:birch_sign count=1 age=17 pickup-delay=0 on-ground=true
+
+entity-order 45 entities e1 e2 e3 e4 e5
+entity 45 e1 1.750032644983562 1.0 1.8289262908549986 3.20614085964131E-4 -0.12 6.200683408565991E-4 item=minecraft:oak_sign count=1 age=26 pickup-delay=0 on-ground=true
+entity 45 e2 4.259371486675022 1.0 3.723130982416045 5.206375300358389E-4 -0.08 6.058583191674664E-4 item=minecraft:spruce_sign count=1 age=24 pickup-delay=0 on-ground=true
+entity 45 e3 4.112608030973937 1.0 1.448283693621161 -0.0017820184623349898 -0.04 1.7470169948708995E-4 item=minecraft:white_banner count=1 age=22 pickup-delay=0 on-ground=true
+entity 45 e4 7.548352364279175 1.0 3.1321829880357175 -2.125529261883384E-4 0 6.583910448170016E-4 item=minecraft:red_banner count=1 age=20 pickup-delay=0 on-ground=true
+entity 45 e5 10.364811157381883 1.0 2.4661310006372243 0.0025205494041464476 0 0.0034302202146835495 item=minecraft:birch_sign count=1 age=18 pickup-delay=0 on-ground=true
+
+entity-order 46 entities e1 e2 e3 e4 e5
+entity 46 e1 1.750353259069526 1.0 1.8295463591958552 1.8852110150411702E-4 0 3.6460022108696186E-4 item=minecraft:oak_sign count=1 age=27 pickup-delay=0 on-ground=true
+entity 46 e2 4.259371486675022 1.0 3.723130982416045 5.206375300358389E-4 -0.12 6.058583191674664E-4 item=minecraft:spruce_sign count=1 age=25 pickup-delay=0 on-ground=true
+entity 46 e3 4.112608030973937 1.0 1.448283693621161 -0.0017820184623349898 -0.08 1.7470169948708995E-4 item=minecraft:white_banner count=1 age=23 pickup-delay=0 on-ground=true
+entity 46 e4 7.548352364279175 1.0 3.1321829880357175 -2.125529261883384E-4 -0.04 6.583910448170016E-4 item=minecraft:red_banner count=1 age=21 pickup-delay=0 on-ground=true
+entity 46 e5 10.367331706786029 1.0 2.469561220851908 0.0014820831986726716 0 0.002016969689055328 item=minecraft:birch_sign count=1 age=19 pickup-delay=0 on-ground=true
+
+entity-order 47 entities e1 e2 e3 e4 e5
+entity 47 e1 1.750353259069526 1.0 1.8295463591958552 1.8852110150411702E-4 -0.04 3.6460022108696186E-4 item=minecraft:oak_sign count=1 age=28 pickup-delay=0 on-ground=true
+entity 47 e2 4.259892124205058 1.0 3.7237368407352123 3.06134898445229E-4 0 3.5624472749354433E-4 item=minecraft:spruce_sign count=1 age=26 pickup-delay=0 on-ground=true
+entity 47 e3 4.112608030973937 1.0 1.448283693621161 -0.0017820184623349898 -0.12 1.7470169948708995E-4 item=minecraft:white_banner count=1 age=24 pickup-delay=0 on-ground=true
+entity 47 e4 7.548352364279175 1.0 3.1321829880357175 -2.125529261883384E-4 -0.08 6.583910448170016E-4 item=minecraft:red_banner count=1 age=22 pickup-delay=0 on-ground=true
+entity 47 e5 10.367331706786029 1.0 2.469561220851908 0.0014820831986726716 -0.04 0.002016969689055328 item=minecraft:birch_sign count=1 age=20 pickup-delay=0 on-ground=true
+
+entity-order 48 entities e1 e2 e3 e4 e5
+entity 48 e1 1.750353259069526 1.0 1.8295463591958552 1.8852110150411702E-4 -0.08 3.6460022108696186E-4 item=minecraft:oak_sign count=1 age=29 pickup-delay=0 on-ground=true
+entity 48 e2 4.259892124205058 1.0 3.7237368407352123 3.06134898445229E-4 -0.04 3.5624472749354433E-4 item=minecraft:spruce_sign count=1 age=27 pickup-delay=0 on-ground=true
+entity 48 e3 4.110826012511602 1.0 1.448458395320648 -0.0010478269612198188 0 1.0272460962813736E-4 item=minecraft:white_banner count=1 age=25 pickup-delay=0 on-ground=true
+entity 48 e4 7.548352364279175 1.0 3.1321829880357175 -2.125529261883384E-4 -0.12 6.583910448170016E-4 item=minecraft:red_banner count=1 age=23 pickup-delay=0 on-ground=true
+entity 48 e5 10.367331706786029 1.0 2.469561220851908 0.0014820831986726716 -0.08 0.002016969689055328 item=minecraft:birch_sign count=1 age=21 pickup-delay=0 on-ground=true
+
+entity-order 49 entities e1 e2 e3 e4 e5
+entity 49 e1 1.750353259069526 1.0 1.8295463591958552 1.8852110150411702E-4 -0.12 3.6460022108696186E-4 item=minecraft:oak_sign count=1 age=30 pickup-delay=0 on-ground=true
+entity 49 e2 4.259892124205058 1.0 3.7237368407352123 3.06134898445229E-4 -0.08 3.5624472749354433E-4 item=minecraft:spruce_sign count=1 age=28 pickup-delay=0 on-ground=true
+entity 49 e3 4.110826012511602 1.0 1.448458395320648 -0.0010478269612198188 -0.04 1.0272460962813736E-4 item=minecraft:white_banner count=1 age=26 pickup-delay=0 on-ground=true
+entity 49 e4 7.5481398113529865 1.0 3.1328413790805345 -1.2498113316653151E-4 0 3.8713397328161595E-4 item=minecraft:red_banner count=1 age=24 pickup-delay=0 on-ground=true
+entity 49 e5 10.367331706786029 1.0 2.469561220851908 0.0014820831986726716 -0.12 0.002016969689055328 item=minecraft:birch_sign count=1 age=22 pickup-delay=0 on-ground=true
+
+at 50 set 1 1 5 minecraft:white_carpet
+change 50 commands 1 1 5 minecraft:air minecraft:white_carpet
+entity-added 50 commands e6 minecraft:item 1.669445175023509 2.3883497173024333 5.699667505805746 -0.07321203188262156 0.2 -0.08338752035501702 item=minecraft:oak_sign count=1
+change 50 commands 1 2 5 minecraft:oak_sign[rotation=0,waterlogged=false] minecraft:air
+draws 50 commands level 10
+entity-order 50 entities e1 e2 e3 e4 e5 e6
+entity 50 e1 1.7505417801710301 1.0 1.829910959416942 1.1085041883126023E-4 0 2.143849515571453E-4 item=minecraft:oak_sign count=1 age=31 pickup-delay=0 on-ground=true
+entity 50 e2 4.259892124205058 1.0 3.7237368407352123 3.06134898445229E-4 -0.12 3.5624472749354433E-4 item=minecraft:spruce_sign count=1 age=29 pickup-delay=0 on-ground=true
+entity 50 e3 4.110826012511602 1.0 1.448458395320648 -0.0010478269612198188 -0.08 1.0272460962813736E-4 item=minecraft:white_banner count=1 age=27 pickup-delay=0 on-ground=true
+entity 50 e4 7.5481398113529865 1.0 3.1328413790805345 -1.2498113316653151E-4 -0.04 3.8713397328161595E-4 item=minecraft:red_banner count=1 age=25 pickup-delay=0 on-ground=true
+entity 50 e5 10.368813789984701 1.0 2.4715781905409635 8.714650084518612E-4 0 0.0011859782964235286 item=minecraft:birch_sign count=1 age=23 pickup-delay=0 on-ground=true
+entity 50 e6 1.5962331431408876 2.5483497173024334 5.6162799854507295 -0.07174779264137782 0.1568 -0.08171977153840741 item=minecraft:oak_sign count=1 age=1 pickup-delay=9 on-ground=false
+
+at 51 set 4 2 5 minecraft:oak_trapdoor[facing=north,half=bottom,open=true,powered=false,waterlogged=false]
+change 51 commands 4 2 5 minecraft:air minecraft:oak_trapdoor[facing=north,half=bottom,open=true,powered=false,waterlogged=false]
+entity-order 51 entities e1 e2 e3 e4 e5 e6
+entity 51 e1 1.7505417801710301 1.0 1.829910959416942 1.1085041883126023E-4 -0.04 2.143849515571453E-4 item=minecraft:oak_sign count=1 age=32 pickup-delay=0 on-ground=true
+entity 51 e2 4.260198259103503 1.0 3.7240930854627057 1.8000733838688003E-4 0 2.0947192083017378E-4 item=minecraft:spruce_sign count=1 age=30 pickup-delay=0 on-ground=true
+entity 51 e3 4.110826012511602 1.0 1.448458395320648 -0.0010478269612198188 -0.12 1.0272460962813736E-4 item=minecraft:white_banner count=1 age=28 pickup-delay=0 on-ground=true
+entity 51 e4 7.5481398113529865 1.0 3.1328413790805345 -1.2498113316653151E-4 -0.08 3.8713397328161595E-4 item=minecraft:red_banner count=1 age=26 pickup-delay=0 on-ground=true
+entity 51 e5 10.368813789984701 1.0 2.4715781905409635 8.714650084518612E-4 -0.04 0.0011859782964235286 item=minecraft:birch_sign count=1 age=24 pickup-delay=0 on-ground=true
+entity 51 e6 1.5244853504995097 2.6651497173024334 5.5345602139123224 -0.07031283815703081 0.11446399999999998 -0.0800853776663202 item=minecraft:oak_sign count=1 age=2 pickup-delay=8 on-ground=false
+
+at 52 set 7 1 5 minecraft:white_carpet
+change 52 commands 7 1 5 minecraft:air minecraft:white_carpet
+entity-added 52 commands e7 minecraft:item 7.73928717007392 2.4861785595944244 5.607515506925237 -0.07135592293988065 0.2 -0.007408436315515424 item=minecraft:blue_banner count=1
+change 52 commands 7 2 5 minecraft:blue_banner[rotation=0] minecraft:air
+draws 52 commands level 10
+entity-order 52 entities e1 e2 e3 e4 e5 e6 e7
+entity 52 e1 1.7505417801710301 1.0 1.829910959416942 1.1085041883126023E-4 -0.08 2.143849515571453E-4 item=minecraft:oak_sign count=1 age=33 pickup-delay=0 on-ground=true
+entity 52 e2 4.260198259103503 1.0 3.7240930854627057 1.8000733838688003E-4 -0.04 2.0947192083017378E-4 item=minecraft:spruce_sign count=1 age=31 pickup-delay=0 on-ground=true
+entity 52 e3 4.109778185550382 1.0 1.4485611199302761 -6.161223151529644E-4 0 6.040207653522572E-5 item=minecraft:white_banner count=1 age=29 pickup-delay=0 on-ground=true
+entity 52 e4 7.5481398113529865 1.0 3.1328413790805345 -1.2498113316653151E-4 -0.12 3.8713397328161595E-4 item=minecraft:red_banner count=1 age=27 pickup-delay=0 on-ground=true
+entity 52 e5 10.368813789984701 1.0 2.4715781905409635 8.714650084518612E-4 -0.08 0.0011859782964235286 item=minecraft:birch_sign count=1 age=25 pickup-delay=0 on-ground=true
+entity 52 e6 1.454172512342479 2.7396137173024333 5.4544748362460025 -0.06890658273500115 0.07297471999999998 -0.07848367164050116 item=minecraft:oak_sign count=1 age=3 pickup-delay=7 on-ground=false
+entity 52 e7 7.66793124713404 2.6461785595944245 5.600107070609722 -0.06992880584208926 0.1568 -0.007260267730509824 item=minecraft:blue_banner count=1 age=1 pickup-delay=9 on-ground=false
+
+at 53 set 10 1 5 minecraft:white_carpet
+change 53 commands 10 1 5 minecraft:air minecraft:white_carpet
+entity-order 53 entities e1 e2 e3 e4 e5 e6 e7
+entity 53 e1 1.7505417801710301 1.0 1.829910959416942 1.1085041883126023E-4 -0.12 2.143849515571453E-4 item=minecraft:oak_sign count=1 age=34 pickup-delay=0 on-ground=true
+entity 53 e2 4.260198259103503 1.0 3.7240930854627057 1.8000733838688003E-4 -0.08 2.0947192083017378E-4 item=minecraft:spruce_sign count=1 age=32 pickup-delay=0 on-ground=true
+entity 53 e3 4.109778185550382 1.0 1.4485611199302761 -6.161223151529644E-4 -0.04 6.040207653522572E-5 item=minecraft:white_banner count=1 age=30 pickup-delay=0 on-ground=true
+entity 53 e4 7.54801483021982 1.0 3.1332285130538162 -7.348891369178092E-5 0 2.2763479917997328E-4 item=minecraft:red_banner count=1 age=28 pickup-delay=0 on-ground=true
+entity 53 e5 10.368813789984701 1.0 2.4715781905409635 8.714650084518612E-4 -0.12 0.0011859782964235286 item=minecraft:birch_sign count=1 age=26 pickup-delay=0 on-ground=true
+entity 53 e6 1.3852659296074779 2.772588437302433 5.375991164605502 -0.06752845239458989 0.032315225599999976 -0.07691399970464838 item=minecraft:oak_sign count=1 age=4 pickup-delay=6 on-ground=false
+entity 53 e7 7.598002441291951 2.7629785595944245 5.592846802879212 -0.0685302310590336 0.11446399999999998 -0.007115062514378244 item=minecraft:blue_banner count=1 age=2 pickup-delay=8 on-ground=false
+
+entity-order 54 entities e1 e2 e3 e4 e5 e6 e7
+entity 54 e1 1.7505417801710301 1.0 1.829910959416942 6.518005282712325E-5 0 1.2605836419171362E-4 item=minecraft:oak_sign count=1 age=35 pickup-delay=0 on-ground=true
+entity 54 e2 4.260198259103503 1.0 3.7240930854627057 1.8000733838688003E-4 -0.12 2.0947192083017378E-4 item=minecraft:spruce_sign count=1 age=33 pickup-delay=0 on-ground=true
+entity 54 e3 4.109778185550382 1.0 1.4485611199302761 -6.161223151529644E-4 -0.08 6.040207653522572E-5 item=minecraft:white_banner count=1 age=31 pickup-delay=0 on-ground=true
+entity 54 e4 7.54801483021982 1.0 3.1332285130538162 -7.348891369178092E-5 -0.04 2.2763479917997328E-4 item=minecraft:red_banner count=1 age=29 pickup-delay=0 on-ground=true
+entity 54 e5 10.369685254993152 1.0 2.472764168837387 5.124214764975097E-4 0 6.973553084213313E-4 item=minecraft:birch_sign count=1 age=27 pickup-delay=0 on-ground=true
+entity 54 e6 1.317737477212888 2.7649036629024333 5.2990771649008535 -0.0661778846347011 -0.007531078912000024 -0.07537572117757353 item=minecraft:oak_sign count=1 age=5 pickup-delay=5 on-ground=false
+entity 54 e7 7.5294722102329175 2.8374425595944244 5.585731740364833 -0.06715962774496335 0.07297471999999998 -0.006972761399799727 item=minecraft:blue_banner count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 55 entities e1 e2 e3 e4 e5 e6 e7
+entity 55 e1 1.7505417801710301 1.0 1.829910959416942 6.518005282712325E-5 -0.04 1.2605836419171362E-4 item=minecraft:oak_sign count=1 age=36 pickup-delay=0 on-ground=true
+entity 55 e2 4.260198259103503 1.0 3.7240930854627057 1.0584432561492472E-4 0 1.231695018337576E-4 item=minecraft:spruce_sign count=1 age=34 pickup-delay=0 on-ground=true
+entity 55 e3 4.109778185550382 1.0 1.4485611199302761 -6.161223151529644E-4 -0.12 6.040207653522572E-5 item=minecraft:white_banner count=1 age=32 pickup-delay=0 on-ground=true
+entity 55 e4 7.54801483021982 1.0 3.1332285130538162 -7.348891369178092E-5 -0.08 2.2763479917997328E-4 item=minecraft:red_banner count=1 age=30 pickup-delay=0 on-ground=true
+entity 55 e5 10.369685254993152 1.0 2.472764168837387 5.124214764975097E-4 -0.04 6.973553084213313E-4 item=minecraft:birch_sign count=1 age=28 pickup-delay=0 on-ground=true
+entity 55 e6 1.2515595925781868 2.7173725839904335 5.22370144372328 -0.06485432820425006 -0.04658045733376002 -0.07386820819169986 item=minecraft:oak_sign count=1 age=6 pickup-delay=4 on-ground=false
+entity 55 e7 7.462312582487954 2.8704172795944243 5.578758978965034 -0.06581643647103233 0.032315225599999976 -0.006833306304798602 item=minecraft:blue_banner count=1 age=4 pickup-delay=6 on-ground=false
+
+entity-order 56 entities e1 e2 e3 e4 e5 e6 e7
+entity 56 e1 1.7505417801710301 1.0 1.829910959416942 6.518005282712325E-5 -0.08 1.2605836419171362E-4 item=minecraft:oak_sign count=1 age=37 pickup-delay=0 on-ground=true
+entity 56 e2 4.260198259103503 1.0 3.7240930854627057 1.0584432561492472E-4 -0.04 1.231695018337576E-4 item=minecraft:spruce_sign count=1 age=35 pickup-delay=0 on-ground=true
+entity 56 e3 4.109162063235229 1.0 1.4486215220068113 -3.6227995773990476E-4 0 3.5516424574155086E-5 item=minecraft:white_banner count=1 age=33 pickup-delay=0 on-ground=true
+entity 56 e4 7.54801483021982 1.0 3.1332285130538162 -7.348891369178092E-5 -0.12 2.2763479917997328E-4 item=minecraft:red_banner count=1 age=31 pickup-delay=0 on-ground=true
+entity 56 e5 10.369685254993152 1.0 2.472764168837387 5.124214764975097E-4 -0.08 6.973553084213313E-4 item=minecraft:birch_sign count=1 age=29 pickup-delay=0 on-ground=true
+entity 56 e6 1.1867052643739369 2.6307921266566736 5.14983323553158 -0.0635572428771632 -0.08484884818708481 -0.07239084543679011 item=minecraft:oak_sign count=1 age=7 pickup-delay=3 on-ground=false
+entity 56 e7 7.396496146016921 2.8627325051944243 5.571925672660235 -0.06450010899696058 -0.007531078912000024 -0.006696640309037605 item=minecraft:blue_banner count=1 age=5 pickup-delay=5 on-ground=false
+
+entity-order 57 entities e1 e2 e3 e4 e5 e6 e7
+entity 57 e1 1.7505417801710301 1.0 1.829910959416942 6.518005282712325E-5 -0.12 1.2605836419171362E-4 item=minecraft:oak_sign count=1 age=38 pickup-delay=0 on-ground=true
+entity 57 e2 4.260198259103503 1.0 3.7240930854627057 1.0584432561492472E-4 -0.08 1.231695018337576E-4 item=minecraft:spruce_sign count=1 age=36 pickup-delay=0 on-ground=true
+entity 57 e3 4.109162063235229 1.0 1.4486215220068113 -3.6227995773990476E-4 -0.04 3.5516424574155086E-5 item=minecraft:white_banner count=1 age=34 pickup-delay=0 on-ground=true
+entity 57 e4 7.54801483021982 1.0 3.1332285130538162 -4.3211485596005535E-5 0 1.338492753773709E-4 item=minecraft:red_banner count=1 age=32 pickup-delay=0 on-ground=true
+entity 57 e5 10.369685254993152 1.0 2.472764168837387 5.124214764975097E-4 -0.12 6.973553084213313E-4 item=minecraft:birch_sign count=1 age=30 pickup-delay=0 on-ground=true
+entity 57 e6 1.1231480214967737 2.505943278469589 5.07744239009479 -0.06228609923187814 -0.12235187122334311 -0.07094302990880011 item=minecraft:oak_sign count=1 age=8 pickup-delay=2 on-ground=false
+entity 57 e7 7.331996037019961 2.8152014262824245 5.565229032351198 -0.06321010804726332 -0.04658045733376002 -0.00656270763058513 item=minecraft:blue_banner count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 58 entities e1 e2 e3 e4 e5 e6 e7
+entity 58 e1 1.7505417801710301 1.0 1.829910959416942 3.8325874916302096E-5 0 7.412232559828231E-5 item=minecraft:oak_sign count=1 age=39 pickup-delay=0 on-ground=true
+entity 58 e2 4.260198259103503 1.0 3.7240930854627057 1.0584432561492472E-4 -0.12 1.231695018337576E-4 item=minecraft:spruce_sign count=1 age=37 pickup-delay=0 on-ground=true
+entity 58 e3 4.109162063235229 1.0 1.4486215220068113 -3.6227995773990476E-4 -0.08 3.5516424574155086E-5 item=minecraft:white_banner count=1 age=35 pickup-delay=0 on-ground=true
+entity 58 e4 7.54801483021982 1.0 3.1332285130538162 -4.3211485596005535E-5 -0.04 1.338492753773709E-4 item=minecraft:red_banner count=1 age=33 pickup-delay=0 on-ground=true
+entity 58 e5 10.37019767646965 1.0 2.4734615241458084 3.013038584788942E-4 0 4.100449625848333E-4 item=minecraft:birch_sign count=1 age=31 pickup-delay=0 on-ground=true
+entity 58 e6 1.0608619222648956 2.343591407246246 5.006499360185989 -0.06104037843525364 -0.15910483379887624 -0.06952417066375502 item=minecraft:oak_sign count=1 age=9 pickup-delay=1 on-ground=false
+entity 58 e7 7.268785928972697 2.7286209689486647 5.558666324720613 -0.06194590709195518 -0.08484884818708481 -0.006431453603147142 item=minecraft:blue_banner count=1 age=7 pickup-delay=3 on-ground=false
+
+entity-order 59 entities e1 e2 e3 e4 e5 e6 e7
+entity 59 e1 1.7505417801710301 1.0 1.829910959416942 3.8325874916302096E-5 -0.04 7.412232559828231E-5 item=minecraft:oak_sign count=1 age=40 pickup-delay=0 on-ground=true
+entity 59 e2 4.260198259103503 1.0 3.7240930854627057 6.223646971991866E-5 0 7.242367436099209E-5 item=minecraft:spruce_sign count=1 age=38 pickup-delay=0 on-ground=true
+entity 59 e3 4.109162063235229 1.0 1.4486215220068113 -3.6227995773990476E-4 -0.12 3.5516424574155086E-5 item=minecraft:white_banner count=1 age=36 pickup-delay=0 on-ground=true
+entity 59 e4 7.54801483021982 1.0 3.1332285130538162 -4.3211485596005535E-5 -0.08 1.338492753773709E-4 item=minecraft:red_banner count=1 age=34 pickup-delay=0 on-ground=true
+entity 59 e5 10.37019767646965 1.0 2.4734615241458084 3.013038584788942E-4 -0.04 4.100449625848333E-4 item=minecraft:birch_sign count=1 age=32 pickup-delay=0 on-ground=true
+entity 59 e6 0.999821543829642 2.1444865734473697 4.936975189522235 -0.05981957203080139 -0.1951227371228987 -0.06813368857654824 item=minecraft:oak_sign count=1 age=10 pickup-delay=0 on-ground=false
+entity 59 e7 7.206840021880742 2.60377212076158 5.552234871117466 -0.06070699013164049 -0.12235187122334311 -0.0063028246537544415 item=minecraft:blue_banner count=1 age=8 pickup-delay=2 on-ground=false
+
+at 60 set 3 1 9 minecraft:air
+change 60 commands 3 1 9 minecraft:red_bed[facing=east,occupied=false,part=head] minecraft:air
+change 60 commands 2 1 9 minecraft:red_bed[facing=east,occupied=false,part=foot] minecraft:air
+entity-order 60 entities e1 e2 e3 e4 e5 e6 e7
+entity 60 e1 1.7505417801710301 1.0 1.829910959416942 3.8325874916302096E-5 -0.08 7.412232559828231E-5 item=minecraft:oak_sign count=1 age=41 pickup-delay=0 on-ground=true
+entity 60 e2 4.260198259103503 1.0 3.7240930854627057 6.223646971991866E-5 -0.04 7.242367436099209E-5 item=minecraft:spruce_sign count=1 age=39 pickup-delay=0 on-ground=true
+entity 60 e3 4.108799783277489 1.0 1.4486570384313855 -2.1302063657188366E-4 0 2.088365974961151E-5 item=minecraft:white_banner count=1 age=37 pickup-delay=0 on-ground=true
+entity 60 e4 7.54801483021982 1.0 3.1332285130538162 -4.3211485596005535E-5 -0.12 1.338492753773709E-4 item=minecraft:red_banner count=1 age=35 pickup-delay=0 on-ground=true
+entity 60 e5 10.37019767646965 1.0 2.4734615241458084 3.013038584788942E-4 -0.08 4.100449625848333E-4 item=minecraft:birch_sign count=1 age=33 pickup-delay=0 on-ground=true
+entity 60 e6 0.9400019717988406 1.909363836324471 4.8688415009456865 -0.058623181731153155 -0.23042028238044074 -0.06677101610456425 item=minecraft:oak_sign count=1 age=11 pickup-delay=0 on-ground=false
+entity 60 e7 7.146133031749102 2.441420249538237 5.545932046463711 -0.05949285148690163 -0.15910483379887624 -0.006176768280896193 item=minecraft:blue_banner count=1 age=9 pickup-delay=1 on-ground=false
+
+entity-order 61 entities e1 e2 e3 e4 e5 e6 e7
+entity 61 e1 1.7505417801710301 1.0 1.829910959416942 3.8325874916302096E-5 -0.12 7.412232559828231E-5 item=minecraft:oak_sign count=1 age=42 pickup-delay=0 on-ground=true
+entity 61 e2 4.260198259103503 1.0 3.7240930854627057 6.223646971991866E-5 -0.08 7.242367436099209E-5 item=minecraft:spruce_sign count=1 age=40 pickup-delay=0 on-ground=true
+entity 61 e3 4.108799783277489 1.0 1.4486570384313855 -2.1302063657188366E-4 -0.04 2.088365974961151E-5 item=minecraft:white_banner count=1 age=38 pickup-delay=0 on-ground=true
+entity 61 e4 7.54801483021982 1.0 3.1332285130538162 -2.540835608545166E-5 0 7.87033818361083E-5 item=minecraft:red_banner count=1 age=36 pickup-delay=0 on-ground=true
+entity 61 e5 10.37019767646965 1.0 2.4734615241458084 3.013038584788942E-4 -0.12 4.100449625848333E-4 item=minecraft:birch_sign count=1 age=34 pickup-delay=0 on-ground=true
+entity 61 e6 0.8813787900676875 1.6389435539440302 4.802070484841122 -0.05745071921467855 -0.26501187673283194 -0.06543559705602903 item=minecraft:oak_sign count=1 age=12 pickup-delay=0 on-ground=false
+entity 61 e7 7.0866401802622 2.2423154157393608 5.539755278182815 -0.058302995591899685 -0.1951227371228987 -0.006053233033090774 item=minecraft:blue_banner count=1 age=10 pickup-delay=0 on-ground=false
+
+at 62 set 6 1 9 minecraft:air
+change 62 commands 6 1 9 minecraft:blue_bed[facing=east,occupied=false,part=foot] minecraft:air
+entity-added 62 commands e8 minecraft:item 7.252242801091443 1.160749157439947 9.424210114895832 -0.032246069292849275 0.2 0.0718713102709296 item=minecraft:blue_bed count=1
+change 62 commands 7 1 9 minecraft:blue_bed[facing=east,occupied=false,part=head] minecraft:air
+draws 62 commands level 10
+entity-order 62 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 62 e1 1.7505417801710301 1.0 1.829910959416942 2.2535616716910593E-5 0 4.358393183448061E-5 item=minecraft:oak_sign count=1 age=43 pickup-delay=0 on-ground=true
+entity 62 e2 4.260198259103503 1.0 3.7240930854627057 6.223646971991866E-5 -0.12 7.242367436099209E-5 item=minecraft:spruce_sign count=1 age=41 pickup-delay=0 on-ground=true
+entity 62 e3 4.108799783277489 1.0 1.4486570384313855 -2.1302063657188366E-4 -0.08 2.088365974961151E-5 item=minecraft:white_banner count=1 age=39 pickup-delay=0 on-ground=true
+entity 62 e4 7.54801483021982 1.0 3.1332285130538162 -2.540835608545166E-5 -0.04 7.87033818361083E-5 item=minecraft:red_banner count=1 age=37 pickup-delay=0 on-ground=true
+entity 62 e5 10.370498980328128 1.0 2.4738715691083932 1.7716668660102636E-4 0 2.4110646224494167E-4 item=minecraft:birch_sign count=1 age=35 pickup-delay=0 on-ground=true
+entity 62 e6 0.8239280708530089 1.3339316772111984 4.736634887785093 -0.05630170592617049 -0.29891163919817526 -0.06412688636299341 item=minecraft:oak_sign count=1 age=13 pickup-delay=0 on-ground=false
+entity 62 e7 7.0283371846703 2.007192678616462 5.533702045149724 -0.057136936792103084 -0.23042028238044074 -0.0059321684878852156 item=minecraft:blue_banner count=1 age=11 pickup-delay=0 on-ground=false
+entity 62 e8 7.219996731798593 1.320749157439947 9.49608142516676 -0.03160114852203725 0.1568 0.07043388543634747 item=minecraft:blue_bed count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 63 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 63 e1 1.7505417801710301 1.0 1.829910959416942 2.2535616716910593E-5 -0.04 4.358393183448061E-5 item=minecraft:oak_sign count=1 age=44 pickup-delay=0 on-ground=true
+entity 63 e2 4.260198259103503 1.0 3.7240930854627057 3.659504787521818E-5 0 4.258512480651643E-5 item=minecraft:spruce_sign count=1 age=42 pickup-delay=0 on-ground=true
+entity 63 e3 4.108799783277489 1.0 1.4486570384313855 -2.1302063657188366E-4 -0.12 2.088365974961151E-5 item=minecraft:white_banner count=1 age=40 pickup-delay=0 on-ground=true
+entity 63 e4 7.54801483021982 1.0 3.1332285130538162 -2.540835608545166E-5 -0.08 7.87033818361083E-5 item=minecraft:red_banner count=1 age=38 pickup-delay=0 on-ground=true
+entity 63 e5 10.370498980328128 1.0 2.4738715691083932 1.7716668660102636E-4 -0.04 2.4110646224494167E-4 item=minecraft:birch_sign count=1 age=36 pickup-delay=0 on-ground=true
+entity 63 e6 0.7676263649268384 1.0 4.672508001422099 -0.033105406413584684 0 -0.037706612973122326 item=minecraft:oak_sign count=1 age=14 pickup-delay=0 on-ground=true
+entity 63 e7 6.971200247878197 1.7367723962360213 5.527769876661838 -0.0559941991460616 -0.26501187673283194 -0.005813525231274646 item=minecraft:blue_banner count=1 age=12 pickup-delay=0 on-ground=false
+entity 63 e8 7.188395583276556 1.437549157439947 9.566515310603108 -0.030969126154340578 0.11446399999999998 0.06902520907104027 item=minecraft:blue_bed count=1 age=2 pickup-delay=8 on-ground=false
+
+at 64 set 8 1 9 minecraft:redstone_block
+change 64 commands 8 1 9 minecraft:air minecraft:redstone_block
+change 64 block_events 10 1 9 minecraft:white_bed[facing=north,occupied=false,part=foot] minecraft:air
+change 64 block_events 10 1 9 minecraft:air minecraft:moving_piston[facing=east,type=normal]
+entity-added 64 block_events e9 minecraft:item 10.735773494425857 1.557872940107019 8.556290552354934 -0.06420240309423655 0.2 -0.05648591755806281 item=minecraft:white_bed count=1
+change 64 block_events 10 1 8 minecraft:white_bed[facing=north,occupied=false,part=head] minecraft:air
+change 64 block_events 9 1 9 minecraft:piston[extended=false,facing=east] minecraft:piston[extended=true,facing=east]
+draws 64 block_events level 11
+entity-order 64 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 64 e1 1.7505417801710301 1.0 1.829910959416942 2.2535616716910593E-5 -0.08 4.358393183448061E-5 item=minecraft:oak_sign count=1 age=45 pickup-delay=0 on-ground=true
+entity 64 e2 4.260198259103503 1.0 3.7240930854627057 3.659504787521818E-5 -0.04 4.258512480651643E-5 item=minecraft:spruce_sign count=1 age=43 pickup-delay=0 on-ground=true
+entity 64 e3 4.108799783277489 1.0 1.4486570384313855 -1.2525614689971081E-4 0 1.2279593167576584E-5 item=minecraft:white_banner count=1 age=41 pickup-delay=0 on-ground=true
+entity 64 e4 7.54801483021982 1.0 3.1332285130538162 -2.540835608545166E-5 -0.12 7.87033818361083E-5 item=minecraft:red_banner count=1 age=39 pickup-delay=0 on-ground=true
+entity 64 e5 10.370498980328128 1.0 2.4738715691083932 1.7716668660102636E-4 -0.08 2.4110646224494167E-4 item=minecraft:birch_sign count=1 age=37 pickup-delay=0 on-ground=true
+entity 64 e6 0.7345209585132537 1.0 4.634801388448977 -0.019465980928637897 0 -0.022171490657705285 item=minecraft:oak_sign count=1 age=15 pickup-delay=0 on-ground=true
+entity 64 e7 6.915206048732135 1.4317605195031895 5.521956351430564 -0.054874316231144964 -0.29891163919817526 -0.005697254837533347 item=minecraft:blue_banner count=1 age=13 pickup-delay=0 on-ground=false
+entity 64 e8 7.157426457122215 1.512013157439947 9.635540519674148 -0.030349744221942972 0.07297471999999998 0.06764470620617086 item=minecraft:blue_bed count=1 age=3 pickup-delay=7 on-ground=false
+entity 64 e9 10.67157109133162 1.717872940107019 8.49980463479687 -0.06291835625691548 0.1568 -0.05535620028428493 item=minecraft:white_bed count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 65 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 65 e1 1.7505417801710301 1.0 1.829910959416942 2.2535616716910593E-5 -0.12 4.358393183448061E-5 item=minecraft:oak_sign count=1 age=46 pickup-delay=0 on-ground=true
+entity 65 e2 4.260198259103503 1.0 3.7240930854627057 3.659504787521818E-5 -0.08 4.258512480651643E-5 item=minecraft:spruce_sign count=1 age=44 pickup-delay=0 on-ground=true
+entity 65 e3 4.108799783277489 1.0 1.4486570384313855 -1.2525614689971081E-4 -0.04 1.2279593167576584E-5 item=minecraft:white_banner count=1 age=42 pickup-delay=0 on-ground=true
+entity 65 e4 7.54801483021982 1.0 3.1332285130538162 -1.4940114880585966E-5 0 4.62775931731901E-5 item=minecraft:red_banner count=1 age=40 pickup-delay=0 on-ground=true
+entity 65 e5 10.370498980328128 1.0 2.4738715691083932 1.7716668660102636E-4 -0.12 2.4110646224494167E-4 item=minecraft:birch_sign count=1 age=38 pickup-delay=0 on-ground=true
+entity 65 e6 0.7150549775846158 1.0 4.6126298977912725 -0.011445997937019859 0 -0.013036837817682341 item=minecraft:oak_sign count=1 age=16 pickup-delay=0 on-ground=true
+entity 65 e7 6.86033173250099 1.0928488803050143 5.516259096593031 -0.053776830953166585 -0.33213340641421174 -0.005583309849449192 item=minecraft:blue_banner count=1 age=14 pickup-delay=0 on-ground=false
+entity 65 e8 7.127076712900272 1.5449878774399468 9.703185225880318 -0.029742749916379544 0.032315225599999976 0.06629181337226782 item=minecraft:blue_bed count=1 age=4 pickup-delay=6 on-ground=false
+entity 65 e9 10.608652735074704 1.834672940107019 8.444448434512585 -0.06165999033184958 0.11446399999999998 -0.05424907733443496 item=minecraft:white_bed count=1 age=2 pickup-delay=8 on-ground=false
+
+change 66 block_entities 10 1 9 minecraft:moving_piston[facing=east,type=normal] minecraft:piston_head[facing=east,short=false,type=normal]
+entity-order 66 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 66 e1 1.7505417801710301 1.0 1.829910959416942 1.3250943962025039E-5 0 2.5627354495696934E-5 item=minecraft:oak_sign count=1 age=47 pickup-delay=0 on-ground=true
+entity 66 e2 4.260198259103503 1.0 3.7240930854627057 3.659504787521818E-5 -0.12 4.258512480651643E-5 item=minecraft:spruce_sign count=1 age=45 pickup-delay=0 on-ground=true
+entity 66 e3 4.108799783277489 1.0 1.4486570384313855 -1.2525614689971081E-4 -0.08 1.2279593167576584E-5 item=minecraft:white_banner count=1 age=43 pickup-delay=0 on-ground=true
+entity 66 e4 7.54801483021982 1.0 3.1332285130538162 -1.4940114880585966E-5 -0.04 4.62775931731901E-5 item=minecraft:red_banner count=1 age=41 pickup-delay=0 on-ground=true
+entity 66 e5 10.370498980328128 1.0 2.4738715691083932 1.0417402219688126E-4 0 1.417706140561222E-4 item=minecraft:birch_sign count=1 age=39 pickup-delay=0 on-ground=true
+entity 66 e6 0.703608979647596 1.0 4.59959305997359 -0.006730247463744441 0 -0.007665661407636855 item=minecraft:oak_sign count=1 age=17 pickup-delay=0 on-ground=true
+entity 66 e7 6.806554901547823 1.0 5.510675786743582 -0.031620779780168064 0 -0.0032829865216049956 item=minecraft:blue_banner count=1 age=15 pickup-delay=0 on-ground=true
+entity 66 e8 7.0973339629838925 1.5373031030399469 9.769477039252585 -0.029147895485349885 -0.007531078912000024 0.06496597836923845 item=minecraft:blue_bed count=1 age=5 pickup-delay=5 on-ground=false
+entity 66 e9 10.546992744742855 1.909136940107019 8.390199357178151 -0.06042679170128357 0.07297471999999998 -0.05316409682246529 item=minecraft:white_bed count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 67 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 67 e1 1.7505417801710301 1.0 1.829910959416942 1.3250943962025039E-5 -0.04 2.5627354495696934E-5 item=minecraft:oak_sign count=1 age=48 pickup-delay=0 on-ground=true
+entity 67 e2 4.260198259103503 1.0 3.7240930854627057 2.1517890314413238E-5 0 2.504005590419673E-5 item=minecraft:spruce_sign count=1 age=46 pickup-delay=0 on-ground=true
+entity 67 e3 4.108799783277489 1.0 1.4486570384313855 -1.2525614689971081E-4 -0.12 1.2279593167576584E-5 item=minecraft:white_banner count=1 age=44 pickup-delay=0 on-ground=true
+entity 67 e4 7.54801483021982 1.0 3.1332285130538162 -1.4940114880585966E-5 -0.08 4.62775931731901E-5 item=minecraft:red_banner count=1 age=42 pickup-delay=0 on-ground=true
+entity 67 e5 10.370498980328128 1.0 2.4738715691083932 1.0417402219688126E-4 -0.04 1.417706140561222E-4 item=minecraft:birch_sign count=1 age=40 pickup-delay=0 on-ground=true
+entity 67 e6 0.6968787321838515 1.0 4.591927398565954 -0.003957385906626509 0 -0.004507409360944224 item=minecraft:oak_sign count=1 age=18 pickup-delay=0 on-ground=true
+entity 67 e7 6.7749341217676555 1.0 5.507392800221977 -0.018593020380406205 0 -0.0019303962688195328 item=minecraft:blue_banner count=1 age=16 pickup-delay=0 on-ground=true
+entity 67 e8 7.068186067498543 1.4897720241279468 9.834443017621824 -0.028564938131594872 -0.04658045733376002 0.06366666004098138 item=minecraft:blue_bed count=1 age=6 pickup-delay=4 on-ground=false
+entity 67 e9 10.486565953041572 1.942111660107019 8.337035260355686 -0.059218257019807485 0.032315225599999976 -0.05210081590004066 item=minecraft:white_bed count=1 age=4 pickup-delay=6 on-ground=false
+
+entity-order 68 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 68 e1 1.7505417801710301 1.0 1.829910959416942 1.3250943962025039E-5 -0.08 2.5627354495696934E-5 item=minecraft:oak_sign count=1 age=49 pickup-delay=0 on-ground=true
+entity 68 e2 4.260198259103503 1.0 3.7240930854627057 2.1517890314413238E-5 -0.04 2.504005590419673E-5 item=minecraft:spruce_sign count=1 age=47 pickup-delay=0 on-ground=true
+entity 68 e3 4.108799783277489 1.0 1.4486570384313855 -7.365062178315132E-5 0 7.220401508600454E-6 item=minecraft:white_banner count=1 age=45 pickup-delay=0 on-ground=true
+entity 68 e4 7.54801483021982 1.0 3.1332285130538162 -1.4940114880585966E-5 -0.12 4.62775931731901E-5 item=minecraft:red_banner count=1 age=43 pickup-delay=0 on-ground=true
+entity 68 e5 10.370498980328128 1.0 2.4738715691083932 1.0417402219688126E-4 -0.08 1.417706140561222E-4 item=minecraft:birch_sign count=1 age=41 pickup-delay=0 on-ground=true
+entity 68 e6 0.692921346277225 1.0 4.587419989205009 -0.0023269431470879396 0 -0.002650356970748437 item=minecraft:oak_sign count=1 age=19 pickup-delay=0 on-ground=true
+entity 68 e7 6.75634110138725 1.0 5.505462403953158 -0.010932697083043381 0 -0.0011350731202059846 item=minecraft:blue_banner count=1 age=17 pickup-delay=0 on-ground=true
+entity 68 e8 7.039621129366948 1.4031915667941868 9.898109677662806 -0.027993639913795932 -0.08484884818708481 0.062393328054506925 item=minecraft:blue_bed count=1 age=7 pickup-delay=3 on-ground=false
+entity 68 e9 10.427347696021764 1.934426885707019 8.284934444455645 -0.05803389300890995 -0.007531078912000024 -0.05105880057578405 item=minecraft:white_bed count=1 age=5 pickup-delay=5 on-ground=false
+
+entity-order 69 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 69 e1 1.7505417801710301 1.0 1.829910959416942 1.3250943962025039E-5 -0.12 2.5627354495696934E-5 item=minecraft:oak_sign count=1 age=50 pickup-delay=0 on-ground=true
+entity 69 e2 4.260198259103503 1.0 3.7240930854627057 2.1517890314413238E-5 -0.08 2.504005590419673E-5 item=minecraft:spruce_sign count=1 age=48 pickup-delay=0 on-ground=true
+entity 69 e3 4.108799783277489 1.0 1.4486570384313855 -7.365062178315132E-5 -0.04 7.220401508600454E-6 item=minecraft:white_banner count=1 age=46 pickup-delay=0 on-ground=true
+entity 69 e4 7.54801483021982 1.0 3.1332285130538162 -8.784788433160787E-6 0 2.7211227522128407E-5 item=minecraft:red_banner count=1 age=44 pickup-delay=0 on-ground=true
+entity 69 e5 10.370498980328128 1.0 2.4738715691083932 1.0417402219688126E-4 -0.12 1.417706140561222E-4 item=minecraft:birch_sign count=1 age=42 pickup-delay=0 on-ground=true
+entity 69 e6 0.6905944031301371 1.0 4.584769632234261 -0.0013682427080747553 0 -0.001558410055509878 item=minecraft:oak_sign count=1 age=20 pickup-delay=0 on-ground=true
+entity 69 e7 6.745408404304206 1.0 5.504327330832952 -0.006428426531255918 0 -6.67423061795504E-4 item=minecraft:blue_banner count=1 age=18 pickup-delay=0 on-ground=true
+entity 69 e8 7.011627489453152 1.278342718607102 9.960503005717312 -0.02743376764945632 -0.12235187122334311 0.06114546268347507 item=minecraft:blue_bed count=1 age=8 pickup-delay=2 on-ground=false
+entity 69 e9 10.369313803012854 1.886895806795019 8.23387564387986 -0.056873216255640416 -0.04658045733376002 -0.0500376255381377 item=minecraft:white_bed count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 70 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 70 e1 1.7505417801710301 1.0 1.829910959416942 7.791555833169988E-6 0 1.5068885958759083E-5 item=minecraft:oak_sign count=1 age=51 pickup-delay=0 on-ground=true
+entity 70 e2 4.260198259103503 1.0 3.7240930854627057 2.1517890314413238E-5 -0.12 2.504005590419673E-5 item=minecraft:spruce_sign count=1 age=49 pickup-delay=0 on-ground=true
+entity 70 e3 4.108799783277489 1.0 1.4486570384313855 -7.365062178315132E-5 -0.08 7.220401508600454E-6 item=minecraft:white_banner count=1 age=47 pickup-delay=0 on-ground=true
+entity 70 e4 7.54801483021982 1.0 3.1332285130538162 -8.784788433160787E-6 -0.04 2.7211227522128407E-5 item=minecraft:red_banner count=1 age=45 pickup-delay=0 on-ground=true
+entity 70 e5 10.370498980328128 1.0 2.4738715691083932 6.125433121134773E-5 0 8.336112944758545E-5 item=minecraft:birch_sign count=1 age=43 pickup-delay=0 on-ground=true
+entity 70 e6 0.6905944031301371 1.0 4.584769632234261 -0.0013682427080747553 -0.04 -0.001558410055509878 item=minecraft:oak_sign count=1 age=21 pickup-delay=0 on-ground=true
+entity 70 e7 6.73897997777295 1.0 5.503659907771157 -0.003779915180477247 0 -3.924447997990188E-4 item=minecraft:blue_banner count=1 age=19 pickup-delay=0 on-ground=true
+entity 70 e8 6.984193721803695 1.1159908473837588 10.021648468400787 -0.026885092819724787 -0.15910483379887624 0.059922554596062716 item=minecraft:blue_bed count=1 age=9 pickup-delay=1 on-ground=false
+entity 70 e9 10.312440586757214 1.800315349461259 8.183838018341723 -0.05573575301529812 -0.08484884818708481 -0.04903687398176691 item=minecraft:white_bed count=1 age=7 pickup-delay=3 on-ground=false
+
+entity-order 71 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 71 e1 1.7505417801710301 1.0 1.829910959416942 7.791555833169988E-6 -0.04 1.5068885958759083E-5 item=minecraft:oak_sign count=1 age=52 pickup-delay=0 on-ground=true
+entity 71 e2 4.260198259103503 1.0 3.7240930854627057 1.2652520777180664E-5 0 1.4723554352231285E-5 item=minecraft:spruce_sign count=1 age=50 pickup-delay=0 on-ground=true
+entity 71 e3 4.108799783277489 1.0 1.4486570384313855 -7.365062178315132E-5 -0.12 7.220401508600454E-6 item=minecraft:white_banner count=1 age=48 pickup-delay=0 on-ground=true
+entity 71 e4 7.54801483021982 1.0 3.1332285130538162 -8.784788433160787E-6 -0.08 2.7211227522128407E-5 item=minecraft:red_banner count=1 age=46 pickup-delay=0 on-ground=true
+entity 71 e5 10.370498980328128 1.0 2.4738715691083932 6.125433121134773E-5 -0.04 8.336112944758545E-5 item=minecraft:birch_sign count=1 age=44 pickup-delay=0 on-ground=true
+entity 71 e6 0.6892261604220623 1.0 4.583211222178751 -8.045267932491478E-4 0 -9.163452047851782E-4 item=minecraft:oak_sign count=1 age=22 pickup-delay=0 on-ground=true
+entity 71 e7 6.735200062592473 1.0 5.503267462971357 -0.002222590349618719 0 -2.3075756548622366E-4 item=minecraft:blue_banner count=1 age=20 pickup-delay=0 on-ground=true
+entity 71 e8 6.957308628983971 1.0 10.081571022996851 -0.01580843616765477 0 0.035234465645574156 item=minecraft:blue_bed count=1 age=10 pickup-delay=0 on-ground=true
+entity 71 e9 10.256704833741916 1.675466501274174 8.134801144359956 -0.05462103901806729 -0.12235187122334311 -0.04805613743743572 item=minecraft:white_bed count=1 age=8 pickup-delay=2 on-ground=false
+
+entity-order 72 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 72 e1 1.7505417801710301 1.0 1.829910959416942 7.791555833169988E-6 -0.08 1.5068885958759083E-5 item=minecraft:oak_sign count=1 age=53 pickup-delay=0 on-ground=true
+entity 72 e2 4.260198259103503 1.0 3.7240930854627057 1.2652520777180664E-5 -0.04 1.4723554352231285E-5 item=minecraft:spruce_sign count=1 age=51 pickup-delay=0 on-ground=true
+entity 72 e3 4.108799783277489 1.0 1.4486570384313855 -4.330656996329277E-5 0 4.245596513983579E-6 item=minecraft:white_banner count=1 age=49 pickup-delay=0 on-ground=true
+entity 72 e4 7.54801483021982 1.0 3.1332285130538162 -8.784788433160787E-6 -0.12 2.7211227522128407E-5 item=minecraft:red_banner count=1 age=47 pickup-delay=0 on-ground=true
+entity 72 e5 10.370498980328128 1.0 2.4738715691083932 6.125433121134773E-5 -0.08 8.336112944758545E-5 item=minecraft:birch_sign count=1 age=45 pickup-delay=0 on-ground=true
+entity 72 e6 0.6892261604220623 1.0 4.583211222178751 -8.045267932491478E-4 -0.04 -9.163452047851782E-4 item=minecraft:oak_sign count=1 age=23 pickup-delay=0 on-ground=true
+entity 72 e7 6.732977472242855 1.0 5.503036705405871 -0.0013068832569927014 0 -1.3568546215008846E-4 item=minecraft:blue_banner count=1 age=21 pickup-delay=0 on-ground=true
+entity 72 e8 6.941500192816316 1.0 10.116805488642425 -0.009295361401299178 0 0.02071786788293431 item=minecraft:blue_bed count=1 age=11 pickup-delay=0 on-ground=true
+entity 72 e9 10.202083794723848 1.513114630050831 8.08674500692252 -0.05352861927951958 -0.15910483379887624 -0.04709501560528508 item=minecraft:white_bed count=1 age=9 pickup-delay=1 on-ground=false
+
+entity-order 73 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 73 e1 1.7505417801710301 1.0 1.829910959416942 7.791555833169988E-6 -0.12 1.5068885958759083E-5 item=minecraft:oak_sign count=1 age=54 pickup-delay=0 on-ground=true
+entity 73 e2 4.260198259103503 1.0 3.7240930854627057 1.2652520777180664E-5 -0.08 1.4723554352231285E-5 item=minecraft:spruce_sign count=1 age=52 pickup-delay=0 on-ground=true
+entity 73 e3 4.108799783277489 1.0 1.4486570384313855 -4.330656996329277E-5 -0.04 4.245596513983579E-6 item=minecraft:white_banner count=1 age=50 pickup-delay=0 on-ground=true
+entity 73 e4 7.54801483021982 1.0 3.1332285130538162 -5.165456118123824E-6 0 1.6000203391951728E-5 item=minecraft:red_banner count=1 age=48 pickup-delay=0 on-ground=true
+entity 73 e5 10.370498980328128 1.0 2.4738715691083932 6.125433121134773E-5 -0.12 8.336112944758545E-5 item=minecraft:birch_sign count=1 age=46 pickup-delay=0 on-ground=true
+entity 73 e6 0.6892261604220623 1.0 4.583211222178751 -8.045267932491478E-4 -0.08 -9.163452047851782E-4 item=minecraft:oak_sign count=1 age=24 pickup-delay=0 on-ground=true
+entity 73 e7 6.732977472242855 1.0 5.503036705405871 -0.0013068832569927014 -0.04 -1.3568546215008846E-4 item=minecraft:blue_banner count=1 age=22 pickup-delay=0 on-ground=true
+entity 73 e8 6.932204831415017 1.0 10.13752335652536 -0.005465673053578257 0 0.012182107540167481 item=minecraft:blue_bed count=1 age=12 pickup-delay=0 on-ground=true
+entity 73 e9 10.148555175444328 1.3140097962519546 8.039649991317235 -0.052458047914906575 -0.1951227371228987 -0.04615311619144552 item=minecraft:white_bed count=1 age=10 pickup-delay=0 on-ground=false
+
+entity-order 74 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 74 e1 1.7505417801710301 1.0 1.829910959416942 4.581435290601568E-6 0 8.86050583474053E-6 item=minecraft:oak_sign count=1 age=55 pickup-delay=0 on-ground=true
+entity 74 e2 4.260198259103503 1.0 3.7240930854627057 1.2652520777180664E-5 -0.12 1.4723554352231285E-5 item=minecraft:spruce_sign count=1 age=53 pickup-delay=0 on-ground=true
+entity 74 e3 4.108799783277489 1.0 1.4486570384313855 -4.330656996329277E-5 -0.08 4.245596513983579E-6 item=minecraft:white_banner count=1 age=51 pickup-delay=0 on-ground=true
+entity 74 e4 7.54801483021982 1.0 3.1332285130538162 -5.165456118123824E-6 -0.04 1.6000203391951728E-5 item=minecraft:red_banner count=1 age=49 pickup-delay=0 on-ground=true
+entity 74 e5 10.370498980328128 1.0 2.4738715691083932 3.6017550374106774E-5 0 4.901634904414107E-5 item=minecraft:birch_sign count=1 age=47 pickup-delay=0 on-ground=true
+entity 74 e6 0.6892261604220623 1.0 4.583211222178751 -8.045267932491478E-4 -0.12 -9.163452047851782E-4 item=minecraft:oak_sign count=1 age=25 pickup-delay=0 on-ground=true
+entity 74 e7 6.732977472242855 1.0 5.503036705405871 -0.0013068832569927014 -0.08 -1.3568546215008846E-4 item=minecraft:blue_banner count=1 age=23 pickup-delay=0 on-ground=true
+entity 74 e8 6.926739158361439 1.0 10.149705464065528 -0.00321381607867728 0 0.00716307995391979 item=minecraft:blue_bed count=1 age=13 pickup-delay=0 on-ground=true
+entity 74 e9 10.09609712752942 1.0788870591290558 7.99349687512579 -0.051408887957166305 -0.23042028238044074 -0.04523005474791744 item=minecraft:white_bed count=1 age=11 pickup-delay=0 on-ground=false
+
+entity-order 75 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 75 e1 1.7505417801710301 1.0 1.829910959416942 4.581435290601568E-6 -0.04 8.86050583474053E-6 item=minecraft:oak_sign count=1 age=56 pickup-delay=0 on-ground=true
+entity 75 e2 4.260198259103503 1.0 3.7240930854627057 7.439682965098045E-6 0 8.657450829683484E-6 item=minecraft:spruce_sign count=1 age=54 pickup-delay=0 on-ground=true
+entity 75 e3 4.108799783277489 1.0 1.4486570384313855 -4.330656996329277E-5 -0.12 4.245596513983579E-6 item=minecraft:white_banner count=1 age=52 pickup-delay=0 on-ground=true
+entity 75 e4 7.54801483021982 1.0 3.1332285130538162 -5.165456118123824E-6 -0.08 1.6000203391951728E-5 item=minecraft:red_banner count=1 age=50 pickup-delay=0 on-ground=true
+entity 75 e5 10.370498980328128 1.0 2.4738715691083932 3.6017550374106774E-5 -0.04 4.901634904414107E-5 item=minecraft:birch_sign count=1 age=48 pickup-delay=0 on-ground=true
+entity 75 e6 0.6884216336288131 1.0 4.582294876973966 -4.7306180200040434E-4 0 -5.388110345951678E-4 item=minecraft:oak_sign count=1 age=26 pickup-delay=0 on-ground=true
+entity 75 e7 6.732977472242855 1.0 5.503036705405871 -0.0013068832569927014 -0.12 -1.3568546215008846E-4 item=minecraft:blue_banner count=1 age=24 pickup-delay=0 on-ground=true
+entity 75 e8 6.923525342282762 1.0 10.156868544019447 -0.0018897240442881395 0 0.00421189143644205 item=minecraft:blue_bed count=1 age=14 pickup-delay=0 on-ground=true
+entity 75 e9 10.044688239572254 1.0 7.948266820377873 -0.030228429158508624 0 -0.02659527486612943 item=minecraft:white_bed count=1 age=12 pickup-delay=0 on-ground=true
+
+entity-order 76 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 76 e1 1.7505417801710301 1.0 1.829910959416942 4.581435290601568E-6 -0.08 8.86050583474053E-6 item=minecraft:oak_sign count=1 age=57 pickup-delay=0 on-ground=true
+entity 76 e2 4.260198259103503 1.0 3.7240930854627057 7.439682965098045E-6 -0.04 8.657450829683484E-6 item=minecraft:spruce_sign count=1 age=55 pickup-delay=0 on-ground=true
+entity 76 e3 4.108799783277489 1.0 1.4486570384313855 -2.5464265699038687E-5 0 2.4964110012551584E-6 item=minecraft:white_banner count=1 age=53 pickup-delay=0 on-ground=true
+entity 76 e4 7.54801483021982 1.0 3.1332285130538162 -5.165456118123824E-6 -0.12 1.6000203391951728E-5 item=minecraft:red_banner count=1 age=51 pickup-delay=0 on-ground=true
+entity 76 e5 10.370498980328128 1.0 2.4738715691083932 3.6017550374106774E-5 -0.08 4.901634904414107E-5 item=minecraft:birch_sign count=1 age=49 pickup-delay=0 on-ground=true
+entity 76 e6 0.6884216336288131 1.0 4.582294876973966 -4.7306180200040434E-4 -0.04 -5.388110345951678E-4 item=minecraft:oak_sign count=1 age=27 pickup-delay=0 on-ground=true
+entity 76 e7 6.731670588985862 1.0 5.502901019943721 -7.684474323848503E-4 0 -7.978305976703592E-5 item=minecraft:blue_banner count=1 age=25 pickup-delay=0 on-ground=true
+entity 76 e8 6.921635618238474 1.0 10.16108043545589 -0.0011111578497766657 0 0.002476592413667832 item=minecraft:blue_bed count=1 age=15 pickup-delay=0 on-ground=true
+entity 76 e9 10.014459810413745 1.0 7.921671545511743 -0.017774318132543813 0 -0.0156380231938044 item=minecraft:white_bed count=1 age=13 pickup-delay=0 on-ground=true
+
+entity-order 77 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 77 e1 1.7505417801710301 1.0 1.829910959416942 4.581435290601568E-6 -0.12 8.86050583474053E-6 item=minecraft:oak_sign count=1 age=58 pickup-delay=0 on-ground=true
+entity 77 e2 4.260198259103503 1.0 3.7240930854627057 7.439682965098045E-6 -0.08 8.657450829683484E-6 item=minecraft:spruce_sign count=1 age=56 pickup-delay=0 on-ground=true
+entity 77 e3 4.108799783277489 1.0 1.4486570384313855 -2.5464265699038687E-5 -0.04 2.4964110012551584E-6 item=minecraft:white_banner count=1 age=54 pickup-delay=0 on-ground=true
+entity 77 e4 7.54801483021982 1.0 3.1332285130538162 -3.037288502878904E-6 0 9.408120540524563E-6 item=minecraft:red_banner count=1 age=52 pickup-delay=0 on-ground=true
+entity 77 e5 10.370498980328128 1.0 2.4738715691083932 3.6017550374106774E-5 -0.12 4.901634904414107E-5 item=minecraft:birch_sign count=1 age=50 pickup-delay=0 on-ground=true
+entity 77 e6 0.6884216336288131 1.0 4.582294876973966 -4.7306180200040434E-4 -0.08 -5.388110345951678E-4 item=minecraft:oak_sign count=1 age=28 pickup-delay=0 on-ground=true
+entity 77 e7 6.731670588985862 1.0 5.502901019943721 -7.684474323848503E-4 -0.04 -7.978305976703592E-5 item=minecraft:blue_banner count=1 age=26 pickup-delay=0 on-ground=true
+entity 77 e8 6.920524460388697 1.0 10.163557027869558 -6.53360881369007E-4 0 0.0014562364856721649 item=minecraft:blue_bed count=1 age=16 pickup-delay=0 on-ground=true
+entity 77 e9 9.996685492281202 1.0 7.906033522317939 -0.010451300112892225 0 -0.009195158562599014 item=minecraft:white_bed count=1 age=14 pickup-delay=0 on-ground=true
+
+entity-order 78 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 78 e1 1.7505417801710301 1.0 1.829910959416942 2.693884221763946E-6 0 5.209977954729716E-6 item=minecraft:oak_sign count=1 age=59 pickup-delay=0 on-ground=true
+entity 78 e2 4.260198259103503 1.0 3.7240930854627057 7.439682965098045E-6 -0.12 8.657450829683484E-6 item=minecraft:spruce_sign count=1 age=57 pickup-delay=0 on-ground=true
+entity 78 e3 4.108799783277489 1.0 1.4486570384313855 -2.5464265699038687E-5 -0.08 2.4964110012551584E-6 item=minecraft:white_banner count=1 age=55 pickup-delay=0 on-ground=true
+entity 78 e4 7.54801483021982 1.0 3.1332285130538162 -3.037288502878904E-6 -0.04 9.408120540524563E-6 item=minecraft:red_banner count=1 age=53 pickup-delay=0 on-ground=true
+entity 78 e5 10.370498980328128 1.0 2.4738715691083932 2.117832174961357E-5 0 2.8821616136184205E-5 item=minecraft:birch_sign count=1 age=51 pickup-delay=0 on-ground=true
+entity 78 e6 0.6884216336288131 1.0 4.582294876973966 -4.7306180200040434E-4 -0.12 -5.388110345951678E-4 item=minecraft:oak_sign count=1 age=29 pickup-delay=0 on-ground=true
+entity 78 e7 6.731670588985862 1.0 5.502901019943721 -7.684474323848503E-4 -0.08 -7.978305976703592E-5 item=minecraft:blue_banner count=1 age=27 pickup-delay=0 on-ground=true
+entity 78 e8 6.920524460388697 1.0 10.163557027869558 -6.53360881369007E-4 -0.04 0.0014562364856721649 item=minecraft:blue_bed count=1 age=17 pickup-delay=0 on-ground=true
+entity 78 e9 9.98623419216831 1.0 7.89683836375534 -0.0061453650843430905 0 -0.005406753778497787 item=minecraft:white_bed count=1 age=15 pickup-delay=0 on-ground=true
+
+entity-order 79 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 79 e1 1.7505417801710301 1.0 1.829910959416942 2.693884221763946E-6 -0.04 5.209977954729716E-6 item=minecraft:oak_sign count=1 age=60 pickup-delay=0 on-ground=true
+entity 79 e2 4.260198259103503 1.0 3.7240930854627057 4.374534023369794E-6 0 5.0905815997499755E-6 item=minecraft:spruce_sign count=1 age=58 pickup-delay=0 on-ground=true
+entity 79 e3 4.108799783277489 1.0 1.4486570384313855 -2.5464265699038687E-5 -0.12 2.4964110012551584E-6 item=minecraft:white_banner count=1 age=56 pickup-delay=0 on-ground=true
+entity 79 e4 7.54801483021982 1.0 3.1332285130538162 -3.037288502878904E-6 -0.08 9.408120540524563E-6 item=minecraft:red_banner count=1 age=54 pickup-delay=0 on-ground=true
+entity 79 e5 10.370498980328128 1.0 2.4738715691083932 2.117832174961357E-5 -0.04 2.8821616136184205E-5 item=minecraft:birch_sign count=1 age=52 pickup-delay=0 on-ground=true
+entity 79 e6 0.6879485718268128 1.0 4.581756065939372 -2.78160367547345E-4 0 -3.1682092020067384E-4 item=minecraft:oak_sign count=1 age=30 pickup-delay=0 on-ground=true
+entity 79 e7 6.731670588985862 1.0 5.502901019943721 -7.684474323848503E-4 -0.12 -7.978305976703592E-5 item=minecraft:blue_banner count=1 age=28 pickup-delay=0 on-ground=true
+entity 79 e8 6.920524460388697 1.0 10.163557027869558 -6.53360881369007E-4 -0.08 0.0014562364856721649 item=minecraft:blue_bed count=1 age=18 pickup-delay=0 on-ground=true
+entity 79 e9 9.980088827083966 1.0 7.891431609976842 -0.0036134750329557016 0 -0.003179171541446196 item=minecraft:white_bed count=1 age=16 pickup-delay=0 on-ground=true
+
+entity-order 80 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 80 e1 1.7505417801710301 1.0 1.829910959416942 2.693884221763946E-6 -0.08 5.209977954729716E-6 item=minecraft:oak_sign count=1 age=61 pickup-delay=0 on-ground=true
+entity 80 e2 4.260198259103503 1.0 3.7240930854627057 4.374534023369794E-6 -0.04 5.0905815997499755E-6 item=minecraft:spruce_sign count=1 age=59 pickup-delay=0 on-ground=true
+entity 80 e3 4.108799783277489 1.0 1.4486570384313855 -1.4972989736680951E-5 0 1.4678898163453426E-6 item=minecraft:white_banner count=1 age=57 pickup-delay=0 on-ground=true
+entity 80 e4 7.54801483021982 1.0 3.1332285130538162 -3.037288502878904E-6 -0.12 9.408120540524563E-6 item=minecraft:red_banner count=1 age=55 pickup-delay=0 on-ground=true
+entity 80 e5 10.370498980328128 1.0 2.4738715691083932 2.117832174961357E-5 -0.08 2.8821616136184205E-5 item=minecraft:birch_sign count=1 age=53 pickup-delay=0 on-ground=true
+entity 80 e6 0.6879485718268128 1.0 4.581756065939372 -2.78160367547345E-4 -0.04 -3.1682092020067384E-4 item=minecraft:oak_sign count=1 age=31 pickup-delay=0 on-ground=true
+entity 80 e7 6.730902141553477 1.0 5.502821236883954 -4.518471356789039E-4 0 -4.691244386041453E-5 item=minecraft:blue_banner count=1 age=29 pickup-delay=0 on-ground=true
+entity 80 e8 6.920524460388697 1.0 10.163557027869558 -6.53360881369007E-4 -0.12 0.0014562364856721649 item=minecraft:blue_bed count=1 age=19 pickup-delay=0 on-ground=true
+entity 80 e9 9.976475352051011 1.0 7.888252438435396 -0.0021247235330348092 0 -0.0018693530543478067 item=minecraft:white_bed count=1 age=17 pickup-delay=0 on-ground=true
+
+entity-order 81 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 81 e1 1.7505417801710301 1.0 1.829910959416942 2.693884221763946E-6 -0.12 5.209977954729716E-6 item=minecraft:oak_sign count=1 age=62 pickup-delay=0 on-ground=true
+entity 81 e2 4.260198259103503 1.0 3.7240930854627057 4.374534023369794E-6 -0.08 5.0905815997499755E-6 item=minecraft:spruce_sign count=1 age=60 pickup-delay=0 on-ground=true
+entity 81 e3 4.108799783277489 1.0 1.4486570384313855 -1.4972989736680951E-5 -0.04 1.4678898163453426E-6 item=minecraft:white_banner count=1 age=58 pickup-delay=0 on-ground=true
+entity 81 e4 7.54801483021982 1.0 3.1332285130538162 -1.7859258192810058E-6 0 5.531975434109985E-6 item=minecraft:red_banner count=1 age=56 pickup-delay=0 on-ground=true
+entity 81 e5 10.370498980328128 1.0 2.4738715691083932 2.117832174961357E-5 -0.12 2.8821616136184205E-5 item=minecraft:birch_sign count=1 age=54 pickup-delay=0 on-ground=true
+entity 81 e6 0.6879485718268128 1.0 4.581756065939372 -2.78160367547345E-4 -0.08 -3.1682092020067384E-4 item=minecraft:oak_sign count=1 age=32 pickup-delay=0 on-ground=true
+entity 81 e7 6.730902141553477 1.0 5.502821236883954 -4.518471356789039E-4 -0.04 -4.691244386041453E-5 item=minecraft:blue_banner count=1 age=30 pickup-delay=0 on-ground=true
+entity 81 e8 6.919871099507328 1.0 10.165013264355231 -3.8417623687677266E-4 0 8.562671396793037E-4 item=minecraft:blue_bed count=1 age=20 pickup-delay=0 on-ground=true
+entity 81 e9 9.976475352051011 1.0 7.888252438435396 -0.0021247235330348092 -0.04 -0.0018693530543478067 item=minecraft:white_bed count=1 age=18 pickup-delay=0 on-ground=true
+
+entity-order 82 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 82 e1 1.7505417801710301 1.0 1.829910959416942 1.5840040816806683E-6 0 3.0634673454356473E-6 item=minecraft:oak_sign count=1 age=63 pickup-delay=0 on-ground=true
+entity 82 e2 4.260198259103503 1.0 3.7240930854627057 4.374534023369794E-6 -0.12 5.0905815997499755E-6 item=minecraft:spruce_sign count=1 age=61 pickup-delay=0 on-ground=true
+entity 82 e3 4.108799783277489 1.0 1.4486570384313855 -1.4972989736680951E-5 -0.08 1.4678898163453426E-6 item=minecraft:white_banner count=1 age=59 pickup-delay=0 on-ground=true
+entity 82 e4 7.54801483021982 1.0 3.1332285130538162 -1.7859258192810058E-6 -0.04 5.531975434109985E-6 item=minecraft:red_banner count=1 age=57 pickup-delay=0 on-ground=true
+entity 82 e5 10.370498980328128 1.0 2.4738715691083932 1.2452854441000514E-5 0 1.6947111992235285E-5 item=minecraft:birch_sign count=1 age=55 pickup-delay=0 on-ground=true
+entity 82 e6 0.6879485718268128 1.0 4.581756065939372 -2.78160367547345E-4 -0.12 -3.1682092020067384E-4 item=minecraft:oak_sign count=1 age=33 pickup-delay=0 on-ground=true
+entity 82 e7 6.730902141553477 1.0 5.502821236883954 -4.518471356789039E-4 -0.08 -4.691244386041453E-5 item=minecraft:blue_banner count=1 age=31 pickup-delay=0 on-ground=true
+entity 82 e8 6.919871099507328 1.0 10.165013264355231 -3.8417623687677266E-4 -0.04 8.562671396793037E-4 item=minecraft:blue_bed count=1 age=21 pickup-delay=0 on-ground=true
+entity 82 e9 9.974350628517977 1.0 7.886383085381048 -0.0012493375630547121 0 -0.001099179706487258 item=minecraft:white_bed count=1 age=19 pickup-delay=0 on-ground=true
+
+entity-order 83 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 83 e1 1.7505417801710301 1.0 1.829910959416942 1.5840040816806683E-6 -0.04 3.0634673454356473E-6 item=minecraft:oak_sign count=1 age=64 pickup-delay=0 on-ground=true
+entity 83 e2 4.260198259103503 1.0 3.7240930854627057 2.572226264398045E-6 0 2.993262281647915E-6 item=minecraft:spruce_sign count=1 age=62 pickup-delay=0 on-ground=true
+entity 83 e3 4.108799783277489 1.0 1.4486570384313855 -1.4972989736680951E-5 -0.12 1.4678898163453426E-6 item=minecraft:white_banner count=1 age=60 pickup-delay=0 on-ground=true
+entity 83 e4 7.54801483021982 1.0 3.1332285130538162 -1.7859258192810058E-6 -0.08 5.531975434109985E-6 item=minecraft:red_banner count=1 age=58 pickup-delay=0 on-ground=true
+entity 83 e5 10.370498980328128 1.0 2.4738715691083932 1.2452854441000514E-5 -0.04 1.6947111992235285E-5 item=minecraft:birch_sign count=1 age=56 pickup-delay=0 on-ground=true
+entity 83 e6 0.6876704114592654 1.0 4.581439245019171 -1.6355831256485156E-4 0 -1.8629071981092265E-4 item=minecraft:oak_sign count=1 age=34 pickup-delay=0 on-ground=true
+entity 83 e7 6.730902141553477 1.0 5.502821236883954 -4.518471356789039E-4 -0.12 -4.691244386041453E-5 item=minecraft:blue_banner count=1 age=32 pickup-delay=0 on-ground=true
+entity 83 e8 6.919871099507328 1.0 10.165013264355231 -3.8417623687677266E-4 -0.08 8.562671396793037E-4 item=minecraft:blue_bed count=1 age=22 pickup-delay=0 on-ground=true
+entity 83 e9 9.974350628517977 1.0 7.886383085381048 -0.0012493375630547121 -0.04 -0.001099179706487258 item=minecraft:white_bed count=1 age=20 pickup-delay=0 on-ground=true
+
+entity-order 84 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 84 e1 1.7505417801710301 1.0 1.829910959416942 1.5840040816806683E-6 -0.08 3.0634673454356473E-6 item=minecraft:oak_sign count=1 age=65 pickup-delay=0 on-ground=true
+entity 84 e2 4.260198259103503 1.0 3.7240930854627057 2.572226264398045E-6 -0.04 2.993262281647915E-6 item=minecraft:spruce_sign count=1 age=63 pickup-delay=0 on-ground=true
+entity 84 e3 4.108799783277489 1.0 1.4486570384313855 -8.804118850488456E-6 0 8.631192988041682E-7 item=minecraft:white_banner count=1 age=61 pickup-delay=0 on-ground=true
+entity 84 e4 7.54801483021982 1.0 3.1332285130538162 -1.7859258192810058E-6 -0.12 5.531975434109985E-6 item=minecraft:red_banner count=1 age=59 pickup-delay=0 on-ground=true
+entity 84 e5 10.370498980328128 1.0 2.4738715691083932 1.2452854441000514E-5 -0.08 1.6947111992235285E-5 item=minecraft:birch_sign count=1 age=57 pickup-delay=0 on-ground=true
+entity 84 e6 0.6876704114592654 1.0 4.581439245019171 -1.6355831256485156E-4 -0.04 -1.8629071981092265E-4 item=minecraft:oak_sign count=1 age=35 pickup-delay=0 on-ground=true
+entity 84 e7 6.730450294417798 1.0 5.502774324440094 -2.65686142495926E-4 0 -2.75845197637537E-5 item=minecraft:blue_banner count=1 age=33 pickup-delay=0 on-ground=true
+entity 84 e8 6.919871099507328 1.0 10.165013264355231 -3.8417623687677266E-4 -0.12 8.562671396793037E-4 item=minecraft:blue_bed count=1 age=23 pickup-delay=0 on-ground=true
+entity 84 e9 9.974350628517977 1.0 7.886383085381048 -0.0012493375630547121 -0.08 -0.001099179706487258 item=minecraft:white_bed count=1 age=21 pickup-delay=0 on-ground=true
+
+entity-order 85 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 85 e1 1.7505417801710301 1.0 1.829910959416942 1.5840040816806683E-6 -0.12 3.0634673454356473E-6 item=minecraft:oak_sign count=1 age=66 pickup-delay=0 on-ground=true
+entity 85 e2 4.260198259103503 1.0 3.7240930854627057 2.572226264398045E-6 -0.08 2.993262281647915E-6 item=minecraft:spruce_sign count=1 age=64 pickup-delay=0 on-ground=true
+entity 85 e3 4.108799783277489 1.0 1.4486570384313855 -8.804118850488456E-6 -0.04 8.631192988041682E-7 item=minecraft:white_banner count=1 age=62 pickup-delay=0 on-ground=true
+entity 85 e4 7.54801483021982 1.0 3.1332285130538162 -1.0501244873351096E-6 0 3.2528018823502505E-6 item=minecraft:red_banner count=1 age=60 pickup-delay=0 on-ground=true
+entity 85 e5 10.370498980328128 1.0 2.4738715691083932 1.2452854441000514E-5 -0.12 1.6947111992235285E-5 item=minecraft:birch_sign count=1 age=58 pickup-delay=0 on-ground=true
+entity 85 e6 0.6876704114592654 1.0 4.581439245019171 -1.6355831256485156E-4 -0.08 -1.8629071981092265E-4 item=minecraft:oak_sign count=1 age=36 pickup-delay=0 on-ground=true
+entity 85 e7 6.730450294417798 1.0 5.502774324440094 -2.65686142495926E-4 -0.04 -2.75845197637537E-5 item=minecraft:blue_banner count=1 age=34 pickup-delay=0 on-ground=true
+entity 85 e8 6.919486923270451 1.0 10.165869531494911 -2.2589564999904094E-4 0 5.034851287606292E-4 item=minecraft:blue_bed count=1 age=24 pickup-delay=0 on-ground=true
+entity 85 e9 9.974350628517977 1.0 7.886383085381048 -0.0012493375630547121 -0.12 -0.001099179706487258 item=minecraft:white_bed count=1 age=22 pickup-delay=0 on-ground=true
+
+entity-order 86 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 86 e1 1.7505417801710301 1.0 1.829910959416942 9.313944936869216E-7 0 1.8013189802522685E-6 item=minecraft:oak_sign count=1 age=67 pickup-delay=0 on-ground=true
+entity 86 e2 4.260198259103503 1.0 3.7240930854627057 2.572226264398045E-6 -0.12 2.993262281647915E-6 item=minecraft:spruce_sign count=1 age=65 pickup-delay=0 on-ground=true
+entity 86 e3 4.108799783277489 1.0 1.4486570384313855 -8.804118850488456E-6 -0.08 8.631192988041682E-7 item=minecraft:white_banner count=1 age=63 pickup-delay=0 on-ground=true
+entity 86 e4 7.54801483021982 1.0 3.1332285130538162 -1.0501244873351096E-6 -0.04 3.2528018823502505E-6 item=minecraft:red_banner count=1 age=61 pickup-delay=0 on-ground=true
+entity 86 e5 10.370498980328128 1.0 2.4738715691083932 7.322279147618284E-6 0 9.964902853479926E-6 item=minecraft:birch_sign count=1 age=59 pickup-delay=0 on-ground=true
+entity 86 e6 0.6876704114592654 1.0 4.581439245019171 -1.6355831256485156E-4 -0.12 -1.8629071981092265E-4 item=minecraft:oak_sign count=1 age=37 pickup-delay=0 on-ground=true
+entity 86 e7 6.730450294417798 1.0 5.502774324440094 -2.65686142495926E-4 -0.08 -2.75845197637537E-5 item=minecraft:blue_banner count=1 age=35 pickup-delay=0 on-ground=true
+entity 86 e8 6.919486923270451 1.0 10.165869531494911 -2.2589564999904094E-4 -0.04 5.034851287606292E-4 item=minecraft:blue_bed count=1 age=25 pickup-delay=0 on-ground=true
+entity 86 e9 9.973101290954922 1.0 7.885283905674561 -7.346105609467618E-4 0 -6.463177324065939E-4 item=minecraft:white_bed count=1 age=23 pickup-delay=0 on-ground=true
+
+entity-order 87 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 87 e1 1.7505417801710301 1.0 1.829910959416942 9.313944936869216E-7 -0.04 1.8013189802522685E-6 item=minecraft:oak_sign count=1 age=68 pickup-delay=0 on-ground=true
+entity 87 e2 4.260198259103503 1.0 3.7240930854627057 1.5124691955561503E-6 0 1.7600383985940105E-6 item=minecraft:spruce_sign count=1 age=66 pickup-delay=0 on-ground=true
+entity 87 e3 4.108799783277489 1.0 1.4486570384313855 -8.804118850488456E-6 -0.12 8.631192988041682E-7 item=minecraft:white_banner count=1 age=64 pickup-delay=0 on-ground=true
+entity 87 e4 7.54801483021982 1.0 3.1332285130538162 -1.0501244873351096E-6 -0.08 3.2528018823502505E-6 item=minecraft:red_banner count=1 age=62 pickup-delay=0 on-ground=true
+entity 87 e5 10.370498980328128 1.0 2.4738715691083932 7.322279147618284E-6 -0.04 9.964902853479926E-6 item=minecraft:birch_sign count=1 age=60 pickup-delay=0 on-ground=true
+entity 87 e6 0.6876704114592654 1.0 4.581439245019171 -9.617229745897715E-5 0 -1.0953895426378436E-4 item=minecraft:oak_sign count=1 age=38 pickup-delay=0 on-ground=true
+entity 87 e7 6.730450294417798 1.0 5.502774324440094 -2.65686142495926E-4 -0.12 -2.75845197637537E-5 item=minecraft:blue_banner count=1 age=36 pickup-delay=0 on-ground=true
+entity 87 e8 6.919486923270451 1.0 10.165869531494911 -2.2589564999904094E-4 -0.08 5.034851287606292E-4 item=minecraft:blue_bed count=1 age=26 pickup-delay=0 on-ground=true
+entity 87 e9 9.973101290954922 1.0 7.885283905674561 -7.346105609467618E-4 -0.04 -6.463177324065939E-4 item=minecraft:white_bed count=1 age=24 pickup-delay=0 on-ground=true
+
+entity-order 88 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 88 e1 1.7505417801710301 1.0 1.829910959416942 9.313944936869216E-7 -0.08 1.8013189802522685E-6 item=minecraft:oak_sign count=1 age=69 pickup-delay=0 on-ground=true
+entity 88 e2 4.260198259103503 1.0 3.7240930854627057 1.5124691955561503E-6 -0.04 1.7600383985940105E-6 item=minecraft:spruce_sign count=1 age=67 pickup-delay=0 on-ground=true
+entity 88 e3 4.108799783277489 1.0 1.4486570384313855 -5.1768224046554575E-6 0 5.075141987312027E-7 item=minecraft:white_banner count=1 age=65 pickup-delay=0 on-ground=true
+entity 88 e4 7.54801483021982 1.0 3.1332285130538162 -1.0501244873351096E-6 -0.12 3.2528018823502505E-6 item=minecraft:red_banner count=1 age=63 pickup-delay=0 on-ground=true
+entity 88 e5 10.370498980328128 1.0 2.4738715691083932 7.322279147618284E-6 -0.08 9.964902853479926E-6 item=minecraft:birch_sign count=1 age=61 pickup-delay=0 on-ground=true
+entity 88 e6 0.6876704114592654 1.0 4.581439245019171 -9.617229745897715E-5 -0.04 -1.0953895426378436E-4 item=minecraft:oak_sign count=1 age=39 pickup-delay=0 on-ground=true
+entity 88 e7 6.730450294417798 1.0 5.502774324440094 -1.5622346749704358E-4 0 -1.6219699252099354E-5 item=minecraft:blue_banner count=1 age=37 pickup-delay=0 on-ground=true
+entity 88 e8 6.919486923270451 1.0 10.165869531494911 -2.2589564999904094E-4 -0.12 5.034851287606292E-4 item=minecraft:blue_bed count=1 age=27 pickup-delay=0 on-ground=true
+entity 88 e9 9.973101290954922 1.0 7.885283905674561 -7.346105609467618E-4 -0.08 -6.463177324065939E-4 item=minecraft:white_bed count=1 age=25 pickup-delay=0 on-ground=true
+
+entity-order 89 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 89 e1 1.7505417801710301 1.0 1.829910959416942 9.313944936869216E-7 -0.12 1.8013189802522685E-6 item=minecraft:oak_sign count=1 age=70 pickup-delay=0 on-ground=true
+entity 89 e2 4.260198259103503 1.0 3.7240930854627057 1.5124691955561503E-6 -0.08 1.7600383985940105E-6 item=minecraft:spruce_sign count=1 age=68 pickup-delay=0 on-ground=true
+entity 89 e3 4.108799783277489 1.0 1.4486570384313855 -5.1768224046554575E-6 -0.04 5.075141987312027E-7 item=minecraft:white_banner count=1 age=66 pickup-delay=0 on-ground=true
+entity 89 e4 7.54801483021982 1.0 3.1332285130538162 -6.174732606446031E-7 0 1.912647699152991E-6 item=minecraft:red_banner count=1 age=64 pickup-delay=0 on-ground=true
+entity 89 e5 10.370498980328128 1.0 2.4738715691083932 7.322279147618284E-6 -0.12 9.964902853479926E-6 item=minecraft:birch_sign count=1 age=62 pickup-delay=0 on-ground=true
+entity 89 e6 0.6876704114592654 1.0 4.581439245019171 -9.617229745897715E-5 -0.08 -1.0953895426378436E-4 item=minecraft:oak_sign count=1 age=40 pickup-delay=0 on-ground=true
+entity 89 e7 6.730450294417798 1.0 5.502774324440094 -1.5622346749704358E-4 -0.04 -1.6219699252099354E-5 item=minecraft:blue_banner count=1 age=38 pickup-delay=0 on-ground=true
+entity 89 e8 6.919261027620452 1.0 10.166373016623671 -1.328266555561506E-4 0 2.9604928548122183E-4 item=minecraft:blue_bed count=1 age=28 pickup-delay=0 on-ground=true
+entity 89 e9 9.973101290954922 1.0 7.885283905674561 -7.346105609467618E-4 -0.12 -6.463177324065939E-4 item=minecraft:white_bed count=1 age=26 pickup-delay=0 on-ground=true
+
+entity-order 90 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 90 e1 1.7505417801710301 1.0 1.829910959416942 5.476600173592243E-7 0 1.059175666896376E-6 item=minecraft:oak_sign count=1 age=71 pickup-delay=0 on-ground=true
+entity 90 e2 4.260198259103503 1.0 3.7240930854627057 1.5124691955561503E-6 -0.12 1.7600383985940105E-6 item=minecraft:spruce_sign count=1 age=69 pickup-delay=0 on-ground=true
+entity 90 e3 4.108799783277489 1.0 1.4486570384313855 -5.1768224046554575E-6 -0.08 5.075141987312027E-7 item=minecraft:white_banner count=1 age=67 pickup-delay=0 on-ground=true
+entity 90 e4 7.54801483021982 1.0 3.1332285130538162 -6.174732606446031E-7 -0.04 1.912647699152991E-6 item=minecraft:red_banner count=1 age=65 pickup-delay=0 on-ground=true
+entity 90 e5 10.370498980328128 1.0 2.4738715691083932 4.305500571749864E-6 0 5.859363467049055E-6 item=minecraft:birch_sign count=1 age=63 pickup-delay=0 on-ground=true
+entity 90 e6 0.6876704114592654 1.0 4.581439245019171 -9.617229745897715E-5 -0.12 -1.0953895426378436E-4 item=minecraft:oak_sign count=1 age=41 pickup-delay=0 on-ground=true
+entity 90 e7 6.730450294417798 1.0 5.502774324440094 -1.5622346749704358E-4 -0.08 -1.6219699252099354E-5 item=minecraft:blue_banner count=1 age=39 pickup-delay=0 on-ground=true
+entity 90 e8 6.919261027620452 1.0 10.166373016623671 -1.328266555561506E-4 -0.04 2.9604928548122183E-4 item=minecraft:blue_bed count=1 age=29 pickup-delay=0 on-ground=true
+entity 90 e9 9.972366680393975 1.0 7.884637587942155 -4.3195105327260787E-4 0 -3.800348648704278E-4 item=minecraft:white_bed count=1 age=27 pickup-delay=0 on-ground=true
+
+entity-order 91 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 91 e1 1.7505417801710301 1.0 1.829910959416942 5.476600173592243E-7 -0.04 1.059175666896376E-6 item=minecraft:oak_sign count=1 age=72 pickup-delay=0 on-ground=true
+entity 91 e2 4.260198259103503 1.0 3.7240930854627057 8.89331976416004E-7 0 1.03490268244049E-6 item=minecraft:spruce_sign count=1 age=70 pickup-delay=0 on-ground=true
+entity 91 e3 4.108799783277489 1.0 1.4486570384313855 -5.1768224046554575E-6 -0.12 5.075141987312027E-7 item=minecraft:white_banner count=1 age=68 pickup-delay=0 on-ground=true
+entity 91 e4 7.54801483021982 1.0 3.1332285130538162 -6.174732606446031E-7 -0.08 1.912647699152991E-6 item=minecraft:red_banner count=1 age=66 pickup-delay=0 on-ground=true
+entity 91 e5 10.370498980328128 1.0 2.4738715691083932 4.305500571749864E-6 -0.04 5.859363467049055E-6 item=minecraft:birch_sign count=1 age=64 pickup-delay=0 on-ground=true
+entity 91 e6 0.6876704114592654 1.0 4.581439245019171 -5.654931659233567E-5 0 -6.440891158390341E-5 item=minecraft:oak_sign count=1 age=42 pickup-delay=0 on-ground=true
+entity 91 e7 6.730450294417798 1.0 5.502774324440094 -1.5622346749704358E-4 -0.12 -1.6219699252099354E-5 item=minecraft:blue_banner count=1 age=40 pickup-delay=0 on-ground=true
+entity 91 e8 6.919261027620452 1.0 10.166373016623671 -1.328266555561506E-4 -0.08 2.9604928548122183E-4 item=minecraft:blue_bed count=1 age=30 pickup-delay=0 on-ground=true
+entity 91 e9 9.972366680393975 1.0 7.884637587942155 -4.3195105327260787E-4 -0.04 -3.800348648704278E-4 item=minecraft:white_bed count=1 age=28 pickup-delay=0 on-ground=true
+
+entity-order 92 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 92 e1 1.7505417801710301 1.0 1.829910959416942 5.476600173592243E-7 -0.08 1.059175666896376E-6 item=minecraft:oak_sign count=1 age=73 pickup-delay=0 on-ground=true
+entity 92 e2 4.260198259103503 1.0 3.7240930854627057 8.89331976416004E-7 -0.04 1.03490268244049E-6 item=minecraft:spruce_sign count=1 age=71 pickup-delay=0 on-ground=true
+entity 92 e3 4.108799783277489 1.0 1.4486570384313855 -3.043971880031568E-6 0 2.9841837886214914E-7 item=minecraft:white_banner count=1 age=69 pickup-delay=0 on-ground=true
+entity 92 e4 7.54801483021982 1.0 3.1332285130538162 -6.174732606446031E-7 -0.12 1.912647699152991E-6 item=minecraft:red_banner count=1 age=67 pickup-delay=0 on-ground=true
+entity 92 e5 10.370498980328128 1.0 2.4738715691083932 4.305500571749864E-6 -0.08 5.859363467049055E-6 item=minecraft:birch_sign count=1 age=65 pickup-delay=0 on-ground=true
+entity 92 e6 0.6876704114592654 1.0 4.581439245019171 -5.654931659233567E-5 -0.04 -6.440891158390341E-5 item=minecraft:oak_sign count=1 age=43 pickup-delay=0 on-ground=true
+entity 92 e7 6.730450294417798 1.0 5.502774324440094 -9.185940812541275E-5 0 -9.537184119269676E-6 item=minecraft:blue_banner count=1 age=41 pickup-delay=0 on-ground=true
+entity 92 e8 6.919261027620452 1.0 10.166373016623671 -1.328266555561506E-4 -0.12 2.9604928548122183E-4 item=minecraft:blue_bed count=1 age=31 pickup-delay=0 on-ground=true
+entity 92 e9 9.972366680393975 1.0 7.884637587942155 -4.3195105327260787E-4 -0.08 -3.800348648704278E-4 item=minecraft:white_bed count=1 age=29 pickup-delay=0 on-ground=true
+
+entity-order 93 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 93 e1 1.7505417801710301 1.0 1.829910959416942 5.476600173592243E-7 -0.12 1.059175666896376E-6 item=minecraft:oak_sign count=1 age=74 pickup-delay=0 on-ground=true
+entity 93 e2 4.260198259103503 1.0 3.7240930854627057 8.89331976416004E-7 -0.08 1.03490268244049E-6 item=minecraft:spruce_sign count=1 age=72 pickup-delay=0 on-ground=true
+entity 93 e3 4.108799783277489 1.0 1.4486570384313855 -3.043971880031568E-6 -0.04 2.9841837886214914E-7 item=minecraft:white_banner count=1 age=70 pickup-delay=0 on-ground=true
+entity 93 e4 7.54801483021982 1.0 3.1332285130538162 -3.630743137688668E-7 0 1.124636960192624E-6 item=minecraft:red_banner count=1 age=68 pickup-delay=0 on-ground=true
+entity 93 e5 10.370498980328128 1.0 2.4738715691083932 4.305500571749864E-6 -0.12 5.859363467049055E-6 item=minecraft:birch_sign count=1 age=66 pickup-delay=0 on-ground=true
+entity 93 e6 0.6876704114592654 1.0 4.581439245019171 -5.654931659233567E-5 -0.08 -6.440891158390341E-5 item=minecraft:oak_sign count=1 age=44 pickup-delay=0 on-ground=true
+entity 93 e7 6.730450294417798 1.0 5.502774324440094 -9.185940812541275E-5 -0.04 -9.537184119269676E-6 item=minecraft:blue_banner count=1 age=42 pickup-delay=0 on-ground=true
+entity 93 e8 6.919128200964896 1.0 10.166669065909153 -7.810208132076549E-5 0 1.7407699736770362E-4 item=minecraft:blue_bed count=1 age=32 pickup-delay=0 on-ground=true
+entity 93 e9 9.972366680393975 1.0 7.884637587942155 -4.3195105327260787E-4 -0.12 -3.800348648704278E-4 item=minecraft:white_bed count=1 age=30 pickup-delay=0 on-ground=true
+
+entity-order 94 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 94 e1 1.7505417801710301 1.0 1.829910959416942 3.2202412258916006E-7 0 6.227953547618041E-7 item=minecraft:oak_sign count=1 age=75 pickup-delay=0 on-ground=true
+entity 94 e2 4.260198259103503 1.0 3.7240930854627057 8.89331976416004E-7 -0.12 1.03490268244049E-6 item=minecraft:spruce_sign count=1 age=73 pickup-delay=0 on-ground=true
+entity 94 e3 4.108799783277489 1.0 1.4486570384313855 -3.043971880031568E-6 -0.08 2.9841837886214914E-7 item=minecraft:white_banner count=1 age=71 pickup-delay=0 on-ground=true
+entity 94 e4 7.54801483021982 1.0 3.1332285130538162 -3.630743137688668E-7 -0.04 1.124636960192624E-6 item=minecraft:red_banner count=1 age=69 pickup-delay=0 on-ground=true
+entity 94 e5 10.370498980328128 1.0 2.4738715691083932 2.5316345907637297E-6 0 3.4453060650761603E-6 item=minecraft:birch_sign count=1 age=67 pickup-delay=0 on-ground=true
+entity 94 e6 0.6876704114592654 1.0 4.581439245019171 -5.654931659233567E-5 -0.12 -6.440891158390341E-5 item=minecraft:oak_sign count=1 age=45 pickup-delay=0 on-ground=true
+entity 94 e7 6.730450294417798 1.0 5.502774324440094 -9.185940812541275E-5 -0.08 -9.537184119269676E-6 item=minecraft:blue_banner count=1 age=43 pickup-delay=0 on-ground=true
+entity 94 e8 6.919128200964896 1.0 10.166669065909153 -7.810208132076549E-5 -0.04 1.7407699736770362E-4 item=minecraft:blue_bed count=1 age=33 pickup-delay=0 on-ground=true
+entity 94 e9 9.971934729340703 1.0 7.884257553077284 -2.539872448646122E-4 0 -2.2346052301443992E-4 item=minecraft:white_bed count=1 age=31 pickup-delay=0 on-ground=true
+
+entity-order 95 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 95 e1 1.7505417801710301 1.0 1.829910959416942 3.2202412258916006E-7 -0.04 6.227953547618041E-7 item=minecraft:oak_sign count=1 age=76 pickup-delay=0 on-ground=true
+entity 95 e2 4.260198259103503 1.0 3.7240930854627057 5.229272547168604E-7 0 6.085228384665349E-7 item=minecraft:spruce_sign count=1 age=74 pickup-delay=0 on-ground=true
+entity 95 e3 4.108799783277489 1.0 1.4486570384313855 -3.043971880031568E-6 -0.12 2.9841837886214914E-7 item=minecraft:white_banner count=1 age=72 pickup-delay=0 on-ground=true
+entity 95 e4 7.54801483021982 1.0 3.1332285130538162 -3.630743137688668E-7 -0.08 1.124636960192624E-6 item=minecraft:red_banner count=1 age=70 pickup-delay=0 on-ground=true
+entity 95 e5 10.370498980328128 1.0 2.4738715691083932 2.5316345907637297E-6 -0.04 3.4453060650761603E-6 item=minecraft:birch_sign count=1 age=68 pickup-delay=0 on-ground=true
+entity 95 e6 0.6876704114592654 1.0 4.581439245019171 -3.325100149993049E-5 0 -3.787244381969294E-5 item=minecraft:oak_sign count=1 age=46 pickup-delay=0 on-ground=true
+entity 95 e7 6.730450294417798 1.0 5.502774324440094 -9.185940812541275E-5 -0.12 -9.537184119269676E-6 item=minecraft:blue_banner count=1 age=44 pickup-delay=0 on-ground=true
+entity 95 e8 6.919128200964896 1.0 10.166669065909153 -7.810208132076549E-5 -0.08 1.7407699736770362E-4 item=minecraft:blue_bed count=1 age=34 pickup-delay=0 on-ground=true
+entity 95 e9 9.971934729340703 1.0 7.884257553077284 -2.539872448646122E-4 -0.04 -2.2346052301443992E-4 item=minecraft:white_bed count=1 age=32 pickup-delay=0 on-ground=true
+
+entity-order 96 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 96 e1 1.7505417801710301 1.0 1.829910959416942 3.2202412258916006E-7 -0.08 6.227953547618041E-7 item=minecraft:oak_sign count=1 age=77 pickup-delay=0 on-ground=true
+entity 96 e2 4.260198259103503 1.0 3.7240930854627057 5.229272547168604E-7 -0.04 6.085228384665349E-7 item=minecraft:spruce_sign count=1 age=75 pickup-delay=0 on-ground=true
+entity 96 e3 4.108799783277489 1.0 1.4486570384313855 -1.7898556454419457E-6 0 1.754700244157682E-7 item=minecraft:white_banner count=1 age=73 pickup-delay=0 on-ground=true
+entity 96 e4 7.54801483021982 1.0 3.1332285130538162 -3.630743137688668E-7 -0.12 1.124636960192624E-6 item=minecraft:red_banner count=1 age=71 pickup-delay=0 on-ground=true
+entity 96 e5 10.370498980328128 1.0 2.4738715691083932 2.5316345907637297E-6 -0.08 3.4453060650761603E-6 item=minecraft:birch_sign count=1 age=69 pickup-delay=0 on-ground=true
+entity 96 e6 0.6876704114592654 1.0 4.581439245019171 -3.325100149993049E-5 -0.04 -3.787244381969294E-5 item=minecraft:oak_sign count=1 age=47 pickup-delay=0 on-ground=true
+entity 96 e7 6.730450294417798 1.0 5.502774324440094 -5.401333740918811E-5 0 -5.607864826043357E-6 item=minecraft:blue_banner count=1 age=45 pickup-delay=0 on-ground=true
+entity 96 e8 6.919128200964896 1.0 10.166669065909153 -7.810208132076549E-5 -0.12 1.7407699736770362E-4 item=minecraft:blue_bed count=1 age=35 pickup-delay=0 on-ground=true
+entity 96 e9 9.971934729340703 1.0 7.884257553077284 -2.539872448646122E-4 -0.08 -2.2346052301443992E-4 item=minecraft:white_bed count=1 age=33 pickup-delay=0 on-ground=true
+
+entity-order 97 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 97 e1 1.7505417801710301 1.0 1.829910959416942 3.2202412258916006E-7 -0.12 6.227953547618041E-7 item=minecraft:oak_sign count=1 age=78 pickup-delay=0 on-ground=true
+entity 97 e2 4.260198259103503 1.0 3.7240930854627057 5.229272547168604E-7 -0.08 6.085228384665349E-7 item=minecraft:spruce_sign count=1 age=76 pickup-delay=0 on-ground=true
+entity 97 e3 4.108799783277489 1.0 1.4486570384313855 -1.7898556454419457E-6 -0.04 1.754700244157682E-7 item=minecraft:white_banner count=1 age=74 pickup-delay=0 on-ground=true
+entity 97 e4 7.54801483021982 1.0 3.1332285130538162 -2.1348771796388185E-7 0 6.612865990905808E-7 item=minecraft:red_banner count=1 age=72 pickup-delay=0 on-ground=true
+entity 97 e5 10.370498980328128 1.0 2.4738715691083932 2.5316345907637297E-6 -0.12 3.4453060650761603E-6 item=minecraft:birch_sign count=1 age=70 pickup-delay=0 on-ground=true
+entity 97 e6 0.6876704114592654 1.0 4.581439245019171 -3.325100149993049E-5 -0.08 -3.787244381969294E-5 item=minecraft:oak_sign count=1 age=48 pickup-delay=0 on-ground=true
+entity 97 e7 6.730450294417798 1.0 5.502774324440094 -5.401333740918811E-5 -0.04 -5.607864826043357E-6 item=minecraft:blue_banner count=1 age=46 pickup-delay=0 on-ground=true
+entity 97 e8 6.919128200964896 1.0 10.166669065909153 -4.592402843461495E-5 0 1.0235728474500094E-4 item=minecraft:blue_bed count=1 age=36 pickup-delay=0 on-ground=true
+entity 97 e9 9.971934729340703 1.0 7.884257553077284 -2.539872448646122E-4 -0.12 -2.2346052301443992E-4 item=minecraft:white_bed count=1 age=34 pickup-delay=0 on-ground=true
+
+entity-order 98 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 98 e1 1.7505417801710301 1.0 1.829910959416942 1.8935020312300648E-7 0 3.6620370542446476E-7 item=minecraft:oak_sign count=1 age=79 pickup-delay=0 on-ground=true
+entity 98 e2 4.260198259103503 1.0 3.7240930854627057 5.229272547168604E-7 -0.12 6.085228384665349E-7 item=minecraft:spruce_sign count=1 age=77 pickup-delay=0 on-ground=true
+entity 98 e3 4.108799783277489 1.0 1.4486570384313855 -1.7898556454419457E-6 -0.08 1.754700244157682E-7 item=minecraft:white_banner count=1 age=75 pickup-delay=0 on-ground=true
+entity 98 e4 7.54801483021982 1.0 3.1332285130538162 -2.1348771796388185E-7 -0.04 6.612865990905808E-7 item=minecraft:red_banner count=1 age=73 pickup-delay=0 on-ground=true
+entity 98 e5 10.370498980328128 1.0 2.4738715691083932 1.488601289059076E-6 0 2.0258401699781766E-6 item=minecraft:birch_sign count=1 age=71 pickup-delay=0 on-ground=true
+entity 98 e6 0.6876704114592654 1.0 4.581439245019171 -3.325100149993049E-5 -0.12 -3.787244381969294E-5 item=minecraft:oak_sign count=1 age=49 pickup-delay=0 on-ground=true
+entity 98 e7 6.730450294417798 1.0 5.502774324440094 -5.401333740918811E-5 -0.08 -5.607864826043357E-6 item=minecraft:blue_banner count=1 age=47 pickup-delay=0 on-ground=true
+entity 98 e8 6.919128200964896 1.0 10.166669065909153 -4.592402843461495E-5 -0.04 1.0235728474500094E-4 item=minecraft:blue_bed count=1 age=37 pickup-delay=0 on-ground=true
+entity 98 e9 9.971680742095838 1.0 7.88403409255427 -1.4934451499810093E-4 0 -1.313948007452215E-4 item=minecraft:white_bed count=1 age=35 pickup-delay=0 on-ground=true
+
+entity-order 99 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 99 e1 1.7505417801710301 1.0 1.829910959416942 1.8935020312300648E-7 -0.04 3.6620370542446476E-7 item=minecraft:oak_sign count=1 age=80 pickup-delay=0 on-ground=true
+entity 99 e2 4.260198259103503 1.0 3.7240930854627057 3.07481256693056E-7 0 3.578114649989438E-7 item=minecraft:spruce_sign count=1 age=78 pickup-delay=0 on-ground=true
+entity 99 e3 4.108799783277489 1.0 1.4486570384313855 -1.7898556454419457E-6 -0.12 1.754700244157682E-7 item=minecraft:white_banner count=1 age=76 pickup-delay=0 on-ground=true
+entity 99 e4 7.54801483021982 1.0 3.1332285130538162 -2.1348771796388185E-7 -0.08 6.612865990905808E-7 item=minecraft:red_banner count=1 age=74 pickup-delay=0 on-ground=true
+entity 99 e5 10.370498980328128 1.0 2.4738715691083932 1.488601289059076E-6 -0.04 2.0258401699781766E-6 item=minecraft:birch_sign count=1 age=72 pickup-delay=0 on-ground=true
+entity 99 e6 0.6876704114592654 1.0 4.581439245019171 -1.9551590848017945E-5 0 -2.226899920529402E-5 item=minecraft:oak_sign count=1 age=50 pickup-delay=0 on-ground=true
+entity 99 e7 6.730450294417798 1.0 5.502774324440094 -5.401333740918811E-5 -0.12 -5.607864826043357E-6 item=minecraft:blue_banner count=1 age=48 pickup-delay=0 on-ground=true
+entity 99 e8 6.919128200964896 1.0 10.166669065909153 -4.592402843461495E-5 -0.08 1.0235728474500094E-4 item=minecraft:blue_bed count=1 age=38 pickup-delay=0 on-ground=true
+entity 99 e9 9.971680742095838 1.0 7.88403409255427 -1.4934451499810093E-4 -0.04 -1.313948007452215E-4 item=minecraft:white_bed count=1 age=36 pickup-delay=0 on-ground=true
+
+entity-order 100 entities e1 e2 e3 e4 e5 e6 e7 e8 e9
+entity 100 e1 1.7505417801710301 1.0 1.829910959416942 1.8935020312300648E-7 -0.08 3.6620370542446476E-7 item=minecraft:oak_sign count=1 age=81 pickup-delay=0 on-ground=true
+entity 100 e2 4.260198259103503 1.0 3.7240930854627057 3.07481256693056E-7 -0.04 3.578114649989438E-7 item=minecraft:spruce_sign count=1 age=79 pickup-delay=0 on-ground=true
+entity 100 e3 4.108799783277489 1.0 1.4486570384313855 -1.0524352253501044E-6 0 1.0317638473162954E-7 item=minecraft:white_banner count=1 age=77 pickup-delay=0 on-ground=true
+entity 100 e4 7.54801483021982 1.0 3.1332285130538162 -2.1348771796388185E-7 -0.12 6.612865990905808E-7 item=minecraft:red_banner count=1 age=75 pickup-delay=0 on-ground=true
+entity 100 e5 10.370498980328128 1.0 2.4738715691083932 1.488601289059076E-6 -0.08 2.0258401699781766E-6 item=minecraft:birch_sign count=1 age=73 pickup-delay=0 on-ground=true
+entity 100 e6 0.6876704114592654 1.0 4.581439245019171 -1.9551590848017945E-5 -0.04 -2.226899920529402E-5 item=minecraft:oak_sign count=1 age=51 pickup-delay=0 on-ground=true
+entity 100 e7 6.730450294417798 1.0 5.502774324440094 -3.175984559029283E-5 0 -3.2974248492942468E-6 item=minecraft:blue_banner count=1 age=49 pickup-delay=0 on-ground=true
+entity 100 e8 6.919128200964896 1.0 10.166669065909153 -4.592402843461495E-5 -0.12 1.0235728474500094E-4 item=minecraft:blue_bed count=1 age=39 pickup-delay=0 on-ground=true
+entity 100 e9 9.971680742095838 1.0 7.88403409255427 -1.4934451499810093E-4 -0.08 -1.313948007452215E-4 item=minecraft:white_bed count=1 age=37 pickup-delay=0 on-ground=true

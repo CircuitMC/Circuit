@@ -1388,6 +1388,7 @@ struct Game::Impl final : GameServices {
         use.cursor_x = within(u.cursor_x);
         use.cursor_y = within(u.cursor_y);
         use.cursor_z = within(u.cursor_z);
+        use.yaw = std::isfinite(p.yaw) ? std::fmod(p.yaw, 360.0f) : 0.0f;
         if (gameplay::in_world(bundle, beside) && in_reach(p, beside)) use.reach |= 2;
         if (!occupied_by_player(b)) use.free |= 1;
         if (!occupied_by_player(beside)) use.free |= 2;

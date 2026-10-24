@@ -139,6 +139,9 @@ struct PlayerUse {
     float cursor_x{0.5f};
     float cursor_y{0.5f};
     float cursor_z{0.5f};
+    // The player's yaw in degrees (0 south, 90 west), for blocks that turn to
+    // the player in sixteen steps.
+    float yaw{};
     bool operator==(const PlayerUse&) const = default;
 };
 // A player breaks a block, resolved when applied: air and piston parts

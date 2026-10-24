@@ -3459,6 +3459,1038 @@
           "its block entity and menu have no behavior"
         ],
         "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+      },
+      "oak_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "oak_wall_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "spruce_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "spruce_wall_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "birch_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "birch_wall_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "jungle_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "jungle_wall_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "acacia_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "acacia_wall_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "dark_oak_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "dark_oak_wall_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "mangrove_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "mangrove_wall_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "cherry_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "cherry_wall_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "pale_oak_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "pale_oak_wall_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "bamboo_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "bamboo_wall_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "crimson_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "crimson_wall_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "warped_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "warped_wall_sign": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "sign text cannot be edited"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "white_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "white_wall_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "white_bed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sleeping, respawning or explosions in other dimensions"
+        ],
+        "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+      },
+      "orange_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "orange_wall_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "orange_bed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sleeping, respawning or explosions in other dimensions"
+        ],
+        "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+      },
+      "magenta_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "magenta_wall_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "magenta_bed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sleeping, respawning or explosions in other dimensions"
+        ],
+        "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+      },
+      "light_blue_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "light_blue_wall_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "light_blue_bed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sleeping, respawning or explosions in other dimensions"
+        ],
+        "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+      },
+      "yellow_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "yellow_wall_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "yellow_bed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sleeping, respawning or explosions in other dimensions"
+        ],
+        "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+      },
+      "lime_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "lime_wall_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "lime_bed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sleeping, respawning or explosions in other dimensions"
+        ],
+        "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+      },
+      "pink_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "pink_wall_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "pink_bed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sleeping, respawning or explosions in other dimensions"
+        ],
+        "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+      },
+      "gray_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "gray_wall_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "gray_bed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sleeping, respawning or explosions in other dimensions"
+        ],
+        "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+      },
+      "light_gray_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "light_gray_wall_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "light_gray_bed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sleeping, respawning or explosions in other dimensions"
+        ],
+        "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+      },
+      "cyan_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "cyan_wall_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "cyan_bed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sleeping, respawning or explosions in other dimensions"
+        ],
+        "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+      },
+      "purple_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "purple_wall_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "purple_bed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sleeping, respawning or explosions in other dimensions"
+        ],
+        "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+      },
+      "blue_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "blue_wall_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "blue_bed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sleeping, respawning or explosions in other dimensions"
+        ],
+        "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+      },
+      "brown_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "brown_wall_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "brown_bed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sleeping, respawning or explosions in other dimensions"
+        ],
+        "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+      },
+      "green_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "green_wall_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "green_bed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sleeping, respawning or explosions in other dimensions"
+        ],
+        "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+      },
+      "red_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "red_wall_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "red_bed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sleeping, respawning or explosions in other dimensions"
+        ],
+        "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+      },
+      "black_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "black_wall_banner": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "patterns and names are not kept"
+        ],
+        "note": "Placed by players turned to them or on the clicked side of a solid block, with an empty block entity; breaks with its drop when its support goes, as both official servers do"
+      },
+      "black_bed": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sleeping, respawning or explosions in other dimensions"
+        ],
+        "note": "Placed by players with both halves facing their way, with empty block entities; a half leaves with the other and the head drops the bed, as both official servers do"
+      },
+      "skeleton_skull": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sounds or player profiles"
+        ],
+        "note": "Placed by players turned away from them or on the clicked side, with an empty block entity, as both official servers do"
+      },
+      "skeleton_wall_skull": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sounds or player profiles"
+        ],
+        "note": "Placed by players turned away from them or on the clicked side, with an empty block entity, as both official servers do"
+      },
+      "wither_skeleton_skull": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sounds or player profiles"
+        ],
+        "note": "Placed by players turned away from them or on the clicked side, with an empty block entity, as both official servers do"
+      },
+      "wither_skeleton_wall_skull": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sounds or player profiles"
+        ],
+        "note": "Placed by players turned away from them or on the clicked side, with an empty block entity, as both official servers do"
+      },
+      "zombie_head": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sounds or player profiles"
+        ],
+        "note": "Placed by players turned away from them or on the clicked side, with an empty block entity, as both official servers do"
+      },
+      "zombie_wall_head": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sounds or player profiles"
+        ],
+        "note": "Placed by players turned away from them or on the clicked side, with an empty block entity, as both official servers do"
+      },
+      "player_head": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sounds or player profiles"
+        ],
+        "note": "Placed by players turned away from them or on the clicked side, with an empty block entity, as both official servers do"
+      },
+      "player_wall_head": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sounds or player profiles"
+        ],
+        "note": "Placed by players turned away from them or on the clicked side, with an empty block entity, as both official servers do"
+      },
+      "creeper_head": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sounds or player profiles"
+        ],
+        "note": "Placed by players turned away from them or on the clicked side, with an empty block entity, as both official servers do"
+      },
+      "creeper_wall_head": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sounds or player profiles"
+        ],
+        "note": "Placed by players turned away from them or on the clicked side, with an empty block entity, as both official servers do"
+      },
+      "dragon_head": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sounds or player profiles"
+        ],
+        "note": "Placed by players turned away from them or on the clicked side, with an empty block entity, as both official servers do"
+      },
+      "dragon_wall_head": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sounds or player profiles"
+        ],
+        "note": "Placed by players turned away from them or on the clicked side, with an empty block entity, as both official servers do"
+      },
+      "piglin_head": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sounds or player profiles"
+        ],
+        "note": "Placed by players turned away from them or on the clicked side, with an empty block entity, as both official servers do"
+      },
+      "piglin_wall_head": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/block_entities",
+          "placement/official_items"
+        ],
+        "deviations": [
+          "no sounds or player profiles"
+        ],
+        "note": "Placed by players turned away from them or on the clicked side, with an empty block entity, as both official servers do"
       }
     },
     "item": {

@@ -3,6 +3,7 @@
 // oriented by the player and the clicked face.
 #include "internal.hpp"
 #include <algorithm>
+#include <cmath>
 #include <string>
 #include <vector>
 
@@ -182,7 +183,10 @@ bool player_has_room(const PlayerInventory& inv, ItemStack stack, std::uint8_t s
 // each only where it is supported (support.cpp), replacing water.
 namespace circuit::gameplay::detail {
 namespace {
-enum class Building { none, plain, pillar, stairs, slab, connector, toward_player, toward_look, clicked_face, fixed, torch, lantern, ladder, resting, tall };
+enum class Building {
+    none, plain, pillar, stairs, slab, connector, toward_player, toward_look, clicked_face, fixed, torch, lantern, ladder, resting, tall,
+    sign, head, bed
+};
 
 Building building_kind(std::uint32_t block) {
     const auto info = registry::block(block);
@@ -212,6 +216,11 @@ Building building_kind(std::uint32_t block) {
     if (name == "lantern" || name == "soul_lantern") return Building::lantern;
     if (name == "ladder") return Building::ladder;
     if (name == "sunflower" || name == "lilac" || name == "rose_bush" || name == "peony") return Building::tall;
+    if ((name.ends_with("_sign") && !name.ends_with("hanging_sign") && !name.ends_with("_wall_sign"))
+        || (name.ends_with("_banner") && !name.ends_with("_wall_banner")))
+        return Building::sign;
+    if ((name.ends_with("_head") || name.ends_with("_skull")) && !name.contains("_wall_") && name != "piston_head") return Building::head;
+    if (name.ends_with("_bed")) return Building::bed;
     if (needs_support(BlockState::registered(info.default_state))) return Building::resting;
     if (name.ends_with("_slab") && has("type") && only({"type", "waterlogged"})) return Building::slab;
     if (registry::connector(info.default_state) != registry::Connector::none) return Building::connector;
@@ -246,6 +255,21 @@ bool top_half(const contracts::PlayerUse& c) {
     return c.face == Direction::down || (contracts::is_horizontal(c.face) && c.cursor_y > 0.5f);
 }
 
+// Sixteen steps of the player's yaw (0 south): a head's rotation; a sign or
+// banner faces back at the player, half a turn on.
+std::string rotation_of(float yaw) {
+    return std::to_string(static_cast<int>(std::floor(yaw * 16.0f / 360.0f + 0.5f)) & 15);
+}
+
+// The wall variant of a standing sign, banner or head: "oak_sign" to
+// "oak_wall_sign".
+std::optional<std::uint32_t> wall_variant(RuleContext& ctx, std::string_view name) {
+    const auto cut = name.rfind('_');
+    if (cut == std::string_view::npos) return std::nullopt;
+    const auto wall = std::string(name.substr(0, cut)) + "_wall" + std::string(name.substr(cut));
+    return registry::find_block(ctx.bundle().schema.content_release, wall);
+}
+
 std::string_view axis_of(Direction d) {
     switch (d) {
     case Direction::down: case Direction::up: return "y";
@@ -275,11 +299,17 @@ std::optional<std::uint32_t> building_block(RuleContext& ctx, std::uint16_t item
     return block;
 }
 
-std::optional<BlockState> upper_half_of(BlockState lower) {
-    if (!lower.is(BlockType::other)) return std::nullopt;
-    const auto block = registry::block_of(lower.registry_state());
-    if (!block || building_kind(*block) != Building::tall) return std::nullopt;
-    return with(lower, {{"half", "upper"}});
+std::optional<std::pair<BlockPos, BlockState>> second_part(BlockState placed, BlockPos pos) {
+    if (!placed.is(BlockType::other)) return std::nullopt;
+    const auto block = registry::block_of(placed.registry_state());
+    if (!block) return std::nullopt;
+    if (building_kind(*block) == Building::tall) return std::pair{pos.relative(Direction::up), with(placed, {{"half", "upper"}})};
+    if (building_kind(*block) == Building::bed) {
+        const auto f = value_of(placed, "facing");
+        const auto facing = f == "north" ? Direction::north : f == "south" ? Direction::south : f == "west" ? Direction::west : Direction::east;
+        return std::pair{pos.relative(facing), with(placed, {{"part", "head"}})};
+    }
+    return std::nullopt;
 }
 
 bool doubles_slab(std::uint32_t block, BlockState s, const contracts::PlayerUse& c, bool clicked) {
@@ -328,6 +358,22 @@ std::optional<BlockState> placed_building(RuleContext& ctx, std::uint32_t block,
     // lower half too (its upper half goes above it, which must be free).
     case Building::resting: return stays(s);
     case Building::tall: return stays(with(s, {{"half", "lower"}}));
+    // Signs and banners hang on the clicked side, else stand turned to the
+    // player; heads alike, but stand turned away from them.
+    case Building::sign: case Building::head: {
+        const bool sign = building_kind(block) == Building::sign;
+        if (contracts::is_horizontal(c.face))
+            if (const auto wall = wall_variant(ctx, registry::block(block).name)) {
+                const auto hung = with(BlockState::registered(registry::block(*wall).default_state),
+                                       {{"facing", std::string(name_of(c.face))}, {"waterlogged", water}});
+                if (!sign) return hung;
+                if (const auto placed = stays(hung)) return placed;
+            }
+        const auto standing = with(s, {{"rotation", rotation_of(sign ? c.yaw + 180.0f : c.yaw)}, {"waterlogged", water}});
+        return sign ? stays(standing) : std::optional(standing);
+    }
+    // A bed's foot faces the player's way; its head goes ahead of it.
+    case Building::bed: return with(s, {{"facing", std::string(name_of(c.horizontal))}, {"part", "foot"}});
     case Building::pillar: return with(s, {{"axis", std::string(axis_of(c.face))}, {"waterlogged", water}});
     case Building::stairs:
         s = with(s, {{"facing", std::string(name_of(c.horizontal))}, {"half", top_half(c) ? "top" : "bottom"}, {"waterlogged", water}});
