@@ -20,8 +20,8 @@ namespace circuit::gameplay::detail {
 // blocks without rules of their own by the registry's rule (full-cube
 // collision, with named exceptions); slime blocks conduct, glass, honey, the
 // redstone block, observers and pistons do not. Faces of blocks without rules
-// are sturdy when opaque or when the collision shape covers the face (an
-// approximation of support shapes from collision data).
+// are sturdy as their support shapes are (registry::sturdy_face, checked
+// against both official servers for every state).
 bool is_conductor(BlockState s) noexcept {
     switch (s.type()) {
     case BlockType::stone: case BlockType::obsidian: case BlockType::redstone_lamp: case BlockType::target: case BlockType::note_block:
@@ -34,7 +34,7 @@ bool is_conductor(BlockState s) noexcept {
 
 bool face_sturdy(BlockState s, Direction face) noexcept {
     switch (s.type()) {
-    case BlockType::other: return other_opaque(s) || other_face_covered(s, face);
+    case BlockType::other: return registry::sturdy_face(s.registry_state(), face);
     // Doors, trapdoors and fence gates by the shape of the state they stand for.
     case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: {
         const auto state = physics::registry_state_of(s);
@@ -54,17 +54,12 @@ bool face_sturdy(BlockState s, Direction face) noexcept {
 
 bool supports_dust(BlockState below) noexcept { return face_sturdy(below, Direction::up) || below.is(BlockType::hopper); }
 
-// A floor torch stands on a sturdy top, or on a block without rules of its
-// own whose collision shape reaches the top over the middle of the cell
-// (fences, walls, panes: an approximation of support shapes from collision
-// data).
+// A floor torch stands on a block whose top's middle bears it (as torches and
+// lanterns do; registry::supports_middle, checked against both official
+// servers for every state).
 bool supports_torch(RuleContext& ctx, BlockState below) {
-    if (face_sturdy(below, Direction::up)) return true;
-    if (!below.is(BlockType::other)) return false;
-    constexpr double low = 7.0 / 16, high = 9.0 / 16;
-    for (const auto& b : registry::collision_boxes(below.registry_state(), ctx.bundle().schema.content_release))
-        if (b.min_x <= low && b.max_x >= high && b.min_z <= low && b.max_z >= high && b.max_y >= 1.0) return true;
-    return false;
+    const auto state = physics::registry_state_of(below);
+    return state && registry::supports_middle(*state, Direction::up, ctx.bundle().schema.content_release);
 }
 bool supports_diode(BlockState below) noexcept { return face_sturdy(below, Direction::up); }
 

@@ -1,0 +1,11 @@
+# What every block state supports, as both official servers decide it (harness 0.17.0 support report): one code
+# (1 or 0) per supported block, whether it can stay with the state as its support. A bare block name stands for all
+# its states. Columns: poppy sapling torch carpet lantern dead_bush short_grass hanging_lantern wall_torch ladder;
+# the poppy, oak sapling, torch, carpet, lantern, dead bush and short grass stand on the state, the hanging lantern hangs
+# under it, the north-facing wall torch and ladder hang on its north face. The report also placed these on every state
+# and they gave the poppy's codes everywhere: dandelion, blue_orchid, allium, azure_bluet, red_tulip, orange_tulip, white_tulip, pink_tulip, oxeye_daisy, cornflower, lily_of_the_valley, torchflower, closed_eyeblossom, open_eyeblossom, spruce_sapling, birch_sapling, jungle_sapling, acacia_sapling, dark_oak_sapling, cherry_sapling, pale_oak_sapling.
+# Rails, redstone wire and fire removed themselves
+# when the report set them without support, so their rows show air's codes.
+# Java Edition 1.21.4: the states whose codes support-1.21.8.txt does not give; every other state as there.
+minecraft:farmland 1101001100
+minecraft:pitcher_crop[age=0,half=upper] 0001000100

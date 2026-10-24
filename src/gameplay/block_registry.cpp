@@ -172,6 +172,31 @@ bool keeps_wall_post(std::uint32_t state) noexcept {
     return b && (data::blocks[*b].connector & 8) != 0;
 }
 
+namespace {
+std::uint8_t support_of(std::uint32_t state, std::string_view release) noexcept {
+    for (std::size_t i = 0; i < data::support_override_count; ++i)
+        if (data::support_overrides[i].state == state && release == data::support_overrides[i].release) return data::support_overrides[i].support;
+    return data::support[state - 1];
+}
+} // namespace
+
+bool supports_middle(std::uint32_t state, contracts::Direction face, std::string_view release) noexcept {
+    if (state < 1 || state > data::state_count) return false;
+    if (face == contracts::Direction::up) return (support_of(state, release) & 1) != 0;
+    if (face == contracts::Direction::down) return (support_of(state, release) & 2) != 0;
+    return false;
+}
+
+bool sturdy_face(std::uint32_t state, contracts::Direction face, std::string_view release) noexcept {
+    if (state < 1 || state > data::state_count) return false;
+    return (support_of(state, release) >> (2 + static_cast<unsigned>(face))) & 1;
+}
+
+bool soil(std::uint32_t state) noexcept {
+    const auto b = block_of(state);
+    return b && (data::blocks[*b].connector & 16) != 0;
+}
+
 std::uint8_t light_emission(std::uint32_t state) noexcept {
     if (state < 1 || state > data::state_count) return 0;
     return data::light[state - 1] & 15;

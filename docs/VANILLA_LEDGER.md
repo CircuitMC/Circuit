@@ -34,9 +34,9 @@ Feature counts per implementation state, then the number of features with compar
 | V08 Terrain and biomes | C7 | 70 | 0 / 0 | 2 / 2 | 64 / 64 | 4 / 4 | 0 / 0 | 0 / 0 |
 | V09 Structures and decoration | C7, C5 | 6 | 0 / 0 | 0 / 0 | 0 / 0 | 6 / 6 | 0 / 0 | 0 / 0 |
 | V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 1 / 1 | 39 / 39 | 3 / 3 | 0 / 0 | 1 / 1 |
-| V11 Common building blocks | C5 | 1346 | 0 / 0 | 234 / 234 | 1111 / 1111 | 1 / 1 | 0 / 0 | 25 / 25 |
+| V11 Common building blocks | C5 | 1347 | 0 / 0 | 258 / 258 | 1088 / 1088 | 1 / 1 | 0 / 0 | 49 / 49 |
 | V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 24 / 24 | 54 / 54 | 4 / 4 | 0 / 0 | 8 / 8 |
-| V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 23 / 23 | 278 / 292 | 5 / 5 | 14 / 0 | 21 / 21 |
+| V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 47 / 47 | 254 / 268 | 5 / 5 | 14 / 0 | 45 / 45 |
 | V14 Redstone sources and signal consumers | C4, C5 | 138 | 7 / 7 | 95 / 95 | 35 / 35 | 1 / 1 | 0 / 0 | 37 / 39 |
 | V15 Pistons and moving structures | C3, C4 | 16 | 2 / 2 | 14 / 14 | 0 / 0 | 0 / 0 | 0 / 0 | 12 / 12 |
 | V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 9 / 9 | 48 / 48 | 2 / 2 | 0 / 0 | 9 / 9 |
@@ -67,7 +67,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 270 / 270 | 821 / 831 | 0 / 0 |
+| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 317 / 317 | 774 / 784 | 0 / 0 |
 | item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 128 / 128 | 1256 / 1287 | 0 / 0 |
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 17 / 17 | 0 / 0 | 132 / 134 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
@@ -127,10 +127,10 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 36 |
+| black_box | passing | 37 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 135 |
+| official_trace | passing | 136 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -251,6 +251,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Placement orientation and shapes: stairs, slabs, walls, fences, panes, doors, beds | C5 | partial, compared | partial, compared | `client/building`, `placement/official_items`; only full cubes without properties, soul sand and mud, pillars, stairs, slabs, fences, panes, bars, walls, carved pumpkins, jack o'lanterns, glazed terracotta, looms, stonecutters, end portal frames, end rods and lightning rods are placed from their items besides the blocks with rules of their own; blocks with block entities, blocks that need support and two-block blocks other than doors are not; spawners, beacons, sponges and test instance blocks are not placed; Pillars along the clicked face's axis, stairs facing the player and in the clicked half, slabs in the clicked half and doubled, facing blocks toward the player or out of the clicked face, connectors and stairs with their neighbors' shapes, waterlogged in water sources, as both official servers do; every placed state checked against a report of every block item |
 | Fences, panes, bars and walls joining their neighbors | C5 | partial, compared | partial, compared | `collision/connection`, `trace/connections`, `trace/connections_moved`, `trace/tnt_duper_wall`; water does not flow out of waterlogged ones; On shape updates and when a piston sets them down, as both official servers do; every state beside and above them compared |
 | Stairs taking corner shapes from the stairs beside them | C5 | partial, compared | partial, compared | `collision/stairs`, `trace/stairs_shapes`; water does not flow out of waterlogged ones; On shape updates from the sides and when a piston sets them down, as both official servers do; every combination of stairs around them compared |
+| Torches, lanterns, ladders, carpets, flowers and saplings on their supports | C5 | partial, compared | partial, compared | `client/building`, `collision/support`, `placement/official_items`, `trace/supported_blocks`; a torch whose clicked side and floor both fail is not placed (the official servers also try the player's other looking directions); flowers and saplings do not grow or spread (no random ticks for them); other plants (grass, ferns, roots, fungi, wither roses, azaleas, tall and double plants, dripleaves, berry bushes, petals) and other attached blocks (signs, banners, vines, lichen, amethyst) are not modeled; Placed by players where supported, and broken with their drops when the support goes (torches, lanterns and ladders on updates from their support's side, carpets, flowers and saplings on any update), as both official servers do |
 | Two-part blocks: doors, beds, tall plants | C5 | partial, compared | partial, compared | `trace/door_basics`, `trace/door_more`; beds and tall plants are not modeled; Doors: the halves follow each other, and a half without the other breaks (the lower one with the drop) |
 | Signs, banners, heads, pots and other block-entity data | C5 | data_only, none | data_only, reference_only | `anvil/components`; Block entities of blocks without rules of their own keep their saved data through checkpoints and Anvil interchange; nothing interprets it, and clients do not receive it |
 | Copper weathering, waxing and scraping | C5 | missing, none | missing, none |  |
@@ -288,7 +289,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Repeaters and comparators | C4 | implemented, compared | implemented, compared | `trace/comparator_priority`, `trace/comparator_signal`, `trace/repeater_lock` |
 | Observers | C4 | implemented, compared | implemented, compared | `trace/observer_clock`, `trace/observer_moved`, `trace/observer_pulse` |
 | Levers and redstone lamps | C4 | implemented, compared | implemented, compared | `trace/lamp_timing`, `trace/lever_attachment` |
-| Support of components | C4 | implemented, compared | implemented, compared | `trace/support` |
+| Support of components | C4 | implemented, compared | implemented, compared | `collision/support`, `trace/support`; Every state's support shape from the registry (collision/support): floor torches and pressure plates on a top whose middle bears them, dust, levers, buttons and wall torches on whole faces |
 | Redstone torches and burnout | C4 | partial, compared | partial, compared | `trace/torch_basics`, `trace/torch_button_piston`, `trace/water_torch_button`; floor support comes from collision shapes; no burnout sound or smoke; players place torches on the clicked face, not by their view; Floor and wall torches power every neighbor but their block and the block above them strongly; power in their block turns them off two ticks after an update; the eighth turn-off of a position within 60 ticks burns a torch out for 160 ticks |
 | Buttons, pressure plates, tripwire and targets | C4 | partial, compared | partial, compared | `trace/button_basics`, `trace/plate_target_more`, `trace/pressure_plates`, `trace/target_block`, `trace/torch_button_piston`, `trace/water_torch_button`; no mobs or players press plates yet; only arrows press wooden buttons; of the projectiles only arrows and snowballs hit target blocks; tripwire is not modeled; Buttons of every kind on floors, walls and ceilings: 20 ticks for stone and polished blackstone, 30 for wooden ones, which arrows press and hold; pressure plates of every kind sensing the entities on them (weighted ones counting them); target blocks grading projectile hits |
 | Daylight detectors, sculk sensors, lightning rods and other sources | C4 | partial, compared | partial, compared | `trace/daylight_basics`, `trace/daylight_cycle`, `trace/daylight_more`; sculk sensors, lightning rods and the other sensors are not modeled; Daylight detectors, normal and inverted, set their output every 20 game ticks from the sky light in their cell, the time of day, rain and thunder; using one inverts it at once |

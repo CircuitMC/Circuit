@@ -116,6 +116,18 @@ Connector connector(std::uint32_t state) noexcept;
 // Whether a wall under the state keeps its post whatever the state's shape
 // (banners, signs, pressure plates, standing torches, tripwire).
 bool keeps_wall_post(std::uint32_t state) noexcept;
+// What a state supports (tools/compile_block_registry.py, checked against
+// both official servers for every state): the middle of its top (up: torches
+// and lanterns stand on it) or bottom (down: lanterns hang under it), and its
+// whole faces (wall torches and ladders hang on them). Its support shape is
+// its collision shape with named exceptions (leaves support nothing).
+// A release whose shape of the state differs (pitcher crops in 1.21.4)
+// supports by its own shape.
+bool supports_middle(std::uint32_t state, contracts::Direction face, std::string_view release = {}) noexcept;
+bool sturdy_face(std::uint32_t state, contracts::Direction face, std::string_view release = {}) noexcept;
+// Whether flowers and saplings grow on the state (dirt, grass, moss, mud and
+// their kinds, and farmland).
+bool soil(std::uint32_t state) noexcept;
 
 // Light, by the rules of tools/compile_block_registry.py (checked against a
 // report of every state of both official servers): the light a state emits,

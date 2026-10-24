@@ -2610,6 +2610,451 @@
           "water does not flow out of it when waterlogged"
         ],
         "note": "Takes its corner shapes from the stairs beside it by the rules compared for oak and cobblestone stairs"
+      },
+      "torch": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "soul_torch": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "wall_torch": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "soul_wall_torch": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "lantern": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "soul_lantern": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "ladder": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "moss_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "white_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "orange_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "magenta_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "light_blue_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "yellow_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "lime_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "pink_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "gray_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "light_gray_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "cyan_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "purple_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "blue_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "brown_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "green_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "red_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "black_carpet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do"
+      },
+      "dandelion": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "poppy": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "blue_orchid": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "allium": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "azure_bluet": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "red_tulip": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "orange_tulip": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "white_tulip": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "pink_tulip": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "oxeye_daisy": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "cornflower": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "lily_of_the_valley": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "torchflower": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "closed_eyeblossom": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "open_eyeblossom": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "oak_sapling": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "spruce_sapling": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "birch_sapling": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "jungle_sapling": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "acacia_sapling": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "dark_oak_sapling": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "cherry_sapling": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
+      },
+      "pale_oak_sapling": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/support"
+        ],
+        "note": "Placed by players where supported, and broken with its drop when its support goes, as both official servers do",
+        "deviations": [
+          "does not grow or spread"
+        ]
       }
     },
     "item": {

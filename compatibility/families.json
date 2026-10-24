@@ -795,6 +795,25 @@
           "note": "On shape updates from the sides and when a piston sets them down, as both official servers do; every combination of stairs around them compared"
         },
         {
+          "id": "supported_blocks",
+          "name": "Torches, lanterns, ladders, carpets, flowers and saplings on their supports",
+          "milestone": "C5",
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "collision/support",
+            "trace/supported_blocks",
+            "placement/official_items",
+            "client/building"
+          ],
+          "deviations": [
+            "flowers and saplings do not grow or spread (no random ticks for them)",
+            "other plants (grass, ferns, roots, fungi, wither roses, azaleas, tall and double plants, dripleaves, berry bushes, petals) and other attached blocks (signs, banners, vines, lichen, amethyst) are not modeled",
+            "a torch whose clicked side and floor both fail is not placed (the official servers also try the player's other looking directions)"
+          ],
+          "note": "Placed by players where supported, and broken with their drops when the support goes (torches, lanterns and ladders on updates from their support's side, carpets, flowers and saplings on any update), as both official servers do"
+        },
+        {
           "id": "multi_block",
           "name": "Two-part blocks: doors, beds, tall plants",
           "milestone": "C5",
@@ -1064,8 +1083,10 @@
           "evidence": "compared",
           "tier": "L0",
           "cases": [
+            "collision/support",
             "trace/support"
-          ]
+          ],
+          "note": "Every state's support shape from the registry (collision/support): floor torches and pressure plates on a top whose middle bears them, dust, levers, buttons and wall torches on whole faces"
         },
         {
           "id": "torches",

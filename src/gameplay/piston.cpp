@@ -506,6 +506,8 @@ bool stays(RuleContext& ctx, BlockPos pos, BlockState s) {
         return face_sturdy(as_settled(ctx, pos.relative(side)), contracts::opposite(side));
     }
     case BlockType::rail: return supports_dust(as_settled(ctx, pos.relative(Direction::down)));
+    case BlockType::other:
+        return !needs_support(s) || supported(s, [&](Direction d) { return as_settled(ctx, pos.relative(d)); }, ctx.bundle().schema.content_release);
     default: return true;
     }
 }

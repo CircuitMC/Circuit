@@ -85,10 +85,11 @@ std::uint16_t button_item(BlockState s);
 std::uint16_t plate_item(BlockState s);
 // Building blocks without rules of their own (placement.cpp): the block an
 // item places, if it is one; whether a slab click doubles the slab `s` (the
-// clicked block, or the cell beside it); the state placed at `target`.
+// clicked block, or the cell beside it); the state placed at `target`, if it
+// can stay there.
 std::optional<std::uint32_t> building_block(RuleContext& ctx, std::uint16_t item);
 bool doubles_slab(std::uint32_t block, BlockState s, const contracts::PlayerUse& c, bool clicked);
-BlockState placed_building(RuleContext& ctx, std::uint32_t block, const contracts::PlayerUse& c, BlockPos target);
+std::optional<BlockState> placed_building(RuleContext& ctx, std::uint32_t block, const contracts::PlayerUse& c, BlockPos target);
 // Whether a block obstructs players standing in its cell.
 bool has_collision(BlockState s);
 // Records a player slot (contracts::player_slots: the cursor) after a change.
@@ -248,6 +249,17 @@ BlockState joined_state(RuleContext& ctx, BlockPos pos, BlockState s);
 // A shape update from `d`: a fence or pane joins or leaves the neighbor on
 // that side, a wall also takes its heights and post from the block above.
 void connector_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d);
+
+// ---- blocks that need support (support.cpp) ----
+// Torches, wall torches, lanterns, ladders, carpets, flowers and saplings.
+bool needs_support(BlockState s);
+// Whether it can stay with `around(d)` the block on side `d`.
+bool supported(BlockState s, const std::function<BlockState(Direction)>& around, std::string_view release);
+bool supported_at(RuleContext& ctx, BlockPos pos, BlockState s);
+// A shape update from `d`: unsupported, it breaks with its drops.
+void support_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d);
+// Its own item, its drop when no data packs give its loot table.
+std::optional<ItemStack> supported_drop(BlockState s);
 
 // ---- stairs (stairs.cpp) ----
 bool is_stairs(BlockState s);

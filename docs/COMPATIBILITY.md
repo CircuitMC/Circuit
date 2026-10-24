@@ -74,7 +74,7 @@ Every block state of both versions is represented, with its official name and pr
 
 ### Technical machines
 
-Block and item registration do not provide behavior. Coral fans die without water and break, but coral blocks and plants are inert. Rails take their shapes and pass power, minecarts ride them and meet each other, and detector rails sense minecarts. Common building blocks such as cobblestone, dirt and oak logs are inert too, but fences, glass panes, iron bars and walls join their neighbors, stairs take corner shapes from the stairs beside them, and players place full blocks, pillars, stairs, slabs and these connectors, as both official servers do; sand, gravel and concrete powder fall, and TNT is primed and explodes (below). Survival inventories and container screens therefore do not constitute complete vanilla survival support.
+Block and item registration do not provide behavior. Coral fans die without water and break, but coral blocks and plants are inert. Rails take their shapes and pass power, minecarts ride them and meet each other, and detector rails sense minecarts. Common building blocks such as cobblestone, dirt and oak logs are inert too, but fences, glass panes, iron bars and walls join their neighbors, stairs take corner shapes from the stairs beside them, players place full blocks, pillars, stairs, slabs and these connectors, and torches, lanterns, ladders, carpets, flowers and saplings stay only where they are supported and break when their support goes, as both official servers do; sand, gravel and concrete powder fall, and TNT is primed and explodes (below). Survival inventories and container screens therefore do not constitute complete vanilla survival support.
 
 | Mechanism or machine | Current support |
 | --- | --- |

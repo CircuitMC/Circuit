@@ -18,7 +18,7 @@ whether it is a redstone conductor (conductor), and what fences, panes and walls
 make of it (connector). Per
 state it keeps the collision class (empty, partial, full cube),
 which faces the collision shape covers completely, the faces fences, panes and
-walls join (join_faces), its light: emission,
+walls join (join_faces), what it supports (support), its light: emission,
 dampening and, for states whose shape occludes light, the parts of each face
 the occlusion shape covers (light_of below; minecraft-data gives light per
 block and describes its default state, so the state rules are Circuit's), and
@@ -367,6 +367,50 @@ def join_faces(name, props, shape):
     return shape_byte(shape) >> 2
 
 
+# What blocks support (both official servers report it for every state; see
+# tests/fixtures/collision/support-*.txt): their support shape is their
+# collision shape, except that leaves support nothing, chorus flowers only
+# what hangs under them, soul sand and mud are full cubes, snow is as tall as
+# its layers, hanging signs support what hangs under them (and, turned
+# between the four sides, what stands on them), and fence gates nothing that
+# hangs. Bit 0: the top's middle (7 to 9 sixteenths both ways) bears
+# torches and lanterns; bit 1: the bottom's middle holds hanging lanterns;
+# bits 2-7: whole faces (down, up, north, south, west, east) for wall torches
+# and ladders. Flowers and saplings grow on SOIL.
+SOIL = {"dirt", "coarse_dirt", "grass_block", "podzol", "mycelium", "rooted_dirt", "moss_block", "pale_moss_block", "mud",
+        "muddy_mangrove_roots", "farmland"}
+
+
+def middle_covered(shape, top):
+    """Whether the boxes touching the top (or bottom) plane cover 7 to 9 sixteenths both ways."""
+    rects = [(b[0], b[2], b[3], b[5]) for b in shape if (b[1] < 1.0 <= b[4] if top else b[1] <= 0.0 < b[4])]
+    for x in (7, 8):
+        for z in (7, 8):
+            cx, cz = (x + 0.5) / 16, (z + 0.5) / 16
+            if not any(r[0] <= cx <= r[2] and r[1] <= cz <= r[3] for r in rects):
+                return False
+    return True
+
+
+def support_byte(name, props, shape):
+    if name.endswith("_leaves"):
+        return 0
+    if name in FULL_SUPPORT:
+        return 255
+    if name == "snow":
+        shape = [[0.0, 0.0, 0.0, 1.0, int(props["layers"]) / 8, 1.0]]
+    top, bottom, faces = middle_covered(shape, True), middle_covered(shape, False), shape_byte(shape) >> 2
+    if name == "chorus_flower":
+        top, faces = False, faces & 1
+    if name.endswith("_wall_hanging_sign"):
+        bottom = True
+    elif name.endswith("_hanging_sign"):
+        top, bottom = int(props["rotation"]) % 4 != 0, True
+    if name.endswith("_fence_gate"):
+        bottom = False
+    return int(top) | int(bottom) << 1 | faces << 2
+
+
 def previous_blocks(path):
     text = open(path, encoding="utf-8").read()
     body = text.split("const BlockData blocks[] = {", 1)[1].split("};", 1)[0]
@@ -418,7 +462,8 @@ def main():
         "// name, first property, property count, first internal state, state count, default state offset,",
         "// hardness (negative: unbreakable), opaque, effective tool, harvest tier, blast resistance,",
         "// push class (0 move, 1 destroy, 2 push only, 3 immovable), note block instrument, conductor,",
-        "// connector (bits 0-2: 1 wooden fence, 2 nether brick fence, 3 pane, 4 wall; bit 3: walls keep their post under it)",
+        "// connector (bits 0-2: 1 wooden fence, 2 nether brick fence, 3 pane, 4 wall; bit 3: walls keep their post under it;",
+        "// bit 4: flowers and saplings grow on it)",
         "const BlockData blocks[] = {",
     ]
     properties = []  # (name, first value, count)
@@ -443,6 +488,8 @@ def main():
     intern_collision([])  # shape 0: no collision
     light_bytes = []
     join_bytes = []
+    support_bytes = []
+    support_overrides = []  # (release, internal state, support byte)
     occlusion_ids = []
     occlusion_shapes = {}  # face masks -> id (from 1)
     first_state = 1
@@ -479,6 +526,7 @@ def main():
         default = dict(zip(names, combos[b["defaultState"] - b["minStateId"]]))
         for combo, i in zip(combos, ids):
             join_bytes.append(join_faces(b["name"], dict(zip(names, combo)), shapes["shapes"][str(i)]))
+            support_bytes.append(support_byte(b["name"], dict(zip(names, combo)), shapes["shapes"][str(i)]))
             boxes16 = [tuple(round(c * 16) for c in box) for box in shapes["shapes"][str(i)]]
             e, d, occlusion = light_of(b["name"], dict(zip(names, combo)), b, boxes16, default)
             motion = 1 if motion_blocking(b["name"], dict(zip(names, combo)), boxes16) else 0
@@ -487,6 +535,17 @@ def main():
                 occlusion_ids.append(0)
             else:
                 occlusion_ids.append(occlusion_shapes.setdefault(face_masks(occlusion), len(occlusion_shapes) + 1))
+        # Another release's shape of a state may support otherwise.
+        for release, other_blocks, other_shapes, _ in versions:
+            other = next((ob for ob in other_blocks if ob["name"] == b["name"] and schema(ob) == sch), None)
+            if other is None or other_shapes is shapes:
+                continue
+            other_ids = other_shapes["blocks"].get(b["name"], 0)
+            other_ids = other_ids if isinstance(other_ids, list) else [other_ids] * count
+            for offset, (combo, theirs) in enumerate(zip(combos, other_ids)):
+                byte = support_byte(b["name"], dict(zip(names, combo)), other_shapes["shapes"][str(theirs)])
+                if byte != support_bytes[first_state - 1 + offset]:
+                    support_overrides.append((release, first_state + offset, byte))
         hardness = b.get("hardness")
         hardness = -1.0 if hardness is None or hardness < 0 else float(hardness)
         opaque = 1 if b.get("filterLight", 0) == 15 and not b.get("transparent", False) else 0
@@ -516,7 +575,7 @@ def main():
                 sys.exit(f"{name}: instrument differs in {release}")
         out.append(f'    {{"{name}", {first_prop}, {len(sch)}, {first_state}, {count}, {b["defaultState"] - b["minStateId"]}, '
                    f'{hardness!r}f, {opaque}, {tool}, {tier_of(b, tool, items)}, {resistance!r}f, {push}, {sound}, {conducts}, '
-                   f'{connector(b["name"], sch)}}},')
+                   f'{connector(b["name"], sch) | (16 if b["name"] in SOIL else 0)}}},')
         first_state += count
     out += ["};", f"const std::uint32_t block_count = {len(internal)};", f"const std::uint32_t state_count = {first_state - 1};", ""]
     out.append("const PropertyData properties[] = {")
@@ -536,6 +595,12 @@ def main():
             "const std::uint8_t join_faces[] = {"]
     for i in range(0, len(join_bytes), 32):
         out.append("    " + ", ".join(str(c) for c in join_bytes[i:i + 32]) + ",")
+    out.append("};")
+    out += ["// Per internal state (from 1): what it supports (bit 0 the top's middle, bit 1 the bottom's middle, bits 2-7",
+            "// whole faces: down, up, north, south, west, east).",
+            "const std::uint8_t support[] = {"]
+    for i in range(0, len(support_bytes), 32):
+        out.append("    " + ", ".join(str(c) for c in support_bytes[i:i + 32]) + ",")
     out.append("};")
     out += ["// Per internal state (from 1): bits 0-3 light emission, bits 4-5 dampening (0: 0, 1: 1, 2: 15),",
             "// bit 6 counts for the MOTION_BLOCKING heightmap.",
@@ -570,6 +635,10 @@ def main():
     for release, state, shape in collision_overrides or [("", 0, 0)]:
         out.append(f'    {{"{release}", {state}, {shape}}},')
     out += ["};", f"const std::size_t collision_override_count = {len(collision_overrides)};", ""]
+    out += ["// The states a release's shape makes support otherwise (support).", "const SupportOverride support_overrides[] = {"]
+    for release, state, byte in support_overrides or [("", 0, 0)]:
+        out.append(f'    {{"{release}", {state}, {byte}}},')
+    out += ["};", f"const std::size_t support_override_count = {len(support_overrides)};", ""]
 
     # Per version: each of its blocks in its registry order, as (first wire
     # state id, internal block). Within a block, states are in the same order

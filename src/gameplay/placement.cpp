@@ -176,10 +176,13 @@ bool player_has_room(const PlayerInventory& inv, ItemStack stack, std::uint8_t s
 // and stairs with the shapes their neighbors give them; waterlogged in a
 // water source. A slab clicked on its free half (the top face of a bottom
 // slab, the bottom face of a top one, the other half of a side), or placed
-// into a slab of its kind, doubles it.
+// into a slab of its kind, doubles it. Torches go on the side of the clicked
+// block or stand; lanterns hang under a clicked bottom or stand; ladders hang
+// on a clicked side; carpets, flowers and saplings rest on what is below;
+// each only where it is supported (support.cpp), replacing water.
 namespace circuit::gameplay::detail {
 namespace {
-enum class Building { none, plain, pillar, stairs, slab, connector, toward_player, clicked_face };
+enum class Building { none, plain, pillar, stairs, slab, connector, toward_player, clicked_face, torch, lantern, ladder, resting };
 
 Building building_kind(std::uint32_t block) {
     const auto info = registry::block(block);
@@ -199,6 +202,11 @@ Building building_kind(std::uint32_t block) {
         || name.ends_with("_glazed_terracotta"))
         return Building::toward_player;
     if (name == "end_rod" || name == "lightning_rod") return Building::clicked_face;
+    // Blocks that need support (support.cpp).
+    if (name == "torch" || name == "soul_torch") return Building::torch;
+    if (name == "lantern" || name == "soul_lantern") return Building::lantern;
+    if (name == "ladder") return Building::ladder;
+    if (needs_support(BlockState::registered(info.default_state))) return Building::resting;
     if (name.ends_with("_slab") && has("type") && only({"type", "waterlogged"})) return Building::slab;
     if (registry::connector(info.default_state) != registry::Connector::none) return Building::connector;
     if (has("axis") && only({"axis", "waterlogged"})) return Building::pillar;
@@ -269,11 +277,42 @@ bool doubles_slab(std::uint32_t block, BlockState s, const contracts::PlayerUse&
     return bottom ? c.face == Direction::up || (horizontal && c.cursor_y > 0.5f) : c.face == Direction::down || (horizontal && c.cursor_y <= 0.5f);
 }
 
-BlockState placed_building(RuleContext& ctx, std::uint32_t block, const contracts::PlayerUse& c, BlockPos target) {
+std::optional<BlockState> placed_building(RuleContext& ctx, std::uint32_t block, const contracts::PlayerUse& c, BlockPos target) {
     const auto here = ctx.block(target);
     auto s = BlockState::registered(registry::block(block).default_state);
     const std::string water = here == blocks::water_source() ? "true" : "false";
+    const auto stays = [&](BlockState placed) -> std::optional<BlockState> {
+        if (supported_at(ctx, target, placed)) return placed;
+        return std::nullopt;
+    };
     switch (building_kind(block)) {
+    // A torch goes on the side of the clicked block, else stands.
+    case Building::torch: {
+        if (contracts::is_horizontal(c.face)) {
+            const auto wall = registry::find_block(ctx.bundle().schema.content_release,
+                                                   registry::block(block).name == "torch" ? "wall_torch" : "soul_wall_torch");
+            if (wall)
+                if (const auto hung = stays(with(BlockState::registered(registry::block(*wall).default_state),
+                                                 {{"facing", std::string(name_of(c.face))}})))
+                    return hung;
+        }
+        return stays(s);
+    }
+    // A lantern hangs when the bottom of a block was clicked, else stands;
+    // when it cannot, the other way.
+    case Building::lantern: {
+        const auto standing = with(s, {{"hanging", "false"}, {"waterlogged", water}});
+        const auto hanging = with(s, {{"hanging", "true"}, {"waterlogged", water}});
+        const auto first = c.face == Direction::down ? hanging : standing;
+        if (const auto placed = stays(first)) return placed;
+        return stays(first == hanging ? standing : hanging);
+    }
+    // A ladder hangs on the side of the clicked block.
+    case Building::ladder:
+        if (!contracts::is_horizontal(c.face)) return std::nullopt;
+        return stays(with(s, {{"facing", std::string(name_of(c.face))}, {"waterlogged", water}}));
+    // Carpets, flowers and saplings rest on what is below.
+    case Building::resting: return stays(s);
     case Building::pillar: return with(s, {{"axis", std::string(axis_of(c.face))}, {"waterlogged", water}});
     case Building::stairs:
         s = with(s, {{"facing", std::string(name_of(c.horizontal))}, {"half", top_half(c) ? "top" : "bottom"}, {"waterlogged", water}});

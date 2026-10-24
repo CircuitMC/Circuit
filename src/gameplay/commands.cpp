@@ -168,7 +168,9 @@ Plan plan_building(RuleContext& ctx, const contracts::PlayerUse& c, const ItemSt
     const auto here = ctx.block(target);
     if (!replaceable(here) && !(target == c.pos ? replace : detail::doubles_slab(block, here, c, false)))
         return std::unexpected(ErrorCode::occupied);
-    const auto state = detail::placed_building(ctx, block, c, target);
+    const auto placed = detail::placed_building(ctx, block, c, target);
+    if (!placed) return std::unexpected(ErrorCode::unsupported);
+    const auto state = *placed;
     if (detail::has_collision(state) && (c.free & bit) == 0) return std::unexpected(ErrorCode::occupied);
     return [&ctx, target, state, c, held] {
         if (c.survival) {

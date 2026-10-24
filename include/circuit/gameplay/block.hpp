@@ -327,11 +327,8 @@ constexpr bool is_torch(BlockType t) noexcept { return t == BlockType::redstone_
 // than `other`); its states never use the registry encoding.
 bool modeled_block(std::uint32_t internal_block) noexcept;
 
-// Coarse data of an `other` state, from the registry: whether the block has a
-// collision shape, blocks all light, and covers a face completely.
+// Whether an `other` state has a collision shape (from the registry).
 bool other_has_collision(BlockState s) noexcept;
-bool other_opaque(BlockState s) noexcept;
-bool other_face_covered(BlockState s, Direction face) noexcept;
 
 // Whether two states are of the same block (for `other`, the same registry block).
 bool same_block(BlockState a, BlockState b) noexcept;

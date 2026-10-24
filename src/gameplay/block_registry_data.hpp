@@ -23,7 +23,7 @@ struct BlockData {
     std::uint8_t push;       // registry::PushClass
     std::uint8_t instrument; // registry::Instrument
     std::uint8_t conductor;  // registry::Conductor
-    std::uint8_t connector;  // bits 0-2 registry::Connector; bit 3 walls keep their post under it
+    std::uint8_t connector;  // bits 0-2 registry::Connector; bit 3 walls keep their post under it; bit 4 soil
 };
 struct PropertyData {
     const char* name;
@@ -50,6 +50,12 @@ struct CollisionOverride {
     std::uint32_t state;
     std::uint16_t shape;
 };
+// A state whose shape in one release supports otherwise than its own.
+struct SupportOverride {
+    const char* release;
+    std::uint32_t state;
+    std::uint8_t support;
+};
 struct VersionTable {
     const char* release;
     const VersionBlock* blocks;
@@ -65,6 +71,7 @@ extern const PropertyData properties[];
 extern const char* const values[];
 extern const std::uint8_t shapes[];
 extern const std::uint8_t join_faces[];
+extern const std::uint8_t support[];
 extern const std::uint8_t light[];
 extern const std::uint16_t light_shape[];
 extern const LightFaces light_faces[];
@@ -74,6 +81,8 @@ extern const CollisionShape collision_shapes[];
 extern const std::uint16_t collision_shape[];
 extern const CollisionOverride collision_overrides[];
 extern const std::size_t collision_override_count;
+extern const SupportOverride support_overrides[];
+extern const std::size_t support_override_count;
 extern const VersionTable versions[];
 extern const std::size_t version_count;
 

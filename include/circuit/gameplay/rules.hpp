@@ -4,6 +4,7 @@
 #include <circuit/gameplay/context.hpp>
 #include <circuit/gameplay/rng.hpp>
 #include <array>
+#include <functional>
 #include <string_view>
 
 // Entry points of circuit-reference-rules-v0. Each function is one root: an
@@ -40,6 +41,10 @@ BlockState wall_under(BlockState wall, std::array<bool, 4> joined, BlockState ab
 // The shape stairs take with `around` on their north, east, south and west
 // (for checks against the official servers).
 BlockState stairs_with_neighbors(BlockState stairs, std::array<BlockState, 4> around);
+// Whether a block that needs support (torches, lanterns, ladders, carpets,
+// flowers, saplings) can stay with `around(d)` on each side (for checks
+// against the official servers); blocks that need none always can.
+bool block_supported(BlockState s, const std::function<BlockState(contracts::Direction)>& around, std::string_view release);
 std::uint8_t received_power(RuleContext& ctx, BlockPos pos);
 
 // Positions outside the level's height or the border are never loaded.

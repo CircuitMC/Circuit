@@ -139,12 +139,7 @@ bool other_push_only(BlockState s) noexcept { return push_class(s) == registry::
 
 bool other_has_collision(BlockState s) noexcept { return registry::collision(s.registry_state()) != registry::Collision::empty; }
 
-bool other_opaque(BlockState s) noexcept {
-    const auto b = registry::block_of(s.registry_state());
-    return b && registry::block(*b).opaque;
-}
 
-bool other_face_covered(BlockState s, Direction face) noexcept { return registry::face_covered(s.registry_state(), face); }
 
 contracts::Result<BlockState> BlockState::decode(std::uint32_t raw) noexcept {
     const auto invalid = std::unexpected(contracts::ErrorCode::invalid_block_state);

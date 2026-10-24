@@ -678,6 +678,84 @@ int main(int argc, char** argv) {
         require(checked == 2 * 104976, std::format("{} combinations", checked));
     });
 
+    suite.run("blocks that need support stay where both official servers keep them", [&] {
+        // tests/fixtures/collision/support-*.txt: for every state as support,
+        // whether flowers and saplings (the poppy's column), torches, carpets,
+        // lanterns standing and hanging, wall torches and ladders stay.
+        namespace registry = circuit::gameplay::registry;
+        using circuit::contracts::Direction;
+        using circuit::gameplay::BlockState;
+        const auto table = [&](const char* file) {
+            std::map<std::string, std::string> out;
+            std::istringstream lines(read_text(fixtures / "collision" / file));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto space = line.find(' ');
+                out[line.substr(0, space)] = line.substr(space + 1);
+            }
+            return out;
+        };
+        const auto newest = table("support-1.21.8.txt");
+        const auto older = table("support-1.21.4-only.txt");
+        // Blocks that removed themselves when the report set them unsupported.
+        const std::set<std::string> vanished{"minecraft:rail", "minecraft:powered_rail", "minecraft:detector_rail", "minecraft:activator_rail",
+                                             "minecraft:redstone_wire", "minecraft:fire", "minecraft:soul_fire"};
+        constexpr std::array<std::string_view, 23> plants{
+            "dandelion", "poppy", "blue_orchid", "allium", "azure_bluet", "red_tulip", "orange_tulip", "white_tulip", "pink_tulip",
+            "oxeye_daisy", "cornflower", "lily_of_the_valley", "torchflower", "closed_eyeblossom", "open_eyeblossom", "oak_sapling",
+            "spruce_sapling", "birch_sapling", "jungle_sapling", "acacia_sapling", "dark_oak_sapling", "cherry_sapling", "pale_oak_sapling"};
+        std::size_t checked = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            const auto* mapping = ContentMapping::for_game_version(release);
+            const auto make = [&](std::string_view name, std::vector<registry::Property> props = {}) {
+                const auto block = registry::find_block(release, name);
+                require(block.has_value(), std::format("{} {}", release, name));
+                return BlockState::registered(registry::state_of(*block, props).value());
+            };
+            std::vector<BlockState> plant_states;
+            for (const auto p : plants) plant_states.push_back(make(p));
+            const auto torch = make("torch"), carpet = make("white_carpet"), lantern = make("lantern"),
+                       hanging = make("lantern", {{"hanging", "true"}}), wall_torch = make("wall_torch", {{"facing", "north"}}),
+                       ladder = make("ladder", {{"facing", "north"}});
+            std::set<std::uint32_t> seen;
+            for (const auto& [key, _] : newest) {
+                const auto name = key.substr(0, key.find('['));
+                if (vanished.contains(name)) continue;
+                const auto block = registry::find_block(release, name.substr(std::string("minecraft:").size()));
+                if (!block) continue;
+                const auto info = registry::block(*block);
+                for (auto state = info.first_state; state < info.first_state + info.state_count; ++state) {
+                    if (!seen.insert(state).second) continue;
+                    const auto notation = registry::notation(state);
+                    const auto find = [&](const std::map<std::string, std::string>& t) -> const std::string* {
+                        for (const auto& k : {notation, name})
+                            if (const auto it = t.find(k); it != t.end()) return &it->second;
+                        return nullptr;
+                    };
+                    const std::string* row = release == std::string_view("1.21.4") ? find(older) : nullptr;
+                    if (!row) row = find(newest);
+                    require(row && row->size() == 10, std::format("{} {}: a row", release, notation));
+                    const auto x = mapping->block(notation);
+                    require(x.has_value(), std::format("{} {}: maps", release, notation));
+                    const auto air = BlockState::of(circuit::gameplay::BlockType::air);
+                    const auto with = [&](Direction side) { return [&, side](Direction d) { return d == side ? *x : air; }; };
+                    const auto on = [&](BlockState s) { return circuit::gameplay::block_supported(s, with(Direction::down), release) ? '1' : '0'; };
+                    for (const auto& p : plant_states)
+                        require(on(p) == (*row)[0], std::format("{} {} under {}: official {}", release, notation, circuit::gameplay::block_notation(p), (*row)[0]));
+                    const std::string got{on(plant_states[15]), on(torch), on(carpet), on(lantern),
+                                          circuit::gameplay::block_supported(hanging, with(Direction::up), release) ? '1' : '0',
+                                          circuit::gameplay::block_supported(wall_torch, with(Direction::south), release) ? '1' : '0',
+                                          circuit::gameplay::block_supported(ladder, with(Direction::south), release) ? '1' : '0'};
+                    const std::string want{(*row)[1], (*row)[2], (*row)[3], (*row)[4], (*row)[7], (*row)[8], (*row)[9]};
+                    require(got == want, std::format("{} {}: official {}, Circuit {}", release, notation, want, got));
+                    ++checked;
+                }
+            }
+        }
+        // Every state of both versions but the ones that vanished.
+        require(checked == 52010, std::format("{} states", checked));
+    });
+
     suite.run("players place blocks from items as both official servers do", [&] {
         // tests/fixtures/placement: every block item in fifteen contexts. Each
         // state Circuit places must be the official one; items Circuit does not

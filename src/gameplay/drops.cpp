@@ -87,7 +87,12 @@ std::vector<ItemStack> block_drops(RuleContext& ctx, BlockState destroyed, const
     }
     // An explosion needs no tool (stone gives cobblestone).
     if (!exploded && !harvests(destroyed, tool, ctx.data())) return {};
-    if (destroyed.is(BlockType::other)) return table_drops(ctx, destroyed, tool);
+    if (destroyed.is(BlockType::other)) {
+        // Blocks that need support drop themselves when no loot table says otherwise.
+        if (!ctx.data())
+            if (const auto own = supported_drop(destroyed)) return {*own};
+        return table_drops(ctx, destroyed, tool);
+    }
     if (const auto item = own_item(destroyed)) return {*item};
     return {};
 }

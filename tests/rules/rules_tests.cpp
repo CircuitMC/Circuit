@@ -2220,6 +2220,30 @@ int main() {
         require(s.at({2, 1, 6}) == stairs("north", "outer_left"), std::format("pushed: {}", circuit::gameplay::block_notation(s.at({2, 1, 6}))));
     });
 
+    suite.run("torches, ladders, carpets and flowers break with their drops when their support goes", [] {
+        namespace registry = circuit::gameplay::registry;
+        using circuit::gameplay::EntityKind;
+        const auto named = [](std::string_view name, std::vector<registry::Property> props = {}) {
+            return BlockState::registered(registry::state_of(registry::find_block("1.21.8", name).value(), props).value());
+        };
+        Sim s;
+        s.tick(with_floor(floor(-2, 8, -1, 4), {place({0, 1, 0}, blocks::stone()), place({0, 2, 0}, named("torch")),
+                                                 place({2, 1, 0}, blocks::stone()), place({2, 1, 1}, named("ladder", {{"facing", "south"}})),
+                                                 place({4, 1, 0}, named("dirt")), place({4, 2, 0}, named("poppy")),
+                                                 place({6, 1, 0}, blocks::stone()), place({6, 2, 0}, named("white_carpet"))}));
+        // A block beside the torch leaves it; one beside the poppy too.
+        s.tick({place({1, 2, 0}, blocks::stone()), place({5, 2, 0}, blocks::stone())});
+        require(s.at({0, 2, 0}) == named("torch") && s.at({4, 2, 0}) == named("poppy"), "supported, they stay");
+        s.tick({place({0, 1, 0}, blocks::air()), place({2, 1, 0}, blocks::air()), place({4, 1, 0}, blocks::stone()), place({6, 1, 0}, blocks::air())});
+        for (const BlockPos p : {BlockPos{0, 2, 0}, BlockPos{2, 1, 1}, BlockPos{4, 2, 0}, BlockPos{6, 2, 0}})
+            require(s.at(p).is_air(), std::format("{} {} {} broke", p.x, p.y, p.z));
+        std::multiset<std::uint16_t> drops;
+        const auto dump = s.oracle.dump();
+        for (const auto& e : dump.overworld().entities)
+            if (e.kind == EntityKind::item) drops.insert(e.stack.item);
+        require(drops == std::multiset<std::uint16_t>{items::torch, items::ladder, items::poppy, items::white_carpet}, "each dropped itself");
+    });
+
     suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {
         using circuit::contracts::UseBlock;
         Sim s;
