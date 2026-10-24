@@ -309,9 +309,12 @@ constexpr std::array reference_v4_mechanisms{
         "buttons and wall torches a whole face to hang on, floor torches and pressure plates the middle of the top; "
         "an update that finds the support gone breaks them with their drops (support, lever_attachment, "
         "torch_basics, button_basics, pressure_plates). Torches, lanterns, ladders, carpets, flowers and saplings "
-        "need theirs too and break when it goes (supported_blocks); signs and banners need a solid block (signs_beds). Support shapes "
-        "and solidity of every state come from the "
-        "registry (tests/fixtures/collision/support-*.txt). The drops' positions follow item_entity."},
+        "need theirs too and break when it goes (supported_blocks); signs and banners need a solid block (signs_beds); "
+        "grasses, ferns, bushes, petals, fungi, roots, wither roses, azaleas, crops, nether wart and bamboo need the "
+        "ground of their kind (plant_grounds; every state in tests/fixtures/collision/plants-*.txt). Support shapes "
+        "and solidity of every state come from the registry (tests/fixtures/collision/support-*.txt). The drops' "
+        "positions follow item_entity; loot rolls that draw random numbers are not modeled (those plants drop nothing "
+        "without data packs)."},
     MechanismEntry{"container_menus", l0_exact, l2_declared_deviation, controlled_experiment,
         "Player windows and chest, double chest and hopper menus with every click mode, applied as commands. "
         "A 48-step client scenario (every click mode, double chests, hoppers, the own window, throws and "

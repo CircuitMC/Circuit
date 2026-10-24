@@ -1,0 +1,9 @@
+# Whether plants stay on every block state as support, as both official servers decide it with nothing else around
+# (harness 0.23.0 plant report): one code per plant, 1 or 0, - when the version lacks the plant. A bare block name
+# stands for all its states. Columns: fern tall_grass large_fern dead_bush short_grass bush short_dry_grass tall_dry_grass firefly_bush crimson_fungus warped_fungus crimson_roots warped_roots nether_sprouts wither_rose mangrove_propagule pink_petals wildflowers leaf_litter azalea flowering_azalea cactus_flower nether_wart sweet_berry_bush carrots potatoes beetroots melon_stem pumpkin_stem torchflower_crop pitcher_crop small_dripleaf big_dripleaf twisting_vines bamboo_sapling bamboo sugar_cane cactus lily_pad sea_pickle brown_mushroom red_mushroom weeping_vines hanging_roots spore_blossom cave_vines pale_hanging_moss;
+# the plants stand on the state, but the last five, which hang under it; plants of two halves are their lower
+# (standing) or upper (hanging) half. Mushrooms had full sky light.
+# Java Edition 1.21.4: the states whose codes plants-1.21.8.txt does not give for the plants 1.21.4 has; every other state as there, with - for the plants it lacks.
+minecraft:farmland 11101----11111111--11-0111111110100000000011111
+minecraft:pitcher_crop[age=0,half=upper] 00000----00000000--00-0000000000000000000000100
+minecraft:pale_moss_block 11111----11111111--11-0100000000111100010011111

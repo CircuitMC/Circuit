@@ -394,6 +394,17 @@
       "description": "The fluid of every block state, whether it takes poured water and whether water and lava replace it, reported by both official servers; Circuit's rules match all 55,812 states"
     },
     {
+      "id": "collision/plants",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "tests/fixtures/collision/plants-*.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness plant report",
+      "status": "passing",
+      "description": "Whether 47 plants stay on every block state as support, as both official servers decide it; Circuit's rules match the 30 that need only the ground below them for every state of both versions (1,535,030 pairs)"
+    },
+    {
       "id": "collision/flows",
       "kind": "black_box",
       "versions": [

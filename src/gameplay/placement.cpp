@@ -214,7 +214,8 @@ Building building_kind(std::uint32_t block) {
     if (name == "torch" || name == "soul_torch") return Building::torch;
     if (name == "lantern" || name == "soul_lantern") return Building::lantern;
     if (name == "ladder") return Building::ladder;
-    if (name == "sunflower" || name == "lilac" || name == "rose_bush" || name == "peony") return Building::tall;
+    if (name == "sunflower" || name == "lilac" || name == "rose_bush" || name == "peony" || name == "tall_grass" || name == "large_fern")
+        return Building::tall;
     if ((name.ends_with("_sign") && !name.ends_with("hanging_sign") && !name.ends_with("_wall_sign"))
         || (name.ends_with("_banner") && !name.ends_with("_wall_banner")))
         return Building::sign;
@@ -292,7 +293,8 @@ std::string_view name_of(Direction d) {
 std::optional<std::uint32_t> building_block(RuleContext& ctx, std::uint16_t item) {
     const auto* info = items::info(item);
     if (!info) return std::nullopt;
-    const auto block = registry::find_block(ctx.bundle().schema.content_release, info->name);
+    // Bamboo is planted as a bamboo shoot (tests/fixtures/placement).
+    const auto block = registry::find_block(ctx.bundle().schema.content_release, info->name == "minecraft:bamboo" ? "bamboo_sapling" : info->name);
     if (!block || !BlockState::decode(BlockState::registered(registry::block(*block).default_state).raw())) return std::nullopt;
     if (building_kind(*block) == Building::none) return std::nullopt;
     return block;
@@ -355,7 +357,14 @@ std::optional<BlockState> placed_building(RuleContext& ctx, std::uint32_t block,
         return stays(with(s, {{"facing", std::string(name_of(c.face))}, {"waterlogged", water}}));
     // Carpets, flowers and saplings rest on what is below; a tall flower's
     // lower half too (its upper half goes above it, which must be free).
-    case Building::resting: return stays(s);
+    // Petals and wildflowers face the player; a mangrove propagule is set
+    // grown (tests/fixtures/placement).
+    case Building::resting: {
+        const auto block_name = registry::block(block).name;
+        if (block_name == "pink_petals" || block_name == "wildflowers") s = with(s, {{"facing", std::string(name_of(contracts::opposite(c.horizontal)))}});
+        if (block_name == "mangrove_propagule") s = with(s, {{"age", "4"}});
+        return stays(s);
+    }
     case Building::tall: return stays(with(s, {{"half", "lower"}}));
     // Signs and banners hang on the clicked side, else stand turned to the
     // player; heads alike, but stand turned away from them.

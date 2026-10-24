@@ -803,10 +803,12 @@
           "cases": [
             "client/building",
             "collision/support",
+            "collision/plants",
             "placement/official_items",
             "trace/signs_beds",
             "trace/supported_blocks",
-            "trace/tall_flowers"
+            "trace/tall_flowers",
+            "trace/plant_grounds"
           ],
           "deviations": [
             "flowers and saplings do not grow or spread (no random ticks for them)",
@@ -988,8 +990,18 @@
           "id": "other_crops",
           "name": "Other crops and plants: carrots, potatoes, beetroots, stems, sugar cane, cactus, bamboo, kelp, cocoa, berries, nether wart, chorus",
           "milestone": "C5",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "collision/plants",
+            "trace/plant_grounds"
+          ],
+          "note": "Carrots, potatoes, beetroots, stems, torchflower crops, nether wart, sweet berry bushes and bamboo grow on their ground only and break when it goes",
+          "deviations": [
+            "they do not grow",
+            "sugar cane, cactus, kelp, cocoa, chorus, pitcher crops and dripleaves are not supported yet",
+            "loot rolls with random numbers are not drawn"
+          ]
         },
         {
           "id": "trees",

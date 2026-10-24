@@ -4106,6 +4106,389 @@
           "no sounds or player profiles"
         ],
         "note": "Placed by players turned away from them or on the clicked side, with an empty block entity, as both official servers do"
+      },
+      "fern": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow",
+          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+        ]
+      },
+      "short_grass": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow",
+          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+        ]
+      },
+      "tall_grass": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow",
+          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+        ]
+      },
+      "large_fern": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow",
+          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+        ]
+      },
+      "dead_bush": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow",
+          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+        ]
+      },
+      "bush": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow",
+          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+        ]
+      },
+      "short_dry_grass": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow",
+          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+        ]
+      },
+      "tall_dry_grass": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow",
+          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+        ]
+      },
+      "firefly_bush": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow"
+        ]
+      },
+      "crimson_fungus": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items",
+          "trace/plant_grounds"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow"
+        ]
+      },
+      "warped_fungus": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow"
+        ]
+      },
+      "crimson_roots": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items",
+          "trace/plant_grounds"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow"
+        ]
+      },
+      "warped_roots": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items",
+          "trace/plant_grounds"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow"
+        ]
+      },
+      "nether_sprouts": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow",
+          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+        ]
+      },
+      "wither_rose": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items",
+          "trace/plant_grounds"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow"
+        ]
+      },
+      "mangrove_propagule": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items",
+          "trace/plant_grounds"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not grow",
+          "hanging propagules are kept wherever they are"
+        ]
+      },
+      "pink_petals": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items",
+          "trace/plant_grounds"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow"
+        ]
+      },
+      "wildflowers": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not spread or grow"
+        ]
+      },
+      "azalea": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items",
+          "trace/plant_grounds"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not grow"
+        ]
+      },
+      "flowering_azalea": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not grow"
+        ]
+      },
+      "nether_wart": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items",
+          "trace/plant_grounds"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not grow"
+        ]
+      },
+      "sweet_berry_bush": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not grow",
+          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+        ]
+      },
+      "carrots": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items",
+          "trace/plant_grounds"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not grow"
+        ]
+      },
+      "potatoes": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not grow"
+        ]
+      },
+      "beetroots": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not grow"
+        ]
+      },
+      "melon_stem": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not grow",
+          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+        ]
+      },
+      "pumpkin_stem": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not grow",
+          "its loot's random rolls are not drawn: without data packs it drops nothing, with them only what needs no roll"
+        ]
+      },
+      "torchflower_crop": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not grow"
+        ]
+      },
+      "bamboo_sapling": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items",
+          "trace/plant_grounds"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not grow"
+        ]
+      },
+      "bamboo": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "collision/plants",
+          "placement/official_items"
+        ],
+        "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
+        "deviations": [
+          "does not grow"
+        ]
       }
     },
     "item": {

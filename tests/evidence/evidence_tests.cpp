@@ -767,6 +767,70 @@ int main(int argc, char** argv) {
         require(checked == 2 * 104976, std::format("{} combinations", checked));
     });
 
+    suite.run("plants grow on the ground both official servers let them", [&] {
+        // tests/fixtures/collision/plants-*.txt: for every state as support,
+        // whether each plant stays on it. The rules model the plants that
+        // need only the block below of their ground; the other columns wait.
+        namespace registry = circuit::gameplay::registry;
+        using circuit::contracts::Direction;
+        using circuit::gameplay::BlockState;
+        const auto table = [&](const char* file) {
+            std::map<std::string, std::string> out;
+            std::istringstream lines(read_text(fixtures / "collision" / file));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto space = line.find(' ');
+                out[line.substr(0, space)] = line.substr(space + 1);
+            }
+            return out;
+        };
+        const auto newest = table("plants-1.21.8.txt");
+        const auto older = table("plants-1.21.4-only.txt");
+        // The modeled columns: the plant and the property its tested state has.
+        const std::vector<std::pair<std::size_t, std::pair<std::string_view, std::vector<registry::Property>>>> modeled{
+            {0, {"fern", {}}}, {1, {"tall_grass", {{"half", "lower"}}}}, {2, {"large_fern", {{"half", "lower"}}}}, {3, {"dead_bush", {}}},
+            {4, {"short_grass", {}}}, {5, {"bush", {}}}, {6, {"short_dry_grass", {}}}, {7, {"tall_dry_grass", {}}}, {8, {"firefly_bush", {}}},
+            {9, {"crimson_fungus", {}}}, {10, {"warped_fungus", {}}}, {11, {"crimson_roots", {}}}, {12, {"warped_roots", {}}},
+            {13, {"nether_sprouts", {}}}, {14, {"wither_rose", {}}}, {15, {"mangrove_propagule", {}}}, {16, {"pink_petals", {}}},
+            {17, {"wildflowers", {}}}, {19, {"azalea", {}}}, {20, {"flowering_azalea", {}}}, {22, {"nether_wart", {}}},
+            {23, {"sweet_berry_bush", {}}}, {24, {"carrots", {}}}, {25, {"potatoes", {}}}, {26, {"beetroots", {}}},
+            {27, {"melon_stem", {}}}, {28, {"pumpkin_stem", {}}}, {29, {"torchflower_crop", {}}}, {34, {"bamboo_sapling", {}}},
+            {35, {"bamboo", {}}}};
+        std::size_t checked = 0, grows = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            const auto* mapping = ContentMapping::for_game_version(release);
+            std::vector<std::pair<std::size_t, BlockState>> plants;
+            for (const auto& [column, plant] : modeled)
+                if (const auto block = registry::find_block(release, plant.first))
+                    plants.push_back({column, BlockState::registered(registry::state_of(*block, plant.second).value())});
+            for (std::uint32_t wire = 0; wire < registry::wire_state_count(release); ++wire) {
+                const auto notation = registry::notation(registry::from_wire(release, static_cast<std::int32_t>(wire)).value());
+                const auto name = notation.substr(0, notation.find('['));
+                const auto find = [&](const std::map<std::string, std::string>& t) -> const std::string* {
+                    for (const auto& k : {notation, name})
+                        if (const auto it = t.find(k); it != t.end()) return &it->second;
+                    return nullptr;
+                };
+                const std::string* row = release == std::string_view("1.21.4") ? find(older) : nullptr;
+                if (!row) row = find(newest);
+                require(row != nullptr, std::format("{} {}: a row", release, notation));
+                const auto below = mapping->block(notation).value();
+                const auto air = BlockState::of(circuit::gameplay::BlockType::air);
+                const auto around = [&](Direction d) { return d == Direction::down ? below : air; };
+                for (const auto& [column, plant] : plants) {
+                    const char want = (*row)[column];
+                    const char got = circuit::gameplay::block_supported(plant, around, release) ? '1' : '0';
+                    require(want == got, std::format("{} {} on {}: official {}, Circuit {}", release, circuit::gameplay::block_notation(plant),
+                                                     notation, want, got));
+                    ++checked;
+                    grows += got == '1' ? 1 : 0;
+                }
+            }
+        }
+        std::cout << std::format("  {} plant and support pairs, {} where the plant grows\n", checked, grows);
+        require(grows > 0, "plants grow somewhere");
+    });
+
     suite.run("blocks that need support stay where both official servers keep them", [&] {
         // tests/fixtures/collision/support-*.txt: for every state as support,
         // whether flowers and saplings (the poppy's column), torches, carpets,
