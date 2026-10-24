@@ -29,17 +29,29 @@
 //   wither roses also on netherrack, soul sand and soul soil; azaleas and
 //   mangrove propagules (not hanging ones) also on clay; crops on farmland;
 //   nether wart on soul sand; bamboo on soil but farmland, on sand, gravel and
-//   bamboo.
+//   bamboo;
+// - sugar cane on sugar cane, or on soil but farmland or sand with water
+//   beside that block; cacti on cacti or sand with nothing solid or lava
+//   beside them and no liquid above (plant-contexts-*.txt); lily pads on
+//   water sources or ice; sea pickles on a top their collision reaches;
+// - vines on their own kind or a sturdy face (weeping and cave vines hang,
+//   twisting vines stand), hanging roots under a sturdy face, spore blossoms
+//   under a bottom whose middle holds them, pale hanging moss under itself,
+//   leaves or either shape's whole bottom, hanging propagules under mangrove
+//   leaves.
 // A shape update that finds one unsupported (torches, lanterns and ladders:
-// from their support's side) breaks it with its drops, and a
-// piston that sets one down where it cannot stay breaks it at once. Without
-// data packs they drop themselves (their loot tables do the same), young
-// crops and bamboo shoots what their loot tables give, and plants whose loot
-// is random (grasses, ferns, dead bushes, stems) nothing.
+// from their support's side) breaks it with its drops, and a piston that
+// sets one down where it cannot stay breaks it at once; sugar cane, cacti,
+// vines and pale hanging moss break a tick later instead, in a block tick.
+// Without data packs they drop themselves (their loot tables do the same),
+// young crops and bamboo shoots what their loot tables give, and plants whose
+// loot is random or needs shears (grasses, ferns, dead bushes, stems, vines,
+// hanging roots, pale hanging moss) nothing.
 namespace circuit::gameplay::detail {
 namespace {
 enum class Need : std::uint8_t {
-    none, standing, wall, lantern, ladder, carpet, plant, tall_plant, standing_sign, wall_sign, bed, cane, cactus, lily_pad, sea_pickle
+    none, standing, wall, lantern, ladder, carpet, plant, tall_plant, standing_sign, wall_sign, bed, cane, cactus, lily_pad, sea_pickle,
+    vine, hanging_roots, spore_blossom, hanging_moss
 };
 // The ground a plant grows on: one bit each in a block's grounds.
 enum class Ground : std::uint8_t { soil, dry, nether, wither, clay, farmland, soul_sand, bamboo, cane, cactus };
@@ -82,6 +94,12 @@ const std::vector<Kind>& kinds() {
             else if (name == "cactus") v[b] = {Need::cactus, Ground::cactus};
             else if (name == "lily_pad") v[b].need = Need::lily_pad;
             else if (name == "sea_pickle") v[b].need = Need::sea_pickle;
+            else if (name == "weeping_vines" || name == "weeping_vines_plant" || name == "twisting_vines" || name == "twisting_vines_plant"
+                     || name == "cave_vines" || name == "cave_vines_plant")
+                v[b].need = Need::vine;
+            else if (name == "hanging_roots") v[b].need = Need::hanging_roots;
+            else if (name == "spore_blossom") v[b].need = Need::spore_blossom;
+            else if (name == "pale_hanging_moss") v[b].need = Need::hanging_moss;
             else if (name == "sunflower" || name == "lilac" || name == "rose_bush" || name == "peony" || name == "tall_grass"
                      || name == "large_fern")
                 v[b].need = Need::tall_plant;
@@ -168,6 +186,10 @@ bool named(BlockState s, std::string_view name) {
     const auto block = s.is(BlockType::other) ? registry::block_of(s.registry_state()) : std::nullopt;
     return block && registry::game_name(*block) == name;
 }
+bool leaves(BlockState s) {
+    const auto block = s.is(BlockType::other) ? registry::block_of(s.registry_state()) : std::nullopt;
+    return block && registry::game_name(*block).ends_with("_leaves");
+}
 // Water or frosted ice, beside sugar cane's ground: any water, a waterlogged
 // block's among them.
 bool waters_cane(BlockState s) {
@@ -182,6 +204,21 @@ bool top_reached(BlockState s, std::string_view release) {
         return b.min_y < 1.0 && b.max_y >= 1.0 && b.max_x > b.min_x && b.max_z > b.min_z;
     });
 }
+
+// Weeping, twisting and cave vines: a head and its body, the way they grow.
+struct Vine {
+    std::string_view head, body;
+    Direction growth;
+};
+constexpr std::array<Vine, 3> vines{{{"weeping_vines", "weeping_vines_plant", Direction::down},
+                                     {"twisting_vines", "twisting_vines_plant", Direction::up},
+                                     {"cave_vines", "cave_vines_plant", Direction::down}}};
+const Vine* vine_of(BlockState s) {
+    for (const auto& v : vines)
+        if (named(s, v.head) || named(s, v.body)) return &v;
+    return nullptr;
+}
+bool of_vine(BlockState s, const Vine& v) { return named(s, v.head) || named(s, v.body); }
 
 // Toward a bed's other half: its head is ahead of its foot.
 Direction toward_other_half(BlockState bed) {
@@ -215,9 +252,8 @@ bool supported(BlockState s, const Near& near, std::string_view release) {
     }
     case Need::carpet: return !around(Direction::down).is_air();
     case Need::plant: {
-        // A hanging mangrove propagule hangs under leaves, which the rules do
-        // not check yet.
-        if (value_of(s, "hanging") == "true") return true;
+        // A hanging mangrove propagule hangs under mangrove leaves.
+        if (value_of(s, "hanging") == "true") return named(around(Direction::up), "mangrove_leaves");
         return grows_on(kind_of(s).ground, around(Direction::down), release);
     }
     // Signs and banners stand on a solid block or hang on one behind them.
@@ -259,6 +295,25 @@ bool supported(BlockState s, const Near& near, std::string_view release) {
         const auto fluid = fluid_state(below);
         return (fluid && fluid->first == "water") || named(below, "ice") || named(below, "frosted_ice");
     }
+    // Vines hang (or stand) on their own kind or a sturdy face.
+    case Need::vine: {
+        const auto& v = *vine_of(s);
+        const auto attached = around(contracts::opposite(v.growth));
+        return of_vine(attached, v) || sturdy(attached, v.growth, release);
+    }
+    // Hanging roots hang under a sturdy face, spore blossoms under a bottom
+    // whose middle holds them, pale hanging moss under itself, leaves and a
+    // whole bottom face of the support or collision shape.
+    case Need::hanging_roots: return sturdy(around(Direction::up), Direction::down, release);
+    case Need::spore_blossom: return middle(around(Direction::up), Direction::down, release);
+    case Need::hanging_moss: {
+        const auto above = around(Direction::up);
+        // Either shape's whole bottom: chorus flowers' collision, one layer of
+        // snow's support shape.
+        const auto state = physics::registry_state_of(above);
+        return same_block(above, s) || leaves(above) || sturdy(above, Direction::down, release)
+            || (state && registry::face_covered(*state, Direction::down));
+    }
     // A sea pickle sits on a top its collision shape reaches, or a sturdy one.
     case Need::sea_pickle: return top_reached(around(Direction::down), release) || sturdy(around(Direction::down), Direction::up, release);
     default: return true;
@@ -269,7 +324,10 @@ bool supported_at(RuleContext& ctx, BlockPos pos, BlockState s) {
     return supported(s, [&](BlockPos o) { return ctx.block({pos.x + o.x, pos.y + o.y, pos.z + o.z}); }, ctx.bundle().schema.content_release);
 }
 
-bool checks_later(BlockState s) { return need_of(s) == Need::cane || need_of(s) == Need::cactus; }
+bool checks_later(BlockState s) {
+    const auto n = need_of(s);
+    return n == Need::cane || n == Need::cactus || n == Need::vine || n == Need::hanging_moss;
+}
 
 void check_support_later(RuleContext& ctx, BlockPos pos, BlockState s) {
     if (checks_later(s) && !supported_at(ctx, pos, s)) schedule(ctx, TickList::block, pos, BlockType::other, 1, 0);
@@ -280,6 +338,39 @@ void support_tick(RuleContext& ctx, BlockPos pos, BlockState s) {
 }
 
 void support_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d) {
+    // Vines look again a tick after an update from the side they hang on;
+    // on the side they grow to, a body without its kind there becomes a head
+    // of a random age (a level-random draw) and a head with it a body, cave
+    // vines keeping their berries (vines).
+    if (const auto* v = vine_of(s)) {
+        if (d == contracts::opposite(v->growth)) check_support_later(ctx, pos, s);
+        if (d != v->growth) return;
+        const bool head = named(s, v->head);
+        if (head == of_vine(ctx.block(pos.relative(d)), *v)) {
+            const auto to = registry::find_block(ctx.bundle().schema.content_release, head ? v->body : v->head);
+            auto props = registry::properties(registry::block(*to).default_state);
+            for (auto& [key, value] : props) {
+                if (key == "berries") value = value_of(s, "berries");
+                if (key == "age") value = std::to_string(ctx.random_int(25));
+            }
+            set_block_quiet(ctx, pos, BlockState::registered(registry::state_of(*to, props).value()));
+        }
+        return;
+    }
+    // Pale hanging moss is the tip when no moss hangs under it.
+    if (need_of(s) == Need::hanging_moss) {
+        if (d == Direction::up) check_support_later(ctx, pos, s);
+        if (d == Direction::down) {
+            const auto tip = same_block(ctx.block(pos.relative(d)), s) ? "false" : "true";
+            if (value_of(s, "tip") != tip) {
+                auto props = registry::properties(s.registry_state());
+                for (auto& [key, value] : props)
+                    if (key == "tip") value = tip;
+                set_block_quiet(ctx, pos, BlockState::registered(registry::state_of(*registry::block_of(s.registry_state()), props).value()));
+            }
+        }
+        return;
+    }
     // Sugar cane and cacti look again a tick after any update.
     if (checks_later(s)) {
         check_support_later(ctx, pos, s);
@@ -323,11 +414,18 @@ std::optional<ItemStack> supported_drop(BlockState s) {
     // Grasses, ferns, bushes and sprouts drop nothing without shears (but a
     // seed or stick a random roll may give), nor do stems and berry bushes
     // without random rolls; petals drop one for each flower.
-    static constexpr std::array<std::string_view, 12> nothing{
+    // Vines too (a random roll), hanging roots and pale hanging moss (only
+    // shears); cave vines drop their berries.
+    static constexpr std::array<std::string_view, 18> nothing{
         "minecraft:fern", "minecraft:tall_grass", "minecraft:large_fern", "minecraft:short_grass", "minecraft:dead_bush", "minecraft:bush",
         "minecraft:short_dry_grass", "minecraft:tall_dry_grass", "minecraft:nether_sprouts", "minecraft:melon_stem", "minecraft:pumpkin_stem",
-        "minecraft:sweet_berry_bush"};
+        "minecraft:sweet_berry_bush", "minecraft:weeping_vines", "minecraft:weeping_vines_plant", "minecraft:twisting_vines",
+        "minecraft:twisting_vines_plant", "minecraft:hanging_roots", "minecraft:pale_hanging_moss"};
     if (std::ranges::find(nothing, name) != nothing.end()) return std::nullopt;
+    if (name == "minecraft:cave_vines" || name == "minecraft:cave_vines_plant") {
+        if (value_of(s, "berries") != "true") return std::nullopt;
+        name = "minecraft:glow_berries";
+    }
     if (name == "minecraft:pink_petals" || name == "minecraft:wildflowers" || name == "minecraft:sea_pickle") {
         const auto item = items::by_name(name);
         const auto count = std::stoi(value_of(s, name == "minecraft:sea_pickle" ? "pickles" : "flower_amount"));

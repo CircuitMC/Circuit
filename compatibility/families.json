@@ -812,7 +812,7 @@
           ],
           "deviations": [
             "flowers and saplings do not grow or spread (no random ticks for them)",
-            "other attached blocks (dripleaves, vines, lichen, amethyst) are not modeled",
+            "other attached blocks (dripleaves, vines on walls, glow lichen, amethyst) are not modeled",
             "a torch whose clicked side and floor both fail is not placed (the official servers also try the player's other looking directions)"
           ],
           "note": "Placed by players where supported, and broken with their drops when the support goes (torches, lanterns, ladders, signs and banners on updates from their support's side, carpets, flowers and saplings on any update), as both official servers do; signs and banners stand and hang on solid blocks"
@@ -999,7 +999,8 @@
             "collision/plants",
             "collision/plant_contexts",
             "trace/plant_grounds",
-            "trace/plant_supports"
+            "trace/plant_supports",
+            "trace/vines"
           ],
           "note": "Carrots, potatoes, beetroots, stems, torchflower crops, nether wart, sweet berry bushes and bamboo grow on their ground only and break when it goes; sugar cane needs water beside its ground and cacti nothing solid beside them, both breaking a tick after an update finds them unsupported",
           "deviations": [

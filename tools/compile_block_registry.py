@@ -370,7 +370,8 @@ def join_faces(name, props, shape):
 # What blocks support (both official servers report it for every state; see
 # tests/fixtures/collision/support-*.txt): their support shape is their
 # collision shape, except that leaves support nothing, chorus flowers only
-# what hangs under them, soul sand and mud are full cubes, snow is as tall as
+# what hangs under the middle of their bottom (no whole face: vines and
+# hanging roots do not hang under them), soul sand and mud are full cubes, snow is as tall as
 # its layers, hanging signs support what hangs under them (and, turned
 # between the four sides, what stands on them), and fence gates nothing that
 # hangs. Bit 0: the top's middle (7 to 9 sixteenths both ways) bears
@@ -401,7 +402,7 @@ def support_byte(name, props, shape):
         shape = [[0.0, 0.0, 0.0, 1.0, int(props["layers"]) / 8, 1.0]]
     top, bottom, faces = middle_covered(shape, True), middle_covered(shape, False), shape_byte(shape) >> 2
     if name == "chorus_flower":
-        top, faces = False, faces & 1
+        top, faces = False, 0
     if name.endswith("_wall_hanging_sign"):
         bottom = True
     elif name.endswith("_hanging_sign"):

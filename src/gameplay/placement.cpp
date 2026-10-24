@@ -295,8 +295,10 @@ std::string_view name_of(Direction d) {
 std::optional<std::uint32_t> building_block(RuleContext& ctx, std::uint16_t item) {
     const auto* info = items::info(item);
     if (!info) return std::nullopt;
-    // Bamboo is planted as a bamboo shoot (tests/fixtures/placement).
-    const auto block = registry::find_block(ctx.bundle().schema.content_release, info->name == "minecraft:bamboo" ? "bamboo_sapling" : info->name);
+    // Bamboo is planted as a bamboo shoot, glow berries as cave vines
+    // (tests/fixtures/placement).
+    const auto name = info->name == "minecraft:bamboo" ? "bamboo_sapling" : info->name == "minecraft:glow_berries" ? "cave_vines" : info->name;
+    const auto block = registry::find_block(ctx.bundle().schema.content_release, name);
     if (!block || !BlockState::decode(BlockState::registered(registry::block(*block).default_state).raw())) return std::nullopt;
     if (building_kind(*block) == Building::none) return std::nullopt;
     return block;
@@ -366,6 +368,19 @@ std::optional<BlockState> placed_building(RuleContext& ctx, std::uint32_t block,
         if (block_name == "pink_petals" || block_name == "wildflowers") s = with(s, {{"facing", std::string(name_of(contracts::opposite(c.horizontal)))}});
         if (block_name == "mangrove_propagule") s = with(s, {{"age", "4"}});
         if (block_name == "sea_pickle") s = with(s, {{"waterlogged", water}});
+        // A vine is placed as a body where its kind grows on from it, else as
+        // a head of a random age (a level-random draw).
+        if (block_name == "weeping_vines" || block_name == "twisting_vines" || block_name == "cave_vines") {
+            const auto growth = block_name == "twisting_vines" ? Direction::up : Direction::down;
+            const auto next = ctx.block(target.relative(growth));
+            const auto body = registry::find_block(ctx.bundle().schema.content_release, std::string(block_name) + "_plant");
+            const bool grows_on = next.is(BlockType::other) && (registry::block_of(next.registry_state()) == block
+                                                                || registry::block_of(next.registry_state()) == body);
+            if (grows_on) return stays(BlockState::registered(registry::block(*body).default_state));
+            // The age is drawn before the vine is found unsupported (whether a
+            // refused placement draws is not observed).
+            return stays(with(s, {{"age", std::to_string(ctx.random_int(25))}}));
+        }
         return stays(s);
     }
     case Building::tall: return stays(with(s, {{"half", "lower"}}));

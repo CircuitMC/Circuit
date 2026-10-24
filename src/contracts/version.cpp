@@ -324,7 +324,9 @@ constexpr std::array reference_v4_mechanisms{
         "grasses, ferns, bushes, petals, fungi, roots, wither roses, azaleas, crops, nether wart and bamboo need the "
         "ground of their kind (plant_grounds; every state in tests/fixtures/collision/plants-*.txt); sugar cane water beside "
         "its ground, cacti nothing solid beside them, lily pads water or ice and sea pickles a top, sugar cane and cacti "
-        "breaking a tick after an update (plant_supports; tests/fixtures/collision/plant-contexts-*.txt). Support shapes "
+        "breaking a tick after an update (plant_supports; tests/fixtures/collision/plant-contexts-*.txt); vines, hanging "
+        "roots, spore blossoms, pale hanging moss and hanging propagules what holds them, vines turning between heads and "
+        "bodies (vines, with the operator's data packs). Support shapes "
         "and solidity of every state come from the registry (tests/fixtures/collision/support-*.txt). The drops' "
         "positions follow item_entity; without data packs, plants whose loot rolls random numbers drop nothing (with "
         "them, see loot)."},

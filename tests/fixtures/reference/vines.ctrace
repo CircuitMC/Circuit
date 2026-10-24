@@ -1,0 +1,747 @@
+circuit-trace 2
+title Vines and hanging plants losing what holds them
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v12
+mechanisms loot support
+area 0 0 0 39 8 7
+ticks 40
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 0
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 0 1 minecraft:stone
+at 0 set 16 0 2 minecraft:stone
+at 0 set 16 0 3 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 set 16 0 5 minecraft:stone
+at 0 set 16 0 6 minecraft:stone
+at 0 set 16 0 7 minecraft:stone
+at 0 set 17 0 0 minecraft:stone
+at 0 set 17 0 1 minecraft:stone
+at 0 set 17 0 2 minecraft:stone
+at 0 set 17 0 3 minecraft:stone
+at 0 set 17 0 4 minecraft:stone
+at 0 set 17 0 5 minecraft:stone
+at 0 set 17 0 6 minecraft:stone
+at 0 set 17 0 7 minecraft:stone
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 0 1 minecraft:stone
+at 0 set 18 0 2 minecraft:stone
+at 0 set 18 0 3 minecraft:stone
+at 0 set 18 0 4 minecraft:stone
+at 0 set 18 0 5 minecraft:stone
+at 0 set 18 0 6 minecraft:stone
+at 0 set 18 0 7 minecraft:stone
+at 0 set 19 0 0 minecraft:stone
+at 0 set 19 0 1 minecraft:stone
+at 0 set 19 0 2 minecraft:stone
+at 0 set 19 0 3 minecraft:stone
+at 0 set 19 0 4 minecraft:stone
+at 0 set 19 0 5 minecraft:stone
+at 0 set 19 0 6 minecraft:stone
+at 0 set 19 0 7 minecraft:stone
+at 0 set 20 0 0 minecraft:stone
+at 0 set 20 0 1 minecraft:stone
+at 0 set 20 0 2 minecraft:stone
+at 0 set 20 0 3 minecraft:stone
+at 0 set 20 0 4 minecraft:stone
+at 0 set 20 0 5 minecraft:stone
+at 0 set 20 0 6 minecraft:stone
+at 0 set 20 0 7 minecraft:stone
+at 0 set 21 0 0 minecraft:stone
+at 0 set 21 0 1 minecraft:stone
+at 0 set 21 0 2 minecraft:stone
+at 0 set 21 0 3 minecraft:stone
+at 0 set 21 0 4 minecraft:stone
+at 0 set 21 0 5 minecraft:stone
+at 0 set 21 0 6 minecraft:stone
+at 0 set 21 0 7 minecraft:stone
+at 0 set 22 0 0 minecraft:stone
+at 0 set 22 0 1 minecraft:stone
+at 0 set 22 0 2 minecraft:stone
+at 0 set 22 0 3 minecraft:stone
+at 0 set 22 0 4 minecraft:stone
+at 0 set 22 0 5 minecraft:stone
+at 0 set 22 0 6 minecraft:stone
+at 0 set 22 0 7 minecraft:stone
+at 0 set 23 0 0 minecraft:stone
+at 0 set 23 0 1 minecraft:stone
+at 0 set 23 0 2 minecraft:stone
+at 0 set 23 0 3 minecraft:stone
+at 0 set 23 0 4 minecraft:stone
+at 0 set 23 0 5 minecraft:stone
+at 0 set 23 0 6 minecraft:stone
+at 0 set 23 0 7 minecraft:stone
+at 0 set 24 0 0 minecraft:stone
+at 0 set 24 0 1 minecraft:stone
+at 0 set 24 0 2 minecraft:stone
+at 0 set 24 0 3 minecraft:stone
+at 0 set 24 0 4 minecraft:stone
+at 0 set 24 0 5 minecraft:stone
+at 0 set 24 0 6 minecraft:stone
+at 0 set 24 0 7 minecraft:stone
+at 0 set 25 0 0 minecraft:stone
+at 0 set 25 0 1 minecraft:stone
+at 0 set 25 0 2 minecraft:stone
+at 0 set 25 0 3 minecraft:stone
+at 0 set 25 0 4 minecraft:stone
+at 0 set 25 0 5 minecraft:stone
+at 0 set 25 0 6 minecraft:stone
+at 0 set 25 0 7 minecraft:stone
+at 0 set 26 0 0 minecraft:stone
+at 0 set 26 0 1 minecraft:stone
+at 0 set 26 0 2 minecraft:stone
+at 0 set 26 0 3 minecraft:stone
+at 0 set 26 0 4 minecraft:stone
+at 0 set 26 0 5 minecraft:stone
+at 0 set 26 0 6 minecraft:stone
+at 0 set 26 0 7 minecraft:stone
+at 0 set 27 0 0 minecraft:stone
+at 0 set 27 0 1 minecraft:stone
+at 0 set 27 0 2 minecraft:stone
+at 0 set 27 0 3 minecraft:stone
+at 0 set 27 0 4 minecraft:stone
+at 0 set 27 0 5 minecraft:stone
+at 0 set 27 0 6 minecraft:stone
+at 0 set 27 0 7 minecraft:stone
+at 0 set 28 0 0 minecraft:stone
+at 0 set 28 0 1 minecraft:stone
+at 0 set 28 0 2 minecraft:stone
+at 0 set 28 0 3 minecraft:stone
+at 0 set 28 0 4 minecraft:stone
+at 0 set 28 0 5 minecraft:stone
+at 0 set 28 0 6 minecraft:stone
+at 0 set 28 0 7 minecraft:stone
+at 0 set 29 0 0 minecraft:stone
+at 0 set 29 0 1 minecraft:stone
+at 0 set 29 0 2 minecraft:stone
+at 0 set 29 0 3 minecraft:stone
+at 0 set 29 0 4 minecraft:stone
+at 0 set 29 0 5 minecraft:stone
+at 0 set 29 0 6 minecraft:stone
+at 0 set 29 0 7 minecraft:stone
+at 0 set 30 0 0 minecraft:stone
+at 0 set 30 0 1 minecraft:stone
+at 0 set 30 0 2 minecraft:stone
+at 0 set 30 0 3 minecraft:stone
+at 0 set 30 0 4 minecraft:stone
+at 0 set 30 0 5 minecraft:stone
+at 0 set 30 0 6 minecraft:stone
+at 0 set 30 0 7 minecraft:stone
+at 0 set 31 0 0 minecraft:stone
+at 0 set 31 0 1 minecraft:stone
+at 0 set 31 0 2 minecraft:stone
+at 0 set 31 0 3 minecraft:stone
+at 0 set 31 0 4 minecraft:stone
+at 0 set 31 0 5 minecraft:stone
+at 0 set 31 0 6 minecraft:stone
+at 0 set 31 0 7 minecraft:stone
+at 0 set 32 0 0 minecraft:stone
+at 0 set 32 0 1 minecraft:stone
+at 0 set 32 0 2 minecraft:stone
+at 0 set 32 0 3 minecraft:stone
+at 0 set 32 0 4 minecraft:stone
+at 0 set 32 0 5 minecraft:stone
+at 0 set 32 0 6 minecraft:stone
+at 0 set 32 0 7 minecraft:stone
+at 0 set 33 0 0 minecraft:stone
+at 0 set 33 0 1 minecraft:stone
+at 0 set 33 0 2 minecraft:stone
+at 0 set 33 0 3 minecraft:stone
+at 0 set 33 0 4 minecraft:stone
+at 0 set 33 0 5 minecraft:stone
+at 0 set 33 0 6 minecraft:stone
+at 0 set 33 0 7 minecraft:stone
+at 0 set 34 0 0 minecraft:stone
+at 0 set 34 0 1 minecraft:stone
+at 0 set 34 0 2 minecraft:stone
+at 0 set 34 0 3 minecraft:stone
+at 0 set 34 0 4 minecraft:stone
+at 0 set 34 0 5 minecraft:stone
+at 0 set 34 0 6 minecraft:stone
+at 0 set 34 0 7 minecraft:stone
+at 0 set 35 0 0 minecraft:stone
+at 0 set 35 0 1 minecraft:stone
+at 0 set 35 0 2 minecraft:stone
+at 0 set 35 0 3 minecraft:stone
+at 0 set 35 0 4 minecraft:stone
+at 0 set 35 0 5 minecraft:stone
+at 0 set 35 0 6 minecraft:stone
+at 0 set 35 0 7 minecraft:stone
+at 0 set 36 0 0 minecraft:stone
+at 0 set 36 0 1 minecraft:stone
+at 0 set 36 0 2 minecraft:stone
+at 0 set 36 0 3 minecraft:stone
+at 0 set 36 0 4 minecraft:stone
+at 0 set 36 0 5 minecraft:stone
+at 0 set 36 0 6 minecraft:stone
+at 0 set 36 0 7 minecraft:stone
+at 0 set 37 0 0 minecraft:stone
+at 0 set 37 0 1 minecraft:stone
+at 0 set 37 0 2 minecraft:stone
+at 0 set 37 0 3 minecraft:stone
+at 0 set 37 0 4 minecraft:stone
+at 0 set 37 0 5 minecraft:stone
+at 0 set 37 0 6 minecraft:stone
+at 0 set 37 0 7 minecraft:stone
+at 0 set 38 0 0 minecraft:stone
+at 0 set 38 0 1 minecraft:stone
+at 0 set 38 0 2 minecraft:stone
+at 0 set 38 0 3 minecraft:stone
+at 0 set 38 0 4 minecraft:stone
+at 0 set 38 0 5 minecraft:stone
+at 0 set 38 0 6 minecraft:stone
+at 0 set 38 0 7 minecraft:stone
+at 0 set 39 0 0 minecraft:stone
+at 0 set 39 0 1 minecraft:stone
+at 0 set 39 0 2 minecraft:stone
+at 0 set 39 0 3 minecraft:stone
+at 0 set 39 0 4 minecraft:stone
+at 0 set 39 0 5 minecraft:stone
+at 0 set 39 0 6 minecraft:stone
+at 0 set 39 0 7 minecraft:stone
+
+at 1 set 2 7 2 minecraft:stone
+at 1 set 5 7 2 minecraft:stone
+at 1 set 8 1 2 minecraft:stone
+at 1 set 11 7 2 minecraft:stone
+at 1 set 14 7 2 minecraft:stone
+at 1 set 14 7 5 minecraft:stone
+at 1 set 17 7 2 minecraft:stone
+at 1 set 20 7 2 minecraft:mangrove_leaves[distance=7,persistent=true,waterlogged=false]
+at 1 set 23 7 2 minecraft:stone
+at 1 set 26 7 2 minecraft:stone
+at 1 set 29 7 2 minecraft:stone
+at 1 set 32 1 2 minecraft:stone
+change 1 commands 2 7 2 minecraft:air minecraft:stone
+change 1 commands 5 7 2 minecraft:air minecraft:stone
+change 1 commands 8 1 2 minecraft:air minecraft:stone
+change 1 commands 11 7 2 minecraft:air minecraft:stone
+change 1 commands 14 7 2 minecraft:air minecraft:stone
+change 1 commands 14 7 5 minecraft:air minecraft:stone
+change 1 commands 17 7 2 minecraft:air minecraft:stone
+change 1 commands 20 7 2 minecraft:air minecraft:mangrove_leaves[distance=7,persistent=true,waterlogged=false]
+change 1 commands 23 7 2 minecraft:air minecraft:stone
+change 1 commands 26 7 2 minecraft:air minecraft:stone
+change 1 commands 29 7 2 minecraft:air minecraft:stone
+change 1 commands 32 1 2 minecraft:air minecraft:stone
+
+at 2 set 2 6 2 minecraft:weeping_vines_plant
+at 2 set 2 5 2 minecraft:weeping_vines_plant
+at 2 set 2 4 2 minecraft:weeping_vines_plant
+at 2 set 2 3 2 minecraft:weeping_vines[age=3]
+at 2 set 5 6 2 minecraft:weeping_vines_plant
+at 2 set 5 5 2 minecraft:weeping_vines_plant
+at 2 set 5 4 2 minecraft:weeping_vines_plant
+at 2 set 5 3 2 minecraft:weeping_vines[age=3]
+at 2 set 8 2 2 minecraft:twisting_vines_plant
+at 2 set 8 3 2 minecraft:twisting_vines_plant
+at 2 set 8 4 2 minecraft:twisting_vines_plant
+at 2 set 8 5 2 minecraft:twisting_vines[age=3]
+at 2 set 11 6 2 minecraft:cave_vines_plant[berries=true]
+at 2 set 11 5 2 minecraft:cave_vines_plant[berries=false]
+at 2 set 11 4 2 minecraft:cave_vines_plant[berries=true]
+at 2 set 11 3 2 minecraft:cave_vines[age=3,berries=true]
+at 2 set 14 6 2 minecraft:hanging_roots[waterlogged=false]
+at 2 set 14 6 5 minecraft:spore_blossom
+at 2 set 17 6 2 minecraft:pale_hanging_moss[tip=false]
+at 2 set 17 5 2 minecraft:pale_hanging_moss[tip=true]
+at 2 set 20 6 2 minecraft:mangrove_propagule[age=4,hanging=true,stage=0,waterlogged=false]
+at 2 set 23 6 2 minecraft:weeping_vines[age=3]
+at 2 set 26 6 2 minecraft:pale_hanging_moss[tip=false]
+at 2 set 26 5 2 minecraft:pale_hanging_moss[tip=true]
+at 2 set 29 6 2 minecraft:cave_vines_plant[berries=true]
+at 2 set 29 5 2 minecraft:cave_vines_plant[berries=true]
+at 2 set 29 4 2 minecraft:cave_vines_plant[berries=false]
+at 2 set 29 3 2 minecraft:cave_vines[age=3,berries=false]
+at 2 set 32 2 2 minecraft:twisting_vines_plant
+at 2 set 32 3 2 minecraft:twisting_vines_plant
+at 2 set 32 4 2 minecraft:twisting_vines_plant
+at 2 set 32 5 2 minecraft:twisting_vines[age=3]
+change 2 commands 2 6 2 minecraft:air minecraft:weeping_vines_plant
+change 2 commands 2 5 2 minecraft:air minecraft:weeping_vines_plant
+change 2 commands 2 4 2 minecraft:air minecraft:weeping_vines_plant
+change 2 commands 2 3 2 minecraft:air minecraft:weeping_vines[age=3]
+change 2 commands 5 6 2 minecraft:air minecraft:weeping_vines_plant
+change 2 commands 5 5 2 minecraft:air minecraft:weeping_vines_plant
+change 2 commands 5 4 2 minecraft:air minecraft:weeping_vines_plant
+change 2 commands 5 3 2 minecraft:air minecraft:weeping_vines[age=3]
+change 2 commands 8 2 2 minecraft:air minecraft:twisting_vines_plant
+change 2 commands 8 3 2 minecraft:air minecraft:twisting_vines_plant
+change 2 commands 8 4 2 minecraft:air minecraft:twisting_vines_plant
+change 2 commands 8 5 2 minecraft:air minecraft:twisting_vines[age=3]
+change 2 commands 11 6 2 minecraft:air minecraft:cave_vines_plant[berries=true]
+change 2 commands 11 5 2 minecraft:air minecraft:cave_vines_plant[berries=false]
+change 2 commands 11 4 2 minecraft:air minecraft:cave_vines_plant[berries=true]
+change 2 commands 11 3 2 minecraft:air minecraft:cave_vines[age=3,berries=true]
+change 2 commands 14 6 2 minecraft:air minecraft:hanging_roots[waterlogged=false]
+change 2 commands 14 6 5 minecraft:air minecraft:spore_blossom
+change 2 commands 17 6 2 minecraft:air minecraft:pale_hanging_moss[tip=false]
+change 2 commands 17 5 2 minecraft:air minecraft:pale_hanging_moss[tip=true]
+change 2 commands 20 6 2 minecraft:air minecraft:mangrove_propagule[age=4,hanging=true,stage=0,waterlogged=false]
+change 2 commands 23 6 2 minecraft:air minecraft:weeping_vines[age=3]
+change 2 commands 26 6 2 minecraft:air minecraft:pale_hanging_moss[tip=false]
+change 2 commands 26 5 2 minecraft:air minecraft:pale_hanging_moss[tip=true]
+change 2 commands 29 6 2 minecraft:air minecraft:cave_vines_plant[berries=true]
+change 2 commands 29 5 2 minecraft:air minecraft:cave_vines_plant[berries=true]
+change 2 commands 29 4 2 minecraft:air minecraft:cave_vines_plant[berries=false]
+change 2 commands 29 3 2 minecraft:air minecraft:cave_vines[age=3,berries=false]
+change 2 commands 32 2 2 minecraft:air minecraft:twisting_vines_plant
+change 2 commands 32 3 2 minecraft:air minecraft:twisting_vines_plant
+change 2 commands 32 4 2 minecraft:air minecraft:twisting_vines_plant
+change 2 commands 32 5 2 minecraft:air minecraft:twisting_vines[age=3]
+
+at 10 set 2 7 2 minecraft:air
+change 10 commands 2 7 2 minecraft:stone minecraft:air
+change 10 block_ticks 2 6 2 minecraft:weeping_vines_plant minecraft:air
+
+change 11 block_ticks 2 5 2 minecraft:weeping_vines_plant minecraft:air
+
+at 12 set 5 5 2 minecraft:air
+change 12 commands 5 5 2 minecraft:weeping_vines_plant minecraft:air
+change 12 commands 5 6 2 minecraft:weeping_vines_plant minecraft:weeping_vines[age=10]
+entity-added 12 block_ticks e1 minecraft:item 2.6657204943935304 4.42817260799868 2.4045252840998548 -0.07659867823855498 0.2 0.05630692640906096 item=minecraft:weeping_vines count=1
+change 12 block_ticks 2 4 2 minecraft:weeping_vines_plant minecraft:air
+change 12 block_ticks 5 4 2 minecraft:weeping_vines_plant minecraft:air
+draws 12 block_ticks level 10
+draws 12 commands level 1
+entity-order 12 entities e1
+entity 12 e1 2.5891218161549756 4.58817260799868 2.4608322105089155 -0.07506670613478773 0.1568 0.05518078895484913 item=minecraft:weeping_vines count=1 age=1 pickup-delay=9 on-ground=false
+
+change 13 block_ticks 2 3 2 minecraft:weeping_vines[age=3] minecraft:air
+entity-added 13 block_ticks e2 minecraft:item 5.376388083287993 3.431517884022307 2.741409762793649 -0.09538362937793379 0.2 -0.06480463959290397 item=minecraft:weeping_vines count=1
+change 13 block_ticks 5 3 2 minecraft:weeping_vines[age=3] minecraft:air
+draws 13 block_ticks level 10
+entity-order 13 entities e1 e2
+entity 13 e1 2.514055110020188 4.70497260799868 2.5160129994637646 -0.07356537344387577 0.11446399999999998 0.054077174228242174 item=minecraft:weeping_vines count=1 age=2 pickup-delay=8 on-ground=false
+entity 13 e2 5.281004453910059 3.591517884022307 2.676605123200745 -0.09347595860967346 0.1568 -0.0635085480370963 item=minecraft:weeping_vines count=1 age=1 pickup-delay=9 on-ground=false
+
+at 14 set 8 1 2 minecraft:air
+change 14 commands 8 1 2 minecraft:stone minecraft:air
+change 14 block_ticks 8 2 2 minecraft:twisting_vines_plant minecraft:air
+entity-order 14 entities e1 e2
+entity 14 e1 2.4404897365763123 4.779436607998679 2.5700901736920065 -0.0720940673781464 0.07297471999999998 0.052995631775117576 item=minecraft:weeping_vines count=1 age=3 pickup-delay=7 on-ground=false
+entity 14 e2 5.187528495300386 3.708317884022307 2.613096575163649 -0.09160644122039241 0.11446399999999998 -0.06223837828768379 item=minecraft:weeping_vines count=1 age=2 pickup-delay=8 on-ground=false
+
+change 15 block_ticks 8 3 2 minecraft:twisting_vines_plant minecraft:air
+entity-order 15 entities e1 e2
+entity 15 e1 2.368395669198166 4.81241132799868 2.623085805467124 -0.07065218740566868 0.032315225599999976 0.05193572015042668 item=minecraft:weeping_vines count=1 age=4 pickup-delay=6 on-ground=false
+entity 15 e2 5.095922054079994 3.782781884022307 2.550858196875965 -0.08977431414323876 0.07297471999999998 -0.06099361190903297 item=minecraft:weeping_vines count=1 age=3 pickup-delay=7 on-ground=false
+
+at 16 set 11 7 2 minecraft:air
+change 16 commands 11 7 2 minecraft:stone minecraft:air
+change 16 block_ticks 8 4 2 minecraft:twisting_vines_plant minecraft:air
+entity-added 16 block_ticks e3 minecraft:item 11.406467982596883 6.308987879355264 2.602587372237728 -0.09972266391891314 0.2 -0.09815502773378237 item=minecraft:glow_berries count=1
+change 16 block_ticks 11 6 2 minecraft:cave_vines_plant[berries=true] minecraft:air
+draws 16 block_ticks level 10
+entity-order 16 entities e1 e2 e3
+entity 16 e1 2.297743481792497 4.804726553598679 2.675021525617551 -0.06923914500513884 -0.007531078912000024 0.050897006738013395 item=minecraft:weeping_vines count=1 age=5 pickup-delay=5 on-ground=false
+entity 16 e2 5.006147739936755 3.8157566040223068 2.489864584966932 -0.08797882957268315 0.032315225599999976 -0.059773740834213135 item=minecraft:weeping_vines count=1 age=4 pickup-delay=6 on-ground=false
+entity 16 e3 11.30674531867797 6.468987879355264 2.504432344503946 -0.09772821254259374 0.1568 -0.0961919290512653 item=minecraft:glow_berries count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-added 17 block_ticks e4 minecraft:item 8.53147483694919 5.251441565343338 2.392952393075795 -0.09701458282377635 0.2 0.09533956942177646 item=minecraft:twisting_vines count=1
+change 17 block_ticks 8 5 2 minecraft:twisting_vines[age=3] minecraft:air
+change 17 block_ticks 11 5 2 minecraft:cave_vines_plant[berries=false] minecraft:air
+draws 17 block_ticks level 10
+entity-order 17 entities e1 e2 e3 e4
+entity 17 e1 2.228504336787358 4.75719547468668 2.725918532355564 -0.06785436342566795 -0.04658045733376002 0.04987906757403649 item=minecraft:weeping_vines count=1 age=6 pickup-delay=4 on-ground=false
+entity 17 e2 4.918168910364072 3.808071829622307 2.430090844132719 -0.08621925465929249 -0.007531078912000024 -0.0585782671576225 item=minecraft:weeping_vines count=1 age=5 pickup-delay=5 on-ground=false
+entity 17 e3 11.209017106135377 6.585787879355264 2.4082404154526804 -0.09577365015575959 0.11446399999999998 -0.09426809230495545 item=minecraft:glow_berries count=1 age=2 pickup-delay=8 on-ground=false
+entity 17 e4 8.434460254125414 5.411441565343338 2.4882919624975717 -0.09507429301770715 0.1568 0.0934327798517989 item=minecraft:twisting_vines count=1 age=1 pickup-delay=9 on-ground=false
+
+at 18 set 14 7 2 minecraft:air
+at 18 set 14 7 5 minecraft:air
+change 18 commands 14 7 2 minecraft:stone minecraft:air
+change 18 commands 14 6 2 minecraft:hanging_roots[waterlogged=false] minecraft:air
+change 18 commands 14 7 5 minecraft:stone minecraft:air
+entity-added 18 commands e5 minecraft:item 14.594117257648952 6.558839334146986 5.7404725829746726 0.014006861499837278 0.2 -0.0974386696848561 item=minecraft:spore_blossom count=1
+change 18 commands 14 6 5 minecraft:spore_blossom minecraft:air
+entity-added 18 block_ticks e6 minecraft:item 11.456108872046318 4.487887433911376 2.742337071403413 0.009225484976358403 0.2 -0.06280206746287842 item=minecraft:glow_berries count=1
+change 18 block_ticks 11 4 2 minecraft:cave_vines_plant[berries=true] minecraft:air
+draws 18 block_ticks level 10
+draws 18 commands level 10
+entity-order 18 entities e1 e2 e3 e4 e5 e6
+entity 18 e1 2.16064997336169 4.67061501735292 2.7757975999296005 -0.06649727745137386 -0.08484884818708481 0.048881487173923474 item=minecraft:weeping_vines count=1 age=7 pickup-delay=3 on-ground=false
+entity 18 e2 4.831949655704779 3.760540750710307 2.3715125769750967 -0.08449487121060842 -0.04658045733376002 -0.05740670293176183 item=minecraft:weeping_vines count=1 age=6 pickup-delay=4 on-ground=false
+entity 18 e3 11.113243455979617 6.660251879355264 2.313972323147725 -0.0938581789793818 0.07297471999999998 -0.09238273225687751 item=minecraft:glow_berries count=1 age=3 pickup-delay=7 on-ground=false
+entity 18 e4 8.339385961107707 5.528241565343338 2.5817247423493708 -0.09317280897075123 0.11446399999999998 0.09156412603685177 item=minecraft:twisting_vines count=1 age=2 pickup-delay=8 on-ground=false
+entity 18 e5 14.608124119148789 6.7188393341469865 5.643033913289816 0.013726724537000214 0.1568 -0.09548989814965411 item=minecraft:spore_blossom count=1 age=1 pickup-delay=9 on-ground=false
+entity 18 e6 11.465334357022677 4.647887433911376 2.6795350039405346 0.009040975452793396 0.1568 -0.061546027311475224 item=minecraft:glow_berries count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-added 19 block_ticks e7 minecraft:item 11.403435578363814 3.460538124405079 2.282136798972043 -0.02816693048787766 0.2 -0.045150586949331786 item=minecraft:glow_berries count=1
+change 19 block_ticks 11 3 2 minecraft:cave_vines[age=3,berries=true] minecraft:air
+draws 19 block_ticks level 10
+entity-order 19 entities e1 e2 e3 e4 e5 e6 e7
+entity 19 e1 2.0941526959103163 4.545766169165835 2.824679087103524 -0.0651673331706813 -0.12235187122334311 0.04790385836278538 item=minecraft:weeping_vines count=1 age=8 pickup-delay=2 on-ground=false
+entity 19 e2 4.74745478449417 3.673960293376547 2.3141058740433347 -0.08280497539800802 -0.08484884818708481 -0.05625856996807256 item=minecraft:weeping_vines count=1 age=7 pickup-delay=3 on-ground=false
+entity 19 e3 11.019385277000236 6.693226599355264 2.2215895908908476 -0.09198101718999685 0.032315225599999976 -0.09053507937380074 item=minecraft:glow_berries count=1 age=4 pickup-delay=6 on-ground=false
+entity 19 e4 8.246213152136956 5.602705565343338 2.6732888683862224 -0.0913093545684665 0.07297471999999998 0.08973284526256184 item=minecraft:twisting_vines count=1 age=3 pickup-delay=7 on-ground=false
+entity 19 e5 14.621850843685788 6.835639334146986 5.547544015140162 0.013452190308076702 0.11446399999999998 -0.09358010200798629 item=minecraft:spore_blossom count=1 age=2 pickup-delay=8 on-ground=false
+entity 19 e6 11.47437533247547 4.764687433911376 2.6179889766290594 0.00886015611618045 0.11446399999999998 -0.06031510793914303 item=minecraft:glow_berries count=1 age=2 pickup-delay=8 on-ground=false
+entity 19 e7 11.375268647875936 3.620538124405079 2.2369862120227113 -0.027603592415361672 0.1568 -0.044247576071524256 item=minecraft:glow_berries count=1 age=1 pickup-delay=9 on-ground=false
+
+at 20 set 17 7 2 minecraft:air
+change 20 commands 17 7 2 minecraft:stone minecraft:air
+change 20 block_ticks 17 6 2 minecraft:pale_hanging_moss[tip=false] minecraft:air
+entity-order 20 entities e1 e2 e3 e4 e5 e6 e7
+entity 20 e1 2.028985362739635 4.383414297942491 2.8725829454663097 -0.06386398775023591 -0.15910483379887624 0.04694578210922326 item=minecraft:weeping_vines count=1 age=9 pickup-delay=1 on-ground=false
+entity 20 e2 4.664649809096162 3.5491114451894625 2.2578473040752622 -0.08114887746942742 -0.12235187122334311 -0.055133399641758174 item=minecraft:weeping_vines count=1 age=8 pickup-delay=2 on-ground=false
+entity 20 e3 10.927404259810238 6.685541824955264 2.1310545115170467 -0.09014139860059558 -0.007531078912000024 -0.08872437951314432 item=minecraft:glow_berries count=1 age=5 pickup-delay=5 on-ground=false
+entity 20 e4 8.15490379756849 5.635680285343338 2.7630217136487842 -0.0894831692186849 0.032315225599999976 0.0879381900688288 item=minecraft:twisting_vines count=1 age=4 pickup-delay=6 on-ground=false
+entity 20 e5 14.635303033993864 6.910103334146986 5.453963913132176 0.013183146758495336 0.07297471999999998 -0.09170850175272537 item=minecraft:spore_blossom count=1 age=3 pickup-delay=7 on-ground=false
+entity 20 e6 11.48323548859165 4.8391514339113755 2.5576738686899163 0.008682953162850908 0.07297471999999998 -0.05910880693077955 item=minecraft:glow_berries count=1 age=3 pickup-delay=7 on-ground=false
+entity 20 e7 11.347665055460574 3.737338124405079 2.192738635951187 -0.027051521093551183 0.11446399999999998 -0.04336262539404931 item=minecraft:glow_berries count=1 age=2 pickup-delay=8 on-ground=false
+
+change 21 block_ticks 17 5 2 minecraft:pale_hanging_moss[tip=true] minecraft:air
+entity-order 21 entities e1 e2 e3 e4 e5 e6 e7
+entity 21 e1 1.965121374989399 4.184309464143615 2.919528727575533 -0.06258670921334009 -0.1951227371228987 0.04600686736245853 item=minecraft:weeping_vines count=1 age=10 pickup-delay=0 on-ground=false
+entity 21 e2 4.583500931626735 3.3867595739661196 2.2027139044335042 -0.07952590146783088 -0.15910483379887624 -0.054030732700509156 item=minecraft:weeping_vines count=1 age=9 pickup-delay=1 on-ground=false
+entity 21 e3 10.837262861209643 6.638010746043264 2.0423301320039022 -0.08833857234789441 -0.04658045733376002 -0.08694989361516468 item=minecraft:glow_berries count=1 age=6 pickup-delay=4 on-ground=false
+entity 21 e4 8.065420628349806 5.627995510943338 2.850959903717613 -0.08769350754106721 -0.007531078912000024 0.0861794279447401 item=minecraft:twisting_vines count=1 age=5 pickup-delay=5 on-ground=false
+entity 21 e5 14.648486180752359 6.943078054146986 5.362255411379451 0.012919484074773998 0.032315225599999976 -0.08987433346687171 item=minecraft:spore_blossom count=1 age=4 pickup-delay=6 on-ground=false
+entity 21 e6 11.4919184417545 4.872126153911376 2.4985650617591366 0.008509294265208078 0.032315225599999976 -0.05792663191957498 item=minecraft:glow_berries count=1 age=4 pickup-delay=6 on-ground=false
+entity 21 e7 11.320613534367023 3.811802124405079 2.149376010557138 -0.02651049118764698 0.07297471999999998 -0.042495373713244765 item=minecraft:glow_berries count=1 age=3 pickup-delay=7 on-ground=false
+
+at 22 set 20 7 2 minecraft:air
+change 22 commands 20 7 2 minecraft:mangrove_leaves[distance=7,persistent=true,waterlogged=false] minecraft:air
+entity-added 22 commands e8 minecraft:item 20.583424673017102 6.4697519939275105 2.6579687844125157 0.021291604218949517 0.2 0.08647361985310015 item=minecraft:mangrove_propagule count=1
+change 22 commands 20 6 2 minecraft:mangrove_propagule[age=4,hanging=true,stage=0,waterlogged=false] minecraft:air
+draws 22 commands level 10
+entity-order 22 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 22 e1 1.902534665776059 3.949186727020716 2.9655355949379913 -0.061334976222820026 -0.23042028238044074 0.045086730892720715 item=minecraft:weeping_vines count=1 age=11 pickup-delay=0 on-ground=false
+entity 22 e2 4.503975030158904 3.1876547401672433 2.148683171732995 -0.07793538495531045 -0.1951227371228987 -0.052950119077053416 item=minecraft:weeping_vines count=1 age=10 pickup-delay=0 on-ground=false
+entity 22 e3 10.74892428886175 6.551430288709504 1.9553802383887375 -0.08657180258586107 -0.08484884818708481 -0.085210897401299 item=minecraft:glow_berries count=1 age=7 pickup-delay=3 on-ground=false
+entity 22 e4 7.977727120808738 5.580464432031338 2.9371393316623533 -0.08593963906286678 -0.04658045733376002 0.08445584102958743 item=minecraft:twisting_vines count=1 age=6 pickup-delay=4 on-ground=false
+entity 22 e5 14.661405664827132 6.935393279746986 5.272381077912579 0.01266109463969812 -0.007531078912000024 -0.08807684851175114 item=minecraft:spore_blossom count=1 age=5 pickup-delay=5 on-ground=false
+entity 22 e6 11.500427736019708 4.8644413795113755 2.4406384298395616 0.008339108542205825 -0.007531078912000024 -0.0567681003860463 item=minecraft:glow_berries count=1 age=5 pickup-delay=5 on-ground=false
+entity 22 e7 11.294103043179376 3.8447768444050787 2.106880636843893 -0.02598028186954153 0.032315225599999976 -0.0416454670495148 item=minecraft:glow_berries count=1 age=4 pickup-delay=6 on-ground=false
+entity 22 e8 20.60471627723605 6.629751993927511 2.744442404265616 0.020865772540675648 0.1568 0.08474414910539155 item=minecraft:mangrove_propagule count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 23 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 23 e1 1.841199689553239 3.6787664446402752 3.010622325830712 -0.06010827786823546 -0.26501187673283194 0.044184997134827445 item=minecraft:weeping_vines count=1 age=12 pickup-delay=0 on-ground=false
+entity 23 e2 4.426039645203594 2.9525320030443445 2.0957330526559415 -0.07637667874270375 -0.23042028238044074 -0.05189111770545572 item=minecraft:weeping_vines count=1 age=11 pickup-delay=0 on-ground=false
+entity 23 e3 10.662352486275887 6.426581440522419 1.8701693409874385 -0.08484036818536994 -0.12235187122334311 -0.08350668107854191 item=minecraft:glow_berries count=1 age=8 pickup-delay=2 on-ground=false
+entity 23 e4 7.8917874817458715 5.493883974697578 3.021595172691941 -0.08422084792077797 -0.08484884818708481 0.08276672581986301 item=minecraft:twisting_vines count=1 age=7 pickup-delay=3 on-ground=false
+entity 23 e5 14.67406675946683 6.887862200834986 5.184304229400827 0.012407872988395373 -0.04658045733376002 -0.08631531322144868 item=minecraft:spore_blossom count=1 age=6 pickup-delay=4 on-ground=false
+entity 23 e6 11.508766844561913 4.816910300599376 2.383870329453515 0.008172326530417582 -0.04658045733376002 -0.055632739461090965 item=minecraft:glow_berries count=1 age=6 pickup-delay=4 on-ground=false
+entity 23 e7 11.268122761309835 3.837092070005079 2.065235169794378 -0.02546067672768525 -0.007531078912000024 -0.04081255850284875 item=minecraft:glow_berries count=1 age=5 pickup-delay=5 on-ground=false
+entity 23 e8 20.625582049776728 6.74655199392751 2.8291865533710077 0.020448457487845163 0.11446399999999998 0.08304926773965009 item=minecraft:mangrove_propagule count=1 age=2 pickup-delay=8 on-ground=false
+
+at 24 set 23 5 2 minecraft:weeping_vines[age=5]
+change 24 commands 23 5 2 minecraft:air minecraft:weeping_vines[age=5]
+change 24 commands 23 6 2 minecraft:weeping_vines[age=3] minecraft:weeping_vines_plant
+entity-order 24 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 24 e1 1.7810914116850036 3.373754567907443 3.0548073229655395 -0.058906113457345165 -0.29891163919817526 0.043301298034892834 item=minecraft:weeping_vines count=1 age=13 pickup-delay=0 on-ground=false
+entity 24 e2 4.34966296646089 2.6821117206639036 2.043841934950486 -0.07484914662461921 -0.26501187673283194 -0.050853296341091134 item=minecraft:weeping_vines count=1 age=12 pickup-delay=0 on-ground=false
+entity 24 e3 10.577512118090517 6.264229569299076 1.7866626599088966 -0.08314356243986415 -0.15910483379887624 -0.08183654904973461 item=minecraft:glow_berries count=1 age=9 pickup-delay=1 on-ground=false
+entity 24 e4 7.807566633825093 5.369035126510493 3.104361898511804 -0.0825364325687476 -0.12235187122334311 0.08111139288211576 item=minecraft:twisting_vines count=1 age=8 pickup-delay=2 on-ground=false
+entity 24 e5 14.686474632455226 6.801281743501226 5.0979889161793785 0.012159715765288862 -0.08484884818708481 -0.08458900860335365 item=minecraft:spore_blossom count=1 age=7 pickup-delay=3 on-ground=false
+entity 24 e6 11.51693917109233 4.730329843265616 2.328237589992424 0.00800888015568399 -0.08484884818708481 -0.054520085732979444 item=minecraft:glow_berries count=1 age=7 pickup-delay=3 on-ground=false
+entity 24 e7 11.24266208458215 3.789560991093079 2.0244226112915293 -0.024951463678755417 -0.04658045733376002 -0.03999630811122955 item=minecraft:glow_berries count=1 age=6 pickup-delay=4 on-ground=false
+entity 24 e8 20.646030507264573 6.82101599392751 2.9122358211106576 0.020039488728111635 0.07297471999999998 0.08138828396889616 item=minecraft:mangrove_propagule count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 25 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 25 e1 1.7221852982276584 3.034842928709268 3.0981086210004323 -0.05772799231174321 -0.33213340641421174 0.04243527290010169 item=minecraft:weeping_vines count=1 age=14 pickup-delay=0 on-ground=false
+entity 25 e2 4.274813819836271 2.3770998439310715 1.992988638609395 -0.073352165119761 -0.29891163919817526 -0.049836231384218964 item=minecraft:weeping_vines count=1 age=13 pickup-delay=0 on-ground=false
+entity 25 e3 10.494368555650654 6.065124735500199 1.704826110859162 -0.08148069277690446 -0.1951227371228987 -0.08019981962964821 item=minecraft:glow_berries count=1 age=10 pickup-delay=0 on-ground=false
+entity 25 e4 7.725030201256346 5.20668325528715 3.1854732913939197 -0.08088570549163017 -0.15910483379887624 0.07948916657155049 item=minecraft:twisting_vines count=1 age=9 pickup-delay=1 on-ground=false
+entity 25 e5 14.698634348220516 6.676432895314141 5.013399907576025 0.011916521681911256 -0.12235187122334311 -0.08289723004469388 item=minecraft:spore_blossom count=1 age=8 pickup-delay=2 on-ground=false
+entity 25 e6 11.524948051248014 4.605480995078531 2.2737175042594444 0.007848702705327577 -0.12235187122334311 -0.053429685058207964 item=minecraft:glow_berries count=1 age=8 pickup-delay=2 on-ground=false
+entity 25 e7 11.217710620903395 3.702980533759319 1.9844263031802998 -0.02445243488109171 -0.08484884818708481 -0.03919638271187399 item=minecraft:glow_berries count=1 age=7 pickup-delay=3 on-ground=false
+entity 25 e8 20.666069995992686 6.8539907139275105 2.9936241050795536 0.019638699335772315 0.032315225599999976 0.07976051984187656 item=minecraft:mangrove_propagule count=1 age=4 pickup-delay=6 on-ground=false
+
+at 26 set 26 5 2 minecraft:air
+change 26 commands 26 5 2 minecraft:pale_hanging_moss[tip=true] minecraft:air
+change 26 commands 26 6 2 minecraft:pale_hanging_moss[tip=false] minecraft:pale_hanging_moss[tip=true]
+entity-order 26 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 26 e1 1.6644573059159151 2.662709522295056 3.140543893900534 -0.05657343356658242 -0.36469073828592746 0.04158656825148825 item=minecraft:weeping_vines count=1 age=15 pickup-delay=0 on-ground=false
+entity 26 e2 4.20146165471651 2.0381882047328963 1.943152407225176 -0.0718851232164473 -0.33213340641421174 -0.04883950770708526 item=minecraft:weeping_vines count=1 age=14 pickup-delay=0 on-ground=false
+entity 26 e3 10.412887862873749 5.830001998377301 1.6246262912295137 -0.07985108047548725 -0.23042028238044074 -0.07859582476674541 item=minecraft:glow_berries count=1 age=11 pickup-delay=0 on-ground=false
+entity 26 e4 7.644144495764716 5.007578421488273 3.26496245796547 -0.07926799292456996 -0.1951227371228987 0.077899384756255 item=minecraft:twisting_vines count=1 age=10 pickup-delay=0 on-ground=false
+entity 26 e5 14.710550869902427 6.514081024090798 4.930502677531331 0.011678191475562644 -0.15910483379887624 -0.08123928702493918 item=minecraft:spore_blossom count=1 age=9 pickup-delay=1 on-ground=false
+entity 26 e6 11.532796753953342 4.443129123855187 2.2202878192012365 0.007691728800923149 -0.15910483379887624 -0.05236109237613417 item=minecraft:glow_berries count=1 age=9 pickup-delay=1 on-ground=false
+entity 26 e7 11.193258186022303 3.5781316855722345 1.9452299204684258 -0.023963386649863055 -0.12235187122334311 -0.03841245580524818 item=minecraft:glow_berries count=1 age=8 pickup-delay=2 on-ground=false
+entity 26 e8 20.685708695328458 6.84630593952751 3.07338462492143 0.019245925723635333 -0.007531078912000024 0.07816531096635021 item=minecraft:mangrove_propagule count=1 age=5 pickup-delay=5 on-ground=false
+
+entity-order 27 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 27 e1 1.6078838723493327 2.2580187840091286 3.1821304621520223 -0.055441965974303384 -0.39659692352020887 0.040754837679659324 item=minecraft:weeping_vines count=1 age=16 pickup-delay=0 on-ground=false
+entity 27 e2 4.129576531500062 1.6660547983186846 1.8943128995180907 -0.07044742212321826 -0.36469073828592746 -0.04786271848448324 item=minecraft:weeping_vines count=1 age=15 pickup-delay=0 on-ground=false
+entity 27 e3 10.333036782398262 5.559581715996861 1.5460304664627684 -0.078254060389016 -0.26501187673283194 -0.0770239097705069 item=minecraft:glow_berries count=1 age=12 pickup-delay=0 on-ground=false
+entity 27 e4 7.564876502840146 4.772455684365375 3.342861842721725 -0.07768263457799554 -0.23042028238044074 0.07634139854694276 item=minecraft:twisting_vines count=1 age=11 pickup-delay=0 on-ground=false
+entity 27 e5 14.72222906137799 6.3149761902919215 4.849263390506392 0.011444627868795217 -0.1951227371228987 -0.07961450283395682 item=minecraft:spore_blossom count=1 age=10 pickup-delay=0 on-ground=false
+entity 27 e6 11.540488482754265 4.244024290056311 2.1679267268251023 0.00753789437161277 -0.1951227371228987 -0.05131387152732007 item=minecraft:glow_berries count=1 age=10 pickup-delay=0 on-ground=false
+entity 27 e7 11.169294799372441 3.4157798143488916 1.9068174646631777 -0.023484119373931123 -0.15910483379887624 -0.03764420742180267 item=minecraft:glow_berries count=1 age=9 pickup-delay=1 on-ground=false
+entity 27 e8 20.704954621052092 6.79877486061551 3.1515499358877803 0.018861007576249526 -0.04658045733376002 0.0766020062379082 item=minecraft:mangrove_propagule count=1 age=6 pickup-delay=4 on-ground=false
+
+at 28 set 29 5 2 minecraft:air
+change 28 commands 29 5 2 minecraft:cave_vines_plant[berries=true] minecraft:air
+change 28 commands 29 6 2 minecraft:cave_vines_plant[berries=true] minecraft:cave_vines[age=23,berries=true]
+change 28 block_ticks 29 4 2 minecraft:cave_vines_plant[berries=false] minecraft:air
+draws 28 commands level 1
+entity-order 28 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 28 e1 1.5524419063750294 1.8214218604889196 3.2228852998316815 -0.054333127712288896 -0.42786498504980464 0.039939741703402976 item=minecraft:weeping_vines count=1 age=17 pickup-delay=0 on-ground=false
+entity 28 e2 4.059129109376844 1.2613640600327571 1.8464501810336074 -0.06903847502443185 -0.39659692352020887 -0.04690546502770248 item=minecraft:weeping_vines count=1 age=16 pickup-delay=0 on-ground=false
+entity 28 e3 10.254782722009246 5.254569839264029 1.4690065566922614 -0.07668898067381343 -0.29891163919817526 -0.07548343304421125 item=minecraft:glow_berries count=1 age=13 pickup-delay=0 on-ground=false
+entity 28 e4 7.487193868262151 4.5020354019849345 3.4192032412686677 -0.0761289833681143 -0.26501187673283194 0.07481457203210053 item=minecraft:twisting_vines count=1 age=12 pickup-delay=0 on-ground=false
+entity 28 e5 14.733673689246785 6.079853453169023 4.769648887672435 0.011215735529708266 -0.23042028238044074 -0.07802221429580382 item=minecraft:spore_blossom count=1 age=11 pickup-delay=0 on-ground=false
+entity 28 e6 11.548026377125877 4.008901552933413 2.1166128552977823 0.00738713662795444 -0.23042028238044074 -0.05028759507550809 item=minecraft:glow_berries count=1 age=11 pickup-delay=0 on-ground=false
+entity 28 e7 11.14581067999851 3.216674980550015 1.869173257241375 -0.02301443743437653 -0.1951227371228987 -0.03689132399137289 item=minecraft:glow_berries count=1 age=10 pickup-delay=0 on-ground=false
+entity 28 e8 20.72381562862834 6.71219440328175 3.2281519421256886 0.018483787784469706 -0.08484884818708481 0.07506996757421734 item=minecraft:mangrove_propagule count=1 age=7 pickup-delay=3 on-ground=false
+
+change 29 block_ticks 29 3 2 minecraft:cave_vines[age=3,berries=false] minecraft:air
+entity-order 29 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 29 e1 1.4981087786627405 1.353556875439115 3.2628250415350846 -0.05324646619436529 -0.45850768534880854 0.039140947631125036 item=minecraft:weeping_vines count=1 age=18 pickup-delay=0 on-ground=false
+entity 29 e2 3.9900906343524123 1 1.7995447160059048 -0.040594627396459596 0 -0.02758041620970637 item=minecraft:weeping_vines count=1 age=17 pickup-delay=0 on-ground=true
+entity 29 e3 10.178093741335433 4.915658200065854 1.39352312364805 -0.07515520252306337 -0.33213340641421174 -0.07397376582305926 item=minecraft:glow_berries count=1 age=14 pickup-delay=0 on-ground=false
+entity 29 e4 7.411064884894036 4.197023525252103 3.4940178133007684 -0.07460640515279714 -0.29891163919817526 0.07331828201843324 item=minecraft:twisting_vines count=1 age=13 pickup-delay=0 on-ground=false
+entity 29 e5 14.744889424776494 5.809433170788583 4.691626673376631 0.010991421033037279 -0.26501187673283194 -0.07646177149804338 item=minecraft:spore_blossom count=1 age=12 pickup-delay=0 on-ground=false
+entity 29 e6 11.555413513753832 3.7384812705529717 2.0663252602222744 0.007239394036293801 -0.26501187673283194 -0.049281844133157685 item=minecraft:glow_berries count=1 age=12 pickup-delay=0 on-ground=false
+entity 29 e7 11.122796242564133 2.9815522434271164 1.8322819332500022 -0.022554149124654557 -0.23042028238044074 -0.03615349821519159 item=minecraft:glow_berries count=1 age=11 pickup-delay=0 on-ground=false
+entity 29 e8 20.74229941641281 6.587345555094665 3.303221909699906 0.018114112381330587 -0.12235187122334311 0.07356856965457899 item=minecraft:mangrove_propagule count=1 age=8 pickup-delay=2 on-ground=false
+
+at 30 set 32 3 2 minecraft:air
+change 30 commands 32 3 2 minecraft:twisting_vines_plant minecraft:air
+change 30 commands 32 2 2 minecraft:twisting_vines_plant minecraft:twisting_vines[age=17]
+change 30 block_ticks 32 4 2 minecraft:twisting_vines_plant minecraft:air
+draws 30 commands level 1
+entity-order 30 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 30 e1 1.4448623124683753 1 3.3019659891662094 -0.0313089252706336 0 0.023014879521419944 item=minecraft:weeping_vines count=1 age=19 pickup-delay=0 on-ground=true
+entity 30 e2 3.9494960069559526 1 1.7719642997961984 -0.023869643309389562 0 -0.01621728636207689 item=minecraft:weeping_vines count=1 age=18 pickup-delay=0 on-ground=true
+entity 30 e3 10.102938538812369 4.543524793651643 1.3195493578249908 -0.07365209990607384 -0.36469073828592746 -0.07249429191753569 item=minecraft:glow_berries count=1 age=15 pickup-delay=0 on-ground=false
+entity 30 e4 7.336458479741239 3.8581118860539276 3.5673360953192015 -0.07311427847274544 -0.33213340641421174 0.07185191777649982 item=minecraft:twisting_vines count=1 age=14 pickup-delay=0 on-ground=false
+entity 30 e5 14.75588084580953 5.504421294055751 4.615164901878588 0.010771592822021251 -0.29891163919817526 -0.07493253752647507 item=minecraft:spore_blossom count=1 age=13 pickup-delay=0 on-ground=false
+entity 30 e6 11.562652907790126 3.4334693938201397 2.0170434160891166 0.007094606293648408 -0.29891163919817526 -0.04829620819047111 item=minecraft:glow_berries count=1 age=13 pickup-delay=0 on-ground=false
+entity 30 e7 11.100242093439478 2.7111319610466755 1.7961284350348106 -0.02210306657234772 -0.26501187673283194 -0.035430428940461015 item=minecraft:glow_berries count=1 age=12 pickup-delay=0 on-ground=false
+entity 30 e8 20.76041352879414 6.424993683871322 3.3767904793544847 0.01775183047920325 -0.15910483379887624 0.07209719966469652 item=minecraft:mangrove_propagule count=1 age=9 pickup-delay=1 on-ground=false
+
+change 31 block_ticks 32 5 2 minecraft:twisting_vines[age=3] minecraft:air
+entity-order 31 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 31 e1 1.4135533871977417 1 3.3249808686876294 -0.018409649910360665 0 0.013532750519414296 item=minecraft:weeping_vines count=1 age=20 pickup-delay=0 on-ground=true
+entity 31 e2 3.925626363646563 1 1.7557470134341215 -0.01403535167728074 0 -0.009535765339793799 item=minecraft:weeping_vines count=1 age=19 pickup-delay=0 on-ground=true
+entity 31 e3 10.029286438906295 4.138834055365716 1.247055065907455 -0.07217905931275469 -0.39659692352020887 -0.07104440746190387 item=minecraft:glow_berries count=1 age=16 pickup-delay=0 on-ground=false
+entity 31 e4 7.2633442012684934 3.4859784796397157 3.6391880130957013 -0.07165199429783473 -0.36469073828592746 0.0704148807914364 item=minecraft:twisting_vines count=1 age=15 pickup-delay=0 on-ground=false
+entity 31 e5 14.766652438631551 5.165509654857576 4.5402323643521125 0.010556161171032655 -0.33213340641421174 -0.0734338882051703 item=minecraft:spore_blossom count=1 age=14 pickup-delay=0 on-ground=false
+entity 31 e6 11.569747514083774 3.0945577546219645 1.9687472078986454 0.006952714303094317 -0.33213340641421174 -0.04733028494783876 item=minecraft:glow_berries count=1 age=14 pickup-delay=0 on-ground=false
+entity 31 e7 11.078139026867131 2.4061200843138435 1.7606980060943496 -0.0216610056624833 -0.29891163919817526 -0.0347218210374336 item=minecraft:glow_berries count=1 age=13 pickup-delay=0 on-ground=false
+entity 31 e8 20.77816535927334 6.225888850072446 3.4488876790191814 0.017396794208208482 -0.1951227371228987 0.07065525704654754 item=minecraft:mangrove_propagule count=1 age=10 pickup-delay=0 on-ground=false
+
+entity-order 32 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 32 e1 1.395143737287381 1 3.3385136192070437 -0.01082487523581431 0 0.007957258105577476 item=minecraft:weeping_vines count=1 age=21 pickup-delay=0 on-ground=true
+entity 32 e2 3.911591011969282 1 1.7462112480943277 -0.008252787616120649 0 -0.005607030583627652 item=minecraft:weeping_vines count=1 age=20 pickup-delay=0 on-ground=true
+entity 32 e3 9.957107379593541 3.7022371318455067 1.1760106584455512 -0.0707354795032059 -0.42786498504980464 -0.06962352066773032 item=minecraft:glow_berries count=1 age=17 pickup-delay=0 on-ground=false
+entity 32 e4 7.191692206970659 3.0812877413537882 3.7096028938871375 -0.07021895577853136 -0.39659692352020887 0.06900658451866494 item=minecraft:twisting_vines count=1 age=16 pickup-delay=0 on-ground=false
+entity 32 e5 14.777208599802584 4.793376248443365 4.466798476146942 0.010345038148954797 -0.36469073828592746 -0.07196521184170716 item=minecraft:spore_blossom count=1 age=15 pickup-delay=0 on-ground=false
+entity 32 e6 11.57670022838687 2.7224243482077526 1.9214169229508067 0.006813660149644932 -0.36469073828592746 -0.04638368015163553 item=minecraft:glow_berries count=1 age=15 pickup-delay=0 on-ground=false
+entity 32 e7 11.056478021204647 2.0672084451156683 1.725976185056916 -0.021227785962384532 -0.33213340641421174 -0.034027385278951106 item=minecraft:glow_berries count=1 age=14 pickup-delay=0 on-ground=false
+entity 32 e8 20.79556215348155 5.990766112949547 3.519542936065729 0.01704885865586183 -0.23042028238044074 0.06924215325325866 item=minecraft:mangrove_propagule count=1 age=11 pickup-delay=0 on-ground=false
+
+entity-order 33 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 33 e1 1.3843188620515667 1 3.3464708773126213 -0.006365027278709955 0 0.004678868236574782 item=minecraft:weeping_vines count=1 age=22 pickup-delay=0 on-ground=true
+entity 33 e2 3.9033382243531616 1 1.7406042175107002 -0.00485263960624818 0 -0.003296934314704485 item=minecraft:weeping_vines count=1 age=21 pickup-delay=0 on-ground=true
+entity 33 e3 9.886371900090335 3.2343721467957023 1.106387137777821 -0.06932077126231398 -0.45850768534880854 -0.06823105158233898 item=minecraft:glow_berries count=1 age=18 pickup-delay=0 on-ground=false
+entity 33 e4 7.1214732511921275 2.6446908178335793 3.7786094784058024 -0.06881457800228102 -0.42786498504980464 0.06762645414448779 item=minecraft:twisting_vines count=1 age=17 pickup-delay=0 on-ground=false
+entity 33 e5 14.78755363795154 4.388685510157438 4.394833264305235 0.010138137583291644 -0.39659692352020887 -0.07052590897750051 item=minecraft:spore_blossom count=1 age=16 pickup-delay=0 on-ground=false
+entity 33 e6 11.583513888536514 2.317733609921825 1.8750332427991712 0.006677387076612287 -0.39659692352020887 -0.045456007433301304 item=minecraft:glow_berries count=1 age=16 pickup-delay=0 on-ground=false
+entity 33 e7 11.035250235242263 1.6950750387014566 1.6919487997779648 -0.020803230648024727 -0.36469073828592746 -0.03334683822239295 item=minecraft:glow_berries count=1 age=15 pickup-delay=0 on-ground=false
+entity 33 e8 20.812611012137413 5.720345830569107 3.5887850893189874 0.016707881807925765 -0.26501187673283194 0.06785731150888276 item=minecraft:mangrove_propagule count=1 age=12 pickup-delay=0 on-ground=false
+
+entity-order 34 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 34 e1 1.3779538347728568 1 3.351149745549196 -0.003742636416231562 0 0.002751174799757193 item=minecraft:weeping_vines count=1 age=23 pickup-delay=0 on-ground=true
+entity 34 e2 3.8984855847469135 1 1.7373072831959957 -0.002853352375399871 0 -0.0019385975719867351 item=minecraft:weeping_vines count=1 age=22 pickup-delay=0 on-ground=true
+entity 34 e3 9.817051128828021 2.735864461446894 1.038156086195482 -0.06793435715925648 -0.48853753164183233 -0.06686643185209623 item=minecraft:glow_berries count=1 age=19 pickup-delay=0 on-ground=false
+entity 34 e4 7.052658673189846 2.176825832783775 3.8462359325502904 -0.06743828775476932 -0.45850768534880854 0.06627392635147028 item=minecraft:twisting_vines count=1 age=18 pickup-delay=0 on-ground=false
+entity 34 e5 14.797691775534831 3.952088586637229 4.3243073553277345 0.00993537502499544 -0.42786498504980464 -0.06911539214312545 item=minecraft:spore_blossom count=1 age=17 pickup-delay=0 on-ground=false
+entity 34 e6 11.590191275613126 1.8811366864016161 1.82957723536587 0.0065438394624410924 -0.42786498504980464 -0.04454688815163981 item=minecraft:glow_berries count=1 age=17 pickup-delay=0 on-ground=false
+entity 34 e7 11.014447004594238 1.290384300415529 1.6586019615555718 -0.020387166431854366 -0.39659692352020887 -0.03267990209398555 item=minecraft:glow_berries count=1 age=16 pickup-delay=0 on-ground=false
+entity 34 e8 20.829318893945338 5.415333953836275 3.65664240082787 0.016373724490444806 -0.29891163919817526 0.0665001665729806 item=minecraft:mangrove_propagule count=1 age=13 pickup-delay=0 on-ground=false
+
+entity-order 35 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 35 e1 1.3742111983566252 1 3.3539009203489534 -0.0022006704340380443 0 0.001617690944928164 item=minecraft:weeping_vines count=1 age=24 pickup-delay=0 on-ground=true
+entity 35 e2 3.8956322323715136 1 1.735368685624009 -0.0016777713654475945 0 -0.0011398954869532246 item=minecraft:weeping_vines count=1 age=23 pickup-delay=0 on-ground=true
+entity 35 e3 9.749116771668765 2.2073269298050615 0.9712896543433858 -0.06657567131181638 -0.5179667810089957 -0.06552910449043028 item=minecraft:glow_berries count=1 age=20 pickup-delay=0 on-ground=false
+entity 35 e4 6.985220385435077 1.6783181474349664 3.912509858901761 -0.06608952328595719 -0.48853753164183233 0.0649484490885157 item=minecraft:twisting_vines count=1 age=19 pickup-delay=0 on-ground=false
+entity 35 e5 14.807627150559826 3.4842236015874244 4.255191963184609 0.00973666771399777 -0.45850768534880854 -0.06773308561853443 item=minecraft:spore_blossom count=1 age=18 pickup-delay=0 on-ground=false
+entity 35 e6 11.596735115075568 1.4132717013518115 1.7850303472142302 0.006412962798006103 -0.45850768534880854 -0.04365595123827148 item=minecraft:glow_berries count=1 age=18 pickup-delay=0 on-ground=false
+entity 35 e7 10.994059838162384 1 1.6259220594615862 -0.011987655067378823 0 -0.019215784363554467 item=minecraft:glow_berries count=1 age=17 pickup-delay=0 on-ground=true
+entity 35 e8 20.845692618435784 5.0764223146381 3.723142567400851 0.01604625031293992 -0.33213340641421174 0.06517016450991102 item=minecraft:mangrove_propagule count=1 age=14 pickup-delay=0 on-ground=false
+
+entity-order 36 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 36 e1 1.3742111983566252 1 3.3539009203489534 -0.0022006704340380443 -0.04 0.001617690944928164 item=minecraft:weeping_vines count=1 age=25 pickup-delay=0 on-ground=true
+entity 36 e2 3.8956322323715136 1 1.735368685624009 -0.0016777713654475945 -0.04 -0.0011398954869532246 item=minecraft:weeping_vines count=1 age=24 pickup-delay=0 on-ground=true
+entity 36 e3 9.682541100356948 1.6493601487960659 0.9057605498529555 -0.06524415915541021 -0.5468074453888159 -0.06421852365049016 item=minecraft:glow_berries count=1 age=21 pickup-delay=0 on-ground=false
+entity 36 e4 6.919130862149119 1.149780615793134 3.9774583079902763 -0.06476773408079566 -0.5179667810089957 0.06364948134553874 item=minecraft:twisting_vines count=1 age=20 pickup-delay=0 on-ground=false
+entity 36 e5 14.817363818273824 2.985715916238616 4.187458877566075 0.009541934545430012 -0.48853753164183233 -0.06637842519806983 item=minecraft:spore_blossom count=1 age=19 pickup-delay=0 on-ground=false
+entity 36 e6 11.603148077873573 1 1.7413743959759587 0.003770822504412019 0 -0.025669701909384314 item=minecraft:glow_berries count=1 age=19 pickup-delay=0 on-ground=true
+entity 36 e7 10.982072183095005 1 1.6067062750980317 -0.007048741888422511 0 -0.011298882341957228 item=minecraft:glow_berries count=1 age=18 pickup-delay=0 on-ground=true
+entity 36 e8 20.861738868748724 4.704288908223888 3.788312731910762 0.015725325612739056 -0.36469073828592746 0.06386676246273504 item=minecraft:mangrove_propagule count=1 age=15 pickup-delay=0 on-ground=false
+
+entity-order 37 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 37 e1 1.3742111983566252 1 3.3539009203489534 -0.0022006704340380443 -0.08 0.001617690944928164 item=minecraft:weeping_vines count=1 age=26 pickup-delay=0 on-ground=true
+entity 37 e2 3.8956322323715136 1 1.735368685624009 -0.0016777713654475945 -0.08 -0.0011398954869532246 item=minecraft:weeping_vines count=1 age=25 pickup-delay=0 on-ground=true
+entity 37 e3 9.617296941201538 1.06255270340725 0.8415420262024653 -0.06393927721673558 -0.5750712964810396 -0.06293415440235149 item=minecraft:glow_berries count=1 age=22 pickup-delay=0 on-ground=false
+entity 37 e4 6.854363128068323 1 4.041107789335815 -0.03808343146908197 0 0.03742589879463107 item=minecraft:twisting_vines count=1 age=21 pickup-delay=0 on-ground=true
+entity 37 e5 14.826905752819254 2.4571783845967836 4.121080452368005 0.00935109603651937 -0.5179667810089957 -0.06505085796017641 item=minecraft:spore_blossom count=1 age=20 pickup-delay=0 on-ground=false
+entity 37 e6 11.606918900377986 1 1.7157046940665743 0.002217243855554735 0 -0.015093786240511173 item=minecraft:glow_berries count=1 age=20 pickup-delay=0 on-ground=true
+entity 37 e7 10.975023441206583 1 1.5954073927560743 -0.0041446606471690906 0 -0.006643743485148991 item=minecraft:glow_berries count=1 age=19 pickup-delay=0 on-ground=true
+entity 37 e8 20.877464194361462 4.299598169937961 3.8521794943734973 0.015410819400421058 -0.39659692352020887 0.06258942843164216 item=minecraft:mangrove_propagule count=1 age=16 pickup-delay=0 on-ground=false
+
+entity-order 38 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 38 e1 1.3720105279225872 1 3.3555186112938817 -0.001293994345335188 0 0.0009512023712682793 item=minecraft:weeping_vines count=1 age=27 pickup-delay=0 on-ground=true
+entity 38 e2 3.893954461006066 1 1.7342287901370557 -0.000986529662086128 0 -0.0006702586137280172 item=minecraft:weeping_vines count=1 age=26 pickup-delay=0 on-ground=true
+entity 38 e3 9.553357663984801 1 0.7786078718001138 -0.0375962987840298 0 -0.037005286509741254 item=minecraft:glow_berries count=1 age=23 pickup-delay=0 on-ground=true
+entity 38 e4 6.816279696599241 1 4.078533688130446 -0.022393059955610008 0 0.022006430704154412 item=minecraft:twisting_vines count=1 age=22 pickup-delay=0 on-ground=true
+entity 38 e5 14.836256848855774 1.899211603587788 4.056029594407829 0.009164074294146986 -0.5468074453888159 -0.06374984204171953 item=minecraft:spore_blossom count=1 age=21 pickup-delay=0 on-ground=false
+entity 38 e6 11.60913614423354 1 1.7006109078260632 0.0013037395181669522 0 -0.008875147201883059 item=minecraft:glow_berries count=1 age=21 pickup-delay=0 on-ground=true
+entity 38 e7 10.970878780559413 1 1.5887636492709254 -0.0024370607056001226 0 -0.003906521562097594 item=minecraft:glow_berries count=1 age=20 pickup-delay=0 on-ground=true
+entity 38 e8 20.892875013761884 3.863001246417752 3.9147689228051394 0.01510260330635069 -0.42786498504980464 0.06133764105680792 item=minecraft:mangrove_propagule count=1 age=17 pickup-delay=0 on-ground=false
+
+entity-order 39 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 39 e1 1.3720105279225872 1 3.3555186112938817 -0.001293994345335188 -0.04 0.0009512023712682793 item=minecraft:weeping_vines count=1 age=28 pickup-delay=0 on-ground=true
+entity 39 e2 3.893954461006066 1 1.7342287901370557 -0.000986529662086128 -0.04 -0.0006702586137280172 item=minecraft:weeping_vines count=1 age=27 pickup-delay=0 on-ground=true
+entity 39 e3 9.515761365200772 1 0.7416025852903726 -0.022106625907996245 0 -0.02175911065576932 item=minecraft:glow_berries count=1 age=24 pickup-delay=0 on-ground=true
+entity 39 e4 6.793886636643631 1 4.1005401188346005 -0.013167120577951226 0 0.012939782555234796 item=minecraft:twisting_vines count=1 age=23 pickup-delay=0 on-ground=true
+entity 39 e5 14.84542092314992 1.312404158198972 3.9922797523661098 0.008980792983054892 -0.5750712964810396 -0.06247484641681688 item=minecraft:spore_blossom count=1 age=22 pickup-delay=0 on-ground=false
+entity 39 e6 11.610439883751708 1 1.69173576062418 0.0007665989137694273 0 -0.005218587079475235 item=minecraft:glow_berries count=1 age=22 pickup-delay=0 on-ground=true
+entity 39 e7 10.968441719853814 1 1.5848571277088277 -0.0014329918389909286 0 -0.0022970349094974403 item=minecraft:glow_berries count=1 age=21 pickup-delay=0 on-ground=true
+entity 39 e8 20.907977617068234 3.3951362613679477 3.9761065638619475 0.014800551528282975 -0.45850768534880854 0.06011088940559442 item=minecraft:mangrove_propagule count=1 age=18 pickup-delay=0 on-ground=false
+
+entity-order 40 entities e1 e2 e3 e4 e5 e6 e7 e8
+entity 40 e1 1.3720105279225872 1 3.3555186112938817 -0.001293994345335188 -0.08 0.0009512023712682793 item=minecraft:weeping_vines count=1 age=29 pickup-delay=0 on-ground=true
+entity 40 e2 3.893954461006066 1 1.7342287901370557 -0.000986529662086128 -0.08 -0.0006702586137280172 item=minecraft:weeping_vines count=1 age=28 pickup-delay=0 on-ground=true
+entity 40 e3 9.493654739292776 1 0.7198434746346033 -0.012998697341018117 0 -0.012794358352160869 item=minecraft:glow_berries count=1 age=25 pickup-delay=0 on-ground=true
+entity 40 e4 6.7807195160656795 1 4.1134799013898355 -0.007742267678378293 0 0.007608592907579034 item=minecraft:twisting_vines count=1 age=24 pickup-delay=0 on-ground=true
+entity 40 e5 14.854401716132974 1 3.9298049059492928 0.005280706805050876 0 -0.03673521338708902 item=minecraft:spore_blossom count=1 age=23 pickup-delay=0 on-ground=true
+entity 40 e6 11.611206482665477 1 1.6865171735447049 0.0004507602066237363 0 -0.003068529511295051 item=minecraft:glow_berries count=1 age=23 pickup-delay=0 on-ground=true
+entity 40 e7 10.968441719853814 1 1.5848571277088277 -0.0014329918389909286 -0.04 -0.0022970349094974403 item=minecraft:glow_berries count=1 age=22 pickup-delay=0 on-ground=true
+entity 40 e8 20.922778168596516 2.8966285760191393 4.036217453267542 0.014504540780015432 -0.48853753164183233 0.058908672764006756 item=minecraft:mangrove_propagule count=1 age=19 pickup-delay=0 on-ground=false

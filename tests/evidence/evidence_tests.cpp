@@ -800,8 +800,8 @@ int main(int argc, char** argv) {
     suite.run("plants grow on the ground both official servers let them", [&] {
         // tests/fixtures/collision/plants-*.txt: for every state as support,
         // whether each plant stays on it with nothing else around. The rules
-        // model the plants that need only the block below, sugar cane and
-        // cacti (more below); the other columns wait.
+        // model the plants that need only the block below or above, sugar cane
+        // and cacti (more below); the dripleaves and mushrooms wait.
         namespace registry = circuit::gameplay::registry;
         using circuit::contracts::Direction;
         using circuit::gameplay::BlockState;
@@ -826,7 +826,11 @@ int main(int argc, char** argv) {
             {17, {"wildflowers", {}}}, {19, {"azalea", {}}}, {20, {"flowering_azalea", {}}}, {22, {"nether_wart", {}}},
             {23, {"sweet_berry_bush", {}}}, {24, {"carrots", {}}}, {25, {"potatoes", {}}}, {26, {"beetroots", {}}},
             {27, {"melon_stem", {}}}, {28, {"pumpkin_stem", {}}}, {29, {"torchflower_crop", {}}}, {34, {"bamboo_sapling", {}}},
-            {35, {"bamboo", {}}}, {36, {"sugar_cane", {}}}, {37, {"cactus", {}}}, {38, {"lily_pad", {}}}, {39, {"sea_pickle", {}}}};
+            {35, {"bamboo", {}}}, {36, {"sugar_cane", {}}}, {37, {"cactus", {}}}, {38, {"lily_pad", {}}}, {39, {"sea_pickle", {}}},
+            {33, {"twisting_vines", {}}}, {42, {"weeping_vines", {}}}, {43, {"hanging_roots", {}}}, {44, {"spore_blossom", {}}},
+            {45, {"cave_vines", {}}}, {46, {"pale_hanging_moss", {}}}};
+        // The last five columns hang under the state.
+        constexpr std::size_t first_hanging = 42;
         std::size_t checked = 0, grows = 0;
         for (const auto release : {"1.21.8", "1.21.4"}) {
             const auto* mapping = ContentMapping::for_game_version(release);
@@ -845,10 +849,11 @@ int main(int argc, char** argv) {
                 const std::string* row = release == std::string_view("1.21.4") ? find(older) : nullptr;
                 if (!row) row = find(newest);
                 require(row != nullptr, std::format("{} {}: a row", release, notation));
-                const auto below = mapping->block(notation).value();
+                const auto support = mapping->block(notation).value();
                 const auto air = BlockState::of(circuit::gameplay::BlockType::air);
-                const auto around = [&](Direction d) { return d == Direction::down ? below : air; };
                 for (const auto& [column, plant] : plants) {
+                    const auto side = column >= first_hanging ? Direction::up : Direction::down;
+                    const auto around = [&](Direction d) { return d == side ? support : air; };
                     const char want = (*row)[column];
                     const char got = circuit::gameplay::block_supported(plant, around, release) ? '1' : '0';
                     require(want == got, std::format("{} {} on {}: official {}, Circuit {}", release, circuit::gameplay::block_notation(plant),
@@ -1152,8 +1157,17 @@ int main(int argc, char** argv) {
                         continue;
                     }
                     placed_items.insert(item);
-                    const auto got = canonical(circuit::gameplay::block_notation(s));
-                    if (got != canonical(official[k])) mismatches.push_back(std::format("{} {} context {}: official {}, Circuit {}", release, item, k, official[k], got));
+                    // A vine's head takes a random age (a level-random draw),
+                    // which the report's draws do not reproduce here.
+                    const auto ageless = [](std::string n) {
+                        if (n.starts_with("minecraft:weeping_vines[") || n.starts_with("minecraft:twisting_vines[") || n.starts_with("minecraft:cave_vines[")) {
+                            const auto at = n.find("age=");
+                            n.erase(at, n.find_first_of(",]", at) - at + (n[n.find_first_of(",]", at)] == ',' ? 1 : 0));
+                        }
+                        return n;
+                    };
+                    const auto got = ageless(canonical(circuit::gameplay::block_notation(s)));
+                    if (got != ageless(canonical(official[k]))) mismatches.push_back(std::format("{} {} context {}: official {}, Circuit {}", release, item, k, official[k], got));
                     ++compared;
                 }
             }
