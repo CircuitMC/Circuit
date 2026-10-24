@@ -127,10 +127,10 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 41 |
+| black_box | passing | 42 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 143 |
+| official_trace | passing | 144 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -260,8 +260,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Water flow, sources and washing away | C5 | partial, compared | partial, compared | `trace/fluid_sources`, `trace/water_channel`, `trace/water_drop`, `trace/water_torch_button`, `trace/water_washes` |
-| Lava flow and lava-water interactions | C5 | partial, compared | partial, compared | `trace/fluid_sources`, `trace/lava_edges`, `trace/lava_flow`, `trace/lava_water`; The overworld's lava; the Nether's, fire from lava and entities in lava are not modeled |
+| Water flow, sources and washing away | C5 | partial, compared | partial, compared | `collision/flows`, `trace/fluid_sources`, `trace/fluid_washes`, `trace/water_channel`, `trace/water_drop`, `trace/water_torch_button`, `trace/water_washes` |
+| Lava flow and lava-water interactions | C5 | partial, compared | partial, compared | `collision/flows`, `trace/fluid_sources`, `trace/fluid_washes`, `trace/lava_edges`, `trace/lava_flow`, `trace/lava_water`; The overworld's lava; the Nether's, fire from lava and entities in lava are not modeled |
 | Waterlogged blocks | C5 | missing, none | missing, none |  |
 | Filling and emptying buckets | C5 | partial, compared | partial, compared | `client/buckets`, `collision/fluids`, `trace/dispenser_buckets`; Water and lava buckets filled and poured by players along their view and by dispensers; fish, axolotl and tadpole buckets, milk and placing powder snow are not modeled |
 | Fire spread, burning and extinguishing | C5 | missing, none | missing, none |  |

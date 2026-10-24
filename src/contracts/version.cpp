@@ -96,13 +96,15 @@ constexpr std::array reference_v4_mechanisms{
         "5-tick fluid ticks; distance-limited spread in the order north, south, west, east, only toward the "
         "nearest drops within reach when there are any; a new source between two sources on solid ground "
         "while waterSourceConversion is on; dust, levers, buttons, redstone torches, repeaters and comparators "
-        "washed away with their drops (water_channel, water_drop, water_washes, water_torch_button, fluid_sources). Not covered: sources above flowing water and three sources beside falling water."},
+        "washed away with their drops, and registry blocks that do not block motion and hold no water but portals "
+        "and structure voids (water_channel, water_drop, water_washes, water_torch_button, fluid_sources, fluid_washes; "
+        "every state in tests/fixtures/collision/flows-*.txt). Not covered: sources above flowing water and three sources beside falling water."},
     MechanismEntry{"lava", l0_exact, l0_exact, harness_trace,
         "Lava as a registry block: 30-tick fluid ticks; water's spread, losing 2 levels a block and looking 2 blocks ahead for "
         "drops, water below counting as one; sources only with lavaSourceConversion (water's with waterSourceConversion); "
         "touching water above or beside it, waterlogged blocks too, a source becomes obsidian and flowing lava cobblestone; "
-        "flowing down into water it makes stone; on soul soil beside blue ice it becomes basalt; it destroys dust, levers, "
-        "buttons, redstone torches, repeaters and comparators without drops (lava_flow, lava_water, lava_edges, fluid_sources). "
+        "flowing down into water it makes stone; on soul soil beside blue ice it becomes basalt; it destroys what water washes "
+        "away without drops (lava_flow, lava_water, lava_edges, fluid_sources, fluid_washes). "
         "Not covered: the Nether's faster lava, fire, sounds, and entities in lava."},
     MechanismEntry{"random_ticks", l1_region_equivalent, l2_declared_deviation, documented_behavior,
         "Speed from the game rule per section; sections without blocks that react are skipped, as in the target "

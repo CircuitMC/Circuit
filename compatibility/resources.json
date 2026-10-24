@@ -5,7 +5,7 @@
     "block": {
       "impl": "data_only",
       "evidence": "none",
-      "note": "A registry state without rules of its own: represented, stored, sent, imported and exported; solid when it has a collision shape, a redstone conductor as both official servers report, moved, destroyed or left in place by pistons as the official servers do, with no drops"
+      "note": "A registry state without rules of its own: represented, stored, sent, imported and exported; solid when it has a collision shape, a redstone conductor as both official servers report, moved, destroyed or left in place by pistons as the official servers do, with no drops; flowing water and lava go into it where both official servers let them (water drops it, lava does not)"
     },
     "item": {
       "impl": "data_only",
@@ -215,7 +215,12 @@
         "evidence": "compared",
         "deviations": [
           "swimming, entity currents and waterlogging"
-        ]
+        ],
+        "cases": [
+          "trace/fluid_washes",
+          "collision/flows"
+        ],
+        "note": "Spreads, falls and drains as both official servers do, washing away the blocks they let it (with their drops)"
       },
       "lava": {
         "impl": "partial",
@@ -224,7 +229,9 @@
           "trace/lava_flow",
           "trace/lava_water",
           "trace/lava_edges",
-          "trace/fluid_sources"
+          "trace/fluid_sources",
+          "trace/fluid_washes",
+          "collision/flows"
         ],
         "deviations": [
           "the Nether's lava, the fire it starts and entities in lava are not modeled"

@@ -73,9 +73,36 @@ BlockState flowing(const Fluid& f, int k) {
     return f.lava ? lava_state(8 - k) : blocks::water_flowing(static_cast<std::uint8_t>(8 - k));
 }
 
+// Registry blocks fluids flow into, washing them away, as both official
+// servers do for every state (tests/fixtures/collision/flows-*.txt): those
+// that do not block motion (solid ones but cobwebs and bamboo saplings) and
+// hold no water (a waterlogged property, kelp and seagrass), but portals and
+// structure voids.
+bool washed(BlockState s) {
+    if (!s.is(BlockType::other)) return false;
+    static const std::vector<bool> table = [] {
+        std::vector<bool> out(registry::state_count() + 1);
+        for (std::uint32_t b = 0; b < registry::block_count(); ++b) {
+            const auto info = registry::block(b);
+            const auto name = info.name;
+            if (name == "nether_portal" || name == "end_portal" || name == "end_gateway" || name == "structure_void" || name == "kelp"
+                || name == "kelp_plant" || name == "seagrass" || name == "tall_seagrass" || name == "lava" || name == "water")
+                continue;
+            for (std::uint32_t state = info.first_state; state < info.first_state + info.state_count; ++state) {
+                if (registry::solid(state) && name != "cobweb" && name != "bamboo_sapling") continue;
+                const auto props = registry::properties(state);
+                out[state] = std::ranges::none_of(props, [](const auto& p) { return p.first == "waterlogged"; });
+            }
+        }
+        return out;
+    }();
+    const auto state = s.registry_state();
+    return state < table.size() && table[state];
+}
+
 // The fluid can stand in the block: air, the fluid itself and the blocks it
 // washes away (lava destroys them without drops: lava_water).
-bool holds(const Fluid& f, BlockState s) { return s.is_air() || is_of(f, s) || washed_away(s.type()); }
+bool holds(const Fluid& f, BlockState s) { return s.is_air() || is_of(f, s) || washed_away(s.type()) || washed(s); }
 // The fluid may flow into the block: it holds the fluid and is no source of
 // it. Lava also flows down into water, which becomes stone.
 bool passable(const Fluid& f, BlockState s, bool down = false) {
@@ -136,7 +163,7 @@ void spread_to(RuleContext& ctx, const Fluid& f, BlockPos pos, BlockState fluid)
         set_block(ctx, pos, blocks::stone());
         return;
     }
-    if (!f.lava && washed_away(there.type())) drop_items(ctx, pos, there);
+    if (!f.lava && !there.is_air() && !is_of(f, there)) drop_items(ctx, pos, there);
     set_block(ctx, pos, fluid);
 }
 
@@ -231,6 +258,7 @@ void wheat_random_tick(RuleContext& ctx, BlockPos pos, BlockState s, Rng& stream
 } // namespace circuit::gameplay::detail
 
 namespace circuit::gameplay {
+bool fluid_flows_into(BlockState s, bool lava) { return detail::holds(lava ? detail::lava : detail::water, s) && !detail::is_of(lava ? detail::lava : detail::water, s); }
 bool is_lava(BlockState s) { return detail::lava_level(s) >= 0; }
 bool is_lava_source(BlockState s) { return detail::lava_level(s) == 0; }
 BlockState lava_source() { return detail::lava_state(0); }

@@ -1,0 +1,11 @@
+# Whether flowing water and flowing lava go into every block state, as both official servers decide it (harness 0.22.0
+# flow report): each state set with updates on dirt in a cell of its own, a source set beside it two ticks later, and
+# the cell read 10 ticks (water) or 40 ticks (lava) later. Codes: water then lava, 1 when the fluid took the cell, 0
+# when not; - when the report cannot tell (the state did not stay until the fluid came, the same updates without a fluid
+# changed it, or it is a fluid). Each block's rows give only the properties that decide them.
+# Java Edition 1.21.4: the blocks whose rows flows-1.21.8.txt does not give; every other block as there.
+minecraft:frosted_ice 00
+minecraft:tube_coral_block 00
+minecraft:brain_coral_block 00
+minecraft:bubble_coral_block 00
+minecraft:fire_coral_block 00

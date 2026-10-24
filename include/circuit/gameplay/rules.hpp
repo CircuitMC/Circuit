@@ -33,6 +33,9 @@ bool block_replaceable(BlockState s);
 // replace it, and the fluid it holds ("water", "flowing_water", "lava" or
 // "flowing_lava", with its amount from 1 to 8), if any.
 bool takes_poured_water(BlockState s);
+// Whether flowing water (or lava) goes into a block, washing it away
+// (nature.cpp; for checks against the official servers).
+bool fluid_flows_into(BlockState s, bool lava);
 bool fluids_replace(BlockState s);
 std::optional<std::pair<std::string_view, int>> fluid_state(BlockState s);
 // A block's blast resistance (its water's, 100, when waterlogged).

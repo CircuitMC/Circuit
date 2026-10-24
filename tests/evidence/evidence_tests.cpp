@@ -442,52 +442,60 @@ int main(int argc, char** argv) {
         require(states == 27946 + 27866 && replaceable > 0, std::format("{} states, {} replaceable", states, replaceable));
     });
 
+    // Rows of a fixture keyed by the properties that decide them
+    // (tests/fixtures/collision/fluids-*.txt and flows-*.txt): the 1.21.8 file
+    // and the 1.21.4 file of the blocks whose rows differ.
+    using KeyedRows = std::map<std::string, std::vector<std::pair<std::map<std::string, std::string>, std::string>>>;
+    const auto split_state = [](const std::string& key) {
+        const auto open = key.find('[');
+        std::map<std::string, std::string> props;
+        if (open != std::string::npos) {
+            std::istringstream parts(key.substr(open + 1, key.size() - open - 2));
+            for (std::string kv; std::getline(parts, kv, ',');) props[kv.substr(0, kv.find('='))] = kv.substr(kv.find('=') + 1);
+        }
+        return std::pair{key.substr(0, open), props};
+    };
+    const auto read_keyed = [&](const std::string& file) {
+        KeyedRows rows;
+        std::istringstream lines(read_text(fixtures / "collision" / file));
+        for (std::string line; std::getline(lines, line);) {
+            if (line.empty() || line.front() == '#') continue;
+            const auto space = line.find(' ');
+            auto [name, props] = split_state(line.substr(0, space));
+            rows[name].push_back({props, line.substr(space + 1)});
+        }
+        return rows;
+    };
+    const auto keyed_row = [&](const KeyedRows& latest, const KeyedRows& older_only, std::string_view release,
+                               const std::string& notation) -> const std::string* {
+        const auto [name, props] = split_state(notation);
+        const auto& rows = release == "1.21.4" && older_only.contains(name) ? older_only : latest;
+        const auto block = rows.find(name);
+        if (block == rows.end()) return nullptr;
+        const auto row = std::ranges::find_if(block->second, [&](const auto& r) {
+            return std::ranges::all_of(r.first, [&](const auto& kv) { return props.contains(kv.first) && props.at(kv.first) == kv.second; });
+        });
+        return row == block->second.end() ? nullptr : &row->second;
+    };
+
     suite.run("fluids and buckets treat every state as both official servers do", [&] {
         // tests/fixtures/collision/fluids-*.txt: each state's fluid, whether
-        // it takes poured water and whether fluids replace it; a block's rows
-        // name only the properties that decide them.
+        // it takes poured water and whether fluids replace it.
         namespace registry = circuit::gameplay::registry;
-        const auto split = [](const std::string& key) {
-            const auto open = key.find('[');
-            std::map<std::string, std::string> props;
-            if (open != std::string::npos) {
-                std::istringstream parts(key.substr(open + 1, key.size() - open - 2));
-                for (std::string kv; std::getline(parts, kv, ',');) props[kv.substr(0, kv.find('='))] = kv.substr(kv.find('=') + 1);
-            }
-            return std::pair{key.substr(0, open), props};
-        };
-        using Rows = std::map<std::string, std::vector<std::pair<std::map<std::string, std::string>, std::string>>>;
-        const auto read = [&](const char* file) {
-            Rows rows;
-            std::istringstream lines(read_text(fixtures / "collision" / file));
-            for (std::string line; std::getline(lines, line);) {
-                if (line.empty() || line.front() == '#') continue;
-                const auto space = line.find(' ');
-                auto [name, props] = split(line.substr(0, space));
-                rows[name].push_back({props, line.substr(space + 1)});
-            }
-            return rows;
-        };
-        const auto latest = read("fluids-1.21.8.txt"), older_only = read("fluids-1.21.4-only.txt");
+        const auto latest = read_keyed("fluids-1.21.8.txt"), older_only = read_keyed("fluids-1.21.4-only.txt");
         std::size_t states = 0, wet = 0, replaced = 0;
         for (const auto release : {"1.21.8", "1.21.4"}) {
             const auto* mapping = ContentMapping::for_game_version(release);
             for (std::uint32_t wire = 0; wire < registry::wire_state_count(release); ++wire) {
                 const auto notation = registry::notation(registry::from_wire(release, static_cast<std::int32_t>(wire)).value());
-                const auto [name, props] = split(notation);
-                const auto& rows = std::string_view(release) == "1.21.4" && older_only.contains(name) ? older_only : latest;
-                const auto block = rows.find(name);
-                require(block != rows.end(), std::format("{} {}: no official row", release, notation));
-                const auto row = std::ranges::find_if(block->second, [&](const auto& r) {
-                    return std::ranges::all_of(r.first, [&](const auto& kv) { return props.contains(kv.first) && props.at(kv.first) == kv.second; });
-                });
-                require(row != block->second.end(), std::format("{} {}: no official row", release, notation));
+                const auto* row = keyed_row(latest, older_only, release, notation);
+                require(row != nullptr, std::format("{} {}: no official row", release, notation));
                 const auto state = mapping->block(notation).value();
                 const auto fluid = circuit::gameplay::fluid_state(state);
                 const auto ours = std::format("{} {} {}", fluid ? std::format("{}:{}", fluid->first, fluid->second) : "-",
                                               circuit::gameplay::takes_poured_water(state) ? 1 : 0,
                                               circuit::gameplay::fluids_replace(state) ? 1 : 0);
-                require(ours == row->second, std::format("{} {}: {} officially, {} here", release, notation, row->second, ours));
+                require(ours == *row, std::format("{} {}: {} officially, {} here", release, notation, *row, ours));
                 ++states;
                 wet += ours.find(" 1 ") != std::string::npos ? 1 : 0;
                 replaced += ours.ends_with(" 1") ? 1 : 0;
@@ -495,6 +503,32 @@ int main(int argc, char** argv) {
         }
         std::cout << std::format("  {} states: {} take poured water, {} replaced by fluids\n", states, wet, replaced);
         require(states == 27946 + 27866 && wet > 0 && replaced > 0, std::format("{} states", states));
+    });
+
+    suite.run("flowing water and lava go into the states both official servers let them", [&] {
+        // tests/fixtures/collision/flows-*.txt: whether each fluid took a
+        // state's cell, where the report could tell.
+        namespace registry = circuit::gameplay::registry;
+        const auto latest = read_keyed("flows-1.21.8.txt"), older_only = read_keyed("flows-1.21.4-only.txt");
+        std::size_t states = 0, told = 0, washed = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            const auto* mapping = ContentMapping::for_game_version(release);
+            for (std::uint32_t wire = 0; wire < registry::wire_state_count(release); ++wire) {
+                const auto notation = registry::notation(registry::from_wire(release, static_cast<std::int32_t>(wire)).value());
+                const auto* row = keyed_row(latest, older_only, release, notation);
+                require(row != nullptr, std::format("{} {}: no official row", release, notation));
+                ++states;
+                if (*row == "-") continue;
+                const auto state = mapping->block(notation).value();
+                const auto ours = std::format("{}{}", circuit::gameplay::fluid_flows_into(state, false) ? 1 : 0,
+                                              circuit::gameplay::fluid_flows_into(state, true) ? 1 : 0);
+                require(ours == *row, std::format("{} {}: {} officially, {} here", release, notation, *row, ours));
+                ++told;
+                washed += *row == "11" ? 1 : 0;
+            }
+        }
+        std::cout << std::format("  {} states, {} told: fluids go into {}\n", states, told, washed);
+        require(states == 27946 + 27866 && washed > 0, std::format("{} states", states));
     });
 
     suite.run("blast resistance matches both official servers", [&] {
