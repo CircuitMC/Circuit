@@ -6,8 +6,10 @@
 #include <circuit/gameplay/recipes.hpp>
 #include <cstdint>
 #include <functional>
+#include <optional>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 // Game data that data packs define, in the form the rules use. An engine
@@ -26,14 +28,18 @@ struct GameData {
     // Per internal registry block: the tool that mines it faster and the
     // tier its drops need, from the mineable and needs-tool block tags.
     std::unordered_map<std::uint32_t, BlockTool> block_tools;
-    // Per internal registry block without rules of its own: its loot table,
-    // when the table is in the deterministic subset (loot.hpp).
+    // Per internal registry block without rules of its own, and wheat: its
+    // loot table, when the rules compile it (loot.hpp).
     std::unordered_map<std::uint32_t, loot::Table> block_loot;
     // The crafting recipes the rules match, in recipe id order.
     std::vector<recipes::Recipe> crafting;
     // The level of an enchantment (an id of the synchronized registry) on a
     // stack; 0 when absent. Set by the server, which reads the components.
     std::function<long(const contracts::ItemStack&, std::uint32_t enchantment)> enchantment_level;
+    // The components of a stack enchanted with these enchantments (namespaced
+    // ids and levels), for the tools fixtures hand to players; nullopt when
+    // the registry lacks one. Set by the server.
+    std::function<std::optional<contracts::ComponentPatch>(const std::vector<std::pair<std::string, std::int32_t>>& levels)> enchanted;
 };
 
 } // namespace circuit::gameplay

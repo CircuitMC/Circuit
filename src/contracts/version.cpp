@@ -103,13 +103,15 @@ constexpr std::array reference_v4_mechanisms{
         "tests/fixtures/collision/flows-*.txt). Not covered: sources above flowing water and three sources beside falling water."},
     MechanismEntry{"loot", l0_exact, l2_declared_deviation, harness_trace,
         "Block loot tables from the data packs: pools, alternatives, groups and sequences, block state, tool, random "
-        "chance and location conditions, constant, uniform and binomial counts and fortune's uniform and binomial "
-        "bonuses, rolled from each table's random sequence (Xoroshiro128++ from the world seed and the MD5 of its id, "
-        "as minecraft.wiki \"Random sequence\" describes; fitted to every roll of loot_many, and the states left equal "
-        "the official saved ones); a stack of none still takes its position from the level random (loot_rolls, "
-        "loot_single, loot_many, with the operator's data packs). Gaps: weighted choices between entries, fortune's ore "
-        "bonus at levels above 0, table bonuses (leaves, gravel) and dynamic entries make tables that do not compile; "
-        "each level keeps its own sequences, where the official servers keep one set for the world."},
+        "chance, table bonus and location conditions, constant, uniform and binomial counts and fortune's ore, uniform "
+        "and binomial bonuses, rolled from each table's random sequence (Xoroshiro128++ from the world seed and the MD5 "
+        "of its id, as minecraft.wiki \"Random sequence\" describes; fitted to every roll of loot_many, and the states "
+        "left equal the official saved ones); a stack of none still takes its position from the level random (loot_rolls, "
+        "loot_single, loot_many; ores, leaves, gravel and other blocks broken by players holding tools with fortune, silk "
+        "touch or shears in loot_tools and loot_bonus; with the operator's data packs). Gaps: weighted choices between "
+        "entries (no block table has them) drop nothing; fortune's binomial bonus above level 0 (crops) is not compared; "
+        "tables that copy components, test entities or name dynamic entries do not compile; each level keeps its own "
+        "sequences, where the official servers keep one set for the world."},
     MechanismEntry{"lava", l0_exact, l0_exact, harness_trace,
         "Lava as a registry block: 30-tick fluid ticks; water's spread, losing 2 levels a block and looking 2 blocks ahead for "
         "drops, water below counting as one; sources only with lavaSourceConversion (water's with waterSourceConversion); "

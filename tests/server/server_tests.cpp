@@ -2347,10 +2347,9 @@ int main() {
         const auto& bundle = **contracts::BundleRegistry::find("java-1.21.8");
         const auto d = server::load_server_data(bundle, {{}, {dir / "pack"}});
         require(d.has_value(), d ? "" : d.error());
-        // Loot: four tables compile; the others name why not.
-        require(d->loot.blocks == 6 && d->game->block_loot.size() == 4, std::format("{} tables, {} used", d->loot.blocks, d->game->block_loot.size()));
-        require(d->loot.refused == std::map<std::string, std::size_t>{{"condition minecraft:table_bonus", 1}, {"entry minecraft:dynamic", 1}},
-                "loot refusals by reason");
+        // Loot: five tables compile; the other names why not.
+        require(d->loot.blocks == 6 && d->game->block_loot.size() == 5, std::format("{} tables, {} used", d->loot.blocks, d->game->block_loot.size()));
+        require(d->loot.refused == std::map<std::string, std::size_t>{{"entry minecraft:dynamic", 1}}, "loot refusals by reason");
         // Recipes: every type checked; crafting recipes compiled; invalid ones skipped with a reason.
         std::vector<std::string> crafted;
         for (const auto& r : d->game->crafting) crafted.push_back(r.id);
@@ -2439,8 +2438,8 @@ int main() {
         // wall torches, signs, hanging signs, banners and heads count with the
         // standing ones' tables (the banners' and the player head's are
         // refused: they copy components).
-        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 952, 871, 1407, 984},
-                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 944, 863, 1370, 948}}) {
+        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 952, 888, 1407, 984},
+                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 944, 880, 1370, 948}}) {
             const char* jar = std::getenv(e.variable);
             if (!jar || !*jar) continue;
             const auto& bundle = **contracts::BundleRegistry::find(e.bundle);
@@ -2492,8 +2491,9 @@ int main() {
                         for (const auto& s : *made) got += std::format("{}{}*{}", got.empty() ? "" : " ", gameplay::items::info(s.item)->name, s.count);
                 }
                 if (got.empty()) got = "-";
-                // Tables that draw random numbers drop nothing yet.
-                require(got == (f[5] == "random" ? "-" : f[4]), std::format("{} {} {} {}: {} (official {})", f[0], f[1], f[2], f[3], got, f[4]));
+                // Rolls that draw random numbers have no sequence here (the
+                // calibration world's are not known) and drop nothing.
+                require(got == f[4] || (f[5] == "random" && got == "-"), std::format("{} {} {} {}: {} (official {})", f[0], f[1], f[2], f[3], got, f[4]));
                 ++cases;
             }
             require(cases == 23, std::format("{} drop cases", cases));

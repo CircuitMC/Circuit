@@ -2389,6 +2389,30 @@ int main() {
                 "the berry sequence's saved state");
     });
 
+    suite.run("fortune and table bonuses roll as both official servers' loot tables do", [] {
+        // The loot_tools skeleton (world seed 0): iron ores broken with fortune
+        // 3, none, 1 and 2, and gravel by hand and with fortune 1 and 3, on
+        // both versions. Fortune multiplies raw iron by 1 + max(0, an int below
+        // level + 2, less 1), drawn only above level 0; a table bonus is a
+        // float below the chance of the tool's level.
+        using circuit::gameplay::RandomSequence;
+        auto iron = RandomSequence::create(0, {0xee7ca3e4d6f665d3ULL, 0x5ca39fd2ffe3da36ULL}, {});
+        const auto ores = [&](std::int32_t level, int n) {
+            std::string out;
+            for (int i = 0; i < n; ++i) out += static_cast<char>('0' + (level > 0 ? std::max(0, iron.next_int(level + 2) - 1) + 1 : 1));
+            return out;
+        };
+        require(ores(3, 16) == "3311142134124344" && ores(0, 8) == "11111111" && ores(1, 16) == "2212211112122111" && ores(2, 16) == "1331313123121213",
+                "raw iron");
+        auto gravel = RandomSequence::create(0, {0x2fedfb509401412fULL, 0x6b4882392a3638a0ULL}, {});
+        const auto flint = [&](float chance, int n) {
+            std::string out;
+            for (int i = 0; i < n; ++i) out += gravel.next_float() < chance ? 'f' : 'g';
+            return out;
+        };
+        require(flint(0.1f, 16) == "gggggggggggggggg" && flint(0.14285715f, 16) == "fggggfggggggfggf" && flint(1.0f, 8) == "ffffffff", "flint");
+    });
+
     suite.run("players place blocks into lava but cannot break it", [] {
         // As water: a block placed into a lava source replaces it; lava
         // cannot be mined.

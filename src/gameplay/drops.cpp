@@ -66,8 +66,7 @@ std::optional<ItemStack> own_item(BlockState s) {
 }
 // Drops of a block by its loot table, when the data packs have one the rules
 // evaluate (nullopt otherwise). Rolls draw from the table's random sequence;
-// one that needs what the rules do not fit yet (fortune's ore bonus) drops
-// nothing.
+// one that needs a weighted choice drops nothing.
 std::optional<std::vector<ItemStack>> table_drops(RuleContext& ctx, BlockPos pos, BlockState s, const ItemStack& tool) {
     const auto* data = ctx.data();
     const auto state = data ? physics::registry_state_of(s) : std::nullopt;

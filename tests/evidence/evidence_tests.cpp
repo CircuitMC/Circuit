@@ -292,6 +292,33 @@ int main(int argc, char** argv) {
         require(evaluate_fixture(big, engine_executor(1)).outcome == Outcome::unsupported, "more than 256 chunks");
     });
 
+    suite.run("players break blocks with tools in fixtures", [&] {
+        const std::string head = "circuit-trace 2\ntitle Breaking\ngame-version 1.21.8\nsource circuit_reference\nharness -\n"
+                                 "mechanisms support\narea 0 0 0 3 3 3\nticks 4\nchanges ordered\nentities observed\n";
+        const auto f = parse(head + "at 0 set 1 0 1 minecraft:stone\nat 2 break 1 0 1 minecraft:air\n"
+                                    "at 3 break 2 0 2 minecraft:diamond_pickaxe minecraft:fortune=3 minecraft:unbreaking=2\n");
+        require(f.actions.size() == 3 && f.actions[1].kind == Action::Kind::break_block && f.actions[1].item == "minecraft:air"
+                    && f.actions[1].enchantments.empty() && f.actions[2].item == "minecraft:diamond_pickaxe"
+                    && f.actions[2].enchantments == std::vector<std::pair<std::string, std::uint8_t>>{{"minecraft:fortune", 3}, {"minecraft:unbreaking", 2}},
+                "items and enchantments");
+        require(write_fixture(parse(write_fixture(f))) == write_fixture(f), "canonical text");
+        for (const auto* bad : {"at 2 break 1 0 1\n", "at 2 break 1 0 1 minecraft:air fortune=1\n", "at 2 break 1 0 1 minecraft:air minecraft:fortune=0\n",
+                                "at 2 break 1 0 1 minecraft:air minecraft:fortune\n", "at 2 break 9 0 1 minecraft:air\n"})
+            require(!circuit::evidence::parse_fixture(head + bad), std::format("refused: {}", bad));
+        // An empty hand breaks stone without a drop; an enchanted tool needs
+        // the data packs' enchantments.
+        const auto plain = parse(head + "at 0 set 1 0 1 minecraft:stone\nat 2 break 1 0 1 minecraft:air\n");
+        auto recorded = record_fixture(plain, engine_executor(1));
+        require(recorded.has_value(), recorded ? std::string() : recorded.error());
+        require(std::ranges::any_of(recorded->recorded_changes, [](const auto& c) { return c.tick == 2 && c.after == "minecraft:air"; })
+                    && recorded->entity_events.empty(),
+                "broken without a drop");
+        require(evaluate_fixture(*recorded, engine_executor(1)).outcome == Outcome::passed, "its own recording passes");
+        const auto enchanted = record_fixture(f, engine_executor(1));
+        require(!enchanted && enchanted.error().find("enchanted tools need the official data packs") != std::string::npos,
+                enchanted ? "recorded without data packs" : enchanted.error());
+    });
+
     suite.run("heightmap properties match both official servers", [&] {
         // tests/fixtures/heightmap: which states count for MOTION_BLOCKING, by
         // block when its states agree, as the official servers report them.

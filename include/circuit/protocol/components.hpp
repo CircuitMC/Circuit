@@ -6,8 +6,10 @@
 #include <expected>
 #include <functional>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
+#include <utility>
 
 // Item data components on the network, for each supported protocol. The
 // schema of every component type comes from a pinned public dataset (see
@@ -78,6 +80,11 @@ public:
     // registry) in the patch's enchantments component; 0 when absent. The
     // patch is canonical for this protocol.
     [[nodiscard]] long enchantment_level(const contracts::ComponentPatch& patch, std::uint32_t enchantment) const;
+    // A patch with the enchantments component holding these (enchantment
+    // id, level) pairs, canonical for this protocol (1.21.4's tooltip flag
+    // shown).
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> enchanted(std::span<const std::pair<std::uint32_t, std::int32_t>> levels,
+                                                                                  const ComponentContext& ctx) const;
 
     explicit ComponentCodec(const void* schema) noexcept : schema_(schema) {}
 

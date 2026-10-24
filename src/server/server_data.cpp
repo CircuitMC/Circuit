@@ -136,10 +136,22 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
         out.recipes = compile_recipes(*packs, bundle, out.registries);
         game->crafting = std::move(out.recipes.crafting);
         out.recipes.crafting.clear();
-        if (const auto* codec = protocol::ComponentCodec::for_protocol(bundle.schema.component_schema))
+        if (const auto* codec = protocol::ComponentCodec::for_protocol(bundle.schema.component_schema)) {
             game->enchantment_level = [codec](const contracts::ItemStack& stack, std::uint32_t enchantment) {
                 return codec->enchantment_level(stack.components, enchantment);
             };
+            game->enchanted = [codec, ctx = component_context(bundle, out.registries)](
+                                  const std::vector<std::pair<std::string, std::int32_t>>& levels) -> std::optional<contracts::ComponentPatch> {
+                std::vector<std::pair<std::uint32_t, std::int32_t>> ids;
+                for (const auto& [name, level] : levels) {
+                    const auto id = ctx.id_of("enchantment", name);
+                    if (!id) return std::nullopt;
+                    ids.emplace_back(*id, level);
+                }
+                auto patch = codec->enchanted(ids, ctx);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
+        }
         out.game = std::move(game);
         out.packs = std::move(*packs);
     } else {

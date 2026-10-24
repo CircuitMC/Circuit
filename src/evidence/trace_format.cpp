@@ -375,6 +375,17 @@ private:
             if (auto ok = state_of(t[6], a.state); !ok) return ok;
         } else if (t[2] == "use" && t.size() == 6) {
             a.kind = Action::Kind::use;
+        } else if (t[2] == "break" && t.size() >= 7) {
+            if (f_.format < 2) return fail(line_, "break needs circuit-trace 2");
+            a.kind = Action::Kind::break_block;
+            if (auto ok = item_of(t[6], false, a.item); !ok) return ok;
+            for (std::size_t i = 7; i < t.size(); ++i) {
+                const auto eq = t[i].find('=');
+                unsigned level{};
+                if (eq == std::string_view::npos || !valid_id(t[i].substr(0, eq)) || !number(t[i].substr(eq + 1), level) || level < 1 || level > 255)
+                    return fail(line_, "invalid enchantment (<id>=<level>)");
+                a.enchantments.emplace_back(std::string(t[i].substr(0, eq)), static_cast<std::uint8_t>(level));
+            }
         } else if (t[2] == "insert" && t.size() == 9) {
             a.kind = Action::Kind::insert;
             unsigned slot{}, count{};
@@ -693,6 +704,12 @@ std::string write_fixture(const Fixture& f) {
                                                a.age != 0 ? std::format(" age={}", a.age) : ""));
             break;
         case Action::Kind::command: body[a.tick].push_back(std::format("at {} command {}", a.tick, a.command)); break;
+        case Action::Kind::break_block: {
+            auto line = std::format("at {} break {} {}", a.tick, pos_text(a.pos), a.item);
+            for (const auto& [name, level] : a.enchantments) line += std::format(" {}={}", name, level);
+            body[a.tick].push_back(std::move(line));
+            break;
+        }
         }
     }
     if (f.format < 2) {

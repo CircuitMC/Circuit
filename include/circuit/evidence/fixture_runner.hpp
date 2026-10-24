@@ -33,9 +33,10 @@ public:
     // Block light and sky light at the end of the last tick; nullopt when the
     // executor does not compute light.
     [[nodiscard]] virtual std::optional<std::pair<std::uint8_t, std::uint8_t>> light(BlockPos) const { return std::nullopt; }
-    // Whether the rules run with data packs' data (loot tables): scenarios of
-    // the `loot` mechanism need it.
-    [[nodiscard]] virtual bool has_data() const { return false; }
+    // The data packs' data the rules run with (loot tables, enchantments);
+    // null without. Scenarios of the `loot` mechanism and enchanted tools
+    // need it.
+    [[nodiscard]] virtual const gameplay::GameData* data() const { return nullptr; }
 };
 using ExecutorFactory =
     std::function<std::unique_ptr<FixtureExecutor>(const contracts::VersionBundle& bundle, std::uint64_t seed)>;

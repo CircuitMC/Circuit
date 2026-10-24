@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 // circuit-trace: a line-oriented behavior fixture shared by Circuit and an
@@ -38,18 +39,22 @@ using Vec3d = std::array<double, 3>;
 using Properties = std::vector<std::pair<std::string, std::string>>;
 
 struct Action {
-    enum class Kind : std::uint8_t { set, use, insert, spawn_item, command };
+    enum class Kind : std::uint8_t { set, use, insert, spawn_item, command, break_block };
     Tick tick{};
     Kind kind{};
     BlockPos pos;                // set, use, insert; the block of `position` for spawn_item
     std::string state;           // set
     std::uint8_t slot{};         // insert
-    std::string item;            // insert, spawn_item
+    std::string item;            // insert, spawn_item, break_block
     std::uint8_t count{};        // insert, spawn_item
     Vec3d position{}, velocity{};// spawn_item (v2)
     std::uint16_t pickup_delay{}; // spawn_item: optional `pickup-delay=<n>`, 0 to 32767
     std::int32_t age{};           // spawn_item: optional `age=<n>`, -32768 to 32767
     std::string command;         // command (v2): a server command without the slash, words separated by one space
+    // break_block (v2): a survival player holding `item` ("minecraft:air" for
+    // an empty hand) with these enchantments (namespaced ids, levels 1 to 255)
+    // breaks the block at `pos`.
+    std::vector<std::pair<std::string, std::uint8_t>> enchantments;
     std::size_t line{};
     bool operator==(const Action&) const = default;
 };

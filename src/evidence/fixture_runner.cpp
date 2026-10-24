@@ -22,15 +22,15 @@ namespace {
 class EngineExecutor final : public FixtureExecutor {
 public:
     EngineExecutor(const contracts::VersionBundle& bundle, std::uint64_t seed, unsigned workers, std::shared_ptr<const gameplay::GameData> data)
-        : has_data_(data != nullptr), engine_(bundle, seed, [&] {
+        : data_(std::move(data)), engine_(bundle, seed, [&] {
               runtime::EngineOptions o;
               o.workers = workers;
               o.level_random_seed = 0; // as the reference harness seeds the overworld's
               o.sequence_seed = 0;     // the harness's worlds have the seed 0
-              o.data = std::move(data);
+              o.data = data_;
               return o;
           }()) {}
-    bool has_data() const override { return has_data_; }
+    const gameplay::GameData* data() const override { return data_.get(); }
     void advance(const std::vector<Command>& commands) override { engine_.advance(commands); }
     const std::vector<contracts::TraceRecord>& trace() const override { return engine_.trace(); }
     // Fixtures run in the overworld (the runner refuses other dimensions).
@@ -49,7 +49,7 @@ public:
     }
 
 private:
-    bool has_data_;
+    std::shared_ptr<const gameplay::GameData> data_;
     runtime::Engine engine_;
 };
 
@@ -73,7 +73,20 @@ struct Prepared {
     std::map<Tick, std::vector<MappedChange>> changes;      // by fixture tick; no-ops after mapping dropped
     std::vector<std::pair<const BlockProbe*, BlockState>> blocks;
     std::vector<std::pair<const SlotProbe*, contracts::ItemStack>> slots;
+    // The tools of break actions with enchantments, which the executor's
+    // data resolves: the input that hands each over.
+    struct Tool {
+        Tick tick{};
+        std::size_t index{};
+        std::vector<std::pair<std::string, std::uint8_t>> enchantments;
+        std::size_t line{};
+    };
+    std::vector<Tool> tools;
 };
+
+// The player who breaks blocks for `break` actions, holding the tool in the
+// first hotbar slot.
+constexpr contracts::PlayerKey breaker{0x636972637569742dULL, 0x627265616b6572ULL};
 
 FixtureReport report(Outcome outcome, std::string detail) { return {outcome, std::move(detail), 0, 0, 0}; }
 
@@ -236,6 +249,22 @@ bool boolean_rule_read(std::string_view name) {
 constexpr std::string_view no_data = "the scenario's loot tables need the official data packs (--vanilla-jar)";
 bool needs_data(const Fixture& f) { return std::ranges::find(f.mechanisms, "loot") != f.mechanisms.end(); }
 
+// Gives the tools of break actions their enchantments, from the data packs'
+// enchantment registry; a report when the executor has none.
+std::optional<FixtureReport> enchant(Prepared& p, const FixtureExecutor& exec) {
+    for (const auto& t : p.tools) {
+        const auto* data = exec.data();
+        if (!data || !data->enchanted)
+            return report(Outcome::unsupported, std::format("line {}: enchanted tools need the official data packs (--vanilla-jar)", t.line));
+        std::vector<std::pair<std::string, std::int32_t>> levels;
+        for (const auto& [name, level] : t.enchantments) levels.emplace_back(name, level);
+        auto patch = data->enchanted(levels);
+        if (!patch) return report(Outcome::unsupported, std::format("line {}: an enchantment the data packs do not define", t.line));
+        std::get<contracts::SetPlayerSlot>(p.inputs[t.tick][t.index].body).stack.components = std::move(*patch);
+    }
+    return std::nullopt;
+}
+
 std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_observations) {
     Prepared p;
     const contracts::VersionBundle* found = nullptr;
@@ -311,9 +340,25 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
             }
             continue;
         }
+        if (a.kind == Action::Kind::break_block) {
+            contracts::ItemStack tool{};
+            if (a.item != "minecraft:air") {
+                const auto item = p.mapping->item(a.item);
+                if (!item) return fail_line(a.line, item.error());
+                tool = {*item, 1};
+            }
+            auto& tick = p.inputs[a.tick + 2];
+            if (!a.enchantments.empty()) p.tools.push_back({a.tick + 2, tick.size(), a.enchantments, a.line});
+            for (auto body : {contracts::CommandBody{contracts::SetPlayerSlot{breaker, contracts::hotbar_first, tool}},
+                              contracts::CommandBody{contracts::PlayerBreak{breaker, a.pos, true, contracts::hotbar_first}}}) {
+                p.action_lines[admission] = a.line;
+                tick.push_back({admission++, std::move(body)});
+            }
+            continue;
+        }
         contracts::CommandBody body;
         switch (a.kind) {
-        case Action::Kind::command: break;
+        case Action::Kind::command: case Action::Kind::break_block: break;
         case Action::Kind::set: {
             const auto s = p.mapping->block(a.state);
             if (!s) return fail_line(a.line, s.error());
@@ -696,7 +741,8 @@ FixtureReport evaluate_fixture(const Fixture& f, const ExecutorFactory& factory)
     if (!prepared) return prepared.error();
     const auto& p = *prepared;
     auto exec = factory(p.bundle, 0);
-    if (needs_data(f) && !exec->has_data()) return report(Outcome::unsupported, std::string(no_data));
+    if (needs_data(f) && !exec->data()) return report(Outcome::unsupported, std::string(no_data));
+    if (auto failed = enchant(*prepared, *exec)) return *failed;
     std::size_t changes = 0, probes = 0, events = 0;
     EntityTracker tracker(*p.mapping);
     const bool v2 = f.format >= 2;
@@ -903,7 +949,8 @@ std::expected<Fixture, std::string> record_fixture(const Fixture& skeleton, cons
     out.chunk_events.clear();
     out.rng.clear();
     auto exec = factory(p.bundle, 0);
-    if (needs_data(skeleton) && !exec->has_data()) return std::unexpected(std::string(no_data));
+    if (needs_data(skeleton) && !exec->data()) return std::unexpected(std::string(no_data));
+    if (auto failed = enchant(*prepared, *exec)) return std::unexpected(failed->detail);
     EntityTracker tracker(*p.mapping);
     std::size_t seq = 0;
     const auto observe = [&](Tick t) -> std::optional<FixtureReport> {

@@ -764,4 +764,21 @@ long ComponentCodec::enchantment_level(const contracts::ComponentPatch& patch, s
     return 0;
 }
 
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::enchanted(std::span<const std::pair<std::uint32_t, std::int32_t>> levels,
+                                                                                const ComponentContext& ctx) const {
+    const auto type = type_id("enchantments");
+    if (!type) return std::unexpected("no enchantments component");
+    Writer w;
+    w.varint(static_cast<std::int32_t>(levels.size()));
+    for (const auto& [id, level] : levels) w.varint(static_cast<std::int32_t>(id)).varint(level);
+    auto value = canonical_value(*type, w.bytes(), ctx);
+    if (!value) {
+        // 1.21.4's form ends with whether the tooltip shows them.
+        w.boolean(true);
+        value = canonical_value(*type, w.bytes(), ctx);
+    }
+    if (!value) return std::unexpected(value.error());
+    return contracts::ComponentPatch::make(protocol(), {{*type, std::move(*value)}}, {}, {});
+}
+
 } // namespace circuit::protocol

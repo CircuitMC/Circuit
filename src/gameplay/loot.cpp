@@ -69,6 +69,10 @@ bool test(const Condition& c, const BreakContext& ctx) {
     case Condition::Kind::all_of: return all(c.children, ctx);
     case Condition::Kind::inverted: return !c.children.empty() && !test(c.children.front(), ctx);
     case Condition::Kind::random_chance: return random(ctx).next_float() < static_cast<float>(c.chance);
+    case Condition::Kind::table_bonus: {
+        const auto level = static_cast<std::size_t>(std::max(0L, level_of(ctx, c.bonus_enchantment)));
+        return random(ctx).next_float() < static_cast<float>(c.chances[std::min(level, c.chances.size() - 1)]);
+    }
     case Condition::Kind::location: return ctx.location && ctx.location(c);
     }
     return false;
@@ -89,8 +93,10 @@ void apply(const std::vector<Function>& fs, long& count, const BreakContext& ctx
             break;
         case Function::Kind::explosion_decay: break; // no explosion, or TNT's (no drop decay)
         case Function::Kind::ore_bonus: {
+            // Fortune multiplies by 1 + max(0, an int below level + 2, less 1)
+            // (minecraft.wiki "Loot table"); nothing is drawn at level 0.
             const long level = level_of(ctx, f.enchantment);
-            if (level > 0) throw Unresolved{}; // fortune multiplies by a random factor not fitted yet
+            if (level > 0) count *= std::max<long>(0, random(ctx).next_int(static_cast<std::int32_t>(level + 2)) - 1) + 1;
             break;
         }
         case Function::Kind::uniform_bonus:

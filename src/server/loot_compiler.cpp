@@ -179,6 +179,13 @@ private:
         } else if (*kind == "minecraft:any_of" || *kind == "minecraft:all_of") {
             c.kind = *kind == "minecraft:any_of" ? loot::Condition::Kind::any_of : loot::Condition::Kind::all_of;
             for (const auto& t : array(j, "terms")) c.children.push_back(condition(t));
+        } else if (*kind == "minecraft:table_bonus") {
+            c.kind = loot::Condition::Kind::table_bonus;
+            const auto* name = j.string("enchantment");
+            if (!name) refuse("table_bonus without an enchantment");
+            c.bonus_enchantment = enchantment(*name);
+            for (const auto& v : array(j, "chances")) c.chances.push_back(constant(v, "chance"));
+            if (c.chances.empty()) refuse("table_bonus without chances");
         } else if (*kind == "minecraft:random_chance") {
             c.kind = loot::Condition::Kind::random_chance;
             const auto* chance = j.find("chance");

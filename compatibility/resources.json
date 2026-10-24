@@ -288,12 +288,14 @@
       "gravel": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Falls when the block below can be replaced and lands as the official servers do",
+        "note": "Falls when the block below can be replaced and lands as the official servers do; broken by players, drops what its loot table rolls for the tool (flint by its table bonus), as both official servers do",
         "cases": [
           "trace/falling_column",
           "trace/falling_drop",
           "trace/falling_onto",
-          "trace/falling_void"
+          "trace/falling_void",
+          "trace/loot_tools",
+          "trace/loot_bonus"
         ]
       },
       "white_concrete_powder": {
@@ -4517,6 +4519,188 @@
         "note": "Placed by players where it grows, and broken with its drop when its ground goes, as both official servers do",
         "deviations": [
           "does not grow"
+        ]
+      },
+      "acacia_leaves": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_bonus"
+        ]
+      },
+      "amethyst_cluster": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_tools",
+          "trace/loot_bonus"
+        ]
+      },
+      "azalea_leaves": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_bonus"
+        ]
+      },
+      "birch_leaves": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_bonus"
+        ]
+      },
+      "cherry_leaves": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_bonus"
+        ]
+      },
+      "copper_ore": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_tools",
+          "trace/loot_bonus"
+        ]
+      },
+      "dark_oak_leaves": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_bonus"
+        ]
+      },
+      "deepslate_copper_ore": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_bonus"
+        ]
+      },
+      "deepslate_gold_ore": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_bonus"
+        ]
+      },
+      "deepslate_iron_ore": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_tools"
+        ]
+      },
+      "flowering_azalea_leaves": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_bonus"
+        ]
+      },
+      "gilded_blackstone": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_tools",
+          "trace/loot_bonus"
+        ]
+      },
+      "glowstone": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_bonus"
+        ]
+      },
+      "gold_ore": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_tools",
+          "trace/loot_bonus"
+        ]
+      },
+      "iron_ore": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_tools",
+          "trace/loot_bonus"
+        ]
+      },
+      "jungle_leaves": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_bonus"
+        ]
+      },
+      "mangrove_leaves": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_bonus"
+        ]
+      },
+      "melon": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_bonus"
+        ]
+      },
+      "oak_leaves": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_tools",
+          "trace/loot_bonus"
+        ]
+      },
+      "pale_oak_leaves": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_bonus"
+        ]
+      },
+      "sea_lantern": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_bonus"
+        ]
+      },
+      "spruce_leaves": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by players, drops what its loot table rolls for the tool (fortune, silk touch, shears or none) as both official servers do; otherwise as other registry blocks",
+        "cases": [
+          "trace/loot_bonus"
         ]
       }
     },

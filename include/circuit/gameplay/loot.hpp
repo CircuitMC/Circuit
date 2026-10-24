@@ -14,15 +14,16 @@
 // (data/<namespace>/loot_table/blocks). The format follows minecraft.wiki
 // "Loot table": pools roll a constant number of times; an entry is an item,
 // or a composite (alternatives, group, sequence); conditions test survival of
-// an explosion, block state properties, the tool, a random chance and the
-// block at an offset; functions set counts (constant, uniform or binomial),
-// limit them and give fortune's bonus. Random numbers come from the table's
-// random sequence (random_sequence.hpp), as both official servers draw them
-// (fitted to their drops and saved sequences): a chance is a float below it,
-// a uniform count an int bounded by its range, a binomial count n floats each
-// below p; fortune's uniform bonus draws an int even at level 0. Weighted
-// choices between entries and fortune's ore bonus above level 0 are not
-// fitted yet: a roll that needs one yields nothing.
+// an explosion, block state properties, the tool, a random chance, a chance
+// by enchantment level (table bonus) and the block at an offset; functions
+// set counts (constant, uniform or binomial), limit them and give fortune's
+// bonuses. Random numbers come from the table's random sequence
+// (random_sequence.hpp), as both official servers draw them (fitted to their
+// drops and saved sequences): a chance is a float below it, a uniform count
+// an int bounded by its range, a binomial count n floats each below p;
+// fortune's uniform bonus draws an int even at level 0, its ore bonus only
+// above it. Weighted choices between entries are not fitted (no block table
+// has them): a roll that needs one yields nothing.
 namespace circuit::gameplay::loot {
 
 // A count: constant, uniform between two bounds (as integers), or binomial.
@@ -36,9 +37,11 @@ struct Number {
 };
 
 struct Condition {
-    enum class Kind : std::uint8_t { survives_explosion, block_state, tool, any_of, all_of, inverted, random_chance, location };
+    enum class Kind : std::uint8_t { survives_explosion, block_state, tool, any_of, all_of, inverted, random_chance, location, table_bonus };
     Kind kind{};
     double chance{};                       // random_chance
+    std::uint32_t bonus_enchantment{};     // table_bonus: the enchantment whose level picks the chance
+    std::vector<double> chances{};         // table_bonus: by level, the last for higher levels
     std::int32_t dx{}, dy{}, dz{};         // location: the offset of the block tested
     std::uint32_t block{UINT32_MAX};       // location: the internal registry block it must be (UINT32_MAX: any)
     // block_state: property -> exact value, or an integer range.
@@ -112,7 +115,7 @@ struct BreakContext {
 };
 
 // The drops, or nullopt when a roll would need a random number it has no
-// source for, or a choice or bonus not fitted yet. A stack may be empty (a count of 0): it still drops, as the
+// source for, or a weighted choice. A stack may be empty (a count of 0): it still drops, as the
 // official servers drop it, and makes no item.
 std::optional<std::vector<contracts::ItemStack>> drops(const Table& table, const BreakContext& context);
 
