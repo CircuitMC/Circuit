@@ -872,15 +872,24 @@
             "trace/water_channel",
             "trace/water_drop",
             "trace/water_washes",
-            "trace/water_torch_button"
+            "trace/water_torch_button",
+            "trace/fluid_sources"
           ]
         },
         {
           "id": "lava",
           "name": "Lava flow and lava-water interactions",
           "milestone": "C5",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "tier": "L0",
+          "cases": [
+            "trace/lava_flow",
+            "trace/lava_water",
+            "trace/lava_edges",
+            "trace/fluid_sources"
+          ],
+          "note": "The overworld's lava; the Nether's, fire from lava and entities in lava are not modeled"
         },
         {
           "id": "waterlogging",

@@ -35,7 +35,7 @@ Feature counts per implementation state, then the number of features with compar
 | V09 Structures and decoration | C7, C5 | 6 | 0 / 0 | 0 / 0 | 0 / 0 | 6 / 6 | 0 / 0 | 0 / 0 |
 | V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 17 / 17 | 23 / 23 | 3 / 3 | 0 / 0 | 17 / 17 |
 | V11 Common building blocks | C5 | 1347 | 0 / 0 | 329 / 329 | 1017 / 1017 | 1 / 1 | 0 / 0 | 120 / 120 |
-| V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 24 / 24 | 54 / 54 | 4 / 4 | 0 / 0 | 8 / 8 |
+| V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 26 / 26 | 53 / 53 | 3 / 3 | 0 / 0 | 10 / 10 |
 | V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 51 / 51 | 250 / 264 | 5 / 5 | 14 / 0 | 49 / 49 |
 | V14 Redstone sources and signal consumers | C4, C5 | 138 | 7 / 7 | 97 / 97 | 33 / 33 | 1 / 1 | 0 / 0 | 39 / 41 |
 | V15 Pistons and moving structures | C3, C4 | 16 | 2 / 2 | 14 / 14 | 0 / 0 | 0 / 0 | 0 / 0 | 12 / 12 |
@@ -67,7 +67,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 437 / 437 | 654 / 664 | 0 / 0 |
+| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 438 / 438 | 653 / 663 | 0 / 0 |
 | item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 128 / 128 | 1256 / 1287 | 0 / 0 |
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 17 / 17 | 0 / 0 | 132 / 134 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
@@ -130,7 +130,7 @@ Their counts are unknown, not zero.
 | black_box | passing | 39 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 138 |
+| official_trace | passing | 142 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -260,8 +260,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
-| Water flow, sources and washing away | C5 | partial, compared | partial, compared | `trace/water_channel`, `trace/water_drop`, `trace/water_torch_button`, `trace/water_washes` |
-| Lava flow and lava-water interactions | C5 | missing, none | missing, none |  |
+| Water flow, sources and washing away | C5 | partial, compared | partial, compared | `trace/fluid_sources`, `trace/water_channel`, `trace/water_drop`, `trace/water_torch_button`, `trace/water_washes` |
+| Lava flow and lava-water interactions | C5 | partial, compared | partial, compared | `trace/fluid_sources`, `trace/lava_edges`, `trace/lava_flow`, `trace/lava_water`; The overworld's lava; the Nether's, fire from lava and entities in lava are not modeled |
 | Waterlogged blocks | C5 | missing, none | missing, none |  |
 | Filling and emptying buckets | C5 | partial, none | partial, none | Placing water from a bucket |
 | Fire spread, burning and extinguishing | C5 | missing, none | missing, none |  |

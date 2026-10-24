@@ -242,7 +242,9 @@ void on_placed(RuleContext& ctx, BlockPos pos, BlockState state, BlockState prev
         if (!same_block(previous, state)) rail_placed(ctx, pos);
         break;
     case BlockType::other:
-        if (falls(state)) schedule_fall(ctx, pos);
+        // Every change of lava hardens it or schedules its next fluid tick.
+        if (is_lava(state)) lava_changed(ctx, pos, state);
+        else if (falls(state)) schedule_fall(ctx, pos);
         // TNT placed or moved in where redstone reaches it is primed.
         else if (is_tnt(state) && !is_tnt(previous)) check_tnt(ctx, pos);
         break;
@@ -303,7 +305,8 @@ void on_neighbor_changed(RuleContext& ctx, BlockPos target, BlockPos from, Block
     case BlockType::dispenser: check_dispenser(ctx, target); break;
     case BlockType::water: schedule(ctx, TickList::fluid, target, BlockType::water, 5, 0); break;
     case BlockType::other:
-        if (is_tnt(s)) check_tnt(ctx, target);
+        if (is_lava(s)) lava_changed(ctx, target, s);
+        else if (is_tnt(s)) check_tnt(ctx, target);
         break;
     default: break;
     }

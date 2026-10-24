@@ -148,7 +148,7 @@ Plan plan(RuleContext& ctx, const contracts::RemoveEntity& c) {
 // actions mean the same however they are grouped into ticks.
 
 // Blocks a placement replaces instead of placing next to.
-bool replaceable(BlockState s) { return s.is_air() || s.is(BlockType::water); }
+bool replaceable(BlockState s) { return s.is_air() || s.is(BlockType::water) || is_lava(s); }
 bool usable(BlockState s) {
     return s.is(BlockType::lever) || s.is(BlockType::button) || s.is(BlockType::repeater) || s.is(BlockType::comparator)
         || s.is(BlockType::daylight_detector) || s.is(BlockType::note_block) || detail::is_dot(s) || detail::is_cross(s) || (is_opening(s.type()) && opens_by_hand(s));
@@ -292,7 +292,7 @@ Plan plan(RuleContext& ctx, const contracts::PlayerBreak& c) {
     if (c.slot < contracts::hotbar_first || c.slot >= contracts::offhand_slot) return std::unexpected(ErrorCode::invalid_slot);
     if (auto ok = check_loaded(ctx, c.pos); !ok) return std::unexpected(ok.error());
     const auto s = ctx.block(c.pos);
-    if (s.is_air() || s.is(BlockType::moving_piston) || s.is(BlockType::water)) return std::unexpected(ErrorCode::not_breakable);
+    if (s.is_air() || s.is(BlockType::moving_piston) || s.is(BlockType::water) || is_lava(s)) return std::unexpected(ErrorCode::not_breakable);
     const auto* inventory = ctx.peek_player(c.player);
     const auto tool = inventory ? inventory->slots[c.slot] : ItemStack{};
     return [&ctx, c, s, tool] {

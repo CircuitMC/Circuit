@@ -773,7 +773,11 @@ private:
         const BlockPos pos{static_cast<std::int32_t>(*x), static_cast<std::int32_t>(*y), static_cast<std::int32_t>(*z)};
         if (contracts::chunk_of(pos) != chunk) return std::unexpected(std::format("{}: scheduled tick outside its chunk", where));
         std::optional<BlockType> type;
-        if (fluid) type = id == "minecraft:water" || id == "minecraft:flowing_water" ? std::optional(BlockType::water) : std::nullopt;
+        // Lava, a registry block, ticks as one.
+        if (fluid)
+            type = id == "minecraft:water" || id == "minecraft:flowing_water" ? std::optional(BlockType::water)
+                 : id == "minecraft:lava" || id == "minecraft:flowing_lava"   ? std::optional(BlockType::other)
+                                                                              : std::nullopt;
         else type = content_.tick_type(id);
         if (!type) {
             unsupported(std::format("scheduled tick of {}", id));
@@ -1074,9 +1078,9 @@ private:
             // a stale tick leaves alone.
             const auto here = at(t->tick.pos);
             if (!fluid && here.type() != t->tick.block && t->tick.block == BlockType::other) continue;
-            tag.set("i", Tag::string(fluid ? (here.is(BlockType::water) && here.level() == 0 && !here.flag()
-                                                  ? "minecraft:water"
-                                                  : "minecraft:flowing_water")
+            const bool lava = t->tick.block == BlockType::other;
+            const bool source = lava ? gameplay::is_lava_source(here) : here.is(BlockType::water) && here.level() == 0 && !here.flag();
+            tag.set("i", Tag::string(fluid ? (lava ? (source ? "minecraft:lava" : "minecraft:flowing_lava") : (source ? "minecraft:water" : "minecraft:flowing_water"))
                                            : content_.block_name(here.type() == t->tick.block ? here : BlockState::of(t->tick.block))));
             tag.set("p", Tag::int_(t->tick.priority));
             tag.set("t", Tag::int_(static_cast<std::int32_t>(static_cast<std::int64_t>(t->tick.due) - static_cast<std::int64_t>(world_.time))));

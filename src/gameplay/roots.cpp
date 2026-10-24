@@ -6,11 +6,13 @@ using namespace detail;
 
 void run_scheduled_tick(RuleContext& ctx, TickList list, const ScheduledTick& tick) {
     const auto s = ctx.block(tick.pos);
-    const bool matches = s.type() == tick.block;
+    // A fluid tick of a registry block is lava's.
+    const bool matches = s.type() == tick.block && (list != TickList::fluid || tick.block != BlockType::other || is_lava(s));
     ctx.record(TraceKind::tick_executed, tick.pos, tick_code(list, tick.block), matches);
     if (!matches) return;
     if (list == TickList::fluid) {
         if (tick.block == BlockType::water) tick_water(ctx, tick.pos, s);
+        else if (tick.block == BlockType::other) tick_lava(ctx, tick.pos, s);
         return;
     }
     switch (tick.block) {

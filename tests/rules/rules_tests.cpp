@@ -2263,6 +2263,23 @@ int main() {
         require(s.at({2, 0, 0}).is(BlockType::other) && be && be->kind == BlockType::other, "the unnamed box is placed with its block entity");
     });
 
+    suite.run("players place blocks into lava but cannot break it", [] {
+        // As water: a block placed into a lava source replaces it; lava
+        // cannot be mined.
+        const circuit::contracts::PlayerKey alex{1, 2};
+        const auto lava = registry_block("lava", {{"level", "0"}});
+        Sim s;
+        auto build = floor(-1, 4, -1, 1);
+        build.push_back(place({0, 0, 0}, lava));
+        build.push_back(place({2, 0, 0}, lava));
+        s.tick(with_floor(build, {}));
+        s.tick({circuit::contracts::SetPlayerSlot{alex, 36, {items::stone, 1, 0}},
+                circuit::contracts::PlayerUse{alex, 36, {0, -1, 0}, D::up, D::north, D::north, false, true, 3, 3},
+                circuit::contracts::PlayerBreak{alex, {2, 0, 0}, true}});
+        require(s.at({0, 0, 0}) == blocks::stone(), "the stone replaced the lava");
+        require(s.at({2, 0, 0}) == lava, "the other source stays");
+    });
+
     suite.run("pistons move, destroy and leave blocks without rules by their push class", [] {
         using circuit::contracts::UseBlock;
         Sim s;

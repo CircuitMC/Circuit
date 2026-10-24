@@ -1262,6 +1262,23 @@ inline Scenario item_sorter_scenario() {
     }, 10};
 }
 
+// Lava spreading across a chunk border, meeting water and receding.
+inline Scenario lava_scenario() {
+    return {"lava_water", 41, 400, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 2)};
+        if (t == 2) {
+            std::vector<CommandBody> b;
+            for (int x = 8; x < 24; ++x)
+                for (int z = 8; z < 24; ++z) b.push_back(place({x, 0, z}, blocks::stone()));
+            return b;
+        }
+        if (t == 3) return {place({15, 1, 15}, registry_block("lava", {{"level", "0"}})), place({19, 1, 12}, blocks::water_source())};
+        if (t == 30) return {place({17, 1, 19}, registry_block("lava", {{"level", "0"}}))};
+        if (t == 150) return {place({15, 1, 15}, blocks::air())};
+        return {};
+    }};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
@@ -1269,7 +1286,7 @@ inline std::vector<Scenario> all_scenarios() {
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
             plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario(), rail_scenario(), minecart_rail_scenario(), minecart_meeting_scenario(), detector_rail_scenario(), coral_scenario(),
-            dispenser_scenario(), tnt_duper_scenario(), flying_engine_scenario(), item_sorter_scenario()};
+            dispenser_scenario(), tnt_duper_scenario(), flying_engine_scenario(), item_sorter_scenario(), lava_scenario()};
 }
 
 } // namespace circuit::test

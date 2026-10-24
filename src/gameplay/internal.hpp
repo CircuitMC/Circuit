@@ -412,6 +412,10 @@ void tick_comparator(RuleContext& ctx, BlockPos pos, BlockState state);
 void refresh_comparator(RuleContext& ctx, BlockPos pos, BlockState state);
 
 void tick_water(RuleContext& ctx, BlockPos pos, BlockState state);
+// Lava's fluid tick, and a change of it or beside it (hardening or a fluid
+// tick; nature.cpp).
+void tick_lava(RuleContext& ctx, BlockPos pos, BlockState state);
+void lava_changed(RuleContext& ctx, BlockPos pos, BlockState state);
 void wheat_random_tick(RuleContext& ctx, BlockPos pos, BlockState state, Rng& stream);
 
 constexpr std::uint64_t tick_code(TickList list, BlockType block) noexcept {

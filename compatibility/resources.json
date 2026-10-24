@@ -217,6 +217,20 @@
           "swimming, entity currents and waterlogging"
         ]
       },
+      "lava": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/lava_flow",
+          "trace/lava_water",
+          "trace/lava_edges",
+          "trace/fluid_sources"
+        ],
+        "deviations": [
+          "the Nether's lava, the fire it starts, entities in lava and lava buckets are not modeled"
+        ],
+        "note": "Spreads, falls, recedes and hardens into obsidian, cobblestone, stone and basalt as both official servers do"
+      },
       "wheat": {
         "impl": "partial",
         "evidence": "documented",

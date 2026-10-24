@@ -117,9 +117,10 @@ bool RegionContext::has_tick(TickList list, BlockPos pos, BlockType type) {
     auto* data = loaded_in_world(pos);
     if (!data) return false;
     if (owned(chunk_of(pos), *data).ticks[static_cast<int>(list)].contains({pos, type})) return true;
-    const bool draining = (list == TickList::block && phase_ == Phase::block_ticks)
-        || (list == TickList::fluid && phase_ == Phase::fluid_ticks);
-    return draining && pending_ticks.contains({pos, type});
+    // A block tick taken out to run this tick still counts; a fluid tick does
+    // not, so a fluid can be scheduled again before its taken tick runs
+    // (lava_flow).
+    return list == TickList::block && phase_ == Phase::block_ticks && pending_ticks.contains({pos, type});
 }
 
 void RegionContext::add_tick(TickList list, BlockPos pos, BlockType type, Tick due, std::int8_t priority, std::uint32_t seq) {

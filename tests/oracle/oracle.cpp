@@ -392,9 +392,12 @@ void Oracle::run_tick_list(DimensionId level, TickList list) {
     }
     lv.ticks[l] = std::move(rest);
     const auto phase = list == TickList::block ? Phase::block_ticks : Phase::fluid_ticks;
+    // A drained block tick still counts as scheduled until it runs; a drained
+    // fluid tick does not (lava_flow).
+    if (list == TickList::fluid)
+        for (const auto& t : due) lv.tick_index[l].erase({t.pos, t.block});
     for (std::size_t i = 0; i < due.size(); ++i) {
-        // A drained tick still counts as scheduled until it runs.
-        lv.tick_index[l].erase({due[i].pos, due[i].block});
+        if (list == TickList::block) lv.tick_index[l].erase({due[i].pos, due[i].block});
         ctx_->begin_root(phase, i);
         run_scheduled_tick(*ctx_, list, due[i]);
     }

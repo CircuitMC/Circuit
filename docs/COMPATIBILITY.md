@@ -47,6 +47,7 @@ Every block state of both versions is represented, with its official name and pr
 | `hopper` | `enabled`, `facing` | — |
 | `chest` | `facing`, `type` | `waterlogged` (stored, not simulated) |
 | `water` | `level` | — |
+| `lava` (a registry block with fluid rules) | `level` | — |
 | `wheat` | `age` | — |
 | `redstone_torch`, `redstone_wall_torch` | `facing`, `lit` | — |
 | `*_button` (every kind) | `face`, `facing`, `powered` | — |
@@ -74,7 +75,7 @@ Every block state of both versions is represented, with its official name and pr
 
 ### Technical machines
 
-Block and item registration do not provide behavior. Coral fans die without water and break, but coral blocks and plants are inert. Rails take their shapes and pass power, minecarts ride them and meet each other, and detector rails sense minecarts. Common building blocks such as cobblestone, dirt and oak logs are inert too, but fences, glass panes, iron bars and walls join their neighbors, stairs take corner shapes from the stairs beside them, players place full blocks, pillars, stairs, slabs and these connectors, and torches, lanterns, ladders, carpets, flowers, saplings, signs and banners stay only where they are supported and break when their support goes, as both official servers do; beds, signs, banners and heads are placed as players place them, a sign's text cannot be edited yet; sand, gravel and concrete powder fall, and TNT is primed and explodes (below). Survival inventories and container screens therefore do not constitute complete vanilla survival support.
+Block and item registration do not provide behavior. Coral fans die without water and break, but coral blocks and plants are inert. Rails take their shapes and pass power, minecarts ride them and meet each other, and detector rails sense minecarts. Common building blocks such as cobblestone, dirt and oak logs are inert too, but fences, glass panes, iron bars and walls join their neighbors, stairs take corner shapes from the stairs beside them, players place full blocks, pillars, stairs, slabs and these connectors, and torches, lanterns, ladders, carpets, flowers, saplings, signs and banners stay only where they are supported and break when their support goes, as both official servers do; beds, signs, banners and heads are placed as players place them, a sign's text cannot be edited yet; lava spreads, falls, recedes and hardens where it meets water or blue ice as in the overworld of both official servers; sand, gravel and concrete powder fall, and TNT is primed and explodes (below). Survival inventories and container screens therefore do not constitute complete vanilla survival support.
 
 | Mechanism or machine | Current support |
 | --- | --- |

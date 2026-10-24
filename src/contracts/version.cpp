@@ -94,9 +94,16 @@ constexpr std::array reference_v4_mechanisms{
         "in the registry."},
     MechanismEntry{"water", l0_exact, l0_exact, harness_trace,
         "5-tick fluid ticks; distance-limited spread in the order north, south, west, east, only toward the "
-        "nearest drops within reach when there are any; a new source between two sources on solid ground; "
-        "dust, levers, buttons, redstone torches, repeaters and comparators washed away with their drops "
-        "(water_channel, water_drop, water_washes, water_torch_button). Not covered: sources above flowing water and three sources beside falling water."},
+        "nearest drops within reach when there are any; a new source between two sources on solid ground "
+        "while waterSourceConversion is on; dust, levers, buttons, redstone torches, repeaters and comparators "
+        "washed away with their drops (water_channel, water_drop, water_washes, water_torch_button, fluid_sources). Not covered: sources above flowing water and three sources beside falling water."},
+    MechanismEntry{"lava", l0_exact, l0_exact, harness_trace,
+        "Lava as a registry block: 30-tick fluid ticks; water's spread, losing 2 levels a block and looking 2 blocks ahead for "
+        "drops, water below counting as one; sources only with lavaSourceConversion (water's with waterSourceConversion); "
+        "touching water above or beside it, waterlogged blocks too, a source becomes obsidian and flowing lava cobblestone; "
+        "flowing down into water it makes stone; on soul soil beside blue ice it becomes basalt; it destroys dust, levers, "
+        "buttons, redstone torches, repeaters and comparators without drops (lava_flow, lava_water, lava_edges, fluid_sources). "
+        "Not covered: the Nether's faster lava, fire, sounds, and entities in lava."},
     MechanismEntry{"random_ticks", l1_region_equivalent, l2_declared_deviation, documented_behavior,
         "Speed from the game rule per section; sections without blocks that react are skipped, as in the target "
         "version; positions and rule draws use a stream derived from (seed, tick, chunk, section) instead of a "
@@ -128,7 +135,7 @@ constexpr std::array reference_v4_mechanisms{
     MechanismEntry{"game_rules", l0_exact, l2_declared_deviation, controlled_experiment,
         "The version's game rules are world state, set by a logged command within the bounds both official "
         "servers enforce (booleans 0 or 1, spawnChunkRadius 0-32, other integers unbounded); random ticks "
-        "read randomTickSpeed. /gamerule gave the official replies for 45 commands on both versions. Gaps: the "
+        "read randomTickSpeed, water and lava waterSourceConversion and lavaSourceConversion (fluid_sources). /gamerule gave the official replies for 45 commands on both versions. Gaps: the "
         "other rules are kept but change nothing; compared through a protocol client, not harness traces."},
     MechanismEntry{"day_time", l0_exact, l2_declared_deviation, controlled_experiment,
         "The world's day time advances by one after each tick's commands while doDaylightCycle is on; a "
