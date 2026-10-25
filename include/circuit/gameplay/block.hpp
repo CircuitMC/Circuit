@@ -360,6 +360,11 @@ constexpr std::uint8_t container_size(BlockType t) noexcept {
 // against both official servers for every state): sections without such
 // states are not random-ticked.
 bool takes_random_ticks(BlockState s);
+// Whether a state makes its section random-ticked: those that take random
+// ticks, and any that holds water, which does nothing in its own (both
+// official servers, 1.21.8: the picks advance through sections that hold
+// only water, waterlogged blocks included).
+bool ticks_section_randomly(BlockState s);
 // Full collision cell for item entities. Blocks without rules of their own
 // are solid when they have any collision shape (cell-level approximation).
 inline bool is_solid(BlockState s) noexcept {

@@ -71,6 +71,16 @@ bool takes_random_ticks(BlockState s) {
     return state && ticking_states()[*state];
 }
 
+bool ticks_section_randomly(BlockState s) {
+    if (!s.is(BlockType::other)) return takes_random_ticks(s) || detail::holds_water_fluid(s);
+    static const std::vector<bool> out = [] {
+        std::vector<bool> v(registry::state_count() + 1, false);
+        for (std::uint32_t st = 1; st <= registry::state_count(); ++st) v[st] = ticks(st) || detail::holds_water_fluid(BlockState::registered(st));
+        return v;
+    }();
+    return out[s.registry_state()];
+}
+
 // The order (both official servers, fitted to every pick of farmland in
 // forced areas of 4 and 16 chunks, random_ticks): the chunks are kept in an
 // open hash table of their keys (x in the low 32 bits, z in the high),
@@ -124,10 +134,11 @@ std::vector<ChunkPos> random_tick_order(std::vector<ChunkPos> chunks) {
 // randomTickSpeed n, n precipitation checks, each a nextInt(48) of the level
 // random that advances the position generator when it is 0 (snow and ice
 // forming, cauldrons filling and lightning are not modeled), then n picks in
-// each section that holds blocks taking random ticks, from the bottom up: the
-// generator's next value v gives x = v >> 2 & 15, z = v >> 10 & 15 and
-// y = v >> 18 & 15 in the section, and the block there takes its random tick
-// when it is one that takes them.
+// each section that holds blocks taking random ticks or water, from the
+// bottom up: the generator's next value v gives x = v >> 2 & 15,
+// z = v >> 10 & 15 and y = v >> 18 & 15 in the section, and the block there
+// takes its random tick when it is one that takes them (crops_growth,
+// stems_growth, grass_spread; crops.cpp, grass.cpp, farmland.cpp).
 void run_random_ticks(RuleContext& ctx, ChunkPos chunk, std::span<const std::int32_t> sections) {
     const auto speed = ctx.game_rule("randomTickSpeed");
     if (speed <= 0) return;
@@ -141,7 +152,9 @@ void run_random_ticks(RuleContext& ctx, ChunkPos chunk, std::span<const std::int
                                chunk.z * 16 + static_cast<std::int32_t>((v >> 8) & 15)};
             const auto s = ctx.block(pos);
             if (!takes_random_ticks(s)) continue;
-            if (s.is(BlockType::wheat)) detail::wheat_random_tick(ctx, pos, s);
+            if (detail::is_crop(s)) detail::crop_random_tick(ctx, pos, s);
+            else if (detail::is_stem(s)) detail::stem_random_tick(ctx, pos, s);
+            else if (detail::is_spreading_dirt(s)) detail::spreading_dirt_random_tick(ctx, pos, s);
             else if (detail::is_farmland(s)) detail::farmland_random_tick(ctx, pos, s);
         }
     }

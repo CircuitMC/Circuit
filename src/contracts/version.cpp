@@ -124,18 +124,32 @@ constexpr std::array reference_v4_mechanisms{
         "As the official 1.21.8 server, fitted to every pick of farmland layers: chunk by chunk in the order of an open "
         "hash table of their keys (chunk 0, 0 first), randomTickSpeed precipitation checks from the level random (each "
         "hit advancing the position generator), then randomTickSpeed positions per section holding blocks that take "
-        "random ticks, from the bottom up, from the level's generator v -> 3v + 1013904223; which states take random "
-        "ticks as both official servers report for every state (tests/fixtures/collision/random-ticks-*.txt); farmland "
-        "dries, is wetted by water and turns to dirt unless a crop or stem keeps it (random_ticks_farmland, "
-        "random_ticks_chunks, random_ticks_sections). Random ticks run serially. Gaps: the table's order for chunks "
-        "that start ticking at different times is Circuit's model (fitted to forced areas); 1.21.4 runs them only near "
-        "players, which the harness lacks, so its order is not compared; random ticks of blocks other than farmland "
-        "and wheat (grass, leaves, crops, lava, copper and the rest) do nothing, where the official servers draw and "
-        "change them; precipitation effects (snow, ice, cauldrons, lightning) are not modeled."},
-    MechanismEntry{"wheat", l0_exact, l2_declared_deviation, documented_behavior,
-        "Grows only with light 9 or more at its own cell; an update that finds no farmland below breaks it with its "
-        "drops (loot_rolls). Gap: grows with probability 1/3 per random tick from the level random, ignoring "
-        "hydration and neighbors (not the target versions' odds)."},
+        "random ticks or water, from the bottom up, from the level's generator v -> 3v + 1013904223; which states take "
+        "random ticks as both official servers report for every state (tests/fixtures/collision/random-ticks-*.txt); "
+        "farmland dries, is wetted by water and turns to dirt unless a crop or stem keeps it (random_ticks_farmland, "
+        "random_ticks_chunks, random_ticks_sections); crops, stems, grass blocks and mycelium (crops, spreading). "
+        "Random ticks run serially. Gaps: the table's order for chunks that start ticking at different times is "
+        "Circuit's model (fitted to forced areas); 1.21.4 runs them only near players, which the harness lacks, so its "
+        "order is not compared; random ticks of other blocks (leaves, saplings, sugar cane, cacti, lava, copper and the "
+        "rest) do nothing, where the official servers draw and change them; precipitation effects (snow, ice, "
+        "cauldrons, lightning) are not modeled."},
+    MechanismEntry{"crops", l0_exact, l2_declared_deviation, harness_trace,
+        "As the official 1.21.8 server in random ticks (crops_growth, stems_growth): wheat, carrots, potatoes, beetroots, "
+        "torchflower crops and melon and pumpkin stems grow with light 9 or more at their cell, by nextInt((int)(25 / f) "
+        "+ 1) == 0 of the level random, f from the farmland under and around them (moist or dry) and halved by the same "
+        "crop beside them in both directions or on a diagonal; beetroots and torchflower crops first skip one tick in "
+        "three; a torchflower crop past age 1 becomes a torchflower; a ripe stem draws a side and sets its fruit there "
+        "on air over farmland or dirt, becoming the attached stem, which stands ripe again when the fruit goes. An "
+        "update that finds no farmland below breaks them with their drops (loot_rolls). Gaps: crops do not break in "
+        "darkness; bone meal and pitcher crops are not modeled; 1.21.4's growth is not compared (its random ticks run "
+        "only near players)."},
+    MechanismEntry{"spreading", l0_exact, l2_declared_deviation, harness_trace,
+        "As the official 1.21.8 server in random ticks (grass_spread): a grass block or mycelium under a block that its "
+        "light cannot pass (stone, bottom slabs and stairs, dirt paths, two snow layers; not glass, top slabs, leaves, "
+        "carpets or one snow layer) or under water becomes dirt; with light 9 or more above it tries four positions in "
+        "x +-1, y -3..+1, z +-1, three draws each, turning dirt that could hold it and has no water above into the same "
+        "block, snowy under snow. Gaps: nylium, moss and sculk do not spread; 1.21.4's spreading is not compared (its "
+        "random ticks run only near players)."},
     MechanismEntry{"item_entity", l0_exact, l2_declared_deviation, harness_trace,
         "Double-precision gravity, drag, bouncing and collision with every state's collision boxes; items at "
         "rest move every fourth tick; currents and buoyancy in water; merging with the target versions' timing, "

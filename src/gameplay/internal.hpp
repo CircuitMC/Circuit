@@ -507,7 +507,17 @@ contracts::Result<std::function<void()>> plan_use_item(RuleContext& ctx, const c
 // tick; nature.cpp).
 void tick_lava(RuleContext& ctx, BlockPos pos, BlockState state);
 void lava_changed(RuleContext& ctx, BlockPos pos, BlockState state);
-void wheat_random_tick(RuleContext& ctx, BlockPos pos, BlockState state);
+// Grass blocks and mycelium (grass.cpp).
+bool is_spreading_dirt(BlockState s);
+void spreading_dirt_random_tick(RuleContext& ctx, BlockPos pos, BlockState s);
+// Crops and stems (crops.cpp).
+bool is_crop(BlockState s);
+void crop_random_tick(RuleContext& ctx, BlockPos pos, BlockState s);
+bool is_stem(BlockState s);
+void stem_random_tick(RuleContext& ctx, BlockPos pos, BlockState s);
+bool is_attached_stem(BlockState s);
+// An attached stem whose fruit is gone becomes the ripe stem (true).
+bool attached_stem_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d);
 
 constexpr std::uint64_t tick_code(TickList list, BlockType block) noexcept {
     return (static_cast<std::uint64_t>(list) << 8) | static_cast<std::uint64_t>(block);

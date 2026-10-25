@@ -1173,7 +1173,7 @@ void Engine::Impl::restore(const WorldDump& state) {
             auto& section = chunk.sections[static_cast<std::size_t>((pos.y - shape.min_y) >> 4)];
             if (!section) section = std::make_shared<Section>();
             section->blocks[contracts::section_local_index(pos)] = *s;
-            if (gameplay::takes_random_ticks(*s)) ++section->random_ticking;
+            if (gameplay::ticks_section_randomly(*s)) ++section->random_ticking;
         }
         for (const auto& [pos, be] : l.block_entities) {
             auto& chunk = column(pos);

@@ -1407,9 +1407,47 @@ int main() {
                     ++grown;
                     if (std::abs(x - 8) + std::abs(z - 8) > 6) ++far;
                 }
-            require(lit ? grown > 20 : grown == 0, std::format("{}: {} crops grew", lit ? "lit" : "dark", grown));
+            // Dry farmland and neighbors on all sides: one in 13 a random tick.
+            require(lit ? grown > 10 : grown == 0, std::format("{}: {} crops grew", lit ? "lit" : "dark", grown));
             require(far == 0, std::format("{} crops grew with light below 9", far));
         }
+    });
+
+    suite.run("stems set their fruit, and grass spreads and dies, in random ticks", [] {
+        Sim s(bundle(), 9, 1);
+        const auto name = [&](BlockPos p) { return circuit::gameplay::block_notation(s.at(p)); };
+        std::vector<CommandBody> build;
+        for (int x = 0; x < 16; ++x)
+            for (int z = 0; z < 16; ++z) build.push_back(place({x, -1, z}, blocks::stone()));
+        // A ripe stem on moist farmland, free only to the east; water keeps
+        // the farmland moist. A torchflower crop about to flower.
+        for (int x = 3; x <= 5; ++x)
+            for (int z = 3; z <= 5; ++z) build.push_back(place({x, -1, z}, registry_block("farmland", {{"moisture", "7"}})));
+        build.push_back(place({7, -1, 4}, blocks::water_source()));
+        build.push_back(place({8, -1, 8}, registry_block("farmland", {{"moisture", "7"}})));
+        for (const BlockPos p : {BlockPos{3, 0, 4}, BlockPos{4, 0, 3}, BlockPos{4, 0, 5}}) build.push_back(place(p, blocks::stone()));
+        // A grass block among dirt, and one under stone.
+        for (int x = 9; x <= 13; ++x)
+            for (int z = 9; z <= 13; ++z) build.push_back(place({x, -1, z}, registry_block("dirt")));
+        build.push_back(place({11, -1, 11}, registry_block("grass_block")));
+        build.push_back(place({2, -1, 12}, registry_block("grass_block")));
+        build.push_back(place({2, 0, 12}, blocks::stone()));
+        s.tick(build);
+        s.tick({place({4, 0, 4}, registry_block("melon_stem", {{"age", "7"}})), place({8, 0, 8}, registry_block("torchflower_crop", {{"age", "1"}})),
+                SetGameRule{"randomTickSpeed", 1000}});
+        s.until(s.oracle.time() + 200);
+        require(name({5, 0, 4}) == "minecraft:melon" && name({4, 0, 4}) == "minecraft:attached_melon_stem[facing=east]",
+                std::format("the fruit: {}, {}", name({5, 0, 4}), name({4, 0, 4})));
+        require(name({8, 0, 8}) == "minecraft:torchflower", "the crop flowers: " + name({8, 0, 8}));
+        require(name({2, -1, 12}) == "minecraft:dirt", "grass under stone dies: " + name({2, -1, 12}));
+        int grass = 0;
+        for (int x = 9; x <= 13; ++x)
+            for (int z = 9; z <= 13; ++z) grass += name({x, -1, z}) == "minecraft:grass_block[snowy=false]" ? 1 : 0;
+        require(grass > 1, std::format("grass spreads: {} blocks", grass));
+        // The fruit taken, the stem stands ripe again.
+        s.tick({SetGameRule{"randomTickSpeed", 0}});
+        s.tick({place({5, 0, 4}, blocks::air())});
+        require(name({4, 0, 4}) == "minecraft:melon_stem[age=7]", "the stem without its fruit: " + name({4, 0, 4}));
     });
 
     suite.run("idle levels and random tick ranges", [] {

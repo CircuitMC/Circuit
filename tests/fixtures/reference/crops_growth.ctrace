@@ -1,0 +1,1612 @@
+circuit-trace 2
+title Crops growing in random ticks by their farmland, neighbors and light
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v12
+mechanisms random_ticks crops
+area 0 0 0 15 15 15
+ticks 200
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 100
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 0 0 10 minecraft:stone
+at 0 set 0 0 11 minecraft:stone
+at 0 set 0 0 12 minecraft:stone
+at 0 set 0 0 13 minecraft:stone
+at 0 set 0 0 14 minecraft:stone
+at 0 set 0 0 15 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:stone
+at 0 set 1 0 11 minecraft:stone
+at 0 set 1 0 12 minecraft:stone
+at 0 set 1 0 13 minecraft:stone
+at 0 set 1 0 14 minecraft:stone
+at 0 set 1 0 15 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 2 0 10 minecraft:stone
+at 0 set 2 0 11 minecraft:stone
+at 0 set 2 0 12 minecraft:stone
+at 0 set 2 0 13 minecraft:stone
+at 0 set 2 0 14 minecraft:stone
+at 0 set 2 0 15 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 3 0 10 minecraft:stone
+at 0 set 3 0 11 minecraft:stone
+at 0 set 3 0 12 minecraft:stone
+at 0 set 3 0 13 minecraft:stone
+at 0 set 3 0 14 minecraft:stone
+at 0 set 3 0 15 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 4 0 11 minecraft:stone
+at 0 set 4 0 12 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 4 0 14 minecraft:stone
+at 0 set 4 0 15 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 5 0 10 minecraft:stone
+at 0 set 5 0 11 minecraft:stone
+at 0 set 5 0 12 minecraft:stone
+at 0 set 5 0 13 minecraft:stone
+at 0 set 5 0 14 minecraft:stone
+at 0 set 5 0 15 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 6 0 10 minecraft:stone
+at 0 set 6 0 11 minecraft:stone
+at 0 set 6 0 12 minecraft:stone
+at 0 set 6 0 13 minecraft:stone
+at 0 set 6 0 14 minecraft:stone
+at 0 set 6 0 15 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 7 0 10 minecraft:stone
+at 0 set 7 0 11 minecraft:stone
+at 0 set 7 0 12 minecraft:stone
+at 0 set 7 0 13 minecraft:stone
+at 0 set 7 0 14 minecraft:stone
+at 0 set 7 0 15 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 8 0 10 minecraft:stone
+at 0 set 8 0 11 minecraft:stone
+at 0 set 8 0 12 minecraft:stone
+at 0 set 8 0 13 minecraft:stone
+at 0 set 8 0 14 minecraft:stone
+at 0 set 8 0 15 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 9 0 10 minecraft:stone
+at 0 set 9 0 11 minecraft:stone
+at 0 set 9 0 12 minecraft:stone
+at 0 set 9 0 13 minecraft:stone
+at 0 set 9 0 14 minecraft:stone
+at 0 set 9 0 15 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 10 0 10 minecraft:stone
+at 0 set 10 0 11 minecraft:stone
+at 0 set 10 0 12 minecraft:stone
+at 0 set 10 0 13 minecraft:stone
+at 0 set 10 0 14 minecraft:stone
+at 0 set 10 0 15 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 11 0 10 minecraft:stone
+at 0 set 11 0 11 minecraft:stone
+at 0 set 11 0 12 minecraft:stone
+at 0 set 11 0 13 minecraft:stone
+at 0 set 11 0 14 minecraft:stone
+at 0 set 11 0 15 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 12 0 8 minecraft:stone
+at 0 set 12 0 9 minecraft:stone
+at 0 set 12 0 10 minecraft:stone
+at 0 set 12 0 11 minecraft:stone
+at 0 set 12 0 12 minecraft:stone
+at 0 set 12 0 13 minecraft:stone
+at 0 set 12 0 14 minecraft:stone
+at 0 set 12 0 15 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 13 0 8 minecraft:stone
+at 0 set 13 0 9 minecraft:stone
+at 0 set 13 0 10 minecraft:stone
+at 0 set 13 0 11 minecraft:stone
+at 0 set 13 0 12 minecraft:stone
+at 0 set 13 0 13 minecraft:stone
+at 0 set 13 0 14 minecraft:stone
+at 0 set 13 0 15 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 14 0 8 minecraft:stone
+at 0 set 14 0 9 minecraft:stone
+at 0 set 14 0 10 minecraft:stone
+at 0 set 14 0 11 minecraft:stone
+at 0 set 14 0 12 minecraft:stone
+at 0 set 14 0 13 minecraft:stone
+at 0 set 14 0 14 minecraft:stone
+at 0 set 14 0 15 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 15 0 8 minecraft:stone
+at 0 set 15 0 9 minecraft:stone
+at 0 set 15 0 10 minecraft:stone
+at 0 set 15 0 11 minecraft:stone
+at 0 set 15 0 12 minecraft:stone
+at 0 set 15 0 13 minecraft:stone
+at 0 set 15 0 14 minecraft:stone
+at 0 set 15 0 15 minecraft:stone
+draws 0 random_ticks level 900
+
+at 1 set 0 1 0 minecraft:farmland[moisture=7]
+at 1 set 0 1 1 minecraft:farmland[moisture=7]
+at 1 set 0 1 2 minecraft:farmland[moisture=7]
+at 1 set 0 1 3 minecraft:farmland[moisture=7]
+at 1 set 0 1 4 minecraft:farmland[moisture=7]
+at 1 set 1 1 0 minecraft:farmland[moisture=7]
+at 1 set 1 1 1 minecraft:farmland[moisture=7]
+at 1 set 1 1 2 minecraft:farmland[moisture=7]
+at 1 set 1 1 3 minecraft:farmland[moisture=7]
+at 1 set 1 1 4 minecraft:farmland[moisture=7]
+at 1 set 2 1 0 minecraft:farmland[moisture=7]
+at 1 set 2 1 1 minecraft:farmland[moisture=7]
+at 1 set 2 1 2 minecraft:farmland[moisture=7]
+at 1 set 2 1 3 minecraft:farmland[moisture=7]
+at 1 set 2 1 4 minecraft:farmland[moisture=7]
+at 1 set 3 1 0 minecraft:farmland[moisture=7]
+at 1 set 3 1 1 minecraft:farmland[moisture=7]
+at 1 set 3 1 2 minecraft:farmland[moisture=7]
+at 1 set 3 1 3 minecraft:farmland[moisture=7]
+at 1 set 3 1 4 minecraft:farmland[moisture=7]
+at 1 set 4 1 0 minecraft:farmland[moisture=7]
+at 1 set 4 1 1 minecraft:farmland[moisture=7]
+at 1 set 4 1 2 minecraft:farmland[moisture=7]
+at 1 set 4 1 3 minecraft:farmland[moisture=7]
+at 1 set 4 1 4 minecraft:farmland[moisture=7]
+at 1 set 6 1 0 minecraft:farmland[moisture=7]
+at 1 set 6 1 2 minecraft:farmland[moisture=7]
+at 1 set 6 1 4 minecraft:farmland[moisture=7]
+at 1 set 8 1 0 minecraft:farmland[moisture=7]
+at 1 set 8 1 2 minecraft:farmland[moisture=7]
+at 1 set 8 1 4 minecraft:farmland[moisture=7]
+at 1 set 10 1 0 minecraft:farmland[moisture=7]
+at 1 set 10 1 2 minecraft:farmland[moisture=7]
+at 1 set 10 1 4 minecraft:farmland[moisture=7]
+at 1 set 12 1 0 minecraft:farmland[moisture=7]
+at 1 set 12 1 2 minecraft:farmland[moisture=7]
+at 1 set 12 1 4 minecraft:farmland[moisture=7]
+at 1 set 14 1 0 minecraft:farmland[moisture=7]
+at 1 set 14 1 2 minecraft:farmland[moisture=7]
+at 1 set 14 1 4 minecraft:farmland[moisture=7]
+at 1 set 7 1 0 minecraft:farmland[moisture=7]
+at 1 set 7 1 2 minecraft:farmland[moisture=7]
+at 1 set 7 1 4 minecraft:farmland[moisture=7]
+at 1 set 9 1 0 minecraft:farmland[moisture=7]
+at 1 set 9 1 2 minecraft:farmland[moisture=7]
+at 1 set 9 1 4 minecraft:farmland[moisture=7]
+at 1 set 11 1 0 minecraft:farmland[moisture=7]
+at 1 set 11 1 2 minecraft:farmland[moisture=7]
+at 1 set 11 1 4 minecraft:farmland[moisture=7]
+at 1 set 13 1 0 minecraft:farmland[moisture=7]
+at 1 set 13 1 2 minecraft:farmland[moisture=7]
+at 1 set 13 1 4 minecraft:farmland[moisture=7]
+at 1 set 15 1 0 minecraft:farmland[moisture=7]
+at 1 set 15 1 2 minecraft:farmland[moisture=7]
+at 1 set 15 1 4 minecraft:farmland[moisture=7]
+at 1 set 0 1 6 minecraft:farmland[moisture=7]
+at 1 set 0 1 7 minecraft:farmland[moisture=7]
+at 1 set 0 1 8 minecraft:farmland[moisture=7]
+at 1 set 0 1 9 minecraft:farmland[moisture=7]
+at 1 set 1 1 6 minecraft:farmland[moisture=7]
+at 1 set 1 1 7 minecraft:farmland[moisture=7]
+at 1 set 1 1 8 minecraft:farmland[moisture=7]
+at 1 set 1 1 9 minecraft:farmland[moisture=7]
+at 1 set 2 1 6 minecraft:farmland[moisture=7]
+at 1 set 2 1 7 minecraft:farmland[moisture=7]
+at 1 set 2 1 8 minecraft:farmland[moisture=7]
+at 1 set 2 1 9 minecraft:farmland[moisture=7]
+at 1 set 3 1 6 minecraft:farmland[moisture=7]
+at 1 set 3 1 7 minecraft:farmland[moisture=7]
+at 1 set 3 1 8 minecraft:farmland[moisture=7]
+at 1 set 3 1 9 minecraft:farmland[moisture=7]
+at 1 set 4 1 6 minecraft:farmland[moisture=7]
+at 1 set 4 1 7 minecraft:farmland[moisture=7]
+at 1 set 4 1 8 minecraft:farmland[moisture=7]
+at 1 set 4 1 9 minecraft:farmland[moisture=7]
+at 1 set 5 1 6 minecraft:farmland[moisture=7]
+at 1 set 5 1 7 minecraft:farmland[moisture=7]
+at 1 set 5 1 8 minecraft:farmland[moisture=7]
+at 1 set 5 1 9 minecraft:farmland[moisture=7]
+at 1 set 7 1 6 minecraft:farmland[moisture=0]
+at 1 set 7 1 7 minecraft:farmland[moisture=0]
+at 1 set 7 1 8 minecraft:farmland[moisture=0]
+at 1 set 7 1 9 minecraft:farmland[moisture=0]
+at 1 set 8 1 6 minecraft:farmland[moisture=0]
+at 1 set 8 1 7 minecraft:farmland[moisture=0]
+at 1 set 8 1 8 minecraft:farmland[moisture=0]
+at 1 set 8 1 9 minecraft:farmland[moisture=0]
+at 1 set 9 1 6 minecraft:farmland[moisture=0]
+at 1 set 9 1 7 minecraft:farmland[moisture=0]
+at 1 set 9 1 8 minecraft:farmland[moisture=0]
+at 1 set 9 1 9 minecraft:farmland[moisture=0]
+at 1 set 10 1 6 minecraft:farmland[moisture=0]
+at 1 set 10 1 7 minecraft:farmland[moisture=0]
+at 1 set 10 1 8 minecraft:farmland[moisture=0]
+at 1 set 10 1 9 minecraft:farmland[moisture=0]
+at 1 set 11 1 6 minecraft:farmland[moisture=0]
+at 1 set 11 1 7 minecraft:farmland[moisture=0]
+at 1 set 11 1 8 minecraft:farmland[moisture=0]
+at 1 set 11 1 9 minecraft:farmland[moisture=0]
+at 1 set 12 1 6 minecraft:farmland[moisture=7]
+at 1 set 12 1 7 minecraft:farmland[moisture=7]
+at 1 set 12 1 8 minecraft:farmland[moisture=7]
+at 1 set 12 1 9 minecraft:farmland[moisture=7]
+at 1 set 13 1 6 minecraft:farmland[moisture=7]
+at 1 set 13 1 7 minecraft:farmland[moisture=7]
+at 1 set 13 1 8 minecraft:farmland[moisture=7]
+at 1 set 13 1 9 minecraft:farmland[moisture=7]
+at 1 set 14 1 6 minecraft:farmland[moisture=7]
+at 1 set 14 1 7 minecraft:farmland[moisture=7]
+at 1 set 14 1 8 minecraft:farmland[moisture=7]
+at 1 set 14 1 9 minecraft:farmland[moisture=7]
+at 1 set 15 1 6 minecraft:farmland[moisture=7]
+at 1 set 15 1 7 minecraft:farmland[moisture=7]
+at 1 set 15 1 8 minecraft:farmland[moisture=7]
+at 1 set 15 1 9 minecraft:farmland[moisture=7]
+at 1 set 1 1 12 minecraft:farmland[moisture=7]
+at 1 set 4 1 12 minecraft:farmland[moisture=7]
+at 1 set 7 1 12 minecraft:farmland[moisture=7]
+at 1 set 5 1 2 minecraft:water[level=0]
+at 1 set 5 1 1 minecraft:stone
+at 1 set 5 1 3 minecraft:stone
+change 1 commands 0 1 0 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 0 1 1 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 0 1 2 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 0 1 3 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 0 1 4 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 1 1 0 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 1 1 1 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 1 1 2 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 1 1 3 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 1 1 4 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 2 1 0 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 2 1 1 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 2 1 2 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 2 1 3 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 2 1 4 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 3 1 0 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 3 1 1 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 3 1 2 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 3 1 3 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 3 1 4 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 4 1 0 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 4 1 1 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 4 1 2 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 4 1 3 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 4 1 4 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 6 1 0 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 6 1 2 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 6 1 4 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 8 1 0 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 8 1 2 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 8 1 4 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 10 1 0 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 10 1 2 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 10 1 4 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 12 1 0 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 12 1 2 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 12 1 4 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 14 1 0 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 14 1 2 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 14 1 4 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 7 1 0 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 7 1 2 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 7 1 4 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 9 1 0 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 9 1 2 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 9 1 4 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 11 1 0 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 11 1 2 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 11 1 4 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 13 1 0 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 13 1 2 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 13 1 4 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 15 1 0 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 15 1 2 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 15 1 4 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 0 1 6 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 0 1 7 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 0 1 8 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 0 1 9 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 1 1 6 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 1 1 7 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 1 1 8 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 1 1 9 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 2 1 6 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 2 1 7 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 2 1 8 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 2 1 9 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 3 1 6 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 3 1 7 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 3 1 8 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 3 1 9 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 4 1 6 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 4 1 7 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 4 1 8 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 4 1 9 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 5 1 6 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 5 1 7 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 5 1 8 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 5 1 9 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 7 1 6 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 7 1 7 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 7 1 8 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 7 1 9 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 8 1 6 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 8 1 7 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 8 1 8 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 8 1 9 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 9 1 6 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 9 1 7 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 9 1 8 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 9 1 9 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 10 1 6 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 10 1 7 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 10 1 8 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 10 1 9 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 11 1 6 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 11 1 7 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 11 1 8 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 11 1 9 minecraft:air minecraft:farmland[moisture=0]
+change 1 commands 12 1 6 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 12 1 7 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 12 1 8 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 12 1 9 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 13 1 6 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 13 1 7 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 13 1 8 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 13 1 9 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 14 1 6 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 14 1 7 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 14 1 8 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 14 1 9 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 15 1 6 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 15 1 7 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 15 1 8 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 15 1 9 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 1 1 12 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 4 1 12 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 7 1 12 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 5 1 2 minecraft:air minecraft:water[level=0]
+change 1 commands 5 1 1 minecraft:air minecraft:stone
+change 1 commands 5 1 3 minecraft:air minecraft:stone
+change 1 random_ticks 0 1 6 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 1 random_ticks 15 1 4 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 1 random_ticks level 900
+
+at 2 set 0 2 0 minecraft:wheat[age=0]
+at 2 set 0 2 1 minecraft:wheat[age=0]
+at 2 set 0 2 2 minecraft:wheat[age=0]
+at 2 set 0 2 3 minecraft:wheat[age=0]
+at 2 set 0 2 4 minecraft:wheat[age=0]
+at 2 set 1 2 0 minecraft:wheat[age=0]
+at 2 set 1 2 1 minecraft:wheat[age=0]
+at 2 set 1 2 2 minecraft:wheat[age=0]
+at 2 set 1 2 3 minecraft:wheat[age=0]
+at 2 set 1 2 4 minecraft:wheat[age=0]
+at 2 set 2 2 0 minecraft:wheat[age=0]
+at 2 set 2 2 1 minecraft:wheat[age=0]
+at 2 set 2 2 2 minecraft:wheat[age=0]
+at 2 set 2 2 3 minecraft:wheat[age=0]
+at 2 set 2 2 4 minecraft:wheat[age=0]
+at 2 set 3 2 0 minecraft:wheat[age=0]
+at 2 set 3 2 1 minecraft:wheat[age=0]
+at 2 set 3 2 2 minecraft:wheat[age=0]
+at 2 set 3 2 3 minecraft:wheat[age=0]
+at 2 set 3 2 4 minecraft:wheat[age=0]
+at 2 set 4 2 0 minecraft:wheat[age=0]
+at 2 set 4 2 1 minecraft:wheat[age=0]
+at 2 set 4 2 2 minecraft:wheat[age=0]
+at 2 set 4 2 3 minecraft:wheat[age=0]
+at 2 set 4 2 4 minecraft:wheat[age=0]
+at 2 set 6 2 0 minecraft:carrots[age=0]
+at 2 set 6 2 2 minecraft:carrots[age=0]
+at 2 set 6 2 4 minecraft:carrots[age=0]
+at 2 set 8 2 0 minecraft:potatoes[age=0]
+at 2 set 8 2 2 minecraft:potatoes[age=0]
+at 2 set 8 2 4 minecraft:potatoes[age=0]
+at 2 set 10 2 0 minecraft:wheat[age=0]
+at 2 set 10 2 2 minecraft:wheat[age=0]
+at 2 set 10 2 4 minecraft:wheat[age=0]
+at 2 set 12 2 0 minecraft:carrots[age=0]
+at 2 set 12 2 2 minecraft:carrots[age=0]
+at 2 set 12 2 4 minecraft:carrots[age=0]
+at 2 set 14 2 0 minecraft:potatoes[age=0]
+at 2 set 14 2 2 minecraft:potatoes[age=0]
+at 2 set 14 2 4 minecraft:potatoes[age=0]
+at 2 set 0 2 6 minecraft:wheat[age=0]
+at 2 set 0 2 7 minecraft:carrots[age=0]
+at 2 set 0 2 8 minecraft:wheat[age=0]
+at 2 set 0 2 9 minecraft:carrots[age=0]
+at 2 set 1 2 6 minecraft:wheat[age=0]
+at 2 set 1 2 7 minecraft:carrots[age=0]
+at 2 set 1 2 8 minecraft:wheat[age=0]
+at 2 set 1 2 9 minecraft:carrots[age=0]
+at 2 set 2 2 6 minecraft:wheat[age=0]
+at 2 set 2 2 7 minecraft:carrots[age=0]
+at 2 set 2 2 8 minecraft:wheat[age=0]
+at 2 set 2 2 9 minecraft:carrots[age=0]
+at 2 set 3 2 6 minecraft:wheat[age=0]
+at 2 set 3 2 7 minecraft:carrots[age=0]
+at 2 set 3 2 8 minecraft:wheat[age=0]
+at 2 set 3 2 9 minecraft:carrots[age=0]
+at 2 set 4 2 6 minecraft:wheat[age=0]
+at 2 set 4 2 7 minecraft:carrots[age=0]
+at 2 set 4 2 8 minecraft:wheat[age=0]
+at 2 set 4 2 9 minecraft:carrots[age=0]
+at 2 set 5 2 6 minecraft:wheat[age=0]
+at 2 set 5 2 7 minecraft:carrots[age=0]
+at 2 set 5 2 8 minecraft:wheat[age=0]
+at 2 set 5 2 9 minecraft:carrots[age=0]
+at 2 set 7 2 6 minecraft:potatoes[age=0]
+at 2 set 7 2 7 minecraft:potatoes[age=0]
+at 2 set 7 2 8 minecraft:potatoes[age=0]
+at 2 set 7 2 9 minecraft:potatoes[age=0]
+at 2 set 8 2 6 minecraft:potatoes[age=0]
+at 2 set 8 2 7 minecraft:potatoes[age=0]
+at 2 set 8 2 8 minecraft:potatoes[age=0]
+at 2 set 8 2 9 minecraft:potatoes[age=0]
+at 2 set 9 2 6 minecraft:potatoes[age=0]
+at 2 set 9 2 7 minecraft:potatoes[age=0]
+at 2 set 9 2 8 minecraft:potatoes[age=0]
+at 2 set 9 2 9 minecraft:potatoes[age=0]
+at 2 set 10 2 6 minecraft:potatoes[age=0]
+at 2 set 10 2 7 minecraft:potatoes[age=0]
+at 2 set 10 2 8 minecraft:potatoes[age=0]
+at 2 set 10 2 9 minecraft:potatoes[age=0]
+at 2 set 11 2 6 minecraft:potatoes[age=0]
+at 2 set 11 2 7 minecraft:potatoes[age=0]
+at 2 set 11 2 8 minecraft:potatoes[age=0]
+at 2 set 11 2 9 minecraft:potatoes[age=0]
+at 2 set 12 2 6 minecraft:beetroots[age=0]
+at 2 set 12 2 7 minecraft:beetroots[age=0]
+at 2 set 12 2 8 minecraft:beetroots[age=0]
+at 2 set 12 2 9 minecraft:beetroots[age=0]
+at 2 set 13 2 6 minecraft:beetroots[age=0]
+at 2 set 13 2 7 minecraft:beetroots[age=0]
+at 2 set 13 2 8 minecraft:beetroots[age=0]
+at 2 set 13 2 9 minecraft:beetroots[age=0]
+at 2 set 14 2 6 minecraft:torchflower_crop[age=0]
+at 2 set 14 2 7 minecraft:torchflower_crop[age=0]
+at 2 set 14 2 8 minecraft:torchflower_crop[age=0]
+at 2 set 14 2 9 minecraft:torchflower_crop[age=0]
+at 2 set 15 2 6 minecraft:torchflower_crop[age=0]
+at 2 set 15 2 7 minecraft:torchflower_crop[age=0]
+at 2 set 15 2 8 minecraft:torchflower_crop[age=0]
+at 2 set 15 2 9 minecraft:torchflower_crop[age=0]
+at 2 set 1 2 12 minecraft:wheat[age=0]
+at 2 set 4 2 12 minecraft:wheat[age=0]
+at 2 set 7 2 12 minecraft:wheat[age=0]
+at 2 set 0 3 11 minecraft:stone
+at 2 set 0 2 11 minecraft:stone
+at 2 set 0 3 12 minecraft:stone
+at 2 set 0 2 12 minecraft:stone
+at 2 set 0 3 13 minecraft:stone
+at 2 set 0 2 13 minecraft:stone
+at 2 set 1 3 11 minecraft:stone
+at 2 set 1 2 11 minecraft:stone
+at 2 set 1 3 12 minecraft:stone
+at 2 set 1 3 13 minecraft:stone
+at 2 set 1 2 13 minecraft:stone
+at 2 set 2 3 11 minecraft:stone
+at 2 set 2 2 11 minecraft:stone
+at 2 set 2 3 12 minecraft:stone
+at 2 set 2 2 12 minecraft:stone
+at 2 set 2 3 13 minecraft:stone
+at 2 set 2 2 13 minecraft:stone
+at 2 set 3 3 11 minecraft:stone
+at 2 set 3 2 11 minecraft:stone
+at 2 set 3 3 12 minecraft:stone
+at 2 set 3 2 12 minecraft:stone
+at 2 set 3 3 13 minecraft:stone
+at 2 set 3 2 13 minecraft:stone
+at 2 set 4 3 11 minecraft:stone
+at 2 set 4 2 11 minecraft:stone
+at 2 set 4 3 12 minecraft:stone
+at 2 set 4 3 13 minecraft:stone
+at 2 set 4 2 13 minecraft:stone
+at 2 set 5 3 11 minecraft:stone
+at 2 set 5 2 11 minecraft:stone
+at 2 set 5 3 12 minecraft:stone
+at 2 set 5 2 12 minecraft:stone
+at 2 set 5 3 13 minecraft:stone
+at 2 set 5 2 13 minecraft:stone
+at 2 set 6 3 11 minecraft:stone
+at 2 set 6 2 11 minecraft:stone
+at 2 set 6 3 12 minecraft:stone
+at 2 set 6 2 12 minecraft:stone
+at 2 set 6 3 13 minecraft:stone
+at 2 set 6 2 13 minecraft:stone
+at 2 set 7 3 11 minecraft:stone
+at 2 set 7 2 11 minecraft:stone
+at 2 set 7 3 12 minecraft:stone
+at 2 set 7 3 13 minecraft:stone
+at 2 set 7 2 13 minecraft:stone
+at 2 set 8 3 11 minecraft:stone
+at 2 set 8 2 11 minecraft:stone
+at 2 set 8 3 12 minecraft:stone
+at 2 set 8 2 12 minecraft:stone
+at 2 set 8 3 13 minecraft:stone
+at 2 set 8 2 13 minecraft:stone
+change 2 commands 0 2 0 minecraft:air minecraft:wheat[age=0]
+change 2 commands 0 2 1 minecraft:air minecraft:wheat[age=0]
+change 2 commands 0 2 2 minecraft:air minecraft:wheat[age=0]
+change 2 commands 0 2 3 minecraft:air minecraft:wheat[age=0]
+change 2 commands 0 2 4 minecraft:air minecraft:wheat[age=0]
+change 2 commands 1 2 0 minecraft:air minecraft:wheat[age=0]
+change 2 commands 1 2 1 minecraft:air minecraft:wheat[age=0]
+change 2 commands 1 2 2 minecraft:air minecraft:wheat[age=0]
+change 2 commands 1 2 3 minecraft:air minecraft:wheat[age=0]
+change 2 commands 1 2 4 minecraft:air minecraft:wheat[age=0]
+change 2 commands 2 2 0 minecraft:air minecraft:wheat[age=0]
+change 2 commands 2 2 1 minecraft:air minecraft:wheat[age=0]
+change 2 commands 2 2 2 minecraft:air minecraft:wheat[age=0]
+change 2 commands 2 2 3 minecraft:air minecraft:wheat[age=0]
+change 2 commands 2 2 4 minecraft:air minecraft:wheat[age=0]
+change 2 commands 3 2 0 minecraft:air minecraft:wheat[age=0]
+change 2 commands 3 2 1 minecraft:air minecraft:wheat[age=0]
+change 2 commands 3 2 2 minecraft:air minecraft:wheat[age=0]
+change 2 commands 3 2 3 minecraft:air minecraft:wheat[age=0]
+change 2 commands 3 2 4 minecraft:air minecraft:wheat[age=0]
+change 2 commands 4 2 0 minecraft:air minecraft:wheat[age=0]
+change 2 commands 4 2 1 minecraft:air minecraft:wheat[age=0]
+change 2 commands 4 2 2 minecraft:air minecraft:wheat[age=0]
+change 2 commands 4 2 3 minecraft:air minecraft:wheat[age=0]
+change 2 commands 4 2 4 minecraft:air minecraft:wheat[age=0]
+change 2 commands 6 2 0 minecraft:air minecraft:carrots[age=0]
+change 2 commands 6 2 2 minecraft:air minecraft:carrots[age=0]
+change 2 commands 6 2 4 minecraft:air minecraft:carrots[age=0]
+change 2 commands 8 2 0 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 8 2 2 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 8 2 4 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 10 2 0 minecraft:air minecraft:wheat[age=0]
+change 2 commands 10 2 2 minecraft:air minecraft:wheat[age=0]
+change 2 commands 10 2 4 minecraft:air minecraft:wheat[age=0]
+change 2 commands 12 2 0 minecraft:air minecraft:carrots[age=0]
+change 2 commands 12 2 2 minecraft:air minecraft:carrots[age=0]
+change 2 commands 12 2 4 minecraft:air minecraft:carrots[age=0]
+change 2 commands 14 2 0 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 14 2 2 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 14 2 4 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 0 2 6 minecraft:air minecraft:wheat[age=0]
+change 2 commands 0 2 7 minecraft:air minecraft:carrots[age=0]
+change 2 commands 0 2 8 minecraft:air minecraft:wheat[age=0]
+change 2 commands 0 2 9 minecraft:air minecraft:carrots[age=0]
+change 2 commands 1 2 6 minecraft:air minecraft:wheat[age=0]
+change 2 commands 1 2 7 minecraft:air minecraft:carrots[age=0]
+change 2 commands 1 2 8 minecraft:air minecraft:wheat[age=0]
+change 2 commands 1 2 9 minecraft:air minecraft:carrots[age=0]
+change 2 commands 2 2 6 minecraft:air minecraft:wheat[age=0]
+change 2 commands 2 2 7 minecraft:air minecraft:carrots[age=0]
+change 2 commands 2 2 8 minecraft:air minecraft:wheat[age=0]
+change 2 commands 2 2 9 minecraft:air minecraft:carrots[age=0]
+change 2 commands 3 2 6 minecraft:air minecraft:wheat[age=0]
+change 2 commands 3 2 7 minecraft:air minecraft:carrots[age=0]
+change 2 commands 3 2 8 minecraft:air minecraft:wheat[age=0]
+change 2 commands 3 2 9 minecraft:air minecraft:carrots[age=0]
+change 2 commands 4 2 6 minecraft:air minecraft:wheat[age=0]
+change 2 commands 4 2 7 minecraft:air minecraft:carrots[age=0]
+change 2 commands 4 2 8 minecraft:air minecraft:wheat[age=0]
+change 2 commands 4 2 9 minecraft:air minecraft:carrots[age=0]
+change 2 commands 5 2 6 minecraft:air minecraft:wheat[age=0]
+change 2 commands 5 2 7 minecraft:air minecraft:carrots[age=0]
+change 2 commands 5 2 8 minecraft:air minecraft:wheat[age=0]
+change 2 commands 5 2 9 minecraft:air minecraft:carrots[age=0]
+change 2 commands 7 2 6 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 7 2 7 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 7 2 8 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 7 2 9 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 8 2 6 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 8 2 7 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 8 2 8 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 8 2 9 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 9 2 6 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 9 2 7 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 9 2 8 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 9 2 9 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 10 2 6 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 10 2 7 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 10 2 8 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 10 2 9 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 11 2 6 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 11 2 7 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 11 2 8 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 11 2 9 minecraft:air minecraft:potatoes[age=0]
+change 2 commands 12 2 6 minecraft:air minecraft:beetroots[age=0]
+change 2 commands 12 2 7 minecraft:air minecraft:beetroots[age=0]
+change 2 commands 12 2 8 minecraft:air minecraft:beetroots[age=0]
+change 2 commands 12 2 9 minecraft:air minecraft:beetroots[age=0]
+change 2 commands 13 2 6 minecraft:air minecraft:beetroots[age=0]
+change 2 commands 13 2 7 minecraft:air minecraft:beetroots[age=0]
+change 2 commands 13 2 8 minecraft:air minecraft:beetroots[age=0]
+change 2 commands 13 2 9 minecraft:air minecraft:beetroots[age=0]
+change 2 commands 14 2 6 minecraft:air minecraft:torchflower_crop[age=0]
+change 2 commands 14 2 7 minecraft:air minecraft:torchflower_crop[age=0]
+change 2 commands 14 2 8 minecraft:air minecraft:torchflower_crop[age=0]
+change 2 commands 14 2 9 minecraft:air minecraft:torchflower_crop[age=0]
+change 2 commands 15 2 6 minecraft:air minecraft:torchflower_crop[age=0]
+change 2 commands 15 2 7 minecraft:air minecraft:torchflower_crop[age=0]
+change 2 commands 15 2 8 minecraft:air minecraft:torchflower_crop[age=0]
+change 2 commands 15 2 9 minecraft:air minecraft:torchflower_crop[age=0]
+change 2 commands 1 2 12 minecraft:air minecraft:wheat[age=0]
+change 2 commands 4 2 12 minecraft:air minecraft:wheat[age=0]
+change 2 commands 7 2 12 minecraft:air minecraft:wheat[age=0]
+change 2 commands 0 3 11 minecraft:air minecraft:stone
+change 2 commands 0 2 11 minecraft:air minecraft:stone
+change 2 commands 0 3 12 minecraft:air minecraft:stone
+change 2 commands 0 2 12 minecraft:air minecraft:stone
+change 2 commands 0 3 13 minecraft:air minecraft:stone
+change 2 commands 0 2 13 minecraft:air minecraft:stone
+change 2 commands 1 3 11 minecraft:air minecraft:stone
+change 2 commands 1 2 11 minecraft:air minecraft:stone
+change 2 commands 1 3 12 minecraft:air minecraft:stone
+change 2 commands 1 3 13 minecraft:air minecraft:stone
+change 2 commands 1 2 13 minecraft:air minecraft:stone
+change 2 commands 2 3 11 minecraft:air minecraft:stone
+change 2 commands 2 2 11 minecraft:air minecraft:stone
+change 2 commands 2 3 12 minecraft:air minecraft:stone
+change 2 commands 2 2 12 minecraft:air minecraft:stone
+change 2 commands 2 3 13 minecraft:air minecraft:stone
+change 2 commands 2 2 13 minecraft:air minecraft:stone
+change 2 commands 3 3 11 minecraft:air minecraft:stone
+change 2 commands 3 2 11 minecraft:air minecraft:stone
+change 2 commands 3 3 12 minecraft:air minecraft:stone
+change 2 commands 3 2 12 minecraft:air minecraft:stone
+change 2 commands 3 3 13 minecraft:air minecraft:stone
+change 2 commands 3 2 13 minecraft:air minecraft:stone
+change 2 commands 4 3 11 minecraft:air minecraft:stone
+change 2 commands 4 2 11 minecraft:air minecraft:stone
+change 2 commands 4 3 12 minecraft:air minecraft:stone
+change 2 commands 4 3 13 minecraft:air minecraft:stone
+change 2 commands 4 2 13 minecraft:air minecraft:stone
+change 2 commands 5 3 11 minecraft:air minecraft:stone
+change 2 commands 5 2 11 minecraft:air minecraft:stone
+change 2 commands 5 3 12 minecraft:air minecraft:stone
+change 2 commands 5 2 12 minecraft:air minecraft:stone
+change 2 commands 5 3 13 minecraft:air minecraft:stone
+change 2 commands 5 2 13 minecraft:air minecraft:stone
+change 2 commands 6 3 11 minecraft:air minecraft:stone
+change 2 commands 6 2 11 minecraft:air minecraft:stone
+change 2 commands 6 3 12 minecraft:air minecraft:stone
+change 2 commands 6 2 12 minecraft:air minecraft:stone
+change 2 commands 6 3 13 minecraft:air minecraft:stone
+change 2 commands 6 2 13 minecraft:air minecraft:stone
+change 2 commands 7 3 11 minecraft:air minecraft:stone
+change 2 commands 7 2 11 minecraft:air minecraft:stone
+change 2 commands 7 3 12 minecraft:air minecraft:stone
+change 2 commands 7 3 13 minecraft:air minecraft:stone
+change 2 commands 7 2 13 minecraft:air minecraft:stone
+change 2 commands 8 3 11 minecraft:air minecraft:stone
+change 2 commands 8 2 11 minecraft:air minecraft:stone
+change 2 commands 8 3 12 minecraft:air minecraft:stone
+change 2 commands 8 2 12 minecraft:air minecraft:stone
+change 2 commands 8 3 13 minecraft:air minecraft:stone
+change 2 commands 8 2 13 minecraft:air minecraft:stone
+change 2 random_ticks 10 1 0 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 2 random_ticks 7 1 6 minecraft:farmland[moisture=0] minecraft:farmland[moisture=7]
+change 2 random_ticks 1 2 8 minecraft:wheat[age=0] minecraft:wheat[age=1]
+draws 2 random_ticks level 902
+
+change 3 random_ticks 2 1 8 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 3 random_ticks 11 1 2 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 3 random_ticks 4 1 12 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 3 random_ticks level 903
+
+change 4 random_ticks 15 1 6 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 4 random_ticks 5 1 8 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 4 random_ticks 0 1 4 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 4 random_ticks level 901
+
+change 5 random_ticks 14 1 7 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 5 random_ticks 15 1 6 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 5 random_ticks 13 1 0 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 5 random_ticks level 900
+
+change 6 random_ticks 11 2 6 minecraft:potatoes[age=0] minecraft:potatoes[age=1]
+change 6 random_ticks 12 1 4 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 6 random_ticks level 902
+
+change 7 random_ticks 3 1 7 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 7 random_ticks 12 1 0 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 7 random_ticks 7 1 12 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 7 random_ticks level 904
+
+change 8 random_ticks 3 1 9 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 8 random_ticks 13 1 8 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 8 random_ticks level 906
+
+change 9 random_ticks 12 1 9 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 9 random_ticks 14 1 0 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 9 random_ticks level 903
+
+change 10 random_ticks 12 1 0 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 10 random_ticks level 902
+
+change 11 random_ticks 11 1 2 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 11 random_ticks 5 1 7 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 11 random_ticks level 900
+
+change 12 random_ticks 4 1 7 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 12 random_ticks 4 1 7 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 12 random_ticks 2 2 1 minecraft:wheat[age=0] minecraft:wheat[age=1]
+change 12 random_ticks 0 1 0 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 12 random_ticks level 903
+
+change 13 random_ticks 13 1 7 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 13 random_ticks level 900
+
+change 14 random_ticks 3 1 7 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 14 random_ticks level 901
+
+change 15 random_ticks 1 1 7 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 15 random_ticks 13 1 4 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 15 random_ticks level 902
+
+change 16 random_ticks 5 1 7 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 16 random_ticks 4 1 8 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 16 random_ticks level 905
+
+draws 17 random_ticks level 901
+
+change 18 random_ticks 0 2 2 minecraft:wheat[age=0] minecraft:wheat[age=1]
+change 18 random_ticks 15 1 2 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 18 random_ticks level 905
+
+change 19 random_ticks 3 1 9 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 19 random_ticks 3 1 8 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 19 random_ticks 12 1 0 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 19 random_ticks level 903
+
+change 20 random_ticks 1 2 8 minecraft:wheat[age=1] minecraft:wheat[age=2]
+change 20 random_ticks 15 1 4 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 20 random_ticks 15 1 4 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 20 random_ticks 4 1 9 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 20 random_ticks level 903
+
+change 21 random_ticks 14 1 7 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 21 random_ticks 12 1 9 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 21 random_ticks 8 1 6 minecraft:farmland[moisture=0] minecraft:farmland[moisture=7]
+draws 21 random_ticks level 903
+
+change 22 random_ticks 13 1 2 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 22 random_ticks level 904
+
+change 23 random_ticks 0 2 7 minecraft:carrots[age=0] minecraft:carrots[age=1]
+change 23 random_ticks 5 1 9 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 23 random_ticks level 904
+
+change 24 random_ticks 5 2 9 minecraft:carrots[age=0] minecraft:carrots[age=1]
+change 24 random_ticks 13 1 2 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 24 random_ticks 2 1 8 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 24 random_ticks level 901
+
+draws 25 random_ticks level 904
+
+change 26 random_ticks 1 1 9 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 26 random_ticks level 901
+
+change 27 random_ticks 1 2 7 minecraft:carrots[age=0] minecraft:carrots[age=1]
+change 27 random_ticks 12 1 7 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 27 random_ticks level 903
+
+change 28 random_ticks 12 2 0 minecraft:carrots[age=0] minecraft:carrots[age=1]
+draws 28 random_ticks level 906
+
+change 29 random_ticks 11 1 4 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 29 random_ticks 0 1 1 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 29 random_ticks level 902
+
+change 30 random_ticks 0 1 0 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 30 random_ticks 15 1 0 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 30 random_ticks 12 1 9 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 30 random_ticks level 901
+
+change 31 random_ticks 2 2 7 minecraft:carrots[age=0] minecraft:carrots[age=1]
+draws 31 random_ticks level 905
+
+change 32 random_ticks 0 2 6 minecraft:wheat[age=0] minecraft:wheat[age=1]
+draws 32 random_ticks level 903
+
+change 33 random_ticks 11 1 2 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 33 random_ticks 13 1 4 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 33 random_ticks level 904
+
+change 34 random_ticks 15 1 2 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 34 random_ticks level 902
+
+change 35 random_ticks 4 1 7 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 35 random_ticks 0 2 2 minecraft:wheat[age=1] minecraft:wheat[age=2]
+draws 35 random_ticks level 903
+
+draws 36 random_ticks level 902
+
+change 37 random_ticks 4 2 0 minecraft:wheat[age=0] minecraft:wheat[age=1]
+change 37 random_ticks 1 1 12 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 37 random_ticks 14 1 9 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 37 random_ticks 4 1 9 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 37 random_ticks level 901
+
+draws 38 random_ticks level 900
+
+change 39 random_ticks 15 1 6 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 39 random_ticks 12 1 7 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 39 random_ticks level 902
+
+change 40 random_ticks 1 2 8 minecraft:wheat[age=2] minecraft:wheat[age=3]
+change 40 random_ticks 0 1 3 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 40 random_ticks 12 1 8 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 40 random_ticks level 906
+
+change 41 random_ticks 4 2 8 minecraft:wheat[age=0] minecraft:wheat[age=1]
+change 41 random_ticks 3 1 9 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 41 random_ticks level 901
+
+change 42 random_ticks 12 1 0 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 42 random_ticks 2 1 7 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 42 random_ticks level 900
+
+change 43 random_ticks 2 2 0 minecraft:wheat[age=0] minecraft:wheat[age=1]
+draws 43 random_ticks level 904
+
+change 44 random_ticks 14 2 0 minecraft:potatoes[age=0] minecraft:potatoes[age=1]
+change 44 random_ticks 11 2 6 minecraft:potatoes[age=1] minecraft:potatoes[age=2]
+draws 44 random_ticks level 905
+
+change 45 random_ticks 3 1 8 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 45 random_ticks 0 2 3 minecraft:wheat[age=0] minecraft:wheat[age=1]
+draws 45 random_ticks level 903
+
+change 46 random_ticks 1 1 12 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 46 random_ticks 6 2 0 minecraft:carrots[age=0] minecraft:carrots[age=1]
+change 46 random_ticks 2 1 9 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 46 random_ticks level 905
+
+change 47 random_ticks 12 1 0 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 47 random_ticks 15 1 8 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 47 random_ticks 12 1 2 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 47 random_ticks level 902
+
+change 48 random_ticks 1 2 7 minecraft:carrots[age=1] minecraft:carrots[age=2]
+change 48 random_ticks 2 2 8 minecraft:wheat[age=0] minecraft:wheat[age=1]
+draws 48 random_ticks level 902
+
+draws 49 random_ticks level 902
+
+change 50 random_ticks 14 2 7 minecraft:torchflower_crop[age=0] minecraft:torchflower_crop[age=1]
+change 50 random_ticks 14 1 9 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 50 random_ticks 4 1 9 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 50 random_ticks 1 1 7 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 50 random_ticks 1 2 3 minecraft:wheat[age=0] minecraft:wheat[age=1]
+draws 50 random_ticks level 904
+
+change 51 random_ticks 0 1 1 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 51 random_ticks 11 2 8 minecraft:potatoes[age=0] minecraft:potatoes[age=1]
+draws 51 random_ticks level 905
+
+change 52 random_ticks 14 2 8 minecraft:torchflower_crop[age=0] minecraft:torchflower_crop[age=1]
+change 52 random_ticks 1 2 7 minecraft:carrots[age=2] minecraft:carrots[age=3]
+draws 52 random_ticks level 905
+
+draws 53 random_ticks level 904
+
+change 54 random_ticks 0 1 7 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 54 random_ticks level 903
+
+change 55 random_ticks 12 1 8 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 55 random_ticks level 902
+
+change 56 random_ticks 12 1 4 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 56 random_ticks 14 1 9 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 56 random_ticks level 904
+
+change 57 random_ticks 9 1 6 minecraft:farmland[moisture=0] minecraft:farmland[moisture=7]
+draws 57 random_ticks level 903
+
+change 58 random_ticks 11 1 0 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 58 random_ticks level 900
+
+change 59 random_ticks 0 2 3 minecraft:wheat[age=1] minecraft:wheat[age=2]
+change 59 random_ticks 2 1 7 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 59 random_ticks level 904
+
+change 60 random_ticks 13 1 0 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 60 random_ticks 10 1 2 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 60 random_ticks 1 1 7 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 60 random_ticks level 905
+
+change 61 random_ticks 14 1 2 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 61 random_ticks level 900
+
+change 62 random_ticks 13 1 7 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 62 random_ticks level 902
+
+change 63 random_ticks 1 1 8 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 63 random_ticks 13 1 7 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 63 random_ticks 14 1 4 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 63 random_ticks level 901
+
+change 64 random_ticks 12 1 8 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 64 random_ticks 1 2 9 minecraft:carrots[age=0] minecraft:carrots[age=1]
+change 64 random_ticks 12 2 6 minecraft:beetroots[age=0] minecraft:beetroots[age=1]
+draws 64 random_ticks level 905
+
+draws 65 random_ticks level 901
+
+change 66 random_ticks 4 1 9 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 66 random_ticks 13 1 4 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 66 random_ticks level 903
+
+change 67 random_ticks 12 1 9 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 67 random_ticks 13 1 0 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 67 random_ticks level 905
+
+change 68 random_ticks 12 1 9 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+draws 68 random_ticks level 901
+
+change 69 random_ticks 14 1 2 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 69 random_ticks 14 1 6 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 69 random_ticks level 901
+
+change 70 random_ticks 14 1 7 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 70 random_ticks 2 2 4 minecraft:wheat[age=0] minecraft:wheat[age=1]
+change 70 random_ticks 1 1 7 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 70 random_ticks level 902
+
+change 71 random_ticks 4 1 9 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 71 random_ticks 0 2 3 minecraft:wheat[age=2] minecraft:wheat[age=3]
+change 71 random_ticks 7 2 6 minecraft:potatoes[age=0] minecraft:potatoes[age=1]
+change 71 random_ticks 3 1 9 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 71 random_ticks 0 1 9 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 71 random_ticks level 903
+
+change 72 random_ticks 3 2 8 minecraft:wheat[age=0] minecraft:wheat[age=1]
+change 72 random_ticks 15 1 2 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 72 random_ticks level 902
+
+change 73 random_ticks 4 1 7 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 73 random_ticks level 904
+
+change 74 random_ticks 0 1 4 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 74 random_ticks 10 1 0 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 74 random_ticks level 904
+
+change 75 random_ticks 12 1 4 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 75 random_ticks 14 2 6 minecraft:torchflower_crop[age=0] minecraft:torchflower_crop[age=1]
+change 75 random_ticks 15 1 4 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 75 random_ticks 0 2 6 minecraft:wheat[age=1] minecraft:wheat[age=2]
+draws 75 random_ticks level 903
+
+draws 76 random_ticks level 903
+
+draws 77 random_ticks level 901
+
+change 78 random_ticks 1 2 8 minecraft:wheat[age=3] minecraft:wheat[age=4]
+change 78 random_ticks 12 1 4 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 78 random_ticks 2 1 8 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 78 random_ticks 0 1 6 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 78 random_ticks level 904
+
+change 79 random_ticks 0 1 7 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 79 random_ticks 3 2 2 minecraft:wheat[age=0] minecraft:wheat[age=1]
+change 79 random_ticks 0 1 4 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 79 random_ticks level 907
+
+change 80 random_ticks 4 1 8 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 80 random_ticks level 904
+
+change 81 random_ticks 2 1 7 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 81 random_ticks 0 1 2 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 81 random_ticks 12 1 9 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+change 81 random_ticks 14 1 8 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 81 random_ticks 12 1 8 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 81 random_ticks level 903
+
+change 82 random_ticks 2 1 9 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 82 random_ticks 0 1 9 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 82 random_ticks level 903
+
+change 83 random_ticks 0 1 3 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 83 random_ticks 4 1 7 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 83 random_ticks 2 2 1 minecraft:wheat[age=1] minecraft:wheat[age=2]
+change 83 random_ticks 0 1 1 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 83 random_ticks level 901
+
+change 84 random_ticks 4 1 12 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 84 random_ticks 12 1 2 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 84 random_ticks 3 1 9 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 84 random_ticks 3 1 9 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+change 84 random_ticks 1 2 0 minecraft:wheat[age=0] minecraft:wheat[age=1]
+change 84 random_ticks 14 2 9 minecraft:torchflower_crop[age=0] minecraft:torchflower_crop[age=1]
+change 84 random_ticks 5 1 9 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 84 random_ticks level 907
+
+change 85 random_ticks 7 2 6 minecraft:potatoes[age=1] minecraft:potatoes[age=2]
+change 85 random_ticks 2 1 8 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 85 random_ticks 3 2 1 minecraft:wheat[age=0] minecraft:wheat[age=1]
+change 85 random_ticks 15 1 0 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 85 random_ticks level 903
+
+change 86 random_ticks 10 1 2 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 86 random_ticks 11 1 0 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 86 random_ticks level 901
+
+change 87 random_ticks 13 1 7 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 87 random_ticks 15 1 7 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 87 random_ticks 12 1 4 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 87 random_ticks 3 1 7 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 87 random_ticks 14 2 4 minecraft:potatoes[age=0] minecraft:potatoes[age=1]
+draws 87 random_ticks level 903
+
+draws 88 random_ticks level 900
+
+change 89 random_ticks 2 1 9 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 89 random_ticks level 905
+
+draws 90 random_ticks level 905
+
+change 91 random_ticks 10 1 0 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 91 random_ticks 5 1 8 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 91 random_ticks 4 2 2 minecraft:wheat[age=0] minecraft:wheat[age=1]
+draws 91 random_ticks level 905
+
+change 92 random_ticks 15 1 0 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 92 random_ticks level 901
+
+change 93 random_ticks 13 1 4 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 93 random_ticks 1 2 0 minecraft:wheat[age=1] minecraft:wheat[age=2]
+draws 93 random_ticks level 908
+
+change 94 random_ticks 7 1 12 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 94 random_ticks 15 1 6 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 94 random_ticks 15 1 6 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 94 random_ticks 4 1 8 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 94 random_ticks level 901
+
+change 95 random_ticks 1 1 9 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 95 random_ticks level 900
+
+change 96 random_ticks 4 2 9 minecraft:carrots[age=0] minecraft:carrots[age=1]
+change 96 random_ticks 5 1 8 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 96 random_ticks level 906
+
+change 97 random_ticks 1 1 8 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 97 random_ticks 12 1 0 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+draws 97 random_ticks level 902
+
+change 98 random_ticks 12 1 2 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 98 random_ticks 1 1 9 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 98 random_ticks level 903
+
+change 99 random_ticks 4 2 7 minecraft:carrots[age=0] minecraft:carrots[age=1]
+draws 99 random_ticks level 903
+
+change 100 random_ticks 11 1 0 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 100 random_ticks 15 1 7 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 100 random_ticks 2 1 9 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 100 random_ticks level 900
+
+change 101 random_ticks 3 1 9 minecraft:farmland[moisture=1] minecraft:farmland[moisture=0]
+change 101 random_ticks 0 1 9 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 101 random_ticks 5 1 8 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 101 random_ticks level 900
+
+change 102 random_ticks 3 2 6 minecraft:wheat[age=0] minecraft:wheat[age=1]
+change 102 random_ticks 4 1 12 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 102 random_ticks level 903
+
+change 103 random_ticks 14 1 0 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 103 random_ticks 2 1 8 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+draws 103 random_ticks level 901
+
+change 104 random_ticks 13 2 6 minecraft:beetroots[age=0] minecraft:beetroots[age=1]
+change 104 random_ticks 12 1 8 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+draws 104 random_ticks level 906
+
+change 105 random_ticks 0 1 8 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 105 random_ticks level 901
+
+draws 106 random_ticks level 903
+
+change 107 random_ticks 10 1 0 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 107 random_ticks 4 1 9 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+draws 107 random_ticks level 905
+
+draws 108 random_ticks level 902
+
+change 109 random_ticks 12 1 9 minecraft:farmland[moisture=1] minecraft:farmland[moisture=0]
+change 109 random_ticks 4 1 12 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 109 random_ticks level 901
+
+change 110 random_ticks 1 1 9 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 110 random_ticks 14 1 7 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 110 random_ticks level 902
+
+change 111 random_ticks 3 2 6 minecraft:wheat[age=1] minecraft:wheat[age=2]
+change 111 random_ticks 11 2 8 minecraft:potatoes[age=1] minecraft:potatoes[age=2]
+change 111 random_ticks 0 1 2 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 111 random_ticks level 907
+
+change 112 random_ticks 3 1 8 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 112 random_ticks level 901
+
+change 113 random_ticks 0 1 8 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 113 random_ticks 10 1 0 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 113 random_ticks 13 1 6 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 113 random_ticks level 905
+
+change 114 random_ticks 0 1 6 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 114 random_ticks level 901
+
+change 115 random_ticks 12 1 7 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 115 random_ticks 5 1 9 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 115 random_ticks 1 2 12 minecraft:wheat[age=0] minecraft:wheat[age=1]
+draws 115 random_ticks level 903
+
+change 116 random_ticks 3 1 8 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 116 random_ticks 12 1 0 minecraft:farmland[moisture=1] minecraft:farmland[moisture=0]
+draws 116 random_ticks level 903
+
+change 117 random_ticks 1 1 7 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 117 random_ticks 13 1 4 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+draws 117 random_ticks level 903
+
+change 118 random_ticks 2 1 8 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+change 118 random_ticks 0 2 0 minecraft:wheat[age=0] minecraft:wheat[age=1]
+change 118 random_ticks 2 1 9 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 118 random_ticks 13 1 7 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 118 random_ticks 8 2 0 minecraft:potatoes[age=0] minecraft:potatoes[age=1]
+change 118 random_ticks 14 1 9 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 118 random_ticks level 904
+
+change 119 random_ticks 0 1 4 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 119 random_ticks 15 1 0 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 119 random_ticks level 903
+
+draws 120 random_ticks level 905
+
+change 121 random_ticks 14 1 6 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 121 random_ticks 4 2 3 minecraft:wheat[age=0] minecraft:wheat[age=1]
+draws 121 random_ticks level 907
+
+change 122 random_ticks 10 1 2 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 122 random_ticks 15 1 6 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+change 122 random_ticks 3 2 8 minecraft:wheat[age=1] minecraft:wheat[age=2]
+change 122 random_ticks 13 1 9 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 122 random_ticks level 901
+
+change 123 random_ticks 2 2 9 minecraft:carrots[age=0] minecraft:carrots[age=1]
+change 123 random_ticks 13 1 4 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+change 123 random_ticks 0 2 3 minecraft:wheat[age=3] minecraft:wheat[age=4]
+change 123 random_ticks 5 1 8 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+draws 123 random_ticks level 903
+
+draws 124 random_ticks level 901
+
+draws 125 random_ticks level 902
+
+change 126 random_ticks 3 1 8 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 126 random_ticks 11 1 4 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 126 random_ticks level 906
+
+draws 127 random_ticks level 900
+
+change 128 random_ticks 12 2 9 minecraft:beetroots[age=0] minecraft:beetroots[age=1]
+change 128 random_ticks 11 2 8 minecraft:potatoes[age=2] minecraft:potatoes[age=3]
+draws 128 random_ticks level 905
+
+change 129 random_ticks 12 1 7 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 129 random_ticks 15 1 6 minecraft:farmland[moisture=1] minecraft:farmland[moisture=0]
+draws 129 random_ticks level 902
+
+change 130 random_ticks 14 1 7 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 130 random_ticks 10 1 4 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 130 random_ticks level 901
+
+change 131 random_ticks 15 1 7 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 131 random_ticks 0 1 2 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 131 random_ticks level 903
+
+change 132 random_ticks 1 2 8 minecraft:wheat[age=4] minecraft:wheat[age=5]
+draws 132 random_ticks level 901
+
+change 133 random_ticks 2 1 9 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+draws 133 random_ticks level 902
+
+change 134 random_ticks 15 1 8 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 134 random_ticks 2 2 1 minecraft:wheat[age=2] minecraft:wheat[age=3]
+draws 134 random_ticks level 903
+
+change 135 random_ticks 13 1 8 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 135 random_ticks level 900
+
+change 136 random_ticks 14 1 9 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 136 random_ticks 0 1 3 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 136 random_ticks level 901
+
+change 137 random_ticks 1 2 3 minecraft:wheat[age=1] minecraft:wheat[age=2]
+change 137 random_ticks 15 1 4 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 137 random_ticks 15 1 4 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+draws 137 random_ticks level 902
+
+change 138 random_ticks 0 1 1 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 138 random_ticks 4 1 7 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+draws 138 random_ticks level 904
+
+change 139 random_ticks 7 2 9 minecraft:potatoes[age=0] minecraft:potatoes[age=1]
+change 139 random_ticks 14 1 6 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 139 random_ticks 0 1 0 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 139 random_ticks level 907
+
+change 140 random_ticks 15 1 8 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 140 random_ticks level 908
+
+change 141 random_ticks 4 2 6 minecraft:wheat[age=0] minecraft:wheat[age=1]
+change 141 random_ticks 14 1 6 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 141 random_ticks level 901
+
+change 142 random_ticks 13 1 6 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 142 random_ticks 10 1 4 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 142 random_ticks 5 2 7 minecraft:carrots[age=0] minecraft:carrots[age=1]
+draws 142 random_ticks level 902
+
+change 143 random_ticks 2 1 9 minecraft:farmland[moisture=1] minecraft:farmland[moisture=0]
+change 143 random_ticks 0 1 9 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 143 random_ticks level 901
+
+change 144 random_ticks 13 1 0 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 144 random_ticks 12 1 4 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+change 144 random_ticks 3 2 9 minecraft:carrots[age=0] minecraft:carrots[age=1]
+change 144 random_ticks 3 2 7 minecraft:carrots[age=0] minecraft:carrots[age=1]
+draws 144 random_ticks level 903
+
+change 145 random_ticks 14 1 9 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+draws 145 random_ticks level 903
+
+change 146 random_ticks 4 1 12 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+draws 146 random_ticks level 902
+
+change 147 random_ticks 8 2 6 minecraft:potatoes[age=0] minecraft:potatoes[age=1]
+draws 147 random_ticks level 902
+
+change 148 random_ticks 7 1 12 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 148 random_ticks 11 1 4 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 148 random_ticks level 900
+
+change 149 random_ticks 12 1 7 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 149 random_ticks 2 2 8 minecraft:wheat[age=1] minecraft:wheat[age=2]
+change 149 random_ticks 13 2 6 minecraft:beetroots[age=1] minecraft:beetroots[age=2]
+draws 149 random_ticks level 910
+
+change 150 random_ticks 12 1 8 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+change 150 random_ticks 15 1 0 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+draws 150 random_ticks level 904
+
+draws 151 random_ticks level 901
+
+change 152 random_ticks 15 1 9 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 152 random_ticks 2 2 7 minecraft:carrots[age=1] minecraft:carrots[age=2]
+change 152 random_ticks 0 2 7 minecraft:carrots[age=1] minecraft:carrots[age=2]
+draws 152 random_ticks level 905
+
+change 153 random_ticks 0 1 7 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 153 random_ticks 10 1 4 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 153 random_ticks 11 1 2 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 153 random_ticks 2 1 8 minecraft:farmland[moisture=1] minecraft:farmland[moisture=0]
+draws 153 random_ticks level 902
+
+change 154 random_ticks 7 1 12 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 154 random_ticks level 905
+
+change 155 random_ticks 15 1 7 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 155 random_ticks level 904
+
+change 156 random_ticks 12 1 4 minecraft:farmland[moisture=1] minecraft:farmland[moisture=0]
+change 156 random_ticks 5 1 7 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 156 random_ticks 12 1 2 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 156 random_ticks level 905
+
+change 157 random_ticks 0 1 6 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 157 random_ticks 0 1 9 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 157 random_ticks 1 1 7 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+change 157 random_ticks 4 2 4 minecraft:wheat[age=0] minecraft:wheat[age=1]
+draws 157 random_ticks level 905
+
+change 158 random_ticks 0 1 3 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 158 random_ticks 0 1 1 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+draws 158 random_ticks level 902
+
+change 159 random_ticks 0 1 6 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 159 random_ticks 7 1 12 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 159 random_ticks 10 2 0 minecraft:wheat[age=0] minecraft:wheat[age=1]
+draws 159 random_ticks level 902
+
+change 160 random_ticks 2 2 4 minecraft:wheat[age=1] minecraft:wheat[age=2]
+draws 160 random_ticks level 903
+
+change 161 random_ticks 11 1 0 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 161 random_ticks level 901
+
+change 162 random_ticks 15 1 7 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+draws 162 random_ticks level 900
+
+change 163 random_ticks 1 1 12 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 163 random_ticks level 903
+
+change 164 random_ticks 2 2 2 minecraft:wheat[age=0] minecraft:wheat[age=1]
+change 164 random_ticks 7 2 8 minecraft:potatoes[age=0] minecraft:potatoes[age=1]
+change 164 random_ticks 13 1 2 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 164 random_ticks level 906
+
+draws 165 random_ticks level 904
+
+change 166 random_ticks 4 2 6 minecraft:wheat[age=1] minecraft:wheat[age=2]
+draws 166 random_ticks level 904
+
+change 167 random_ticks 3 1 7 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 167 random_ticks level 903
+
+change 168 random_ticks 8 2 2 minecraft:potatoes[age=0] minecraft:potatoes[age=1]
+change 168 random_ticks 14 1 4 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 168 random_ticks level 905
+
+draws 169 random_ticks level 900
+
+change 170 random_ticks 0 2 9 minecraft:carrots[age=0] minecraft:carrots[age=1]
+change 170 random_ticks 5 2 8 minecraft:wheat[age=0] minecraft:wheat[age=1]
+change 170 random_ticks 10 1 0 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+draws 170 random_ticks level 907
+
+change 171 random_ticks 13 1 9 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 171 random_ticks 5 1 9 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 171 random_ticks level 900
+
+change 172 random_ticks 3 1 8 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+change 172 random_ticks 0 1 4 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+draws 172 random_ticks level 903
+
+change 173 random_ticks 0 1 8 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 173 random_ticks 10 1 0 minecraft:farmland[moisture=1] minecraft:farmland[moisture=0]
+change 173 random_ticks 15 1 2 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 173 random_ticks level 903
+
+draws 174 random_ticks level 902
+
+change 175 random_ticks 11 2 7 minecraft:potatoes[age=0] minecraft:potatoes[age=1]
+draws 175 random_ticks level 902
+
+change 176 random_ticks 11 1 0 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 176 random_ticks 13 1 0 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 176 random_ticks 13 1 8 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 176 random_ticks 1 1 7 minecraft:farmland[moisture=1] minecraft:farmland[moisture=0]
+change 176 random_ticks 5 1 9 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+draws 176 random_ticks level 900
+
+change 177 random_ticks 14 1 8 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 177 random_ticks 0 1 7 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 177 random_ticks level 900
+
+change 178 random_ticks 1 1 8 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 178 random_ticks 12 1 8 minecraft:farmland[moisture=1] minecraft:farmland[moisture=0]
+change 178 random_ticks 1 1 12 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 178 random_ticks 0 1 9 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+draws 178 random_ticks level 902
+
+change 179 random_ticks 7 2 9 minecraft:potatoes[age=1] minecraft:potatoes[age=2]
+change 179 random_ticks 8 2 0 minecraft:potatoes[age=1] minecraft:potatoes[age=2]
+draws 179 random_ticks level 905
+
+change 180 random_ticks 15 1 8 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 180 random_ticks 0 1 4 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+draws 180 random_ticks level 905
+
+change 181 random_ticks 0 1 6 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+draws 181 random_ticks level 902
+
+change 182 random_ticks 2 2 6 minecraft:wheat[age=0] minecraft:wheat[age=1]
+draws 182 random_ticks level 903
+
+change 183 random_ticks 15 1 2 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+draws 183 random_ticks level 904
+
+change 184 random_ticks 12 2 6 minecraft:beetroots[age=1] minecraft:beetroots[age=2]
+change 184 random_ticks 14 1 0 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 184 random_ticks level 909
+
+draws 185 random_ticks level 901
+
+change 186 random_ticks 12 2 0 minecraft:carrots[age=1] minecraft:carrots[age=2]
+change 186 random_ticks 4 1 8 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 186 random_ticks 15 1 2 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+draws 186 random_ticks level 901
+
+change 187 random_ticks 1 2 9 minecraft:carrots[age=1] minecraft:carrots[age=2]
+draws 187 random_ticks level 904
+
+draws 188 random_ticks level 910
+
+change 189 random_ticks 6 2 0 minecraft:carrots[age=1] minecraft:carrots[age=2]
+change 189 random_ticks 15 1 0 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+draws 189 random_ticks level 903
+
+change 190 random_ticks 0 1 8 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 190 random_ticks level 900
+
+draws 191 random_ticks level 904
+
+change 192 random_ticks 5 2 8 minecraft:wheat[age=1] minecraft:wheat[age=2]
+draws 192 random_ticks level 902
+
+change 193 random_ticks 14 1 2 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 193 random_ticks level 901
+
+change 194 random_ticks 2 1 7 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 194 random_ticks 0 1 2 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 194 random_ticks level 902
+
+change 195 random_ticks 1 1 8 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 195 random_ticks 13 1 7 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+change 195 random_ticks 0 1 1 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+change 195 random_ticks 10 1 4 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 195 random_ticks 15 1 8 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+draws 195 random_ticks level 901
+
+change 196 random_ticks 15 1 8 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+change 196 random_ticks 4 1 12 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+draws 196 random_ticks level 901
+
+change 197 random_ticks 13 1 9 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 197 random_ticks level 906
+
+change 198 random_ticks 1 1 8 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+draws 198 random_ticks level 901
+
+change 199 random_ticks 15 1 7 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+change 199 random_ticks 10 1 2 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+change 199 random_ticks 14 1 4 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+change 199 random_ticks 4 1 9 minecraft:farmland[moisture=1] minecraft:farmland[moisture=0]
+draws 199 random_ticks level 900
+
+change 200 random_ticks 12 1 7 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+change 200 random_ticks 0 2 2 minecraft:wheat[age=2] minecraft:wheat[age=3]
+draws 200 random_ticks level 903

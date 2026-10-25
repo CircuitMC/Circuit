@@ -607,9 +607,10 @@
             "collision/random_ticks",
             "trace/random_ticks_farmland",
             "trace/random_ticks_chunks",
-            "trace/random_ticks_sections"
+            "trace/random_ticks_sections",
+            "trace/crops_growth"
           ],
-          "note": "Random ticks run at simulation level 31 and lower in 1.21.8, and at 32 and lower within 128 blocks of a non-spectator player in 1.21.4; on 1.21.8 every pick, the precipitation checks' draws and the chunk order of forced areas equal the official server's, with the level's position generator and the states that take random ticks as both versions report",
+          "note": "Random ticks run at simulation level 31 and lower in 1.21.8, and at 32 and lower within 128 blocks of a non-spectator player in 1.21.4; on 1.21.8 every pick, the precipitation checks' draws and the chunk order of forced areas equal the official server's, with the level's position generator, the states that take random ticks as both versions report, and sections holding only water ticked too",
           "deviations": [
             "the order of chunks that start ticking at different times is Circuit's model",
             "1.21.4's order is not compared (the harness has no player to make its random ticks run)"
@@ -1007,17 +1008,19 @@
       "mechanics": [
         {
           "id": "wheat",
-          "name": "Wheat growth",
+          "name": "Crop growth",
           "milestone": "C5",
           "impl": "partial",
-          "evidence": "documented",
-          "note": "Grows only with light 9 or more at its own cell (minecraft.wiki \"Wheat Crops\"), light as the tick sees it; planted on farmland, and broken with its drops by an update that finds no farmland below, as both official servers do",
+          "evidence": "compared",
+          "note": "Wheat, carrots, potatoes, beetroots and torchflower crops grow in random ticks with light 9 or more at their cell, by the farmland under and around them and the same crops beside them, beetroots and torchflowers skipping one tick in three, as the official 1.21.8 server does draw for draw; planted on farmland, and broken with their drops by an update that finds no farmland below",
           "cases": [
-            "trace/loot_rolls"
+            "trace/loot_rolls",
+            "trace/crops_growth"
           ],
           "deviations": [
-            "grows with probability 1/3 per random tick, ignoring hydration and neighboring crops",
-            "does not break in darkness"
+            "crops do not break in darkness",
+            "bone meal and pitcher crops are not modeled",
+            "1.21.4's growth is not compared (its random ticks run only near players, and the harness has none)"
           ]
         },
         {
@@ -1050,11 +1053,12 @@
             "trace/vines",
             "trace/dripleaves",
             "trace/mushrooms",
-            "trace/cactus_damage"
+            "trace/cactus_damage",
+            "trace/stems_growth"
           ],
-          "note": "Carrots, potatoes, beetroots, stems, torchflower crops, nether wart, sweet berry bushes and bamboo grow on their ground only and break when it goes; sugar cane needs water beside its ground and cacti nothing solid beside them, both breaking a tick after an update finds them unsupported",
+          "note": "Carrots, potatoes, beetroots, stems, torchflower crops, nether wart, sweet berry bushes and bamboo grow on their ground only and break when it goes; sugar cane needs water beside its ground and cacti nothing solid beside them, both breaking a tick after an update finds them unsupported; melon and pumpkin stems grow and set their fruit on farmland or dirt, and attached stems stand ripe again when it goes, as the official 1.21.8 server does",
           "deviations": [
-            "they do not grow",
+            "sugar cane, cacti, bamboo, nether wart, berry bushes and the other plants do not grow",
             "cacti hurt only items",
             "kelp, cocoa, chorus and pitcher crops are not supported yet",
             "without data packs, plants whose loot rolls random numbers drop nothing"
@@ -1071,8 +1075,16 @@
           "id": "spreading",
           "name": "Grass, mycelium, nylium, moss and sculk spread",
           "milestone": "C5",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "note": "Grass blocks and mycelium die under blocks their light cannot pass and under water, and spread to dirt within reach in random ticks, as the official 1.21.8 server does draw for draw",
+          "cases": [
+            "trace/grass_spread"
+          ],
+          "deviations": [
+            "nylium, moss and sculk do not spread",
+            "1.21.4's spreading is not compared (its random ticks run only near players, and the harness has none)"
+          ]
         },
         {
           "id": "bone_meal",

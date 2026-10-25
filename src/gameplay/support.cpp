@@ -78,13 +78,14 @@ const std::vector<Kind>& kinds() {
             "oak_sapling", "spruce_sapling", "birch_sapling", "jungle_sapling", "acacia_sapling", "dark_oak_sapling",
             "cherry_sapling", "pale_oak_sapling", "fern", "short_grass", "bush", "firefly_bush", "pink_petals", "wildflowers",
             "sweet_berry_bush"};
-        constexpr std::array<std::pair<std::string_view, Ground>, 19> other_plants{{
+        constexpr std::array<std::pair<std::string_view, Ground>, 21> other_plants{{
             {"dead_bush", Ground::dry}, {"short_dry_grass", Ground::dry}, {"tall_dry_grass", Ground::dry},
             {"crimson_fungus", Ground::nether}, {"warped_fungus", Ground::nether}, {"crimson_roots", Ground::nether},
             {"warped_roots", Ground::nether}, {"nether_sprouts", Ground::nether}, {"wither_rose", Ground::wither},
             {"azalea", Ground::clay}, {"flowering_azalea", Ground::clay}, {"mangrove_propagule", Ground::clay},
             {"carrots", Ground::farmland}, {"potatoes", Ground::farmland}, {"beetroots", Ground::farmland},
             {"melon_stem", Ground::farmland}, {"pumpkin_stem", Ground::farmland}, {"torchflower_crop", Ground::farmland},
+            {"attached_melon_stem", Ground::farmland}, {"attached_pumpkin_stem", Ground::farmland},
             {"nether_wart", Ground::soul_sand}}};
         std::vector<Kind> v(registry::block_count());
         for (std::uint32_t b = 0; b < v.size(); ++b) {
@@ -509,7 +510,7 @@ std::optional<ItemStack> supported_drop(BlockState s) {
     // Vines too (a random roll), hanging roots and pale hanging moss (only
     // shears); cave vines drop their berries.
     // Snow layers drop snowballs only by their loot table.
-    static constexpr std::array<std::string_view, 19> nothing{"minecraft:snow",
+    static constexpr std::array<std::string_view, 21> nothing{"minecraft:snow", "minecraft:attached_melon_stem", "minecraft:attached_pumpkin_stem",
         "minecraft:fern", "minecraft:tall_grass", "minecraft:large_fern", "minecraft:short_grass", "minecraft:dead_bush", "minecraft:bush",
         "minecraft:short_dry_grass", "minecraft:tall_dry_grass", "minecraft:nether_sprouts", "minecraft:melon_stem", "minecraft:pumpkin_stem",
         "minecraft:sweet_berry_bush", "minecraft:weeping_vines", "minecraft:weeping_vines_plant", "minecraft:twisting_vines",

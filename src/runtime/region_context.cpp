@@ -85,8 +85,8 @@ void RegionContext::write_block(BlockPos pos, BlockState state) {
         section = std::make_shared<Section>(*section); // Copy on write: the snapshot keeps the old section.
     }
     auto& cell = section->blocks[contracts::section_local_index(pos)];
-    section->random_ticking = static_cast<std::uint16_t>(section->random_ticking - (gameplay::takes_random_ticks(cell) ? 1 : 0) +
-                                                         (gameplay::takes_random_ticks(state) ? 1 : 0));
+    section->random_ticking = static_cast<std::uint16_t>(section->random_ticking - (gameplay::ticks_section_randomly(cell) ? 1 : 0) +
+                                                         (gameplay::ticks_section_randomly(state) ? 1 : 0));
     cell = state;
 }
 

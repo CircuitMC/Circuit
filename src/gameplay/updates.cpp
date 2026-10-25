@@ -204,6 +204,7 @@ void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
         if (falls(s)) schedule_fall(ctx, target);
         else if (is_connector(s)) connector_shape_update(ctx, target, s, *d);
         else if (is_stairs(s)) stairs_shape_update(ctx, target, s, *d);
+        else if (is_attached_stem(s) && attached_stem_shape_update(ctx, target, s, *d)) {}
         else if (needs_support(s)) support_shape_update(ctx, target, s, *d);
         else if (is_farmland(s)) farmland_shape_update(ctx, target, *d);
         else if (is_fire(s) || is_soul_fire(s)) fire_shape_update(ctx, target, s);

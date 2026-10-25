@@ -433,7 +433,7 @@ void Oracle::run_random_ticks(DimensionId level) {
         // The sections holding blocks that take random ticks, as the chunk's turn comes.
         std::set<std::int32_t> sections;
         for (auto it = lv.blocks.lower_bound({chunk.x * 16, INT32_MIN, INT32_MIN}); it != lv.blocks.end() && it->first.x < chunk.x * 16 + 16; ++it)
-            if (contracts::chunk_of(it->first) == chunk && gameplay::takes_random_ticks(it->second)) sections.insert((it->first.y - shape.min_y) >> 4);
+            if (contracts::chunk_of(it->first) == chunk && gameplay::ticks_section_randomly(it->second)) sections.insert((it->first.y - shape.min_y) >> 4);
         const std::vector<std::int32_t> with_blocks(sections.begin(), sections.end());
         ctx_->begin_root(Phase::random_ticks, index++);
         gameplay::run_random_ticks(*ctx_, chunk, with_blocks);

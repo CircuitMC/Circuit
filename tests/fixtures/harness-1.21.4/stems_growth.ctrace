@@ -1,0 +1,410 @@
+circuit-trace 2
+title Stems growing and setting melons and pumpkins in random ticks
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.30.0+mc1.21.4
+mechanisms random_ticks crops
+area 0 0 0 15 15 15
+ticks 200
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 200
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 0 0 10 minecraft:stone
+at 0 set 0 0 11 minecraft:stone
+at 0 set 0 0 12 minecraft:stone
+at 0 set 0 0 13 minecraft:stone
+at 0 set 0 0 14 minecraft:stone
+at 0 set 0 0 15 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:stone
+at 0 set 1 0 11 minecraft:stone
+at 0 set 1 0 12 minecraft:stone
+at 0 set 1 0 13 minecraft:stone
+at 0 set 1 0 14 minecraft:stone
+at 0 set 1 0 15 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 2 0 10 minecraft:stone
+at 0 set 2 0 11 minecraft:stone
+at 0 set 2 0 12 minecraft:stone
+at 0 set 2 0 13 minecraft:stone
+at 0 set 2 0 14 minecraft:stone
+at 0 set 2 0 15 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 3 0 10 minecraft:stone
+at 0 set 3 0 11 minecraft:stone
+at 0 set 3 0 12 minecraft:stone
+at 0 set 3 0 13 minecraft:stone
+at 0 set 3 0 14 minecraft:stone
+at 0 set 3 0 15 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 4 0 11 minecraft:stone
+at 0 set 4 0 12 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 4 0 14 minecraft:stone
+at 0 set 4 0 15 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 5 0 10 minecraft:stone
+at 0 set 5 0 11 minecraft:stone
+at 0 set 5 0 12 minecraft:stone
+at 0 set 5 0 13 minecraft:stone
+at 0 set 5 0 14 minecraft:stone
+at 0 set 5 0 15 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 6 0 10 minecraft:stone
+at 0 set 6 0 11 minecraft:stone
+at 0 set 6 0 12 minecraft:stone
+at 0 set 6 0 13 minecraft:stone
+at 0 set 6 0 14 minecraft:stone
+at 0 set 6 0 15 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 7 0 10 minecraft:stone
+at 0 set 7 0 11 minecraft:stone
+at 0 set 7 0 12 minecraft:stone
+at 0 set 7 0 13 minecraft:stone
+at 0 set 7 0 14 minecraft:stone
+at 0 set 7 0 15 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 8 0 10 minecraft:stone
+at 0 set 8 0 11 minecraft:stone
+at 0 set 8 0 12 minecraft:stone
+at 0 set 8 0 13 minecraft:stone
+at 0 set 8 0 14 minecraft:stone
+at 0 set 8 0 15 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 9 0 10 minecraft:stone
+at 0 set 9 0 11 minecraft:stone
+at 0 set 9 0 12 minecraft:stone
+at 0 set 9 0 13 minecraft:stone
+at 0 set 9 0 14 minecraft:stone
+at 0 set 9 0 15 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 10 0 10 minecraft:stone
+at 0 set 10 0 11 minecraft:stone
+at 0 set 10 0 12 minecraft:stone
+at 0 set 10 0 13 minecraft:stone
+at 0 set 10 0 14 minecraft:stone
+at 0 set 10 0 15 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 11 0 10 minecraft:stone
+at 0 set 11 0 11 minecraft:stone
+at 0 set 11 0 12 minecraft:stone
+at 0 set 11 0 13 minecraft:stone
+at 0 set 11 0 14 minecraft:stone
+at 0 set 11 0 15 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 12 0 8 minecraft:stone
+at 0 set 12 0 9 minecraft:stone
+at 0 set 12 0 10 minecraft:stone
+at 0 set 12 0 11 minecraft:stone
+at 0 set 12 0 12 minecraft:stone
+at 0 set 12 0 13 minecraft:stone
+at 0 set 12 0 14 minecraft:stone
+at 0 set 12 0 15 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 13 0 8 minecraft:stone
+at 0 set 13 0 9 minecraft:stone
+at 0 set 13 0 10 minecraft:stone
+at 0 set 13 0 11 minecraft:stone
+at 0 set 13 0 12 minecraft:stone
+at 0 set 13 0 13 minecraft:stone
+at 0 set 13 0 14 minecraft:stone
+at 0 set 13 0 15 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 14 0 8 minecraft:stone
+at 0 set 14 0 9 minecraft:stone
+at 0 set 14 0 10 minecraft:stone
+at 0 set 14 0 11 minecraft:stone
+at 0 set 14 0 12 minecraft:stone
+at 0 set 14 0 13 minecraft:stone
+at 0 set 14 0 14 minecraft:stone
+at 0 set 14 0 15 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 15 0 8 minecraft:stone
+at 0 set 15 0 9 minecraft:stone
+at 0 set 15 0 10 minecraft:stone
+at 0 set 15 0 11 minecraft:stone
+at 0 set 15 0 12 minecraft:stone
+at 0 set 15 0 13 minecraft:stone
+at 0 set 15 0 14 minecraft:stone
+at 0 set 15 0 15 minecraft:stone
+
+at 1 set 2 1 2 minecraft:farmland[moisture=7]
+change 1 commands 2 1 2 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 3 1 2 minecraft:dirt
+change 1 commands 3 1 2 minecraft:air minecraft:dirt
+at 1 set 1 1 2 minecraft:coarse_dirt
+change 1 commands 1 1 2 minecraft:air minecraft:coarse_dirt
+at 1 set 2 1 3 minecraft:grass_block
+change 1 commands 2 1 3 minecraft:air minecraft:grass_block[snowy=false]
+at 1 set 2 1 1 minecraft:grass_block
+change 1 commands 2 1 1 minecraft:air minecraft:grass_block[snowy=false]
+at 1 set 6 1 2 minecraft:farmland[moisture=7]
+change 1 commands 6 1 2 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 7 1 2 minecraft:coarse_dirt
+change 1 commands 7 1 2 minecraft:air minecraft:coarse_dirt
+at 1 set 5 1 2 minecraft:sand
+change 1 commands 5 1 2 minecraft:air minecraft:sand
+at 1 set 6 1 3 minecraft:stone
+change 1 commands 6 1 3 minecraft:air minecraft:stone
+at 1 set 6 1 1 minecraft:stone
+change 1 commands 6 1 1 minecraft:air minecraft:stone
+at 1 set 10 1 2 minecraft:farmland[moisture=7]
+change 1 commands 10 1 2 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 11 1 2 minecraft:sand
+change 1 commands 11 1 2 minecraft:air minecraft:sand
+at 1 set 9 1 2 minecraft:mud
+change 1 commands 9 1 2 minecraft:air minecraft:mud
+at 1 set 10 1 3 minecraft:moss_block
+change 1 commands 10 1 3 minecraft:air minecraft:moss_block
+at 1 set 10 1 1 minecraft:moss_block
+change 1 commands 10 1 1 minecraft:air minecraft:moss_block
+at 1 set 14 1 2 minecraft:farmland[moisture=7]
+change 1 commands 14 1 2 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 15 1 2 minecraft:mud
+change 1 commands 15 1 2 minecraft:air minecraft:mud
+at 1 set 13 1 2 minecraft:dirt
+change 1 commands 13 1 2 minecraft:air minecraft:dirt
+at 1 set 14 1 3 minecraft:farmland[moisture=7]
+change 1 commands 14 1 3 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 14 1 1 minecraft:farmland[moisture=7]
+change 1 commands 14 1 1 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 2 1 6 minecraft:farmland[moisture=7]
+change 1 commands 2 1 6 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 3 1 6 minecraft:dirt
+change 1 commands 3 1 6 minecraft:air minecraft:dirt
+at 1 set 3 2 6 minecraft:cobblestone
+change 1 commands 3 2 6 minecraft:air minecraft:cobblestone
+at 1 set 1 1 6 minecraft:dirt
+change 1 commands 1 1 6 minecraft:air minecraft:dirt
+at 1 set 1 2 6 minecraft:cobblestone
+change 1 commands 1 2 6 minecraft:air minecraft:cobblestone
+at 1 set 2 1 7 minecraft:dirt
+change 1 commands 2 1 7 minecraft:air minecraft:dirt
+at 1 set 2 1 5 minecraft:dirt
+change 1 commands 2 1 5 minecraft:air minecraft:dirt
+at 1 set 2 2 5 minecraft:cobblestone
+change 1 commands 2 2 5 minecraft:air minecraft:cobblestone
+at 1 set 6 1 6 minecraft:farmland[moisture=7]
+change 1 commands 6 1 6 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 7 1 6 minecraft:dirt
+change 1 commands 7 1 6 minecraft:air minecraft:dirt
+at 1 set 7 2 6 minecraft:cobblestone
+change 1 commands 7 2 6 minecraft:air minecraft:cobblestone
+at 1 set 5 1 6 minecraft:dirt
+change 1 commands 5 1 6 minecraft:air minecraft:dirt
+at 1 set 5 2 6 minecraft:cobblestone
+change 1 commands 5 2 6 minecraft:air minecraft:cobblestone
+at 1 set 6 1 7 minecraft:dirt
+change 1 commands 6 1 7 minecraft:air minecraft:dirt
+at 1 set 6 1 5 minecraft:dirt
+change 1 commands 6 1 5 minecraft:air minecraft:dirt
+at 1 set 6 2 5 minecraft:cobblestone
+change 1 commands 6 2 5 minecraft:air minecraft:cobblestone
+at 1 set 9 1 6 minecraft:farmland[moisture=7]
+change 1 commands 9 1 6 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 9 1 9 minecraft:farmland[moisture=7]
+change 1 commands 9 1 9 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 11 1 6 minecraft:farmland[moisture=7]
+change 1 commands 11 1 6 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 11 1 9 minecraft:farmland[moisture=7]
+change 1 commands 11 1 9 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 13 1 6 minecraft:farmland[moisture=7]
+change 1 commands 13 1 6 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 13 1 9 minecraft:farmland[moisture=7]
+change 1 commands 13 1 9 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 15 1 6 minecraft:farmland[moisture=7]
+change 1 commands 15 1 6 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 15 1 9 minecraft:farmland[moisture=7]
+change 1 commands 15 1 9 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 2 1 12 minecraft:farmland[moisture=7]
+change 1 commands 2 1 12 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 6 1 12 minecraft:farmland[moisture=7]
+change 1 commands 6 1 12 minecraft:air minecraft:farmland[moisture=7]
+at 1 set 10 1 12 minecraft:farmland[moisture=7]
+change 1 commands 10 1 12 minecraft:air minecraft:farmland[moisture=7]
+
+at 2 set 2 2 2 minecraft:pumpkin_stem[age=7]
+change 2 commands 2 2 2 minecraft:air minecraft:pumpkin_stem[age=7]
+at 2 set 6 2 2 minecraft:melon_stem[age=7]
+change 2 commands 6 2 2 minecraft:air minecraft:melon_stem[age=7]
+at 2 set 10 2 2 minecraft:pumpkin_stem[age=7]
+change 2 commands 10 2 2 minecraft:air minecraft:pumpkin_stem[age=7]
+at 2 set 14 2 2 minecraft:melon_stem[age=7]
+change 2 commands 14 2 2 minecraft:air minecraft:melon_stem[age=7]
+at 2 set 2 2 6 minecraft:pumpkin_stem[age=7]
+change 2 commands 2 2 6 minecraft:air minecraft:pumpkin_stem[age=7]
+at 2 set 6 2 6 minecraft:melon_stem[age=7]
+change 2 commands 6 2 6 minecraft:air minecraft:melon_stem[age=7]
+at 2 set 9 2 6 minecraft:pumpkin_stem[age=0]
+change 2 commands 9 2 6 minecraft:air minecraft:pumpkin_stem[age=0]
+at 2 set 9 2 9 minecraft:melon_stem[age=3]
+change 2 commands 9 2 9 minecraft:air minecraft:melon_stem[age=3]
+at 2 set 11 2 6 minecraft:melon_stem[age=1]
+change 2 commands 11 2 6 minecraft:air minecraft:melon_stem[age=1]
+at 2 set 11 2 9 minecraft:pumpkin_stem[age=4]
+change 2 commands 11 2 9 minecraft:air minecraft:pumpkin_stem[age=4]
+at 2 set 13 2 6 minecraft:pumpkin_stem[age=2]
+change 2 commands 13 2 6 minecraft:air minecraft:pumpkin_stem[age=2]
+at 2 set 13 2 9 minecraft:melon_stem[age=5]
+change 2 commands 13 2 9 minecraft:air minecraft:melon_stem[age=5]
+at 2 set 15 2 6 minecraft:melon_stem[age=3]
+change 2 commands 15 2 6 minecraft:air minecraft:melon_stem[age=3]
+at 2 set 15 2 9 minecraft:pumpkin_stem[age=6]
+change 2 commands 15 2 9 minecraft:air minecraft:pumpkin_stem[age=6]
+at 2 set 3 2 12 minecraft:melon
+change 2 commands 3 2 12 minecraft:air minecraft:melon
+at 2 set 6 2 13 minecraft:pumpkin
+change 2 commands 6 2 13 minecraft:air minecraft:pumpkin
+at 2 set 10 2 12 minecraft:melon_stem[age=7]
+change 2 commands 10 2 12 minecraft:air minecraft:melon_stem[age=7]
+at 2 set 11 2 12 minecraft:melon
+change 2 commands 11 2 12 minecraft:air minecraft:melon
+
+at 3 set 2 2 12 minecraft:attached_melon_stem[facing=east]
+change 3 commands 2 2 12 minecraft:air minecraft:attached_melon_stem[facing=east]
+at 3 set 6 2 12 minecraft:attached_pumpkin_stem[facing=south]
+change 3 commands 6 2 12 minecraft:air minecraft:attached_pumpkin_stem[facing=south]
+
+at 100 set 6 2 13 minecraft:air
+change 100 commands 6 2 13 minecraft:pumpkin minecraft:air
+change 100 commands 6 2 12 minecraft:attached_pumpkin_stem[facing=south] minecraft:pumpkin_stem[age=7]

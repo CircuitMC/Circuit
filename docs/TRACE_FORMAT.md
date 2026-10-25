@@ -46,7 +46,7 @@ Every position must lie inside the area. Actions run in file order within a tick
 - **Actions.** All actions for a tick are applied before that tick's scheduled ticks, with normal neighbor updates, as inputs at the start of the tick would be.
 - **Changes.** With `changes ordered`, the recorder lists every block state change inside the area during each tick from 1 on, in the order the changes were applied, including intermediate states. `unordered` compares each tick's changes as a multiset. Every property of every block state is represented (block registry `circuit-blocks-1`), so every change is compared, including dust shapes and properties the rules only store.
 - **Probes.** Probes read state at the end of the tick, after all phases.
-- **Randomness.** Random ticks are off unless `random-tick-speed` is set. Circuit's random-tick stream is a declared L1 choice, so exact random outcomes are not expected to match the target version.
+- **Randomness.** Random ticks are off unless `random-tick-speed` or the randomTickSpeed game rule sets their speed. On 1.21.8 Circuit picks their positions and draws as the official server does ([random ticks](SIMULATION.md)), so with `rng observed` their outcomes are compared draw for draw; 1.21.4 runs them only near players, which the harness lacks.
 
 Evaluation reports one of four outcomes:
 

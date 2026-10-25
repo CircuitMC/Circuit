@@ -39,7 +39,7 @@ struct Section {
 // Counts the randomly ticking blocks of a section filled without write_block.
 inline void count_random_ticking(Section& s) {
     s.random_ticking = 0;
-    for (const auto b : s.blocks) s.random_ticking += gameplay::takes_random_ticks(b) ? 1 : 0;
+    for (const auto b : s.blocks) s.random_ticking += gameplay::ticks_section_randomly(b) ? 1 : 0;
 }
 
 // Level-wide counters whose values are staged while regions run in parallel.
