@@ -2221,6 +2221,8 @@ struct Game::Impl final : GameServices {
             // spawn chunks are loaded again.
             admit(contracts::LevelsStarted{});
             add_start_ticket();
+            // The world takes the configured difficulty at every start.
+            if (engine->difficulty() != config.difficulty) admit(contracts::SetDifficulty{config.difficulty});
             started = true;
         }
         std::vector<Message> batch;

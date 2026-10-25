@@ -289,6 +289,18 @@ std::optional<BlockPos> supporting_block(RuleContext& ctx, const physics::Aabb& 
 void farmland_shape_update(RuleContext& ctx, BlockPos pos, Direction d);
 void tick_farmland(RuleContext& ctx, BlockPos pos);
 
+// ---- fire (fire.cpp) ----
+bool is_fire(BlockState s);
+bool is_soul_fire(BlockState s);
+// Whether fire or soul fire can stay with `near(offset)` the block at an offset from it.
+bool fire_supported(BlockState s, const Near& near, std::string_view release);
+// A state of fire set (`previous` was there before): its block tick's delay,
+// and its removal where it cannot stay.
+void fire_placed(RuleContext& ctx, BlockPos pos, BlockState s, BlockState previous);
+// A shape update: gone unsupported, else its faces again.
+void fire_shape_update(RuleContext& ctx, BlockPos pos, BlockState s);
+void tick_fire(RuleContext& ctx, BlockPos pos, BlockState s);
+
 // ---- big dripleaves tilting (dripleaf.cpp) ----
 bool is_big_dripleaf(BlockState s);
 // An entity in the cell: on the leaf, it tilts it.
@@ -359,6 +371,8 @@ void check_tnt(RuleContext& ctx, BlockPos pos);
 void prime_by_explosion(RuleContext& ctx, BlockPos pos);
 // TNT a burning projectile hit: primed as by redstone.
 void prime_by_fire(RuleContext& ctx, BlockPos pos);
+// TNT fire burned (its block already replaced): primed as by redstone.
+void prime_burned(RuleContext& ctx, BlockPos pos);
 // TNT a dispenser primes in the cell `pos`, as by redstone; false when the
 // game rule tntExplodes is off (the dispenser keeps it).
 bool prime_dispensed(RuleContext& ctx, BlockPos pos);

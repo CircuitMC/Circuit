@@ -1159,6 +1159,42 @@ int main() {
         require(s.oracle.dump().day_time == 4294967319, "advancing again");
     });
 
+    suite.run("the difficulty is the world's, set by commands", [] {
+        Sim s;
+        require(s.oracle.dump().difficulty == 0, "a new world is peaceful");
+        s.tick({SetDifficulty{2}});
+        require(s.oracle.dump().difficulty == 2 && of_kind(s.last, TraceKind::command_rejected).empty(), "normal");
+        s.tick({SetDifficulty{4}});
+        require(s.oracle.dump().difficulty == 2 && of_kind(s.last, TraceKind::command_rejected).size() == 1, "nothing above hard");
+    });
+
+    suite.run("fire burns near players on 1.21.8, or away from them with the game rule, and anywhere on 1.21.4", [] {
+        const auto fire = registry_block("fire");
+        const auto planks = registry_block("oak_planks");
+        // Fire on stone beside planks; what is there after 300 ticks.
+        const auto burn = [&](const VersionBundle& b, std::vector<CommandBody> setup) {
+            Sim s(b);
+            auto build = floor(-2, 2, -2, 2);
+            build.push_back(place({1, 0, 0}, planks));
+            build.insert(build.end(), setup.begin(), setup.end());
+            s.tick(build);
+            s.tick({place({0, 0, 0}, fire)});
+            require(s.at({0, 0, 0}) == fire, "set");
+            s.until(s.oracle.time() + 300);
+            return std::pair{s.at({0, 0, 0}), s.at({1, 0, 0})};
+        };
+        const auto& newer = bundle();
+        const auto& older = **BundleRegistry::select_for_simulation("java-1.21.4");
+        require(burn(newer, {}) == std::pair{fire, planks}, "1.21.8 without a player: only its ticks rescheduled");
+        for (const auto& [b, setup, label] : {std::tuple{&newer, std::vector<CommandBody>{PlayerPresence{{1, 1}, at_block(40.5, 0.0, 0.5)}}, "a player near"},
+                                             std::tuple{&newer, std::vector<CommandBody>{SetGameRule{"allowFireTicksAwayFromPlayer", 1}}, "the game rule"},
+                                             std::tuple{&older, std::vector<CommandBody>{}, "1.21.4"}})
+            require(burn(*b, setup) != std::pair{fire, planks}, std::format("{}: it ages or burns", label));
+        // A spectator does not count; doFireTick off stops it everywhere.
+        require(burn(newer, {PlayerPresence{{1, 1}, at_block(0.5, 0.0, 0.5), true}}) == std::pair{fire, planks}, "a spectator");
+        require(burn(older, {SetGameRule{"doFireTick", 0}}) == std::pair{fire, planks}, "doFireTick off");
+    });
+
     suite.run("the weather follows its timers and its levels follow the flags", [] {
         Sim s;
         // What both official servers did after /weather rain 100.

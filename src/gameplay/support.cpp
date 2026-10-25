@@ -528,10 +528,11 @@ bool block_supported(BlockState s, const std::function<BlockState(contracts::Dir
         release);
 }
 bool block_ticks_scheduled(BlockState s) {
-    return detail::falls(s) || detail::checks_later(s) || detail::is_big_dripleaf(s) || detail::is_farmland(s);
+    return detail::falls(s) || detail::checks_later(s) || detail::is_big_dripleaf(s) || detail::is_farmland(s) || detail::is_fire(s);
 }
 bool block_supported_near(BlockState s, const std::function<BlockState(contracts::BlockPos offset)>& near, std::string_view release,
                           std::uint8_t light) {
+    if (detail::is_fire(s) || detail::is_soul_fire(s)) return detail::fire_supported(s, near, release);
     return detail::supported(s, near, release, [light] { return light; });
 }
 } // namespace circuit::gameplay

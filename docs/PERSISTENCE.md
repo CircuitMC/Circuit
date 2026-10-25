@@ -101,7 +101,8 @@ The server fails closed on storage errors. If a log record cannot be written, th
 
 ## Checkpoint format
 
-A checkpoint file is `CIRCKPT\0`, a format version (25; versions 1–24 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+A checkpoint file is `CIRCKPT\0`, a format version (26; versions 1–25 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+- versions before 26 have no difficulty: the world is peaceful until the server sets the configured one at its start;
 - versions before 25 have no fall distances: every entity starts its count again;
 - versions before 24 have no random sequences: each loot table's starts when it is first used, with the default settings;
 - versions before 23 have no minecart yaw (0, not flipped);
@@ -125,7 +126,7 @@ A checkpoint file is `CIRCKPT\0`, a format version (25; versions 1–24 are stil
 - versions before 6 have item stacks without components.
 
 The body holds:
-- the time, the entity id counter, counted over all levels, the tick the levels last started, the game rules away from their defaults (name and value), the day time, the weather (timers, flags and levels), and the settings new random sequences start with (salt and flags);
+- the time, the entity id counter, counted over all levels, the tick the levels last started, the game rules away from their defaults (name and value), the day time, the weather (timers, flags and levels), the settings new random sequences start with (salt and flags), and the difficulty;
 - per level (overworld, Nether, End; only those with columns, players or an active tick): its counters, the last tick it had players or forced chunks, the state of its level random, the players in it (position and whether a spectator), columns with their load and simulation levels, the tick a saved column dropped and the tick a reloaded column resumes, palette-packed sections, block entities, entities (their kind, tick count, position and velocity as doubles, an item's stack, age, pickup delay and health, a falling block's state and fall time, primed TNT's fuse, an arrow's being stuck, life and fire, a boat's wood, last state and last vertical move, a minecart's water, the tick and amount of its last push by moving blocks, how far it has fallen, and for an entity of a reloaded chunk the tick it comes back), scheduled ticks, pending block events, the recent turn-offs of its redstone torches (position and tick, for their burnout) and its loot tables' random sequences (id and state, by id);
 - chunk tickets: type, level, square radius, the tick their lifetime ends and their level (dimension);
 - player inventories: the 46 slots, the carried stack and a drag in progress; item stacks carry their damage and their other data components;
@@ -139,7 +140,8 @@ Decoding checks every length, count and the digest. The engine's restoring const
 The server's metadata records the fingerprint of the [data packs](DATA_PACKS.md#the-worlds-data) the log was written with; a server with other data refuses to replay that log.
 
 Log segments start with `CIRCWAL` and a format byte:
-- 9: commands include summoned entities;
+- 10: commands include the difficulty;
+- 9 (read only): commands include summoned entities, player uses with where they clicked and items used along the view;
 - 8 (read only): spawned items may carry a pickup delay and an age;
 - 7 (read only): positions and velocities in commands are doubles;
 - 6 (read only): commands include the weather;
@@ -169,14 +171,14 @@ Import reads the source world and never writes to it. It creates a new world dir
 | Block entities | Chests, hoppers, dispensers and droppers with their items, custom name and components, the hopper transfer cooldown, comparator output signals, daylight detectors and moving pistons. Block entities of blocks without rules of their own (signs, banners, furnaces and the rest) are kept as saved and written back unchanged |
 | Item components | The damage, and the components whose save form mirrors their network form: `custom_data`, `max_stack_size`, `max_damage`, `unbreakable`, `custom_name`, `item_name`, `item_model`, `lore`, `rarity`, `repair_cost`, `enchantment_glint_override`, `intangible_projectile`, `glider`, `tooltip_style`, `dyed_color`, `map_color`, `map_id`, `map_decorations`, `potion_duration_scale`, `recipes`, `ominous_bottle_amplifier`, `note_block_sound`, `provides_banner_patterns`, `lock`, `container_loot`, `debug_stick_state`, `entity_data`, `bucket_entity_data` and `block_entity_data`; those that name registry entries: `trim`, `banner_patterns`, `base_color`, and, when the configured data packs synchronize enchantments, `enchantments` and `stored_enchantments`; a removed default (`!minecraft:name`) |
 | Entities | Every entity with how far it has fallen (`fall_distance`); item entities, with their age, pickup delay and health; falling blocks, with their block state and time; empty minecarts and boats (a boat's kind by its id; a minecart's yaw as its `Rotation`, whether it is flipped not saved, as the official servers do; their state before the tick is not saved); arrows and snowballs (`inGround`, `life`, `Fire`; their owner, damage and pickup rule are not kept); primed TNT, with its fuse (`fuse`, `block_state` TNT and `explosion_power` 4 when exported; other display states and powers are unsupported on import) |
-| Scheduled ticks | Block and fluid ticks of blocks with rules of their own, lava's fluid ticks among them, and the block ticks of falling blocks, sugar cane and cacti, with their delay and priority |
-| Level data | Time, day time, weather (flags and timers; the levels follow the flags, as when the official servers load a world), game rules (rules the version lacks, or has only with experiments, are ignored with a note; invalid values are refused), seed, spawn point and level name. An exported world holds every rule of the version; the official 1.21.8 server read the day time and rules of one |
+| Scheduled ticks | Block and fluid ticks of blocks with rules of their own, lava's fluid ticks among them, and the block ticks of falling blocks, sugar cane, cacti, vines, dripleaves, farmland and fire, with their delay and priority |
+| Level data | Time, day time, difficulty (`Difficulty`, normal when absent; the server sets its configured difficulty at every start, as the official dedicated server does), weather (flags and timers; the levels follow the flags, as when the official servers load a world), game rules (rules the version lacks, or has only with experiments, are ignored with a note; invalid values are refused), seed, spawn point and level name. An exported world holds every rule of the version; the official 1.21.8 server read the day time and rules of one |
 | Random sequences | `data/random_sequences.dat`: the loot tables' random sequences (id and 128-bit state) and the settings new ones start with (salt, and the flags, written only when false as the official server writes them). The official 1.21.8 server continued the sequences of an exported world and started new ones with its settings |
 
 Every block property round-trips unchanged, including dust shapes, lever mounting, repeater locks, cave air and properties the rules only store, such as a chest's `waterlogged`.
 
 **Unsupported content and policies.** Anything else is unsupported content, for example:
-- blocks unknown to 1.21.8 or with invalid properties; scheduled ticks of blocks without rules of their own (but falling blocks, sugar cane and cacti); other entities; and items with components that have no save form in Circuit yet (enchantments, potions, books, containers and the rest are kept on the network and in checkpoints, but not converted to or from region files yet; inline trim or banner pattern definitions likewise);
+- blocks unknown to 1.21.8 or with invalid properties; scheduled ticks of blocks without rules of their own (but falling blocks, sugar cane, cacti, vines, dripleaves, farmland and fire); other entities; and items with components that have no save form in Circuit yet (enchantments, potions, books, containers and the rest are kept on the network and in checkpoints, but not converted to or from region files yet; inline trim or banner pattern definitions likewise);
 - containers with a loot table or a lock;
 - block entities with custom names, loot tables or locks;
 - the Nether and the End;
@@ -186,7 +188,7 @@ By default, an import that meets unsupported content imports nothing and lists e
 - **Blocks** with invalid properties are replaced by a stand-in of the same coarse shape: air for blocks without collision, obsidian for unbreakable blocks, stone for full light-blocking solids and glass for other solids. Unknown blocks become air.
 - **Other content** is dropped: block entities, items and entities.
 
-Export refuses a state whose items hold a component without a save form, and lists them; it writes nothing.
+Export refuses a state whose items hold a component without a save form, and lists them; it writes nothing. Export leaves out a block tick of a block without rules of its own whose block has gone, such as the next tick of fire that went out: Circuit's ticks of such blocks do not name the block. The official servers save it; it does nothing unless the same block is back when it is due.
 
 The report lists every replacement. Substitution changes behavior: for example, an enchanted tool or a container with a loot table is dropped. A substituted world is therefore not evidence about the original machine.
 

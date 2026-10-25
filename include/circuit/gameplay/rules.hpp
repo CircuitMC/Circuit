@@ -57,10 +57,11 @@ BlockState stairs_with_neighbors(BlockState stairs, std::array<BlockState, 4> ar
 bool block_supported(BlockState s, const std::function<BlockState(contracts::Direction)>& around, std::string_view release);
 // Whether a block without rules of its own runs scheduled block ticks:
 // falling blocks fall in them, sugar cane, cacti, vines and dripleaf stems
-// break, big dripleaves tilt and farmland turns to dirt.
+// break, big dripleaves tilt, farmland turns to dirt and fire burns.
 bool block_ticks_scheduled(BlockState s);
 // The same with `near(offset)` the block at any offset from it (sugar cane
-// reads the blocks beside its ground) and the light at its cell (mushrooms).
+// reads the blocks beside its ground, fire its flammable neighbors) and the
+// light at its cell (mushrooms).
 bool block_supported_near(BlockState s, const std::function<BlockState(contracts::BlockPos offset)>& near, std::string_view release,
                           std::uint8_t light = 15);
 // Whether a door a player places takes its hinge on the right (for checks

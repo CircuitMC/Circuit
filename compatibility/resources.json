@@ -252,15 +252,49 @@
       "tnt": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Primed where redstone reaches it when placed, moved in by a piston or updated, unless tntExplodes is off; pistons move it; explosions prime it with a short fuse; burning arrows prime it",
+        "note": "Primed where redstone reaches it when placed, moved in by a piston or updated, unless tntExplodes is off; pistons move it; explosions prime it with a short fuse; burning arrows and fire burning it prime it",
         "cases": [
           "trace/tnt_ignition",
           "trace/tnt_explodes_disabled",
           "trace/tnt_chain_edge",
-          "trace/arrow_tnt"
+          "trace/arrow_tnt",
+          "trace/fire_tnt"
         ],
         "deviations": [
-          "fire, flint and steel and players do not ignite it yet"
+          "flint and steel and players do not ignite it yet"
+        ]
+      },
+      "fire": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Stays on a sturdy top or beside a flammable block, with the faces of its flammable neighbors when nothing below bears or feeds it; ages, burns out, burns its neighbors and spreads in its block ticks, on 1.21.8 only near players unless allowFireTicksAwayFromPlayer, as both official servers do",
+        "cases": [
+          "collision/fire",
+          "trace/fire_basics",
+          "trace/fire_stone",
+          "trace/fire_netherrack",
+          "trace/fire_planks",
+          "trace/fire_log",
+          "trace/fire_tnt",
+          "trace/fire_wool",
+          "trace/fire_spread"
+        ],
+        "deviations": [
+          "rain and humid biomes do not put it out sooner",
+          "does not hurt or ignite entities"
+        ]
+      },
+      "soul_fire": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Stays on soul sand and soul soil only and goes when an update finds it elsewhere, as both official servers do; it neither ages nor spreads",
+        "cases": [
+          "collision/fire",
+          "trace/fire_basics",
+          "trace/fire_spread"
+        ],
+        "deviations": [
+          "does not hurt or ignite entities"
         ]
       },
       "sand": {

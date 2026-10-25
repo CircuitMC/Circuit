@@ -122,6 +122,7 @@ struct WorldStore {
     Tick started{}; // see WorldDump::started
     std::map<std::string, std::int32_t> game_rules; // see WorldDump::game_rules
     std::int64_t day_time{};                        // see WorldDump::day_time
+    std::uint8_t difficulty{};                      // see WorldDump::difficulty
     gameplay::Weather weather;                      // see WorldDump::weather
     gameplay::SequenceSettings sequence_settings;   // see WorldDump::sequence_settings
     std::int64_t sequence_seed{};                   // the world seed new random sequences start from

@@ -108,6 +108,8 @@ std::uint8_t RegionContext::light(BlockPos pos) {
 
 std::uint8_t RegionContext::sky_light(BlockPos pos) { return light_field().get(gameplay::LightKind::sky, pos); }
 
+bool RegionContext::player_near(ChunkPos chunk) { return gameplay::player_near(world_.counters(dimension()).presences, chunk); }
+
 // The day time and weather change only in the command phase and between the
 // command phase and the levels' phases.
 gameplay::RuleContext::Sky RegionContext::sky() { return {world_.day_time, world_.sky_darken}; }

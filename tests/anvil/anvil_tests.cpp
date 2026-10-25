@@ -174,6 +174,7 @@ fs::path hand_made_world(const fs::path& dir, std::vector<std::pair<ChunkPos, Ta
 struct Kept {
     Tick time{};
     std::int64_t day_time{};
+    std::uint8_t difficulty{};
     std::map<std::string, std::int32_t> game_rules;
     std::tuple<std::int32_t, std::int32_t, std::int32_t, bool, bool> weather; // timers and flags; levels are not saved
     std::vector<ChunkPos> chunks;
@@ -188,15 +189,21 @@ struct Kept {
 Kept kept(const WorldDump& world) {
     const auto& d = world.overworld();
     const auto& w = world.weather;
-    Kept k{world.time, world.day_time, world.game_rules, {w.clear_time, w.rain_time, w.thunder_time, w.raining, w.thundering},
+    Kept k{world.time, world.day_time, world.difficulty, world.game_rules, {w.clear_time, w.rain_time, w.thunder_time, w.raining, w.thundering},
            {}, d.blocks, d.block_entities, {}, {}, d.sequences, world.sequence_settings};
     for (const auto& c : d.chunks) k.chunks.push_back(c.pos);
     for (auto& [pos, be] : k.block_entities) {
         be.order = 0;
         be.ticked = 0;
     }
-    for (const auto& t : d.ticks)
+    for (const auto& t : d.ticks) {
+        // A block tick of a block without rules of its own whose block is
+        // gone (fire that went out) is not saved: it names no block.
+        if (t.list == circuit::contracts::TickList::block && t.tick.block == BlockType::other
+            && !state_at(world, t.tick.pos).is(BlockType::other))
+            continue;
         k.ticks.insert({static_cast<int>(t.list), t.tick.pos, static_cast<int>(t.tick.block), t.tick.due, t.tick.priority});
+    }
     for (const auto& e : d.entities)
         k.entities.insert({e.position, e.velocity, e.stack.item, e.stack.count, static_cast<std::uint32_t>(std::min(e.age, 6000)), e.on_ground,
                            static_cast<int>(e.kind), e.carried.raw(), e.fall_time, e.fuse, e.health});
@@ -205,6 +212,7 @@ Kept kept(const WorldDump& world) {
 std::string describe(const Kept& a, const Kept& b) {
     if (a.time != b.time) return "time";
     if (a.day_time != b.day_time) return std::format("day time {} vs {}", a.day_time, b.day_time);
+    if (a.difficulty != b.difficulty) return std::format("difficulty {} vs {}", a.difficulty, b.difficulty);
     if (a.game_rules != b.game_rules) return "game rules";
     if (a.weather != b.weather) return "weather";
     if (a.chunks != b.chunks) return std::format("chunks {} vs {}", a.chunks.size(), b.chunks.size());
@@ -463,11 +471,12 @@ int main() {
         Engine engine(bundle(), 5);
         Admissions admit;
         engine.advance(admit({ticket(1, {0, 0}, 1)}));
-        engine.advance(admit({circuit::contracts::SetDayTime{6000}, place({3, 0, 3}, blocks::daylight_detector()),
+        engine.advance(admit({circuit::contracts::SetDayTime{6000}, circuit::contracts::SetDifficulty{3}, place({3, 0, 3}, blocks::daylight_detector()),
                               place({5, 0, 3}, blocks::daylight_detector(true))}));
         while (engine.dump().time % 20 != 0) engine.advance({});
         const auto state = engine.dump();
-        require(state_at(state, {3, 0, 3}) == blocks::daylight_detector(false, 15), "the detector saw the noon sky");
+        require(state_at(state, {3, 0, 3}) == blocks::daylight_detector(false, 15) && state.difficulty == 3,
+                "the detector saw the noon sky; the world is hard");
         const auto target = root / "daylight";
         require(anvil::export_world(state, bundle(), target, {.level_name = "daylight", .seed = 5}).has_value(), "export");
         const auto back = anvil::import_world(target, bundle());
@@ -923,14 +932,22 @@ int main() {
             const auto r = anvil::import_world(dir, bundle());
             require(r && r->state.day_time == 4294967318
                         && r->state.game_rules == std::map<std::string, std::int32_t>{{"doDaylightCycle", 0}, {"spawnChunkRadius", 5}}
-                        && std::ranges::any_of(r->report.notes, [](const std::string& n) { return n.starts_with("2 game rules"); }),
-                    "day time and game rules imported");
+                        && std::ranges::any_of(r->report.notes, [](const std::string& n) { return n.starts_with("2 game rules"); })
+                        && r->state.difficulty == 2,
+                    "day time and game rules imported; normal when the file names no difficulty");
         }
         expect_error(hand_made_world(root / "rule-bounds", {{{0, 0}, good}}, with_rules({{"spawnChunkRadius", "33"}}, 0)),
                      "game rule spawnChunkRadius has the invalid value 33", "a rule out of bounds");
         expect_error(hand_made_world(root / "rule-bool", {{{0, 0}, good}}, with_rules({{"keepInventory", "1"}}, 0)),
                      "game rule keepInventory has the invalid value 1", "a boolean rule");
         expect_error(hand_made_world(root / "day", {{{0, 0}, good}}, with_rules({}, -1)), "negative day time", "a negative day time");
+        {
+            auto level = level_dat();
+            auto data = *level.find("Data");
+            data.set("Difficulty", Tag::byte(4));
+            level.set("Data", std::move(data));
+            expect_error(hand_made_world(root / "difficulty", {{{0, 0}, good}}, level), "invalid difficulty", "a difficulty above hard");
+        }
         {
             auto bad = good;
             bad.set("xPos", Tag::int_(5));

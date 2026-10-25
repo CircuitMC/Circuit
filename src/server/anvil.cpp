@@ -533,6 +533,10 @@ private:
         const auto day = integer(*level, "DayTime").value_or(0);
         if (day < 0) return std::unexpected("level.dat: negative day time");
         result_.state.day_time = day;
+        // Normal when the file does not say.
+        const auto difficulty = integer(*level, "Difficulty").value_or(2);
+        if (difficulty < 0 || difficulty > contracts::max_difficulty) return std::unexpected("level.dat: invalid difficulty");
+        result_.state.difficulty = static_cast<std::uint8_t>(difficulty);
         // The weather's flags and timers; its levels follow the flags, as when
         // the official servers load a world.
         auto& weather = result_.state.weather;
@@ -1432,7 +1436,7 @@ private:
         data.set("allowCommands", Tag::boolean(true));
         data.set("hardcore", Tag::boolean(false));
         data.set("initialized", Tag::boolean(true));
-        data.set("Difficulty", Tag::byte(2));
+        data.set("Difficulty", Tag::byte(static_cast<std::int8_t>(world_.difficulty)));
         data.set("SpawnX", Tag::int_(options_.spawn.x));
         data.set("SpawnY", Tag::int_(options_.spawn.y + 1));
         data.set("SpawnZ", Tag::int_(options_.spawn.z));

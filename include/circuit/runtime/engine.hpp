@@ -156,6 +156,8 @@ public:
     [[nodiscard]] contracts::Tick time() const noexcept;
     // The world's day time after the last tick (gameplay::WorldDump::day_time).
     [[nodiscard]] std::int64_t day_time() const noexcept;
+    // The world's difficulty (gameplay::WorldDump::difficulty).
+    [[nodiscard]] std::uint8_t difficulty() const noexcept;
     // The world's weather after the last tick (gameplay::WorldDump::weather).
     [[nodiscard]] const gameplay::Weather& weather() const noexcept;
     [[nodiscard]] const std::vector<contracts::TraceRecord>& trace() const noexcept;

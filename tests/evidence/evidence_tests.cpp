@@ -945,6 +945,63 @@ int main(int argc, char** argv) {
         require(stays > 0, "they stay somewhere");
     });
 
+    suite.run("fire stays and burns where both official servers keep it", [&] {
+        // tests/fixtures/collision/fire-*.txt: fire in the air with every
+        // state east of it (it stays beside a flammable block), fire on every
+        // state and soul fire on every state. States that did not stay where
+        // they were set (?) are left out.
+        namespace registry = circuit::gameplay::registry;
+        using circuit::contracts::BlockPos;
+        using circuit::gameplay::BlockState;
+        const auto table = [&](const char* file) {
+            std::map<std::string, std::string> out;
+            std::istringstream lines(read_text(fixtures / "collision" / file));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto space = line.find(' ');
+                out[line.substr(0, space)] = line.substr(space + 1);
+            }
+            return out;
+        };
+        const auto newest = table("fire-1.21.8.txt");
+        const auto older = table("fire-1.21.4-only.txt");
+        std::size_t checked = 0, flammable = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            const auto* mapping = ContentMapping::for_game_version(release);
+            const auto make = [&](std::string_view name) {
+                return BlockState::registered(registry::block(*registry::find_block(release, name)).default_state);
+            };
+            const auto fire = make("fire"), soul_fire = make("soul_fire");
+            for (std::uint32_t wire = 0; wire < registry::wire_state_count(release); ++wire) {
+                const auto notation = registry::notation(registry::from_wire(release, static_cast<std::int32_t>(wire)).value());
+                const auto name = notation.substr(0, notation.find('['));
+                const auto find = [&](const std::map<std::string, std::string>& t) -> const std::string* {
+                    for (const auto& k : {notation, name})
+                        if (const auto it = t.find(k); it != t.end()) return &it->second;
+                    return nullptr;
+                };
+                const std::string* row = release == std::string_view("1.21.4") ? find(older) : nullptr;
+                if (!row) row = find(newest);
+                require(row != nullptr && row->size() == 3, std::format("{} {}: a row", release, notation));
+                const auto state = mapping->block(notation).value();
+                const std::array<std::tuple<BlockState, BlockPos, const char*>, 3> contexts{{
+                    {fire, {1, 0, 0}, "fire in the air beside it"}, {fire, {0, -1, 0}, "fire on it"}, {soul_fire, {0, -1, 0}, "soul fire on it"}}};
+                for (std::size_t column = 0; column < contexts.size(); ++column) {
+                    const auto& [what, at, label] = contexts[column];
+                    const char want = (*row)[column];
+                    if (want == '?') continue;
+                    const auto near = [&](BlockPos o) { return o == at ? state : BlockState::of(circuit::gameplay::BlockType::air); };
+                    const char got = circuit::gameplay::block_supported_near(what, near, release) ? '1' : '0';
+                    require(want == got, std::format("{} {} ({}): official {}, Circuit {}", release, notation, label, want, got));
+                    ++checked;
+                    flammable += column == 0 && got == '1' ? 1 : 0;
+                }
+            }
+        }
+        std::cout << std::format("  {} pairs, {} flammable states\n", checked, flammable);
+        require(flammable > 0, "some states burn");
+    });
+
     suite.run("blocks that need support stay where both official servers keep them", [&] {
         // tests/fixtures/collision/support-*.txt: for every state as support,
         // whether flowers and saplings (the poppy's column), torches, carpets,
@@ -1629,7 +1686,9 @@ int main(int argc, char** argv) {
 
     suite.run("the 1.21.4 rule set rests on identical recordings", [&] {
         // Both bundles run the same rules because every scenario recorded on
-        // 1.21.4 is identical to its 1.21.8 recording.
+        // 1.21.4 is identical to its 1.21.8 recording. A 1.21.8 recording may
+        // set a game rule 1.21.4 lacks, to run as 1.21.4 does
+        // (allowFireTicksAwayFromPlayer: fire away from players).
         const auto& b4 = **circuit::contracts::BundleRegistry::select_for_simulation("java-1.21.4");
         const auto& b8 = **circuit::contracts::BundleRegistry::select_for_simulation("java-1.21.8");
         require(b4.rules->id == b8.rules->id && b4.rules->basis.find("identical") != std::string_view::npos, "the basis is stated");
@@ -1637,7 +1696,9 @@ int main(int argc, char** argv) {
         for (const auto& entry : fs::directory_iterator(fixtures / "harness-1.21.4")) {
             const auto counterpart = fixtures / "harness" / entry.path().filename();
             require(fs::exists(counterpart), std::format("{} has a 1.21.8 recording", entry.path().filename().string()));
-            const auto diff = first_difference(parse(read_text(entry.path())), parse(read_text(counterpart)));
+            auto newer = parse(read_text(counterpart));
+            std::erase_if(newer.gamerules, [&](const auto& rule) { return b4.schema.game_rule(rule.first) == nullptr; });
+            const auto diff = first_difference(parse(read_text(entry.path())), newer);
             require(!diff, std::format("{}: {}", entry.path().filename().string(), diff.value_or("")));
             ++pairs;
         }

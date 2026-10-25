@@ -7,6 +7,7 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
+// 17: the world's difficulty (tag 27);
 // 16: players use items along their view (tag 26);
 // 15: player uses carry the player's yaw (tag 25; tags 7 and 24 read it from the horizontal facing);
 // 14: player uses carry where they clicked (tag 24; tag 7 reads as the middle of the block);
@@ -18,7 +19,7 @@ constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
 // block registry id; 3: stacks carry damage, player commands carry their
 // player. Commands of versions before 6 are the overworld's. Tickets of
 // versions before 7 (tags 5 and 9) read as forced squares.
-constexpr std::uint16_t format_version = 16;
+constexpr std::uint16_t format_version = 17;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -121,11 +122,13 @@ private:
 // 18 LevelsStarted, 19 SetGameRule, 20 SetDayTime, 21 SetWeather,
 // 22 SpawnItem with a pickup delay or an age (tag 3 has neither),
 // 23 SummonEntity, 24 PlayerUse with where it clicked (tag 7 has none),
-// 25 PlayerUse with where it clicked and the player's yaw, 26 PlayerUseItem.
+// 25 PlayerUse with where it clicked and the player's yaw, 26 PlayerUseItem,
+// 27 SetDifficulty.
 std::uint8_t tag_of(const CommandBody& body) {
     if (std::holds_alternative<SummonEntity>(body)) return 23;
     if (std::holds_alternative<PlayerUse>(body)) return 25;
     if (std::holds_alternative<PlayerUseItem>(body)) return 26;
+    if (std::holds_alternative<SetDifficulty>(body)) return 27;
     if (const auto* spawn = std::get_if<SpawnItem>(&body); spawn && (spawn->pickup_delay != 0 || spawn->age != 0)) return 22;
     if (std::holds_alternative<SetGameRule>(body)) return 19;
     if (std::holds_alternative<SetDayTime>(body)) return 20;
@@ -182,6 +185,8 @@ void encode_command(Writer& w, const Command& c) {
             w.put(body.fire);
         } else if constexpr (std::is_same_v<T, SetDayTime>) {
             w.put(body.time);
+        } else if constexpr (std::is_same_v<T, SetDifficulty>) {
+            w.put(body.difficulty);
         } else if constexpr (std::is_same_v<T, SetWeather>) {
             w.put(static_cast<std::uint8_t>(body.kind));
             w.put(body.duration);
@@ -476,6 +481,12 @@ bool decode_command(Reader& r, Command& c) {
     case 20: {
         SetDayTime b;
         if (!r.get(b.time) || b.time < 0) return false;
+        c.body = b;
+        return true;
+    }
+    case 27: {
+        SetDifficulty b;
+        if (!r.get(b.difficulty) || b.difficulty > max_difficulty) return false;
         c.body = b;
         return true;
     }

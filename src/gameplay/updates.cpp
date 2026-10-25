@@ -206,6 +206,7 @@ void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
         else if (is_stairs(s)) stairs_shape_update(ctx, target, s, *d);
         else if (needs_support(s)) support_shape_update(ctx, target, s, *d);
         else if (is_farmland(s)) farmland_shape_update(ctx, target, *d);
+        else if (is_fire(s) || is_soul_fire(s)) fire_shape_update(ctx, target, s);
         break;
     default: break;
     }
@@ -255,6 +256,7 @@ void on_placed(RuleContext& ctx, BlockPos pos, BlockState state, BlockState prev
         else if (falls(state)) schedule_fall(ctx, pos);
         // TNT placed or moved in where redstone reaches it is primed.
         else if (is_tnt(state) && !is_tnt(previous)) check_tnt(ctx, pos);
+        else if (is_fire(state) || is_soul_fire(state)) fire_placed(ctx, pos, state, previous);
         // Sugar cane or a cactus moved in where it cannot stay breaks a tick later.
         else if (moved_in) check_support_later(ctx, pos, state);
         break;

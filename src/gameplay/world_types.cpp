@@ -257,6 +257,7 @@ std::string first_difference(const WorldDump& a, const WorldDump& b) {
         return "game rules: set only in the second";
     }
     if (a.day_time != b.day_time) return std::format("day time {} != {}", a.day_time, b.day_time);
+    if (a.difficulty != b.difficulty) return std::format("difficulty {} != {}", a.difficulty, b.difficulty);
     if (a.sequence_settings != b.sequence_settings) return "random sequence settings";
     if (a.weather != b.weather) {
         const auto text = [](const Weather& w) {
@@ -322,6 +323,7 @@ std::uint64_t digest(const WorldDump& d) {
         h.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(value)));
     }
     h.add(static_cast<std::uint64_t>(d.day_time));
+    h.add(d.difficulty);
     h.add(static_cast<std::uint64_t>(static_cast<std::uint32_t>(d.sequence_settings.salt)));
     h.add(static_cast<std::uint64_t>(d.sequence_settings.include_world_seed) | static_cast<std::uint64_t>(d.sequence_settings.include_sequence_id) << 1);
     const auto& w = d.weather;

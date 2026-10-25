@@ -91,6 +91,7 @@ private:
     contracts::Tick started_{};
     std::map<std::string, std::int32_t> game_rules_;
     std::int64_t day_time_{};
+    std::uint8_t difficulty_{};
     gameplay::Weather weather_;
     std::uint8_t sky_darken_{}; // as the overworld's last tick computed it
     bool failed_{};

@@ -376,6 +376,7 @@ Plan plan(RuleContext&, const contracts::LevelsStarted&) { return std::unexpecte
 Plan plan(RuleContext&, const contracts::SetGameRule&) { return std::unexpected(ErrorCode::unknown_command); }
 Plan plan(RuleContext&, const contracts::SetDayTime&) { return std::unexpected(ErrorCode::unknown_command); }
 Plan plan(RuleContext&, const contracts::SetWeather&) { return std::unexpected(ErrorCode::unknown_command); }
+Plan plan(RuleContext&, const contracts::SetDifficulty&) { return std::unexpected(ErrorCode::unknown_command); }
 } // namespace
 
 void apply_command(RuleContext& ctx, const contracts::Command& command) {

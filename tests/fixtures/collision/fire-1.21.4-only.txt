@@ -1,0 +1,17 @@
+# Whether fire stays with every block state, as both official servers decide it with nothing else around (harness
+# 0.26.0 fire report): fire in the air with the state east of it (beside: the state is flammable), fire on the
+# state (on), soul fire on the state (soul_on). One code per column, 1 or 0, ? when the state did not stay where it
+# was set. A bare block name stands for all its states. Columns: beside on soul_on
+# Java Edition 1.21.4: the states whose codes fire-1.21.8.txt does not give; every other state as there.
+minecraft:creaking_heart[active=true,axis=x,natural=true] 010
+minecraft:creaking_heart[active=true,axis=x,natural=false] 010
+minecraft:creaking_heart[active=true,axis=y,natural=true] 010
+minecraft:creaking_heart[active=true,axis=y,natural=false] 010
+minecraft:creaking_heart[active=true,axis=z,natural=true] 010
+minecraft:creaking_heart[active=true,axis=z,natural=false] 010
+minecraft:creaking_heart[active=false,axis=x,natural=true] 010
+minecraft:creaking_heart[active=false,axis=x,natural=false] 010
+minecraft:creaking_heart[active=false,axis=y,natural=true] 010
+minecraft:creaking_heart[active=false,axis=y,natural=false] 010
+minecraft:creaking_heart[active=false,axis=z,natural=true] 010
+minecraft:creaking_heart[active=false,axis=z,natural=false] 010

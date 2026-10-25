@@ -334,6 +334,18 @@ constexpr std::array reference_v4_mechanisms{
         "and solidity of every state come from the registry (tests/fixtures/collision/support-*.txt). The drops' "
         "positions follow item_entity; without data packs, plants whose loot rolls random numbers drop nothing (with "
         "them, see loot)."},
+    MechanismEntry{"fire", l0_exact, l2_declared_deviation, harness_trace,
+        "Fire stays on a sturdy top or beside a flammable block (soul fire on soul sand and soul soil), takes the faces "
+        "of flammable neighbors when nothing below bears or feeds it, and goes when an update finds it unsupported. "
+        "Every state of fire draws its next block tick (30 to 39 ticks) from the level random; in it, with doFireTick "
+        "(on 1.21.8 also a player within 128 blocks of the chunk, or allowFireTicksAwayFromPlayer), it ages, burns out, "
+        "burns its neighbors by their burn odds (TNT primed) and spreads to cells beside flammable blocks by their "
+        "ignite odds and the difficulty; netherrack and magma blocks keep it (fire_basics, fire_stone, fire_netherrack, "
+        "fire_planks, fire_log, fire_tnt, fire_wool; the odds from minecraft.wiki \"Fire\", which blocks burn in "
+        "tests/fixtures/collision/fire-*.txt). Gaps: rain and humid biomes do not put it out sooner; entities in fire "
+        "and lava, lightning and flint and steel setting fire are not modeled; the player range on 1.21.8 is that of "
+        "random ticks, not observed for fire; the pending tick of fire that went out stands for any block without rules "
+        "of its own set there before it is due (as their ticks do for each other), and Anvil export leaves it out."},
     MechanismEntry{"container_menus", l0_exact, l2_declared_deviation, controlled_experiment,
         "Player windows and chest, double chest and hopper menus with every click mode, applied as commands. "
         "A 48-step client scenario (every click mode, double chests, hoppers, the own window, throws and "
@@ -484,13 +496,15 @@ constexpr std::array game_rules_1_21_4{
 // its own: the rules were checked against harness traces of 1.21.8, and the
 // same scenarios recorded on 1.21.4 are identical (evidence_tests compares
 // every pair). What differs is the bundles' own: content, component schema,
-// registries and game rules, and where random ticks run (RandomTickRange),
-// which the official servers showed differs.
+// registries and game rules (fire acts away from players only with 1.21.8's
+// allowFireTicksAwayFromPlayer), and where random ticks run
+// (RandomTickRange), which the official servers showed differs.
 constexpr RuleSet rules_1_21_8{"circuit-reference-rules-v12", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
                                "circuit-blocks-1", "harness traces of 1.21.8 (tests/fixtures/harness)", RandomTickRange::entity_ticking};
 constexpr RuleSet rules_1_21_4{"circuit-reference-rules-v12", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
                                "circuit-blocks-1",
-                               "harness traces of 1.21.4 (tests/fixtures/harness-1.21.4), each identical to its 1.21.8 recording; "
+                               "harness traces of 1.21.4 (tests/fixtures/harness-1.21.4), each identical to its 1.21.8 recording "
+                               "(fire's with 1.21.8's allowFireTicksAwayFromPlayer on); "
                                "random ticks run only near players (observed on the official 1.21.4 server)",
                                RandomTickRange::block_ticking_near_player};
 

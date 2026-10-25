@@ -127,6 +127,8 @@ int main() {
                     && rules.admit(SetWeather{WeatherKind::rain, -1}).error() == ErrorCode::invalid_argument
                     && rules.admit(SetWeather{static_cast<WeatherKind>(3), 1}).error() == ErrorCode::invalid_argument,
                 "weather kinds and durations");
+        require(rules.admit(SetDifficulty{3}).has_value() && rules.admit(SetDifficulty{4}).error() == ErrorCode::invalid_argument,
+                "difficulties from peaceful to hard");
     });
 
     suite.run("trace divergence", [] {
@@ -305,6 +307,12 @@ int main() {
             auto kind = encode_replay(weather).value();
             kind[kind.size() - 5] = std::byte{3}; // the second command's kind
             require(decode_replay(kind).error() == ErrorCode::malformed_record, "an unknown weather is refused");
+            ReplayLog difficulty{"java-1.21.8", "circuit-reference-rules-v12", 1, {}, "circuit-blocks-1"};
+            difficulty.ticks.push_back({1, {{1, SetDifficulty{0}}, {2, SetDifficulty{3}}}});
+            require(decode_replay(encode_replay(difficulty).value()).value() == difficulty, "difficulties round-trip");
+            auto hard = encode_replay(difficulty).value();
+            hard[hard.size() - 1] = std::byte{4}; // the second command's difficulty
+            require(decode_replay(hard).error() == ErrorCode::malformed_record, "a difficulty above hard is refused");
             ReplayLog summons{"java-1.21.8", "circuit-reference-rules-v12", 1, {}, "circuit-blocks-1"};
             summons.ticks.push_back({1, {{1, SummonEntity{"minecraft:arrow", {0.5, 3.0, 0.5}, {1.2, 0.25, 0.05}, 80, 300}},
                                          {2, SummonEntity{"minecraft:tnt", {1.5, 2.0, 0.5}, {}, 3, 0}}}});

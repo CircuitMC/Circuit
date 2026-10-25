@@ -414,6 +414,8 @@ struct WorldDump {
     // overworld has a daylight cycle. It advances by one each tick after the
     // commands while doDaylightCycle is on.
     std::int64_t day_time{};
+    // The world's difficulty (contracts::SetDifficulty), peaceful until set.
+    std::uint8_t difficulty{};
     // The world's weather (contracts::SetWeather), as the overworld's: only it has weather.
     Weather weather;
     // How new random sequences start (random_sequence.hpp).

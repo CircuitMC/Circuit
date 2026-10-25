@@ -242,7 +242,7 @@ std::expected<std::vector<contracts::CommandBody>, std::string> forceload(const 
 // Boolean game rules the rules read.
 bool boolean_rule_read(std::string_view name) {
     return name == "tntExplodes" || name == "doDaylightCycle" || name == "doWeatherCycle" || name == "lavaSourceConversion"
-        || name == "waterSourceConversion";
+        || name == "waterSourceConversion" || name == "doFireTick" || name == "allowFireTicksAwayFromPlayer";
 }
 
 // Scenarios whose drops come from loot tables need the data packs' data.
@@ -281,9 +281,9 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
             return std::unexpected(report(Outcome::invalid, std::format("game rule {} does not exist in {}", name, f.game_version)));
         const auto expected = rule->type == contracts::GameRuleType::boolean ? std::string(rule->default_value ? "true" : "false")
                                                                              : std::to_string(rule->default_value);
-        // randomTickSpeed, tntExplodes, the day and weather cycles and the
-        // source conversions are world state the rules read; other rules are
-        // modeled only at their defaults.
+        // randomTickSpeed, tntExplodes, the day and weather cycles, the
+        // source conversions and fire's rules are world state the rules
+        // read; other rules are modeled only at their defaults.
         if (name == "randomTickSpeed" || boolean_rule_read(name)) continue;
         if (value != expected)
             return std::unexpected(report(Outcome::unsupported, std::format("game rule {}: the rules model only its default, {}", name, expected)));

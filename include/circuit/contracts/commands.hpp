@@ -295,9 +295,18 @@ struct SetWeather {
     bool operator==(const SetWeather&) const = default;
 };
 
+// The world's difficulty takes a value: 0 peaceful, 1 easy, 2 normal, 3
+// hard. Like the game rules it belongs to the world.
+inline constexpr std::uint8_t max_difficulty = 3;
+struct SetDifficulty {
+    std::uint8_t difficulty{};
+    bool operator==(const SetDifficulty&) const = default;
+};
+
 using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket,
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
-                                 PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity, PlayerUseItem>;
+                                 PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity, PlayerUseItem,
+                                 SetDifficulty>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.
@@ -326,6 +335,8 @@ public:
                      || !std::ranges::all_of(rule->name, [](char ch) { return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'); })))
             return std::unexpected(ErrorCode::invalid_argument);
         if (const auto* day = std::get_if<SetDayTime>(&body); day && day->time < 0) return std::unexpected(ErrorCode::invalid_argument);
+        if (const auto* set = std::get_if<SetDifficulty>(&body); set && set->difficulty > max_difficulty)
+            return std::unexpected(ErrorCode::invalid_argument);
         if (const auto* summon = std::get_if<SummonEntity>(&body); summon && !valid_entity_type(summon->type))
             return std::unexpected(ErrorCode::invalid_argument);
         if (const auto* weather = std::get_if<SetWeather>(&body);

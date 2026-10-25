@@ -92,6 +92,12 @@ public:
     virtual std::uint8_t light(BlockPos pos) = 0;
     // The sky light alone, from the same light.
     virtual std::uint8_t sky_light(BlockPos pos) = 0;
+    // Whether a player of the level is within 128 blocks of the chunk's
+    // center (what fire needs on 1.21.5 and later; presences change only in
+    // the command phase).
+    virtual bool player_near(ChunkPos chunk) = 0;
+    // The world's difficulty (contracts::SetDifficulty).
+    virtual std::uint8_t difficulty() = 0;
     // The overworld's day time, and the darkening of its sky (0-11) as its
     // last tick computed it (gameplay/sky.hpp).
     struct Sky {

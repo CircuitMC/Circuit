@@ -1306,6 +1306,34 @@ inline Scenario waterlogged_scenario() {
     }};
 }
 
+// Fire across the x=16 chunk edge on a hard world: planks, wool and TNT
+// burning while a player stands near, nothing but rescheduling once the
+// player leaves, and burning again with allowFireTicksAwayFromPlayer.
+inline Scenario fire_scenario() {
+    return {"fire", 61, 300, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1), SetDifficulty{3}, PlayerPresence{{1, 1}, at_block(16.5, 0.0, 2.5)}};
+        std::vector<CommandBody> c;
+        if (t == 2) {
+            for (int x = 8; x <= 24; ++x)
+                for (int z = -3; z <= 6; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            for (int x = 10; x <= 22; ++x)
+                for (int z = 0; z <= 1; ++z) c.push_back(place({x, 0, z}, registry_block("oak_planks")));
+            for (int x = 14; x <= 18; ++x) c.push_back(place({x, 0, 3}, registry_block("white_wool")));
+            c.push_back(place({16, 0, 4}, registry_block("tnt")));
+            c.push_back(place({15, 1, 1}, registry_block("oak_fence")));
+        }
+        if (t == 5) {
+            c.push_back(place({12, 0, 2}, registry_block("fire")));
+            c.push_back(place({20, 0, 2}, registry_block("fire")));
+            c.push_back(place({17, 1, 3}, registry_block("fire")));
+            c.push_back(place({22, 3, 5}, registry_block("fire"))); // in the air: gone at once
+        }
+        if (t == 150) c.push_back(PlayerPresence{{1, 1}, {}, false, false});
+        if (t == 200) c.push_back(SetGameRule{"allowFireTicksAwayFromPlayer", 1});
+        return c;
+    }, 10};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
@@ -1313,7 +1341,7 @@ inline std::vector<Scenario> all_scenarios() {
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
             plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario(), rail_scenario(), minecart_rail_scenario(), minecart_meeting_scenario(), detector_rail_scenario(), coral_scenario(),
-            dispenser_scenario(), tnt_duper_scenario(), flying_engine_scenario(), item_sorter_scenario(), lava_scenario(), waterlogged_scenario()};
+            dispenser_scenario(), tnt_duper_scenario(), flying_engine_scenario(), item_sorter_scenario(), lava_scenario(), waterlogged_scenario(), fire_scenario()};
 }
 
 } // namespace circuit::test

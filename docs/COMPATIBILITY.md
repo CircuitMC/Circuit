@@ -124,7 +124,7 @@ Each mechanism of the rule set declares a compatibility tier:
 | L1 | Exact within a region; only invariants across regions |
 | L2 | Circuit's own definition; known or uncompared differences are listed |
 
-`circuit-server --compatibility` prints the table of the selected bundle, with each row's tier, evidence and gaps. [The simulation guide](SIMULATION.md#status) explains the rows and the evidence behind them. Both supported versions run the same rule set: the traces recorded on 1.21.4 are identical to those recorded on 1.21.8.
+`circuit-server --compatibility` prints the table of the selected bundle, with each row's tier, evidence and gaps. [The simulation guide](SIMULATION.md#status) explains the rows and the evidence behind them. Both supported versions run the same rule set: the traces recorded on 1.21.4 are identical to those recorded on 1.21.8 (where fire is concerned, with 1.21.8's allowFireTicksAwayFromPlayer on: from 1.21.5 fire acts only near players unless that game rule lets it). What differs follows from each bundle's content, game rules and random-tick range.
 
 Behavior the server adds on top of the rules, such as player placement, digging time and container windows, is checked against the official server with the client harnesses; [the server guide](SERVER.md#design) describes what is validated. Player inventories, survival use and the click modes of container windows are part of the rule set; their results were compared with the official servers of both versions in a 48-step window scenario. With the official data pack, 2x2 crafting was compared in a 48-step scenario and block drops in 23 cases per version (see [data packs](DATA_PACKS.md)).
 

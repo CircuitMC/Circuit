@@ -47,6 +47,8 @@ public:
     }
     std::uint8_t light(BlockPos pos) override { return o_.light(dimension(), pos); }
     std::uint8_t sky_light(BlockPos pos) override { return o_.light(dimension(), pos, true); }
+    bool player_near(ChunkPos chunk) override { return gameplay::player_near(lv().presences, chunk); }
+    std::uint8_t difficulty() override { return o_.difficulty_; }
     Sky sky() override { return {o_.day_time_, o_.sky_darken_}; }
     std::int32_t game_rule(std::string_view name) override { return game_rule_value(o_.bundle_, o_.game_rules_, name); }
     std::optional<contracts::Generation> chunk_generation(ChunkPos chunk) override {
@@ -261,6 +263,9 @@ void Oracle::advance(const std::vector<contracts::Command>& commands) {
         } else if (const auto* day = std::get_if<contracts::SetDayTime>(&c.body)) {
             if (day->time < 0) ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
             else day_time_ = day->time;
+        } else if (const auto* set = std::get_if<contracts::SetDifficulty>(&c.body)) {
+            if (set->difficulty > contracts::max_difficulty) ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
+            else difficulty_ = set->difficulty;
         } else if (const auto* weather = std::get_if<contracts::SetWeather>(&c.body)) {
             if (static_cast<std::uint8_t>(weather->kind) >= contracts::weather_kind_count || weather->duration < 0)
                 ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
@@ -481,6 +486,7 @@ WorldDump Oracle::dump() const {
     d.started = started_;
     d.game_rules = game_rules_;
     d.day_time = day_time_;
+    d.difficulty = difficulty_;
     d.weather = weather_;
     for (const auto level : contracts::level_order) {
         const auto& lv = levels_[static_cast<std::size_t>(level)];

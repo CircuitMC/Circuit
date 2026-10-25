@@ -401,6 +401,9 @@ void Engine::Impl::command_phase(const std::vector<Command>& commands) {
         } else if (const auto* day = std::get_if<contracts::SetDayTime>(&c.body)) {
             if (day->time < 0) ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
             else world.day_time = day->time;
+        } else if (const auto* set = std::get_if<contracts::SetDifficulty>(&c.body)) {
+            if (set->difficulty > contracts::max_difficulty) ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
+            else world.difficulty = set->difficulty;
         } else if (const auto* weather = std::get_if<contracts::SetWeather>(&c.body)) {
             if (static_cast<std::uint8_t>(weather->kind) >= contracts::weather_kind_count || weather->duration < 0)
                 ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
@@ -1001,6 +1004,7 @@ void fill_dump(const WorldStore& world, const contracts::VersionBundle& bundle, 
     d.started = world.started;
     d.game_rules = world.game_rules;
     d.day_time = world.day_time;
+    d.difficulty = world.difficulty;
     d.weather = world.weather;
     d.sequence_settings = world.sequence_settings;
     std::map<DimensionId, std::vector<std::pair<std::uint64_t, BlockEvent>>> events;
@@ -1098,6 +1102,8 @@ void Engine::Impl::restore(const WorldDump& state) {
     world.game_rules = state.game_rules;
     if (state.day_time < 0) bad("day time");
     world.day_time = state.day_time;
+    if (state.difficulty > contracts::max_difficulty) bad("difficulty");
+    world.difficulty = state.difficulty;
     if (!gameplay::valid_weather(state.weather)) bad("weather");
     world.weather = state.weather;
     world.sequence_settings = state.sequence_settings;
@@ -1283,6 +1289,7 @@ Engine::~Engine() = default;
 void Engine::advance(const std::vector<Command>& commands) { impl_->advance(commands); }
 contracts::Tick Engine::time() const noexcept { return impl_->world.time; }
 std::int64_t Engine::day_time() const noexcept { return impl_->world.day_time; }
+std::uint8_t Engine::difficulty() const noexcept { return impl_->world.difficulty; }
 const gameplay::Weather& Engine::weather() const noexcept { return impl_->world.weather; }
 const std::vector<TraceRecord>& Engine::trace() const noexcept { return impl_->trace; }
 WorldDump Engine::dump() const { return impl_->dump(); }

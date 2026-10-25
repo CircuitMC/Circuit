@@ -928,8 +928,25 @@
           "id": "fire",
           "name": "Fire spread, burning and extinguishing",
           "milestone": "C5",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "cases": [
+            "collision/fire",
+            "trace/fire_basics",
+            "trace/fire_stone",
+            "trace/fire_netherrack",
+            "trace/fire_planks",
+            "trace/fire_log",
+            "trace/fire_tnt",
+            "trace/fire_wool",
+            "trace/fire_spread"
+          ],
+          "note": "Fire stays on sturdy tops and beside flammable blocks, soul fire on soul sand and soil; its block ticks age it, burn it out, burn its neighbors by their burn odds and spread it by their ignite odds and the difficulty, as both official servers do; on 1.21.8 only near players unless allowFireTicksAwayFromPlayer",
+          "deviations": [
+            "rain and humid biomes do not put it out sooner",
+            "entities in fire are not hurt or set on fire",
+            "lava, lightning and flint and steel do not set fire"
+          ]
         },
         {
           "id": "snow_and_ice",
@@ -1462,11 +1479,12 @@
             "trace/tnt_chain_edge",
             "trace/tnt_power",
             "trace/arrow_tnt",
-            "trace/dispensers"
+            "trace/dispensers",
+            "trace/fire_tnt"
           ],
-          "note": "Redstone: a signal from any neighbor when TNT is placed, moved in by a piston or updated (blocks, levers, diodes, observers, dust, strongly powered blocks); explosions prime TNT with a fuse of 10 to 29 ticks; a burning arrow primes the TNT it hits; dispensers prime TNT items",
+          "note": "Redstone: a signal from any neighbor when TNT is placed, moved in by a piston or updated (blocks, levers, diodes, observers, dust, strongly powered blocks); explosions prime TNT with a fuse of 10 to 29 ticks; fire burning it primes it; a burning arrow primes the TNT it hits; dispensers prime TNT items",
           "deviations": [
-            "fire, flint and steel (also in dispensers) and fire charges do not ignite TNT yet; of the burning projectiles only arrows are modeled"
+            "flint and steel (also in dispensers) and fire charges do not ignite TNT yet; of the burning projectiles only arrows are modeled"
           ]
         },
         {

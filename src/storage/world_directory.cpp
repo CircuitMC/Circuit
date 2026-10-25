@@ -11,8 +11,9 @@
 namespace circuit::storage {
 namespace {
 constexpr std::string_view manifest_file = "manifest";
-// Log segments: "CIRCWAL" and a format byte. 9: summoned entities (tag
-// 23); 8 (read only): spawned items may carry a pickup delay and an age (tag
+// Log segments: "CIRCWAL" and a format byte. 10: the world's difficulty
+// (tag 27); 9 (read only): summoned entities (tag 23), player uses with
+// where they clicked and items used along the view (tags 24-26); 8 (read only): spawned items may carry a pickup delay and an age (tag
 // 22); 7 (read only): positions and velocities
 // are doubles; 6 (read only): weather; 5 (read only): day time; 4 (read
 // only): game rule changes; 3 (read only): typed tickets, presences; 2 (read
@@ -21,10 +22,11 @@ constexpr std::string_view manifest_file = "manifest";
 // encoding of formats 2 to 6 is the same; a format 2 record holds no command
 // of tags 16-21, a format 3 record none of tags 19-21, a format 4 record none
 // of tags 20-21, a format 5 record none of tags 21-22, a format 6 or 7
-// record none of tag 22, a format 8 record none of tag 23. Formats 7 to 9 write positions and velocities as
+// record none of tag 22, a format 8 record none of tag 23, a format 9 record
+// none of tag 27. Formats 7 to 10 write positions and velocities as
 // doubles instead of 1/4096 block units.
 constexpr std::string_view segment_prefix{"CIRCWAL", 7};
-constexpr char segment_format = 9;
+constexpr char segment_format = 10;
 constexpr std::size_t segment_magic_size = 8;
 constexpr std::size_t max_record = std::size_t{64} << 20;
 

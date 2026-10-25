@@ -24,7 +24,7 @@ The configuration file holds `key=value` lines; `#` starts a comment. Unknown ke
 | `bind-address`, `port` | `0.0.0.0`, `25565` | Listening address |
 | `game-version` | `java-1.21.8` | Version bundle: `java-1.21.8` or `java-1.21.4`. Clients of another protocol are refused at login |
 | `online-mode` | `true` | Require session verification. See [Identity](#identity) |
-| `allow-flight`, `difficulty` | `false`, `easy` | Whether survival players may hover; `peaceful`, `easy`, `normal` or `hard` (how far players starve, and peaceful regeneration) |
+| `allow-flight`, `difficulty` | `false`, `easy` | Whether survival players may hover; `peaceful`, `easy`, `normal` or `hard` (how far players starve, peaceful regeneration, and how readily fire spreads); the world takes it at every start |
 | `session-server` | `https://sessionserver.mojang.com` | Session service for online mode; plain `http` only on loopback |
 | `auth-timeout-ms` | `5000` | Deadline for one verification |
 | `max-players`, `max-connections` | `20`, `256` | Players in the game; open sockets of any kind |
