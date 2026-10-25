@@ -273,7 +273,8 @@ void explode(RuleContext& ctx, Vec3 center, float power) {
             continue;
         }
         // Stacks of none are not compared yet in explosions: they drop nothing.
-        for (auto& stack : block_drops(ctx, p, s, {}, true))
+        // Primed TNT is the explosion's entity: snow drops its snowballs (snow_explosion).
+        for (auto& stack : block_drops(ctx, p, s, {}, true, true))
             if (stack.count > 0) add_drop(drops, std::move(stack), p);
         set_block(ctx, p, blocks::air());
     }

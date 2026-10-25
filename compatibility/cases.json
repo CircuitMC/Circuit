@@ -405,6 +405,17 @@
       "description": "Whether 47 plants stay on every block state as support, as both official servers decide it; Circuit's rules match the 30 that need only the ground below them for every state of both versions (1,535,030 pairs)"
     },
     {
+      "id": "collision/snow",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "tests/fixtures/collision/snow-*.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness snow report",
+      "status": "passing",
+      "description": "Whether a snow layer stays on every block state, as both official servers decide it; Circuit's rules match every state of both versions but those that do not stay where they are set"
+    },
+    {
       "id": "collision/fire",
       "kind": "black_box",
       "versions": [

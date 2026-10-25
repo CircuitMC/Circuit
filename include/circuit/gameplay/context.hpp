@@ -90,8 +90,9 @@ public:
     // light and sky light, from the blocks at the end of the previous tick
     // (gameplay/light.hpp), in every phase.
     virtual std::uint8_t light(BlockPos pos) = 0;
-    // The sky light alone, from the same light.
+    // The sky light alone, and the block light alone, from the same light.
     virtual std::uint8_t sky_light(BlockPos pos) = 0;
+    virtual std::uint8_t block_light(BlockPos pos) = 0;
     // Whether a player of the level is within 128 blocks of the chunk's
     // center (what fire needs on 1.21.5 and later; presences change only in
     // the command phase).

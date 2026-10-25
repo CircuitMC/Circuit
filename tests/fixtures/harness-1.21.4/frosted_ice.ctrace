@@ -1,0 +1,258 @@
+circuit-trace 2
+title Frosted ice melting when its neighbors change
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.27.0+mc1.21.4
+mechanisms snow_and_ice water
+area 0 0 0 19 4 7
+ticks 60
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 0
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 0 1 minecraft:stone
+at 0 set 16 0 2 minecraft:stone
+at 0 set 16 0 3 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 set 16 0 5 minecraft:stone
+at 0 set 16 0 6 minecraft:stone
+at 0 set 16 0 7 minecraft:stone
+at 0 set 17 0 0 minecraft:stone
+at 0 set 17 0 1 minecraft:stone
+at 0 set 17 0 2 minecraft:stone
+at 0 set 17 0 3 minecraft:stone
+at 0 set 17 0 4 minecraft:stone
+at 0 set 17 0 5 minecraft:stone
+at 0 set 17 0 6 minecraft:stone
+at 0 set 17 0 7 minecraft:stone
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 0 1 minecraft:stone
+at 0 set 18 0 2 minecraft:stone
+at 0 set 18 0 3 minecraft:stone
+at 0 set 18 0 4 minecraft:stone
+at 0 set 18 0 5 minecraft:stone
+at 0 set 18 0 6 minecraft:stone
+at 0 set 18 0 7 minecraft:stone
+at 0 set 19 0 0 minecraft:stone
+at 0 set 19 0 1 minecraft:stone
+at 0 set 19 0 2 minecraft:stone
+at 0 set 19 0 3 minecraft:stone
+at 0 set 19 0 4 minecraft:stone
+at 0 set 19 0 5 minecraft:stone
+at 0 set 19 0 6 minecraft:stone
+at 0 set 19 0 7 minecraft:stone
+
+at 1 set 1 1 1 minecraft:frosted_ice
+change 1 commands 1 1 1 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 1 1 2 minecraft:frosted_ice
+change 1 commands 1 1 2 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 1 1 3 minecraft:frosted_ice
+change 1 commands 1 1 3 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 2 1 1 minecraft:frosted_ice
+change 1 commands 2 1 1 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 2 1 2 minecraft:frosted_ice
+change 1 commands 2 1 2 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 2 1 3 minecraft:frosted_ice
+change 1 commands 2 1 3 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 3 1 1 minecraft:frosted_ice
+change 1 commands 3 1 1 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 3 1 2 minecraft:frosted_ice
+change 1 commands 3 1 2 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 3 1 3 minecraft:frosted_ice
+change 1 commands 3 1 3 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 6 1 2 minecraft:frosted_ice
+change 1 commands 6 1 2 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 7 1 2 minecraft:frosted_ice
+change 1 commands 7 1 2 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 8 1 2 minecraft:frosted_ice
+change 1 commands 8 1 2 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 9 1 2 minecraft:frosted_ice
+change 1 commands 9 1 2 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 10 1 2 minecraft:frosted_ice
+change 1 commands 10 1 2 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 12 1 2 minecraft:frosted_ice
+change 1 commands 12 1 2 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 13 1 2 minecraft:frosted_ice
+change 1 commands 13 1 2 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 15 1 2 minecraft:frosted_ice
+change 1 commands 15 1 2 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 15 2 2 minecraft:frosted_ice
+change 1 commands 15 2 2 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 16 1 2 minecraft:frosted_ice[age=2]
+change 1 commands 16 1 2 minecraft:air minecraft:frosted_ice[age=2]
+at 1 set 1 1 6 minecraft:frosted_ice
+change 1 commands 1 1 6 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 2 1 6 minecraft:frosted_ice
+change 1 commands 2 1 6 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 3 1 6 minecraft:frosted_ice
+change 1 commands 3 1 6 minecraft:air minecraft:frosted_ice[age=0]
+draws 1 commands level 22
+
+at 5 set 2 1 2 minecraft:water[level=0]
+change 5 commands 2 1 2 minecraft:frosted_ice[age=0] minecraft:water[level=0]
+at 5 set 8 1 2 minecraft:water[level=0]
+change 5 commands 8 1 2 minecraft:frosted_ice[age=0] minecraft:water[level=0]
+change 5 commands 7 1 2 minecraft:frosted_ice[age=0] minecraft:water[level=0]
+change 5 commands 6 1 2 minecraft:frosted_ice[age=0] minecraft:water[level=0]
+change 5 commands 9 1 2 minecraft:frosted_ice[age=0] minecraft:water[level=0]
+change 5 commands 10 1 2 minecraft:frosted_ice[age=0] minecraft:water[level=0]
+at 5 set 13 1 2 minecraft:stone
+change 5 commands 13 1 2 minecraft:frosted_ice[age=0] minecraft:stone
+change 5 commands 12 1 2 minecraft:frosted_ice[age=0] minecraft:water[level=0]
+at 5 set 15 3 2 minecraft:stone
+change 5 commands 15 3 2 minecraft:air minecraft:stone
+
+change 9 fluid_ticks 8 1 1 minecraft:air minecraft:water[level=1]
+change 9 fluid_ticks 7 1 1 minecraft:air minecraft:water[level=1]
+change 9 fluid_ticks 6 1 1 minecraft:air minecraft:water[level=1]
+change 9 fluid_ticks 9 1 1 minecraft:air minecraft:water[level=1]
+change 9 fluid_ticks 10 1 1 minecraft:air minecraft:water[level=1]
+change 9 fluid_ticks 12 1 1 minecraft:air minecraft:water[level=1]
+
+at 10 set 2 1 6 minecraft:air
+change 10 commands 2 1 6 minecraft:frosted_ice[age=0] minecraft:air
+change 10 commands 1 1 6 minecraft:frosted_ice[age=0] minecraft:water[level=0]
+change 10 commands 3 1 6 minecraft:frosted_ice[age=0] minecraft:water[level=0]
+
+change 14 fluid_ticks 8 1 0 minecraft:air minecraft:water[level=2]
+change 14 fluid_ticks 7 1 0 minecraft:air minecraft:water[level=2]
+change 14 fluid_ticks 6 1 0 minecraft:air minecraft:water[level=2]
+change 14 fluid_ticks 9 1 0 minecraft:air minecraft:water[level=2]
+change 14 fluid_ticks 10 1 0 minecraft:air minecraft:water[level=2]
+change 14 fluid_ticks 12 1 0 minecraft:air minecraft:water[level=2]
+change 14 fluid_ticks 1 1 7 minecraft:air minecraft:water[level=1]
+change 14 fluid_ticks 0 1 6 minecraft:air minecraft:water[level=1]
+change 14 fluid_ticks 3 1 7 minecraft:air minecraft:water[level=1]
+
+at 15 set 2 2 6 minecraft:stone
+change 15 commands 2 2 6 minecraft:air minecraft:stone

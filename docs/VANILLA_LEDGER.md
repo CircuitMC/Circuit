@@ -35,8 +35,8 @@ Feature counts per implementation state, then the number of features with compar
 | V09 Structures and decoration | C7, C5 | 6 | 0 / 0 | 0 / 0 | 0 / 0 | 6 / 6 | 0 / 0 | 0 / 0 |
 | V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 17 / 17 | 23 / 23 | 3 / 3 | 0 / 0 | 17 / 17 |
 | V11 Common building blocks | C5 | 1347 | 0 / 0 | 339 / 339 | 1007 / 1007 | 1 / 1 | 0 / 0 | 130 / 130 |
-| V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 30 / 30 | 51 / 51 | 1 / 1 | 0 / 0 | 15 / 15 |
-| V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 109 / 114 | 194 / 203 | 3 / 3 | 14 / 0 | 108 / 113 |
+| V12 Fluids, fire and falling blocks | C3, C5 | 82 | 0 / 0 | 34 / 34 | 48 / 48 | 0 / 0 | 0 / 0 | 19 / 19 |
+| V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 110 / 115 | 193 / 202 | 3 / 3 | 14 / 0 | 109 / 114 |
 | V14 Redstone sources and signal consumers | C4, C5 | 138 | 7 / 7 | 97 / 97 | 33 / 33 | 1 / 1 | 0 / 0 | 39 / 41 |
 | V15 Pistons and moving structures | C3, C4 | 16 | 2 / 2 | 14 / 14 | 0 / 0 | 0 / 0 | 0 / 0 | 12 / 12 |
 | V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 29 / 29 | 28 / 28 | 2 / 2 | 0 / 0 | 29 / 29 |
@@ -67,7 +67,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 506 / 511 | 585 / 590 | 0 / 0 |
+| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 510 / 515 | 581 / 586 | 0 / 0 |
 | item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 130 / 130 | 1254 / 1285 | 0 / 0 |
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 17 / 17 | 0 / 0 | 132 / 134 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
@@ -127,10 +127,10 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 45 |
+| black_box | passing | 46 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 166 |
+| official_trace | passing | 171 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -265,7 +265,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Waterlogged blocks | C5 | partial, compared | partial, compared | `client/buckets`, `client/building`, `trace/waterlogged_flow`; Blocks waterlogged by placement in water, buckets and dispensers; their water moves to the sides their collision shapes leave open after shape updates and once poured; entities' currents do not see it yet |
 | Filling and emptying buckets | C5 | partial, compared | partial, compared | `client/buckets`, `collision/fluids`, `trace/dispenser_buckets`; Water and lava buckets filled and poured by players along their view and by dispensers; fish, axolotl and tadpole buckets, milk and placing powder snow are not modeled |
 | Fire spread, burning and extinguishing | C5 | partial, compared | partial, compared | `collision/fire`, `trace/fire_basics`, `trace/fire_log`, `trace/fire_netherrack`, `trace/fire_planks`, `trace/fire_spread`, `trace/fire_stone`, `trace/fire_tnt`, `trace/fire_wool`; entities in fire are not hurt or set on fire; lava, lightning and flint and steel do not set fire; rain and humid biomes do not put it out sooner; Fire stays on sturdy tops and beside flammable blocks, soul fire on soul sand and soil; its block ticks age it, burn it out, burn its neighbors by their burn odds and spread it by their ignite odds and the difficulty, as both official servers do; on 1.21.8 only near players unless allowFireTicksAwayFromPlayer |
-| Snow, ice, freezing and melting | C5 | missing, none | missing, none |  |
+| Snow, ice, freezing and melting | C5 | partial, compared | partial, compared | `collision/snow`, `trace/frosted_ice`, `trace/frosted_ice_ticks`, `trace/ice_break`, `trace/snow_explosion`, `trace/snow_layers`; melting and freezing by light and weather (random ticks) are not modeled; players do not stack snow layers yet; powder snow is not modeled; Snow layers on their supports and breaking without them, snowy grass, podzol and mycelium, ice and frosted ice turning to water when players break them, frosted ice aging and melting in its block ticks and by updates, and snow's drops, as both official servers do |
 | Falling blocks: sand, gravel, concrete powder, anvils, dripstone, scaffolding | C3 | partial, compared | partial, compared | `collision/replaceable`, `trace/falling_column`, `trace/falling_drop`, `trace/falling_onto`, `trace/falling_void`; anvils, pointed dripstone, scaffolding and suspicious sand and gravel do not fall; concrete powder placed beside water or reached by flowing water does not become concrete; falling blocks hurt nothing; Sand, red sand, gravel and the concrete powders: when they fall, the falling block's motion, landing, breaking into items, concrete powder in water, and the 100- and 600-tick limits |
 
 ### V13 Crops, growth and ecology

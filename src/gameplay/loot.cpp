@@ -74,6 +74,7 @@ bool test(const Condition& c, const BreakContext& ctx) {
         return random(ctx).next_float() < static_cast<float>(c.chances[std::min(level, c.chances.size() - 1)]);
     }
     case Condition::Kind::location: return ctx.location && ctx.location(c);
+    case Condition::Kind::breaker: return ctx.by_entity;
     }
     return false;
 }

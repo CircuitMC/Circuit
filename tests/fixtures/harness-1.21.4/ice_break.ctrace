@@ -1,0 +1,623 @@
+circuit-trace 2
+title Players breaking ice, frosted, packed and blue ice, snow layers and snow blocks
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.27.0+mc1.21.4
+mechanisms snow_and_ice loot support
+area 0 0 0 23 4 5
+ticks 60
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 0
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 0 1 minecraft:stone
+at 0 set 16 0 2 minecraft:stone
+at 0 set 16 0 3 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 set 16 0 5 minecraft:stone
+at 0 set 17 0 0 minecraft:stone
+at 0 set 17 0 1 minecraft:stone
+at 0 set 17 0 2 minecraft:stone
+at 0 set 17 0 3 minecraft:stone
+at 0 set 17 0 4 minecraft:stone
+at 0 set 17 0 5 minecraft:stone
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 0 1 minecraft:stone
+at 0 set 18 0 2 minecraft:stone
+at 0 set 18 0 3 minecraft:stone
+at 0 set 18 0 4 minecraft:stone
+at 0 set 18 0 5 minecraft:stone
+at 0 set 19 0 0 minecraft:stone
+at 0 set 19 0 1 minecraft:stone
+at 0 set 19 0 2 minecraft:stone
+at 0 set 19 0 3 minecraft:stone
+at 0 set 19 0 4 minecraft:stone
+at 0 set 19 0 5 minecraft:stone
+at 0 set 20 0 0 minecraft:stone
+at 0 set 20 0 1 minecraft:stone
+at 0 set 20 0 2 minecraft:stone
+at 0 set 20 0 3 minecraft:stone
+at 0 set 20 0 4 minecraft:stone
+at 0 set 20 0 5 minecraft:stone
+at 0 set 21 0 0 minecraft:stone
+at 0 set 21 0 1 minecraft:stone
+at 0 set 21 0 2 minecraft:stone
+at 0 set 21 0 3 minecraft:stone
+at 0 set 21 0 4 minecraft:stone
+at 0 set 21 0 5 minecraft:stone
+at 0 set 22 0 0 minecraft:stone
+at 0 set 22 0 1 minecraft:stone
+at 0 set 22 0 2 minecraft:stone
+at 0 set 22 0 3 minecraft:stone
+at 0 set 22 0 4 minecraft:stone
+at 0 set 22 0 5 minecraft:stone
+at 0 set 23 0 0 minecraft:stone
+at 0 set 23 0 1 minecraft:stone
+at 0 set 23 0 2 minecraft:stone
+at 0 set 23 0 3 minecraft:stone
+at 0 set 23 0 4 minecraft:stone
+at 0 set 23 0 5 minecraft:stone
+
+at 1 set 1 1 1 minecraft:ice
+change 1 commands 1 1 1 minecraft:air minecraft:ice
+at 1 set 3 2 1 minecraft:ice
+change 1 commands 3 2 1 minecraft:air minecraft:ice
+at 1 set 5 1 1 minecraft:water[level=0]
+change 1 commands 5 1 1 minecraft:air minecraft:water[level=0]
+at 1 set 4 1 1 minecraft:stone
+change 1 commands 4 1 1 minecraft:air minecraft:stone
+at 1 set 6 1 1 minecraft:stone
+change 1 commands 6 1 1 minecraft:air minecraft:stone
+at 1 set 5 1 0 minecraft:stone
+change 1 commands 5 1 0 minecraft:air minecraft:stone
+at 1 set 5 1 2 minecraft:stone
+change 1 commands 5 1 2 minecraft:air minecraft:stone
+at 1 set 5 2 1 minecraft:ice
+change 1 commands 5 2 1 minecraft:air minecraft:ice
+at 1 set 7 1 1 minecraft:frosted_ice
+change 1 commands 7 1 1 minecraft:air minecraft:frosted_ice[age=0]
+at 1 set 9 1 1 minecraft:packed_ice
+change 1 commands 9 1 1 minecraft:air minecraft:packed_ice
+at 1 set 11 1 1 minecraft:blue_ice
+change 1 commands 11 1 1 minecraft:air minecraft:blue_ice
+at 1 set 13 1 1 minecraft:ice
+change 1 commands 13 1 1 minecraft:air minecraft:ice
+at 1 set 15 1 1 minecraft:snow[layers=3]
+change 1 commands 15 1 1 minecraft:air minecraft:snow[layers=3]
+at 1 set 17 1 1 minecraft:snow_block
+change 1 commands 17 1 1 minecraft:air minecraft:snow_block
+at 1 set 19 1 1 minecraft:snow_block
+change 1 commands 19 1 1 minecraft:air minecraft:snow_block
+at 1 set 21 1 1 minecraft:snow[layers=8]
+change 1 commands 21 1 1 minecraft:air minecraft:snow[layers=8]
+at 1 set 1 1 4 minecraft:snow[layers=5]
+change 1 commands 1 1 4 minecraft:air minecraft:snow[layers=5]
+at 1 set 3 1 4 minecraft:ice
+change 1 commands 3 1 4 minecraft:air minecraft:ice
+at 1 set 5 1 4 minecraft:snow_block
+change 1 commands 5 1 4 minecraft:air minecraft:snow_block
+draws 1 commands level 1
+
+at 10 break 1 1 1 minecraft:diamond_pickaxe
+change 10 commands 1 1 1 minecraft:ice minecraft:air
+change 10 commands 1 1 1 minecraft:air minecraft:water[level=0]
+at 10 break 3 2 1 minecraft:diamond_pickaxe
+change 10 commands 3 2 1 minecraft:ice minecraft:air
+at 10 break 5 2 1 minecraft:diamond_pickaxe
+change 10 commands 5 2 1 minecraft:ice minecraft:air
+change 10 commands 5 2 1 minecraft:air minecraft:water[level=0]
+at 10 break 7 1 1 minecraft:diamond_pickaxe
+change 10 commands 7 1 1 minecraft:frosted_ice[age=0] minecraft:air
+change 10 commands 7 1 1 minecraft:air minecraft:water[level=0]
+at 10 break 9 1 1 minecraft:diamond_pickaxe
+change 10 commands 9 1 1 minecraft:packed_ice minecraft:air
+at 10 break 11 1 1 minecraft:diamond_pickaxe
+change 10 commands 11 1 1 minecraft:blue_ice minecraft:air
+at 10 break 13 1 1 minecraft:diamond_pickaxe minecraft:silk_touch=1
+change 10 commands 13 1 1 minecraft:ice minecraft:air
+entity-added 10 commands e1 minecraft:item 13.66572049439353 1.4281726079986798 1.4045252840998546 -0.07659867823855498 0.2 0.05630692640906096 item=minecraft:ice count=1
+at 10 break 15 1 1 minecraft:diamond_shovel
+change 10 commands 15 1 1 minecraft:snow[layers=3] minecraft:air
+entity-added 10 commands e2 minecraft:item 15.376388083287994 1.4315178840223068 1.7414097627936491 -0.09538362937793379 0.2 -0.06480463959290397 item=minecraft:snowball count=3
+at 10 break 17 1 1 minecraft:diamond_shovel
+change 10 commands 17 1 1 minecraft:snow_block minecraft:air
+entity-added 10 commands e3 minecraft:item 17.406467982596883 1.308987879355264 1.602587372237728 -0.09972266391891314 0.2 -0.09815502773378237 item=minecraft:snowball count=4
+at 10 break 19 1 1 minecraft:diamond_shovel minecraft:silk_touch=1
+change 10 commands 19 1 1 minecraft:snow_block minecraft:air
+entity-added 10 commands e4 minecraft:item 19.53147483694919 1.251441565343338 1.3929523930757954 -0.09701458282377635 0.2 0.09533956942177646 item=minecraft:snow_block count=1
+at 10 break 21 1 1 minecraft:diamond_shovel minecraft:silk_touch=1
+change 10 commands 21 1 1 minecraft:snow[layers=8] minecraft:air
+entity-added 10 commands e5 minecraft:item 21.59411725764895 1.5588393341469868 1.7404725829746728 0.014006861499837278 0.2 -0.0974386696848561 item=minecraft:snow_block count=1
+at 10 break 1 1 4 minecraft:stick
+change 10 commands 1 1 4 minecraft:snow[layers=5] minecraft:air
+at 10 break 3 1 4 minecraft:stick
+change 10 commands 3 1 4 minecraft:ice minecraft:air
+change 10 commands 3 1 4 minecraft:air minecraft:water[level=0]
+at 10 break 5 1 4 minecraft:stick
+change 10 commands 5 1 4 minecraft:snow_block minecraft:air
+draws 10 commands level 50
+entity-order 10 entities e1 e2 e3 e4 e5
+entity 10 e1 13.589121816154975 1.5881726079986798 1.4608322105089155 -0.07506670613478773 0.1568 0.05518078895484913 item=minecraft:ice count=1 age=1 pickup-delay=9 on-ground=false
+entity 10 e2 15.28100445391006 1.5915178840223068 1.676605123200745 -0.09347595860967346 0.1568 -0.0635085480370963 item=minecraft:snowball count=3 age=1 pickup-delay=9 on-ground=false
+entity 10 e3 17.30674531867797 1.468987879355264 1.5044323445039456 -0.09772821254259374 0.1568 -0.0961919290512653 item=minecraft:snowball count=4 age=1 pickup-delay=9 on-ground=false
+entity 10 e4 19.434460254125415 1.4114415653433379 1.488291962497572 -0.09507429301770715 0.1568 0.0934327798517989 item=minecraft:snow_block count=1 age=1 pickup-delay=9 on-ground=false
+entity 10 e5 21.608124119148787 1.7188393341469868 1.6430339132898166 0.013726724537000214 0.1568 -0.09548989814965411 item=minecraft:snow_block count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 11 entities e1 e2 e3 e4 e5
+entity 11 e1 13.514055110020188 1.7049726079986798 1.5160129994637648 -0.07356537344387577 0.11446399999999998 0.054077174228242174 item=minecraft:ice count=1 age=2 pickup-delay=8 on-ground=false
+entity 11 e2 15.187528495300386 1.7083178840223068 1.6130965751636488 -0.09160644122039241 0.11446399999999998 -0.06223837828768379 item=minecraft:snowball count=3 age=2 pickup-delay=8 on-ground=false
+entity 11 e3 17.209017106135374 1.585787879355264 1.4082404154526802 -0.09577365015575959 0.11446399999999998 -0.09426809230495545 item=minecraft:snowball count=4 age=2 pickup-delay=8 on-ground=false
+entity 11 e4 19.33938596110771 1.5282415653433379 1.5817247423493708 -0.09317280897075123 0.11446399999999998 0.09156412603685177 item=minecraft:snow_block count=1 age=2 pickup-delay=8 on-ground=false
+entity 11 e5 21.621850843685788 1.8356393341469868 1.5475440151401625 0.013452190308076702 0.11446399999999998 -0.09358010200798629 item=minecraft:snow_block count=1 age=2 pickup-delay=8 on-ground=false
+
+entity-order 12 entities e1 e2 e3 e4 e5
+entity 12 e1 13.440489736576312 1.7794366079986799 1.570090173692007 -0.0720940673781464 0.07297471999999998 0.052995631775117576 item=minecraft:ice count=1 age=3 pickup-delay=7 on-ground=false
+entity 12 e2 15.095922054079994 1.7827818840223069 1.550858196875965 -0.08977431414323876 0.07297471999999998 -0.06099361190903297 item=minecraft:snowball count=3 age=3 pickup-delay=7 on-ground=false
+entity 12 e3 17.113243455979614 1.6602518793552639 1.3139723231477247 -0.0938581789793818 0.07297471999999998 -0.09238273225687751 item=minecraft:snowball count=4 age=3 pickup-delay=7 on-ground=false
+entity 12 e4 19.246213152136956 1.6027055653433377 1.6732888683862226 -0.0913093545684665 0.07297471999999998 0.08973284526256184 item=minecraft:snow_block count=1 age=3 pickup-delay=7 on-ground=false
+entity 12 e5 21.635303033993864 1.9101033341469869 1.4539639131321762 0.013183146758495336 0.07297471999999998 -0.09170850175272537 item=minecraft:snow_block count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 13 entities e1 e2 e3 e4 e5
+entity 13 e1 13.368395669198167 1.8124113279986798 1.6230858054671247 -0.07065218740566868 0.032315225599999976 0.05193572015042668 item=minecraft:ice count=1 age=4 pickup-delay=6 on-ground=false
+entity 13 e2 15.006147739936756 1.8157566040223068 1.4898645849669319 -0.08797882957268315 0.032315225599999976 -0.059773740834213135 item=minecraft:snowball count=3 age=4 pickup-delay=6 on-ground=false
+entity 13 e3 17.019385277000232 1.6932265993552638 1.2215895908908472 -0.09198101718999685 0.032315225599999976 -0.09053507937380074 item=minecraft:snowball count=4 age=4 pickup-delay=6 on-ground=false
+entity 13 e4 19.15490379756849 1.6356802853433376 1.7630217136487845 -0.0894831692186849 0.032315225599999976 0.0879381900688288 item=minecraft:snow_block count=1 age=4 pickup-delay=6 on-ground=false
+entity 13 e5 21.64848618075236 1.9430780541469868 1.362255411379451 0.012919484074773998 0.032315225599999976 -0.08987433346687171 item=minecraft:snow_block count=1 age=4 pickup-delay=6 on-ground=false
+
+change 14 fluid_ticks 1 1 0 minecraft:air minecraft:water[level=1]
+change 14 fluid_ticks 0 1 1 minecraft:air minecraft:water[level=1]
+change 14 fluid_ticks 5 2 0 minecraft:air minecraft:water[level=1]
+change 14 fluid_ticks 5 2 2 minecraft:air minecraft:water[level=1]
+change 14 fluid_ticks 4 2 1 minecraft:air minecraft:water[level=1]
+change 14 fluid_ticks 6 2 1 minecraft:air minecraft:water[level=1]
+change 14 fluid_ticks 7 1 0 minecraft:air minecraft:water[level=1]
+change 14 fluid_ticks 3 1 5 minecraft:air minecraft:water[level=1]
+entity-order 14 entities e1 e2 e3 e4 e5
+entity 14 e1 13.297743481792498 1.8047265535986798 1.6750215256175514 -0.06923914500513884 -0.007531078912000024 0.050897006738013395 item=minecraft:ice count=1 age=5 pickup-delay=5 on-ground=false
+entity 14 e2 14.918168910364072 1.8080718296223068 1.4300908441327187 -0.08621925465929249 -0.007531078912000024 -0.0585782671576225 item=minecraft:snowball count=3 age=5 pickup-delay=5 on-ground=false
+entity 14 e3 16.927404259810235 1.6855418249552638 1.1310545115170465 -0.09014139860059558 -0.007531078912000024 -0.08872437951314432 item=minecraft:snowball count=4 age=5 pickup-delay=5 on-ground=false
+entity 14 e4 19.065420628349806 1.6279955109433377 1.8509599037176132 -0.08769350754106721 -0.007531078912000024 0.0861794279447401 item=minecraft:snow_block count=1 age=5 pickup-delay=5 on-ground=false
+entity 14 e5 21.661405664827136 1.9353932797469868 1.2723810779125793 0.01266109463969812 -0.007531078912000024 -0.08807684851175114 item=minecraft:snow_block count=1 age=5 pickup-delay=5 on-ground=false
+
+entity-order 15 entities e1 e2 e3 e4 e5
+entity 15 e1 13.22850433678736 1.7571954746866798 1.7259185323555648 -0.06785436342566795 -0.04658045733376002 0.04987906757403649 item=minecraft:ice count=1 age=6 pickup-delay=4 on-ground=false
+entity 15 e2 14.83194965570478 1.7605407507103068 1.3715125769750962 -0.08449487121060842 -0.04658045733376002 -0.05740670293176183 item=minecraft:snowball count=3 age=6 pickup-delay=4 on-ground=false
+entity 15 e3 16.837262861209638 1.6380107460432638 1.0423301320039022 -0.08833857234789441 -0.04658045733376002 -0.08694989361516468 item=minecraft:snowball count=4 age=6 pickup-delay=4 on-ground=false
+entity 15 e4 18.977727120808737 1.5804644320313377 1.9371393316623533 -0.08593963906286678 -0.04658045733376002 0.08445584102958743 item=minecraft:snow_block count=1 age=6 pickup-delay=4 on-ground=false
+entity 15 e5 21.674066759466832 1.8878622008349868 1.1843042294008281 0.012407872988395373 -0.04658045733376002 -0.08631531322144868 item=minecraft:snow_block count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 16 entities e1 e2 e3 e4 e5
+entity 16 e1 13.160649973361691 1.6706150173529197 1.7757975999296014 -0.06649727745137386 -0.08484884818708481 0.048881487173923474 item=minecraft:ice count=1 age=7 pickup-delay=3 on-ground=false
+entity 16 e2 14.74745478449417 1.6739602933765467 1.3141058740433345 -0.08280497539800802 -0.08484884818708481 -0.05625856996807256 item=minecraft:snowball count=3 age=7 pickup-delay=3 on-ground=false
+entity 16 e3 16.748924288861744 1.5514302887095037 0.9553802383887375 -0.08657180258586107 -0.08484884818708481 -0.085210897401299 item=minecraft:snowball count=4 age=7 pickup-delay=3 on-ground=false
+entity 16 e4 18.89178748174587 1.4938839746975776 2.021595172691941 -0.08422084792077797 -0.08484884818708481 0.08276672581986301 item=minecraft:snow_block count=1 age=7 pickup-delay=3 on-ground=false
+entity 16 e5 21.686474632455226 1.8012817435012267 1.0979889161793794 0.012159715765288862 -0.08484884818708481 -0.08458900860335365 item=minecraft:snow_block count=1 age=7 pickup-delay=3 on-ground=false
+
+entity-order 17 entities e1 e2 e3 e4 e5
+entity 17 e1 13.094152695910317 1.5457661691658349 1.8246790871035248 -0.0651673331706813 -0.12235187122334311 0.04790385836278538 item=minecraft:ice count=1 age=8 pickup-delay=2 on-ground=false
+entity 17 e2 14.664649809096161 1.5491114451894619 1.2578473040752618 -0.08114887746942742 -0.12235187122334311 -0.055133399641758174 item=minecraft:snowball count=3 age=8 pickup-delay=2 on-ground=false
+entity 17 e3 16.662352486275882 1.4265814405224189 0.8701693409874385 -0.08484036818536994 -0.12235187122334311 -0.08350668107854191 item=minecraft:snowball count=4 age=8 pickup-delay=2 on-ground=false
+entity 17 e4 18.80756663382509 1.3690351265104928 2.104361898511804 -0.0825364325687476 -0.12235187122334311 0.08111139288211576 item=minecraft:snow_block count=1 age=8 pickup-delay=2 on-ground=false
+entity 17 e5 21.698634348220516 1.6764328953141419 1.0133999075760258 0.011916521681911256 -0.12235187122334311 -0.08289723004469388 item=minecraft:snow_block count=1 age=8 pickup-delay=2 on-ground=false
+
+entity-order 18 entities e1 e2 e3 e4 e5
+entity 18 e1 13.028985362739636 1.3834142979424917 1.87258294546631 -0.06386398775023591 -0.15910483379887624 0.04694578210922326 item=minecraft:ice count=1 age=9 pickup-delay=1 on-ground=false
+entity 18 e2 14.583500931626734 1.3867595739661187 1.2027139044335036 -0.07952590146783088 -0.15910483379887624 -0.054030732700509156 item=minecraft:snowball count=3 age=9 pickup-delay=1 on-ground=false
+entity 18 e3 16.577512118090514 1.2642295692990757 0.7866626599088966 -0.08314356243986415 -0.15910483379887624 -0.08183654904973461 item=minecraft:snowball count=4 age=9 pickup-delay=1 on-ground=false
+entity 18 e4 18.72503020125634 1.2066832552871496 2.1854732913939197 -0.08088570549163017 -0.15910483379887624 0.07948916657155049 item=minecraft:snow_block count=1 age=9 pickup-delay=1 on-ground=false
+entity 18 e5 21.710550869902427 1.5140810240907987 0.930502677531332 0.011678191475562644 -0.15910483379887624 -0.08123928702493918 item=minecraft:snow_block count=1 age=9 pickup-delay=1 on-ground=false
+
+change 19 fluid_ticks 4 2 0 minecraft:air minecraft:water[level=2]
+change 19 fluid_ticks 6 2 0 minecraft:air minecraft:water[level=2]
+change 19 fluid_ticks 5 2 3 minecraft:air minecraft:water[level=2]
+change 19 fluid_ticks 4 2 2 minecraft:air minecraft:water[level=2]
+change 19 fluid_ticks 6 2 2 minecraft:air minecraft:water[level=2]
+change 19 fluid_ticks 3 2 1 minecraft:air minecraft:water[level=2]
+change 19 fluid_ticks 7 2 1 minecraft:air minecraft:water[level=2]
+entity-order 19 entities e1 e2 e3 e4 e5
+entity 19 e1 12.9651213749894 1.1843094641436154 1.9195287275755333 -0.06258670921334009 -0.1951227371228987 0.04600686736245853 item=minecraft:ice count=1 age=10 pickup-delay=0 on-ground=false
+entity 19 e2 14.503975030158903 1.1876547401672424 1.1486831717329944 -0.07793538495531045 -0.1951227371228987 -0.052950119077053416 item=minecraft:snowball count=3 age=10 pickup-delay=0 on-ground=false
+entity 19 e3 16.49436855565065 1.0651247355001994 0.704826110859162 -0.08148069277690446 -0.1951227371228987 -0.08019981962964821 item=minecraft:snowball count=4 age=10 pickup-delay=0 on-ground=false
+entity 19 e4 18.64414449576471 1.0075784214882733 2.26496245796547 -0.07926799292456996 -0.1951227371228987 0.077899384756255 item=minecraft:snow_block count=1 age=10 pickup-delay=0 on-ground=false
+entity 19 e5 21.72222906137799 1.3149761902919224 0.8492633905063928 0.011444627868795217 -0.1951227371228987 -0.07961450283395682 item=minecraft:snow_block count=1 age=10 pickup-delay=0 on-ground=false
+
+entity-order 20 entities e1 e2 e3 e4 e5
+entity 20 e1 12.90253466577606 1.0 1.9655355949379918 -0.03680098871805887 0 0.027052040729410816 item=minecraft:ice count=1 age=11 pickup-delay=0 on-ground=true
+entity 20 e2 14.426039645203593 1.0 1.095733052655941 -0.04582601096187099 0 -0.031134673148131863 item=minecraft:snowball count=3 age=11 pickup-delay=0 on-ground=true
+entity 20 e3 16.412887862873745 1.0 0.6246262912295139 -0.04791065217059455 0 -0.04715749868427266 item=minecraft:snowball count=4 age=11 pickup-delay=0 on-ground=true
+entity 20 e4 18.56487650284014 1.0 2.342861842721725 -0.046609584526589774 0 0.04580484284269778 item=minecraft:snow_block count=1 age=11 pickup-delay=0 on-ground=true
+entity 20 e5 21.733673689246785 1.0798534531690236 0.7696488876724359 0.011215735529708266 -0.23042028238044074 -0.07802221429580382 item=minecraft:snow_block count=1 age=11 pickup-delay=0 on-ground=false
+
+entity-order 21 entities e1 e2 e3 e4 e5
+entity 21 e1 12.865733677058001 1.0 1.9925876356674026 -0.021638983542180395 0 0.01590660154842142 item=minecraft:ice count=1 age=12 pickup-delay=0 on-ground=true
+entity 21 e2 14.380213634241722 1.0 1.0645983795078091 -0.026945697155171703 0 -0.0183071896520265 item=minecraft:snowball count=3 age=12 pickup-delay=0 on-ground=true
+entity 21 e3 16.364977210703152 1.0 0.5774687925452412 -0.02817146630916142 0 -0.027728612014671833 item=minecraft:snowball count=4 age=12 pickup-delay=0 on-ground=true
+entity 21 e4 18.51826691831355 1.0 2.3886666855644227 -0.027406438457557334 0 0.02693325029984623 item=minecraft:snow_block count=1 age=12 pickup-delay=0 on-ground=true
+entity 21 e5 21.744889424776495 1.0 0.6916266733766321 0.006594853154630313 0 -0.045877066619215125 item=minecraft:snow_block count=1 age=12 pickup-delay=0 on-ground=true
+
+entity-order 22 entities e1 e2 e3 e4 e5
+entity 22 e1 12.844094693515821 1.0 2.008494237215824 -0.012723723602267728 0 0.009353082650994271 item=minecraft:ice count=1 age=13 pickup-delay=0 on-ground=true
+entity 22 e2 14.35326793708655 1.0 1.0462911898557825 -0.015844071520480958 0 -0.01076462859785557 item=minecraft:snowball count=3 age=13 pickup-delay=0 on-ground=true
+entity 22 e3 16.336805744393992 1.0 0.5497401805305694 -0.016564823855503955 0 -0.016304425504159073 item=minecraft:snowball count=4 age=13 pickup-delay=0 on-ground=true
+entity 22 e4 18.490860479855993 1.0 2.415599935864269 -0.016114987433526334 0 0.015836752768813626 item=minecraft:snow_block count=1 age=13 pickup-delay=0 on-ground=true
+entity 22 e5 21.751484277931127 1.0 0.645749606757417 0.0038777740448618326 0 -0.02697571788470886 item=minecraft:snow_block count=1 age=13 pickup-delay=0 on-ground=true
+
+entity-order 23 entities e1 e2 e3 e4 e5
+entity 23 e1 12.831370969913554 1.0 2.0178473198668185 -0.007481550230459305 0 0.005499613151811903 item=minecraft:ice count=1 age=14 pickup-delay=0 on-ground=true
+entity 23 e2 14.337423865566068 1.0 1.035526561257927 -0.009316314990868017 0 -0.006329602252027965 item=minecraft:snowball count=3 age=14 pickup-delay=0 on-ground=true
+entity 23 e3 16.320240920538488 1.0 0.5334357550264103 -0.009740117406478043 0 -0.00958700316049047 item=minecraft:snowball count=4 age=14 pickup-delay=0 on-ground=true
+entity 23 e4 18.474745492422468 1.0 2.4314366886330827 -0.009475613563757361 0 0.009312011564454884 item=minecraft:snow_block count=1 age=14 pickup-delay=0 on-ground=true
+entity 23 e5 21.75536205197599 1.0 0.6187738888727081 0.0022801313676630353 0 -0.01586172371122387 item=minecraft:snow_block count=1 age=14 pickup-delay=0 on-ground=true
+
+change 24 fluid_ticks 4 1 0 minecraft:air minecraft:water[level=8]
+change 24 fluid_ticks 6 1 0 minecraft:air minecraft:water[level=8]
+change 24 fluid_ticks 5 1 3 minecraft:air minecraft:water[level=8]
+change 24 fluid_ticks 4 1 2 minecraft:air minecraft:water[level=8]
+change 24 fluid_ticks 6 1 2 minecraft:air minecraft:water[level=8]
+change 24 fluid_ticks 3 1 1 minecraft:air minecraft:water[level=8]
+entity-order 24 entities e1 e2 e3 e4 e5
+entity 24 e1 12.823889419683095 1.0 2.0233469330186304 -0.004399151977877734 0 0.0032337728584454673 item=minecraft:ice count=1 age=15 pickup-delay=0 on-ground=true
+entity 24 e2 14.3281075505752 1.0 1.029196959005899 -0.005477993765483674 0 -0.0037218064984479477 item=minecraft:snowball count=3 age=15 pickup-delay=0 on-ground=true
+entity 24 e3 16.310500803132012 1.0 0.5238487518659198 -0.005727189610920878 0 -0.005637158425226875 item=minecraft:snowball count=4 age=15 pickup-delay=0 on-ground=true
+entity 24 e4 18.46526987885871 1.0 2.4407487001975374 -0.005571661335761584 0 0.0054754633504983 item=minecraft:snow_block count=1 age=15 pickup-delay=0 on-ground=true
+entity 24 e5 21.757642183343652 1.0 0.6029121651614843 0.0013407173790050337 0 -0.009326694480068584 item=minecraft:snow_block count=1 age=15 pickup-delay=0 on-ground=true
+
+entity-order 25 entities e1 e2 e3 e4 e5
+entity 25 e1 12.819490267705216 1.0 2.026580705877076 -0.0025867016231043193 0 0.0019014586319718342 item=minecraft:ice count=1 age=16 pickup-delay=0 on-ground=true
+entity 25 e2 14.322629556809717 1.0 1.025475152507451 -0.003221060658006162 0 -0.0021884224411496517 item=minecraft:snowball count=3 age=16 pickup-delay=0 on-ground=true
+entity 25 e3 16.304773613521093 1.0 0.518211593440693 -0.003367587829857642 0 -0.0033146494873462213 item=minecraft:snowball count=4 age=16 pickup-delay=0 on-ground=true
+entity 25 e4 18.45969821752295 1.0 2.4462241635480355 -0.003276137194867931 0 0.003219572773845144 item=minecraft:snow_block count=1 age=16 pickup-delay=0 on-ground=true
+entity 25 e5 21.758982900722657 1.0 0.5935854706814157 7.883418981286391E-4 0 -0.005484096905747324 item=minecraft:snow_block count=1 age=16 pickup-delay=0 on-ground=true
+
+entity-order 26 entities e1 e2 e3 e4 e5
+entity 26 e1 12.816903566082113 1.0 2.0284821645090476 -0.0015209807073313358 0 0.0011180577880285187 item=minecraft:ice count=1 age=17 pickup-delay=0 on-ground=true
+entity 26 e2 14.319408496151711 1.0 1.0232867300663013 -0.0018939838573618782 0 -0.0012867925247926164 item=minecraft:snowball count=3 age=17 pickup-delay=0 on-ground=true
+entity 26 e3 16.301406025691236 1.0 0.5148969439533468 -0.001980141843074379 0 -0.0019490140945475354 item=minecraft:snowball count=4 age=17 pickup-delay=0 on-ground=true
+entity 26 e4 18.456422080328082 1.0 2.449443736321881 -0.0019263688642931532 0 0.0018931089813872244 item=minecraft:snow_block count=1 age=17 pickup-delay=0 on-ground=true
+entity 26 e5 21.759771242620786 1.0 0.5881013737756683 4.6354508271256785E-4 0 -0.0032246493048420535 item=minecraft:snow_block count=1 age=17 pickup-delay=0 on-ground=true
+
+entity-order 27 entities e1 e2 e3 e4 e5
+entity 27 e1 12.816903566082113 1.0 2.0284821645090476 -0.0015209807073313358 -0.04 0.0011180577880285187 item=minecraft:ice count=1 age=18 pickup-delay=0 on-ground=true
+entity 27 e2 14.317514512294348 1.0 1.0219999375415088 -0.0011136626201158975 0 -7.566340806632793E-4 item=minecraft:snowball count=3 age=18 pickup-delay=0 on-ground=true
+entity 27 e3 16.301406025691236 1.0 0.5148969439533468 -0.001980141843074379 -0.04 -0.0019490140945475354 item=minecraft:snowball count=4 age=18 pickup-delay=0 on-ground=true
+entity 27 e4 18.456422080328082 1.0 2.449443736321881 -0.0019263688642931532 -0.04 0.0018931089813872244 item=minecraft:snow_block count=1 age=18 pickup-delay=0 on-ground=true
+entity 27 e5 21.7602347877035 1.0 0.5848767244708263 2.725645360433944E-4 0 -0.0018960939819135712 item=minecraft:snow_block count=1 age=18 pickup-delay=0 on-ground=true
+
+entity-order 28 entities e1 e2 e3 e4 e5
+entity 28 e1 12.815382585374781 1.0 2.029600222297076 -8.9433674584308E-4 0 6.574180454690748E-4 item=minecraft:ice count=1 age=19 pickup-delay=0 on-ground=true
+entity 28 e2 14.317514512294348 1.0 1.0219999375415088 -0.0011136626201158975 -0.04 -7.566340806632793E-4 item=minecraft:snowball count=3 age=19 pickup-delay=0 on-ground=true
+entity 28 e3 16.301406025691236 1.0 0.5148969439533468 -0.001980141843074379 -0.08 -0.0019490140945475354 item=minecraft:snowball count=4 age=19 pickup-delay=0 on-ground=true
+entity 28 e4 18.456422080328082 1.0 2.449443736321881 -0.0019263688642931532 -0.08 0.0018931089813872244 item=minecraft:snow_block count=1 age=19 pickup-delay=0 on-ground=true
+entity 28 e5 21.760507352239543 1.0 0.5829806304889127 1.6026796330965935E-4 0 -0.00111490337347706 item=minecraft:snow_block count=1 age=19 pickup-delay=0 on-ground=true
+
+change 29 fluid_ticks 5 1 4 minecraft:air minecraft:water[level=1]
+change 29 fluid_ticks 4 1 3 minecraft:air minecraft:water[level=1]
+change 29 fluid_ticks 3 1 2 minecraft:air minecraft:water[level=1]
+change 29 fluid_ticks 6 1 3 minecraft:air minecraft:water[level=1]
+change 29 fluid_ticks 3 1 0 minecraft:air minecraft:water[level=1]
+entity-order 29 entities e1 e2 e3 e4 e5
+entity 29 e1 12.815382585374781 1.0 2.029600222297076 -8.9433674584308E-4 -0.04 6.574180454690748E-4 item=minecraft:ice count=1 age=20 pickup-delay=0 on-ground=true
+entity 29 e2 14.317514512294348 1.0 1.0219999375415088 -0.0011136626201158975 -0.08 -7.566340806632793E-4 item=minecraft:snowball count=3 age=20 pickup-delay=0 on-ground=true
+entity 29 e3 16.301406025691236 1.0 0.5148969439533468 -0.001980141843074379 -0.12 -0.0019490140945475354 item=minecraft:snowball count=4 age=20 pickup-delay=0 on-ground=true
+entity 29 e4 18.45449571146379 1.0 2.4513368453032682 -0.0011327050061063417 0 0.0011131481929910717 item=minecraft:snow_block count=1 age=20 pickup-delay=0 on-ground=true
+entity 29 e5 21.760507352239543 1.0 0.5829806304889127 1.6026796330965935E-4 -0.04 -0.00111490337347706 item=minecraft:snow_block count=1 age=20 pickup-delay=0 on-ground=true
+
+entity-order 30 entities e1 e2 e3 e4 e5
+entity 30 e1 12.815382585374781 1.0 2.029600222297076 -8.9433674584308E-4 -0.08 6.574180454690748E-4 item=minecraft:ice count=1 age=21 pickup-delay=0 on-ground=true
+entity 30 e2 14.317514512294348 1.0 1.0219999375415088 -0.0011136626201158975 -0.12 -7.566340806632793E-4 item=minecraft:snowball count=3 age=21 pickup-delay=0 on-ground=true
+entity 30 e3 16.299425883848162 1.0 0.5129479298587993 -0.0011643235208091808 0 -0.0011460204028348813 item=minecraft:snowball count=4 age=21 pickup-delay=0 on-ground=true
+entity 30 e4 18.45449571146379 1.0 2.4513368453032682 -0.0011327050061063417 -0.04 0.0011131481929910717 item=minecraft:snow_block count=1 age=21 pickup-delay=0 on-ground=true
+entity 30 e5 21.760507352239543 1.0 0.5829806304889127 1.6026796330965935E-4 -0.08 -0.00111490337347706 item=minecraft:snow_block count=1 age=21 pickup-delay=0 on-ground=true
+
+entity-order 31 entities e1 e2 e3 e4 e5
+entity 31 e1 12.815382585374781 1.0 2.029600222297076 -8.9433674584308E-4 -0.12 6.574180454690748E-4 item=minecraft:ice count=1 age=22 pickup-delay=0 on-ground=true
+entity 31 e2 14.316400849674233 1.0 1.0212433034608455 -6.548336864765769E-4 0 -4.449008841681226E-4 item=minecraft:snowball count=3 age=22 pickup-delay=0 on-ground=true
+entity 31 e3 16.299425883848162 1.0 0.5129479298587993 -0.0011643235208091808 -0.04 -0.0011460204028348813 item=minecraft:snowball count=4 age=22 pickup-delay=0 on-ground=true
+entity 31 e4 18.45449571146379 1.0 2.4513368453032682 -0.0011327050061063417 -0.08 0.0011131481929910717 item=minecraft:snow_block count=1 age=22 pickup-delay=0 on-ground=true
+entity 31 e5 21.760507352239543 1.0 0.5829806304889127 1.6026796330965935E-4 -0.12 -0.00111490337347706 item=minecraft:snow_block count=1 age=22 pickup-delay=0 on-ground=true
+
+entity-order 32 entities e1 e2 e3 e4 e5
+entity 32 e1 12.814488248628939 1.0 2.0302576403425454 -5.258700594359021E-4 0 3.865618496075037E-4 item=minecraft:ice count=1 age=23 pickup-delay=0 on-ground=true
+entity 32 e2 14.316400849674233 1.0 1.0212433034608455 -6.548336864765769E-4 -0.04 -4.449008841681226E-4 item=minecraft:snowball count=3 age=23 pickup-delay=0 on-ground=true
+entity 32 e3 16.299425883848162 1.0 0.5129479298587993 -0.0011643235208091808 -0.08 -0.0011460204028348813 item=minecraft:snowball count=4 age=23 pickup-delay=0 on-ground=true
+entity 32 e4 18.45449571146379 1.0 2.4513368453032682 -0.0011327050061063417 -0.12 0.0011131481929910717 item=minecraft:snow_block count=1 age=23 pickup-delay=0 on-ground=true
+entity 32 e5 21.760667620202852 1.0 0.5818657271154356 9.4237571902373E-5 0 -6.555632495263034E-4 item=minecraft:snow_block count=1 age=23 pickup-delay=0 on-ground=true
+
+entity-order 33 entities e1 e2 e3 e4 e5
+entity 33 e1 12.814488248628939 1.0 2.0302576403425454 -5.258700594359021E-4 -0.04 3.865618496075037E-4 item=minecraft:ice count=1 age=24 pickup-delay=0 on-ground=true
+entity 33 e2 14.316400849674233 1.0 1.0212433034608455 -6.548336864765769E-4 -0.08 -4.449008841681226E-4 item=minecraft:snowball count=3 age=24 pickup-delay=0 on-ground=true
+entity 33 e3 16.299425883848162 1.0 0.5129479298587993 -0.0011643235208091808 -0.12 -0.0011460204028348813 item=minecraft:snowball count=4 age=24 pickup-delay=0 on-ground=true
+entity 33 e4 18.453363006457682 1.0 2.452449993496259 -6.660306105648926E-4 0 6.545312032967623E-4 item=minecraft:snow_block count=1 age=24 pickup-delay=0 on-ground=true
+entity 33 e5 21.760667620202852 1.0 0.5818657271154356 9.4237571902373E-5 -0.04 -6.555632495263034E-4 item=minecraft:snow_block count=1 age=24 pickup-delay=0 on-ground=true
+
+change 34 fluid_ticks 5 1 5 minecraft:air minecraft:water[level=2]
+change 34 fluid_ticks 4 1 4 minecraft:air minecraft:water[level=1]
+change 34 fluid_ticks 6 1 4 minecraft:air minecraft:water[level=2]
+entity-order 34 entities e1 e2 e3 e4 e5
+entity 34 e1 12.814488248628939 1.0 2.0302576403425454 -5.258700594359021E-4 -0.08 3.865618496075037E-4 item=minecraft:ice count=1 age=25 pickup-delay=0 on-ground=true
+entity 34 e2 14.316400849674233 1.0 1.0212433034608455 -6.548336864765769E-4 -0.12 -4.449008841681226E-4 item=minecraft:snowball count=3 age=25 pickup-delay=0 on-ground=true
+entity 34 e3 16.298261560327354 1.0 0.5118019094559645 -6.846222990796954E-4 0 -6.738600646285841E-4 item=minecraft:snowball count=4 age=25 pickup-delay=0 on-ground=true
+entity 34 e4 18.453363006457682 1.0 2.452449993496259 -6.660306105648926E-4 -0.04 6.545312032967623E-4 item=minecraft:snow_block count=1 age=25 pickup-delay=0 on-ground=true
+entity 34 e5 21.760667620202852 1.0 0.5818657271154356 9.4237571902373E-5 -0.08 -6.555632495263034E-4 item=minecraft:snow_block count=1 age=25 pickup-delay=0 on-ground=true
+
+entity-order 35 entities e1 e2 e3 e4 e5
+entity 35 e1 12.814488248628939 1.0 2.0302576403425454 -5.258700594359021E-4 -0.12 3.865618496075037E-4 item=minecraft:ice count=1 age=26 pickup-delay=0 on-ground=true
+entity 35 e2 14.315746015987756 1.0 1.0207984025766774 -3.850422463671075E-4 0 -2.6160174619686995E-4 item=minecraft:snowball count=3 age=26 pickup-delay=0 on-ground=true
+entity 35 e3 16.298261560327354 1.0 0.5118019094559645 -6.846222990796954E-4 -0.04 -6.738600646285841E-4 item=minecraft:snowball count=4 age=26 pickup-delay=0 on-ground=true
+entity 35 e4 18.453363006457682 1.0 2.452449993496259 -6.660306105648926E-4 -0.08 6.545312032967623E-4 item=minecraft:snow_block count=1 age=26 pickup-delay=0 on-ground=true
+entity 35 e5 21.760667620202852 1.0 0.5818657271154356 9.4237571902373E-5 -0.12 -6.555632495263034E-4 item=minecraft:snow_block count=1 age=26 pickup-delay=0 on-ground=true
+
+entity-order 36 entities e1 e2 e3 e4 e5
+entity 36 e1 12.813962378569503 1.0 2.030644202192153 -3.092116260418541E-4 0 2.2729839042576685E-4 item=minecraft:ice count=1 age=27 pickup-delay=0 on-ground=true
+entity 36 e2 14.315746015987756 1.0 1.0207984025766774 -3.850422463671075E-4 -0.04 -2.6160174619686995E-4 item=minecraft:snowball count=3 age=27 pickup-delay=0 on-ground=true
+entity 36 e3 16.298261560327354 1.0 0.5118019094559645 -6.846222990796954E-4 -0.08 -6.738600646285841E-4 item=minecraft:snowball count=4 age=27 pickup-delay=0 on-ground=true
+entity 36 e4 18.453363006457682 1.0 2.452449993496259 -6.660306105648926E-4 -0.12 6.545312032967623E-4 item=minecraft:snow_block count=1 age=27 pickup-delay=0 on-ground=true
+entity 36 e5 21.760761857774753 1.0 0.5812101638659093 5.5411697850656346E-5 0 -3.854712294834841E-4 item=minecraft:snow_block count=1 age=27 pickup-delay=0 on-ground=true
+
+entity-order 37 entities e1 e2 e3 e4 e5
+entity 37 e1 12.813962378569503 1.0 2.030644202192153 -3.092116260418541E-4 -0.04 2.2729839042576685E-4 item=minecraft:ice count=1 age=28 pickup-delay=0 on-ground=true
+entity 37 e2 14.315746015987756 1.0 1.0207984025766774 -3.850422463671075E-4 -0.08 -2.6160174619686995E-4 item=minecraft:snowball count=3 age=28 pickup-delay=0 on-ground=true
+entity 37 e3 16.298261560327354 1.0 0.5118019094559645 -6.846222990796954E-4 -0.12 -6.738600646285841E-4 item=minecraft:snowball count=4 age=28 pickup-delay=0 on-ground=true
+entity 37 e4 18.452696975847118 1.0 2.453104524699556 -3.916260383930866E-4 0 3.848643862394913E-4 item=minecraft:snow_block count=1 age=28 pickup-delay=0 on-ground=true
+entity 37 e5 21.760761857774753 1.0 0.5812101638659093 5.5411697850656346E-5 -0.04 -3.854712294834841E-4 item=minecraft:snow_block count=1 age=28 pickup-delay=0 on-ground=true
+
+entity-order 38 entities e1 e2 e3 e4 e5
+entity 38 e1 12.813962378569503 1.0 2.030644202192153 -3.092116260418541E-4 -0.08 2.2729839042576685E-4 item=minecraft:ice count=1 age=29 pickup-delay=0 on-ground=true
+entity 38 e2 14.315746015987756 1.0 1.0207984025766774 -3.850422463671075E-4 -0.12 -2.6160174619686995E-4 item=minecraft:snowball count=3 age=29 pickup-delay=0 on-ground=true
+entity 38 e3 16.297576938028275 1.0 0.5111280493913359 -4.025579523390765E-4 0 -3.962297578454757E-4 item=minecraft:snowball count=4 age=29 pickup-delay=0 on-ground=true
+entity 38 e4 18.452696975847118 1.0 2.453104524699556 -3.916260383930866E-4 -0.04 3.848643862394913E-4 item=minecraft:snow_block count=1 age=29 pickup-delay=0 on-ground=true
+entity 38 e5 21.760761857774753 1.0 0.5812101638659093 5.5411697850656346E-5 -0.08 -3.854712294834841E-4 item=minecraft:snow_block count=1 age=29 pickup-delay=0 on-ground=true
+
+change 39 fluid_ticks 4 1 5 minecraft:air minecraft:water[level=2]
+change 39 fluid_ticks 6 1 5 minecraft:air minecraft:water[level=3]
+entity-order 39 entities e1 e2 e3 e4 e5
+entity 39 e1 12.813962378569503 1.0 2.030644202192153 -3.092116260418541E-4 -0.12 2.2729839042576685E-4 item=minecraft:ice count=1 age=30 pickup-delay=0 on-ground=true
+entity 39 e2 14.315360973741388 1.0 1.0205368008304805 -2.2640486363056307E-4 0 -1.5382184223169726E-4 item=minecraft:snowball count=3 age=30 pickup-delay=0 on-ground=true
+entity 39 e3 16.297576938028275 1.0 0.5111280493913359 -4.025579523390765E-4 -0.04 -3.962297578454757E-4 item=minecraft:snowball count=4 age=30 pickup-delay=0 on-ground=true
+entity 39 e4 18.452696975847118 1.0 2.453104524699556 -3.916260383930866E-4 -0.08 3.848643862394913E-4 item=minecraft:snow_block count=1 age=30 pickup-delay=0 on-ground=true
+entity 39 e5 21.760761857774753 1.0 0.5812101638659093 5.5411697850656346E-5 -0.12 -3.854712294834841E-4 item=minecraft:snow_block count=1 age=30 pickup-delay=0 on-ground=true
+
+entity-order 40 entities e1 e2 e3 e4 e5
+entity 40 e1 12.81365316694346 1.0 2.030871500582579 -1.8181645439561573E-4 0 1.3365146701000642E-4 item=minecraft:ice count=1 age=31 pickup-delay=0 on-ground=true
+entity 40 e2 14.315360973741388 1.0 1.0205368008304805 -2.2640486363056307E-4 -0.04 -1.5382184223169726E-4 item=minecraft:snowball count=3 age=31 pickup-delay=0 on-ground=true
+entity 40 e3 16.297576938028275 1.0 0.5111280493913359 -4.025579523390765E-4 -0.08 -3.962297578454757E-4 item=minecraft:snowball count=4 age=31 pickup-delay=0 on-ground=true
+entity 40 e4 18.452696975847118 1.0 2.453104524699556 -3.916260383930866E-4 -0.12 3.848643862394913E-4 item=minecraft:snow_block count=1 age=31 pickup-delay=0 on-ground=true
+entity 40 e5 21.760817269472604 1.0 0.5808246926364258 3.258208161255814E-5 0 -2.2665710572835737E-4 item=minecraft:snow_block count=1 age=31 pickup-delay=0 on-ground=true
+
+entity-order 41 entities e1 e2 e3 e4 e5
+entity 41 e1 12.81365316694346 1.0 2.030871500582579 -1.8181645439561573E-4 -0.04 1.3365146701000642E-4 item=minecraft:ice count=1 age=32 pickup-delay=0 on-ground=true
+entity 41 e2 14.315360973741388 1.0 1.0205368008304805 -2.2640486363056307E-4 -0.08 -1.5382184223169726E-4 item=minecraft:snowball count=3 age=32 pickup-delay=0 on-ground=true
+entity 41 e3 16.297576938028275 1.0 0.5111280493913359 -4.025579523390765E-4 -0.12 -3.962297578454757E-4 item=minecraft:snowball count=4 age=32 pickup-delay=0 on-ground=true
+entity 41 e4 18.452305349808725 1.0 2.4534893890857954 -2.3027613373112398E-4 0 2.2630028186500827E-4 item=minecraft:snow_block count=1 age=32 pickup-delay=0 on-ground=true
+entity 41 e5 21.760817269472604 1.0 0.5808246926364258 3.258208161255814E-5 -0.04 -2.2665710572835737E-4 item=minecraft:snow_block count=1 age=32 pickup-delay=0 on-ground=true
+
+entity-order 42 entities e1 e2 e3 e4 e5
+entity 42 e1 12.81365316694346 1.0 2.030871500582579 -1.8181645439561573E-4 -0.08 1.3365146701000642E-4 item=minecraft:ice count=1 age=33 pickup-delay=0 on-ground=true
+entity 42 e2 14.315360973741388 1.0 1.0205368008304805 -2.2640486363056307E-4 -0.12 -1.5382184223169726E-4 item=minecraft:snowball count=3 age=33 pickup-delay=0 on-ground=true
+entity 42 e3 16.297174380075937 1.0 0.5107318196334905 -2.3670409977774617E-4 0 -2.3298312104133662E-4 item=minecraft:snowball count=4 age=33 pickup-delay=0 on-ground=true
+entity 42 e4 18.452305349808725 1.0 2.4534893890857954 -2.3027613373112398E-4 -0.04 2.2630028186500827E-4 item=minecraft:snow_block count=1 age=33 pickup-delay=0 on-ground=true
+entity 42 e5 21.760817269472604 1.0 0.5808246926364258 3.258208161255814E-5 -0.08 -2.2665710572835737E-4 item=minecraft:snow_block count=1 age=33 pickup-delay=0 on-ground=true
+
+entity-order 43 entities e1 e2 e3 e4 e5
+entity 43 e1 12.81365316694346 1.0 2.030871500582579 -1.8181645439561573E-4 -0.12 1.3365146701000642E-4 item=minecraft:ice count=1 age=34 pickup-delay=0 on-ground=true
+entity 43 e2 14.315360973741388 1.0 1.0205368008304805 -1.331260732015943E-4 0 -9.044725232738628E-5 item=minecraft:snowball count=3 age=34 pickup-delay=0 on-ground=true
+entity 43 e3 16.297174380075937 1.0 0.5107318196334905 -2.3670409977774617E-4 -0.04 -2.3298312104133662E-4 item=minecraft:snowball count=4 age=34 pickup-delay=0 on-ground=true
+entity 43 e4 18.452305349808725 1.0 2.4534893890857954 -2.3027613373112398E-4 -0.08 2.2630028186500827E-4 item=minecraft:snow_block count=1 age=34 pickup-delay=0 on-ground=true
+entity 43 e5 21.760817269472604 1.0 0.5808246926364258 3.258208161255814E-5 -0.12 -2.2665710572835737E-4 item=minecraft:snow_block count=1 age=34 pickup-delay=0 on-ground=true
+
+entity-order 44 entities e1 e2 e3 e4 e5
+entity 44 e1 12.81365316694346 1.0 2.030871500582579 -1.0690808593503039E-4 0 7.8587070504402E-5 item=minecraft:ice count=1 age=35 pickup-delay=0 on-ground=true
+entity 44 e2 14.315360973741388 1.0 1.0205368008304805 -1.331260732015943E-4 -0.04 -9.044725232738628E-5 item=minecraft:snowball count=3 age=35 pickup-delay=0 on-ground=true
+entity 44 e3 16.297174380075937 1.0 0.5107318196334905 -2.3670409977774617E-4 -0.08 -2.3298312104133662E-4 item=minecraft:snowball count=4 age=35 pickup-delay=0 on-ground=true
+entity 44 e4 18.452305349808725 1.0 2.4534893890857954 -2.3027613373112398E-4 -0.12 2.2630028186500827E-4 item=minecraft:snow_block count=1 age=35 pickup-delay=0 on-ground=true
+entity 44 e5 21.760817269472604 1.0 0.5808246926364258 1.9158265914691242E-5 0 -1.332743915700119E-4 item=minecraft:snow_block count=1 age=35 pickup-delay=0 on-ground=true
+
+entity-order 45 entities e1 e2 e3 e4 e5
+entity 45 e1 12.81365316694346 1.0 2.030871500582579 -1.0690808593503039E-4 -0.04 7.8587070504402E-5 item=minecraft:ice count=1 age=36 pickup-delay=0 on-ground=true
+entity 45 e2 14.315360973741388 1.0 1.0205368008304805 -1.331260732015943E-4 -0.08 -9.044725232738628E-5 item=minecraft:snowball count=3 age=36 pickup-delay=0 on-ground=true
+entity 45 e3 16.297174380075937 1.0 0.5107318196334905 -2.3670409977774617E-4 -0.12 -2.3298312104133662E-4 item=minecraft:snowball count=4 age=36 pickup-delay=0 on-ground=true
+entity 45 e4 18.452075073674994 1.0 2.4537156893676606 -1.3540238024962382E-4 0 1.3306457911726438E-4 item=minecraft:snow_block count=1 age=36 pickup-delay=0 on-ground=true
+entity 45 e5 21.760817269472604 1.0 0.5808246926364258 1.9158265914691242E-5 -0.04 -1.332743915700119E-4 item=minecraft:snow_block count=1 age=36 pickup-delay=0 on-ground=true
+
+entity-order 46 entities e1 e2 e3 e4 e5
+entity 46 e1 12.81365316694346 1.0 2.030871500582579 -1.0690808593503039E-4 -0.08 7.8587070504402E-5 item=minecraft:ice count=1 age=37 pickup-delay=0 on-ground=true
+entity 46 e2 14.315360973741388 1.0 1.0205368008304805 -1.331260732015943E-4 -0.12 -9.044725232738628E-5 item=minecraft:snowball count=3 age=37 pickup-delay=0 on-ground=true
+entity 46 e3 16.29693767597616 1.0 0.5104988365124491 -1.391820246651092E-4 0 -1.369940889480871E-4 item=minecraft:snowball count=4 age=37 pickup-delay=0 on-ground=true
+entity 46 e4 18.452075073674994 1.0 2.4537156893676606 -1.3540238024962382E-4 -0.04 1.3306457911726438E-4 item=minecraft:snow_block count=1 age=37 pickup-delay=0 on-ground=true
+entity 46 e5 21.760817269472604 1.0 0.5808246926364258 1.9158265914691242E-5 -0.08 -1.332743915700119E-4 item=minecraft:snow_block count=1 age=37 pickup-delay=0 on-ground=true
+
+entity-order 47 entities e1 e2 e3 e4 e5
+entity 47 e1 12.81365316694346 1.0 2.030871500582579 -1.0690808593503039E-4 -0.12 7.8587070504402E-5 item=minecraft:ice count=1 age=38 pickup-delay=0 on-ground=true
+entity 47 e2 14.315360973741388 1.0 1.0205368008304805 -7.82781389139903E-5 0 -5.3182989716450864E-5 item=minecraft:snowball count=3 age=38 pickup-delay=0 on-ground=true
+entity 47 e3 16.29693767597616 1.0 0.5104988365124491 -1.391820246651092E-4 -0.04 -1.369940889480871E-4 item=minecraft:snowball count=4 age=38 pickup-delay=0 on-ground=true
+entity 47 e4 18.452075073674994 1.0 2.4537156893676606 -1.3540238024962382E-4 -0.08 1.3306457911726438E-4 item=minecraft:snow_block count=1 age=38 pickup-delay=0 on-ground=true
+entity 47 e5 21.760817269472604 1.0 0.5808246926364258 1.9158265914691242E-5 -0.12 -1.332743915700119E-4 item=minecraft:snow_block count=1 age=38 pickup-delay=0 on-ground=true
+
+entity-order 48 entities e1 e2 e3 e4 e5
+entity 48 e1 12.81365316694346 1.0 2.030871500582579 -6.28619608510386E-5 0 4.620920210326956E-5 item=minecraft:ice count=1 age=39 pickup-delay=0 on-ground=true
+entity 48 e2 14.315360973741388 1.0 1.0205368008304805 -7.82781389139903E-5 -0.04 -5.3182989716450864E-5 item=minecraft:snowball count=3 age=39 pickup-delay=0 on-ground=true
+entity 48 e3 16.29693767597616 1.0 0.5104988365124491 -1.391820246651092E-4 -0.08 -1.369940889480871E-4 item=minecraft:snowball count=4 age=39 pickup-delay=0 on-ground=true
+entity 48 e4 18.452075073674994 1.0 2.4537156893676606 -1.3540238024962382E-4 -0.12 1.3306457911726438E-4 item=minecraft:snow_block count=1 age=39 pickup-delay=0 on-ground=true
+entity 48 e5 21.760817269472604 1.0 0.5808246926364258 1.1265061490624712E-5 0 -7.836535012338958E-5 item=minecraft:snow_block count=1 age=39 pickup-delay=0 on-ground=true
+
+entity-order 49 entities e1 e2 e3 e4 e5
+entity 49 e1 12.81365316694346 1.0 2.030871500582579 -6.28619608510386E-5 -0.04 4.620920210326956E-5 item=minecraft:ice count=1 age=40 pickup-delay=0 on-ground=true
+entity 49 e2 14.315360973741388 1.0 1.0205368008304805 -7.82781389139903E-5 -0.08 -5.3182989716450864E-5 item=minecraft:snowball count=3 age=40 pickup-delay=0 on-ground=true
+entity 49 e3 16.29693767597616 1.0 0.5104988365124491 -1.391820246651092E-4 -0.12 -1.369940889480871E-4 item=minecraft:snowball count=4 age=40 pickup-delay=0 on-ground=true
+entity 49 e4 18.452075073674994 1.0 2.4537156893676606 -7.96166075928247E-5 0 7.82419803887683E-5 item=minecraft:snow_block count=1 age=40 pickup-delay=0 on-ground=true
+entity 49 e5 21.760817269472604 1.0 0.5808246926364258 1.1265061490624712E-5 -0.04 -7.836535012338958E-5 item=minecraft:snow_block count=1 age=40 pickup-delay=0 on-ground=true
+
+entity-order 50 entities e1 e2 e3 e4 e5
+entity 50 e1 12.81365316694346 1.0 2.030871500582579 -6.28619608510386E-5 -0.08 4.620920210326956E-5 item=minecraft:ice count=1 age=41 pickup-delay=0 on-ground=true
+entity 50 e2 14.315360973741388 1.0 1.0205368008304805 -7.82781389139903E-5 -0.12 -5.3182989716450864E-5 item=minecraft:snowball count=3 age=41 pickup-delay=0 on-ground=true
+entity 50 e3 16.29693767597616 1.0 0.5104988365124491 -8.18390387326122E-5 0 -8.055253240163535E-5 item=minecraft:snowball count=4 age=41 pickup-delay=0 on-ground=true
+entity 50 e4 18.452075073674994 1.0 2.4537156893676606 -7.96166075928247E-5 -0.04 7.82419803887683E-5 item=minecraft:snow_block count=1 age=41 pickup-delay=0 on-ground=true
+entity 50 e5 21.760817269472604 1.0 0.5808246926364258 1.1265061490624712E-5 -0.08 -7.836535012338958E-5 item=minecraft:snow_block count=1 age=41 pickup-delay=0 on-ground=true
+
+entity-order 51 entities e1 e2 e3 e4 e5
+entity 51 e1 12.81365316694346 1.0 2.030871500582579 -6.28619608510386E-5 -0.12 4.620920210326956E-5 item=minecraft:ice count=1 age=42 pickup-delay=0 on-ground=true
+entity 51 e2 14.315360973741388 1.0 1.0205368008304805 -4.602755030984103E-5 0 -3.127160109786669E-5 item=minecraft:snowball count=3 age=42 pickup-delay=0 on-ground=true
+entity 51 e3 16.29693767597616 1.0 0.5104988365124491 -8.18390387326122E-5 -0.04 -8.055253240163535E-5 item=minecraft:snowball count=4 age=42 pickup-delay=0 on-ground=true
+entity 51 e4 18.452075073674994 1.0 2.4537156893676606 -7.96166075928247E-5 -0.08 7.82419803887683E-5 item=minecraft:snow_block count=1 age=42 pickup-delay=0 on-ground=true
+entity 51 e5 21.760817269472604 1.0 0.5808246926364258 1.1265061490624712E-5 -0.12 -7.836535012338958E-5 item=minecraft:snow_block count=1 age=42 pickup-delay=0 on-ground=true
+
+entity-order 52 entities e1 e2 e3 e4 e5
+entity 52 e1 12.81365316694346 1.0 2.030871500582579 -3.6962836697300626E-5 0 2.7171013568971316E-5 item=minecraft:ice count=1 age=43 pickup-delay=0 on-ground=true
+entity 52 e2 14.315360973741388 1.0 1.0205368008304805 -4.602755030984103E-5 -0.04 -3.127160109786669E-5 item=minecraft:snowball count=3 age=43 pickup-delay=0 on-ground=true
+entity 52 e3 16.29693767597616 1.0 0.5104988365124491 -8.18390387326122E-5 -0.08 -8.055253240163535E-5 item=minecraft:snowball count=4 age=43 pickup-delay=0 on-ground=true
+entity 52 e4 18.452075073674994 1.0 2.4537156893676606 -7.96166075928247E-5 -0.12 7.82419803887683E-5 item=minecraft:snow_block count=1 age=43 pickup-delay=0 on-ground=true
+entity 52 e5 21.760817269472604 1.0 0.5808246926364258 6.623856822565719E-6 0 -4.607883050612442E-5 item=minecraft:snow_block count=1 age=43 pickup-delay=0 on-ground=true
+
+entity-order 53 entities e1 e2 e3 e4 e5
+entity 53 e1 12.81365316694346 1.0 2.030871500582579 -3.6962836697300626E-5 -0.04 2.7171013568971316E-5 item=minecraft:ice count=1 age=44 pickup-delay=0 on-ground=true
+entity 53 e2 14.315360973741388 1.0 1.0205368008304805 -4.602755030984103E-5 -0.08 -3.127160109786669E-5 item=minecraft:snowball count=3 age=44 pickup-delay=0 on-ground=true
+entity 53 e3 16.29693767597616 1.0 0.5104988365124491 -8.18390387326122E-5 -0.12 -8.055253240163535E-5 item=minecraft:snowball count=4 age=44 pickup-delay=0 on-ground=true
+entity 53 e4 18.452075073674994 1.0 2.4537156893676606 -4.6814569972136386E-5 0 4.600628909487252E-5 item=minecraft:snow_block count=1 age=44 pickup-delay=0 on-ground=true
+entity 53 e5 21.760817269472604 1.0 0.5808246926364258 6.623856822565719E-6 -0.04 -4.607883050612442E-5 item=minecraft:snow_block count=1 age=44 pickup-delay=0 on-ground=true
+
+entity-order 54 entities e1 e2 e3 e4 e5
+entity 54 e1 12.81365316694346 1.0 2.030871500582579 -3.6962836697300626E-5 -0.08 2.7171013568971316E-5 item=minecraft:ice count=1 age=45 pickup-delay=0 on-ground=true
+entity 54 e2 14.315360973741388 1.0 1.0205368008304805 -4.602755030984103E-5 -0.12 -3.127160109786669E-5 item=minecraft:snowball count=3 age=45 pickup-delay=0 on-ground=true
+entity 54 e3 16.29693767597616 1.0 0.5104988365124491 -4.812135961373891E-5 0 -4.7364893815056226E-5 item=minecraft:snowball count=4 age=45 pickup-delay=0 on-ground=true
+entity 54 e4 18.452075073674994 1.0 2.4537156893676606 -4.6814569972136386E-5 -0.04 4.600628909487252E-5 item=minecraft:snow_block count=1 age=45 pickup-delay=0 on-ground=true
+entity 54 e5 21.760817269472604 1.0 0.5808246926364258 6.623856822565719E-6 -0.08 -4.607883050612442E-5 item=minecraft:snow_block count=1 age=45 pickup-delay=0 on-ground=true
+
+entity-order 55 entities e1 e2 e3 e4 e5
+entity 55 e1 12.81365316694346 1.0 2.030871500582579 -3.6962836697300626E-5 -0.12 2.7171013568971316E-5 item=minecraft:ice count=1 age=46 pickup-delay=0 on-ground=true
+entity 55 e2 14.315360973741388 1.0 1.0205368008304805 -2.7064202303694664E-5 0 -1.838770329456683E-5 item=minecraft:snowball count=3 age=46 pickup-delay=0 on-ground=true
+entity 55 e3 16.29693767597616 1.0 0.5104988365124491 -4.812135961373891E-5 -0.04 -4.7364893815056226E-5 item=minecraft:snowball count=4 age=46 pickup-delay=0 on-ground=true
+entity 55 e4 18.452075073674994 1.0 2.4537156893676606 -4.6814569972136386E-5 -0.08 4.600628909487252E-5 item=minecraft:snow_block count=1 age=46 pickup-delay=0 on-ground=true
+entity 55 e5 21.760817269472604 1.0 0.5808246926364258 6.623856822565719E-6 -0.12 -4.607883050612442E-5 item=minecraft:snow_block count=1 age=46 pickup-delay=0 on-ground=true
+
+entity-order 56 entities e1 e2 e3 e4 e5
+entity 56 e1 12.81365316694346 1.0 2.030871500582579 -2.1734150163544264E-5 0 1.5976557585117598E-5 item=minecraft:ice count=1 age=47 pickup-delay=0 on-ground=true
+entity 56 e2 14.315360973741388 1.0 1.0205368008304805 -2.7064202303694664E-5 -0.04 -1.838770329456683E-5 item=minecraft:snowball count=3 age=47 pickup-delay=0 on-ground=true
+entity 56 e3 16.29693767597616 1.0 0.5104988365124491 -4.812135961373891E-5 -0.08 -4.7364893815056226E-5 item=minecraft:snowball count=4 age=47 pickup-delay=0 on-ground=true
+entity 56 e4 18.452075073674994 1.0 2.4537156893676606 -4.6814569972136386E-5 -0.12 4.600628909487252E-5 item=minecraft:snow_block count=1 age=47 pickup-delay=0 on-ground=true
+entity 56 e5 21.760817269472604 1.0 0.5808246926364258 3.894828203322775E-6 0 -2.7094355062141382E-5 item=minecraft:snow_block count=1 age=47 pickup-delay=0 on-ground=true
+
+entity-order 57 entities e1 e2 e3 e4 e5
+entity 57 e1 12.81365316694346 1.0 2.030871500582579 -2.1734150163544264E-5 -0.04 1.5976557585117598E-5 item=minecraft:ice count=1 age=48 pickup-delay=0 on-ground=true
+entity 57 e2 14.315360973741388 1.0 1.0205368008304805 -2.7064202303694664E-5 -0.08 -1.838770329456683E-5 item=minecraft:snowball count=3 age=48 pickup-delay=0 on-ground=true
+entity 57 e3 16.29693767597616 1.0 0.5104988365124491 -4.812135961373891E-5 -0.12 -4.7364893815056226E-5 item=minecraft:snowball count=4 age=48 pickup-delay=0 on-ground=true
+entity 57 e4 18.452075073674994 1.0 2.4537156893676606 -2.7526969911659082E-5 0 2.705170070803605E-5 item=minecraft:snow_block count=1 age=48 pickup-delay=0 on-ground=true
+entity 57 e5 21.760817269472604 1.0 0.5808246926364258 3.894828203322775E-6 -0.04 -2.7094355062141382E-5 item=minecraft:snow_block count=1 age=48 pickup-delay=0 on-ground=true
+
+entity-order 58 entities e1 e2 e3 e4 e5
+entity 58 e1 12.81365316694346 1.0 2.030871500582579 -2.1734150163544264E-5 -0.08 1.5976557585117598E-5 item=minecraft:ice count=1 age=49 pickup-delay=0 on-ground=true
+entity 58 e2 14.315360973741388 1.0 1.0205368008304805 -2.7064202303694664E-5 -0.12 -1.838770329456683E-5 item=minecraft:snowball count=3 age=49 pickup-delay=0 on-ground=true
+entity 58 e3 16.29693767597616 1.0 0.5104988365124491 -2.8295362298188973E-5 0 -2.785056036383539E-5 item=minecraft:snowball count=4 age=49 pickup-delay=0 on-ground=true
+entity 58 e4 18.452075073674994 1.0 2.4537156893676606 -2.7526969911659082E-5 -0.04 2.705170070803605E-5 item=minecraft:snow_block count=1 age=49 pickup-delay=0 on-ground=true
+entity 58 e5 21.760817269472604 1.0 0.5808246926364258 3.894828203322775E-6 -0.08 -2.7094355062141382E-5 item=minecraft:snow_block count=1 age=49 pickup-delay=0 on-ground=true
+
+entity-order 59 entities e1 e2 e3 e4 e5
+entity 59 e1 12.81365316694346 1.0 2.030871500582579 -2.1734150163544264E-5 -0.12 1.5976557585117598E-5 item=minecraft:ice count=1 age=50 pickup-delay=0 on-ground=true
+entity 59 e2 14.315360973741388 1.0 1.0205368008304805 -1.591375255481941E-5 0 -1.0811970624429879E-5 item=minecraft:snowball count=3 age=50 pickup-delay=0 on-ground=true
+entity 59 e3 16.29693767597616 1.0 0.5104988365124491 -2.8295362298188973E-5 -0.04 -2.785056036383539E-5 item=minecraft:snowball count=4 age=50 pickup-delay=0 on-ground=true
+entity 59 e4 18.452075073674994 1.0 2.4537156893676606 -2.7526969911659082E-5 -0.08 2.705170070803605E-5 item=minecraft:snow_block count=1 age=50 pickup-delay=0 on-ground=true
+entity 59 e5 21.760817269472604 1.0 0.5808246926364258 3.894828203322775E-6 -0.12 -2.7094355062141382E-5 item=minecraft:snow_block count=1 age=50 pickup-delay=0 on-ground=true
+
+entity-order 60 entities e1 e2 e3 e4 e5
+entity 60 e1 12.81365316694346 1.0 2.030871500582579 -1.2779681581256677E-5 0 9.39421680470797E-6 item=minecraft:ice count=1 age=51 pickup-delay=0 on-ground=true
+entity 60 e2 14.315360973741388 1.0 1.0205368008304805 -1.591375255481941E-5 -0.04 -1.0811970624429879E-5 item=minecraft:snowball count=3 age=51 pickup-delay=0 on-ground=true
+entity 60 e3 16.29693767597616 1.0 0.5104988365124491 -2.8295362298188973E-5 -0.08 -2.785056036383539E-5 item=minecraft:snowball count=4 age=51 pickup-delay=0 on-ground=true
+entity 60 e4 18.452075073674994 1.0 2.4537156893676606 -2.7526969911659082E-5 -0.12 2.705170070803605E-5 item=minecraft:snow_block count=1 age=51 pickup-delay=0 on-ground=true
+entity 60 e5 21.760817269472604 1.0 0.5808246926364258 2.2901592138464445E-6 0 -1.5931482378568947E-5 item=minecraft:snow_block count=1 age=51 pickup-delay=0 on-ground=true

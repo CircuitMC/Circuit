@@ -111,7 +111,7 @@ constexpr std::array reference_v4_mechanisms{
         "touch or shears in loot_tools and loot_bonus, crops with fortune in farmland; with the operator's data packs). Gaps: "
         "weighted choices between "
         "entries (no block table has them) drop nothing; "
-        "tables that copy components, test entities or name dynamic entries do not compile; each level keeps its own "
+        "tables that copy components or block states or name dynamic entries do not compile; each level keeps its own "
         "sequences, where the official servers keep one set for the world."},
     MechanismEntry{"lava", l0_exact, l0_exact, harness_trace,
         "Lava as a registry block: 30-tick fluid ticks; water's spread, losing 2 levels a block and looking 2 blocks ahead for "
@@ -346,6 +346,16 @@ constexpr std::array reference_v4_mechanisms{
         "and lava, lightning and flint and steel setting fire are not modeled; the player range on 1.21.8 is that of "
         "random ticks, not observed for fire; the pending tick of fire that went out stands for any block without rules "
         "of its own set there before it is due (as their ticks do for each other), and Anvil export leaves it out."},
+    MechanismEntry{"snow_and_ice", l0_exact, l2_declared_deviation, harness_trace,
+        "Snow layers lie on whole collision tops, honey, soul sand, mud and eight layers of snow, but not on ice, packed "
+        "ice or barriers, and an update that finds them unsupported breaks them without drops; grass blocks, podzol and "
+        "mycelium are snowy under snow layers, snow blocks and powder snow; ice and frosted ice a player breaks without "
+        "silk touch become water over a solid block or a liquid; frosted ice draws its block ticks from the level "
+        "random and ages and melts in them by its frosted neighbors and the light, and melts when an update from frosted "
+        "ice leaves it fewer than two frosted neighbors; snow drops its snowballs for players and explosions "
+        "(snow_layers, ice_break, frosted_ice, frosted_ice_ticks, snow_explosion; every state under a snow layer in "
+        "tests/fixtures/collision/snow-*.txt). Gaps: melting and freezing by light and weather in random ticks; players "
+        "stacking snow layers; powder snow; snow and ice in the Nether are not compared."},
     MechanismEntry{"container_menus", l0_exact, l2_declared_deviation, controlled_experiment,
         "Player windows and chest, double chest and hopper menus with every click mode, applied as commands. "
         "A 48-step client scenario (every click mode, double chests, hoppers, the own window, throws and "

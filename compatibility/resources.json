@@ -284,6 +284,56 @@
           "does not hurt or ignite entities"
         ]
       },
+      "snow": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Lies on whole collision tops, honey, soul sand, mud and eight layers of snow, not on ice, packed ice or barriers, and breaks without drops when an update finds it unsupported; drops its snowballs for players and explosions by its loot table; sand falling into a single layer replaces it, as both official servers do",
+        "cases": [
+          "collision/snow",
+          "trace/snow_layers",
+          "trace/ice_break",
+          "trace/snow_explosion"
+        ],
+        "deviations": [
+          "does not melt; players do not stack it"
+        ]
+      },
+      "ice": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Broken by a player without silk touch, becomes water over a solid block or a liquid, as both official servers do; slippery",
+        "cases": [
+          "trace/ice_break"
+        ],
+        "deviations": [
+          "does not melt or freeze"
+        ]
+      },
+      "frosted_ice": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Draws its block ticks from the level random and ages and melts in them by its frosted neighbors and the light, and melts when an update from frosted ice leaves it fewer than two frosted neighbors; broken by a player, becomes water like ice, as both official servers do",
+        "cases": [
+          "trace/frosted_ice",
+          "trace/frosted_ice_ticks",
+          "trace/ice_break"
+        ],
+        "deviations": [
+          "frost walker does not make it"
+        ]
+      },
+      "grass_block": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Snowy while a snow layer, snow block or powder snow is on it, as both official servers do; plants grow on it",
+        "cases": [
+          "trace/snow_layers",
+          "collision/plants"
+        ],
+        "deviations": [
+          "does not spread or die"
+        ]
+      },
       "soul_fire": {
         "impl": "partial",
         "evidence": "compared",

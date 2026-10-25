@@ -1334,6 +1334,31 @@ inline Scenario fire_scenario() {
     }, 10};
 }
 
+// Frosted ice across the x=16 chunk edge aging and melting in its ticks and
+// by its neighbors, half of it under a roof; snow layers losing their
+// support and grass under snow.
+inline Scenario snow_scenario() {
+    return {"snow", 67, 320, [](Tick t) -> std::vector<CommandBody> {
+        if (t == 1) return {ticket(1, {0, 0}, 1)};
+        std::vector<CommandBody> c;
+        if (t == 2) {
+            for (int x = 10; x <= 22; ++x)
+                for (int z = -2; z <= 6; ++z) c.push_back(place({x, -1, z}, blocks::stone()));
+            for (int x = 12; x <= 20; ++x)
+                for (int z = 0; z <= 2; ++z) c.push_back(place({x, 0, z}, registry_block("frosted_ice", {{"age", "0"}})));
+            for (int x = 16; x <= 20; ++x)
+                for (int z = -1; z <= 3; ++z) c.push_back(place({x, 2, z}, blocks::stone()));
+            for (int x = 12; x <= 20; x += 2) c.push_back(place({x, -1, 5}, registry_block(x % 4 == 0 ? "ice" : "grass_block", {})));
+        }
+        if (t == 3)
+            for (int x = 12; x <= 20; x += 2) c.push_back(place({x, 0, 5}, registry_block("snow", {{"layers", "2"}})));
+        if (t == 40)
+            for (int x = 13; x <= 21; x += 2) c.push_back(place({x, 0, 5}, blocks::stone()));
+        if (t == 150) c.push_back(place({16, 0, 1}, blocks::stone()));
+        return c;
+    }, 10};
+}
+
 inline std::vector<Scenario> all_scenarios() {
     return {slice_scenario(), clock_scenario(), piston_scenario(), hopper_scenario(), water_scenario(),
             wheat_scenario(), many_machines_scenario(), ticket_scenario(), piston_chain_scenario(),
@@ -1341,7 +1366,7 @@ inline std::vector<Scenario> all_scenarios() {
             transient_head_scenario(), registry_block_scenario(), chunk_levels_scenario(), crop_light_scenario(), falling_scenario(),
             tnt_scenario(), projectile_scenario(), vehicle_scenario(), torch_button_scenario(),
             plate_target_scenario(), door_scenario(), honey_scenario(), push_class_scenario(), daylight_scenario(), note_scenario(), rail_scenario(), minecart_rail_scenario(), minecart_meeting_scenario(), detector_rail_scenario(), coral_scenario(),
-            dispenser_scenario(), tnt_duper_scenario(), flying_engine_scenario(), item_sorter_scenario(), lava_scenario(), waterlogged_scenario(), fire_scenario()};
+            dispenser_scenario(), tnt_duper_scenario(), flying_engine_scenario(), item_sorter_scenario(), lava_scenario(), waterlogged_scenario(), fire_scenario(), snow_scenario()};
 }
 
 } // namespace circuit::test

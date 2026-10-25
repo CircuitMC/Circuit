@@ -193,11 +193,13 @@ void check_piston(RuleContext& ctx, BlockPos pos);
 void run_piston_event(RuleContext& ctx, const BlockEvent& event, BlockState state);
 // Spawns the items a destroyed block drops, around the block center with
 // random offsets and velocities from the level random: what `tool` harvests
-// (nothing for blocks that need a tool when none is given).
-void drop_items(RuleContext& ctx, BlockPos pos, BlockState destroyed, ItemStack tool = {});
+// (nothing for blocks that need a tool when none is given), `by_entity` when
+// a player or an explosion's entity broke it (loot tables that need one).
+void drop_items(RuleContext& ctx, BlockPos pos, BlockState destroyed, ItemStack tool = {}, bool by_entity = false);
 // The stacks a block drops (loot tables roll from their random sequences):
 // what `tool` harvests, or, when it `exploded`, what it drops without a tool.
-std::vector<ItemStack> block_drops(RuleContext& ctx, BlockPos pos, BlockState destroyed, const ItemStack& tool, bool exploded);
+std::vector<ItemStack> block_drops(RuleContext& ctx, BlockPos pos, BlockState destroyed, const ItemStack& tool, bool exploded,
+                                   bool by_entity = false);
 // Spawns one stack as a block drop at `pos` (drawing its offset and velocity).
 void pop_resource(RuleContext& ctx, BlockPos pos, ItemStack stack);
 // Scatters a removed container's contents around its cell, as both target
@@ -288,6 +290,20 @@ void entity_fell(RuleContext& ctx, Entity& e, Vec3 position, Vec3 moved, bool on
 std::optional<BlockPos> supporting_block(RuleContext& ctx, const physics::Aabb& box, Vec3 position, Vec3 moved);
 void farmland_shape_update(RuleContext& ctx, BlockPos pos, Direction d);
 void tick_farmland(RuleContext& ctx, BlockPos pos);
+
+// ---- snow and ice (snow.cpp) ----
+// Grass blocks, podzol and mycelium, and their snowy state from the block
+// above on a shape update from it.
+bool is_snowy_dirt(BlockState s);
+void snowy_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d);
+bool is_frosted_ice(BlockState s);
+// A neighbor update from the block `cause`: frosted ice melts by frosted ice.
+void frosted_ice_neighbor_changed(RuleContext& ctx, BlockPos pos, BlockState cause);
+// A state of frosted ice set: its block tick's delay. Its block tick.
+void frosted_ice_placed(RuleContext& ctx, BlockPos pos);
+void tick_frosted_ice(RuleContext& ctx, BlockPos pos, BlockState s);
+// Ice or frosted ice a player broke with `tool` (its block already gone).
+void ice_broken(RuleContext& ctx, BlockPos pos, BlockState s, const ItemStack& tool);
 
 // ---- fire (fire.cpp) ----
 bool is_fire(BlockState s);

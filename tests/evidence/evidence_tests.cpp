@@ -1002,6 +1002,52 @@ int main(int argc, char** argv) {
         require(flammable > 0, "some states burn");
     });
 
+    suite.run("snow layers stay where both official servers keep them", [&] {
+        // tests/fixtures/collision/snow-*.txt: a snow layer on every state.
+        // States that did not stay where they were set (?) are left out.
+        namespace registry = circuit::gameplay::registry;
+        using circuit::contracts::BlockPos;
+        using circuit::gameplay::BlockState;
+        const auto table = [&](const char* file) {
+            std::map<std::string, std::string> out;
+            std::istringstream lines(read_text(fixtures / "collision" / file));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto space = line.find(' ');
+                out[line.substr(0, space)] = line.substr(space + 1);
+            }
+            return out;
+        };
+        const auto newest = table("snow-1.21.8.txt");
+        const auto older = table("snow-1.21.4-only.txt");
+        std::size_t checked = 0, stays = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            const auto* mapping = ContentMapping::for_game_version(release);
+            const auto snow = BlockState::registered(registry::block(*registry::find_block(release, "snow")).default_state);
+            for (std::uint32_t wire = 0; wire < registry::wire_state_count(release); ++wire) {
+                const auto notation = registry::notation(registry::from_wire(release, static_cast<std::int32_t>(wire)).value());
+                const auto name = notation.substr(0, notation.find('['));
+                const auto find = [&](const std::map<std::string, std::string>& t) -> const std::string* {
+                    for (const auto& k : {notation, name})
+                        if (const auto it = t.find(k); it != t.end()) return &it->second;
+                    return nullptr;
+                };
+                const std::string* row = release == std::string_view("1.21.4") ? find(older) : nullptr;
+                if (!row) row = find(newest);
+                require(row != nullptr && row->size() == 1, std::format("{} {}: a row", release, notation));
+                if ((*row)[0] == '?') continue;
+                const auto state = mapping->block(notation).value();
+                const auto near = [&](BlockPos o) { return o == BlockPos{0, -1, 0} ? state : BlockState::of(circuit::gameplay::BlockType::air); };
+                const char got = circuit::gameplay::block_supported_near(snow, near, release) ? '1' : '0';
+                require((*row)[0] == got, std::format("{} snow on {}: official {}, Circuit {}", release, notation, (*row)[0], got));
+                ++checked;
+                stays += got == '1' ? 1 : 0;
+            }
+        }
+        std::cout << std::format("  {} states, {} under a snow layer\n", checked, stays);
+        require(stays > 0, "snow lies somewhere");
+    });
+
     suite.run("blocks that need support stay where both official servers keep them", [&] {
         // tests/fixtures/collision/support-*.txt: for every state as support,
         // whether flowers and saplings (the poppy's column), torches, carpets,

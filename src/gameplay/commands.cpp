@@ -310,7 +310,10 @@ Plan plan(RuleContext& ctx, const contracts::PlayerBreak& c) {
             }
         }
         set_block(ctx, c.pos, blocks::air());
-        if (c.survival) detail::drop_items(ctx, c.pos, s, tool);
+        if (c.survival) {
+            detail::drop_items(ctx, c.pos, s, tool, true);
+            detail::ice_broken(ctx, c.pos, s, tool);
+        }
         if (head_with_base && c.survival && is_piston(ctx.block(base_pos).type())) detail::destroy_block(ctx, base_pos);
     };
 }

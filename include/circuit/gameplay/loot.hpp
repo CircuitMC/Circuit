@@ -37,7 +37,9 @@ struct Number {
 };
 
 struct Condition {
-    enum class Kind : std::uint8_t { survives_explosion, block_state, tool, any_of, all_of, inverted, random_chance, location, table_bonus };
+    // breaker: an entity broke the block (entity_properties of `this` with
+    // no predicate).
+    enum class Kind : std::uint8_t { survives_explosion, block_state, tool, any_of, all_of, inverted, random_chance, location, table_bonus, breaker };
     Kind kind{};
     double chance{};                       // random_chance
     std::uint32_t bonus_enchantment{};     // table_bonus: the enchantment whose level picks the chance
@@ -112,6 +114,8 @@ struct BreakContext {
     // Whether the block at an offset is the block a location condition names
     // with its properties; without it, location conditions fail.
     std::function<bool(const Condition&)> location;
+    // Whether an entity broke it (a player, an explosion's primed TNT; not an update).
+    bool by_entity{};
 };
 
 // The drops, or nullopt when a roll would need a random number it has no

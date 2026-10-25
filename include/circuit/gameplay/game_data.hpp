@@ -40,6 +40,9 @@ struct GameData {
     // ids and levels), for the tools fixtures hand to players; nullopt when
     // the registry lacks one. Set by the server.
     std::function<std::optional<contracts::ComponentPatch>(const std::vector<std::pair<std::string, std::int32_t>>& levels)> enchanted;
+    // The enchantments that keep ice a player breaks from melting (the
+    // enchantment tag prevents_ice_melting), as ids of the synchronized registry.
+    std::vector<std::uint32_t> keeps_ice;
 };
 
 } // namespace circuit::gameplay

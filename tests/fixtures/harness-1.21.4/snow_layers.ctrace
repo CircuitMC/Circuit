@@ -1,0 +1,608 @@
+circuit-trace 2
+title Snow layers on their supports, dirt under snow and sand falling onto snow
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.27.0+mc1.21.4
+mechanisms snow_and_ice support falling_block
+area 0 0 0 23 6 11
+ticks 80
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 0
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 0 0 10 minecraft:stone
+at 0 set 0 0 11 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:stone
+at 0 set 1 0 11 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 2 0 10 minecraft:stone
+at 0 set 2 0 11 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 3 0 10 minecraft:stone
+at 0 set 3 0 11 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 4 0 11 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 5 0 10 minecraft:stone
+at 0 set 5 0 11 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 6 0 10 minecraft:stone
+at 0 set 6 0 11 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 7 0 10 minecraft:stone
+at 0 set 7 0 11 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 8 0 10 minecraft:stone
+at 0 set 8 0 11 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 9 0 10 minecraft:stone
+at 0 set 9 0 11 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 10 0 10 minecraft:stone
+at 0 set 10 0 11 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 11 0 10 minecraft:stone
+at 0 set 11 0 11 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 12 0 8 minecraft:stone
+at 0 set 12 0 9 minecraft:stone
+at 0 set 12 0 10 minecraft:stone
+at 0 set 12 0 11 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 13 0 8 minecraft:stone
+at 0 set 13 0 9 minecraft:stone
+at 0 set 13 0 10 minecraft:stone
+at 0 set 13 0 11 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 14 0 8 minecraft:stone
+at 0 set 14 0 9 minecraft:stone
+at 0 set 14 0 10 minecraft:stone
+at 0 set 14 0 11 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 15 0 8 minecraft:stone
+at 0 set 15 0 9 minecraft:stone
+at 0 set 15 0 10 minecraft:stone
+at 0 set 15 0 11 minecraft:stone
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 0 1 minecraft:stone
+at 0 set 16 0 2 minecraft:stone
+at 0 set 16 0 3 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 set 16 0 5 minecraft:stone
+at 0 set 16 0 6 minecraft:stone
+at 0 set 16 0 7 minecraft:stone
+at 0 set 16 0 8 minecraft:stone
+at 0 set 16 0 9 minecraft:stone
+at 0 set 16 0 10 minecraft:stone
+at 0 set 16 0 11 minecraft:stone
+at 0 set 17 0 0 minecraft:stone
+at 0 set 17 0 1 minecraft:stone
+at 0 set 17 0 2 minecraft:stone
+at 0 set 17 0 3 minecraft:stone
+at 0 set 17 0 4 minecraft:stone
+at 0 set 17 0 5 minecraft:stone
+at 0 set 17 0 6 minecraft:stone
+at 0 set 17 0 7 minecraft:stone
+at 0 set 17 0 8 minecraft:stone
+at 0 set 17 0 9 minecraft:stone
+at 0 set 17 0 10 minecraft:stone
+at 0 set 17 0 11 minecraft:stone
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 0 1 minecraft:stone
+at 0 set 18 0 2 minecraft:stone
+at 0 set 18 0 3 minecraft:stone
+at 0 set 18 0 4 minecraft:stone
+at 0 set 18 0 5 minecraft:stone
+at 0 set 18 0 6 minecraft:stone
+at 0 set 18 0 7 minecraft:stone
+at 0 set 18 0 8 minecraft:stone
+at 0 set 18 0 9 minecraft:stone
+at 0 set 18 0 10 minecraft:stone
+at 0 set 18 0 11 minecraft:stone
+at 0 set 19 0 0 minecraft:stone
+at 0 set 19 0 1 minecraft:stone
+at 0 set 19 0 2 minecraft:stone
+at 0 set 19 0 3 minecraft:stone
+at 0 set 19 0 4 minecraft:stone
+at 0 set 19 0 5 minecraft:stone
+at 0 set 19 0 6 minecraft:stone
+at 0 set 19 0 7 minecraft:stone
+at 0 set 19 0 8 minecraft:stone
+at 0 set 19 0 9 minecraft:stone
+at 0 set 19 0 10 minecraft:stone
+at 0 set 19 0 11 minecraft:stone
+at 0 set 20 0 0 minecraft:stone
+at 0 set 20 0 1 minecraft:stone
+at 0 set 20 0 2 minecraft:stone
+at 0 set 20 0 3 minecraft:stone
+at 0 set 20 0 4 minecraft:stone
+at 0 set 20 0 5 minecraft:stone
+at 0 set 20 0 6 minecraft:stone
+at 0 set 20 0 7 minecraft:stone
+at 0 set 20 0 8 minecraft:stone
+at 0 set 20 0 9 minecraft:stone
+at 0 set 20 0 10 minecraft:stone
+at 0 set 20 0 11 minecraft:stone
+at 0 set 21 0 0 minecraft:stone
+at 0 set 21 0 1 minecraft:stone
+at 0 set 21 0 2 minecraft:stone
+at 0 set 21 0 3 minecraft:stone
+at 0 set 21 0 4 minecraft:stone
+at 0 set 21 0 5 minecraft:stone
+at 0 set 21 0 6 minecraft:stone
+at 0 set 21 0 7 minecraft:stone
+at 0 set 21 0 8 minecraft:stone
+at 0 set 21 0 9 minecraft:stone
+at 0 set 21 0 10 minecraft:stone
+at 0 set 21 0 11 minecraft:stone
+at 0 set 22 0 0 minecraft:stone
+at 0 set 22 0 1 minecraft:stone
+at 0 set 22 0 2 minecraft:stone
+at 0 set 22 0 3 minecraft:stone
+at 0 set 22 0 4 minecraft:stone
+at 0 set 22 0 5 minecraft:stone
+at 0 set 22 0 6 minecraft:stone
+at 0 set 22 0 7 minecraft:stone
+at 0 set 22 0 8 minecraft:stone
+at 0 set 22 0 9 minecraft:stone
+at 0 set 22 0 10 minecraft:stone
+at 0 set 22 0 11 minecraft:stone
+at 0 set 23 0 0 minecraft:stone
+at 0 set 23 0 1 minecraft:stone
+at 0 set 23 0 2 minecraft:stone
+at 0 set 23 0 3 minecraft:stone
+at 0 set 23 0 4 minecraft:stone
+at 0 set 23 0 5 minecraft:stone
+at 0 set 23 0 6 minecraft:stone
+at 0 set 23 0 7 minecraft:stone
+at 0 set 23 0 8 minecraft:stone
+at 0 set 23 0 9 minecraft:stone
+at 0 set 23 0 10 minecraft:stone
+at 0 set 23 0 11 minecraft:stone
+
+at 1 set 1 1 1 minecraft:stone
+change 1 commands 1 1 1 minecraft:air minecraft:stone
+at 1 set 3 1 1 minecraft:oak_leaves[persistent=true]
+change 1 commands 3 1 1 minecraft:air minecraft:oak_leaves[distance=7,persistent=true,waterlogged=false]
+at 1 set 5 1 1 minecraft:ice
+change 1 commands 5 1 1 minecraft:air minecraft:ice
+at 1 set 7 1 1 minecraft:packed_ice
+change 1 commands 7 1 1 minecraft:air minecraft:packed_ice
+at 1 set 9 1 1 minecraft:blue_ice
+change 1 commands 9 1 1 minecraft:air minecraft:blue_ice
+at 1 set 11 1 1 minecraft:soul_sand
+change 1 commands 11 1 1 minecraft:air minecraft:soul_sand
+at 1 set 13 1 1 minecraft:honey_block
+change 1 commands 13 1 1 minecraft:air minecraft:honey_block
+at 1 set 15 1 1 minecraft:glass
+change 1 commands 15 1 1 minecraft:air minecraft:glass
+at 1 set 17 1 1 minecraft:oak_slab[type=bottom]
+change 1 commands 17 1 1 minecraft:air minecraft:oak_slab[type=bottom,waterlogged=false]
+at 1 set 19 1 1 minecraft:oak_slab[type=top]
+change 1 commands 19 1 1 minecraft:air minecraft:oak_slab[type=top,waterlogged=false]
+at 1 set 21 1 1 minecraft:snow[layers=8]
+change 1 commands 21 1 1 minecraft:air minecraft:snow[layers=8]
+at 1 set 23 1 1 minecraft:snow[layers=3]
+change 1 commands 23 1 1 minecraft:air minecraft:snow[layers=3]
+at 1 set 1 1 6 minecraft:grass_block
+change 1 commands 1 1 6 minecraft:air minecraft:grass_block[snowy=false]
+at 1 set 1 1 8 minecraft:grass_block
+change 1 commands 1 1 8 minecraft:air minecraft:grass_block[snowy=false]
+at 1 set 1 1 10 minecraft:grass_block
+change 1 commands 1 1 10 minecraft:air minecraft:grass_block[snowy=false]
+at 1 set 3 1 6 minecraft:podzol
+change 1 commands 3 1 6 minecraft:air minecraft:podzol[snowy=false]
+at 1 set 3 1 8 minecraft:podzol
+change 1 commands 3 1 8 minecraft:air minecraft:podzol[snowy=false]
+at 1 set 3 1 10 minecraft:podzol
+change 1 commands 3 1 10 minecraft:air minecraft:podzol[snowy=false]
+at 1 set 5 1 6 minecraft:mycelium
+change 1 commands 5 1 6 minecraft:air minecraft:mycelium[snowy=false]
+at 1 set 5 1 8 minecraft:mycelium
+change 1 commands 5 1 8 minecraft:air minecraft:mycelium[snowy=false]
+at 1 set 5 1 10 minecraft:mycelium
+change 1 commands 5 1 10 minecraft:air minecraft:mycelium[snowy=false]
+at 1 set 21 1 6 minecraft:snow[layers=1]
+change 1 commands 21 1 6 minecraft:air minecraft:snow[layers=1]
+at 1 set 23 1 6 minecraft:snow[layers=2]
+change 1 commands 23 1 6 minecraft:air minecraft:snow[layers=2]
+
+at 2 set 1 2 1 minecraft:snow[layers=1]
+change 2 commands 1 2 1 minecraft:air minecraft:snow[layers=1]
+at 2 set 3 2 1 minecraft:snow[layers=2]
+change 2 commands 3 2 1 minecraft:air minecraft:snow[layers=2]
+at 2 set 5 2 1 minecraft:snow[layers=3]
+change 2 commands 5 2 1 minecraft:air minecraft:snow[layers=3]
+at 2 set 7 2 1 minecraft:snow[layers=4]
+change 2 commands 7 2 1 minecraft:air minecraft:snow[layers=4]
+at 2 set 9 2 1 minecraft:snow[layers=1]
+change 2 commands 9 2 1 minecraft:air minecraft:snow[layers=1]
+at 2 set 11 2 1 minecraft:snow[layers=2]
+change 2 commands 11 2 1 minecraft:air minecraft:snow[layers=2]
+at 2 set 13 2 1 minecraft:snow[layers=3]
+change 2 commands 13 2 1 minecraft:air minecraft:snow[layers=3]
+at 2 set 15 2 1 minecraft:snow[layers=4]
+change 2 commands 15 2 1 minecraft:air minecraft:snow[layers=4]
+at 2 set 17 2 1 minecraft:snow[layers=1]
+change 2 commands 17 2 1 minecraft:air minecraft:snow[layers=1]
+at 2 set 19 2 1 minecraft:snow[layers=2]
+change 2 commands 19 2 1 minecraft:air minecraft:snow[layers=2]
+at 2 set 21 2 1 minecraft:snow[layers=3]
+change 2 commands 21 2 1 minecraft:air minecraft:snow[layers=3]
+at 2 set 23 2 1 minecraft:snow[layers=4]
+change 2 commands 23 2 1 minecraft:air minecraft:snow[layers=4]
+
+at 5 set 1 2 6 minecraft:snow[layers=1]
+change 5 commands 1 2 6 minecraft:air minecraft:snow[layers=1]
+change 5 commands 1 1 6 minecraft:grass_block[snowy=false] minecraft:grass_block[snowy=true]
+at 5 set 1 2 8 minecraft:snow_block
+change 5 commands 1 2 8 minecraft:air minecraft:snow_block
+change 5 commands 1 1 8 minecraft:grass_block[snowy=false] minecraft:grass_block[snowy=true]
+at 5 set 1 2 10 minecraft:powder_snow
+change 5 commands 1 2 10 minecraft:air minecraft:powder_snow
+change 5 commands 1 1 10 minecraft:grass_block[snowy=false] minecraft:grass_block[snowy=true]
+at 5 set 3 2 6 minecraft:snow[layers=1]
+change 5 commands 3 2 6 minecraft:air minecraft:snow[layers=1]
+change 5 commands 3 1 6 minecraft:podzol[snowy=false] minecraft:podzol[snowy=true]
+at 5 set 3 2 8 minecraft:snow_block
+change 5 commands 3 2 8 minecraft:air minecraft:snow_block
+change 5 commands 3 1 8 minecraft:podzol[snowy=false] minecraft:podzol[snowy=true]
+at 5 set 3 2 10 minecraft:powder_snow
+change 5 commands 3 2 10 minecraft:air minecraft:powder_snow
+change 5 commands 3 1 10 minecraft:podzol[snowy=false] minecraft:podzol[snowy=true]
+at 5 set 5 2 6 minecraft:snow[layers=1]
+change 5 commands 5 2 6 minecraft:air minecraft:snow[layers=1]
+change 5 commands 5 1 6 minecraft:mycelium[snowy=false] minecraft:mycelium[snowy=true]
+at 5 set 5 2 8 minecraft:snow_block
+change 5 commands 5 2 8 minecraft:air minecraft:snow_block
+change 5 commands 5 1 8 minecraft:mycelium[snowy=false] minecraft:mycelium[snowy=true]
+at 5 set 5 2 10 minecraft:powder_snow
+change 5 commands 5 2 10 minecraft:air minecraft:powder_snow
+change 5 commands 5 1 10 minecraft:mycelium[snowy=false] minecraft:mycelium[snowy=true]
+
+at 10 set 1 2 2 minecraft:stone
+change 10 commands 1 2 2 minecraft:air minecraft:stone
+at 10 set 3 2 2 minecraft:stone
+change 10 commands 3 2 2 minecraft:air minecraft:stone
+at 10 set 5 2 2 minecraft:stone
+change 10 commands 5 2 2 minecraft:air minecraft:stone
+change 10 commands 5 2 1 minecraft:snow[layers=3] minecraft:air
+at 10 set 7 2 2 minecraft:stone
+change 10 commands 7 2 2 minecraft:air minecraft:stone
+change 10 commands 7 2 1 minecraft:snow[layers=4] minecraft:air
+at 10 set 9 2 2 minecraft:stone
+change 10 commands 9 2 2 minecraft:air minecraft:stone
+at 10 set 11 2 2 minecraft:stone
+change 10 commands 11 2 2 minecraft:air minecraft:stone
+at 10 set 13 2 2 minecraft:stone
+change 10 commands 13 2 2 minecraft:air minecraft:stone
+at 10 set 15 2 2 minecraft:stone
+change 10 commands 15 2 2 minecraft:air minecraft:stone
+at 10 set 17 2 2 minecraft:stone
+change 10 commands 17 2 2 minecraft:air minecraft:stone
+change 10 commands 17 2 1 minecraft:snow[layers=1] minecraft:air
+at 10 set 19 2 2 minecraft:stone
+change 10 commands 19 2 2 minecraft:air minecraft:stone
+at 10 set 21 2 2 minecraft:stone
+change 10 commands 21 2 2 minecraft:air minecraft:stone
+at 10 set 23 2 2 minecraft:stone
+change 10 commands 23 2 2 minecraft:air minecraft:stone
+change 10 commands 23 2 1 minecraft:snow[layers=4] minecraft:air
+
+at 20 set 1 1 1 minecraft:air
+change 20 commands 1 1 1 minecraft:stone minecraft:air
+change 20 commands 1 2 1 minecraft:snow[layers=1] minecraft:air
+
+at 30 set 1 2 6 minecraft:air
+change 30 commands 1 2 6 minecraft:snow[layers=1] minecraft:air
+change 30 commands 1 1 6 minecraft:grass_block[snowy=true] minecraft:grass_block[snowy=false]
+at 30 set 1 2 8 minecraft:air
+change 30 commands 1 2 8 minecraft:snow_block minecraft:air
+change 30 commands 1 1 8 minecraft:grass_block[snowy=true] minecraft:grass_block[snowy=false]
+at 30 set 1 2 10 minecraft:air
+change 30 commands 1 2 10 minecraft:powder_snow minecraft:air
+change 30 commands 1 1 10 minecraft:grass_block[snowy=true] minecraft:grass_block[snowy=false]
+at 30 set 3 2 6 minecraft:air
+change 30 commands 3 2 6 minecraft:snow[layers=1] minecraft:air
+change 30 commands 3 1 6 minecraft:podzol[snowy=true] minecraft:podzol[snowy=false]
+at 30 set 3 2 8 minecraft:air
+change 30 commands 3 2 8 minecraft:snow_block minecraft:air
+change 30 commands 3 1 8 minecraft:podzol[snowy=true] minecraft:podzol[snowy=false]
+at 30 set 3 2 10 minecraft:air
+change 30 commands 3 2 10 minecraft:powder_snow minecraft:air
+change 30 commands 3 1 10 minecraft:podzol[snowy=true] minecraft:podzol[snowy=false]
+at 30 set 5 2 6 minecraft:air
+change 30 commands 5 2 6 minecraft:snow[layers=1] minecraft:air
+change 30 commands 5 1 6 minecraft:mycelium[snowy=true] minecraft:mycelium[snowy=false]
+at 30 set 5 2 8 minecraft:air
+change 30 commands 5 2 8 minecraft:snow_block minecraft:air
+change 30 commands 5 1 8 minecraft:mycelium[snowy=true] minecraft:mycelium[snowy=false]
+at 30 set 5 2 10 minecraft:air
+change 30 commands 5 2 10 minecraft:powder_snow minecraft:air
+change 30 commands 5 1 10 minecraft:mycelium[snowy=true] minecraft:mycelium[snowy=false]
+
+at 40 set 21 4 6 minecraft:sand
+change 40 commands 21 4 6 minecraft:air minecraft:sand
+at 40 set 23 4 6 minecraft:sand
+change 40 commands 23 4 6 minecraft:air minecraft:sand
+
+change 41 block_ticks 21 4 6 minecraft:sand minecraft:air
+entity-added 41 block_ticks e1 minecraft:falling_block 21.5 4.0 6.5 0 0 0 block=minecraft:sand
+change 41 block_ticks 23 4 6 minecraft:sand minecraft:air
+entity-added 41 block_ticks e2 minecraft:falling_block 23.5 4.0 6.5 0 0 0 block=minecraft:sand
+entity-order 41 entities e1 e2
+entity 41 e1 21.5 3.96 6.5 0 -0.0392 0 time=1 on-ground=false
+entity 41 e2 23.5 3.96 6.5 0 -0.0392 0 time=1 on-ground=false
+
+entity-order 42 entities e1 e2
+entity 42 e1 21.5 3.8808 6.5 0 -0.07761599999999999 0 time=2 on-ground=false
+entity 42 e2 23.5 3.8808 6.5 0 -0.07761599999999999 0 time=2 on-ground=false
+
+entity-order 43 entities e1 e2
+entity 43 e1 21.5 3.763184 6.5 0 -0.11526368 0 time=3 on-ground=false
+entity 43 e2 23.5 3.763184 6.5 0 -0.11526368 0 time=3 on-ground=false
+
+entity-order 44 entities e1 e2
+entity 44 e1 21.5 3.60792032 6.5 0 -0.15215840639999997 0 time=4 on-ground=false
+entity 44 e2 23.5 3.60792032 6.5 0 -0.15215840639999997 0 time=4 on-ground=false
+
+entity-order 45 entities e1 e2
+entity 45 e1 21.5 3.4157619136 6.5 0 -0.18831523827199997 0 time=5 on-ground=false
+entity 45 e2 23.5 3.4157619136 6.5 0 -0.18831523827199997 0 time=5 on-ground=false
+
+entity-order 46 entities e1 e2
+entity 46 e1 21.5 3.1874466753279997 6.5 0 -0.22374893350655997 0 time=6 on-ground=false
+entity 46 e2 23.5 3.1874466753279997 6.5 0 -0.22374893350655997 0 time=6 on-ground=false
+
+entity-order 47 entities e1 e2
+entity 47 e1 21.5 2.9236977418214396 6.5 0 -0.25847395483642877 0 time=7 on-ground=false
+entity 47 e2 23.5 2.9236977418214396 6.5 0 -0.25847395483642877 0 time=7 on-ground=false
+
+entity-order 48 entities e1 e2
+entity 48 e1 21.5 2.625223786985011 6.5 0 -0.2925044757397002 0 time=8 on-ground=false
+entity 48 e2 23.5 2.625223786985011 6.5 0 -0.2925044757397002 0 time=8 on-ground=false
+
+entity-order 49 entities e1 e2
+entity 49 e1 21.5 2.292719311245311 6.5 0 -0.32585438622490615 0 time=9 on-ground=false
+entity 49 e2 23.5 2.292719311245311 6.5 0 -0.32585438622490615 0 time=9 on-ground=false
+
+entity-order 50 entities e1 e2
+entity 50 e1 21.5 1.9268649250204046 6.5 0 -0.358537298500408 0 time=10 on-ground=false
+entity 50 e2 23.5 1.9268649250204046 6.5 0 -0.358537298500408 0 time=10 on-ground=false
+
+entity-order 51 entities e1 e2
+entity 51 e1 21.5 1.5283276265199968 6.5 0 -0.3905665525303998 0 time=11 on-ground=false
+entity 51 e2 23.5 1.5283276265199968 6.5 0 -0.3905665525303998 0 time=11 on-ground=false
+
+entity-removed 52 entities e2 discarded
+entity-added 52 entities e3 minecraft:item 23.5 1.125 6.5 0.04619355747533141 0.2 -0.05189271686570283 item=minecraft:sand count=1
+draws 52 entities level 4
+entity-order 52 entities e1 e2
+entity 52 e1 21.5 1.0977610739895969 6.5 0 -0.42195522147979175 0 time=12 on-ground=false
+entity 52 e3 23.5 1.125 6.5 0.04619355747533141 0.2 -0.05189271686570283 item=minecraft:sand count=1 age=0 pickup-delay=10 on-ground=false
+
+change 53 entities 21 1 6 minecraft:snow[layers=1] minecraft:sand
+entity-removed 53 entities e1 discarded
+entity-order 53 entities e1 e3
+entity 53 e3 23.54619355747533 1.285 6.448107283134298 0.04526968720689697 0.1568 -0.0508548635181638 item=minecraft:sand count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 54 entities e3
+entity 54 e3 23.591463244682227 1.4018 6.397252419616134 0.04436429432620979 0.11446399999999998 -0.04983776721778006 item=minecraft:sand count=1 age=2 pickup-delay=8 on-ground=false
+
+entity-order 55 entities e3
+entity 55 e3 23.63582753900844 1.476264 6.347414652398354 0.043477009285867355 0.07297471999999998 -0.04884101282400443 item=minecraft:sand count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 56 entities e3
+entity 56 e3 23.679304548294304 1.50923872 6.298573639574349 0.04260746992940815 0.032315225599999976 -0.04786419349909273 item=minecraft:sand count=1 age=4 pickup-delay=6 on-ground=false
+
+entity-order 57 entities e3
+entity 57 e3 23.721912018223712 1.5015539456 6.250709446075256 0.04175532134349298 -0.007531078912000024 -0.04690691054204792 item=minecraft:sand count=1 age=5 pickup-delay=5 on-ground=false
+
+entity-order 58 entities e3
+entity 58 e3 23.763667339567206 1.454022866688 6.2038025355332085 0.040920215713042676 -0.04658045733376002 -0.04596877322588527 item=minecraft:sand count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 59 entities e3
+entity 59 e3 23.80458755528025 1.3674424093542399 6.157833762307323 0.040101812179273 -0.08484884818708481 -0.045049398638152334 item=minecraft:sand count=1 age=7 pickup-delay=3 on-ground=false
+
+entity-order 60 entities e3
+entity 60 e3 23.844689367459523 1.242593561167155 6.112784363669171 0.0392997767005689 -0.12235187122334311 -0.04414841152463837 item=minecraft:sand count=1 age=8 pickup-delay=2 on-ground=false
+
+entity-order 61 entities e3
+entity 61 e3 23.883989144160093 1.125 6.0686359521445326 0.023108271023644152 0 -0.025959268586886148 item=minecraft:sand count=1 age=9 pickup-delay=1 on-ground=true
+
+entity-order 62 entities e3
+entity 62 e3 23.90709741518374 1.125 6.042676683557646 0.013587664728244166 0 -0.015264051464003694 item=minecraft:sand count=1 age=10 pickup-delay=0 on-ground=true
+
+entity-order 63 entities e3
+entity 63 e3 23.920685079911983 1.125 6.027412632093642 0.007989547663616396 0 -0.008975263163364071 item=minecraft:sand count=1 age=11 pickup-delay=0 on-ground=true
+
+entity-order 64 entities e3
+entity 64 e3 23.9286746275756 1.125 6.018437368930278 0.004697854498610878 0 -0.0052774552707457074 item=minecraft:sand count=1 age=12 pickup-delay=0 on-ground=true
+
+entity-order 65 entities e3
+entity 65 e3 23.933372482074212 1.125 6.013159913659532 0.0027623387229570332 0 -0.003103144011242836 item=minecraft:sand count=1 age=13 pickup-delay=0 on-ground=true
+
+entity-order 66 entities e3
+entity 66 e3 23.936134820797168 1.125 6.010056769648289 0.0016242553324297682 0 -0.0018246488620928896 item=minecraft:sand count=1 age=14 pickup-delay=0 on-ground=true
+
+entity-order 67 entities e3
+entity 67 e3 23.936134820797168 1.125 6.010056769648289 0.0016242553324297682 -0.04 -0.0018246488620928896 item=minecraft:sand count=1 age=15 pickup-delay=0 on-ground=true
+
+entity-order 68 entities e3
+entity 68 e3 23.936134820797168 1.125 6.010056769648289 0.0016242553324297682 -0.08 -0.0018246488620928896 item=minecraft:sand count=1 age=16 pickup-delay=0 on-ground=true
+
+entity-order 69 entities e3
+entity 69 e3 23.9377590761296 1.125 6.008232120786196 9.550622315073605E-4 0 -0.0010728936387981059 item=minecraft:sand count=1 age=17 pickup-delay=0 on-ground=true
+
+entity-order 70 entities e3
+entity 70 e3 23.9377590761296 1.125 6.008232120786196 9.550622315073605E-4 -0.04 -0.0010728936387981059 item=minecraft:sand count=1 age=18 pickup-delay=0 on-ground=true
+
+entity-order 71 entities e3
+entity 71 e3 23.9377590761296 1.125 6.008232120786196 9.550622315073605E-4 -0.08 -0.0010728936387981059 item=minecraft:sand count=1 age=19 pickup-delay=0 on-ground=true
+
+entity-order 72 entities e3
+entity 72 e3 23.9377590761296 1.125 6.008232120786196 9.550622315073605E-4 -0.12 -0.0010728936387981059 item=minecraft:sand count=1 age=20 pickup-delay=0 on-ground=true
+
+entity-order 73 entities e3
+entity 73 e3 23.938714138361107 1.125 6.0071592271473975 5.615766485970639E-4 0 -6.308615230511349E-4 item=minecraft:sand count=1 age=21 pickup-delay=0 on-ground=true
+
+entity-order 74 entities e3
+entity 74 e3 23.938714138361107 1.125 6.0071592271473975 5.615766485970639E-4 -0.04 -6.308615230511349E-4 item=minecraft:sand count=1 age=22 pickup-delay=0 on-ground=true
+
+entity-order 75 entities e3
+entity 75 e3 23.938714138361107 1.125 6.0071592271473975 5.615766485970639E-4 -0.08 -6.308615230511349E-4 item=minecraft:sand count=1 age=23 pickup-delay=0 on-ground=true
+
+entity-order 76 entities e3
+entity 76 e3 23.938714138361107 1.125 6.0071592271473975 5.615766485970639E-4 -0.12 -6.308615230511349E-4 item=minecraft:sand count=1 age=24 pickup-delay=0 on-ground=true
+
+entity-order 77 entities e3
+entity 77 e3 23.939275715009703 1.125 6.006528365624346 3.302071025798696E-4 0 -3.709466128555261E-4 item=minecraft:sand count=1 age=25 pickup-delay=0 on-ground=true
+
+entity-order 78 entities e3
+entity 78 e3 23.939275715009703 1.125 6.006528365624346 3.302071025798696E-4 -0.04 -3.709466128555261E-4 item=minecraft:sand count=1 age=26 pickup-delay=0 on-ground=true
+
+entity-order 79 entities e3
+entity 79 e3 23.939275715009703 1.125 6.006528365624346 3.302071025798696E-4 -0.08 -3.709466128555261E-4 item=minecraft:sand count=1 age=27 pickup-delay=0 on-ground=true
+
+entity-order 80 entities e3
+entity 80 e3 23.939275715009703 1.125 6.006528365624346 3.302071025798696E-4 -0.12 -3.709466128555261E-4 item=minecraft:sand count=1 age=28 pickup-delay=0 on-ground=true

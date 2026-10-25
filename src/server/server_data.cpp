@@ -152,6 +152,11 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
                 return patch ? std::optional(std::move(*patch)) : std::nullopt;
             };
         }
+        if (const auto* keeps = packs->tag("enchantment", "minecraft:prevents_ice_melting")) {
+            const auto ctx = component_context(bundle, out.registries);
+            for (const auto& name : *keeps)
+                if (const auto id = ctx.id_of("enchantment", name)) game->keeps_ice.push_back(*id);
+        }
         out.game = std::move(game);
         out.packs = std::move(*packs);
     } else {

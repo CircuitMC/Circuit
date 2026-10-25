@@ -1195,6 +1195,31 @@ int main() {
         require(burn(older, {SetGameRule{"doFireTick", 0}}) == std::pair{fire, planks}, "doFireTick off");
     });
 
+    suite.run("snow lies on its supports, dirt turns snowy, broken ice becomes water and frosted ice melts", [] {
+        const circuit::contracts::PlayerKey alex{9, 10};
+        const auto snow = registry_block("snow", {{"layers", "1"}});
+        const auto frosted = registry_block("frosted_ice", {{"age", "0"}});
+        Sim s;
+        auto build = floor(-3, 3, -3, 3);
+        for (const BlockPos p : {BlockPos{0, 0, 0}, BlockPos{2, 1, 0}, BlockPos{-2, 0, 0}, BlockPos{-2, 0, -2}}) build.push_back(place(p, registry_block("ice")));
+        build.push_back(place({2, 0, -2}, registry_block("grass_block", {{"snowy", "false"}})));
+        for (int x = -1; x <= 1; ++x) build.push_back(place({x, 0, 2}, frosted));
+        s.tick(build);
+        // Snow on ice and on grass; dirt under snow is snowy.
+        s.tick({place({-2, 1, -2}, snow), place({2, 1, -2}, snow), place({0, 0, -3}, snow)});
+        require(s.at({2, 0, -2}) == registry_block("grass_block", {{"snowy", "true"}}), "snowy under snow");
+        // An update beside them: the layer on ice goes, the one on stone stays.
+        s.tick({place({-1, 1, -2}, blocks::stone()), place({1, 0, -3}, blocks::stone())});
+        require(s.at({-2, 1, -2}).is_air() && s.at({0, 0, -3}) == snow, "snow on ice breaks, on stone it stays");
+        // Ice broken in survival: water over stone, air over air; in creative, air.
+        s.tick({circuit::contracts::PlayerBreak{alex, {0, 0, 0}, true, 36}, circuit::contracts::PlayerBreak{alex, {2, 1, 0}, true, 36},
+                circuit::contracts::PlayerBreak{alex, {-2, 0, 0}, false, 36}});
+        require(s.at({0, 0, 0}) == blocks::water_source() && s.at({2, 1, 0}).is_air() && s.at({-2, 0, 0}).is_air(), "ice to water");
+        // Frosted ice replaced: its neighbors, left without frosted neighbors, melt.
+        s.tick({place({0, 0, 2}, blocks::stone())});
+        require(s.at({-1, 0, 2}) == blocks::water_source() && s.at({1, 0, 2}) == blocks::water_source(), "frosted ice melts");
+    });
+
     suite.run("the weather follows its timers and its levels follow the flags", [] {
         Sim s;
         // What both official servers did after /weather rain 100.

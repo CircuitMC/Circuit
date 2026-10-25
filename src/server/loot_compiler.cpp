@@ -219,6 +219,13 @@ private:
                     refuse(std::format("location_check block {}", key));
                 }
             }
+        } else if (*kind == "minecraft:entity_properties") {
+            // Only "an entity broke it": the block's own entity, with no predicate.
+            const auto* entity = j.string("entity");
+            const auto* predicate = j.find("predicate");
+            if (!entity || *entity != "this" || !predicate || predicate->kind() != Json::Kind::object || !predicate->members().empty())
+                refuse("entity_properties other than the breaking entity's presence");
+            c.kind = loot::Condition::Kind::breaker;
         } else if (*kind == "minecraft:inverted") {
             c.kind = loot::Condition::Kind::inverted;
             const auto* term = j.find("term");

@@ -1,0 +1,16 @@
+# Whether a snow layer stays on every block state, as both official servers decide it with nothing else around
+# (harness 0.27.0 snow report): 1 or 0, ? when the state did not stay where it was set. A bare block name stands
+# for all its states.
+# Java Edition 1.21.4: the states whose codes snow-1.21.8.txt does not give; every other state as there.
+minecraft:creaking_heart[active=true,axis=x,natural=true] 1
+minecraft:creaking_heart[active=true,axis=x,natural=false] 1
+minecraft:creaking_heart[active=true,axis=y,natural=true] 1
+minecraft:creaking_heart[active=true,axis=y,natural=false] 1
+minecraft:creaking_heart[active=true,axis=z,natural=true] 1
+minecraft:creaking_heart[active=true,axis=z,natural=false] 1
+minecraft:creaking_heart[active=false,axis=x,natural=true] 1
+minecraft:creaking_heart[active=false,axis=x,natural=false] 1
+minecraft:creaking_heart[active=false,axis=y,natural=true] 1
+minecraft:creaking_heart[active=false,axis=y,natural=false] 1
+minecraft:creaking_heart[active=false,axis=z,natural=true] 1
+minecraft:creaking_heart[active=false,axis=z,natural=false] 1

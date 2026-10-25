@@ -46,7 +46,8 @@ public:
         else lv().blocks[pos] = state;
     }
     std::uint8_t light(BlockPos pos) override { return o_.light(dimension(), pos); }
-    std::uint8_t sky_light(BlockPos pos) override { return o_.light(dimension(), pos, true); }
+    std::uint8_t sky_light(BlockPos pos) override { return o_.light(dimension(), pos, gameplay::LightKind::sky); }
+    std::uint8_t block_light(BlockPos pos) override { return o_.light(dimension(), pos, gameplay::LightKind::block); }
     bool player_near(ChunkPos chunk) override { return gameplay::player_near(lv().presences, chunk); }
     std::uint8_t difficulty() override { return o_.difficulty_; }
     Sky sky() override { return {o_.day_time_, o_.sky_darken_}; }
@@ -185,11 +186,11 @@ struct Oracle::LightSnapshot {
 
 Oracle::~Oracle() = default;
 
-std::uint8_t Oracle::light(DimensionId level, BlockPos pos, bool sky_only) {
+std::uint8_t Oracle::light(DimensionId level, BlockPos pos, std::optional<gameplay::LightKind> only) {
     auto& snap = light_[static_cast<std::size_t>(level)];
     const auto chunk = contracts::chunk_of(pos);
     if (!snap || !snap->loaded.contains(chunk)) return 0;
-    if (pos.y > snap->top) return 15;
+    if (pos.y > snap->top) return only == gameplay::LightKind::block ? 0 : 15;
     auto it = snap->around.find(chunk);
     if (it == snap->around.end()) {
         std::set<ChunkPos> columns;
@@ -199,8 +200,8 @@ std::uint8_t Oracle::light(DimensionId level, BlockPos pos, bool sky_only) {
         const test::MapLightWorld world(snap->blocks, snap->loaded);
         it = snap->around.try_emplace(chunk, world, columns, bundle_.shape(level).min_y, snap->top).first;
     }
-    const auto sky = it->second.get(gameplay::LightKind::sky, pos);
-    return sky_only ? sky : std::max(it->second.get(gameplay::LightKind::block, pos), sky);
+    if (only) return it->second.get(*only, pos);
+    return std::max(it->second.get(gameplay::LightKind::block, pos), it->second.get(gameplay::LightKind::sky, pos));
 }
 
 ChunkLevel Oracle::Level::level(ChunkPos chunk) const {

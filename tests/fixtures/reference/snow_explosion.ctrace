@@ -1,0 +1,610 @@
+circuit-trace 2
+title TNT exploding among snow layers and a snow block
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v12
+mechanisms snow_and_ice tnt loot
+area 0 0 0 11 4 11
+ticks 120
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 0
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 0 0 10 minecraft:stone
+at 0 set 0 0 11 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:stone
+at 0 set 1 0 11 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 2 0 10 minecraft:stone
+at 0 set 2 0 11 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 3 0 10 minecraft:stone
+at 0 set 3 0 11 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 4 0 11 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 5 0 10 minecraft:stone
+at 0 set 5 0 11 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 6 0 10 minecraft:stone
+at 0 set 6 0 11 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 7 0 10 minecraft:stone
+at 0 set 7 0 11 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 8 0 10 minecraft:stone
+at 0 set 8 0 11 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 9 0 10 minecraft:stone
+at 0 set 9 0 11 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 10 0 10 minecraft:stone
+at 0 set 10 0 11 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 11 0 10 minecraft:stone
+at 0 set 11 0 11 minecraft:stone
+
+at 1 set 3 1 5 minecraft:snow[layers=3]
+at 1 set 8 1 5 minecraft:snow[layers=8]
+at 1 set 5 1 3 minecraft:snow_block
+at 1 set 5 1 8 minecraft:snow[layers=1]
+change 1 commands 3 1 5 minecraft:air minecraft:snow[layers=3]
+change 1 commands 8 1 5 minecraft:air minecraft:snow[layers=8]
+change 1 commands 5 1 3 minecraft:air minecraft:snow_block
+change 1 commands 5 1 8 minecraft:air minecraft:snow[layers=1]
+
+at 5 set 5 1 5 minecraft:tnt
+change 5 commands 5 1 5 minecraft:air minecraft:tnt[unstable=false]
+
+at 6 set 5 2 5 minecraft:redstone_block
+change 6 commands 5 2 5 minecraft:air minecraft:redstone_block
+entity-added 6 commands e1 minecraft:tnt 5.5 1 5.5 0.019857169889349057 0.20000000298023224 0.002385959761925832 fuse=80
+change 6 commands 5 1 5 minecraft:tnt[unstable=false] minecraft:air
+draws 6 commands level 2
+entity-order 6 entities e1
+entity 6 e1 5.519857169889349 1.0199999809265137 5.502385959761926 0.019460026491562074 0 0.0023382405666873152 fuse=79 on-ground=false
+
+entity-order 7 entities e1
+entity 7 e1 5.539317196380911 1 5.504724200328614 0.013349578173211583 0 0.0016040330287474982 fuse=78 on-ground=true
+
+entity-order 8 entities e1
+entity 8 e1 5.5526667745541225 1 5.506328233357361 0.009157810626823146 0 0.0011003666577207836 fuse=77 on-ground=true
+
+entity-order 9 entities e1
+entity 9 e1 5.561824585180946 1 5.507428600015082 0.006282258090000678 0 0.0007548515271964576 fuse=76 on-ground=true
+
+entity-order 10 entities e1
+entity 10 e1 5.568106843270947 1 5.508183451542279 0.004309629049740465 0 0.0005178281476567699 fuse=75 on-ground=true
+
+entity-order 11 entities e1
+entity 11 e1 5.572416472320687 1 5.5087012796899355 0.002956405528121959 0 0.0003552301092925441 fuse=74 on-ground=true
+
+entity-order 12 entities e1
+entity 12 e1 5.575372877848809 1 5.509056509799228 0.0020280941922916637 0 0.0002436878549746852 fuse=73 on-ground=true
+
+entity-order 13 entities e1
+entity 13 e1 5.577400972041101 1 5.509300197654203 0.0013912726159120811 0 0.00016716986851263404 fuse=72 on-ground=true
+
+entity-order 14 entities e1
+entity 14 e1 5.578792244657013 1 5.509467367522715 0.0009544130145156876 0 0.00011467852979966694 fuse=71 on-ground=true
+
+entity-order 15 entities e1
+entity 15 e1 5.579746657671529 1 5.509582046052515 0.0006547273279577617 0 7.86694714425715e-05 fuse=70 on-ground=true
+
+entity-order 16 entities e1
+entity 16 e1 5.580401384999487 1 5.509660715523958 0.00044914294697902447 0 5.396725740960404e-05 fuse=69 on-ground=true
+
+entity-order 17 entities e1
+entity 17 e1 5.580850527946466 1 5.509714682781367 0.00030811206162761076 0 3.7021538582988365e-05 fuse=68 on-ground=true
+
+entity-order 18 entities e1
+entity 18 e1 5.580850527946466 1 5.509714682781367 0.000211364874276541 0 2.5396775467930018e-05 fuse=67 on-ground=true
+
+entity-order 19 entities e1
+entity 19 e1 5.580850527946466 1 5.509714682781367 0.0001449963037537071 0 1.742218797099999e-05 fuse=66 on-ground=true
+
+entity-order 20 entities e1
+entity 20 e1 5.580850527946466 1 5.509714682781367 9.946746437504306e-05 0 1.1951620948105993e-05 fuse=65 on-ground=true
+
+entity-order 21 entities e1
+entity 21 e1 5.580850527946466 1 5.509714682781367 6.823468056127954e-05 0 8.198811970400711e-06 fuse=64 on-ground=true
+
+entity-order 22 entities e1
+entity 22 e1 5.580850527946466 1 5.509714682781367 4.680899086503776e-05 0 5.624385011694887e-06 fuse=63 on-ground=true
+
+entity-order 23 entities e1
+entity 23 e1 5.580850527946466 1 5.509714682781367 3.21109677334159e-05 0 3.858328118022692e-06 fuse=62 on-ground=true
+
+entity-order 24 entities e1
+entity 24 e1 5.580850527946466 1 5.509714682781367 2.2028123865123304e-05 0 2.6468130889635663e-06 fuse=61 on-ground=true
+
+entity-order 25 entities e1
+entity 25 e1 5.580850527946466 1 5.509714682781367 1.5111292971474586e-05 0 1.8157137790290064e-06 fuse=60 on-ground=true
+
+entity-order 26 entities e1
+entity 26 e1 5.580850527946466 1 5.509714682781367 1.0366346978431566e-05 0 1.2455796524138983e-06 fuse=59 on-ground=true
+
+entity-order 27 entities e1
+entity 27 e1 5.580850527946466 1 5.509714682781367 7.111314027204053e-06 0 8.544676415559342e-07 fuse=58 on-ground=true
+
+entity-order 28 entities e1
+entity 28 e1 5.580850527946466 1 5.509714682781367 4.87836142266198e-06 0 5.861648021073707e-07 fuse=57 on-ground=true
+
+entity-order 29 entities e1
+entity 29 e1 5.580850527946466 1 5.509714682781367 3.346555935946118e-06 0 4.021090542456563e-07 fuse=56 on-ground=true
+
+entity-order 30 entities e1
+entity 30 e1 5.580850527946466 1 5.509714682781367 2.295737372059037e-06 0 2.758468112125202e-07 fuse=55 on-ground=true
+
+entity-order 31 entities e1
+entity 31 e1 5.580850527946466 1 5.509714682781367 1.5748758372324994e-06 0 1.8923091249178885e-07 fuse=54 on-ground=true
+
+entity-order 32 entities e1
+entity 32 e1 5.580850527946466 1 5.509714682781367 1.0803648243414944e-06 0 1.2981240596936715e-07 fuse=53 on-ground=true
+
+entity-order 33 entities e1
+entity 33 e1 5.580850527946466 1 5.509714682781367 7.41130269498265e-07 0 8.905131049498587e-08 fuse=52 on-ground=true
+
+entity-order 34 entities e1
+entity 34 e1 5.580850527946466 1 5.509714682781367 5.084153648758097e-07 0 6.108919899956029e-08 fuse=51 on-ground=true
+
+entity-order 35 entities e1
+entity 35 e1 5.580850527946466 1 5.509714682781367 3.4877294030480543e-07 0 4.190719051369835e-08 fuse=50 on-ground=true
+
+entity-order 36 entities e1
+entity 36 e1 5.580850527946466 1 5.509714682781367 2.392582370490965e-07 0 2.8748332692397068e-08 fuse=49 on-ground=true
+
+entity-order 37 entities e1
+entity 37 e1 5.580850527946466 1 5.509714682781367 1.6413115061568018e-07 0 1.9721356226984388e-08 fuse=48 on-ground=true
+
+entity-order 38 entities e1
+entity 38 e1 5.580850527946466 1 5.509714682781367 1.1259396932235659e-07 0 1.3528850371711288e-08 fuse=47 on-ground=true
+
+entity-order 39 entities e1
+entity 39 e1 5.580850527946466 1 5.509714682781367 7.723946295513662e-08 0 9.280791354993943e-09 fuse=46 on-ground=true
+
+entity-order 40 entities e1
+entity 40 e1 5.580850527946466 1 5.509714682781367 5.298627158722371e-08 0 6.3666228695258454e-09 fuse=45 on-ground=true
+
+entity-order 41 entities e1
+entity 41 e1 5.580850527946466 1 5.509714682781367 3.634858230883546e-08 0 4.3675032884947294e-09 fuse=44 on-ground=true
+
+entity-order 42 entities e1
+entity 42 e1 5.580850527946466 1 5.509714682781367 2.4935127463861125e-08 0 2.996107255907384e-09 fuse=43 on-ground=true
+
+entity-order 43 entities e1
+entity 43 e1 5.580850527946466 1 5.509714682781367 1.710549744020873e-08 0 2.055329577552465e-09 fuse=42 on-ground=true
+
+entity-order 44 entities e1
+entity 44 e1 5.580850527946466 1 5.509714682781367 1.1734371243983189e-08 0 1.4099560902009912e-09 fuse=41 on-ground=true
+
+entity-order 45 entities e1
+entity 45 e1 5.580850527946466 1 5.509714682781367 8.049778673372467e-09 0 9.672298778778798e-10 fuse=40 on-ground=true
+
+entity-order 46 entities e1
+entity 46 e1 5.580850527946466 1 5.509714682781367 5.5221481699335116e-09 0 6.635196962242254e-10 fuse=39 on-ground=true
+
+entity-order 47 entities e1
+entity 47 e1 5.580850527946466 1 5.509714682781367 3.788193644574389e-09 0 4.5517451160981855e-10 fuse=38 on-ground=true
+
+entity-order 48 entities e1
+entity 48 e1 5.580850527946466 1 5.509714682781367 2.5987008401780305e-09 0 3.1224971496433554e-10 fuse=37 on-ground=true
+
+entity-order 49 entities e1
+entity 49 e1 5.580850527946466 1 5.509714682781367 1.7827087763621288e-09 0 2.1420330446553416e-10 fuse=36 on-ground=true
+
+entity-order 50 entities e1
+entity 50 e1 5.580850527946466 1 5.509714682781367 1.2229382205844203e-09 0 1.4694346686335644e-10 fuse=35 on-ground=true
+
+entity-order 51 entities e1
+entity 51 e1 5.580850527946466 1 5.509714682781367 8.389356193209123e-10 0 1.008032182682625e-10 fuse=34 on-ground=true
+
+entity-order 52 entities e1
+entity 52 e1 5.580850527946466 1 5.509714682781367 5.755098348541457e-10 0 6.915100773202807e-11 fuse=33 on-ground=true
+
+entity-order 53 entities e1
+entity 53 e1 5.580850527946466 1 5.509714682781367 3.947997467099439e-10 0 4.7437591304171254e-11 fuse=32 on-ground=true
+
+entity-order 54 entities e1
+entity 54 e1 5.580850527946466 1 5.509714682781367 2.7083262624302146e-10 0 3.254218763466148e-11 fuse=31 on-ground=true
+
+entity-order 55 entities e1
+entity 55 e1 5.580850527946466 1 5.509714682781367 1.857911816027127e-10 0 2.2323940717377772e-11 fuse=30 on-ground=true
+
+entity-order 56 entities e1
+entity 56 e1 5.580850527946466 1 5.509714682781367 1.274527505794609e-10 0 1.531422333212115e-11 fuse=29 on-ground=true
+
+entity-order 57 entities e1
+entity 57 e1 5.580850527946466 1 5.509714682781367 8.743258689751018e-11 0 1.0505557205835108e-11 fuse=28 on-ground=true
+
+entity-order 58 entities e1
+entity 58 e1 5.580850527946466 1 5.509714682781367 5.997875461169197e-11 0 7.206812243202884e-12 fuse=27 on-ground=true
+
+entity-order 59 entities e1
+entity 59 e1 5.580850527946466 1 5.509714682781367 4.114542566362069e-11 0 4.943873198837178e-12 fuse=26 on-ground=true
+
+entity-order 60 entities e1
+entity 60 e1 5.580850527946466 1 5.509714682781367 2.8225762005243787e-11 0 3.391497014402304e-12 fuse=25 on-ground=true
+
+entity-order 61 entities e1
+entity 61 e1 5.580850527946466 1 5.509714682781367 1.9362872735597235e-11 0 2.32656695187998e-12 fuse=24 on-ground=true
+
+entity-order 62 entities e1
+entity 62 e1 5.580850527946466 1 5.509714682781367 1.3282930696619702e-11 0 1.596024928989666e-12 fuse=23 on-ground=true
+
+entity-order 63 entities e1
+entity 63 e1 5.580850527946466 1 5.509714682781367 9.112090457881115e-12 0 1.0948731012869108e-12 fuse=22 on-ground=true
+
+entity-order 64 entities e1
+entity 64 e1 5.580850527946466 1 5.509714682781367 6.250894054106445e-12 0 7.510829474828208e-13 fuse=21 on-ground=true
+
+entity-order 65 entities e1
+entity 65 e1 5.580850527946466 1 5.509714682781367 4.288113321117021e-12 0 5.15242901973215e-13 fuse=20 on-ground=true
+
+entity-order 66 entities e1
+entity 66 e1 5.580850527946466 1 5.509714682781367 2.941645738286276e-12 0 3.5345663075362546e-13 fuse=19 on-ground=true
+
+entity-order 67 entities e1
+entity 67 e1 5.580850527946466 1 5.509714682781367 2.0179689764643855e-12 0 2.4247124869698706e-13 fuse=18 on-ground=true
+
+entity-order 68 entities e1
+entity 68 e1 5.580850527946466 1 5.509714682781367 1.3843267178545684e-12 0 1.663352766061331e-13 fuse=17 on-ground=true
+
+entity-order 69 entities e1
+entity 69 e1 5.580850527946466 1 5.509714682781367 9.496481284482339e-13 0 1.1410599975180731e-13 fuse=16 on-ground=true
+
+entity-order 70 entities e1
+entity 70 e1 5.580850527946466 1 5.509714682781367 6.514586161154884e-13 0 7.827671582973982e-14 fuse=15 on-ground=true
+
+entity-order 71 entities e1
+entity 71 e1 5.580850527946466 1 5.509714682781367 4.46900610655225e-13 0 5.369782705920151e-14 fuse=14 on-ground=true
+
+entity-order 72 entities e1
+entity 72 e1 5.580850527946466 1 5.509714682781367 3.065738189094843e-13 0 3.683670936261224e-14 fuse=13 on-ground=true
+
+entity-order 73 entities e1
+entity 73 e1 5.580850527946466 1 5.509714682781367 2.1030963977190624e-13 0 2.526998262275199e-14 fuse=12 on-ground=true
+
+entity-order 74 entities e1
+entity 74 e1 5.580850527946466 1 5.509714682781367 1.4427241288352767e-13 0 1.7335208079207864e-14 fuse=11 on-ground=true
+
+entity-order 75 entities e1
+entity 75 e1 5.580850527946466 1 5.509714682781367 9.897087523809998e-14 0 1.1891952742336592e-14 fuse=10 on-ground=true
+
+entity-order 76 entities e1
+entity 76 e1 5.580850527946466 1 5.509714682781367 6.789402041333658e-14 0 8.157879581242902e-15 fuse=9 on-ground=true
+
+entity-order 77 entities e1
+entity 77 e1 5.580850527946466 1 5.509714682781367 4.657529800354889e-14 0 5.5963053927326304e-15 fuse=8 on-ground=true
+
+entity-order 78 entities e1
+entity 78 e1 5.580850527946466 1 5.509714682781367 3.195065443043454e-14 0 3.839065499414584e-15 fuse=7 on-ground=true
+
+entity-order 79 entities e1
+entity 79 e1 5.580850527946466 1 5.509714682781367 2.191814893927809e-14 0 2.6335989325984043e-15 fuse=6 on-ground=true
+
+entity-order 80 entities e1
+entity 80 e1 5.580850527946466 1 5.509714682781367 1.5035850172344768e-14 0 1.806648867762505e-15 fuse=5 on-ground=true
+
+entity-order 81 entities e1
+entity 81 e1 5.580850527946466 1 5.509714682781367 1.031459321822851e-14 0 1.2393611232850784e-15 fuse=4 on-ground=true
+
+entity-order 82 entities e1
+entity 82 e1 5.580850527946466 1 5.509714682781367 7.075810947704758e-15 0 8.502017305735637e-16 fuse=3 on-ground=true
+
+entity-order 83 entities e1
+entity 83 e1 5.580850527946466 1 5.509714682781367 4.854006310125464e-15 0 5.832383871734646e-16 fuse=2 on-ground=true
+
+entity-order 84 entities e1
+entity 84 e1 5.580850527946466 1 5.509714682781367 3.329848328746068e-15 0 4.001015336009967e-16 fuse=1 on-ground=true
+
+entity-removed 85 entities e1 discarded
+change 85 entities 4 0 6 minecraft:stone minecraft:air
+change 85 entities 5 0 6 minecraft:stone minecraft:air
+change 85 entities 6 0 4 minecraft:stone minecraft:air
+change 85 entities 5 0 4 minecraft:stone minecraft:air
+change 85 entities 4 0 5 minecraft:stone minecraft:air
+change 85 entities 6 0 5 minecraft:stone minecraft:air
+change 85 entities 3 1 5 minecraft:snow[layers=3] minecraft:air
+change 85 entities 5 0 5 minecraft:stone minecraft:air
+change 85 entities 4 0 4 minecraft:stone minecraft:air
+change 85 entities 5 1 8 minecraft:snow[layers=1] minecraft:air
+change 85 entities 6 0 6 minecraft:stone minecraft:air
+change 85 entities 5 1 3 minecraft:snow_block minecraft:air
+change 85 entities 5 2 5 minecraft:redstone_block minecraft:air
+change 85 entities 8 1 5 minecraft:snow[layers=8] minecraft:air
+entity-added 85 entities e2 minecraft:item 4.687220401121787 0.5350222585654916 6.696989794265511 0.04249853156542224 0.2 -0.07501582148401947 item=minecraft:cobblestone count=9
+entity-added 85 entities e3 minecraft:item 3.6851542068737912 1.3138745855495642 5.37690016802856 -0.016541934900490246 0.2 0.06283161189009678 item=minecraft:snowball count=16
+entity-added 85 entities e4 minecraft:item 5.412659176076783 2.5518527065677254 5.255485961184294 -0.09632251237190677 0.2 -0.08145681814228836 item=minecraft:redstone_block count=1
+draws 85 entities level 1921
+entity-order 85 entities e1
+entity 85 e2 4.687220401121787 0.5350222585654916 6.696989794265511 0.04249853156542224 0.2 -0.07501582148401947 item=minecraft:cobblestone count=9 age=0 pickup-delay=10 on-ground=false
+entity 85 e3 3.6851542068737912 1.3138745855495642 5.37690016802856 -0.016541934900490246 0.2 0.06283161189009678 item=minecraft:snowball count=16 age=0 pickup-delay=10 on-ground=false
+entity 85 e4 5.412659176076783 2.5518527065677254 5.255485961184294 -0.09632251237190677 0.2 -0.08145681814228836 item=minecraft:redstone_block count=1 age=0 pickup-delay=10 on-ground=false
+
+entity-order 86 entities e2 e3 e4
+entity 86 e2 4.729718932687209 0.6950222585654916 6.621973972781492 0.04164856174470896 0.1568 -0.07351550648515233 item=minecraft:cobblestone count=9 age=1 pickup-delay=9 on-ground=false
+entity 86 e3 3.668612271973301 1.473874585549564 5.439731779918657 -0.01621109651799281 0.1568 0.06157498085071274 item=minecraft:snowball count=16 age=1 pickup-delay=9 on-ground=false
+entity 86 e4 5.316336663704877 2.7118527065677256 5.174029143042006 -0.09439606396167476 0.1568 -0.07982768333310811 item=minecraft:redstone_block count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 87 entities e2 e3 e4
+entity 87 e2 4.771367494431918 0.8118222585654916 6.54845846629634 0.040815591304198054 0.11446399999999998 -0.07204519775764628 item=minecraft:cobblestone count=9 age=2 pickup-delay=8 on-ground=false
+entity 87 e3 3.6524011754553083 1.590674585549564 5.50130676076937 -0.01588687489683508 0.11446399999999998 0.06034348240814804 item=minecraft:snowball count=16 age=2 pickup-delay=8 on-ground=false
+entity 87 e4 5.221940599743202 2.8286527065677256 5.094201459708898 -0.0925081444829033 0.11446399999999998 -0.07823113118903817 item=minecraft:redstone_block count=1 age=2 pickup-delay=8 on-ground=false
+
+entity-order 88 entities e2 e3 e4
+entity 88 e2 4.812183085736116 0.8862862585654916 6.476413268538694 0.03999928025660972 0.07297471999999998 -0.07060429517664646 item=minecraft:cobblestone count=9 age=3 pickup-delay=7 on-ground=false
+entity 88 e3 3.6365143005584732 1.6651385855495642 5.561650243177517 -0.01556913770191647 0.07297471999999998 0.059136613910945664 item=minecraft:snowball count=16 age=3 pickup-delay=7 on-ground=false
+entity 88 e4 5.129432455260298 2.9031167065677255 5.01597032851986 -0.09065798335769806 0.07297471999999998 -0.07666651005739782 item=minecraft:redstone_block count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 89 entities e2 e3 e4
+entity 89 e2 4.852182365992726 0.9192609785654916 6.405808973362048 0.03919929541440325 0.032315225599999976 -0.06919221061978359 item=minecraft:cobblestone count=9 age=4 pickup-delay=6 on-ground=false
+entity 89 e3 3.620945162856557 1.698113305549564 5.620786857088463 -0.015257755244835875 0.032315225599999976 0.057953882760668145 item=minecraft:snowball count=16 age=4 pickup-delay=6 on-ground=false
+entity 89 e4 5.038774471902601 2.9360914265677254 4.939303818462462 -0.08884482541970791 0.032315225599999976 -0.07513318131854749 item=minecraft:redstone_block count=1 age=4 pickup-delay=6 on-ground=false
+
+entity-order 90 entities e2 e3 e4
+entity 90 e2 4.891381661407129 0.9115762041654916 6.336616762742264 0.03841531025378241 -0.007531078912000024 -0.0678083677271246 item=minecraft:cobblestone count=9 age=5 pickup-delay=5 on-ground=false
+entity 90 e3 3.605687407611721 1.6904285311495642 5.678740739849132 -0.014952600430957743 -0.007531078912000024 0.05679480621083737 item=minecraft:snowball count=16 age=5 pickup-delay=5 on-ground=false
+entity 90 e4 4.949929646482893 2.9284066521677254 4.864170637143914 -0.08706793060589431 -0.007531078912000024 -0.07363051912522825 item=minecraft:redstone_block count=1 age=5 pickup-delay=5 on-ground=false
+
+entity-order 91 entities e2 e3 e4
+entity 91 e2 4.929796971660911 0.8640451252534915 6.26880839501514 0.03764700478142066 -0.04658045733376002 -0.06645220166592408 item=minecraft:cobblestone count=9 age=6 pickup-delay=4 on-ground=false
+entity 91 e3 3.590734807180763 1.6428974522375641 5.735535546059969 -0.014653548707536808 -0.04658045733376002 0.05565891116989558 item=minecraft:snowball count=16 age=6 pickup-delay=4 on-ground=false
+entity 91 e4 4.862861715876999 2.8808755732557256 4.7905401180186855 -0.0853265736544654 -0.04658045733376002 -0.07215791014711438 item=minecraft:redstone_block count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 92 entities e2 e3 e4
+entity 92 e2 4.967443976442332 0.7774646679197315 6.202356193349216 0.03689406540385188 -0.08484884818708481 -0.06512315890008076 item=minecraft:cobblestone count=9 age=7 pickup-delay=3 on-ground=false
+entity 92 e3 3.576081258473226 1.556316994903804 5.791194457229865 -0.014360478012880332 -0.08484884818708481 0.05454573400810715 item=minecraft:snowball count=16 age=7 pickup-delay=3 on-ground=false
+entity 92 e4 4.777535142222534 2.7942951159219658 4.718382207871571 -0.08362004380885132 -0.08484884818708481 -0.07071475332047501 item=minecraft:redstone_block count=1 age=7 pickup-delay=3 on-ground=false
+
+entity-order 93 entities e2 e3 e4
+entity 93 e2 5.004338041846184 0.6526158197326466 6.137233034449135 0.036156184799473294 -0.12235187122334311 -0.06382069696420482 item=minecraft:cobblestone count=9 age=8 pickup-delay=2 on-ground=false
+entity 93 e3 3.561720780460346 1.4314681467167192 5.845740191237971 -0.014073268726527106 -0.12235187122334311 0.053454820368322324 item=minecraft:snowball count=16 age=8 pickup-delay=2 on-ground=false
+entity 93 e4 4.693915098413682 2.669446267734881 4.647667454551096 -0.08194764452760006 -0.12235187122334311 -0.0693004596028424 item=minecraft:redstone_block count=1 age=8 pickup-delay=2 on-ground=false
+
+entity-order 94 entities e2 e3 e4
+entity 94 e2 5.040494226645658 0.4902639485093035 6.07341233748493 0.035433061793108324 -0.15910483379887624 -0.06254428424220392 item=minecraft:cobblestone count=9 age=9 pickup-delay=1 on-ground=false
+entity 94 e3 3.547647511733819 1.269116275493376 5.8991950116062934 -0.013791803620422862 -0.15910483379887624 0.05238572498052566 item=minecraft:snowball count=16 age=9 pickup-delay=1 on-ground=false
+entity 94 e4 4.611967453886082 2.507094396511538 4.5783669949482535 -0.08030869320007533 -0.15910483379887624 -0.06791445173258692 item=minecraft:redstone_block count=1 age=9 pickup-delay=1 on-ground=false
+
+entity-order 95 entities e2 e3 e4
+entity 95 e2 5.075927288438766 0.2911591147104272 6.010868053242726 0.03472440123307818 -0.1951227371228987 -0.061293399750297385 item=minecraft:cobblestone count=9 age=10 pickup-delay=0 on-ground=false
+entity 95 e3 3.533855708113396 1.0700114416944997 5.951580736586819 -0.013515967811072184 -0.1951227371228987 0.05133801148009356 item=minecraft:snowball count=16 age=10 pickup-delay=0 on-ground=false
+entity 95 e4 4.531658760686007 2.307989562712662 4.510452543215667 -0.07870252086784059 -0.1951227371228987 -0.06655616399330055 item=minecraft:redstone_block count=1 age=10 pickup-delay=0 on-ground=false
+
+entity-order 96 entities e2 e3 e4
+entity 96 e2 5.110651689671845 0.056036377587528496 5.949574653492428 0.034029913870732 -0.23042028238044074 -0.06006753292437026 item=minecraft:cobblestone count=9 age=11 pickup-delay=0 on-ground=false
+entity 96 e3 3.5203397403023238 1 6.002918748066913 -0.007947389872079989 0 0.03018675378579908 item=minecraft:snowball count=16 age=11 pickup-delay=0 on-ground=true
+entity 96 e4 4.452956239818167 2.072866825589763 4.443896379222366 -0.07712847195161524 -0.23042028238044074 -0.06522504198289263 item=minecraft:redstone_block count=1 age=11 pickup-delay=0 on-ground=false
+
+entity-order 97 entities e2 e3 e4
+entity 97 e2 5.144681603542577 -0.21438390479291225 5.889507120568058 0.03334931624238646 -0.26501187673283194 -0.05886618341158013 item=minecraft:cobblestone count=9 age=12 pickup-delay=0 on-ground=false
+entity 97 e3 3.5123923504302437 1 6.033105501852711 -0.004673065714694773 0 0.01774981301092643 item=minecraft:snowball count=16 age=12 pickup-delay=0 on-ground=true
+entity 97 e4 4.375827767866551 1.8024465432093224 4.378671337239473 -0.07558590398369179 -0.26501187673283194 -0.06392054238730371 item=minecraft:redstone_block count=1 age=12 pickup-delay=0 on-ground=false
+
+entity-order 98 entities e2 e3 e4
+entity 98 e2 5.178030919784963 -0.5193957815257442 5.830640937156478 0.03268233055362646 -0.29891163919817526 -0.05768886086613187 item=minecraft:cobblestone count=9 age=13 pickup-delay=0 on-ground=false
+entity 98 e3 3.5077192847155487 1 6.050855314863638 -0.002747762916548657 0 0.01043689109993227 item=minecraft:snowball count=16 age=13 pickup-delay=0 on-ground=true
+entity 98 e4 4.300241863882859 1.4974346664764906 4.31475079485217 -0.07407418734570466 -0.29891163919817526 -0.06264213275874524 item=minecraft:redstone_block count=1 age=13 pickup-delay=0 on-ground=false
+
+entity-order 99 entities e2 e3 e4
+entity 99 e2 5.21071325033859 -0.8583074207239194 5.772952076290346 0.03202868456591992 -0.33213340641421174 -0.05653508474913693 item=minecraft:cobblestone count=9 age=14 pickup-delay=0 on-ground=false
+entity 99 e3 3.5049715217990003 1 6.06129220596357 -0.0016156847573998074 0 0.006136892583870663 item=minecraft:snowball count=16 age=14 pickup-delay=0 on-ground=true
+entity 99 e4 4.2261676765371545 1.1585230272783154 4.252108662093424 -0.07259270501164357 -0.33213340641421174 -0.06138929129837419 item=minecraft:redstone_block count=1 age=14 pickup-delay=0 on-ground=false
+
+entity-order 100 entities e2 e3 e4
+entity 100 e2 5.24274193490451 -1.230440827138131 5.716416991541209 0.0313881114855002 -0.36469073828592746 -0.05540438413247536 item=minecraft:cobblestone count=9 age=15 pickup-delay=0 on-ground=false
+entity 100 e3 3.5033558370416005 1 6.06742909854744 -0.0009500227328829842 0 0.003608493202176954 item=minecraft:snowball count=16 age=15 pickup-delay=0 on-ground=true
+entity 100 e4 4.153574971525511 0.7863896208641037 4.19071937079505 -0.07114085229600667 -0.36469073828592746 -0.060161506643314516 item=minecraft:redstone_block count=1 age=15 pickup-delay=0 on-ground=false
+
+entity-order 101 entities e2 e3 e4
+entity 101 e2 5.2741300463900105 -1.6351315654240586 5.6610126074087335 0.03076034985447091 -0.39659692352020887 -0.05429629750658061 item=minecraft:cobblestone count=9 age=16 pickup-delay=0 on-ground=false
+entity 101 e3 3.5024058143087173 1 6.071037591749617 -0.0005586134231079561 0 0.0021217942162423406 item=minecraft:snowball count=16 age=16 pickup-delay=0 on-ground=true
+entity 101 e4 4.125 0.38169888257817625 4.1305578641517355 0 -0.39659692352020887 -0.0589582776579379 item=minecraft:redstone_block count=1 age=16 pickup-delay=0 on-ground=false
+
+entity-order 102 entities e2 e3 e4
+entity 102 e2 5.304890396244481 -2.0717284889442675 5.606716309902152 0.030145143444088605 -0.42786498504980464 -0.053210372592068685 item=minecraft:cobblestone count=9 age=17 pickup-delay=0 on-ground=false
+entity 102 e3 3.501847200885609 1 6.073159385965859 -0.00032846472581706524 0 0.0012476151246075366 item=minecraft:snowball count=16 age=17 pickup-delay=0 on-ground=true
+entity 102 e4 4.125 -0.0548980409420326 4.125 0 -0.42786498504980464 0 item=minecraft:redstone_block count=1 age=17 pickup-delay=0 on-ground=false
+
+entity-order 103 entities e2 e3 e4
+entity 103 e2 5.33503553968857 -2.539593473994072 5.553505937310084 0.029542241150179813 -0.45850768534880854 -0.05214616615513463 item=minecraft:cobblestone count=9 age=18 pickup-delay=0 on-ground=false
+entity 103 e3 3.501847200885609 1 6.073159385965859 -0.00032846472581706524 -0.04 0.0012476151246075366 item=minecraft:snowball count=16 age=18 pickup-delay=0 on-ground=true
+entity 103 e4 4.125 -0.5227630259918372 4.125 0 -0.45850768534880854 0 item=minecraft:redstone_block count=1 age=18 pickup-delay=0 on-ground=false
+
+entity-order 104 entities e2 e3 e4
+entity 104 e2 5.36457778083875 -3.0381011593428804 5.50135977115495 0.02895139689064975 -0.48853753164183233 -0.05110324382664112 item=minecraft:cobblestone count=9 age=19 pickup-delay=0 on-ground=false
+entity 104 e3 3.501847200885609 1 6.073159385965859 -0.00032846472581706524 -0.08 0.0012476151246075366 item=minecraft:snowball count=16 age=19 pickup-delay=0 on-ground=true
+entity 104 e4 4.125 -1.0212707113406458 4.125 0 -0.48853753164183233 0 item=minecraft:redstone_block count=1 age=19 pickup-delay=0 on-ground=false
+
+entity-order 105 entities e2 e3 e4
+entity 105 e2 5.393529177729399 -3.5666386909847128 5.450256527328309 0.028372369505040827 -0.5179667810089957 -0.050081179924825324 item=minecraft:cobblestone count=9 age=20 pickup-delay=0 on-ground=false
+entity 105 e3 3.501847200885609 1 6.073159385965859 -0.00032846472581706524 -0.12 0.0012476151246075366 item=minecraft:snowball count=16 age=20 pickup-delay=0 on-ground=true
+entity 105 e4 4.125 -1.5498082429824782 4.125 0 -0.5179667810089957 0 item=minecraft:redstone_block count=1 age=20 pickup-delay=0 on-ground=false
+
+entity-order 106 entities e2 e3 e4
+entity 106 e2 5.42190154723444 -4.124605471993709 5.400175347403483 0.02780492265610001 -0.5468074453888159 -0.04907955728155152 item=minecraft:cobblestone count=9 age=21 pickup-delay=0 on-ground=false
+entity 106 e3 3.501518736159792 1 6.074407001090466 -0.00019313727820183347 0 0.0007335977670379786 item=minecraft:snowball count=16 age=21 pickup-delay=0 on-ground=true
+entity 106 e4 4.125 -2.107775023991474 4.125 0 -0.5468074453888159 0 item=minecraft:redstone_block count=1 age=21 pickup-delay=0 on-ground=false
+
+entity-order 107 entities e2 e3 e4
+entity 107 e2 5.44970646989054 -4.711412917382525 5.351095790121931 0.027248824733314823 -0.5750712964810396 -0.048097967072038755 item=minecraft:cobblestone count=9 age=22 pickup-delay=0 on-ground=false
+entity 107 e3 3.501518736159792 1 6.074407001090466 -0.00019313727820183347 -0.04 0.0007335977670379786 item=minecraft:snowball count=16 age=22 pickup-delay=0 on-ground=true
+entity 107 e4 4.125 -2.69458246938029 4.125 0 -0.5750712964810396 0 item=minecraft:redstone_block count=1 age=22 pickup-delay=0 on-ground=false
+
+entity-order 108 entities e2 e3 e4
+entity 108 e2 5.476955294623854 -5.326484213863564 5.302997823049893 0.026703848758378612 -0.6027698705514188 -0.047136008647993895 item=minecraft:cobblestone count=9 age=23 pickup-delay=0 on-ground=false
+entity 108 e3 3.501518736159792 1 6.074407001090466 -0.00019313727820183347 -0.08 0.0007335977670379786 item=minecraft:snowball count=16 age=23 pickup-delay=0 on-ground=true
+entity 108 e4 4.125 -3.3096537658613294 4.125 0 -0.6027698705514188 0 item=minecraft:redstone_block count=1 age=23 pickup-delay=0 on-ground=false
+
+entity-order 109 entities e2 e3 e4
+entity 109 e2 5.503659143382233 -5.969254084414983 5.255861814401899 0.026169772292546533 -0.6299144731403905 -0.046193289374082035 item=minecraft:cobblestone count=9 age=24 pickup-delay=0 on-ground=false
+entity 109 e3 3.501518736159792 1 6.074407001090466 -0.00019313727820183347 -0.12 0.0007335977670379786 item=minecraft:snowball count=16 age=24 pickup-delay=0 on-ground=true
+entity 109 e4 4.125 -3.9524236364127483 4.125 0 -0.6299144731403905 0 item=minecraft:redstone_block count=1 age=24 pickup-delay=0 on-ground=false
+
+entity-order 110 entities e2 e3 e4
+entity 110 e2 5.52982891567478 -6.639168557555373 5.209668525027817 0.025646377345844396 -0.6565161836775827 -0.04526942446766747 item=minecraft:cobblestone count=9 age=25 pickup-delay=0 on-ground=false
+entity 110 e3 3.50132559888159 1 6.075140598857504 -0.0001135647310024619 0 0.00043135553039435904 item=minecraft:snowball count=16 age=25 pickup-delay=0 on-ground=true
+entity 110 e4 4.125 -4.622338109553139 4.125 0 -0.6565161836775827 0 item=minecraft:redstone_block count=1 age=25 pickup-delay=0 on-ground=false
+
+entity-order 111 entities e2 e3 e4
+entity 111 e2 5.555475293020624 -7.3356847412329556 5.16439910056015 0.025133450288093336 -0.6825858600040311 -0.044364036841759866 item=minecraft:cobblestone count=9 age=26 pickup-delay=0 on-ground=false
+entity 111 e3 3.50132559888159 1 6.075140598857504 -0.0001135647310024619 -0.04 0.00043135553039435904 item=minecraft:snowball count=16 age=26 pickup-delay=0 on-ground=true
+entity 111 e4 4.125 -5.3188542932307215 4.125 0 -0.6825858600040311 0 item=minecraft:redstone_block count=1 age=26 pickup-delay=0 on-ground=false
+
+entity-order 112 entities e2 e3 e4
+entity 112 e2 5.5806087433087175 -8.058270601236988 5.12003506371839 0.024630781761713988 -0.7081341428039505 -0.043476756951101515 item=minecraft:cobblestone count=9 age=27 pickup-delay=0 on-ground=false
+entity 112 e3 3.50132559888159 1 6.075140598857504 -0.0001135647310024619 -0.08 0.00043135553039435904 item=minecraft:snowball count=16 age=27 pickup-delay=0 on-ground=true
+entity 112 e4 4.125 -6.041440153234753 4.125 0 -0.7081341428039505 0 item=minecraft:redstone_block count=1 age=27 pickup-delay=0 on-ground=false
+
+entity-order 113 entities e2 e3 e4
+entity 113 e2 5.605239525070432 -8.806404744040938 5.076558306767288 0.024138166596274588 -0.7331714599478715 -0.04260722264133281 item=minecraft:cobblestone count=9 age=28 pickup-delay=0 on-ground=false
+entity 113 e3 3.50132559888159 1 6.075140598857504 -0.0001135647310024619 -0.12 0.00043135553039435904 item=minecraft:snowball count=16 age=28 pickup-delay=0 on-ground=true
+entity 113 e4 4.125 -6.789574296038703 4.125 0 -0.7331714599478715 0 item=minecraft:redstone_block count=1 age=28 pickup-delay=0 on-ground=false
+
+entity-order 114 entities e2 e3 e4
+entity 114 e2 5.629377691666706 -9.57957620398881 5.033951084125955 0.023655403724748086 -0.757708030748914 -0.041755079001174436 item=minecraft:cobblestone count=9 age=29 pickup-delay=0 on-ground=false
+entity 114 e3 3.5012120341505875 1 6.0755719543878985 -6.677606854428117e-05 0 0.00025363707737698993 item=minecraft:snowball count=16 age=29 pickup-delay=0 on-ground=true
+entity 114 e4 4.125 -7.562745755986574 4.125 0 -0.757708030748914 0 item=minecraft:redstone_block count=1 age=29 pickup-delay=0 on-ground=false
+
+entity-order 115 entities e2 e3 e4
+entity 115 e2 5.6530330953914545 -10.377284234737724 4.9921960051247805 0.023182296101444143 -0.7817538701339357 -0.04091997821756588 item=minecraft:cobblestone count=9 age=30 pickup-delay=0 on-ground=false
+entity 115 e3 3.5012120341505875 1 6.0755719543878985 -6.677606854428117e-05 -0.04 0.00025363707737698993 item=minecraft:snowball count=16 age=30 pickup-delay=0 on-ground=true
+entity 115 e4 4.125 -8.360453786735489 4.125 0 -0.7817538701339357 0 item=minecraft:redstone_block count=1 age=30 pickup-delay=0 on-ground=false
+
+entity-order 116 entities e2 e3 e4
+entity 116 e2 5.6762153914928986 -11.19903810487166 4.951276026907214 0.022718650621582466 -0.8053187927312571 -0.040101579433701205 item=minecraft:cobblestone count=9 age=31 pickup-delay=0 on-ground=false
+entity 116 e3 3.5012120341505875 1 6.0755719543878985 -6.677606854428117e-05 -0.08 0.00025363707737698993 item=minecraft:snowball count=16 age=31 pickup-delay=0 on-ground=true
+entity 116 e4 4.125 -9.182207656869425 4.125 0 -0.8053187927312571 0 item=minecraft:redstone_block count=1 age=31 pickup-delay=0 on-ground=false
+
+entity-order 117 entities e2 e3 e4
+entity 117 e2 5.698934042114481 -12.044356897602917 4.911174447473513 0.02226427804247469 -0.8284124168766319 -0.03929954860990411 item=minecraft:cobblestone count=9 age=32 pickup-delay=0 on-ground=false
+entity 117 e3 3.5012120341505875 1 6.0755719543878985 -6.677606854428117e-05 -0.12 0.00025363707737698993 item=minecraft:snowball count=16 age=32 pickup-delay=0 on-ground=true
+entity 117 e4 4.125 -10.027526449600682 4.125 0 -0.8284124168766319 0 item=minecraft:redstone_block count=1 age=32 pickup-delay=0 on-ground=false
+
+entity-order 118 entities e2 e3 e4
+entity 118 e2 5.721198320156956 -12.912769314479549 4.871874898863609 0.021818992906282596 -0.8510441685390993 -0.03851355838728543 item=minecraft:cobblestone count=9 age=33 pickup-delay=0 on-ground=false
+entity 118 e3 3.5012120341505875 1 6.0755719543878985 -3.9264332252359864e-05 0 0.0001491386164946744 item=minecraft:snowball count=16 age=33 pickup-delay=0 on-ground=true
+entity 118 e4 4.125 -10.895938866477314 4.125 0 -0.8510441685390993 0 item=minecraft:redstone_block count=1 age=33 pickup-delay=0 on-ground=false
+
+entity-order 119 entities e2 e3 e4
+entity 119 e2 5.7430173130632385 -13.803813483018649 4.833361340476324 0.021382613464321208 -0.8732232851683173 -0.03774328795412755 item=minecraft:cobblestone count=9 age=34 pickup-delay=0 on-ground=false
+entity 119 e3 3.5012120341505875 1 6.0755719543878985 -3.9264332252359864e-05 -0.04 0.0001491386164946744 item=minecraft:snowball count=16 age=34 pickup-delay=0 on-ground=true
+entity 119 e4 4.125 -11.786983035016414 4.125 0 -0.8732232851683173 0 item=minecraft:redstone_block count=1 age=34 pickup-delay=0 on-ground=false
+
+entity-order 120 entities e2 e3 e4
+entity 120 e2 5.76439992652756 -14.717036768186967 4.795618052522196 0.02095496160287577 -0.8949588194649509 -0.03698842291494108 item=minecraft:cobblestone count=9 age=35 pickup-delay=0 on-ground=false
+entity 120 e3 3.5012120341505875 1 6.0755719543878985 -3.9264332252359864e-05 -0.08 0.0001491386164946744 item=minecraft:snowball count=16 age=35 pickup-delay=0 on-ground=true
+entity 120 e4 4.125 -12.700206320184732 4.125 0 -0.8949588194649509 0 item=minecraft:redstone_block count=1 age=35 pickup-delay=0 on-ground=false

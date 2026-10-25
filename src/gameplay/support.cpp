@@ -57,7 +57,7 @@ namespace circuit::gameplay::detail {
 namespace {
 enum class Need : std::uint8_t {
     none, standing, wall, lantern, ladder, carpet, plant, tall_plant, standing_sign, wall_sign, bed, cane, cactus, lily_pad, sea_pickle,
-    vine, hanging_roots, spore_blossom, hanging_moss, small_dripleaf, big_dripleaf, dripleaf_stem, mushroom
+    vine, hanging_roots, spore_blossom, hanging_moss, small_dripleaf, big_dripleaf, dripleaf_stem, mushroom, snow
 };
 // The ground a plant grows on: one bit each in a block's grounds.
 enum class Ground : std::uint8_t {
@@ -112,6 +112,7 @@ const std::vector<Kind>& kinds() {
             else if (name == "big_dripleaf") v[b] = {Need::big_dripleaf, Ground::big_dripleaf};
             else if (name == "big_dripleaf_stem") v[b] = {Need::dripleaf_stem, Ground::big_dripleaf};
             else if (name == "brown_mushroom" || name == "red_mushroom") v[b] = {Need::mushroom, Ground::mushroom};
+            else if (name == "snow") v[b].need = Need::snow;
             else if (name == "sunflower" || name == "lilac" || name == "rose_bush" || name == "peony" || name == "tall_grass"
                      || name == "large_fern")
                 v[b].need = Need::tall_plant;
@@ -373,6 +374,18 @@ bool supported(BlockState s, const Near& near, std::string_view release, const s
     }
     // A sea pickle sits on a top its collision shape reaches, or a sturdy one.
     case Need::sea_pickle: return top_reached(around(Direction::down), release) || sturdy(around(Direction::down), Direction::up, release);
+    // A snow layer lies on a whole top face of a collision shape (eight layers
+    // of snow among them), honey, soul sand or mud, but not on ice, packed
+    // ice or a barrier (tests/fixtures/collision/snow-*.txt).
+    case Need::snow: {
+        const auto state = physics::registry_state_of(around(Direction::down));
+        if (!state) return false;
+        const auto below = registry::game_name(*registry::block_of(*state));
+        if (below == "ice" || below == "packed_ice" || below == "barrier") return false;
+        if (below == "honey_block" || below == "soul_sand" || below == "mud") return true;
+        if (below == "snow") return value_of(around(Direction::down), "layers") == "8";
+        return registry::face_covered(*state, Direction::up);
+    }
     default: return true;
     }
 }
@@ -495,7 +508,8 @@ std::optional<ItemStack> supported_drop(BlockState s) {
     // without random rolls; petals drop one for each flower.
     // Vines too (a random roll), hanging roots and pale hanging moss (only
     // shears); cave vines drop their berries.
-    static constexpr std::array<std::string_view, 18> nothing{
+    // Snow layers drop snowballs only by their loot table.
+    static constexpr std::array<std::string_view, 19> nothing{"minecraft:snow",
         "minecraft:fern", "minecraft:tall_grass", "minecraft:large_fern", "minecraft:short_grass", "minecraft:dead_bush", "minecraft:bush",
         "minecraft:short_dry_grass", "minecraft:tall_dry_grass", "minecraft:nether_sprouts", "minecraft:melon_stem", "minecraft:pumpkin_stem",
         "minecraft:sweet_berry_bush", "minecraft:weeping_vines", "minecraft:weeping_vines_plant", "minecraft:twisting_vines",
@@ -528,7 +542,8 @@ bool block_supported(BlockState s, const std::function<BlockState(contracts::Dir
         release);
 }
 bool block_ticks_scheduled(BlockState s) {
-    return detail::falls(s) || detail::checks_later(s) || detail::is_big_dripleaf(s) || detail::is_farmland(s) || detail::is_fire(s);
+    return detail::falls(s) || detail::checks_later(s) || detail::is_big_dripleaf(s) || detail::is_farmland(s) || detail::is_fire(s)
+        || detail::is_frosted_ice(s);
 }
 bool block_supported_near(BlockState s, const std::function<BlockState(contracts::BlockPos offset)>& near, std::string_view release,
                           std::uint8_t light) {

@@ -42,6 +42,7 @@ public:
     std::uint8_t sky_light(BlockPos pos) override;
     bool player_near(ChunkPos chunk) override;
     std::uint8_t difficulty() override { return world_.difficulty; }
+    std::uint8_t block_light(BlockPos pos) override;
     Sky sky() override;
     std::int32_t game_rule(std::string_view name) override;
     std::optional<contracts::Generation> chunk_generation(ChunkPos chunk) override;

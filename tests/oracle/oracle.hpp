@@ -5,6 +5,7 @@
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/game_data.hpp>
 #include <circuit/gameplay/level_random.hpp>
+#include <circuit/gameplay/light.hpp>
 #include <circuit/gameplay/world_types.hpp>
 #include <array>
 #include <deque>
@@ -75,7 +76,8 @@ private:
     void apply_levels(contracts::DimensionId level);
     // Light as a tick sees it (gameplay::RuleContext::light), computed from
     // scratch from the blocks at the start of the tick.
-    std::uint8_t light(contracts::DimensionId level, contracts::BlockPos pos, bool sky_only = false);
+    // The most of the block and sky light, or `only` one of them.
+    std::uint8_t light(contracts::DimensionId level, contracts::BlockPos pos, std::optional<gameplay::LightKind> only = std::nullopt);
     struct LightSnapshot;
     void run_tick_list(contracts::DimensionId level, contracts::TickList list);
     void run_random_ticks(contracts::DimensionId level);

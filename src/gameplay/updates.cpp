@@ -207,6 +207,7 @@ void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
         else if (needs_support(s)) support_shape_update(ctx, target, s, *d);
         else if (is_farmland(s)) farmland_shape_update(ctx, target, *d);
         else if (is_fire(s) || is_soul_fire(s)) fire_shape_update(ctx, target, s);
+        else if (is_snowy_dirt(s)) snowy_shape_update(ctx, target, s, *d);
         break;
     default: break;
     }
@@ -257,6 +258,7 @@ void on_placed(RuleContext& ctx, BlockPos pos, BlockState state, BlockState prev
         // TNT placed or moved in where redstone reaches it is primed.
         else if (is_tnt(state) && !is_tnt(previous)) check_tnt(ctx, pos);
         else if (is_fire(state) || is_soul_fire(state)) fire_placed(ctx, pos, state, previous);
+        else if (is_frosted_ice(state)) frosted_ice_placed(ctx, pos);
         // Sugar cane or a cactus moved in where it cannot stay breaks a tick later.
         else if (moved_in) check_support_later(ctx, pos, state);
         break;
@@ -320,6 +322,7 @@ void on_neighbor_changed(RuleContext& ctx, BlockPos target, BlockPos from, Block
         if (is_lava(s)) lava_changed(ctx, target, s);
         else if (is_tnt(s)) check_tnt(ctx, target);
         else if (is_big_dripleaf(s)) dripleaf_neighbor_changed(ctx, target, s);
+        else if (is_frosted_ice(s)) frosted_ice_neighbor_changed(ctx, target, cause);
         break;
     default: break;
     }

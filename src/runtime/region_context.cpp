@@ -107,6 +107,7 @@ std::uint8_t RegionContext::light(BlockPos pos) {
 }
 
 std::uint8_t RegionContext::sky_light(BlockPos pos) { return light_field().get(gameplay::LightKind::sky, pos); }
+std::uint8_t RegionContext::block_light(BlockPos pos) { return light_field().get(gameplay::LightKind::block, pos); }
 
 bool RegionContext::player_near(ChunkPos chunk) { return gameplay::player_near(world_.counters(dimension()).presences, chunk); }
 
