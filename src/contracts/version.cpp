@@ -356,10 +356,11 @@ constexpr std::array reference_v4_mechanisms{
         "mycelium are snowy under snow layers, snow blocks and powder snow; ice and frosted ice a player breaks without "
         "silk touch become water over a solid block or a liquid; frosted ice draws its block ticks from the level "
         "random and ages and melts in them by its frosted neighbors and the light, and melts when an update from frosted "
-        "ice leaves it fewer than two frosted neighbors; snow drops its snowballs for players and explosions "
-        "(snow_layers, ice_break, frosted_ice, frosted_ice_ticks, snow_explosion; every state under a snow layer in "
-        "tests/fixtures/collision/snow-*.txt). Gaps: melting and freezing by light and weather in random ticks; players "
-        "stacking snow layers; powder snow; snow and ice in the Nether are not compared."},
+        "ice leaves it fewer than two frosted neighbors; snow drops its snowballs for players and explosions; players "
+        "stack snow layers up to eight and any block they place replaces a single layer (snow_layers, ice_break, "
+        "frosted_ice, frosted_ice_ticks, snow_explosion; every state under a snow layer in "
+        "tests/fixtures/collision/snow-*.txt; a protocol client's 40 placed states). Gaps: melting and freezing by light "
+        "and weather in random ticks; powder snow; snow and ice in the Nether are not compared."},
     MechanismEntry{"container_menus", l0_exact, l2_declared_deviation, controlled_experiment,
         "Player windows and chest, double chest and hopper menus with every click mode, applied as commands. "
         "A 48-step client scenario (every click mode, double chests, hoppers, the own window, throws and "

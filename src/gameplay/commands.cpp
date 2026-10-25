@@ -160,13 +160,14 @@ Plan plan(RuleContext& ctx, const contracts::UseBlock& c);
 // clicked cell when it is replaceable or a slab the click doubles, else
 // beside it.
 Plan plan_building(RuleContext& ctx, const contracts::PlayerUse& c, const ItemStack& held, BlockState clicked, std::uint32_t block) {
-    const bool replace = replaceable(clicked) || detail::doubles_slab(block, clicked, c, true);
+    const bool replace = replaceable(clicked) || detail::doubles_slab(block, clicked, c, true) || detail::snow_replaced(block, clicked, c.face, true);
     const auto target = replace ? c.pos : c.pos.relative(c.face);
     const std::uint8_t bit = replace ? 1 : 2;
     if ((c.reach & bit) == 0) return std::unexpected(ErrorCode::out_of_reach);
     if (auto ok = check_loaded(ctx, target); !ok) return std::unexpected(ok.error());
     const auto here = ctx.block(target);
-    if (!replaceable(here) && !(target == c.pos ? replace : detail::doubles_slab(block, here, c, false)))
+    if (!replaceable(here)
+        && !(target == c.pos ? replace : detail::doubles_slab(block, here, c, false) || detail::snow_replaced(block, here, c.face, false)))
         return std::unexpected(ErrorCode::occupied);
     const auto placed = detail::placed_building(ctx, block, c, target);
     if (!placed) return std::unexpected(ErrorCode::unsupported);
@@ -228,13 +229,15 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
     if (!state && !held.empty())
         if (const auto building = detail::building_block(ctx, held.item)) return plan_building(ctx, c, held, clicked, *building);
     if (!state) return std::unexpected(ErrorCode::not_usable);
-    const bool replace = replaceable(clicked);
+    // A single snow layer is replaced as air is (place_snow).
+    const auto replaced = [](BlockState s) { return replaceable(s) || detail::single_snow_layer(s); };
+    const bool replace = replaced(clicked);
     const auto target = replace ? c.pos : c.pos.relative(c.face);
     const std::uint8_t bit = replace ? 1 : 2;
     if ((c.reach & bit) == 0) return std::unexpected(ErrorCode::out_of_reach);
     if (detail::has_collision(*state) && (c.free & bit) == 0) return std::unexpected(ErrorCode::occupied);
     if (auto ok = check_loaded(ctx, target); !ok) return std::unexpected(ok.error());
-    if (!replaceable(ctx.block(target))) return std::unexpected(ErrorCode::occupied);
+    if (!replaced(ctx.block(target))) return std::unexpected(ErrorCode::occupied);
     // The placed block must be able to stand where it goes.
     if ((state->is(BlockType::lever) || state->is(BlockType::button)) && (replace || !detail::face_sturdy(clicked, c.face)))
         return std::unexpected(ErrorCode::unsupported);

@@ -89,6 +89,12 @@ std::uint16_t plate_item(BlockState s);
 // can stay there.
 std::optional<std::uint32_t> building_block(RuleContext& ctx, std::uint16_t item);
 bool doubles_slab(std::uint32_t block, BlockState s, const contracts::PlayerUse& c, bool clicked);
+// Whether placing `block` replaces the snow layer `s` (the clicked block, or
+// the cell beside it): snow adds a layer to fewer than eight (when clicked, on
+// its top face); any other block replaces a single layer (place_snow).
+bool snow_replaced(std::uint32_t block, BlockState s, Direction face, bool clicked);
+// A snow layer of one layer: any block a player places replaces it.
+bool single_snow_layer(BlockState s);
 std::optional<BlockState> placed_building(RuleContext& ctx, std::uint32_t block, const contracts::PlayerUse& c, BlockPos target);
 // The other block a placed block brings: a tall flower's upper half above
 // it, a bed's head ahead of its foot.

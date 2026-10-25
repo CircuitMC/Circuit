@@ -184,7 +184,7 @@ namespace circuit::gameplay::detail {
 namespace {
 enum class Building {
     none, plain, pillar, stairs, slab, connector, toward_player, toward_look, clicked_face, fixed, torch, lantern, ladder, resting, tall,
-    sign, head, bed
+    sign, head, bed, snowy
 };
 
 Building building_kind(std::uint32_t block) {
@@ -228,6 +228,8 @@ Building building_kind(std::uint32_t block) {
     if (name.ends_with("_slab") && has("type") && only({"type", "waterlogged"})) return Building::slab;
     if (registry::connector(info.default_state) != registry::Connector::none) return Building::connector;
     if (has("axis") && only({"axis", "waterlogged"})) return Building::pillar;
+    // Grass blocks, podzol and mycelium, snowy under snow.
+    if (has("snowy") && only({"snowy"})) return Building::snowy;
     if (keys.empty() && (registry::collision(info.default_state) == registry::Collision::full || name == "soul_sand" || name == "mud"))
         return Building::plain;
     return Building::none;
@@ -318,6 +320,23 @@ std::optional<std::pair<BlockPos, BlockState>> second_part(BlockState placed, Bl
     return std::nullopt;
 }
 
+namespace {
+// The number of layers of a snow layer; 0 for other blocks.
+int snow_layers(BlockState s) {
+    const auto at = s.is(BlockType::other) ? registry::block_of(s.registry_state()) : std::nullopt;
+    return at && registry::game_name(*at) == "snow" ? std::stoi(value_of(s, "layers")) : 0;
+}
+} // namespace
+
+bool single_snow_layer(BlockState s) { return snow_layers(s) == 1; }
+
+bool snow_replaced(std::uint32_t block, BlockState s, Direction face, bool clicked) {
+    const int layers = snow_layers(s);
+    if (layers == 0) return false;
+    if (registry::game_name(block) != "snow") return layers == 1;
+    return layers < 8 && (!clicked || face == Direction::up);
+}
+
 bool doubles_slab(std::uint32_t block, BlockState s, const contracts::PlayerUse& c, bool clicked) {
     if (building_kind(block) != Building::slab || !single_slab_of(block, s)) return false;
     if (!clicked) return true;
@@ -329,12 +348,22 @@ bool doubles_slab(std::uint32_t block, BlockState s, const contracts::PlayerUse&
 std::optional<BlockState> placed_building(RuleContext& ctx, std::uint32_t block, const contracts::PlayerUse& c, BlockPos target) {
     const auto here = ctx.block(target);
     auto s = BlockState::registered(registry::block(block).default_state);
+    // Snow placed into snow is a layer more.
+    if (registry::game_name(block) == "snow" && snow_replaced(block, here, c.face, false))
+        return with(here, {{"layers", std::to_string(std::stoi(value_of(here, "layers")) + 1)}});
     const std::string water = here == blocks::water_source() ? "true" : "false";
     const auto stays = [&](BlockState placed) -> std::optional<BlockState> {
         if (supported_at(ctx, target, placed)) return placed;
         return std::nullopt;
     };
     switch (building_kind(block)) {
+    // Snowy under a snow layer, a snow block or powder snow.
+    case Building::snowy: {
+        const auto above = ctx.block(target.relative(Direction::up));
+        const auto block_above = above.is(BlockType::other) ? registry::block_of(above.registry_state()) : std::nullopt;
+        const auto n = block_above ? registry::game_name(*block_above) : std::string_view{};
+        return with(s, {{"snowy", n == "snow" || n == "snow_block" || n == "powder_snow" ? "true" : "false"}});
+    }
     // A torch goes on the side of the clicked block, else stands.
     case Building::torch: {
         if (contracts::is_horizontal(c.face)) {

@@ -1220,6 +1220,38 @@ int main() {
         require(s.at({-1, 0, 2}) == blocks::water_source() && s.at({1, 0, 2}) == blocks::water_source(), "frosted ice melts");
     });
 
+    suite.run("players stack snow layers and replace single ones", [] {
+        const circuit::contracts::PlayerKey alex{11, 12};
+        const auto snow_item = *circuit::gameplay::items::by_name("minecraft:snow");
+        const auto layers = [](int n) { return registry_block("snow", {{"layers", std::to_string(n)}}); };
+        Sim s;
+        s.tick(floor(-4, 4, -4, 4));
+        const auto use = [&](std::uint16_t item, BlockPos pos, D face) {
+            s.tick({circuit::contracts::SetPlayerSlot{alex, 36, {item, 1, 0}},
+                    circuit::contracts::PlayerUse{alex, 36, pos, face, D::north, D::north, false, false, 3, 3}});
+        };
+        // Snow on the floor, then on its top: a layer more up to eight, then a layer above.
+        use(snow_item, {0, -1, 0}, D::up);
+        for (int n = 2; n <= 8; ++n) {
+            use(snow_item, {0, 0, 0}, D::up);
+            require(s.at({0, 0, 0}) == layers(n), std::format("{} layers", n));
+        }
+        use(snow_item, {0, 0, 0}, D::up);
+        require(s.at({0, 0, 0}) == layers(8) && s.at({0, 1, 0}) == layers(1), "a ninth goes above");
+        // Clicked on a layer's side: a layer beside it.
+        use(snow_item, {2, -1, 0}, D::up);
+        use(snow_item, {2, 0, 0}, D::east);
+        require(s.at({2, 0, 0}) == layers(1) && s.at({3, 0, 0}) == layers(1), "beside");
+        // Stone and a snow block replace a single layer, not two.
+        use(snow_item, {-2, -1, 0}, D::up);
+        use(items::stone, {-2, 0, 0}, D::up);
+        use(snow_item, {-2, -1, 2}, D::up);
+        use(snow_item, {-2, 0, 2}, D::up);
+        use(items::stone, {-2, 0, 2}, D::up);
+        require(s.at({-2, 0, 0}) == blocks::stone() && s.at({-2, 1, 0}).is_air(), "stone replaces one layer");
+        require(s.at({-2, 0, 2}) == layers(2) && s.at({-2, 1, 2}) == blocks::stone(), "but not two");
+    });
+
     suite.run("items burn in fire and lava, netherite does not, and lava reaches them by the version", [] {
         const auto stick = *circuit::gameplay::items::by_name("minecraft:stick");
         const auto netherite = *circuit::gameplay::items::by_name("minecraft:netherite_ingot");

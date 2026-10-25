@@ -287,15 +287,16 @@
       "snow": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Lies on whole collision tops, honey, soul sand, mud and eight layers of snow, not on ice, packed ice or barriers, and breaks without drops when an update finds it unsupported; drops its snowballs for players and explosions by its loot table; sand falling into a single layer replaces it, as both official servers do",
+        "note": "Lies on whole collision tops, honey, soul sand, mud and eight layers of snow, not on ice, packed ice or barriers, and breaks without drops when an update finds it unsupported; drops its snowballs for players and explosions by its loot table; sand falling into a single layer replaces it; players stack it up to eight layers and any block they place replaces a single layer, as both official servers do",
         "cases": [
           "collision/snow",
           "trace/snow_layers",
           "trace/ice_break",
-          "trace/snow_explosion"
+          "trace/snow_explosion",
+          "client/snow"
         ],
         "deviations": [
-          "does not melt; players do not stack it"
+          "does not melt"
         ]
       },
       "ice": {

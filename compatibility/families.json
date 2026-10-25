@@ -962,12 +962,12 @@
             "trace/ice_break",
             "trace/frosted_ice",
             "trace/frosted_ice_ticks",
-            "trace/snow_explosion"
+            "trace/snow_explosion",
+            "client/snow"
           ],
-          "note": "Snow layers on their supports and breaking without them, snowy grass, podzol and mycelium, ice and frosted ice turning to water when players break them, frosted ice aging and melting in its block ticks and by updates, and snow's drops, as both official servers do",
+          "note": "Snow layers on their supports and breaking without them, snowy grass, podzol and mycelium, ice and frosted ice turning to water when players break them, frosted ice aging and melting in its block ticks and by updates, snow's drops, and players stacking snow layers and replacing single ones, as both official servers do",
           "deviations": [
             "melting and freezing by light and weather (random ticks) are not modeled",
-            "players do not stack snow layers yet",
             "powder snow is not modeled"
           ]
         },

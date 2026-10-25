@@ -67,6 +67,17 @@
       "description": "Player placement of full blocks, soul sand and mud, pillars on every face, stairs facing four ways and in both halves, slabs in both halves and doubled from the clicked slab and beside it, fences, panes, bars and walls beside blocks and each other, blocks facing the player, end rods and lightning rods (an end rod on an end rod), observers looking each way, trapdoors on a side's halves, torches, lanterns, ladders, carpets, flowers and a sapling where supported and a flower where not, doors clicked in either half, beside stone and beside another door, tall flowers on dirt and where they have no soil, furnaces, barrels, shulker boxes and eleven other blocks with block entities, signs, a banner and heads turned at yaws between the four sides, a wall sign, a wall banner and a wall head, a bed and a bed whose head is blocked, and nine of them into water sources: 148 placed states identical with both official servers"
     },
     {
+      "id": "client/snow",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/place-snow.js; tests/rules/rules_tests.cpp",
+      "status": "passing",
+      "description": "Players stacking snow layers from one to eight and a ninth above them, snow on grass, ice, a bottom slab and beside a layer, stone, a torch, a lantern and planks placed at a single layer and stone onto two, snow blocks on the floor and into a layer: 40 placed states identical with both official servers"
+    },
+    {
       "id": "client/suite",
       "kind": "black_box",
       "versions": [
