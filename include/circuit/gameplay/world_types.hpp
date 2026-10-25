@@ -393,6 +393,8 @@ struct LevelDump {
     Tick last_active{};
     // The state of the level's random sequence (LevelRandom::state).
     std::uint64_t random{};
+    // The state random ticks pick positions from (RuleContext::random_tick_pick).
+    std::uint32_t random_tick{};
     // The random sequences of loot tables used so far, by id (ascending).
     // The official servers keep one set for the world; Circuit keeps one per
     // level, the same while only the overworld is reached.

@@ -416,6 +416,17 @@
       "description": "Whether 47 plants stay on every block state as support, as both official servers decide it; Circuit's rules match the 30 that need only the ground below them for every state of both versions (1,535,030 pairs)"
     },
     {
+      "id": "collision/random_ticks",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "tests/fixtures/collision/random-ticks-*.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness random tick report",
+      "status": "passing",
+      "description": "Whether each block state takes random ticks, as both official servers report it; Circuit's rules give the same for every state of both versions"
+    },
+    {
       "id": "collision/snow",
       "kind": "black_box",
       "versions": [

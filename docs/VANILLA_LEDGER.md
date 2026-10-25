@@ -30,7 +30,7 @@ Feature counts per implementation state, then the number of features with compar
 | V04 Data and resource-pack negotiation | C1, C9, C10 | 6 | 0 / 0 | 4 / 4 | 0 / 0 | 2 / 2 | 0 / 0 | 2 / 2 |
 | V05 Dimensions, tickets and chunk lifecycle | C2 | 8 | 0 / 0 | 6 / 6 | 0 / 0 | 2 / 2 | 0 / 0 | 3 / 3 |
 | V06 Lighting and environmental state | C2, C3, C7 | 7 | 0 / 0 | 5 / 5 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
-| V07 RNG and global event order | C0, C2, C4 | 7 | 4 / 4 | 3 / 3 | 0 / 0 | 0 / 0 | 0 / 0 | 6 / 6 |
+| V07 RNG and global event order | C0, C2, C4 | 7 | 4 / 4 | 3 / 3 | 0 / 0 | 0 / 0 | 0 / 0 | 7 / 7 |
 | V08 Terrain and biomes | C7 | 70 | 0 / 0 | 2 / 2 | 64 / 64 | 4 / 4 | 0 / 0 | 0 / 0 |
 | V09 Structures and decoration | C7, C5 | 6 | 0 / 0 | 0 / 0 | 0 / 0 | 6 / 6 | 0 / 0 | 0 / 0 |
 | V10 Portals and dimension travel | C7 | 43 | 0 / 0 | 17 / 17 | 23 / 23 | 3 / 3 | 0 / 0 | 17 / 17 |
@@ -127,10 +127,10 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 47 |
+| black_box | passing | 48 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 174 |
+| official_trace | passing | 177 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -213,8 +213,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Neighbor and shape update order and the chain limit | C4 | implemented, compared | implemented, compared | `trace/chain_limit`, `trace/vertical_slice` |
 | Block-entity tick order | C4 | implemented, compared | implemented, compared | `trace/hopper_competition`, `trace/piston_slime` |
 | Entity tick order | C3 | partial, compared | partial, compared | `trace/item_hopper_pickup`, `trace/item_merge`, `trace/item_merge_moving`, `trace/item_water_current`; ascending id, compared with the target versions for item entities only |
-| The level random source and its draw order | C3 | partial, compared | partial, compared | `trace/item_chest_scatter`, `trace/item_drop_piston`, `trace/piston_draws`, `trace/tnt_redstone_ignition`; only block drops (a stack of none included), container scatter and piston sounds draw from it; random ticks and weather durations use Circuit's own derived streams, and other draws of the target versions are not made yet; Each level's java.util.Random-compatible sequence, its state saved with the world; fixtures seed it with 0 as the harness does and compare raw draw counts per stage |
-| Random-tick chunk order and positions | C2 | partial, reference_only | partial, reference_only | `observation/chunk_levels`; chunks in coordinate order instead of the shuffled order; Random ticks run at simulation level 31 and lower in 1.21.8, and at 32 and lower within 128 blocks of a non-spectator player in 1.21.4 |
+| The level random source and its draw order | C3 | partial, compared | partial, compared | `trace/item_chest_scatter`, `trace/item_drop_piston`, `trace/piston_draws`, `trace/tnt_redstone_ignition`; weather durations use Circuit's own derived stream, and other draws of the target versions (random ticks of blocks other than farmland, mobs and the rest) are not made yet; Each level's java.util.Random-compatible sequence, its state saved with the world; fixtures seed it with 0 as the harness does and compare raw draw counts per stage |
+| Random-tick chunk order and positions | C2 | partial, compared | partial, compared | `collision/random_ticks`, `observation/chunk_levels`, `trace/random_ticks_chunks`, `trace/random_ticks_farmland`, `trace/random_ticks_sections`; 1.21.4's order is not compared (the harness has no player to make its random ticks run); the order of chunks that start ticking at different times is Circuit's model; Random ticks run at simulation level 31 and lower in 1.21.8, and at 32 and lower within 128 blocks of a non-spectator player in 1.21.4; on 1.21.8 every pick, the precipitation checks' draws and the chunk order of forced areas equal the official server's, with the level's position generator and the states that take random ticks as both versions report |
 
 ### V08 Terrain and biomes
 
@@ -273,7 +273,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Feature | Milestone | 1.21.4 | 1.21.8 | Cases and gaps |
 | --- | --- | --- | --- | --- |
 | Wheat growth | C5 | partial, documented | partial, documented | `trace/loot_rolls`; does not break in darkness; grows with probability 1/3 per random tick, ignoring hydration and neighboring crops; Grows only with light 9 or more at its own cell (minecraft.wiki "Wheat Crops"), light as the tick sees it; planted on farmland, and broken with its drops by an update that finds no farmland below, as both official servers do |
-| Farmland, hydration and trampling | C5 | partial, compared | partial, compared | `trace/farmland`; moisture, drying and hydration (random ticks) are not modeled; nothing tramples it (there are no living entities yet), and entities are not pushed up when it turns; Farmland turns to dirt a tick after a solid block is set on it; entities count their falls and every landing on farmland draws its trampling check from the level random, as both official servers do |
+| Farmland, hydration and trampling | C5 | partial, compared | partial, compared | `trace/farmland`, `trace/random_ticks_farmland`; nothing tramples it (there are no living entities yet), and entities are not pushed up when it turns; rain does not wet it; Farmland turns to dirt a tick after a solid block is set on it; entities count their falls and every landing on farmland draws its trampling check from the level random; in its random ticks it dries, is wetted by water and turns to dirt unless a crop or stem keeps it, as both official servers do |
 | Other crops and plants: carrots, potatoes, beetroots, stems, sugar cane, cactus, bamboo, kelp, cocoa, berries, nether wart, chorus | C5 | partial, compared | partial, compared | `collision/plant_contexts`, `collision/plants`, `trace/cactus_damage`, `trace/dripleaves`, `trace/mushrooms`, `trace/plant_grounds`, `trace/plant_supports`, `trace/vines`; cacti hurt only items; kelp, cocoa, chorus and pitcher crops are not supported yet; they do not grow; without data packs, plants whose loot rolls random numbers drop nothing; Carrots, potatoes, beetroots, stems, torchflower crops, nether wart, sweet berry bushes and bamboo grow on their ground only and break when it goes; sugar cane needs water beside its ground and cacti nothing solid beside them, both breaking a tick after an update finds them unsupported |
 | Saplings, trees and leaf decay | C5 | missing, none | missing, none |  |
 | Grass, mycelium, nylium, moss and sculk spread | C5 | missing, none | missing, none |  |

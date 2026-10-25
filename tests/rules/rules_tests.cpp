@@ -38,7 +38,9 @@ struct Sim {
     explicit Sim(const VersionBundle& b = bundle(), std::uint64_t seed = 7, std::uint8_t radius = 2,
                  std::shared_ptr<const circuit::gameplay::GameData> data = {})
         : oracle(b, seed, std::move(data)) {
-        tick({ticket(1, {0, 0}, radius)});
+        // Random ticks are off unless a test turns them on, as in the
+        // harness's scenarios: they draw from the level random.
+        tick({ticket(1, {0, 0}, radius), SetGameRule{"randomTickSpeed", 0}});
     }
     void tick(std::vector<CommandBody> bodies = {}) {
         oracle.advance(admit(std::move(bodies)));
@@ -610,7 +612,7 @@ int main() {
         for (int x = 0; x <= 9; ++x) require(s.at({x, 1, 0}).is_air(), "channel drained");
     });
 
-    suite.run("random ticks use per-section streams", [] {
+    suite.run("random ticks share the level's random and position generator", [] {
         const auto run = [](std::uint64_t seed, bool neighbor_activity) {
             Sim s(bundle(), seed, 1);
             std::vector<CommandBody> build;
@@ -623,6 +625,7 @@ int main() {
                 for (int z = 0; z < 16; ++z) crop({x, 0, z});
             if (neighbor_activity)
                 for (int x = 16; x < 32; ++x) crop({x, 0, 3});
+            build.push_back(SetGameRule{"randomTickSpeed", 3});
             s.tick(build);
             s.until(150);
             std::vector<std::uint8_t> ages;
@@ -634,7 +637,8 @@ int main() {
         unsigned grown = 0;
         for (auto a : base) grown += a;
         require(grown > 0, "wheat grows");
-        require(run(11, true) == base, "another chunk's draws do not shift this chunk's stream");
+        require(run(11, false) == base, "the same world grows the same");
+        require(run(11, true) != base, "another chunk's random ticks shift the level's generators");
         require(run(12, false) != base, "seed changes the outcome");
     });
 
@@ -1218,6 +1222,21 @@ int main() {
         // Frosted ice replaced: its neighbors, left without frosted neighbors, melt.
         s.tick({place({0, 0, 2}, blocks::stone())});
         require(s.at({-1, 0, 2}) == blocks::water_source() && s.at({1, 0, 2}) == blocks::water_source(), "frosted ice melts");
+    });
+
+    suite.run("random ticks visit chunks in the official servers' order", [] {
+        // The order the official 1.21.8 server ticked sixteen forced chunks in
+        // (every pick of farmland layers in them).
+        std::vector<ChunkPos> forced;
+        for (int x = 0; x < 4; ++x)
+            for (int z = 0; z < 4; ++z) forced.push_back({x, z});
+        const std::vector<ChunkPos> official{{0, 0}, {0, 2}, {1, 3}, {1, 2}, {3, 0}, {2, 0}, {2, 2}, {0, 3},
+                                             {0, 1}, {3, 1}, {1, 0}, {1, 1}, {3, 3}, {3, 2}, {2, 3}, {2, 1}};
+        require(circuit::gameplay::random_tick_order(forced) == official, "sixteen forced chunks");
+        auto reversed = forced;
+        std::ranges::reverse(reversed);
+        require(circuit::gameplay::random_tick_order(reversed) == official, "whatever order they come in");
+        require(circuit::gameplay::random_tick_order({{5, -3}, {0, 0}, {-2, 7}}).front() == ChunkPos{0, 0}, "the chunk at 0, 0 first");
     });
 
     suite.run("an arrow or a snowball tilts a big dripleaf at once, and it goes back 100 ticks later", [] {

@@ -5,7 +5,9 @@
 #include <circuit/gameplay/rng.hpp>
 #include <array>
 #include <functional>
+#include <span>
 #include <string_view>
+#include <vector>
 
 // Entry points of circuit-reference-rules-v0. Each function is one root: an
 // executor calls it in the phase's serial order with a context whose updater
@@ -17,8 +19,12 @@ namespace circuit::gameplay {
 void apply_command(RuleContext& ctx, const contracts::Command& command);
 
 void run_scheduled_tick(RuleContext& ctx, TickList list, const ScheduledTick& tick);
-// Performs randomTickSpeed random ticks in one section using `stream`.
-void run_random_ticks(RuleContext& ctx, ChunkPos chunk, std::int32_t section, Rng& stream);
+// One chunk's random ticks (random_ticks.cpp): randomTickSpeed precipitation
+// checks from the level random, then randomTickSpeed positions picked in
+// each of `sections` (those with blocks that take random ticks, ascending).
+void run_random_ticks(RuleContext& ctx, ChunkPos chunk, std::span<const std::int32_t> sections);
+// The order the official servers tick their random-ticking chunks in.
+std::vector<ChunkPos> random_tick_order(std::vector<ChunkPos> chunks);
 void run_block_event(RuleContext& ctx, const BlockEvent& event);
 void run_entity(RuleContext& ctx, EntityId id);
 void run_block_entity(RuleContext& ctx, BlockPos pos);

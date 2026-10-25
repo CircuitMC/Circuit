@@ -51,7 +51,8 @@ struct EngineOptions {
     std::function<void(contracts::ChunkKey, const std::function<std::array<gameplay::BlockState, 4096>&(std::size_t)>&)>
         generator;
     // The seed of every level's random sequence in a new world (the reference
-    // harness seeds the overworld's with 0); empty: derived from the world seed.
+    // harness seeds the overworld's with 0, and its random-tick position state
+    // with 0); empty: both derived from the world seed.
     std::optional<std::int64_t> level_random_seed;
     // The world seed random sequences start from; empty: the engine's seed
     // (the reference harness's worlds have the seed 0).

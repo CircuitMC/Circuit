@@ -1,0 +1,15 @@
+# Whether each block state takes random ticks (1) or not (0), as both official servers report it (harness 0.29.0
+# random tick report). A bare block name stands for all its states.
+# Java Edition 1.21.4: the states whose codes random-ticks-1.21.8.txt does not give; every other state as there.
+minecraft:creaking_heart[active=true,axis=x,natural=true] 0
+minecraft:creaking_heart[active=true,axis=x,natural=false] 0
+minecraft:creaking_heart[active=true,axis=y,natural=true] 0
+minecraft:creaking_heart[active=true,axis=y,natural=false] 0
+minecraft:creaking_heart[active=true,axis=z,natural=true] 0
+minecraft:creaking_heart[active=true,axis=z,natural=false] 0
+minecraft:creaking_heart[active=false,axis=x,natural=true] 0
+minecraft:creaking_heart[active=false,axis=x,natural=false] 0
+minecraft:creaking_heart[active=false,axis=y,natural=true] 0
+minecraft:creaking_heart[active=false,axis=y,natural=false] 0
+minecraft:creaking_heart[active=false,axis=z,natural=true] 0
+minecraft:creaking_heart[active=false,axis=z,natural=false] 0

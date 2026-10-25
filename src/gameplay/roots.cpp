@@ -39,20 +39,6 @@ void run_scheduled_tick(RuleContext& ctx, TickList list, const ScheduledTick& ti
     }
 }
 
-void run_random_ticks(RuleContext& ctx, ChunkPos chunk, std::int32_t section, Rng& stream) {
-    const auto base_y = ctx.world().min_y + section * 16; // the level's sections
-    // The randomTickSpeed game rule; 0 and less: none.
-    const auto speed = ctx.game_rule("randomTickSpeed");
-    for (std::int32_t k = 0; k < speed; ++k) {
-        const auto r = stream.bounded(4096);
-        const BlockPos pos{chunk.x * 16 + static_cast<std::int32_t>(r & 15),
-                           base_y + static_cast<std::int32_t>((r >> 8) & 15),
-                           chunk.z * 16 + static_cast<std::int32_t>((r >> 4) & 15)};
-        const auto s = ctx.block(pos);
-        if (s.is(BlockType::wheat)) wheat_random_tick(ctx, pos, s, stream);
-    }
-}
-
 void run_block_event(RuleContext& ctx, const BlockEvent& event) {
     const auto s = ctx.block(event.pos);
     const bool matches = s.type() == event.block;

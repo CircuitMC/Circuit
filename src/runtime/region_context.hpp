@@ -102,6 +102,7 @@ public:
 
 protected:
     gameplay::LevelRandom& level_random() override;
+    std::uint32_t& random_tick_state() override;
     gameplay::RandomSequence& random_sequence(const std::string& id, const gameplay::SequenceIdHash& hash) override;
 
 private:
@@ -130,6 +131,7 @@ private:
     // Each level's random sequence, and its loot tables' sequences, before
     // this attempt first drew from them.
     std::array<std::optional<gameplay::LevelRandom>, contracts::dimension_count> random_snapshots_;
+    std::array<std::optional<std::uint32_t>, contracts::dimension_count> random_tick_snapshots_;
     std::array<std::optional<std::map<std::string, gameplay::RandomSequence>>, contracts::dimension_count> sequence_snapshots_;
     // Each level's light as this context first read it outside the phases
     // that publish it (WorldStore::light_now).

@@ -261,6 +261,7 @@ int main() {
         auto c = checkpoint_at(histories[1], histories[1].ticks());
         c.state.sequence_settings = {-7, false, true};
         c.state.difficulty = 3;
+        c.state.level(circuit::contracts::DimensionId::overworld).random_tick = 0xDEADBEEF;
         c.state.level(circuit::contracts::DimensionId::overworld).sequences = {
             {"circuit:fresh", circuit::gameplay::RandomSequence{1, 2}},
             {"minecraft:blocks/short_grass", circuit::gameplay::RandomSequence{2022789406501655404ULL, 17977990001259141514ULL}}};

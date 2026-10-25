@@ -659,8 +659,9 @@ int main() {
         // them and destroy the items they drop; what later rounds can still
         // prime by redstone, and what explosions prime, decide the counts.
         // (Since a removed head takes its base, the piston goes with the
-        // first explosion that reaches its head.)
-        require(primed == 12 && explosions == 11 && destroyed == 27,
+        // first explosion that reaches its head.) Random ticks at the default
+        // speed draw from the same level random as the explosions.
+        require(primed == 14 && explosions == 13 && destroyed == 30,
                 std::format("{} primed, {} explosions, {} entities exploded or destroyed", primed, explosions, destroyed));
     });
 

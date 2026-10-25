@@ -120,14 +120,22 @@ constexpr std::array reference_v4_mechanisms{
         "flowing down into water it makes stone; on soul soil beside blue ice it becomes basalt; it destroys what water washes "
         "away without drops (lava_flow, lava_water, lava_edges, fluid_sources, fluid_washes). "
         "Not covered: the Nether's faster lava, fire, sounds, and entities in lava."},
-    MechanismEntry{"random_ticks", l1_region_equivalent, l2_declared_deviation, documented_behavior,
-        "Speed from the game rule per section; sections without blocks that react are skipped, as in the target "
-        "version; positions and rule draws use a stream derived from (seed, tick, chunk, section) instead of a "
-        "level-wide stream. Gaps: chunks run in coordinate order instead of a "
-        "shuffled order; not compared with the target version."},
+    MechanismEntry{"random_ticks", l0_exact, l2_declared_deviation, harness_trace,
+        "As the official 1.21.8 server, fitted to every pick of farmland layers: chunk by chunk in the order of an open "
+        "hash table of their keys (chunk 0, 0 first), randomTickSpeed precipitation checks from the level random (each "
+        "hit advancing the position generator), then randomTickSpeed positions per section holding blocks that take "
+        "random ticks, from the bottom up, from the level's generator v -> 3v + 1013904223; which states take random "
+        "ticks as both official servers report for every state (tests/fixtures/collision/random-ticks-*.txt); farmland "
+        "dries, is wetted by water and turns to dirt unless a crop or stem keeps it (random_ticks_farmland, "
+        "random_ticks_chunks, random_ticks_sections). Random ticks run serially. Gaps: the table's order for chunks "
+        "that start ticking at different times is Circuit's model (fitted to forced areas); 1.21.4 runs them only near "
+        "players, which the harness lacks, so its order is not compared; random ticks of blocks other than farmland "
+        "and wheat (grass, leaves, crops, lava, copper and the rest) do nothing, where the official servers draw and "
+        "change them; precipitation effects (snow, ice, cauldrons, lightning) are not modeled."},
     MechanismEntry{"wheat", l0_exact, l2_declared_deviation, documented_behavior,
         "Grows only with light 9 or more at its own cell; an update that finds no farmland below breaks it with its "
-        "drops (loot_rolls). Gap: grows with probability 1/3 per random tick, ignoring hydration."},
+        "drops (loot_rolls). Gap: grows with probability 1/3 per random tick from the level random, ignoring "
+        "hydration and neighbors (not the target versions' odds)."},
     MechanismEntry{"item_entity", l0_exact, l2_declared_deviation, harness_trace,
         "Double-precision gravity, drag, bouncing and collision with every state's collision boxes; items at "
         "rest move every fourth tick; currents and buoyancy in water; merging with the target versions' timing, "
@@ -516,10 +524,10 @@ constexpr std::array game_rules_1_21_4{
 // allowFireTicksAwayFromPlayer), and where random ticks run
 // (RandomTickRange) and when lava reaches entities (LavaContact), which the
 // official servers showed differ.
-constexpr RuleSet rules_1_21_8{"circuit-reference-rules-v12", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
+constexpr RuleSet rules_1_21_8{"circuit-reference-rules-v12", RngPolicy::level_random_in_target_order, reference_v4_mechanisms,
                                "circuit-blocks-1", "harness traces of 1.21.8 (tests/fixtures/harness)", RandomTickRange::entity_ticking,
                                LavaContact::after_move};
-constexpr RuleSet rules_1_21_4{"circuit-reference-rules-v12", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
+constexpr RuleSet rules_1_21_4{"circuit-reference-rules-v12", RngPolicy::level_random_in_target_order, reference_v4_mechanisms,
                                "circuit-blocks-1",
                                "harness traces of 1.21.4 (tests/fixtures/harness-1.21.4), each identical to its 1.21.8 recording "
                                "(fire's with 1.21.8's allowFireTicksAwayFromPlayer on) but those of entities in lava, which "

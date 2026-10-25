@@ -206,11 +206,6 @@ private:
         switch (phase) {
         case Phase::block_ticks: gameplay::run_scheduled_tick(*ctx, TickList::block, r.tick); break;
         case Phase::fluid_ticks: gameplay::run_scheduled_tick(*ctx, TickList::fluid, r.tick); break;
-        case Phase::random_ticks: {
-            auto stream = gameplay::random_tick_stream(engine_.seed, engine_.world.time, ctx->dimension(), r.home, r.section);
-            gameplay::run_random_ticks(*ctx, r.home, r.section, stream);
-            break;
-        }
         case Phase::entities: gameplay::run_entity(*ctx, r.entity); break;
         case Phase::block_entities: gameplay::run_block_entity(*ctx, r.pos); break;
         default: throw std::logic_error("runtime: phase has no region roots");
@@ -235,6 +230,7 @@ Engine::Impl::Impl(const contracts::VersionBundle& b, std::uint64_t s, EngineOpt
     // region map.
     for (const auto level : contracts::level_order) {
         world.counters(level).random = gameplay::initial_level_random(seed, level, options.level_random_seed);
+        world.counters(level).random_tick = gameplay::initial_random_tick(seed, level, options.level_random_seed);
         region_for_new_chunk(random_key(level));
     }
     world.sequence_seed = options.sequence_seed.value_or(static_cast<std::int64_t>(seed));
@@ -572,32 +568,37 @@ void Engine::Impl::tick_phase(DimensionId level, TickList list) {
     run_phase(list == TickList::block ? Phase::block_ticks : Phase::fluid_ticks, level, std::move(roots));
 }
 
+// The level's random ticks, as the target versions run them: chunk by chunk
+// in their order (gameplay::random_tick_order), each drawing from the level
+// random and the level's position generator. Both are level-wide, so the
+// phase runs serially on the coordinator with access to every column.
 void Engine::Impl::random_phase(DimensionId level) {
+    if (gameplay::game_rule_value(bundle, world.game_rules, "randomTickSpeed") <= 0) return;
     const auto sections = bundle.shape(level).sections();
-    std::vector<RootItem> roots;
-    std::uint64_t index = 0;
     const auto& presences = world.counters(level).presences;
+    std::vector<ChunkPos> ticking;
     world.for_each_loaded(level, [&](ChunkPos c, const ChunkData& data) {
-        if (!gameplay::random_ticks_run(bundle.rules->random_ticks, data.levels.simulation, c, presences)) return;
-        for (std::int32_t s = 0; s < sections; ++s) {
-            // A section without randomly ticking blocks would draw positions
-            // and change nothing; its stream is its own, so skipping it is exact.
-            const auto& section = data.sections[static_cast<std::size_t>(s)];
-            if (!section || section->random_ticking == 0) continue;
-            RootItem r;
-            r.key = index * static_cast<std::uint64_t>(sections) + static_cast<std::uint64_t>(s);
-            r.home = c;
-            r.section = s;
-            roots.push_back(r);
-        }
-        ++index;
+        if (gameplay::random_ticks_run(bundle.rules->random_ticks, data.levels.simulation, c, presences)) ticking.push_back(c);
     });
+    if (ticking.empty()) return;
+    ++stats.phases;
     // Rules that read light see it as of the start of the tick.
-    if (!roots.empty()) {
-        update_light(level);
-        world.light[static_cast<std::size_t>(level)] = light[static_cast<std::size_t>(level)] ? &*light[static_cast<std::size_t>(level)] : nullptr;
+    update_light(level);
+    world.light[static_cast<std::size_t>(level)] = light[static_cast<std::size_t>(level)] ? &*light[static_cast<std::size_t>(level)] : nullptr;
+    RegionContext ctx(bundle, world, regions, all_regions, Phase::random_ticks, level, options.record_trace, false, options.data.get());
+    std::uint64_t index = 0;
+    std::vector<std::int32_t> with_blocks;
+    for (const auto c : gameplay::random_tick_order(std::move(ticking))) {
+        // The sections that hold blocks taking random ticks, read as the
+        // chunk's turn comes (earlier chunks' ticks may change them).
+        with_blocks.clear();
+        const auto& data = *world.loaded.at({level, c});
+        for (std::int32_t s = 0; s < sections; ++s)
+            if (const auto& section = data.sections[static_cast<std::size_t>(s)]; section && section->random_ticking > 0) with_blocks.push_back(s);
+        ctx.begin_root(index++, c);
+        gameplay::run_random_ticks(ctx, c, with_blocks);
     }
-    run_phase(Phase::random_ticks, level, std::move(roots));
+    commit({&ctx});
     world.light[static_cast<std::size_t>(level)] = nullptr;
 }
 
@@ -1053,6 +1054,7 @@ void fill_dump(const WorldStore& world, const contracts::VersionBundle& bundle, 
         l.next_suborder = world.counters(l.dimension).next_suborder;
         l.next_block_entity_order = world.counters(l.dimension).next_block_entity_order;
         l.random = world.counters(l.dimension).random.state();
+        l.random_tick = world.counters(l.dimension).random_tick;
         for (const auto& [id, sequence] : world.counters(l.dimension).sequences) l.sequences.emplace_back(id, sequence);
         auto& list = events[l.dimension];
         std::ranges::sort(list, {}, [](const auto& p) { return p.first; });
@@ -1126,6 +1128,7 @@ void Engine::Impl::restore(const WorldDump& state) {
         counters.last_active = l.last_active;
         if (l.random > gameplay::LevelRandom::mask) bad("level random");
         counters.random = gameplay::LevelRandom::from_state(l.random);
+        counters.random_tick = l.random_tick;
         counters.sequences.clear();
         for (const auto& [id, sequence] : l.sequences)
             if (id.empty() || !counters.sequences.emplace(id, sequence).second) bad("random sequence");
@@ -1170,7 +1173,7 @@ void Engine::Impl::restore(const WorldDump& state) {
             auto& section = chunk.sections[static_cast<std::size_t>((pos.y - shape.min_y) >> 4)];
             if (!section) section = std::make_shared<Section>();
             section->blocks[contracts::section_local_index(pos)] = *s;
-            if (gameplay::reacts_to_random_ticks(s->type())) ++section->random_ticking;
+            if (gameplay::takes_random_ticks(*s)) ++section->random_ticking;
         }
         for (const auto& [pos, be] : l.block_entities) {
             auto& chunk = column(pos);

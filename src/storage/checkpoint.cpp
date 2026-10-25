@@ -19,6 +19,7 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 27: levels carry the state random ticks pick positions from;
 // 26: the world carries its difficulty;
 // 25: entities carry how far they have fallen;
 // 24: levels carry their loot tables' random sequences, the world the settings
@@ -54,7 +55,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 26;
+constexpr std::uint32_t version = 27;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -130,6 +131,7 @@ void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
     w.u8(static_cast<std::uint8_t>(l.dimension));
     w.varlong(static_cast<std::int64_t>(l.next_suborder)).varlong(static_cast<std::int64_t>(l.next_block_entity_order));
     w.varlong(static_cast<std::int64_t>(l.last_active)).varlong(static_cast<std::int64_t>(l.random));
+    w.i32(static_cast<std::int32_t>(l.random_tick));
     w.varint(static_cast<std::int32_t>(l.sequences.size()));
     for (const auto& [id, sequence] : l.sequences)
         w.string(id, 256).i64(static_cast<std::int64_t>(sequence.low())).i64(static_cast<std::int64_t>(sequence.high()));
@@ -535,6 +537,11 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
                 std::size_t presences = 0;
                 if (!b.u64(l.last_active)) return false;
                 if (b.version >= 13 && !b.u64(l.random)) return false;
+                if (b.version >= 27) {
+                    std::int32_t state{};
+                    if (!b.get(b.r.i32(), state)) return false;
+                    l.random_tick = static_cast<std::uint32_t>(state);
+                }
                 if (b.version >= 24) {
                     std::size_t sequences = 0;
                     if (!b.count(sequences, 17)) return false;

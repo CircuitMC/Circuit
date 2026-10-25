@@ -44,22 +44,4 @@ private:
     std::uint64_t draws_{};
 };
 
-// Random-tick stream of one section in one tick (RngPolicy::per_section_derived_stream).
-constexpr Rng random_tick_stream(std::uint64_t seed, contracts::Tick tick, contracts::ChunkPos chunk,
-                                 std::int32_t section) noexcept {
-    return Rng::derive({seed, tick, static_cast<std::uint64_t>(static_cast<std::uint32_t>(chunk.x)),
-                        static_cast<std::uint64_t>(static_cast<std::uint32_t>(chunk.z)),
-                        static_cast<std::uint64_t>(static_cast<std::uint32_t>(section))});
-}
-// In another level: the level joins the derivation, so equal coordinates in
-// two levels draw independent streams. The overworld's streams are the ones above.
-constexpr Rng random_tick_stream(std::uint64_t seed, contracts::Tick tick, contracts::DimensionId level,
-                                 contracts::ChunkPos chunk, std::int32_t section) noexcept {
-    if (level == contracts::DimensionId::overworld) return random_tick_stream(seed, tick, chunk, section);
-    return Rng::derive({seed, tick, static_cast<std::uint64_t>(static_cast<std::uint32_t>(chunk.x)),
-                        static_cast<std::uint64_t>(static_cast<std::uint32_t>(chunk.z)),
-                        static_cast<std::uint64_t>(static_cast<std::uint32_t>(section)),
-                        static_cast<std::uint64_t>(level)});
-}
-
 } // namespace circuit::gameplay

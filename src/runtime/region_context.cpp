@@ -29,6 +29,8 @@ void RegionContext::rollback() {
     snapshots.clear();
     for (std::size_t level = 0; level < random_snapshots_.size(); ++level)
         if (random_snapshots_[level]) world_.levels[level].random = *std::exchange(random_snapshots_[level], std::nullopt);
+    for (std::size_t level = 0; level < random_tick_snapshots_.size(); ++level)
+        if (random_tick_snapshots_[level]) world_.levels[level].random_tick = *std::exchange(random_tick_snapshots_[level], std::nullopt);
     for (std::size_t level = 0; level < sequence_snapshots_.size(); ++level)
         if (sequence_snapshots_[level]) world_.levels[level].sequences = *std::exchange(sequence_snapshots_[level], std::nullopt);
     trace.clear();
@@ -83,8 +85,8 @@ void RegionContext::write_block(BlockPos pos, BlockState state) {
         section = std::make_shared<Section>(*section); // Copy on write: the snapshot keeps the old section.
     }
     auto& cell = section->blocks[contracts::section_local_index(pos)];
-    section->random_ticking = static_cast<std::uint16_t>(section->random_ticking - (gameplay::reacts_to_random_ticks(cell.type()) ? 1 : 0) +
-                                                         (gameplay::reacts_to_random_ticks(state.type()) ? 1 : 0));
+    section->random_ticking = static_cast<std::uint16_t>(section->random_ticking - (gameplay::takes_random_ticks(cell) ? 1 : 0) +
+                                                         (gameplay::takes_random_ticks(state) ? 1 : 0));
     cell = state;
 }
 
@@ -303,6 +305,17 @@ gameplay::LevelRandom& RegionContext::level_random() {
     auto& snapshot = random_snapshots_[static_cast<std::size_t>(dimension())];
     if (!snapshot) snapshot = random;
     return random;
+}
+
+std::uint32_t& RegionContext::random_tick_state() {
+    // Held with the level random: using it needs the level's pseudo column.
+    const auto k = random_key(dimension());
+    if (!unchecked_ && region_ != all_regions && regions_.owner.at(k) != region_) throw ForeignAccess{k};
+    if (phase_ != Phase::commands) interactions.insert(std::minmax(key(home_), k));
+    auto& state = world_.counters(dimension()).random_tick;
+    auto& snapshot = random_tick_snapshots_[static_cast<std::size_t>(dimension())];
+    if (!snapshot) snapshot = state;
+    return state;
 }
 
 gameplay::RandomSequence& RegionContext::random_sequence(const std::string& id, const gameplay::SequenceIdHash& hash) {

@@ -298,6 +298,7 @@ void entity_fell(RuleContext& ctx, Entity& e, Vec3 position, Vec3 moved, bool on
 std::optional<BlockPos> supporting_block(RuleContext& ctx, const physics::Aabb& box, Vec3 position, Vec3 moved);
 void farmland_shape_update(RuleContext& ctx, BlockPos pos, Direction d);
 void tick_farmland(RuleContext& ctx, BlockPos pos);
+void farmland_random_tick(RuleContext& ctx, BlockPos pos, BlockState s);
 
 // ---- snow and ice (snow.cpp) ----
 // Grass blocks, podzol and mycelium, and their snowy state from the block
@@ -506,7 +507,7 @@ contracts::Result<std::function<void()>> plan_use_item(RuleContext& ctx, const c
 // tick; nature.cpp).
 void tick_lava(RuleContext& ctx, BlockPos pos, BlockState state);
 void lava_changed(RuleContext& ctx, BlockPos pos, BlockState state);
-void wheat_random_tick(RuleContext& ctx, BlockPos pos, BlockState state, Rng& stream);
+void wheat_random_tick(RuleContext& ctx, BlockPos pos, BlockState state);
 
 constexpr std::uint64_t tick_code(TickList list, BlockType block) noexcept {
     return (static_cast<std::uint64_t>(list) << 8) | static_cast<std::uint64_t>(block);

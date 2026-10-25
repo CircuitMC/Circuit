@@ -279,6 +279,7 @@ std::string first_difference(const WorldDump& a, const WorldDump& b) {
             return std::format("{} next_block_entity_order {} != {}", name, la.next_block_entity_order, lb.next_block_entity_order);
         if (la.last_active != lb.last_active) return std::format("{} last_active {} != {}", name, la.last_active, lb.last_active);
         if (la.random != lb.random) return std::format("{} level random {:#x} != {:#x}", name, la.random, lb.random);
+        if (la.random_tick != lb.random_tick) return std::format("{} random tick state {:#x} != {:#x}", name, la.random_tick, lb.random_tick);
         if (la.sequences != lb.sequences) return std::format("{} random sequences ({} != {})", name, la.sequences.size(), lb.sequences.size());
         // The overworld's differences keep their short form.
         const auto prefix = la.dimension == contracts::DimensionId::overworld ? std::string{} : std::string(name) + " ";
@@ -340,6 +341,7 @@ std::uint64_t digest(const WorldDump& d) {
         h.add(l.next_block_entity_order);
         h.add(l.last_active);
         h.add(l.random);
+        h.add(l.random_tick);
         h.add(l.sequences.size());
         for (const auto& [id, sequence] : l.sequences) {
             for (const char ch : id) h.add(static_cast<std::uint64_t>(static_cast<unsigned char>(ch)));

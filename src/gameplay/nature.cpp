@@ -268,11 +268,12 @@ void lava_changed(RuleContext& ctx, BlockPos pos, BlockState s) {
     schedule(ctx, TickList::fluid, pos, BlockType::other, lava.delay, 0);
 }
 
-void wheat_random_tick(RuleContext& ctx, BlockPos pos, BlockState s, Rng& stream) {
+void wheat_random_tick(RuleContext& ctx, BlockPos pos, BlockState s) {
     // Crops grow only with light 9 or more at their own cell (minecraft.wiki
-    // "Wheat Crops"), checked before the growth draw.
+    // "Wheat Crops"), checked before the growth draw from the level random
+    // (one in three: Circuit's own odds, not the target versions').
     if (s.level() >= 7 || ctx.light(pos) < 9) return;
-    if (stream.bounded(3) == 0) set_block(ctx, pos, s.with_level(static_cast<std::uint8_t>(s.level() + 1)));
+    if (ctx.random_int(3) == 0) set_block(ctx, pos, s.with_level(static_cast<std::uint8_t>(s.level() + 1)));
 }
 
 } // namespace circuit::gameplay::detail

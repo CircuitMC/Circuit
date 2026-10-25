@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
+#include <algorithm>
+#include <array>
+#include <string_view>
 
 // Cacti hurt the items whose boxes reach into their cells (not only their
 // shapes), a point of health for each cactus at every move (cactus_damage);
@@ -11,9 +14,12 @@
 //   trampling check, which only living entities pass), and the count starts
 //   again; water resets it;
 // - farmland turns to dirt in a block tick after an update from above finds
-//   a solid block there (not a fence gate or a moving piston).
-// Not modeled: moisture and drying (random ticks), trampling, entities on
-// farmland pushed up when it turns.
+//   a solid block there (not a fence gate or a moving piston);
+// - in a random tick farmland with water up to four blocks away and one
+//   above is wet (moisture 7); else it dries a step, and dry farmland turns to
+//   dirt unless a crop or stem stands on it (random_ticks).
+// Not modeled: rain wetting it, trampling, entities on farmland pushed up
+// when it turns.
 namespace circuit::gameplay::detail {
 
 bool is_farmland(BlockState s) {
@@ -80,6 +86,41 @@ bool keeps_farmland(BlockState above) {
 
 void farmland_shape_update(RuleContext& ctx, BlockPos pos, Direction d) {
     if (d == Direction::up && !keeps_farmland(ctx.block(pos.relative(d)))) schedule(ctx, TickList::block, pos, BlockType::other, 1, 0);
+}
+
+void farmland_random_tick(RuleContext& ctx, BlockPos pos, BlockState s) {
+    bool wet = false;
+    for (int dx = -4; dx <= 4 && !wet; ++dx)
+        for (int dy = 0; dy <= 1 && !wet; ++dy)
+            for (int dz = -4; dz <= 4 && !wet; ++dz) {
+                const BlockPos q{pos.x + dx, pos.y + dy, pos.z + dz};
+                if (ctx.world().contains_y(q.y) && holds_water_fluid(ctx.block(q))) wet = true;
+            }
+    int moisture = 0;
+    for (const auto& [k, v] : registry::properties(s.registry_state()))
+        if (k == "moisture") moisture = std::stoi(v);
+    const auto with_moisture = [&](int m) {
+        const std::vector<registry::Property> props{{"moisture", std::to_string(m)}};
+        return BlockState::registered(registry::state_of(*registry::block_of(s.registry_state()), props).value());
+    };
+    if (wet) {
+        if (moisture < 7) set_block_quiet(ctx, pos, with_moisture(7));
+        return;
+    }
+    if (moisture > 0) {
+        set_block_quiet(ctx, pos, with_moisture(moisture - 1));
+        return;
+    }
+    // The crops and stems that keep it (the block tag maintains_farmland).
+    const auto above = ctx.block(pos.relative(Direction::up));
+    const auto state = physics::registry_state_of(above);
+    const auto block = state ? registry::block_of(*state) : std::nullopt;
+    const auto n = block ? registry::game_name(*block) : std::string_view{};
+    static constexpr std::array<std::string_view, 10> keeps{"wheat", "carrots", "potatoes", "beetroots", "melon_stem", "pumpkin_stem",
+                                                           "attached_melon_stem", "attached_pumpkin_stem", "torchflower_crop", "pitcher_crop"};
+    if (std::ranges::find(keeps, n) != keeps.end()) return;
+    const auto dirt = registry::find_block(ctx.bundle().schema.content_release, "dirt");
+    set_block(ctx, pos, BlockState::registered(registry::block(*dirt).default_state));
 }
 
 void tick_farmland(RuleContext& ctx, BlockPos pos) {

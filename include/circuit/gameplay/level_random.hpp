@@ -70,6 +70,14 @@ private:
 // A new world's random sequence of a level: seeded with `seed` when given
 // (the reference harness seeds the overworld's with 0), else derived from the
 // world seed and the level.
+// The random-tick position state of a new level: 0 where the level random
+// is seeded as the reference harness seeds it (it fixes both), else derived
+// from the world seed.
+inline std::uint32_t initial_random_tick(std::uint64_t world_seed, contracts::DimensionId level, std::optional<std::int64_t> seed) {
+    if (seed) return 0;
+    return static_cast<std::uint32_t>(Rng::derive({world_seed, static_cast<std::uint64_t>(level), 0x52414E44544943ULL}).next());
+}
+
 inline LevelRandom initial_level_random(std::uint64_t world_seed, contracts::DimensionId level, std::optional<std::int64_t> seed) {
     if (seed) return LevelRandom(*seed);
     return LevelRandom(static_cast<std::int64_t>(Rng::derive({world_seed, static_cast<std::uint64_t>(level), 0x4C4556454C52414EULL}).next()));

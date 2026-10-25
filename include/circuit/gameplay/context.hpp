@@ -170,14 +170,24 @@ public:
     std::invoke_result_t<F, LevelRandom&> random_draws(F&& f) {
         return draw(std::forward<F>(f));
     }
+    // The next value of the level's random-tick position generator: v ->
+    // 3v + 1013904223 (mod 2^32), from which random ticks take their positions
+    // (both official servers, fitted to every pick of farmland layers). Uses
+    // are serial as the level random's are; they are not level-random draws.
+    std::uint32_t random_tick_pick() {
+        auto& v = random_tick_state();
+        v = v * 3u + 1013904223u;
+        return v;
+    }
     // The random sequence of a namespaced id (random_sequence.hpp; loot
     // tables roll from theirs), started from the world seed when first used.
     // Uses are serial as the level random's are.
     virtual RandomSequence& random_sequence(const std::string& id, const SequenceIdHash& hash) = 0;
 
 protected:
-    // The current level's random sequence.
+    // The current level's random sequence and random-tick position state.
     virtual LevelRandom& level_random() = 0;
+    virtual std::uint32_t& random_tick_state() = 0;
     // Executors switch the level between roots, never within one.
     void enter(contracts::DimensionId dimension) noexcept {
         dimension_ = dimension;

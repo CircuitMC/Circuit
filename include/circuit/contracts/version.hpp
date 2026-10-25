@@ -60,9 +60,10 @@ struct RuleLimits {
 };
 
 enum class RngPolicy : std::uint8_t {
-    // Random ticks draw from a stream derived from (seed, tick, chunk, section).
-    // Declared L1 relative to a level-wide stream; see the compatibility table.
-    per_section_derived_stream,
+    // Random ticks draw from the level random and the level's position
+    // generator, chunk by chunk in the target versions' order (fitted to the
+    // official 1.21.8 server; gameplay::run_random_ticks).
+    level_random_in_target_order,
 };
 
 // Which chunks random ticks run in (observed on both official servers,

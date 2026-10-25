@@ -300,16 +300,23 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
     if (!p.bundle.world.contains_y(f.area_min.y) || !p.bundle.world.contains_y(f.area_max.y))
         return std::unexpected(report(Outcome::unsupported, "area outside the world height"));
     const auto lo = contracts::chunk_of(f.area_min), hi = contracts::chunk_of(f.area_max);
-    const contracts::ChunkPos center{lo.x + (hi.x - lo.x) / 2, lo.z + (hi.z - lo.z) / 2};
-    const auto radius = std::max({center.x - lo.x, hi.x - center.x, center.z - lo.z, hi.z - center.z}) + 1;
-    if (radius > p.bundle.limits.max_ticket_radius) return std::unexpected(report(Outcome::unsupported, "area too large to load"));
+    // The area and a chunk around it, each chunk forced, as the harness loads it.
+    if ((std::int64_t{hi.x} - lo.x + 3) * (std::int64_t{hi.z} - lo.z + 3) > 4096)
+        return std::unexpected(report(Outcome::unsupported, "area too large to load"));
 
     std::uint64_t admission = 1;
-    if (f.load_area) p.inputs[1].push_back({admission++, contracts::AddTicket{1, center, static_cast<std::uint8_t>(radius)}});
+    std::uint32_t area_tickets = 0;
+    if (f.load_area)
+        for (auto x = lo.x - 1; x <= hi.x + 1; ++x)
+            for (auto z = lo.z - 1; z <= hi.z + 1; ++z)
+                p.inputs[1].push_back({admission++, contracts::AddTicket{++area_tickets, {x, z}, 0}});
     // Random ticks are off unless the fixture sets their speed; the day and
     // the weather stand still unless it turns their cycles on (the harness
-    // turns them off).
-    p.inputs[1].push_back({admission++, contracts::SetGameRule{"randomTickSpeed", static_cast<std::int32_t>(f.random_tick_speed)}});
+    // turns them off). The fixture's random tick speed takes effect with its
+    // first tick, when the harness seeds the level random and the random-tick
+    // position state: the setup tick draws nothing.
+    std::int32_t speed = static_cast<std::int32_t>(f.random_tick_speed);
+    p.inputs[1].push_back({admission++, contracts::SetGameRule{"randomTickSpeed", 0}});
     p.inputs[1].push_back({admission++, contracts::SetGameRule{"doDaylightCycle", 0}});
     p.inputs[1].push_back({admission++, contracts::SetGameRule{"doWeatherCycle", 0}});
     for (const auto& [name, value] : f.gamerules)
@@ -318,18 +325,19 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
             const auto [end, ec] = std::from_chars(value.data(), value.data() + value.size(), v);
             if (ec != std::errc{} || end != value.data() + value.size())
                 return std::unexpected(report(Outcome::invalid, "game rule randomTickSpeed needs an integer"));
-            p.inputs[1].push_back({admission++, contracts::SetGameRule{name, v}});
+            speed = v;
         } else if (boolean_rule_read(name)) {
             if (value != "true" && value != "false")
                 return std::unexpected(report(Outcome::invalid, std::format("game rule {} needs true or false", name)));
             p.inputs[1].push_back({admission++, contracts::SetGameRule{name, value == "true" ? 1 : 0}});
         }
+    if (speed != 0) p.inputs[2].push_back({admission++, contracts::SetGameRule{"randomTickSpeed", speed}});
     const auto fail_line = [](std::size_t line, const std::string& message) {
         return std::unexpected(report(Outcome::unsupported, std::format("line {}: {}", line, message)));
     };
     // Force-loaded chunks of `forceload` commands, by chunk: their ticket ids.
     std::map<contracts::ChunkPos, std::uint32_t> forced;
-    std::uint32_t next_ticket = 2;
+    std::uint32_t next_ticket = area_tickets + 1;
     for (const auto& a : f.actions) {
         if (a.kind == Action::Kind::command) {
             auto bodies = forceload(a.command, forced, next_ticket);

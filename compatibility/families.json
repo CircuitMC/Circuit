@@ -586,7 +586,7 @@
           "impl": "partial",
           "evidence": "compared",
           "deviations": [
-            "only block drops (a stack of none included), container scatter and piston sounds draw from it; random ticks and weather durations use Circuit's own derived streams, and other draws of the target versions are not made yet"
+            "weather durations use Circuit's own derived stream, and other draws of the target versions (random ticks of blocks other than farmland, mobs and the rest) are not made yet"
           ],
           "cases": [
             "trace/item_chest_scatter",
@@ -601,13 +601,18 @@
           "name": "Random-tick chunk order and positions",
           "milestone": "C2",
           "impl": "partial",
-          "evidence": "reference_only",
+          "evidence": "compared",
           "cases": [
-            "observation/chunk_levels"
+            "observation/chunk_levels",
+            "collision/random_ticks",
+            "trace/random_ticks_farmland",
+            "trace/random_ticks_chunks",
+            "trace/random_ticks_sections"
           ],
-          "note": "Random ticks run at simulation level 31 and lower in 1.21.8, and at 32 and lower within 128 blocks of a non-spectator player in 1.21.4",
+          "note": "Random ticks run at simulation level 31 and lower in 1.21.8, and at 32 and lower within 128 blocks of a non-spectator player in 1.21.4; on 1.21.8 every pick, the precipitation checks' draws and the chunk order of forced areas equal the official server's, with the level's position generator and the states that take random ticks as both versions report",
           "deviations": [
-            "chunks in coordinate order instead of the shuffled order"
+            "the order of chunks that start ticking at different times is Circuit's model",
+            "1.21.4's order is not compared (the harness has no player to make its random ticks run)"
           ]
         }
       ]
@@ -1021,12 +1026,13 @@
           "milestone": "C5",
           "impl": "partial",
           "evidence": "compared",
-          "note": "Farmland turns to dirt a tick after a solid block is set on it; entities count their falls and every landing on farmland draws its trampling check from the level random, as both official servers do",
+          "note": "Farmland turns to dirt a tick after a solid block is set on it; entities count their falls and every landing on farmland draws its trampling check from the level random; in its random ticks it dries, is wetted by water and turns to dirt unless a crop or stem keeps it, as both official servers do",
           "cases": [
-            "trace/farmland"
+            "trace/farmland",
+            "trace/random_ticks_farmland"
           ],
           "deviations": [
-            "moisture, drying and hydration (random ticks) are not modeled",
+            "rain does not wet it",
             "nothing tramples it (there are no living entities yet), and entities are not pushed up when it turns"
           ]
         },

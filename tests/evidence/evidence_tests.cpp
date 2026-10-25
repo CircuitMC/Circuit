@@ -1002,6 +1002,44 @@ int main(int argc, char** argv) {
         require(flammable > 0, "some states burn");
     });
 
+    suite.run("the block states that take random ticks are the official servers'", [&] {
+        // tests/fixtures/collision/random-ticks-*.txt: every state of both versions.
+        namespace registry = circuit::gameplay::registry;
+        const auto table = [&](const char* file) {
+            std::map<std::string, std::string> out;
+            std::istringstream lines(read_text(fixtures / "collision" / file));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto space = line.find(' ');
+                out[line.substr(0, space)] = line.substr(space + 1);
+            }
+            return out;
+        };
+        const auto newest = table("random-ticks-1.21.8.txt");
+        const auto older = table("random-ticks-1.21.4-only.txt");
+        std::size_t checked = 0, ticking = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            const auto* mapping = ContentMapping::for_game_version(release);
+            for (std::uint32_t wire = 0; wire < registry::wire_state_count(release); ++wire) {
+                const auto notation = registry::notation(registry::from_wire(release, static_cast<std::int32_t>(wire)).value());
+                const auto name = notation.substr(0, notation.find('['));
+                const auto find = [&](const std::map<std::string, std::string>& t) -> const std::string* {
+                    for (const auto& k : {notation, name})
+                        if (const auto it = t.find(k); it != t.end()) return &it->second;
+                    return nullptr;
+                };
+                const std::string* row = release == std::string_view("1.21.4") ? find(older) : nullptr;
+                if (!row) row = find(newest);
+                require(row != nullptr && row->size() == 1, std::format("{} {}: a row", release, notation));
+                const char got = circuit::gameplay::takes_random_ticks(mapping->block(notation).value()) ? '1' : '0';
+                require((*row)[0] == got, std::format("{} {}: official {}, Circuit {}", release, notation, (*row)[0], got));
+                ++checked;
+                ticking += got == '1' ? 1 : 0;
+            }
+        }
+        std::cout << std::format("  {} states, {} take random ticks\n", checked, ticking);
+    });
+
     suite.run("snow layers stay where both official servers keep them", [&] {
         // tests/fixtures/collision/snow-*.txt: a snow layer on every state.
         // States that did not stay where they were set (?) are left out.
@@ -1708,15 +1746,18 @@ int main(int argc, char** argv) {
         require(!parse_fixture(std::string(header) + "gamerule tntExplodes false\n"), "game rules need version 2");
         require(!parse_fixture(std::string(header2) + "gamerule a true\ngamerule a false\n"), "duplicate game rule");
         // A rule at its default changes nothing; randomTickSpeed and
-        // tntExplodes are world state at any value; another rule away from
-        // its default is not modeled; a rule the version lacks makes the
-        // scenario invalid there.
+        // tntExplodes are world state at any value (random ticks draw from
+        // the level random, so a scenario recorded without them differs);
+        // another rule away from its default is not modeled; a rule the
+        // version lacks makes the scenario invalid there.
         auto text = read_text(fixtures / "reference" / "item_drop_piston.ctrace");
-        text.insert(text.find("entities observed"), "gamerule tntExplodes true\ngamerule randomTickSpeed 3\n");
+        text.insert(text.find("entities observed"), "gamerule tntExplodes true\ngamerule randomTickSpeed 0\n");
         require(evaluate_fixture(parse(text), engine_executor()).outcome == Outcome::passed, "rules at their defaults");
         auto faster = text;
-        faster.replace(faster.find("randomTickSpeed 3"), 17, "randomTickSpeed 5");
-        require(evaluate_fixture(parse(faster), engine_executor()).outcome == Outcome::passed, "randomTickSpeed at another value");
+        faster.replace(faster.find("randomTickSpeed 0"), 17, "randomTickSpeed 5");
+        const auto ticking = evaluate_fixture(parse(faster), engine_executor());
+        require(ticking.outcome == Outcome::failed && ticking.detail.find("rng") != std::string::npos,
+                std::format("randomTickSpeed draws from the level random: {}", ticking.detail));
         auto off = text;
         off.replace(off.find("tntExplodes true"), 16, "tntExplodes false");
         require(evaluate_fixture(parse(off), engine_executor()).outcome == Outcome::passed, "tntExplodes off");
@@ -1739,14 +1780,14 @@ int main(int argc, char** argv) {
         const auto& b8 = **circuit::contracts::BundleRegistry::select_for_simulation("java-1.21.8");
         require(b4.rules->id == b8.rules->id && b4.rules->basis.find("identical") != std::string_view::npos, "the basis is stated");
         // But the scenarios of tests/fixtures/version-differences.txt, which
-        // differ by a difference the bundles declare (LavaContact).
+        // differ by a difference the bundles declare (LavaContact, RandomTickRange).
         std::set<std::string> different;
         {
             std::istringstream lines(read_text(fixtures / "version-differences.txt"));
             for (std::string line; std::getline(lines, line);)
                 if (!line.empty() && line.front() != '#') different.insert(line.substr(0, line.find(' ')));
         }
-        require(b4.rules->lava != b8.rules->lava, "the bundles declare the difference");
+        require(b4.rules->lava != b8.rules->lava && b4.rules->random_ticks != b8.rules->random_ticks, "the bundles declare the differences");
         std::size_t pairs = 0;
         for (const auto& entry : fs::directory_iterator(fixtures / "harness-1.21.4")) {
             const auto name = entry.path().filename().string();

@@ -147,6 +147,7 @@ public:
 
 protected:
     gameplay::LevelRandom& level_random() override { return lv().random; }
+    std::uint32_t& random_tick_state() override { return lv().random_tick; }
 
 private:
     Level& lv() { return o_.at(dimension()); }
@@ -172,7 +173,10 @@ Oracle::Oracle(const contracts::VersionBundle& bundle, std::uint64_t seed, std::
                std::optional<std::int64_t> level_random_seed)
     : bundle_(bundle), seed_(seed), data_(std::move(data)), ctx_(std::make_unique<Context>(*this)) {
     if (!bundle.rules) throw std::invalid_argument("oracle: bundle has no executable rules");
-    for (const auto level : contracts::level_order) at(level).random = gameplay::initial_level_random(seed, level, level_random_seed);
+    for (const auto level : contracts::level_order) {
+        at(level).random = gameplay::initial_level_random(seed, level, level_random_seed);
+        at(level).random_tick = gameplay::initial_random_tick(seed, level, level_random_seed);
+    }
 }
 // The blocks of a level at the start of a tick, kept while nothing light
 // depends on changes, and light computed from scratch around the columns read.
@@ -417,20 +421,22 @@ void Oracle::run_tick_list(DimensionId level, TickList list) {
 }
 
 void Oracle::run_random_ticks(DimensionId level) {
-    const auto sections = bundle_.shape(level).sections();
-    std::uint64_t index = 0;
+    if (game_rule_value(bundle_, game_rules_, "randomTickSpeed") <= 0) return;
+    const auto& shape = bundle_.shape(level);
+    auto& lv = at(level);
     std::vector<ChunkPos> ticking;
-    for (const auto& [chunk, info] : at(level).chunks)
-        if (info.level != ChunkLevel::unloaded
-            && random_ticks_run(bundle_.rules->random_ticks, info.levels.simulation, chunk, at(level).presences))
+    for (const auto& [chunk, info] : lv.chunks)
+        if (info.level != ChunkLevel::unloaded && random_ticks_run(bundle_.rules->random_ticks, info.levels.simulation, chunk, lv.presences))
             ticking.push_back(chunk);
-    for (const auto chunk : ticking) {
-        for (std::int32_t s = 0; s < sections; ++s) {
-            ctx_->begin_root(Phase::random_ticks, index * static_cast<std::uint64_t>(sections) + static_cast<std::uint64_t>(s));
-            auto stream = random_tick_stream(seed_, time_, level, chunk, s);
-            gameplay::run_random_ticks(*ctx_, chunk, s, stream);
-        }
-        ++index;
+    std::uint64_t index = 0;
+    for (const auto chunk : gameplay::random_tick_order(std::move(ticking))) {
+        // The sections holding blocks that take random ticks, as the chunk's turn comes.
+        std::set<std::int32_t> sections;
+        for (auto it = lv.blocks.lower_bound({chunk.x * 16, INT32_MIN, INT32_MIN}); it != lv.blocks.end() && it->first.x < chunk.x * 16 + 16; ++it)
+            if (contracts::chunk_of(it->first) == chunk && gameplay::takes_random_ticks(it->second)) sections.insert((it->first.y - shape.min_y) >> 4);
+        const std::vector<std::int32_t> with_blocks(sections.begin(), sections.end());
+        ctx_->begin_root(Phase::random_ticks, index++);
+        gameplay::run_random_ticks(*ctx_, chunk, with_blocks);
     }
 }
 
@@ -497,6 +503,7 @@ WorldDump Oracle::dump() const {
         l.next_block_entity_order = lv.next_block_entity_order;
         l.last_active = lv.last_active;
         l.random = lv.random.state();
+        l.random_tick = lv.random_tick;
         for (const auto& [id, sequence] : lv.sequences) l.sequences.emplace_back(id, sequence);
         for (const auto& [key, p] : lv.presences) l.presences.push_back(p);
         for (const auto& [c, info] : lv.chunks)
