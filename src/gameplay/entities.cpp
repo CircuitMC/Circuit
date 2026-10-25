@@ -370,12 +370,32 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
     ++e.tick_count;
     if (e.pickup_delay > 0 && e.pickup_delay != item_pickup_never) --e.pickup_delay;
     const auto ticks = e.tick_count;
+    // Burning first: 1 when its fire ticks are a multiple of 20, out of lava;
+    // on 1.21.4 lava then hurts it, but in its first tick (entities_in_lava).
+    const bool resistant = detail::fire_resistant(e.stack);
+    double lava_depth = 0.0;
+    const bool lava = detail::in_lava(ctx, detail::entity_box(e), &lava_depth);
+    if (water_at(ctx, detail::entity_box(e)).inside) e.fire = 0; // water puts it out
+    int burnt = 0;
+    if (e.fire > 0) {
+        if (resistant) e.fire = std::max(0, e.fire - 4);
+        else {
+            if (e.fire % 20 == 0 && !lava) ++burnt;
+            --e.fire;
+        }
+    }
+    if (ctx.bundle().rules->lava == contracts::LavaContact::tick_start && ticks > 1 && lava && !resistant) {
+        burnt += 4;
+        e.fire = std::max(e.fire, 300);
+    }
+    if (detail::hurt_item(ctx, id, burnt)) return;
     const auto start = e.position;
     auto v = e.velocity;
     auto p = e.position;
     // Currents push before the move and after it. An item more than 0.1 deep
     // floats up by 0.0005 a tick (while slower than 0.06) and loses 1% of its
-    // horizontal speed, instead of falling.
+    // horizontal speed, instead of falling; more than 0.1 deep in lava it
+    // floats as slowly and loses 5% (entities_in_lava).
     if (const auto water = water_at(ctx, detail::entity_box(e)); water.inside) {
         e.fall_distance = 0.0; // water breaks the fall
         v = {v.x + water.push.x, v.y + water.push.y, v.z + water.push.z};
@@ -385,6 +405,9 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
         } else {
             v.y -= gravity;
         }
+    } else if (lava && lava_depth > 0.1) {
+        constexpr double drag = 0.95f, rise = 0.0005f;
+        v = {v.x * drag, v.y + (v.y < static_cast<double>(0.06f) ? rise : 0.0), v.z * drag};
     } else {
         v.y -= gravity;
     }
@@ -414,6 +437,21 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
         // cacti there hurt it.
         if (const auto* self = ctx.peek_entity(id)) detail::entity_inside(ctx, *self);
         if (detail::cactus_hurts(ctx, id)) return;
+        // Fire its box reaches hurts it and sets it burning; so does lava on
+        // 1.21.8 (items_in_fire, entities_in_lava).
+        if (auto* self = ctx.entity(id); self && !resistant) {
+            int damage = 0;
+            const auto box = detail::entity_box(*self);
+            if (const int f = detail::fire_contact(ctx, box); f >= 0) {
+                damage += f;
+                self->fire = std::max(self->fire, 160);
+            }
+            if (ctx.bundle().rules->lava == contracts::LavaContact::after_move && detail::in_lava(ctx, box)) {
+                damage += 4;
+                self->fire = std::max(self->fire, 300);
+            }
+            if (detail::hurt_item(ctx, id, damage)) return;
+        }
         if (enter_hoppers(ctx, id)) return;
     }
     const bool changed_block = contracts::block_of(start) != contracts::block_of(p);

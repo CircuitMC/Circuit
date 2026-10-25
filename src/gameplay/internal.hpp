@@ -275,6 +275,8 @@ void support_tick(RuleContext& ctx, BlockPos pos, BlockState s);
 std::optional<ItemStack> supported_drop(BlockState s);
 
 // ---- cacti (farmland.cpp) ----
+// An item loses `amount` health; true when that leaves none and it is gone.
+bool hurt_item(RuleContext& ctx, EntityId id, int amount);
 // After an item's move: each cactus whose cell its box reaches takes a point
 // of its health; true when that leaves none and it is gone.
 bool cactus_hurts(RuleContext& ctx, EntityId id);
@@ -316,6 +318,13 @@ void fire_placed(RuleContext& ctx, BlockPos pos, BlockState s, BlockState previo
 // A shape update: gone unsupported, else its faces again.
 void fire_shape_update(RuleContext& ctx, BlockPos pos, BlockState s);
 void tick_fire(RuleContext& ctx, BlockPos pos, BlockState s);
+// The damage of the fire cells an entity's box reaches (fire 1, soul fire
+// 2), or -1 when it reaches none.
+int fire_contact(RuleContext& ctx, const physics::Aabb& entity);
+// Whether an entity's box is in lava, and how deep its bottom is.
+bool in_lava(RuleContext& ctx, const physics::Aabb& entity, double* depth = nullptr);
+// Netherite items and ancient debris: fire and lava leave them alone.
+bool fire_resistant(const ItemStack& stack);
 
 // ---- big dripleaves tilting (dripleaf.cpp) ----
 bool is_big_dripleaf(BlockState s);

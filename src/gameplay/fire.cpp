@@ -2,6 +2,7 @@
 #include "internal.hpp"
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <string>
 #include <string_view>
 
@@ -30,8 +31,17 @@
 //   below to four above it beside flammable blocks: x, then z, then y, with
 //   nextInt(100, 100 more for each level above the next) at most (their best
 //   ignite odds + 40 + 7 * difficulty) / (age + 30).
-// Not modeled: rain and humid biomes, entities in fire, lava and lightning
-// setting fire, flint and steel.
+// Entities in fire and lava (both official servers; items_in_fire,
+// entities_in_lava): an item whose box reaches a fire's cell after a move
+// takes the fire's damage (fire 1, soul fire 2) and burns for at least 160
+// ticks; one in lava takes 4 and burns for at least 300 (LavaContact: after
+// its move from 1.21.5, at the start of its ticks but its first before). A
+// burning item takes 1 at the start of each tick its fire ticks are a
+// multiple of 20, out of lava, and they count down. Netherite and ancient
+// debris do neither. Arrows in fire or lava burn as long; a flying arrow's
+// fire counts down after that, a stuck one's does not count.
+// Not modeled: rain and humid biomes, other entities in fire and lava, lava
+// and lightning setting fire, flint and steel.
 namespace circuit::gameplay::detail {
 namespace {
 struct Odds {
@@ -166,6 +176,55 @@ int ignite_odds_at(RuleContext& ctx, BlockPos pos) {
 } // namespace
 
 bool is_fire(BlockState s) { return s.is(BlockType::other) && name_of(s) == "fire"; }
+
+int fire_contact(RuleContext& ctx, const physics::Aabb& entity) {
+    const auto box = entity.deflate(1.0e-5);
+    const auto cell = [](double v) { return static_cast<std::int32_t>(std::floor(v)); };
+    int damage = -1;
+    for (auto x = cell(box.min_x); x <= cell(box.max_x); ++x)
+        for (auto y = cell(box.min_y); y <= cell(box.max_y); ++y)
+            for (auto z = cell(box.min_z); z <= cell(box.max_z); ++z) {
+                if (!ctx.world().contains_y(y)) continue;
+                const auto s = ctx.block({x, y, z});
+                if (is_fire(s) || is_soul_fire(s)) damage = std::max(damage, 0) + (is_soul_fire(s) ? 2 : 1);
+            }
+    return damage;
+}
+
+bool in_lava(RuleContext& ctx, const physics::Aabb& entity, double* depth) {
+    const auto box = entity.deflate(0.001);
+    const auto cell = [](double v) { return static_cast<std::int32_t>(std::floor(v)); };
+    bool inside = false;
+    double deepest = 0.0;
+    for (auto x = cell(box.min_x); x <= cell(box.max_x); ++x)
+        for (auto y = cell(box.min_y); y <= cell(box.max_y); ++y)
+            for (auto z = cell(box.min_z); z <= cell(box.max_z); ++z) {
+                const BlockPos p{x, y, z};
+                if (!ctx.world().contains_y(y)) continue;
+                const auto s = ctx.block(p);
+                if (!is_lava(s)) continue;
+                // As water's: 8/9 for a source or falling lava, less by its
+                // level, all of the cell under lava; in single precision.
+                int level = 0;
+                for (const auto& [k, v] : registry::properties(s.registry_state()))
+                    if (k == "level") level = std::stoi(v);
+                const float height = is_lava(ctx.block(p.relative(Direction::up))) ? 1.0f
+                                                                                  : static_cast<float>(level >= 8 || level == 0 ? 8 : 8 - level) / 9.0f;
+                const double top = static_cast<double>(static_cast<float>(y) + height);
+                if (top < box.min_y) continue;
+                inside = true;
+                deepest = std::max(deepest, top - box.min_y);
+            }
+    if (depth) *depth = deepest;
+    return inside;
+}
+
+bool fire_resistant(const ItemStack& stack) {
+    const auto* info = items::info(stack.item);
+    if (!info) return false;
+    const auto n = info->name;
+    return n == "minecraft:ancient_debris" || (n.starts_with("minecraft:netherite_") && n != "minecraft:netherite_upgrade_smithing_template");
+}
 bool is_soul_fire(BlockState s) { return s.is(BlockType::other) && name_of(s) == "soul_fire"; }
 
 bool fire_supported(BlockState s, const Near& near, std::string_view release) {

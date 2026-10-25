@@ -43,6 +43,16 @@ void entity_fell(RuleContext& ctx, Entity& e, Vec3 position, Vec3 moved, bool on
     e.fall_distance = 0.0;
 }
 
+bool hurt_item(RuleContext& ctx, EntityId id, int amount) {
+    auto* e = ctx.entity(id);
+    if (!e || amount <= 0) return false;
+    e->health -= amount;
+    if (e->health > 0) return false;
+    ctx.record(TraceKind::entity_removed, contracts::block_of(e->position), id.value, static_cast<std::uint64_t>(RemovalReason::hurt));
+    ctx.remove_entity(id);
+    return true;
+}
+
 bool cactus_hurts(RuleContext& ctx, EntityId id) {
     auto* e = ctx.entity(id);
     if (!e || e->kind != EntityKind::item) return false;
@@ -57,12 +67,7 @@ bool cactus_hurts(RuleContext& ctx, EntityId id) {
                 const auto block = s.is(BlockType::other) ? registry::block_of(s.registry_state()) : std::nullopt;
                 if (block && registry::game_name(*block) == "cactus") ++hits;
             }
-    if (hits == 0) return false;
-    e->health -= hits;
-    if (e->health > 0) return false;
-    ctx.record(TraceKind::entity_removed, contracts::block_of(e->position), id.value, static_cast<std::uint64_t>(RemovalReason::hurt));
-    ctx.remove_entity(id);
-    return true;
+    return hurt_item(ctx, id, hits);
 }
 
 namespace {

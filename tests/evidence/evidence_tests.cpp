@@ -1738,16 +1738,31 @@ int main(int argc, char** argv) {
         const auto& b4 = **circuit::contracts::BundleRegistry::select_for_simulation("java-1.21.4");
         const auto& b8 = **circuit::contracts::BundleRegistry::select_for_simulation("java-1.21.8");
         require(b4.rules->id == b8.rules->id && b4.rules->basis.find("identical") != std::string_view::npos, "the basis is stated");
+        // But the scenarios of tests/fixtures/version-differences.txt, which
+        // differ by a difference the bundles declare (LavaContact).
+        std::set<std::string> different;
+        {
+            std::istringstream lines(read_text(fixtures / "version-differences.txt"));
+            for (std::string line; std::getline(lines, line);)
+                if (!line.empty() && line.front() != '#') different.insert(line.substr(0, line.find(' ')));
+        }
+        require(b4.rules->lava != b8.rules->lava, "the bundles declare the difference");
         std::size_t pairs = 0;
         for (const auto& entry : fs::directory_iterator(fixtures / "harness-1.21.4")) {
+            const auto name = entry.path().filename().string();
             const auto counterpart = fixtures / "harness" / entry.path().filename();
-            require(fs::exists(counterpart), std::format("{} has a 1.21.8 recording", entry.path().filename().string()));
+            require(fs::exists(counterpart), std::format("{} has a 1.21.8 recording", name));
             auto newer = parse(read_text(counterpart));
             std::erase_if(newer.gamerules, [&](const auto& rule) { return b4.schema.game_rule(rule.first) == nullptr; });
             const auto diff = first_difference(parse(read_text(entry.path())), newer);
-            require(!diff, std::format("{}: {}", entry.path().filename().string(), diff.value_or("")));
+            if (different.erase(name) == 1) {
+                require(diff.has_value(), std::format("{}: listed as different, but identical", name));
+                continue;
+            }
+            require(!diff, std::format("{}: {}", name, diff.value_or("")));
             ++pairs;
         }
+        require(different.empty(), "every listed difference has its recordings");
         require(pairs >= 30, std::format("{} pairs", pairs));
     });
 

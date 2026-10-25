@@ -133,7 +133,9 @@ constexpr std::array reference_v4_mechanisms{
         "rest move every fourth tick; currents and buoyancy in water; merging with the target versions' timing, "
         "reach and results; block drops and container scatter placed and launched with level-random draws; "
         "despawns at age 6000; pushed by moving blocks; falls counted, landing on the block that supports them "
-        "(farmland draws); hurt by cacti (item_hopper_pickup, item_water_current, item_water_spread, cactus_damage, item_merge, "
+        "(farmland draws); hurt by cacti; burnt by fire, soul fire and lava (and burning after them), but netherite, which "
+        "floats in lava; lava reaching them after their moves on 1.21.8, at the start of their ticks on 1.21.4 "
+        "(item_hopper_pickup, item_water_current, item_water_spread, cactus_damage, items_in_fire, entities_in_lava, item_merge, "
         "item_merge_moving, item_merge_crossing, item_merge_vertical, item_merge_timers, item_chest_scatter, "
         "item_water_still, item_water_channel, item_water_ice_corner, item_water_falling, item_water_fall); "
         "entities leave with an unloading chunk and come back a tick after it reloads, under new ids "
@@ -193,8 +195,9 @@ constexpr std::array reference_v4_mechanisms{
         "Arrows and snowballs summoned with a velocity: arrows move, then lose 1% of their speed (40% in water) "
         "and 0.05 downwards, stick 0.05 short of the block shape they hit, count their life to 1,200 and fall again "
         "when no block is left beside them; burning arrows count their fire down in flight and prime TNT they "
-        "hit; snowballs fall by 0.03 and lose 1% before they move, and break on the first block (arrow_flight, "
-        "arrow_tnt). Gaps: projectiles pass through entities; bows, crossbows, dispensers and players do not shoot; "
+        "hit; fire and lava their box reaches set them burning (160 and 300 ticks; lava before the count on 1.21.8, "
+        "after it on 1.21.4), a stuck one's fire does not count; snowballs fall by 0.03 and lose 1% before they move, "
+        "and break on the first block (arrow_flight, arrow_tnt, items_in_fire, entities_in_lava). Gaps: projectiles pass through entities; bows, crossbows, dispensers and players do not shoot; "
         "currents do not push arrows; water does not put out burning arrows; other projectiles."},
     MechanismEntry{"vehicle", l0_exact, l2_declared_deviation, harness_trace,
         "Minecarts off and on rails and boats without riders, summoned: on rails minecarts follow the rail's line at up to "
@@ -341,9 +344,10 @@ constexpr std::array reference_v4_mechanisms{
         "(on 1.21.8 also a player within 128 blocks of the chunk, or allowFireTicksAwayFromPlayer), it ages, burns out, "
         "burns its neighbors by their burn odds (TNT primed) and spreads to cells beside flammable blocks by their "
         "ignite odds and the difficulty; netherrack and magma blocks keep it (fire_basics, fire_stone, fire_netherrack, "
-        "fire_planks, fire_log, fire_tnt, fire_wool; the odds from minecraft.wiki \"Fire\", which blocks burn in "
-        "tests/fixtures/collision/fire-*.txt). Gaps: rain and humid biomes do not put it out sooner; entities in fire "
-        "and lava, lightning and flint and steel setting fire are not modeled; the player range on 1.21.8 is that of "
+        "fire_planks, fire_log, fire_tnt, fire_wool, fire_spread; the odds from minecraft.wiki \"Fire\", which blocks burn in "
+        "tests/fixtures/collision/fire-*.txt); items and arrows in fire burn (items_in_fire, see item_entity and "
+        "projectile). Gaps: rain and humid biomes do not put it out sooner; other entities in fire, and lava, lightning "
+        "and flint and steel setting fire are not modeled; the player range on 1.21.8 is that of "
         "random ticks, not observed for fire; the pending tick of fire that went out stands for any block without rules "
         "of its own set there before it is due (as their ticks do for each other), and Anvil export leaves it out."},
     MechanismEntry{"snow_and_ice", l0_exact, l2_declared_deviation, harness_trace,
@@ -508,15 +512,18 @@ constexpr std::array game_rules_1_21_4{
 // every pair). What differs is the bundles' own: content, component schema,
 // registries and game rules (fire acts away from players only with 1.21.8's
 // allowFireTicksAwayFromPlayer), and where random ticks run
-// (RandomTickRange), which the official servers showed differs.
+// (RandomTickRange) and when lava reaches entities (LavaContact), which the
+// official servers showed differ.
 constexpr RuleSet rules_1_21_8{"circuit-reference-rules-v12", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
-                               "circuit-blocks-1", "harness traces of 1.21.8 (tests/fixtures/harness)", RandomTickRange::entity_ticking};
+                               "circuit-blocks-1", "harness traces of 1.21.8 (tests/fixtures/harness)", RandomTickRange::entity_ticking,
+                               LavaContact::after_move};
 constexpr RuleSet rules_1_21_4{"circuit-reference-rules-v12", RngPolicy::per_section_derived_stream, reference_v4_mechanisms,
                                "circuit-blocks-1",
                                "harness traces of 1.21.4 (tests/fixtures/harness-1.21.4), each identical to its 1.21.8 recording "
-                               "(fire's with 1.21.8's allowFireTicksAwayFromPlayer on); "
-                               "random ticks run only near players (observed on the official 1.21.4 server)",
-                               RandomTickRange::block_ticking_near_player};
+                               "(fire's with 1.21.8's allowFireTicksAwayFromPlayer on) but those of entities in lava, which "
+                               "reaches them at the start of their ticks; random ticks run only near players (observed on the "
+                               "official 1.21.4 server)",
+                               RandomTickRange::block_ticking_near_player, LavaContact::tick_start};
 
 constexpr std::array bundles{
     VersionBundle{

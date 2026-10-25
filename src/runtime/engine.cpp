@@ -1204,7 +1204,9 @@ void Engine::Impl::restore(const WorldDump& state) {
                     bad("entity stack");
                 if (!gameplay::valid_item_age(e.age)) bad("entity age");
                 if (e.health < 1 || e.health > 32767) bad("item health"); // a short, as saved
+                if (e.fire < 0 || e.fire > 32767) bad("item fire");
                 rest.stack = {};
+                rest.fire = 0;
                 rest.age = 0;
                 rest.pickup_delay = 0;
                 rest.health = gameplay::item_health;

@@ -75,6 +75,17 @@ enum class RandomTickRange : std::uint8_t {
     block_ticking_near_player,
 };
 
+// When lava reaches an entity (observed on both official servers,
+// 2026-10-25): an item in lava is hurt and an arrow set burning.
+enum class LavaContact : std::uint8_t {
+    // After each move, where its box is then, before an arrow's fire counts
+    // down (1.21.8).
+    after_move,
+    // At the start of each of an item's ticks but its first, where it is
+    // then; an arrow after its move and its fire's count (1.21.4).
+    tick_start,
+};
+
 // A level with neither players nor forced chunks stops ticking its entities
 // and block entities after this many ticks (both versions; minecraft.wiki
 // "Chunk", observed on both official servers).
@@ -91,6 +102,7 @@ struct RuleSet {
     // differences the bundle handles itself.
     std::string_view basis;
     RandomTickRange random_ticks{};
+    LavaContact lava{};
 };
 
 enum class GameRuleType : std::uint8_t { boolean, integer };

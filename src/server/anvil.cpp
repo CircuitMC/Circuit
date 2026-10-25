@@ -935,6 +935,8 @@ private:
                 out.pickup_delay = static_cast<std::uint16_t>(std::clamp<std::int64_t>(integer(e, "PickupDelay").value_or(0), 0, 32767));
                 // A short; an item with none left is gone.
                 const auto health = integer(e, "Health").value_or(gameplay::item_health);
+                // A burning item's fire ticks (none: -1 or less).
+                out.fire = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "Fire").value_or(0), 0, 32767));
                 if (health <= 0) continue;
                 out.health = static_cast<std::int32_t>(std::min<std::int64_t>(health, 32767));
             }
@@ -1390,7 +1392,7 @@ private:
             t.set("Health", Tag::short_(static_cast<std::int16_t>(e->health)));
             t.set("PickupDelay", Tag::short_(static_cast<std::int16_t>(e->pickup_delay)));
             t.set("Air", Tag::short_(300));
-            t.set("Fire", Tag::short_(-1));
+            t.set("Fire", Tag::short_(static_cast<std::int16_t>(e->fire > 0 ? e->fire : -1)));
             // A UUID derived from the Circuit entity id ("Circuit" in the high bits).
             t.set("UUID", Tag::int_array({static_cast<std::int32_t>(hi >> 32), static_cast<std::int32_t>(hi & 0xFFFFFFFF),
                                           static_cast<std::int32_t>(lo >> 32), static_cast<std::int32_t>(lo & 0xFFFFFFFF)}));

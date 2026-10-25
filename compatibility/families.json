@@ -939,12 +939,14 @@
             "trace/fire_log",
             "trace/fire_tnt",
             "trace/fire_wool",
-            "trace/fire_spread"
+            "trace/fire_spread",
+            "trace/items_in_fire",
+            "trace/entities_in_lava"
           ],
-          "note": "Fire stays on sturdy tops and beside flammable blocks, soul fire on soul sand and soil; its block ticks age it, burn it out, burn its neighbors by their burn odds and spread it by their ignite odds and the difficulty, as both official servers do; on 1.21.8 only near players unless allowFireTicksAwayFromPlayer",
+          "note": "Fire stays on sturdy tops and beside flammable blocks, soul fire on soul sand and soil; its block ticks age it, burn it out, burn its neighbors by their burn odds and spread it by their ignite odds and the difficulty, as both official servers do; on 1.21.8 only near players unless allowFireTicksAwayFromPlayer; items and arrows in fire, soul fire and lava burn, by each version's timing in lava",
           "deviations": [
             "rain and humid biomes do not put it out sooner",
-            "entities in fire are not hurt or set on fire",
+            "entities other than items and arrows are not hurt or set burning",
             "lava, lightning and flint and steel do not set fire"
           ]
         },
@@ -1799,9 +1801,11 @@
             "trace/item_water_ice_corner",
             "trace/item_water_spread",
             "trace/item_water_still",
-            "trace/cactus_damage"
+            "trace/cactus_damage",
+            "trace/items_in_fire",
+            "trace/entities_in_lava"
           ],
-          "note": "Double-precision gravity, drag, collision with every state's collision boxes, bouncing, the resting rule, currents and buoyancy in water (water surfaces in single precision), damage from cacti, identical with both official servers in the passing traces"
+          "note": "Double-precision gravity, drag, collision with every state's collision boxes, bouncing, the resting rule, currents and buoyancy in water (water surfaces in single precision), damage from cacti, burning in fire, soul fire and lava and floating in lava (netherite), identical with both official servers in the passing traces"
         },
         {
           "id": "merging",

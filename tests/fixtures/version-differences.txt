@@ -1,0 +1,3 @@
+# Scenarios whose 1.21.4 recording differs from the 1.21.8 one by a difference the bundles declare (the rule set's
+# LavaContact): one per line, the trace's file name and the difference.
+entities_in_lava.ctrace lava reaches entities at the start of their ticks on 1.21.4, after their moves on 1.21.8

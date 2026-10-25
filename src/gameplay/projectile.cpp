@@ -13,8 +13,11 @@
 // precision) short of the point it hit on every axis it moved along, stuck
 // in the ground with no velocity. After the move its velocity loses 1% (40%
 // when the arrow started the tick in water) and 0.05 downwards. A burning
-// arrow counts its fire down while it flies, goes out in water it moves
-// into, and primes TNT it hits. A stuck
+// arrow counts its fire down while it flies, after fire and (on 1.21.8)
+// lava its box reaches set it burning for at least 160 and 300 ticks (1.21.4
+// lava after the count; a stuck arrow burns as long in them and its fire
+// does not count), goes out in water it moves into, and primes TNT it hits
+// (items_in_fire, entities_in_lava). A stuck
 // arrow counts its life up and despawns at 1,200; when no block's shape is
 // left within 0.06 of its position it starts falling again in the next tick.
 //
@@ -138,6 +141,14 @@ bool touches_blocks(RuleContext& ctx, const physics::Aabb& box) {
 } // namespace
 
 namespace {
+// Fire and lava an arrow's box reaches at `at`: at least 160 and 300 ticks
+// of fire; lava only `with_lava`.
+void arrow_in_fire(RuleContext& ctx, Vec3 at, std::int32_t& fire, bool with_lava) {
+    const auto box = physics::box_at(at, 0.5, 0.5);
+    if (fire_contact(ctx, box) >= 0) fire = std::max(fire, 160);
+    if (with_lava && in_lava(ctx, box)) fire = std::max(fire, 300);
+}
+
 void step_arrow(RuleContext& ctx, EntityId id, Entity& e) {
     ++e.tick_count;
     // An arrow inside the collision shape of its cell's block is stuck in it.
@@ -159,11 +170,18 @@ void step_arrow(RuleContext& ctx, EntityId id, Entity& e) {
             e.life = 0;
             return;
         }
+        arrow_in_fire(ctx, e.position, e.fire, true);
         if (++e.life >= arrow_despawn_life) remove(ctx, id, e.position, RemovalReason::despawned);
         return;
     }
     const bool in_water = water_at(ctx, entity_box(e)).inside;
-    if (e.fire > 0) --e.fire;
+    const bool lava_first = ctx.bundle().rules->lava == contracts::LavaContact::after_move;
+    // After the move: fire, lava on 1.21.8, the count, lava on 1.21.4.
+    const auto burn = [&](Vec3 at) {
+        arrow_in_fire(ctx, at, e.fire, lava_first);
+        if (e.fire > 0) --e.fire;
+        if (!lava_first && in_lava(ctx, physics::box_at(at, 0.5, 0.5))) e.fire = std::max(e.fire, 300);
+    };
     const auto start = e.position;
     const Vec3 to{start.x + e.velocity.x, start.y + e.velocity.y, start.z + e.velocity.z};
     if (const auto hit = clip(ctx, start, to)) {
@@ -172,6 +190,7 @@ void step_arrow(RuleContext& ctx, EntityId id, Entity& e) {
         e.in_ground = true;
         e.life = 0;
         const bool burning = e.fire > 0;
+        burn(at);
         moved(ctx, id, start, at);
         if (burning && is_tnt(ctx.block(hit->block))) prime_by_fire(ctx, hit->block);
         target_hit(ctx, hit->block, hit->at, hit->axis, true);
@@ -179,6 +198,7 @@ void step_arrow(RuleContext& ctx, EntityId id, Entity& e) {
     }
     const double drag = in_water ? static_cast<double>(0.6f) : static_cast<double>(0.99f);
     e.velocity = {e.velocity.x * drag, e.velocity.y * drag - arrow_gravity, e.velocity.z * drag};
+    burn(to);
     // Water it ends the tick in puts it out.
     if (e.fire > 0 && water_at(ctx, physics::box_at(to, 0.5, 0.5)).inside) e.fire = 0;
     moved(ctx, id, start, to);

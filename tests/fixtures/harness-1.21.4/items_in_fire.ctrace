@@ -1,0 +1,1687 @@
+circuit-trace 2
+title Items, arrows, primed TNT and sand in fire and soul fire
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.27.0+mc1.21.4
+mechanisms fire item_entity projectile falling_block tnt
+area 0 0 0 19 6 9
+ticks 160
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 0
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 12 0 8 minecraft:stone
+at 0 set 12 0 9 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 13 0 8 minecraft:stone
+at 0 set 13 0 9 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 14 0 8 minecraft:stone
+at 0 set 14 0 9 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 15 0 8 minecraft:stone
+at 0 set 15 0 9 minecraft:stone
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 0 1 minecraft:stone
+at 0 set 16 0 2 minecraft:stone
+at 0 set 16 0 3 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 set 16 0 5 minecraft:stone
+at 0 set 16 0 6 minecraft:stone
+at 0 set 16 0 7 minecraft:stone
+at 0 set 16 0 8 minecraft:stone
+at 0 set 16 0 9 minecraft:stone
+at 0 set 17 0 0 minecraft:stone
+at 0 set 17 0 1 minecraft:stone
+at 0 set 17 0 2 minecraft:stone
+at 0 set 17 0 3 minecraft:stone
+at 0 set 17 0 4 minecraft:stone
+at 0 set 17 0 5 minecraft:stone
+at 0 set 17 0 6 minecraft:stone
+at 0 set 17 0 7 minecraft:stone
+at 0 set 17 0 8 minecraft:stone
+at 0 set 17 0 9 minecraft:stone
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 0 1 minecraft:stone
+at 0 set 18 0 2 minecraft:stone
+at 0 set 18 0 3 minecraft:stone
+at 0 set 18 0 4 minecraft:stone
+at 0 set 18 0 5 minecraft:stone
+at 0 set 18 0 6 minecraft:stone
+at 0 set 18 0 7 minecraft:stone
+at 0 set 18 0 8 minecraft:stone
+at 0 set 18 0 9 minecraft:stone
+at 0 set 19 0 0 minecraft:stone
+at 0 set 19 0 1 minecraft:stone
+at 0 set 19 0 2 minecraft:stone
+at 0 set 19 0 3 minecraft:stone
+at 0 set 19 0 4 minecraft:stone
+at 0 set 19 0 5 minecraft:stone
+at 0 set 19 0 6 minecraft:stone
+at 0 set 19 0 7 minecraft:stone
+at 0 set 19 0 8 minecraft:stone
+at 0 set 19 0 9 minecraft:stone
+
+at 1 set 14 0 2 minecraft:soul_sand
+change 1 commands 14 0 2 minecraft:stone minecraft:soul_sand
+at 1 set 17 0 2 minecraft:soul_sand
+change 1 commands 17 0 2 minecraft:stone minecraft:soul_sand
+at 1 set 8 1 6 minecraft:fire
+change 1 commands 8 1 6 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+at 1 set 11 0 8 minecraft:soul_sand
+change 1 commands 11 0 8 minecraft:stone minecraft:soul_sand
+at 1 set 11 1 8 minecraft:soul_fire
+change 1 commands 11 1 8 minecraft:air minecraft:soul_fire
+at 1 set 13 1 6 minecraft:stone
+change 1 commands 13 1 6 minecraft:air minecraft:stone
+at 1 set 13 2 6 minecraft:stone
+change 1 commands 13 2 6 minecraft:air minecraft:stone
+at 1 set 13 1 8 minecraft:stone
+change 1 commands 13 1 8 minecraft:air minecraft:stone
+at 1 set 13 2 8 minecraft:stone
+change 1 commands 13 2 8 minecraft:air minecraft:stone
+at 1 set 17 1 6 minecraft:fire
+change 1 commands 17 1 6 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+at 1 set 17 1 8 minecraft:fire
+change 1 commands 17 1 8 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+draws 1 commands level 3
+
+at 2 set 2 1 2 minecraft:fire
+change 2 commands 2 1 2 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+at 2 set 5 1 2 minecraft:fire
+change 2 commands 5 1 2 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+at 2 set 8 1 2 minecraft:fire
+change 2 commands 8 1 2 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+at 2 set 11 1 2 minecraft:fire
+change 2 commands 11 1 2 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+at 2 set 14 1 2 minecraft:soul_fire
+change 2 commands 14 1 2 minecraft:air minecraft:soul_fire
+at 2 set 17 1 2 minecraft:soul_fire
+change 2 commands 17 1 2 minecraft:air minecraft:soul_fire
+at 2 set 3 1 6 minecraft:fire
+change 2 commands 3 1 6 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+at 2 set 3 1 8 minecraft:fire
+change 2 commands 3 1 8 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+draws 2 commands level 6
+
+at 10 spawn-item 2.5 3.0 2.5 0 0 0 minecraft:stick 1 pickup-delay=32767
+entity-added 10 commands e1 minecraft:item 2.5 3.0 2.5 0 0 0 item=minecraft:stick count=1
+at 10 spawn-item 5.5 1.0 2.5 0 0 0 minecraft:stick 1 pickup-delay=32767
+entity-added 10 commands e2 minecraft:item 5.5 1.0 2.5 0 0 0 item=minecraft:stick count=1
+at 10 spawn-item 8.5 1.0 2.5 0 0 0 minecraft:netherite_ingot 1 pickup-delay=32767
+entity-added 10 commands e3 minecraft:item 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1
+at 10 spawn-item 12.1 1.0 2.5 0 0 0 minecraft:stick 1 pickup-delay=32767
+entity-added 10 commands e4 minecraft:item 12.1 1.0 2.5 0 0 0 item=minecraft:stick count=1
+at 10 spawn-item 12.13 1.0 2.5 0 0 0 minecraft:stick 1 pickup-delay=32767
+entity-added 10 commands e5 minecraft:item 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1
+at 10 spawn-item 14.5 3.0 2.5 0 0 0 minecraft:stick 1 pickup-delay=32767
+entity-added 10 commands e6 minecraft:item 14.5 3.0 2.5 0 0 0 item=minecraft:stick count=1
+at 10 spawn-item 17.5 1.0 2.5 0 0 0 minecraft:stick 1 pickup-delay=32767
+entity-added 10 commands e7 minecraft:item 17.5 1.0 2.5 0 0 0 item=minecraft:stick count=1
+entity-order 10 entities e1 e2 e3 e4 e5 e6 e7
+entity 10 e1 2.5 2.96 2.5 0 -0.0392 0 item=minecraft:stick count=1 age=1 pickup-delay=32767 on-ground=false
+entity 10 e2 5.5 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=1 pickup-delay=32767 on-ground=true
+entity 10 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=1 pickup-delay=32767 on-ground=true
+entity 10 e4 12.1 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=1 pickup-delay=32767 on-ground=true
+entity 10 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=1 pickup-delay=32767 on-ground=true
+entity 10 e6 14.5 2.96 2.5 0 -0.0392 0 item=minecraft:stick count=1 age=1 pickup-delay=32767 on-ground=false
+entity 10 e7 17.5 0.96 2.5 0 -0.0392 0 item=minecraft:stick count=1 age=1 pickup-delay=32767 on-ground=false
+
+entity-removed 11 entities e7 discarded
+entity-order 11 entities e1 e2 e3 e4 e5 e6 e7
+entity 11 e1 2.5 2.8808 2.5 0 -0.07761599999999999 0 item=minecraft:stick count=1 age=2 pickup-delay=32767 on-ground=false
+entity 11 e2 5.5 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=2 pickup-delay=32767 on-ground=true
+entity 11 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=2 pickup-delay=32767 on-ground=true
+entity 11 e4 12.1 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=2 pickup-delay=32767 on-ground=true
+entity 11 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=2 pickup-delay=32767 on-ground=true
+entity 11 e6 14.5 2.8808 2.5 0 -0.07761599999999999 0 item=minecraft:stick count=1 age=2 pickup-delay=32767 on-ground=false
+
+at 12 spawn-item 1.5 1.0 6.5 0.3 0 0 minecraft:stick 1 pickup-delay=32767
+entity-added 12 commands e8 minecraft:item 1.5 1.0 6.5 0.3 0 0 item=minecraft:stick count=1
+at 12 spawn-item 1.5 1.0 8.5 0.3 0 0 minecraft:netherite_scrap 1 pickup-delay=32767
+entity-added 12 commands e9 minecraft:item 1.5 1.0 8.5 0.3 0 0 item=minecraft:netherite_scrap count=1
+entity-order 12 entities e1 e2 e3 e4 e5 e6 e8 e9
+entity 12 e1 2.5 2.763184 2.5 0 -0.11526368 0 item=minecraft:stick count=1 age=3 pickup-delay=32767 on-ground=false
+entity 12 e2 5.5 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=3 pickup-delay=32767 on-ground=true
+entity 12 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=3 pickup-delay=32767 on-ground=true
+entity 12 e4 12.1 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=3 pickup-delay=32767 on-ground=true
+entity 12 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=3 pickup-delay=32767 on-ground=true
+entity 12 e6 14.5 2.763184 2.5 0 -0.11526368 0 item=minecraft:stick count=1 age=3 pickup-delay=32767 on-ground=false
+entity 12 e8 1.8 1.0 6.5 0.17640001773834227 0 0 item=minecraft:stick count=1 age=1 pickup-delay=32767 on-ground=true
+entity 12 e9 1.8 1.0 8.5 0.17640001773834227 0 0 item=minecraft:netherite_scrap count=1 age=1 pickup-delay=32767 on-ground=true
+
+entity-order 13 entities e1 e2 e3 e4 e5 e6 e8 e9
+entity 13 e1 2.5 2.60792032 2.5 0 -0.15215840639999997 0 item=minecraft:stick count=1 age=4 pickup-delay=32767 on-ground=false
+entity 13 e2 5.5 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=4 pickup-delay=32767 on-ground=true
+entity 13 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=4 pickup-delay=32767 on-ground=true
+entity 13 e4 12.1 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=4 pickup-delay=32767 on-ground=true
+entity 13 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=4 pickup-delay=32767 on-ground=true
+entity 13 e6 14.5 2.60792032 2.5 0 -0.15215840639999997 0 item=minecraft:stick count=1 age=4 pickup-delay=32767 on-ground=false
+entity 13 e8 1.9764000177383423 1.0 6.5 0.10372322086029157 0 0 item=minecraft:stick count=1 age=2 pickup-delay=32767 on-ground=true
+entity 13 e9 1.9764000177383423 1.0 8.5 0.10372322086029157 0 0 item=minecraft:netherite_scrap count=1 age=2 pickup-delay=32767 on-ground=true
+
+entity-order 14 entities e1 e2 e3 e4 e5 e6 e8 e9
+entity 14 e1 2.5 2.4157619136 2.5 0 -0.18831523827199997 0 item=minecraft:stick count=1 age=5 pickup-delay=32767 on-ground=false
+entity 14 e2 5.5 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=5 pickup-delay=32767 on-ground=true
+entity 14 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=5 pickup-delay=32767 on-ground=true
+entity 14 e4 12.1 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=5 pickup-delay=32767 on-ground=true
+entity 14 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=5 pickup-delay=32767 on-ground=true
+entity 14 e6 14.5 2.4157619136 2.5 0 -0.18831523827199997 0 item=minecraft:stick count=1 age=5 pickup-delay=32767 on-ground=false
+entity 14 e8 2.0801232385986337 1.0 6.5 0.06098925999877809 0 0 item=minecraft:stick count=1 age=3 pickup-delay=32767 on-ground=true
+entity 14 e9 2.0801232385986337 1.0 8.5 0.06098925999877809 0 0 item=minecraft:netherite_scrap count=1 age=3 pickup-delay=32767 on-ground=true
+
+entity-removed 15 entities e2 discarded
+entity-order 15 entities e1 e2 e3 e4 e5 e6 e8 e9
+entity 15 e1 2.5 2.1874466753279997 2.5 0 -0.22374893350655997 0 item=minecraft:stick count=1 age=6 pickup-delay=32767 on-ground=false
+entity 15 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=6 pickup-delay=32767 on-ground=true
+entity 15 e4 12.1 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=6 pickup-delay=32767 on-ground=true
+entity 15 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=6 pickup-delay=32767 on-ground=true
+entity 15 e6 14.5 2.1874466753279997 2.5 0 -0.22374893350655997 0 item=minecraft:stick count=1 age=6 pickup-delay=32767 on-ground=false
+entity 15 e8 2.141112498597412 1.0 6.5 0.03586168848544275 0 0 item=minecraft:stick count=1 age=4 pickup-delay=32767 on-ground=true
+entity 15 e9 2.141112498597412 1.0 8.5 0.03586168848544275 0 0 item=minecraft:netherite_scrap count=1 age=4 pickup-delay=32767 on-ground=true
+
+entity-order 16 entities e1 e3 e4 e5 e6 e8 e9
+entity 16 e1 2.5 1.9236977418214398 2.5 0 -0.25847395483642877 0 item=minecraft:stick count=1 age=7 pickup-delay=32767 on-ground=false
+entity 16 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=7 pickup-delay=32767 on-ground=true
+entity 16 e4 12.1 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=7 pickup-delay=32767 on-ground=true
+entity 16 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=7 pickup-delay=32767 on-ground=true
+entity 16 e6 14.5 1.9236977418214398 2.5 0 -0.25847395483642877 0 item=minecraft:stick count=1 age=7 pickup-delay=32767 on-ground=false
+entity 16 e8 2.1769741870828545 1.0 6.5 0.021086674949863354 0 0 item=minecraft:stick count=1 age=5 pickup-delay=32767 on-ground=true
+entity 16 e9 2.1769741870828545 1.0 8.5 0.021086674949863354 0 0 item=minecraft:netherite_scrap count=1 age=5 pickup-delay=32767 on-ground=true
+
+entity-removed 17 entities e4 discarded
+entity-removed 17 entities e6 discarded
+entity-order 17 entities e1 e3 e4 e5 e6 e8 e9
+entity 17 e1 2.5 1.625223786985011 2.5 0 -0.2925044757397002 0 item=minecraft:stick count=1 age=8 pickup-delay=32767 on-ground=false
+entity 17 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=8 pickup-delay=32767 on-ground=true
+entity 17 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=8 pickup-delay=32767 on-ground=true
+entity 17 e8 2.198060862032718 1.0 6.5 0.012398966117328512 0 0 item=minecraft:stick count=1 age=6 pickup-delay=32767 on-ground=true
+entity 17 e9 2.198060862032718 1.0 8.5 0.012398966117328512 0 0 item=minecraft:netherite_scrap count=1 age=6 pickup-delay=32767 on-ground=true
+
+entity-removed 18 entities e1 discarded
+entity-order 18 entities e1 e3 e5 e8 e9
+entity 18 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=9 pickup-delay=32767 on-ground=true
+entity 18 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=9 pickup-delay=32767 on-ground=true
+entity 18 e8 2.2104598281500465 1.0 6.5 0.007290592810112849 0 0 item=minecraft:stick count=1 age=7 pickup-delay=32767 on-ground=true
+entity 18 e9 2.2104598281500465 1.0 8.5 0.007290592810112849 0 0 item=minecraft:netherite_scrap count=1 age=7 pickup-delay=32767 on-ground=true
+
+entity-order 19 entities e3 e5 e8 e9
+entity 19 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=10 pickup-delay=32767 on-ground=true
+entity 19 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=10 pickup-delay=32767 on-ground=true
+entity 19 e8 2.2177504209601593 1.0 6.5 0.004286869003423124 0 0 item=minecraft:stick count=1 age=8 pickup-delay=32767 on-ground=true
+entity 19 e9 2.2177504209601593 1.0 8.5 0.004286869003423124 0 0 item=minecraft:netherite_scrap count=1 age=8 pickup-delay=32767 on-ground=true
+
+at 20 command summon minecraft:arrow 6.5 1.5 6.5 {Motion:[0.6d,0.0d,0.0d]}
+entity-added 20 commands e10 minecraft:arrow 6.5 1.5 6.5 0.6 0 0
+at 20 command summon minecraft:arrow 9.5 1.5 8.5 {Motion:[0.6d,0.0d,0.0d]}
+entity-added 20 commands e11 minecraft:arrow 9.5 1.5 8.5 0.6 0 0
+entity-order 20 entities e3 e5 e8 e9 e10 e11
+entity 20 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=11 pickup-delay=32767 on-ground=true
+entity 20 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=11 pickup-delay=32767 on-ground=true
+entity 20 e8 2.2220372899635823 1.0 6.5 0.002520679227485963 0 0 item=minecraft:stick count=1 age=9 pickup-delay=32767 on-ground=true
+entity 20 e9 2.2220372899635823 1.0 8.5 0.002520679227485963 0 0 item=minecraft:netherite_scrap count=1 age=9 pickup-delay=32767 on-ground=true
+entity 20 e10 7.1 1.5 6.5 0.5940000057220459 -0.05 0 in-ground=false life=0 on-ground=false
+entity 20 e11 10.1 1.5 8.5 0.5940000057220459 -0.05 0 in-ground=false life=0 on-ground=false
+
+entity-order 21 entities e3 e5 e8 e9 e10 e11
+entity 21 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=12 pickup-delay=32767 on-ground=true
+entity 21 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=12 pickup-delay=32767 on-ground=true
+entity 21 e8 2.2220372899635823 1.0 6.5 0.002520679227485963 -0.04 0 item=minecraft:stick count=1 age=10 pickup-delay=32767 on-ground=true
+entity 21 e9 2.2220372899635823 1.0 8.5 0.002520679227485963 -0.04 0 item=minecraft:netherite_scrap count=1 age=10 pickup-delay=32767 on-ground=true
+entity 21 e10 7.694000005722046 1.45 6.5 0.5880600113296509 -0.09950000047683716 0 in-ground=false life=0 on-ground=false
+entity 21 e11 10.694000005722046 1.45 8.5 0.5880600113296509 -0.09950000047683716 0 in-ground=false life=0 on-ground=false
+
+entity-order 22 entities e3 e5 e8 e9 e10 e11
+entity 22 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=13 pickup-delay=32767 on-ground=true
+entity 22 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=13 pickup-delay=32767 on-ground=true
+entity 22 e8 2.2220372899635823 1.0 6.5 0.002520679227485963 -0.08 0 item=minecraft:stick count=1 age=11 pickup-delay=32767 on-ground=true
+entity 22 e9 2.224557969191068 1.0 8.5 0.0014821595348039826 0 0 item=minecraft:netherite_scrap count=1 age=11 pickup-delay=32767 on-ground=true
+entity 22 e10 8.282060017051696 1.3504999995231628 6.5 0.5821794168245317 -0.14850500142097472 0 in-ground=false life=0 fire=159 on-ground=false
+entity 22 e11 11.282060017051696 1.3504999995231628 8.5 0.5821794168245317 -0.14850500142097472 0 in-ground=false life=0 fire=159 on-ground=false
+
+entity-order 23 entities e3 e5 e8 e9 e10 e11
+entity 23 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=14 pickup-delay=32767 on-ground=true
+entity 23 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=14 pickup-delay=32767 on-ground=true
+entity 23 e8 2.224557969191068 1.0 6.5 0.0014821595348039826 0 0 item=minecraft:stick count=1 age=12 pickup-delay=32767 on-ground=true
+entity 23 e9 2.224557969191068 1.0 8.5 0.0014821595348039826 -0.04 0 item=minecraft:netherite_scrap count=1 age=12 pickup-delay=32767 on-ground=true
+entity 23 e10 8.864239433876229 1.201994998102188 6.5 0.5763576282083819 -0.19701995282301904 0 in-ground=false life=0 fire=159 on-ground=false
+entity 23 e11 11.864239433876229 1.201994998102188 8.5 0.5763576282083819 -0.19701995282301904 0 in-ground=false life=0 fire=159 on-ground=false
+
+entity-order 24 entities e3 e5 e8 e9 e10 e11
+entity 24 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=15 pickup-delay=32767 on-ground=true
+entity 24 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=15 pickup-delay=32767 on-ground=true
+entity 24 e8 2.224557969191068 1.0 6.5 0.0014821595348039826 -0.04 0 item=minecraft:stick count=1 age=13 pickup-delay=32767 on-ground=true
+entity 24 e9 2.224557969191068 1.0 8.5 0.0014821595348039826 -0.08 0 item=minecraft:netherite_scrap count=1 age=13 pickup-delay=32767 on-ground=true
+entity 24 e10 9.44059706208461 1.004975045279169 6.5 0.5705940574228727 -0.24504975517371752 0 in-ground=false life=0 fire=158 on-ground=false
+entity 24 e11 12.44059706208461 1.004975045279169 8.5 0.5705940574228727 -0.24504975517371752 0 in-ground=false life=0 fire=158 on-ground=false
+
+entity-order 25 entities e3 e5 e8 e9 e10 e11
+entity 25 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=16 pickup-delay=32767 on-ground=true
+entity 25 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=16 pickup-delay=32767 on-ground=true
+entity 25 e8 2.224557969191068 1.0 6.5 0.0014821595348039826 -0.08 0 item=minecraft:stick count=1 age=14 pickup-delay=32767 on-ground=true
+entity 25 e9 2.224557969191068 1.0 8.5 0.0014821595348039826 -0.12 0 item=minecraft:netherite_scrap count=1 age=14 pickup-delay=32767 on-ground=true
+entity 25 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=0 fire=157 on-ground=false
+entity 25 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=0 fire=157 on-ground=false
+
+entity-order 26 entities e3 e5 e8 e9 e10 e11
+entity 26 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=17 pickup-delay=32767 on-ground=true
+entity 26 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=17 pickup-delay=32767 on-ground=true
+entity 26 e8 2.224557969191068 1.0 6.5 0.0014821595348039826 -0.12 0 item=minecraft:stick count=1 age=15 pickup-delay=32767 on-ground=true
+entity 26 e9 2.226040128725872 1.0 8.5 8.715098941015856E-4 0 0 item=minecraft:netherite_scrap count=1 age=15 pickup-delay=32767 on-ground=true
+entity 26 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=1 fire=157 on-ground=false
+entity 26 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=1 fire=157 on-ground=false
+
+entity-order 27 entities e3 e5 e8 e9 e10 e11
+entity 27 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=18 pickup-delay=32767 on-ground=true
+entity 27 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=18 pickup-delay=32767 on-ground=true
+entity 27 e8 2.226040128725872 1.0 6.5 8.715098941015856E-4 0 0 item=minecraft:stick count=1 age=16 pickup-delay=32767 on-ground=true
+entity 27 e9 2.226040128725872 1.0 8.5 8.715098941015856E-4 -0.04 0 item=minecraft:netherite_scrap count=1 age=16 pickup-delay=32767 on-ground=true
+entity 27 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=2 fire=157 on-ground=false
+entity 27 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=2 fire=157 on-ground=false
+
+entity-order 28 entities e3 e5 e8 e9 e10 e11
+entity 28 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=19 pickup-delay=32767 on-ground=true
+entity 28 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=19 pickup-delay=32767 on-ground=true
+entity 28 e8 2.226040128725872 1.0 6.5 8.715098941015856E-4 -0.04 0 item=minecraft:stick count=1 age=17 pickup-delay=32767 on-ground=true
+entity 28 e9 2.226040128725872 1.0 8.5 8.715098941015856E-4 -0.08 0 item=minecraft:netherite_scrap count=1 age=17 pickup-delay=32767 on-ground=true
+entity 28 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=3 fire=157 on-ground=false
+entity 28 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=3 fire=157 on-ground=false
+
+entity-order 29 entities e3 e5 e8 e9 e10 e11
+entity 29 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=20 pickup-delay=32767 on-ground=true
+entity 29 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=20 pickup-delay=32767 on-ground=true
+entity 29 e8 2.226040128725872 1.0 6.5 8.715098941015856E-4 -0.08 0 item=minecraft:stick count=1 age=18 pickup-delay=32767 on-ground=true
+entity 29 e9 2.226040128725872 1.0 8.5 8.715098941015856E-4 -0.12 0 item=minecraft:netherite_scrap count=1 age=18 pickup-delay=32767 on-ground=true
+entity 29 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=4 fire=157 on-ground=false
+entity 29 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=4 fire=157 on-ground=false
+
+at 30 command summon minecraft:tnt 17.5 3 6.5 {fuse:200s}
+entity-added 30 commands e12 minecraft:tnt 17.5 3.0 6.5 0 0 0 fuse=200
+at 30 set 17 4 8 minecraft:sand
+change 30 commands 17 4 8 minecraft:air minecraft:sand
+change 30 block_ticks 8 1 6 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false]
+draws 30 block_ticks level 3
+entity-order 30 entities e3 e5 e8 e9 e10 e11 e12
+entity 30 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=21 pickup-delay=32767 on-ground=true
+entity 30 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=21 pickup-delay=32767 on-ground=true
+entity 30 e8 2.226040128725872 1.0 6.5 8.715098941015856E-4 -0.12 0 item=minecraft:stick count=1 age=19 pickup-delay=32767 on-ground=true
+entity 30 e9 2.2269116386199737 1.0 8.5 5.124478692622017E-4 0 0 item=minecraft:netherite_scrap count=1 age=19 pickup-delay=32767 on-ground=true
+entity 30 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=5 fire=157 on-ground=false
+entity 30 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=5 fire=157 on-ground=false
+entity 30 e12 17.5 2.96 6.5 0 -0.0392 0 fuse=199 on-ground=false
+
+change 31 block_ticks 17 4 8 minecraft:sand minecraft:air
+entity-added 31 block_ticks e13 minecraft:falling_block 17.5 4.0 8.5 0 0 0 block=minecraft:sand
+entity-order 31 entities e3 e5 e8 e9 e10 e11 e12 e13
+entity 31 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=22 pickup-delay=32767 on-ground=true
+entity 31 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=22 pickup-delay=32767 on-ground=true
+entity 31 e8 2.2269116386199737 1.0 6.5 5.124478692622017E-4 0 0 item=minecraft:stick count=1 age=20 pickup-delay=32767 on-ground=true
+entity 31 e9 2.2269116386199737 1.0 8.5 5.124478692622017E-4 -0.04 0 item=minecraft:netherite_scrap count=1 age=20 pickup-delay=32767 on-ground=true
+entity 31 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=6 fire=157 on-ground=false
+entity 31 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=6 fire=157 on-ground=false
+entity 31 e12 17.5 2.8808 6.5 0 -0.07761599999999999 0 fuse=198 on-ground=false
+entity 31 e13 17.5 3.96 8.5 0 -0.0392 0 time=1 on-ground=false
+
+change 32 block_ticks 3 1 6 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false]
+draws 32 block_ticks level 5
+entity-order 32 entities e3 e5 e8 e9 e10 e11 e12 e13
+entity 32 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=23 pickup-delay=32767 on-ground=true
+entity 32 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=23 pickup-delay=32767 on-ground=true
+entity 32 e8 2.2269116386199737 1.0 6.5 5.124478692622017E-4 -0.04 0 item=minecraft:stick count=1 age=21 pickup-delay=32767 on-ground=true
+entity 32 e9 2.2269116386199737 1.0 8.5 5.124478692622017E-4 -0.08 0 item=minecraft:netherite_scrap count=1 age=21 pickup-delay=32767 on-ground=true
+entity 32 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=7 fire=157 on-ground=false
+entity 32 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=7 fire=157 on-ground=false
+entity 32 e12 17.5 2.763184 6.5 0 -0.11526368 0 fuse=197 on-ground=false
+entity 32 e13 17.5 3.8808 8.5 0 -0.07761599999999999 0 time=2 on-ground=false
+
+entity-order 33 entities e3 e5 e8 e9 e10 e11 e12 e13
+entity 33 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=24 pickup-delay=32767 on-ground=true
+entity 33 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=24 pickup-delay=32767 on-ground=true
+entity 33 e8 2.2269116386199737 1.0 6.5 5.124478692622017E-4 -0.08 0 item=minecraft:stick count=1 age=22 pickup-delay=32767 on-ground=true
+entity 33 e9 2.2269116386199737 1.0 8.5 5.124478692622017E-4 -0.12 0 item=minecraft:netherite_scrap count=1 age=22 pickup-delay=32767 on-ground=true
+entity 33 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=8 fire=157 on-ground=false
+entity 33 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=8 fire=157 on-ground=false
+entity 33 e12 17.5 2.60792032 6.5 0 -0.15215840639999997 0 fuse=196 on-ground=false
+entity 33 e13 17.5 3.763184 8.5 0 -0.11526368 0 time=3 on-ground=false
+
+change 34 block_ticks 8 1 2 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false]
+draws 34 block_ticks level 3
+entity-order 34 entities e3 e5 e8 e9 e10 e11 e12 e13
+entity 34 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=25 pickup-delay=32767 on-ground=true
+entity 34 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=25 pickup-delay=32767 on-ground=true
+entity 34 e8 2.2269116386199737 1.0 6.5 5.124478692622017E-4 -0.12 0 item=minecraft:stick count=1 age=23 pickup-delay=32767 on-ground=true
+entity 34 e9 2.227424086489236 1.0 8.5 3.013193774260936E-4 0 0 item=minecraft:netherite_scrap count=1 age=23 pickup-delay=32767 on-ground=true
+entity 34 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=9 fire=157 on-ground=false
+entity 34 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=9 fire=157 on-ground=false
+entity 34 e12 17.5 2.4157619136 6.5 0 -0.18831523827199997 0 fuse=195 on-ground=false
+entity 34 e13 17.5 3.60792032 8.5 0 -0.15215840639999997 0 time=4 on-ground=false
+
+entity-order 35 entities e3 e5 e8 e9 e10 e11 e12 e13
+entity 35 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=26 pickup-delay=32767 on-ground=true
+entity 35 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=26 pickup-delay=32767 on-ground=true
+entity 35 e8 2.227424086489236 1.0 6.5 3.013193774260936E-4 0 0 item=minecraft:stick count=1 age=24 pickup-delay=32767 on-ground=true
+entity 35 e9 2.227424086489236 1.0 8.5 3.013193774260936E-4 -0.04 0 item=minecraft:netherite_scrap count=1 age=24 pickup-delay=32767 on-ground=true
+entity 35 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=10 fire=157 on-ground=false
+entity 35 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=10 fire=157 on-ground=false
+entity 35 e12 17.5 2.1874466753279997 6.5 0 -0.22374893350655997 0 fuse=194 on-ground=false
+entity 35 e13 17.5 3.4157619136 8.5 0 -0.18831523827199997 0 time=5 on-ground=false
+
+draws 36 block_ticks level 2
+entity-order 36 entities e3 e5 e8 e9 e10 e11 e12 e13
+entity 36 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=27 pickup-delay=32767 on-ground=true
+entity 36 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=27 pickup-delay=32767 on-ground=true
+entity 36 e8 2.227424086489236 1.0 6.5 3.013193774260936E-4 -0.04 0 item=minecraft:stick count=1 age=25 pickup-delay=32767 on-ground=true
+entity 36 e9 2.227424086489236 1.0 8.5 3.013193774260936E-4 -0.08 0 item=minecraft:netherite_scrap count=1 age=25 pickup-delay=32767 on-ground=true
+entity 36 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=11 fire=157 on-ground=false
+entity 36 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=11 fire=157 on-ground=false
+entity 36 e12 17.5 1.9236977418214398 6.5 0 -0.25847395483642877 0 fuse=193 on-ground=false
+entity 36 e13 17.5 3.1874466753279997 8.5 0 -0.22374893350655997 0 time=6 on-ground=false
+
+entity-order 37 entities e3 e5 e8 e9 e10 e11 e12 e13
+entity 37 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=28 pickup-delay=32767 on-ground=true
+entity 37 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=28 pickup-delay=32767 on-ground=true
+entity 37 e8 2.227424086489236 1.0 6.5 3.013193774260936E-4 -0.08 0 item=minecraft:stick count=1 age=26 pickup-delay=32767 on-ground=true
+entity 37 e9 2.227424086489236 1.0 8.5 3.013193774260936E-4 -0.12 0 item=minecraft:netherite_scrap count=1 age=26 pickup-delay=32767 on-ground=true
+entity 37 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=12 fire=157 on-ground=false
+entity 37 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=12 fire=157 on-ground=false
+entity 37 e12 17.5 1.625223786985011 6.5 0 -0.2925044757397002 0 fuse=192 on-ground=false
+entity 37 e13 17.5 2.9236977418214396 8.5 0 -0.25847395483642877 0 time=7 on-ground=false
+
+change 38 block_ticks 17 1 6 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false]
+draws 38 block_ticks level 5
+entity-order 38 entities e3 e5 e8 e9 e10 e11 e12 e13
+entity 38 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=29 pickup-delay=32767 on-ground=true
+entity 38 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=29 pickup-delay=32767 on-ground=true
+entity 38 e8 2.227424086489236 1.0 6.5 3.013193774260936E-4 -0.12 0 item=minecraft:stick count=1 age=27 pickup-delay=32767 on-ground=true
+entity 38 e9 2.227424086489236 1.0 8.5 1.7717581174289722E-4 0 0 item=minecraft:netherite_scrap count=1 age=27 pickup-delay=32767 on-ground=true
+entity 38 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=13 fire=157 on-ground=false
+entity 38 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=13 fire=157 on-ground=false
+entity 38 e12 17.5 1.2927193112453108 6.5 0 -0.32585438622490615 0 fuse=191 on-ground=false
+entity 38 e13 17.5 2.625223786985011 8.5 0 -0.2925044757397002 0 time=8 on-ground=false
+
+draws 39 block_ticks level 2
+entity-order 39 entities e3 e5 e8 e9 e10 e11 e12 e13
+entity 39 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=30 pickup-delay=32767 on-ground=true
+entity 39 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=30 pickup-delay=32767 on-ground=true
+entity 39 e8 2.227424086489236 1.0 6.5 1.7717581174289722E-4 0 0 item=minecraft:stick count=1 age=28 pickup-delay=32767 on-ground=true
+entity 39 e9 2.227424086489236 1.0 8.5 1.7717581174289722E-4 -0.04 0 item=minecraft:netherite_scrap count=1 age=28 pickup-delay=32767 on-ground=true
+entity 39 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=14 fire=157 on-ground=false
+entity 39 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=14 fire=157 on-ground=false
+entity 39 e12 17.5 1.0 6.5 0 0 0 fuse=190 on-ground=true
+entity 39 e13 17.5 2.292719311245311 8.5 0 -0.32585438622490615 0 time=9 on-ground=false
+
+change 40 block_ticks 3 1 8 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false]
+draws 40 block_ticks level 3
+entity-order 40 entities e3 e5 e8 e9 e10 e11 e12 e13
+entity 40 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=31 pickup-delay=32767 on-ground=true
+entity 40 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=31 pickup-delay=32767 on-ground=true
+entity 40 e8 2.227424086489236 1.0 6.5 1.7717581174289722E-4 -0.04 0 item=minecraft:stick count=1 age=29 pickup-delay=32767 on-ground=true
+entity 40 e9 2.227424086489236 1.0 8.5 1.7717581174289722E-4 -0.08 0 item=minecraft:netherite_scrap count=1 age=29 pickup-delay=32767 on-ground=true
+entity 40 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=15 fire=157 on-ground=false
+entity 40 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=15 fire=157 on-ground=false
+entity 40 e12 17.5 1.0 6.5 0 0 0 fuse=189 on-ground=true
+entity 40 e13 17.5 1.9268649250204046 8.5 0 -0.358537298500408 0 time=10 on-ground=false
+
+entity-order 41 entities e3 e5 e8 e9 e10 e11 e12 e13
+entity 41 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=32 pickup-delay=32767 on-ground=true
+entity 41 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=32 pickup-delay=32767 on-ground=true
+entity 41 e8 2.227424086489236 1.0 6.5 1.7717581174289722E-4 -0.08 0 item=minecraft:stick count=1 age=30 pickup-delay=32767 on-ground=true
+entity 41 e9 2.227424086489236 1.0 8.5 1.7717581174289722E-4 -0.12 0 item=minecraft:netherite_scrap count=1 age=30 pickup-delay=32767 on-ground=true
+entity 41 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=16 fire=157 on-ground=false
+entity 41 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=16 fire=157 on-ground=false
+entity 41 e12 17.5 1.0 6.5 0 0 0 fuse=188 on-ground=true
+entity 41 e13 17.5 1.5283276265199968 8.5 0 -0.3905665525303998 0 time=11 on-ground=false
+
+entity-order 42 entities e3 e5 e8 e9 e10 e11 e12 e13
+entity 42 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=33 pickup-delay=32767 on-ground=true
+entity 42 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=33 pickup-delay=32767 on-ground=true
+entity 42 e8 2.227424086489236 1.0 6.5 1.7717581174289722E-4 -0.12 0 item=minecraft:stick count=1 age=31 pickup-delay=32767 on-ground=true
+entity 42 e9 2.227424086489236 1.0 8.5 1.0417938778084088E-4 0 0 item=minecraft:netherite_scrap count=1 age=31 pickup-delay=32767 on-ground=true
+entity 42 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=17 fire=157 on-ground=false
+entity 42 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=17 fire=157 on-ground=false
+entity 42 e12 17.5 1.0 6.5 0 0 0 fuse=187 on-ground=true
+entity 42 e13 17.5 1.0977610739895969 8.5 0 -0.42195522147979175 0 time=12 on-ground=false
+
+change 43 entities 17 1 8 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false] minecraft:sand
+entity-removed 43 entities e13 discarded
+entity-order 43 entities e3 e5 e8 e9 e10 e11 e12 e13
+entity 43 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=34 pickup-delay=32767 on-ground=true
+entity 43 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=34 pickup-delay=32767 on-ground=true
+entity 43 e8 2.227424086489236 1.0 6.5 1.0417938778084088E-4 0 0 item=minecraft:stick count=1 age=32 pickup-delay=32767 on-ground=true
+entity 43 e9 2.227424086489236 1.0 8.5 1.0417938778084088E-4 -0.04 0 item=minecraft:netherite_scrap count=1 age=32 pickup-delay=32767 on-ground=true
+entity 43 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=18 fire=157 on-ground=false
+entity 43 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=18 fire=157 on-ground=false
+entity 43 e12 17.5 1.0 6.5 0 0 0 fuse=186 on-ground=true
+
+entity-order 44 entities e3 e5 e8 e9 e10 e11 e12
+entity 44 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=35 pickup-delay=32767 on-ground=true
+entity 44 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=35 pickup-delay=32767 on-ground=true
+entity 44 e8 2.227424086489236 1.0 6.5 1.0417938778084088E-4 -0.04 0 item=minecraft:stick count=1 age=33 pickup-delay=32767 on-ground=true
+entity 44 e9 2.227424086489236 1.0 8.5 1.0417938778084088E-4 -0.08 0 item=minecraft:netherite_scrap count=1 age=33 pickup-delay=32767 on-ground=true
+entity 44 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=19 fire=157 on-ground=false
+entity 44 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=19 fire=157 on-ground=false
+entity 44 e12 17.5 1.0 6.5 0 0 0 fuse=185 on-ground=true
+
+entity-order 45 entities e3 e5 e8 e9 e10 e11 e12
+entity 45 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=36 pickup-delay=32767 on-ground=true
+entity 45 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=36 pickup-delay=32767 on-ground=true
+entity 45 e8 2.227424086489236 1.0 6.5 1.0417938778084088E-4 -0.08 0 item=minecraft:stick count=1 age=34 pickup-delay=32767 on-ground=true
+entity 45 e9 2.227424086489236 1.0 8.5 1.0417938778084088E-4 -0.12 0 item=minecraft:netherite_scrap count=1 age=34 pickup-delay=32767 on-ground=true
+entity 45 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=20 fire=157 on-ground=false
+entity 45 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=20 fire=157 on-ground=false
+entity 45 e12 17.5 1.0 6.5 0 0 0 fuse=184 on-ground=true
+
+entity-order 46 entities e3 e5 e8 e9 e10 e11 e12
+entity 46 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=37 pickup-delay=32767 on-ground=true
+entity 46 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=37 pickup-delay=32767 on-ground=true
+entity 46 e8 2.227424086489236 1.0 6.5 1.0417938778084088E-4 -0.12 0 item=minecraft:stick count=1 age=35 pickup-delay=32767 on-ground=true
+entity 46 e9 2.227424086489236 1.0 8.5 6.125748617503323E-5 0 0 item=minecraft:netherite_scrap count=1 age=35 pickup-delay=32767 on-ground=true
+entity 46 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=21 fire=157 on-ground=false
+entity 46 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=21 fire=157 on-ground=false
+entity 46 e12 17.5 1.0 6.5 0 0 0 fuse=183 on-ground=true
+
+entity-order 47 entities e3 e5 e8 e9 e10 e11 e12
+entity 47 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=38 pickup-delay=32767 on-ground=true
+entity 47 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=38 pickup-delay=32767 on-ground=true
+entity 47 e8 2.227424086489236 1.0 6.5 6.125748617503323E-5 0 0 item=minecraft:stick count=1 age=36 pickup-delay=32767 on-ground=true
+entity 47 e9 2.227424086489236 1.0 8.5 6.125748617503323E-5 -0.04 0 item=minecraft:netherite_scrap count=1 age=36 pickup-delay=32767 on-ground=true
+entity 47 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=22 fire=157 on-ground=false
+entity 47 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=22 fire=157 on-ground=false
+entity 47 e12 17.5 1.0 6.5 0 0 0 fuse=182 on-ground=true
+
+entity-order 48 entities e3 e5 e8 e9 e10 e11 e12
+entity 48 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=39 pickup-delay=32767 on-ground=true
+entity 48 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=39 pickup-delay=32767 on-ground=true
+entity 48 e8 2.227424086489236 1.0 6.5 6.125748617503323E-5 -0.04 0 item=minecraft:stick count=1 age=37 pickup-delay=32767 on-ground=true
+entity 48 e9 2.227424086489236 1.0 8.5 6.125748617503323E-5 -0.08 0 item=minecraft:netherite_scrap count=1 age=37 pickup-delay=32767 on-ground=true
+entity 48 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=23 fire=157 on-ground=false
+entity 48 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=23 fire=157 on-ground=false
+entity 48 e12 17.5 1.0 6.5 0 0 0 fuse=181 on-ground=true
+
+entity-order 49 entities e3 e5 e8 e9 e10 e11 e12
+entity 49 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=40 pickup-delay=32767 on-ground=true
+entity 49 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=40 pickup-delay=32767 on-ground=true
+entity 49 e8 2.227424086489236 1.0 6.5 6.125748617503323E-5 -0.08 0 item=minecraft:stick count=1 age=38 pickup-delay=32767 on-ground=true
+entity 49 e9 2.227424086489236 1.0 8.5 6.125748617503323E-5 -0.12 0 item=minecraft:netherite_scrap count=1 age=38 pickup-delay=32767 on-ground=true
+entity 49 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=24 fire=157 on-ground=false
+entity 49 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=24 fire=157 on-ground=false
+entity 49 e12 17.5 1.0 6.5 0 0 0 fuse=180 on-ground=true
+
+entity-order 50 entities e3 e5 e8 e9 e10 e11 e12
+entity 50 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=41 pickup-delay=32767 on-ground=true
+entity 50 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=41 pickup-delay=32767 on-ground=true
+entity 50 e8 2.227424086489236 1.0 6.5 6.125748617503323E-5 -0.12 0 item=minecraft:stick count=1 age=39 pickup-delay=32767 on-ground=true
+entity 50 e9 2.227424086489236 1.0 8.5 3.6019405492940395E-5 0 0 item=minecraft:netherite_scrap count=1 age=39 pickup-delay=32767 on-ground=true
+entity 50 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=25 fire=157 on-ground=false
+entity 50 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=25 fire=157 on-ground=false
+entity 50 e12 17.5 1.0 6.5 0 0 0 fuse=179 on-ground=true
+
+entity-order 51 entities e3 e5 e8 e9 e10 e11 e12
+entity 51 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=42 pickup-delay=32767 on-ground=true
+entity 51 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=42 pickup-delay=32767 on-ground=true
+entity 51 e8 2.227424086489236 1.0 6.5 3.6019405492940395E-5 0 0 item=minecraft:stick count=1 age=40 pickup-delay=32767 on-ground=true
+entity 51 e9 2.227424086489236 1.0 8.5 3.6019405492940395E-5 -0.04 0 item=minecraft:netherite_scrap count=1 age=40 pickup-delay=32767 on-ground=true
+entity 51 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=26 fire=157 on-ground=false
+entity 51 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=26 fire=157 on-ground=false
+entity 51 e12 17.5 1.0 6.5 0 0 0 fuse=178 on-ground=true
+
+entity-order 52 entities e3 e5 e8 e9 e10 e11 e12
+entity 52 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=43 pickup-delay=32767 on-ground=true
+entity 52 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=43 pickup-delay=32767 on-ground=true
+entity 52 e8 2.227424086489236 1.0 6.5 3.6019405492940395E-5 -0.04 0 item=minecraft:stick count=1 age=41 pickup-delay=32767 on-ground=true
+entity 52 e9 2.227424086489236 1.0 8.5 3.6019405492940395E-5 -0.08 0 item=minecraft:netherite_scrap count=1 age=41 pickup-delay=32767 on-ground=true
+entity 52 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=27 fire=157 on-ground=false
+entity 52 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=27 fire=157 on-ground=false
+entity 52 e12 17.5 1.0 6.5 0 0 0 fuse=177 on-ground=true
+
+entity-order 53 entities e3 e5 e8 e9 e10 e11 e12
+entity 53 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=44 pickup-delay=32767 on-ground=true
+entity 53 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=44 pickup-delay=32767 on-ground=true
+entity 53 e8 2.227424086489236 1.0 6.5 3.6019405492940395E-5 -0.08 0 item=minecraft:stick count=1 age=42 pickup-delay=32767 on-ground=true
+entity 53 e9 2.227424086489236 1.0 8.5 3.6019405492940395E-5 -0.12 0 item=minecraft:netherite_scrap count=1 age=42 pickup-delay=32767 on-ground=true
+entity 53 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=28 fire=157 on-ground=false
+entity 53 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=28 fire=157 on-ground=false
+entity 53 e12 17.5 1.0 6.5 0 0 0 fuse=176 on-ground=true
+
+entity-order 54 entities e3 e5 e8 e9 e10 e11 e12
+entity 54 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=45 pickup-delay=32767 on-ground=true
+entity 54 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=45 pickup-delay=32767 on-ground=true
+entity 54 e8 2.227424086489236 1.0 6.5 3.6019405492940395E-5 -0.12 0 item=minecraft:stick count=1 age=43 pickup-delay=32767 on-ground=true
+entity 54 e9 2.227424086489236 1.0 8.5 2.117941255959743E-5 0 0 item=minecraft:netherite_scrap count=1 age=43 pickup-delay=32767 on-ground=true
+entity 54 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=29 fire=157 on-ground=false
+entity 54 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=29 fire=157 on-ground=false
+entity 54 e12 17.5 1.0 6.5 0 0 0 fuse=175 on-ground=true
+
+entity-order 55 entities e3 e5 e8 e9 e10 e11 e12
+entity 55 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=46 pickup-delay=32767 on-ground=true
+entity 55 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=46 pickup-delay=32767 on-ground=true
+entity 55 e8 2.227424086489236 1.0 6.5 2.117941255959743E-5 0 0 item=minecraft:stick count=1 age=44 pickup-delay=32767 on-ground=true
+entity 55 e9 2.227424086489236 1.0 8.5 2.117941255959743E-5 -0.04 0 item=minecraft:netherite_scrap count=1 age=44 pickup-delay=32767 on-ground=true
+entity 55 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=30 fire=157 on-ground=false
+entity 55 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=30 fire=157 on-ground=false
+entity 55 e12 17.5 1.0 6.5 0 0 0 fuse=174 on-ground=true
+
+entity-order 56 entities e3 e5 e8 e9 e10 e11 e12
+entity 56 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=47 pickup-delay=32767 on-ground=true
+entity 56 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=47 pickup-delay=32767 on-ground=true
+entity 56 e8 2.227424086489236 1.0 6.5 2.117941255959743E-5 -0.04 0 item=minecraft:stick count=1 age=45 pickup-delay=32767 on-ground=true
+entity 56 e9 2.227424086489236 1.0 8.5 2.117941255959743E-5 -0.08 0 item=minecraft:netherite_scrap count=1 age=45 pickup-delay=32767 on-ground=true
+entity 56 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=31 fire=157 on-ground=false
+entity 56 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=31 fire=157 on-ground=false
+entity 56 e12 17.5 1.0 6.5 0 0 0 fuse=173 on-ground=true
+
+entity-order 57 entities e3 e5 e8 e9 e10 e11 e12
+entity 57 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=48 pickup-delay=32767 on-ground=true
+entity 57 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=48 pickup-delay=32767 on-ground=true
+entity 57 e8 2.227424086489236 1.0 6.5 2.117941255959743E-5 -0.08 0 item=minecraft:stick count=1 age=46 pickup-delay=32767 on-ground=true
+entity 57 e9 2.227424086489236 1.0 8.5 2.117941255959743E-5 -0.12 0 item=minecraft:netherite_scrap count=1 age=46 pickup-delay=32767 on-ground=true
+entity 57 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=32 fire=157 on-ground=false
+entity 57 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=32 fire=157 on-ground=false
+entity 57 e12 17.5 1.0 6.5 0 0 0 fuse=172 on-ground=true
+
+entity-order 58 entities e3 e5 e8 e9 e10 e11 e12
+entity 58 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=49 pickup-delay=32767 on-ground=true
+entity 58 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=49 pickup-delay=32767 on-ground=true
+entity 58 e8 2.227424086489236 1.0 6.5 2.117941255959743E-5 -0.12 0 item=minecraft:stick count=1 age=47 pickup-delay=32767 on-ground=true
+entity 58 e9 2.227424086489236 1.0 8.5 1.2453495837335521E-5 0 0 item=minecraft:netherite_scrap count=1 age=47 pickup-delay=32767 on-ground=true
+entity 58 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=33 fire=157 on-ground=false
+entity 58 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=33 fire=157 on-ground=false
+entity 58 e12 17.5 1.0 6.5 0 0 0 fuse=171 on-ground=true
+
+entity-order 59 entities e3 e5 e8 e9 e10 e11 e12
+entity 59 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=50 pickup-delay=32767 on-ground=true
+entity 59 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=50 pickup-delay=32767 on-ground=true
+entity 59 e8 2.227424086489236 1.0 6.5 1.2453495837335521E-5 0 0 item=minecraft:stick count=1 age=48 pickup-delay=32767 on-ground=true
+entity 59 e9 2.227424086489236 1.0 8.5 1.2453495837335521E-5 -0.04 0 item=minecraft:netherite_scrap count=1 age=48 pickup-delay=32767 on-ground=true
+entity 59 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=34 fire=157 on-ground=false
+entity 59 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=34 fire=157 on-ground=false
+entity 59 e12 17.5 1.0 6.5 0 0 0 fuse=170 on-ground=true
+
+entity-order 60 entities e3 e5 e8 e9 e10 e11 e12
+entity 60 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=51 pickup-delay=32767 on-ground=true
+entity 60 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=51 pickup-delay=32767 on-ground=true
+entity 60 e8 2.227424086489236 1.0 6.5 1.2453495837335521E-5 -0.04 0 item=minecraft:stick count=1 age=49 pickup-delay=32767 on-ground=true
+entity 60 e9 2.227424086489236 1.0 8.5 1.2453495837335521E-5 -0.08 0 item=minecraft:netherite_scrap count=1 age=49 pickup-delay=32767 on-ground=true
+entity 60 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=35 fire=157 on-ground=false
+entity 60 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=35 fire=157 on-ground=false
+entity 60 e12 17.5 1.0 6.5 0 0 0 fuse=169 on-ground=true
+
+entity-order 61 entities e3 e5 e8 e9 e10 e11 e12
+entity 61 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=52 pickup-delay=32767 on-ground=true
+entity 61 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=52 pickup-delay=32767 on-ground=true
+entity 61 e8 2.227424086489236 1.0 6.5 1.2453495837335521E-5 -0.08 0 item=minecraft:stick count=1 age=50 pickup-delay=32767 on-ground=true
+entity 61 e9 2.227424086489236 1.0 8.5 1.2453495837335521E-5 -0.12 0 item=minecraft:netherite_scrap count=1 age=50 pickup-delay=32767 on-ground=true
+entity 61 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=36 fire=157 on-ground=false
+entity 61 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=36 fire=157 on-ground=false
+entity 61 e12 17.5 1.0 6.5 0 0 0 fuse=168 on-ground=true
+
+entity-order 62 entities e3 e5 e8 e9 e10 e11 e12
+entity 62 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=53 pickup-delay=32767 on-ground=true
+entity 62 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=53 pickup-delay=32767 on-ground=true
+entity 62 e8 2.227424086489236 1.0 6.5 1.2453495837335521E-5 -0.12 0 item=minecraft:stick count=1 age=51 pickup-delay=32767 on-ground=true
+entity 62 e9 2.227424086489236 1.0 8.5 7.3226562887011925E-6 0 0 item=minecraft:netherite_scrap count=1 age=51 pickup-delay=32767 on-ground=true
+entity 62 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=37 fire=157 on-ground=false
+entity 62 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=37 fire=157 on-ground=false
+entity 62 e12 17.5 1.0 6.5 0 0 0 fuse=167 on-ground=true
+
+entity-order 63 entities e3 e5 e8 e9 e10 e11 e12
+entity 63 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=54 pickup-delay=32767 on-ground=true
+entity 63 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=54 pickup-delay=32767 on-ground=true
+entity 63 e8 2.227424086489236 1.0 6.5 7.3226562887011925E-6 0 0 item=minecraft:stick count=1 age=52 pickup-delay=32767 on-ground=true
+entity 63 e9 2.227424086489236 1.0 8.5 7.3226562887011925E-6 -0.04 0 item=minecraft:netherite_scrap count=1 age=52 pickup-delay=32767 on-ground=true
+entity 63 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=38 fire=157 on-ground=false
+entity 63 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=38 fire=157 on-ground=false
+entity 63 e12 17.5 1.0 6.5 0 0 0 fuse=166 on-ground=true
+
+change 64 block_ticks 8 1 6 minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=2,east=false,north=false,south=false,up=false,west=false]
+draws 64 block_ticks level 3
+entity-order 64 entities e3 e5 e8 e9 e10 e11 e12
+entity 64 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=55 pickup-delay=32767 on-ground=true
+entity 64 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=55 pickup-delay=32767 on-ground=true
+entity 64 e8 2.227424086489236 1.0 6.5 7.3226562887011925E-6 -0.04 0 item=minecraft:stick count=1 age=53 pickup-delay=32767 on-ground=true
+entity 64 e9 2.227424086489236 1.0 8.5 7.3226562887011925E-6 -0.08 0 item=minecraft:netherite_scrap count=1 age=53 pickup-delay=32767 on-ground=true
+entity 64 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=39 fire=157 on-ground=false
+entity 64 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=39 fire=157 on-ground=false
+entity 64 e12 17.5 1.0 6.5 0 0 0 fuse=165 on-ground=true
+
+draws 65 block_ticks level 2
+entity-order 65 entities e3 e5 e8 e9 e10 e11 e12
+entity 65 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=56 pickup-delay=32767 on-ground=true
+entity 65 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=56 pickup-delay=32767 on-ground=true
+entity 65 e8 2.227424086489236 1.0 6.5 7.3226562887011925E-6 -0.08 0 item=minecraft:stick count=1 age=54 pickup-delay=32767 on-ground=true
+entity 65 e9 2.227424086489236 1.0 8.5 7.3226562887011925E-6 -0.12 0 item=minecraft:netherite_scrap count=1 age=54 pickup-delay=32767 on-ground=true
+entity 65 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=40 fire=157 on-ground=false
+entity 65 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=40 fire=157 on-ground=false
+entity 65 e12 17.5 1.0 6.5 0 0 0 fuse=164 on-ground=true
+
+entity-order 66 entities e3 e5 e8 e9 e10 e11 e12
+entity 66 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=57 pickup-delay=32767 on-ground=true
+entity 66 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=57 pickup-delay=32767 on-ground=true
+entity 66 e8 2.227424086489236 1.0 6.5 7.3226562887011925E-6 -0.12 0 item=minecraft:stick count=1 age=55 pickup-delay=32767 on-ground=true
+entity 66 e9 2.227424086489236 1.0 8.5 4.305722330728914E-6 0 0 item=minecraft:netherite_scrap count=1 age=55 pickup-delay=32767 on-ground=true
+entity 66 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=41 fire=157 on-ground=false
+entity 66 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=41 fire=157 on-ground=false
+entity 66 e12 17.5 1.0 6.5 0 0 0 fuse=163 on-ground=true
+
+draws 67 block_ticks level 2
+entity-order 67 entities e3 e5 e8 e9 e10 e11 e12
+entity 67 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=58 pickup-delay=32767 on-ground=true
+entity 67 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=58 pickup-delay=32767 on-ground=true
+entity 67 e8 2.227424086489236 1.0 6.5 4.305722330728914E-6 0 0 item=minecraft:stick count=1 age=56 pickup-delay=32767 on-ground=true
+entity 67 e9 2.227424086489236 1.0 8.5 4.305722330728914E-6 -0.04 0 item=minecraft:netherite_scrap count=1 age=56 pickup-delay=32767 on-ground=true
+entity 67 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=42 fire=157 on-ground=false
+entity 67 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=42 fire=157 on-ground=false
+entity 67 e12 17.5 1.0 6.5 0 0 0 fuse=162 on-ground=true
+
+change 68 block_ticks 2 1 2 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false]
+draws 68 block_ticks level 3
+entity-order 68 entities e3 e5 e8 e9 e10 e11 e12
+entity 68 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=59 pickup-delay=32767 on-ground=true
+entity 68 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=59 pickup-delay=32767 on-ground=true
+entity 68 e8 2.227424086489236 1.0 6.5 4.305722330728914E-6 -0.04 0 item=minecraft:stick count=1 age=57 pickup-delay=32767 on-ground=true
+entity 68 e9 2.227424086489236 1.0 8.5 4.305722330728914E-6 -0.08 0 item=minecraft:netherite_scrap count=1 age=57 pickup-delay=32767 on-ground=true
+entity 68 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=43 fire=157 on-ground=false
+entity 68 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=43 fire=157 on-ground=false
+entity 68 e12 17.5 1.0 6.5 0 0 0 fuse=161 on-ground=true
+
+change 69 block_ticks 8 1 2 minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=2,east=false,north=false,south=false,up=false,west=false]
+draws 69 block_ticks level 5
+entity-order 69 entities e3 e5 e8 e9 e10 e11 e12
+entity 69 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=60 pickup-delay=32767 on-ground=true
+entity 69 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=60 pickup-delay=32767 on-ground=true
+entity 69 e8 2.227424086489236 1.0 6.5 4.305722330728914E-6 -0.08 0 item=minecraft:stick count=1 age=58 pickup-delay=32767 on-ground=true
+entity 69 e9 2.227424086489236 1.0 8.5 4.305722330728914E-6 -0.12 0 item=minecraft:netherite_scrap count=1 age=58 pickup-delay=32767 on-ground=true
+entity 69 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=44 fire=157 on-ground=false
+entity 69 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=44 fire=157 on-ground=false
+entity 69 e12 17.5 1.0 6.5 0 0 0 fuse=160 on-ground=true
+
+entity-order 70 entities e3 e5 e8 e9 e10 e11 e12
+entity 70 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=61 pickup-delay=32767 on-ground=true
+entity 70 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=61 pickup-delay=32767 on-ground=true
+entity 70 e8 2.227424086489236 1.0 6.5 4.305722330728914E-6 -0.12 0 item=minecraft:stick count=1 age=59 pickup-delay=32767 on-ground=true
+entity 70 e9 2.227424086489236 1.0 8.5 2.531764985056523E-6 0 0 item=minecraft:netherite_scrap count=1 age=59 pickup-delay=32767 on-ground=true
+entity 70 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=45 fire=157 on-ground=false
+entity 70 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=45 fire=157 on-ground=false
+entity 70 e12 17.5 1.0 6.5 0 0 0 fuse=159 on-ground=true
+
+entity-order 71 entities e3 e5 e8 e9 e10 e11 e12
+entity 71 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=62 pickup-delay=32767 on-ground=true
+entity 71 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=62 pickup-delay=32767 on-ground=true
+entity 71 e8 2.227424086489236 1.0 6.5 2.531764985056523E-6 0 0 item=minecraft:stick count=1 age=60 pickup-delay=32767 on-ground=true
+entity 71 e9 2.227424086489236 1.0 8.5 2.531764985056523E-6 -0.04 0 item=minecraft:netherite_scrap count=1 age=60 pickup-delay=32767 on-ground=true
+entity 71 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=46 fire=157 on-ground=false
+entity 71 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=46 fire=157 on-ground=false
+entity 71 e12 17.5 1.0 6.5 0 0 0 fuse=158 on-ground=true
+
+draws 72 block_ticks level 2
+entity-order 72 entities e3 e5 e8 e9 e10 e11 e12
+entity 72 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=63 pickup-delay=32767 on-ground=true
+entity 72 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=63 pickup-delay=32767 on-ground=true
+entity 72 e8 2.227424086489236 1.0 6.5 2.531764985056523E-6 -0.04 0 item=minecraft:stick count=1 age=61 pickup-delay=32767 on-ground=true
+entity 72 e9 2.227424086489236 1.0 8.5 2.531764985056523E-6 -0.08 0 item=minecraft:netherite_scrap count=1 age=61 pickup-delay=32767 on-ground=true
+entity 72 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=47 fire=157 on-ground=false
+entity 72 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=47 fire=157 on-ground=false
+entity 72 e12 17.5 1.0 6.5 0 0 0 fuse=157 on-ground=true
+
+draws 73 block_ticks level 2
+entity-order 73 entities e3 e5 e8 e9 e10 e11 e12
+entity 73 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=64 pickup-delay=32767 on-ground=true
+entity 73 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=64 pickup-delay=32767 on-ground=true
+entity 73 e8 2.227424086489236 1.0 6.5 2.531764985056523E-6 -0.08 0 item=minecraft:stick count=1 age=62 pickup-delay=32767 on-ground=true
+entity 73 e9 2.227424086489236 1.0 8.5 2.531764985056523E-6 -0.12 0 item=minecraft:netherite_scrap count=1 age=62 pickup-delay=32767 on-ground=true
+entity 73 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=48 fire=157 on-ground=false
+entity 73 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=48 fire=157 on-ground=false
+entity 73 e12 17.5 1.0 6.5 0 0 0 fuse=156 on-ground=true
+
+entity-order 74 entities e3 e5 e8 e9 e10 e11 e12
+entity 74 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=65 pickup-delay=32767 on-ground=true
+entity 74 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=65 pickup-delay=32767 on-ground=true
+entity 74 e8 2.227424086489236 1.0 6.5 2.531764985056523E-6 -0.12 0 item=minecraft:stick count=1 age=63 pickup-delay=32767 on-ground=true
+entity 74 e9 2.227424086489236 1.0 8.5 1.4886779609109485E-6 0 0 item=minecraft:netherite_scrap count=1 age=63 pickup-delay=32767 on-ground=true
+entity 74 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=49 fire=157 on-ground=false
+entity 74 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=49 fire=157 on-ground=false
+entity 74 e12 17.5 1.0 6.5 0 0 0 fuse=155 on-ground=true
+
+entity-order 75 entities e3 e5 e8 e9 e10 e11 e12
+entity 75 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=66 pickup-delay=32767 on-ground=true
+entity 75 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=66 pickup-delay=32767 on-ground=true
+entity 75 e8 2.227424086489236 1.0 6.5 1.4886779609109485E-6 0 0 item=minecraft:stick count=1 age=64 pickup-delay=32767 on-ground=true
+entity 75 e9 2.227424086489236 1.0 8.5 1.4886779609109485E-6 -0.04 0 item=minecraft:netherite_scrap count=1 age=64 pickup-delay=32767 on-ground=true
+entity 75 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=50 fire=157 on-ground=false
+entity 75 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=50 fire=157 on-ground=false
+entity 75 e12 17.5 1.0 6.5 0 0 0 fuse=154 on-ground=true
+
+entity-order 76 entities e3 e5 e8 e9 e10 e11 e12
+entity 76 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=67 pickup-delay=32767 on-ground=true
+entity 76 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=67 pickup-delay=32767 on-ground=true
+entity 76 e8 2.227424086489236 1.0 6.5 1.4886779609109485E-6 -0.04 0 item=minecraft:stick count=1 age=65 pickup-delay=32767 on-ground=true
+entity 76 e9 2.227424086489236 1.0 8.5 1.4886779609109485E-6 -0.08 0 item=minecraft:netherite_scrap count=1 age=65 pickup-delay=32767 on-ground=true
+entity 76 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=51 fire=157 on-ground=false
+entity 76 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=51 fire=157 on-ground=false
+entity 76 e12 17.5 1.0 6.5 0 0 0 fuse=153 on-ground=true
+
+entity-order 77 entities e3 e5 e8 e9 e10 e11 e12
+entity 77 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=68 pickup-delay=32767 on-ground=true
+entity 77 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=68 pickup-delay=32767 on-ground=true
+entity 77 e8 2.227424086489236 1.0 6.5 1.4886779609109485E-6 -0.08 0 item=minecraft:stick count=1 age=66 pickup-delay=32767 on-ground=true
+entity 77 e9 2.227424086489236 1.0 8.5 1.4886779609109485E-6 -0.12 0 item=minecraft:netherite_scrap count=1 age=66 pickup-delay=32767 on-ground=true
+entity 77 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=52 fire=157 on-ground=false
+entity 77 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=52 fire=157 on-ground=false
+entity 77 e12 17.5 1.0 6.5 0 0 0 fuse=152 on-ground=true
+
+entity-order 78 entities e3 e5 e8 e9 e10 e11 e12
+entity 78 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=69 pickup-delay=32767 on-ground=true
+entity 78 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=69 pickup-delay=32767 on-ground=true
+entity 78 e8 2.227424086489236 1.0 6.5 1.4886779609109485E-6 -0.12 0 item=minecraft:stick count=1 age=67 pickup-delay=32767 on-ground=true
+entity 78 e9 2.227424086489236 1.0 8.5 8.753427290379018E-7 0 0 item=minecraft:netherite_scrap count=1 age=67 pickup-delay=32767 on-ground=true
+entity 78 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=53 fire=157 on-ground=false
+entity 78 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=53 fire=157 on-ground=false
+entity 78 e12 17.5 1.0 6.5 0 0 0 fuse=151 on-ground=true
+
+entity-order 79 entities e3 e5 e8 e9 e10 e11 e12
+entity 79 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=70 pickup-delay=32767 on-ground=true
+entity 79 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=70 pickup-delay=32767 on-ground=true
+entity 79 e8 2.227424086489236 1.0 6.5 8.753427290379018E-7 0 0 item=minecraft:stick count=1 age=68 pickup-delay=32767 on-ground=true
+entity 79 e9 2.227424086489236 1.0 8.5 8.753427290379018E-7 -0.04 0 item=minecraft:netherite_scrap count=1 age=68 pickup-delay=32767 on-ground=true
+entity 79 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=54 fire=157 on-ground=false
+entity 79 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=54 fire=157 on-ground=false
+entity 79 e12 17.5 1.0 6.5 0 0 0 fuse=150 on-ground=true
+
+entity-order 80 entities e3 e5 e8 e9 e10 e11 e12
+entity 80 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=71 pickup-delay=32767 on-ground=true
+entity 80 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=71 pickup-delay=32767 on-ground=true
+entity 80 e8 2.227424086489236 1.0 6.5 8.753427290379018E-7 -0.04 0 item=minecraft:stick count=1 age=69 pickup-delay=32767 on-ground=true
+entity 80 e9 2.227424086489236 1.0 8.5 8.753427290379018E-7 -0.08 0 item=minecraft:netherite_scrap count=1 age=69 pickup-delay=32767 on-ground=true
+entity 80 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=55 fire=157 on-ground=false
+entity 80 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=55 fire=157 on-ground=false
+entity 80 e12 17.5 1.0 6.5 0 0 0 fuse=149 on-ground=true
+
+entity-order 81 entities e3 e5 e8 e9 e10 e11 e12
+entity 81 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=72 pickup-delay=32767 on-ground=true
+entity 81 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=72 pickup-delay=32767 on-ground=true
+entity 81 e8 2.227424086489236 1.0 6.5 8.753427290379018E-7 -0.08 0 item=minecraft:stick count=1 age=70 pickup-delay=32767 on-ground=true
+entity 81 e9 2.227424086489236 1.0 8.5 8.753427290379018E-7 -0.12 0 item=minecraft:netherite_scrap count=1 age=70 pickup-delay=32767 on-ground=true
+entity 81 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=56 fire=157 on-ground=false
+entity 81 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=56 fire=157 on-ground=false
+entity 81 e12 17.5 1.0 6.5 0 0 0 fuse=148 on-ground=true
+
+entity-order 82 entities e3 e5 e8 e9 e10 e11 e12
+entity 82 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=73 pickup-delay=32767 on-ground=true
+entity 82 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=73 pickup-delay=32767 on-ground=true
+entity 82 e8 2.227424086489236 1.0 6.5 8.753427290379018E-7 -0.12 0 item=minecraft:stick count=1 age=71 pickup-delay=32767 on-ground=true
+entity 82 e9 2.227424086489236 1.0 8.5 5.147015764313827E-7 0 0 item=minecraft:netherite_scrap count=1 age=71 pickup-delay=32767 on-ground=true
+entity 82 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=57 fire=157 on-ground=false
+entity 82 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=57 fire=157 on-ground=false
+entity 82 e12 17.5 1.0 6.5 0 0 0 fuse=147 on-ground=true
+
+entity-order 83 entities e3 e5 e8 e9 e10 e11 e12
+entity 83 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=74 pickup-delay=32767 on-ground=true
+entity 83 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=74 pickup-delay=32767 on-ground=true
+entity 83 e8 2.227424086489236 1.0 6.5 5.147015764313827E-7 0 0 item=minecraft:stick count=1 age=72 pickup-delay=32767 on-ground=true
+entity 83 e9 2.227424086489236 1.0 8.5 5.147015764313827E-7 -0.04 0 item=minecraft:netherite_scrap count=1 age=72 pickup-delay=32767 on-ground=true
+entity 83 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=58 fire=157 on-ground=false
+entity 83 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=58 fire=157 on-ground=false
+entity 83 e12 17.5 1.0 6.5 0 0 0 fuse=146 on-ground=true
+
+entity-order 84 entities e3 e5 e8 e9 e10 e11 e12
+entity 84 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=75 pickup-delay=32767 on-ground=true
+entity 84 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=75 pickup-delay=32767 on-ground=true
+entity 84 e8 2.227424086489236 1.0 6.5 5.147015764313827E-7 -0.04 0 item=minecraft:stick count=1 age=73 pickup-delay=32767 on-ground=true
+entity 84 e9 2.227424086489236 1.0 8.5 5.147015764313827E-7 -0.08 0 item=minecraft:netherite_scrap count=1 age=73 pickup-delay=32767 on-ground=true
+entity 84 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=59 fire=157 on-ground=false
+entity 84 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=59 fire=157 on-ground=false
+entity 84 e12 17.5 1.0 6.5 0 0 0 fuse=145 on-ground=true
+
+entity-order 85 entities e3 e5 e8 e9 e10 e11 e12
+entity 85 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=76 pickup-delay=32767 on-ground=true
+entity 85 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=76 pickup-delay=32767 on-ground=true
+entity 85 e8 2.227424086489236 1.0 6.5 5.147015764313827E-7 -0.08 0 item=minecraft:stick count=1 age=74 pickup-delay=32767 on-ground=true
+entity 85 e9 2.227424086489236 1.0 8.5 5.147015764313827E-7 -0.12 0 item=minecraft:netherite_scrap count=1 age=74 pickup-delay=32767 on-ground=true
+entity 85 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=60 fire=157 on-ground=false
+entity 85 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=60 fire=157 on-ground=false
+entity 85 e12 17.5 1.0 6.5 0 0 0 fuse=144 on-ground=true
+
+entity-order 86 entities e3 e5 e8 e9 e10 e11 e12
+entity 86 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=77 pickup-delay=32767 on-ground=true
+entity 86 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=77 pickup-delay=32767 on-ground=true
+entity 86 e8 2.227424086489236 1.0 6.5 5.147015764313827E-7 -0.12 0 item=minecraft:stick count=1 age=75 pickup-delay=32767 on-ground=true
+entity 86 e9 2.227424086489236 1.0 8.5 3.026445573748288E-7 0 0 item=minecraft:netherite_scrap count=1 age=75 pickup-delay=32767 on-ground=true
+entity 86 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=61 fire=157 on-ground=false
+entity 86 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=61 fire=157 on-ground=false
+entity 86 e12 17.5 1.0 6.5 0 0 0 fuse=143 on-ground=true
+
+entity-order 87 entities e3 e5 e8 e9 e10 e11 e12
+entity 87 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=78 pickup-delay=32767 on-ground=true
+entity 87 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=78 pickup-delay=32767 on-ground=true
+entity 87 e8 2.227424086489236 1.0 6.5 3.026445573748288E-7 0 0 item=minecraft:stick count=1 age=76 pickup-delay=32767 on-ground=true
+entity 87 e9 2.227424086489236 1.0 8.5 3.026445573748288E-7 -0.04 0 item=minecraft:netherite_scrap count=1 age=76 pickup-delay=32767 on-ground=true
+entity 87 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=62 fire=157 on-ground=false
+entity 87 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=62 fire=157 on-ground=false
+entity 87 e12 17.5 1.0 6.5 0 0 0 fuse=142 on-ground=true
+
+entity-order 88 entities e3 e5 e8 e9 e10 e11 e12
+entity 88 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=79 pickup-delay=32767 on-ground=true
+entity 88 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=79 pickup-delay=32767 on-ground=true
+entity 88 e8 2.227424086489236 1.0 6.5 3.026445573748288E-7 -0.04 0 item=minecraft:stick count=1 age=77 pickup-delay=32767 on-ground=true
+entity 88 e9 2.227424086489236 1.0 8.5 3.026445573748288E-7 -0.08 0 item=minecraft:netherite_scrap count=1 age=77 pickup-delay=32767 on-ground=true
+entity 88 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=63 fire=157 on-ground=false
+entity 88 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=63 fire=157 on-ground=false
+entity 88 e12 17.5 1.0 6.5 0 0 0 fuse=141 on-ground=true
+
+entity-order 89 entities e3 e5 e8 e9 e10 e11 e12
+entity 89 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=80 pickup-delay=32767 on-ground=true
+entity 89 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=80 pickup-delay=32767 on-ground=true
+entity 89 e8 2.227424086489236 1.0 6.5 3.026445573748288E-7 -0.08 0 item=minecraft:stick count=1 age=78 pickup-delay=32767 on-ground=true
+entity 89 e9 2.227424086489236 1.0 8.5 3.026445573748288E-7 -0.12 0 item=minecraft:netherite_scrap count=1 age=78 pickup-delay=32767 on-ground=true
+entity 89 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=64 fire=157 on-ground=false
+entity 89 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=64 fire=157 on-ground=false
+entity 89 e12 17.5 1.0 6.5 0 0 0 fuse=140 on-ground=true
+
+entity-order 90 entities e3 e5 e8 e9 e10 e11 e12
+entity 90 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=81 pickup-delay=32767 on-ground=true
+entity 90 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=81 pickup-delay=32767 on-ground=true
+entity 90 e8 2.227424086489236 1.0 6.5 3.026445573748288E-7 -0.12 0 item=minecraft:stick count=1 age=79 pickup-delay=32767 on-ground=true
+entity 90 e9 2.227424086489236 1.0 8.5 1.779550176311085E-7 0 0 item=minecraft:netherite_scrap count=1 age=79 pickup-delay=32767 on-ground=true
+entity 90 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=65 fire=157 on-ground=false
+entity 90 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=65 fire=157 on-ground=false
+entity 90 e12 17.5 1.0 6.5 0 0 0 fuse=139 on-ground=true
+
+entity-order 91 entities e3 e5 e8 e9 e10 e11 e12
+entity 91 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=82 pickup-delay=32767 on-ground=true
+entity 91 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=82 pickup-delay=32767 on-ground=true
+entity 91 e8 2.227424086489236 1.0 6.5 1.779550176311085E-7 0 0 item=minecraft:stick count=1 age=80 pickup-delay=32767 on-ground=true
+entity 91 e9 2.227424086489236 1.0 8.5 1.779550176311085E-7 -0.04 0 item=minecraft:netherite_scrap count=1 age=80 pickup-delay=32767 on-ground=true
+entity 91 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=66 fire=157 on-ground=false
+entity 91 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=66 fire=157 on-ground=false
+entity 91 e12 17.5 1.0 6.5 0 0 0 fuse=138 on-ground=true
+
+entity-order 92 entities e3 e5 e8 e9 e10 e11 e12
+entity 92 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=83 pickup-delay=32767 on-ground=true
+entity 92 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=83 pickup-delay=32767 on-ground=true
+entity 92 e8 2.227424086489236 1.0 6.5 1.779550176311085E-7 -0.04 0 item=minecraft:stick count=1 age=81 pickup-delay=32767 on-ground=true
+entity 92 e9 2.227424086489236 1.0 8.5 1.779550176311085E-7 -0.08 0 item=minecraft:netherite_scrap count=1 age=81 pickup-delay=32767 on-ground=true
+entity 92 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=67 fire=157 on-ground=false
+entity 92 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=67 fire=157 on-ground=false
+entity 92 e12 17.5 1.0 6.5 0 0 0 fuse=137 on-ground=true
+
+entity-order 93 entities e3 e5 e8 e9 e10 e11 e12
+entity 93 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=84 pickup-delay=32767 on-ground=true
+entity 93 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=84 pickup-delay=32767 on-ground=true
+entity 93 e8 2.227424086489236 1.0 6.5 1.779550176311085E-7 -0.08 0 item=minecraft:stick count=1 age=82 pickup-delay=32767 on-ground=true
+entity 93 e9 2.227424086489236 1.0 8.5 1.779550176311085E-7 -0.12 0 item=minecraft:netherite_scrap count=1 age=82 pickup-delay=32767 on-ground=true
+entity 93 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=68 fire=157 on-ground=false
+entity 93 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=68 fire=157 on-ground=false
+entity 93 e12 17.5 1.0 6.5 0 0 0 fuse=136 on-ground=true
+
+entity-order 94 entities e3 e5 e8 e9 e10 e11 e12
+entity 94 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=85 pickup-delay=32767 on-ground=true
+entity 94 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=85 pickup-delay=32767 on-ground=true
+entity 94 e8 2.227424086489236 1.0 6.5 1.779550176311085E-7 -0.12 0 item=minecraft:stick count=1 age=83 pickup-delay=32767 on-ground=true
+entity 94 e9 2.227424086489236 1.0 8.5 1.0463756088918184E-7 0 0 item=minecraft:netherite_scrap count=1 age=83 pickup-delay=32767 on-ground=true
+entity 94 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=69 fire=157 on-ground=false
+entity 94 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=69 fire=157 on-ground=false
+entity 94 e12 17.5 1.0 6.5 0 0 0 fuse=135 on-ground=true
+
+entity-order 95 entities e3 e5 e8 e9 e10 e11 e12
+entity 95 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=86 pickup-delay=32767 on-ground=true
+entity 95 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=86 pickup-delay=32767 on-ground=true
+entity 95 e8 2.227424086489236 1.0 6.5 1.0463756088918184E-7 0 0 item=minecraft:stick count=1 age=84 pickup-delay=32767 on-ground=true
+entity 95 e9 2.227424086489236 1.0 8.5 1.0463756088918184E-7 -0.04 0 item=minecraft:netherite_scrap count=1 age=84 pickup-delay=32767 on-ground=true
+entity 95 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=70 fire=157 on-ground=false
+entity 95 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=70 fire=157 on-ground=false
+entity 95 e12 17.5 1.0 6.5 0 0 0 fuse=134 on-ground=true
+
+entity-order 96 entities e3 e5 e8 e9 e10 e11 e12
+entity 96 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=87 pickup-delay=32767 on-ground=true
+entity 96 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=87 pickup-delay=32767 on-ground=true
+entity 96 e8 2.227424086489236 1.0 6.5 1.0463756088918184E-7 -0.04 0 item=minecraft:stick count=1 age=85 pickup-delay=32767 on-ground=true
+entity 96 e9 2.227424086489236 1.0 8.5 1.0463756088918184E-7 -0.08 0 item=minecraft:netherite_scrap count=1 age=85 pickup-delay=32767 on-ground=true
+entity 96 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=71 fire=157 on-ground=false
+entity 96 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=71 fire=157 on-ground=false
+entity 96 e12 17.5 1.0 6.5 0 0 0 fuse=133 on-ground=true
+
+change 97 block_ticks 11 1 2 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false]
+draws 97 block_ticks level 3
+entity-order 97 entities e3 e5 e8 e9 e10 e11 e12
+entity 97 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=88 pickup-delay=32767 on-ground=true
+entity 97 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=88 pickup-delay=32767 on-ground=true
+entity 97 e8 2.227424086489236 1.0 6.5 1.0463756088918184E-7 -0.08 0 item=minecraft:stick count=1 age=86 pickup-delay=32767 on-ground=true
+entity 97 e9 2.227424086489236 1.0 8.5 1.0463756088918184E-7 -0.12 0 item=minecraft:netherite_scrap count=1 age=86 pickup-delay=32767 on-ground=true
+entity 97 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=72 fire=157 on-ground=false
+entity 97 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=72 fire=157 on-ground=false
+entity 97 e12 17.5 1.0 6.5 0 0 0 fuse=132 on-ground=true
+
+entity-order 98 entities e3 e5 e8 e9 e10 e11 e12
+entity 98 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=89 pickup-delay=32767 on-ground=true
+entity 98 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=89 pickup-delay=32767 on-ground=true
+entity 98 e8 2.227424086489236 1.0 6.5 1.0463756088918184E-7 -0.12 0 item=minecraft:stick count=1 age=87 pickup-delay=32767 on-ground=true
+entity 98 e9 2.227424086489236 1.0 8.5 6.15268919898285E-8 0 0 item=minecraft:netherite_scrap count=1 age=87 pickup-delay=32767 on-ground=true
+entity 98 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=73 fire=157 on-ground=false
+entity 98 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=73 fire=157 on-ground=false
+entity 98 e12 17.5 1.0 6.5 0 0 0 fuse=131 on-ground=true
+
+entity-order 99 entities e3 e5 e8 e9 e10 e11 e12
+entity 99 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=90 pickup-delay=32767 on-ground=true
+entity 99 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=90 pickup-delay=32767 on-ground=true
+entity 99 e8 2.227424086489236 1.0 6.5 6.15268919898285E-8 0 0 item=minecraft:stick count=1 age=88 pickup-delay=32767 on-ground=true
+entity 99 e9 2.227424086489236 1.0 8.5 6.15268919898285E-8 -0.04 0 item=minecraft:netherite_scrap count=1 age=88 pickup-delay=32767 on-ground=true
+entity 99 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=74 fire=157 on-ground=false
+entity 99 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=74 fire=157 on-ground=false
+entity 99 e12 17.5 1.0 6.5 0 0 0 fuse=130 on-ground=true
+
+change 100 block_ticks 5 1 2 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false]
+draws 100 block_ticks level 5
+entity-order 100 entities e3 e5 e8 e9 e10 e11 e12
+entity 100 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=91 pickup-delay=32767 on-ground=true
+entity 100 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=91 pickup-delay=32767 on-ground=true
+entity 100 e8 2.227424086489236 1.0 6.5 6.15268919898285E-8 -0.04 0 item=minecraft:stick count=1 age=89 pickup-delay=32767 on-ground=true
+entity 100 e9 2.227424086489236 1.0 8.5 6.15268919898285E-8 -0.08 0 item=minecraft:netherite_scrap count=1 age=89 pickup-delay=32767 on-ground=true
+entity 100 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=75 fire=157 on-ground=false
+entity 100 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=75 fire=157 on-ground=false
+entity 100 e12 17.5 1.0 6.5 0 0 0 fuse=129 on-ground=true
+
+change 101 block_ticks 8 1 6 minecraft:fire[age=2,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=3,east=false,north=false,south=false,up=false,west=false]
+draws 101 block_ticks level 3
+entity-order 101 entities e3 e5 e8 e9 e10 e11 e12
+entity 101 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=92 pickup-delay=32767 on-ground=true
+entity 101 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=92 pickup-delay=32767 on-ground=true
+entity 101 e8 2.227424086489236 1.0 6.5 6.15268919898285E-8 -0.08 0 item=minecraft:stick count=1 age=90 pickup-delay=32767 on-ground=true
+entity 101 e9 2.227424086489236 1.0 8.5 6.15268919898285E-8 -0.12 0 item=minecraft:netherite_scrap count=1 age=90 pickup-delay=32767 on-ground=true
+entity 101 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=76 fire=157 on-ground=false
+entity 101 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=76 fire=157 on-ground=false
+entity 101 e12 17.5 1.0 6.5 0 0 0 fuse=128 on-ground=true
+
+entity-order 102 entities e3 e5 e8 e9 e10 e11 e12
+entity 102 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=93 pickup-delay=32767 on-ground=true
+entity 102 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=93 pickup-delay=32767 on-ground=true
+entity 102 e8 2.227424086489236 1.0 6.5 6.15268919898285E-8 -0.12 0 item=minecraft:stick count=1 age=91 pickup-delay=32767 on-ground=true
+entity 102 e9 2.227424086489236 1.0 8.5 3.617781612796939E-8 0 0 item=minecraft:netherite_scrap count=1 age=91 pickup-delay=32767 on-ground=true
+entity 102 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=77 fire=157 on-ground=false
+entity 102 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=77 fire=157 on-ground=false
+entity 102 e12 17.5 1.0 6.5 0 0 0 fuse=127 on-ground=true
+
+draws 103 block_ticks level 2
+entity-order 103 entities e3 e5 e8 e9 e10 e11 e12
+entity 103 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=94 pickup-delay=32767 on-ground=true
+entity 103 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=94 pickup-delay=32767 on-ground=true
+entity 103 e8 2.227424086489236 1.0 6.5 3.617781612796939E-8 0 0 item=minecraft:stick count=1 age=92 pickup-delay=32767 on-ground=true
+entity 103 e9 2.227424086489236 1.0 8.5 3.617781612796939E-8 -0.04 0 item=minecraft:netherite_scrap count=1 age=92 pickup-delay=32767 on-ground=true
+entity 103 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=78 fire=157 on-ground=false
+entity 103 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=78 fire=157 on-ground=false
+entity 103 e12 17.5 1.0 6.5 0 0 0 fuse=126 on-ground=true
+
+draws 104 block_ticks level 2
+entity-order 104 entities e3 e5 e8 e9 e10 e11 e12
+entity 104 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=95 pickup-delay=32767 on-ground=true
+entity 104 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=95 pickup-delay=32767 on-ground=true
+entity 104 e8 2.227424086489236 1.0 6.5 3.617781612796939E-8 -0.04 0 item=minecraft:stick count=1 age=93 pickup-delay=32767 on-ground=true
+entity 104 e9 2.227424086489236 1.0 8.5 3.617781612796939E-8 -0.08 0 item=minecraft:netherite_scrap count=1 age=93 pickup-delay=32767 on-ground=true
+entity 104 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=79 fire=157 on-ground=false
+entity 104 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=79 fire=157 on-ground=false
+entity 104 e12 17.5 1.0 6.5 0 0 0 fuse=125 on-ground=true
+
+change 105 block_ticks 3 1 8 minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=2,east=false,north=false,south=false,up=false,west=false]
+draws 105 block_ticks level 3
+entity-order 105 entities e3 e5 e8 e9 e10 e11 e12
+entity 105 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=96 pickup-delay=32767 on-ground=true
+entity 105 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=96 pickup-delay=32767 on-ground=true
+entity 105 e8 2.227424086489236 1.0 6.5 3.617781612796939E-8 -0.08 0 item=minecraft:stick count=1 age=94 pickup-delay=32767 on-ground=true
+entity 105 e9 2.227424086489236 1.0 8.5 3.617781612796939E-8 -0.12 0 item=minecraft:netherite_scrap count=1 age=94 pickup-delay=32767 on-ground=true
+entity 105 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=80 fire=157 on-ground=false
+entity 105 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=80 fire=157 on-ground=false
+entity 105 e12 17.5 1.0 6.5 0 0 0 fuse=124 on-ground=true
+
+entity-order 106 entities e3 e5 e8 e9 e10 e11 e12
+entity 106 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=97 pickup-delay=32767 on-ground=true
+entity 106 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=97 pickup-delay=32767 on-ground=true
+entity 106 e8 2.227424086489236 1.0 6.5 3.617781612796939E-8 -0.12 0 item=minecraft:stick count=1 age=95 pickup-delay=32767 on-ground=true
+entity 106 e9 2.227424086489236 1.0 8.5 2.1272558022360954E-8 0 0 item=minecraft:netherite_scrap count=1 age=95 pickup-delay=32767 on-ground=true
+entity 106 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=81 fire=157 on-ground=false
+entity 106 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=81 fire=157 on-ground=false
+entity 106 e12 17.5 1.0 6.5 0 0 0 fuse=123 on-ground=true
+
+entity-order 107 entities e3 e5 e8 e9 e10 e11 e12
+entity 107 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=98 pickup-delay=32767 on-ground=true
+entity 107 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=98 pickup-delay=32767 on-ground=true
+entity 107 e8 2.227424086489236 1.0 6.5 2.1272558022360954E-8 0 0 item=minecraft:stick count=1 age=96 pickup-delay=32767 on-ground=true
+entity 107 e9 2.227424086489236 1.0 8.5 2.1272558022360954E-8 -0.04 0 item=minecraft:netherite_scrap count=1 age=96 pickup-delay=32767 on-ground=true
+entity 107 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=82 fire=157 on-ground=false
+entity 107 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=82 fire=157 on-ground=false
+entity 107 e12 17.5 1.0 6.5 0 0 0 fuse=122 on-ground=true
+
+change 108 block_ticks 17 1 6 minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=2,east=false,north=false,south=false,up=false,west=false]
+draws 108 block_ticks level 3
+entity-order 108 entities e3 e5 e8 e9 e10 e11 e12
+entity 108 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=99 pickup-delay=32767 on-ground=true
+entity 108 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=99 pickup-delay=32767 on-ground=true
+entity 108 e8 2.227424086489236 1.0 6.5 2.1272558022360954E-8 -0.04 0 item=minecraft:stick count=1 age=97 pickup-delay=32767 on-ground=true
+entity 108 e9 2.227424086489236 1.0 8.5 2.1272558022360954E-8 -0.08 0 item=minecraft:netherite_scrap count=1 age=97 pickup-delay=32767 on-ground=true
+entity 108 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=83 fire=157 on-ground=false
+entity 108 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=83 fire=157 on-ground=false
+entity 108 e12 17.5 1.0 6.5 0 0 0 fuse=121 on-ground=true
+
+entity-order 109 entities e3 e5 e8 e9 e10 e11 e12
+entity 109 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=100 pickup-delay=32767 on-ground=true
+entity 109 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=100 pickup-delay=32767 on-ground=true
+entity 109 e8 2.227424086489236 1.0 6.5 2.1272558022360954E-8 -0.08 0 item=minecraft:stick count=1 age=98 pickup-delay=32767 on-ground=true
+entity 109 e9 2.227424086489236 1.0 8.5 2.1272558022360954E-8 -0.12 0 item=minecraft:netherite_scrap count=1 age=98 pickup-delay=32767 on-ground=true
+entity 109 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=84 fire=157 on-ground=false
+entity 109 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=84 fire=157 on-ground=false
+entity 109 e12 17.5 1.0 6.5 0 0 0 fuse=120 on-ground=true
+
+entity-order 110 entities e3 e5 e8 e9 e10 e11 e12
+entity 110 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=101 pickup-delay=32767 on-ground=true
+entity 110 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=101 pickup-delay=32767 on-ground=true
+entity 110 e8 2.227424086489236 1.0 6.5 2.1272558022360954E-8 -0.12 0 item=minecraft:stick count=1 age=99 pickup-delay=32767 on-ground=true
+entity 110 e9 2.227424086489236 1.0 8.5 1.2508265374947959E-8 0 0 item=minecraft:netherite_scrap count=1 age=99 pickup-delay=32767 on-ground=true
+entity 110 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=85 fire=157 on-ground=false
+entity 110 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=85 fire=157 on-ground=false
+entity 110 e12 17.5 1.0 6.5 0 0 0 fuse=119 on-ground=true
+
+entity-order 111 entities e3 e5 e8 e9 e10 e11 e12
+entity 111 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=102 pickup-delay=32767 on-ground=true
+entity 111 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=102 pickup-delay=32767 on-ground=true
+entity 111 e8 2.227424086489236 1.0 6.5 1.2508265374947959E-8 0 0 item=minecraft:stick count=1 age=100 pickup-delay=32767 on-ground=true
+entity 111 e9 2.227424086489236 1.0 8.5 1.2508265374947959E-8 -0.04 0 item=minecraft:netherite_scrap count=1 age=100 pickup-delay=32767 on-ground=true
+entity 111 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=86 fire=157 on-ground=false
+entity 111 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=86 fire=157 on-ground=false
+entity 111 e12 17.5 1.0 6.5 0 0 0 fuse=118 on-ground=true
+
+entity-order 112 entities e3 e5 e8 e9 e10 e11 e12
+entity 112 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=103 pickup-delay=32767 on-ground=true
+entity 112 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=103 pickup-delay=32767 on-ground=true
+entity 112 e8 2.227424086489236 1.0 6.5 1.2508265374947959E-8 -0.04 0 item=minecraft:stick count=1 age=101 pickup-delay=32767 on-ground=true
+entity 112 e9 2.227424086489236 1.0 8.5 1.2508265374947959E-8 -0.08 0 item=minecraft:netherite_scrap count=1 age=101 pickup-delay=32767 on-ground=true
+entity 112 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=87 fire=157 on-ground=false
+entity 112 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=87 fire=157 on-ground=false
+entity 112 e12 17.5 1.0 6.5 0 0 0 fuse=117 on-ground=true
+
+entity-order 113 entities e3 e5 e8 e9 e10 e11 e12
+entity 113 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=104 pickup-delay=32767 on-ground=true
+entity 113 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=104 pickup-delay=32767 on-ground=true
+entity 113 e8 2.227424086489236 1.0 6.5 1.2508265374947959E-8 -0.08 0 item=minecraft:stick count=1 age=102 pickup-delay=32767 on-ground=true
+entity 113 e9 2.227424086489236 1.0 8.5 1.2508265374947959E-8 -0.12 0 item=minecraft:netherite_scrap count=1 age=102 pickup-delay=32767 on-ground=true
+entity 113 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=88 fire=157 on-ground=false
+entity 113 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=88 fire=157 on-ground=false
+entity 113 e12 17.5 1.0 6.5 0 0 0 fuse=116 on-ground=true
+
+entity-order 114 entities e3 e5 e8 e9 e10 e11 e12
+entity 114 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=105 pickup-delay=32767 on-ground=true
+entity 114 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=105 pickup-delay=32767 on-ground=true
+entity 114 e8 2.227424086489236 1.0 6.5 1.2508265374947959E-8 -0.12 0 item=minecraft:stick count=1 age=103 pickup-delay=32767 on-ground=true
+entity 114 e9 2.227424086489236 1.0 8.5 7.354860780055708E-9 0 0 item=minecraft:netherite_scrap count=1 age=103 pickup-delay=32767 on-ground=true
+entity 114 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=89 fire=157 on-ground=false
+entity 114 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=89 fire=157 on-ground=false
+entity 114 e12 17.5 1.0 6.5 0 0 0 fuse=115 on-ground=true
+
+entity-order 115 entities e3 e5 e8 e9 e10 e11 e12
+entity 115 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=106 pickup-delay=32767 on-ground=true
+entity 115 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=106 pickup-delay=32767 on-ground=true
+entity 115 e8 2.227424086489236 1.0 6.5 7.354860780055708E-9 0 0 item=minecraft:stick count=1 age=104 pickup-delay=32767 on-ground=true
+entity 115 e9 2.227424086489236 1.0 8.5 7.354860780055708E-9 -0.04 0 item=minecraft:netherite_scrap count=1 age=104 pickup-delay=32767 on-ground=true
+entity 115 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=90 fire=157 on-ground=false
+entity 115 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=90 fire=157 on-ground=false
+entity 115 e12 17.5 1.0 6.5 0 0 0 fuse=114 on-ground=true
+
+entity-order 116 entities e3 e5 e8 e9 e10 e11 e12
+entity 116 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=107 pickup-delay=32767 on-ground=true
+entity 116 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=107 pickup-delay=32767 on-ground=true
+entity 116 e8 2.227424086489236 1.0 6.5 7.354860780055708E-9 -0.04 0 item=minecraft:stick count=1 age=105 pickup-delay=32767 on-ground=true
+entity 116 e9 2.227424086489236 1.0 8.5 7.354860780055708E-9 -0.08 0 item=minecraft:netherite_scrap count=1 age=105 pickup-delay=32767 on-ground=true
+entity 116 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=91 fire=157 on-ground=false
+entity 116 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=91 fire=157 on-ground=false
+entity 116 e12 17.5 1.0 6.5 0 0 0 fuse=113 on-ground=true
+
+entity-order 117 entities e3 e5 e8 e9 e10 e11 e12
+entity 117 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=108 pickup-delay=32767 on-ground=true
+entity 117 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=108 pickup-delay=32767 on-ground=true
+entity 117 e8 2.227424086489236 1.0 6.5 7.354860780055708E-9 -0.08 0 item=minecraft:stick count=1 age=106 pickup-delay=32767 on-ground=true
+entity 117 e9 2.227424086489236 1.0 8.5 7.354860780055708E-9 -0.12 0 item=minecraft:netherite_scrap count=1 age=106 pickup-delay=32767 on-ground=true
+entity 117 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=92 fire=157 on-ground=false
+entity 117 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=92 fire=157 on-ground=false
+entity 117 e12 17.5 1.0 6.5 0 0 0 fuse=112 on-ground=true
+
+entity-order 118 entities e3 e5 e8 e9 e10 e11 e12
+entity 118 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=109 pickup-delay=32767 on-ground=true
+entity 118 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=109 pickup-delay=32767 on-ground=true
+entity 118 e8 2.227424086489236 1.0 6.5 7.354860780055708E-9 -0.12 0 item=minecraft:stick count=1 age=107 pickup-delay=32767 on-ground=true
+entity 118 e9 2.227424086489236 1.0 8.5 4.324658573549549E-9 0 0 item=minecraft:netherite_scrap count=1 age=107 pickup-delay=32767 on-ground=true
+entity 118 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=93 fire=157 on-ground=false
+entity 118 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=93 fire=157 on-ground=false
+entity 118 e12 17.5 1.0 6.5 0 0 0 fuse=111 on-ground=true
+
+entity-order 119 entities e3 e5 e8 e9 e10 e11 e12
+entity 119 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=110 pickup-delay=32767 on-ground=true
+entity 119 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=110 pickup-delay=32767 on-ground=true
+entity 119 e8 2.227424086489236 1.0 6.5 4.324658573549549E-9 0 0 item=minecraft:stick count=1 age=108 pickup-delay=32767 on-ground=true
+entity 119 e9 2.227424086489236 1.0 8.5 4.324658573549549E-9 -0.04 0 item=minecraft:netherite_scrap count=1 age=108 pickup-delay=32767 on-ground=true
+entity 119 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=94 fire=157 on-ground=false
+entity 119 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=94 fire=157 on-ground=false
+entity 119 e12 17.5 1.0 6.5 0 0 0 fuse=110 on-ground=true
+
+entity-order 120 entities e3 e5 e8 e9 e10 e11 e12
+entity 120 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=111 pickup-delay=32767 on-ground=true
+entity 120 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=111 pickup-delay=32767 on-ground=true
+entity 120 e8 2.227424086489236 1.0 6.5 4.324658573549549E-9 -0.04 0 item=minecraft:stick count=1 age=109 pickup-delay=32767 on-ground=true
+entity 120 e9 2.227424086489236 1.0 8.5 4.324658573549549E-9 -0.08 0 item=minecraft:netherite_scrap count=1 age=109 pickup-delay=32767 on-ground=true
+entity 120 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=95 fire=157 on-ground=false
+entity 120 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=95 fire=157 on-ground=false
+entity 120 e12 17.5 1.0 6.5 0 0 0 fuse=109 on-ground=true
+
+entity-order 121 entities e3 e5 e8 e9 e10 e11 e12
+entity 121 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=112 pickup-delay=32767 on-ground=true
+entity 121 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=112 pickup-delay=32767 on-ground=true
+entity 121 e8 2.227424086489236 1.0 6.5 4.324658573549549E-9 -0.08 0 item=minecraft:stick count=1 age=110 pickup-delay=32767 on-ground=true
+entity 121 e9 2.227424086489236 1.0 8.5 4.324658573549549E-9 -0.12 0 item=minecraft:netherite_scrap count=1 age=110 pickup-delay=32767 on-ground=true
+entity 121 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=96 fire=157 on-ground=false
+entity 121 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=96 fire=157 on-ground=false
+entity 121 e12 17.5 1.0 6.5 0 0 0 fuse=108 on-ground=true
+
+entity-order 122 entities e3 e5 e8 e9 e10 e11 e12
+entity 122 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=113 pickup-delay=32767 on-ground=true
+entity 122 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=113 pickup-delay=32767 on-ground=true
+entity 122 e8 2.227424086489236 1.0 6.5 4.324658573549549E-9 -0.12 0 item=minecraft:stick count=1 age=111 pickup-delay=32767 on-ground=true
+entity 122 e9 2.227424086489236 1.0 8.5 2.542899496954715E-9 0 0 item=minecraft:netherite_scrap count=1 age=111 pickup-delay=32767 on-ground=true
+entity 122 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=97 fire=157 on-ground=false
+entity 122 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=97 fire=157 on-ground=false
+entity 122 e12 17.5 1.0 6.5 0 0 0 fuse=107 on-ground=true
+
+entity-order 123 entities e3 e5 e8 e9 e10 e11 e12
+entity 123 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=114 pickup-delay=32767 on-ground=true
+entity 123 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=114 pickup-delay=32767 on-ground=true
+entity 123 e8 2.227424086489236 1.0 6.5 2.542899496954715E-9 0 0 item=minecraft:stick count=1 age=112 pickup-delay=32767 on-ground=true
+entity 123 e9 2.227424086489236 1.0 8.5 2.542899496954715E-9 -0.04 0 item=minecraft:netherite_scrap count=1 age=112 pickup-delay=32767 on-ground=true
+entity 123 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=98 fire=157 on-ground=false
+entity 123 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=98 fire=157 on-ground=false
+entity 123 e12 17.5 1.0 6.5 0 0 0 fuse=106 on-ground=true
+
+entity-order 124 entities e3 e5 e8 e9 e10 e11 e12
+entity 124 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=115 pickup-delay=32767 on-ground=true
+entity 124 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=115 pickup-delay=32767 on-ground=true
+entity 124 e8 2.227424086489236 1.0 6.5 2.542899496954715E-9 -0.04 0 item=minecraft:stick count=1 age=113 pickup-delay=32767 on-ground=true
+entity 124 e9 2.227424086489236 1.0 8.5 2.542899496954715E-9 -0.08 0 item=minecraft:netherite_scrap count=1 age=113 pickup-delay=32767 on-ground=true
+entity 124 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=99 fire=157 on-ground=false
+entity 124 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=99 fire=157 on-ground=false
+entity 124 e12 17.5 1.0 6.5 0 0 0 fuse=105 on-ground=true
+
+entity-order 125 entities e3 e5 e8 e9 e10 e11 e12
+entity 125 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=116 pickup-delay=32767 on-ground=true
+entity 125 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=116 pickup-delay=32767 on-ground=true
+entity 125 e8 2.227424086489236 1.0 6.5 2.542899496954715E-9 -0.08 0 item=minecraft:stick count=1 age=114 pickup-delay=32767 on-ground=true
+entity 125 e9 2.227424086489236 1.0 8.5 2.542899496954715E-9 -0.12 0 item=minecraft:netherite_scrap count=1 age=114 pickup-delay=32767 on-ground=true
+entity 125 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=100 fire=157 on-ground=false
+entity 125 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=100 fire=157 on-ground=false
+entity 125 e12 17.5 1.0 6.5 0 0 0 fuse=104 on-ground=true
+
+entity-order 126 entities e3 e5 e8 e9 e10 e11 e12
+entity 126 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=117 pickup-delay=32767 on-ground=true
+entity 126 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=117 pickup-delay=32767 on-ground=true
+entity 126 e8 2.227424086489236 1.0 6.5 2.542899496954715E-9 -0.12 0 item=minecraft:stick count=1 age=115 pickup-delay=32767 on-ground=true
+entity 126 e9 2.227424086489236 1.0 8.5 1.4952250545654446E-9 0 0 item=minecraft:netherite_scrap count=1 age=115 pickup-delay=32767 on-ground=true
+entity 126 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=101 fire=157 on-ground=false
+entity 126 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=101 fire=157 on-ground=false
+entity 126 e12 17.5 1.0 6.5 0 0 0 fuse=103 on-ground=true
+
+entity-order 127 entities e3 e5 e8 e9 e10 e11 e12
+entity 127 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=118 pickup-delay=32767 on-ground=true
+entity 127 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=118 pickup-delay=32767 on-ground=true
+entity 127 e8 2.227424086489236 1.0 6.5 1.4952250545654446E-9 0 0 item=minecraft:stick count=1 age=116 pickup-delay=32767 on-ground=true
+entity 127 e9 2.227424086489236 1.0 8.5 1.4952250545654446E-9 -0.04 0 item=minecraft:netherite_scrap count=1 age=116 pickup-delay=32767 on-ground=true
+entity 127 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=102 fire=157 on-ground=false
+entity 127 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=102 fire=157 on-ground=false
+entity 127 e12 17.5 1.0 6.5 0 0 0 fuse=102 on-ground=true
+
+entity-order 128 entities e3 e5 e8 e9 e10 e11 e12
+entity 128 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=119 pickup-delay=32767 on-ground=true
+entity 128 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=119 pickup-delay=32767 on-ground=true
+entity 128 e8 2.227424086489236 1.0 6.5 1.4952250545654446E-9 -0.04 0 item=minecraft:stick count=1 age=117 pickup-delay=32767 on-ground=true
+entity 128 e9 2.227424086489236 1.0 8.5 1.4952250545654446E-9 -0.08 0 item=minecraft:netherite_scrap count=1 age=117 pickup-delay=32767 on-ground=true
+entity 128 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=103 fire=157 on-ground=false
+entity 128 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=103 fire=157 on-ground=false
+entity 128 e12 17.5 1.0 6.5 0 0 0 fuse=101 on-ground=true
+
+entity-order 129 entities e3 e5 e8 e9 e10 e11 e12
+entity 129 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=120 pickup-delay=32767 on-ground=true
+entity 129 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=120 pickup-delay=32767 on-ground=true
+entity 129 e8 2.227424086489236 1.0 6.5 1.4952250545654446E-9 -0.08 0 item=minecraft:stick count=1 age=118 pickup-delay=32767 on-ground=true
+entity 129 e9 2.227424086489236 1.0 8.5 1.4952250545654446E-9 -0.12 0 item=minecraft:netherite_scrap count=1 age=118 pickup-delay=32767 on-ground=true
+entity 129 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=104 fire=157 on-ground=false
+entity 129 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=104 fire=157 on-ground=false
+entity 129 e12 17.5 1.0 6.5 0 0 0 fuse=100 on-ground=true
+
+entity-order 130 entities e3 e5 e8 e9 e10 e11 e12
+entity 130 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=121 pickup-delay=32767 on-ground=true
+entity 130 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=121 pickup-delay=32767 on-ground=true
+entity 130 e8 2.227424086489236 1.0 6.5 1.4952250545654446E-9 -0.12 0 item=minecraft:stick count=1 age=119 pickup-delay=32767 on-ground=true
+entity 130 e9 2.227424086489236 1.0 8.5 8.791924204938608E-10 0 0 item=minecraft:netherite_scrap count=1 age=119 pickup-delay=32767 on-ground=true
+entity 130 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=105 fire=157 on-ground=false
+entity 130 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=105 fire=157 on-ground=false
+entity 130 e12 17.5 1.0 6.5 0 0 0 fuse=99 on-ground=true
+
+entity-order 131 entities e3 e5 e8 e9 e10 e11 e12
+entity 131 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=122 pickup-delay=32767 on-ground=true
+entity 131 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=122 pickup-delay=32767 on-ground=true
+entity 131 e8 2.227424086489236 1.0 6.5 8.791924204938608E-10 0 0 item=minecraft:stick count=1 age=120 pickup-delay=32767 on-ground=true
+entity 131 e9 2.227424086489236 1.0 8.5 8.791924204938608E-10 -0.04 0 item=minecraft:netherite_scrap count=1 age=120 pickup-delay=32767 on-ground=true
+entity 131 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=106 fire=157 on-ground=false
+entity 131 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=106 fire=157 on-ground=false
+entity 131 e12 17.5 1.0 6.5 0 0 0 fuse=98 on-ground=true
+
+entity-order 132 entities e3 e5 e8 e9 e10 e11 e12
+entity 132 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=123 pickup-delay=32767 on-ground=true
+entity 132 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=123 pickup-delay=32767 on-ground=true
+entity 132 e8 2.227424086489236 1.0 6.5 8.791924204938608E-10 -0.04 0 item=minecraft:stick count=1 age=121 pickup-delay=32767 on-ground=true
+entity 132 e9 2.227424086489236 1.0 8.5 8.791924204938608E-10 -0.08 0 item=minecraft:netherite_scrap count=1 age=121 pickup-delay=32767 on-ground=true
+entity 132 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=107 fire=157 on-ground=false
+entity 132 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=107 fire=157 on-ground=false
+entity 132 e12 17.5 1.0 6.5 0 0 0 fuse=97 on-ground=true
+
+entity-order 133 entities e3 e5 e8 e9 e10 e11 e12
+entity 133 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=124 pickup-delay=32767 on-ground=true
+entity 133 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=124 pickup-delay=32767 on-ground=true
+entity 133 e8 2.227424086489236 1.0 6.5 8.791924204938608E-10 -0.08 0 item=minecraft:stick count=1 age=122 pickup-delay=32767 on-ground=true
+entity 133 e9 2.227424086489236 1.0 8.5 8.791924204938608E-10 -0.12 0 item=minecraft:netherite_scrap count=1 age=122 pickup-delay=32767 on-ground=true
+entity 133 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=108 fire=157 on-ground=false
+entity 133 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=108 fire=157 on-ground=false
+entity 133 e12 17.5 1.0 6.5 0 0 0 fuse=96 on-ground=true
+
+change 134 block_ticks 11 1 2 minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=2,east=false,north=false,south=false,up=false,west=false]
+draws 134 block_ticks level 3
+entity-order 134 entities e3 e5 e8 e9 e10 e11 e12
+entity 134 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=125 pickup-delay=32767 on-ground=true
+entity 134 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=125 pickup-delay=32767 on-ground=true
+entity 134 e8 2.227424086489236 1.0 6.5 8.791924204938608E-10 -0.12 0 item=minecraft:stick count=1 age=123 pickup-delay=32767 on-ground=true
+entity 134 e9 2.227424086489236 1.0 8.5 5.169651952351105E-10 0 0 item=minecraft:netherite_scrap count=1 age=123 pickup-delay=32767 on-ground=true
+entity 134 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=109 fire=157 on-ground=false
+entity 134 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=109 fire=157 on-ground=false
+entity 134 e12 17.5 1.0 6.5 0 0 0 fuse=95 on-ground=true
+
+entity-order 135 entities e3 e5 e8 e9 e10 e11 e12
+entity 135 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=126 pickup-delay=32767 on-ground=true
+entity 135 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=126 pickup-delay=32767 on-ground=true
+entity 135 e8 2.227424086489236 1.0 6.5 5.169651952351105E-10 0 0 item=minecraft:stick count=1 age=124 pickup-delay=32767 on-ground=true
+entity 135 e9 2.227424086489236 1.0 8.5 5.169651952351105E-10 -0.04 0 item=minecraft:netherite_scrap count=1 age=124 pickup-delay=32767 on-ground=true
+entity 135 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=110 fire=157 on-ground=false
+entity 135 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=110 fire=157 on-ground=false
+entity 135 e12 17.5 1.0 6.5 0 0 0 fuse=94 on-ground=true
+
+change 136 block_ticks 3 1 8 minecraft:fire[age=2,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=3,east=false,north=false,south=false,up=false,west=false]
+draws 136 block_ticks level 3
+entity-order 136 entities e3 e5 e8 e9 e10 e11 e12
+entity 136 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=127 pickup-delay=32767 on-ground=true
+entity 136 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=127 pickup-delay=32767 on-ground=true
+entity 136 e8 2.227424086489236 1.0 6.5 5.169651952351105E-10 -0.04 0 item=minecraft:stick count=1 age=125 pickup-delay=32767 on-ground=true
+entity 136 e9 2.227424086489236 1.0 8.5 5.169651952351105E-10 -0.08 0 item=minecraft:netherite_scrap count=1 age=125 pickup-delay=32767 on-ground=true
+entity 136 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=111 fire=157 on-ground=false
+entity 136 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=111 fire=157 on-ground=false
+entity 136 e12 17.5 1.0 6.5 0 0 0 fuse=93 on-ground=true
+
+draws 137 block_ticks level 2
+entity-order 137 entities e3 e5 e8 e9 e10 e11 e12
+entity 137 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=128 pickup-delay=32767 on-ground=true
+entity 137 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=128 pickup-delay=32767 on-ground=true
+entity 137 e8 2.227424086489236 1.0 6.5 5.169651952351105E-10 -0.08 0 item=minecraft:stick count=1 age=126 pickup-delay=32767 on-ground=true
+entity 137 e9 2.227424086489236 1.0 8.5 5.169651952351105E-10 -0.12 0 item=minecraft:netherite_scrap count=1 age=126 pickup-delay=32767 on-ground=true
+entity 137 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=112 fire=157 on-ground=false
+entity 137 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=112 fire=157 on-ground=false
+entity 137 e12 17.5 1.0 6.5 0 0 0 fuse=92 on-ground=true
+
+draws 138 block_ticks level 6
+entity-order 138 entities e3 e5 e8 e9 e10 e11 e12
+entity 138 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=129 pickup-delay=32767 on-ground=true
+entity 138 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=129 pickup-delay=32767 on-ground=true
+entity 138 e8 2.227424086489236 1.0 6.5 5.169651952351105E-10 -0.12 0 item=minecraft:stick count=1 age=127 pickup-delay=32767 on-ground=true
+entity 138 e9 2.227424086489236 1.0 8.5 3.039755653652636E-10 0 0 item=minecraft:netherite_scrap count=1 age=127 pickup-delay=32767 on-ground=true
+entity 138 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=113 fire=157 on-ground=false
+entity 138 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=113 fire=157 on-ground=false
+entity 138 e12 17.5 1.0 6.5 0 0 0 fuse=91 on-ground=true
+
+entity-order 139 entities e3 e5 e8 e9 e10 e11 e12
+entity 139 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=130 pickup-delay=32767 on-ground=true
+entity 139 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=130 pickup-delay=32767 on-ground=true
+entity 139 e8 2.227424086489236 1.0 6.5 3.039755653652636E-10 0 0 item=minecraft:stick count=1 age=128 pickup-delay=32767 on-ground=true
+entity 139 e9 2.227424086489236 1.0 8.5 3.039755653652636E-10 -0.04 0 item=minecraft:netherite_scrap count=1 age=128 pickup-delay=32767 on-ground=true
+entity 139 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=114 fire=157 on-ground=false
+entity 139 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=114 fire=157 on-ground=false
+entity 139 e12 17.5 1.0 6.5 0 0 0 fuse=90 on-ground=true
+
+entity-order 140 entities e3 e5 e8 e9 e10 e11 e12
+entity 140 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=131 pickup-delay=32767 on-ground=true
+entity 140 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=131 pickup-delay=32767 on-ground=true
+entity 140 e8 2.227424086489236 1.0 6.5 3.039755653652636E-10 -0.04 0 item=minecraft:stick count=1 age=129 pickup-delay=32767 on-ground=true
+entity 140 e9 2.227424086489236 1.0 8.5 3.039755653652636E-10 -0.08 0 item=minecraft:netherite_scrap count=1 age=129 pickup-delay=32767 on-ground=true
+entity 140 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=115 fire=157 on-ground=false
+entity 140 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=115 fire=157 on-ground=false
+entity 140 e12 17.5 1.0 6.5 0 0 0 fuse=89 on-ground=true
+
+entity-order 141 entities e3 e5 e8 e9 e10 e11 e12
+entity 141 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=132 pickup-delay=32767 on-ground=true
+entity 141 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=132 pickup-delay=32767 on-ground=true
+entity 141 e8 2.227424086489236 1.0 6.5 3.039755653652636E-10 -0.08 0 item=minecraft:stick count=1 age=130 pickup-delay=32767 on-ground=true
+entity 141 e9 2.227424086489236 1.0 8.5 3.039755653652636E-10 -0.12 0 item=minecraft:netherite_scrap count=1 age=130 pickup-delay=32767 on-ground=true
+entity 141 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=116 fire=157 on-ground=false
+entity 141 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=116 fire=157 on-ground=false
+entity 141 e12 17.5 1.0 6.5 0 0 0 fuse=88 on-ground=true
+
+draws 142 block_ticks level 2
+entity-order 142 entities e3 e5 e8 e9 e10 e11 e12
+entity 142 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=133 pickup-delay=32767 on-ground=true
+entity 142 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=133 pickup-delay=32767 on-ground=true
+entity 142 e8 2.227424086489236 1.0 6.5 3.039755653652636E-10 -0.12 0 item=minecraft:stick count=1 age=131 pickup-delay=32767 on-ground=true
+entity 142 e9 2.227424086489236 1.0 8.5 1.7873765040818375E-10 0 0 item=minecraft:netherite_scrap count=1 age=131 pickup-delay=32767 on-ground=true
+entity 142 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=117 fire=157 on-ground=false
+entity 142 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=117 fire=157 on-ground=false
+entity 142 e12 17.5 1.0 6.5 0 0 0 fuse=87 on-ground=true
+
+entity-order 143 entities e3 e5 e8 e9 e10 e11 e12
+entity 143 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=134 pickup-delay=32767 on-ground=true
+entity 143 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=134 pickup-delay=32767 on-ground=true
+entity 143 e8 2.227424086489236 1.0 6.5 1.7873765040818375E-10 0 0 item=minecraft:stick count=1 age=132 pickup-delay=32767 on-ground=true
+entity 143 e9 2.227424086489236 1.0 8.5 1.7873765040818375E-10 -0.04 0 item=minecraft:netherite_scrap count=1 age=132 pickup-delay=32767 on-ground=true
+entity 143 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=118 fire=157 on-ground=false
+entity 143 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=118 fire=157 on-ground=false
+entity 143 e12 17.5 1.0 6.5 0 0 0 fuse=86 on-ground=true
+
+entity-order 144 entities e3 e5 e8 e9 e10 e11 e12
+entity 144 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=135 pickup-delay=32767 on-ground=true
+entity 144 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=135 pickup-delay=32767 on-ground=true
+entity 144 e8 2.227424086489236 1.0 6.5 1.7873765040818375E-10 -0.04 0 item=minecraft:stick count=1 age=133 pickup-delay=32767 on-ground=true
+entity 144 e9 2.227424086489236 1.0 8.5 1.7873765040818375E-10 -0.08 0 item=minecraft:netherite_scrap count=1 age=133 pickup-delay=32767 on-ground=true
+entity 144 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=119 fire=157 on-ground=false
+entity 144 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=119 fire=157 on-ground=false
+entity 144 e12 17.5 1.0 6.5 0 0 0 fuse=85 on-ground=true
+
+entity-order 145 entities e3 e5 e8 e9 e10 e11 e12
+entity 145 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=136 pickup-delay=32767 on-ground=true
+entity 145 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=136 pickup-delay=32767 on-ground=true
+entity 145 e8 2.227424086489236 1.0 6.5 1.7873765040818375E-10 -0.08 0 item=minecraft:stick count=1 age=134 pickup-delay=32767 on-ground=true
+entity 145 e9 2.227424086489236 1.0 8.5 1.7873765040818375E-10 -0.12 0 item=minecraft:netherite_scrap count=1 age=134 pickup-delay=32767 on-ground=true
+entity 145 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=120 fire=157 on-ground=false
+entity 145 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=120 fire=157 on-ground=false
+entity 145 e12 17.5 1.0 6.5 0 0 0 fuse=84 on-ground=true
+
+draws 146 block_ticks level 2
+entity-order 146 entities e3 e5 e8 e9 e10 e11 e12
+entity 146 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=137 pickup-delay=32767 on-ground=true
+entity 146 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=137 pickup-delay=32767 on-ground=true
+entity 146 e8 2.227424086489236 1.0 6.5 1.7873765040818375E-10 -0.12 0 item=minecraft:stick count=1 age=135 pickup-delay=32767 on-ground=true
+entity 146 e9 2.227424086489236 1.0 8.5 1.0509774900837746E-10 0 0 item=minecraft:netherite_scrap count=1 age=135 pickup-delay=32767 on-ground=true
+entity 146 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=121 fire=157 on-ground=false
+entity 146 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=121 fire=157 on-ground=false
+entity 146 e12 17.5 1.0 6.5 0 0 0 fuse=83 on-ground=true
+
+entity-order 147 entities e3 e5 e8 e9 e10 e11 e12
+entity 147 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=138 pickup-delay=32767 on-ground=true
+entity 147 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=138 pickup-delay=32767 on-ground=true
+entity 147 e8 2.227424086489236 1.0 6.5 1.0509774900837746E-10 0 0 item=minecraft:stick count=1 age=136 pickup-delay=32767 on-ground=true
+entity 147 e9 2.227424086489236 1.0 8.5 1.0509774900837746E-10 -0.04 0 item=minecraft:netherite_scrap count=1 age=136 pickup-delay=32767 on-ground=true
+entity 147 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=122 fire=157 on-ground=false
+entity 147 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=122 fire=157 on-ground=false
+entity 147 e12 17.5 1.0 6.5 0 0 0 fuse=82 on-ground=true
+
+entity-order 148 entities e3 e5 e8 e9 e10 e11 e12
+entity 148 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=139 pickup-delay=32767 on-ground=true
+entity 148 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=139 pickup-delay=32767 on-ground=true
+entity 148 e8 2.227424086489236 1.0 6.5 1.0509774900837746E-10 -0.04 0 item=minecraft:stick count=1 age=137 pickup-delay=32767 on-ground=true
+entity 148 e9 2.227424086489236 1.0 8.5 1.0509774900837746E-10 -0.08 0 item=minecraft:netherite_scrap count=1 age=137 pickup-delay=32767 on-ground=true
+entity 148 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=123 fire=157 on-ground=false
+entity 148 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=123 fire=157 on-ground=false
+entity 148 e12 17.5 1.0 6.5 0 0 0 fuse=81 on-ground=true
+
+entity-order 149 entities e3 e5 e8 e9 e10 e11 e12
+entity 149 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=140 pickup-delay=32767 on-ground=true
+entity 149 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=140 pickup-delay=32767 on-ground=true
+entity 149 e8 2.227424086489236 1.0 6.5 1.0509774900837746E-10 -0.08 0 item=minecraft:stick count=1 age=138 pickup-delay=32767 on-ground=true
+entity 149 e9 2.227424086489236 1.0 8.5 1.0509774900837746E-10 -0.12 0 item=minecraft:netherite_scrap count=1 age=138 pickup-delay=32767 on-ground=true
+entity 149 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=124 fire=157 on-ground=false
+entity 149 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=124 fire=157 on-ground=false
+entity 149 e12 17.5 1.0 6.5 0 0 0 fuse=80 on-ground=true
+
+entity-order 150 entities e3 e5 e8 e9 e10 e11 e12
+entity 150 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=141 pickup-delay=32767 on-ground=true
+entity 150 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=141 pickup-delay=32767 on-ground=true
+entity 150 e8 2.227424086489236 1.0 6.5 1.0509774900837746E-10 -0.12 0 item=minecraft:stick count=1 age=139 pickup-delay=32767 on-ground=true
+entity 150 e9 2.227424086489236 1.0 8.5 6.179748263112543E-11 0 0 item=minecraft:netherite_scrap count=1 age=139 pickup-delay=32767 on-ground=true
+entity 150 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=125 fire=157 on-ground=false
+entity 150 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=125 fire=157 on-ground=false
+entity 150 e12 17.5 1.0 6.5 0 0 0 fuse=79 on-ground=true
+
+entity-order 151 entities e3 e5 e8 e9 e10 e11 e12
+entity 151 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=142 pickup-delay=32767 on-ground=true
+entity 151 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=142 pickup-delay=32767 on-ground=true
+entity 151 e8 2.227424086489236 1.0 6.5 6.179748263112543E-11 0 0 item=minecraft:stick count=1 age=140 pickup-delay=32767 on-ground=true
+entity 151 e9 2.227424086489236 1.0 8.5 6.179748263112543E-11 -0.04 0 item=minecraft:netherite_scrap count=1 age=140 pickup-delay=32767 on-ground=true
+entity 151 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=126 fire=157 on-ground=false
+entity 151 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=126 fire=157 on-ground=false
+entity 151 e12 17.5 1.0 6.5 0 0 0 fuse=78 on-ground=true
+
+entity-order 152 entities e3 e5 e8 e9 e10 e11 e12
+entity 152 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=143 pickup-delay=32767 on-ground=true
+entity 152 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=143 pickup-delay=32767 on-ground=true
+entity 152 e8 2.227424086489236 1.0 6.5 6.179748263112543E-11 -0.04 0 item=minecraft:stick count=1 age=141 pickup-delay=32767 on-ground=true
+entity 152 e9 2.227424086489236 1.0 8.5 6.179748263112543E-11 -0.08 0 item=minecraft:netherite_scrap count=1 age=141 pickup-delay=32767 on-ground=true
+entity 152 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=127 fire=157 on-ground=false
+entity 152 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=127 fire=157 on-ground=false
+entity 152 e12 17.5 1.0 6.5 0 0 0 fuse=77 on-ground=true
+
+entity-order 153 entities e3 e5 e8 e9 e10 e11 e12
+entity 153 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=144 pickup-delay=32767 on-ground=true
+entity 153 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=144 pickup-delay=32767 on-ground=true
+entity 153 e8 2.227424086489236 1.0 6.5 6.179748263112543E-11 -0.08 0 item=minecraft:stick count=1 age=142 pickup-delay=32767 on-ground=true
+entity 153 e9 2.227424086489236 1.0 8.5 6.179748263112543E-11 -0.12 0 item=minecraft:netherite_scrap count=1 age=142 pickup-delay=32767 on-ground=true
+entity 153 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=128 fire=157 on-ground=false
+entity 153 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=128 fire=157 on-ground=false
+entity 153 e12 17.5 1.0 6.5 0 0 0 fuse=76 on-ground=true
+
+entity-order 154 entities e3 e5 e8 e9 e10 e11 e12
+entity 154 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=145 pickup-delay=32767 on-ground=true
+entity 154 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=145 pickup-delay=32767 on-ground=true
+entity 154 e8 2.227424086489236 1.0 6.5 6.179748263112543E-11 -0.12 0 item=minecraft:stick count=1 age=143 pickup-delay=32767 on-ground=true
+entity 154 e9 2.227424086489236 1.0 8.5 3.633692344105142E-11 0 0 item=minecraft:netherite_scrap count=1 age=143 pickup-delay=32767 on-ground=true
+entity 154 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=129 fire=157 on-ground=false
+entity 154 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=129 fire=157 on-ground=false
+entity 154 e12 17.5 1.0 6.5 0 0 0 fuse=75 on-ground=true
+
+entity-order 155 entities e3 e5 e8 e9 e10 e11 e12
+entity 155 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=146 pickup-delay=32767 on-ground=true
+entity 155 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=146 pickup-delay=32767 on-ground=true
+entity 155 e8 2.227424086489236 1.0 6.5 3.633692344105142E-11 0 0 item=minecraft:stick count=1 age=144 pickup-delay=32767 on-ground=true
+entity 155 e9 2.227424086489236 1.0 8.5 3.633692344105142E-11 -0.04 0 item=minecraft:netherite_scrap count=1 age=144 pickup-delay=32767 on-ground=true
+entity 155 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=130 fire=157 on-ground=false
+entity 155 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=130 fire=157 on-ground=false
+entity 155 e12 17.5 1.0 6.5 0 0 0 fuse=74 on-ground=true
+
+entity-order 156 entities e3 e5 e8 e9 e10 e11 e12
+entity 156 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=147 pickup-delay=32767 on-ground=true
+entity 156 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=147 pickup-delay=32767 on-ground=true
+entity 156 e8 2.227424086489236 1.0 6.5 3.633692344105142E-11 -0.04 0 item=minecraft:stick count=1 age=145 pickup-delay=32767 on-ground=true
+entity 156 e9 2.227424086489236 1.0 8.5 3.633692344105142E-11 -0.08 0 item=minecraft:netherite_scrap count=1 age=145 pickup-delay=32767 on-ground=true
+entity 156 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=131 fire=157 on-ground=false
+entity 156 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=131 fire=157 on-ground=false
+entity 156 e12 17.5 1.0 6.5 0 0 0 fuse=73 on-ground=true
+
+entity-order 157 entities e3 e5 e8 e9 e10 e11 e12
+entity 157 e3 8.5 1.0 2.5 0 -0.12 0 item=minecraft:netherite_ingot count=1 age=148 pickup-delay=32767 on-ground=true
+entity 157 e5 12.13 1.0 2.5 0 -0.04 0 item=minecraft:stick count=1 age=148 pickup-delay=32767 on-ground=true
+entity 157 e8 2.227424086489236 1.0 6.5 3.633692344105142E-11 -0.08 0 item=minecraft:stick count=1 age=146 pickup-delay=32767 on-ground=true
+entity 157 e9 2.227424086489236 1.0 8.5 3.633692344105142E-11 -0.12 0 item=minecraft:netherite_scrap count=1 age=146 pickup-delay=32767 on-ground=true
+entity 157 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=132 fire=157 on-ground=false
+entity 157 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=132 fire=157 on-ground=false
+entity 157 e12 17.5 1.0 6.5 0 0 0 fuse=72 on-ground=true
+
+entity-order 158 entities e3 e5 e8 e9 e10 e11 e12
+entity 158 e3 8.5 1.0 2.5 0 0 0 item=minecraft:netherite_ingot count=1 age=149 pickup-delay=32767 on-ground=true
+entity 158 e5 12.13 1.0 2.5 0 -0.08 0 item=minecraft:stick count=1 age=149 pickup-delay=32767 on-ground=true
+entity 158 e8 2.227424086489236 1.0 6.5 3.633692344105142E-11 -0.12 0 item=minecraft:stick count=1 age=147 pickup-delay=32767 on-ground=true
+entity 158 e9 2.227424086489236 1.0 8.5 2.1366113131860853E-11 0 0 item=minecraft:netherite_scrap count=1 age=147 pickup-delay=32767 on-ground=true
+entity 158 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=133 fire=157 on-ground=false
+entity 158 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=133 fire=157 on-ground=false
+entity 158 e12 17.5 1.0 6.5 0 0 0 fuse=71 on-ground=true
+
+entity-order 159 entities e3 e5 e8 e9 e10 e11 e12
+entity 159 e3 8.5 1.0 2.5 0 -0.04 0 item=minecraft:netherite_ingot count=1 age=150 pickup-delay=32767 on-ground=true
+entity 159 e5 12.13 1.0 2.5 0 -0.12 0 item=minecraft:stick count=1 age=150 pickup-delay=32767 on-ground=true
+entity 159 e8 2.227424086489236 1.0 6.5 2.1366113131860853E-11 0 0 item=minecraft:stick count=1 age=148 pickup-delay=32767 on-ground=true
+entity 159 e9 2.227424086489236 1.0 8.5 2.1366113131860853E-11 -0.04 0 item=minecraft:netherite_scrap count=1 age=148 pickup-delay=32767 on-ground=true
+entity 159 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=134 fire=157 on-ground=false
+entity 159 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=134 fire=157 on-ground=false
+entity 159 e12 17.5 1.0 6.5 0 0 0 fuse=70 on-ground=true
+
+entity-order 160 entities e3 e5 e8 e9 e10 e11 e12
+entity 160 e3 8.5 1.0 2.5 0 -0.08 0 item=minecraft:netherite_ingot count=1 age=151 pickup-delay=32767 on-ground=true
+entity 160 e5 12.13 1.0 2.5 0 0 0 item=minecraft:stick count=1 age=151 pickup-delay=32767 on-ground=true
+entity 160 e8 2.227424086489236 1.0 6.5 2.1366113131860853E-11 -0.04 0 item=minecraft:stick count=1 age=149 pickup-delay=32767 on-ground=true
+entity 160 e9 2.227424086489236 1.0 8.5 2.1366113131860853E-11 -0.08 0 item=minecraft:netherite_scrap count=1 age=149 pickup-delay=32767 on-ground=true
+entity 160 e10 9.402181367023477 1.050000000745058 6.5 0 0 0 in-ground=true life=135 fire=157 on-ground=false
+entity 160 e11 12.402181367023477 1.050000000745058 8.5 0 0 0 in-ground=true life=135 fire=157 on-ground=false
+entity 160 e12 17.5 1.0 6.5 0 0 0 fuse=69 on-ground=true

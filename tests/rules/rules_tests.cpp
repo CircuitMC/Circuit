@@ -1220,6 +1220,39 @@ int main() {
         require(s.at({-1, 0, 2}) == blocks::water_source() && s.at({1, 0, 2}) == blocks::water_source(), "frosted ice melts");
     });
 
+    suite.run("items burn in fire and lava, netherite does not, and lava reaches them by the version", [] {
+        const auto stick = *circuit::gameplay::items::by_name("minecraft:stick");
+        const auto netherite = *circuit::gameplay::items::by_name("minecraft:netherite_ingot");
+        const auto lava = registry_block("lava", {{"level", "0"}});
+        // Ticks until each item (in fire, in lava, netherite in fire) is gone, or 0.
+        const auto gone = [&](const VersionBundle& b) {
+            Sim s(b);
+            auto build = floor(-4, 4, -4, 4);
+            build.push_back(place({0, 0, 0}, registry_block("fire")));
+            for (const BlockPos p : {BlockPos{3, 0, 1}, BlockPos{3, 0, -1}, BlockPos{2, 0, 0}, BlockPos{4, 0, 0}}) build.push_back(place(p, blocks::stone()));
+            build.push_back(place({3, 0, 0}, lava));
+            build.push_back(place({-3, 0, 0}, registry_block("fire")));
+            s.tick(build);
+            s.tick({SpawnItem{at_block(0.5, 0.0, 0.5), {}, {stick, 1}, 32767}, SpawnItem{at_block(3.5, 0.0, 0.5), {}, {stick, 1}, 32767},
+                    SpawnItem{at_block(-2.5, 0.0, 0.5), {}, {netherite, 1}, 32767}});
+            const auto start = s.oracle.time();
+            std::array<Tick, 3> when{};
+            for (Tick t = 1; t <= 40; ++t) {
+                s.tick();
+                for (const auto& r : of_kind(s.last, TraceKind::entity_removed)) {
+                    require(r.b == static_cast<std::uint64_t>(circuit::gameplay::RemovalReason::hurt), "burnt");
+                    when[r.pos.x == 0 ? 0 : r.pos.x == 3 ? 1 : 2] = s.oracle.time() - start;
+                }
+            }
+            return when;
+        };
+        const auto newer = gone(bundle());
+        const auto older = gone(**BundleRegistry::select_for_simulation("java-1.21.4"));
+        require(newer[0] > 0 && newer[0] == older[0], "fire burns an item the same way on both versions");
+        require(newer[1] > 0 && older[1] == newer[1] + 1, "lava reaches it a tick later on 1.21.4");
+        require(newer[2] == 0 && older[2] == 0, "netherite survives fire");
+    });
+
     suite.run("the weather follows its timers and its levels follow the flags", [] {
         Sim s;
         // What both official servers did after /weather rain 100.

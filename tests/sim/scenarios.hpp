@@ -1328,6 +1328,15 @@ inline Scenario fire_scenario() {
             c.push_back(place({17, 1, 3}, registry_block("fire")));
             c.push_back(place({22, 3, 5}, registry_block("fire"))); // in the air: gone at once
         }
+        // Items and an arrow into the fires and a lava pool on the chunk edge.
+        if (t == 6) {
+            for (const BlockPos p : {BlockPos{15, 0, 6}, BlockPos{17, 0, 6}, BlockPos{16, 0, 5}, BlockPos{16, 0, 7}}) c.push_back(place(p, blocks::stone()));
+            c.push_back(place({16, 0, 6}, registry_block("lava", {{"level", "0"}})));
+            c.push_back(SpawnItem{at_block(12.5, 2.0, 2.5), {}, {items::redstone, 1}});
+            c.push_back(SpawnItem{at_block(16.5, 1.5, 6.5), {}, {items::stone, 1}});
+            c.push_back(SpawnItem{at_block(19.4, 0.0, 2.5), {0.2, 0.0, 0.0}, {items::glass, 1}});
+            c.push_back(SummonEntity{"minecraft:arrow", at_block(10.5, 0.5, 2.5), {0.6, 0.0, 0.0}, 0, 0});
+        }
         if (t == 150) c.push_back(PlayerPresence{{1, 1}, {}, false, false});
         if (t == 200) c.push_back(SetGameRule{"allowFireTicksAwayFromPlayer", 1});
         return c;
