@@ -340,6 +340,8 @@ void dripleaf_entity_inside(RuleContext& ctx, BlockPos pos, BlockState s, const 
 void tick_dripleaf(RuleContext& ctx, BlockPos pos, BlockState s);
 // A neighbor update: back when powered.
 void dripleaf_neighbor_changed(RuleContext& ctx, BlockPos pos, BlockState s);
+// A projectile hit it: tilted to full at once.
+void dripleaf_hit(RuleContext& ctx, BlockPos pos);
 
 // ---- stairs (stairs.cpp) ----
 bool is_stairs(BlockState s);

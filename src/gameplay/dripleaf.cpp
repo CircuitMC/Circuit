@@ -8,8 +8,10 @@
 // collision shape lets entities through, and back after 100; each of these
 // three steps plays a sound whose pitch is a level-random draw. A signal
 // beside the leaf takes it back at once (with a sound when it was tilted),
-// and its pending tick then only keeps it there. The state changes send
-// shape updates only, as the official servers set them.
+// and its pending tick then only keeps it there. An arrow or a snowball
+// hitting the leaf tilts it to full at once, with a sound, and it goes back
+// 100 ticks later (dripleaf_arrows). The state changes send shape updates
+// only, as the official servers set them.
 namespace circuit::gameplay::detail {
 namespace {
 std::string tilt_of(BlockState s) {
@@ -57,6 +59,10 @@ void tick_dripleaf(RuleContext& ctx, BlockPos pos, BlockState s) {
     if (tilt == "unstable") set_tilt(ctx, pos, s, "partial", 10, true);
     else if (tilt == "partial") set_tilt(ctx, pos, s, "full", 100, true);
     else if (tilt == "full") reset_tilt(ctx, pos, s);
+}
+
+void dripleaf_hit(RuleContext& ctx, BlockPos pos) {
+    if (const auto s = ctx.block(pos); is_big_dripleaf(s)) set_tilt(ctx, pos, s, "full", 100, true);
 }
 
 void dripleaf_neighbor_changed(RuleContext& ctx, BlockPos pos, BlockState s) {

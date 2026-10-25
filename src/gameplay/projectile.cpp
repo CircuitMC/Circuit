@@ -194,6 +194,7 @@ void step_arrow(RuleContext& ctx, EntityId id, Entity& e) {
         moved(ctx, id, start, at);
         if (burning && is_tnt(ctx.block(hit->block))) prime_by_fire(ctx, hit->block);
         target_hit(ctx, hit->block, hit->at, hit->axis, true);
+        dripleaf_hit(ctx, hit->block);
         return;
     }
     const double drag = in_water ? static_cast<double>(0.6f) : static_cast<double>(0.99f);
@@ -221,6 +222,7 @@ void run_snowball(RuleContext& ctx, EntityId id, Entity& e) {
     if (const auto hit = clip(ctx, start, to)) {
         moved(ctx, id, start, hit->at);
         target_hit(ctx, hit->block, hit->at, hit->axis, false);
+        dripleaf_hit(ctx, hit->block);
         remove(ctx, id, hit->at, RemovalReason::despawned);
         return;
     }

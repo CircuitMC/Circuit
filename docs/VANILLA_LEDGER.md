@@ -130,7 +130,7 @@ Their counts are unknown, not zero.
 | black_box | passing | 47 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 173 |
+| official_trace | passing | 174 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 

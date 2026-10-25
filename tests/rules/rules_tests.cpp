@@ -1220,6 +1220,31 @@ int main() {
         require(s.at({-1, 0, 2}) == blocks::water_source() && s.at({1, 0, 2}) == blocks::water_source(), "frosted ice melts");
     });
 
+    suite.run("an arrow or a snowball tilts a big dripleaf at once, and it goes back 100 ticks later", [] {
+        const auto leaf = registry_block("big_dripleaf", {{"facing", "north"}, {"tilt", "none"}});
+        const auto tilted = registry_block("big_dripleaf", {{"facing", "north"}, {"tilt", "full"}});
+        Sim s;
+        auto build = floor(-4, 4, -4, 4);
+        for (const int x : {0, 2}) {
+            build.push_back(place({x, 0, 0}, registry_block("clay")));
+            build.push_back(place({x, 1, 0}, registry_block("big_dripleaf_stem", {{"facing", "north"}})));
+            build.push_back(place({x, 2, 0}, leaf));
+        }
+        s.tick(build);
+        s.tick({SummonEntity{"minecraft:arrow", at_block(0.5, 5.0, 0.5), {0.0, -0.5, 0.0}, 0, 0},
+                SummonEntity{"minecraft:snowball", at_block(2.5, 5.0, 0.5), {0.0, -0.5, 0.0}, 0, 0}});
+        Tick hit = 0;
+        for (int i = 0; i < 10 && !hit; ++i) {
+            s.tick();
+            if (s.at({0, 2, 0}) == tilted) hit = s.oracle.time();
+        }
+        require(hit != 0 && s.at({2, 2, 0}) == tilted, "both tilt fully when hit");
+        s.until(hit + 99);
+        require(s.at({0, 2, 0}) == tilted, "still tilted");
+        s.tick();
+        require(s.at({0, 2, 0}) == leaf && s.at({2, 2, 0}) == leaf, "back after 100 ticks");
+    });
+
     suite.run("players stack snow layers and replace single ones", [] {
         const circuit::contracts::PlayerKey alex{11, 12};
         const auto snow_item = *circuit::gameplay::items::by_name("minecraft:snow");

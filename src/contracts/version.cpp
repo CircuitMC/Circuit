@@ -196,8 +196,9 @@ constexpr std::array reference_v4_mechanisms{
         "and 0.05 downwards, stick 0.05 short of the block shape they hit, count their life to 1,200 and fall again "
         "when no block is left beside them; burning arrows count their fire down in flight and prime TNT they "
         "hit; fire and lava their box reaches set them burning (160 and 300 ticks; lava before the count on 1.21.8, "
-        "after it on 1.21.4), a stuck one's fire does not count; snowballs fall by 0.03 and lose 1% before they move, "
-        "and break on the first block (arrow_flight, arrow_tnt, items_in_fire, entities_in_lava). Gaps: projectiles pass through entities; bows, crossbows, dispensers and players do not shoot; "
+        "after it on 1.21.4), a stuck one's fire does not count; arrows and snowballs tilt big dripleaves they hit; "
+        "snowballs fall by 0.03 and lose 1% before they move, and break on the first block (arrow_flight, arrow_tnt, "
+        "items_in_fire, entities_in_lava, dripleaf_arrows). Gaps: projectiles pass through entities; bows, crossbows, dispensers and players do not shoot; "
         "currents do not push arrows; water does not put out burning arrows; other projectiles."},
     MechanismEntry{"vehicle", l0_exact, l2_declared_deviation, harness_trace,
         "Minecarts off and on rails and boats without riders, summoned: on rails minecarts follow the rail's line at up to "
@@ -332,7 +333,7 @@ constexpr std::array reference_v4_mechanisms{
         "breaking a tick after an update (plant_supports; tests/fixtures/collision/plant-contexts-*.txt); vines, hanging "
         "roots, spore blossoms, pale hanging moss and hanging propagules what holds them, vines turning between heads and "
         "bodies (vines, with the operator's data packs); small and big dripleaves and stems, big dripleaves tilting under "
-        "entities and back with a signal (dripleaves); mushrooms their ground or darkness (mushrooms); farmland turns to "
+        "entities and back with a signal (dripleaves) and at once under arrows and snowballs (dripleaf_arrows); mushrooms their ground or darkness (mushrooms); farmland turns to "
         "dirt a tick after a solid block is set on it (farmland). Support shapes "
         "and solidity of every state come from the registry (tests/fixtures/collision/support-*.txt). The drops' "
         "positions follow item_entity; without data packs, plants whose loot rolls random numbers drop nothing (with "
