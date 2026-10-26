@@ -285,6 +285,7 @@ public:
         own_ = parts.empty();
         furnace_ = parts.size() == 1 && ctx.block(parts[0]).is(BlockType::furnace);
         crafter_ = parts.size() == 1 && ctx.block(parts[0]).is(BlockType::crafter);
+        brewing_ = parts.size() == 1 && ctx.block(parts[0]).is(BlockType::brewing_stand);
         if (own_) {
             for (std::uint8_t i = 0; i < player_slots; ++i) slots_.push_back({{}, i, false});
         } else {
@@ -349,6 +350,9 @@ public:
         // A furnace's result slot takes nothing; its fuel slot fuels and buckets.
         if (furnace_ && i == 2) return false;
         if (furnace_ && i == 1) return burn_time(stack.item) > 0 || stack.item == items::bucket;
+        // A brewing stand's bottle slots take bottles, its ingredient slot
+        // ingredients, its fuel slot fuel.
+        if (brewing_ && i < 5) return brewing_slot_takes(ctx_.data(), i, stack.item);
         if (smith_ && i < 3) return smith_takes(ctx_, i, stack.item);
         if (grind_ && i < 2) return grinds(ctx_, stack);
         if (loom_ && i < 3) return loom_takes(i, stack.item);
@@ -363,6 +367,7 @@ public:
     [[nodiscard]] int max_stack(std::size_t i, ItemStack stack) const {
         if (own_ && i >= 5 && i <= 8) return 1;
         if (furnace_ && i == 1 && stack.item == items::bucket) return 1;
+        if (brewing_ && i < 3) return 1;
         return std::min<int>(contracts::max_stack_size, items::max_stack(stack));
     }
 
@@ -428,6 +433,28 @@ public:
             else if (burn_time(stack.item) > 0) moved = move_into(stack, 1, 2, false);
             else if (i < 30) moved = move_into(stack, 30, 39, false);
             else moved = move_into(stack, 3, 30, false);
+        } else if (brewing_) {
+            // The stand's slots go to the inventory from the hotbar's end;
+            // from the inventory fuel goes into the fuel slot (else, as an
+            // ingredient, into the ingredient slot), an ingredient into the
+            // ingredient slot and a bottle into the first empty bottle slot,
+            // or nowhere when they do not take it; the rest between the main
+            // inventory and the hotbar.
+            const auto* data = ctx_.data();
+            if (i < 5) {
+                moved = move_into(stack, 5, 41, true);
+            } else if (brewing_slot_takes(data, 4, stack.item)) {
+                moved = move_into(stack, 4, 5, false);
+                if (!moved && brewing_slot_takes(data, 3, stack.item)) moved = move_into(stack, 3, 4, false);
+            } else if (brewing_slot_takes(data, 3, stack.item)) {
+                moved = move_into(stack, 3, 4, false);
+            } else if (brewing_slot_takes(data, 0, stack.item)) {
+                moved = move_into(stack, 0, 3, false);
+            } else if (i < 32) {
+                moved = move_into(stack, 32, 41, false);
+            } else {
+                moved = move_into(stack, 5, 32, false);
+            }
         } else if (loom_) {
             // The banner, dye and pattern item go to the inventory from its
             // start; from the inventory each to its slot, or nowhere when
@@ -566,6 +593,7 @@ private:
     bool smith_{};
     bool grind_{};
     bool loom_{};
+    bool brewing_{};
 };
 
 void throw_item(RuleContext& ctx, const contracts::Vec3& position, const contracts::Vec3& velocity, ItemStack stack) {

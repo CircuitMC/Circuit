@@ -13,8 +13,8 @@
 //   bottle mixes with, potions.hpp) it uses a brew of fuel and brews for 400
 //   ticks;
 // - it shows which bottle slots hold something, without neighbor updates.
-// Brewing turns each bottle that mixes with the ingredient into its mix and
-// uses one ingredient; of a stack of more than one, the ingredient's
+// Brewing turns each bottle that mixes with the ingredient into a new bottle
+// of its mix and uses one ingredient; of a stack of more than one, the ingredient's
 // remainder (a glass bottle of dragon's breath) is thrown out of the stand,
 // while the last one leaves nothing.
 //
@@ -45,19 +45,18 @@ bool is_bottle(std::uint16_t item) {
 }
 
 // What a bottle becomes with the ingredient; nullopt without a mix (or the
-// data packs' component encoding to read its potion).
+// data packs' component encoding to read its potion). Every mix makes a new
+// bottle with its potion alone: the bottle's custom color and other
+// components are gone (both official servers, for potion and container mixes).
 std::optional<ItemStack> mixed(const GameData* data, const ItemStack& bottle, std::uint16_t ingredient) {
     if (bottle.empty() || !data || !data->potion_of || !data->with_potion) return std::nullopt;
     const auto potion = data->potion_of(bottle.components);
     if (!potion) return std::nullopt;
     const auto mix = potions::mix({bottle.item, *potion}, ingredient);
     if (!mix) return std::nullopt;
-    auto components = data->with_potion(bottle.components, mix->potion);
+    auto components = data->with_potion({}, mix->potion);
     if (!components) return std::nullopt;
-    auto out = bottle;
-    out.item = mix->item;
-    out.components = std::move(*components);
-    return out;
+    return ItemStack{mix->item, 1, 0, std::move(*components)};
 }
 
 bool brewable(const GameData* data, const BlockEntity& be) {
@@ -129,10 +128,14 @@ std::vector<std::size_t> brewing_slots(Direction face) {
     return {0, 1, 2, 4};
 }
 
+bool brewing_slot_takes(const GameData* data, std::size_t slot, std::uint16_t item) {
+    if (slot == 3) return potions::ingredient(item);
+    if (slot == 4) return is_fuel(data, item);
+    return slot < 3 && is_bottle(item);
+}
+
 bool brewing_accepts(const GameData* data, const BlockEntity& be, std::size_t slot, const ItemStack& stack) {
-    if (slot == 3) return potions::ingredient(stack.item);
-    if (slot == 4) return is_fuel(data, stack.item);
-    return slot < 3 && is_bottle(stack.item) && be.slots[slot].empty();
+    return brewing_slot_takes(data, slot, stack.item) && (slot >= 3 || be.slots[slot].empty());
 }
 
 bool brewing_gives(std::size_t slot, const ItemStack& stack) { return slot != 3 || stack.item == items::glass_bottle; }

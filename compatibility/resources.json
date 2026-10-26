@@ -2953,12 +2953,13 @@
           "placement/official_items",
           "trace/brewing",
           "trace/brewing_hoppers",
-          "collision/brewing"
+          "collision/brewing",
+          "client/brewing"
         ],
         "deviations": [
-          "players cannot open its menu yet"
+          "a glass bottle thrown out of a larger stack of dragon's breath is not compared"
         ],
-        "note": "Placed by players as both official servers place it; it brews with fuel, ingredients and bottles from hoppers as both official servers do"
+        "note": "Placed by players as both official servers place it; it brews with fuel, ingredients and bottles from hoppers, and players use its menu, as both official servers do"
       },
       "enchanting_table": {
         "impl": "partial",

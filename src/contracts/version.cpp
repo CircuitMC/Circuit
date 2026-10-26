@@ -186,9 +186,10 @@ constexpr std::array reference_v4_mechanisms{
         "of both servers' brewing reports), and stop when the ingredient changes or nothing is left to brew; the last "
         "ingredient leaves nothing, while dragon's breath of a larger stack throws out its glass bottle; they show which "
         "bottle slots hold something; hoppers reach the ingredient from above and the bottles and fuel from the sides, "
-        "and take the bottles and a glass bottle in the ingredient slot from below; comparators read their fullness. "
-        "Gaps: their menus (players cannot open them yet); a thrown-out glass bottle is pushed out of the stand by an "
-        "unseeded random and is not compared; whether a brew loaded from a saved world carries on is not observed."},
+        "and take the bottles and a glass bottle in the ingredient slot from below; comparators read their fullness; a "
+        "brewed bottle is a new one of its mix, without the old one's custom color or other components "
+        "(client/brewing). Gaps: a thrown-out glass bottle is pushed out of the stand by an unseeded random and is not "
+        "compared; whether a brew loaded from a saved world carries on is not observed."},
     MechanismEntry{"crafter", l0_exact, l2_declared_deviation, harness_trace,
         "Crafters as both official servers run them (crafters; with the official data packs' crafting recipes): power at "
         "the block (not above it) sets them triggered and crafts 4 ticks later by the first recipe that takes the grid, "
@@ -471,8 +472,8 @@ constexpr std::array reference_v4_mechanisms{
         "tests/fixtures/collision/snow-*.txt; a protocol client's 40 placed states). Gaps: melting and freezing by light "
         "and weather in random ticks; powder snow; snow and ice in the Nether are not compared."},
     MechanismEntry{"container_menus", l0_exact, l2_declared_deviation, controlled_experiment,
-        "Player windows and chest, double chest, hopper, furnace, crafter, crafting table, stonecutter, smithing table, grindstone "
-        "and loom menus with every click mode, applied as commands. "
+        "Player windows and chest, double chest, hopper, furnace, crafter, brewing stand, crafting table, stonecutter, smithing "
+        "table, grindstone and loom menus with every click mode, applied as commands. "
         "A 48-step client scenario (every click mode, double chests, hoppers, the own window, throws and "
         "pickups) gives the same windows, carried stacks and inventories as the official 1.21.8 and 1.21.4 "
         "servers. With data packs the own window's 2x2 grid crafts: a 48-step scenario (results, every way "
@@ -484,7 +485,9 @@ constexpr std::array reference_v4_mechanisms{
         "another input) with the clients' recipe data, and a 24-step scenario at a smithing table (upgrades keeping "
         "components, trims and their registry ids), and a 20-step scenario in a crafter's window (slot toggles, the "
         "result shown), a 25-step scenario at a grindstone (curses kept, durabilities merged, books) and a 32-step "
-        "scenario at a loom (pattern buttons, the choice following the slots, layers). Gaps: no "
+        "scenario at a loom (pattern buttons, the choice following the slots, layers), and a 36-step scenario at a brewing "
+        "stand (slot rules, quick moves to fuel, ingredient and bottles, brews stopped and started by the ingredient, "
+        "brewed bottles losing their other components, the brew time and fuel properties). Gaps: no "
         "special recipes or recipe book; grindstones give no experience; trim materials of 1.21.5 "
         "and later from the vanilla materials' items; no harness traces of menus."},
     MechanismEntry{"survival_actions", l0_exact, l2_declared_deviation, documented_behavior,

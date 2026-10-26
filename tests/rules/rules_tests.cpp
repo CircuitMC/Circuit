@@ -1762,6 +1762,50 @@ int main() {
         require(potion(slots({0, 0, 0})[0]) == "minecraft:awkward" && slots({0, 0, 0})[3].count == 1, "nothing more to brew");
     });
 
+    suite.run("brewing stand windows put fuel, ingredients and bottles where they go", [] {
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::PlayerKey;
+        using circuit::contracts::SetPlayerSlot;
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->brewing_fuel = {items::blaze_powder};
+        data->potion_of = [](const ComponentPatch& patch) -> std::optional<std::string_view> {
+            if (patch.empty()) return std::nullopt;
+            return circuit::gameplay::potions::names()[0];
+        };
+        data->with_potion = [](const ComponentPatch&, std::string_view) {
+            return std::optional(ComponentPatch::make(772, {{1, {std::byte{0}}}}, {}, {}));
+        };
+        const PlayerKey alex{7, 8};
+        const BlockPos stand{0, 0, 0};
+        Sim s(bundle(), 7, 2, data);
+        const ItemStack water{items::potion, 1, 0, *data->with_potion({}, "minecraft:water")};
+        s.tick({place(stand, blocks::brewing_stand()), SetPlayerSlot{alex, 36, {items::blaze_powder, 3, 0}}, SetPlayerSlot{alex, 37, {items::stone, 2, 0}},
+                SetPlayerSlot{alex, 38, {items::glass_bottle, 3, 0}}, SetPlayerSlot{alex, 39, water}});
+        // Brewing stand window: 0-2 bottles, 3 ingredient, 4 fuel, 5-31 the main inventory, 32-40 the hotbar.
+        const auto click = [&](std::int16_t slot, std::uint8_t button, std::uint8_t mode) {
+            return ContainerClick{alex, std::optional(stand), slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+        };
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+        };
+        const auto slot = [&](std::size_t i) { return block_entity_at(s.oracle.dump(), stand)->slots[i]; };
+        s.tick({click(32, 0, 1), click(33, 0, 1), click(34, 0, 1), click(35, 0, 1)});
+        require(slot(4) == ItemStack{items::blaze_powder, 2, 0} && slot(3) == ItemStack{items::stone, 2, 0},
+                "blaze powder into the fuel slot (one burned), stone into the ingredient slot");
+        require(slot(0).item == items::glass_bottle && slot(1).item == items::glass_bottle && slot(2).item == items::glass_bottle
+                    && slot(2).count == 1 && player().slots[38].empty(),
+                "one glass bottle into each bottle slot");
+        require(player().slots[39] == water, "a bottle with every bottle slot full stays where it is");
+        s.tick({click(3, 0, 0), click(4, 0, 0), click(1, 0, 0)});
+        require(player().cursor == ItemStack{items::stone, 2, 0} && slot(4).count == 2 && slot(1).item == items::glass_bottle,
+                "stone goes into neither the fuel slot nor a bottle slot");
+        s.tick({click(3, 0, 0), click(0, 0, 1)});
+        require(slot(3).item == items::stone && slot(0).empty() && player().slots[44].item == items::glass_bottle,
+                "a bottle goes out to the hotbar's end");
+    });
+
     suite.run("crafters craft on power and fill evenly from hoppers", [] {
         namespace recipes = circuit::gameplay::recipes;
         const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };

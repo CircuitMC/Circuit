@@ -398,6 +398,9 @@ bool furnace_gives(std::size_t slot, const ItemStack& stack, Direction face);
 void tick_brewing_stand(RuleContext& ctx, BlockPos pos, BlockState s);
 std::vector<std::size_t> brewing_slots(Direction face);
 bool brewing_accepts(const GameData* data, const BlockEntity& be, std::size_t slot, const ItemStack& stack);
+// Whether a slot of a brewing stand's (bottles 0-2, the ingredient, the
+// fuel) takes an item, full or not: what its window lets players put there.
+bool brewing_slot_takes(const GameData* data, std::size_t slot, std::uint16_t item);
 bool brewing_gives(std::size_t slot, const ItemStack& stack);
 
 // ---- dispensers and droppers (dispenser.cpp) ----

@@ -218,8 +218,7 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
         if (is_opening(clicked.type()) && opens_by_hand(clicked))
             return [&ctx, c, clicked] { detail::use_opening(ctx, c.pos, clicked, c.horizontal); };
         if (usable(clicked)) return plan(ctx, contracts::UseBlock{c.pos});
-        // Brewing stands' menus are not modeled yet: they do not open.
-        if (is_container(clicked.type()) && !clicked.is(BlockType::brewing_stand)) {
+        if (is_container(clicked.type())) {
             // A chest under a solid block does not open.
             for (const auto part : detail::container_parts(ctx, c.pos))
                 if (ctx.block(part).is(BlockType::chest) && detail::is_conductor(ctx.block(part.relative(Direction::up))))

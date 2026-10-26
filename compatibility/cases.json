@@ -339,6 +339,17 @@
       "description": "25 steps at a grindstone: a cursed and enchanted pickaxe disenchanted (the curse and a repair cost of 1 kept), two damaged pickaxes merged, enchanted books into books (1.21.4 keeps an empty stored_enchantments, 1.21.8 none), a plain damaged pickaxe alone making nothing, quick moves into both inputs and across, stone refused, closing; experience orbs left out; Circuit and both official servers give identical windows"
     },
     {
+      "id": "client/brewing",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/brewing.js",
+      "status": "passing",
+      "description": "36 steps at a brewing stand: blaze powder shifted into the fuel slot and burned, stone and other ingredients into the ingredient slot, bottles one per slot and kept where they are when the bottle slots are full, stacks that do not swap, brews stopped and started by taking and putting ingredients, brewed bottles (also splash potions made with gunpowder) losing their custom color and rarity, results out to the hotbar's end and by key, the brew time and fuel properties; Circuit and both official servers give identical windows"
+    },
+    {
       "id": "client/loom",
       "kind": "black_box",
       "versions": [
