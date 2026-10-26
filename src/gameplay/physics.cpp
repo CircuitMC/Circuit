@@ -56,6 +56,18 @@ const std::unordered_map<std::uint32_t, std::uint32_t>& modeled_registry_states(
 }
 } // namespace
 
+std::optional<BlockState> modeled_state_of(std::uint32_t registry_state) {
+    static const auto table = [] {
+        std::unordered_map<std::uint32_t, std::uint32_t> out;
+        for (const auto& [raw, state] : modeled_registry_states()) out.emplace(state, raw);
+        return out;
+    }();
+    const auto it = table.find(registry_state);
+    if (it == table.end()) return std::nullopt;
+    const auto s = BlockState::decode(it->second);
+    return s ? std::optional(*s) : std::nullopt;
+}
+
 std::optional<std::uint32_t> registry_state_of(BlockState s) {
     if (s.is(BlockType::other)) return s.registry_state();
     const auto& modeled = modeled_registry_states();

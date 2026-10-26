@@ -49,6 +49,10 @@ std::optional<ItemStack> own_item(BlockState s) {
     case BlockType::hopper: return ItemStack{items::hopper, 1};
     case BlockType::chest: return ItemStack{items::chest, 1};
     case BlockType::dispenser: return ItemStack{s.variant() == 1 ? items::dropper : items::dispenser, 1};
+    case BlockType::furnace: {
+        constexpr std::array<std::uint16_t, 3> kinds{items::furnace, items::smoker, items::blast_furnace};
+        return ItemStack{kinds[s.variant() % 3], 1};
+    }
     case BlockType::redstone_torch: case BlockType::redstone_wall_torch: return ItemStack{items::redstone_torch, 1};
     case BlockType::button: return ItemStack{button_item(s), 1};
     case BlockType::pressure_plate: case BlockType::weighted_plate: return ItemStack{plate_item(s), 1};

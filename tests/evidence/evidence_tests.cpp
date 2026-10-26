@@ -1074,6 +1074,38 @@ int main(int argc, char** argv) {
         require(ignited > 0, "lava ignites some");
     });
 
+    suite.run("every item burns in furnaces as long as on the official servers", [&] {
+        // tests/fixtures/collision/fuel-*.txt: every item of both versions.
+        const auto table = [&](const char* file) {
+            std::map<std::string, std::int32_t> out;
+            std::istringstream lines(read_text(fixtures / "collision" / file));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto space = line.find(' ');
+                out[line.substr(0, space)] = std::stoi(line.substr(space + 1));
+            }
+            return out;
+        };
+        const auto newest = table("fuel-1.21.8.txt");
+        const auto older = table("fuel-1.21.4-only.txt");
+        std::size_t checked = 0, fuels = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            const auto& rows = release == std::string_view("1.21.4") ? older : newest;
+            for (const auto& [name, ticks] : newest) {
+                const auto it = rows.find(name);
+                const auto want = it != rows.end() ? it->second : ticks;
+                const auto item = circuit::gameplay::items::by_name(name);
+                if (!item) continue;
+                const auto got = circuit::gameplay::fuel_burn_time(*item);
+                require(got == want, std::format("{} {}: official {}, Circuit {}", release, name, want, got));
+                ++checked;
+                fuels += got > 0 ? 1 : 0;
+            }
+        }
+        std::cout << std::format("  {} items, {} fuels\n", checked, fuels);
+        require(fuels > 0, "some items burn");
+    });
+
     suite.run("snow layers stay where both official servers keep them", [&] {
         // tests/fixtures/collision/snow-*.txt: a snow layer on every state.
         // States that did not stay where they were set (?) are left out.

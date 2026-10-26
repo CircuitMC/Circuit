@@ -18,12 +18,16 @@ bool paired(BlockState a, BlockState b) {
     return (ta == ChestType::left && tb == ChestType::right) || (ta == ChestType::right && tb == ChestType::left);
 }
 
-// One container seen through its parts in combined slot order.
+// One container seen through its parts in combined slot order; a furnace
+// through the face an item comes in or goes out by (`face`), which picks
+// its slots.
 struct Inventory {
     std::vector<BlockPos> parts;
     std::vector<BlockEntity*> entities;
+    std::optional<Direction> face;
+    bool furnace = false;
 
-    static Inventory open(RuleContext& ctx, BlockPos pos) {
+    static Inventory open(RuleContext& ctx, BlockPos pos, std::optional<Direction> face = std::nullopt) {
         Inventory inv;
         for (const auto p : container_parts(ctx, pos)) {
             auto* be = ctx.block_entity(p);
@@ -31,18 +35,36 @@ struct Inventory {
             inv.parts.push_back(p);
             inv.entities.push_back(be);
         }
+        inv.face = face;
+        inv.furnace = inv.parts.size() == 1 && ctx.block(pos).is(BlockType::furnace);
         return inv;
     }
     [[nodiscard]] bool valid() const { return !parts.empty(); }
+    // The slots of part `i` in the order items go in or out.
+    [[nodiscard]] std::vector<std::size_t> slots(std::size_t i) const {
+        if (furnace) return furnace_slots(face.value_or(Direction::up));
+        std::vector<std::size_t> out(entities[i]->slots.size());
+        for (std::size_t j = 0; j < out.size(); ++j) out[j] = j;
+        return out;
+    }
     // First (part, slot), in combined order, that accepts one more item of
     // the kind of `stack` (same item, damage and components).
     [[nodiscard]] std::optional<std::pair<std::size_t, std::size_t>> insert_slot(const ItemStack& stack) const {
         for (std::size_t i = 0; i < entities.size(); ++i)
-            for (std::size_t j = 0; j < entities[i]->slots.size(); ++j) {
+            for (const auto j : slots(i)) {
                 const auto& s = entities[i]->slots[j];
+                if (furnace && !furnace_accepts(*entities[i], j, stack)) continue;
                 if (s.empty() || (s.same_kind(stack) && s.count < slot_limit(s))) return std::pair{i, j};
             }
         return std::nullopt;
+    }
+    // Whether an item may go out of part `i`'s slot `j`.
+    [[nodiscard]] bool gives(std::size_t j, const ItemStack& stack) const {
+        return !furnace || furnace_gives(j, stack, face.value_or(Direction::down));
+    }
+    // A furnace's input set anew starts its cooking over.
+    void set_into(RuleContext& ctx, std::size_t i, std::size_t j, const ItemStack& before) const {
+        if (furnace && j == 0) furnace_input_set(ctx, parts[i], before);
     }
     void changed(RuleContext& ctx) const {
         for (const auto p : parts) container_changed(ctx, p);
@@ -77,9 +99,9 @@ bool transfer_one(RuleContext& ctx, const Inventory& from, const Inventory& to, 
     if (to.parts.size() == 1 && ctx.block(to.parts[0]).is(BlockType::hopper) && all_empty(*to.entities[0]))
         receiving_hopper = to.entities[0];
     for (std::size_t i = 0; i < from.entities.size(); ++i)
-        for (std::size_t j = 0; j < from.entities[i]->slots.size(); ++j) {
+        for (const auto j : from.slots(i)) {
             auto& source = from.entities[i]->slots[j];
-            if (source.empty()) continue;
+            if (source.empty() || !from.gives(j, source)) continue;
             const auto target = to.insert_slot(source);
             if (!target) continue;
             auto& destination = to.entities[target->first]->slots[target->second];
@@ -90,6 +112,7 @@ bool transfer_one(RuleContext& ctx, const Inventory& from, const Inventory& to, 
             ctx.record(TraceKind::inventory_changed, from.parts[i], j, pack_stack(before_from), pack_stack(source));
             ctx.record(TraceKind::inventory_changed, to.parts[target->first], target->second, pack_stack(before_to),
                        pack_stack(destination));
+            to.set_into(ctx, target->first, target->second, before_to);
             if (receiving_hopper)
                 receiving_hopper->cooldown = static_cast<std::uint8_t>(hopper_cooldown - (from_hopper && receiving_hopper->ticked >= ctx.now() ? 1 : 0));
             from.changed(ctx);
@@ -265,12 +288,12 @@ void tick_hopper(RuleContext& ctx, BlockPos pos) {
     if (!s.flag()) return;
     const auto self = Inventory::open(ctx, pos);
     bool moved = false;
-    if (const auto target = Inventory::open(ctx, pos.relative(s.facing())); target.valid())
+    if (const auto target = Inventory::open(ctx, pos.relative(s.facing()), contracts::opposite(s.facing())); target.valid())
         moved = transfer_one(ctx, self, target, true);
     const auto above_pos = pos.relative(Direction::up);
     const auto above = ctx.block(above_pos);
     if (is_container(above.type())) {
-        if (const auto source = Inventory::open(ctx, above_pos); source.valid())
+        if (const auto source = Inventory::open(ctx, above_pos, Direction::down); source.valid())
             moved = transfer_one(ctx, source, self) || moved;
     } else if (!above.is_unloaded() && !is_solid(above)) {
         moved = pick_up(ctx, self, pos) || moved;
@@ -278,8 +301,8 @@ void tick_hopper(RuleContext& ctx, BlockPos pos) {
     if (moved) self_entity->cooldown = hopper_cooldown;
 }
 
-bool insert_one(RuleContext& ctx, BlockPos pos, const ItemStack& stack) {
-    const auto to = Inventory::open(ctx, pos);
+bool insert_one(RuleContext& ctx, BlockPos pos, const ItemStack& stack, std::optional<Direction> face) {
+    const auto to = Inventory::open(ctx, pos, face);
     if (!to.valid() || stack.empty()) return false;
     const auto target = to.insert_slot(stack);
     if (!target) return false;
@@ -289,6 +312,7 @@ bool insert_one(RuleContext& ctx, BlockPos pos, const ItemStack& stack) {
     const auto before = slot;
     add_one(slot, stack);
     ctx.record(TraceKind::inventory_changed, to.parts[target->first], target->second, pack_stack(before), pack_stack(slot));
+    to.set_into(ctx, target->first, target->second, before);
     if (receiving_hopper) receiving_hopper->cooldown = hopper_cooldown;
     to.changed(ctx);
     return true;

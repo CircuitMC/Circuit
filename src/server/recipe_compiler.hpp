@@ -13,6 +13,7 @@ namespace circuit::server {
 
 struct RecipeCompilation {
     std::vector<gameplay::recipes::Recipe> crafting; // the crafting recipes the rules match, by id
+    std::vector<gameplay::recipes::Cooking> cooking; // the cooking recipes, by id
     std::map<std::string, std::size_t> valid;        // valid recipes, by type
     std::map<std::string, std::size_t> invalid;      // recipes the target version would skip too, by reason
     std::map<std::string, std::size_t> not_crafted;  // valid crafting recipes the rules do not match yet, by reason

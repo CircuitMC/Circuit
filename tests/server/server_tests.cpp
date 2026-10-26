@@ -2433,13 +2433,14 @@ int main() {
         // rules v11 also the redstone torch's, the 14 buttons', the 16
         // pressure plates', the target block's, the 54 doors', trapdoors'
         // and fence gates', the honey block's, the daylight detector's, the
-        // note block's, the four rails', the ten coral fans' and the
-        // dispenser's and dropper's; but wheat's, which its rules use. The 49
+        // note block's, the four rails', the ten coral fans', the
+        // dispenser's and dropper's and the furnace's, smoker's and blast
+        // furnace's; but wheat's, which its rules use. The 49
         // wall torches, signs, hanging signs, banners and heads count with the
         // standing ones' tables (the banners' and the player head's are
         // refused: they copy components).
-        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 952, 890, 1407, 984},
-                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 944, 882, 1370, 948}}) {
+        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 949, 890, 1407, 984},
+                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 941, 882, 1370, 948}}) {
             const char* jar = std::getenv(e.variable);
             if (!jar || !*jar) continue;
             const auto& bundle = **contracts::BundleRegistry::find(e.bundle);

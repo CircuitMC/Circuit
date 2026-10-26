@@ -33,6 +33,8 @@ struct GameData {
     std::unordered_map<std::uint32_t, loot::Table> block_loot;
     // The crafting recipes the rules match, in recipe id order.
     std::vector<recipes::Recipe> crafting;
+    // The cooking recipes, in recipe id order.
+    std::vector<recipes::Cooking> cooking;
     // The level of an enchantment (an id of the synchronized registry) on a
     // stack; 0 when absent. Set by the server, which reads the components.
     std::function<long(const contracts::ItemStack&, std::uint32_t enchantment)> enchantment_level;

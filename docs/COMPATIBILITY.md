@@ -56,6 +56,7 @@ Every block state of both versions is represented, with its official name and pr
 | `daylight_detector` | `inverted`, `power` | — |
 | `note_block` | `instrument`, `note`, `powered` | — |
 | `dispenser`, `dropper` | `facing`, `triggered` | — |
+| `furnace`, `smoker`, `blast_furnace` | `facing`, `lit` | — |
 | the ten `*_coral_fan` and ten `*_coral_wall_fan` blocks | `waterlogged`, `facing` (wall fans) | — |
 | `rail` | `shape` | `waterlogged` (stored) |
 | `powered_rail`, `activator_rail`, `detector_rail` | `powered`, `shape` | `waterlogged` (stored) |
@@ -69,7 +70,7 @@ Every block state of both versions is represented, with its official name and pr
 
 **Saved worlds.** Anvil worlds of Java Edition 1.21.8 (DataVersion 4440) import and export with every block state, as long as their block entities, entities and items are the ones described here and in [persistence](PERSISTENCE.md#anvil-import-and-export), in the overworld. Other content is refused by default, or substituted or dropped under an explicit policy with a report; see [persistence](PERSISTENCE.md#anvil-import-and-export). A world directory belongs to one version bundle and rule set; `--migrate-world` moves it to the other version when both run the same rules.
 
-**Block entities.** Containers keep their custom name (the window title) and components. The block entities of blocks without rules of their own (signs, banners, furnaces and the rest) keep their saved data through checkpoints and Anvil interchange, but nothing interprets it and clients do not receive it: a sign shows no text. Such a block that a player places (a furnace, barrel, shulker box, beacon and the like) starts with an empty block entity, which an export writes as the data the official servers save for a newly placed one.
+**Block entities.** Containers keep their custom name (the window title) and components. Furnaces, smokers and blast furnaces keep their items and times. The block entities of blocks without rules of their own (signs, banners, brewing stands and the rest) keep their saved data through checkpoints and Anvil interchange, but nothing interprets it and clients do not receive it: a sign shows no text. Such a block that a player places (a barrel, shulker box, beacon and the like) starts with an empty block entity, which an export writes as the data the official servers save for a newly placed one.
 
 **Not represented:** mobs and other entities beyond items, falling blocks, primed TNT and players, biomes other than plains, lighting (everything is lit by the sky), and world generation beyond a flat floor.
 

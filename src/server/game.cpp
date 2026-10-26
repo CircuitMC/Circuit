@@ -830,6 +830,8 @@ struct Game::Impl final : GameServices {
     }
 
     void open_window(Player& p, BlockPos pos) {
+        // Furnaces have no menu yet (C5.7): nothing opens.
+        if (at(pos).is(BlockType::furnace)) return;
         const auto slots = container_slot_count(pos);
         // Menu types of the protocol's menu registry (minecraft.wiki, Java
         // Edition protocol/Inventory, and observed from the target version):

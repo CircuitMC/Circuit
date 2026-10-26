@@ -38,3 +38,10 @@ inline std::int32_t max_damage(const contracts::ItemStack& s) noexcept {
 std::optional<std::uint16_t> by_name(std::string_view name) noexcept;
 
 } // namespace circuit::gameplay::items
+
+namespace circuit::gameplay {
+// An item's burn time in a furnace, in ticks; 0 when it is no fuel (furnace.cpp;
+// checked against both official servers for every item). Smokers and blast
+// furnaces burn half of it.
+std::int32_t fuel_burn_time(std::uint16_t item);
+} // namespace circuit::gameplay

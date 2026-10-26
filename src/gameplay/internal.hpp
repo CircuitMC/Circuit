@@ -375,7 +375,17 @@ void tick_hopper(RuleContext& ctx, BlockPos pos);
 // One item of the kind of `stack` into the container at `pos`, at the first
 // slot that takes it (in combined order); an empty hopper that receives it
 // waits 8 ticks. Returns whether it went in.
-bool insert_one(RuleContext& ctx, BlockPos pos, const ItemStack& stack);
+// One of `stack` into the container at `pos`, coming in by `face` (which
+// picks a furnace's slots).
+bool insert_one(RuleContext& ctx, BlockPos pos, const ItemStack& stack, std::optional<Direction> face = std::nullopt);
+// Furnaces (furnace.cpp).
+std::int32_t burn_time(std::uint16_t item);
+std::int32_t cooking_time(RuleContext& ctx, BlockState furnace, const ItemStack& input);
+void furnace_input_set(RuleContext& ctx, BlockPos pos, const ItemStack& before);
+void tick_furnace(RuleContext& ctx, BlockPos pos, BlockState s);
+std::vector<std::size_t> furnace_slots(Direction face);
+bool furnace_accepts(const BlockEntity& be, std::size_t slot, const ItemStack& stack);
+bool furnace_gives(std::size_t slot, const ItemStack& stack, Direction face);
 
 // ---- dispensers and droppers (dispenser.cpp) ----
 // A neighbor update: triggered by power at the block or above it.

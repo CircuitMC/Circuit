@@ -99,10 +99,18 @@ public:
         if (type == "minecraft:smelting" || type == "minecraft:blasting" || type == "minecraft:smoking" || type == "minecraft:campfire_cooking") {
             category(j, cooking_categories);
             optional_string(j, "group");
-            ingredient(j.find("ingredient"));
-            result(j.find("result"));
+            gameplay::recipes::Cooking c;
+            c.id = std::string(id);
+            c.kind = type == "minecraft:smelting" ? gameplay::recipes::Cooking::Kind::smelting
+                   : type == "minecraft:blasting" ? gameplay::recipes::Cooking::Kind::blasting
+                   : type == "minecraft:smoking" ? gameplay::recipes::Cooking::Kind::smoking : gameplay::recipes::Cooking::Kind::campfire;
+            c.ingredient = ingredient(j.find("ingredient"));
+            c.result = result(j.find("result")).first;
             if (const auto* xp = j.find("experience"); xp && xp->kind() != Json::Kind::number) invalid("experience is not a number");
+            else if (xp) c.experience = static_cast<float>(xp->as_number());
             if (const auto* time = j.find("cookingtime"); time && !whole(*time, 1, INT32_MAX)) invalid("cooking time");
+            else c.time = time ? static_cast<std::int32_t>(time->as_number()) : c.kind == gameplay::recipes::Cooking::Kind::smelting ? 200 : 100;
+            if (cooking_) cooking_->push_back(std::move(c));
             return std::nullopt;
         }
         if (type == "minecraft:stonecutting") {
@@ -253,6 +261,10 @@ private:
         if (const auto* n = j.find("show_notification"); n && n->kind() != Json::Kind::boolean) invalid("show_notification");
     }
 
+public:
+    std::vector<gameplay::recipes::Cooking>* cooking_ = nullptr;
+
+private:
     const data::DataPacks& packs_;
     const contracts::VersionBundle& bundle_;
     const std::vector<RegistryEntries>& registries_;
@@ -267,6 +279,7 @@ RecipeCompilation compile_recipes(const data::DataPacks& packs, const contracts:
     const auto* all = packs.resources("recipe");
     if (!all || !protocol::ContentTables::for_protocol(bundle.protocol)) return out;
     Compiler compiler(packs, bundle, registries);
+    compiler.cooking_ = &out.cooking;
     for (const auto& [id, text] : *all) {
         std::string type;
         const auto fail = [&](const std::string& reason) {

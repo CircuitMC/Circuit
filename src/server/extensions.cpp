@@ -230,6 +230,7 @@ struct Extensions::Impl {
             case gameplay::BlockType::daylight_detector: return "minecraft:daylight_detector";
             case gameplay::BlockType::moving_piston: return "minecraft:piston";
             case gameplay::BlockType::dispenser: return "minecraft:dispenser";
+            case gameplay::BlockType::furnace: return "minecraft:furnace";
             default: return "unknown";
             }
         }

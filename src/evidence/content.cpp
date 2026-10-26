@@ -205,6 +205,15 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
         CIRCUIT_TRY(triggered, p.choice("triggered", {"false", "true"}, 0));
         return simple(blocks::dispenser(facing, id == "minecraft:dropper", triggered == 1));
     }
+    if (id == "minecraft:furnace" || id == "minecraft:smoker" || id == "minecraft:blast_furnace") {
+        // Absent properties take the default state's (facing north, not lit).
+        CIRCUIT_TRY(facing, p.direction_or("facing", Direction::north));
+        if (!contracts::is_horizontal(facing)) return std::unexpected(std::format("{}: `facing` must be horizontal", id));
+        CIRCUIT_TRY(lit, p.choice("lit", {"false", "true"}, 0));
+        const auto kind = id == "minecraft:smoker" ? blocks::FurnaceKind::smoker
+                        : id == "minecraft:blast_furnace" ? blocks::FurnaceKind::blast_furnace : blocks::FurnaceKind::furnace;
+        return simple(blocks::furnace(kind, facing, lit == 1));
+    }
     if (id == "minecraft:piston" || id == "minecraft:sticky_piston") {
         CIRCUIT_TRY(facing, p.direction("facing"));
         CIRCUIT_TRY(extended, p.flag("extended"));

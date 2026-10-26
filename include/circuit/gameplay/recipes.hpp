@@ -39,6 +39,20 @@ struct Recipe {
     contracts::ItemStack result;
 };
 
+// A cooking recipe: smelting (furnaces), blasting (blast furnaces), smoking
+// (smokers) or campfire cooking, with its cooking time in ticks (the type's
+// default when the recipe gives none: 200 for smelting, 100 otherwise).
+struct Cooking {
+    enum class Kind : std::uint8_t { smelting, blasting, smoking, campfire };
+    Kind kind{};
+    std::string id;
+    Ingredient ingredient;
+    contracts::ItemStack result;
+    float experience{};
+    std::int32_t time{};
+    bool operator==(const Cooking&) const = default;
+};
+
 // A crafting grid's slots, row by row.
 struct Grid {
     std::uint8_t width{}, height{};

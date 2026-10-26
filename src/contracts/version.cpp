@@ -168,6 +168,17 @@ constexpr std::array reference_v4_mechanisms{
         "10 d later; turtle eggs crack on sand when nextInt(500) is 0 (or by night's end), drawing their sound's pitch "
         "(eggs_blossoms). Gaps: chorus flowers and saplings are not modeled; hatching turtles are not spawned; "
         "1.21.4's growth is not compared (its random ticks run only near players)."},
+    MechanismEntry{"furnace", l0_exact, l2_declared_deviation, harness_trace,
+        "Furnaces, smokers and blast furnaces as both official servers run them (furnaces, furnaces_more; with the "
+        "official data packs' cooking recipes): lit, they burn a tick of fuel; unlit with fuel and input their type "
+        "cooks, they light by a fuel item for its burn time (half in smokers and blast furnaces; every item's burn "
+        "time in tests/fixtures/collision/fuel-*.txt), a lava bucket leaving its bucket; the progress grows to the "
+        "recipe's cooking time, then the input becomes its result; without fuel the progress falls by 2; a new input "
+        "starts it over; a wet sponge dried over an empty bucket fills it; they show whether they are lit and "
+        "comparators read them; hoppers fill the input from above and the fuel from the sides and take the result "
+        "and empty buckets from below. Gaps: their menus (players cannot open them yet), the experience of what they "
+        "cooked, and minecarts with hoppers are not modeled; checkpoints before version 28 bring their furnaces back "
+        "empty."},
     MechanismEntry{"bone_meal", l0_exact, l2_declared_deviation, harness_trace,
         "Dispensers use bone meal on the block in front as the official 1.21.8 server does (bonemeal_dispensers): crops "
         "and stems grow 2 + nextInt(4) stages (beetroots a third of that), torchflower and pitcher crops, cocoa and berry "

@@ -2262,8 +2262,19 @@
           "id": "smelting",
           "name": "Furnaces, smokers, blast furnaces and campfires",
           "milestone": "C5",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "note": "Furnaces, smokers and blast furnaces burn their fuel and cook by the official data packs' recipes, light and go out, fill and empty through hoppers by their faces and drive comparators, as both official servers do tick by tick; every item's burn time as both report it",
+          "cases": [
+            "trace/furnaces",
+            "trace/furnaces_more",
+            "collision/fuel"
+          ],
+          "deviations": [
+            "players cannot open their menus yet",
+            "the experience of what they cooked is not kept",
+            "campfires do not cook"
+          ]
         },
         {
           "id": "other_menus",

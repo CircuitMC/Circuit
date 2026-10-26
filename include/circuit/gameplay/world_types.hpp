@@ -42,6 +42,9 @@ struct BlockEntity {
     std::uint32_t moving{};
     std::uint8_t progress{};
     std::uint8_t motion{};
+    // Furnace: ticks its fuel still burns and the fuel's whole burn time,
+    // the input's cooking progress and the time it needs.
+    std::int32_t lit_time{}, lit_total{}, cook_time{}, cook_total{};
     // Data components of the block entity (a container's custom name), in
     // the item component form of the world's protocol.
     contracts::ComponentPatch components{};

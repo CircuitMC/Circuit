@@ -199,9 +199,10 @@ std::string text(const std::pair<BlockPos, std::uint32_t>& b) { return std::form
 std::string text(const std::pair<BlockPos, BlockEntity>& b) {
     std::string slots;
     for (const auto& s : b.second.slots) slots += std::format("{}x{} ", s.item, s.count);
-    return std::format("block_entity {} kind={} order={} cooldown={} signal={} moving={:#x} progress={} motion={} slots=[{}]",
+    return std::format("block_entity {} kind={} order={} cooldown={} signal={} moving={:#x} progress={} motion={} lit={}/{} cook={}/{} slots=[{}]",
                        pos_text(b.first), static_cast<int>(b.second.kind), b.second.order, b.second.cooldown,
-                       b.second.signal, b.second.moving, b.second.progress, b.second.motion, slots);
+                       b.second.signal, b.second.moving, b.second.progress, b.second.motion, b.second.lit_time, b.second.lit_total,
+                       b.second.cook_time, b.second.cook_total, slots);
 }
 std::string text(const Entity& e) {
     return std::format("entity {} {} pos=({},{},{}) vel=({},{},{}) ticks={} stack={}x{}/{} age={} last_tick={} ground={} pickup_delay={} "
@@ -358,6 +359,8 @@ std::uint64_t digest(const WorldDump& d) {
         for (const auto& [p, be] : l.block_entities) {
             h.add(p); h.add(static_cast<std::uint64_t>(be.kind)); h.add(be.order); h.add(be.cooldown); h.add(be.signal);
             h.add(be.moving); h.add(be.progress); h.add(be.motion); h.add(be.ticked);
+            h.add(static_cast<std::uint32_t>(be.lit_time)); h.add(static_cast<std::uint32_t>(be.lit_total));
+            h.add(static_cast<std::uint32_t>(be.cook_time)); h.add(static_cast<std::uint32_t>(be.cook_total));
             h.add(be.components.hash()); h.add(be.saved.hash());
             for (const auto& s : be.slots) { h.add(contracts::pack_stack(s)); h.add(s.components.hash()); }
         }

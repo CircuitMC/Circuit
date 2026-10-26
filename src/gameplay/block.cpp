@@ -11,11 +11,12 @@ namespace circuit::gameplay {
 namespace {
 // Registry blocks with a BlockType of their own (see evidence::ContentMapping),
 // besides the buttons and pressure plates of each kind.
-constexpr std::array<std::string_view, 32> modeled_names{
+constexpr std::array<std::string_view, 35> modeled_names{
     "air", "cave_air", "void_air", "stone", "glass", "obsidian", "redstone_block", "slime_block", "lever", "redstone_wire",
     "repeater", "redstone_lamp", "observer", "piston", "sticky_piston", "piston_head", "moving_piston", "hopper", "chest",
     "comparator", "water", "wheat", "redstone_torch", "redstone_wall_torch", "light_weighted_pressure_plate",
-    "heavy_weighted_pressure_plate", "target", "honey_block", "daylight_detector", "note_block", "dispenser", "dropper"};
+    "heavy_weighted_pressure_plate", "target", "honey_block", "daylight_detector", "note_block", "dispenser", "dropper", "furnace", "smoker",
+    "blast_furnace"};
 constexpr std::array<std::string_view, note_instruments> instrument_names{
     "harp", "basedrum", "snare", "hat", "bass", "flute", "bell", "guitar", "chime", "xylophone", "iron_xylophone", "cow_bell",
     "didgeridoo", "bit", "banjo", "pling", "zombie", "skeleton", "creeper", "dragon", "wither_skeleton", "piglin", "custom_head"};
@@ -55,7 +56,7 @@ constexpr Properties properties(BlockType t) noexcept {
     case BlockType::rail: return {false, true, true, true};
     case BlockType::coral_fan: return {false, false, true, false};
     case BlockType::coral_wall_fan: return {true, false, true, false};
-    case BlockType::dispenser: return {true, false, true, false};
+    case BlockType::dispenser: case BlockType::furnace: return {true, false, true, false};
     default: return {false, false, false, false};
     }
 }
@@ -200,6 +201,9 @@ contracts::Result<BlockState> BlockState::decode(std::uint32_t raw) noexcept {
     case BlockType::hopper:
         if (s.facing() == Direction::up) return invalid;
         break;
+    case BlockType::furnace:
+        if (!contracts::is_horizontal(s.facing())) return invalid;
+        break;
     case BlockType::chest:
         if (!contracts::is_horizontal(s.facing()) || s.level() > 2) return invalid;
         break;
@@ -327,6 +331,10 @@ std::string block_notation(BlockState s) {
     case BlockType::dispenser:
         return std::format("minecraft:{}[facing={},triggered={}]", s.variant() == 1 ? "dropper" : "dispenser", direction_name(s.facing()),
                            b(s.flag()));
+    case BlockType::furnace: {
+        constexpr std::array<std::string_view, 3> kinds{"furnace", "smoker", "blast_furnace"};
+        return std::format("minecraft:{}[facing={},lit={}]", kinds[s.variant() % 3], direction_name(s.facing()), b(s.flag()));
+    }
     case BlockType::other: return registry::notation(s.registry_state());
     default: return std::format("circuit:unrepresentable[raw={}]", s.raw());
     }

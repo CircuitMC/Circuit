@@ -44,6 +44,9 @@ struct Aabb {
 // The registry state a state stands for (a table built once); nullopt for
 // the unloaded sentinel.
 [[nodiscard]] std::optional<std::uint32_t> registry_state_of(BlockState s);
+// The modeled state a registry state stands for, when its block has rules of
+// its own (the inverse of registry_state_of on modeled states).
+[[nodiscard]] std::optional<BlockState> modeled_state_of(std::uint32_t registry_state);
 // A state's collision boxes in a release, in block coordinates (modeled
 // states through the registry states they stand for).
 [[nodiscard]] std::span<const registry::Box> collision_boxes(BlockState s, std::string_view release);

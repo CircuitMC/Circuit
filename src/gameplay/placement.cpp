@@ -61,6 +61,10 @@ std::optional<BlockState> placed_by(std::uint16_t item, const contracts::PlayerU
     case items::sticky_piston: return blocks::piston(contracts::opposite(look), true);
     case items::dispenser: return blocks::dispenser(contracts::opposite(look));
     case items::dropper: return blocks::dispenser(contracts::opposite(look), true);
+    // Furnaces face the player (tests/fixtures/placement).
+    case items::furnace: return blocks::furnace(blocks::FurnaceKind::furnace, contracts::opposite(horizontal));
+    case items::smoker: return blocks::furnace(blocks::FurnaceKind::smoker, contracts::opposite(horizontal));
+    case items::blast_furnace: return blocks::furnace(blocks::FurnaceKind::blast_furnace, contracts::opposite(horizontal));
     case items::hopper:
         return blocks::hopper(face == Direction::up || face == Direction::down ? Direction::down : contracts::opposite(face));
     case items::chest: return blocks::chest(contracts::opposite(horizontal));

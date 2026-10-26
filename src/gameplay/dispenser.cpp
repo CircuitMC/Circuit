@@ -216,7 +216,7 @@ void set_minecart(RuleContext& ctx, BlockPos pos, Direction facing, std::size_t 
 void drop_from(RuleContext& ctx, BlockPos pos, Direction facing, std::size_t slot, const ItemStack& stack) {
     const auto front = pos.relative(facing);
     if (is_container(ctx.block(front).type())) {
-        if (insert_one(ctx, front, stack)) set_slot(ctx, pos, slot, less_one(stack));
+        if (insert_one(ctx, front, stack, contracts::opposite(facing))) set_slot(ctx, pos, slot, less_one(stack));
         return;
     }
     eject(ctx, pos, facing, stack);

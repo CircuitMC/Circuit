@@ -262,13 +262,24 @@ int main() {
         c.state.sequence_settings = {-7, false, true};
         c.state.difficulty = 3;
         c.state.level(circuit::contracts::DimensionId::overworld).random_tick = 0xDEADBEEF;
+        // A furnace's times.
+        {
+            circuit::gameplay::BlockEntity furnace{circuit::gameplay::BlockType::furnace, 99, std::vector<circuit::contracts::ItemStack>(3), 0};
+            furnace.lit_time = 1234;
+            furnace.lit_total = 1600;
+            furnace.cook_time = 77;
+            furnace.cook_total = 200;
+            auto& bes = c.state.level(circuit::contracts::DimensionId::overworld).block_entities;
+            bes.push_back({{29999, 0, 29999}, furnace});
+            std::ranges::sort(bes, {}, &std::pair<circuit::contracts::BlockPos, circuit::gameplay::BlockEntity>::first);
+        }
         c.state.level(circuit::contracts::DimensionId::overworld).sequences = {
             {"circuit:fresh", circuit::gameplay::RandomSequence{1, 2}},
             {"minecraft:blocks/short_grass", circuit::gameplay::RandomSequence{2022789406501655404ULL, 17977990001259141514ULL}}};
         const auto encoded = circuit::storage::encode_checkpoint(c);
         const auto decoded = circuit::storage::decode_checkpoint(encoded);
         require(decoded.has_value(), decoded ? "" : decoded.error());
-        require(*decoded == c && circuit::storage::encode_checkpoint(*decoded) == encoded, "the sequences and settings round-trip");
+        require(*decoded == c && circuit::storage::encode_checkpoint(*decoded) == encoded, "the sequences, settings and furnace times round-trip");
         auto swapped = c;
         auto& sequences = swapped.state.level(circuit::contracts::DimensionId::overworld).sequences;
         std::swap(sequences[0], sequences[1]);

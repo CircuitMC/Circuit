@@ -25,7 +25,7 @@ namespace circuit::gameplay::detail {
 bool is_conductor(BlockState s) noexcept {
     switch (s.type()) {
     case BlockType::stone: case BlockType::obsidian: case BlockType::redstone_lamp: case BlockType::target: case BlockType::note_block:
-    case BlockType::dispenser: case BlockType::slime_block:
+    case BlockType::dispenser: case BlockType::furnace: case BlockType::slime_block:
         return true;
     case BlockType::other: return registry::conducts(s.registry_state());
     default: return false;
@@ -42,7 +42,7 @@ bool face_sturdy(BlockState s, Direction face) noexcept {
     }
     case BlockType::stone: case BlockType::glass: case BlockType::obsidian: case BlockType::redstone_block:
     case BlockType::slime_block: case BlockType::redstone_lamp: case BlockType::observer: case BlockType::target:
-    case BlockType::honey_block: case BlockType::note_block: case BlockType::dispenser:
+    case BlockType::honey_block: case BlockType::note_block: case BlockType::dispenser: case BlockType::furnace:
         return true;
     case BlockType::piston: case BlockType::sticky_piston:
         // An extended base keeps only its back face whole.

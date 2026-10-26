@@ -432,7 +432,7 @@ int main() {
     });
 
     suite.run("blocks with block entities that players place export their official defaults", [&] {
-        // A furnace, a shulker box and a barrel placed on stone: each keeps an
+        // A brewing stand, a shulker box and a barrel placed on stone: each keeps an
         // empty block entity, written out as its type's defaults and read back
         // as saved data.
         namespace registry = circuit::gameplay::registry;
@@ -441,7 +441,7 @@ int main() {
         const circuit::contracts::PlayerKey alex{1, 2};
         engine.advance(admit({ticket(1, {0, 0}, 1)}));
         std::vector<CommandBody> commands;
-        for (const auto& [x, item] : {std::pair{1, "minecraft:furnace"}, std::pair{3, "minecraft:red_shulker_box"}, std::pair{5, "minecraft:barrel"}}) {
+        for (const auto& [x, item] : {std::pair{1, "minecraft:brewing_stand"}, std::pair{3, "minecraft:red_shulker_box"}, std::pair{5, "minecraft:barrel"}}) {
             commands.push_back(place({x, 0, 3}, blocks::stone()));
             commands.push_back(circuit::contracts::SetPlayerSlot{alex, 36, {circuit::gameplay::items::by_name(item).value(), 1, 0}});
             commands.push_back(circuit::contracts::PlayerUse{alex, 36, {x, 0, 3}, Direction::up, Direction::north, Direction::north, false, false, 3, 3});
@@ -456,7 +456,7 @@ int main() {
         require(anvil::export_world(state, bundle(), target, {.level_name = "placed", .seed = 5}).has_value(), "export");
         const auto back = anvil::import_world(target, bundle());
         require(back.has_value(), back ? "" : back.error());
-        for (const auto& [x, saved] : {std::pair{1, "furnace"}, std::pair{3, "shulker_box"}, std::pair{5, "barrel"}}) {
+        for (const auto& [x, saved] : {std::pair{1, "brewing_stand"}, std::pair{3, "shulker_box"}, std::pair{5, "barrel"}}) {
             const auto* be = block_entity_at(back->state, {x, 1, 3});
             require(be && be->kind == BlockType::other, std::format("{}: imported", saved));
             circuit::protocol::Reader r(be->saved.bytes());
@@ -465,6 +465,33 @@ int main() {
             require(tag && *tag == nbt::canonical(anvil::default_block_entity(block.registry_state(), "1.21.8")),
                     std::format("{}: the official defaults", saved));
         }
+    });
+
+    suite.run("furnaces round-trip through Anvil with their items and times", [&] {
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine.advance(admit({place({2, 0, 2}, blocks::furnace(circuit::gameplay::blocks::FurnaceKind::smoker, Direction::east)),
+                              insert({2, 0, 2}, 0, circuit::gameplay::items::by_name("minecraft:beef").value(), 3),
+                              insert({2, 0, 2}, 1, circuit::gameplay::items::by_name("minecraft:coal").value(), 2)}));
+        auto state = engine.dump();
+        for (auto& level : state.levels)
+            for (auto& [pos, be] : level.block_entities)
+                if (be.kind == BlockType::furnace) {
+                    be.lit_time = 700;
+                    be.lit_total = 800;
+                    be.cook_time = 42;
+                    be.cook_total = 100;
+                }
+        const auto target = root / "furnace";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "furnace", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        require(state_at(back->state, {2, 0, 2}) == blocks::furnace(circuit::gameplay::blocks::FurnaceKind::smoker, Direction::east), "the smoker");
+        const auto* be = block_entity_at(back->state, {2, 0, 2});
+        require(be && be->kind == BlockType::furnace && be->slots.size() == 3 && be->slots[0].count == 3 && be->slots[1].count == 2,
+                "its items");
+        require(be->lit_time == 700 && be->lit_total == 800 && be->cook_time == 42 && be->cook_total == 100, "its times");
     });
 
     suite.run("daylight detectors round-trip through Anvil with their block entities", [&] {

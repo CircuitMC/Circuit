@@ -4,9 +4,11 @@
 #include <cstdlib>
 #include <circuit/gameplay/block_registry.hpp>
 #include <circuit/gameplay/level_random.hpp>
+#include <circuit/gameplay/physics.hpp>
 #include <circuit/protocol/codec.hpp>
 #include <circuit/protocol/framing.hpp>
 #include <circuit/storage/checkpoint.hpp>
+#include <set>
 #include <unordered_map>
 #include <utility>
 #include <format>
@@ -55,7 +57,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 27;
+constexpr std::uint32_t version = 28;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -158,6 +160,7 @@ void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
         std::vector<std::byte> patch;
         contracts::write_patch(patch, be.components);
         w.raw(patch).prefixed_bytes(be.saved.bytes());
+        w.i32(be.lit_time).i32(be.lit_total).i32(be.cook_time).i32(be.cook_total);
     }
     w.varint(static_cast<std::int32_t>(l.entities.size()));
     for (const auto& e : l.entities) {
@@ -387,8 +390,33 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
             if (!b.get(b.r.prefixed_bytes(1u << 21), saved)) return false;
             be.saved = contracts::Blob(std::move(saved));
         }
+        if (b.version >= 28) {
+            if (!b.get(b.r.i32(), be.lit_time) || !b.get(b.r.i32(), be.lit_total) || !b.get(b.r.i32(), be.cook_time)
+                || !b.get(b.r.i32(), be.cook_total))
+                return false;
+            if (be.lit_time < 0 || be.lit_total < 0 || be.cook_time < 0 || be.cook_total < 0) return false;
+        }
         be.moving = static_cast<std::uint32_t>(moving);
         s.block_entities.push_back({p, std::move(be)});
+    }
+    // Before version 28 furnaces, smokers and blast furnaces had no rules of
+    // their own: their registry states become the modeled ones, and their
+    // block entities start empty (they could hold nothing the rules used).
+    if (b.version < 28) {
+        std::set<contracts::BlockPos> furnaces;
+        for (auto& [p, raw] : s.blocks) {
+            if (static_cast<gameplay::BlockType>(raw & 0xFF) != gameplay::BlockType::other) continue;
+            const auto state = raw >> 8;
+            const auto block = gameplay::registry::block_of(state);
+            if (!block || !gameplay::modeled_block(*block)) continue;
+            if (const auto now = gameplay::physics::modeled_state_of(state); now && now->is(gameplay::BlockType::furnace)) {
+                raw = now->raw();
+                furnaces.insert(p);
+            }
+        }
+        for (auto& [p, be] : s.block_entities)
+            if (furnaces.contains(p) && be.kind == gameplay::BlockType::other)
+                be = gameplay::BlockEntity{gameplay::BlockType::furnace, be.order, std::vector<contracts::ItemStack>(3), 0};
     }
     if (!b.count(n, 55)) return false;
     for (std::size_t i = 0; i < n; ++i) {

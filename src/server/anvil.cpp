@@ -782,6 +782,18 @@ private:
                    && (block->variant() == 1) == (id == "minecraft:dropper")) {
             out = {BlockType::dispenser, 0, std::vector<contracts::ItemStack>(9), 0};
             read_items(be, out, id == "minecraft:dropper" ? "dropper" : "dispenser");
+        } else if ((id == "minecraft:furnace" || id == "minecraft:smoker" || id == "minecraft:blast_furnace") && expect(BlockType::furnace)
+                   && block->variant() == (id == "minecraft:smoker" ? 1 : id == "minecraft:blast_furnace" ? 2 : 0)) {
+            out = {BlockType::furnace, 0, std::vector<contracts::ItemStack>(3), 0};
+            read_items(be, out, std::string(id.substr(10)));
+            // Its times; the recipes it used (the experience they give) are not kept.
+            const auto time = [&](std::string_view key) {
+                return static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(be, key).value_or(0), 0, 32767));
+            };
+            out.cook_time = time("cooking_time_spent");
+            out.cook_total = time("cooking_total_time");
+            out.lit_time = time("lit_time_remaining");
+            out.lit_total = time("lit_total_time");
         } else if (id == "minecraft:comparator" && expect(BlockType::comparator)) {
             out = {BlockType::comparator, 0, {}, 0};
             out.signal = static_cast<std::uint8_t>(std::clamp<std::int64_t>(integer(be, "OutputSignal").value_or(0), 0, 15));
@@ -1268,6 +1280,17 @@ private:
             t.set("id", Tag::string(at(pos).variant() == 1 ? "minecraft:dropper" : "minecraft:dispenser"));
             t.set("Items", items(be.slots));
             break;
+        case BlockType::furnace: {
+            constexpr std::array<std::string_view, 3> kinds{"minecraft:furnace", "minecraft:smoker", "minecraft:blast_furnace"};
+            t.set("id", Tag::string(std::string(kinds[at(pos).variant() % 3])));
+            t.set("Items", items(be.slots));
+            t.set("RecipesUsed", Tag::compound());
+            t.set("cooking_time_spent", Tag::short_(static_cast<std::int16_t>(be.cook_time)));
+            t.set("cooking_total_time", Tag::short_(static_cast<std::int16_t>(be.cook_total)));
+            t.set("lit_time_remaining", Tag::short_(static_cast<std::int16_t>(be.lit_time)));
+            t.set("lit_total_time", Tag::short_(static_cast<std::int16_t>(be.lit_total)));
+            break;
+        }
         case BlockType::comparator:
             t.set("id", Tag::string("minecraft:comparator"));
             t.set("OutputSignal", Tag::int_(be.signal));

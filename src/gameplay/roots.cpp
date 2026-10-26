@@ -58,6 +58,7 @@ void run_block_entity(RuleContext& ctx, BlockPos pos) {
     if (s.is(BlockType::hopper)) tick_hopper(ctx, pos);
     else if (s.is(BlockType::moving_piston)) tick_moving_piston(ctx, pos);
     else if (s.is(BlockType::daylight_detector)) tick_daylight_detector(ctx, pos, s);
+    else if (s.is(BlockType::furnace)) tick_furnace(ctx, pos, s);
 }
 
 } // namespace circuit::gameplay

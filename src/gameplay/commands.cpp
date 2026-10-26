@@ -90,6 +90,8 @@ Plan plan(RuleContext& ctx, const contracts::InsertItem& c) {
         after.count = static_cast<std::uint8_t>(total);
         target->slots[c.slot] = after;
         ctx.record(TraceKind::inventory_changed, c.pos, c.slot, contracts::pack_stack(existing), contracts::pack_stack(after));
+        // A furnace's new input takes its cooking time.
+        if (ctx.block(c.pos).is(BlockType::furnace) && c.slot == 0) detail::furnace_input_set(ctx, c.pos, existing);
         for (const auto part : detail::container_parts(ctx, c.pos)) detail::container_changed(ctx, part);
     };
 }

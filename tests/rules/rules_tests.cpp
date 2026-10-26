@@ -1628,6 +1628,36 @@ int main() {
         require(kept({0, 0, 0}) == 0 && kept({0, 0, 3}) == 1, std::format("used once, kept once: {}, {}", kept({0, 0, 0}), kept({0, 0, 3})));
     });
 
+    suite.run("furnaces cook with fuel from hoppers and smokers burn it twice as fast", [] {
+        using circuit::gameplay::blocks::FurnaceKind;
+        namespace recipes = circuit::gameplay::recipes;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->cooking.push_back({recipes::Cooking::Kind::smelting, "minecraft:iron_ingot", {{item("minecraft:raw_iron")}},
+                                 {item("minecraft:iron_ingot"), 1}, 0.7f, 200});
+        data->cooking.push_back({recipes::Cooking::Kind::smoking, "minecraft:cooked_beef_from_smoking", {{item("minecraft:beef")}},
+                                 {item("minecraft:cooked_beef"), 1}, 0.35f, 100});
+        Sim s(bundle(), 7, 2, data);
+        s.tick(floor(-3, 8, -1, 6));
+        s.tick({place({0, 0, 0}, blocks::furnace(FurnaceKind::furnace, Direction::south)), place({0, 1, 0}, blocks::hopper(Direction::down)),
+                place({-1, 0, 0}, blocks::hopper(Direction::east)), place({4, 0, 0}, blocks::furnace(FurnaceKind::smoker, Direction::south)),
+                insert({0, 1, 0}, 0, item("minecraft:raw_iron"), 2), insert({-1, 0, 0}, 0, item("minecraft:stick"), 1),
+                insert({4, 0, 0}, 0, item("minecraft:beef"), 2), insert({4, 0, 0}, 1, item("minecraft:stick"), 2)});
+        const auto slots = [&](circuit::contracts::BlockPos p) {
+            const auto d = s.oracle.dump();
+            for (const auto& [pos, be] : d.overworld().block_entities)
+                if (pos == p) return be.slots;
+            return std::vector<ItemStack>{};
+        };
+        s.until(s.oracle.time() + 3);
+        require(s.at({0, 0, 0}).flag() && s.at({4, 0, 0}).flag(), "both light");
+        // A stick burns 100 ticks in a furnace, 50 in a smoker: half an iron
+        // ingot's time; the smoker cooks one beef per stick.
+        s.until(s.oracle.time() + 210);
+        require(slots({0, 0, 0})[2].empty() && !s.at({0, 0, 0}).flag(), "the furnace went out before the ingot");
+        require(slots({4, 0, 0})[2].count == 1, std::format("the smoker cooked one beef: {}", slots({4, 0, 0})[2].count));
+    });
+
     suite.run("idle levels and random tick ranges", [] {
         // A level is awake while active, and for 300 ticks after it was last
         // active or started.
