@@ -587,16 +587,9 @@ void Engine::Impl::random_phase(DimensionId level) {
     world.light[static_cast<std::size_t>(level)] = light[static_cast<std::size_t>(level)] ? &*light[static_cast<std::size_t>(level)] : nullptr;
     RegionContext ctx(bundle, world, regions, all_regions, Phase::random_ticks, level, options.record_trace, false, options.data.get());
     std::uint64_t index = 0;
-    std::vector<std::int32_t> with_blocks;
     for (const auto c : gameplay::random_tick_order(std::move(ticking))) {
-        // The sections that hold blocks taking random ticks, read as the
-        // chunk's turn comes (earlier chunks' ticks may change them).
-        with_blocks.clear();
-        const auto& data = *world.loaded.at({level, c});
-        for (std::int32_t s = 0; s < sections; ++s)
-            if (const auto& section = data.sections[static_cast<std::size_t>(s)]; section && section->random_ticking > 0) with_blocks.push_back(s);
         ctx.begin_root(index++, c);
-        gameplay::run_random_ticks(ctx, c, with_blocks);
+        gameplay::run_random_ticks(ctx, c, sections);
     }
     commit({&ctx});
     world.light[static_cast<std::size_t>(level)] = nullptr;

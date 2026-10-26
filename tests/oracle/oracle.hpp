@@ -52,6 +52,8 @@ private:
     struct Level {
         std::map<contracts::ChunkPos, ChunkInfo> chunks;
         std::map<contracts::BlockPos, gameplay::BlockState> blocks;
+        // Per (chunk, section from the lowest), the states that make it random-ticked.
+        std::map<std::pair<contracts::ChunkPos, std::int32_t>, std::uint32_t> random_ticking;
         std::map<contracts::BlockPos, gameplay::BlockEntity> block_entities;
         std::map<contracts::EntityId, gameplay::Entity> entities;
         std::vector<gameplay::ScheduledTick> ticks[2];

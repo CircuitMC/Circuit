@@ -42,6 +42,9 @@ public:
         const auto before = block(pos);
         if (before.is_unloaded()) throw std::logic_error("oracle: write to unloaded position");
         if (!(gameplay::light_info(before) == gameplay::light_info(state))) ++lv().light_version;
+        const std::pair key{contracts::chunk_of(pos), (pos.y - world().min_y) >> 4};
+        if (gameplay::ticks_section_randomly(before) && --lv().random_ticking[key] == 0) lv().random_ticking.erase(key);
+        if (gameplay::ticks_section_randomly(state)) ++lv().random_ticking[key];
         if (state.is_air()) lv().blocks.erase(pos);
         else lv().blocks[pos] = state;
     }
@@ -49,6 +52,9 @@ public:
     std::uint8_t sky_light(BlockPos pos) override { return o_.light(dimension(), pos, gameplay::LightKind::sky); }
     std::uint8_t block_light(BlockPos pos) override { return o_.light(dimension(), pos, gameplay::LightKind::block); }
     bool player_near(ChunkPos chunk) override { return gameplay::player_near(lv().presences, chunk); }
+    bool section_ticks_randomly(ChunkPos chunk, std::int32_t section) override {
+        return lv().random_ticking.contains({chunk, section});
+    }
     std::uint8_t difficulty() override { return o_.difficulty_; }
     Sky sky() override { return {o_.day_time_, o_.sky_darken_}; }
     std::int32_t game_rule(std::string_view name) override { return game_rule_value(o_.bundle_, o_.game_rules_, name); }
@@ -410,9 +416,10 @@ void Oracle::run_tick_list(DimensionId level, TickList list) {
     lv.ticks[l] = std::move(rest);
     const auto phase = list == TickList::block ? Phase::block_ticks : Phase::fluid_ticks;
     // A drained block tick still counts as scheduled until it runs; a drained
-    // fluid tick does not (lava_flow).
-    if (list == TickList::fluid)
-        for (const auto& t : due) lv.tick_index[l].erase({t.pos, t.block});
+    // fluid tick, or one of a block without rules of its own, does not
+    // (lava_flow, leaves_decay).
+    for (const auto& t : due)
+        if (list == TickList::fluid || t.block == BlockType::other) lv.tick_index[l].erase({t.pos, t.block});
     for (std::size_t i = 0; i < due.size(); ++i) {
         if (list == TickList::block) lv.tick_index[l].erase({due[i].pos, due[i].block});
         ctx_->begin_root(phase, i);
@@ -430,13 +437,8 @@ void Oracle::run_random_ticks(DimensionId level) {
             ticking.push_back(chunk);
     std::uint64_t index = 0;
     for (const auto chunk : gameplay::random_tick_order(std::move(ticking))) {
-        // The sections holding blocks that take random ticks, as the chunk's turn comes.
-        std::set<std::int32_t> sections;
-        for (auto it = lv.blocks.lower_bound({chunk.x * 16, INT32_MIN, INT32_MIN}); it != lv.blocks.end() && it->first.x < chunk.x * 16 + 16; ++it)
-            if (contracts::chunk_of(it->first) == chunk && gameplay::ticks_section_randomly(it->second)) sections.insert((it->first.y - shape.min_y) >> 4);
-        const std::vector<std::int32_t> with_blocks(sections.begin(), sections.end());
         ctx_->begin_root(Phase::random_ticks, index++);
-        gameplay::run_random_ticks(*ctx_, chunk, with_blocks);
+        gameplay::run_random_ticks(*ctx_, chunk, shape.sections());
     }
 }
 

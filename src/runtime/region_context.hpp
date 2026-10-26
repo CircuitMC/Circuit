@@ -41,6 +41,7 @@ public:
     std::uint8_t light(BlockPos pos) override;
     std::uint8_t sky_light(BlockPos pos) override;
     bool player_near(ChunkPos chunk) override;
+    bool section_ticks_randomly(ChunkPos chunk, std::int32_t section) override;
     std::uint8_t difficulty() override { return world_.difficulty; }
     std::uint8_t block_light(BlockPos pos) override;
     Sky sky() override;

@@ -52,19 +52,93 @@ struct Growing {
 };
 constexpr std::array<Growing, 4> growing{{{"kelp", Direction::up, 0.14}, {"weeping_vines", Direction::down, 0.1},
                                           {"twisting_vines", Direction::up, 0.1}, {"cave_vines", Direction::down, 0.1}}};
+
+BlockState bamboo(RuleContext& ctx, int age, std::string_view leaves, int stage) {
+    const auto block = registry::find_block(ctx.bundle().schema.content_release, "bamboo");
+    const std::vector<registry::Property> props{{"age", std::to_string(age)}, {"leaves", std::string(leaves)}, {"stage", std::to_string(stage)}};
+    return BlockState::registered(registry::state_of(*block, props).value());
+}
+
+std::string leaves_of(BlockState s) {
+    for (const auto& [k, v] : registry::properties(s.registry_state()))
+        if (k == "leaves") return v;
+    return "none";
+}
+
+// A stalk grows a block above it, `height` tall itself (bamboo_growth): the new
+// block has leaves, large when the stalk's below has them too, which then
+// leaves that one small and the one under it bare; it is thick when the stalk
+// is or two of its blocks are below; it stops growing when the stalk is 11 or
+// more tall and nextFloat() < 0.25, or 15 tall.
+void grow_bamboo(RuleContext& ctx, BlockPos pos, BlockState s, int height) {
+    const BlockPos down{pos.x, pos.y - 1, pos.z}, down2{pos.x, pos.y - 2, pos.z};
+    const auto b1 = ctx.block(down), b2 = ctx.block(down2);
+    std::string_view leaves = "small";
+    if (name_of(b1) == "bamboo" && leaves_of(b1) != "none") {
+        leaves = "large";
+        if (name_of(b2) == "bamboo") {
+            set_block(ctx, down, with(b1, "leaves", "small"));
+            set_block(ctx, down2, with(b2, "leaves", "none"));
+        }
+    }
+    const int thick = property(s, "age") == 1 || name_of(b2) == "bamboo" ? 1 : 0;
+    const int stage = (height >= 11 && ctx.random_float() < 0.25F) || height == 15 ? 1 : 0;
+    set_block(ctx, pos.relative(Direction::up), bamboo(ctx, thick, leaves, stage));
+}
+} // namespace
+
+bool is_bamboo(BlockState s) {
+    if (!s.is(BlockType::other)) return false;
+    const auto n = name_of(s);
+    return n == "bamboo" || n == "bamboo_sapling";
+}
+
+// A shoot turns into a stalk when bamboo grows above it; a stalk thickens
+// when the one above it is thicker (without neighbor updates).
+bool bamboo_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d) {
+    if (d != Direction::up) return false;
+    const auto above = ctx.block(pos.relative(d));
+    if (name_of(above) != "bamboo") return false;
+    if (name_of(s) == "bamboo_sapling") {
+        set_block_quiet(ctx, pos, bamboo(ctx, 0, "none", 0));
+        return true;
+    }
+    if (property(above, "age") <= property(s, "age")) return false;
+    set_block_quiet(ctx, pos, with(s, "age", "1"));
+    return true;
+}
+
+namespace {
+void bamboo_random_tick(RuleContext& ctx, BlockPos pos, BlockState s) {
+    const auto up = pos.relative(Direction::up);
+    if (name_of(s) == "bamboo_sapling") {
+        if (ctx.random_int(3) == 0 && ctx.block(up).is_air() && ctx.light(up) >= 9) set_block(ctx, up, bamboo(ctx, 0, "small", 0));
+        return;
+    }
+    if (property(s, "stage") != 0) return;
+    if (ctx.random_int(3) != 0 || !ctx.block(up).is_air() || ctx.light(up) < 9) return;
+    int below = 0;
+    while (below < 16 && name_of(ctx.block({pos.x, pos.y - below - 1, pos.z})) == "bamboo") ++below;
+    if (below + 1 < 16) grow_bamboo(ctx, pos, s, below + 1);
+}
 } // namespace
 
 bool is_growing_plant(BlockState s) {
     if (!s.is(BlockType::other)) return false;
     const auto n = name_of(s);
-    static constexpr std::array<std::string_view, 11> plants{"sugar_cane", "cactus", "nether_wart", "sweet_berry_bush", "cocoa", "kelp",
-                                                            "weeping_vines", "twisting_vines", "cave_vines", "brown_mushroom", "red_mushroom"};
+    static constexpr std::array<std::string_view, 13> plants{"sugar_cane", "cactus", "nether_wart", "sweet_berry_bush", "cocoa", "kelp",
+                                                            "weeping_vines", "twisting_vines", "cave_vines", "brown_mushroom", "red_mushroom",
+                                                            "bamboo", "bamboo_sapling"};
     return std::ranges::find(plants, n) != plants.end();
 }
 
 void plant_random_tick(RuleContext& ctx, BlockPos pos, BlockState s) {
     const auto n = name_of(s);
     const auto up = pos.relative(Direction::up);
+    if (n == "bamboo" || n == "bamboo_sapling") {
+        bamboo_random_tick(ctx, pos, s);
+        return;
+    }
     if (n == "sugar_cane") {
         if (!ctx.block(up).is_air() || height_below(ctx, pos, n) >= 3) return;
         const int age = property(s, "age");

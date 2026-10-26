@@ -97,6 +97,9 @@ public:
     // center (what fire needs on 1.21.5 and later; presences change only in
     // the command phase).
     virtual bool player_near(ChunkPos chunk) = 0;
+    // Whether a chunk's section (from the lowest, 0) holds states that make
+    // it random-ticked (ticks_section_randomly), as it is now.
+    virtual bool section_ticks_randomly(ChunkPos chunk, std::int32_t section) = 0;
     // The world's difficulty (contracts::SetDifficulty).
     virtual std::uint8_t difficulty() = 0;
     // The overworld's day time, and the darkening of its sky (0-11) as its

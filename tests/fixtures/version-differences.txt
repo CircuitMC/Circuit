@@ -10,3 +10,5 @@ grass_spread.ctrace random ticks run only near players on 1.21.4 (RandomTickRang
 cane_cactus_growth.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none
 wart_berry_cocoa_growth.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none
 kelp_vines_growth.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none
+leaves_decay.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none
+bamboo_growth.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none

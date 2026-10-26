@@ -159,8 +159,17 @@ constexpr std::array reference_v4_mechanisms{
         "grow a head one older into water or air, cave vines drawing their berries (nextFloat < 0.11); kelp stands on "
         "kelp or a sturdy top but magma's; mushrooms draw nextInt(25) and, with fewer than five of their kind within "
         "4, 1, 4, walk five steps of three offsets (x, y as nextInt(2) - nextInt(2), z) and settle on the last where "
-        "they could stay. Gaps: bamboo, chorus flowers, leaves, saplings and pitcher crops are not modeled; 1.21.4's "
-        "growth is not compared (its random ticks run only near players)."},
+        "they could stay; bamboo shoots and stalks with air and light 9 above draw nextInt(3) and grow a block on 0, "
+        "with leaves and thickness by the stalk below and a stop (nextFloat < 0.25) from 11 tall, a stalk thickening "
+        "under a thicker one (bamboo_growth). Gaps: chorus flowers, saplings and pitcher crops are not modeled; "
+        "1.21.4's growth is not compared (its random ticks run only near players)."},
+    MechanismEntry{"leaves", l0_exact, l2_declared_deviation, harness_trace,
+        "As the official 1.21.8 server (leaves_decay): a leaf's update from a neighbor schedules its block tick a tick "
+        "later (unless the neighbor is a log and it is at distance 1), the tick setting its distance, one more than the "
+        "least of its neighbors' (a log or wood block 0, any other block 7); a leaf at distance 7 that is not "
+        "persistent decays in a random tick with what its loot table rolls. A taken tick of a block without rules of "
+        "its own does not keep the block from being scheduled again before it runs. Gaps: scaffolding's distance, "
+        "players' persistent leaves and 1.21.4's decay are not compared."},
     MechanismEntry{"item_entity", l0_exact, l2_declared_deviation, harness_trace,
         "Double-precision gravity, drag, bouncing and collision with every state's collision boxes; items at "
         "rest move every fourth tick; currents and buoyancy in water; merging with the target versions' timing, "

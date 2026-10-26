@@ -21,8 +21,9 @@ void apply_command(RuleContext& ctx, const contracts::Command& command);
 void run_scheduled_tick(RuleContext& ctx, TickList list, const ScheduledTick& tick);
 // One chunk's random ticks (random_ticks.cpp): randomTickSpeed precipitation
 // checks from the level random, then randomTickSpeed positions picked in
-// each of `sections` (those with blocks that take random ticks, ascending).
-void run_random_ticks(RuleContext& ctx, ChunkPos chunk, std::span<const std::int32_t> sections);
+// each of its `sections` sections, from the bottom, that holds blocks taking
+// random ticks when its turn comes.
+void run_random_ticks(RuleContext& ctx, ChunkPos chunk, std::int32_t sections);
 // The order the official servers tick their random-ticking chunks in.
 std::vector<ChunkPos> random_tick_order(std::vector<ChunkPos> chunks);
 void run_block_event(RuleContext& ctx, const BlockEvent& event);

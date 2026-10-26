@@ -113,6 +113,14 @@ std::uint8_t RegionContext::block_light(BlockPos pos) { return light_field().get
 
 bool RegionContext::player_near(ChunkPos chunk) { return gameplay::player_near(world_.counters(dimension()).presences, chunk); }
 
+bool RegionContext::section_ticks_randomly(ChunkPos chunk, std::int32_t section) {
+    auto* data = loaded_in_world({chunk.x * 16, world().min_y + section * 16, chunk.z * 16});
+    if (!data) return false;
+    const auto& sections = owned(chunk, *data).sections;
+    const auto& s = sections[static_cast<std::size_t>(section)];
+    return s && s->random_ticking > 0;
+}
+
 // The day time and weather change only in the command phase and between the
 // command phase and the levels' phases.
 gameplay::RuleContext::Sky RegionContext::sky() { return {world_.day_time, world_.sky_darken}; }
@@ -127,10 +135,11 @@ bool RegionContext::has_tick(TickList list, BlockPos pos, BlockType type) {
     auto* data = loaded_in_world(pos);
     if (!data) return false;
     if (owned(chunk_of(pos), *data).ticks[static_cast<int>(list)].contains({pos, type})) return true;
-    // A block tick taken out to run this tick still counts; a fluid tick does
-    // not, so a fluid can be scheduled again before its taken tick runs
-    // (lava_flow).
-    return list == TickList::block && phase_ == Phase::block_ticks && pending_ticks.contains({pos, type});
+    // A block tick taken out to run this tick still counts for the blocks
+    // with rules of their own; a fluid tick, or one of a block without (fire,
+    // farmland, leaves and the others), does not, so it can be scheduled
+    // again before its taken tick runs (lava_flow, leaves_decay).
+    return list == TickList::block && type != BlockType::other && phase_ == Phase::block_ticks && pending_ticks.contains({pos, type});
 }
 
 void RegionContext::add_tick(TickList list, BlockPos pos, BlockType type, Tick due, std::int8_t priority, std::uint32_t seq) {

@@ -1481,6 +1481,41 @@ int main() {
                 std::format("kelp grows to the surface: {}, {}", name({13, 0, 11}), name({13, 4, 11})));
     });
 
+    suite.run("leaves take their distance from logs and decay without them", [] {
+        Sim s(bundle(), 13, 1);
+        const auto name = [&](BlockPos p) { return circuit::gameplay::block_notation(s.at(p)); };
+        const auto leaves = [](int d) {
+            return std::format("minecraft:oak_leaves[distance={},persistent=false,waterlogged=false]", d);
+        };
+        std::vector<CommandBody> line;
+        for (int x = 1; x <= 8; ++x) line.push_back(place({x, 0, 0}, registry_block("oak_leaves")));
+        s.tick(line);
+        s.tick({place({0, 0, 0}, registry_block("oak_log", {{"axis", "y"}}))});
+        s.until(s.oracle.time() + 10);
+        for (int x = 1; x <= 8; ++x)
+            require(name({x, 0, 0}) == leaves(std::min(x, 7)), std::format("distance at {}: {}", x, name({x, 0, 0})));
+        // Without the log they count up again a step a tick, then decay.
+        s.tick({place({0, 0, 0}, blocks::air())});
+        s.until(s.oracle.time() + 10);
+        require(name({1, 0, 0}) == leaves(7), "away from logs: " + name({1, 0, 0}));
+        s.tick({SetGameRule{"randomTickSpeed", 4096}});
+        s.until(s.oracle.time() + 20);
+        for (int x = 1; x <= 8; ++x) require(s.at({x, 0, 0}).is_air(), std::format("decayed at {}: {}", x, name({x, 0, 0})));
+    });
+
+    suite.run("bamboo grows from its shoot and thickens", [] {
+        Sim s(bundle(), 17, 1);
+        const auto name = [&](BlockPos p) { return circuit::gameplay::block_notation(s.at(p)); };
+        s.tick({place({4, -1, 4}, registry_block("grass_block"))});
+        s.tick({place({4, 0, 4}, registry_block("bamboo_sapling")), SetGameRule{"randomTickSpeed", 4096}});
+        s.until(s.oracle.time() + 60);
+        int height = 0;
+        while (name({4, height, 4}).starts_with("minecraft:bamboo[")) ++height;
+        require(height >= 5, std::format("bamboo {} tall: {}", height, name({4, 0, 4})));
+        require(name({4, 0, 4}).starts_with("minecraft:bamboo[age=1"), "a thick stalk: " + name({4, 0, 4}));
+        require(name({4, height - 1, 4}).find("leaves=large") != std::string::npos, "large leaves on top: " + name({4, height - 1, 4}));
+    });
+
     suite.run("idle levels and random tick ranges", [] {
         // A level is awake while active, and for 300 ticks after it was last
         // active or started.

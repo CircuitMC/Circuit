@@ -139,12 +139,15 @@ std::vector<ChunkPos> random_tick_order(std::vector<ChunkPos> chunks) {
 // z = v >> 10 & 15 and y = v >> 18 & 15 in the section, and the block there
 // takes its random tick when it is one that takes them (crops_growth,
 // stems_growth, grass_spread; crops.cpp, grass.cpp, farmland.cpp).
-void run_random_ticks(RuleContext& ctx, ChunkPos chunk, std::span<const std::int32_t> sections) {
+void run_random_ticks(RuleContext& ctx, ChunkPos chunk, std::int32_t sections) {
     const auto speed = ctx.game_rule("randomTickSpeed");
     if (speed <= 0) return;
     for (std::int32_t k = 0; k < speed; ++k)
         if (ctx.random_int(48) == 0) (void)ctx.random_tick_pick();
-    for (const auto section : sections) {
+    for (std::int32_t section = 0; section < sections; ++section) {
+        // Whether the section takes them is read as its turn comes: a block
+        // grown into it from the one below counts at once (bamboo_growth).
+        if (!ctx.section_ticks_randomly(chunk, section)) continue;
         const auto base_y = ctx.world().min_y + section * 16;
         for (std::int32_t k = 0; k < speed; ++k) {
             const auto v = ctx.random_tick_pick() >> 2;
@@ -157,6 +160,7 @@ void run_random_ticks(RuleContext& ctx, ChunkPos chunk, std::span<const std::int
             else if (detail::is_spreading_dirt(s)) detail::spreading_dirt_random_tick(ctx, pos, s);
             else if (detail::is_farmland(s)) detail::farmland_random_tick(ctx, pos, s);
             else if (detail::is_growing_plant(s)) detail::plant_random_tick(ctx, pos, s);
+            else if (detail::is_leaves(s)) detail::leaves_random_tick(ctx, pos, s);
         }
     }
 }
