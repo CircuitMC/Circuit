@@ -92,12 +92,14 @@ void opening_shape_update(RuleContext& ctx, BlockPos pos, Direction d) {
         const auto toward_other = upper_half(s) ? Direction::down : Direction::up;
         if (d == toward_other) {
             const auto other = ctx.block(pos.relative(d));
-            if (!other.is(BlockType::door) || other.variant() != s.variant() || upper_half(other) == upper_half(s)) {
+            if (!other.is(BlockType::door) || upper_half(other) == upper_half(s)) {
                 destroy_block(ctx, pos);
                 return;
             }
-            // The half takes the other half's facing, hinge, opening and power.
-            const auto next = s.with_facing(other.facing()).with_level(static_cast<std::uint8_t>((s.level() & 1) | (other.level() & 2)))
+            // The half takes the other half's kind (a lower half that weathered:
+            // drip_eggs_blossoms), facing, hinge, opening and power.
+            const auto next = s.with_variant(other.variant()).with_facing(other.facing())
+                                  .with_level(static_cast<std::uint8_t>((s.level() & 1) | (other.level() & 2)))
                                   .with_flag(other.flag()).with_extra(other.extra());
             if (next != s) set_block_quiet(ctx, pos, next);
             return;

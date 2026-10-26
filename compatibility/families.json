@@ -858,12 +858,12 @@
           "milestone": "C5",
           "impl": "partial",
           "evidence": "compared",
-          "note": "Copper blocks, cut copper, its stairs and slabs, chiseled copper, grates and bulbs weather in random ticks by their chance and the copper around them, as the official 1.21.8 server does draw for draw",
+          "note": "Copper blocks, cut copper, its stairs and slabs, chiseled copper, grates, bulbs, doors and trapdoors weather in random ticks by their chance and the copper around them, as the official 1.21.8 server does draw for draw",
           "cases": [
-            "trace/melt_weather"
+            "trace/melt_weather",
+            "trace/eggs_blossoms"
           ],
           "deviations": [
-            "copper doors and trapdoors do not weather",
             "waxing with honeycomb and scraping with axes are not modeled",
             "1.21.4's weathering is not compared (its random ticks run only near players, and the harness has none)"
           ]
@@ -1070,11 +1070,12 @@
             "trace/cane_cactus_growth",
             "trace/wart_berry_cocoa_growth",
             "trace/kelp_vines_growth",
-            "trace/bamboo_growth"
+            "trace/bamboo_growth",
+            "trace/eggs_blossoms"
           ],
           "note": "Carrots, potatoes, beetroots, stems, torchflower crops, nether wart, sweet berry bushes and bamboo grow on their ground only and break when it goes; sugar cane needs water beside its ground and cacti nothing solid beside them, both breaking a tick after an update finds them unsupported; melon and pumpkin stems grow and set their fruit on farmland or dirt, and attached stems stand ripe again when it goes; sugar cane, cacti and their flowers, nether wart, sweet berry bushes, cocoa, kelp, weeping, twisting and cave vines and bamboo grow and mushrooms spread in random ticks, as the official 1.21.8 server does draw for draw",
           "deviations": [
-            "chorus flowers, saplings and pitcher crops do not grow",
+            "chorus flowers and saplings do not grow",
             "1.21.4's growth is not compared (its random ticks run only near players, and the harness has none)",
             "cacti hurt only items",
             "chorus and pitcher crops are not supported yet",
@@ -1103,9 +1104,10 @@
           "milestone": "C5",
           "impl": "partial",
           "evidence": "compared",
-          "note": "Grass blocks and mycelium die under blocks their light cannot pass and under water, and spread to dirt within reach in random ticks, as the official 1.21.8 server does draw for draw",
+          "note": "Grass blocks and mycelium die under blocks their light cannot pass and under water, and spread to dirt within reach in random ticks, and nylium under such blocks becomes netherrack, as the official 1.21.8 server does draw for draw",
           "cases": [
-            "trace/grass_spread"
+            "trace/grass_spread",
+            "trace/eggs_blossoms"
           ],
           "deviations": [
             "nylium, moss and sculk do not spread",
@@ -1291,7 +1293,6 @@
           ],
           "deviations": [
             "bells, copper bulbs and the other consumers are not modeled",
-            "copper doors and trapdoors do not weather",
             "player heads with a note block sound of their own play nothing"
           ],
           "note": "Doors, trapdoors and fence gates of every kind open and close with the power around them and by hand (iron ones only by power), quietly, with a level-random draw for the sound; note blocks take the instrument of the block below or a head above and play on a rising signal and when used, as block events that draw for the sound"

@@ -52,7 +52,9 @@ BlockState named(RuleContext& ctx, std::string_view name, const std::vector<regi
 
 BlockState with_age(BlockState s, int age) {
     if (s.is(BlockType::wheat)) return s.with_level(static_cast<std::uint8_t>(age));
-    const std::vector<registry::Property> props{{"age", std::to_string(age)}};
+    auto props = registry::properties(s.registry_state());
+    for (auto& [k, v] : props)
+        if (k == "age") v = std::to_string(age);
     return BlockState::registered(registry::state_of(*block_id(s), props).value());
 }
 
@@ -103,11 +105,37 @@ bool is_crop(BlockState s) {
     if (s.is(BlockType::wheat)) return true;
     if (!s.is(BlockType::other)) return false;
     const auto n = name_of(s);
-    return n == "carrots" || n == "potatoes" || n == "beetroots" || n == "torchflower_crop";
+    return n == "carrots" || n == "potatoes" || n == "beetroots" || n == "torchflower_crop" || n == "pitcher_crop";
+}
+
+// A pitcher crop's lower half (drip_eggs_blossoms; minecraft.wiki "Pitcher
+// Crop") draws its growth as a crop does, before anything else, then grows a
+// stage below age 4 with light 8 or more or the sky above, from age 3 with
+// its upper half above (air or that half there).
+void pitcher_random_tick(RuleContext& ctx, BlockPos pos, BlockState s) {
+    if (!grows(ctx, pos, s)) return;
+    const int age = property(s, "age");
+    if (age >= 4) return;
+    const auto up = pos.relative(Direction::up);
+    if (ctx.light(pos) < 8 && ctx.sky_light(pos) < 15) return;
+    const auto above = ctx.block(up);
+    if (age + 1 >= 3 && !above.is_air() && name_of(above) != "pitcher_crop") return;
+    const auto next = with_age(s, age + 1);
+    set_block_quiet(ctx, pos, next);
+    if (age + 1 >= 3) {
+        auto props = registry::properties(next.registry_state());
+        for (auto& [k, v] : props)
+            if (k == "half") v = "upper";
+        set_block(ctx, up, BlockState::registered(registry::state_of(*block_id(next), props).value()));
+    }
 }
 
 void crop_random_tick(RuleContext& ctx, BlockPos pos, BlockState s) {
     const auto n = name_of(s);
+    if (n == "pitcher_crop") {
+        pitcher_random_tick(ctx, pos, s);
+        return;
+    }
     const bool slow = n == "beetroots" || n == "torchflower_crop";
     if (slow && ctx.random_int(3) == 0) return;
     if (ctx.light(pos) < 9) return;

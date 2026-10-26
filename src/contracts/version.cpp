@@ -140,16 +140,18 @@ constexpr std::array reference_v4_mechanisms{
         "crop beside them in both directions or on a diagonal; beetroots and torchflower crops first skip one tick in "
         "three; a torchflower crop past age 1 becomes a torchflower; a ripe stem draws a side and sets its fruit there "
         "on air over farmland or dirt, becoming the attached stem, which stands ripe again when the fruit goes. An "
-        "update that finds no farmland below breaks them with their drops (loot_rolls). Gaps: crops do not break in "
-        "darkness; bone meal and pitcher crops are not modeled; 1.21.4's growth is not compared (its random ticks run "
-        "only near players)."},
+        "update that finds no farmland below breaks them with their drops (loot_rolls). A pitcher crop draws its growth, "
+        "then grows with light 8 or the sky, from age 3 with its upper half (eggs_blossoms). Gaps: crops do not break in "
+        "darkness; bone meal is not modeled; 1.21.4's growth is not compared (its random ticks run only near "
+        "players)."},
     MechanismEntry{"spreading", l0_exact, l2_declared_deviation, harness_trace,
         "As the official 1.21.8 server in random ticks (grass_spread): a grass block or mycelium under a block that its "
         "light cannot pass (stone, bottom slabs and stairs, dirt paths, two snow layers; not glass, top slabs, leaves, "
         "carpets or one snow layer) or under water becomes dirt; with light 9 or more above it tries four positions in "
         "x +-1, y -3..+1, z +-1, three draws each, turning dirt that could hold it and has no water above into the same "
-        "block, snowy under snow. Gaps: nylium, moss and sculk do not spread; 1.21.4's spreading is not compared (its "
-        "random ticks run only near players)."},
+        "block, snowy under snow; nylium under such a block becomes netherrack (eggs_blossoms). Gaps: nylium, moss and "
+        "sculk do not spread (bone meal); 1.21.4's spreading is not compared (its random ticks run only near "
+        "players)."},
     MechanismEntry{"plants", l0_exact, l2_declared_deviation, harness_trace,
         "As the official 1.21.8 server in random ticks (cane_cactus_growth, wart_berry_cocoa_growth, kelp_vines_growth): "
         "sugar cane and cacti with air above age to 15 and then grow a block when less than three tall (sugar cane at "
@@ -161,7 +163,10 @@ constexpr std::array reference_v4_mechanisms{
         "4, 1, 4, walk five steps of three offsets (x, y as nextInt(2) - nextInt(2), z) and settle on the last where "
         "they could stay; bamboo shoots and stalks with air and light 9 above draw nextInt(3) and grow a block on 0, "
         "with leaves and thickness by the stalk below and a stop (nextFloat < 0.25) from 11 tall, a stalk thickening "
-        "under a thicker one (bamboo_growth). Gaps: chorus flowers, saplings and pitcher crops are not modeled; "
+        "under a thicker one (bamboo_growth); eyeblossoms open by night and close by day in the overworld, drawing four "
+        "doubles for their particles and giving each eyeblossom of their old state within 3, 2, 3 a block tick 5 d to "
+        "10 d later; turtle eggs crack on sand when nextInt(500) is 0 (or by night's end), drawing their sound's pitch "
+        "(eggs_blossoms). Gaps: chorus flowers and saplings are not modeled; hatching turtles are not spawned; "
         "1.21.4's growth is not compared (its random ticks run only near players)."},
     MechanismEntry{"leaves", l0_exact, l2_declared_deviation, harness_trace,
         "As the official 1.21.8 server (leaves_decay): a leaf's update from a neighbor schedules its block tick a tick "
@@ -402,8 +407,9 @@ constexpr std::array reference_v4_mechanisms{
         "budding amethyst draws nextInt(5) and a side (nextInt(6)), setting a small bud in air or water there or growing "
         "a bud facing that side; copper that can still weather draws nextFloat() < 64 / 1125 and, unless less "
         "weathered copper is within a taxicab distance of 4, weathers at nextFloat() < m c^2 (minecraft.wiki "
-        "\"Oxidation\"). Gaps: copper doors and trapdoors do not weather; rain, snowfall and freezing are not modeled; "
-        "1.21.4's random ticks are not compared (they run only near players)."},
+        "\"Oxidation\"), copper doors (by their lower halves, the upper following) and trapdoors too (eggs_blossoms). "
+        "Gaps: rain, snowfall and freezing are not modeled; 1.21.4's random ticks are not compared (they run only near "
+        "players)."},
     MechanismEntry{"snow_and_ice", l0_exact, l2_declared_deviation, harness_trace,
         "Snow layers lie on whole collision tops, honey, soul sand, mud and eight layers of snow, but not on ice, packed "
         "ice or barriers, and an update that finds them unsupported breaks them without drops; grass blocks, podzol and "

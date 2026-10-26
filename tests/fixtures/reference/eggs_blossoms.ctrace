@@ -1,0 +1,973 @@
+circuit-trace 2
+title Turtle eggs, eyeblossoms, nylium, pitcher crops and copper doors in random ticks
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v12
+mechanisms random_ticks plants weathering crops
+area 0 0 0 15 15 15
+ticks 200
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 400
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 0 0 10 minecraft:stone
+at 0 set 0 0 11 minecraft:stone
+at 0 set 0 0 12 minecraft:stone
+at 0 set 0 0 13 minecraft:stone
+at 0 set 0 0 14 minecraft:stone
+at 0 set 0 0 15 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:stone
+at 0 set 1 0 11 minecraft:stone
+at 0 set 1 0 12 minecraft:stone
+at 0 set 1 0 13 minecraft:stone
+at 0 set 1 0 14 minecraft:stone
+at 0 set 1 0 15 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 2 0 10 minecraft:stone
+at 0 set 2 0 11 minecraft:stone
+at 0 set 2 0 12 minecraft:stone
+at 0 set 2 0 13 minecraft:stone
+at 0 set 2 0 14 minecraft:stone
+at 0 set 2 0 15 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 3 0 10 minecraft:stone
+at 0 set 3 0 11 minecraft:stone
+at 0 set 3 0 12 minecraft:stone
+at 0 set 3 0 13 minecraft:stone
+at 0 set 3 0 14 minecraft:stone
+at 0 set 3 0 15 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 4 0 11 minecraft:stone
+at 0 set 4 0 12 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 4 0 14 minecraft:stone
+at 0 set 4 0 15 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 5 0 10 minecraft:stone
+at 0 set 5 0 11 minecraft:stone
+at 0 set 5 0 12 minecraft:stone
+at 0 set 5 0 13 minecraft:stone
+at 0 set 5 0 14 minecraft:stone
+at 0 set 5 0 15 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 6 0 10 minecraft:stone
+at 0 set 6 0 11 minecraft:stone
+at 0 set 6 0 12 minecraft:stone
+at 0 set 6 0 13 minecraft:stone
+at 0 set 6 0 14 minecraft:stone
+at 0 set 6 0 15 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 7 0 10 minecraft:stone
+at 0 set 7 0 11 minecraft:stone
+at 0 set 7 0 12 minecraft:stone
+at 0 set 7 0 13 minecraft:stone
+at 0 set 7 0 14 minecraft:stone
+at 0 set 7 0 15 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 8 0 10 minecraft:stone
+at 0 set 8 0 11 minecraft:stone
+at 0 set 8 0 12 minecraft:stone
+at 0 set 8 0 13 minecraft:stone
+at 0 set 8 0 14 minecraft:stone
+at 0 set 8 0 15 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 9 0 10 minecraft:stone
+at 0 set 9 0 11 minecraft:stone
+at 0 set 9 0 12 minecraft:stone
+at 0 set 9 0 13 minecraft:stone
+at 0 set 9 0 14 minecraft:stone
+at 0 set 9 0 15 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 10 0 10 minecraft:stone
+at 0 set 10 0 11 minecraft:stone
+at 0 set 10 0 12 minecraft:stone
+at 0 set 10 0 13 minecraft:stone
+at 0 set 10 0 14 minecraft:stone
+at 0 set 10 0 15 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 11 0 10 minecraft:stone
+at 0 set 11 0 11 minecraft:stone
+at 0 set 11 0 12 minecraft:stone
+at 0 set 11 0 13 minecraft:stone
+at 0 set 11 0 14 minecraft:stone
+at 0 set 11 0 15 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 12 0 8 minecraft:stone
+at 0 set 12 0 9 minecraft:stone
+at 0 set 12 0 10 minecraft:stone
+at 0 set 12 0 11 minecraft:stone
+at 0 set 12 0 12 minecraft:stone
+at 0 set 12 0 13 minecraft:stone
+at 0 set 12 0 14 minecraft:stone
+at 0 set 12 0 15 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 13 0 8 minecraft:stone
+at 0 set 13 0 9 minecraft:stone
+at 0 set 13 0 10 minecraft:stone
+at 0 set 13 0 11 minecraft:stone
+at 0 set 13 0 12 minecraft:stone
+at 0 set 13 0 13 minecraft:stone
+at 0 set 13 0 14 minecraft:stone
+at 0 set 13 0 15 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 14 0 8 minecraft:stone
+at 0 set 14 0 9 minecraft:stone
+at 0 set 14 0 10 minecraft:stone
+at 0 set 14 0 11 minecraft:stone
+at 0 set 14 0 12 minecraft:stone
+at 0 set 14 0 13 minecraft:stone
+at 0 set 14 0 14 minecraft:stone
+at 0 set 14 0 15 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 15 0 8 minecraft:stone
+at 0 set 15 0 9 minecraft:stone
+at 0 set 15 0 10 minecraft:stone
+at 0 set 15 0 11 minecraft:stone
+at 0 set 15 0 12 minecraft:stone
+at 0 set 15 0 13 minecraft:stone
+at 0 set 15 0 14 minecraft:stone
+at 0 set 15 0 15 minecraft:stone
+draws 0 random_ticks level 3600
+
+at 1 set 0 1 6 minecraft:sand
+at 1 set 1 1 6 minecraft:sand
+at 1 set 2 1 6 minecraft:sand
+at 1 set 3 1 6 minecraft:sand
+at 1 set 4 1 6 minecraft:sand
+at 1 set 5 1 6 minecraft:sand
+at 1 set 6 1 6 minecraft:sand
+at 1 set 7 1 6 minecraft:sand
+at 1 set 0 1 8 minecraft:grass_block
+at 1 set 0 1 9 minecraft:grass_block
+at 1 set 0 1 10 minecraft:grass_block
+at 1 set 1 1 8 minecraft:grass_block
+at 1 set 1 1 9 minecraft:grass_block
+at 1 set 1 1 10 minecraft:grass_block
+at 1 set 2 1 8 minecraft:grass_block
+at 1 set 2 1 9 minecraft:grass_block
+at 1 set 2 1 10 minecraft:grass_block
+at 1 set 3 1 8 minecraft:grass_block
+at 1 set 3 1 9 minecraft:grass_block
+at 1 set 3 1 10 minecraft:grass_block
+at 1 set 4 1 8 minecraft:grass_block
+at 1 set 4 1 9 minecraft:grass_block
+at 1 set 4 1 10 minecraft:grass_block
+at 1 set 5 1 8 minecraft:grass_block
+at 1 set 5 1 9 minecraft:grass_block
+at 1 set 5 1 10 minecraft:grass_block
+at 1 set 6 1 8 minecraft:grass_block
+at 1 set 6 1 9 minecraft:grass_block
+at 1 set 6 1 10 minecraft:grass_block
+at 1 set 7 1 8 minecraft:grass_block
+at 1 set 7 1 9 minecraft:grass_block
+at 1 set 7 1 10 minecraft:grass_block
+at 1 set 8 1 8 minecraft:grass_block
+at 1 set 8 1 9 minecraft:grass_block
+at 1 set 8 1 10 minecraft:grass_block
+at 1 set 9 1 8 minecraft:grass_block
+at 1 set 9 1 9 minecraft:grass_block
+at 1 set 9 1 10 minecraft:grass_block
+at 1 set 10 1 8 minecraft:grass_block
+at 1 set 10 1 9 minecraft:grass_block
+at 1 set 10 1 10 minecraft:grass_block
+at 1 set 11 1 8 minecraft:grass_block
+at 1 set 11 1 9 minecraft:grass_block
+at 1 set 11 1 10 minecraft:grass_block
+at 1 set 12 1 8 minecraft:grass_block
+at 1 set 12 1 9 minecraft:grass_block
+at 1 set 12 1 10 minecraft:grass_block
+at 1 set 13 1 8 minecraft:grass_block
+at 1 set 13 1 9 minecraft:grass_block
+at 1 set 13 1 10 minecraft:grass_block
+at 1 set 14 1 8 minecraft:grass_block
+at 1 set 14 1 9 minecraft:grass_block
+at 1 set 14 1 10 minecraft:grass_block
+at 1 set 15 1 8 minecraft:grass_block
+at 1 set 15 1 9 minecraft:grass_block
+at 1 set 15 1 10 minecraft:grass_block
+at 1 set 0 1 14 minecraft:warped_nylium
+at 1 set 1 1 14 minecraft:crimson_nylium
+at 1 set 2 1 14 minecraft:warped_nylium
+at 1 set 3 1 14 minecraft:crimson_nylium
+at 1 set 4 1 14 minecraft:warped_nylium
+at 1 set 5 1 14 minecraft:crimson_nylium
+at 1 set 8 1 14 minecraft:farmland[moisture=7]
+at 1 set 9 1 14 minecraft:farmland[moisture=7]
+at 1 set 10 1 14 minecraft:farmland[moisture=7]
+at 1 set 11 1 14 minecraft:farmland[moisture=7]
+at 1 set 12 1 14 minecraft:farmland[moisture=7]
+at 1 set 13 1 14 minecraft:farmland[moisture=7]
+at 1 set 14 1 13 minecraft:water[level=0]
+at 1 set 0 1 4 minecraft:copper_door[facing=north,half=lower,hinge=left,open=false,powered=false]
+at 1 set 0 2 4 minecraft:copper_door[facing=north,half=upper,hinge=left,open=false,powered=false]
+at 1 set 8 1 4 minecraft:copper_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=false]
+at 1 set 2 1 4 minecraft:exposed_copper_door[facing=north,half=lower,hinge=left,open=false,powered=false]
+at 1 set 2 2 4 minecraft:exposed_copper_door[facing=north,half=upper,hinge=left,open=false,powered=false]
+at 1 set 10 1 4 minecraft:exposed_copper_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=false]
+at 1 set 4 1 4 minecraft:weathered_copper_door[facing=north,half=lower,hinge=left,open=false,powered=false]
+at 1 set 4 2 4 minecraft:weathered_copper_door[facing=north,half=upper,hinge=left,open=false,powered=false]
+at 1 set 12 1 4 minecraft:weathered_copper_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=false]
+at 1 set 6 1 4 minecraft:copper_block
+at 1 set 6 2 4 minecraft:copper_block
+at 1 set 14 1 4 minecraft:copper_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=false]
+at 1 command time set 13000
+change 1 commands 0 1 6 minecraft:air minecraft:sand
+change 1 commands 1 1 6 minecraft:air minecraft:sand
+change 1 commands 2 1 6 minecraft:air minecraft:sand
+change 1 commands 3 1 6 minecraft:air minecraft:sand
+change 1 commands 4 1 6 minecraft:air minecraft:sand
+change 1 commands 5 1 6 minecraft:air minecraft:sand
+change 1 commands 6 1 6 minecraft:air minecraft:sand
+change 1 commands 7 1 6 minecraft:air minecraft:sand
+change 1 commands 0 1 8 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 0 1 9 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 0 1 10 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 1 1 8 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 1 1 9 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 1 1 10 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 2 1 8 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 2 1 9 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 2 1 10 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 3 1 8 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 3 1 9 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 3 1 10 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 4 1 8 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 4 1 9 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 4 1 10 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 5 1 8 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 5 1 9 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 5 1 10 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 6 1 8 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 6 1 9 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 6 1 10 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 7 1 8 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 7 1 9 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 7 1 10 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 8 1 8 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 8 1 9 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 8 1 10 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 9 1 8 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 9 1 9 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 9 1 10 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 10 1 8 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 10 1 9 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 10 1 10 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 11 1 8 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 11 1 9 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 11 1 10 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 12 1 8 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 12 1 9 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 12 1 10 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 13 1 8 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 13 1 9 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 13 1 10 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 14 1 8 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 14 1 9 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 14 1 10 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 15 1 8 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 15 1 9 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 15 1 10 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 0 1 14 minecraft:air minecraft:warped_nylium
+change 1 commands 1 1 14 minecraft:air minecraft:crimson_nylium
+change 1 commands 2 1 14 minecraft:air minecraft:warped_nylium
+change 1 commands 3 1 14 minecraft:air minecraft:crimson_nylium
+change 1 commands 4 1 14 minecraft:air minecraft:warped_nylium
+change 1 commands 5 1 14 minecraft:air minecraft:crimson_nylium
+change 1 commands 8 1 14 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 9 1 14 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 10 1 14 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 11 1 14 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 12 1 14 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 13 1 14 minecraft:air minecraft:farmland[moisture=7]
+change 1 commands 14 1 13 minecraft:air minecraft:water[level=0]
+change 1 commands 0 1 4 minecraft:air minecraft:copper_door[facing=north,half=lower,hinge=left,open=false,powered=false]
+change 1 commands 0 2 4 minecraft:air minecraft:copper_door[facing=north,half=upper,hinge=left,open=false,powered=false]
+change 1 commands 8 1 4 minecraft:air minecraft:copper_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=false]
+change 1 commands 2 1 4 minecraft:air minecraft:exposed_copper_door[facing=north,half=lower,hinge=left,open=false,powered=false]
+change 1 commands 2 2 4 minecraft:air minecraft:exposed_copper_door[facing=north,half=upper,hinge=left,open=false,powered=false]
+change 1 commands 10 1 4 minecraft:air minecraft:exposed_copper_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=false]
+change 1 commands 4 1 4 minecraft:air minecraft:weathered_copper_door[facing=north,half=lower,hinge=left,open=false,powered=false]
+change 1 commands 4 2 4 minecraft:air minecraft:weathered_copper_door[facing=north,half=upper,hinge=left,open=false,powered=false]
+change 1 commands 12 1 4 minecraft:air minecraft:weathered_copper_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=false]
+change 1 commands 6 1 4 minecraft:air minecraft:copper_block
+change 1 commands 6 2 4 minecraft:air minecraft:copper_block
+change 1 commands 14 1 4 minecraft:air minecraft:copper_trapdoor[facing=north,half=bottom,open=false,powered=false,waterlogged=false]
+change 1 random_ticks 8 1 14 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+change 1 random_ticks 9 1 14 minecraft:farmland[moisture=7] minecraft:farmland[moisture=6]
+draws 1 random_ticks level 3674
+
+at 2 set 0 2 6 minecraft:turtle_egg[eggs=1,hatch=0]
+at 2 set 1 2 6 minecraft:turtle_egg[eggs=2,hatch=1]
+at 2 set 2 2 6 minecraft:turtle_egg[eggs=3,hatch=0]
+at 2 set 3 2 6 minecraft:turtle_egg[eggs=4,hatch=1]
+at 2 set 4 2 6 minecraft:turtle_egg[eggs=1,hatch=0]
+at 2 set 5 2 6 minecraft:turtle_egg[eggs=2,hatch=1]
+at 2 set 6 2 6 minecraft:turtle_egg[eggs=3,hatch=0]
+at 2 set 7 2 6 minecraft:turtle_egg[eggs=4,hatch=1]
+at 2 set 9 1 6 minecraft:turtle_egg[eggs=2,hatch=0]
+at 2 set 0 2 8 minecraft:open_eyeblossom
+at 2 set 0 2 10 minecraft:open_eyeblossom
+at 2 set 1 2 9 minecraft:open_eyeblossom
+at 2 set 2 2 8 minecraft:open_eyeblossom
+at 2 set 2 2 10 minecraft:open_eyeblossom
+at 2 set 3 2 9 minecraft:open_eyeblossom
+at 2 set 4 2 8 minecraft:open_eyeblossom
+at 2 set 4 2 10 minecraft:open_eyeblossom
+at 2 set 5 2 9 minecraft:open_eyeblossom
+at 2 set 6 2 8 minecraft:open_eyeblossom
+at 2 set 6 2 10 minecraft:open_eyeblossom
+at 2 set 7 2 9 minecraft:open_eyeblossom
+at 2 set 8 2 8 minecraft:closed_eyeblossom
+at 2 set 8 2 10 minecraft:closed_eyeblossom
+at 2 set 9 2 9 minecraft:closed_eyeblossom
+at 2 set 10 2 8 minecraft:closed_eyeblossom
+at 2 set 10 2 10 minecraft:closed_eyeblossom
+at 2 set 11 2 9 minecraft:closed_eyeblossom
+at 2 set 12 2 8 minecraft:closed_eyeblossom
+at 2 set 12 2 10 minecraft:closed_eyeblossom
+at 2 set 13 2 9 minecraft:closed_eyeblossom
+at 2 set 14 2 8 minecraft:closed_eyeblossom
+at 2 set 14 2 10 minecraft:closed_eyeblossom
+at 2 set 15 2 9 minecraft:closed_eyeblossom
+at 2 set 3 2 12 minecraft:potted_open_eyeblossom
+at 2 set 12 2 12 minecraft:potted_closed_eyeblossom
+at 2 set 0 2 14 minecraft:stone
+at 2 set 1 2 14 minecraft:stone
+at 2 set 2 2 14 minecraft:stone
+at 2 set 8 2 14 minecraft:pitcher_crop[age=0,half=lower]
+at 2 set 9 2 14 minecraft:pitcher_crop[age=1,half=lower]
+at 2 set 10 2 14 minecraft:pitcher_crop[age=2,half=lower]
+at 2 set 11 2 14 minecraft:pitcher_crop[age=3,half=lower]
+at 2 set 12 2 14 minecraft:pitcher_crop[age=4,half=lower]
+at 2 set 13 2 14 minecraft:pitcher_crop[age=0,half=lower]
+change 2 commands 0 2 6 minecraft:air minecraft:turtle_egg[eggs=1,hatch=0]
+change 2 commands 1 2 6 minecraft:air minecraft:turtle_egg[eggs=2,hatch=1]
+change 2 commands 2 2 6 minecraft:air minecraft:turtle_egg[eggs=3,hatch=0]
+change 2 commands 3 2 6 minecraft:air minecraft:turtle_egg[eggs=4,hatch=1]
+change 2 commands 4 2 6 minecraft:air minecraft:turtle_egg[eggs=1,hatch=0]
+change 2 commands 5 2 6 minecraft:air minecraft:turtle_egg[eggs=2,hatch=1]
+change 2 commands 6 2 6 minecraft:air minecraft:turtle_egg[eggs=3,hatch=0]
+change 2 commands 7 2 6 minecraft:air minecraft:turtle_egg[eggs=4,hatch=1]
+change 2 commands 9 1 6 minecraft:air minecraft:turtle_egg[eggs=2,hatch=0]
+change 2 commands 0 2 8 minecraft:air minecraft:open_eyeblossom
+change 2 commands 0 2 10 minecraft:air minecraft:open_eyeblossom
+change 2 commands 1 2 9 minecraft:air minecraft:open_eyeblossom
+change 2 commands 2 2 8 minecraft:air minecraft:open_eyeblossom
+change 2 commands 2 2 10 minecraft:air minecraft:open_eyeblossom
+change 2 commands 3 2 9 minecraft:air minecraft:open_eyeblossom
+change 2 commands 4 2 8 minecraft:air minecraft:open_eyeblossom
+change 2 commands 4 2 10 minecraft:air minecraft:open_eyeblossom
+change 2 commands 5 2 9 minecraft:air minecraft:open_eyeblossom
+change 2 commands 6 2 8 minecraft:air minecraft:open_eyeblossom
+change 2 commands 6 2 10 minecraft:air minecraft:open_eyeblossom
+change 2 commands 7 2 9 minecraft:air minecraft:open_eyeblossom
+change 2 commands 8 2 8 minecraft:air minecraft:closed_eyeblossom
+change 2 commands 8 2 10 minecraft:air minecraft:closed_eyeblossom
+change 2 commands 9 2 9 minecraft:air minecraft:closed_eyeblossom
+change 2 commands 10 2 8 minecraft:air minecraft:closed_eyeblossom
+change 2 commands 10 2 10 minecraft:air minecraft:closed_eyeblossom
+change 2 commands 11 2 9 minecraft:air minecraft:closed_eyeblossom
+change 2 commands 12 2 8 minecraft:air minecraft:closed_eyeblossom
+change 2 commands 12 2 10 minecraft:air minecraft:closed_eyeblossom
+change 2 commands 13 2 9 minecraft:air minecraft:closed_eyeblossom
+change 2 commands 14 2 8 minecraft:air minecraft:closed_eyeblossom
+change 2 commands 14 2 10 minecraft:air minecraft:closed_eyeblossom
+change 2 commands 15 2 9 minecraft:air minecraft:closed_eyeblossom
+change 2 commands 3 2 12 minecraft:air minecraft:potted_open_eyeblossom
+change 2 commands 12 2 12 minecraft:air minecraft:potted_closed_eyeblossom
+change 2 commands 0 2 14 minecraft:air minecraft:stone
+change 2 commands 1 2 14 minecraft:air minecraft:stone
+change 2 commands 2 2 14 minecraft:air minecraft:stone
+change 2 commands 8 2 14 minecraft:air minecraft:pitcher_crop[age=0,half=lower]
+change 2 commands 9 2 14 minecraft:air minecraft:pitcher_crop[age=1,half=lower]
+change 2 commands 10 2 14 minecraft:air minecraft:pitcher_crop[age=2,half=lower]
+change 2 commands 11 2 14 minecraft:air minecraft:pitcher_crop[age=3,half=lower]
+change 2 commands 12 2 14 minecraft:air minecraft:pitcher_crop[age=4,half=lower]
+change 2 commands 13 2 14 minecraft:air minecraft:pitcher_crop[age=0,half=lower]
+change 2 random_ticks 8 1 14 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+draws 2 random_ticks level 3652
+
+draws 3 random_ticks level 3625
+
+change 4 random_ticks 10 2 10 minecraft:closed_eyeblossom minecraft:open_eyeblossom
+change 4 random_ticks 15 2 9 minecraft:closed_eyeblossom minecraft:open_eyeblossom
+change 4 random_ticks 11 2 9 minecraft:closed_eyeblossom minecraft:open_eyeblossom
+draws 4 random_ticks level 3706
+
+change 5 fluid_ticks 15 1 13 minecraft:air minecraft:water[level=1]
+change 5 random_ticks 9 2 9 minecraft:closed_eyeblossom minecraft:open_eyeblossom
+draws 5 random_ticks level 3709
+
+change 6 random_ticks 8 1 14 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 6 random_ticks level 3686
+
+change 7 random_ticks 10 2 8 minecraft:closed_eyeblossom minecraft:open_eyeblossom
+draws 7 random_ticks level 3639
+
+change 8 random_ticks 0 1 14 minecraft:warped_nylium minecraft:netherrack
+change 8 random_ticks 11 2 14 minecraft:pitcher_crop[age=3,half=lower] minecraft:pitcher_crop[age=4,half=lower]
+change 8 random_ticks 11 3 14 minecraft:air minecraft:pitcher_crop[age=4,half=upper]
+draws 8 random_ticks level 3642
+
+change 9 random_ticks 12 2 12 minecraft:potted_closed_eyeblossom minecraft:potted_open_eyeblossom
+change 9 random_ticks 12 2 8 minecraft:closed_eyeblossom minecraft:open_eyeblossom
+draws 9 random_ticks level 3670
+
+draws 10 random_ticks level 3672
+
+change 11 random_ticks 13 2 9 minecraft:closed_eyeblossom minecraft:open_eyeblossom
+change 11 random_ticks 8 2 10 minecraft:closed_eyeblossom minecraft:open_eyeblossom
+change 11 random_ticks 8 1 14 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 11 random_ticks level 3694
+
+change 12 random_ticks 10 2 14 minecraft:pitcher_crop[age=2,half=lower] minecraft:pitcher_crop[age=3,half=lower]
+change 12 random_ticks 10 3 14 minecraft:air minecraft:pitcher_crop[age=3,half=upper]
+change 12 random_ticks 8 2 8 minecraft:closed_eyeblossom minecraft:open_eyeblossom
+change 12 random_ticks 14 2 10 minecraft:closed_eyeblossom minecraft:open_eyeblossom
+draws 12 random_ticks level 3680
+
+change 13 random_ticks 2 1 14 minecraft:warped_nylium minecraft:netherrack
+draws 13 random_ticks level 3661
+
+draws 14 random_ticks level 3660
+
+change 15 block_ticks 12 2 10 minecraft:closed_eyeblossom minecraft:open_eyeblossom
+change 15 random_ticks 9 1 14 minecraft:farmland[moisture=6] minecraft:farmland[moisture=5]
+change 15 random_ticks 9 1 14 minecraft:farmland[moisture=5] minecraft:farmland[moisture=4]
+draws 15 block_ticks level 9
+draws 15 random_ticks level 3627
+
+draws 16 random_ticks level 3757
+
+change 17 block_ticks 14 2 8 minecraft:closed_eyeblossom minecraft:open_eyeblossom
+draws 17 block_ticks level 8
+draws 17 random_ticks level 3662
+
+draws 18 random_ticks level 3672
+
+draws 19 random_ticks level 3699
+
+draws 20 random_ticks level 3649
+
+draws 21 random_ticks level 3660
+
+change 22 random_ticks 5 2 6 minecraft:turtle_egg[eggs=2,hatch=1] minecraft:turtle_egg[eggs=2,hatch=2]
+change 22 random_ticks 13 2 14 minecraft:pitcher_crop[age=0,half=lower] minecraft:pitcher_crop[age=1,half=lower]
+change 22 random_ticks 8 1 14 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+change 22 random_ticks 9 2 14 minecraft:pitcher_crop[age=1,half=lower] minecraft:pitcher_crop[age=2,half=lower]
+draws 22 random_ticks level 3668
+
+change 23 random_ticks 8 1 14 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+draws 23 random_ticks level 3685
+
+change 24 random_ticks 9 1 14 minecraft:farmland[moisture=4] minecraft:farmland[moisture=3]
+draws 24 random_ticks level 3639
+
+draws 25 random_ticks level 3674
+
+change 26 random_ticks 8 1 14 minecraft:farmland[moisture=1] minecraft:farmland[moisture=0]
+draws 26 random_ticks level 3697
+
+draws 27 random_ticks level 3636
+
+draws 28 random_ticks level 3697
+
+draws 29 random_ticks level 3685
+
+change 30 random_ticks 13 2 14 minecraft:pitcher_crop[age=1,half=lower] minecraft:pitcher_crop[age=2,half=lower]
+draws 30 random_ticks level 3640
+
+draws 31 random_ticks level 3660
+
+draws 32 random_ticks level 3624
+
+draws 33 random_ticks level 3651
+
+draws 34 random_ticks level 3673
+
+change 35 random_ticks 13 2 14 minecraft:pitcher_crop[age=2,half=lower] minecraft:pitcher_crop[age=3,half=lower]
+change 35 random_ticks 13 3 14 minecraft:air minecraft:pitcher_crop[age=3,half=upper]
+change 35 random_ticks 1 1 14 minecraft:crimson_nylium minecraft:netherrack
+change 35 random_ticks 6 1 4 minecraft:copper_block minecraft:exposed_copper
+draws 35 random_ticks level 3668
+
+draws 36 random_ticks level 3653
+
+draws 37 random_ticks level 3661
+
+draws 38 random_ticks level 3673
+
+draws 39 random_ticks level 3672
+
+draws 40 random_ticks level 3650
+
+draws 41 random_ticks level 3627
+
+draws 42 random_ticks level 3650
+
+draws 43 random_ticks level 3673
+
+draws 44 random_ticks level 3629
+
+draws 45 random_ticks level 3624
+
+draws 46 random_ticks level 3698
+
+draws 47 random_ticks level 3612
+
+draws 48 random_ticks level 3676
+
+draws 49 random_ticks level 3662
+
+draws 50 random_ticks level 3697
+
+draws 51 random_ticks level 3677
+
+draws 52 random_ticks level 3700
+
+draws 53 random_ticks level 3698
+
+draws 54 random_ticks level 3661
+
+draws 55 random_ticks level 3650
+
+change 56 random_ticks 9 1 14 minecraft:farmland[moisture=3] minecraft:farmland[moisture=2]
+draws 56 random_ticks level 3701
+
+draws 57 random_ticks level 3663
+
+draws 58 random_ticks level 3626
+
+draws 59 random_ticks level 3626
+
+draws 60 random_ticks level 3674
+
+draws 61 random_ticks level 3673
+
+change 62 random_ticks 9 2 14 minecraft:pitcher_crop[age=2,half=lower] minecraft:pitcher_crop[age=3,half=lower]
+change 62 random_ticks 9 3 14 minecraft:air minecraft:pitcher_crop[age=3,half=upper]
+draws 62 random_ticks level 3640
+
+draws 63 random_ticks level 3637
+
+draws 64 random_ticks level 3650
+
+draws 65 random_ticks level 3673
+
+draws 66 random_ticks level 3662
+
+draws 67 random_ticks level 3628
+
+draws 68 random_ticks level 3637
+
+draws 69 random_ticks level 3676
+
+draws 70 random_ticks level 3696
+
+draws 71 random_ticks level 3625
+
+draws 72 random_ticks level 3639
+
+change 73 random_ticks 9 1 14 minecraft:farmland[moisture=2] minecraft:farmland[moisture=1]
+draws 73 random_ticks level 3663
+
+draws 74 random_ticks level 3648
+
+draws 75 random_ticks level 3733
+
+draws 76 random_ticks level 3698
+
+draws 77 random_ticks level 3649
+
+draws 78 random_ticks level 3648
+
+draws 79 random_ticks level 3625
+
+draws 80 random_ticks level 3663
+
+draws 81 random_ticks level 3624
+
+draws 82 random_ticks level 3637
+
+draws 83 random_ticks level 3626
+
+draws 84 random_ticks level 3673
+
+draws 85 random_ticks level 3629
+
+draws 86 random_ticks level 3624
+
+draws 87 random_ticks level 3661
+
+draws 88 random_ticks level 3687
+
+change 89 random_ticks 10 2 14 minecraft:pitcher_crop[age=3,half=lower] minecraft:pitcher_crop[age=4,half=lower]
+change 89 random_ticks 10 3 14 minecraft:pitcher_crop[age=3,half=upper] minecraft:pitcher_crop[age=4,half=upper]
+draws 89 random_ticks level 3614
+
+change 90 random_ticks 9 1 14 minecraft:farmland[moisture=1] minecraft:farmland[moisture=0]
+draws 90 random_ticks level 3625
+
+draws 91 random_ticks level 3649
+
+draws 92 random_ticks level 3638
+
+draws 93 random_ticks level 3690
+
+draws 94 random_ticks level 3626
+
+draws 95 random_ticks level 3686
+
+draws 96 random_ticks level 3614
+
+draws 97 random_ticks level 3696
+
+draws 98 random_ticks level 3686
+
+draws 99 random_ticks level 3675
+
+draws 100 random_ticks level 3661
+
+draws 101 random_ticks level 3709
+
+draws 102 random_ticks level 3650
+
+draws 103 random_ticks level 3648
+
+draws 104 random_ticks level 3636
+
+draws 105 random_ticks level 3648
+
+draws 106 random_ticks level 3648
+
+draws 107 random_ticks level 3625
+
+draws 108 random_ticks level 3615
+
+draws 109 random_ticks level 3661
+
+draws 110 random_ticks level 3650
+
+draws 111 random_ticks level 3685
+
+draws 112 random_ticks level 3711
+
+draws 113 random_ticks level 3685
+
+change 114 random_ticks 13 2 14 minecraft:pitcher_crop[age=3,half=lower] minecraft:pitcher_crop[age=4,half=lower]
+change 114 random_ticks 13 3 14 minecraft:pitcher_crop[age=3,half=upper] minecraft:pitcher_crop[age=4,half=upper]
+draws 114 random_ticks level 3676
+
+draws 115 random_ticks level 3685
+
+draws 116 random_ticks level 3637
+
+draws 117 random_ticks level 3686
+
+draws 118 random_ticks level 3638
+
+draws 119 random_ticks level 3651
+
+draws 120 random_ticks level 3697
+
+draws 121 random_ticks level 3674
+
+draws 122 random_ticks level 3686
+
+draws 123 random_ticks level 3685
+
+draws 124 random_ticks level 3654
+
+draws 125 random_ticks level 3660
+
+draws 126 random_ticks level 3654
+
+draws 127 random_ticks level 3660
+
+draws 128 random_ticks level 3618
+
+draws 129 random_ticks level 3640
+
+draws 130 random_ticks level 3652
+
+draws 131 random_ticks level 3685
+
+change 132 random_ticks 8 2 14 minecraft:pitcher_crop[age=0,half=lower] minecraft:pitcher_crop[age=1,half=lower]
+draws 132 random_ticks level 3676
+
+draws 133 random_ticks level 3651
+
+draws 134 random_ticks level 3649
+
+draws 135 random_ticks level 3627
+
+draws 136 random_ticks level 3697
+
+draws 137 random_ticks level 3661
+
+draws 138 random_ticks level 3664
+
+draws 139 random_ticks level 3687
+
+draws 140 random_ticks level 3661
+
+draws 141 random_ticks level 3639
+
+draws 142 random_ticks level 3661
+
+draws 143 random_ticks level 3673
+
+draws 144 random_ticks level 3684
+
+draws 145 random_ticks level 3698
+
+draws 146 random_ticks level 3723
+
+draws 147 random_ticks level 3638
+
+draws 148 random_ticks level 3638
+
+draws 149 random_ticks level 3649
+
+draws 150 random_ticks level 3690
+
+draws 151 random_ticks level 3650
+
+draws 152 random_ticks level 3625
+
+draws 153 random_ticks level 3625
+
+draws 154 random_ticks level 3673
+
+draws 155 random_ticks level 3649
+
+draws 156 random_ticks level 3637
+
+draws 157 random_ticks level 3663
+
+draws 158 random_ticks level 3663
+
+draws 159 random_ticks level 3711
+
+draws 160 random_ticks level 3686
+
+draws 161 random_ticks level 3649
+
+draws 162 random_ticks level 3651
+
+draws 163 random_ticks level 3673
+
+draws 164 random_ticks level 3636
+
+draws 165 random_ticks level 3638
+
+draws 166 random_ticks level 3711
+
+draws 167 random_ticks level 3638
+
+draws 168 random_ticks level 3665
+
+draws 169 random_ticks level 3624
+
+draws 170 random_ticks level 3639
+
+draws 171 random_ticks level 3637
+
+draws 172 random_ticks level 3613
+
+draws 173 random_ticks level 3637
+
+change 174 random_ticks 6 2 4 minecraft:copper_block minecraft:exposed_copper
+draws 174 random_ticks level 3642
+
+draws 175 random_ticks level 3664
+
+draws 176 random_ticks level 3625
+
+draws 177 random_ticks level 3639
+
+draws 178 random_ticks level 3674
+
+draws 179 random_ticks level 3653
+
+draws 180 random_ticks level 3664
+
+draws 181 random_ticks level 3662
+
+draws 182 random_ticks level 3615
+
+draws 183 random_ticks level 3628
+
+draws 184 random_ticks level 3663
+
+draws 185 random_ticks level 3648
+
+draws 186 random_ticks level 3653
+
+draws 187 random_ticks level 3674
+
+draws 188 random_ticks level 3639
+
+draws 189 random_ticks level 3624
+
+draws 190 random_ticks level 3661
+
+draws 191 random_ticks level 3690
+
+draws 192 random_ticks level 3661
+
+draws 193 random_ticks level 3650
+
+draws 194 random_ticks level 3700
+
+draws 195 random_ticks level 3677
+
+draws 196 random_ticks level 3661
+
+draws 197 random_ticks level 3696
+
+draws 198 random_ticks level 3665
+
+draws 199 random_ticks level 3725
+
+draws 200 random_ticks level 3673

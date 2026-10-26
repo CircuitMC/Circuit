@@ -1549,6 +1549,32 @@ int main() {
         require(fire, "lava sets fire by the planks");
     });
 
+    suite.run("eyeblossoms turn by night, copper doors weather whole, pitcher crops grow tall and nylium dies", [] {
+        Sim s(bundle(), 23, 1);
+        const auto name = [&](BlockPos p) { return circuit::gameplay::block_notation(s.at(p)); };
+        std::vector<CommandBody> build;
+        for (int x = 0; x < 16; ++x)
+            for (int z = 0; z < 16; ++z) build.push_back(place({x, -1, z}, registry_block("grass_block")));
+        for (int x = 2; x <= 6; ++x) build.push_back(place({x, 0, 2}, registry_block("closed_eyeblossom")));
+        build.push_back(place({9, -1, 9}, registry_block("crimson_nylium")));
+        build.push_back(place({9, 0, 9}, blocks::stone()));
+        for (int x = 12; x <= 14; ++x) build.push_back(place({x, -1, 12}, registry_block("farmland", {{"moisture", "7"}})));
+        build.push_back(place({11, -1, 12}, blocks::water_source()));
+        s.tick(build);
+        s.tick({place({12, 0, 12}, registry_block("pitcher_crop", {{"age", "2"}, {"half", "lower"}})),
+                place({4, 0, 8}, registry_block("copper_door", {{"half", "lower"}})),
+                place({4, 1, 8}, registry_block("copper_door", {{"half", "upper"}})),
+                SetDayTime{13000}, SetGameRule{"randomTickSpeed", 4096}});
+        s.until(s.oracle.time() + 100);
+        for (int x = 2; x <= 6; ++x) require(name({x, 0, 2}) == "minecraft:open_eyeblossom", std::format("open by night at {}: {}", x, name({x, 0, 2})));
+        require(name({9, -1, 9}) == "minecraft:netherrack", "nylium under stone: " + name({9, -1, 9}));
+        require(name({12, 1, 12}).starts_with("minecraft:pitcher_crop[age=") && name({12, 1, 12}).ends_with("half=upper]"),
+                "the pitcher's upper half: " + name({12, 1, 12}));
+        const auto lower = name({4, 0, 8}), upper = name({4, 1, 8});
+        require(!lower.starts_with("minecraft:copper_door") && lower.substr(0, lower.find('[')) == upper.substr(0, upper.find('[')),
+                std::format("both halves weather: {}, {}", lower, upper));
+    });
+
     suite.run("idle levels and random tick ranges", [] {
         // A level is awake while active, and for 300 ticks after it was last
         // active or started.

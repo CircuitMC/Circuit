@@ -101,6 +101,12 @@ void weather_copper(RuleContext& ctx, BlockPos pos, BlockState s, int stage, std
     const float c = static_cast<float>(more + 1) / static_cast<float>(more + same + 1);
     const float chance = c * c * (stage == 0 ? 0.75F : 1.0F);
     if (!(ctx.random_float() < chance)) return;
+    // A copper door's lower half or a trapdoor: the next kind; a door's
+    // upper half follows by its update.
+    if (s.is(BlockType::door) || s.is(BlockType::trapdoor)) {
+        set_block(ctx, pos, s.with_variant(static_cast<std::uint8_t>(s.variant() + 1)));
+        return;
+    }
     // The block of the next stage, its properties kept.
     const auto release = ctx.bundle().schema.content_release;
     const auto next = registry::find_block(release, copper_name(stage + 1, kind));
@@ -132,7 +138,16 @@ void grow_amethyst(RuleContext& ctx, BlockPos pos) {
 }
 } // namespace
 
+// Copper doors (their lower halves) and trapdoors that can still weather:
+// variants 13 to 15 (blocks::door_kinds).
+bool weathering_opening(BlockState s) {
+    if (!s.is(BlockType::door) && !s.is(BlockType::trapdoor)) return false;
+    if (s.is(BlockType::door) && upper_half(s)) return false;
+    return s.variant() >= 13 && s.variant() <= 15;
+}
+
 bool is_weathering(BlockState s) {
+    if (weathering_opening(s)) return true;
     if (!s.is(BlockType::other)) return false;
     const auto n = name_of(s);
     if (n == "ice" || n == "snow" || n == "redstone_ore" || n == "deepslate_redstone_ore" || n == "budding_amethyst") return true;
@@ -142,6 +157,10 @@ bool is_weathering(BlockState s) {
 
 void weathering_random_tick(RuleContext& ctx, BlockPos pos, BlockState s) {
     const auto n = name_of(s);
+    if (weathering_opening(s)) {
+        weather_copper(ctx, pos, s, s.variant() - 13, {});
+        return;
+    }
     if (n == "ice") {
         const int dampening = registry::light_dampening(s.registry_state());
         if (ctx.block_light(pos) > 11 - dampening) {

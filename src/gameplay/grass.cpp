@@ -51,6 +51,19 @@ bool can_stay(RuleContext& ctx, BlockPos pos, BlockState self) {
 }
 } // namespace
 
+bool is_nylium(BlockState s) {
+    if (!s.is(BlockType::other)) return false;
+    const auto n = name_of(s);
+    return n == "crimson_nylium" || n == "warped_nylium";
+}
+
+// Nylium under a block its top's light cannot pass becomes netherrack
+// (drip_eggs_blossoms; minecraft.wiki "Nylium").
+void nylium_random_tick(RuleContext& ctx, BlockPos pos, BlockState s) {
+    const auto above = ctx.block(pos.relative(Direction::up));
+    if (light_passed(LightKind::sky, 15, light_info(s), light_info(above), Direction::up) == 0) set_block(ctx, pos, named(ctx, "netherrack"));
+}
+
 bool is_spreading_dirt(BlockState s) {
     if (!s.is(BlockType::other)) return false;
     const auto n = name_of(s);

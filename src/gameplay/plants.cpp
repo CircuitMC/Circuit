@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
+#include <circuit/gameplay/sky.hpp>
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -123,12 +125,62 @@ void bamboo_random_tick(RuleContext& ctx, BlockPos pos, BlockState s) {
 }
 } // namespace
 
+// Eyeblossoms (drip_eggs_blossoms; minecraft.wiki "Eyeblossom"): one open by
+// day (the sky darkened less than 4) or closed by night turns, in the
+// overworld, and gives every eyeblossom of its old state within 3, 2, 3 a
+// block tick nextInt between 5 d and 10 d (d its distance) later, cells in
+// x, then y, then z order; the tick turns them as the random tick does. A
+// potted one turns alone.
+bool turn_eyeblossom(RuleContext& ctx, BlockPos pos, BlockState s) {
+    if (ctx.dimension() != contracts::DimensionId::overworld) return false;
+    const auto n = name_of(s);
+    const bool open = n == "open_eyeblossom" || n == "potted_open_eyeblossom";
+    const bool day = ctx.sky().darken < 4;
+    if (day != open) return false;
+    const bool potted = n.starts_with("potted_");
+    set_block(ctx, pos, named(ctx, std::string(potted ? "potted_" : "") + (open ? "closed_eyeblossom" : "open_eyeblossom")));
+    // The particle trail of the turn draws four doubles (not modeled otherwise).
+    for (int i = 0; i < 4; ++i) (void)ctx.random_double();
+    if (potted) return true;
+    for (int dz = -3; dz <= 3; ++dz)
+        for (int dy = -2; dy <= 2; ++dy)
+            for (int dx = -3; dx <= 3; ++dx) {
+                const BlockPos q{pos.x + dx, pos.y + dy, pos.z + dz};
+                if (!ctx.world().contains_y(q.y) || ctx.block(q) != s) continue;
+                const double d = std::sqrt(static_cast<double>(dx * dx + dy * dy + dz * dz));
+                const int least = static_cast<int>(d * 5.0), most = static_cast<int>(d * 10.0);
+                const auto delay = static_cast<std::uint32_t>(least + ctx.random_int(most - least + 1));
+                schedule(ctx, TickList::block, q, BlockType::other, delay, 0);
+            }
+    return true;
+}
+
+// Turtle eggs (minecraft.wiki "Turtle Egg"): unless the time of day is
+// between 0.65 and 0.69, an egg cracks only on nextInt(500) == 0; on sand it
+// then draws its sound's pitch and cracks a step, or at its third hatches
+// (the turtles are not modeled: the eggs go).
+void turtle_egg_random_tick(RuleContext& ctx, BlockPos pos, BlockState s) {
+    const float t = time_of_day(ctx.sky().day_time);
+    const bool now = (t < 0.69 && t > 0.65) || ctx.random_int(500) == 0;
+    if (!now) return;
+    const auto below = name_of(ctx.block(pos.relative(Direction::down)));
+    if (below != "sand" && below != "red_sand" && below != "suspicious_sand") return;
+    // The sound of the crack or the hatching draws its pitch.
+    (void)ctx.random_float();
+    const int hatch = property(s, "hatch");
+    if (hatch < 2) set_block_quiet(ctx, pos, with(s, "hatch", std::to_string(hatch + 1)));
+    else set_block(ctx, pos, blocks::air());
+}
+
 bool is_growing_plant(BlockState s) {
     if (!s.is(BlockType::other)) return false;
     const auto n = name_of(s);
     static constexpr std::array<std::string_view, 13> plants{"sugar_cane", "cactus", "nether_wart", "sweet_berry_bush", "cocoa", "kelp",
                                                             "weeping_vines", "twisting_vines", "cave_vines", "brown_mushroom", "red_mushroom",
                                                             "bamboo", "bamboo_sapling"};
+    if (n == "open_eyeblossom" || n == "closed_eyeblossom" || n == "potted_open_eyeblossom" || n == "potted_closed_eyeblossom"
+        || n == "turtle_egg")
+        return true;
     return std::ranges::find(plants, n) != plants.end();
 }
 
@@ -137,6 +189,14 @@ void plant_random_tick(RuleContext& ctx, BlockPos pos, BlockState s) {
     const auto up = pos.relative(Direction::up);
     if (n == "bamboo" || n == "bamboo_sapling") {
         bamboo_random_tick(ctx, pos, s);
+        return;
+    }
+    if (n == "turtle_egg") {
+        turtle_egg_random_tick(ctx, pos, s);
+        return;
+    }
+    if (n.ends_with("eyeblossom")) {
+        (void)turn_eyeblossom(ctx, pos, s);
         return;
     }
     if (n == "sugar_cane") {

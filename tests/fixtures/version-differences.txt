@@ -13,3 +13,4 @@ kelp_vines_growth.ctrace random ticks run only near players on 1.21.4 (RandomTic
 leaves_decay.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none
 bamboo_growth.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none
 melt_weather.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none
+eggs_blossoms.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none

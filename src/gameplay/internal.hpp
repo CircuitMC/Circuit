@@ -508,7 +508,9 @@ contracts::Result<std::function<void()>> plan_use_item(RuleContext& ctx, const c
 // tick; nature.cpp).
 void tick_lava(RuleContext& ctx, BlockPos pos, BlockState state);
 void lava_changed(RuleContext& ctx, BlockPos pos, BlockState state);
-// Grass blocks and mycelium (grass.cpp).
+// Grass blocks and mycelium, nylium (grass.cpp).
+bool is_nylium(BlockState s);
+void nylium_random_tick(RuleContext& ctx, BlockPos pos, BlockState s);
 bool is_spreading_dirt(BlockState s);
 void spreading_dirt_random_tick(RuleContext& ctx, BlockPos pos, BlockState s);
 // Ice, snow, redstone ore, budding amethyst and copper in random ticks
@@ -522,6 +524,8 @@ void tick_leaves(RuleContext& ctx, BlockPos pos, BlockState s);
 void leaves_random_tick(RuleContext& ctx, BlockPos pos, BlockState s);
 // Other plants growing in random ticks (plants.cpp).
 bool is_growing_plant(BlockState s);
+// An eyeblossom's block tick or random tick: it turns if it should (true).
+bool turn_eyeblossom(RuleContext& ctx, BlockPos pos, BlockState s);
 bool is_bamboo(BlockState s);
 // Bamboo's update from above (true when it changed).
 bool bamboo_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d);

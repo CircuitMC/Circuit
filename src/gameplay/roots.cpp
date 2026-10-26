@@ -34,6 +34,8 @@ void run_scheduled_tick(RuleContext& ctx, TickList list, const ScheduledTick& ti
         else if (is_fire(s)) tick_fire(ctx, tick.pos, s);
         else if (is_frosted_ice(s)) tick_frosted_ice(ctx, tick.pos, s);
         else if (is_leaves(s)) tick_leaves(ctx, tick.pos, s);
+        else if (is_growing_plant(s) && registry::game_name(*registry::block_of(s.registry_state())).ends_with("eyeblossom"))
+            (void)turn_eyeblossom(ctx, tick.pos, s);
         else tick_falling_block(ctx, tick.pos, s);
         break;
     default: break;
