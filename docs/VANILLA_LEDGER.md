@@ -55,7 +55,7 @@ Feature counts per implementation state, then the number of features with compar
 | V29 Bosses and progression | C8 | 11 | 0 / 0 | 0 / 0 | 4 / 4 | 7 / 7 | 0 / 0 | 0 / 0 |
 | V30 Data-pack execution | C1, C5, C9 | 8 | 0 / 0 | 1 / 1 | 0 / 0 | 6 / 7 | 1 / 0 | 0 / 0 |
 | V31 Commands and administration | C9 | 117 | 0 / 0 | 7 / 7 | 16 / 20 | 85 / 90 | 9 / 0 | 1 / 1 |
-| V32 Client-visible world state | C10 | 287 | 5 / 5 | 52 / 52 | 0 / 0 | 223 / 229 | 7 / 1 | 6 / 6 |
+| V32 Client-visible world state | C10 | 287 | 5 / 5 | 53 / 53 | 0 / 0 | 222 / 228 | 7 / 1 | 6 / 6 |
 | V33 Communication and connection lifecycle | C10 | 85 | 17 / 17 | 19 / 19 | 0 / 0 | 41 / 49 | 8 / 0 | 0 / 0 |
 | V34 Save compatibility | C11 | 6 | 1 / 1 | 0 / 1 | 0 / 0 | 4 / 3 | 1 / 1 | 0 / 1 |
 | V35 Version-specific gameplay and optional profiles | C12 | 6 | 0 / 0 | 0 / 0 | 1 / 3 | 3 / 3 | 2 / 0 | 0 / 0 |
@@ -77,7 +77,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 | biome | minecraft-data pc/1.21.4/biomes.json / minecraft-data pc/1.21.8/biomes.json | 65 / 65 | 0 / 0 | 1 / 1 | 64 / 64 | 0 / 0 |
 | particle | minecraft-data pc/1.21.4/particles.json / minecraft-data pc/1.21.8/particles.json | 112 / 114 | 0 / 0 | 0 / 0 | 0 / 0 | 112 / 114 |
 | command | approximate: minecraft-data pc/1.20.5/commands.json / approximate: minecraft-data pc/1.21.6/commands.json | 83 / 88 | 0 / 0 | 4 / 4 | 0 / 0 | 79 / 84 |
-| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 20 / 20 | 67 / 67 | 0 / 0 | 147 / 157 |
+| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 20 / 20 | 68 / 68 | 0 / 0 | 146 / 156 |
 | block_state | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 27866 / 27946 | — | — | — | — |
 | sound_event | minecraft-data pc/1.21.4/sounds.json / minecraft-data pc/1.21.8/sounds.json | 1651 / 1728 | — | — | — | — |
 | recipe | minecraft-data pc/1.21.4/recipes.json / minecraft-data pc/1.21.8/recipes.json | 1557 / 1607 | — | — | — | — |
@@ -127,7 +127,7 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 54 |
+| black_box | passing | 55 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
 | official_trace | passing | 196 |
@@ -315,7 +315,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Chests and double chests | C4 | implemented, compared | implemented, compared | `client/chests`, `trace/double_chest`, `trace/double_chest_left_input` |
 | Hopper transfers, cooldowns and pickup | C4 | implemented, compared | implemented, compared | `trace/hopper_chain`, `trace/hopper_chained`, `trace/hopper_competition` |
 | Dispensers and droppers with dispense behaviors | C4 | partial, compared | partial, compared | `trace/dispenser_cases`, `trace/dispenser_items`, `trace/dispenser_tnt_rule`, `trace/dispensers`, `trace/dispensers_more`; dispensed projectiles, fire, shears, boats, bottles, honeycomb, glowstone and water bottles at their targets, golem and wither heads, other fluids, other minecarts, spawn eggs, armor stands and shulker boxes are not modeled: those items stay; equipping players is not modeled; Fired 4 ticks after power reaches them or the block above them, from a random filled slot (level-random draws); droppers fill the container in front or eject; dispensers eject items (position, motion and draws exact), prime TNT, pour and fill water and lava buckets, set minecarts on rails and eject equipment |
-| The Crafter | C5 | partial, compared | partial, compared | `trace/crafters`, `trace/crafters_more`, `trace/crafters_partial`; an item thrown into the cell of a full container in front is pushed out by an unseeded random and is not compared; players cannot open their menus yet: slots are disabled only in saved worlds; Crafters triggered by power at the block craft their grid 4 ticks later by the official data packs' crafting recipes, deliver the result and the remainders to the container in front or throw them out whole as dispensers throw items, show that they crafted for 6 ticks, fill evenly from hoppers and droppers, give items to hoppers and drive comparators by their filled slots, as both official servers do tick by tick |
+| The Crafter | C5 | partial, compared | partial, compared | `client/crafter_menu`, `trace/crafters`, `trace/crafters_more`, `trace/crafters_partial`; an item thrown into the cell of a full container in front is pushed out by an unseeded random and is not compared; Crafters triggered by power at the block craft their grid 4 ticks later by the official data packs' crafting recipes, deliver the result and the remainders to the container in front or throw them out whole as dispensers throw items, show that they crafted for 6 ticks, fill evenly from hoppers and droppers, give items to hoppers and drive comparators by their filled slots, as both official servers do tick by tick |
 | Barrels, shulker boxes, ender chests, trapped chests, chiseled bookshelves, composters | C5 | missing, none | missing, none |  |
 | Component-aware automation (stacking of items with components) | C5 | implemented, none | implemented, none | Stacks merge only with equal item, damage and components; hoppers, pickups, inserts and menus keep components |
 

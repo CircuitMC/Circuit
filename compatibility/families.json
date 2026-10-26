@@ -1496,10 +1496,10 @@
           "cases": [
             "trace/crafters",
             "trace/crafters_more",
-            "trace/crafters_partial"
+            "trace/crafters_partial",
+            "client/crafter_menu"
           ],
           "deviations": [
-            "players cannot open their menus yet: slots are disabled only in saved worlds",
             "an item thrown into the cell of a full container in front is pushed out by an unseeded random and is not compared"
           ]
         },

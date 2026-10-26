@@ -146,7 +146,8 @@ Decoding checks every length, count and the digest. The engine's restoring const
 The server's metadata records the fingerprint of the [data packs](DATA_PACKS.md#the-worlds-data) the log was written with; a server with other data refuses to replay that log.
 
 Log segments start with `CIRCWAL` and a format byte:
-- 12: commands include window buttons;
+- 13: commands include slot toggles;
+- 12 (read only): commands include window buttons;
 - 11 (read only): commands include closed windows whose items drop;
 - 10 (read only): commands include the difficulty;
 - 9 (read only): commands include summoned entities, player uses with where they clicked and items used along the view;

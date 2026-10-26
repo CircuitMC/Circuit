@@ -317,6 +317,17 @@
       "description": "24 steps at a smithing table: shift-clicks into the template, base and addition slots and across the inventory (an item whose slot holds another), a netherite upgrade keeping an enchantment, a coast trim of netherite and of iron (the trim components' registry ids), the same trim again making nothing, results by click, shift-click and number key, stone refused by every slot, the inputs given back on closing; Circuit and both official servers give identical windows"
     },
     {
+      "id": "client/crafter_menu",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/crafter-menu.js",
+      "status": "passing",
+      "description": "20 steps in a crafter's window: its type and slots, shift-clicks into the first enabled slot and out to the hotbar's end, an empty slot disabled and enabled again, a slot holding logs refusing to be disabled, a disabled slot refusing items, the result shown and refusing clicks, the window's ten properties (disabled slots, triggered) kept across closing; Circuit and both official servers give identical windows"
+    },
+    {
       "id": "data/block_drops",
       "kind": "black_box",
       "versions": [

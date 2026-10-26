@@ -218,8 +218,7 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
         if (is_opening(clicked.type()) && opens_by_hand(clicked))
             return [&ctx, c, clicked] { detail::use_opening(ctx, c.pos, clicked, c.horizontal); };
         if (usable(clicked)) return plan(ctx, contracts::UseBlock{c.pos});
-        // Crafters' menus are not modeled yet: they do not open.
-        if (is_container(clicked.type()) && !clicked.is(BlockType::crafter)) {
+        if (is_container(clicked.type())) {
             // A chest under a solid block does not open.
             for (const auto part : detail::container_parts(ctx, c.pos))
                 if (ctx.block(part).is(BlockType::chest) && detail::is_conductor(ctx.block(part.relative(Direction::up))))
@@ -392,6 +391,7 @@ Plan plan(RuleContext& ctx, const contracts::PlayerDeath& c) { return detail::pl
 Plan plan(RuleContext& ctx, const contracts::ContainerClick& c) { return detail::plan_click(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::CloseContainer& c) { return detail::plan_close(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::ContainerButton& c) { return detail::plan_button(ctx, c); }
+Plan plan(RuleContext& ctx, const contracts::SetSlotEnabled& c) { return detail::plan_slot_enabled(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::PlayerUseItem& c) { return detail::plan_use_item(ctx, c); }
 
 Plan plan(RuleContext&, const contracts::AddTicket&) { return std::unexpected(ErrorCode::unknown_command); }

@@ -329,10 +329,20 @@ struct ContainerButton {
     bool operator==(const ContainerButton&) const = default;
 };
 
+// A player enables or disables a slot of their window (a crafter's grid
+// slot, 0-8). `container` is the window's block.
+struct SetSlotEnabled {
+    PlayerKey player;
+    std::optional<BlockPos> container;
+    std::uint8_t slot{};
+    bool enabled{};
+    bool operator==(const SetSlotEnabled&) const = default;
+};
+
 using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket,
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
                                  PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity, PlayerUseItem,
-                                 SetDifficulty, ContainerButton>;
+                                 SetDifficulty, ContainerButton, SetSlotEnabled>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.

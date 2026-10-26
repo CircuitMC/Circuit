@@ -111,6 +111,12 @@ struct ContainerButton {
     std::int32_t window{};
     std::int32_t button{};
 };
+// A slot of the open window enabled or disabled (a crafter's grid).
+struct SlotState {
+    std::int32_t window{};
+    std::int32_t slot{};
+    bool enabled{};
+};
 struct Command {
     std::string text;
 };
@@ -135,7 +141,7 @@ struct Sprint {
 using Intent = std::variant<intent::Move, intent::ConfirmTeleport, intent::Dig, intent::UseOn, intent::Use,
                             intent::HeldSlot, intent::CreativeSlot, intent::Command, intent::Chat, intent::Sneak,
                             intent::Flying, intent::Loaded, intent::ContainerClick, intent::ContainerClose,
-                            intent::ClientCommand, intent::Sprint, intent::ContainerButton>;
+                            intent::ClientCommand, intent::Sprint, intent::ContainerButton, intent::SlotState>;
 
 class Wire {
 public:

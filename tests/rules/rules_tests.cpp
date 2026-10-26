@@ -1751,6 +1751,32 @@ int main() {
                 "eight planks around the stick, then a second in slots 0 and 1");
     });
 
+    suite.run("crafter windows disable empty slots and keep items out of them", [] {
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::SetPlayerSlot;
+        using circuit::contracts::SetSlotEnabled;
+        const PlayerKey alex{4, 2};
+        const BlockPos crafter{0, 0, 0};
+        Sim s;
+        s.tick({place(crafter, blocks::crafter(Direction::east)), insert(crafter, 0, items::oak_log, 3),
+                SetPlayerSlot{alex, 36, {items::stone, 5}}, SetPlayerSlot{alex, 37, {items::oak_planks, 4}}});
+        const auto be = [&] { return *block_entity_at(s.oracle.dump(), crafter); };
+        // Crafter window: 0-8 the grid, 9-35 the main inventory, 36-44 the hotbar (45, the result shown, is no slot).
+        const auto click = [&](std::int16_t slot, std::uint8_t button, std::uint8_t mode) {
+            return ContainerClick{alex, std::optional(crafter), slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+        };
+        s.tick({SetSlotEnabled{alex, crafter, 1, false}, SetSlotEnabled{alex, crafter, 0, false}});
+        require(be().disabled == 0b10, "slot 1 disabled; slot 0 holds logs and stays enabled");
+        s.tick({click(36, 0, 1)});
+        require(be().slots[2] == ItemStack{items::stone, 5} && be().slots[1].empty(), "a shift-click skips the disabled slot");
+        s.tick({click(37, 0, 0), click(1, 1, 0), click(45, 0, 0)});
+        require(be().slots[1].empty() && s.oracle.dump().players[0].cursor.count == 4, "nothing goes into a disabled slot or the result");
+        s.tick({click(37, 0, 0), SetSlotEnabled{alex, crafter, 1, true}});
+        require(be().disabled == 0, "enabled again");
+        s.tick({click(2, 0, 1)});
+        require(be().slots[2].empty() && s.oracle.dump().players[0].slots[44] == ItemStack{items::stone, 5}, "out to the hotbar's end");
+    });
+
     suite.run("idle levels and random tick ranges", [] {
         // A level is awake while active, and for 300 ticks after it was last
         // active or started.

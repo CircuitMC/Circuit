@@ -140,6 +140,7 @@ public:
         container_size_ = slots_.size();
         own_ = parts.empty();
         furnace_ = parts.size() == 1 && ctx.block(parts[0]).is(BlockType::furnace);
+        crafter_ = parts.size() == 1 && ctx.block(parts[0]).is(BlockType::crafter);
         if (own_) {
             for (std::uint8_t i = 0; i < player_slots; ++i) slots_.push_back({{}, i, false});
         } else {
@@ -197,6 +198,11 @@ public:
         if (furnace_ && i == 2) return false;
         if (furnace_ && i == 1) return burn_time(stack.item) > 0 || stack.item == items::bucket;
         if (smith_ && i < 3) return smith_takes(ctx_, i, stack.item);
+        // A crafter's disabled slots take nothing.
+        if (crafter_ && i < container_size_) {
+            const auto* be = ctx_.peek_block_entity(slots_[i].pos);
+            return !be || (be->disabled >> slots_[i].index & 1) == 0;
+        }
         return true;
     }
     [[nodiscard]] bool may_pickup(std::size_t i) const { return !result(i); }
@@ -374,6 +380,7 @@ private:
     std::size_t container_size_{};
     bool own_{};
     bool furnace_{};
+    bool crafter_{};
     bool table_{};
     bool cutter_{};
     bool smith_{};
@@ -798,6 +805,24 @@ contracts::Result<std::function<void()>> plan_button(RuleContext& ctx, const con
         if (static_cast<std::size_t>(c.button) >= recipes::cuttings(data->stonecutting, inv.cutter[0].item).size()) return;
         inv.cutter_recipe = static_cast<std::int16_t>(c.button);
         set_cutter_result(ctx, inv);
+    };
+}
+
+// A crafter's slot toggle: an empty grid slot may be disabled, a disabled
+// one enabled; comparators read the change.
+contracts::Result<std::function<void()>> plan_slot_enabled(RuleContext& ctx, const contracts::SetSlotEnabled& c) {
+    auto parts = menu_parts(ctx, c.container);
+    if (!parts) return std::unexpected(parts.error());
+    if (parts->size() != 1 || !ctx.block(parts->front()).is(BlockType::crafter) || c.slot >= 9)
+        return std::unexpected(contracts::ErrorCode::invalid_argument);
+    return [&ctx, c, pos = parts->front()] {
+        auto* be = ctx.block_entity(pos);
+        if (!be || be->slots.size() != 9) return;
+        const auto bit = static_cast<std::uint16_t>(1u << c.slot);
+        if (c.enabled == ((be->disabled & bit) == 0)) return;
+        if (!c.enabled && !be->slots[c.slot].empty()) return;
+        be->disabled = static_cast<std::uint16_t>(c.enabled ? be->disabled & ~bit : be->disabled | bit);
+        container_changed(ctx, pos);
     };
 }
 

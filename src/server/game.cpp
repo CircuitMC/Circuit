@@ -99,7 +99,7 @@ struct Player {
         // and burn time, cooking progress and time; a stonecutter's recipe),
         // INT32_MIN when not sent yet.
         static constexpr std::int32_t unsent = std::numeric_limits<std::int32_t>::min();
-        std::array<std::int32_t, 4> data{unsent, unsent, unsent, unsent};
+        std::array<std::int32_t, 10> data{unsent, unsent, unsent, unsent, unsent, unsent, unsent, unsent, unsent, unsent};
     };
     std::optional<Window> window;
     std::int32_t next_window{1};
@@ -837,6 +837,8 @@ struct Game::Impl final : GameServices {
                 if (const auto be = view.block_entity(overworld, part); be && *be)
                     for (const auto& s : (*be)->slots) slots.push_back(wire_stack(s));
             for (std::size_t i = 9; i < 45; ++i) slots.push_back(player_slot(i));
+            // A crafter's window ends with what its grid would make.
+            if (at(p.window->pos).is(BlockType::crafter)) slots.push_back(wire_stack(crafter_result(p.window->pos)));
         }
         const auto id = p.window ? p.window->id : 0;
         if (p.remote_window != id || p.remote.size() != slots.size()) {
@@ -855,6 +857,17 @@ struct Game::Impl final : GameServices {
             p.peer->send(wire.cursor_item(carried));
             p.remote_carried = carried;
         }
+        // A crafter window's properties: each slot disabled (1) or not, and
+        // whether it is triggered.
+        if (p.window && at(p.window->pos).is(BlockType::crafter))
+            if (const auto be = view.block_entity(overworld, p.window->pos); be && *be)
+                for (std::size_t k = 0; k < 10; ++k) {
+                    const std::int32_t now = k < 9 ? ((*be)->disabled >> k & 1) : at(p.window->pos).flag() ? 1 : 0;
+                    if (p.window->data[k] != now) {
+                        p.peer->send(wire.container_data(p.window->id, static_cast<std::int16_t>(k), static_cast<std::int16_t>(now)));
+                        p.window->data[k] = now;
+                    }
+                }
         // A stonecutter window's property: the chosen recipe (-1: none).
         if (p.window && gameplay::is_stonecutter(at(p.window->pos))) {
             const std::int32_t recipe = inv && *inv ? (*inv)->cutter_recipe : -1;
@@ -873,6 +886,19 @@ struct Game::Impl final : GameServices {
                         p.window->data[k] = now[k];
                     }
             }
+    }
+
+    // What a crafter's grid would make (the result its window shows):
+    // disabled slots count as empty.
+    contracts::ItemStack crafter_result(BlockPos pos) const {
+        const auto view = engine->view();
+        const auto be = view.block_entity(overworld, pos);
+        if (!data.game || !be || !*be || (*be)->slots.size() != 9) return {};
+        std::array<contracts::ItemStack, 9> grid{};
+        for (std::size_t k = 0; k < 9; ++k)
+            if (((*be)->disabled >> k & 1) == 0) grid[k] = (*be)->slots[k];
+        const auto made = gameplay::recipes::match(data.game->crafting, {3, 3, grid});
+        return made ? made->result : contracts::ItemStack{};
     }
 
     // The parts of the container at `pos` in the menu's slot order: the right
@@ -915,17 +941,19 @@ struct Game::Impl final : GameServices {
         // Menu types of the protocol's menu registry (minecraft.wiki, Java
         // Edition protocol/Inventory, and observed from the target version):
         // generic_9x3 2, generic_9x6 5, generic_3x3 6, blast_furnace 10,
-        // crafting 12, furnace 14, hopper 16, smithing 21, smoker 22, stonecutter 24.
+        // crafter_3x3 7, crafting 12, furnace 14, hopper 16, smithing 21, smoker 22, stonecutter 24.
         constexpr std::array<std::int32_t, 3> furnace_menus{14, 22, 10};
         const bool table = gameplay::is_crafting_table(block);
         const bool cutter = gameplay::is_stonecutter(block);
         const bool smith = gameplay::is_smithing_table(block);
         const std::int32_t type = block.is(BlockType::furnace) ? furnace_menus[block.variant() % 3]
+                                : block.is(BlockType::crafter) ? 7
                                 : table ? 12 : cutter ? 24 : smith ? 21 : slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
         // A container's custom name is its title (for a double chest, the
         // first named half's).
         constexpr std::array<std::string_view, 3> furnace_titles{"Furnace", "Smoker", "Blast Furnace"};
         auto title = protocol::nbt::text(block.is(BlockType::furnace) ? std::string(furnace_titles[block.variant() % 3])
+                                         : block.is(BlockType::crafter) ? "Crafter"
                                          : table ? "Crafting" : cutter ? "Stonecutter" : smith ? "Upgrade Gear"
                                          : slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper"
                                          : block.is(BlockType::dispenser) ? (block.variant() == 1 ? "Dropper" : "Dispenser")
@@ -1602,6 +1630,13 @@ struct Game::Impl final : GameServices {
             const auto [position, velocity] = throw_from(p);
             admit(contracts::CloseContainer{key_of(p), position, velocity});
         }
+    }
+
+    // A slot toggle of the open window (a crafter's grid); one of another
+    // window does nothing.
+    void handle(Player& p, intent::SlotState& s) {
+        if (!p.window || s.window != p.window->id || s.slot < 0 || s.slot > 8) return;
+        admit(contracts::SetSlotEnabled{key_of(p), p.window->pos, static_cast<std::uint8_t>(s.slot), s.enabled});
     }
 
     // A button of the open window (a stonecutter's recipe); a button of
