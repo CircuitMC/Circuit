@@ -160,8 +160,10 @@ int main() {
                                  {19, ContainerClick{alex, std::nullopt, 45, 40, 2, true, {}, {}}},
                                  {20, CloseContainer{alex, {7, 8, 9}, {0, 400, 0}}},
                                  {21, PlayerDeath{alex, {-40960, -245760, 81920}}}}});
-        // Spawned items with a pickup delay or an age (tag 22).
-        log.ticks.push_back({7, {{22, SpawnItem{{0.5, 1, 0.5}, {0, 0.2, 0}, {7, 8}, 32767, -32768}}, {23, SpawnItem{{0.5, 1, 0.5}, {}, {7, 8}, 0, 5}}}});
+        // Spawned items with a pickup delay or an age (tag 22); a closed
+        // window whose items drop (tag 28).
+        log.ticks.push_back({7, {{22, SpawnItem{{0.5, 1, 0.5}, {0, 0.2, 0}, {7, 8}, 32767, -32768}}, {23, SpawnItem{{0.5, 1, 0.5}, {}, {7, 8}, 0, 5}},
+                                 {24, CloseContainer{alex, {7, 8, 9}, {0, 0.3, 0}, true}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);

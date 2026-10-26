@@ -2248,15 +2248,15 @@
           "impl": "partial",
           "evidence": "compared",
           "deviations": [
-            "the crafting table's 3x3 grid is not modeled",
             "special recipes (repairing, map and book cloning, fireworks, armor dye, banner copying, shield decoration, tipped arrows, decorated pots) and recipes whose results carry components (suspicious stew) make nothing",
             "the recipe book is not synchronized and recipe placement requests are ignored; the doLimitedCrafting rule is not applied",
             "without the official data pack there are no recipes"
           ],
           "cases": [
-            "client/crafting"
+            "client/crafting",
+            "client/crafting_table"
           ],
-          "note": "The player's 2x2 grid crafts with the shaped, shapeless and transmute recipes of the loaded data packs: the result follows the grid, every click mode takes it, ingredients are used and remainders kept; 48 steps give the same windows as both official servers"
+          "note": "The player's 2x2 grid and the crafting table's 3x3 grid craft with the shaped, shapeless and transmute recipes of the loaded data packs: the result follows the grid, every click mode takes it, ingredients are used and remainders kept, and the grids go back to the inventory on closing and drop when the player leaves or dies; 48 steps in the own window and 47 at crafting tables give the same windows as both official servers"
         },
         {
           "id": "smelting",

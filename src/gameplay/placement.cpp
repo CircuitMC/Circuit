@@ -101,7 +101,9 @@ bool has_collision(BlockState s) {
 }
 
 void record_slot(RuleContext& ctx, const PlayerInventory& inventory, std::uint8_t slot) {
-    const auto stack = slot == contracts::player_slots ? inventory.cursor : inventory.slots[slot];
+    const auto stack = slot == contracts::player_slots ? inventory.cursor
+                     : slot >= contracts::table_first ? inventory.table[slot - contracts::table_first]
+                                                      : inventory.slots[slot];
     ctx.record(TraceKind::player_slot_changed, {}, inventory.player.hi, inventory.player.lo,
                (static_cast<std::uint64_t>(slot) << 48) | contracts::pack_stack(stack));
 }

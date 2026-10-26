@@ -7,6 +7,7 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
+// 18: closed windows whose items drop (tag 28);
 // 17: the world's difficulty (tag 27);
 // 16: players use items along their view (tag 26);
 // 15: player uses carry the player's yaw (tag 25; tags 7 and 24 read it from the horizontal facing);
@@ -19,7 +20,7 @@ constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
 // block registry id; 3: stacks carry damage, player commands carry their
 // player. Commands of versions before 6 are the overworld's. Tickets of
 // versions before 7 (tags 5 and 9) read as forced squares.
-constexpr std::uint16_t format_version = 17;
+constexpr std::uint16_t format_version = 18;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -123,8 +124,9 @@ private:
 // 22 SpawnItem with a pickup delay or an age (tag 3 has neither),
 // 23 SummonEntity, 24 PlayerUse with where it clicked (tag 7 has none),
 // 25 PlayerUse with where it clicked and the player's yaw, 26 PlayerUseItem,
-// 27 SetDifficulty.
+// 27 SetDifficulty, 28 CloseContainer whose items drop (tag 14 returns them).
 std::uint8_t tag_of(const CommandBody& body) {
+    if (const auto* close = std::get_if<CloseContainer>(&body); close && close->drop) return 28;
     if (std::holds_alternative<SummonEntity>(body)) return 23;
     if (std::holds_alternative<PlayerUse>(body)) return 25;
     if (std::holds_alternative<PlayerUseItem>(body)) return 26;
@@ -438,9 +440,11 @@ bool decode_command(Reader& r, Command& c) {
         c.body = b;
         return true;
     }
-    case 14: {
+    case 14:
+    case 28: {
         CloseContainer b;
         if (!r.player(b.player) || !r.vec(b.drop_position) || !r.vec(b.drop_velocity)) return false;
+        b.drop = tag == 28;
         c.body = b;
         return true;
     }

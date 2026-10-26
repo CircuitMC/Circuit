@@ -103,6 +103,11 @@ struct RemoveTicket {
 inline constexpr std::uint8_t player_slots = 46;
 inline constexpr std::uint8_t hotbar_first = 36;
 inline constexpr std::uint8_t offhand_slot = 45;
+// The crafting table window a player has open holds its result and 3x3 grid
+// (window slots 0-9); slot records number them from table_first (after the
+// cursor, 46).
+inline constexpr std::uint8_t table_slots = 10;
+inline constexpr std::uint8_t table_first = 47;
 
 // A creative player sets a slot of their inventory (an empty stack clears it).
 struct SetPlayerSlot {
@@ -222,12 +227,15 @@ struct ContainerClick {
     Vec3 drop_velocity;
     bool operator==(const ContainerClick&) const = default;
 };
-// A player closes their window: the carried stack and the crafting grid go
-// back into the inventory; what does not fit drops.
+// A player closes their window: the carried stack and the crafting grids
+// (the own window's and an open crafting table's) go back into the
+// inventory; what does not fit drops. When `drop` (the player left), they
+// all drop instead, as the target versions drop a departed player's menus.
 struct CloseContainer {
     PlayerKey player;
     Vec3 drop_position;
     Vec3 drop_velocity;
+    bool drop{};
     bool operator==(const CloseContainer&) const = default;
 };
 

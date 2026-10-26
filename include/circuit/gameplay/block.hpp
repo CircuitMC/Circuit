@@ -377,6 +377,8 @@ bool ticks_section_randomly(BlockState s);
 // Whether lava sets fire in the air beside a state (weathering.cpp; checked
 // against both official servers for every state).
 bool ignited_by_lava(BlockState s);
+// Whether a state is a crafting table, which opens a crafting window (menus.cpp).
+bool is_crafting_table(BlockState s);
 // Full collision cell for item entities. Blocks without rules of their own
 // are solid when they have any collision shape (cell-level approximation).
 inline bool is_solid(BlockState s) noexcept {

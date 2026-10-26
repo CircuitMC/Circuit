@@ -174,6 +174,9 @@ struct PlayerInventory {
     contracts::PlayerKey player;
     std::array<ItemStack, contracts::player_slots> slots{};
     ItemStack cursor;
+    // The crafting table window the player has open: its result (0) and
+    // grid (1-9, row by row); empty while none is open.
+    std::array<ItemStack, contracts::table_slots> table{};
     // A drag across slots in progress (several clicks): its stage (0 none,
     // 1 collecting slots), its type (0 split evenly, 1 one each, 2 full
     // stacks) and the slots collected so far, in window numbering.
@@ -181,7 +184,8 @@ struct PlayerInventory {
     std::uint8_t drag_type{};
     std::vector<std::int16_t> drag_slots;
     [[nodiscard]] bool empty() const noexcept {
-        return cursor.empty() && drag_stage == 0 && std::ranges::all_of(slots, [](const ItemStack& s) { return s.empty(); });
+        const auto none = [](const ItemStack& s) { return s.empty(); };
+        return cursor.empty() && drag_stage == 0 && std::ranges::all_of(slots, none) && std::ranges::all_of(table, none);
     }
     bool operator==(const PlayerInventory&) const = default;
 };

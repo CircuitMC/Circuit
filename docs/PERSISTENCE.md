@@ -101,7 +101,8 @@ The server fails closed on storage errors. If a log record cannot be written, th
 
 ## Checkpoint format
 
-A checkpoint file is `CIRCKPT\0`, a format version (28; versions 1–27 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+A checkpoint file is `CIRCKPT\0`, a format version (29; versions 1–28 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+- versions before 29 have no open crafting tables: none is open;
 - versions before 28 have no furnace times, and their furnaces, smokers and blast furnaces were blocks without rules of their own: they come back as the modeled blocks with empty block entities;
 - versions before 27 have no random-tick position state: each level's starts at 0;
 - versions before 26 have no difficulty: the world is peaceful until the server sets the configured one at its start;
@@ -131,7 +132,7 @@ The body holds:
 - the time, the entity id counter, counted over all levels, the tick the levels last started, the game rules away from their defaults (name and value), the day time, the weather (timers, flags and levels), the settings new random sequences start with (salt and flags), and the difficulty;
 - per level (overworld, Nether, End; only those with columns, players or an active tick): its counters, the last tick it had players or forced chunks, the state of its level random and of its random-tick position generator, the players in it (position and whether a spectator), columns with their load and simulation levels, the tick a saved column dropped and the tick a reloaded column resumes, palette-packed sections, block entities, entities (their kind, tick count, position and velocity as doubles, an item's stack, age, pickup delay and health, a falling block's state and fall time, primed TNT's fuse, an arrow's being stuck, life and fire, a boat's wood, last state and last vertical move, a minecart's water, the tick and amount of its last push by moving blocks, how far it has fallen, and for an entity of a reloaded chunk the tick it comes back), scheduled ticks, pending block events, the recent turn-offs of its redstone torches (position and tick, for their burnout) and its loot tables' random sequences (id and state, by id);
 - chunk tickets: type, level, square radius, the tick their lifetime ends and their level (dimension);
-- player inventories: the 46 slots, the carried stack and a drag in progress; item stacks carry their damage and their other data components;
+- player inventories: the 46 slots, the carried stack, a drag in progress and an open crafting table's result and grid; item stacks carry their damage and their other data components;
 - block entities' components (a container's name) and the saved data of block entities of blocks without rules of their own (empty for one a player placed: an Anvil export writes the official defaults of its type);
 - named extras, such as the server's metadata and player positions.
 
@@ -142,7 +143,8 @@ Decoding checks every length, count and the digest. The engine's restoring const
 The server's metadata records the fingerprint of the [data packs](DATA_PACKS.md#the-worlds-data) the log was written with; a server with other data refuses to replay that log.
 
 Log segments start with `CIRCWAL` and a format byte:
-- 10: commands include the difficulty;
+- 11: commands include closed windows whose items drop;
+- 10 (read only): commands include the difficulty;
 - 9 (read only): commands include summoned entities, player uses with where they clicked and items used along the view;
 - 8 (read only): spawned items may carry a pickup delay and an age;
 - 7 (read only): positions and velocities in commands are doubles;

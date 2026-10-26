@@ -232,6 +232,8 @@ std::string text(const PlayerInventory& p) {
     std::string slots;
     for (std::size_t i = 0; i < p.slots.size(); ++i)
         if (!p.slots[i].empty()) slots += std::format("{}:{}x{}/{} ", i, p.slots[i].item, p.slots[i].count, p.slots[i].damage);
+    for (std::size_t i = 0; i < p.table.size(); ++i)
+        if (!p.table[i].empty()) slots += std::format("table{}:{}x{}/{} ", i, p.table[i].item, p.table[i].count, p.table[i].damage);
     return std::format("player {:016x}{:016x} cursor={}x{} slots=[{}]", p.player.hi, p.player.lo, p.cursor.item, p.cursor.count, slots);
 }
 
@@ -393,6 +395,7 @@ std::uint64_t digest(const WorldDump& d) {
     for (const auto& p : d.players) {
         h.add(p.player.hi); h.add(p.player.lo); h.add(contracts::pack_stack(p.cursor)); h.add(p.cursor.components.hash());
         for (const auto& s : p.slots) { h.add(contracts::pack_stack(s)); h.add(s.components.hash()); }
+        for (const auto& s : p.table) { h.add(contracts::pack_stack(s)); h.add(s.components.hash()); }
         h.add(p.drag_stage); h.add(p.drag_type); h.add(p.drag_slots.size());
         for (const auto slot : p.drag_slots) h.add(static_cast<std::uint16_t>(slot));
     }

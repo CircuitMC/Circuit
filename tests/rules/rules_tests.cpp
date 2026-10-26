@@ -3424,5 +3424,73 @@ int main() {
         require(p.size() == 1 && p[0].slots[0].empty(), "no result without data");
     });
 
+    suite.run("crafting tables craft 3x3 recipes and give their grid back, or drop it", [] {
+        namespace recipes = circuit::gameplay::recipes;
+        using circuit::contracts::CloseContainer;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::SetPlayerSlot;
+        using recipes::Ingredient;
+        using recipes::Recipe;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        const Ingredient log{{items::oak_log}}, cobble{{items::cobblestone}}, stick{{item("minecraft:stick")}};
+        data->crafting = {
+            {Recipe::Kind::shapeless, "test:planks", 0, 0, {log}, {items::oak_planks, 4}},
+            {Recipe::Kind::shaped, "test:pickaxe", 3, 3, {cobble, cobble, cobble, {}, stick, {}, {}, stick, {}}, {item("minecraft:stone_pickaxe"), 1}},
+        };
+        const PlayerKey alex{4, 2};
+        const BlockPos table{0, 0, 0};
+        Sim s(bundle(), 7, 2, data);
+        s.tick({place(table, registry_block("crafting_table"))});
+        // Crafting table window: 0 the result, 1-9 the grid, 10-36 the main inventory, 37-45 the hotbar.
+        const auto click = [&](std::int16_t slot, std::uint8_t button, std::uint8_t mode) {
+            return ContainerClick{alex, std::optional(table), slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+        };
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            const auto it = std::ranges::find(d.players, alex, &PlayerInventory::player);
+            if (it != d.players.end()) return *it;
+            PlayerInventory none;
+            none.player = alex;
+            return none;
+        };
+        s.tick({SetPlayerSlot{alex, 36, {items::oak_log, 3}}, SetPlayerSlot{alex, 37, {item("minecraft:stick"), 2}},
+                SetPlayerSlot{alex, 38, {items::cobblestone, 3}}, SetPlayerSlot{alex, 9, {items::stone, 64}}});
+        s.tick({click(37, 0, 1)});
+        require(player().table[1] == ItemStack{items::oak_log, 3} && player().table[0] == ItemStack{items::oak_planks, 4},
+                "a shift-click from the hotbar fills the grid");
+        s.tick({click(0, 0, 1)});
+        require(player().table[1].empty() && player().slots[44] == ItemStack{items::oak_planks, 12}, "the planks into the hotbar from its end");
+        // The pickaxe needs the whole 3x3 grid.
+        s.tick({click(39, 0, 0), click(-999, 0, 5), click(1, 1, 5), click(2, 1, 5), click(3, 1, 5), click(-999, 2, 5)});
+        s.tick({click(38, 0, 0), click(5, 1, 0), click(8, 1, 0)});
+        require(player().table[0] == ItemStack{item("minecraft:stone_pickaxe"), 1}, "a pickaxe");
+        s.tick({click(0, 0, 0)});
+        require(player().cursor.item == item("minecraft:stone_pickaxe") && player().table[0].empty() && player().table[5].empty(),
+                "taken: the grid is used");
+        s.tick({click(43, 0, 0), click(10, 0, 1)});
+        require(player().table[1] == ItemStack{items::stone, 64} && player().slots[9].empty(), "the stone into the first empty grid slot");
+        // Closing gives the grid back to the inventory.
+        s.tick({CloseContainer{alex, at_block(0.5, 2, 0.5), {}}});
+        require(std::ranges::all_of(player().table, &ItemStack::empty) && player().slots[36] == ItemStack{items::stone, 64},
+                "the grid back in the inventory, hotbar first");
+        // A player who leaves drops the grids and the carried stack.
+        s.tick({click(37, 0, 1), SetPlayerSlot{alex, 9, {item("minecraft:stick"), 1}}});
+        s.tick({ContainerClick{alex, std::nullopt, 9, 0, 0, false, {}, {}}});
+        const auto before = s.oracle.dump().overworld().entities.size();
+        s.tick({CloseContainer{alex, at_block(0.5, 2, 0.5), {}, true}});
+        require(std::ranges::all_of(player().table, &ItemStack::empty) && player().cursor.empty() &&
+                    s.oracle.dump().overworld().entities.size() == before + 2,
+                "the grid and the cursor dropped");
+        // A death drops an open table's grid with the inventory.
+        s.tick({SetPlayerSlot{alex, 36, {items::oak_log, 2}}});
+        s.tick({click(37, 0, 1)});
+        s.tick({circuit::contracts::PlayerDeath{alex, at_block(0.5, 2, 0.5)}});
+        const auto d = s.oracle.dump();
+        require(std::ranges::find(d.players, alex, &PlayerInventory::player) == d.players.end() &&
+                    std::ranges::count(d.overworld().entities, ItemStack{items::oak_log, 2}, &circuit::gameplay::Entity::stack) == 1,
+                "the log dropped at death");
+    });
+
     return suite.finish();
 }

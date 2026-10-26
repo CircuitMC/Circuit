@@ -17,6 +17,7 @@
 #include <chrono>
 #include <cmath>
 #include <latch>
+#include <limits>
 #include <condition_variable>
 #include <thread>
 #include <cstdlib>
@@ -669,6 +670,12 @@ struct Game::Impl final : GameServices {
         const auto it = players.find(peer_id);
         if (it == players.end()) return;
         auto& p = it->second;
+        // The crafting grids and the carried stack drop where the player
+        // was, as the official servers drop a departed player's menus.
+        if (!p.dead) {
+            const auto [position, velocity] = throw_from(p);
+            admit(contracts::CloseContainer{key_of(p), position, velocity, true});
+        }
         remove_tickets(p);
         admit(contracts::PlayerPresence{key_of(p), {}, false, false}, overworld);
         saved[p.uuid] = snapshot(p);
@@ -762,8 +769,8 @@ struct Game::Impl final : GameServices {
     }
 
     // The player's open window as the simulation holds it: the own inventory
-    // (window 0), or a container's slots followed by the main inventory and
-    // the hotbar.
+    // (window 0), or a container's slots (a crafting table's result and grid)
+    // followed by the main inventory and the hotbar.
     // Sends the window's slots that differ from the client's view, one by
     // one, or the whole window when the client describes another one.
     void sync_inventory(Player& p) {
@@ -777,6 +784,9 @@ struct Game::Impl final : GameServices {
         if (!p.window) {
             for (std::size_t i = 0; i < inventory_slots; ++i) slots.push_back(player_slot(i));
         } else {
+            if (gameplay::is_crafting_table(at(p.window->pos)))
+                for (std::size_t i = 0; i < contracts::table_slots; ++i)
+                    slots.push_back(inv && *inv ? wire_stack((*inv)->table[i]) : WireStack{});
             for (const auto part : container_parts_of(p.window->pos))
                 if (const auto be = view.block_entity(overworld, part); be && *be)
                     for (const auto& s : (*be)->slots) slots.push_back(wire_stack(s));
@@ -827,6 +837,7 @@ struct Game::Impl final : GameServices {
         return {pos};
     }
     std::size_t container_slot_count(BlockPos pos) const {
+        if (gameplay::is_crafting_table(at(pos))) return contracts::table_slots;
         std::size_t n = 0;
         for (const auto part : container_parts_of(pos)) n += gameplay::container_size(at(part).type());
         return n;
@@ -848,15 +859,16 @@ struct Game::Impl final : GameServices {
         // Menu types of the protocol's menu registry (minecraft.wiki, Java
         // Edition protocol/Inventory, and observed from the target version):
         // generic_9x3 2, generic_9x6 5, generic_3x3 6, blast_furnace 10,
-        // furnace 14, hopper 16, smoker 22.
+        // crafting 12, furnace 14, hopper 16, smoker 22.
         constexpr std::array<std::int32_t, 3> furnace_menus{14, 22, 10};
+        const bool table = gameplay::is_crafting_table(block);
         const std::int32_t type = block.is(BlockType::furnace) ? furnace_menus[block.variant() % 3]
-                                : slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
+                                : table ? 12 : slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
         // A container's custom name is its title (for a double chest, the
         // first named half's).
         constexpr std::array<std::string_view, 3> furnace_titles{"Furnace", "Smoker", "Blast Furnace"};
         auto title = protocol::nbt::text(block.is(BlockType::furnace) ? std::string(furnace_titles[block.variant() % 3])
-                                         : slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper"
+                                         : table ? "Crafting" : slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper"
                                          : block.is(BlockType::dispenser) ? (block.variant() == 1 ? "Dropper" : "Dispenser")
                                                                           : "Chest");
         const auto view = engine->view();
@@ -1032,7 +1044,7 @@ struct Game::Impl final : GameServices {
         if (damage > 0.0) hurt(p, static_cast<float>(damage), Harm::fall, distance);
     }
 
-    enum class Harm : std::uint8_t { fall, void_, starve };
+    enum class Harm : std::uint8_t { fall, void_, starve, kill };
 
     // Damage: creative and spectator players take none but from the void
     // (spectators not even that). Within the last 10 ticks of the 20-tick
@@ -1040,7 +1052,8 @@ struct Game::Impl final : GameServices {
     // These damage types cost no exhaustion.
     void hurt(Player& p, float amount, Harm harm, double fall_distance = 0.0) {
         if (p.dead || amount <= 0.0f) return;
-        if (harm != Harm::void_ && p.game_mode != survival) return;
+        // `/kill` reaches players in every game mode.
+        if (harm != Harm::void_ && harm != Harm::kill && p.game_mode != survival) return;
         if (harm == Harm::void_ && p.game_mode == spectator) return;
         float applied = amount;
         if (p.hurt_cooldown > 10) {
@@ -1051,7 +1064,10 @@ struct Game::Impl final : GameServices {
         }
         p.last_hurt = amount;
         p.health = std::max(0.0f, p.health - applied);
-        const auto name = harm == Harm::fall ? "minecraft:fall" : harm == Harm::void_ ? "minecraft:out_of_world" : "minecraft:starve";
+        const auto name = harm == Harm::fall    ? "minecraft:fall"
+                        : harm == Harm::void_   ? "minecraft:out_of_world"
+                        : harm == Harm::kill    ? "minecraft:generic_kill"
+                                                : "minecraft:starve";
         const auto event = wire.damage_event(p.entity_id, registry_index(registries, "minecraft:damage_type", name).value_or(0));
         p.peer->send(event);
         for (const auto viewer : p.seen_by)
@@ -1070,10 +1086,14 @@ struct Game::Impl final : GameServices {
         p.digging.reset();
         p.floating = false;
         p.fall_distance = 0.0;
-        if (p.window) close_window(p, true);
+        // The window closes without telling the client (the death screen
+        // replaces it), as on the official servers; the death drops an open
+        // crafting table's grid with the rest.
+        p.window.reset();
         admit(contracts::PlayerDeath{key_of(p), contracts::Vec3{p.pos.x, p.pos.y + 1.32, p.pos.z}});
         const auto key = harm == Harm::void_ ? "death.attack.outOfWorld"
                          : harm == Harm::starve ? "death.attack.starve"
+                         : harm == Harm::kill ? "death.attack.genericKill"
                          : fall_distance > 5.0 ? "death.fell.accident.generic" : "death.attack.fall";
         auto with = nbt::Tag::list(nbt::TagType::compound);
         auto name = nbt::Tag::compound();
@@ -1548,7 +1568,7 @@ struct Game::Impl final : GameServices {
             for (const auto& [name, usage] : extensions->commands()) extra += std::format(", /{}{}{}", name, usage.empty() ? "" : " ", usage);
             message(p, "Commands: /help, /players, /tp [<own name>] <x> <y> <z>, /gamemode <survival|creative|spectator>, "
                        "/forceload add|remove <x> <z> [<x> <z>], /forceload remove all, /forceload query [<x> <z>], /gamerule <rule> [<value>], "
-                       "/time set|add <time>, /time query daytime|gametime|day, /weather clear|rain|thunder [<duration>], /tps" + extra);
+                       "/time set|add <time>, /time query daytime|gametime|day, /weather clear|rain|thunder [<duration>], /kill [<own name>], /tps" + extra);
         } else if (args[0] == "players") {
             std::string names;
             for (const auto& [id, o] : players) names += (names.empty() ? "" : ", ") + o.name;
@@ -1589,6 +1609,11 @@ struct Game::Impl final : GameServices {
             time(p, c.text);
         } else if (args[0] == "weather" && c.text.starts_with("weather")) {
             weather(p, c.text);
+        } else if (args[0] == "kill" && (args.size() == 1 || (args.size() == 2 && args[1] == p.name))) {
+            // `/kill` or `/kill <own name>`: the generic kill, whatever the
+            // game mode.
+            if (!p.dead) hurt(p, std::numeric_limits<float>::max(), Harm::kill);
+            send_translation(p, "commands.kill.success.single", string_arguments({p.name}));
         } else if (args[0] == "tps") {
             message(p, std::format("tick {}", engine->time()));
         } else if (const auto reply = extensions->command(p.name, args[0], std::span(args).subspan(1))) {

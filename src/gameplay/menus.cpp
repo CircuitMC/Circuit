@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Container menus: a player's own window and the windows of chests, double
-// chests, hoppers and furnaces, with every click mode of the protocol,
-// applied as the target version's menus apply them (documented in the
-// protocol pages and compared with the official server through a protocol
-// client).
+// chests, hoppers, furnaces and crafting tables, with every click mode of the
+// protocol, applied as the target version's menus apply them (documented in
+// the protocol pages and compared with the official server through a
+// protocol client).
 #include "internal.hpp"
 #include <circuit/gameplay/game_data.hpp>
 #include <algorithm>
@@ -27,13 +27,36 @@ std::uint8_t armor_slot(std::uint16_t item) {
 }
 bool offhand_item(std::uint16_t item) { return item == items::shield; }
 
+// A player slot by its slot-record number: the inventory, or the open
+// crafting table's result and grid.
+ItemStack& player_slot(PlayerInventory& inv, std::uint8_t index) {
+    return index >= contracts::table_first ? inv.table[index - contracts::table_first] : inv.slots[index];
+}
+
+// A window's crafting grid: the own window's 2x2 (slots 0-4) or a crafting
+// table's 3x3 (slot records 47-56); the result first.
+struct CraftingGrid {
+    std::uint8_t first{};
+    std::uint8_t width{};
+    [[nodiscard]] std::uint8_t record(std::size_t k) const { return static_cast<std::uint8_t>(first + k); }
+    [[nodiscard]] std::size_t size() const { return std::size_t{width} * width; }
+};
+constexpr CraftingGrid own_grid{0, 2};
+constexpr CraftingGrid table_grid{contracts::table_first, 3};
+
 // One menu: a list of slots, each a container slot or a player slot.
 class Menu {
 public:
     Menu(RuleContext& ctx, PlayerInventory& inv, std::vector<BlockPos> parts) : ctx_(ctx), inv_(inv) {
-        for (const auto p : parts) {
-            const auto* be = ctx.peek_block_entity(p);
-            for (std::size_t i = 0; be && i < be->slots.size(); ++i) slots_.push_back({p, static_cast<std::uint8_t>(i), true});
+        table_ = parts.size() == 1 && is_crafting_table(ctx.block(parts[0]));
+        if (table_) {
+            for (std::uint8_t i = 0; i < contracts::table_slots; ++i)
+                slots_.push_back({{}, static_cast<std::uint8_t>(contracts::table_first + i), false});
+        } else {
+            for (const auto p : parts) {
+                const auto* be = ctx.peek_block_entity(p);
+                for (std::size_t i = 0; be && i < be->slots.size(); ++i) slots_.push_back({p, static_cast<std::uint8_t>(i), true});
+            }
         }
         container_size_ = slots_.size();
         own_ = parts.empty();
@@ -52,7 +75,7 @@ public:
 
     [[nodiscard]] ItemStack get(std::size_t i) const {
         const auto& s = slots_[i];
-        if (!s.container) return inv_.slots[s.index];
+        if (!s.container) return player_slot(inv_, s.index);
         const auto* be = ctx_.peek_block_entity(s.pos);
         return be ? be->slots[s.index] : ItemStack{};
     }
@@ -60,8 +83,9 @@ public:
         if (stack.count == 0) stack = {};
         const auto& s = slots_[i];
         if (!s.container) {
-            if (inv_.slots[s.index] == stack) return;
-            inv_.slots[s.index] = stack;
+            auto& slot = player_slot(inv_, s.index);
+            if (slot == stack) return;
+            slot = stack;
             record_slot(ctx_, inv_, s.index);
             return;
         }
@@ -80,9 +104,9 @@ public:
         record_slot(ctx_, inv_, player_slots);
     }
 
-    // The crafting result of the own window: taking from it crafts (see
-    // click_result); nothing is placed in it.
-    [[nodiscard]] bool result(std::size_t i) const { return own_ && i == 0; }
+    // The crafting result of the own window or a crafting table: taking
+    // from it crafts (see click_result); nothing is placed in it.
+    [[nodiscard]] bool result(std::size_t i) const { return (own_ || table_) && i == 0; }
     [[nodiscard]] bool may_place(std::size_t i, ItemStack stack) const {
         if (result(i)) return false;
         if (own_ && i >= 5 && i <= 8) return armor_slot(stack.item) == i;
@@ -160,6 +184,12 @@ public:
             else if (burn_time(stack.item) > 0) moved = move_into(stack, 1, 2, false);
             else if (i < 30) moved = move_into(stack, 30, 39, false);
             else moved = move_into(stack, 3, 30, false);
+        } else if (table_) {
+            // The grid goes to the inventory from its start; from the
+            // inventory items go into the grid, else between the main
+            // inventory and the hotbar.
+            if (i < 10) moved = move_into(stack, 10, 46, false);
+            else if (!(moved = move_into(stack, 1, 10, false))) moved = i < 37 ? move_into(stack, 37, 46, false) : move_into(stack, 10, 37, false);
         } else if (!own_) {
             moved = i < container_size_ ? move_into(stack, container_size_, size(), true) : move_into(stack, 0, container_size_, false);
         } else {
@@ -217,6 +247,11 @@ public:
         return std::nullopt;
     }
     [[nodiscard]] bool own() const { return own_; }
+    [[nodiscard]] bool table() const { return table_; }
+    [[nodiscard]] CraftingGrid grid() const { return table_ ? table_grid : own_grid; }
+    // The window slots of the main inventory and the hotbar.
+    [[nodiscard]] std::size_t inventory_first() const { return table_ ? 10 : 9; }
+    [[nodiscard]] std::size_t inventory_end() const { return table_ ? 46 : 45; }
     [[nodiscard]] PlayerInventory& inventory() const { return inv_; }
 
 private:
@@ -231,6 +266,7 @@ private:
     std::size_t container_size_{};
     bool own_{};
     bool furnace_{};
+    bool table_{};
 };
 
 void throw_item(RuleContext& ctx, const contracts::Vec3& position, const contracts::Vec3& velocity, ItemStack stack) {
@@ -255,9 +291,10 @@ void pickup(RuleContext& ctx, Menu& menu, const contracts::ContainerClick& c, st
 // The result was taken: one of each grid item is used up. An item with a
 // remainder leaves it in its slot; when the slot still holds other items,
 // the remainder goes into the inventory, or drops when it does not fit.
-void use_grid(RuleContext& ctx, PlayerInventory& inv, const contracts::ContainerClick& c) {
-    for (std::uint8_t slot = 1; slot <= 4; ++slot) {
-        auto s = inv.slots[slot];
+void use_grid(RuleContext& ctx, PlayerInventory& inv, CraftingGrid grid, const contracts::ContainerClick& c) {
+    for (std::size_t k = 1; k <= grid.size(); ++k) {
+        const auto slot = grid.record(k);
+        auto s = player_slot(inv, slot);
         if (s.empty()) continue;
         const auto left = recipes::remainder(s.item);
         s.count = static_cast<std::uint8_t>(s.count - 1);
@@ -268,13 +305,13 @@ void use_grid(RuleContext& ctx, PlayerInventory& inv, const contracts::Container
             } else if (s.same_kind(left)) {
                 s.count = static_cast<std::uint8_t>(s.count + left.count);
             } else {
-                inv.slots[slot] = s;
+                player_slot(inv, slot) = s;
                 record_slot(ctx, inv, slot);
                 throw_item(ctx, c.drop_position, c.drop_velocity, add_to_player(ctx, inv, left, contracts::hotbar_first));
                 continue;
             }
         }
-        inv.slots[slot] = s;
+        player_slot(inv, slot) = s;
         record_slot(ctx, inv, slot);
     }
     update_crafting(ctx, inv);
@@ -284,7 +321,9 @@ void use_grid(RuleContext& ctx, PlayerInventory& inv, const contracts::Container
 // leaves the slot and the grid is used.
 void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick& c) {
     auto& inv = menu.inventory();
-    const auto result = inv.slots[0];
+    const auto grid = menu.grid();
+    const auto made_now = [&] { return player_slot(inv, grid.first); };
+    const auto result = made_now();
     if (result.empty()) return;
     switch (c.mode) {
     case 0: { // onto the cursor, when all of it fits there
@@ -298,15 +337,15 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
             return;
         }
         menu.set_cursor(carried);
-        use_grid(ctx, inv, c);
+        use_grid(ctx, inv, grid, c);
         return;
     }
     case 1: { // into the inventory, hotbar first from its end, as long as the result stays the same item
         if (c.button > 1) return;
-        for (auto made = inv.slots[0]; !made.empty() && made.item == result.item; made = inv.slots[0]) {
+        for (auto made = made_now(); !made.empty() && made.item == result.item; made = made_now()) {
             auto stack = made;
-            if (!menu.move_into(stack, 9, 45, true)) return;
-            use_grid(ctx, inv, c);
+            if (!menu.move_into(stack, menu.inventory_first(), menu.inventory_end(), true)) return;
+            use_grid(ctx, inv, grid, c);
             // What did not fit drops.
             throw_item(ctx, c.drop_position, c.drop_velocity, stack);
         }
@@ -318,14 +357,14 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
         if (!inv.slots[slot].empty()) return;
         inv.slots[slot] = result;
         record_slot(ctx, inv, slot);
-        use_grid(ctx, inv, c);
+        use_grid(ctx, inv, grid, c);
         return;
     }
     case 4: { // thrown; with button 1, again while the result stays the same item
         if (!menu.cursor().empty()) return;
-        for (auto made = inv.slots[0]; !made.empty() && made.item == result.item; made = inv.slots[0]) {
+        for (auto made = made_now(); !made.empty() && made.item == result.item; made = made_now()) {
             throw_item(ctx, c.drop_position, c.drop_velocity, made);
-            use_grid(ctx, inv, c);
+            use_grid(ctx, inv, grid, c);
             if (c.button != 1) return;
         }
         return;
@@ -338,16 +377,23 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
 void update_crafting(RuleContext& ctx, PlayerInventory& inv) {
     const auto* data = ctx.data();
     if (!data) return;
-    const auto made = recipes::match(data->crafting, {2, 2, std::span<const ItemStack>(inv.slots).subspan(1, 4)});
-    const auto result = made ? made->result : ItemStack{};
-    if (inv.slots[0] == result) return;
-    inv.slots[0] = result;
-    record_slot(ctx, inv, 0);
+    const auto craft = [&](std::span<ItemStack> slots, std::uint8_t width, std::uint8_t first) {
+        const auto grid = slots.subspan(1);
+        const bool empty = std::ranges::all_of(grid, [](const ItemStack& s) { return s.empty(); });
+        const auto made = empty ? std::nullopt : recipes::match(data->crafting, {width, width, grid});
+        const auto result = made ? made->result : ItemStack{};
+        if (slots[0] == result) return;
+        slots[0] = result;
+        record_slot(ctx, inv, first);
+    };
+    craft(std::span(inv.slots).first(5), 2, 0);
+    craft(std::span(inv.table), 3, contracts::table_first);
 }
 
 contracts::Result<std::vector<BlockPos>> menu_parts(RuleContext& ctx, std::optional<BlockPos> container) {
     if (!container) return std::vector<BlockPos>{};
     const auto s = ctx.block(*container);
+    if (!s.is_unloaded() && is_crafting_table(s)) return std::vector<BlockPos>{*container};
     if (s.is_unloaded() || !is_container(s.type())) return std::unexpected(contracts::ErrorCode::not_a_container);
     return container_parts(ctx, *container);
 }
@@ -408,11 +454,11 @@ contracts::Result<std::function<void()>> plan_click(RuleContext& ctx, const cont
         struct Recraft {
             RuleContext& ctx;
             PlayerInventory& inv;
-            bool own;
+            bool crafts;
             ~Recraft() {
-                if (own) update_crafting(ctx, inv);
+                if (crafts) update_crafting(ctx, inv);
             }
-        } recraft{ctx, inv, menu.own()};
+        } recraft{ctx, inv, menu.own() || menu.table()};
         // Drags collect slots over several clicks; any other click ends one.
         if (c.mode == 5) {
             const auto previous = inv.drag_stage;
@@ -600,20 +646,25 @@ contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const cont
     return [&ctx, c] {
         auto& inv = ctx.player(c.player);
         reset_drag(inv);
-        // The crafting grid and the carried stack go back into the inventory.
-        for (std::uint8_t slot = 1; slot <= 4; ++slot) {
-            const auto s = inv.slots[slot];
-            if (s.empty()) continue;
-            inv.slots[slot] = {};
-            record_slot(ctx, inv, slot);
-            throw_item(ctx, c.drop_position, c.drop_velocity, add_to_player(ctx, inv, s, contracts::hotbar_first));
-        }
+        // The crafting grids (the own window's, an open crafting table's)
+        // and the carried stack go back into the inventory, or drop when the
+        // player left.
+        const auto put_back = [&](ItemStack s) { return c.drop ? s : add_to_player(ctx, inv, s, contracts::hotbar_first); };
+        for (const auto grid : {own_grid, table_grid})
+            for (std::size_t k = 1; k <= grid.size(); ++k) {
+                auto& slot = player_slot(inv, grid.record(k));
+                const auto s = slot;
+                if (s.empty()) continue;
+                slot = {};
+                record_slot(ctx, inv, grid.record(k));
+                throw_item(ctx, c.drop_position, c.drop_velocity, put_back(s));
+            }
         update_crafting(ctx, inv);
         if (!inv.cursor.empty()) {
             const auto carried = inv.cursor;
             inv.cursor = {};
             record_slot(ctx, inv, player_slots);
-            throw_item(ctx, c.drop_position, c.drop_velocity, add_to_player(ctx, inv, carried, contracts::hotbar_first));
+            throw_item(ctx, c.drop_position, c.drop_velocity, put_back(carried));
         }
     };
 }
@@ -642,21 +693,24 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
         auto& inv = ctx.player(c.player);
         reset_drag(inv);
         // The target version's order: hotbar, main inventory, armor from the
-        // feet up, off hand; then the crafting grid and the carried stack.
+        // feet up, off hand; then the crafting grids (an open crafting
+        // table's after the own one) and the carried stack.
         std::vector<std::uint8_t> order;
         for (std::uint8_t s = contracts::hotbar_first; s < contracts::offhand_slot; ++s) order.push_back(s);
         for (std::uint8_t s = 9; s < contracts::hotbar_first; ++s) order.push_back(s);
         for (std::uint8_t s = 8; s >= 5; --s) order.push_back(s);
         order.push_back(contracts::offhand_slot);
         for (std::uint8_t s = 1; s <= 4; ++s) order.push_back(s);
+        for (std::size_t k = 1; k <= table_grid.size(); ++k) order.push_back(table_grid.record(k));
         std::size_t n = 0;
         const auto drop = [&](ItemStack stack) {
             if (in_world) spawn_dropped(ctx, cell, c.position, death_drop_velocity(n++), stack, 40);
         };
         for (const auto s : order) {
-            if (inv.slots[s].empty()) continue;
-            const auto stack = inv.slots[s];
-            inv.slots[s] = {};
+            auto& slot = player_slot(inv, s);
+            if (slot.empty()) continue;
+            const auto stack = slot;
+            slot = {};
             record_slot(ctx, inv, s);
             drop(stack);
         }
@@ -671,3 +725,16 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
 }
 
 } // namespace circuit::gameplay::detail
+
+namespace circuit::gameplay {
+bool is_crafting_table(BlockState s) {
+    static const std::optional<std::uint32_t> table = []() -> std::optional<std::uint32_t> {
+        for (std::uint32_t b = 0; b < registry::block_count(); ++b)
+            if (registry::game_name(b) == "crafting_table") return b;
+        return std::nullopt;
+    }();
+    if (!table || !s.is(BlockType::other)) return false;
+    const auto state = physics::registry_state_of(s);
+    return state && registry::block_of(*state) == table;
+}
+} // namespace circuit::gameplay

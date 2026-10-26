@@ -225,6 +225,7 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
                     return std::unexpected(ErrorCode::not_usable);
             return [&ctx, c] { ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo); };
         }
+        if (is_crafting_table(clicked)) return [&ctx, c] { ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo); };
     }
     // Bone meal acts on the clicked block as a dispenser's does, used up in
     // survival when it acts (not compared with a client yet).

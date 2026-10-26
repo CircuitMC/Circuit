@@ -21,6 +21,8 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 29: player inventories carry an open crafting table's result and grid;
+// 28: furnaces, smokers and blast furnaces carry their times;
 // 27: levels carry the state random ticks pick positions from;
 // 26: the world carries its difficulty;
 // 25: entities carry how far they have fallen;
@@ -57,7 +59,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 28;
+constexpr std::uint32_t version = 29;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -229,6 +231,7 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
         for (const auto& st : p.slots) stack(w, st);
         w.u8(p.drag_stage).u8(p.drag_type).varint(static_cast<std::int32_t>(p.drag_slots.size()));
         for (const auto slot : p.drag_slots) w.i16(slot);
+        for (const auto& st : p.table) stack(w, st);
     }
     w.varint(static_cast<std::int32_t>(c.extras.size()));
     for (const auto& [name, bytes] : c.extras) w.string(name, 256).prefixed_bytes(bytes);
@@ -651,6 +654,9 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
             p.drag_slots.resize(drag);
             for (auto& slot : p.drag_slots)
                 if (!b.get(b.r.i16(), slot)) return false;
+            if (b.version >= 29)
+                for (auto& st : p.table)
+                    if (!b.stack(st)) return false;
             p.player = {static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)};
             s.players.push_back(p);
         }
