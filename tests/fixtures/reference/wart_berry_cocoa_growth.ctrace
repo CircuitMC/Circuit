@@ -1,0 +1,1335 @@
+circuit-trace 2
+title Nether wart, sweet berry bushes, cocoa and mushrooms in random ticks
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v12
+mechanisms random_ticks plants
+area 0 0 0 15 15 15
+ticks 200
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 400
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 0 0 10 minecraft:stone
+at 0 set 0 0 11 minecraft:stone
+at 0 set 0 0 12 minecraft:stone
+at 0 set 0 0 13 minecraft:stone
+at 0 set 0 0 14 minecraft:stone
+at 0 set 0 0 15 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:stone
+at 0 set 1 0 11 minecraft:stone
+at 0 set 1 0 12 minecraft:stone
+at 0 set 1 0 13 minecraft:stone
+at 0 set 1 0 14 minecraft:stone
+at 0 set 1 0 15 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 2 0 10 minecraft:stone
+at 0 set 2 0 11 minecraft:stone
+at 0 set 2 0 12 minecraft:stone
+at 0 set 2 0 13 minecraft:stone
+at 0 set 2 0 14 minecraft:stone
+at 0 set 2 0 15 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 3 0 10 minecraft:stone
+at 0 set 3 0 11 minecraft:stone
+at 0 set 3 0 12 minecraft:stone
+at 0 set 3 0 13 minecraft:stone
+at 0 set 3 0 14 minecraft:stone
+at 0 set 3 0 15 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 4 0 11 minecraft:stone
+at 0 set 4 0 12 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 4 0 14 minecraft:stone
+at 0 set 4 0 15 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 5 0 10 minecraft:stone
+at 0 set 5 0 11 minecraft:stone
+at 0 set 5 0 12 minecraft:stone
+at 0 set 5 0 13 minecraft:stone
+at 0 set 5 0 14 minecraft:stone
+at 0 set 5 0 15 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 6 0 10 minecraft:stone
+at 0 set 6 0 11 minecraft:stone
+at 0 set 6 0 12 minecraft:stone
+at 0 set 6 0 13 minecraft:stone
+at 0 set 6 0 14 minecraft:stone
+at 0 set 6 0 15 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 7 0 10 minecraft:stone
+at 0 set 7 0 11 minecraft:stone
+at 0 set 7 0 12 minecraft:stone
+at 0 set 7 0 13 minecraft:stone
+at 0 set 7 0 14 minecraft:stone
+at 0 set 7 0 15 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 8 0 10 minecraft:stone
+at 0 set 8 0 11 minecraft:stone
+at 0 set 8 0 12 minecraft:stone
+at 0 set 8 0 13 minecraft:stone
+at 0 set 8 0 14 minecraft:stone
+at 0 set 8 0 15 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 9 0 10 minecraft:stone
+at 0 set 9 0 11 minecraft:stone
+at 0 set 9 0 12 minecraft:stone
+at 0 set 9 0 13 minecraft:stone
+at 0 set 9 0 14 minecraft:stone
+at 0 set 9 0 15 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 10 0 10 minecraft:stone
+at 0 set 10 0 11 minecraft:stone
+at 0 set 10 0 12 minecraft:stone
+at 0 set 10 0 13 minecraft:stone
+at 0 set 10 0 14 minecraft:stone
+at 0 set 10 0 15 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 11 0 10 minecraft:stone
+at 0 set 11 0 11 minecraft:stone
+at 0 set 11 0 12 minecraft:stone
+at 0 set 11 0 13 minecraft:stone
+at 0 set 11 0 14 minecraft:stone
+at 0 set 11 0 15 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 12 0 8 minecraft:stone
+at 0 set 12 0 9 minecraft:stone
+at 0 set 12 0 10 minecraft:stone
+at 0 set 12 0 11 minecraft:stone
+at 0 set 12 0 12 minecraft:stone
+at 0 set 12 0 13 minecraft:stone
+at 0 set 12 0 14 minecraft:stone
+at 0 set 12 0 15 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 13 0 8 minecraft:stone
+at 0 set 13 0 9 minecraft:stone
+at 0 set 13 0 10 minecraft:stone
+at 0 set 13 0 11 minecraft:stone
+at 0 set 13 0 12 minecraft:stone
+at 0 set 13 0 13 minecraft:stone
+at 0 set 13 0 14 minecraft:stone
+at 0 set 13 0 15 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 14 0 8 minecraft:stone
+at 0 set 14 0 9 minecraft:stone
+at 0 set 14 0 10 minecraft:stone
+at 0 set 14 0 11 minecraft:stone
+at 0 set 14 0 12 minecraft:stone
+at 0 set 14 0 13 minecraft:stone
+at 0 set 14 0 14 minecraft:stone
+at 0 set 14 0 15 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 15 0 8 minecraft:stone
+at 0 set 15 0 9 minecraft:stone
+at 0 set 15 0 10 minecraft:stone
+at 0 set 15 0 11 minecraft:stone
+at 0 set 15 0 12 minecraft:stone
+at 0 set 15 0 13 minecraft:stone
+at 0 set 15 0 14 minecraft:stone
+at 0 set 15 0 15 minecraft:stone
+draws 0 random_ticks level 3600
+
+at 1 set 0 1 0 minecraft:soul_sand
+at 1 set 0 1 1 minecraft:soul_sand
+at 1 set 0 1 2 minecraft:soul_sand
+at 1 set 0 1 3 minecraft:soul_sand
+at 1 set 1 1 0 minecraft:soul_sand
+at 1 set 1 1 1 minecraft:soul_sand
+at 1 set 1 1 2 minecraft:soul_sand
+at 1 set 1 1 3 minecraft:soul_sand
+at 1 set 2 1 0 minecraft:soul_sand
+at 1 set 2 1 1 minecraft:soul_sand
+at 1 set 2 1 2 minecraft:soul_sand
+at 1 set 2 1 3 minecraft:soul_sand
+at 1 set 3 1 0 minecraft:soul_sand
+at 1 set 3 1 1 minecraft:soul_sand
+at 1 set 3 1 2 minecraft:soul_sand
+at 1 set 3 1 3 minecraft:soul_sand
+at 1 set 4 1 0 minecraft:soul_sand
+at 1 set 4 1 1 minecraft:soul_sand
+at 1 set 4 1 2 minecraft:soul_sand
+at 1 set 4 1 3 minecraft:soul_sand
+at 1 set 5 1 0 minecraft:soul_sand
+at 1 set 5 1 1 minecraft:soul_sand
+at 1 set 5 1 2 minecraft:soul_sand
+at 1 set 5 1 3 minecraft:soul_sand
+at 1 set 6 1 0 minecraft:soul_sand
+at 1 set 6 1 1 minecraft:soul_sand
+at 1 set 6 1 2 minecraft:soul_sand
+at 1 set 6 1 3 minecraft:soul_sand
+at 1 set 7 1 0 minecraft:soul_sand
+at 1 set 7 1 1 minecraft:soul_sand
+at 1 set 7 1 2 minecraft:soul_sand
+at 1 set 7 1 3 minecraft:soul_sand
+at 1 set 8 1 0 minecraft:grass_block
+at 1 set 8 1 1 minecraft:grass_block
+at 1 set 8 1 2 minecraft:grass_block
+at 1 set 8 1 3 minecraft:grass_block
+at 1 set 9 1 0 minecraft:grass_block
+at 1 set 9 1 1 minecraft:grass_block
+at 1 set 9 1 2 minecraft:grass_block
+at 1 set 9 1 3 minecraft:grass_block
+at 1 set 10 1 0 minecraft:grass_block
+at 1 set 10 1 1 minecraft:grass_block
+at 1 set 10 1 2 minecraft:grass_block
+at 1 set 10 1 3 minecraft:grass_block
+at 1 set 11 1 0 minecraft:grass_block
+at 1 set 11 1 1 minecraft:grass_block
+at 1 set 11 1 2 minecraft:grass_block
+at 1 set 11 1 3 minecraft:grass_block
+at 1 set 12 1 0 minecraft:grass_block
+at 1 set 12 1 1 minecraft:grass_block
+at 1 set 12 1 2 minecraft:grass_block
+at 1 set 12 1 3 minecraft:grass_block
+at 1 set 13 1 0 minecraft:grass_block
+at 1 set 13 1 1 minecraft:grass_block
+at 1 set 13 1 2 minecraft:grass_block
+at 1 set 13 1 3 minecraft:grass_block
+at 1 set 14 1 0 minecraft:grass_block
+at 1 set 14 1 1 minecraft:grass_block
+at 1 set 14 1 2 minecraft:grass_block
+at 1 set 14 1 3 minecraft:grass_block
+at 1 set 15 1 0 minecraft:grass_block
+at 1 set 15 1 1 minecraft:grass_block
+at 1 set 15 1 2 minecraft:grass_block
+at 1 set 15 1 3 minecraft:grass_block
+at 1 set 0 2 6 minecraft:jungle_log
+at 1 set 1 2 6 minecraft:jungle_log
+at 1 set 2 2 6 minecraft:jungle_log
+at 1 set 3 2 6 minecraft:jungle_log
+at 1 set 4 2 6 minecraft:jungle_log
+at 1 set 5 2 6 minecraft:jungle_log
+at 1 set 6 2 6 minecraft:jungle_log
+at 1 set 7 2 6 minecraft:jungle_log
+at 1 set 0 1 9 minecraft:mycelium
+at 1 set 0 1 10 minecraft:mycelium
+at 1 set 0 1 11 minecraft:mycelium
+at 1 set 0 1 12 minecraft:mycelium
+at 1 set 0 1 13 minecraft:mycelium
+at 1 set 0 1 14 minecraft:mycelium
+at 1 set 0 1 15 minecraft:mycelium
+at 1 set 1 1 9 minecraft:mycelium
+at 1 set 1 1 10 minecraft:mycelium
+at 1 set 1 1 11 minecraft:mycelium
+at 1 set 1 1 12 minecraft:mycelium
+at 1 set 1 1 13 minecraft:mycelium
+at 1 set 1 1 14 minecraft:mycelium
+at 1 set 1 1 15 minecraft:mycelium
+at 1 set 2 1 9 minecraft:mycelium
+at 1 set 2 1 10 minecraft:mycelium
+at 1 set 2 1 11 minecraft:mycelium
+at 1 set 2 1 12 minecraft:mycelium
+at 1 set 2 1 13 minecraft:mycelium
+at 1 set 2 1 14 minecraft:mycelium
+at 1 set 2 1 15 minecraft:mycelium
+at 1 set 3 1 9 minecraft:mycelium
+at 1 set 3 1 10 minecraft:mycelium
+at 1 set 3 1 11 minecraft:mycelium
+at 1 set 3 1 12 minecraft:mycelium
+at 1 set 3 1 13 minecraft:mycelium
+at 1 set 3 1 14 minecraft:mycelium
+at 1 set 3 1 15 minecraft:mycelium
+at 1 set 4 1 9 minecraft:mycelium
+at 1 set 4 1 10 minecraft:mycelium
+at 1 set 4 1 11 minecraft:mycelium
+at 1 set 4 1 12 minecraft:mycelium
+at 1 set 4 1 13 minecraft:mycelium
+at 1 set 4 1 14 minecraft:mycelium
+at 1 set 4 1 15 minecraft:mycelium
+at 1 set 5 1 9 minecraft:mycelium
+at 1 set 5 1 10 minecraft:mycelium
+at 1 set 5 1 11 minecraft:mycelium
+at 1 set 5 1 12 minecraft:mycelium
+at 1 set 5 1 13 minecraft:mycelium
+at 1 set 5 1 14 minecraft:mycelium
+at 1 set 5 1 15 minecraft:mycelium
+at 1 set 6 1 9 minecraft:mycelium
+at 1 set 6 1 10 minecraft:mycelium
+at 1 set 6 1 11 minecraft:mycelium
+at 1 set 6 1 12 minecraft:mycelium
+at 1 set 6 1 13 minecraft:mycelium
+at 1 set 6 1 14 minecraft:mycelium
+at 1 set 6 1 15 minecraft:mycelium
+at 1 set 7 1 9 minecraft:mycelium
+at 1 set 7 1 10 minecraft:mycelium
+at 1 set 7 1 11 minecraft:mycelium
+at 1 set 7 1 12 minecraft:mycelium
+at 1 set 7 1 13 minecraft:mycelium
+at 1 set 7 1 14 minecraft:mycelium
+at 1 set 7 1 15 minecraft:mycelium
+at 1 set 8 1 9 minecraft:mycelium
+at 1 set 8 1 10 minecraft:mycelium
+at 1 set 8 1 11 minecraft:mycelium
+at 1 set 8 1 12 minecraft:mycelium
+at 1 set 8 1 13 minecraft:mycelium
+at 1 set 8 1 14 minecraft:mycelium
+at 1 set 8 1 15 minecraft:mycelium
+at 1 set 9 1 9 minecraft:mycelium
+at 1 set 9 1 10 minecraft:mycelium
+at 1 set 9 1 11 minecraft:mycelium
+at 1 set 9 1 12 minecraft:mycelium
+at 1 set 9 1 13 minecraft:mycelium
+at 1 set 9 1 14 minecraft:mycelium
+at 1 set 9 1 15 minecraft:mycelium
+at 1 set 10 1 9 minecraft:mycelium
+at 1 set 10 1 10 minecraft:mycelium
+at 1 set 10 1 11 minecraft:mycelium
+at 1 set 10 1 12 minecraft:mycelium
+at 1 set 10 1 13 minecraft:mycelium
+at 1 set 10 1 14 minecraft:mycelium
+at 1 set 10 1 15 minecraft:mycelium
+at 1 set 11 1 9 minecraft:mycelium
+at 1 set 11 1 10 minecraft:mycelium
+at 1 set 11 1 11 minecraft:mycelium
+at 1 set 11 1 12 minecraft:mycelium
+at 1 set 11 1 13 minecraft:mycelium
+at 1 set 11 1 14 minecraft:mycelium
+at 1 set 11 1 15 minecraft:mycelium
+at 1 set 12 1 9 minecraft:mycelium
+at 1 set 12 1 10 minecraft:mycelium
+at 1 set 12 1 11 minecraft:mycelium
+at 1 set 12 1 12 minecraft:mycelium
+at 1 set 12 1 13 minecraft:mycelium
+at 1 set 12 1 14 minecraft:mycelium
+at 1 set 12 1 15 minecraft:mycelium
+at 1 set 13 1 9 minecraft:mycelium
+at 1 set 13 1 10 minecraft:mycelium
+at 1 set 13 1 11 minecraft:mycelium
+at 1 set 13 1 12 minecraft:mycelium
+at 1 set 13 1 13 minecraft:mycelium
+at 1 set 13 1 14 minecraft:mycelium
+at 1 set 13 1 15 minecraft:mycelium
+at 1 set 14 1 9 minecraft:mycelium
+at 1 set 14 1 10 minecraft:mycelium
+at 1 set 14 1 11 minecraft:mycelium
+at 1 set 14 1 12 minecraft:mycelium
+at 1 set 14 1 13 minecraft:mycelium
+at 1 set 14 1 14 minecraft:mycelium
+at 1 set 14 1 15 minecraft:mycelium
+at 1 set 15 1 9 minecraft:mycelium
+at 1 set 15 1 10 minecraft:mycelium
+at 1 set 15 1 11 minecraft:mycelium
+at 1 set 15 1 12 minecraft:mycelium
+at 1 set 15 1 13 minecraft:mycelium
+at 1 set 15 1 14 minecraft:mycelium
+at 1 set 15 1 15 minecraft:mycelium
+change 1 commands 0 1 0 minecraft:air minecraft:soul_sand
+change 1 commands 0 1 1 minecraft:air minecraft:soul_sand
+change 1 commands 0 1 2 minecraft:air minecraft:soul_sand
+change 1 commands 0 1 3 minecraft:air minecraft:soul_sand
+change 1 commands 1 1 0 minecraft:air minecraft:soul_sand
+change 1 commands 1 1 1 minecraft:air minecraft:soul_sand
+change 1 commands 1 1 2 minecraft:air minecraft:soul_sand
+change 1 commands 1 1 3 minecraft:air minecraft:soul_sand
+change 1 commands 2 1 0 minecraft:air minecraft:soul_sand
+change 1 commands 2 1 1 minecraft:air minecraft:soul_sand
+change 1 commands 2 1 2 minecraft:air minecraft:soul_sand
+change 1 commands 2 1 3 minecraft:air minecraft:soul_sand
+change 1 commands 3 1 0 minecraft:air minecraft:soul_sand
+change 1 commands 3 1 1 minecraft:air minecraft:soul_sand
+change 1 commands 3 1 2 minecraft:air minecraft:soul_sand
+change 1 commands 3 1 3 minecraft:air minecraft:soul_sand
+change 1 commands 4 1 0 minecraft:air minecraft:soul_sand
+change 1 commands 4 1 1 minecraft:air minecraft:soul_sand
+change 1 commands 4 1 2 minecraft:air minecraft:soul_sand
+change 1 commands 4 1 3 minecraft:air minecraft:soul_sand
+change 1 commands 5 1 0 minecraft:air minecraft:soul_sand
+change 1 commands 5 1 1 minecraft:air minecraft:soul_sand
+change 1 commands 5 1 2 minecraft:air minecraft:soul_sand
+change 1 commands 5 1 3 minecraft:air minecraft:soul_sand
+change 1 commands 6 1 0 minecraft:air minecraft:soul_sand
+change 1 commands 6 1 1 minecraft:air minecraft:soul_sand
+change 1 commands 6 1 2 minecraft:air minecraft:soul_sand
+change 1 commands 6 1 3 minecraft:air minecraft:soul_sand
+change 1 commands 7 1 0 minecraft:air minecraft:soul_sand
+change 1 commands 7 1 1 minecraft:air minecraft:soul_sand
+change 1 commands 7 1 2 minecraft:air minecraft:soul_sand
+change 1 commands 7 1 3 minecraft:air minecraft:soul_sand
+change 1 commands 8 1 0 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 8 1 1 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 8 1 2 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 8 1 3 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 9 1 0 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 9 1 1 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 9 1 2 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 9 1 3 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 10 1 0 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 10 1 1 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 10 1 2 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 10 1 3 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 11 1 0 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 11 1 1 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 11 1 2 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 11 1 3 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 12 1 0 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 12 1 1 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 12 1 2 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 12 1 3 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 13 1 0 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 13 1 1 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 13 1 2 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 13 1 3 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 14 1 0 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 14 1 1 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 14 1 2 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 14 1 3 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 15 1 0 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 15 1 1 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 15 1 2 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 15 1 3 minecraft:air minecraft:grass_block[snowy=false]
+change 1 commands 0 2 6 minecraft:air minecraft:jungle_log[axis=y]
+change 1 commands 1 2 6 minecraft:air minecraft:jungle_log[axis=y]
+change 1 commands 2 2 6 minecraft:air minecraft:jungle_log[axis=y]
+change 1 commands 3 2 6 minecraft:air minecraft:jungle_log[axis=y]
+change 1 commands 4 2 6 minecraft:air minecraft:jungle_log[axis=y]
+change 1 commands 5 2 6 minecraft:air minecraft:jungle_log[axis=y]
+change 1 commands 6 2 6 minecraft:air minecraft:jungle_log[axis=y]
+change 1 commands 7 2 6 minecraft:air minecraft:jungle_log[axis=y]
+change 1 commands 0 1 9 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 0 1 10 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 0 1 11 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 0 1 12 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 0 1 13 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 0 1 14 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 0 1 15 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 1 1 9 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 1 1 10 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 1 1 11 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 1 1 12 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 1 1 13 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 1 1 14 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 1 1 15 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 2 1 9 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 2 1 10 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 2 1 11 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 2 1 12 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 2 1 13 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 2 1 14 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 2 1 15 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 3 1 9 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 3 1 10 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 3 1 11 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 3 1 12 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 3 1 13 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 3 1 14 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 3 1 15 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 4 1 9 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 4 1 10 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 4 1 11 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 4 1 12 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 4 1 13 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 4 1 14 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 4 1 15 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 5 1 9 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 5 1 10 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 5 1 11 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 5 1 12 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 5 1 13 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 5 1 14 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 5 1 15 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 6 1 9 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 6 1 10 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 6 1 11 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 6 1 12 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 6 1 13 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 6 1 14 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 6 1 15 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 7 1 9 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 7 1 10 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 7 1 11 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 7 1 12 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 7 1 13 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 7 1 14 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 7 1 15 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 8 1 9 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 8 1 10 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 8 1 11 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 8 1 12 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 8 1 13 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 8 1 14 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 8 1 15 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 9 1 9 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 9 1 10 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 9 1 11 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 9 1 12 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 9 1 13 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 9 1 14 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 9 1 15 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 10 1 9 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 10 1 10 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 10 1 11 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 10 1 12 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 10 1 13 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 10 1 14 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 10 1 15 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 11 1 9 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 11 1 10 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 11 1 11 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 11 1 12 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 11 1 13 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 11 1 14 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 11 1 15 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 12 1 9 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 12 1 10 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 12 1 11 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 12 1 12 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 12 1 13 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 12 1 14 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 12 1 15 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 13 1 9 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 13 1 10 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 13 1 11 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 13 1 12 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 13 1 13 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 13 1 14 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 13 1 15 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 14 1 9 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 14 1 10 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 14 1 11 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 14 1 12 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 14 1 13 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 14 1 14 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 14 1 15 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 15 1 9 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 15 1 10 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 15 1 11 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 15 1 12 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 15 1 13 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 15 1 14 minecraft:air minecraft:mycelium[snowy=false]
+change 1 commands 15 1 15 minecraft:air minecraft:mycelium[snowy=false]
+draws 1 random_ticks level 3852
+
+at 2 set 0 2 0 minecraft:nether_wart[age=0]
+at 2 set 0 2 1 minecraft:nether_wart[age=1]
+at 2 set 0 2 2 minecraft:nether_wart[age=2]
+at 2 set 0 2 3 minecraft:nether_wart[age=0]
+at 2 set 1 2 0 minecraft:nether_wart[age=1]
+at 2 set 1 2 1 minecraft:nether_wart[age=2]
+at 2 set 1 2 2 minecraft:nether_wart[age=0]
+at 2 set 1 2 3 minecraft:nether_wart[age=1]
+at 2 set 2 2 0 minecraft:nether_wart[age=2]
+at 2 set 2 2 1 minecraft:nether_wart[age=0]
+at 2 set 2 2 2 minecraft:nether_wart[age=1]
+at 2 set 2 2 3 minecraft:nether_wart[age=2]
+at 2 set 3 2 0 minecraft:nether_wart[age=0]
+at 2 set 3 2 1 minecraft:nether_wart[age=1]
+at 2 set 3 2 2 minecraft:nether_wart[age=2]
+at 2 set 3 2 3 minecraft:nether_wart[age=0]
+at 2 set 4 2 0 minecraft:nether_wart[age=1]
+at 2 set 4 2 1 minecraft:nether_wart[age=2]
+at 2 set 4 2 2 minecraft:nether_wart[age=0]
+at 2 set 4 2 3 minecraft:nether_wart[age=1]
+at 2 set 5 2 0 minecraft:nether_wart[age=2]
+at 2 set 5 2 1 minecraft:nether_wart[age=0]
+at 2 set 5 2 2 minecraft:nether_wart[age=1]
+at 2 set 5 2 3 minecraft:nether_wart[age=2]
+at 2 set 6 2 0 minecraft:nether_wart[age=0]
+at 2 set 6 2 1 minecraft:nether_wart[age=1]
+at 2 set 6 2 2 minecraft:nether_wart[age=2]
+at 2 set 6 2 3 minecraft:nether_wart[age=0]
+at 2 set 7 2 0 minecraft:nether_wart[age=1]
+at 2 set 7 2 1 minecraft:nether_wart[age=2]
+at 2 set 7 2 2 minecraft:nether_wart[age=0]
+at 2 set 7 2 3 minecraft:nether_wart[age=1]
+at 2 set 8 2 0 minecraft:sweet_berry_bush[age=2]
+at 2 set 8 2 1 minecraft:sweet_berry_bush[age=0]
+at 2 set 8 2 2 minecraft:sweet_berry_bush[age=1]
+at 2 set 8 2 3 minecraft:sweet_berry_bush[age=2]
+at 2 set 9 2 0 minecraft:sweet_berry_bush[age=0]
+at 2 set 9 2 1 minecraft:sweet_berry_bush[age=1]
+at 2 set 9 2 2 minecraft:sweet_berry_bush[age=2]
+at 2 set 9 2 3 minecraft:sweet_berry_bush[age=0]
+at 2 set 10 2 0 minecraft:sweet_berry_bush[age=1]
+at 2 set 10 2 1 minecraft:sweet_berry_bush[age=2]
+at 2 set 10 2 2 minecraft:sweet_berry_bush[age=0]
+at 2 set 10 2 3 minecraft:sweet_berry_bush[age=1]
+at 2 set 11 2 0 minecraft:sweet_berry_bush[age=2]
+at 2 set 11 2 1 minecraft:sweet_berry_bush[age=0]
+at 2 set 11 2 2 minecraft:sweet_berry_bush[age=1]
+at 2 set 11 2 3 minecraft:sweet_berry_bush[age=2]
+at 2 set 12 2 0 minecraft:sweet_berry_bush[age=0]
+at 2 set 12 2 1 minecraft:sweet_berry_bush[age=1]
+at 2 set 12 2 2 minecraft:sweet_berry_bush[age=2]
+at 2 set 12 2 3 minecraft:sweet_berry_bush[age=0]
+at 2 set 13 2 0 minecraft:sweet_berry_bush[age=1]
+at 2 set 13 2 1 minecraft:sweet_berry_bush[age=2]
+at 2 set 13 2 2 minecraft:sweet_berry_bush[age=0]
+at 2 set 13 2 3 minecraft:sweet_berry_bush[age=1]
+at 2 set 14 2 0 minecraft:sweet_berry_bush[age=2]
+at 2 set 14 2 1 minecraft:sweet_berry_bush[age=0]
+at 2 set 14 2 2 minecraft:sweet_berry_bush[age=1]
+at 2 set 14 2 3 minecraft:sweet_berry_bush[age=2]
+at 2 set 15 2 0 minecraft:sweet_berry_bush[age=0]
+at 2 set 15 2 1 minecraft:sweet_berry_bush[age=1]
+at 2 set 15 2 2 minecraft:sweet_berry_bush[age=2]
+at 2 set 15 2 3 minecraft:sweet_berry_bush[age=0]
+at 2 set 0 2 5 minecraft:cocoa[age=0,facing=south]
+at 2 set 0 2 7 minecraft:cocoa[age=0,facing=north]
+at 2 set 1 2 5 minecraft:cocoa[age=1,facing=south]
+at 2 set 1 2 7 minecraft:cocoa[age=1,facing=north]
+at 2 set 2 2 5 minecraft:cocoa[age=0,facing=south]
+at 2 set 2 2 7 minecraft:cocoa[age=0,facing=north]
+at 2 set 3 2 5 minecraft:cocoa[age=1,facing=south]
+at 2 set 3 2 7 minecraft:cocoa[age=1,facing=north]
+at 2 set 4 2 5 minecraft:cocoa[age=0,facing=south]
+at 2 set 4 2 7 minecraft:cocoa[age=0,facing=north]
+at 2 set 5 2 5 minecraft:cocoa[age=1,facing=south]
+at 2 set 5 2 7 minecraft:cocoa[age=1,facing=north]
+at 2 set 6 2 5 minecraft:cocoa[age=0,facing=south]
+at 2 set 6 2 7 minecraft:cocoa[age=0,facing=north]
+at 2 set 7 2 5 minecraft:cocoa[age=1,facing=south]
+at 2 set 7 2 7 minecraft:cocoa[age=1,facing=north]
+at 2 set 2 2 11 minecraft:brown_mushroom
+at 2 set 8 2 12 minecraft:red_mushroom
+at 2 set 13 2 13 minecraft:brown_mushroom
+at 2 set 12 2 13 minecraft:brown_mushroom
+change 2 commands 0 2 0 minecraft:air minecraft:nether_wart[age=0]
+change 2 commands 0 2 1 minecraft:air minecraft:nether_wart[age=1]
+change 2 commands 0 2 2 minecraft:air minecraft:nether_wart[age=2]
+change 2 commands 0 2 3 minecraft:air minecraft:nether_wart[age=0]
+change 2 commands 1 2 0 minecraft:air minecraft:nether_wart[age=1]
+change 2 commands 1 2 1 minecraft:air minecraft:nether_wart[age=2]
+change 2 commands 1 2 2 minecraft:air minecraft:nether_wart[age=0]
+change 2 commands 1 2 3 minecraft:air minecraft:nether_wart[age=1]
+change 2 commands 2 2 0 minecraft:air minecraft:nether_wart[age=2]
+change 2 commands 2 2 1 minecraft:air minecraft:nether_wart[age=0]
+change 2 commands 2 2 2 minecraft:air minecraft:nether_wart[age=1]
+change 2 commands 2 2 3 minecraft:air minecraft:nether_wart[age=2]
+change 2 commands 3 2 0 minecraft:air minecraft:nether_wart[age=0]
+change 2 commands 3 2 1 minecraft:air minecraft:nether_wart[age=1]
+change 2 commands 3 2 2 minecraft:air minecraft:nether_wart[age=2]
+change 2 commands 3 2 3 minecraft:air minecraft:nether_wart[age=0]
+change 2 commands 4 2 0 minecraft:air minecraft:nether_wart[age=1]
+change 2 commands 4 2 1 minecraft:air minecraft:nether_wart[age=2]
+change 2 commands 4 2 2 minecraft:air minecraft:nether_wart[age=0]
+change 2 commands 4 2 3 minecraft:air minecraft:nether_wart[age=1]
+change 2 commands 5 2 0 minecraft:air minecraft:nether_wart[age=2]
+change 2 commands 5 2 1 minecraft:air minecraft:nether_wart[age=0]
+change 2 commands 5 2 2 minecraft:air minecraft:nether_wart[age=1]
+change 2 commands 5 2 3 minecraft:air minecraft:nether_wart[age=2]
+change 2 commands 6 2 0 minecraft:air minecraft:nether_wart[age=0]
+change 2 commands 6 2 1 minecraft:air minecraft:nether_wart[age=1]
+change 2 commands 6 2 2 minecraft:air minecraft:nether_wart[age=2]
+change 2 commands 6 2 3 minecraft:air minecraft:nether_wart[age=0]
+change 2 commands 7 2 0 minecraft:air minecraft:nether_wart[age=1]
+change 2 commands 7 2 1 minecraft:air minecraft:nether_wart[age=2]
+change 2 commands 7 2 2 minecraft:air minecraft:nether_wart[age=0]
+change 2 commands 7 2 3 minecraft:air minecraft:nether_wart[age=1]
+change 2 commands 8 2 0 minecraft:air minecraft:sweet_berry_bush[age=2]
+change 2 commands 8 2 1 minecraft:air minecraft:sweet_berry_bush[age=0]
+change 2 commands 8 2 2 minecraft:air minecraft:sweet_berry_bush[age=1]
+change 2 commands 8 2 3 minecraft:air minecraft:sweet_berry_bush[age=2]
+change 2 commands 9 2 0 minecraft:air minecraft:sweet_berry_bush[age=0]
+change 2 commands 9 2 1 minecraft:air minecraft:sweet_berry_bush[age=1]
+change 2 commands 9 2 2 minecraft:air minecraft:sweet_berry_bush[age=2]
+change 2 commands 9 2 3 minecraft:air minecraft:sweet_berry_bush[age=0]
+change 2 commands 10 2 0 minecraft:air minecraft:sweet_berry_bush[age=1]
+change 2 commands 10 2 1 minecraft:air minecraft:sweet_berry_bush[age=2]
+change 2 commands 10 2 2 minecraft:air minecraft:sweet_berry_bush[age=0]
+change 2 commands 10 2 3 minecraft:air minecraft:sweet_berry_bush[age=1]
+change 2 commands 11 2 0 minecraft:air minecraft:sweet_berry_bush[age=2]
+change 2 commands 11 2 1 minecraft:air minecraft:sweet_berry_bush[age=0]
+change 2 commands 11 2 2 minecraft:air minecraft:sweet_berry_bush[age=1]
+change 2 commands 11 2 3 minecraft:air minecraft:sweet_berry_bush[age=2]
+change 2 commands 12 2 0 minecraft:air minecraft:sweet_berry_bush[age=0]
+change 2 commands 12 2 1 minecraft:air minecraft:sweet_berry_bush[age=1]
+change 2 commands 12 2 2 minecraft:air minecraft:sweet_berry_bush[age=2]
+change 2 commands 12 2 3 minecraft:air minecraft:sweet_berry_bush[age=0]
+change 2 commands 13 2 0 minecraft:air minecraft:sweet_berry_bush[age=1]
+change 2 commands 13 2 1 minecraft:air minecraft:sweet_berry_bush[age=2]
+change 2 commands 13 2 2 minecraft:air minecraft:sweet_berry_bush[age=0]
+change 2 commands 13 2 3 minecraft:air minecraft:sweet_berry_bush[age=1]
+change 2 commands 14 2 0 minecraft:air minecraft:sweet_berry_bush[age=2]
+change 2 commands 14 2 1 minecraft:air minecraft:sweet_berry_bush[age=0]
+change 2 commands 14 2 2 minecraft:air minecraft:sweet_berry_bush[age=1]
+change 2 commands 14 2 3 minecraft:air minecraft:sweet_berry_bush[age=2]
+change 2 commands 15 2 0 minecraft:air minecraft:sweet_berry_bush[age=0]
+change 2 commands 15 2 1 minecraft:air minecraft:sweet_berry_bush[age=1]
+change 2 commands 15 2 2 minecraft:air minecraft:sweet_berry_bush[age=2]
+change 2 commands 15 2 3 minecraft:air minecraft:sweet_berry_bush[age=0]
+change 2 commands 0 2 5 minecraft:air minecraft:cocoa[age=0,facing=south]
+change 2 commands 0 2 7 minecraft:air minecraft:cocoa[age=0,facing=north]
+change 2 commands 1 2 5 minecraft:air minecraft:cocoa[age=1,facing=south]
+change 2 commands 1 2 7 minecraft:air minecraft:cocoa[age=1,facing=north]
+change 2 commands 2 2 5 minecraft:air minecraft:cocoa[age=0,facing=south]
+change 2 commands 2 2 7 minecraft:air minecraft:cocoa[age=0,facing=north]
+change 2 commands 3 2 5 minecraft:air minecraft:cocoa[age=1,facing=south]
+change 2 commands 3 2 7 minecraft:air minecraft:cocoa[age=1,facing=north]
+change 2 commands 4 2 5 minecraft:air minecraft:cocoa[age=0,facing=south]
+change 2 commands 4 2 7 minecraft:air minecraft:cocoa[age=0,facing=north]
+change 2 commands 5 2 5 minecraft:air minecraft:cocoa[age=1,facing=south]
+change 2 commands 5 2 7 minecraft:air minecraft:cocoa[age=1,facing=north]
+change 2 commands 6 2 5 minecraft:air minecraft:cocoa[age=0,facing=south]
+change 2 commands 6 2 7 minecraft:air minecraft:cocoa[age=0,facing=north]
+change 2 commands 7 2 5 minecraft:air minecraft:cocoa[age=1,facing=south]
+change 2 commands 7 2 7 minecraft:air minecraft:cocoa[age=1,facing=north]
+change 2 commands 2 2 11 minecraft:air minecraft:brown_mushroom
+change 2 commands 8 2 12 minecraft:air minecraft:red_mushroom
+change 2 commands 13 2 13 minecraft:air minecraft:brown_mushroom
+change 2 commands 12 2 13 minecraft:air minecraft:brown_mushroom
+change 2 random_ticks 9 2 1 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+change 2 random_ticks 13 2 3 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+draws 2 random_ticks level 3780
+
+at 3 set 9 3 1 minecraft:stone
+at 3 set 12 3 1 minecraft:stone
+at 3 set 14 3 2 minecraft:glass
+change 3 commands 9 3 1 minecraft:air minecraft:stone
+change 3 commands 12 3 1 minecraft:air minecraft:stone
+change 3 commands 14 3 2 minecraft:air minecraft:glass
+draws 3 random_ticks level 3819
+
+draws 4 random_ticks level 3727
+
+draws 5 random_ticks level 3844
+
+draws 6 random_ticks level 3790
+
+change 7 random_ticks 1 2 7 minecraft:cocoa[age=1,facing=north] minecraft:cocoa[age=2,facing=north]
+draws 7 random_ticks level 3738
+
+change 8 random_ticks 2 2 7 minecraft:cocoa[age=0,facing=north] minecraft:cocoa[age=1,facing=north]
+change 8 random_ticks 13 2 3 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+change 8 random_ticks 10 2 1 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 8 random_ticks level 3790
+
+draws 9 random_ticks level 3764
+
+change 10 random_ticks 8 2 1 minecraft:sweet_berry_bush[age=0] minecraft:sweet_berry_bush[age=1]
+draws 10 random_ticks level 3776
+
+change 11 random_ticks 2 2 0 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 11 random_ticks level 3808
+
+change 12 random_ticks 11 2 0 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 12 random_ticks level 3841
+
+draws 13 random_ticks level 3728
+
+draws 14 random_ticks level 3782
+
+draws 15 random_ticks level 3773
+
+change 16 random_ticks 1 2 1 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 16 random_ticks level 3761
+
+change 17 random_ticks 6 2 1 minecraft:nether_wart[age=1] minecraft:nether_wart[age=2]
+draws 17 random_ticks level 3772
+
+change 18 random_ticks 3 2 5 minecraft:cocoa[age=1,facing=south] minecraft:cocoa[age=2,facing=south]
+draws 18 random_ticks level 3729
+
+change 19 random_ticks 13 2 0 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+change 19 random_ticks 5 2 3 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 19 random_ticks level 3744
+
+change 20 random_ticks 15 2 0 minecraft:sweet_berry_bush[age=0] minecraft:sweet_berry_bush[age=1]
+change 20 random_ticks 0 2 7 minecraft:cocoa[age=0,facing=north] minecraft:cocoa[age=1,facing=north]
+draws 20 random_ticks level 3756
+
+draws 21 random_ticks level 3825
+
+draws 22 random_ticks level 3819
+
+draws 23 random_ticks level 3868
+
+draws 24 random_ticks level 3795
+
+change 25 random_ticks 0 2 1 minecraft:nether_wart[age=1] minecraft:nether_wart[age=2]
+change 25 random_ticks 11 2 1 minecraft:sweet_berry_bush[age=0] minecraft:sweet_berry_bush[age=1]
+draws 25 random_ticks level 3814
+
+change 26 random_ticks 3 2 0 minecraft:nether_wart[age=0] minecraft:nether_wart[age=1]
+draws 26 random_ticks level 3787
+
+draws 27 random_ticks level 3867
+
+draws 28 random_ticks level 3867
+
+change 29 random_ticks 8 2 3 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 29 random_ticks level 3726
+
+draws 30 random_ticks level 3762
+
+change 31 random_ticks 7 2 5 minecraft:cocoa[age=1,facing=south] minecraft:cocoa[age=2,facing=south]
+draws 31 random_ticks level 3772
+
+change 32 random_ticks 5 2 7 minecraft:cocoa[age=1,facing=north] minecraft:cocoa[age=2,facing=north]
+change 32 random_ticks 15 2 1 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+change 32 random_ticks 9 2 12 minecraft:air minecraft:red_mushroom
+draws 32 random_ticks level 3747
+
+change 33 random_ticks 7 2 7 minecraft:cocoa[age=1,facing=north] minecraft:cocoa[age=2,facing=north]
+draws 33 random_ticks level 3786
+
+change 34 random_ticks 8 2 1 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+draws 34 random_ticks level 3846
+
+change 35 random_ticks 9 2 3 minecraft:sweet_berry_bush[age=0] minecraft:sweet_berry_bush[age=1]
+change 35 random_ticks 3 2 0 minecraft:nether_wart[age=1] minecraft:nether_wart[age=2]
+change 35 random_ticks 12 2 2 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 35 random_ticks level 3745
+
+draws 36 random_ticks level 3869
+
+draws 37 random_ticks level 3815
+
+change 38 random_ticks 13 2 2 minecraft:sweet_berry_bush[age=0] minecraft:sweet_berry_bush[age=1]
+change 38 random_ticks 2 2 7 minecraft:cocoa[age=1,facing=north] minecraft:cocoa[age=2,facing=north]
+draws 38 random_ticks level 3781
+
+change 39 random_ticks 11 2 1 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+change 39 random_ticks 0 2 2 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 39 random_ticks level 3796
+
+draws 40 random_ticks level 3794
+
+change 41 random_ticks 2 2 2 minecraft:nether_wart[age=1] minecraft:nether_wart[age=2]
+draws 41 random_ticks level 3811
+
+change 42 random_ticks 15 2 2 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+change 42 random_ticks 1 2 0 minecraft:nether_wart[age=1] minecraft:nether_wart[age=2]
+draws 42 random_ticks level 3813
+
+draws 43 random_ticks level 3762
+
+draws 44 random_ticks level 3759
+
+change 45 random_ticks 4 2 5 minecraft:cocoa[age=0,facing=south] minecraft:cocoa[age=1,facing=south]
+draws 45 random_ticks level 3892
+
+change 46 random_ticks 9 2 2 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 46 random_ticks level 3773
+
+change 47 random_ticks 12 2 0 minecraft:sweet_berry_bush[age=0] minecraft:sweet_berry_bush[age=1]
+change 47 random_ticks 14 2 1 minecraft:sweet_berry_bush[age=0] minecraft:sweet_berry_bush[age=1]
+change 47 random_ticks 10 2 2 minecraft:sweet_berry_bush[age=0] minecraft:sweet_berry_bush[age=1]
+draws 47 random_ticks level 3732
+
+change 48 random_ticks 15 2 0 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+draws 48 random_ticks level 3807
+
+change 49 random_ticks 9 2 3 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+draws 49 random_ticks level 3760
+
+change 50 random_ticks 0 2 5 minecraft:cocoa[age=0,facing=south] minecraft:cocoa[age=1,facing=south]
+draws 50 random_ticks level 3812
+
+change 51 random_ticks 13 2 2 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+change 51 random_ticks 11 2 3 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 51 random_ticks level 3693
+
+draws 52 random_ticks level 3845
+
+draws 53 random_ticks level 3766
+
+draws 54 random_ticks level 3713
+
+change 55 random_ticks 14 2 1 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+draws 55 random_ticks level 3783
+
+draws 56 random_ticks level 3852
+
+change 57 random_ticks 11 2 2 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+draws 57 random_ticks level 3832
+
+change 58 random_ticks 4 2 7 minecraft:cocoa[age=0,facing=north] minecraft:cocoa[age=1,facing=north]
+change 58 random_ticks 10 2 0 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+draws 58 random_ticks level 3814
+
+draws 59 random_ticks level 3722
+
+draws 60 random_ticks level 3715
+
+change 61 random_ticks 0 2 0 minecraft:nether_wart[age=0] minecraft:nether_wart[age=1]
+draws 61 random_ticks level 3764
+
+draws 62 random_ticks level 3773
+
+draws 63 random_ticks level 3734
+
+change 64 random_ticks 14 2 0 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+change 64 random_ticks 4 2 5 minecraft:cocoa[age=1,facing=south] minecraft:cocoa[age=2,facing=south]
+change 64 random_ticks 0 2 1 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 64 random_ticks level 3714
+
+change 65 random_ticks 14 2 2 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+draws 65 random_ticks level 3699
+
+draws 66 random_ticks level 3790
+
+change 67 random_ticks 14 2 3 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 67 random_ticks level 3801
+
+draws 68 random_ticks level 3784
+
+draws 69 random_ticks level 3808
+
+change 70 random_ticks 13 2 0 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+change 70 random_ticks 3 2 0 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 70 random_ticks level 3799
+
+change 71 random_ticks 7 2 1 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+change 71 random_ticks 4 2 3 minecraft:nether_wart[age=1] minecraft:nether_wart[age=2]
+change 71 random_ticks 1 2 5 minecraft:cocoa[age=1,facing=south] minecraft:cocoa[age=2,facing=south]
+draws 71 random_ticks level 3793
+
+change 72 random_ticks 3 2 7 minecraft:cocoa[age=1,facing=north] minecraft:cocoa[age=2,facing=north]
+draws 72 random_ticks level 3774
+
+draws 73 random_ticks level 3797
+
+draws 74 random_ticks level 3740
+
+change 75 random_ticks 6 2 1 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 75 random_ticks level 3800
+
+change 76 random_ticks 13 2 2 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 76 random_ticks level 3761
+
+draws 77 random_ticks level 3818
+
+draws 78 random_ticks level 3749
+
+draws 79 random_ticks level 3843
+
+change 80 random_ticks 0 2 0 minecraft:nether_wart[age=1] minecraft:nether_wart[age=2]
+draws 80 random_ticks level 3822
+
+change 81 random_ticks 14 2 1 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 81 random_ticks level 3767
+
+draws 82 random_ticks level 3751
+
+draws 83 random_ticks level 3747
+
+change 84 random_ticks 15 2 3 minecraft:sweet_berry_bush[age=0] minecraft:sweet_berry_bush[age=1]
+draws 84 random_ticks level 3759
+
+change 85 random_ticks 11 2 1 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 85 random_ticks level 3749
+
+draws 86 random_ticks level 3736
+
+change 87 random_ticks 5 2 5 minecraft:cocoa[age=1,facing=south] minecraft:cocoa[age=2,facing=south]
+draws 87 random_ticks level 3783
+
+change 88 random_ticks 7 2 2 minecraft:nether_wart[age=0] minecraft:nether_wart[age=1]
+draws 88 random_ticks level 3761
+
+change 89 random_ticks 15 2 1 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+change 89 random_ticks 7 2 0 minecraft:nether_wart[age=1] minecraft:nether_wart[age=2]
+draws 89 random_ticks level 3778
+
+draws 90 random_ticks level 3773
+
+change 91 random_ticks 0 2 7 minecraft:cocoa[age=1,facing=north] minecraft:cocoa[age=2,facing=north]
+draws 91 random_ticks level 3806
+
+draws 92 random_ticks level 3855
+
+change 93 random_ticks 2 2 1 minecraft:nether_wart[age=0] minecraft:nether_wart[age=1]
+draws 93 random_ticks level 3771
+
+draws 94 random_ticks level 3776
+
+draws 95 random_ticks level 3804
+
+change 96 random_ticks 2 2 2 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 96 random_ticks level 3716
+
+draws 97 random_ticks level 3748
+
+draws 98 random_ticks level 3759
+
+draws 99 random_ticks level 3843
+
+draws 100 random_ticks level 3775
+
+change 101 random_ticks 8 2 2 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+draws 101 random_ticks level 3666
+
+change 102 random_ticks 10 2 0 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 102 random_ticks level 3823
+
+draws 103 random_ticks level 3817
+
+draws 104 random_ticks level 3771
+
+draws 105 random_ticks level 3728
+
+change 106 random_ticks 7 2 3 minecraft:nether_wart[age=1] minecraft:nether_wart[age=2]
+draws 106 random_ticks level 3834
+
+change 107 random_ticks 13 2 1 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 107 random_ticks level 3726
+
+draws 108 random_ticks level 3746
+
+draws 109 random_ticks level 3772
+
+draws 110 random_ticks level 3700
+
+draws 111 random_ticks level 3793
+
+draws 112 random_ticks level 3752
+
+change 113 random_ticks 6 2 3 minecraft:nether_wart[age=0] minecraft:nether_wart[age=1]
+draws 113 random_ticks level 3808
+
+change 114 random_ticks 0 2 5 minecraft:cocoa[age=1,facing=south] minecraft:cocoa[age=2,facing=south]
+draws 114 random_ticks level 3747
+
+change 115 random_ticks 4 2 1 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+change 115 random_ticks 8 2 1 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 115 random_ticks level 3771
+
+change 116 random_ticks 12 2 0 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+change 116 random_ticks 6 2 0 minecraft:nether_wart[age=0] minecraft:nether_wart[age=1]
+change 116 random_ticks 1 2 2 minecraft:nether_wart[age=0] minecraft:nether_wart[age=1]
+draws 116 random_ticks level 3774
+
+draws 117 random_ticks level 3810
+
+draws 118 random_ticks level 3903
+
+change 119 random_ticks 15 2 3 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+draws 119 random_ticks level 3729
+
+draws 120 random_ticks level 3747
+
+change 121 random_ticks 11 2 2 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 121 random_ticks level 3771
+
+draws 122 random_ticks level 3737
+
+change 123 random_ticks 4 2 0 minecraft:nether_wart[age=1] minecraft:nether_wart[age=2]
+draws 123 random_ticks level 3823
+
+draws 124 random_ticks level 3725
+
+change 125 random_ticks 15 2 3 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+change 125 random_ticks 0 2 3 minecraft:nether_wart[age=0] minecraft:nether_wart[age=1]
+draws 125 random_ticks level 3847
+
+change 126 random_ticks 5 2 0 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 126 random_ticks level 3750
+
+change 127 random_ticks 2 2 3 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+change 127 random_ticks 0 2 3 minecraft:nether_wart[age=1] minecraft:nether_wart[age=2]
+draws 127 random_ticks level 3725
+
+draws 128 random_ticks level 3807
+
+draws 129 random_ticks level 3786
+
+draws 130 random_ticks level 3712
+
+change 131 random_ticks 8 2 2 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+change 131 random_ticks 4 2 2 minecraft:nether_wart[age=0] minecraft:nether_wart[age=1]
+change 131 random_ticks 15 2 0 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 131 random_ticks level 3811
+
+draws 132 random_ticks level 3713
+
+change 133 random_ticks 12 2 0 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 133 random_ticks level 3770
+
+change 134 random_ticks 14 2 2 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 134 random_ticks level 3800
+
+change 135 random_ticks 6 2 2 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+change 135 random_ticks 0 2 0 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 135 random_ticks level 3785
+
+draws 136 random_ticks level 3807
+
+change 137 random_ticks 10 2 2 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+draws 137 random_ticks level 3758
+
+draws 138 random_ticks level 3866
+
+draws 139 random_ticks level 3756
+
+draws 140 random_ticks level 3710
+
+draws 141 random_ticks level 3703
+
+change 142 random_ticks 2 2 1 minecraft:nether_wart[age=1] minecraft:nether_wart[age=2]
+change 142 random_ticks 4 2 0 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 142 random_ticks level 3785
+
+draws 143 random_ticks level 3757
+
+draws 144 random_ticks level 3725
+
+change 145 random_ticks 7 2 0 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 145 random_ticks level 3772
+
+draws 146 random_ticks level 3758
+
+change 147 random_ticks 9 2 0 minecraft:sweet_berry_bush[age=0] minecraft:sweet_berry_bush[age=1]
+draws 147 random_ticks level 3822
+
+draws 148 random_ticks level 3829
+
+draws 149 random_ticks level 3746
+
+draws 150 random_ticks level 3820
+
+change 151 random_ticks 8 2 0 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 151 random_ticks level 3797
+
+draws 152 random_ticks level 3795
+
+change 153 random_ticks 3 2 1 minecraft:nether_wart[age=1] minecraft:nether_wart[age=2]
+draws 153 random_ticks level 3794
+
+change 154 random_ticks 6 2 3 minecraft:nether_wart[age=1] minecraft:nether_wart[age=2]
+draws 154 random_ticks level 3736
+
+change 155 random_ticks 2 2 5 minecraft:cocoa[age=0,facing=south] minecraft:cocoa[age=1,facing=south]
+change 155 random_ticks 6 2 3 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 155 random_ticks level 3776
+
+change 156 random_ticks 3 2 1 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 156 random_ticks level 3761
+
+draws 157 random_ticks level 3810
+
+draws 158 random_ticks level 3722
+
+change 159 random_ticks 3 2 2 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 159 random_ticks level 3737
+
+draws 160 random_ticks level 3794
+
+draws 161 random_ticks level 3828
+
+change 162 random_ticks 2 2 1 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 162 random_ticks level 3782
+
+draws 163 random_ticks level 3747
+
+draws 164 random_ticks level 3758
+
+draws 165 random_ticks level 3770
+
+draws 166 random_ticks level 3757
+
+draws 167 random_ticks level 3830
+
+draws 168 random_ticks level 3828
+
+change 169 random_ticks 10 2 2 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 169 random_ticks level 3830
+
+draws 170 random_ticks level 3804
+
+draws 171 random_ticks level 3771
+
+change 172 random_ticks 4 2 2 minecraft:nether_wart[age=1] minecraft:nether_wart[age=2]
+draws 172 random_ticks level 3806
+
+draws 173 random_ticks level 3807
+
+change 174 random_ticks 9 2 0 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+draws 174 random_ticks level 3748
+
+draws 175 random_ticks level 3733
+
+draws 176 random_ticks level 3792
+
+draws 177 random_ticks level 3721
+
+draws 178 random_ticks level 3806
+
+draws 179 random_ticks level 3792
+
+draws 180 random_ticks level 3732
+
+change 181 random_ticks 10 2 3 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+draws 181 random_ticks level 3844
+
+change 182 random_ticks 1 2 0 minecraft:nether_wart[age=2] minecraft:nether_wart[age=3]
+draws 182 random_ticks level 3782
+
+draws 183 random_ticks level 3794
+
+draws 184 random_ticks level 3733
+
+draws 185 random_ticks level 3759
+
+draws 186 random_ticks level 3878
+
+draws 187 random_ticks level 3771
+
+draws 188 random_ticks level 3769
+
+change 189 random_ticks 9 2 3 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 189 random_ticks level 3735
+
+draws 190 random_ticks level 3720
+
+draws 191 random_ticks level 3770
+
+draws 192 random_ticks level 3734
+
+draws 193 random_ticks level 3782
+
+draws 194 random_ticks level 3806
+
+draws 195 random_ticks level 3710
+
+draws 196 random_ticks level 3807
+
+change 197 random_ticks 12 2 3 minecraft:sweet_berry_bush[age=0] minecraft:sweet_berry_bush[age=1]
+draws 197 random_ticks level 3781
+
+draws 198 random_ticks level 3733
+
+change 199 random_ticks 12 2 3 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+draws 199 random_ticks level 3833
+
+change 200 random_ticks 10 2 3 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+draws 200 random_ticks level 3805

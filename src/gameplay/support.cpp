@@ -104,7 +104,7 @@ const std::vector<Kind>& kinds() {
             else if (name == "lily_pad") v[b].need = Need::lily_pad;
             else if (name == "sea_pickle") v[b].need = Need::sea_pickle;
             else if (name == "weeping_vines" || name == "weeping_vines_plant" || name == "twisting_vines" || name == "twisting_vines_plant"
-                     || name == "cave_vines" || name == "cave_vines_plant")
+                     || name == "cave_vines" || name == "cave_vines_plant" || name == "kelp" || name == "kelp_plant")
                 v[b].need = Need::vine;
             else if (name == "hanging_roots") v[b].need = Need::hanging_roots;
             else if (name == "spore_blossom") v[b].need = Need::spore_blossom;
@@ -244,9 +244,10 @@ struct Vine {
     std::string_view head, body;
     Direction growth;
 };
-constexpr std::array<Vine, 3> vines{{{"weeping_vines", "weeping_vines_plant", Direction::down},
+constexpr std::array<Vine, 4> vines{{{"weeping_vines", "weeping_vines_plant", Direction::down},
                                      {"twisting_vines", "twisting_vines_plant", Direction::up},
-                                     {"cave_vines", "cave_vines_plant", Direction::down}}};
+                                     {"cave_vines", "cave_vines_plant", Direction::down},
+                                     {"kelp", "kelp_plant", Direction::up}}};
 const Vine* vine_of(BlockState s) {
     for (const auto& v : vines)
         if (named(s, v.head) || named(s, v.body)) return &v;
@@ -329,10 +330,12 @@ bool supported(BlockState s, const Near& near, std::string_view release, const s
         const auto fluid = fluid_state(below);
         return (fluid && fluid->first == "water") || named(below, "ice") || named(below, "frosted_ice");
     }
-    // Vines hang (or stand) on their own kind or a sturdy face.
+    // Vines hang (or stand) on their own kind or a sturdy face; kelp
+    // stands on kelp or a sturdy top but magma's (minecraft.wiki "Kelp").
     case Need::vine: {
         const auto& v = *vine_of(s);
         const auto attached = around(contracts::opposite(v.growth));
+        if (v.head == "kelp" && named(attached, "magma_block")) return false;
         return of_vine(attached, v) || sturdy(attached, v.growth, release);
     }
     // Hanging roots hang under a sturdy face, spore blossoms under a bottom
@@ -516,6 +519,7 @@ std::optional<ItemStack> supported_drop(BlockState s) {
         "minecraft:sweet_berry_bush", "minecraft:weeping_vines", "minecraft:weeping_vines_plant", "minecraft:twisting_vines",
         "minecraft:twisting_vines_plant", "minecraft:hanging_roots", "minecraft:pale_hanging_moss"};
     if (std::ranges::find(nothing, name) != nothing.end()) return std::nullopt;
+    if (name == "minecraft:kelp_plant") name = "minecraft:kelp";
     if (name == "minecraft:cave_vines" || name == "minecraft:cave_vines_plant") {
         if (value_of(s, "berries") != "true") return std::nullopt;
         name = "minecraft:glow_berries";

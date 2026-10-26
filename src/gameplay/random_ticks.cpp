@@ -156,6 +156,7 @@ void run_random_ticks(RuleContext& ctx, ChunkPos chunk, std::span<const std::int
             else if (detail::is_stem(s)) detail::stem_random_tick(ctx, pos, s);
             else if (detail::is_spreading_dirt(s)) detail::spreading_dirt_random_tick(ctx, pos, s);
             else if (detail::is_farmland(s)) detail::farmland_random_tick(ctx, pos, s);
+            else if (detail::is_growing_plant(s)) detail::plant_random_tick(ctx, pos, s);
         }
     }
 }

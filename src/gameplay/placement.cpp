@@ -402,9 +402,11 @@ std::optional<BlockState> placed_building(RuleContext& ctx, std::uint32_t block,
         if (block_name == "big_dripleaf")
             s = with(s, {{"facing", std::string(name_of(contracts::opposite(c.horizontal)))}, {"waterlogged", water}});
         // A vine is placed as a body where its kind grows on from it, else as
-        // a head of a random age (a level-random draw).
-        if (block_name == "weeping_vines" || block_name == "twisting_vines" || block_name == "cave_vines") {
-            const auto growth = block_name == "twisting_vines" ? Direction::up : Direction::down;
+        // a head of a random age (a level-random draw); kelp alike, but only
+        // into a water source (tests/fixtures/placement).
+        if (block_name == "kelp" && water != "true") return std::nullopt;
+        if (block_name == "weeping_vines" || block_name == "twisting_vines" || block_name == "cave_vines" || block_name == "kelp") {
+            const auto growth = block_name == "twisting_vines" || block_name == "kelp" ? Direction::up : Direction::down;
             const auto next = ctx.block(target.relative(growth));
             const auto body = registry::find_block(ctx.bundle().schema.content_release, std::string(block_name) + "_plant");
             const bool grows_on = next.is(BlockType::other) && (registry::block_of(next.registry_state()) == block

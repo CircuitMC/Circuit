@@ -150,6 +150,17 @@ constexpr std::array reference_v4_mechanisms{
         "x +-1, y -3..+1, z +-1, three draws each, turning dirt that could hold it and has no water above into the same "
         "block, snowy under snow. Gaps: nylium, moss and sculk do not spread; 1.21.4's spreading is not compared (its "
         "random ticks run only near players)."},
+    MechanismEntry{"plants", l0_exact, l2_declared_deviation, harness_trace,
+        "As the official 1.21.8 server in random ticks (cane_cactus_growth, wart_berry_cocoa_growth, kelp_vines_growth): "
+        "sugar cane and cacti with air above age to 15 and then grow a block when less than three tall (sugar cane at "
+        "full height not aging); a cactus at age 8 with air around the cell above draws nextDouble and flowers at 0.1, "
+        "or 0.25 three tall; nether wart (nextInt(10)), cocoa (nextInt(5)) and sweet berry bushes (nextInt(5), then "
+        "light 9 above) age; kelp (0.14) and weeping, twisting and cave vines (0.1) draw nextDouble below age 25 and "
+        "grow a head one older into water or air, cave vines drawing their berries (nextFloat < 0.11); kelp stands on "
+        "kelp or a sturdy top but magma's; mushrooms draw nextInt(25) and, with fewer than five of their kind within "
+        "4, 1, 4, walk five steps of three offsets (x, y as nextInt(2) - nextInt(2), z) and settle on the last where "
+        "they could stay. Gaps: bamboo, chorus flowers, leaves, saplings and pitcher crops are not modeled; 1.21.4's "
+        "growth is not compared (its random ticks run only near players)."},
     MechanismEntry{"item_entity", l0_exact, l2_declared_deviation, harness_trace,
         "Double-precision gravity, drag, bouncing and collision with every state's collision boxes; items at "
         "rest move every fourth tick; currents and buoyancy in water; merging with the target versions' timing, "

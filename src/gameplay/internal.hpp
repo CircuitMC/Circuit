@@ -510,6 +510,9 @@ void lava_changed(RuleContext& ctx, BlockPos pos, BlockState state);
 // Grass blocks and mycelium (grass.cpp).
 bool is_spreading_dirt(BlockState s);
 void spreading_dirt_random_tick(RuleContext& ctx, BlockPos pos, BlockState s);
+// Other plants growing in random ticks (plants.cpp).
+bool is_growing_plant(BlockState s);
+void plant_random_tick(RuleContext& ctx, BlockPos pos, BlockState s);
 // Crops and stems (crops.cpp).
 bool is_crop(BlockState s);
 void crop_random_tick(RuleContext& ctx, BlockPos pos, BlockState s);

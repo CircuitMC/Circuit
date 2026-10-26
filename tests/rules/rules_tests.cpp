@@ -1450,6 +1450,37 @@ int main() {
         require(name({4, 0, 4}) == "minecraft:melon_stem[age=7]", "the stem without its fruit: " + name({4, 0, 4}));
     });
 
+    suite.run("sugar cane, cacti, nether wart and kelp grow in random ticks", [] {
+        Sim s(bundle(), 11, 1);
+        const auto name = [&](BlockPos p) { return circuit::gameplay::block_notation(s.at(p)); };
+        std::vector<CommandBody> build;
+        for (int x = 0; x < 16; ++x)
+            for (int z = 0; z < 16; ++z) build.push_back(place({x, -1, z}, blocks::stone()));
+        // Sugar cane on sand beside water, a cactus on sand, nether wart on
+        // soul sand, and kelp in a glass tank of water four deep.
+        build.push_back(place({2, 0, 2}, registry_block("sand")));
+        build.push_back(place({3, 0, 2}, blocks::water_source()));
+        build.push_back(place({6, 0, 2}, registry_block("sand")));
+        build.push_back(place({9, 0, 2}, registry_block("soul_sand")));
+        for (int x = 11; x <= 15; ++x)
+            for (int z = 9; z <= 13; ++z)
+                for (int y = 0; y <= 4; ++y) {
+                    const bool wall = x == 11 || x == 15 || z == 9 || z == 13;
+                    build.push_back(place({x, y, z}, wall ? registry_block("glass") : blocks::water_source()));
+                }
+        s.tick(build);
+        s.tick({place({2, 1, 2}, registry_block("sugar_cane")), place({6, 1, 2}, registry_block("cactus")),
+                place({9, 1, 2}, registry_block("nether_wart")), place({13, 0, 11}, registry_block("kelp", {{"age", "20"}})),
+                SetGameRule{"randomTickSpeed", 2000}});
+        s.until(s.oracle.time() + 300);
+        require(name({2, 3, 2}).starts_with("minecraft:sugar_cane") && name({2, 4, 2}) == "minecraft:air",
+                std::format("sugar cane three tall: {}, {}", name({2, 3, 2}), name({2, 4, 2})));
+        require(name({6, 2, 2}).starts_with("minecraft:cactus"), "a cactus grows: " + name({6, 2, 2}));
+        require(name({9, 1, 2}) == "minecraft:nether_wart[age=3]", "nether wart ripens: " + name({9, 1, 2}));
+        require(name({13, 0, 11}) == "minecraft:kelp_plant" && name({13, 4, 11}).starts_with("minecraft:kelp"),
+                std::format("kelp grows to the surface: {}, {}", name({13, 0, 11}), name({13, 4, 11})));
+    });
+
     suite.run("idle levels and random tick ranges", [] {
         // A level is awake while active, and for 300 ticks after it was last
         // active or started.
