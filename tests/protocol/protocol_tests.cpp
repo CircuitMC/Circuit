@@ -484,6 +484,20 @@ int main() {
             require(it != trimmed->added().end() && it->value == expected, std::format("{}: the trim's value", protocol));
             const auto again = c.with_trim(*trimmed, 0, 0, pctx);
             require(again.has_value() && *again == *trimmed, std::format("{}: the same trim again changes nothing", protocol));
+            // A grindstone's rewrite: the enchantments replaced, a repair cost
+            // set, the trim kept; none left means no component (unless kept empty).
+            require((c.enchantments_of(*trimmed, false) == std::vector<std::pair<std::uint32_t, std::int32_t>>{{1, 5}}),
+                    std::format("{}: the enchantments read", protocol));
+            const std::vector<std::pair<std::uint32_t, std::int32_t>> kept{{0, 1}};
+            const auto ground = c.with_enchantments(*trimmed, false, kept, false, 1, pctx);
+            require(ground.has_value() && c.enchantments_of(*ground, false) == kept && ground->added().size() == 3,
+                    std::format("{}: enchantments, repair cost and trim", protocol));
+            const auto bare = c.with_enchantments(*ground, false, {}, false, 0, pctx);
+            require(bare.has_value() && bare->added().size() == 1 && c.enchantments_of(*bare, false).empty(),
+                    std::format("{}: only the trim is left", protocol));
+            const auto stored = c.with_enchantments(contracts::ComponentPatch{}, true, {}, true, 0, pctx);
+            require(stored.has_value() && stored->added().size() == 1 && c.enchantments_of(*stored, true).empty(),
+                    std::format("{}: an empty stored list kept", protocol));
         }
     });
 

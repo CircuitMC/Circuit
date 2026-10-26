@@ -781,6 +781,64 @@ std::expected<contracts::ComponentPatch, std::string> ComponentCodec::enchanted(
     return contracts::ComponentPatch::make(protocol(), {{*type, std::move(*value)}}, {}, {});
 }
 
+std::vector<std::pair<std::uint32_t, std::int32_t>> ComponentCodec::enchantments_of(const contracts::ComponentPatch& patch, bool stored) const {
+    std::vector<std::pair<std::uint32_t, std::int32_t>> out;
+    const auto type = type_id(stored ? "stored_enchantments" : "enchantments");
+    if (patch.empty() || patch.protocol() != protocol() || !type) return out;
+    for (const auto& a : patch.added()) {
+        if (a.type != *type) continue;
+        Reader r(a.value);
+        const auto count = r.varint();
+        for (std::int32_t i = 0; count && i < *count; ++i) {
+            const auto id = r.varint();
+            const auto level = r.varint();
+            if (!id || !level) return {};
+            out.emplace_back(static_cast<std::uint32_t>(*id), *level);
+        }
+    }
+    return out;
+}
+
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_enchantments(
+    const contracts::ComponentPatch& base, bool stored, std::span<const std::pair<std::uint32_t, std::int32_t>> levels, bool keep_empty,
+    std::int32_t repair_cost, const ComponentContext& ctx) const {
+    const auto type = type_id(stored ? "stored_enchantments" : "enchantments");
+    const auto cost_type = type_id("repair_cost");
+    if (!type || !cost_type) return std::unexpected("no enchantment components");
+    // 1.21.4's form ends with whether the tooltip shows them: kept as it was.
+    std::optional<bool> flag;
+    for (const auto& a : base.added())
+        if (a.type == *type && !a.value.empty()) flag = a.value.back() != std::byte{0};
+    std::vector<contracts::ComponentPatch::Added> added;
+    for (const auto& a : base.added())
+        if (a.type != *type && a.type != *cost_type) added.push_back(a);
+    if (!levels.empty() || keep_empty) {
+        Writer w;
+        w.varint(static_cast<std::int32_t>(levels.size()));
+        for (const auto& [id, level] : levels) w.varint(static_cast<std::int32_t>(id)).varint(level);
+        auto value = canonical_value(*type, w.bytes(), ctx);
+        if (!value) {
+            w.boolean(flag.value_or(true));
+            value = canonical_value(*type, w.bytes(), ctx);
+        }
+        if (!value) return std::unexpected(value.error());
+        added.push_back({*type, std::move(*value)});
+    }
+    if (repair_cost > 0) {
+        Writer w;
+        w.varint(repair_cost);
+        auto value = canonical_value(*cost_type, w.bytes(), ctx);
+        if (!value) return std::unexpected(value.error());
+        added.push_back({*cost_type, std::move(*value)});
+    }
+    std::ranges::sort(added, {}, &contracts::ComponentPatch::Added::type);
+    std::vector<std::uint16_t> removed;
+    for (const auto r : base.removed())
+        if (r != *type && r != *cost_type) removed.push_back(r);
+    if (added.empty() && removed.empty()) return contracts::ComponentPatch{};
+    return contracts::ComponentPatch::make(protocol(), std::move(added), std::move(removed), base.typed());
+}
+
 std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_trim(const contracts::ComponentPatch& base, std::uint32_t material,
                                                                                 std::uint32_t pattern, const ComponentContext& ctx) const {
     const auto type = type_id("trim");

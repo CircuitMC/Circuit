@@ -188,6 +188,8 @@ struct PlayerInventory {
     // The smithing table window the player has open: its template, base,
     // addition and result.
     std::array<ItemStack, contracts::smith_slots> smith{};
+    // The grindstone window the player has open: its two inputs and result.
+    std::array<ItemStack, contracts::grind_slots> grind{};
     // A drag across slots in progress (several clicks): its stage (0 none,
     // 1 collecting slots), its type (0 split evenly, 1 one each, 2 full
     // stacks) and the slots collected so far, in window numbering.
@@ -197,7 +199,8 @@ struct PlayerInventory {
     [[nodiscard]] bool empty() const noexcept {
         const auto none = [](const ItemStack& s) { return s.empty(); };
         return cursor.empty() && drag_stage == 0 && std::ranges::all_of(slots, none) && std::ranges::all_of(table, none)
-            && std::ranges::all_of(cutter, none) && cutter_recipe == -1 && std::ranges::all_of(smith, none);
+            && std::ranges::all_of(cutter, none) && cutter_recipe == -1 && std::ranges::all_of(smith, none)
+            && std::ranges::all_of(grind, none);
     }
     bool operator==(const PlayerInventory&) const = default;
 };

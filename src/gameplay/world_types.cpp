@@ -240,6 +240,8 @@ std::string text(const PlayerInventory& p) {
     if (p.cutter_recipe >= 0) slots += std::format("recipe:{} ", p.cutter_recipe);
     for (std::size_t i = 0; i < p.smith.size(); ++i)
         if (!p.smith[i].empty()) slots += std::format("smith{}:{}x{}/{} ", i, p.smith[i].item, p.smith[i].count, p.smith[i].damage);
+    for (std::size_t i = 0; i < p.grind.size(); ++i)
+        if (!p.grind[i].empty()) slots += std::format("grind{}:{}x{}/{} ", i, p.grind[i].item, p.grind[i].count, p.grind[i].damage);
     return std::format("player {:016x}{:016x} cursor={}x{} slots=[{}]", p.player.hi, p.player.lo, p.cursor.item, p.cursor.count, slots);
 }
 
@@ -406,6 +408,7 @@ std::uint64_t digest(const WorldDump& d) {
         for (const auto& s : p.cutter) { h.add(contracts::pack_stack(s)); h.add(s.components.hash()); }
         h.add(static_cast<std::uint16_t>(p.cutter_recipe));
         for (const auto& s : p.smith) { h.add(contracts::pack_stack(s)); h.add(s.components.hash()); }
+        for (const auto& s : p.grind) { h.add(contracts::pack_stack(s)); h.add(s.components.hash()); }
         h.add(p.drag_stage); h.add(p.drag_type); h.add(p.drag_slots.size());
         for (const auto slot : p.drag_slots) h.add(static_cast<std::uint16_t>(slot));
     }

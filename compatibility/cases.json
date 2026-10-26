@@ -328,6 +328,17 @@
       "description": "20 steps in a crafter's window: its type and slots, shift-clicks into the first enabled slot and out to the hotbar's end, an empty slot disabled and enabled again, a slot holding logs refusing to be disabled, a disabled slot refusing items, the result shown and refusing clicks, the window's ten properties (disabled slots, triggered) kept across closing; Circuit and both official servers give identical windows"
     },
     {
+      "id": "client/grindstone",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/grindstone.js",
+      "status": "passing",
+      "description": "25 steps at a grindstone: a cursed and enchanted pickaxe disenchanted (the curse and a repair cost of 1 kept), two damaged pickaxes merged, enchanted books into books (1.21.4 keeps an empty stored_enchantments, 1.21.8 none), a plain damaged pickaxe alone making nothing, quick moves into both inputs and across, stone refused, closing; experience orbs left out; Circuit and both official servers give identical windows"
+    },
+    {
       "id": "data/block_drops",
       "kind": "black_box",
       "versions": [

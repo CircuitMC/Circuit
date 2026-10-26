@@ -116,6 +116,10 @@ inline constexpr std::uint8_t cutter_first = 57;
 // slots 0-3), recorded as slots 59-62.
 inline constexpr std::uint8_t smith_slots = 4;
 inline constexpr std::uint8_t smith_first = 59;
+// The grindstone window: two inputs and the result (window slots 0-2),
+// recorded as slots 63-65.
+inline constexpr std::uint8_t grind_slots = 3;
+inline constexpr std::uint8_t grind_first = 63;
 
 // A creative player sets a slot of their inventory (an empty stack clears it).
 struct SetPlayerSlot {

@@ -286,6 +286,7 @@ int main() {
             p.cutter[0] = {circuit::gameplay::items::stone, 9};
             p.cutter_recipe = 3;
             p.smith[1] = {circuit::gameplay::items::diamond_pickaxe, 1, 17};
+            p.grind[0] = {circuit::gameplay::items::iron_pickaxe, 1, 30};
             c.state.players.insert(std::ranges::upper_bound(c.state.players, p.player, {}, &circuit::gameplay::PlayerInventory::player), p);
         }
         c.state.level(circuit::contracts::DimensionId::overworld).sequences = {

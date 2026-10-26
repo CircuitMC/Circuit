@@ -21,6 +21,7 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 33: player inventories carry an open grindstone's slots;
 // 32: crafters have rules of their own; block entities carry a crafter's
 // disabled slots and crafting ticks;
 // 31: player inventories carry an open smithing table's slots;
@@ -63,7 +64,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 32;
+constexpr std::uint32_t version = 33;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -240,6 +241,7 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
         for (const auto& st : p.cutter) stack(w, st);
         w.i16(p.cutter_recipe);
         for (const auto& st : p.smith) stack(w, st);
+        for (const auto& st : p.grind) stack(w, st);
     }
     w.varint(static_cast<std::int32_t>(c.extras.size()));
     for (const auto& [name, bytes] : c.extras) w.string(name, 256).prefixed_bytes(bytes);
@@ -680,6 +682,9 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
             }
             if (b.version >= 31)
                 for (auto& st : p.smith)
+                    if (!b.stack(st)) return false;
+            if (b.version >= 33)
+                for (auto& st : p.grind)
                     if (!b.stack(st)) return false;
             p.player = {static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)};
             s.players.push_back(p);

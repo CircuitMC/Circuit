@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 // Item data components on the network, for each supported protocol. The
 // schema of every component type comes from a pinned public dataset (see
@@ -85,6 +86,17 @@ public:
     // shown).
     [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> enchanted(std::span<const std::pair<std::uint32_t, std::int32_t>> levels,
                                                                                   const ComponentContext& ctx) const;
+    // The (enchantment id, level) pairs of the enchantments component, or of
+    // stored_enchantments (`stored`), in their order; none when absent.
+    [[nodiscard]] std::vector<std::pair<std::uint32_t, std::int32_t>> enchantments_of(const contracts::ComponentPatch& patch, bool stored) const;
+    // `base` with its enchantments (or stored_enchantments) holding these
+    // pairs, the component left out when there are none unless `keep_empty`
+    // (1.21.4's tooltip flag kept as it was), and its repair cost set (left
+    // out at 0); its other components kept.
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_enchantments(const contracts::ComponentPatch& base, bool stored,
+                                                                                          std::span<const std::pair<std::uint32_t, std::int32_t>> levels,
+                                                                                          bool keep_empty, std::int32_t repair_cost,
+                                                                                          const ComponentContext& ctx) const;
     // `base` (canonical for this protocol) with its trim component set to
     // `material` and `pattern` (ids of the synchronized trim registries;
     // 1.21.4's tooltip flag shown), its other components kept.

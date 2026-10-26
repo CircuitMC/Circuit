@@ -61,6 +61,20 @@ struct GameData {
     // The enchantments that keep ice a player breaks from melting (the
     // enchantment tag prevents_ice_melting), as ids of the synchronized registry.
     std::vector<std::uint32_t> keeps_ice;
+    // The curses (the enchantment tag curse), ascending ids of the synchronized registry.
+    std::vector<std::uint32_t> curses;
+    // 1.21.4: a book a grindstone makes of an enchanted book keeps an empty
+    // stored_enchantments component (1.21.8 leaves it out).
+    bool keeps_empty_book_enchantments{};
+    // A stack's enchantments, or stored enchantments (`stored`), as (id,
+    // level) pairs; and its components with them replaced (left out when
+    // none, unless `keep_empty`) and its repair cost set. Set by the server,
+    // which knows the components' encoding.
+    std::function<std::vector<std::pair<std::uint32_t, std::int32_t>>(const contracts::ComponentPatch&, bool stored)> enchantments_of;
+    std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, bool stored,
+                                                            const std::vector<std::pair<std::uint32_t, std::int32_t>>& levels, bool keep_empty,
+                                                            std::int32_t repair_cost)>
+        with_enchantments;
 };
 
 } // namespace circuit::gameplay

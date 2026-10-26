@@ -173,6 +173,23 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
                 return patch ? std::optional(std::move(*patch)) : std::nullopt;
             };
         }
+        if (const auto* codec = protocol::ComponentCodec::for_protocol(bundle.schema.component_schema)) {
+            game->enchantments_of = [codec](const contracts::ComponentPatch& patch, bool stored) { return codec->enchantments_of(patch, stored); };
+            game->with_enchantments = [codec, ctx = component_context(bundle, out.registries)](
+                                          const contracts::ComponentPatch& base, bool stored,
+                                          const std::vector<std::pair<std::uint32_t, std::int32_t>>& levels, bool keep_empty,
+                                          std::int32_t repair_cost) -> std::optional<contracts::ComponentPatch> {
+                auto patch = codec->with_enchantments(base, stored, levels, keep_empty, repair_cost, ctx);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
+        }
+        game->keeps_empty_book_enchantments = bundle.protocol == 769;
+        if (const auto* curses = packs->tag("enchantment", "minecraft:curse")) {
+            const auto ctx = component_context(bundle, out.registries);
+            for (const auto& name : *curses)
+                if (const auto id = ctx.id_of("enchantment", name)) game->curses.push_back(*id);
+            std::ranges::sort(game->curses);
+        }
         if (const auto* keeps = packs->tag("enchantment", "minecraft:prevents_ice_melting")) {
             const auto ctx = component_context(bundle, out.registries);
             for (const auto& name : *keeps)

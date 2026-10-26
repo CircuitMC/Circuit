@@ -3575,6 +3575,76 @@ int main() {
         require(std::ranges::all_of(player().smith, &ItemStack::empty), "closing gives the inputs back");
     });
 
+    suite.run("grindstones remove all but curses and merge durability", [] {
+        using circuit::contracts::CloseContainer;
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::SetPlayerSlot;
+        using Levels = std::vector<std::pair<std::uint32_t, std::int32_t>>;
+        // Stand-ins for the server's encoding: type 1 the enchantments, 2 the
+        // stored ones, 3 the repair cost, one byte per id and level.
+        const auto patch = [](const Levels& plain, const Levels& stored, std::int32_t cost) {
+            std::vector<ComponentPatch::Added> added;
+            for (const auto& [type, list] : {std::pair{std::uint16_t{1}, plain}, std::pair{std::uint16_t{2}, stored}}) {
+                if (list.empty()) continue;
+                std::vector<std::byte> bytes;
+                for (const auto& [id, level] : list) {
+                    bytes.push_back(static_cast<std::byte>(id));
+                    bytes.push_back(static_cast<std::byte>(level));
+                }
+                added.push_back({type, bytes});
+            }
+            if (cost > 0) added.push_back({3, {static_cast<std::byte>(cost)}});
+            return added.empty() ? ComponentPatch{} : ComponentPatch::make(772, std::move(added), {}, {});
+        };
+        const auto read = [](const ComponentPatch& p, bool stored) {
+            Levels out;
+            for (const auto& a : p.added())
+                if (a.type == (stored ? 2 : 1))
+                    for (std::size_t k = 0; k + 1 < a.value.size(); k += 2)
+                        out.emplace_back(static_cast<std::uint32_t>(a.value[k]), static_cast<std::int32_t>(a.value[k + 1]));
+            return out;
+        };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->curses = {2, 40};
+        data->enchantments_of = read;
+        data->with_enchantments = [&](const ComponentPatch& base, bool stored, const Levels& levels, bool, std::int32_t cost) {
+            return std::optional(stored ? patch(read(base, false), levels, cost) : patch(levels, read(base, true), cost));
+        };
+        const PlayerKey alex{4, 2};
+        const BlockPos grindstone{0, 0, 0};
+        Sim s(bundle(), 7, 2, data);
+        s.tick({place(grindstone, registry_block("grindstone", {{"face", "floor"}, {"facing", "north"}}))});
+        // Grindstone window: 0 and 1 the inputs, 2 the result, 3-29 the main inventory, 30-38 the hotbar.
+        const auto click = [&](std::int16_t slot, std::uint8_t button, std::uint8_t mode) {
+            return ContainerClick{alex, std::optional(grindstone), slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+        };
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+        };
+        auto cursed = ItemStack{items::diamond_pickaxe, 1, 1000};
+        cursed.components = patch({{40, 1}, {13, 2}}, {}, 0);
+        auto fortune = ItemStack{items::diamond_pickaxe, 1, 900};
+        fortune.components = patch({{13, 3}}, {}, 0);
+        s.tick({SetPlayerSlot{alex, 36, cursed}, SetPlayerSlot{alex, 37, fortune}, SetPlayerSlot{alex, 38, {items::stone, 3}},
+                SetPlayerSlot{alex, 39, {items::iron_pickaxe, 1, 50}}});
+        s.tick({click(30, 0, 1)});
+        auto expected = ItemStack{items::diamond_pickaxe, 1, 1000};
+        expected.components = patch({{40, 1}}, {}, 1);
+        require(player().grind[2] == expected, "the curse kept, its repair cost 1");
+        s.tick({click(31, 0, 1)});
+        expected.damage = 261;
+        require(player().grind[2] == expected, "two of a kind: both durabilities and 5% of 1561");
+        s.tick({click(2, 0, 1)});
+        require(player().grind[0].empty() && player().grind[1].empty() && player().slots[44] == expected, "taken: both inputs used up");
+        s.tick({click(32, 0, 1), click(33, 0, 1)});
+        require(player().slots[9].item == items::stone && player().grind[0].item == items::iron_pickaxe && player().grind[2].empty(),
+                "stone goes across; a plain damaged pickaxe alone makes nothing");
+        s.tick({CloseContainer{alex, at_block(0.5, 2, 0.5), {}}});
+        require(player().grind[0].empty() && player().slots[36].item == items::iron_pickaxe, "closing gives the input back");
+    });
+
     suite.run("stonecutters cut by the chosen recipe until the input runs out", [] {
         namespace recipes = circuit::gameplay::recipes;
         using circuit::contracts::CloseContainer;

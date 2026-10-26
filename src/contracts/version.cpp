@@ -461,8 +461,8 @@ constexpr std::array reference_v4_mechanisms{
         "tests/fixtures/collision/snow-*.txt; a protocol client's 40 placed states). Gaps: melting and freezing by light "
         "and weather in random ticks; powder snow; snow and ice in the Nether are not compared."},
     MechanismEntry{"container_menus", l0_exact, l2_declared_deviation, controlled_experiment,
-        "Player windows and chest, double chest, hopper, furnace, crafter, crafting table, stonecutter and smithing table menus with every "
-        "click mode, applied as commands. "
+        "Player windows and chest, double chest, hopper, furnace, crafter, crafting table, stonecutter, smithing table and grindstone "
+        "menus with every click mode, applied as commands. "
         "A 48-step client scenario (every click mode, double chests, hoppers, the own window, throws and "
         "pickups) gives the same windows, carried stacks and inventories as the official 1.21.8 and 1.21.4 "
         "servers. With data packs the own window's 2x2 grid crafts: a 48-step scenario (results, every way "
@@ -473,7 +473,8 @@ constexpr std::array reference_v4_mechanisms{
         "27-step scenario at a stonecutter (recipe buttons, every way of taking the result, the choice cleared by "
         "another input) with the clients' recipe data, and a 24-step scenario at a smithing table (upgrades keeping "
         "components, trims and their registry ids), and a 20-step scenario in a crafter's window (slot toggles, the "
-        "result shown). Gaps: no special recipes or recipe book; trim materials of 1.21.5 "
+        "result shown), and a 25-step scenario at a grindstone (curses kept, durabilities merged, books). Gaps: no "
+        "special recipes or recipe book; grindstones give no experience; trim materials of 1.21.5 "
         "and later from the vanilla materials' items; no harness traces of menus."},
     MechanismEntry{"survival_actions", l0_exact, l2_declared_deviation, documented_behavior,
         "Placement uses up items; dig progress from hardness, tool speed and tier, ground and water; drops by "

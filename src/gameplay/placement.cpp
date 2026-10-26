@@ -109,6 +109,7 @@ bool has_collision(BlockState s) {
 
 void record_slot(RuleContext& ctx, const PlayerInventory& inventory, std::uint8_t slot) {
     const auto stack = slot == contracts::player_slots ? inventory.cursor
+                     : slot >= contracts::grind_first  ? inventory.grind[slot - contracts::grind_first]
                      : slot >= contracts::smith_first  ? inventory.smith[slot - contracts::smith_first]
                      : slot >= contracts::cutter_first ? inventory.cutter[slot - contracts::cutter_first]
                      : slot >= contracts::table_first  ? inventory.table[slot - contracts::table_first]
@@ -199,7 +200,7 @@ namespace circuit::gameplay::detail {
 namespace {
 enum class Building {
     none, plain, pillar, stairs, slab, connector, toward_player, toward_look, clicked_face, fixed, torch, lantern, ladder, resting, tall,
-    sign, head, bed, snowy
+    sign, head, bed, snowy, mounted
 };
 
 Building building_kind(std::uint32_t block) {
@@ -223,6 +224,8 @@ Building building_kind(std::uint32_t block) {
         || name == "bee_nest" || name == "beehive" || name == "ender_chest" || name == "chiseled_bookshelf")
         return Building::toward_player;
     if (name == "barrel") return Building::toward_look;
+    // Mounted on the clicked face as levers are, without needing support.
+    if (name == "grindstone") return Building::mounted;
     if (name == "end_rod" || name == "lightning_rod" || name.ends_with("shulker_box")) return Building::clicked_face;
     if (name == "beacon" || name == "enchanting_table" || name == "jukebox" || name == "brewing_stand") return Building::fixed;
     // Blocks that need support (support.cpp).
@@ -451,6 +454,12 @@ std::optional<BlockState> placed_building(RuleContext& ctx, std::uint32_t block,
     // A bed's foot faces the player's way; its head goes ahead of it.
     case Building::bed: return with(s, {{"facing", std::string(name_of(c.horizontal))}, {"part", "foot"}});
     case Building::pillar: return with(s, {{"axis", std::string(axis_of(c.face))}, {"waterlogged", water}});
+    // Floor and ceiling ones face the player's way, wall ones away from the
+    // wall (tests/fixtures/placement).
+    case Building::mounted:
+        if (c.face == Direction::up) return with(s, {{"face", "floor"}, {"facing", std::string(name_of(c.horizontal))}});
+        if (c.face == Direction::down) return with(s, {{"face", "ceiling"}, {"facing", std::string(name_of(c.horizontal))}});
+        return with(s, {{"face", "wall"}, {"facing", std::string(name_of(c.face))}});
     case Building::stairs:
         s = with(s, {{"facing", std::string(name_of(c.horizontal))}, {"half", top_half(c) ? "top" : "bottom"}, {"waterlogged", water}});
         return shaped_stairs(ctx, target, s);
