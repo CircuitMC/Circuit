@@ -289,6 +289,10 @@ int main() {
             p.grind[0] = {circuit::gameplay::items::iron_pickaxe, 1, 30};
             p.loom[1] = {circuit::gameplay::items::stone, 3};
             p.loom_pattern = 5;
+            p.xp_level = 9;
+            p.xp_progress = 0.6000000834465027f;
+            p.xp_total = 150;
+            p.xp_ready = 12;
             c.state.players.insert(std::ranges::upper_bound(c.state.players, p.player, {}, &circuit::gameplay::PlayerInventory::player), p);
         }
         c.state.level(circuit::contracts::DimensionId::overworld).sequences = {
@@ -297,7 +301,7 @@ int main() {
         const auto encoded = circuit::storage::encode_checkpoint(c);
         const auto decoded = circuit::storage::decode_checkpoint(encoded);
         require(decoded.has_value(), decoded ? "" : decoded.error());
-        require(*decoded == c && circuit::storage::encode_checkpoint(*decoded) == encoded, "the sequences, settings, furnace and crafter block entities and player menus round-trip");
+        require(*decoded == c && circuit::storage::encode_checkpoint(*decoded) == encoded, "the sequences, settings, furnace and crafter block entities, player menus and experience round-trip");
         auto swapped = c;
         auto& sequences = swapped.state.level(circuit::contracts::DimensionId::overworld).sequences;
         std::swap(sequences[0], sequences[1]);

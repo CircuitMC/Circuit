@@ -1919,17 +1919,18 @@
           "milestone": "C6",
           "impl": "partial",
           "evidence": "compared",
-          "note": "Summoned experience orbs fall, slide, bounce on the ground (each version its own way), float with their eye in water, take in orbs of their value 40 ids apart every 20 ticks and go at age 6000, as both official servers do tick by tick",
+          "note": "Summoned experience orbs fall, slide, bounce on the ground (each version its own way), float with their eye in water, take in orbs of their value 40 ids apart every 20 ticks and go at age 6000, as both official servers do tick by tick; players within 8 blocks draw them and take one orb every 2 ticks, gaining the official servers' levels, totals and progress",
           "cases": [
             "trace/orbs",
             "trace/orbs_merge",
-            "trace/orbs_more"
+            "trace/orbs_more",
+            "client/orbs"
           ],
           "deviations": [
-            "players do not draw or pick them up, and gain no experience",
+            "how players draw orbs is not compared tick by tick",
+            "Mending and death drops of experience are not modeled",
             "nothing drops them yet: no furnace, grindstone, block or mob experience",
-            "in lava they rise without the official servers' unseeded random jump (not compared)",
-            "clients do not see them"
+            "in lava they rise without the official servers' unseeded random jump (not compared)"
           ]
         }
       ]

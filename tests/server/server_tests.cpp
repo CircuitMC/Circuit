@@ -968,12 +968,12 @@ int main() {
         d = f.game->engine().dump();
         require(d.overworld().presences.size() == 1 && !d.overworld().presences[0].spectator && d.overworld().last_active == d.time,
                 "a player makes it active");
-        // 1.21.8's rules do not use the position: moving logs nothing.
-        const auto at = d.overworld().presences[0].position;
+        // The rules follow the position (experience orbs are drawn to it).
         f.game->submit(1, server::intent::ConfirmTeleport{1});
         f.game->submit(1, server::intent::Move{server::Vec3{4.5, -60.0, 0.5}, std::nullopt, true});
         f.game->tick();
-        require(f.game->engine().dump().overworld().presences[0].position == at, "the position is kept");
+        f.game->tick();
+        require(f.game->engine().dump().overworld().presences[0].position == contracts::Vec3{4.5, -60.0, 0.5}, "the new position");
         f.game->leave(1);
         f.game->tick();
         d = f.game->engine().dump();

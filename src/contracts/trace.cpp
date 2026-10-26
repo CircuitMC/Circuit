@@ -31,6 +31,7 @@ std::string_view kind_name(TraceKind kind) {
     case TraceKind::level_random_draw: return "level_random_draw";
     case TraceKind::entity_loaded: return "entity_loaded";
     case TraceKind::explosion: return "explosion";
+    case TraceKind::player_experience_changed: return "player_experience_changed";
     }
     return "unknown";
 }

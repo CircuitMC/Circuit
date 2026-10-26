@@ -68,6 +68,9 @@ struct FixtureInputs {
     std::map<Tick, std::vector<contracts::Command>> by_tick;
 };
 std::expected<FixtureInputs, std::string> fixture_inputs(const Fixture& fixture);
+// `summon <type> <x> <y> <z> [{...}]` for the entities the rules summon, as
+// fixtures and the server's command read it (absolute coordinates).
+std::expected<contracts::SummonEntity, std::string> parse_summon(const std::string& command);
 
 FixtureReport evaluate_fixture(const Fixture& fixture, const ExecutorFactory& executor);
 

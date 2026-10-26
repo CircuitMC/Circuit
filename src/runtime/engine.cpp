@@ -1289,6 +1289,7 @@ void Engine::Impl::restore(const WorldDump& state) {
         if (!valid_stack(p.cursor) || !std::ranges::all_of(p.slots, valid_stack) || !std::ranges::all_of(p.table, valid_stack)
             || !std::ranges::all_of(p.cutter, valid_stack) || p.cutter_recipe < -1 || !std::ranges::all_of(p.smith, valid_stack) || !std::ranges::all_of(p.grind, valid_stack)
             || !std::ranges::all_of(p.loom, valid_stack) || p.loom_pattern < -1
+            || p.xp_level < 0 || p.xp_total < 0 || !std::isfinite(p.xp_progress) || p.xp_progress < 0.0f || p.xp_progress > 1.0f
             || p.drag_stage > 1 || p.drag_type > 2
             || p.drag_slots.size() > 256 || std::ranges::any_of(p.drag_slots, [](std::int16_t s) { return s < 0 || s >= 256; }))
             bad("player inventory");

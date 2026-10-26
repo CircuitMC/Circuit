@@ -10,6 +10,7 @@
 #include <circuit/gameplay/random_sequence.hpp>
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/block_registry.hpp>
+#include <circuit/gameplay/experience.hpp>
 #include <circuit/gameplay/game_data.hpp>
 #include <circuit/gameplay/potions.hpp>
 #include <circuit/gameplay/items.hpp>
@@ -1739,6 +1740,54 @@ int main() {
         require(merged != now.end() && merged->orbs == 2 && now.size() == 40
                     && std::ranges::find(now, first_id, [](const auto& e) { return e.id.value; }) == now.end(),
                 "the orb 40 ids on took in the first; the next one did not");
+    });
+
+    suite.run("players draw experience orbs and take one every 2 ticks for the official levels", [] {
+        using circuit::contracts::PickUp;
+        using circuit::contracts::PlayerKey;
+        using circuit::contracts::PlayerPresence;
+        using circuit::contracts::SummonEntity;
+        using circuit::gameplay::EntityKind;
+        // Points to level and progress as both official servers give them.
+        circuit::gameplay::PlayerInventory p;
+        std::vector<std::tuple<float, std::int32_t, std::int32_t>> got;
+        for (const auto points : {7, 17, 1, 2, 3, 4, 5, 37, 37, 37, 2477}) {
+            circuit::gameplay::experience::give_points(p, points);
+            got.emplace_back(p.xp_progress, p.xp_level, p.xp_total);
+        }
+        require(got.front() == std::tuple{0.0f, 1, 7} && got[1] == std::tuple{0.7272726893424988f, 2, 24}
+                    && got[3] == std::tuple{0.9999999403953552f, 2, 27} && got[9] == std::tuple{0.6000000834465027f, 9, 150}
+                    && got.back() == std::tuple{0.4565214216709137f, 38, 2627},
+                "the official levels and progress");
+        Sim s;
+        const PlayerKey alex{3, 9};
+        s.tick(floor(-3, 20, -3, 6));
+        s.tick({PlayerPresence{alex, {0.5, 0.0, 0.5}}, SummonEntity{"minecraft:experience_orb", {4.5, 0.0, 0.5}, {}, 80, 0, 7, 1, 0},
+                SummonEntity{"minecraft:experience_orb", {12.5, 0.0, 0.5}, {}, 80, 0, 3, 1, 0},
+                SummonEntity{"minecraft:experience_orb", {0.5, 0.0, 2.5}, {}, 80, 0, 5, 2, 0}});
+        const auto orbs = [&] {
+            const auto d = s.oracle.dump();
+            std::vector<circuit::gameplay::Entity> out;
+            for (const auto& e : d.overworld().entities)
+                if (e.kind == EntityKind::experience_orb) out.push_back(e);
+            return out;
+        };
+        const auto first = orbs();
+        s.until(s.oracle.time() + 10);
+        const auto later = orbs();
+        require(later[0].position.x < first[0].position.x - 0.1 && later[1].position.x == first[1].position.x,
+                "the orb within 8 blocks comes, the one 12 away stays");
+        const auto pair = first[2].id;
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, alex, &circuit::gameplay::PlayerInventory::player);
+        };
+        s.tick({PickUp{alex, pair, 36, false}});
+        require(player().xp_total == 5 && orbs().size() == 3, "one of the pair's two orbs");
+        s.tick({PickUp{alex, pair, 36, false}});
+        require(player().xp_total == 5, "not again in the next tick");
+        s.tick({PickUp{alex, pair, 36, false}});
+        require(player().xp_total == 10 && player().xp_level == 1 && orbs().size() == 2, "the second two ticks on, and the orb is gone");
     });
 
     suite.run("brewing stands brew the bottles that mix with their ingredient", [] {

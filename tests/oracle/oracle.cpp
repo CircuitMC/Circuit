@@ -52,6 +52,9 @@ public:
     std::uint8_t sky_light(BlockPos pos) override { return o_.light(dimension(), pos, gameplay::LightKind::sky); }
     std::uint8_t block_light(BlockPos pos) override { return o_.light(dimension(), pos, gameplay::LightKind::block); }
     bool player_near(ChunkPos chunk) override { return gameplay::player_near(lv().presences, chunk); }
+    std::optional<gameplay::Presence> nearest_player(contracts::Vec3 at, double range) override {
+        return gameplay::nearest_player(lv().presences, at, range);
+    }
     bool section_ticks_randomly(ChunkPos chunk, std::int32_t section) override {
         return lv().random_ticking.contains({chunk, section});
     }

@@ -211,11 +211,20 @@ struct PlayerInventory {
     std::uint8_t drag_stage{};
     std::uint8_t drag_type{};
     std::vector<std::int16_t> drag_slots;
+    // Experience (gameplay/experience.hpp): the player's level, the progress
+    // toward the next one (in single precision, as the target versions keep
+    // it), the points gained in all, and the first tick at which the player
+    // may take another orb.
+    std::int32_t xp_level{};
+    float xp_progress{};
+    std::int32_t xp_total{};
+    Tick xp_ready{};
     [[nodiscard]] bool empty() const noexcept {
         const auto none = [](const ItemStack& s) { return s.empty(); };
         return cursor.empty() && drag_stage == 0 && std::ranges::all_of(slots, none) && std::ranges::all_of(table, none)
             && std::ranges::all_of(cutter, none) && cutter_recipe == -1 && std::ranges::all_of(smith, none)
-            && std::ranges::all_of(grind, none) && std::ranges::all_of(loom, none) && loom_pattern == -1;
+            && std::ranges::all_of(grind, none) && std::ranges::all_of(loom, none) && loom_pattern == -1 && xp_level == 0
+            && xp_progress == 0.0f && xp_total == 0 && xp_ready == 0;
     }
     bool operator==(const PlayerInventory&) const = default;
 };
@@ -352,6 +361,27 @@ bool player_near(const Presences& presences, ChunkPos chunk) {
         if (dx * dx + dz * dz < range * range) return true;
     }
     return false;
+}
+
+// The non-spectator player nearest to a position, within `range` of it (the
+// first by key of those as near).
+template <class Presences>
+std::optional<Presence> nearest_player(const Presences& presences, Vec3 at, double range) {
+    std::optional<Presence> best;
+    double best_distance = range * range;
+    for (const auto& entry : presences) {
+        const Presence& p = [&]() -> const Presence& {
+            if constexpr (requires { entry.second; }) return entry.second;
+            else return entry;
+        }();
+        if (p.spectator) continue;
+        const double dx = p.position.x - at.x, dy = p.position.y - at.y, dz = p.position.z - at.z;
+        const double d = dx * dx + dy * dy + dz * dz;
+        if (d > best_distance || (best && d == best_distance)) continue;
+        best = p;
+        best_distance = d;
+    }
+    return best;
 }
 
 // Game rules (contracts::SetGameRule). A value is valid for a rule the

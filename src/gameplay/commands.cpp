@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include "internal.hpp"
+#include <circuit/gameplay/experience.hpp>
 #include <circuit/gameplay/survival.hpp>
 #include <functional>
 
@@ -345,6 +346,24 @@ Plan plan(RuleContext& ctx, const contracts::PlayerBreak& c) {
 Plan plan(RuleContext& ctx, const contracts::PickUp& c) {
     if (c.selected < contracts::hotbar_first || c.selected >= contracts::offhand_slot) return std::unexpected(ErrorCode::invalid_slot);
     const auto* e = ctx.peek_entity(c.entity);
+    // An experience orb: a player takes one of its orbs every 2 ticks, gaining
+    // its experience (the official servers' levels and progress, checked with
+    // a protocol client); the last one is gone. Mending is not modeled.
+    if (e && e->kind == EntityKind::experience_orb) {
+        if (const auto* inv = ctx.peek_player(c.player); inv && ctx.now() < inv->xp_ready) return std::unexpected(ErrorCode::not_usable);
+        return [&ctx, c] {
+            auto& player = ctx.player(c.player);
+            auto* orb = ctx.entity(c.entity);
+            player.xp_ready = ctx.now() + 2;
+            experience::give_points(player, orb->experience);
+            ctx.record(TraceKind::player_experience_changed, contracts::block_of(orb->position), c.player.hi, c.player.lo,
+                       static_cast<std::uint64_t>(static_cast<std::uint32_t>(player.xp_total)));
+            if (--orb->orbs > 0) return;
+            ctx.record(TraceKind::entity_removed, contracts::block_of(orb->position), c.entity.value,
+                       static_cast<std::uint64_t>(RemovalReason::picked_up));
+            ctx.remove_entity(c.entity);
+        };
+    }
     if (!e || e->kind != EntityKind::item || e->stack.empty()) return std::unexpected(ErrorCode::unknown_entity);
     if (e->pickup_delay > 0) return std::unexpected(ErrorCode::not_usable);
     // Nothing happens when the inventory has no room for any of it.

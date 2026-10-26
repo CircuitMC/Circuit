@@ -5,6 +5,7 @@
 #include "log.hpp"
 #include "movement.hpp"
 #include "world_meta.hpp"
+#include <circuit/evidence/fixture_runner.hpp>
 #include <circuit/gameplay/rules.hpp>
 #include <circuit/gameplay/survival.hpp>
 #include <circuit/storage/world_directory.hpp>
@@ -20,6 +21,7 @@
 #include <limits>
 #include <condition_variable>
 #include <thread>
+#include <tuple>
 #include <cstdlib>
 #include <format>
 #include <map>
@@ -70,6 +72,7 @@ struct Player {
     std::set<ChunkPos> sent;
     std::uint32_t ticket{}; // and ticket + 1: the loading and the simulation ticket
     std::optional<std::pair<contracts::Vec3, bool>> presence; // last sent (position, spectator)
+    std::optional<std::tuple<float, std::int32_t, std::int32_t>> experience; // last sent (progress, level, total)
     std::int32_t next_teleport{1};
     std::optional<std::int32_t> awaiting_teleport;
     std::int32_t held{}; // hotbar slot 0-8; the inventory itself is simulation state
@@ -275,6 +278,7 @@ struct Game::Impl final : GameServices {
     std::int32_t dimension_type{};
     std::int32_t biome{};
     std::int32_t item_entity_type{}, falling_block_type{}, tnt_entity_type{}, arrow_entity_type{}, snowball_entity_type{}, minecart_entity_type{},
+        orb_entity_type{},
         player_entity_type{};
     std::array<std::int32_t, gameplay::boat_types.size()> boat_entity_types{};
     std::unordered_map<std::uint16_t, std::int32_t> item_wire; // reference item -> wire item id
@@ -301,6 +305,7 @@ struct Game::Impl final : GameServices {
         arrow_entity_type = content.entity_type("minecraft:arrow").value();
         snowball_entity_type = content.entity_type("minecraft:snowball").value();
         minecart_entity_type = content.entity_type("minecraft:minecart").value();
+        orb_entity_type = content.entity_type("minecraft:experience_orb").value();
         for (std::size_t i = 0; i < gameplay::boat_types.size(); ++i) boat_entity_types[i] = content.entity_type(gameplay::boat_types[i]).value();
         player_entity_type = content.entity_type("minecraft:player").value();
         for (std::uint16_t i = 1; i <= gameplay::items::max_id; ++i)
@@ -635,6 +640,7 @@ struct Game::Impl final : GameServices {
         peer.send(wire.player_info_add(all));
         broadcast(wire.player_info_add({entry(p)}));
         sync_inventory(p);
+        sync_experience(p);
         peer.send(wire.game_event(13, 0.0f)); // start waiting for level chunks
         peer.send(wire.chunk_center(p.center.x, p.center.z));
         teleport(p, p.pos);
@@ -751,15 +757,14 @@ struct Game::Impl final : GameServices {
         remove_tickets(p);
         add_tickets(p, center);
     }
-    // Where each player is, for the rules that depend on players: sent when
-    // the spectator flag changed, or the position when the rules use it
-    // (random ticks near players).
+    // Where each player is, for the rules that depend on players (random
+    // ticks and fire near players, experience orbs drawn to them): sent when
+    // the position or the spectator flag changed.
     void send_presences() {
-        const bool positional = bundle.rules->random_ticks == contracts::RandomTickRange::block_ticking_near_player;
         for (auto& [id, p] : players) {
             const auto at = p.pos;
             const auto now = std::pair{at, p.game_mode == spectator};
-            if (p.presence && p.presence->second == now.second && (!positional || p.presence->first == at)) continue;
+            if (p.presence && *p.presence == now) continue;
             p.presence = now;
             admit(contracts::PlayerPresence{key_of(p), at, now.second, true}, overworld);
         }
@@ -1480,8 +1485,21 @@ struct Game::Impl final : GameServices {
             for (const auto& [entity_id, t] : tracked) {
                 if (taken.contains(entity_id)) continue;
                 const auto e = view.entity(overworld, EntityId{entity_id});
-                if (!e || !*e || (*e)->kind != gameplay::EntityKind::item || (*e)->pickup_delay > 0) continue;
+                if (!e || !*e) continue;
                 const auto pos = (*e)->position;
+                // An experience orb (0.5 wide and high) the player's box,
+                // grown by 1 sideways and 0.5 up and down, touches.
+                if ((*e)->kind == gameplay::EntityKind::experience_orb) {
+                    if (pos.x + 0.25 <= p.pos.x - 1.3 || pos.x - 0.25 >= p.pos.x + 1.3 || pos.z + 0.25 <= p.pos.z - 1.3 || pos.z - 0.25 >= p.pos.z + 1.3
+                        || pos.y + 0.5 <= p.pos.y - 0.5 || pos.y >= p.pos.y + 1.8 + 0.5)
+                        continue;
+                    const auto admission = queue.admit(contracts::PickUp{key_of(p), EntityId{entity_id}, main_hand(p), p.game_mode == creative});
+                    if (!admission) continue;
+                    taken.insert(entity_id);
+                    pickups[*admission] = {id, entity_id, 1};
+                    continue;
+                }
+                if ((*e)->kind != gameplay::EntityKind::item || (*e)->pickup_delay > 0) continue;
                 // The item's box is 0.25 wide and high.
                 const bool x = pos.x + 0.125 > p.pos.x - 1.3 && pos.x - 0.125 < p.pos.x + 1.3;
                 const bool z = pos.z + 0.125 > p.pos.z - 1.3 && pos.z - 0.125 < p.pos.z + 1.3;
@@ -1694,7 +1712,7 @@ struct Game::Impl final : GameServices {
             for (const auto& [name, usage] : extensions->commands()) extra += std::format(", /{}{}{}", name, usage.empty() ? "" : " ", usage);
             message(p, "Commands: /help, /players, /tp [<own name>] <x> <y> <z>, /gamemode <survival|creative|spectator>, "
                        "/forceload add|remove <x> <z> [<x> <z>], /forceload remove all, /forceload query [<x> <z>], /gamerule <rule> [<value>], "
-                       "/time set|add <time>, /time query daytime|gametime|day, /weather clear|rain|thunder [<duration>], /kill [<own name>], /tps" + extra);
+                       "/time set|add <time>, /time query daytime|gametime|day, /weather clear|rain|thunder [<duration>], /kill [<own name>], /summon <entity> <x> <y> <z> [{...}], /tps" + extra);
         } else if (args[0] == "players") {
             std::string names;
             for (const auto& [id, o] : players) names += (names.empty() ? "" : ", ") + o.name;
@@ -1740,6 +1758,16 @@ struct Game::Impl final : GameServices {
             // game mode.
             if (!p.dead) hurt(p, std::numeric_limits<float>::max(), Harm::kill);
             send_translation(p, "commands.kill.success.single", string_arguments({p.name}));
+        } else if (args[0] == "summon" && c.text.starts_with("summon")) {
+            // The entities the rules summon, at absolute coordinates.
+            auto summon = evidence::parse_summon(c.text);
+            if (!summon) {
+                message(p, summon.error(), "red");
+                return;
+            }
+            const auto type = summon->type;
+            admit(std::move(*summon), overworld);
+            message(p, std::format("Summoned new {}", type));
         } else if (args[0] == "tps") {
             message(p, std::format("tick {}", engine->time()));
         } else if (const auto reply = extensions->command(p.name, args[0], std::span(args).subspan(1))) {
@@ -2085,8 +2113,6 @@ struct Game::Impl final : GameServices {
     }
 
     void show_entity(Player& p, std::uint64_t engine_id, const gameplay::Entity& e) {
-        // Experience orbs are not shown yet.
-        if (e.kind == gameplay::EntityKind::experience_orb) return;
         auto [it, fresh] = tracked.try_emplace(engine_id);
         auto& t = it->second;
         if (fresh) {
@@ -2094,6 +2120,11 @@ struct Game::Impl final : GameServices {
             t.last = e.position;
         }
         if (!t.viewers.insert(p.peer->id()).second) return;
+        if (e.kind == gameplay::EntityKind::experience_orb) {
+            p.peer->send(wire.experience_orb(t.protocol_id, entity_uuid(engine_id), orb_entity_type, t.last, e.experience));
+            if (wire.orbs_are_entities()) p.peer->send(wire.orb_metadata(t.protocol_id, e.experience));
+            return;
+        }
         if (e.kind == gameplay::EntityKind::falling_block) {
             // The spawn data of a falling block is its block state.
             p.peer->send(wire.spawn_entity(t.protocol_id, entity_uuid(engine_id), falling_block_type, t.last, 0, 0, 0,
@@ -2198,7 +2229,18 @@ struct Game::Impl final : GameServices {
                 if (size != p.window->container_slots || !near) close_window(p, true);
             }
             sync_inventory(p);
+            sync_experience(p);
         }
+    }
+    // A player's experience, when it changed (and once on joining).
+    void sync_experience(Player& p) {
+        const auto view = engine->view();
+        const auto inv = view.player(key_of(p));
+        const std::tuple<float, std::int32_t, std::int32_t> now =
+            inv && *inv ? std::tuple{(*inv)->xp_progress, (*inv)->xp_level, (*inv)->xp_total} : std::tuple{0.0f, 0, 0};
+        if (p.experience == now) return;
+        p.experience = now;
+        p.peer->send(wire.set_experience(std::get<0>(now), std::get<1>(now), std::get<2>(now)));
     }
 
     // Light that changed in chunks players have, as light updates; light

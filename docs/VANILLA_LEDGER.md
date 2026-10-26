@@ -55,7 +55,7 @@ Feature counts per implementation state, then the number of features with compar
 | V29 Bosses and progression | C8 | 11 | 0 / 0 | 0 / 0 | 4 / 4 | 7 / 7 | 0 / 0 | 0 / 0 |
 | V30 Data-pack execution | C1, C5, C9 | 8 | 0 / 0 | 1 / 1 | 0 / 0 | 6 / 7 | 1 / 0 | 0 / 0 |
 | V31 Commands and administration | C9 | 117 | 0 / 0 | 7 / 7 | 16 / 20 | 85 / 90 | 9 / 0 | 1 / 1 |
-| V32 Client-visible world state | C10 | 287 | 5 / 5 | 53 / 53 | 0 / 0 | 222 / 228 | 7 / 1 | 6 / 6 |
+| V32 Client-visible world state | C10 | 287 | 5 / 5 | 54 / 54 | 0 / 0 | 221 / 227 | 7 / 1 | 6 / 6 |
 | V33 Communication and connection lifecycle | C10 | 85 | 17 / 17 | 19 / 19 | 0 / 0 | 41 / 49 | 8 / 0 | 0 / 0 |
 | V34 Save compatibility | C11 | 6 | 1 / 1 | 0 / 1 | 0 / 0 | 4 / 3 | 1 / 1 | 0 / 1 |
 | V35 Version-specific gameplay and optional profiles | C12 | 6 | 0 / 0 | 0 / 0 | 1 / 3 | 3 / 3 | 2 / 0 | 0 / 0 |
@@ -77,7 +77,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 | biome | minecraft-data pc/1.21.4/biomes.json / minecraft-data pc/1.21.8/biomes.json | 65 / 65 | 0 / 0 | 1 / 1 | 64 / 64 | 0 / 0 |
 | particle | minecraft-data pc/1.21.4/particles.json / minecraft-data pc/1.21.8/particles.json | 112 / 114 | 0 / 0 | 0 / 0 | 0 / 0 | 112 / 114 |
 | command | approximate: minecraft-data pc/1.20.5/commands.json / approximate: minecraft-data pc/1.21.6/commands.json | 83 / 88 | 0 / 0 | 4 / 4 | 0 / 0 | 79 / 84 |
-| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 20 / 20 | 68 / 68 | 0 / 0 | 146 / 156 |
+| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 20 / 20 | 69 / 69 | 0 / 0 | 145 / 155 |
 | block_state | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 27866 / 27946 | — | — | — | — |
 | sound_event | minecraft-data pc/1.21.4/sounds.json / minecraft-data pc/1.21.8/sounds.json | 1651 / 1728 | — | — | — | — |
 | recipe | minecraft-data pc/1.21.4/recipes.json / minecraft-data pc/1.21.8/recipes.json | 1557 / 1607 | — | — | — | — |
@@ -127,7 +127,7 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 59 |
+| black_box | passing | 60 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
 | official_trace | passing | 201 |
@@ -360,7 +360,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Item merging | C3 | implemented, compared | implemented, compared | `trace/item_merge`, `trace/item_merge_crossing`, `trace/item_merge_moving`, `trace/item_merge_timers`, `trace/item_merge_vertical`; Every 40 ticks of the item's own count, or every 2 after a move into another block; reach half a block sideways; stacks of one kind within their limit; the smaller joins the larger (equal: the other survives); younger age and longer pickup delay kept |
 | Pickup by players and hoppers, pickup delays | C3 | partial, compared | partial, compared | `client/vitals`, `client/windows`, `trace/item_hopper_area`, `trace/item_hopper_inside`, `trace/item_hopper_pickup`, `trace/item_merge_timers` |
 | Despawning | C3 | implemented, compared | implemented, compared | `trace/item_merge_timers`; Age 6000, -32768 never; the age goes up after the item's move and merges |
-| Experience orbs | C6 | partial, compared | partial, compared | `trace/orbs`, `trace/orbs_merge`, `trace/orbs_more`; clients do not see them; in lava they rise without the official servers' unseeded random jump (not compared); nothing drops them yet: no furnace, grindstone, block or mob experience; players do not draw or pick them up, and gain no experience; Summoned experience orbs fall, slide, bounce on the ground (each version its own way), float with their eye in water, take in orbs of their value 40 ids apart every 20 ticks and go at age 6000, as both official servers do tick by tick |
+| Experience orbs | C6 | partial, compared | partial, compared | `client/orbs`, `trace/orbs`, `trace/orbs_merge`, `trace/orbs_more`; Mending and death drops of experience are not modeled; how players draw orbs is not compared tick by tick; in lava they rise without the official servers' unseeded random jump (not compared); nothing drops them yet: no furnace, grindstone, block or mob experience; Summoned experience orbs fall, slide, bounce on the ground (each version its own way), float with their eye in water, take in orbs of their value 40 ids apart every 20 ticks and go at age 6000, as both official servers do tick by tick; players within 8 blocks draw them and take one orb every 2 ticks, gaining the official servers' levels, totals and progress |
 
 ### V21 Projectiles, vehicles and mounts
 

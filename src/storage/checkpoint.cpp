@@ -21,6 +21,7 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 37: player inventories carry the player's experience;
 // 36: entities carry an experience orb's experience and orbs;
 // 35: brewing stands have rules of their own (their block entities keep
 // their fuel, brew time and ingredient in the furnace times);
@@ -68,7 +69,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 36;
+constexpr std::uint32_t version = 37;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -249,6 +250,7 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
         for (const auto& st : p.grind) stack(w, st);
         for (const auto& st : p.loom) stack(w, st);
         w.i16(p.loom_pattern);
+        w.varint(p.xp_level).f32(p.xp_progress).varint(p.xp_total).varlong(static_cast<std::int64_t>(p.xp_ready));
     }
     w.varint(static_cast<std::int32_t>(c.extras.size()));
     for (const auto& [name, bytes] : c.extras) w.string(name, 256).prefixed_bytes(bytes);
@@ -704,6 +706,9 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
                     if (!b.stack(st)) return false;
                 if (!b.get(b.r.i16(), p.loom_pattern)) return false;
             }
+            if (b.version >= 37 && (!b.get(b.r.varint(), p.xp_level) || !b.get(b.r.f32(), p.xp_progress) || !b.get(b.r.varint(), p.xp_total)
+                                    || !b.u64(p.xp_ready)))
+                return false;
             p.player = {static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)};
             s.players.push_back(p);
         }

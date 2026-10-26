@@ -5844,14 +5844,15 @@
       "experience_orb": {
         "impl": "partial",
         "evidence": "compared",
-        "note": "Summoned experience orbs: motion, bouncing, floating, merging and despawning, as both official servers run them",
+        "note": "Summoned experience orbs: motion, bouncing, floating, merging and despawning, as both official servers run them; drawn to and taken by players, shown to clients",
         "cases": [
           "trace/orbs",
           "trace/orbs_merge",
-          "trace/orbs_more"
+          "trace/orbs_more",
+          "client/orbs"
         ],
         "deviations": [
-          "players do not draw or pick them up; nothing drops them; clients do not see them"
+          "nothing drops them yet; how players draw them is not compared tick by tick; Mending is not modeled"
         ]
       },
       "snowball": {

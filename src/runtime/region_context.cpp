@@ -112,6 +112,9 @@ std::uint8_t RegionContext::sky_light(BlockPos pos) { return light_field().get(g
 std::uint8_t RegionContext::block_light(BlockPos pos) { return light_field().get(gameplay::LightKind::block, pos); }
 
 bool RegionContext::player_near(ChunkPos chunk) { return gameplay::player_near(world_.counters(dimension()).presences, chunk); }
+std::optional<gameplay::Presence> RegionContext::nearest_player(contracts::Vec3 at, double range) {
+    return gameplay::nearest_player(world_.counters(dimension()).presences, at, range);
+}
 
 bool RegionContext::section_ticks_randomly(ChunkPos chunk, std::int32_t section) {
     auto* data = loaded_in_world({chunk.x * 16, world().min_y + section * 16, chunk.z * 16});

@@ -485,7 +485,9 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
 //   multiple of 40 apart from its own and whose boxes reach within half a
 //   block of its own: their orbs join its own, it keeps the younger age;
 // - its age goes up; at 6000 it is gone.
-// Fire and lava hurt it as they hurt items (5 health). In lava the official
+// The nearest player within 8 blocks draws it, and a player who touches it
+// takes it (contracts::PickUp). Fire and lava hurt it as they hurt items (5
+// health). In lava the official
 // servers make it jump by an unseeded random of its own; Circuit lifts it
 // by 0.2 without the random, which is not compared.
 constexpr double orb_size = 0.5;
@@ -539,6 +541,16 @@ void run_orb(RuleContext& ctx, EntityId id, Entity& e) {
         v.y -= orb_gravity;
     }
     if (detail::in_lava(ctx, detail::entity_box(e), &lava_depth)) v.y = 0.2;
+    // The nearest player within 8 blocks draws it toward the middle of their
+    // body, the more the nearer they are (not compared tick by tick).
+    if (const auto player = ctx.nearest_player(p, 8.0)) {
+        const Vec3 to{player->position.x - p.x, player->position.y + static_cast<double>(1.62f) / 2.0 - p.y, player->position.z - p.z};
+        const double length = std::sqrt(to.x * to.x + to.y * to.y + to.z * to.z);
+        if (length > 0.0 && length < 8.0) {
+            const double pull = (1.0 - length / 8.0) * (1.0 - length / 8.0) * 0.1;
+            v = {v.x + to.x / length * pull, v.y + to.y / length * pull, v.z + to.z / length * pull};
+        }
+    }
     const double fall = v.y;
     Vec3 moved{};
     e.on_ground = detail::move_entity(ctx, p, v, orb_size, orb_size, &e, &moved);

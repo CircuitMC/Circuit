@@ -23,7 +23,10 @@ struct Wire::Ids {
         set_entity_data, remove_entities, entity_position_sync, rotate_head, container_set_content, disconnect, take_item_entity,
         open_screen, container_close, container_set_slot, container_set_data, set_cursor_item, respawn, combat_kill, damage_event, sb_container_click,
         sb_container_close, sb_container_button_click, sb_container_slot_state_changed, update_recipes,
-        commands, explode;
+        commands, explode, set_experience;
+    // The orb spawn packet of protocols before 1.21.5's (-1: none; orbs are
+    // entities with their value as data).
+    std::int32_t add_experience_orb{-1};
     // Serverbound play.
     std::int32_t sb_accept_teleportation, sb_move_pos, sb_move_pos_rot, sb_move_rot, sb_move_status,
         sb_player_action, sb_use_item_on, sb_use_item, sb_set_carried_item, sb_set_creative_slot, sb_chat_command,
@@ -98,6 +101,8 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->disconnect = cb(State::play, "disconnect");
     ids->commands = cb(State::play, "commands");
     ids->explode = cb(State::play, "explode");
+    ids->set_experience = cb(State::play, "set_experience");
+    ids->add_experience_orb = ids_.find(State::play, Bound::clientbound, "add_experience_orb").value_or(-1);
     ids->sb_accept_teleportation = sb(State::play, "accept_teleportation");
     ids->sb_move_pos = sb(State::play, "move_player_pos");
     ids->sb_move_pos_rot = sb(State::play, "move_player_pos_rot");
@@ -330,6 +335,27 @@ Bytes Wire::item_metadata(std::int32_t id, const WireStack& stack) const {
     slot(w, stack);
     w.u8(0xFF);
     return packet(id_->set_entity_data, w);
+}
+Bytes Wire::experience_orb(std::int32_t id, Uuid uuid, std::int32_t type, Vec3 pos, std::int32_t value) const {
+    // 1.21.4: the orb's own packet with its value as a short; 1.21.5 and
+    // later: an entity with its value at data index 8 (a VarInt).
+    if (id_->add_experience_orb >= 0) {
+        Writer w;
+        w.varint(id).f64(pos.x).f64(pos.y).f64(pos.z).i16(static_cast<std::int16_t>(std::clamp(value, 0, 32767)));
+        return packet(id_->add_experience_orb, w);
+    }
+    return spawn_entity(id, uuid, type, pos, 0, 0, 0, 0, {});
+}
+Bytes Wire::orb_metadata(std::int32_t id, std::int32_t value) const {
+    Writer w;
+    w.varint(id);
+    w.u8(8).varint(1).varint(value); // index 8 (experience orb: value), type VarInt
+    w.u8(0xFF);
+    return packet(id_->set_entity_data, w);
+}
+bool Wire::orbs_are_entities() const noexcept { return id_->add_experience_orb < 0; }
+Bytes Wire::set_experience(float progress, std::int32_t level, std::int32_t total) const {
+    return packet(id_->set_experience, Writer().f32(progress).varint(level).varint(total));
 }
 Bytes Wire::tnt_metadata(std::int32_t id, std::int32_t fuse) const {
     Writer w;

@@ -218,6 +218,13 @@ public:
     Bytes take_item_entity(std::int32_t collected, std::int32_t collector, std::int32_t count) const;
     Bytes item_metadata(std::int32_t id, const WireStack& stack) const;
     Bytes tnt_metadata(std::int32_t id, std::int32_t fuse) const;
+    // An experience orb appearing: on 1.21.4 its own packet, on 1.21.5 and
+    // later an entity of `type` whose value follows in orb_metadata.
+    Bytes experience_orb(std::int32_t id, Uuid uuid, std::int32_t type, Vec3 pos, std::int32_t value) const;
+    Bytes orb_metadata(std::int32_t id, std::int32_t value) const;
+    [[nodiscard]] bool orbs_are_entities() const noexcept;
+    // A player's experience: the progress toward the next level, the level and the total.
+    Bytes set_experience(float progress, std::int32_t level, std::int32_t total) const;
     Bytes explosion(Vec3 center) const;
     Bytes remove_entities(const std::vector<std::int32_t>& ids) const;
     Bytes entity_position(std::int32_t id, Vec3 pos, float yaw, float pitch, bool on_ground) const;

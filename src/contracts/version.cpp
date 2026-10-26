@@ -185,8 +185,10 @@ constexpr std::array reference_v4_mechanisms{
         "block's slipperiness, bouncing back from the ground at 0.4 of their speed (on 1.21.8 only when falling faster "
         "than gravity alone makes them, else they rest; on 1.21.4 always, and their vertical drag in double precision), "
         "taking in the orbs of their value whose ids are 40 apart every 20 ticks from their first, keeping the younger "
-        "age, and going at age 6000. Gaps: players, who draw them, pick them up and gain their experience; in lava they "
-        "rise without the official servers' unseeded random jump, which is not compared; clients do not see them."},
+        "age, and going at age 6000; the nearest player within 8 blocks draws them, and a player who touches one takes "
+        "one of its orbs every 2 ticks, gaining its experience with the official servers' levels and progress "
+        "(client/orbs). Gaps: how players draw orbs is not compared tick by tick; Mending; in lava they rise without "
+        "the official servers' unseeded random jump, which is not compared."},
     MechanismEntry{"brewing", l0_exact, l2_declared_deviation, harness_trace,
         "Brewing stands as both official servers run them (brewing, brewing_hoppers; with the official data packs' "
         "brewing fuel and component encoding): blaze powder gives fuel for 20 brews when none is left; with fuel and a "

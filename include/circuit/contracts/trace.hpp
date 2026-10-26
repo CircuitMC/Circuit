@@ -41,6 +41,7 @@ enum class TraceKind : std::uint8_t {
     entity_loaded = 24,         // an entity its chunk saved is back: a = its new id, b = its id before, c = as entity_spawned's b;
                                 // entity_spawn_position and entity_spawn_velocity follow
     explosion = 25,             // an explosion at pos's cell: a, b, c = the bits of its center (double_bits)
+    player_experience_changed = 26, // a = player key high half, b = low half, c = the player's total experience points
 };
 
 struct TraceRecord {

@@ -113,7 +113,7 @@ Vec3d to_vec(contracts::Vec3 v) { return {v.x, v.y, v.z}; }
 // optional), Fire (short, `s` optional), fuse (primed TNT), and an
 // experience orb's Value, Count and Age (short, `s` optional). Anything else
 // is not modeled.
-std::expected<contracts::SummonEntity, std::string> summon(const std::string& command) {
+std::expected<contracts::SummonEntity, std::string> summon_command(const std::string& command) {
     const auto unsupported = std::format("command `{}`: summon is modeled for minecraft:tnt, minecraft:arrow, minecraft:snowball, "
                                          "minecraft:minecart, minecraft:experience_orb and boats at absolute coordinates with Motion, Fire, "
                                          "fuse and an orb's Value, Count and Age",
@@ -202,7 +202,7 @@ std::expected<std::vector<contracts::CommandBody>, std::string> forceload(const 
         "command `{}`: only forceload add and remove, gamerule randomTickSpeed, summon, time set and weather with a duration are modeled",
         command);
     if (!w.empty() && w[0] == "summon") {
-        auto c = summon(command);
+        auto c = summon_command(command);
         if (!c) return std::unexpected(c.error());
         return std::vector<contracts::CommandBody>{std::move(*c)};
     }
@@ -779,6 +779,8 @@ std::string_view outcome_name(Outcome outcome) noexcept {
     }
     return "INVALID";
 }
+
+std::expected<contracts::SummonEntity, std::string> parse_summon(const std::string& command) { return summon_command(command); }
 
 std::expected<FixtureInputs, std::string> fixture_inputs(const Fixture& f) {
     auto prepared = prepare(f, false);

@@ -34,8 +34,8 @@ std::optional<Permissions> parse_permissions(std::string_view list) {
 }
 
 namespace {
-constexpr std::array<std::string_view, 10> builtin_commands{"help",     "players", "tp",      "gamemode", "forceload",
-                                                            "gamerule", "time",    "weather", "kill",     "tps"};
+constexpr std::array<std::string_view, 11> builtin_commands{"help",     "players", "tp",      "gamemode", "forceload", "gamerule",
+                                                            "time",     "weather", "kill",    "summon",   "tps"};
 
 bool valid_command(std::string_view name) {
     return !name.empty() && name.size() <= 32 &&
