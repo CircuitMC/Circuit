@@ -94,6 +94,7 @@ A wrong convention makes fixtures fail rather than pass.
 | `dispenser`, `dropper` | `facing`, `triggered` | absent properties take the default state's (`north`, `false`) |
 | `furnace`, `smoker`, `blast_furnace` | `facing` (horizontal), `lit` | absent properties take the default state's (`north`, `false`) |
 | `crafter` | `orientation`, `triggered`, `crafting` | absent properties take the default state's (`north_up`, `false`, `false`) |
+| `brewing_stand` | `has_bottle_0`, `has_bottle_1`, `has_bottle_2` | absent properties take the default state's (`false`) |
 | `rail` | `shape` | `waterlogged` |
 | `*_coral_fan`, `*_coral_wall_fan` (living and dead) | `waterlogged`, `facing` | — |
 | `powered_rail`, `activator_rail`, `detector_rail` | `powered`, `shape` | `waterlogged` |
@@ -127,6 +128,7 @@ A file that starts with `circuit-trace 2` may use everything version 1 allows, p
 | --- | --- |
 | `at <t> spawn-item <x> <y> <z> <vx> <vy> <vz> <item> <count> [pickup-delay=<n>] [age=<n>]` | Add an item entity at the start of tick `t`, with a pickup delay of 0 and an age of 0 unless given (in this order): a pickup delay of 0 to 32767 (never picked up) and an age of -32768 (never ages) to 32767 |
 | `at <t> break <x> <y> <z> <item> [<enchantment>=<level> ...]` | At the start of tick `t`, a survival player holding the item (`minecraft:air` for an empty hand) with these enchantments (levels 1 to 255) breaks the block, dropping what the tool harvests. Circuit runs it as one player's slot and break commands; a tool with enchantments needs the official data packs |
+| `at <t> insert <x> <y> <z> <slot> <item> <count> potion=<potion>` | An insert of a bottle (`minecraft:potion`, `minecraft:splash_potion` or `minecraft:lingering_potion`) with this potion (an id of the potion registry, such as `minecraft:water`); slot probes write such a bottle as `<item>#<potion>`, and a bottle without a potion as its item alone. Circuit builds the bottle's potion contents with the official data packs' component encoding |
 | `at <t> command <words>` | Run a server command (without the slash) at the start of tick `t`. Circuit models `forceload add|remove <x> <z> [<x> <z>]` and `forceload remove all` (one forced ticket of level 31 per chunk, at most 256) `gamerule randomTickSpeed <n>`, `summon <type> <x> <y> <z> [{...}]` for `minecraft:tnt`, `minecraft:arrow`, `minecraft:snowball`, `minecraft:minecart` and the boats at absolute coordinates with the data tags `Motion`, `Fire` and `fuse`, `time set <ticks>` (or `day`, `noon`, `night`, `midnight`) and `weather clear|rain|thunder <ticks>` with a duration (without one the official servers draw it from the level random); any other command makes the fixture unsupported |
 | `change <t> <stage> <x> <y> <z> <old> <new>` | A block changed (v2 form of the v1 line) |
 | `entity-added <t> <stage> <handle> <type> <x> <y> <z> <vx> <vy> <vz> [key=value ...]` | An entity was added, at this position and velocity; a property's value runs to the next space and may hold `=` (a falling block's `block=` state) |

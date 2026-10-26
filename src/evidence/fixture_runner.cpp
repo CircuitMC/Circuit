@@ -82,7 +82,23 @@ struct Prepared {
         std::size_t line{};
     };
     std::vector<Tool> tools;
+    // The inserts of bottles with a potion, which the executor's data
+    // gives their potion contents: the input and the potion.
+    struct Bottle {
+        Tick tick{};
+        std::size_t index{};
+        std::string potion;
+        std::size_t line{};
+    };
+    std::vector<Bottle> bottles;
 };
+
+// The potion of a slot probe's bottle (`<item>#<potion>`); empty without one.
+std::string_view probe_potion(const SlotProbe& probe) {
+    const std::string_view v = *probe.item.value;
+    const auto hash = v.find('#');
+    return hash == std::string_view::npos ? std::string_view{} : v.substr(hash + 1);
+}
 
 // The player who breaks blocks for `break` actions, holding the tool in the
 // first hotbar slot.
@@ -262,6 +278,14 @@ std::optional<FixtureReport> enchant(Prepared& p, const FixtureExecutor& exec) {
         if (!patch) return report(Outcome::unsupported, std::format("line {}: an enchantment the data packs do not define", t.line));
         std::get<contracts::SetPlayerSlot>(p.inputs[t.tick][t.index].body).stack.components = std::move(*patch);
     }
+    for (const auto& b : p.bottles) {
+        const auto* data = exec.data();
+        if (!data || !data->with_potion)
+            return report(Outcome::unsupported, std::format("line {}: potions need the official data packs (--vanilla-jar)", b.line));
+        auto patch = data->with_potion({}, b.potion);
+        if (!patch) return report(Outcome::unsupported, std::format("line {}: a potion the potion registry lacks", b.line));
+        std::get<contracts::InsertItem>(p.inputs[b.tick][b.index].body).stack.components = std::move(*patch);
+    }
     return std::nullopt;
 }
 
@@ -378,6 +402,7 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
             const auto item = p.mapping->item(a.item);
             if (!item) return fail_line(a.line, item.error());
             body = contracts::InsertItem{a.pos, a.slot, {*item, a.count}};
+            if (!a.potion.empty()) p.bottles.push_back({a.tick + 2, p.inputs[a.tick + 2].size(), a.potion, a.line});
             break;
         }
         case Action::Kind::spawn_item: {
@@ -410,7 +435,8 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
     for (const auto& probe : f.slot_probes) {
         contracts::ItemStack stack{};
         if (*probe.item.value != "empty") {
-            const auto item = p.mapping->item(*probe.item.value);
+            const std::string_view value = *probe.item.value;
+            const auto item = p.mapping->item(value.substr(0, value.find('#')));
             if (!item) return fail_line(probe.line, item.error());
             stack = {*item, probe.count};
         }
@@ -873,13 +899,26 @@ FixtureReport evaluate_fixture(const Fixture& f, const ExecutorFactory& factory)
         for (const auto& [probe, stack] : p.slots) {
             if (probe->tick != t) continue;
             const auto observed = exec->slot(probe->pos, probe->slot);
-            if (!observed || *observed != stack) {
-                const auto text = [&](std::optional<contracts::ItemStack> s) -> std::string {
+            // A bottle's potion is compared by name, from its components.
+            const auto potion = probe_potion(*probe);
+            const auto* data = exec->data();
+            const auto potion_of = [&](const contracts::ItemStack& s) -> std::string_view {
+                if (!data || !data->potion_of || s.empty()) return {};
+                return data->potion_of(s.components).value_or(std::string_view{});
+            };
+            if (!potion.empty() && (!data || !data->potion_of))
+                return report(Outcome::unsupported, std::format("line {}: potions need the official data packs (--vanilla-jar)", probe->line));
+            const bool same = observed && (potion.empty() ? *observed == stack
+                                                          : observed->item == stack.item && observed->count == stack.count
+                                                                && potion_of(*observed) == potion);
+            if (!same) {
+                const auto text = [&](std::optional<contracts::ItemStack> s, std::string_view bottle) -> std::string {
                     if (!s) return "no container slot";
-                    return s->empty() ? std::string("empty") : std::format("{} x{}", p.mapping->item_name(s->item), s->count);
+                    if (s->empty()) return "empty";
+                    return std::format("{}{}{} x{}", p.mapping->item_name(s->item), bottle.empty() ? "" : "#", bottle, s->count);
                 };
                 return report(Outcome::failed, std::format("tick {} slot probe (line {}): expected {}, observed {}", t, probe->line,
-                                                           text(stack), text(observed)));
+                                                           text(stack, potion), text(observed, observed ? potion_of(*observed) : "")));
             }
             ++probes;
         }
@@ -984,6 +1023,8 @@ std::expected<Fixture, std::string> record_fixture(const Fixture& skeleton, cons
             const auto s = exec->slot(probe.pos, probe.slot);
             if (!s) return report(Outcome::invalid, std::format("line {}: no container slot to record", probe.line));
             probe.item.value = s->empty() ? std::string("empty") : p.mapping->item_name(s->item);
+            if (const auto* data = exec->data(); !s->empty() && data && data->potion_of)
+                if (const auto potion = data->potion_of(s->components)) *probe.item.value += std::format("#{}", *potion);
             probe.count = s->empty() ? 0 : s->count;
         }
         if (out.format >= 2 && out.observe_entities) {

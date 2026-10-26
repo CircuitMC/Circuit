@@ -11,6 +11,7 @@
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/block_registry.hpp>
 #include <circuit/gameplay/game_data.hpp>
+#include <circuit/gameplay/potions.hpp>
 #include <circuit/gameplay/items.hpp>
 #include <circuit/gameplay/light.hpp>
 #include <circuit/gameplay/loot.hpp>
@@ -1701,6 +1702,64 @@ int main() {
         s.tick({click(2, 0, 1)});
         require(furnace_slot(2).empty() && player().slots[44].item == item("minecraft:iron_ingot"),
                 "the result goes to the hotbar from its end");
+    });
+
+    suite.run("brewing stands brew the bottles that mix with their ingredient", [] {
+        using circuit::contracts::ComponentPatch;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->brewing_fuel = {items::blaze_powder};
+        // A stand-in for the server's encoding: the potion's name as the bytes of one component.
+        data->potion_of = [](const ComponentPatch& patch) -> std::optional<std::string_view> {
+            for (const auto& a : patch.added()) {
+                const std::string name(reinterpret_cast<const char*>(a.value.data()), a.value.size());
+                const auto names = circuit::gameplay::potions::names();
+                if (const auto it = std::ranges::find(names, name); it != names.end()) return *it;
+            }
+            return std::nullopt;
+        };
+        data->with_potion = [](const ComponentPatch&, std::string_view potion) {
+            std::vector<std::byte> bytes;
+            for (const char c : potion) bytes.push_back(static_cast<std::byte>(c));
+            return std::optional(ComponentPatch::make(772, {{1, bytes}}, {}, {}));
+        };
+        const auto bottle = [&](std::uint16_t kind, std::string_view potion) {
+            return ItemStack{kind, 1, 0, *data->with_potion({}, potion)};
+        };
+        const auto put = [](BlockPos p, std::uint8_t slot, ItemStack stack) { return circuit::contracts::InsertItem{p, slot, std::move(stack)}; };
+        Sim s(bundle(), 7, 2, data);
+        s.tick(floor(-3, 10, -1, 6));
+        const auto slots = [&](BlockPos p) { return block_entity_at(s.oracle.dump(), p)->slots; };
+        const auto potion = [&](const ItemStack& stack) { return data->potion_of(stack.components).value_or(""); };
+        // Water bottles with nether wart; splash potions with two dragon's
+        // breath; a hopper below another stand takes its bottle, not its fuel.
+        s.tick({place({0, 0, 0}, blocks::brewing_stand()), place({4, 0, 0}, blocks::brewing_stand()), place({8, 1, 0}, blocks::brewing_stand()),
+                place({8, 0, 0}, blocks::hopper(Direction::east))});
+        s.tick({put({0, 0, 0}, 0, bottle(items::potion, "minecraft:water")), put({0, 0, 0}, 2, bottle(items::potion, "minecraft:water")),
+                put({0, 0, 0}, 3, {item("minecraft:nether_wart"), 2}), put({0, 0, 0}, 4, {items::blaze_powder, 1}),
+                put({4, 0, 0}, 1, bottle(items::splash_potion, "minecraft:swiftness")), put({4, 0, 0}, 3, {items::dragon_breath, 2}),
+                put({4, 0, 0}, 4, {items::blaze_powder, 2}), put({8, 1, 0}, 0, bottle(items::potion, "minecraft:awkward")),
+                put({8, 1, 0}, 4, {items::blaze_powder, 3})});
+        require(slots({0, 0, 0})[4].empty() && slots({4, 0, 0})[4].count == 1 && s.at({0, 0, 0}).level() == 0b101,
+                "fuel is used up as it comes; the stand shows its bottles");
+        require(slots({8, 1, 0})[0].empty() && slots({8, 1, 0})[4].count == 2 && slots({8, 0, 0})[0].item == items::potion,
+                "the hopper below takes the bottle, not the fuel");
+        const auto entities = s.oracle.dump().overworld().entities.size();
+        s.until(s.oracle.time() + 399);
+        require(potion(slots({0, 0, 0})[0]).empty() || potion(slots({0, 0, 0})[0]) == "minecraft:water", "not before 400 ticks");
+        s.until(s.oracle.time() + 1);
+        const auto first = slots({0, 0, 0});
+        require(potion(first[0]) == "minecraft:awkward" && potion(first[2]) == "minecraft:awkward" && first[3].count == 1,
+                "both bottles became awkward potions with one nether wart");
+        const auto second = slots({4, 0, 0});
+        require(second[1].item == items::lingering_potion && potion(second[1]) == "minecraft:swiftness" && second[3].count == 1,
+                "dragon's breath made a lingering potion of the same potion");
+        const auto d = s.oracle.dump();
+        require(d.overworld().entities.size() == entities + 1 && d.overworld().entities.back().stack.item == items::glass_bottle,
+                "and threw out its glass bottle");
+        // Awkward potions take no nether wart: the stand does not brew again.
+        s.until(s.oracle.time() + 401);
+        require(potion(slots({0, 0, 0})[0]) == "minecraft:awkward" && slots({0, 0, 0})[3].count == 1, "nothing more to brew");
     });
 
     suite.run("crafters craft on power and fill evenly from hoppers", [] {

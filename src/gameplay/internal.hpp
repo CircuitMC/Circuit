@@ -392,6 +392,13 @@ void tick_furnace(RuleContext& ctx, BlockPos pos, BlockState s);
 std::vector<std::size_t> furnace_slots(Direction face);
 bool furnace_accepts(const BlockEntity& be, std::size_t slot, const ItemStack& stack);
 bool furnace_gives(std::size_t slot, const ItemStack& stack, Direction face);
+// Brewing stands (brewing.cpp): the block-entity tick; the slots a face
+// reaches, in order; whether a slot takes an item (`fuel`: what fuels them,
+// GameData::brewing_fuel, or blaze powder without data) and gives one.
+void tick_brewing_stand(RuleContext& ctx, BlockPos pos, BlockState s);
+std::vector<std::size_t> brewing_slots(Direction face);
+bool brewing_accepts(const GameData* data, const BlockEntity& be, std::size_t slot, const ItemStack& stack);
+bool brewing_gives(std::size_t slot, const ItemStack& stack);
 
 // ---- dispensers and droppers (dispenser.cpp) ----
 // A neighbor update: triggered by power at the block or above it.

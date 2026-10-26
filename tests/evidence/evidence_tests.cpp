@@ -11,6 +11,8 @@
 #include <circuit/gameplay/physics.hpp>
 #include <circuit/gameplay/rules.hpp>
 #include <circuit/gameplay/light.hpp>
+#include <circuit/gameplay/potions.hpp>
+#include <tuple>
 #include <array>
 #include <charconv>
 #include <cmath>
@@ -1072,6 +1074,53 @@ int main(int argc, char** argv) {
         }
         std::cout << std::format("  {} states, {} ignited by lava\n", checked, ignited);
         require(ignited > 0, "lava ignites some");
+    });
+
+    suite.run("every bottle brews with every item as on the official servers", [&] {
+        // tests/fixtures/collision/brewing.txt: the potion registry, the
+        // ingredients and every mix of both versions.
+        namespace potions = circuit::gameplay::potions;
+        const auto item = [](std::string_view n) { return circuit::gameplay::items::by_name(n).value(); };
+        std::istringstream lines(read_text(fixtures / "collision" / "brewing.txt"));
+        std::set<std::uint16_t> ingredients;
+        std::map<std::tuple<std::uint16_t, std::string, std::uint16_t>, potions::Bottle> mixes;
+        std::size_t potion_count = 0;
+        for (std::string line; std::getline(lines, line);) {
+            if (line.empty() || line.front() == '#') continue;
+            std::istringstream words(line);
+            std::string kind;
+            words >> kind;
+            if (kind == "potion") {
+                std::uint32_t id{};
+                std::string name;
+                words >> id >> name;
+                require(potions::id(name) == id, std::format("potion {}: official id {}", name, id));
+                ++potion_count;
+            } else if (kind == "ingredient") {
+                std::string name;
+                words >> name;
+                ingredients.insert(item(name));
+            } else {
+                std::string from, potion, with, to, made;
+                words >> from >> potion >> with >> to >> made;
+                mixes[{item(from), potion, item(with)}] = {item(to), *std::ranges::find(potions::names(), made)};
+            }
+        }
+        require(potion_count == potions::names().size(), "every potion");
+        std::size_t checked = 0;
+        for (std::uint16_t id = 1; circuit::gameplay::items::info(id); ++id) {
+            require(potions::ingredient(id) == ingredients.contains(id), std::format("item {}: an ingredient or not", id));
+            for (const auto bottle : {circuit::gameplay::items::potion, circuit::gameplay::items::splash_potion, circuit::gameplay::items::lingering_potion})
+                for (const auto potion : potions::names()) {
+                    const auto it = mixes.find({bottle, std::string(potion), id});
+                    const auto want = it == mixes.end() ? std::nullopt : std::optional(it->second);
+                    require(potions::mix({bottle, potion}, id) == want,
+                            std::format("{} {} with item {}", circuit::gameplay::items::info(bottle)->name, potion, id));
+                    ++checked;
+                }
+        }
+        std::cout << std::format("  {} bottles and items, {} mixes\n", checked, mixes.size());
+        require(mixes.size() == 281, "281 mixes");
     });
 
     suite.run("every item burns in furnaces as long as on the official servers", [&] {

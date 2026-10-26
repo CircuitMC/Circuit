@@ -2950,12 +2950,15 @@
         "evidence": "compared",
         "cases": [
           "collision/block_entities",
-          "placement/official_items"
+          "placement/official_items",
+          "trace/brewing",
+          "trace/brewing_hoppers",
+          "collision/brewing"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "players cannot open its menu yet"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; it brews with fuel, ingredients and bottles from hoppers as both official servers do"
       },
       "enchanting_table": {
         "impl": "partial",

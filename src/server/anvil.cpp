@@ -794,6 +794,14 @@ private:
             out.cook_total = time("cooking_total_time");
             out.lit_time = time("lit_time_remaining");
             out.lit_total = time("lit_total_time");
+        } else if (id == "minecraft:brewing_stand" && expect(BlockType::brewing_stand)) {
+            out = {BlockType::brewing_stand, 0, std::vector<contracts::ItemStack>(5), 0};
+            read_items(be, out, "brewing_stand");
+            // Its brew time and fuel. The ingredient it brews with is not
+            // saved: the one in its slot carries on.
+            out.cook_time = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(be, "BrewTime").value_or(0), 0, 400));
+            out.lit_time = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(be, "Fuel").value_or(0), 0, 127));
+            out.cook_total = out.slots[3].item;
         } else if (id == "minecraft:crafter" && expect(BlockType::crafter)) {
             out = {BlockType::crafter, 0, std::vector<contracts::ItemStack>(9), 0};
             read_items(be, out, "crafter");
@@ -1299,6 +1307,12 @@ private:
             t.set("lit_total_time", Tag::short_(static_cast<std::int16_t>(be.lit_total)));
             break;
         }
+        case BlockType::brewing_stand:
+            t.set("id", Tag::string("minecraft:brewing_stand"));
+            t.set("BrewTime", Tag::short_(static_cast<std::int16_t>(be.cook_time)));
+            t.set("Fuel", Tag::byte(static_cast<std::int8_t>(be.lit_time)));
+            t.set("Items", items(be.slots));
+            break;
         case BlockType::crafter: {
             t.set("id", Tag::string("minecraft:crafter"));
             t.set("Items", items(be.slots));

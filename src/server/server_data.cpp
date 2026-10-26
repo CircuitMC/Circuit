@@ -3,6 +3,7 @@
 #include <circuit/server/data_report.hpp>
 #include <circuit/gameplay/block.hpp>
 #include <circuit/gameplay/block_registry.hpp>
+#include <circuit/gameplay/potions.hpp>
 #include <circuit/protocol/content.hpp>
 #include <algorithm>
 #include <array>
@@ -200,6 +201,26 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
                 auto patch = codec->with_banner_layer(base, *id, color, ctx);
                 return patch ? std::optional(std::move(*patch)) : std::nullopt;
             };
+        }
+        if (const auto* codec = protocol::ComponentCodec::for_protocol(bundle.schema.component_schema)) {
+            game->potion_of = [codec](const contracts::ComponentPatch& patch) -> std::optional<std::string_view> {
+                const auto id = codec->potion_of(patch);
+                const auto names = gameplay::potions::names();
+                if (!id || *id >= names.size()) return std::nullopt;
+                return names[*id];
+            };
+            game->with_potion = [codec, ctx = component_context(bundle, out.registries)](
+                                    const contracts::ComponentPatch& base, std::string_view potion) -> std::optional<contracts::ComponentPatch> {
+                const auto id = gameplay::potions::id(potion);
+                if (!id) return std::nullopt;
+                auto patch = codec->with_potion(base, *id, ctx);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
+        }
+        if (const auto* fuel = packs->tag("item", "minecraft:brewing_fuel")) {
+            for (const auto& name : *fuel)
+                if (const auto item = gameplay::items::by_name(name)) game->brewing_fuel.push_back(*item);
+            std::ranges::sort(game->brewing_fuel);
         }
         if (const auto* curses = packs->tag("enchantment", "minecraft:curse")) {
             const auto ctx = component_context(bundle, out.registries);

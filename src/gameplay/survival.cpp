@@ -80,7 +80,8 @@ Tool effective_tool(BlockState s, const GameData* data) noexcept {
     case BlockType::weighted_plate: return Tool::pickaxe;
     case BlockType::target: return Tool::hoe;
     case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: case BlockType::daylight_detector:
-    case BlockType::note_block: case BlockType::rail: case BlockType::dispenser: case BlockType::furnace: case BlockType::crafter: {
+    case BlockType::note_block: case BlockType::rail: case BlockType::dispenser: case BlockType::furnace: case BlockType::crafter:
+    case BlockType::brewing_stand: {
         const auto info = detail::modeled_info(s);
         switch (info ? info->tool : registry::Tool::none) {
         case registry::Tool::pickaxe: return Tool::pickaxe;
@@ -103,7 +104,7 @@ int required_tier(BlockState s, const GameData* data) noexcept {
     case BlockType::stone: case BlockType::redstone_block: case BlockType::observer: case BlockType::hopper: return 1;
     case BlockType::obsidian: return 4;
     case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: case BlockType::dispenser: case BlockType::furnace:
-    case BlockType::crafter: {
+    case BlockType::crafter: case BlockType::brewing_stand: {
         const auto info = detail::modeled_info(s);
         return info ? info->tier : 0;
     }
@@ -127,7 +128,7 @@ float hardness(BlockState s) noexcept {
         return 0.5f;
     case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: case BlockType::daylight_detector:
     case BlockType::note_block: case BlockType::rail: case BlockType::coral_fan: case BlockType::coral_wall_fan:
-    case BlockType::dispenser: case BlockType::furnace: case BlockType::crafter: {
+    case BlockType::dispenser: case BlockType::furnace: case BlockType::crafter: case BlockType::brewing_stand: {
         const auto info = detail::modeled_info(s);
         return info ? info->hardness : -1.0f;
     }

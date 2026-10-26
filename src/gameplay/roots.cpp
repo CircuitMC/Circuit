@@ -61,6 +61,7 @@ void run_block_entity(RuleContext& ctx, BlockPos pos) {
     else if (s.is(BlockType::daylight_detector)) tick_daylight_detector(ctx, pos, s);
     else if (s.is(BlockType::furnace)) tick_furnace(ctx, pos, s);
     else if (s.is(BlockType::crafter)) tick_crafter_entity(ctx, pos, s);
+    else if (s.is(BlockType::brewing_stand)) tick_brewing_stand(ctx, pos, s);
 }
 
 } // namespace circuit::gameplay

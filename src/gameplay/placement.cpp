@@ -70,6 +70,7 @@ std::optional<BlockState> placed_by(std::uint16_t item, const contracts::PlayerU
     }
     // Furnaces face the player (tests/fixtures/placement).
     case items::furnace: return blocks::furnace(blocks::FurnaceKind::furnace, contracts::opposite(horizontal));
+    case items::brewing_stand: return blocks::brewing_stand();
     case items::smoker: return blocks::furnace(blocks::FurnaceKind::smoker, contracts::opposite(horizontal));
     case items::blast_furnace: return blocks::furnace(blocks::FurnaceKind::blast_furnace, contracts::opposite(horizontal));
     case items::hopper:

@@ -228,6 +228,15 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
                                                          {D::west, D::up}, {D::east, D::up}, {D::north, D::up}, {D::south, D::up}}};
         return simple(blocks::crafter(sides[orientation].first, sides[orientation].second, triggered == 1, crafting == 1));
     }
+    if (id == "minecraft:brewing_stand") {
+        // Absent properties take the default state's (no bottles).
+        std::uint8_t bottles = 0;
+        for (std::uint8_t k = 0; k < 3; ++k) {
+            CIRCUIT_TRY(has, p.choice(std::format("has_bottle_{}", k), {"false", "true"}, 0));
+            if (has == 1) bottles = static_cast<std::uint8_t>(bottles | 1u << k);
+        }
+        return simple(blocks::brewing_stand(bottles));
+    }
     if (id == "minecraft:piston" || id == "minecraft:sticky_piston") {
         CIRCUIT_TRY(facing, p.direction("facing"));
         CIRCUIT_TRY(extended, p.flag("extended"));

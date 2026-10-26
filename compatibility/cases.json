@@ -504,6 +504,17 @@
       "description": "Each item's burn time in a furnace, as both official servers report it; Circuit's rules give the same for every item of both versions"
     },
     {
+      "id": "collision/brewing",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "tests/fixtures/collision/brewing.txt, checked by tests/evidence/evidence_tests.cpp; external: circuit-harness brewing report",
+      "status": "passing",
+      "description": "The potion registry, the brewing ingredients and the 281 mixes, as both official servers report them; Circuit's rules brew every bottle of every potion with every item as they do"
+    },
+    {
       "id": "collision/lava_ignites",
       "kind": "black_box",
       "versions": [

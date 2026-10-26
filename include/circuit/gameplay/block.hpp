@@ -55,6 +55,8 @@ enum class BlockType : std::uint8_t {
     furnace,             // facing: front (horizontal); flag: lit; variant: FurnaceKind. Block entity: input, fuel and result slots, its times
     crafter,             // facing: front (any side); variant: the top's direction (up for a horizontal front); flag: triggered;
                          // extra: crafting. Block entity: nine grid slots, the disabled ones, its crafting ticks
+    brewing_stand,       // level: its bottles (bit k: has_bottle_k). Block entity: three bottles, the ingredient, the fuel; its
+                         // fuel, brew time and the ingredient it brews with
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -263,6 +265,10 @@ constexpr BlockState crafter(Direction front, Direction top = Direction::up, boo
     return BlockState::of(BlockType::crafter).with_facing(front).with_variant(static_cast<std::uint8_t>(top)).with_flag(triggered)
         .with_extra(crafting ? 1 : 0);
 }
+// A brewing stand showing the bottles of `bottles` (bit k: slot k).
+constexpr BlockState brewing_stand(std::uint8_t bottles = 0) {
+    return BlockState::of(BlockType::brewing_stand).with_level(static_cast<std::uint8_t>(bottles & 7));
+}
 // A note block; `instrument` is a registry::Instrument.
 constexpr BlockState note_block(std::uint8_t instrument = 0, std::uint8_t note = 0, bool powered = false) {
     return BlockState::of(BlockType::note_block).with_variant(instrument).with_level(static_cast<std::uint8_t>(note & 15))
@@ -356,7 +362,8 @@ constexpr bool repeater_locked(BlockState s) noexcept { return s.is(BlockType::r
 template <class F>
 void for_each_block_state(F&& f);
 constexpr bool is_container(BlockType t) noexcept {
-    return t == BlockType::hopper || t == BlockType::chest || t == BlockType::dispenser || t == BlockType::furnace || t == BlockType::crafter;
+    return t == BlockType::hopper || t == BlockType::chest || t == BlockType::dispenser || t == BlockType::furnace || t == BlockType::crafter
+        || t == BlockType::brewing_stand;
 }
 // Block entities hold container slots, hopper cooldowns, comparator output
 // signals and moving blocks; a daylight detector's ticks it.
@@ -373,7 +380,7 @@ constexpr std::optional<Direction> chest_partner(BlockState s) noexcept {
 }
 constexpr std::uint8_t container_size(BlockType t) noexcept {
     return t == BlockType::hopper ? 5 : t == BlockType::chest ? 27 : t == BlockType::dispenser || t == BlockType::crafter ? 9
-         : t == BlockType::furnace ? 3 : 0;
+         : t == BlockType::furnace ? 3 : t == BlockType::brewing_stand ? 5 : 0;
 }
 // Whether a block state takes random ticks (random_ticks.cpp; checked
 // against both official servers for every state): sections without such
@@ -403,6 +410,7 @@ inline bool is_solid(BlockState s) noexcept {
     case BlockType::piston_head: case BlockType::slime_block: case BlockType::hopper: case BlockType::chest:
     case BlockType::moving_piston: case BlockType::target: case BlockType::honey_block: case BlockType::daylight_detector:
     case BlockType::note_block: case BlockType::dispenser: case BlockType::furnace: case BlockType::crafter:
+    case BlockType::brewing_stand:
         return true;
     case BlockType::other: return other_has_collision(s);
     default:

@@ -45,6 +45,8 @@ struct BlockEntity {
     // Furnace: ticks its fuel still burns and the fuel's whole burn time,
     // the input's cooking progress and the time it needs.
     std::int32_t lit_time{}, lit_total{}, cook_time{}, cook_total{};
+    // Brewing stand: lit_time its fuel (the brews it has left), cook_time
+    // the ticks its brew still takes and cook_total the item it brews with.
     // Crafter: its disabled slots (bit k: slot k) and the ticks it still
     // shows that it crafted.
     std::uint16_t disabled{};

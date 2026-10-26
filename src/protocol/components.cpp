@@ -898,4 +898,52 @@ std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_trim(
     return contracts::ComponentPatch::make(protocol(), std::move(added), std::move(removed), base.typed());
 }
 
+
+std::optional<std::uint32_t> ComponentCodec::potion_of(const contracts::ComponentPatch& patch) const {
+    const auto type = type_id("potion_contents");
+    if (patch.empty() || patch.protocol() != protocol() || !type) return std::nullopt;
+    for (const auto& a : patch.added()) {
+        if (a.type != *type) continue;
+        // Whether there is a potion, then its id.
+        Reader r(a.value);
+        const auto has = r.boolean();
+        if (!has || !*has) return std::nullopt;
+        const auto id = r.varint();
+        if (!id || *id < 0) return std::nullopt;
+        return static_cast<std::uint32_t>(*id);
+    }
+    return std::nullopt;
+}
+
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_potion(const contracts::ComponentPatch& base, std::uint32_t potion,
+                                                                                  const ComponentContext& ctx) const {
+    const auto type = type_id("potion_contents");
+    if (!type) return std::unexpected("no potion_contents component");
+    Writer w;
+    w.boolean(true).varint(static_cast<std::int32_t>(potion));
+    // The rest of the contents as they were: the custom color, effects and
+    // name; none of them without contents.
+    bool had = false;
+    for (const auto& a : base.added()) {
+        if (a.type != *type) continue;
+        Reader r(a.value);
+        const auto has = r.boolean();
+        if (!has || (*has && !r.varint())) return std::unexpected("potion_contents: unreadable");
+        w.raw(std::span(a.value).subspan(a.value.size() - r.remaining()));
+        had = true;
+    }
+    if (!had) w.boolean(false).varint(0).boolean(false);
+    auto value = canonical_value(*type, w.bytes(), ctx);
+    if (!value) return std::unexpected(value.error());
+    std::vector<contracts::ComponentPatch::Added> added;
+    for (const auto& a : base.added())
+        if (a.type != *type) added.push_back(a);
+    added.push_back({*type, std::move(*value)});
+    std::ranges::sort(added, {}, &contracts::ComponentPatch::Added::type);
+    std::vector<std::uint16_t> removed;
+    for (const auto r : base.removed())
+        if (r != *type) removed.push_back(r);
+    return contracts::ComponentPatch::make(protocol(), std::move(added), std::move(removed), base.typed());
+}
+
 } // namespace circuit::protocol

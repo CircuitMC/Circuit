@@ -47,6 +47,7 @@ struct Action {
     std::uint8_t slot{};         // insert
     std::string item;            // insert, spawn_item, break_block
     std::uint8_t count{};        // insert, spawn_item
+    std::string potion;          // insert (v2): optional `potion=<id>`, the potion of a bottle
     Vec3d position{}, velocity{};// spawn_item (v2)
     std::uint16_t pickup_delay{}; // spawn_item: optional `pickup-delay=<n>`, 0 to 32767
     std::int32_t age{};           // spawn_item: optional `age=<n>`, -32768 to 32767
@@ -141,7 +142,7 @@ struct SlotProbe {
     Tick tick{};
     BlockPos pos;
     std::uint8_t slot{};
-    Observed item;               // "empty" or an item id
+    Observed item;               // "empty", an item id, or (v2) a bottle's item id and potion id as `<item>#<potion>`
     std::uint8_t count{};
     std::size_t line{};
     bool operator==(const SlotProbe&) const = default;

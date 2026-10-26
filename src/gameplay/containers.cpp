@@ -27,6 +27,8 @@ struct Inventory {
     std::optional<Direction> face;
     bool furnace = false;
     bool crafter = false;
+    bool brewing = false;
+    const GameData* data = nullptr;
 
     static Inventory open(RuleContext& ctx, BlockPos pos, std::optional<Direction> face = std::nullopt) {
         Inventory inv;
@@ -39,12 +41,15 @@ struct Inventory {
         inv.face = face;
         inv.furnace = inv.parts.size() == 1 && ctx.block(pos).is(BlockType::furnace);
         inv.crafter = inv.parts.size() == 1 && ctx.block(pos).is(BlockType::crafter);
+        inv.brewing = inv.parts.size() == 1 && ctx.block(pos).is(BlockType::brewing_stand);
+        inv.data = ctx.data();
         return inv;
     }
     [[nodiscard]] bool valid() const { return !parts.empty(); }
     // The slots of part `i` in the order items go in or out.
     [[nodiscard]] std::vector<std::size_t> slots(std::size_t i) const {
         if (furnace) return furnace_slots(face.value_or(Direction::up));
+        if (brewing) return brewing_slots(face.value_or(Direction::up));
         std::vector<std::size_t> out(entities[i]->slots.size());
         for (std::size_t j = 0; j < out.size(); ++j) out[j] = j;
         return out;
@@ -57,12 +62,14 @@ struct Inventory {
                 const auto& s = entities[i]->slots[j];
                 if (furnace && !furnace_accepts(*entities[i], j, stack)) continue;
                 if (crafter && !crafter_accepts(*entities[i], j, stack)) continue;
+                if (brewing && !brewing_accepts(data, *entities[i], j, stack)) continue;
                 if (s.empty() || (s.same_kind(stack) && s.count < slot_limit(s))) return std::pair{i, j};
             }
         return std::nullopt;
     }
     // Whether an item may go out of part `i`'s slot `j`.
     [[nodiscard]] bool gives(std::size_t j, const ItemStack& stack) const {
+        if (brewing) return brewing_gives(j, stack);
         return !furnace || furnace_gives(j, stack, face.value_or(Direction::down));
     }
     // A furnace's input set anew starts its cooking over.

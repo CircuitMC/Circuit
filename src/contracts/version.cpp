@@ -179,6 +179,16 @@ constexpr std::array reference_v4_mechanisms{
         "and empty buckets from below; players use their menus (client/furnace_menus). Gaps: the experience of what they "
         "cooked and minecarts with hoppers are not modeled; checkpoints before version 28 bring their furnaces back "
         "empty."},
+    MechanismEntry{"brewing", l0_exact, l2_declared_deviation, harness_trace,
+        "Brewing stands as both official servers run them (brewing, brewing_hoppers; with the official data packs' "
+        "brewing fuel and component encoding): blaze powder gives fuel for 20 brews when none is left; with fuel and a "
+        "bottle that mixes with the ingredient they brew for 400 ticks, each such bottle becoming its mix (the 281 mixes "
+        "of both servers' brewing reports), and stop when the ingredient changes or nothing is left to brew; the last "
+        "ingredient leaves nothing, while dragon's breath of a larger stack throws out its glass bottle; they show which "
+        "bottle slots hold something; hoppers reach the ingredient from above and the bottles and fuel from the sides, "
+        "and take the bottles and a glass bottle in the ingredient slot from below; comparators read their fullness. "
+        "Gaps: their menus (players cannot open them yet); a thrown-out glass bottle is pushed out of the stand by an "
+        "unseeded random and is not compared; whether a brew loaded from a saved world carries on is not observed."},
     MechanismEntry{"crafter", l0_exact, l2_declared_deviation, harness_trace,
         "Crafters as both official servers run them (crafters; with the official data packs' crafting recipes): power at "
         "the block (not above it) sets them triggered and crafts 4 ticks later by the first recipe that takes the grid, "

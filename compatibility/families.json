@@ -2338,8 +2338,25 @@
           ]
         },
         {
+          "id": "brewing",
+          "name": "Brewing stands",
+          "milestone": "C5",
+          "impl": "partial",
+          "evidence": "compared",
+          "note": "Brewing stands take blaze powder as fuel for 20 brews, brew for 400 ticks each bottle that mixes with the ingredient into its mix (every mix of both official servers' brewing reports), stop when the ingredient changes or nothing is left to brew, throw out dragon's breath's glass bottle, show their bottles, take from and give to hoppers by face and drive comparators, as both official servers do tick by tick (with the official data packs)",
+          "cases": [
+            "trace/brewing",
+            "trace/brewing_hoppers",
+            "collision/brewing"
+          ],
+          "deviations": [
+            "players cannot open their menus yet",
+            "a thrown-out glass bottle is pushed out of the stand by an unseeded random and is not compared"
+          ]
+        },
+        {
           "id": "other_menus",
-          "name": "Brewing, enchanting, anvils, cartography, beacons, merchants, lecterns and mount inventories",
+          "name": "Enchanting, anvils, cartography, beacons, merchants, lecterns and mount inventories",
           "milestone": "C5",
           "impl": "missing",
           "evidence": "none"

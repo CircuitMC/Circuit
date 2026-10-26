@@ -8,6 +8,7 @@
 #include <functional>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -84,6 +85,13 @@ struct GameData {
                                                             const std::vector<std::pair<std::uint32_t, std::int32_t>>& levels, bool keep_empty,
                                                             std::int32_t repair_cost)>
         with_enchantments;
+    // A stack's potion (an id of the built-in potion registry, potions.hpp)
+    // and its components with the potion set (their other potion contents
+    // kept); set by the server, which knows the components' encoding.
+    std::function<std::optional<std::string_view>(const contracts::ComponentPatch&)> potion_of;
+    std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, std::string_view potion)> with_potion;
+    // What fuels brewing stands: the items of the item tag brewing_fuel, ascending.
+    std::vector<std::uint16_t> brewing_fuel;
 };
 
 } // namespace circuit::gameplay

@@ -108,6 +108,14 @@ public:
     [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_trim(const contracts::ComponentPatch& base, std::uint32_t material,
                                                                                   std::uint32_t pattern, const ComponentContext& ctx) const;
 
+    // The potion (an id of the potion registry) of the patch's potion
+    // contents; nullopt without one.
+    [[nodiscard]] std::optional<std::uint32_t> potion_of(const contracts::ComponentPatch& patch) const;
+    // `base` with the potion of its potion contents set to `potion`, their
+    // color, effects and name and its other components kept.
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_potion(const contracts::ComponentPatch& base, std::uint32_t potion,
+                                                                                    const ComponentContext& ctx) const;
+
     explicit ComponentCodec(const void* schema) noexcept : schema_(schema) {}
 
 private:

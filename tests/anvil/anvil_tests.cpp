@@ -432,7 +432,7 @@ int main() {
     });
 
     suite.run("blocks with block entities that players place export their official defaults", [&] {
-        // A brewing stand, a shulker box and a barrel placed on stone: each keeps an
+        // A beacon, a shulker box and a barrel placed on stone: each keeps an
         // empty block entity, written out as its type's defaults and read back
         // as saved data.
         namespace registry = circuit::gameplay::registry;
@@ -441,7 +441,7 @@ int main() {
         const circuit::contracts::PlayerKey alex{1, 2};
         engine.advance(admit({ticket(1, {0, 0}, 1)}));
         std::vector<CommandBody> commands;
-        for (const auto& [x, item] : {std::pair{1, "minecraft:brewing_stand"}, std::pair{3, "minecraft:red_shulker_box"}, std::pair{5, "minecraft:barrel"}}) {
+        for (const auto& [x, item] : {std::pair{1, "minecraft:beacon"}, std::pair{3, "minecraft:red_shulker_box"}, std::pair{5, "minecraft:barrel"}}) {
             commands.push_back(place({x, 0, 3}, blocks::stone()));
             commands.push_back(circuit::contracts::SetPlayerSlot{alex, 36, {circuit::gameplay::items::by_name(item).value(), 1, 0}});
             commands.push_back(circuit::contracts::PlayerUse{alex, 36, {x, 0, 3}, Direction::up, Direction::north, Direction::north, false, false, 3, 3});
@@ -456,7 +456,7 @@ int main() {
         require(anvil::export_world(state, bundle(), target, {.level_name = "placed", .seed = 5}).has_value(), "export");
         const auto back = anvil::import_world(target, bundle());
         require(back.has_value(), back ? "" : back.error());
-        for (const auto& [x, saved] : {std::pair{1, "brewing_stand"}, std::pair{3, "shulker_box"}, std::pair{5, "barrel"}}) {
+        for (const auto& [x, saved] : {std::pair{1, "beacon"}, std::pair{3, "shulker_box"}, std::pair{5, "barrel"}}) {
             const auto* be = block_entity_at(back->state, {x, 1, 3});
             require(be && be->kind == BlockType::other, std::format("{}: imported", saved));
             circuit::protocol::Reader r(be->saved.bytes());
@@ -515,6 +515,33 @@ int main() {
         const auto* be = block_entity_at(back->state, {2, 0, 2});
         require(be && be->kind == BlockType::crafter && be->slots.size() == 9 && be->slots[4].count == 7, "its grid");
         require(be->disabled == 0b100000001 && be->crafting_ticks == 3, "its disabled slots and crafting ticks");
+    });
+
+    suite.run("brewing stands round-trip through Anvil with their slots, brew time and fuel", [&] {
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        const auto wart = circuit::gameplay::items::by_name("minecraft:nether_wart").value();
+        engine.advance(admit({place({2, 0, 2}, blocks::brewing_stand(0b010)), insert({2, 0, 2}, 1, circuit::gameplay::items::glass_bottle, 1),
+                              insert({2, 0, 2}, 3, wart, 5)}));
+        auto state = engine.dump();
+        for (auto& level : state.levels)
+            for (auto& [pos, be] : level.block_entities)
+                if (be.kind == BlockType::brewing_stand) {
+                    be.cook_time = 123;
+                    be.cook_total = wart;
+                    be.lit_time = 17;
+                }
+        const auto target = root / "brewing";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "brewing", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        require(state_at(back->state, {2, 0, 2}) == blocks::brewing_stand(0b010), "the stand with its bottle shown");
+        const auto* be = block_entity_at(back->state, {2, 0, 2});
+        require(be && be->kind == BlockType::brewing_stand && be->slots.size() == 5 && be->slots[1].item == circuit::gameplay::items::glass_bottle
+                    && be->slots[3].count == 5,
+                "its slots");
+        require(be->cook_time == 123 && be->lit_time == 17 && be->cook_total == wart, "its brew time, fuel and the ingredient in its slot");
     });
 
     suite.run("daylight detectors round-trip through Anvil with their block entities", [&] {

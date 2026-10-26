@@ -387,7 +387,7 @@ private:
                     return fail(line_, "invalid enchantment (<id>=<level>)");
                 a.enchantments.emplace_back(std::string(t[i].substr(0, eq)), static_cast<std::uint8_t>(level));
             }
-        } else if (t[2] == "insert" && t.size() == 9) {
+        } else if (t[2] == "insert" && (t.size() == 9 || t.size() == 10)) {
             a.kind = Action::Kind::insert;
             unsigned slot{}, count{};
             if (!number(t[6], slot) || slot > 255) return fail(line_, "invalid slot");
@@ -395,6 +395,11 @@ private:
             if (!number(t[8], count) || count < 1 || count > contracts::max_stack_size) return fail(line_, "invalid count");
             a.slot = static_cast<std::uint8_t>(slot);
             a.count = static_cast<std::uint8_t>(count);
+            if (t.size() == 10) {
+                if (f_.format < 2) return fail(line_, "potion needs circuit-trace 2");
+                if (!t[9].starts_with("potion=") || !valid_id(t[9].substr(7))) return fail(line_, "invalid potion (potion=<id>)");
+                a.potion = std::string(t[9].substr(7));
+            }
         } else {
             return fail(line_, "unknown or malformed action");
         }
@@ -584,7 +589,15 @@ private:
             if (t[6] != "?") return fail(line_, "slot probe needs an item and a count, or `?`");
         } else {
             std::string item;
-            if (auto ok = item_of(t[6], true, item); !ok) return ok;
+            // A bottle's potion follows its item id after `#`.
+            const auto hash = t[6].find('#');
+            if (hash != std::string_view::npos) {
+                if (f_.format < 2) return fail(line_, "potions need circuit-trace 2");
+                if (!valid_id(t[6].substr(0, hash)) || !valid_id(t[6].substr(hash + 1))) return fail(line_, "invalid item id");
+                item = std::string(t[6]);
+            } else if (auto ok = item_of(t[6], true, item); !ok) {
+                return ok;
+            }
             unsigned count{};
             if (!number(t[7], count) || count > contracts::max_stack_size) return fail(line_, "invalid count");
             if ((item == "empty") != (count == 0)) return fail(line_, "empty slots have count 0");
@@ -697,7 +710,8 @@ std::string write_fixture(const Fixture& f) {
         case Action::Kind::set: body[a.tick].push_back(std::format("at {} set {} {}", a.tick, pos_text(a.pos), a.state)); break;
         case Action::Kind::use: body[a.tick].push_back(std::format("at {} use {}", a.tick, pos_text(a.pos))); break;
         case Action::Kind::insert:
-            body[a.tick].push_back(std::format("at {} insert {} {} {} {}", a.tick, pos_text(a.pos), a.slot, a.item, a.count));
+            body[a.tick].push_back(std::format("at {} insert {} {} {} {}{}", a.tick, pos_text(a.pos), a.slot, a.item, a.count,
+                                               a.potion.empty() ? "" : " potion=" + a.potion));
             break;
         case Action::Kind::spawn_item:
             body[a.tick].push_back(std::format("at {} spawn-item {} {} {} {}{}{}", a.tick, vec_text(a.position), vec_text(a.velocity), a.item,

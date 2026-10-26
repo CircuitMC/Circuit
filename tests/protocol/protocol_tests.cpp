@@ -505,6 +505,17 @@ int main() {
             const auto stored = c.with_enchantments(contracts::ComponentPatch{}, true, {}, true, 0, pctx);
             require(stored.has_value() && stored->added().size() == 1 && c.enchantments_of(*stored, true).empty(),
                     std::format("{}: an empty stored list kept", protocol));
+            // A bottle's potion: present, then id; no color, effects or name.
+            const auto water = c.with_potion(contracts::ComponentPatch{}, 0, pctx);
+            const auto potion_type = *c.type_id("potion_contents");
+            require(water.has_value() && water->added().size() == 1 && water->added()[0].type == potion_type &&
+                        water->added()[0].value == std::vector{std::byte{1}, std::byte{0}, std::byte{0}, std::byte{0}, std::byte{0}} &&
+                        c.potion_of(*water) == 0u,
+                    std::format("{}: a water bottle", protocol));
+            const auto infested = c.with_potion(*trimmed, 45, pctx);
+            const auto rebrewed = infested ? c.with_potion(*infested, 3, pctx) : infested;
+            require(rebrewed.has_value() && c.potion_of(*rebrewed) == 3u && rebrewed->added().size() == 3 && !c.potion_of(*trimmed),
+                    std::format("{}: the potion replaced, the other components kept", protocol));
         }
     });
 
