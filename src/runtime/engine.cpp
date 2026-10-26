@@ -1229,6 +1229,15 @@ void Engine::Impl::restore(const WorldDump& state) {
                 rest.status = 0;
                 rest.last_dy = 0.0;
                 break;
+            case gameplay::EntityKind::experience_orb:
+                // 1.21.4 saves an orb's health as 0.
+                if (e.experience < 0 || e.orbs < 1 || e.age < -32768 || e.age > 32767 || e.health < 0 || e.health > 32767)
+                    bad("experience orb state");
+                rest.experience = 0;
+                rest.orbs = 1;
+                rest.age = 0;
+                rest.health = gameplay::item_health;
+                break;
             case gameplay::EntityKind::minecart:
                 if (!std::isfinite(e.yaw) || std::abs(e.yaw) >= 360.0f) bad("minecart yaw");
                 rest.in_water = false;
@@ -1240,7 +1249,7 @@ void Engine::Impl::restore(const WorldDump& state) {
             if (!rest.stack.empty() || rest.age != 0 || rest.pickup_delay != 0 || rest.health != gameplay::item_health
                 || rest.carried != gameplay::BlockState{} || rest.fall_time != 0 || rest.fuse != 0 || rest.in_ground || rest.life != 0
                 || rest.fire != 0 || rest.variant != 0 || rest.status != 0 || rest.last_dy != 0.0 || rest.in_water || rest.yaw != 0.0f
-                || rest.flipped)
+                || rest.flipped || rest.experience != 0 || rest.orbs != 1)
                 bad("entity state of another kind");
             const auto it = columns.find(contracts::chunk_of(contracts::block_of(e.position)));
             if (it == columns.end()) bad("entity in an unknown column");

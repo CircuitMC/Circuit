@@ -2085,6 +2085,8 @@ struct Game::Impl final : GameServices {
     }
 
     void show_entity(Player& p, std::uint64_t engine_id, const gameplay::Entity& e) {
+        // Experience orbs are not shown yet.
+        if (e.kind == gameplay::EntityKind::experience_orb) return;
         auto [it, fresh] = tracked.try_emplace(engine_id);
         auto& t = it->second;
         if (fresh) {

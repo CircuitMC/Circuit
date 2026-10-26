@@ -433,6 +433,15 @@ int main() {
         cart.position = {10.5, 1.0, 8.5};
         cart.in_water = true;
         never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(cart);
+        // An experience orb that took in two others.
+        circuit::gameplay::Entity orb;
+        orb.id = circuit::contracts::EntityId{never.state.next_entity_id++};
+        orb.kind = circuit::gameplay::EntityKind::experience_orb;
+        orb.position = {12.5, 1.0, 8.5};
+        orb.experience = 37;
+        orb.orbs = 3;
+        orb.age = 120;
+        never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(orb);
         // And one waiting to come back with its reloaded chunk.
         auto returning = item;
         returning.id = circuit::contracts::EntityId{never.state.next_entity_id++};

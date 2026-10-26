@@ -1917,8 +1917,20 @@
           "id": "experience_orbs",
           "name": "Experience orbs",
           "milestone": "C6",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "note": "Summoned experience orbs fall, slide, bounce on the ground (each version its own way), float with their eye in water, take in orbs of their value 40 ids apart every 20 ticks and go at age 6000, as both official servers do tick by tick",
+          "cases": [
+            "trace/orbs",
+            "trace/orbs_merge",
+            "trace/orbs_more"
+          ],
+          "deviations": [
+            "players do not draw or pick them up, and gain no experience",
+            "nothing drops them yet: no furnace, grindstone, block or mob experience",
+            "in lava they rise without the official servers' unseeded random jump (not compared)",
+            "clients do not see them"
+          ]
         }
       ]
     },

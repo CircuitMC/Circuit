@@ -21,6 +21,7 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 36: entities carry an experience orb's experience and orbs;
 // 35: brewing stands have rules of their own (their block entities keep
 // their fuel, brew time and ingredient in the furnace times);
 // 34: player inventories carry an open loom's slots and pattern;
@@ -67,7 +68,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 35;
+constexpr std::uint32_t version = 36;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -189,6 +190,7 @@ void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
         w.varlong(static_cast<std::int64_t>(e.piston_tick)).f64(e.piston_push.x).f64(e.piston_push.y).f64(e.piston_push.z);
         w.f32(e.yaw).boolean(e.flipped);
         w.f64(e.fall_distance);
+        w.varint(e.experience).varint(e.orbs);
     }
     w.varint(static_cast<std::int32_t>(l.ticks.size()));
     for (const auto& t : l.ticks) {
@@ -480,6 +482,11 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
         if (b.version >= 21 && (!b.u64(e.piston_tick) || !b.vec(e.piston_push))) return false;
         if (b.version >= 23 && (!b.get(b.r.f32(), e.yaw) || !b.get(b.r.boolean(), e.flipped))) return false;
         if (b.version >= 25 && !b.get(b.r.f64(), e.fall_distance)) return false;
+        if (b.version >= 36 && (!b.get(b.r.varint(), e.experience) || !b.get(b.r.varint(), e.orbs))) return false;
+        if (e.experience < 0 || e.orbs < 1) {
+            b.error = "invalid experience orb";
+            return false;
+        }
         e.age = age;
         // Before version 14 nothing reset an item's age, which counted every
         // tick since it was spawned.

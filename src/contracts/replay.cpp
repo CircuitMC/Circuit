@@ -7,6 +7,7 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
+// 21: summoned experience orbs carry their value, count and age (tag 31);
 // 20: slots enabled and disabled (tag 30);
 // 19: window buttons (tag 29);
 // 18: closed windows whose items drop (tag 28);
@@ -22,7 +23,7 @@ constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
 // block registry id; 3: stacks carry damage, player commands carry their
 // player. Commands of versions before 6 are the overworld's. Tickets of
 // versions before 7 (tags 5 and 9) read as forced squares.
-constexpr std::uint16_t format_version = 20;
+constexpr std::uint16_t format_version = 21;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -127,8 +128,11 @@ private:
 // 23 SummonEntity, 24 PlayerUse with where it clicked (tag 7 has none),
 // 25 PlayerUse with where it clicked and the player's yaw, 26 PlayerUseItem,
 // 27 SetDifficulty, 28 CloseContainer whose items drop (tag 14 returns them),
-// 29 ContainerButton, 30 SetSlotEnabled.
+// 29 ContainerButton, 30 SetSlotEnabled, 31 SummonEntity with an experience
+// orb's value, count and age (tag 23 has none).
 std::uint8_t tag_of(const CommandBody& body) {
+    if (const auto* summon = std::get_if<SummonEntity>(&body); summon && (summon->value != 0 || summon->count != 1 || summon->age != 0))
+        return 31;
     if (std::holds_alternative<SetSlotEnabled>(body)) return 30;
     if (std::holds_alternative<ContainerButton>(body)) return 29;
     if (const auto* close = std::get_if<CloseContainer>(&body); close && close->drop) return 28;
@@ -190,6 +194,11 @@ void encode_command(Writer& w, const Command& c) {
             w.vec(body.velocity);
             w.put(body.fuse);
             w.put(body.fire);
+            if (tag_of(CommandBody{body}) == 31) {
+                w.put(body.value);
+                w.put(body.count);
+                w.put(body.age);
+            }
         } else if constexpr (std::is_same_v<T, SetDayTime>) {
             w.put(body.time);
         } else if constexpr (std::is_same_v<T, SetDifficulty>) {
@@ -544,12 +553,13 @@ bool decode_command(Reader& r, Command& c) {
         c.body = b;
         return true;
     }
-    case 23: {
+    case 23: case 31: {
         SummonEntity b;
         std::uint8_t length{};
         if (!r.get(length) || length == 0 || length > max_entity_type || !r.bytes(length, b.type) || !r.vec(b.position)
             || !r.vec(b.velocity) || !r.get(b.fuse) || !r.get(b.fire))
             return false;
+        if (tag == 31 && (!r.get(b.value) || !r.get(b.count) || !r.get(b.age) || (b.value == 0 && b.count == 1 && b.age == 0))) return false;
         if (!valid_entity_type(b.type)) return false;
         c.body = b;
         return true;

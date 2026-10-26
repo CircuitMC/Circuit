@@ -87,6 +87,17 @@ enum class LavaContact : std::uint8_t {
     tick_start,
 };
 
+// How experience orbs move (observed on both official servers, 2026-10-26).
+enum class OrbMotion : std::uint8_t {
+    // Their vertical drag is in single precision, and an orb on the ground
+    // bounces back at 0.4 of its speed only when it fell faster than gravity
+    // alone makes it fall in a tick; else it rests (1.21.8).
+    settling,
+    // Their vertical drag is in double precision, and an orb on the ground
+    // always bounces back at 0.4 of its speed (1.21.4).
+    bouncing,
+};
+
 // A level with neither players nor forced chunks stops ticking its entities
 // and block entities after this many ticks (both versions; minecraft.wiki
 // "Chunk", observed on both official servers).
@@ -104,6 +115,7 @@ struct RuleSet {
     std::string_view basis;
     RandomTickRange random_ticks{};
     LavaContact lava{};
+    OrbMotion orbs{};
 };
 
 enum class GameRuleType : std::uint8_t { boolean, integer };

@@ -5841,6 +5841,19 @@
           "passes through entities; not shot by bows, crossbows or dispensers"
         ]
       },
+      "experience_orb": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Summoned experience orbs: motion, bouncing, floating, merging and despawning, as both official servers run them",
+        "cases": [
+          "trace/orbs",
+          "trace/orbs_merge",
+          "trace/orbs_more"
+        ],
+        "deviations": [
+          "players do not draw or pick them up; nothing drops them; clients do not see them"
+        ]
+      },
       "snowball": {
         "impl": "partial",
         "evidence": "compared",

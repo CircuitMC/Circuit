@@ -1704,6 +1704,43 @@ int main() {
                 "the result goes to the hotbar from its end");
     });
 
+    suite.run("experience orbs fall, rest, merge 40 ids apart and go at age 6000", [] {
+        using circuit::contracts::SummonEntity;
+        using circuit::gameplay::EntityKind;
+        Sim s;
+        s.tick(floor(-3, 45, -1, 6));
+        const auto orb = [](double x, double y, double z, std::int32_t value, std::int32_t age = 0) {
+            return SummonEntity{"minecraft:experience_orb", {x, y, z}, {}, 80, 0, value, 1, age};
+        };
+        const auto orbs = [&] {
+            const auto d = s.oracle.dump();
+            std::vector<circuit::gameplay::Entity> out;
+            for (const auto& e : d.overworld().entities)
+                if (e.kind == EntityKind::experience_orb) out.push_back(e);
+            return out;
+        };
+        // The first orb, then 38 others and an old one, then one of its value
+        // beside it 40 ids on, and one 41 ids on.
+        std::vector<CommandBody> first{orb(0.5, 3.0, 0.5, 3)};
+        for (int k = 0; k < 38; ++k) first.push_back(orb(2.5 + k, 0.0, 4.5, 1));
+        first.push_back(orb(0.5, 0.0, 2.5, 7, 5997));
+        s.tick(first);
+        const auto ids = orbs();
+        require(ids.size() == 40, "forty orbs");
+        const auto first_id = ids.front().id.value;
+        s.until(s.oracle.time() + 30);
+        const auto rested = orbs();
+        const auto it = std::ranges::find(rested, first_id, [](const auto& e) { return e.id.value; });
+        require(it != rested.end() && it->position.y == 0.0 && it->velocity.y == 0.0 && it->on_ground, "the first one fell and rests");
+        require(rested.size() == 39, "the old one went at age 6000");
+        s.tick({orb(0.8, 0.0, 0.5, 3), orb(0.5, 0.0, 1.0, 3)});
+        const auto now = orbs();
+        const auto merged = std::ranges::find(now, first_id + 40, [](const auto& e) { return e.id.value; });
+        require(merged != now.end() && merged->orbs == 2 && now.size() == 40
+                    && std::ranges::find(now, first_id, [](const auto& e) { return e.id.value; }) == now.end(),
+                "the orb 40 ids on took in the first; the next one did not");
+    });
+
     suite.run("brewing stands brew the bottles that mix with their ingredient", [] {
         using circuit::contracts::ComponentPatch;
         const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };

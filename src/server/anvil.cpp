@@ -889,9 +889,10 @@ private:
             const bool falling = id == "minecraft:falling_block";
             const bool tnt = id == "minecraft:tnt";
             const bool arrow = id == "minecraft:arrow", snowball = id == "minecraft:snowball", minecart = id == "minecraft:minecart";
+            const bool orb = id == "minecraft:experience_orb";
             const auto boat = std::ranges::find(gameplay::boat_types, id);
             const bool is_boat = boat != gameplay::boat_types.end();
-            if (id != "minecraft:item" && !falling && !tnt && !arrow && !snowball && !minecart && !is_boat) {
+            if (id != "minecraft:item" && !falling && !tnt && !arrow && !snowball && !minecart && !is_boat && !orb) {
                 unsupported("entity " + id);
                 continue;
             }
@@ -905,7 +906,15 @@ private:
                 continue;
             }
             gameplay::Entity out;
-            if (minecart || is_boat) {
+            if (orb) {
+                // Its experience (a short), the orbs merged into it and its
+                // age (a short); its health as saved (1.21.4 saves 0).
+                out.kind = gameplay::EntityKind::experience_orb;
+                out.experience = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "Value").value_or(0), 0, 32767));
+                out.orbs = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "Count").value_or(1), 1, INT32_MAX));
+                out.age = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "Age").value_or(0), -32768, 32767));
+                out.health = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(e, "Health").value_or(gameplay::item_health), 0, 32767));
+            } else if (minecart || is_boat) {
                 // Their state before this tick is not saved: a loaded boat
                 // has no state before, a minecart no water.
                 out.kind = minecart ? gameplay::EntityKind::minecart : gameplay::EntityKind::boat;
@@ -1382,6 +1391,24 @@ private:
                 if (e->kind == gameplay::EntityKind::boat) t.set("id", Tag::string(std::string(gameplay::boat_types.at(e->variant))));
                 t.set("Air", Tag::short_(300));
                 t.set("Fire", Tag::short_(-1));
+                t.set("Invulnerable", Tag::boolean(false));
+                t.set("PortalCooldown", Tag::int_(0));
+                t.set("UUID", Tag::int_array({static_cast<std::int32_t>(hi >> 32), static_cast<std::int32_t>(hi & 0xFFFFFFFF),
+                                              static_cast<std::int32_t>(lo >> 32), static_cast<std::int32_t>(lo & 0xFFFFFFFF)}));
+                list.push(std::move(t));
+                ++report_.entities;
+                continue;
+            }
+            if (e->kind == gameplay::EntityKind::experience_orb) {
+                // As the target versions save a summoned orb: 1.21.4 writes
+                // its health as 0 and its fire as -1.
+                const bool older = bundle_.schema.content_release == "1.21.4";
+                t.set("Value", Tag::short_(static_cast<std::int16_t>(std::clamp(e->experience, 0, 32767))));
+                t.set("Count", Tag::int_(e->orbs));
+                t.set("Age", Tag::short_(static_cast<std::int16_t>(e->age)));
+                t.set("Health", Tag::short_(static_cast<std::int16_t>(older ? 0 : e->health)));
+                t.set("Air", Tag::short_(300));
+                t.set("Fire", Tag::short_(static_cast<std::int16_t>(older ? -1 : 0)));
                 t.set("Invulnerable", Tag::boolean(false));
                 t.set("PortalCooldown", Tag::int_(0));
                 t.set("UUID", Tag::int_array({static_cast<std::int32_t>(hi >> 32), static_cast<std::int32_t>(hi & 0xFFFFFFFF),

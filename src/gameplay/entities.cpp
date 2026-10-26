@@ -463,6 +463,112 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
         ctx.remove_entity(id);
     }
 }
+
+// ---- experience orbs -------------------------------------------------------
+//
+// Experience orbs, as both official servers run them without players near
+// (checked against their traces of falling, sliding, resting, merging and
+// floating orbs; minecraft.wiki "Experience orb"). Each tick:
+// - the tick count goes up;
+// - with its eye (0.425 above its feet) in water it floats up by 0.0005 a
+//   tick (while slower than 0.06) and loses 1% of its horizontal speed,
+//   whether the eye was in water decided where it was at the tick's start;
+//   otherwise gravity takes 0.03 from the vertical velocity;
+// - it moves; its velocity is damped by 0.98 (the block's slipperiness
+//   times 0.98 on the ground) in single precision, but on 1.21.4 its
+//   vertical velocity by 0.98 in double precision (OrbMotion); on the ground
+//   it bounces back at 0.4 of the speed it moved with (on 1.21.8 only when
+//   that was faster than 0.03, else it keeps what the block left it: none,
+//   or a slime block's bounce);
+// - in the ticks whose tick count is 1 more than a multiple of 20 (its first
+//   among them) it takes in the orbs of its experience whose ids are a
+//   multiple of 40 apart from its own and whose boxes reach within half a
+//   block of its own: their orbs join its own, it keeps the younger age;
+// - its age goes up; at 6000 it is gone.
+// Fire and lava hurt it as they hurt items (5 health). In lava the official
+// servers make it jump by an unseeded random of its own; Circuit lifts it
+// by 0.2 without the random, which is not compared.
+constexpr double orb_size = 0.5;
+constexpr double orb_gravity = 0.03;
+const double orb_eye = static_cast<double>(0.425f);
+
+bool eye_in_water(RuleContext& ctx, Vec3 feet) {
+    const double eye = feet.y + orb_eye;
+    const auto cell = contracts::block_of(Vec3{feet.x, eye, feet.z});
+    if (!ctx.world().contains_y(cell.y)) return false;
+    const auto s = ctx.block(cell);
+    if (!s.is(BlockType::water)) return false;
+    const auto above = ctx.world().contains_y(cell.y + 1) ? ctx.block(cell.relative(Direction::up)) : blocks::air();
+    return eye < static_cast<double>(static_cast<float>(cell.y) + fluid_height(s, above));
+}
+
+// Takes in the orbs this one may merge with (see above); ascending id order.
+void merge_orbs(RuleContext& ctx, EntityId id) {
+    const auto* self = ctx.peek_entity(id);
+    if (!self) return;
+    const auto area = detail::entity_box(*self).inflate(0.5, 0.5, 0.5);
+    for (const auto other : detail::entities_intersecting(ctx, area)) {
+        if (other == id) continue;
+        const auto* o = ctx.peek_entity(other);
+        const auto* me = ctx.peek_entity(id);
+        if (!o || !me || o->kind != EntityKind::experience_orb || o->experience != me->experience) continue;
+        const auto apart = other.value > id.value ? other.value - id.value : id.value - other.value;
+        if (apart % 40 != 0) continue;
+        const auto orbs = o->orbs;
+        const auto age = o->age;
+        const auto cell = contracts::block_of(o->position);
+        ctx.record(TraceKind::entity_removed, cell, other.value, static_cast<std::uint64_t>(RemovalReason::merged));
+        ctx.remove_entity(other);
+        auto* into = ctx.entity(id);
+        into->orbs = static_cast<std::int32_t>(std::min<std::int64_t>(std::int64_t{into->orbs} + orbs, INT32_MAX));
+        into->age = std::min(into->age, age);
+    }
+}
+
+void run_orb(RuleContext& ctx, EntityId id, Entity& e) {
+    ++e.tick_count;
+    const bool settling = ctx.bundle().rules->orbs == contracts::OrbMotion::settling;
+    const auto start = e.position;
+    auto v = e.velocity;
+    auto p = e.position;
+    double lava_depth = 0.0;
+    if (eye_in_water(ctx, p)) {
+        constexpr double drag = 0.99f, rise = 0.0005f;
+        v = {v.x * drag, v.y + (v.y < 0.06 ? rise : 0.0), v.z * drag};
+    } else {
+        v.y -= orb_gravity;
+    }
+    if (detail::in_lava(ctx, detail::entity_box(e), &lava_depth)) v.y = 0.2;
+    const double fall = v.y;
+    Vec3 moved{};
+    e.on_ground = detail::move_entity(ctx, p, v, orb_size, orb_size, &e, &moved);
+    float f = 0.98f;
+    if (e.on_ground) f = slipperiness(ctx.block(contracts::block_of(Vec3{p.x, p.y - 0.5000001, p.z}))) * 0.98f;
+    v = {v.x * static_cast<double>(f), settling ? v.y * static_cast<double>(f) : v.y * 0.98, v.z * static_cast<double>(f)};
+    if (e.on_ground && (!settling || fall < -orb_gravity)) v.y = fall * -0.4;
+    e.velocity = v;
+    if (p != start) {
+        const auto from = contracts::chunk_of(contracts::block_of(start));
+        const auto to = contracts::chunk_of(contracts::block_of(p));
+        if (from != to)
+            ctx.record(TraceKind::entity_changed_chunk, contracts::block_of(p), id.value, contracts::pack_chunk(from), contracts::pack_chunk(to));
+        ctx.relocate_entity(id, p); // `e` must not be used after relocation.
+    }
+    // Fire its box reaches and lava hurt it.
+    if (const auto* self = ctx.peek_entity(id)) {
+        const auto box = detail::entity_box(*self);
+        int damage = 0;
+        if (const int fire = detail::fire_contact(ctx, box); fire >= 0) damage += fire;
+        if (detail::in_lava(ctx, box)) damage += 4;
+        if (detail::hurt_item(ctx, id, damage)) return;
+    }
+    if (ctx.peek_entity(id)->tick_count % 20 == 1) merge_orbs(ctx, id);
+    auto* self = ctx.entity(id);
+    if (++self->age >= orb_despawn_age) {
+        ctx.record(TraceKind::entity_removed, contracts::block_of(self->position), id.value, static_cast<std::uint64_t>(RemovalReason::despawned));
+        ctx.remove_entity(id);
+    }
+}
 } // namespace
 
 namespace detail {
@@ -472,6 +578,7 @@ physics::Aabb entity_box(const Entity& e) {
     case EntityKind::arrow: return physics::box_at(e.position, 0.5, 0.5);
     case EntityKind::minecart: return physics::box_at(e.position, static_cast<double>(0.98f), static_cast<double>(0.7f));
     case EntityKind::boat: return physics::box_at(e.position, 1.375, 0.5625);
+    case EntityKind::experience_orb: return physics::box_at(e.position, orb_size, orb_size);
     default: break;
     }
     const double size = static_cast<double>(0.98f);
@@ -529,6 +636,7 @@ void run_entity(RuleContext& ctx, EntityId id) {
     case EntityKind::snowball: detail::run_snowball(ctx, id, *e); break;
     case EntityKind::minecart: detail::run_minecart(ctx, id, *e); break;
     case EntityKind::boat: detail::run_boat(ctx, id, *e); break;
+    case EntityKind::experience_orb: run_orb(ctx, id, *e); break;
     }
     // Entities that move every tick press plates and make buttons check
     // where their move ends (items, arrows and snowballs do in their tick).

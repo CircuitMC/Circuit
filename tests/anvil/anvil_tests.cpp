@@ -659,6 +659,28 @@ int main() {
         require(lost(state) == lost(back->state), "arrows kept with their state");
     });
 
+    suite.run("experience orbs round-trip through Anvil with their value, orbs and age", [&] {
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine.advance(admit({place({3, -1, 3}, blocks::stone()), SummonEntity{"minecraft:experience_orb", {3.5, 0.0, 3.5}, {}, 80, 0, 7, 3, 100},
+                              SummonEntity{"minecraft:experience_orb", {6.5, 2.0, 6.5}, {0.0, 0.1, 0.0}, 80, 0, 2477, 1, 0}}));
+        engine.advance({});
+        const auto state = engine.dump();
+        const auto target = root / "orbs";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "orbs", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        const auto orbs = [](const WorldDump& w) {
+            std::vector<std::tuple<Vec3, Vec3, std::int32_t, std::int32_t, std::int32_t, std::int32_t>> out;
+            for (const auto& e : w.overworld().entities)
+                if (e.kind == circuit::gameplay::EntityKind::experience_orb) out.emplace_back(e.position, e.velocity, e.experience, e.orbs, e.age, e.health);
+            std::ranges::sort(out);
+            return out;
+        };
+        require(orbs(state).size() == 2 && orbs(state) == orbs(back->state), "orbs kept with their state");
+    });
+
     suite.run("minecarts and boats round-trip through Anvil", [&] {
         Engine engine(bundle(), 5);
         Admissions admit;

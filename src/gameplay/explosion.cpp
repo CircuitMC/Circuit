@@ -218,9 +218,9 @@ void hurt_entities(RuleContext& ctx, Vec3 center, float power) {
         direction = {direction.x / length, direction.y / length, direction.z / length};
         const double impact = (1.0 - distance) * static_cast<double>(exposure(ctx, center, entity_box(*e)));
         const auto damage = static_cast<float>((impact * impact + impact) / 2.0 * 7.0 * reach + 1.0);
-        if (e->kind == EntityKind::item && e->stack.item != items::nether_star) {
-            // Items have 5 health, kept in whole points; the explosion
-            // destroys one left with none.
+        if ((e->kind == EntityKind::item && e->stack.item != items::nether_star) || e->kind == EntityKind::experience_orb) {
+            // Items and experience orbs have 5 health, kept in whole points;
+            // the explosion destroys one left with none.
             e->health = static_cast<std::int32_t>(static_cast<float>(e->health) - damage);
             if (e->health <= 0) {
                 ctx.record(TraceKind::entity_removed, contracts::block_of(at), id.value, static_cast<std::uint64_t>(RemovalReason::exploded));

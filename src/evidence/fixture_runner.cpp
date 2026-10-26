@@ -110,11 +110,13 @@ Vec3d to_vec(contracts::Vec3 v) { return {v.x, v.y, v.z}; }
 
 // `summon <type> <x> <y> <z> [{...}]` for the entities the rules summon:
 // absolute coordinates and these data tags: Motion:[x,y,z] (doubles, `d`
-// optional), Fire (short, `s` optional) and fuse (primed TNT). Anything else
+// optional), Fire (short, `s` optional), fuse (primed TNT), and an
+// experience orb's Value, Count and Age (short, `s` optional). Anything else
 // is not modeled.
 std::expected<contracts::SummonEntity, std::string> summon(const std::string& command) {
     const auto unsupported = std::format("command `{}`: summon is modeled for minecraft:tnt, minecraft:arrow, minecraft:snowball, "
-                                         "minecraft:minecart and boats at absolute coordinates with Motion, Fire and fuse",
+                                         "minecraft:minecart, minecraft:experience_orb and boats at absolute coordinates with Motion, Fire, "
+                                         "fuse and an orb's Value, Count and Age",
                                          command);
     std::istringstream in(command);
     std::string word, type, xs, ys, zs;
@@ -166,13 +168,19 @@ std::expected<contracts::SummonEntity, std::string> summon(const std::string& co
                 double v{};
                 if (!number(value, 's', v) || v != std::floor(v) || v < -32768 || v > 32767) return std::unexpected(unsupported);
                 (key == "Fire" ? c.fire : c.fuse) = static_cast<std::int32_t>(v);
+            } else if ((key == "Value" || key == "Count" || key == "Age") && type == "minecraft:experience_orb") {
+                double v{};
+                if (!number(value, key == "Age" ? 's' : 'i', v) || v != std::floor(v) || v < (key == "Count" ? 1 : key == "Age" ? -32768 : 0)
+                    || v > (key == "Age" ? 32767 : INT32_MAX))
+                    return std::unexpected(unsupported);
+                (key == "Value" ? c.value : key == "Count" ? c.count : c.age) = static_cast<std::int32_t>(v);
             } else {
                 return std::unexpected(unsupported);
             }
         }
     }
     if (type != "minecraft:tnt" && type != "minecraft:arrow" && type != "minecraft:snowball" && type != "minecraft:minecart"
-        && std::ranges::find(gameplay::boat_types, type) == gameplay::boat_types.end())
+        && type != "minecraft:experience_orb" && std::ranges::find(gameplay::boat_types, type) == gameplay::boat_types.end())
         return std::unexpected(unsupported);
     return c;
 }
@@ -619,6 +627,10 @@ public:
                 props.emplace_back("in-ground", e.in_ground ? "true" : "false");
                 props.emplace_back("life", std::to_string(e.life));
                 if (e.fire > 0) props.emplace_back("fire", std::to_string(e.fire));
+            } else if (e.kind == gameplay::EntityKind::experience_orb) {
+                props.emplace_back("value", std::to_string(e.experience));
+                props.emplace_back("count", std::to_string(e.orbs));
+                props.emplace_back("age", std::to_string(e.age));
             } else if (e.kind != gameplay::EntityKind::item) {
                 if (e.fire > 0) props.emplace_back("fire", std::to_string(e.fire));
             } else {
@@ -663,6 +675,9 @@ private:
         if (kind == gameplay::EntityKind::falling_block)
             return {{"block", mapping_.notation(gameplay::BlockState::decode(static_cast<std::uint32_t>(payload)).value())}};
         if (kind == gameplay::EntityKind::primed_tnt) return {{"fuse", std::to_string(static_cast<std::int32_t>(payload))}};
+        if (kind == gameplay::EntityKind::experience_orb)
+            return {{"value", std::to_string(static_cast<std::int32_t>(payload & 0xFFFFFFFF))},
+                    {"count", std::to_string(static_cast<std::int32_t>(payload >> 32))}};
         if (kind != gameplay::EntityKind::item) return {};
         return stack_properties(payload);
     }

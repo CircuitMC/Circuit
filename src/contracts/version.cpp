@@ -179,6 +179,14 @@ constexpr std::array reference_v4_mechanisms{
         "and empty buckets from below; players use their menus (client/furnace_menus). Gaps: the experience of what they "
         "cooked and minecarts with hoppers are not modeled; checkpoints before version 28 bring their furnaces back "
         "empty."},
+    MechanismEntry{"experience_orbs", l0_exact, l2_declared_deviation, harness_trace,
+        "Experience orbs as both official servers run them without players near (orbs, orbs_merge, orbs_more; summoned "
+        "with their value, count and age): gravity of 0.03 and drag, floating with their eye in water, sliding with the "
+        "block's slipperiness, bouncing back from the ground at 0.4 of their speed (on 1.21.8 only when falling faster "
+        "than gravity alone makes them, else they rest; on 1.21.4 always, and their vertical drag in double precision), "
+        "taking in the orbs of their value whose ids are 40 apart every 20 ticks from their first, keeping the younger "
+        "age, and going at age 6000. Gaps: players, who draw them, pick them up and gain their experience; in lava they "
+        "rise without the official servers' unseeded random jump, which is not compared; clients do not see them."},
     MechanismEntry{"brewing", l0_exact, l2_declared_deviation, harness_trace,
         "Brewing stands as both official servers run them (brewing, brewing_hoppers; with the official data packs' "
         "brewing fuel and component encoding): blaze powder gives fuel for 20 brews when none is left; with fuel and a "
@@ -635,18 +643,20 @@ constexpr std::array game_rules_1_21_4{
 // every pair). What differs is the bundles' own: content, component schema,
 // registries and game rules (fire acts away from players only with 1.21.8's
 // allowFireTicksAwayFromPlayer), and where random ticks run
-// (RandomTickRange) and when lava reaches entities (LavaContact), which the
-// official servers showed differ.
+// (RandomTickRange), when lava reaches entities (LavaContact) and how
+// experience orbs come to rest (OrbMotion), which the official servers
+// showed differ.
 constexpr RuleSet rules_1_21_8{"circuit-reference-rules-v12", RngPolicy::level_random_in_target_order, reference_v4_mechanisms,
                                "circuit-blocks-1", "harness traces of 1.21.8 (tests/fixtures/harness)", RandomTickRange::entity_ticking,
-                               LavaContact::after_move};
+                               LavaContact::after_move, OrbMotion::settling};
 constexpr RuleSet rules_1_21_4{"circuit-reference-rules-v12", RngPolicy::level_random_in_target_order, reference_v4_mechanisms,
                                "circuit-blocks-1",
                                "harness traces of 1.21.4 (tests/fixtures/harness-1.21.4), each identical to its 1.21.8 recording "
                                "(fire's with 1.21.8's allowFireTicksAwayFromPlayer on) but those of entities in lava, which "
-                               "reaches them at the start of their ticks; random ticks run only near players (observed on the "
-                               "official 1.21.4 server)",
-                               RandomTickRange::block_ticking_near_player, LavaContact::tick_start};
+                               "reaches them at the start of their ticks, and of experience orbs, which bounce on the ground "
+                               "and drag in double precision; random ticks run only near players (observed on the official "
+                               "1.21.4 server)",
+                               RandomTickRange::block_ticking_near_player, LavaContact::tick_start, OrbMotion::bouncing};
 
 constexpr std::array bundles{
     VersionBundle{

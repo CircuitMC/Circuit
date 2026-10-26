@@ -84,8 +84,8 @@ inline constexpr double max_entity_speed = 64.0;
 
 // The kinds of entities the rules model (their registry names in
 // entity_kind_name).
-enum class EntityKind : std::uint8_t { item = 1, falling_block = 2, primed_tnt = 3, arrow = 4, snowball = 5, minecart = 6, boat = 7 };
-inline constexpr std::uint8_t entity_kind_count = 8; // kinds are 1 to entity_kind_count - 1
+enum class EntityKind : std::uint8_t { item = 1, falling_block = 2, primed_tnt = 3, arrow = 4, snowball = 5, minecart = 6, boat = 7, experience_orb = 8 };
+inline constexpr std::uint8_t entity_kind_count = 9; // kinds are 1 to entity_kind_count - 1
 std::string_view entity_kind_name(EntityKind kind) noexcept;
 // The entity type of a kind with its spawn record's payload (a boat's kind).
 std::string_view entity_type_name(EntityKind kind, std::uint64_t payload) noexcept;
@@ -98,6 +98,8 @@ inline constexpr std::uint16_t item_pickup_never = 32767;
 inline constexpr std::int32_t item_despawn_age = 6000;
 // Items have 5 health (saved as a short); explosions take it away in whole points.
 inline constexpr std::int32_t item_health = 5;
+// Experience orbs go at age 6000 too, and have 5 health as items do.
+inline constexpr std::int32_t orb_despawn_age = 6000;
 
 struct Entity {
     EntityId id;
@@ -113,11 +115,15 @@ struct Entity {
     // farmland reads).
     double fall_distance{};
     // Items: the stack, its age (a merge keeps the younger one's) and the
-    // ticks until players may pick it up.
+    // ticks until players may pick it up. Experience orbs: their age too.
     ItemStack stack;
     std::int32_t age{};
     std::uint16_t pickup_delay{};
     std::int32_t health{item_health};
+    // Experience orbs: the experience each holds and how many orbs merged
+    // into it (it holds `orbs` times `experience`).
+    std::int32_t experience{};
+    std::int32_t orbs{1};
     // Falling blocks: the block it carries and the ticks it has fallen.
     BlockState carried{};
     std::uint32_t fall_time{};
@@ -156,12 +162,15 @@ inline constexpr std::array<std::string_view, 10> boat_types{"minecraft:oak_boat
                                                               "minecraft:dark_oak_boat", "minecraft:mangrove_boat", "minecraft:pale_oak_boat",
                                                               "minecraft:bamboo_raft"};
 // What a spawn or load record says about the entity: an item's stack
-// (packed), a falling block's state (raw), primed TNT's fuse.
+// (packed), a falling block's state (raw), primed TNT's fuse, an experience
+// orb's experience (low 32 bits) and orbs (high 32 bits).
 [[nodiscard]] inline std::uint64_t entity_payload(const Entity& e) noexcept {
     switch (e.kind) {
     case EntityKind::falling_block: return e.carried.raw();
     case EntityKind::primed_tnt: return static_cast<std::uint32_t>(e.fuse);
     case EntityKind::boat: return e.variant;
+    case EntityKind::experience_orb:
+        return static_cast<std::uint32_t>(e.experience) | static_cast<std::uint64_t>(static_cast<std::uint32_t>(e.orbs)) << 32;
     default: return contracts::pack_stack(e.stack);
     }
 }

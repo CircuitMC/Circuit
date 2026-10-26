@@ -43,7 +43,7 @@ Feature counts per implementation state, then the number of features with compar
 | V17 TNT and explosions | C3, C4 | 11 | 0 / 1 | 8 / 8 | 0 / 0 | 2 / 2 | 1 / 0 | 8 / 9 |
 | V18 Technical machines and vanilla quirks | C4, C6, C7 | 6 | 0 / 0 | 4 / 4 | 0 / 0 | 2 / 2 | 0 / 0 | 4 / 4 |
 | V19 General entity lifecycle | C3 | 17 | 0 / 0 | 4 / 4 | 0 / 0 | 13 / 13 | 0 / 0 | 3 / 3 |
-| V20 Item entities and experience | C3, C6 | 7 | 2 / 2 | 3 / 3 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
+| V20 Item entities and experience | C3, C6 | 7 | 2 / 2 | 5 / 5 | 0 / 0 | 0 / 0 | 0 / 0 | 7 / 7 |
 | V21 Projectiles, vehicles and mounts | C3, C6 | 109 | 0 / 0 | 17 / 17 | 38 / 56 | 33 / 35 | 21 / 1 | 8 / 8 |
 | V22 Movement and player modes | C6 | 7 | 3 / 3 | 2 / 2 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
 | V23 Combat, attributes and effects | C6 | 219 | 1 / 1 | 6 / 6 | 91 / 91 | 118 / 121 | 3 / 0 | 6 / 6 |
@@ -69,7 +69,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 510 / 515 | 581 / 586 | 0 / 0 |
 | item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 130 / 130 | 1254 / 1285 | 0 / 0 |
-| entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 17 / 17 | 0 / 0 | 132 / 134 |
+| entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 18 / 18 | 0 / 0 | 131 / 133 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
 | enchantment | approximate: minecraft-data pc/1.21.1/enchantments.json / minecraft-data pc/1.21.8/enchantments.json | 42 / 42 | 0 / 0 | 0 / 0 | 0 / 0 | 42 / 42 |
 | attribute | approximate: minecraft-data pc/1.21.3/attributes.json / minecraft-data pc/1.21.8/attributes.json | 32 / 35 | 0 / 0 | 0 / 0 | 0 / 0 | 32 / 35 |
@@ -130,7 +130,7 @@ Their counts are unknown, not zero.
 | black_box | passing | 59 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 198 |
+| official_trace | passing | 201 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -360,7 +360,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Item merging | C3 | implemented, compared | implemented, compared | `trace/item_merge`, `trace/item_merge_crossing`, `trace/item_merge_moving`, `trace/item_merge_timers`, `trace/item_merge_vertical`; Every 40 ticks of the item's own count, or every 2 after a move into another block; reach half a block sideways; stacks of one kind within their limit; the smaller joins the larger (equal: the other survives); younger age and longer pickup delay kept |
 | Pickup by players and hoppers, pickup delays | C3 | partial, compared | partial, compared | `client/vitals`, `client/windows`, `trace/item_hopper_area`, `trace/item_hopper_inside`, `trace/item_hopper_pickup`, `trace/item_merge_timers` |
 | Despawning | C3 | implemented, compared | implemented, compared | `trace/item_merge_timers`; Age 6000, -32768 never; the age goes up after the item's move and merges |
-| Experience orbs | C6 | missing, none | missing, none |  |
+| Experience orbs | C6 | partial, compared | partial, compared | `trace/orbs`, `trace/orbs_merge`, `trace/orbs_more`; clients do not see them; in lava they rise without the official servers' unseeded random jump (not compared); nothing drops them yet: no furnace, grindstone, block or mob experience; players do not draw or pick them up, and gain no experience; Summoned experience orbs fall, slide, bounce on the ground (each version its own way), float with their eye in water, take in orbs of their value 40 ids apart every 20 ticks and go at age 6000, as both official servers do tick by tick |
 
 ### V21 Projectiles, vehicles and mounts
 

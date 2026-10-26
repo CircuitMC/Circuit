@@ -122,11 +122,15 @@ Plan plan(RuleContext& ctx, const contracts::SummonEntity& c) {
     if (auto ok = check_loaded(ctx, contracts::block_of(c.position)); !ok) return std::unexpected(ok.error());
     if (!valid_velocity(c.velocity) || c.fuse < -32768 || c.fuse > 32767 || c.fire < -32768 || c.fire > 32767)
         return std::unexpected(ErrorCode::invalid_argument);
+    const bool orb = c.type == "minecraft:experience_orb";
+    if ((c.value != 0 || c.count != 1 || c.age != 0) && !orb) return std::unexpected(ErrorCode::invalid_argument);
+    if (orb && (c.value < 0 || c.count < 1 || c.age < -32768 || c.age > 32767)) return std::unexpected(ErrorCode::invalid_argument);
     Entity e;
     if (c.type == "minecraft:tnt") e.kind = EntityKind::primed_tnt, e.fuse = c.fuse;
     else if (c.type == "minecraft:arrow") e.kind = EntityKind::arrow, e.fire = c.fire;
     else if (c.type == "minecraft:snowball") e.kind = EntityKind::snowball;
     else if (c.type == "minecraft:minecart") e.kind = EntityKind::minecart;
+    else if (orb) e.kind = EntityKind::experience_orb, e.experience = c.value, e.orbs = c.count, e.age = c.age;
     else if (const auto boat = std::ranges::find(boat_types, c.type); boat != boat_types.end())
         e.kind = EntityKind::boat, e.variant = static_cast<std::uint8_t>(boat - boat_types.begin());
     else return std::unexpected(ErrorCode::unknown_command);
