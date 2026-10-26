@@ -4142,6 +4142,128 @@ int main() {
         require(worn == std::vector<std::string>{"chipped_anvil", "damaged_anvil", "air"}, "worn down to nothing");
     });
 
+    suite.run("enchanting tables offer and enchant by the bookshelves and the player's seed", [] {
+        using circuit::contracts::ChangeExperience;
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::ContainerButton;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::SetPlayerSlot;
+        using Levels = std::vector<std::pair<std::uint32_t, std::int32_t>>;
+        // Stand-ins for the server's encoding: type 1 the enchantments, 2 the
+        // stored ones, one byte per id and level.
+        const auto make = [](const Levels& plain, const Levels& stored) {
+            std::vector<ComponentPatch::Added> added;
+            for (const auto& [type, list] : {std::pair{std::uint16_t{1}, plain}, std::pair{std::uint16_t{2}, stored}}) {
+                if (list.empty()) continue;
+                std::vector<std::byte> bytes;
+                for (const auto& [id, level] : list) {
+                    bytes.push_back(static_cast<std::byte>(id));
+                    bytes.push_back(static_cast<std::byte>(level));
+                }
+                added.push_back({type, bytes});
+            }
+            return added.empty() ? ComponentPatch{} : ComponentPatch::make(772, std::move(added), {}, {});
+        };
+        const auto read = [](const ComponentPatch& p, bool stored) {
+            Levels out;
+            for (const auto& a : p.added())
+                if (a.type == (stored ? 2 : 1))
+                    for (std::size_t k = 0; k + 1 < a.value.size(); k += 2)
+                        out.emplace_back(static_cast<std::uint32_t>(a.value[k]), static_cast<std::int32_t>(a.value[k + 1]));
+            return out;
+        };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->enchantments_of = read;
+        data->with_enchantments = [&](const ComponentPatch& base, bool stored, const Levels& levels, bool, std::int32_t) {
+            return std::optional(stored ? make(read(base, false), levels) : make(levels, read(base, true)));
+        };
+        data->repair_cost_of = [](const ComponentPatch&) { return 0; };
+        // Sharpness (32) and Smite (34) exclude each other; Knockback (17);
+        // Efficiency (8) on pickaxes; Unbreaking (39) on both.
+        using Offered = circuit::gameplay::GameData::TableEnchantment;
+        std::vector<std::uint16_t> sword{items::diamond_sword}, pickaxe{items::iron_pickaxe}, both{items::diamond_sword, items::iron_pickaxe};
+        std::ranges::sort(both);
+        data->table_enchantments = {Offered{32, 10, 5, {1, 11}, {21, 11}, sword}, Offered{34, 5, 5, {5, 8}, {25, 8}, sword},
+                                    Offered{17, 5, 2, {5, 20}, {55, 20}, sword}, Offered{8, 10, 5, {1, 10}, {51, 10}, pickaxe},
+                                    Offered{39, 5, 3, {5, 8}, {55, 8}, both}};
+        data->enchantment_rules[32] = {1, 5, {}, {34}};
+        data->enchantment_rules[34] = {1, 5, {}, {32}};
+        data->power_providers = {*registry::find_block("1.21.8", "bookshelf")};
+        data->power_transmitters = {*registry::find_block("1.21.8", "air")};
+        const PlayerKey alex{4, 2}; // enchantment seed 405050550
+        const BlockPos table{0, 0, 0};
+        // Enchanting table window: 0 the item, 1 the lapis, 2-28 the main inventory, 29-37 the hotbar.
+        const auto click = [&](std::int16_t slot) {
+            return ContainerClick{alex, std::optional(table), slot, 0, 1, false, at_block(0.5, 2, 0.5), {}};
+        };
+        const auto offers = [](const PlayerInventory& p) {
+            return std::tuple{p.enchant_costs, p.enchant_clues, p.enchant_clue_levels};
+        };
+        using Offers = std::tuple<std::array<std::int32_t, 3>, std::array<std::int32_t, 3>, std::array<std::int32_t, 3>>;
+        // The sixteen cells two blocks away, fifteen of them bookshelves.
+        std::vector<CommandBody> shelves;
+        for (std::int32_t dx = -2; dx <= 2; ++dx)
+            for (std::int32_t dz = -2; dz <= 2; ++dz)
+                if ((std::abs(dx) == 2 || std::abs(dz) == 2) && !(dx == 2 && dz == 2)) shelves.push_back(place({dx, 0, dz}, registry_block("bookshelf")));
+        {
+            Sim s(bundle(), 7, 2, data);
+            const auto player = [&] {
+                const auto d = s.oracle.dump();
+                return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+            };
+            s.tick({place(table, registry_block("enchanting_table")), SetPlayerSlot{alex, 36, {items::diamond_sword, 1}},
+                    SetPlayerSlot{alex, 37, {items::lapis_lazuli, 2}}, SetPlayerSlot{alex, 38, {items::lapis_lazuli, 64}},
+                    SetPlayerSlot{alex, 39, {items::stone, 3}}});
+            s.tick({click(29)});
+            require(offers(player()) == Offers{{1, 5, 4}, {32, 39, 32}, {1, 1, 1}} && player().enchant[0].item == items::diamond_sword,
+                    "no bookshelves: the offers and their clues");
+            s.tick({click(0)});
+            require(player().slots[44].item == items::diamond_sword, "the item goes back to the hotbar's end");
+            s.tick(shelves);
+            s.tick({click(37), click(30), click(32)});
+            require(offers(player()) == Offers{{4, 19, 30}, {32, 39, 39}, {1, 3, 3}} && player().enchant[1].count == 2 && player().slots[39].count == 3,
+                    "fifteen bookshelves (the sword back from the hotbar's end); lapis goes into its slot, stone nowhere");
+            s.tick({ChangeExperience{alex, 2, true, true}, ContainerButton{alex, table, 2}});
+            require(player().enchant[0] == ItemStack{items::diamond_sword, 1} && player().xp_level == 2, "two levels are too few");
+            s.tick({ChangeExperience{alex, 30, true, true}, ContainerButton{alex, table, 2}});
+            require(player().enchant[0] == ItemStack{items::diamond_sword, 1}, "two lapis are too few for the third offer");
+            s.tick({click(31)});
+            require(player().enchant[1].count == 64 && player().slots[38].count == 2, "the lapis slot fills up");
+            s.tick({ContainerButton{alex, table, 2}});
+            require(player().enchant[0] == ItemStack{items::diamond_sword, 1, 0, make({{32, 3}, {39, 3}, {17, 2}}, {})}
+                        && player().enchant[1].count == 61 && player().xp_level == 27 && offers(player()) == Offers{{0, 0, 0}, {-1, -1, -1}, {-1, -1, -1}}
+                        && player().xp_seed != 0 && player().xp_seed != 405050550,
+                    "enchanted for three levels and three lapis; the seed changes, and an enchanted sword is offered nothing");
+            s.tick({click(0), click(1)});
+            require(player().enchant[0].empty() && player().enchant[1].empty() && player().slots[44].item == items::diamond_sword
+                        && player().slots[38].count == 63,
+                    "the item goes back to the hotbar's end, the lapis onto the lapis left there");
+        }
+        {
+            Sim s(bundle(), 7, 2, data);
+            const auto player = [&] {
+                const auto d = s.oracle.dump();
+                return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+            };
+            s.tick({place(table, registry_block("enchanting_table")), SetPlayerSlot{alex, 36, {items::book, 5}},
+                    SetPlayerSlot{alex, 37, {items::lapis_lazuli, 64}}, ChangeExperience{alex, 30, true, true}});
+            s.tick(shelves);
+            s.tick({click(29), click(30)});
+            require(offers(player()) == Offers{{4, 19, 30}, {8, 34, 39}, {1, 3, 3}} && player().enchant[0] == ItemStack{items::book, 1}
+                        && player().slots[36].count == 4,
+                    "a book: one of the five, offered any enchantment");
+            // A cell halfway to a bookshelf that is not air blocks it: stone
+            // there blocks the three in the middle of the row behind.
+            s.tick({click(0), place({0, 0, -1}, blocks::stone())});
+            s.tick({click(29)});
+            require(offers(player()) == Offers{{7, 13, 24}, {8, 34, 8}, {1, 2, 3}}, "twelve bookshelves (the book back onto the others)");
+            s.tick({click(0), place({0, 0, -1}, blocks::air())});
+            s.tick({click(29), ContainerButton{alex, table, 2}});
+            require(player().enchant[0] == ItemStack{items::enchanted_book, 1, 0, make({}, {{8, 4}, {39, 3}})} && player().xp_level == 27,
+                    "an enchanted book, which kept all but one");
+        }
+    });
+
     suite.run("experience changes as the /xp command makes them", [] {
         using circuit::contracts::ChangeExperience;
         const PlayerKey alex{4, 2};

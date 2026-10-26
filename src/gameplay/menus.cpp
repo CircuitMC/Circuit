@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Container menus: a player's own window and the windows of chests, double
 // chests, hoppers, furnaces, crafters, crafting tables, stonecutters,
-// smithing tables, grindstones, looms and anvils, with every click mode of the protocol,
+// smithing tables, grindstones, looms, anvils and enchanting tables, with every click mode of the protocol,
 // applied as the target version's menus apply them (documented in the
 // protocol pages and compared with the official server through a protocol
 // client).
@@ -31,6 +31,7 @@ bool offhand_item(std::uint16_t item) { return item == items::shield; }
 // A player slot by its slot-record number: the inventory, or the open
 // crafting table's result and grid.
 ItemStack& player_slot(PlayerInventory& inv, std::uint8_t index) {
+    if (index >= contracts::enchant_first) return inv.enchant[index - contracts::enchant_first];
     if (index >= contracts::anvil_first) return inv.anvil[index - contracts::anvil_first];
     if (index >= contracts::loom_first) return inv.loom[index - contracts::loom_first];
     if (index >= contracts::grind_first) return inv.grind[index - contracts::grind_first];
@@ -262,7 +263,12 @@ public:
         grind_ = parts.size() == 1 && is_grindstone(ctx.block(parts[0]));
         loom_ = parts.size() == 1 && is_loom(ctx.block(parts[0]));
         anvil_ = parts.size() == 1 && is_anvil(ctx.block(parts[0]));
-        if (anvil_) {
+        enchant_ = parts.size() == 1 && is_enchanting_table(ctx.block(parts[0]));
+        if (parts.size() == 1) block_ = parts[0];
+        if (enchant_) {
+            for (std::uint8_t i = 0; i < contracts::enchant_slots; ++i)
+                slots_.push_back({{}, static_cast<std::uint8_t>(contracts::enchant_first + i), false});
+        } else if (anvil_) {
             for (std::uint8_t i = 0; i < contracts::anvil_slots; ++i)
                 slots_.push_back({{}, static_cast<std::uint8_t>(contracts::anvil_first + i), false});
         } else if (loom_) {
@@ -322,6 +328,7 @@ public:
             if (s.index >= contracts::smith_first && s.index < contracts::smith_first + 3) set_smith_result(ctx_, inv_);
             if (s.index >= contracts::grind_first && s.index < contracts::grind_first + 2) set_grind_result(ctx_, inv_);
             if (s.index >= contracts::anvil_first && s.index < contracts::anvil_first + 2) set_anvil_result(ctx_, inv_, creative_);
+            if (enchant_ && s.index >= contracts::enchant_first && s.index < contracts::enchant_first + 2) set_enchant_offers(ctx_, inv_, *block_);
             if (s.index >= contracts::loom_first && s.index < contracts::loom_first + 3) {
                 const auto banner = s.index == contracts::loom_first ? before : inv_.loom[0];
                 const auto dye = s.index == contracts::loom_first + 1 ? before : inv_.loom[1];
@@ -364,6 +371,8 @@ public:
         if (smith_ && i < 3) return smith_takes(ctx_, i, stack.item);
         if (grind_ && i < 2) return grinds(ctx_, stack);
         if (loom_ && i < 3) return loom_takes(i, stack.item);
+        // An enchanting table's lapis slot takes lapis lazuli.
+        if (enchant_ && i == 1) return stack.item == items::lapis_lazuli;
         // A crafter's disabled slots take nothing.
         if (crafter_ && i < container_size_) {
             const auto* be = ctx_.peek_block_entity(slots_[i].pos);
@@ -376,6 +385,7 @@ public:
         if (own_ && i >= 5 && i <= 8) return 1;
         if (furnace_ && i == 1 && stack.item == items::bucket) return 1;
         if (brewing_ && i < 3) return 1;
+        if (enchant_ && i == 0) return 1;
         return std::min<int>(contracts::max_stack_size, items::max_stack(stack));
     }
 
@@ -487,6 +497,22 @@ public:
             else if (may_place(1, stack) && get(1).empty()) moved = move_into(stack, 1, 2, false);
             else if (i < 30) moved = move_into(stack, 30, 39, false);
             else moved = move_into(stack, 3, 30, false);
+        } else if (enchant_) {
+            // The item and the lapis go to the inventory from the hotbar's
+            // end; from the inventory lapis goes into the lapis slot, another
+            // item, one of it, into the empty item slot, else nowhere.
+            if (i < 2) {
+                moved = move_into(stack, 2, 38, true);
+            } else if (stack.item == items::lapis_lazuli) {
+                moved = move_into(stack, 1, 2, true);
+            } else if (get(0).empty() && may_place(0, stack)) {
+                auto one = stack;
+                one.count = 1;
+                stack.count = static_cast<std::uint8_t>(stack.count - 1);
+                if (stack.count == 0) stack = {};
+                set(0, one);
+                moved = true;
+            }
         } else if (anvil_) {
             // The inputs go to the inventory from its start; from the
             // inventory an item goes into the first input that is empty or
@@ -592,11 +618,12 @@ public:
     [[nodiscard]] bool grind() const { return grind_; }
     [[nodiscard]] bool loom() const { return loom_; }
     [[nodiscard]] bool anvil() const { return anvil_; }
+    [[nodiscard]] bool enchant() const { return enchant_; }
     [[nodiscard]] bool creative() const { return creative_; }
     [[nodiscard]] CraftingGrid grid() const { return table_ ? table_grid : own_grid; }
     // The window slots of the main inventory and the hotbar.
-    [[nodiscard]] std::size_t inventory_first() const { return smith_ || loom_ ? 4 : grind_ || anvil_ ? 3 : cutter_ ? 2 : table_ ? 10 : 9; }
-    [[nodiscard]] std::size_t inventory_end() const { return smith_ || loom_ ? 40 : grind_ || anvil_ ? 39 : cutter_ ? 38 : table_ ? 46 : 45; }
+    [[nodiscard]] std::size_t inventory_first() const { return smith_ || loom_ ? 4 : grind_ || anvil_ ? 3 : cutter_ || enchant_ ? 2 : table_ ? 10 : 9; }
+    [[nodiscard]] std::size_t inventory_end() const { return smith_ || loom_ ? 40 : grind_ || anvil_ ? 39 : cutter_ || enchant_ ? 38 : table_ ? 46 : 45; }
     [[nodiscard]] PlayerInventory& inventory() const { return inv_; }
 
 private:
@@ -618,8 +645,10 @@ private:
     bool grind_{};
     bool loom_{};
     bool anvil_{};
+    bool enchant_{};
     bool brewing_{};
     bool creative_{};
+    std::optional<BlockPos> block_;
 };
 
 void throw_item(RuleContext& ctx, const contracts::Vec3& position, const contracts::Vec3& velocity, ItemStack stack) {
@@ -829,7 +858,8 @@ void update_crafting(RuleContext& ctx, PlayerInventory& inv) {
 contracts::Result<std::vector<BlockPos>> menu_parts(RuleContext& ctx, std::optional<BlockPos> container) {
     if (!container) return std::vector<BlockPos>{};
     const auto s = ctx.block(*container);
-    if (!s.is_unloaded() && (is_crafting_table(s) || is_stonecutter(s) || is_smithing_table(s) || is_grindstone(s) || is_loom(s) || is_anvil(s)))
+    if (!s.is_unloaded()
+        && (is_crafting_table(s) || is_stonecutter(s) || is_smithing_table(s) || is_grindstone(s) || is_loom(s) || is_anvil(s) || is_enchanting_table(s)))
         return std::vector<BlockPos>{*container};
     if (s.is_unloaded() || !is_container(s.type())) return std::unexpected(contracts::ErrorCode::not_a_container);
     return container_parts(ctx, *container);
@@ -1085,9 +1115,15 @@ contracts::Result<std::function<void()>> plan_button(RuleContext& ctx, const con
     if (!parts) return std::unexpected(parts.error());
     const bool cutter = parts->size() == 1 && is_stonecutter(ctx.block(parts->front()));
     const bool loom = parts->size() == 1 && is_loom(ctx.block(parts->front()));
-    return [&ctx, c, cutter, loom] {
+    const bool table = parts->size() == 1 && is_enchanting_table(ctx.block(parts->front()));
+    return [&ctx, c, cutter, loom, table] {
         const auto* data = ctx.data();
         if (!data) return;
+        // An enchanting table's offer.
+        if (table) {
+            enchant_by_offer(ctx, ctx.player(c.player), *c.container, c.button, c.creative);
+            return;
+        }
         // A loom's pattern button: one of the patterns it offers (with or
         // without a banner there), another number does nothing.
         if (loom) {
@@ -1149,7 +1185,8 @@ contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const cont
                                 static_cast<std::uint8_t>(contracts::smith_first + 2), contracts::grind_first,
                                 static_cast<std::uint8_t>(contracts::grind_first + 1), contracts::loom_first,
                                 static_cast<std::uint8_t>(contracts::loom_first + 1), static_cast<std::uint8_t>(contracts::loom_first + 2),
-                                contracts::anvil_first, static_cast<std::uint8_t>(contracts::anvil_first + 1)}) {
+                                contracts::anvil_first, static_cast<std::uint8_t>(contracts::anvil_first + 1), contracts::enchant_first,
+                                static_cast<std::uint8_t>(contracts::enchant_first + 1)}) {
             auto& held = player_slot(inv, slot);
             const auto input = held;
             if (input.empty()) continue;
@@ -1163,9 +1200,12 @@ contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const cont
         set_grind_result(ctx, inv);
         inv.loom_pattern = -1;
         set_loom_result(ctx, inv);
-        // An anvil's typed name goes with its window.
+        // An anvil's typed name goes with its window, and an enchanting
+        // table's offers.
         inv.anvil_name.clear();
         set_anvil_result(ctx, inv, false);
+        inv.enchant_costs = {};
+        inv.enchant_clues = inv.enchant_clue_levels = {-1, -1, -1};
         if (!inv.cursor.empty()) {
             const auto carried = inv.cursor;
             inv.cursor = {};
@@ -1213,6 +1253,7 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
         for (std::uint8_t k = 0; k < 2; ++k) order.push_back(static_cast<std::uint8_t>(contracts::grind_first + k));
         for (std::uint8_t k = 0; k < 3; ++k) order.push_back(static_cast<std::uint8_t>(contracts::loom_first + k));
         for (std::uint8_t k = 0; k < 2; ++k) order.push_back(static_cast<std::uint8_t>(contracts::anvil_first + k));
+        for (std::uint8_t k = 0; k < 2; ++k) order.push_back(static_cast<std::uint8_t>(contracts::enchant_first + k));
         std::size_t n = 0;
         const auto drop = [&](ItemStack stack) {
             if (in_world) spawn_dropped(ctx, cell, c.position, death_drop_velocity(n++), stack, 40);
@@ -1234,6 +1275,8 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
         set_loom_result(ctx, inv);
         inv.anvil_name.clear();
         set_anvil_result(ctx, inv, false);
+        inv.enchant_costs = {};
+        inv.enchant_clues = inv.enchant_clue_levels = {-1, -1, -1};
         if (!inv.cursor.empty()) {
             const auto stack = inv.cursor;
             inv.cursor = {};
@@ -1278,6 +1321,10 @@ bool is_grindstone(BlockState s) {
 }
 bool is_loom(BlockState s) {
     static const auto block = find_registry_block("loom");
+    return of_block(s, block);
+}
+bool is_enchanting_table(BlockState s) {
+    static const auto block = find_registry_block("enchanting_table");
     return of_block(s, block);
 }
 bool is_anvil(BlockState s) {

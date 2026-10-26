@@ -110,6 +110,7 @@ bool has_collision(BlockState s) {
 
 void record_slot(RuleContext& ctx, const PlayerInventory& inventory, std::uint8_t slot) {
     const auto stack = slot == contracts::player_slots ? inventory.cursor
+                     : slot >= contracts::enchant_first ? inventory.enchant[slot - contracts::enchant_first]
                      : slot >= contracts::anvil_first  ? inventory.anvil[slot - contracts::anvil_first]
                      : slot >= contracts::loom_first   ? inventory.loom[slot - contracts::loom_first]
                      : slot >= contracts::grind_first  ? inventory.grind[slot - contracts::grind_first]

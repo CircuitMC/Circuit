@@ -133,6 +133,10 @@ inline constexpr std::uint8_t loom_first = 66;
 // slots 0-2), recorded as slots 70-72.
 inline constexpr std::uint8_t anvil_slots = 3;
 inline constexpr std::uint8_t anvil_first = 70;
+// The enchanting table window: the item and the lapis (window slots 0-1),
+// recorded as slots 73-74.
+inline constexpr std::uint8_t enchant_slots = 2;
+inline constexpr std::uint8_t enchant_first = 73;
 // The longest name an anvil gives, in UTF-16 code units as the protocol
 // counts them (minecraft.wiki "Anvil").
 inline constexpr std::size_t max_item_name = 50;
@@ -340,12 +344,14 @@ struct SetDifficulty {
 };
 
 // A player presses a button of their window (the protocol's container
-// button click): a stonecutter's recipe, by its place in the input's list.
-// `container` is the window's block.
+// button click): a stonecutter's recipe, by its place in the input's list,
+// or an enchanting table's offer. `container` is the window's block;
+// `creative` whether the player is in creative mode.
 struct ContainerButton {
     PlayerKey player;
     std::optional<BlockPos> container;
     std::int32_t button{};
+    bool creative{};
     bool operator==(const ContainerButton&) const = default;
 };
 

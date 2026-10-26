@@ -294,6 +294,12 @@ int main() {
             p.anvil[2] = {circuit::gameplay::items::iron_pickaxe, 1, 3};
             p.anvil_name = "Rock \xE2\x9B\x8F";
             p.anvil_cost = 41;
+            p.enchant[0] = {circuit::gameplay::items::diamond_sword, 1};
+            p.enchant[1] = {circuit::gameplay::items::lapis_lazuli, 12};
+            p.enchant_costs = {4, 19, 30};
+            p.enchant_clues = {32, -1, 39};
+            p.enchant_clue_levels = {1, -1, 3};
+            p.xp_seed = -1987654321;
             p.xp_level = 9;
             p.xp_progress = 0.6000000834465027f;
             p.xp_total = 150;

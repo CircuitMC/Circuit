@@ -7,6 +7,7 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
+// 23: window buttons of creative players (tag 34);
 // 22: names typed into anvils (tag 32) and experience changes (tag 33);
 // 21: summoned experience orbs carry their value, count and age (tag 31);
 // 20: slots enabled and disabled (tag 30);
@@ -24,7 +25,7 @@ constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
 // block registry id; 3: stacks carry damage, player commands carry their
 // player. Commands of versions before 6 are the overworld's. Tickets of
 // versions before 7 (tags 5 and 9) read as forced squares.
-constexpr std::uint16_t format_version = 22;
+constexpr std::uint16_t format_version = 23;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -131,14 +132,15 @@ private:
 // 27 SetDifficulty, 28 CloseContainer whose items drop (tag 14 returns them),
 // 29 ContainerButton, 30 SetSlotEnabled, 31 SummonEntity with an experience
 // orb's value, count and age (tag 23 has none), 32 RenameItem,
-// 33 ChangeExperience.
+// 33 ChangeExperience, 34 ContainerButton of a creative player (tag 29's
+// players are not).
 std::uint8_t tag_of(const CommandBody& body) {
     if (const auto* summon = std::get_if<SummonEntity>(&body); summon && (summon->value != 0 || summon->count != 1 || summon->age != 0))
         return 31;
     if (std::holds_alternative<ChangeExperience>(body)) return 33;
     if (std::holds_alternative<RenameItem>(body)) return 32;
     if (std::holds_alternative<SetSlotEnabled>(body)) return 30;
-    if (std::holds_alternative<ContainerButton>(body)) return 29;
+    if (const auto* button = std::get_if<ContainerButton>(&body)) return button->creative ? 34 : 29;
     if (const auto* close = std::get_if<CloseContainer>(&body); close && close->drop) return 28;
     if (std::holds_alternative<SummonEntity>(body)) return 23;
     if (std::holds_alternative<PlayerUse>(body)) return 25;
@@ -533,8 +535,10 @@ bool decode_command(Reader& r, Command& c) {
         c.body = b;
         return true;
     }
-    case 29: {
+    case 29:
+    case 34: {
         ContainerButton b;
+        b.creative = tag == 34;
         std::uint8_t has{};
         if (!r.player(b.player) || !r.get(has) || has > 1) return false;
         if (has) {

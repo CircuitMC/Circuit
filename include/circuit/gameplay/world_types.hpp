@@ -223,6 +223,16 @@ struct PlayerInventory {
     std::array<ItemStack, contracts::anvil_slots> anvil{};
     std::string anvil_name;
     std::int32_t anvil_cost{};
+    // The enchanting table window the player has open: its item and lapis,
+    // and its three offers: their level costs (0: none), and the enchantment
+    // each shows and its level (-1: none).
+    std::array<ItemStack, contracts::enchant_slots> enchant{};
+    std::array<std::int32_t, 3> enchant_costs{};
+    std::array<std::int32_t, 3> enchant_clues{-1, -1, -1};
+    std::array<std::int32_t, 3> enchant_clue_levels{-1, -1, -1};
+    // The player's enchantment seed once enchanting changed it; 0 before
+    // (experience::enchantment_seed).
+    std::int32_t xp_seed{};
     // A drag across slots in progress (several clicks): its stage (0 none,
     // 1 collecting slots), its type (0 split evenly, 1 one each, 2 full
     // stacks) and the slots collected so far, in window numbering.
@@ -242,7 +252,9 @@ struct PlayerInventory {
         return cursor.empty() && drag_stage == 0 && std::ranges::all_of(slots, none) && std::ranges::all_of(table, none)
             && std::ranges::all_of(cutter, none) && cutter_recipe == -1 && std::ranges::all_of(smith, none)
             && std::ranges::all_of(grind, none) && std::ranges::all_of(loom, none) && loom_pattern == -1
-            && std::ranges::all_of(anvil, none) && anvil_name.empty() && anvil_cost == 0 && xp_level == 0
+            && std::ranges::all_of(anvil, none) && anvil_name.empty() && anvil_cost == 0 && std::ranges::all_of(enchant, none)
+            && enchant_costs == std::array<std::int32_t, 3>{} && enchant_clues == std::array<std::int32_t, 3>{-1, -1, -1}
+            && enchant_clue_levels == std::array<std::int32_t, 3>{-1, -1, -1} && xp_seed == 0 && xp_level == 0
             && xp_progress == 0.0f && xp_total == 0 && xp_ready == 0;
     }
     bool operator==(const PlayerInventory&) const = default;

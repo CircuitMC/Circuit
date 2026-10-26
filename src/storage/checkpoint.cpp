@@ -21,6 +21,8 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 41: player inventories carry an open enchanting table's slots and offers
+// and the player's enchantment seed;
 // 40: player inventories carry an open anvil's slots, name and cost;
 // 39: block entities carry the recipes a furnace cooked;
 // 38: entities carry their own random;
@@ -72,7 +74,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 40;
+constexpr std::uint32_t version = 41;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -259,6 +261,9 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
         w.varint(p.xp_level).f32(p.xp_progress).varint(p.xp_total).varlong(static_cast<std::int64_t>(p.xp_ready));
         for (const auto& st : p.anvil) stack(w, st);
         w.string(p.anvil_name, 256).varint(p.anvil_cost);
+        for (const auto& st : p.enchant) stack(w, st);
+        for (std::size_t i = 0; i < 3; ++i) w.varint(p.enchant_costs[i]).varint(p.enchant_clues[i]).varint(p.enchant_clue_levels[i]);
+        w.i32(p.xp_seed);
     }
     w.varint(static_cast<std::int32_t>(c.extras.size()));
     for (const auto& [name, bytes] : c.extras) w.string(name, 256).prefixed_bytes(bytes);
@@ -741,6 +746,16 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
                 for (auto& st : p.anvil)
                     if (!b.stack(st)) return false;
                 if (!b.get(b.r.string(256), p.anvil_name) || !b.get(b.r.varint(), p.anvil_cost) || p.anvil_cost < 0) return false;
+            }
+            if (b.version >= 41) {
+                for (auto& st : p.enchant)
+                    if (!b.stack(st)) return false;
+                for (std::size_t k = 0; k < 3; ++k)
+                    if (!b.get(b.r.varint(), p.enchant_costs[k]) || !b.get(b.r.varint(), p.enchant_clues[k])
+                        || !b.get(b.r.varint(), p.enchant_clue_levels[k]) || p.enchant_costs[k] < 0 || p.enchant_clues[k] < -1
+                        || p.enchant_clue_levels[k] < -1)
+                        return false;
+                if (!b.get(b.r.i32(), p.xp_seed)) return false;
             }
             p.player = {static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)};
             s.players.push_back(p);

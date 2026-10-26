@@ -231,7 +231,7 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
             return [&ctx, c] { ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo); };
         }
         if (is_crafting_table(clicked) || is_stonecutter(clicked) || is_smithing_table(clicked) || is_grindstone(clicked) || is_loom(clicked)
-            || is_anvil(clicked))
+            || is_anvil(clicked) || is_enchanting_table(clicked))
             return [&ctx, c] { ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo); };
     }
     // Bone meal acts on the clicked block as a dispenser's does, used up in

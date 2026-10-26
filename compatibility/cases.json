@@ -350,6 +350,17 @@
       "description": "48 steps at an anvil placed across the player's way: a worn iron pickaxe repaired by three ingots, two pickaxes combined, Efficiency I and a book of it made Efficiency II, names typed and kept for the next items (a blank one removing a name, one too long ignored, a section sign removed), renaming alone capped at 39 levels with prior work penalties, a repair too expensive at 41, a result refused with too few levels and taken with enough, then /xp adding and setting levels and points (the total wrapping at the largest int); Circuit and both official servers give identical windows, costs, components, levels, progress and totals"
     },
     {
+      "id": "client/enchanting",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/enchant3.js, enchantable2.js",
+      "status": "passing",
+      "description": "An enchanting table with 0 to 16 bookshelves placed around it, a stone halfway to three of them and two raised ones: the ten window properties for 35 items (costs, the seed's low bits, the clues), lapis and items moved in and out, an offer refused with too few levels and too little lapis, a diamond sword enchanted by the third offer for 3 levels and 3 lapis, an enchanted item offered nothing, and enchanting in creative mode, with the player's enchantment seed set on the official servers to Circuit's; enchantments are compared as sets (the official servers send them in a hash order); Circuit and both official servers give identical output, and 320 windows recorded with two other seeds match the fitted model"
+    },
+    {
       "id": "client/furnace_xp",
       "kind": "black_box",
       "versions": [

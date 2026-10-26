@@ -415,6 +415,13 @@ void use_anvil(RuleContext& ctx, PlayerInventory& inv, std::optional<BlockPos> a
 // Whether a typed name may name an item: UTF-8 without control characters
 // or the section sign, of at most contracts::max_item_name UTF-16 code units.
 bool valid_item_name(std::string_view name);
+
+// ---- enchanting tables (enchanting.cpp) ----
+// Sets an enchanting table window's offers from its item, the bookshelves
+// around the table at `table` and the player's enchantment seed; and
+// enchants the item by an offer (0-2) for its levels and lapis.
+void set_enchant_offers(RuleContext& ctx, PlayerInventory& inv, BlockPos table);
+void enchant_by_offer(RuleContext& ctx, PlayerInventory& inv, BlockPos table, std::int32_t offer, bool creative);
 void tick_furnace(RuleContext& ctx, BlockPos pos, BlockState s);
 std::vector<std::size_t> furnace_slots(Direction face);
 bool furnace_accepts(const BlockEntity& be, std::size_t slot, const ItemStack& stack);

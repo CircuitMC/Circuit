@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #include <circuit/gameplay/experience.hpp>
+#include <circuit/gameplay/rng.hpp>
 #include <algorithm>
 #include <climits>
 
@@ -39,6 +40,11 @@ void give_levels(PlayerInventory& player, std::int32_t levels) noexcept {
 void set_points(PlayerInventory& player, std::int32_t points) noexcept {
     const auto need = static_cast<float>(needed(player.xp_level));
     player.xp_progress = std::clamp(static_cast<float>(points) / need, 0.0f, (need - 1.0f) / need);
+}
+
+std::int32_t enchantment_seed(const PlayerInventory& player) noexcept {
+    if (player.xp_seed != 0) return player.xp_seed;
+    return static_cast<std::int32_t>(static_cast<std::uint32_t>(Rng::derive({player.player.hi, player.player.lo, 0x5850534545440000ULL}).next()));
 }
 
 } // namespace circuit::gameplay::experience

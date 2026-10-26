@@ -169,6 +169,8 @@ int main() {
         // Anvil names (tag 32) and experience changes (tag 33).
         log.ticks.push_back({8, {{29, RenameItem{alex, "Digger \xE2\x9B\x8F", true}}, {30, RenameItem{alex, "", false}},
                                  {31, ChangeExperience{alex, -2147483647 - 1, false, false}}, {32, ChangeExperience{alex, 30, true, true}}}});
+        // A creative player's window button (tag 34).
+        log.ticks.push_back({9, {{33, ContainerButton{alex, BlockPos{0, 1, 2}, 2, true}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);

@@ -299,6 +299,44 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
                 game->enchantment_rules.emplace(*id, std::move(rules));
             }
         }
+        // Enchanting tables: the enchantments they offer, in the tag's order,
+        // and the blocks that power them and let the power through.
+        if (const auto* offered = packs->ordered_tag("enchantment", "minecraft:in_enchanting_table"))
+            if (const auto* defined = packs->resources("enchantment")) {
+                const auto ctx = component_context(bundle, out.registries);
+                const auto pair_of = [](const auth::Json* cost) {
+                    const auto* base = cost ? cost->find("base") : nullptr;
+                    const auto* per = cost ? cost->find("per_level_above_first") : nullptr;
+                    return std::pair<std::int32_t, std::int32_t>{base ? static_cast<std::int32_t>(base->as_number()) : 0,
+                                                                 per ? static_cast<std::int32_t>(per->as_number()) : 0};
+                };
+                for (const auto& name : *offered) {
+                    const auto it = defined->find(name);
+                    const auto id = ctx.id_of("enchantment", name);
+                    if (it == defined->end() || !id) continue;
+                    const auto json = auth::Json::parse(it->second);
+                    if (!json) continue;
+                    gameplay::GameData::TableEnchantment e;
+                    e.id = *id;
+                    if (const auto* weight = json->find("weight")) e.weight = static_cast<std::int32_t>(weight->as_number());
+                    if (const auto* level = json->find("max_level")) e.max_level = static_cast<std::int32_t>(level->as_number());
+                    e.min_cost = pair_of(json->find("min_cost"));
+                    e.max_cost = pair_of(json->find("max_cost"));
+                    const auto* primary = json->find("primary_items");
+                    e.primary = items_of(primary ? primary : json->find("supported_items"));
+                    game->table_enchantments.push_back(std::move(e));
+                }
+            }
+        const auto blocks_of = [&](std::string_view tag) {
+            std::vector<std::uint32_t> blocks;
+            if (const auto* members = packs->tag("block", tag))
+                for (const auto& member : *members)
+                    if (const auto b = gameplay::registry::find_block(bundle.schema.content_release, member)) blocks.push_back(*b);
+            std::ranges::sort(blocks);
+            return blocks;
+        };
+        game->power_providers = blocks_of("minecraft:enchantment_power_provider");
+        game->power_transmitters = blocks_of("minecraft:enchantment_power_transmitter");
         for (std::uint16_t item = 1; const auto* info = gameplay::items::info(item); ++item) {
             std::string_view n = info->name;
             n.remove_prefix(10);

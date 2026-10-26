@@ -27,4 +27,10 @@ void give_levels(PlayerInventory& player, std::int32_t levels) noexcept;
 // than all of it); the level and total stay.
 void set_points(PlayerInventory& player, std::int32_t points) noexcept;
 
+// The player's enchantment seed, which an enchanting table's offers draw
+// from: its own once enchanting changed it (`xp_seed`), else one Circuit
+// derives from the player (the official servers draw a new player's at
+// random).
+std::int32_t enchantment_seed(const PlayerInventory& player) noexcept;
+
 } // namespace circuit::gameplay::experience

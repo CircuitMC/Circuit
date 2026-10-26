@@ -119,6 +119,24 @@ struct GameData {
     std::function<std::int32_t(const contracts::ComponentPatch&)> repair_cost_of;
     std::function<std::optional<std::string>(const contracts::ComponentPatch&)> custom_name_of;
     std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, const std::optional<std::string>&)> with_custom_name;
+    // Enchanting tables (minecraft.wiki "Enchanting mechanics"): the
+    // enchantments of the enchantment tag in_enchanting_table in its order,
+    // each with its id, weight, highest level, cost range (base and per
+    // level above the first) and primary items (its supported items without
+    // any; ascending); and the blocks that power a table and those that let
+    // the power through (the block tags enchantment_power_provider and
+    // enchantment_power_transmitter; internal registry blocks, ascending).
+    struct TableEnchantment {
+        std::uint32_t id{};
+        std::int32_t weight{};
+        std::int32_t max_level{1};
+        std::pair<std::int32_t, std::int32_t> min_cost{};
+        std::pair<std::int32_t, std::int32_t> max_cost{};
+        std::vector<std::uint16_t> primary{};
+    };
+    std::vector<TableEnchantment> table_enchantments;
+    std::vector<std::uint32_t> power_providers;
+    std::vector<std::uint32_t> power_transmitters;
     // A stack's name as a player sees it (in English): its custom name, else
     // its potion's or its item's name; set by the server from the language
     // file of the official jar. Without it the rules name items by their id.

@@ -251,6 +251,12 @@ std::string text(const PlayerInventory& p) {
     for (std::size_t i = 0; i < p.anvil.size(); ++i)
         if (!p.anvil[i].empty()) slots += std::format("anvil{}:{}x{}/{} ", i, p.anvil[i].item, p.anvil[i].count, p.anvil[i].damage);
     if (!p.anvil_name.empty() || p.anvil_cost != 0) slots += std::format("name:\"{}\" cost:{} ", p.anvil_name, p.anvil_cost);
+    for (std::size_t i = 0; i < p.enchant.size(); ++i)
+        if (!p.enchant[i].empty()) slots += std::format("enchant{}:{}x{}/{} ", i, p.enchant[i].item, p.enchant[i].count, p.enchant[i].damage);
+    for (std::size_t i = 0; i < 3; ++i)
+        if (p.enchant_costs[i] != 0 || p.enchant_clues[i] != -1 || p.enchant_clue_levels[i] != -1)
+            slots += std::format("offer{}:{}/{}/{} ", i, p.enchant_costs[i], p.enchant_clues[i], p.enchant_clue_levels[i]);
+    if (p.xp_seed != 0) slots += std::format("seed:{} ", p.xp_seed);
     return std::format("player {:016x}{:016x} cursor={}x{} slots=[{}] xp={}+{}/{} xp_ready={}", p.player.hi, p.player.lo, p.cursor.item,
                        p.cursor.count, slots, p.xp_level, p.xp_progress, p.xp_total, p.xp_ready);
 }
@@ -433,6 +439,13 @@ std::uint64_t digest(const WorldDump& d) {
         h.add(p.anvil_name.size());
         for (const char ch : p.anvil_name) h.add(static_cast<std::uint8_t>(ch));
         h.add(static_cast<std::uint32_t>(p.anvil_cost));
+        for (const auto& s : p.enchant) { h.add(contracts::pack_stack(s)); h.add(s.components.hash()); }
+        for (std::size_t i = 0; i < 3; ++i) {
+            h.add(static_cast<std::uint32_t>(p.enchant_costs[i]));
+            h.add(static_cast<std::uint32_t>(p.enchant_clues[i]));
+            h.add(static_cast<std::uint32_t>(p.enchant_clue_levels[i]));
+        }
+        h.add(static_cast<std::uint32_t>(p.xp_seed));
         h.add(static_cast<std::uint32_t>(p.xp_level)); h.add(std::bit_cast<std::uint32_t>(p.xp_progress));
         h.add(static_cast<std::uint32_t>(p.xp_total)); h.add(p.xp_ready);
         h.add(p.drag_stage); h.add(p.drag_type); h.add(p.drag_slots.size());
