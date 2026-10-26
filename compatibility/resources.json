@@ -2817,7 +2817,7 @@
           "client/furnace_menus"
         ],
         "deviations": [
-          "the experience of what it cooked is not kept"
+          "the rest of its experience below 1 comes by a random of Circuit's own"
         ],
         "note": "Placed by players as both official servers place it; it burns fuel and cooks by the official data packs' recipes, and players use its menu, as both official servers do"
       },
@@ -2831,7 +2831,7 @@
           "client/furnace_menus"
         ],
         "deviations": [
-          "the experience of what it cooked is not kept"
+          "the rest of its experience below 1 comes by a random of Circuit's own"
         ],
         "note": "Placed by players as both official servers place it; it burns fuel and cooks by the official data packs' recipes, and players use its menu, as both official servers do"
       },
@@ -2845,7 +2845,7 @@
           "client/furnace_menus"
         ],
         "deviations": [
-          "the experience of what it cooked is not kept"
+          "the rest of its experience below 1 comes by a random of Circuit's own"
         ],
         "note": "Placed by players as both official servers place it; it burns fuel and cooks by the official data packs' recipes, and players use its menu, as both official servers do"
       },
@@ -5855,7 +5855,7 @@
           "client/orbs"
         ],
         "deviations": [
-          "furnaces, grindstones and mobs give none yet; how players draw them is not compared tick by tick; Mending is not modeled"
+          "mobs give none yet; how players draw them is not compared tick by tick; Mending is not modeled"
         ]
       },
       "snowball": {

@@ -223,11 +223,18 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
                 if (const auto item = gameplay::items::by_name(name)) game->brewing_fuel.push_back(*item);
             std::ranges::sort(game->brewing_fuel);
         }
-        // Enchantments that set a broken block's experience (Silk Touch).
+        // Enchantments that set a broken block's experience (Silk Touch),
+        // and every enchantment's minimum cost (grindstones).
         if (const auto* defined = packs->resources("enchantment")) {
             const auto ctx = component_context(bundle, out.registries);
             for (const auto& [name, text] : *defined) {
                 const auto json = auth::Json::parse(text);
+                if (const auto* cost = json ? json->find("min_cost") : nullptr) {
+                    const auto* base = cost->find("base");
+                    const auto* per = cost->find("per_level_above_first");
+                    if (const auto id = ctx.id_of("enchantment", name); id && base && per)
+                        game->enchantment_min_cost[*id] = {static_cast<std::int32_t>(base->as_number()), static_cast<std::int32_t>(per->as_number())};
+                }
                 const auto* effects = json ? json->find("effects") : nullptr;
                 const auto* list = effects ? effects->find("minecraft:block_experience") : nullptr;
                 if (!list || list->kind() != auth::Json::Kind::array) continue;

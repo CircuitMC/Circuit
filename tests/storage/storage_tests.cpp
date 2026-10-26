@@ -269,6 +269,7 @@ int main() {
             furnace.lit_total = 1600;
             furnace.cook_time = 77;
             furnace.cook_total = 200;
+            furnace.recipes_used = {{"minecraft:iron_ingot", 7}, {"minecraft:stone", 2}};
             auto& bes = c.state.level(circuit::contracts::DimensionId::overworld).block_entities;
             bes.push_back({{29999, 0, 29999}, furnace});
             circuit::gameplay::BlockEntity crafter{circuit::gameplay::BlockType::crafter, 98, std::vector<circuit::contracts::ItemStack>(9), 0};

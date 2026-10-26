@@ -42,6 +42,8 @@ public:
     std::uint8_t sky_light(BlockPos pos) override;
     bool player_near(ChunkPos chunk) override;
     std::optional<gameplay::Presence> nearest_player(contracts::Vec3 at, double range) override;
+    std::optional<gameplay::Presence> presence_of(contracts::PlayerKey player) override;
+    [[nodiscard]] bool final_ids() const noexcept override;
     bool section_ticks_randomly(ChunkPos chunk, std::int32_t section) override;
     std::uint8_t difficulty() override { return world_.difficulty; }
     std::uint8_t block_light(BlockPos pos) override;

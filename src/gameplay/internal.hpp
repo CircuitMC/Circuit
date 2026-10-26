@@ -398,6 +398,11 @@ std::int32_t burn_time(std::uint16_t item);
 // The cooking time of an input; without a recipe 200, or 0 with `recipe_only`.
 std::int32_t cooking_time(RuleContext& ctx, BlockState furnace, const ItemStack& input, bool recipe_only = false);
 void furnace_input_set(RuleContext& ctx, BlockPos pos, const ItemStack& before);
+// The experience of what a furnace cooked, given at a point (its recipes'
+// counts times their experience); and a player taking a furnace's result,
+// who gets it at their feet.
+void award_cooked(RuleContext& ctx, const std::vector<std::pair<std::string, std::int32_t>>& recipes, contracts::Vec3 at);
+void furnace_result_taken(RuleContext& ctx, BlockPos pos, contracts::PlayerKey player);
 void tick_furnace(RuleContext& ctx, BlockPos pos, BlockState s);
 std::vector<std::size_t> furnace_slots(Direction face);
 bool furnace_accepts(const BlockEntity& be, std::size_t slot, const ItemStack& stack);

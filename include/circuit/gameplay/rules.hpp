@@ -28,6 +28,10 @@ void run_random_ticks(RuleContext& ctx, ChunkPos chunk, std::int32_t sections);
 std::vector<ChunkPos> random_tick_order(std::vector<ChunkPos> chunks);
 void run_block_event(RuleContext& ctx, const BlockEvent& event);
 void run_entity(RuleContext& ctx, EntityId id);
+// A new experience orb's first motion, drawn from its own random (seeded
+// with its id): what experience given outside the command phase waits for
+// until the commit gives the orb its id (Entity::launch).
+void launch_orb(Entity& orb, contracts::OrbMotion motion);
 void run_block_entity(RuleContext& ctx, BlockPos pos);
 
 // Rule primitives, exposed for fixtures.

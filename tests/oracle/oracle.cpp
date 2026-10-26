@@ -55,6 +55,11 @@ public:
     std::optional<gameplay::Presence> nearest_player(contracts::Vec3 at, double range) override {
         return gameplay::nearest_player(lv().presences, at, range);
     }
+    std::optional<gameplay::Presence> presence_of(contracts::PlayerKey player) override {
+        const auto it = lv().presences.find(player);
+        return it == lv().presences.end() ? std::nullopt : std::optional(it->second);
+    }
+    bool final_ids() const noexcept override { return true; }
     bool section_ticks_randomly(ChunkPos chunk, std::int32_t section) override {
         return lv().random_ticking.contains({chunk, section});
     }

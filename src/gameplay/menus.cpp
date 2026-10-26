@@ -329,6 +329,8 @@ public:
         be->slots[s.index] = stack;
         ctx_.record(TraceKind::inventory_changed, s.pos, s.index, contracts::pack_stack(before), contracts::pack_stack(stack));
         if (furnace_ && s.index == 0) furnace_input_set(ctx_, s.pos, before);
+        // Taking from a furnace's result gives its experience.
+        if (furnace_ && s.index == 2 && stack.count < before.count) furnace_result_taken(ctx_, s.pos, inv_.player);
         for (const auto part : container_parts(ctx_, s.pos)) container_changed(ctx_, part);
     }
     void set_cursor(ItemStack stack) {
@@ -675,7 +677,27 @@ void use_smith(RuleContext& ctx, PlayerInventory& inv) {
 
 // A grindstone's result was taken: both inputs are used up (the
 // experience it gives is not modeled).
-void use_grind(RuleContext& ctx, PlayerInventory& inv) {
+void use_grind(RuleContext& ctx, PlayerInventory& inv, std::optional<BlockPos> at) {
+    // Experience at the grindstone's center: of the minimum costs i of the
+    // inputs' enchantments that were not curses, ceil(i / 2) and a level
+    // random draw below that (minecraft.wiki "Grindstone").
+    if (const auto* data = ctx.data(); data && data->enchantments_of && at) {
+        std::int32_t cost = 0;
+        for (std::size_t k = 0; k < 2; ++k) {
+            const auto& input = inv.grind[k];
+            if (input.empty()) continue;
+            for (const bool stored : {false, true})
+                for (const auto& [id, level] : data->enchantments_of(input.components, stored)) {
+                    if (std::ranges::binary_search(data->curses, id)) continue;
+                    if (const auto it = data->enchantment_min_cost.find(id); it != data->enchantment_min_cost.end())
+                        cost += it->second.first + it->second.second * (level - 1);
+                }
+        }
+        if (cost > 0) {
+            const auto half = (cost + 1) / 2;
+            award_experience(ctx, {at->x + 0.5, at->y + 0.5, at->z + 0.5}, half + ctx.random_int(half));
+        }
+    }
     for (std::size_t k = 0; k < 2; ++k) {
         if (inv.grind[k].empty()) continue;
         inv.grind[k] = {};
@@ -704,7 +726,7 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
     const auto made_now = [&] { return menu.get(menu.result_slot()); };
     const auto use = [&] {
         if (menu.smith()) use_smith(ctx, inv);
-        else if (menu.grind()) use_grind(ctx, inv);
+        else if (menu.grind()) use_grind(ctx, inv, c.container);
         else if (menu.loom()) use_loom(ctx, inv);
         else if (menu.cutter()) use_cutter(ctx, inv);
         else use_grid(ctx, inv, menu.grid(), c);

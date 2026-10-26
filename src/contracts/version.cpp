@@ -176,9 +176,12 @@ constexpr std::array reference_v4_mechanisms{
         "recipe's cooking time, then the input becomes its result; without fuel the progress falls by 2; a new input "
         "starts it over; a wet sponge dried over an empty bucket fills it; they show whether they are lit and "
         "comparators read them; hoppers fill the input from above and the fuel from the sides and take the result "
-        "and empty buckets from below; players use their menus (client/furnace_menus). Gaps: the experience of what they "
-        "cooked and minecarts with hoppers are not modeled; checkpoints before version 28 bring their furnaces back "
-        "empty."},
+        "and empty buckets from below; players use their menus (client/furnace_menus); they keep what they cooked and "
+        "give its experience when a player takes the result (at the player) or they are removed (after their contents; "
+        "xp_furnaces, xp_explosion, client/furnace_xp). Gaps: the rest of an experience below 1, which the official "
+        "servers give by an unseeded random's chance, Circuit gives by a random of its own; furnaces that cooked by "
+        "several recipes give them in recipe id order, the official servers in a hash order; minecarts with hoppers are "
+        "not modeled; checkpoints before version 28 bring their furnaces back empty."},
     MechanismEntry{"experience_orbs", l0_exact, l2_declared_deviation, harness_trace,
         "Experience orbs as both official servers run them without players near (orbs, orbs_merge, orbs_more; summoned "
         "with their value, count and age): gravity of 0.03 and drag, floating with their eye in water, sliding with the "
@@ -191,7 +194,8 @@ constexpr std::array reference_v4_mechanisms{
         "level random to join an orb of its value nearby, a new orb drawing its first motion from its own random "
         "(seeded with its id, as harness 0.36.0 seeds it); mined ores and sculk give their experience (xp_ores, "
         "xp_merge, xp_merge_more), none to Silk Touch; lava makes orbs jump by their own random. Gaps: how players draw "
-        "orbs is not compared tick by tick; Mending; furnaces and grindstones give no experience yet."},
+        "orbs is not compared tick by tick; Mending; experience given outside the command phase gets its orbs' first "
+        "motion at the commit (xp_explosion)."},
     MechanismEntry{"brewing", l0_exact, l2_declared_deviation, harness_trace,
         "Brewing stands as both official servers run them (brewing, brewing_hoppers; with the official data packs' "
         "brewing fuel and component encoding): blaze powder gives fuel for 20 brews when none is left; with fuel and a "
@@ -501,7 +505,8 @@ constexpr std::array reference_v4_mechanisms{
         "scenario at a loom (pattern buttons, the choice following the slots, layers), and a 36-step scenario at a brewing "
         "stand (slot rules, quick moves to fuel, ingredient and bottles, brews stopped and started by the ingredient, "
         "brewed bottles losing their other components, the brew time and fuel properties). Gaps: no "
-        "special recipes or recipe book; grindstones give no experience; trim materials of 1.21.5 "
+        "special recipes or recipe book; a grindstone's experience draws from the level random, so the client "
+        "scenario checks only its range (client/furnace_xp); trim materials of 1.21.5 "
         "and later from the vanilla materials' items; no harness traces of menus."},
     MechanismEntry{"survival_actions", l0_exact, l2_declared_deviation, documented_behavior,
         "Placement uses up items; dig progress from hardness, tool speed and tier, ground and water; drops by "

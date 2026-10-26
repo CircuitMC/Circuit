@@ -379,6 +379,12 @@ std::uint64_t digest(const WorldDump& d) {
             h.add(static_cast<std::uint32_t>(be.lit_time)); h.add(static_cast<std::uint32_t>(be.lit_total));
             h.add(static_cast<std::uint32_t>(be.cook_time)); h.add(static_cast<std::uint32_t>(be.cook_total));
             h.add(be.disabled); h.add(static_cast<std::uint32_t>(be.crafting_ticks));
+            h.add(be.recipes_used.size());
+            for (const auto& [id, count] : be.recipes_used) {
+                h.add(id.size());
+                for (const char ch : id) h.add(static_cast<std::uint8_t>(ch));
+                h.add(static_cast<std::uint32_t>(count));
+            }
             h.add(be.components.hash()); h.add(be.saved.hash());
             for (const auto& s : be.slots) { h.add(contracts::pack_stack(s)); h.add(s.components.hash()); }
         }

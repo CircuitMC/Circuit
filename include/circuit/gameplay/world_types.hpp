@@ -45,6 +45,9 @@ struct BlockEntity {
     // Furnace: ticks its fuel still burns and the fuel's whole burn time,
     // the input's cooking progress and the time it needs.
     std::int32_t lit_time{}, lit_total{}, cook_time{}, cook_total{};
+    // Furnace: the recipes it cooked since a player last took their
+    // experience, by recipe id (ascending), and how often.
+    std::vector<std::pair<std::string, std::int32_t>> recipes_used{};
     // Brewing stand: lit_time its fuel (the brews it has left), cook_time
     // the ticks its brew still takes and cook_total the item it brews with.
     // Crafter: its disabled slots (bit k: slot k) and the ticks it still
@@ -130,6 +133,9 @@ struct Entity {
     // reference harness seeds it (the official servers seed it from the clock).
     bool seeded{};
     std::uint64_t own_random{};
+    // An experience orb given outside the command phase, whose first motion
+    // waits for its final id (the commit gives it; never saved).
+    bool launch{};
     // Falling blocks: the block it carries and the ticks it has fallen.
     BlockState carried{};
     std::uint32_t fall_time{};

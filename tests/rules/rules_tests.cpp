@@ -1821,6 +1821,53 @@ int main() {
         require(total >= 3 && total <= 7 && centered, std::format("3 to 7 experience from the plain pickaxe's diamond ore: {}", total));
     });
 
+    suite.run("furnaces keep what they cooked and give its experience when taken or removed", [] {
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::PlayerBreak;
+        using circuit::contracts::PlayerKey;
+        using circuit::contracts::PlayerPresence;
+        using circuit::contracts::SetPlayerSlot;
+        using circuit::gameplay::EntityKind;
+        using circuit::gameplay::blocks::FurnaceKind;
+        namespace recipes = circuit::gameplay::recipes;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->cooking.push_back({recipes::Cooking::Kind::blasting, "minecraft:gold_ingot_from_blasting_raw_gold", {{item("minecraft:raw_gold")}},
+                                 {item("minecraft:gold_ingot"), 1}, 1.0f, 100});
+        Sim s(bundle(), 7, 2, data);
+        const PlayerKey alex{5, 5};
+        s.tick(floor(-3, 12, -1, 6));
+        s.tick({place({0, 0, 0}, blocks::furnace(FurnaceKind::blast_furnace, Direction::south)), place({6, 0, 0}, blocks::furnace(FurnaceKind::blast_furnace, Direction::south)),
+                insert({0, 0, 0}, 0, item("minecraft:raw_gold"), 3), insert({0, 0, 0}, 1, items::coal, 1),
+                insert({6, 0, 0}, 0, item("minecraft:raw_gold"), 2), insert({6, 0, 0}, 1, items::coal, 1),
+                PlayerPresence{alex, {3.5, 0.0, 3.5}}, SetPlayerSlot{alex, 36, {items::diamond_pickaxe, 1, 0}}});
+        s.until(s.oracle.time() + 310);
+        const auto orbs = [&] {
+            const auto d = s.oracle.dump();
+            std::vector<circuit::gameplay::Entity> out;
+            for (const auto& e : d.overworld().entities)
+                if (e.kind == EntityKind::experience_orb) out.push_back(e);
+            return out;
+        };
+        const auto cooked = s.oracle.dump();
+        const auto* first = block_entity_at(cooked, {0, 0, 0});
+        require(first && first->recipes_used == std::vector<std::pair<std::string, std::int32_t>>{{"minecraft:gold_ingot_from_blasting_raw_gold", 3}},
+                "three cooked by the recipe");
+        // Taking the result gives 3 at the player's feet; the other furnace,
+        // broken, gives 2 at its center after its contents.
+        s.tick({ContainerClick{alex, std::optional(BlockPos{0, 0, 0}), 2, 0, 1, false, at_block(3.5, 1.6, 3.5), {}}});
+        auto now = orbs();
+        std::int32_t taken = 0;
+        for (const auto& o : now) taken += std::abs(o.position.x - 3.5) < 0.5 ? o.experience * o.orbs : 0;
+        const auto after = s.oracle.dump();
+        require(taken == 3 && block_entity_at(after, {0, 0, 0})->recipes_used.empty(), "3 at the player, the recipes cleared");
+        s.tick({PlayerBreak{alex, {6, 0, 0}, true, 36}});
+        now = orbs();
+        std::int32_t broken = 0;
+        for (const auto& o : now) broken += std::abs(o.position.x - 6.5) < 0.5 ? o.experience * o.orbs : 0;
+        require(broken == 2, std::format("2 from the broken furnace: {}", broken));
+    });
+
     suite.run("brewing stands brew the bottles that mix with their ingredient", [] {
         using circuit::contracts::ComponentPatch;
         const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };

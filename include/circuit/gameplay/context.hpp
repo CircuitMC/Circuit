@@ -101,6 +101,11 @@ public:
     // `range` (gameplay::nearest_player; presences change only in the
     // command phase).
     virtual std::optional<Presence> nearest_player(contracts::Vec3 at, double range) = 0;
+    // Where a player of the level is (their presence), if anywhere.
+    virtual std::optional<Presence> presence_of(contracts::PlayerKey player) = 0;
+    // Whether entities spawned now get their final ids (the serial command
+    // phase); otherwise the commit gives them.
+    [[nodiscard]] virtual bool final_ids() const noexcept = 0;
     // Whether a chunk's section (from the lowest, 0) holds states that make
     // it random-ticked (ticks_section_randomly), as it is now.
     virtual bool section_ticks_randomly(ChunkPos chunk, std::int32_t section) = 0;

@@ -11,9 +11,13 @@ bool set_block(RuleContext& ctx, BlockPos pos, BlockState next) {
     if (prev.is_unloaded() || next.is_unloaded() || prev == next) return false;
     const bool replaced = !same_block(prev, next);
     std::vector<contracts::ItemStack> contents;
+    std::vector<std::pair<std::string, std::int32_t>> cooked;
     if (replaced && has_block_entity(prev.type())) {
         if (is_container(prev.type()))
-            if (const auto* be = ctx.peek_block_entity(pos)) contents = be->slots;
+            if (const auto* be = ctx.peek_block_entity(pos)) {
+                contents = be->slots;
+                cooked = be->recipes_used;
+            }
         ctx.remove_block_entity(pos);
     } else if (replaced && prev.is(BlockType::other) && ctx.peek_block_entity(pos)) {
         ctx.remove_block_entity(pos); // the saved data of a block without rules goes with it
@@ -25,6 +29,8 @@ bool set_block(RuleContext& ctx, BlockPos pos, BlockState next) {
     // container drops its contents.
     if (replaced) {
         drop_contents(ctx, pos, contents);
+        // A removed furnace gives the experience of what it cooked.
+        if (!cooked.empty()) award_cooked(ctx, cooked, {pos.x + 0.5, pos.y + 0.5, pos.z + 0.5});
         on_removed(ctx, pos, prev);
     }
     if (replaced && has_block_entity(next.type())) ctx.create_block_entity(pos, next.type());

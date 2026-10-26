@@ -115,6 +115,12 @@ bool RegionContext::player_near(ChunkPos chunk) { return gameplay::player_near(w
 std::optional<gameplay::Presence> RegionContext::nearest_player(contracts::Vec3 at, double range) {
     return gameplay::nearest_player(world_.counters(dimension()).presences, at, range);
 }
+std::optional<gameplay::Presence> RegionContext::presence_of(contracts::PlayerKey player) {
+    const auto& presences = world_.counters(dimension()).presences;
+    const auto it = presences.find(player);
+    return it == presences.end() ? std::nullopt : std::optional(it->second);
+}
+bool RegionContext::final_ids() const noexcept { return region_ == all_regions; }
 
 bool RegionContext::section_ticks_randomly(ChunkPos chunk, std::int32_t section) {
     auto* data = loaded_in_world({chunk.x * 16, world().min_y + section * 16, chunk.z * 16});

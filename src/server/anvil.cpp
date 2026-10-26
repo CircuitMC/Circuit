@@ -786,7 +786,13 @@ private:
                    && block->variant() == (id == "minecraft:smoker" ? 1 : id == "minecraft:blast_furnace" ? 2 : 0)) {
             out = {BlockType::furnace, 0, std::vector<contracts::ItemStack>(3), 0};
             read_items(be, out, std::string(id.substr(10)));
-            // Its times; the recipes it used (the experience they give) are not kept.
+            // Its times, and the recipes it cooked (the experience a player
+            // takes) with their counts.
+            if (const auto* used = be.find("RecipesUsed"); used && used->type() == TagType::compound)
+                for (std::size_t k = 0; k < used->keys().size(); ++k)
+                    if (const auto& n = used->items()[k]; n.type() == TagType::int_ && n.integer() > 0)
+                        out.recipes_used.emplace_back(used->keys()[k], static_cast<std::int32_t>(n.integer()));
+            std::ranges::sort(out.recipes_used);
             const auto time = [&](std::string_view key) {
                 return static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(be, key).value_or(0), 0, 32767));
             };
@@ -1309,7 +1315,9 @@ private:
             constexpr std::array<std::string_view, 3> kinds{"minecraft:furnace", "minecraft:smoker", "minecraft:blast_furnace"};
             t.set("id", Tag::string(std::string(kinds[at(pos).variant() % 3])));
             t.set("Items", items(be.slots));
-            t.set("RecipesUsed", Tag::compound());
+            auto used = Tag::compound();
+            for (const auto& [recipe, count] : be.recipes_used) used.set(recipe, Tag::int_(count));
+            t.set("RecipesUsed", std::move(used));
             t.set("cooking_time_spent", Tag::short_(static_cast<std::int16_t>(be.cook_time)));
             t.set("cooking_total_time", Tag::short_(static_cast<std::int16_t>(be.cook_total)));
             t.set("lit_time_remaining", Tag::short_(static_cast<std::int16_t>(be.lit_time)));

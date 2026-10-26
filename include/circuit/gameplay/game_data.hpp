@@ -96,6 +96,10 @@ struct GameData {
     // minecraft:block_experience effect of type minecraft:set: Silk Touch's
     // 0), as ids of the synchronized registry and the value.
     std::vector<std::pair<std::uint32_t, float>> block_experience_set;
+    // Each enchantment's minimum cost (its min_cost: base and per level
+    // above the first), by id of the synchronized registry: what a
+    // grindstone's experience counts.
+    std::unordered_map<std::uint32_t, std::pair<std::int32_t, std::int32_t>> enchantment_min_cost;
 };
 
 } // namespace circuit::gameplay

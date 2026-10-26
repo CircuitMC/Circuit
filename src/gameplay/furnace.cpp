@@ -3,6 +3,10 @@
 #include <circuit/gameplay/game_data.hpp>
 #include <algorithm>
 #include <array>
+#include <bit>
+#include <climits>
+#include <cmath>
+#include <functional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -165,6 +169,10 @@ void tick_furnace(RuleContext& ctx, BlockPos pos, BlockState s) {
                 if (in.count == 0) in = {};
                 set_slot(ctx, pos, *be, 2, out);
                 set_slot(ctx, pos, *be, 0, in);
+                // It keeps the recipe for the experience a player takes.
+                auto used = std::ranges::lower_bound(be->recipes_used, r->id, {}, &std::pair<std::string, std::int32_t>::first);
+                if (used == be->recipes_used.end() || used->first != r->id) used = be->recipes_used.insert(used, {r->id, 0});
+                if (used->second < INT32_MAX) ++used->second;
                 if (sponge && !be->slots[1].empty() && be->slots[1].item == items::bucket)
                     set_slot(ctx, pos, *be, 1, ItemStack{items::water_bucket, 1});
                 changed = true;
@@ -181,6 +189,37 @@ void tick_furnace(RuleContext& ctx, BlockPos pos, BlockState s) {
         set_block(ctx, pos, s.with_flag(lit));
     }
     if (changed) container_changed(ctx, pos);
+}
+
+void award_cooked(RuleContext& ctx, const std::vector<std::pair<std::string, std::int32_t>>& recipes, contracts::Vec3 at) {
+    // Per recipe its count times its experience, in single precision; the
+    // official servers give the rest below 1 with that chance by an unseeded
+    // random, Circuit by a random of its own from the tick and the place.
+    const auto* data = ctx.data();
+    if (!data) return;
+    for (const auto& [id, count] : recipes) {
+        const auto it = std::ranges::find(data->cooking, id, &recipes::Cooking::id);
+        if (it == data->cooking.end()) continue;
+        const float amount = static_cast<float>(count) * it->experience;
+        auto whole = static_cast<std::int32_t>(std::floor(amount));
+        const float rest = amount - static_cast<float>(whole);
+        if (rest > 0.0f) {
+            auto chance = Rng::derive({ctx.now(), std::bit_cast<std::uint64_t>(at.x), std::bit_cast<std::uint64_t>(at.y),
+                                       std::bit_cast<std::uint64_t>(at.z), std::hash<std::string>{}(id)});
+            if (static_cast<float>(chance.bounded(1u << 24)) / static_cast<float>(1u << 24) < rest) ++whole;
+        }
+        if (whole > 0) award_experience(ctx, at, whole);
+    }
+}
+
+void furnace_result_taken(RuleContext& ctx, BlockPos pos, contracts::PlayerKey player) {
+    auto* be = ctx.block_entity(pos);
+    if (!be || be->recipes_used.empty()) return;
+    const auto recipes = std::move(be->recipes_used);
+    be->recipes_used.clear();
+    // At the player's feet.
+    const auto presence = ctx.presence_of(player);
+    award_cooked(ctx, recipes, presence ? presence->position : contracts::Vec3{pos.x + 0.5, pos.y + 0.5, pos.z + 0.5});
 }
 
 // Which slots a face of a furnace reaches, in order: the top its input, the

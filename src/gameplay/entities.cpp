@@ -621,33 +621,17 @@ void award_experience(RuleContext& ctx, Vec3 at, std::int32_t amount) {
             break;
         }
         if (merged) continue;
-        // A new orb's first motion comes from its own random: a draw for its
-        // yaw, then up to 0.2 to each side and up to 0.4 up.
+        // A new orb's first motion comes from its own random (launch_orb);
+        // outside the command phase its id, and so its motion, waits for the
+        // commit.
         Entity e;
         e.kind = EntityKind::experience_orb;
         e.position = at;
         e.experience = value;
         const auto id = ctx.spawn_entity(e);
         auto* orb = ctx.entity(id);
-        // 1.21.4 draws a double for the yaw and works sideways in single
-        // precision factors (OrbMotion::bouncing).
-        auto r = own_random(*orb);
-        const bool settling = ctx.bundle().rules->orbs == contracts::OrbMotion::settling;
-        double vx{}, vy{}, vz{};
-        if (settling) {
-            (void)r.next_float();
-            vx = (r.next_double() * 0.2 - 0.1) * 2.0;
-            vy = r.next_double() * 0.2 * 2.0;
-            vz = (r.next_double() * 0.2 - 0.1) * 2.0;
-        } else {
-            (void)r.next_double();
-            constexpr double fifth = 0.2f, tenth = 0.1f;
-            vx = (r.next_double() * fifth - tenth) * 2.0;
-            vy = r.next_double() * 0.2 * 2.0;
-            vz = (r.next_double() * fifth - tenth) * 2.0;
-        }
-        orb->velocity = {vx, vy, vz};
-        keep_random(*orb, r);
+        if (ctx.final_ids()) launch_orb(*orb, ctx.bundle().rules->orbs);
+        else orb->launch = true;
         record_spawn(ctx, id, *orb);
     }
 }
@@ -690,6 +674,29 @@ std::vector<EntityId> entities_intersecting(RuleContext& ctx, const physics::Aab
     return out;
 }
 } // namespace detail
+
+void launch_orb(Entity& orb, contracts::OrbMotion motion) {
+    // A draw for its yaw, then up to 0.2 to each side and up to 0.4 up; 1.21.4
+    // draws a double for the yaw and works sideways in single-precision
+    // factors (OrbMotion::bouncing).
+    auto r = detail::own_random(orb);
+    double vx{}, vy{}, vz{};
+    if (motion == contracts::OrbMotion::settling) {
+        (void)r.next_float();
+        vx = (r.next_double() * 0.2 - 0.1) * 2.0;
+        vy = r.next_double() * 0.2 * 2.0;
+        vz = (r.next_double() * 0.2 - 0.1) * 2.0;
+    } else {
+        (void)r.next_double();
+        constexpr double fifth = 0.2f, tenth = 0.1f;
+        vx = (r.next_double() * fifth - tenth) * 2.0;
+        vy = r.next_double() * 0.2 * 2.0;
+        vz = (r.next_double() * fifth - tenth) * 2.0;
+    }
+    orb.velocity = {vx, vy, vz};
+    orb.launch = false;
+    detail::keep_random(orb, r);
+}
 
 void run_entity(RuleContext& ctx, EntityId id) {
     auto* e = ctx.entity(id);

@@ -482,6 +482,7 @@ int main() {
                     be.lit_total = 800;
                     be.cook_time = 42;
                     be.cook_total = 100;
+                    be.recipes_used = {{"minecraft:cooked_beef_from_smoking", 4}};
                 }
         const auto target = root / "furnace";
         require(anvil::export_world(state, bundle(), target, {.level_name = "furnace", .seed = 5}).has_value(), "export");
@@ -492,6 +493,8 @@ int main() {
         require(be && be->kind == BlockType::furnace && be->slots.size() == 3 && be->slots[0].count == 3 && be->slots[1].count == 2,
                 "its items");
         require(be->lit_time == 700 && be->lit_total == 800 && be->cook_time == 42 && be->cook_total == 100, "its times");
+        require((be->recipes_used == std::vector<std::pair<std::string, std::int32_t>>{{"minecraft:cooked_beef_from_smoking", 4}}),
+                "and the recipes it cooked");
     });
 
     suite.run("crafters round-trip through Anvil with their grid, disabled slots and crafting ticks", [&] {

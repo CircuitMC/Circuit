@@ -21,6 +21,7 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 39: block entities carry the recipes a furnace cooked;
 // 38: entities carry their own random;
 // 37: player inventories carry the player's experience;
 // 36: entities carry an experience orb's experience and orbs;
@@ -70,7 +71,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 38;
+constexpr std::uint32_t version = 39;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -175,6 +176,8 @@ void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
         w.raw(patch).prefixed_bytes(be.saved.bytes());
         w.i32(be.lit_time).i32(be.lit_total).i32(be.cook_time).i32(be.cook_total);
         w.u16(be.disabled).i32(be.crafting_ticks);
+        w.varint(static_cast<std::int32_t>(be.recipes_used.size()));
+        for (const auto& [id, count] : be.recipes_used) w.string(id, 256).varint(count);
     }
     w.varint(static_cast<std::int32_t>(l.entities.size()));
     for (const auto& e : l.entities) {
@@ -423,6 +426,17 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
         if (b.version >= 32) {
             if (!b.get(b.r.u16(), be.disabled) || !b.get(b.r.i32(), be.crafting_ticks)) return false;
             if (be.disabled > 0x1FF || be.crafting_ticks < 0) return false;
+        }
+        if (b.version >= 39) {
+            std::int32_t recipes{};
+            if (!b.get(b.r.varint(), recipes) || recipes < 0 || recipes > 4096) return false;
+            for (std::int32_t k = 0; k < recipes; ++k) {
+                std::string id;
+                std::int32_t count{};
+                if (!b.get(b.r.string(256), id) || !b.get(b.r.varint(), count) || count < 1) return false;
+                if (!be.recipes_used.empty() && be.recipes_used.back().first >= id) return false; // ascending, once each
+                be.recipes_used.emplace_back(std::move(id), count);
+            }
         }
         be.moving = static_cast<std::uint32_t>(moving);
         s.block_entities.push_back({p, std::move(be)});

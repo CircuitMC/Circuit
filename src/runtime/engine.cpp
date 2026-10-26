@@ -848,6 +848,9 @@ void Engine::Impl::commit(const std::vector<RegionContext*>& contexts) {
     // are rewritten in storage, the index and the trace, also for entities that
     // were removed again.
     std::unordered_map<std::uint64_t, std::uint64_t> real_ids;
+    // Experience orbs given in the phase get their first motion now that
+    // their ids are final; their spawn records follow (by provisional id).
+    std::unordered_map<std::uint64_t, contracts::Vec3> launched;
     for (std::size_t i = 0; i < contexts.size(); ++i) {
         const auto& spawned = contexts[i]->ledger[static_cast<std::size_t>(Counter::entity_id)];
         for (std::size_t j = 0; j < spawned.size(); ++j)
@@ -875,6 +878,10 @@ void Engine::Impl::commit(const std::vector<RegionContext*>& contexts) {
                 auto node = data.entities.extract(provisional_id);
                 node.key() = id;
                 node.mapped().id = id;
+                if (node.mapped().launch) {
+                    gameplay::launch_orb(node.mapped(), bundle.rules->orbs);
+                    launched[provisional_id.value] = node.mapped().velocity;
+                }
                 data.entities.insert(std::move(node));
             }
             data.new_entities.clear();
@@ -892,7 +899,17 @@ void Engine::Impl::commit(const std::vector<RegionContext*>& contexts) {
             else world.entity_index.erase(key);
         }
         for (const auto& edge : ctx->interactions) edges[edge] = world.time;
+        std::optional<contracts::Vec3> relaunch;
         for (auto record : ctx->trace) {
+            if (record.kind == TraceKind::entity_spawned) {
+                const auto it = launched.find(record.a);
+                relaunch = it == launched.end() ? std::nullopt : std::optional(it->second);
+            } else if (record.kind == TraceKind::entity_spawn_velocity && relaunch) {
+                record.a = contracts::double_bits(relaunch->x);
+                record.b = contracts::double_bits(relaunch->y);
+                record.c = contracts::double_bits(relaunch->z);
+                relaunch.reset();
+            }
             switch (record.kind) {
             // (entity_spawn_position and entity_spawn_velocity carry no id.)
             case TraceKind::entity_spawned: case TraceKind::entity_removed:
