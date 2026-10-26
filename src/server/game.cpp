@@ -95,9 +95,11 @@ struct Player {
         std::int32_t id{};
         BlockPos pos;
         std::size_t container_slots{};
-        // A furnace's properties as last sent: its fuel's ticks left and burn
-        // time, its cooking progress and time (-1: not sent yet).
-        std::array<std::int32_t, 4> data{-1, -1, -1, -1};
+        // The window's properties as last sent (a furnace's fuel ticks left
+        // and burn time, cooking progress and time; a stonecutter's recipe),
+        // INT32_MIN when not sent yet.
+        static constexpr std::int32_t unsent = std::numeric_limits<std::int32_t>::min();
+        std::array<std::int32_t, 4> data{unsent, unsent, unsent, unsent};
     };
     std::optional<Window> window;
     std::int32_t next_window{1};
@@ -276,6 +278,7 @@ struct Game::Impl final : GameServices {
         player_entity_type{};
     std::array<std::int32_t, gameplay::boat_types.size()> boat_entity_types{};
     std::unordered_map<std::uint16_t, std::int32_t> item_wire; // reference item -> wire item id
+    Bytes recipes_bytes;                                        // update_recipes, once built
     bool started{false};
 
     // Tick control (freeze and step, pause when empty) and timing of recent ticks.
@@ -616,6 +619,7 @@ struct Game::Impl final : GameServices {
         peer.send(wire.set_held_slot(p.held));
         send_vitals(p);
         peer.send(wire.empty_commands());
+        peer.send(recipes_packet());
         peer.send(wire.spawn_position(wire_pos({meta.spawn.x, meta.spawn.y + 1, meta.spawn.z}), 0.0f));
         peer.send(time_packet());
         // Rain, as both official servers report it on joining.
@@ -639,6 +643,41 @@ struct Game::Impl final : GameServices {
         player_count = players.size();
         auto& joined = players.at(peer_id);
         for (const auto& [id, other] : players) message(players.at(id), std::format("{} joined the game", joined.name), "yellow");
+    }
+
+    // The recipe data clients need (built once): the item property sets of
+    // the cooking and smithing recipes, and the stonecutter's recipes in the
+    // order its buttons number them.
+    const Bytes& recipes_packet() {
+        if (recipes_bytes.empty()) {
+            const auto ids = [&](std::span<const std::uint16_t> items) {
+                std::vector<std::int32_t> out;
+                for (const auto i : items)
+                    if (const auto it = item_wire.find(i); it != item_wire.end()) out.push_back(it->second);
+                return out;
+            };
+            std::vector<Wire::PropertySet> sets;
+            std::vector<Wire::StonecutterEntry> cutter;
+            using Kind = gameplay::recipes::Cooking::Kind;
+            const auto* game = data.game.get();
+            for (const auto& [name, kind] : {std::pair{"minecraft:furnace_input", Kind::smelting}, std::pair{"minecraft:blast_furnace_input", Kind::blasting},
+                                             std::pair{"minecraft:smoker_input", Kind::smoking}, std::pair{"minecraft:campfire_input", Kind::campfire}}) {
+                std::vector<std::uint16_t> items;
+                if (game)
+                    for (const auto& c : game->cooking)
+                        if (c.kind == kind) items.insert(items.end(), c.ingredient.items.begin(), c.ingredient.items.end());
+                std::ranges::sort(items);
+                items.erase(std::ranges::unique(items).begin(), items.end());
+                sets.push_back({name, ids(items)});
+            }
+            sets.push_back({"minecraft:smithing_template", ids(data.recipes.smithing_template)});
+            sets.push_back({"minecraft:smithing_base", ids(data.recipes.smithing_base)});
+            sets.push_back({"minecraft:smithing_addition", ids(data.recipes.smithing_addition)});
+            if (game)
+                for (const auto& r : game->stonecutting) cutter.push_back({ids(r.ingredient.items), wire_stack(r.result)});
+            recipes_bytes = wire.update_recipes(sets, cutter);
+        }
+        return recipes_bytes;
     }
 
     // Applies saved data; values the movement rules would refuse are ignored.
@@ -787,6 +826,9 @@ struct Game::Impl final : GameServices {
             if (gameplay::is_crafting_table(at(p.window->pos)))
                 for (std::size_t i = 0; i < contracts::table_slots; ++i)
                     slots.push_back(inv && *inv ? wire_stack((*inv)->table[i]) : WireStack{});
+            if (gameplay::is_stonecutter(at(p.window->pos)))
+                for (std::size_t i = 0; i < contracts::cutter_slots; ++i)
+                    slots.push_back(inv && *inv ? wire_stack((*inv)->cutter[i]) : WireStack{});
             for (const auto part : container_parts_of(p.window->pos))
                 if (const auto be = view.block_entity(overworld, part); be && *be)
                     for (const auto& s : (*be)->slots) slots.push_back(wire_stack(s));
@@ -808,6 +850,14 @@ struct Game::Impl final : GameServices {
         if (p.remote_carried != carried) {
             p.peer->send(wire.cursor_item(carried));
             p.remote_carried = carried;
+        }
+        // A stonecutter window's property: the chosen recipe (-1: none).
+        if (p.window && gameplay::is_stonecutter(at(p.window->pos))) {
+            const std::int32_t recipe = inv && *inv ? (*inv)->cutter_recipe : -1;
+            if (p.window->data[0] != recipe) {
+                p.peer->send(wire.container_data(p.window->id, 0, static_cast<std::int16_t>(recipe)));
+                p.window->data[0] = recipe;
+            }
         }
         // A furnace window's properties, each when it changed.
         if (p.window && at(p.window->pos).is(BlockType::furnace))
@@ -838,6 +888,7 @@ struct Game::Impl final : GameServices {
     }
     std::size_t container_slot_count(BlockPos pos) const {
         if (gameplay::is_crafting_table(at(pos))) return contracts::table_slots;
+        if (gameplay::is_stonecutter(at(pos))) return contracts::cutter_slots;
         std::size_t n = 0;
         for (const auto part : container_parts_of(pos)) n += gameplay::container_size(at(part).type());
         return n;
@@ -859,16 +910,17 @@ struct Game::Impl final : GameServices {
         // Menu types of the protocol's menu registry (minecraft.wiki, Java
         // Edition protocol/Inventory, and observed from the target version):
         // generic_9x3 2, generic_9x6 5, generic_3x3 6, blast_furnace 10,
-        // crafting 12, furnace 14, hopper 16, smoker 22.
+        // crafting 12, furnace 14, hopper 16, smoker 22, stonecutter 24.
         constexpr std::array<std::int32_t, 3> furnace_menus{14, 22, 10};
         const bool table = gameplay::is_crafting_table(block);
+        const bool cutter = gameplay::is_stonecutter(block);
         const std::int32_t type = block.is(BlockType::furnace) ? furnace_menus[block.variant() % 3]
-                                : table ? 12 : slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
+                                : table ? 12 : cutter ? 24 : slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
         // A container's custom name is its title (for a double chest, the
         // first named half's).
         constexpr std::array<std::string_view, 3> furnace_titles{"Furnace", "Smoker", "Blast Furnace"};
         auto title = protocol::nbt::text(block.is(BlockType::furnace) ? std::string(furnace_titles[block.variant() % 3])
-                                         : table ? "Crafting" : slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper"
+                                         : table ? "Crafting" : cutter ? "Stonecutter" : slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper"
                                          : block.is(BlockType::dispenser) ? (block.variant() == 1 ? "Dropper" : "Dispenser")
                                                                           : "Chest");
         const auto view = engine->view();
@@ -1543,6 +1595,13 @@ struct Game::Impl final : GameServices {
             const auto [position, velocity] = throw_from(p);
             admit(contracts::CloseContainer{key_of(p), position, velocity});
         }
+    }
+
+    // A button of the open window (a stonecutter's recipe); a button of
+    // another window does nothing.
+    void handle(Player& p, intent::ContainerButton& c) {
+        if (!p.window || c.window != p.window->id) return;
+        admit(contracts::ContainerButton{key_of(p), p.window->pos, c.button});
     }
 
     void handle(Player& p, intent::Chat& c) {

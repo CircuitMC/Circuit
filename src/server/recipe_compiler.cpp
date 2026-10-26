@@ -115,21 +115,33 @@ public:
         }
         if (type == "minecraft:stonecutting") {
             optional_string(j, "group");
-            ingredient(j.find("ingredient"));
-            result(j.find("result"));
+            gameplay::recipes::Stonecutting c;
+            c.id = std::string(id);
+            c.ingredient = ingredient(j.find("ingredient"));
+            c.result = result(j.find("result")).first;
+            if (stonecutting_) stonecutting_->push_back(std::move(c));
             return std::nullopt;
         }
         if (type == "minecraft:smithing_transform" || type == "minecraft:smithing_trim") {
             // The template and the addition may be absent (minecraft.wiki).
-            for (const auto* key : {"template", "addition"})
-                if (const auto* i = j.find(key)) ingredient(i);
-            ingredient(j.find("base"));
+            const auto* template_ = j.find("template");
+            const auto* addition = j.find("addition");
+            const auto taken = template_ ? ingredient(template_) : recipes::Ingredient{};
+            const auto added = addition ? ingredient(addition) : recipes::Ingredient{};
+            const auto base = ingredient(j.find("base"));
             if (type == "minecraft:smithing_transform") result(j.find("result"));
             if (type == "minecraft:smithing_trim" && bundle_.schema.data_pack_format >= format_1_21_5) {
                 const auto* pattern = j.string("pattern");
                 if (!pattern) invalid("no trim pattern");
                 if (!registry_index(registries_, "minecraft:trim_pattern", with_namespace(*pattern))) invalid("unknown trim pattern");
             }
+            // A valid recipe's items join the property sets.
+            const auto add = [](std::vector<std::uint16_t>* to, const recipes::Ingredient& i) {
+                if (to) to->insert(to->end(), i.items.begin(), i.items.end());
+            };
+            add(smithing_template_, taken);
+            add(smithing_addition_, added);
+            add(smithing_base_, base);
             return std::nullopt;
         }
         invalid(std::format("unknown type {}", type));
@@ -263,6 +275,10 @@ private:
 
 public:
     std::vector<gameplay::recipes::Cooking>* cooking_ = nullptr;
+    std::vector<gameplay::recipes::Stonecutting>* stonecutting_ = nullptr;
+    std::vector<std::uint16_t>* smithing_template_ = nullptr;
+    std::vector<std::uint16_t>* smithing_base_ = nullptr;
+    std::vector<std::uint16_t>* smithing_addition_ = nullptr;
 
 private:
     const data::DataPacks& packs_;
@@ -280,6 +296,10 @@ RecipeCompilation compile_recipes(const data::DataPacks& packs, const contracts:
     if (!all || !protocol::ContentTables::for_protocol(bundle.protocol)) return out;
     Compiler compiler(packs, bundle, registries);
     compiler.cooking_ = &out.cooking;
+    compiler.stonecutting_ = &out.stonecutting;
+    compiler.smithing_template_ = &out.smithing_template;
+    compiler.smithing_base_ = &out.smithing_base;
+    compiler.smithing_addition_ = &out.smithing_addition;
     for (const auto& [id, text] : *all) {
         std::string type;
         const auto fail = [&](const std::string& reason) {
@@ -301,6 +321,18 @@ RecipeCompilation compile_recipes(const data::DataPacks& packs, const contracts:
             ++out.valid[type];
             ++out.not_crafted[e.reason];
         }
+    }
+    // Both official servers list stonecutting recipes by the id's path,
+    // then its namespace (observed with recipes in three namespaces).
+    const auto split = [](const std::string& id) {
+        const auto colon = id.find(':');
+        return std::pair{std::string_view(id).substr(colon + 1), std::string_view(id).substr(0, colon)};
+    };
+    std::ranges::stable_sort(out.stonecutting, [&](const auto& a, const auto& b) { return split(a.id) < split(b.id); });
+    for (auto* items : {&out.smithing_template, &out.smithing_base, &out.smithing_addition}) {
+        std::ranges::sort(*items);
+        const auto [first, last] = std::ranges::unique(*items);
+        items->erase(first, last);
     }
     return out;
 }

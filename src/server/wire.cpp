@@ -22,7 +22,7 @@ struct Wire::Ids {
         player_position, keep_alive, system_chat, player_info_update, player_info_remove, add_entity,
         set_entity_data, remove_entities, entity_position_sync, rotate_head, container_set_content, disconnect, take_item_entity,
         open_screen, container_close, container_set_slot, container_set_data, set_cursor_item, respawn, combat_kill, damage_event, sb_container_click,
-        sb_container_close,
+        sb_container_close, sb_container_button_click, update_recipes,
         commands, explode;
     // Serverbound play.
     std::int32_t sb_accept_teleportation, sb_move_pos, sb_move_pos_rot, sb_move_rot, sb_move_status,
@@ -92,6 +92,8 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->damage_event = cb(State::play, "damage_event");
     ids->sb_container_click = sb(State::play, "container_click");
     ids->sb_container_close = sb(State::play, "container_close");
+    ids->sb_container_button_click = sb(State::play, "container_button_click");
+    ids->update_recipes = cb(State::play, "update_recipes");
     ids->disconnect = cb(State::play, "disconnect");
     ids->commands = cb(State::play, "commands");
     ids->explode = cb(State::play, "explode");
@@ -385,6 +387,25 @@ Bytes Wire::container_data(std::int32_t window, std::int16_t property, std::int1
     w.varint(window).i16(property).i16(value);
     return packet(id_->container_set_data, w);
 }
+Bytes Wire::update_recipes(const std::vector<PropertySet>& property_sets, const std::vector<StonecutterEntry>& stonecutter) const {
+    Writer w;
+    w.varint(static_cast<std::int32_t>(property_sets.size()));
+    for (const auto& set : property_sets) {
+        w.string(set.id);
+        w.varint(static_cast<std::int32_t>(set.items.size()));
+        for (const auto item : set.items) w.varint(item);
+    }
+    w.varint(static_cast<std::int32_t>(stonecutter.size()));
+    for (const auto& e : stonecutter) {
+        // The input as a list of item ids (an id set of n + 1), then the
+        // result shown as a stack (slot display 3, item_stack).
+        w.varint(static_cast<std::int32_t>(e.input.size()) + 1);
+        for (const auto item : e.input) w.varint(item);
+        w.varint(3);
+        slot(w, e.result);
+    }
+    return packet(id_->update_recipes, w);
+}
 Bytes Wire::cursor_item(const WireStack& stack) const {
     Writer w;
     slot(w, stack);
@@ -568,6 +589,11 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
     if (id == i.sb_container_close) {
         TRY(window, r.varint());
         return done(intent::ContainerClose{*window});
+    }
+    if (id == i.sb_container_button_click) {
+        TRY(window, r.varint());
+        TRY(button, r.varint());
+        return done(intent::ContainerButton{*window, *button});
     }
     if (id == i.sb_chat_command || id == i.sb_chat_command_signed) {
         TRY(text, r.string(32767));

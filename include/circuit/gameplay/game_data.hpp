@@ -35,6 +35,9 @@ struct GameData {
     std::vector<recipes::Recipe> crafting;
     // The cooking recipes, in recipe id order.
     std::vector<recipes::Cooking> cooking;
+    // The stonecutting recipes, ordered by id path and then namespace, as
+    // both official servers list them to clients and number their buttons.
+    std::vector<recipes::Stonecutting> stonecutting;
     // The level of an enchantment (an id of the synchronized registry) on a
     // stack; 0 when absent. Set by the server, which reads the components.
     std::function<long(const contracts::ItemStack&, std::uint32_t enchantment)> enchantment_level;

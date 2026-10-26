@@ -108,6 +108,10 @@ inline constexpr std::uint8_t offhand_slot = 45;
 // cursor, 46).
 inline constexpr std::uint8_t table_slots = 10;
 inline constexpr std::uint8_t table_first = 47;
+// The stonecutter window a player has open holds its input and result
+// (window slots 0-1), recorded as slots 57-58.
+inline constexpr std::uint8_t cutter_slots = 2;
+inline constexpr std::uint8_t cutter_first = 57;
 
 // A creative player sets a slot of their inventory (an empty stack clears it).
 struct SetPlayerSlot {
@@ -311,10 +315,20 @@ struct SetDifficulty {
     bool operator==(const SetDifficulty&) const = default;
 };
 
+// A player presses a button of their window (the protocol's container
+// button click): a stonecutter's recipe, by its place in the input's list.
+// `container` is the window's block.
+struct ContainerButton {
+    PlayerKey player;
+    std::optional<BlockPos> container;
+    std::int32_t button{};
+    bool operator==(const ContainerButton&) const = default;
+};
+
 using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket,
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
                                  PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity, PlayerUseItem,
-                                 SetDifficulty>;
+                                 SetDifficulty, ContainerButton>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.

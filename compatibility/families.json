@@ -2277,8 +2277,19 @@
           ]
         },
         {
+          "id": "stonecutting",
+          "name": "Stonecutters",
+          "milestone": "C5",
+          "impl": "implemented",
+          "evidence": "compared",
+          "note": "Stonecutters cut by the data packs' stonecutting recipes: clients receive the recipes in the official order (by id path, then namespace) with the item property sets, a button chooses one of the input's recipes, every click mode takes the result, the input goes back on closing and drops when the player leaves; 27 steps and the recipe packet give the same windows and data as both official servers",
+          "cases": [
+            "client/stonecutter"
+          ]
+        },
+        {
           "id": "other_menus",
-          "name": "Brewing, enchanting, anvils, grindstones, stonecutters, smithing, looms, cartography, beacons, merchants, lecterns and mount inventories",
+          "name": "Brewing, enchanting, anvils, grindstones, smithing, looms, cartography, beacons, merchants, lecterns and mount inventories",
           "milestone": "C5",
           "impl": "missing",
           "evidence": "none"

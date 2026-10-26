@@ -32,7 +32,7 @@ enum class TraceKind : std::uint8_t {
     piston_blocked = 16,     // pos = piston
     entity_stack_changed = 17,// a = entity id, b = old stack, c = new stack
     signal_changed = 18,     // pos, a = old output signal, b = new output signal (block-entity state)
-    player_slot_changed = 19,// a = player key high half, b = low half, c = slot << 48 | new stack (slot 46: the cursor; 47-56: an open crafting table)
+    player_slot_changed = 19,// a = player key high half, b = low half, c = slot << 48 | new stack (slot 46: the cursor; 47-56: an open crafting table; 57-58: an open stonecutter)
     container_opened = 20,   // pos = the container, a = player key high half, b = low half
     entity_spawn_position = 21, // right after entity_spawned: pos = block of the position, a, b, c = the
                                 // bits of x, y and z (double_bits)

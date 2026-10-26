@@ -453,15 +453,17 @@ constexpr std::array reference_v4_mechanisms{
         "tests/fixtures/collision/snow-*.txt; a protocol client's 40 placed states). Gaps: melting and freezing by light "
         "and weather in random ticks; powder snow; snow and ice in the Nether are not compared."},
     MechanismEntry{"container_menus", l0_exact, l2_declared_deviation, controlled_experiment,
-        "Player windows and chest, double chest, hopper, furnace and crafting table menus with every click mode, applied as commands. "
+        "Player windows and chest, double chest, hopper, furnace, crafting table and stonecutter menus with every click mode, applied as commands. "
         "A 48-step client scenario (every click mode, double chests, hoppers, the own window, throws and "
         "pickups) gives the same windows, carried stacks and inventories as the official 1.21.8 and 1.21.4 "
         "servers. With data packs the own window's 2x2 grid crafts: a 48-step scenario (results, every way "
         "of taking them, shapes, remainders, transmuting) matches both official servers, and a 26-step scenario "
         "in furnace, smoker and blast furnace windows (slot rules, quick moves by recipe and fuel, cooking, their "
         "properties) matches both too, as does a 47-step scenario at crafting tables (3x3 recipes, quick moves into "
-        "and out of the grid, the grid given back on closing and on breaking, dropped on death and on leaving). "
-        "Gaps: no special recipes or recipe book; no harness traces of menus."},
+        "and out of the grid, the grid given back on closing and on breaking, dropped on death and on leaving), and a "
+        "27-step scenario at a stonecutter (recipe buttons, every way of taking the result, the choice cleared by "
+        "another input) with the clients' recipe data. Gaps: no special recipes or recipe book; no harness traces of "
+        "menus."},
     MechanismEntry{"survival_actions", l0_exact, l2_declared_deviation, documented_behavior,
         "Placement uses up items; dig progress from hardness, tool speed and tier, ground and water; drops by "
         "tool (stone gives cobblestone), container contents and tool wear; pickup by box with the target "

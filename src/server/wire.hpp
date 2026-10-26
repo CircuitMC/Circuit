@@ -106,6 +106,11 @@ struct ContainerClick {
 struct ContainerClose {
     std::int32_t window{};
 };
+// A button of the open window: a stonecutter's recipe.
+struct ContainerButton {
+    std::int32_t window{};
+    std::int32_t button{};
+};
 struct Command {
     std::string text;
 };
@@ -130,7 +135,7 @@ struct Sprint {
 using Intent = std::variant<intent::Move, intent::ConfirmTeleport, intent::Dig, intent::UseOn, intent::Use,
                             intent::HeldSlot, intent::CreativeSlot, intent::Command, intent::Chat, intent::Sneak,
                             intent::Flying, intent::Loaded, intent::ContainerClick, intent::ContainerClose,
-                            intent::ClientCommand, intent::Sprint>;
+                            intent::ClientCommand, intent::Sprint, intent::ContainerButton>;
 
 class Wire {
 public:
@@ -216,6 +221,17 @@ public:
     // One property of a window (a furnace's burn and cooking times).
     Bytes container_data(std::int32_t window, std::int16_t property, std::int16_t value) const;
     Bytes cursor_item(const WireStack& stack) const;
+    // The recipe data clients need: item property sets (furnace inputs,
+    // smithing slots) and the stonecutter's recipes in their button order.
+    struct PropertySet {
+        std::string id;
+        std::vector<std::int32_t> items;
+    };
+    struct StonecutterEntry {
+        std::vector<std::int32_t> input;
+        WireStack result;
+    };
+    Bytes update_recipes(const std::vector<PropertySet>& property_sets, const std::vector<StonecutterEntry>& stonecutter) const;
     // What item components may refer to on this protocol.
     [[nodiscard]] const protocol::ComponentContext& component_context() const noexcept { return components_ctx_; }
     [[nodiscard]] const protocol::ComponentCodec& components() const noexcept { return *components_; }

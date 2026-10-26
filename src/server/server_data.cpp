@@ -138,6 +138,8 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
         out.recipes.crafting.clear();
         game->cooking = std::move(out.recipes.cooking);
         out.recipes.cooking.clear();
+        game->stonecutting = std::move(out.recipes.stonecutting);
+        out.recipes.stonecutting.clear();
         if (const auto* codec = protocol::ComponentCodec::for_protocol(bundle.schema.component_schema)) {
             game->enchantment_level = [codec](const contracts::ItemStack& stack, std::uint32_t enchantment) {
                 return codec->enchantment_level(stack.components, enchantment);

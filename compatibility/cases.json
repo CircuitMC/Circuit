@@ -295,6 +295,17 @@
       "description": "47 steps at crafting tables: shift-clicks into the grid and out of it, results by click, number key and shift-click (crafting until the result changes), drags over the grid, remainders, the grid given back on closing and when a creative player breaks the table, dropped when the player dies and when they leave (with the own grid's items); Circuit and both official servers give identical windows, inventories and drops"
     },
     {
+      "id": "client/stonecutter",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/stonecutter.js and recipes-dump.js",
+      "status": "passing",
+      "description": "27 steps at a stonecutter: shift-clicks into the input by recipe and across the inventory, recipe buttons (one beyond the list), results by click, onto the cursor, by number key and shift-clicked until the input runs out, another item clearing the choice, the input given back on closing and dropped when the player leaves; and the update_recipes packet (254 stonecutter recipes in order, seven property sets) equal to both official servers'"
+    },
+    {
       "id": "data/block_drops",
       "kind": "black_box",
       "versions": [

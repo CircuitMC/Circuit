@@ -3424,6 +3424,67 @@ int main() {
         require(p.size() == 1 && p[0].slots[0].empty(), "no result without data");
     });
 
+    suite.run("stonecutters cut by the chosen recipe until the input runs out", [] {
+        namespace recipes = circuit::gameplay::recipes;
+        using circuit::contracts::CloseContainer;
+        using circuit::contracts::ContainerButton;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::SetPlayerSlot;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        const recipes::Ingredient stone{{items::stone}};
+        data->stonecutting = {
+            {"minecraft:stone_bricks_from_stone_stonecutting", stone, {item("minecraft:stone_bricks"), 1}},
+            {"minecraft:stone_slab_from_stone_stonecutting", stone, {item("minecraft:stone_slab"), 2}},
+        };
+        require(recipes::cuttings(data->stonecutting, items::stone).size() == 2 && recipes::cuttings(data->stonecutting, items::dirt).empty(),
+                "the recipes that cut an item");
+        const PlayerKey alex{4, 2};
+        const BlockPos cutter{0, 0, 0};
+        Sim s(bundle(), 7, 2, data);
+        s.tick({place(cutter, registry_block("stonecutter"))});
+        // Stonecutter window: 0 the input, 1 the result, 2-28 the main inventory, 29-37 the hotbar.
+        const auto click = [&](std::int16_t slot, std::uint8_t button, std::uint8_t mode) {
+            return ContainerClick{alex, std::optional(cutter), slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+        };
+        const auto press = [&](std::int32_t button) { return ContainerButton{alex, std::optional(cutter), button}; };
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            const auto it = std::ranges::find(d.players, alex, &PlayerInventory::player);
+            if (it != d.players.end()) return *it;
+            PlayerInventory none;
+            none.player = alex;
+            return none;
+        };
+        s.tick({SetPlayerSlot{alex, 36, {items::stone, 3}}, SetPlayerSlot{alex, 37, {items::oak_planks, 5}}});
+        s.tick({click(29, 0, 1), click(30, 0, 1)});
+        require(player().cutter[0] == ItemStack{items::stone, 3} && player().slots[9] == ItemStack{items::oak_planks, 5},
+                "stone into the input, planks (uncut) into the main inventory");
+        s.tick({press(2)});
+        require(player().cutter_recipe == -1 && player().cutter[1].empty(), "a button beyond the list does nothing");
+        s.tick({press(1)});
+        require(player().cutter_recipe == 1 && player().cutter[1] == ItemStack{item("minecraft:stone_slab"), 2}, "the second recipe");
+        s.tick({click(1, 0, 0)});
+        require(player().cursor == ItemStack{item("minecraft:stone_slab"), 2} && player().cutter[0].count == 2 &&
+                    player().cutter[1] == ItemStack{item("minecraft:stone_slab"), 2},
+                "taken: one stone used, the result made again");
+        s.tick({click(1, 0, 1)});
+        require(player().cutter[0].empty() && player().cutter[1].empty() && player().cutter_recipe == -1 &&
+                    player().slots[44] == ItemStack{item("minecraft:stone_slab"), 4},
+                "shift-clicked until the input ran out, into the hotbar from its end");
+        // Another item in the input clears the choice; closing gives it back.
+        s.tick({SetPlayerSlot{alex, 36, {items::stone, 2}}});
+        s.tick({click(29, 0, 1), press(0)});
+        require(player().cutter[1] == ItemStack{item("minecraft:stone_bricks"), 1}, "bricks");
+        s.tick({click(2, 0, 0), click(0, 0, 0)});
+        require(player().cutter[0] == ItemStack{items::oak_planks, 5} && player().cutter_recipe == -1 && player().cutter[1].empty() &&
+                    player().cursor == ItemStack{items::stone, 2},
+                "planks swapped in: no recipe");
+        s.tick({click(29, 0, 0), CloseContainer{alex, at_block(0.5, 2, 0.5), {}}});
+        require(player().cutter[0].empty() && player().slots[36] == ItemStack{items::stone, 2} && player().slots[37] == ItemStack{items::oak_planks, 5},
+                "closing gives the input back, to the first empty hotbar slot");
+    });
+
     suite.run("crafting tables craft 3x3 recipes and give their grid back, or drop it", [] {
         namespace recipes = circuit::gameplay::recipes;
         using circuit::contracts::CloseContainer;

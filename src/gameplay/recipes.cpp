@@ -68,6 +68,13 @@ bool shapeless(const Recipe& r, const std::vector<std::uint16_t>& items) {
 
 bool Ingredient::test(std::uint16_t item) const noexcept { return std::ranges::binary_search(items, item); }
 
+std::vector<const Stonecutting*> cuttings(std::span<const Stonecutting> recipes, std::uint16_t item) {
+    std::vector<const Stonecutting*> out;
+    for (const auto& r : recipes)
+        if (r.ingredient.test(item)) out.push_back(&r);
+    return out;
+}
+
 std::optional<Match> match(std::span<const Recipe> recipes, const Grid& grid) {
     const auto box = bounds(grid);
     if (box.count == 0 || box.count > 9) return std::nullopt;

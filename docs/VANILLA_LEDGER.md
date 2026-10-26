@@ -48,14 +48,14 @@ Feature counts per implementation state, then the number of features with compar
 | V22 Movement and player modes | C6 | 7 | 3 / 3 | 2 / 2 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
 | V23 Combat, attributes and effects | C6 | 219 | 1 / 1 | 6 / 6 | 91 / 91 | 118 / 121 | 3 / 0 | 6 / 6 |
 | V24 Food, equipment and item use | C5, C6 | 143 | 0 / 0 | 19 / 19 | 118 / 120 | 4 / 4 | 2 / 0 | 5 / 6 |
-| V25 Menus, recipes and production | C5 | 186 | 1 / 1 | 11 / 11 | 171 / 171 | 3 / 3 | 0 / 0 | 10 / 11 |
+| V25 Menus, recipes and production | C5 | 187 | 2 / 2 | 11 / 11 | 171 / 171 | 3 / 3 | 0 / 0 | 11 / 12 |
 | V26 Mob AI and navigation | C8 | 94 | 0 / 0 | 2 / 2 | 12 / 14 | 77 / 78 | 3 / 0 | 2 / 2 |
 | V27 Spawning and farms | C8 | 104 | 0 / 0 | 0 / 0 | 99 / 100 | 4 / 4 | 1 / 0 | 0 / 0 |
 | V28 Villages, raids and trading | C8 | 15 | 0 / 0 | 0 / 0 | 0 / 0 | 15 / 15 | 0 / 0 | 0 / 0 |
 | V29 Bosses and progression | C8 | 11 | 0 / 0 | 0 / 0 | 4 / 4 | 7 / 7 | 0 / 0 | 0 / 0 |
 | V30 Data-pack execution | C1, C5, C9 | 8 | 0 / 0 | 1 / 1 | 0 / 0 | 6 / 7 | 1 / 0 | 0 / 0 |
 | V31 Commands and administration | C9 | 117 | 0 / 0 | 7 / 7 | 16 / 20 | 85 / 90 | 9 / 0 | 1 / 1 |
-| V32 Client-visible world state | C10 | 287 | 5 / 5 | 50 / 50 | 0 / 0 | 225 / 231 | 7 / 1 | 6 / 6 |
+| V32 Client-visible world state | C10 | 287 | 5 / 5 | 52 / 52 | 0 / 0 | 223 / 229 | 7 / 1 | 6 / 6 |
 | V33 Communication and connection lifecycle | C10 | 85 | 17 / 17 | 19 / 19 | 0 / 0 | 41 / 49 | 8 / 0 | 0 / 0 |
 | V34 Save compatibility | C11 | 6 | 1 / 1 | 0 / 1 | 0 / 0 | 4 / 3 | 1 / 1 | 0 / 1 |
 | V35 Version-specific gameplay and optional profiles | C12 | 6 | 0 / 0 | 0 / 0 | 1 / 3 | 3 / 3 | 2 / 0 | 0 / 0 |
@@ -77,7 +77,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 | biome | minecraft-data pc/1.21.4/biomes.json / minecraft-data pc/1.21.8/biomes.json | 65 / 65 | 0 / 0 | 1 / 1 | 64 / 64 | 0 / 0 |
 | particle | minecraft-data pc/1.21.4/particles.json / minecraft-data pc/1.21.8/particles.json | 112 / 114 | 0 / 0 | 0 / 0 | 0 / 0 | 112 / 114 |
 | command | approximate: minecraft-data pc/1.20.5/commands.json / approximate: minecraft-data pc/1.21.6/commands.json | 83 / 88 | 0 / 0 | 4 / 4 | 0 / 0 | 79 / 84 |
-| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 20 / 20 | 65 / 65 | 0 / 0 | 149 / 159 |
+| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 20 / 20 | 67 / 67 | 0 / 0 | 147 / 157 |
 | block_state | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 27866 / 27946 | — | — | — | — |
 | sound_event | minecraft-data pc/1.21.4/sounds.json / minecraft-data pc/1.21.8/sounds.json | 1651 / 1728 | — | — | — | — |
 | recipe | minecraft-data pc/1.21.4/recipes.json / minecraft-data pc/1.21.8/recipes.json | 1557 / 1607 | — | — | — | — |
@@ -127,7 +127,7 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 52 |
+| black_box | passing | 53 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
 | official_trace | passing | 193 |
@@ -415,7 +415,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Player window, chest, double-chest and hopper menus with every click mode | C5 | implemented, compared | implemented, compared | `client/windows` |
 | Crafting (2x2 and table) and the recipe book | C5 | partial, compared | partial, compared | `client/crafting`, `client/crafting_table`; special recipes (repairing, map and book cloning, fireworks, armor dye, banner copying, shield decoration, tipped arrows, decorated pots) and recipes whose results carry components (suspicious stew) make nothing; the recipe book is not synchronized and recipe placement requests are ignored; the doLimitedCrafting rule is not applied; without the official data pack there are no recipes; The player's 2x2 grid and the crafting table's 3x3 grid craft with the shaped, shapeless and transmute recipes of the loaded data packs: the result follows the grid, every click mode takes it, ingredients are used and remainders kept, and the grids go back to the inventory on closing and drop when the player leaves or dies; 48 steps in the own window and 47 at crafting tables give the same windows as both official servers |
 | Furnaces, smokers, blast furnaces and campfires | C5 | partial, compared | partial, compared | `client/furnace_menus`, `collision/fuel`, `trace/furnaces`, `trace/furnaces_more`; campfires do not cook; the experience of what they cooked is not kept; Furnaces, smokers and blast furnaces burn their fuel and cook by the official data packs' recipes, light and go out, fill and empty through hoppers by their faces and drive comparators, as both official servers do tick by tick; every item's burn time as both report it |
-| Brewing, enchanting, anvils, grindstones, stonecutters, smithing, looms, cartography, beacons, merchants, lecterns and mount inventories | C5 | missing, none | missing, none |  |
+| Stonecutters | C5 | implemented, compared | implemented, compared | `client/stonecutter`; Stonecutters cut by the data packs' stonecutting recipes: clients receive the recipes in the official order (by id path, then namespace) with the item property sets, a button chooses one of the input's recipes, every click mode takes the result, the input goes back on closing and drops when the player leaves; 27 steps and the recipe packet give the same windows and data as both official servers |
+| Brewing, enchanting, anvils, grindstones, smithing, looms, cartography, beacons, merchants, lecterns and mount inventories | C5 | missing, none | missing, none |  |
 | Loot tables for blocks, entities and containers | C5 | partial, compared | partial, compared | `data/block_drops`, `trace/farmland`, `trace/loot_bonus`, `trace/loot_many`, `trace/loot_rolls`, `trace/loot_single`, `trace/loot_tools`; each level keeps its own random sequences; the official servers keep one set for the world; entity, container and archaeology tables are not used; modeled blocks ignore their tables, so silk touch does not change their drops; tables that choose between weighted entries drop nothing (no block table has them); tables that copy components or name dynamic contents (shulker boxes, banners, decorated pots) are not used; Blocks without rules of their own, and wheat, drop from their loot tables (888 of 952 tables in 1.21.8, 880 of 944 in 1.21.4; wall torches, signs, banners and heads by the standing ones' tables), with harvest tools, silk touch and shears; random counts, chances, table bonuses and fortune's ore, uniform and binomial bonuses roll from each table's random sequence, which checkpoints and Anvil worlds keep, as both official servers roll them; other modeled blocks keep fixed drops |
 
 ### V26 Mob AI and navigation

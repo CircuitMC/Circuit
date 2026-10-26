@@ -7,6 +7,7 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
+// 19: window buttons (tag 29);
 // 18: closed windows whose items drop (tag 28);
 // 17: the world's difficulty (tag 27);
 // 16: players use items along their view (tag 26);
@@ -20,7 +21,7 @@ constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
 // block registry id; 3: stacks carry damage, player commands carry their
 // player. Commands of versions before 6 are the overworld's. Tickets of
 // versions before 7 (tags 5 and 9) read as forced squares.
-constexpr std::uint16_t format_version = 18;
+constexpr std::uint16_t format_version = 19;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -124,8 +125,10 @@ private:
 // 22 SpawnItem with a pickup delay or an age (tag 3 has neither),
 // 23 SummonEntity, 24 PlayerUse with where it clicked (tag 7 has none),
 // 25 PlayerUse with where it clicked and the player's yaw, 26 PlayerUseItem,
-// 27 SetDifficulty, 28 CloseContainer whose items drop (tag 14 returns them).
+// 27 SetDifficulty, 28 CloseContainer whose items drop (tag 14 returns them),
+// 29 ContainerButton.
 std::uint8_t tag_of(const CommandBody& body) {
+    if (std::holds_alternative<ContainerButton>(body)) return 29;
     if (const auto* close = std::get_if<CloseContainer>(&body); close && close->drop) return 28;
     if (std::holds_alternative<SummonEntity>(body)) return 23;
     if (std::holds_alternative<PlayerUse>(body)) return 25;
@@ -267,6 +270,11 @@ void encode_command(Writer& w, const Command& c) {
             w.player(body.player);
             w.vec(body.drop_position);
             w.vec(body.drop_velocity);
+        } else if constexpr (std::is_same_v<T, ContainerButton>) {
+            w.player(body.player);
+            w.put(static_cast<std::uint8_t>(body.container.has_value()));
+            if (body.container) w.pos(*body.container);
+            w.put(body.button);
         } else if constexpr (std::is_same_v<T, PlayerDeath>) {
             w.player(body.player);
             w.vec(body.position);
@@ -491,6 +499,19 @@ bool decode_command(Reader& r, Command& c) {
     case 27: {
         SetDifficulty b;
         if (!r.get(b.difficulty) || b.difficulty > max_difficulty) return false;
+        c.body = b;
+        return true;
+    }
+    case 29: {
+        ContainerButton b;
+        std::uint8_t has{};
+        if (!r.player(b.player) || !r.get(has) || has > 1) return false;
+        if (has) {
+            BlockPos p;
+            if (!r.pos(p)) return false;
+            b.container = p;
+        }
+        if (!r.get(b.button)) return false;
         c.body = b;
         return true;
     }

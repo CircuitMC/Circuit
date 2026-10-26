@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Container menus: a player's own window and the windows of chests, double
-// chests, hoppers, furnaces and crafting tables, with every click mode of the
-// protocol, applied as the target version's menus apply them (documented in
-// the protocol pages and compared with the official server through a
-// protocol client).
+// chests, hoppers, furnaces, crafting tables and stonecutters, with every
+// click mode of the protocol, applied as the target version's menus apply
+// them (documented in the protocol pages and compared with the official
+// server through a protocol client).
 #include "internal.hpp"
 #include <circuit/gameplay/game_data.hpp>
 #include <algorithm>
@@ -30,7 +30,32 @@ bool offhand_item(std::uint16_t item) { return item == items::shield; }
 // A player slot by its slot-record number: the inventory, or the open
 // crafting table's result and grid.
 ItemStack& player_slot(PlayerInventory& inv, std::uint8_t index) {
+    if (index >= contracts::cutter_first) return inv.cutter[index - contracts::cutter_first];
     return index >= contracts::table_first ? inv.table[index - contracts::table_first] : inv.slots[index];
+}
+
+// A stonecutter's result: the chosen recipe's, among those that cut its
+// input, while there is input.
+void set_cutter_result(RuleContext& ctx, PlayerInventory& inv) {
+    ItemStack result;
+    const auto* data = ctx.data();
+    if (data && inv.cutter_recipe >= 0 && !inv.cutter[0].empty()) {
+        const auto list = recipes::cuttings(data->stonecutting, inv.cutter[0].item);
+        if (static_cast<std::size_t>(inv.cutter_recipe) < list.size()) result = list[static_cast<std::size_t>(inv.cutter_recipe)]->result;
+    }
+    if (inv.cutter[1] == result) return;
+    inv.cutter[1] = result;
+    record_slot(ctx, inv, contracts::cutter_first + 1);
+}
+// The stonecutter's input changed from `before`: another item, or none,
+// clears the chosen recipe (a new count of the same item keeps it).
+void cutter_input_changed(RuleContext& ctx, PlayerInventory& inv, const ItemStack& before) {
+    if (inv.cutter[0].empty() || inv.cutter[0].item != before.item) inv.cutter_recipe = -1;
+    set_cutter_result(ctx, inv);
+}
+bool cuts(const RuleContext& ctx, std::uint16_t item) {
+    const auto* data = ctx.data();
+    return data && std::ranges::any_of(data->stonecutting, [&](const auto& r) { return r.ingredient.test(item); });
 }
 
 // A window's crafting grid: the own window's 2x2 (slots 0-4) or a crafting
@@ -49,9 +74,13 @@ class Menu {
 public:
     Menu(RuleContext& ctx, PlayerInventory& inv, std::vector<BlockPos> parts) : ctx_(ctx), inv_(inv) {
         table_ = parts.size() == 1 && is_crafting_table(ctx.block(parts[0]));
+        cutter_ = parts.size() == 1 && is_stonecutter(ctx.block(parts[0]));
         if (table_) {
             for (std::uint8_t i = 0; i < contracts::table_slots; ++i)
                 slots_.push_back({{}, static_cast<std::uint8_t>(contracts::table_first + i), false});
+        } else if (cutter_) {
+            for (std::uint8_t i = 0; i < contracts::cutter_slots; ++i)
+                slots_.push_back({{}, static_cast<std::uint8_t>(contracts::cutter_first + i), false});
         } else {
             for (const auto p : parts) {
                 const auto* be = ctx.peek_block_entity(p);
@@ -85,8 +114,10 @@ public:
         if (!s.container) {
             auto& slot = player_slot(inv_, s.index);
             if (slot == stack) return;
+            const auto before = slot;
             slot = stack;
             record_slot(ctx_, inv_, s.index);
+            if (s.index == contracts::cutter_first) cutter_input_changed(ctx_, inv_, before);
             return;
         }
         auto* be = ctx_.block_entity(s.pos);
@@ -106,7 +137,8 @@ public:
 
     // The crafting result of the own window or a crafting table: taking
     // from it crafts (see click_result); nothing is placed in it.
-    [[nodiscard]] bool result(std::size_t i) const { return (own_ || table_) && i == 0; }
+    [[nodiscard]] bool result(std::size_t i) const { return ((own_ || table_) && i == 0) || (cutter_ && i == 1); }
+    [[nodiscard]] std::size_t result_slot() const { return cutter_ ? 1 : 0; }
     [[nodiscard]] bool may_place(std::size_t i, ItemStack stack) const {
         if (result(i)) return false;
         if (own_ && i >= 5 && i <= 8) return armor_slot(stack.item) == i;
@@ -184,6 +216,14 @@ public:
             else if (burn_time(stack.item) > 0) moved = move_into(stack, 1, 2, false);
             else if (i < 30) moved = move_into(stack, 30, 39, false);
             else moved = move_into(stack, 3, 30, false);
+        } else if (cutter_) {
+            // The input goes to the inventory from its start; from the
+            // inventory an item a recipe cuts goes into the input, the rest
+            // between the main inventory and the hotbar.
+            if (i == 0) moved = move_into(stack, 2, 38, false);
+            else if (cuts(ctx_, stack.item)) moved = move_into(stack, 0, 1, false);
+            else if (i < 29) moved = move_into(stack, 29, 38, false);
+            else moved = move_into(stack, 2, 29, false);
         } else if (table_) {
             // The grid goes to the inventory from its start; from the
             // inventory items go into the grid, else between the main
@@ -248,10 +288,11 @@ public:
     }
     [[nodiscard]] bool own() const { return own_; }
     [[nodiscard]] bool table() const { return table_; }
+    [[nodiscard]] bool cutter() const { return cutter_; }
     [[nodiscard]] CraftingGrid grid() const { return table_ ? table_grid : own_grid; }
     // The window slots of the main inventory and the hotbar.
-    [[nodiscard]] std::size_t inventory_first() const { return table_ ? 10 : 9; }
-    [[nodiscard]] std::size_t inventory_end() const { return table_ ? 46 : 45; }
+    [[nodiscard]] std::size_t inventory_first() const { return cutter_ ? 2 : table_ ? 10 : 9; }
+    [[nodiscard]] std::size_t inventory_end() const { return cutter_ ? 38 : table_ ? 46 : 45; }
     [[nodiscard]] PlayerInventory& inventory() const { return inv_; }
 
 private:
@@ -267,6 +308,7 @@ private:
     bool own_{};
     bool furnace_{};
     bool table_{};
+    bool cutter_{};
 };
 
 void throw_item(RuleContext& ctx, const contracts::Vec3& position, const contracts::Vec3& velocity, ItemStack stack) {
@@ -317,12 +359,31 @@ void use_grid(RuleContext& ctx, PlayerInventory& inv, CraftingGrid grid, const c
     update_crafting(ctx, inv);
 }
 
-// Clicks on the crafting result. Each take crafts once: the whole result
-// leaves the slot and the grid is used.
+// A stonecutter's result was taken: the input gives one item, and the
+// result is made again while input of the same item is left.
+void use_cutter(RuleContext& ctx, PlayerInventory& inv) {
+    const auto before = inv.cutter[0];
+    auto input = before;
+    input.count = static_cast<std::uint8_t>(input.count - 1);
+    if (input.count == 0) input = {};
+    inv.cutter[0] = input;
+    record_slot(ctx, inv, contracts::cutter_first);
+    if (inv.cutter[1].count != 0) {
+        inv.cutter[1] = {};
+        record_slot(ctx, inv, contracts::cutter_first + 1);
+    }
+    cutter_input_changed(ctx, inv, before);
+}
+
+// Clicks on a crafting or stonecutting result. Each take crafts once: the
+// whole result leaves the slot and the grid or the input is used.
 void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick& c) {
     auto& inv = menu.inventory();
-    const auto grid = menu.grid();
-    const auto made_now = [&] { return player_slot(inv, grid.first); };
+    const auto made_now = [&] { return menu.get(menu.result_slot()); };
+    const auto use = [&] {
+        if (menu.cutter()) use_cutter(ctx, inv);
+        else use_grid(ctx, inv, menu.grid(), c);
+    };
     const auto result = made_now();
     if (result.empty()) return;
     switch (c.mode) {
@@ -337,7 +398,7 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
             return;
         }
         menu.set_cursor(carried);
-        use_grid(ctx, inv, grid, c);
+        use();
         return;
     }
     case 1: { // into the inventory, hotbar first from its end, as long as the result stays the same item
@@ -345,7 +406,7 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
         for (auto made = made_now(); !made.empty() && made.item == result.item; made = made_now()) {
             auto stack = made;
             if (!menu.move_into(stack, menu.inventory_first(), menu.inventory_end(), true)) return;
-            use_grid(ctx, inv, grid, c);
+            use();
             // What did not fit drops.
             throw_item(ctx, c.drop_position, c.drop_velocity, stack);
         }
@@ -357,14 +418,14 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
         if (!inv.slots[slot].empty()) return;
         inv.slots[slot] = result;
         record_slot(ctx, inv, slot);
-        use_grid(ctx, inv, grid, c);
+        use();
         return;
     }
     case 4: { // thrown; with button 1, again while the result stays the same item
         if (!menu.cursor().empty()) return;
         for (auto made = made_now(); !made.empty() && made.item == result.item; made = made_now()) {
             throw_item(ctx, c.drop_position, c.drop_velocity, made);
-            use_grid(ctx, inv, grid, c);
+            use();
             if (c.button != 1) return;
         }
         return;
@@ -393,7 +454,7 @@ void update_crafting(RuleContext& ctx, PlayerInventory& inv) {
 contracts::Result<std::vector<BlockPos>> menu_parts(RuleContext& ctx, std::optional<BlockPos> container) {
     if (!container) return std::vector<BlockPos>{};
     const auto s = ctx.block(*container);
-    if (!s.is_unloaded() && is_crafting_table(s)) return std::vector<BlockPos>{*container};
+    if (!s.is_unloaded() && (is_crafting_table(s) || is_stonecutter(s))) return std::vector<BlockPos>{*container};
     if (s.is_unloaded() || !is_container(s.type())) return std::unexpected(contracts::ErrorCode::not_a_container);
     return container_parts(ctx, *container);
 }
@@ -641,6 +702,23 @@ contracts::Result<std::function<void()>> plan_click(RuleContext& ctx, const cont
     };
 }
 
+// A stonecutter's recipe button: one of the input's recipes, by its place
+// in their list; another number does nothing.
+contracts::Result<std::function<void()>> plan_button(RuleContext& ctx, const contracts::ContainerButton& c) {
+    auto parts = menu_parts(ctx, c.container);
+    if (!parts) return std::unexpected(parts.error());
+    const bool cutter = parts->size() == 1 && is_stonecutter(ctx.block(parts->front()));
+    return [&ctx, c, cutter] {
+        const auto* data = ctx.data();
+        if (!cutter || !data) return;
+        auto& inv = ctx.player(c.player);
+        if (inv.cutter[0].empty() || c.button < 0) return;
+        if (static_cast<std::size_t>(c.button) >= recipes::cuttings(data->stonecutting, inv.cutter[0].item).size()) return;
+        inv.cutter_recipe = static_cast<std::int16_t>(c.button);
+        set_cutter_result(ctx, inv);
+    };
+}
+
 contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const contracts::CloseContainer& c) {
     (void)ctx;
     return [&ctx, c] {
@@ -660,6 +738,14 @@ contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const cont
                 throw_item(ctx, c.drop_position, c.drop_velocity, put_back(s));
             }
         update_crafting(ctx, inv);
+        // An open stonecutter's input too; its result and recipe clear.
+        if (const auto input = inv.cutter[0]; !input.empty()) {
+            inv.cutter[0] = {};
+            record_slot(ctx, inv, contracts::cutter_first);
+            throw_item(ctx, c.drop_position, c.drop_velocity, put_back(input));
+        }
+        inv.cutter_recipe = -1;
+        set_cutter_result(ctx, inv);
         if (!inv.cursor.empty()) {
             const auto carried = inv.cursor;
             inv.cursor = {};
@@ -702,6 +788,7 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
         order.push_back(contracts::offhand_slot);
         for (std::uint8_t s = 1; s <= 4; ++s) order.push_back(s);
         for (std::size_t k = 1; k <= table_grid.size(); ++k) order.push_back(table_grid.record(k));
+        order.push_back(contracts::cutter_first);
         std::size_t n = 0;
         const auto drop = [&](ItemStack stack) {
             if (in_world) spawn_dropped(ctx, cell, c.position, death_drop_velocity(n++), stack, 40);
@@ -715,6 +802,8 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
             drop(stack);
         }
         update_crafting(ctx, inv);
+        inv.cutter_recipe = -1;
+        set_cutter_result(ctx, inv);
         if (!inv.cursor.empty()) {
             const auto stack = inv.cursor;
             inv.cursor = {};
@@ -727,14 +816,26 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
 } // namespace circuit::gameplay::detail
 
 namespace circuit::gameplay {
-bool is_crafting_table(BlockState s) {
-    static const std::optional<std::uint32_t> table = []() -> std::optional<std::uint32_t> {
-        for (std::uint32_t b = 0; b < registry::block_count(); ++b)
-            if (registry::game_name(b) == "crafting_table") return b;
-        return std::nullopt;
-    }();
-    if (!table || !s.is(BlockType::other)) return false;
+namespace {
+// Whether a state is of a registry block without rules of its own.
+bool of_block(BlockState s, const std::optional<std::uint32_t>& block) {
+    if (!block || !s.is(BlockType::other)) return false;
     const auto state = physics::registry_state_of(s);
-    return state && registry::block_of(*state) == table;
+    return state && registry::block_of(*state) == block;
+}
+std::optional<std::uint32_t> find_registry_block(std::string_view name) {
+    for (std::uint32_t b = 0; b < registry::block_count(); ++b)
+        if (registry::game_name(b) == name) return b;
+    return std::nullopt;
+}
+} // namespace
+
+bool is_crafting_table(BlockState s) {
+    static const auto block = find_registry_block("crafting_table");
+    return of_block(s, block);
+}
+bool is_stonecutter(BlockState s) {
+    static const auto block = find_registry_block("stonecutter");
+    return of_block(s, block);
 }
 } // namespace circuit::gameplay

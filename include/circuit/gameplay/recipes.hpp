@@ -53,6 +53,18 @@ struct Cooking {
     bool operator==(const Cooking&) const = default;
 };
 
+// A stonecutting recipe: one of the ingredient becomes the result.
+struct Stonecutting {
+    std::string id;
+    Ingredient ingredient;
+    contracts::ItemStack result;
+    bool operator==(const Stonecutting&) const = default;
+};
+
+// The stonecutting recipes an item can be cut by, in the order the list is
+// given (the stonecutter's buttons).
+std::vector<const Stonecutting*> cuttings(std::span<const Stonecutting> recipes, std::uint16_t item);
+
 // A crafting grid's slots, row by row.
 struct Grid {
     std::uint8_t width{}, height{};
