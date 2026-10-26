@@ -3575,6 +3575,60 @@ int main() {
         require(std::ranges::all_of(player().smith, &ItemStack::empty), "closing gives the inputs back");
     });
 
+    suite.run("looms add the chosen pattern's layer and keep their choice as both official servers do", [] {
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::ContainerButton;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::SetPlayerSlot;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->loom_patterns = {"minecraft:square_bottom_left", "minecraft:stripe_top", "minecraft:gradient"};
+        data->pattern_item_patterns = {{item("minecraft:creeper_banner_pattern"), {"minecraft:creeper"}}};
+        // A stand-in for the server's encoding: one byte per layer's pattern
+        // name length and color, appended.
+        data->with_banner_layer = [](const ComponentPatch& base, std::string_view pattern, std::uint32_t color) {
+            std::vector<std::byte> bytes;
+            for (const auto& a : base.added()) bytes = a.value;
+            bytes.push_back(static_cast<std::byte>(pattern.size()));
+            bytes.push_back(static_cast<std::byte>(color));
+            return std::optional(ComponentPatch::make(772, {{1, bytes}}, {}, {}));
+        };
+        const PlayerKey alex{4, 2};
+        const BlockPos loom{0, 0, 0};
+        Sim s(bundle(), 7, 2, data);
+        s.tick({place(loom, registry_block("loom", {{"facing", "north"}}))});
+        // Loom window: 0 banner, 1 dye, 2 pattern item, 3 result, 4-30 the main inventory, 31-39 the hotbar.
+        const auto click = [&](std::int16_t slot, std::uint8_t button, std::uint8_t mode) {
+            return ContainerClick{alex, std::optional(loom), slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+        };
+        const auto press = [&](std::int32_t b) { return ContainerButton{alex, std::optional(loom), b}; };
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+        };
+        const auto banner = item("minecraft:white_banner");
+        s.tick({SetPlayerSlot{alex, 36, {banner, 2}}, SetPlayerSlot{alex, 37, {item("minecraft:red_dye"), 3}},
+                SetPlayerSlot{alex, 38, {item("minecraft:creeper_banner_pattern"), 1}}, SetPlayerSlot{alex, 39, {item("minecraft:blue_dye"), 1}}});
+        s.tick({press(1), click(31, 0, 1)});
+        require(player().loom_pattern == -1, "no button without a banner and a dye");
+        s.tick({click(32, 0, 1), press(1)});
+        require(player().loom_pattern == 1 && player().loom[3].item == banner && !player().loom[3].components.empty(), "the second pattern");
+        s.tick({press(3)});
+        require(player().loom_pattern == 1, "a button beyond the patterns does nothing");
+        s.tick({click(34, 0, 1)});
+        require(player().loom[1].item == item("minecraft:red_dye") && player().slots[39].item == item("minecraft:blue_dye"),
+                "a dye goes nowhere while another fills its slot");
+        s.tick({click(3, 0, 0)});
+        require(player().loom[0].count == 1 && player().loom[1].count == 2 && player().loom_pattern == 1 && !player().loom[3].empty(),
+                "taken: a banner and a dye used, the choice kept");
+        s.tick({click(33, 0, 1)});
+        require(player().loom_pattern == 0, "a pattern item with one pattern chooses it");
+        s.tick({click(2, 0, 1)});
+        require(player().loom_pattern == -1 && player().loom[3].empty(), "without it the creeper is not on offer");
+        s.tick({press(2), click(3, 0, 1)});
+        require(player().loom[0].empty() && player().loom_pattern == -1, "shift-clicked until the banners ran out; the choice cleared");
+    });
+
     suite.run("grindstones remove all but curses and merge durability", [] {
         using circuit::contracts::CloseContainer;
         using circuit::contracts::ComponentPatch;

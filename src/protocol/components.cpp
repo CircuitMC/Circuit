@@ -839,6 +839,40 @@ std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_encha
     return contracts::ComponentPatch::make(protocol(), std::move(added), std::move(removed), base.typed());
 }
 
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_banner_layer(const contracts::ComponentPatch& base,
+                                                                                        std::uint32_t pattern, std::uint32_t color,
+                                                                                        const ComponentContext& ctx) const {
+    const auto type = type_id("banner_patterns");
+    if (!type) return std::unexpected("no banner_patterns component");
+    // The layers so far (a count, then each layer's pattern holder and
+    // color), then the new one as a registry reference (id + 1).
+    std::int32_t count = 0;
+    std::span<const std::byte> layers;
+    for (const auto& a : base.added())
+        if (a.type == *type) {
+            Reader r(a.value);
+            const auto n = r.varint();
+            if (!n) return std::unexpected("banner_patterns: unreadable");
+            count = *n;
+            layers = std::span(a.value).subspan(a.value.size() - r.remaining());
+        }
+    Writer w;
+    w.varint(count + 1);
+    w.raw(layers);
+    w.varint(static_cast<std::int32_t>(pattern) + 1).varint(static_cast<std::int32_t>(color));
+    auto value = canonical_value(*type, w.bytes(), ctx);
+    if (!value) return std::unexpected(value.error());
+    std::vector<contracts::ComponentPatch::Added> added;
+    for (const auto& a : base.added())
+        if (a.type != *type) added.push_back(a);
+    added.push_back({*type, std::move(*value)});
+    std::ranges::sort(added, {}, &contracts::ComponentPatch::Added::type);
+    std::vector<std::uint16_t> removed;
+    for (const auto r : base.removed())
+        if (r != *type) removed.push_back(r);
+    return contracts::ComponentPatch::make(protocol(), std::move(added), std::move(removed), base.typed());
+}
+
 std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_trim(const contracts::ComponentPatch& base, std::uint32_t material,
                                                                                 std::uint32_t pattern, const ComponentContext& ctx) const {
     const auto type = type_id("trim");

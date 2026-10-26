@@ -120,6 +120,10 @@ inline constexpr std::uint8_t smith_first = 59;
 // recorded as slots 63-65.
 inline constexpr std::uint8_t grind_slots = 3;
 inline constexpr std::uint8_t grind_first = 63;
+// The loom window: banner, dye, pattern item and result (window slots
+// 0-3), recorded as slots 66-69.
+inline constexpr std::uint8_t loom_slots = 4;
+inline constexpr std::uint8_t loom_first = 66;
 
 // A creative player sets a slot of their inventory (an empty stack clears it).
 struct SetPlayerSlot {

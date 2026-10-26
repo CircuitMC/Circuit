@@ -495,6 +495,13 @@ int main() {
             const auto bare = c.with_enchantments(*ground, false, {}, false, 0, pctx);
             require(bare.has_value() && bare->added().size() == 1 && c.enchantments_of(*bare, false).empty(),
                     std::format("{}: only the trim is left", protocol));
+            // A loom's layer on top of a banner's: count, then pattern and color.
+            const auto layered = c.with_banner_layer(contracts::ComponentPatch{}, 3, 14, pctx);
+            const auto twice = layered ? c.with_banner_layer(*layered, 5, 11, pctx) : layered;
+            const auto layers_type = *c.type_id("banner_patterns");
+            require(twice.has_value() && twice->added().size() == 1 && twice->added()[0].type == layers_type &&
+                        twice->added()[0].value == std::vector{std::byte{2}, std::byte{4}, std::byte{14}, std::byte{6}, std::byte{11}},
+                    std::format("{}: two banner layers", protocol));
             const auto stored = c.with_enchantments(contracts::ComponentPatch{}, true, {}, true, 0, pctx);
             require(stored.has_value() && stored->added().size() == 1 && c.enchantments_of(*stored, true).empty(),
                     std::format("{}: an empty stored list kept", protocol));

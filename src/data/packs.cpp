@@ -279,6 +279,8 @@ std::expected<DataPacks, std::string> DataPacks::load(const contracts::VersionBu
     // Flattening: references resolve recursively; a cycle or a missing
     // required entry fails the load, as it fails a reload in the target version.
     std::map<std::pair<std::string, std::string>, std::vector<std::string>> resolved;
+    // The same entries in the order the files list them, each at its first place.
+    std::map<std::pair<std::string, std::string>, std::vector<std::string>> in_order;
     std::set<std::pair<std::string, std::string>> resolving;
     std::function<std::expected<const std::vector<std::string>*, std::string>(const std::pair<std::string, std::string>&)> resolve;
     resolve = [&](const std::pair<std::string, std::string>& key) -> std::expected<const std::vector<std::string>*, std::string> {
@@ -287,29 +289,36 @@ std::expected<DataPacks, std::string> DataPacks::load(const contracts::VersionBu
         if (raw == raw_tags.end()) return std::unexpected(std::format("tag #{} of {} does not exist", key.second, key.first));
         if (!resolving.insert(key).second) return std::unexpected(std::format("tag #{} of {} refers to itself", key.second, key.first));
         std::set<std::string> entries;
+        std::vector<std::string> ordered;
+        const auto add = [&](const std::string& id) {
+            if (entries.insert(id).second) ordered.push_back(id);
+        };
         for (const auto& v : raw->second) {
             if (v.id.starts_with('#')) {
-                const auto sub = resolve({key.first, with_namespace(v.id.substr(1))});
+                const auto sub_key = std::pair{key.first, with_namespace(v.id.substr(1))};
+                const auto sub = resolve(sub_key);
                 if (!sub) {
                     if (v.required) return std::unexpected(sub.error());
                     continue;
                 }
-                entries.insert((*sub)->begin(), (*sub)->end());
+                for (const auto& id : in_order[sub_key]) add(id);
             } else {
                 const auto id = with_namespace(v.id);
                 const auto known = registries(key.first, id);
-                if (known && *known) entries.insert(id);
+                if (known && *known) add(id);
                 else if (v.required)
                     return std::unexpected(std::format("tag #{} of {} lists {}, which the registry does not have", key.second, key.first, id));
             }
         }
         resolving.erase(key);
+        in_order[key] = std::move(ordered);
         return &(resolved[key] = std::vector<std::string>(entries.begin(), entries.end()));
     };
     for (const auto& [key, values] : raw_tags) {
         auto r = resolve(key);
         if (!r) return std::unexpected(r.error());
         out.tags_[key.first][key.second] = **r;
+        out.ordered_tags_[key.first][key.second] = in_order[key];
     }
     if (!out.packs_.empty()) {
         std::vector<std::byte> ids;
@@ -323,6 +332,13 @@ std::expected<DataPacks, std::string> DataPacks::load(const contracts::VersionBu
 const std::vector<std::string>* DataPacks::tag(std::string_view registry, std::string_view name) const {
     const auto r = tags_.find(std::string(registry));
     if (r == tags_.end()) return nullptr;
+    const auto t = r->second.find(with_namespace(name));
+    return t == r->second.end() ? nullptr : &t->second;
+}
+
+const std::vector<std::string>* DataPacks::ordered_tag(std::string_view registry, std::string_view name) const {
+    const auto r = ordered_tags_.find(std::string(registry));
+    if (r == ordered_tags_.end()) return nullptr;
     const auto t = r->second.find(with_namespace(name));
     return t == r->second.end() ? nullptr : &t->second;
 }

@@ -190,6 +190,10 @@ struct PlayerInventory {
     std::array<ItemStack, contracts::smith_slots> smith{};
     // The grindstone window the player has open: its two inputs and result.
     std::array<ItemStack, contracts::grind_slots> grind{};
+    // The loom window the player has open: its banner, dye, pattern item and
+    // result, and the pattern chosen among the selectable ones (-1: none).
+    std::array<ItemStack, contracts::loom_slots> loom{};
+    std::int16_t loom_pattern{-1};
     // A drag across slots in progress (several clicks): its stage (0 none,
     // 1 collecting slots), its type (0 split evenly, 1 one each, 2 full
     // stacks) and the slots collected so far, in window numbering.
@@ -200,7 +204,7 @@ struct PlayerInventory {
         const auto none = [](const ItemStack& s) { return s.empty(); };
         return cursor.empty() && drag_stage == 0 && std::ranges::all_of(slots, none) && std::ranges::all_of(table, none)
             && std::ranges::all_of(cutter, none) && cutter_recipe == -1 && std::ranges::all_of(smith, none)
-            && std::ranges::all_of(grind, none);
+            && std::ranges::all_of(grind, none) && std::ranges::all_of(loom, none) && loom_pattern == -1;
     }
     bool operator==(const PlayerInventory&) const = default;
 };

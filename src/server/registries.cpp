@@ -135,20 +135,21 @@ const std::vector<RegistryEntries> registries_772{
         "minecraft:snout", "minecraft:spire", "minecraft:tide", "minecraft:vex", "minecraft:ward", "minecraft:wayfinder",
         "minecraft:wild",
      }},
-    // minecraft.wiki "Banner/Patterns" revision 3556873 (Java Edition resource names)
+    // minecraft.wiki "Banner/Patterns" revision 3556873 (Java Edition resource
+    // names), in the order both official servers number them (by name).
     {"minecraft:banner_pattern",
      {
-        "minecraft:base", "minecraft:stripe_bottom", "minecraft:stripe_top", "minecraft:stripe_left",
-        "minecraft:stripe_right", "minecraft:stripe_center", "minecraft:stripe_middle", "minecraft:stripe_downright",
-        "minecraft:stripe_downleft", "minecraft:small_stripes", "minecraft:cross", "minecraft:straight_cross",
-        "minecraft:diagonal_left", "minecraft:diagonal_right", "minecraft:diagonal_up_left", "minecraft:diagonal_up_right",
-        "minecraft:half_vertical", "minecraft:half_vertical_right", "minecraft:half_horizontal",
-        "minecraft:half_horizontal_bottom", "minecraft:square_bottom_left", "minecraft:square_bottom_right",
-        "minecraft:square_top_left", "minecraft:square_top_right", "minecraft:triangle_bottom", "minecraft:triangle_top",
-        "minecraft:triangles_bottom", "minecraft:triangles_top", "minecraft:circle", "minecraft:rhombus",
-        "minecraft:border", "minecraft:curly_border", "minecraft:bricks", "minecraft:gradient", "minecraft:gradient_up",
-        "minecraft:creeper", "minecraft:skull", "minecraft:flower", "minecraft:mojang", "minecraft:globe",
-        "minecraft:piglin", "minecraft:flow", "minecraft:guster",
+        "minecraft:base", "minecraft:border", "minecraft:bricks", "minecraft:circle", "minecraft:creeper",
+        "minecraft:cross", "minecraft:curly_border", "minecraft:diagonal_left", "minecraft:diagonal_right",
+        "minecraft:diagonal_up_left", "minecraft:diagonal_up_right", "minecraft:flow", "minecraft:flower",
+        "minecraft:globe", "minecraft:gradient", "minecraft:gradient_up", "minecraft:guster",
+        "minecraft:half_horizontal", "minecraft:half_horizontal_bottom", "minecraft:half_vertical",
+        "minecraft:half_vertical_right", "minecraft:mojang", "minecraft:piglin", "minecraft:rhombus", "minecraft:skull",
+        "minecraft:small_stripes", "minecraft:square_bottom_left", "minecraft:square_bottom_right",
+        "minecraft:square_top_left", "minecraft:square_top_right", "minecraft:straight_cross",
+        "minecraft:stripe_bottom", "minecraft:stripe_center", "minecraft:stripe_downleft", "minecraft:stripe_downright",
+        "minecraft:stripe_left", "minecraft:stripe_middle", "minecraft:stripe_right", "minecraft:stripe_top",
+        "minecraft:triangle_bottom", "minecraft:triangle_top", "minecraft:triangles_bottom", "minecraft:triangles_top",
      }},
     // minecraft.wiki "Instrument definition" revision 3778776 (goat horns)
     {"minecraft:instrument",

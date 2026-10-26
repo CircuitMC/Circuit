@@ -97,6 +97,11 @@ public:
                                                                                           std::span<const std::pair<std::uint32_t, std::int32_t>> levels,
                                                                                           bool keep_empty, std::int32_t repair_cost,
                                                                                           const ComponentContext& ctx) const;
+    // `base` with a layer of `pattern` (an id of the synchronized banner
+    // pattern registry) in `color` (a dye color, 0-15) added on top of its
+    // banner patterns; its other components kept.
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_banner_layer(const contracts::ComponentPatch& base, std::uint32_t pattern,
+                                                                                          std::uint32_t color, const ComponentContext& ctx) const;
     // `base` (canonical for this protocol) with its trim component set to
     // `material` and `pattern` (ids of the synchronized trim registries;
     // 1.21.4's tooltip flag shown), its other components kept.

@@ -50,6 +50,8 @@ public:
     // Flattened tags: registry -> tag ("minecraft:mineable/pickaxe") -> entries, sorted.
     [[nodiscard]] const std::map<std::string, std::map<std::string, std::vector<std::string>>>& tags() const noexcept { return tags_; }
     [[nodiscard]] const std::vector<std::string>* tag(std::string_view registry, std::string_view name) const;
+    // The same entries in the order the tag files list them (each at its first place).
+    [[nodiscard]] const std::vector<std::string>* ordered_tag(std::string_view registry, std::string_view name) const;
     // Other resources by kind ("loot_table", "recipe", "enchantment"): id -> JSON text.
     [[nodiscard]] const std::map<std::string, std::string>* resources(std::string_view kind) const;
     [[nodiscard]] const std::vector<std::string>& notes() const noexcept { return notes_; }
@@ -58,6 +60,7 @@ private:
     std::vector<PackInfo> packs_;
     std::string fingerprint_{"none"};
     std::map<std::string, std::map<std::string, std::vector<std::string>>> tags_;
+    std::map<std::string, std::map<std::string, std::vector<std::string>>> ordered_tags_;
     std::map<std::string, std::map<std::string, std::string>> resources_;
     std::vector<std::string> notes_;
 };

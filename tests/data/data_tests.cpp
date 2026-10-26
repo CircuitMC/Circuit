@@ -141,6 +141,8 @@ int main() {
         require(packs->packs().size() == 3 && packs->packs()[2].name == "c.zip", "three packs in order");
         require(*packs->tag("block", "minecraft:soft") == std::vector<std::string>{"minecraft:dirt", "minecraft:oak_log", "minecraft:sand"},
                 "merged, flattened, optional entry skipped");
+        require(*packs->ordered_tag("block", "minecraft:soft") == std::vector<std::string>{"minecraft:dirt", "minecraft:sand", "minecraft:oak_log"},
+                "in the files' order, a referenced tag's entries in its place");
         require(*packs->tag("item", "gems") == std::vector<std::string>{"minecraft:stick"}, "replace");
         require(*packs->tag("block", "custom:hard") == std::vector<std::string>{"minecraft:stone"}, "namespace defaults");
         require(packs->resources("recipe")->at("minecraft:stick") == R"({"type": "b"})", "a later pack replaces files");

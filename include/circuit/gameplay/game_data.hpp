@@ -61,6 +61,15 @@ struct GameData {
     // The enchantments that keep ice a player breaks from melting (the
     // enchantment tag prevents_ice_melting), as ids of the synchronized registry.
     std::vector<std::uint32_t> keeps_ice;
+    // A loom's patterns, in the order its buttons number them: those of the
+    // banner pattern tag no_item_required, or a pattern item's (by the
+    // item, from the tag pattern_item/<its name less _banner_pattern>).
+    std::vector<std::string> loom_patterns;
+    std::unordered_map<std::uint16_t, std::vector<std::string>> pattern_item_patterns;
+    // A banner's components with a layer of a pattern (an id of the banner
+    // pattern registry) in a dye color added on top; set by the server.
+    std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, std::string_view pattern, std::uint32_t color)>
+        with_banner_layer;
     // The curses (the enchantment tag curse), ascending ids of the synchronized registry.
     std::vector<std::uint32_t> curses;
     // 1.21.4: a book a grindstone makes of an enchanted book keeps an empty

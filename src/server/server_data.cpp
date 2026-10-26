@@ -184,6 +184,23 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
             };
         }
         game->keeps_empty_book_enchantments = bundle.protocol == 769;
+        if (const auto* free = packs->ordered_tag("banner_pattern", "minecraft:no_item_required")) game->loom_patterns = *free;
+        for (std::uint16_t item = 1; const auto* info = gameplay::items::info(item); ++item) {
+            const std::string_view name = info->name;
+            if (!name.ends_with("_banner_pattern")) continue;
+            const auto tag = std::format("minecraft:pattern_item/{}", name.substr(10, name.size() - 10 - 15));
+            if (const auto* patterns = packs->ordered_tag("banner_pattern", tag)) game->pattern_item_patterns.emplace(item, *patterns);
+        }
+        if (const auto* codec = protocol::ComponentCodec::for_protocol(bundle.schema.component_schema)) {
+            game->with_banner_layer = [codec, ctx = component_context(bundle, out.registries)](
+                                          const contracts::ComponentPatch& base, std::string_view pattern,
+                                          std::uint32_t color) -> std::optional<contracts::ComponentPatch> {
+                const auto id = ctx.id_of("banner_pattern", pattern);
+                if (!id) return std::nullopt;
+                auto patch = codec->with_banner_layer(base, *id, color, ctx);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
+        }
         if (const auto* curses = packs->tag("enchantment", "minecraft:curse")) {
             const auto ctx = component_context(bundle, out.registries);
             for (const auto& name : *curses)
