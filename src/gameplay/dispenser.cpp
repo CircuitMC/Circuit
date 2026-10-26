@@ -38,22 +38,23 @@ constexpr std::uint32_t dispense_delay = 4;
 constexpr double eject_spread = 0.0172275 * 6;
 
 // What a dispenser does with an item. `keep`: a use the rules do not model
-// (projectiles, fire, bone meal, shears, golem and wither heads, placing
+// (projectiles, fire, shears, golem and wither heads, placing
 // shulker boxes, armor stands, mobs, other fluids and other minecarts); the
 // item stays. The conditional ones eject unless the cell in front is one
 // they act on, which the rules do not model either: boats on water,
 // bottles at water or a full hive, honeycomb at copper that is not waxed,
 // glowstone at a respawn anchor, a potion with data at dirt.
-enum class Use : std::uint8_t { eject, keep, tnt, water, lava, bucket, minecart, boat, bottle, honeycomb, glowstone, potion };
+enum class Use : std::uint8_t { eject, keep, tnt, water, lava, bucket, minecart, boat, bottle, honeycomb, glowstone, potion, bone_meal };
 
 Use classify(std::string_view name) {
-    static constexpr std::array<std::string_view, 32> kept{
-        "shears", "bone_meal", "carved_pumpkin", "brush", "wither_skeleton_skull", "flint_and_steel", "arrow", "spectral_arrow",
+    static constexpr std::array<std::string_view, 31> kept{
+        "shears", "carved_pumpkin", "brush", "wither_skeleton_skull", "flint_and_steel", "arrow", "spectral_arrow",
         "tipped_arrow", "snowball", "egg", "blue_egg", "brown_egg", "experience_bottle", "splash_potion", "lingering_potion",
         "fire_charge", "firework_rocket", "wind_charge", "armor_stand", "powder_snow_bucket", "cod_bucket",
         "salmon_bucket", "pufferfish_bucket", "tropical_fish_bucket", "axolotl_bucket", "tadpole_bucket", "chest_minecart",
         "furnace_minecart", "tnt_minecart", "hopper_minecart", "command_block_minecart"};
     if (name == "tnt") return Use::tnt;
+    if (name == "bone_meal") return Use::bone_meal;
     if (name == "water_bucket") return Use::water;
     if (name == "lava_bucket") return Use::lava;
     if (name == "bucket") return Use::bucket;
@@ -241,6 +242,10 @@ void dispense_from(RuleContext& ctx, BlockPos pos, Direction facing, std::size_t
         }
         break;
     case Use::minecart: set_minecart(ctx, pos, facing, slot, stack); return;
+    // Bone meal acts on the block in front, or stays (bonemeal_dispensers).
+    case Use::bone_meal:
+        if (loaded_in_world(ctx, front) && apply_bone_meal(ctx, front)) set_slot(ctx, pos, slot, less_one(stack));
+        return;
     case Use::boat: case Use::bottle: case Use::honeycomb: case Use::glowstone: case Use::potion:
         if (has_target(ctx, use, front, stack)) return;
         break;

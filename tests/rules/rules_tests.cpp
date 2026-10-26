@@ -1607,6 +1607,27 @@ int main() {
         require(name({2, 0, 2}).starts_with("minecraft:water_cauldron"), "water drips into the cauldron: " + name({2, 0, 2}));
     });
 
+    suite.run("dispensers use bone meal on plants and keep it for other blocks", [] {
+        Sim s;
+        const auto name = [&](circuit::contracts::BlockPos p) { return circuit::gameplay::block_notation(s.at(p)); };
+        const auto bone_meal = *circuit::gameplay::items::by_name("minecraft:bone_meal");
+        s.tick(floor(-3, 8, -1, 6));
+        s.tick({place({1, -1, 0}, registry_block("farmland", {{"moisture", "7"}})), place({0, 0, 0}, blocks::dispenser(D::east)),
+                place({0, 0, 3}, blocks::dispenser(D::east)), place({1, 0, 3}, blocks::stone()),
+                insert({0, 0, 0}, 0, bone_meal, 1), insert({0, 0, 3}, 0, bone_meal, 1)});
+        s.tick({place({1, 0, 0}, blocks::wheat())});
+        s.tick({place({-1, 0, 0}, blocks::redstone_block()), place({-1, 0, 3}, blocks::redstone_block())});
+        s.until(s.oracle.time() + 6);
+        require(s.at({1, 0, 0}).level() >= 2, "the wheat grows 2 to 5 stages: " + name({1, 0, 0}));
+        const auto d = s.oracle.dump();
+        const auto kept = [&](circuit::contracts::BlockPos p) {
+            for (const auto& [pos, be] : d.overworld().block_entities)
+                if (pos == p) return be.slots.empty() ? 0 : static_cast<int>(be.slots[0].count);
+            return -1;
+        };
+        require(kept({0, 0, 0}) == 0 && kept({0, 0, 3}) == 1, std::format("used once, kept once: {}, {}", kept({0, 0, 0}), kept({0, 0, 3})));
+    });
+
     suite.run("idle levels and random tick ranges", [] {
         // A level is awake while active, and for 300 ticks after it was last
         // active or started.

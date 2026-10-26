@@ -224,6 +224,19 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
             return [&ctx, c] { ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo); };
         }
     }
+    // Bone meal acts on the clicked block as a dispenser's does, used up in
+    // survival when it acts (not compared with a client yet).
+    static const auto bone_meal = items::by_name("minecraft:bone_meal");
+    if (!held.empty() && bone_meal && held.item == *bone_meal) {
+        if ((c.reach & 1) == 0) return std::unexpected(ErrorCode::out_of_reach);
+        return [&ctx, c] {
+            if (!detail::apply_bone_meal(ctx, c.pos) || !c.survival) return;
+            auto& inv = ctx.player(c.player);
+            auto& slot = inv.slots[c.slot];
+            if (--slot.count == 0) slot = {};
+            detail::record_slot(ctx, inv, c.slot);
+        };
+    }
     auto state = held.empty() ? std::nullopt : detail::placed_by(held.item, c);
     if (!state && held.item == items::tnt) state = detail::tnt_block(ctx);
     if (!state && !held.empty())

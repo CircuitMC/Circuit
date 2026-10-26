@@ -1,0 +1,2121 @@
+circuit-trace 2
+title Dispensers using bone meal on crops, stems, bushes, bamboo, dripleaves, petals, vines and kelp
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v12
+mechanisms dispenser bone_meal
+area 0 0 0 31 7 29
+ticks 80
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 0 0 10 minecraft:stone
+at 0 set 0 0 11 minecraft:stone
+at 0 set 0 0 12 minecraft:stone
+at 0 set 0 0 13 minecraft:stone
+at 0 set 0 0 14 minecraft:stone
+at 0 set 0 0 15 minecraft:stone
+at 0 set 0 0 16 minecraft:stone
+at 0 set 0 0 17 minecraft:stone
+at 0 set 0 0 18 minecraft:stone
+at 0 set 0 0 19 minecraft:stone
+at 0 set 0 0 20 minecraft:stone
+at 0 set 0 0 21 minecraft:stone
+at 0 set 0 0 22 minecraft:stone
+at 0 set 0 0 23 minecraft:stone
+at 0 set 0 0 24 minecraft:stone
+at 0 set 0 0 25 minecraft:stone
+at 0 set 0 0 26 minecraft:stone
+at 0 set 0 0 27 minecraft:stone
+at 0 set 0 0 28 minecraft:stone
+at 0 set 0 0 29 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:stone
+at 0 set 1 0 11 minecraft:stone
+at 0 set 1 0 12 minecraft:stone
+at 0 set 1 0 13 minecraft:stone
+at 0 set 1 0 14 minecraft:stone
+at 0 set 1 0 15 minecraft:stone
+at 0 set 1 0 16 minecraft:stone
+at 0 set 1 0 17 minecraft:stone
+at 0 set 1 0 18 minecraft:stone
+at 0 set 1 0 19 minecraft:stone
+at 0 set 1 0 20 minecraft:stone
+at 0 set 1 0 21 minecraft:stone
+at 0 set 1 0 22 minecraft:stone
+at 0 set 1 0 23 minecraft:stone
+at 0 set 1 0 24 minecraft:stone
+at 0 set 1 0 25 minecraft:stone
+at 0 set 1 0 26 minecraft:stone
+at 0 set 1 0 27 minecraft:stone
+at 0 set 1 0 28 minecraft:stone
+at 0 set 1 0 29 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 2 0 10 minecraft:stone
+at 0 set 2 0 11 minecraft:stone
+at 0 set 2 0 12 minecraft:stone
+at 0 set 2 0 13 minecraft:stone
+at 0 set 2 0 14 minecraft:stone
+at 0 set 2 0 15 minecraft:stone
+at 0 set 2 0 16 minecraft:stone
+at 0 set 2 0 17 minecraft:stone
+at 0 set 2 0 18 minecraft:stone
+at 0 set 2 0 19 minecraft:stone
+at 0 set 2 0 20 minecraft:stone
+at 0 set 2 0 21 minecraft:stone
+at 0 set 2 0 22 minecraft:stone
+at 0 set 2 0 23 minecraft:stone
+at 0 set 2 0 24 minecraft:stone
+at 0 set 2 0 25 minecraft:stone
+at 0 set 2 0 26 minecraft:stone
+at 0 set 2 0 27 minecraft:stone
+at 0 set 2 0 28 minecraft:stone
+at 0 set 2 0 29 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 3 0 10 minecraft:stone
+at 0 set 3 0 11 minecraft:stone
+at 0 set 3 0 12 minecraft:stone
+at 0 set 3 0 13 minecraft:stone
+at 0 set 3 0 14 minecraft:stone
+at 0 set 3 0 15 minecraft:stone
+at 0 set 3 0 16 minecraft:stone
+at 0 set 3 0 17 minecraft:stone
+at 0 set 3 0 18 minecraft:stone
+at 0 set 3 0 19 minecraft:stone
+at 0 set 3 0 20 minecraft:stone
+at 0 set 3 0 21 minecraft:stone
+at 0 set 3 0 22 minecraft:stone
+at 0 set 3 0 23 minecraft:stone
+at 0 set 3 0 24 minecraft:stone
+at 0 set 3 0 25 minecraft:stone
+at 0 set 3 0 26 minecraft:stone
+at 0 set 3 0 27 minecraft:stone
+at 0 set 3 0 28 minecraft:stone
+at 0 set 3 0 29 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 4 0 11 minecraft:stone
+at 0 set 4 0 12 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 4 0 14 minecraft:stone
+at 0 set 4 0 15 minecraft:stone
+at 0 set 4 0 16 minecraft:stone
+at 0 set 4 0 17 minecraft:stone
+at 0 set 4 0 18 minecraft:stone
+at 0 set 4 0 19 minecraft:stone
+at 0 set 4 0 20 minecraft:stone
+at 0 set 4 0 21 minecraft:stone
+at 0 set 4 0 22 minecraft:stone
+at 0 set 4 0 23 minecraft:stone
+at 0 set 4 0 24 minecraft:stone
+at 0 set 4 0 25 minecraft:stone
+at 0 set 4 0 26 minecraft:stone
+at 0 set 4 0 27 minecraft:stone
+at 0 set 4 0 28 minecraft:stone
+at 0 set 4 0 29 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 5 0 10 minecraft:stone
+at 0 set 5 0 11 minecraft:stone
+at 0 set 5 0 12 minecraft:stone
+at 0 set 5 0 13 minecraft:stone
+at 0 set 5 0 14 minecraft:stone
+at 0 set 5 0 15 minecraft:stone
+at 0 set 5 0 16 minecraft:stone
+at 0 set 5 0 17 minecraft:stone
+at 0 set 5 0 18 minecraft:stone
+at 0 set 5 0 19 minecraft:stone
+at 0 set 5 0 20 minecraft:stone
+at 0 set 5 0 21 minecraft:stone
+at 0 set 5 0 22 minecraft:stone
+at 0 set 5 0 23 minecraft:stone
+at 0 set 5 0 24 minecraft:stone
+at 0 set 5 0 25 minecraft:stone
+at 0 set 5 0 26 minecraft:stone
+at 0 set 5 0 27 minecraft:stone
+at 0 set 5 0 28 minecraft:stone
+at 0 set 5 0 29 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 6 0 10 minecraft:stone
+at 0 set 6 0 11 minecraft:stone
+at 0 set 6 0 12 minecraft:stone
+at 0 set 6 0 13 minecraft:stone
+at 0 set 6 0 14 minecraft:stone
+at 0 set 6 0 15 minecraft:stone
+at 0 set 6 0 16 minecraft:stone
+at 0 set 6 0 17 minecraft:stone
+at 0 set 6 0 18 minecraft:stone
+at 0 set 6 0 19 minecraft:stone
+at 0 set 6 0 20 minecraft:stone
+at 0 set 6 0 21 minecraft:stone
+at 0 set 6 0 22 minecraft:stone
+at 0 set 6 0 23 minecraft:stone
+at 0 set 6 0 24 minecraft:stone
+at 0 set 6 0 25 minecraft:stone
+at 0 set 6 0 26 minecraft:stone
+at 0 set 6 0 27 minecraft:stone
+at 0 set 6 0 28 minecraft:stone
+at 0 set 6 0 29 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 7 0 10 minecraft:stone
+at 0 set 7 0 11 minecraft:stone
+at 0 set 7 0 12 minecraft:stone
+at 0 set 7 0 13 minecraft:stone
+at 0 set 7 0 14 minecraft:stone
+at 0 set 7 0 15 minecraft:stone
+at 0 set 7 0 16 minecraft:stone
+at 0 set 7 0 17 minecraft:stone
+at 0 set 7 0 18 minecraft:stone
+at 0 set 7 0 19 minecraft:stone
+at 0 set 7 0 20 minecraft:stone
+at 0 set 7 0 21 minecraft:stone
+at 0 set 7 0 22 minecraft:stone
+at 0 set 7 0 23 minecraft:stone
+at 0 set 7 0 24 minecraft:stone
+at 0 set 7 0 25 minecraft:stone
+at 0 set 7 0 26 minecraft:stone
+at 0 set 7 0 27 minecraft:stone
+at 0 set 7 0 28 minecraft:stone
+at 0 set 7 0 29 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 8 0 10 minecraft:stone
+at 0 set 8 0 11 minecraft:stone
+at 0 set 8 0 12 minecraft:stone
+at 0 set 8 0 13 minecraft:stone
+at 0 set 8 0 14 minecraft:stone
+at 0 set 8 0 15 minecraft:stone
+at 0 set 8 0 16 minecraft:stone
+at 0 set 8 0 17 minecraft:stone
+at 0 set 8 0 18 minecraft:stone
+at 0 set 8 0 19 minecraft:stone
+at 0 set 8 0 20 minecraft:stone
+at 0 set 8 0 21 minecraft:stone
+at 0 set 8 0 22 minecraft:stone
+at 0 set 8 0 23 minecraft:stone
+at 0 set 8 0 24 minecraft:stone
+at 0 set 8 0 25 minecraft:stone
+at 0 set 8 0 26 minecraft:stone
+at 0 set 8 0 27 minecraft:stone
+at 0 set 8 0 28 minecraft:stone
+at 0 set 8 0 29 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 9 0 10 minecraft:stone
+at 0 set 9 0 11 minecraft:stone
+at 0 set 9 0 12 minecraft:stone
+at 0 set 9 0 13 minecraft:stone
+at 0 set 9 0 14 minecraft:stone
+at 0 set 9 0 15 minecraft:stone
+at 0 set 9 0 16 minecraft:stone
+at 0 set 9 0 17 minecraft:stone
+at 0 set 9 0 18 minecraft:stone
+at 0 set 9 0 19 minecraft:stone
+at 0 set 9 0 20 minecraft:stone
+at 0 set 9 0 21 minecraft:stone
+at 0 set 9 0 22 minecraft:stone
+at 0 set 9 0 23 minecraft:stone
+at 0 set 9 0 24 minecraft:stone
+at 0 set 9 0 25 minecraft:stone
+at 0 set 9 0 26 minecraft:stone
+at 0 set 9 0 27 minecraft:stone
+at 0 set 9 0 28 minecraft:stone
+at 0 set 9 0 29 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 10 0 10 minecraft:stone
+at 0 set 10 0 11 minecraft:stone
+at 0 set 10 0 12 minecraft:stone
+at 0 set 10 0 13 minecraft:stone
+at 0 set 10 0 14 minecraft:stone
+at 0 set 10 0 15 minecraft:stone
+at 0 set 10 0 16 minecraft:stone
+at 0 set 10 0 17 minecraft:stone
+at 0 set 10 0 18 minecraft:stone
+at 0 set 10 0 19 minecraft:stone
+at 0 set 10 0 20 minecraft:stone
+at 0 set 10 0 21 minecraft:stone
+at 0 set 10 0 22 minecraft:stone
+at 0 set 10 0 23 minecraft:stone
+at 0 set 10 0 24 minecraft:stone
+at 0 set 10 0 25 minecraft:stone
+at 0 set 10 0 26 minecraft:stone
+at 0 set 10 0 27 minecraft:stone
+at 0 set 10 0 28 minecraft:stone
+at 0 set 10 0 29 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 11 0 10 minecraft:stone
+at 0 set 11 0 11 minecraft:stone
+at 0 set 11 0 12 minecraft:stone
+at 0 set 11 0 13 minecraft:stone
+at 0 set 11 0 14 minecraft:stone
+at 0 set 11 0 15 minecraft:stone
+at 0 set 11 0 16 minecraft:stone
+at 0 set 11 0 17 minecraft:stone
+at 0 set 11 0 18 minecraft:stone
+at 0 set 11 0 19 minecraft:stone
+at 0 set 11 0 20 minecraft:stone
+at 0 set 11 0 21 minecraft:stone
+at 0 set 11 0 22 minecraft:stone
+at 0 set 11 0 23 minecraft:stone
+at 0 set 11 0 24 minecraft:stone
+at 0 set 11 0 25 minecraft:stone
+at 0 set 11 0 26 minecraft:stone
+at 0 set 11 0 27 minecraft:stone
+at 0 set 11 0 28 minecraft:stone
+at 0 set 11 0 29 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 12 0 8 minecraft:stone
+at 0 set 12 0 9 minecraft:stone
+at 0 set 12 0 10 minecraft:stone
+at 0 set 12 0 11 minecraft:stone
+at 0 set 12 0 12 minecraft:stone
+at 0 set 12 0 13 minecraft:stone
+at 0 set 12 0 14 minecraft:stone
+at 0 set 12 0 15 minecraft:stone
+at 0 set 12 0 16 minecraft:stone
+at 0 set 12 0 17 minecraft:stone
+at 0 set 12 0 18 minecraft:stone
+at 0 set 12 0 19 minecraft:stone
+at 0 set 12 0 20 minecraft:stone
+at 0 set 12 0 21 minecraft:stone
+at 0 set 12 0 22 minecraft:stone
+at 0 set 12 0 23 minecraft:stone
+at 0 set 12 0 24 minecraft:stone
+at 0 set 12 0 25 minecraft:stone
+at 0 set 12 0 26 minecraft:stone
+at 0 set 12 0 27 minecraft:stone
+at 0 set 12 0 28 minecraft:stone
+at 0 set 12 0 29 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 13 0 8 minecraft:stone
+at 0 set 13 0 9 minecraft:stone
+at 0 set 13 0 10 minecraft:stone
+at 0 set 13 0 11 minecraft:stone
+at 0 set 13 0 12 minecraft:stone
+at 0 set 13 0 13 minecraft:stone
+at 0 set 13 0 14 minecraft:stone
+at 0 set 13 0 15 minecraft:stone
+at 0 set 13 0 16 minecraft:stone
+at 0 set 13 0 17 minecraft:stone
+at 0 set 13 0 18 minecraft:stone
+at 0 set 13 0 19 minecraft:stone
+at 0 set 13 0 20 minecraft:stone
+at 0 set 13 0 21 minecraft:stone
+at 0 set 13 0 22 minecraft:stone
+at 0 set 13 0 23 minecraft:stone
+at 0 set 13 0 24 minecraft:stone
+at 0 set 13 0 25 minecraft:stone
+at 0 set 13 0 26 minecraft:stone
+at 0 set 13 0 27 minecraft:stone
+at 0 set 13 0 28 minecraft:stone
+at 0 set 13 0 29 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 14 0 8 minecraft:stone
+at 0 set 14 0 9 minecraft:stone
+at 0 set 14 0 10 minecraft:stone
+at 0 set 14 0 11 minecraft:stone
+at 0 set 14 0 12 minecraft:stone
+at 0 set 14 0 13 minecraft:stone
+at 0 set 14 0 14 minecraft:stone
+at 0 set 14 0 15 minecraft:stone
+at 0 set 14 0 16 minecraft:stone
+at 0 set 14 0 17 minecraft:stone
+at 0 set 14 0 18 minecraft:stone
+at 0 set 14 0 19 minecraft:stone
+at 0 set 14 0 20 minecraft:stone
+at 0 set 14 0 21 minecraft:stone
+at 0 set 14 0 22 minecraft:stone
+at 0 set 14 0 23 minecraft:stone
+at 0 set 14 0 24 minecraft:stone
+at 0 set 14 0 25 minecraft:stone
+at 0 set 14 0 26 minecraft:stone
+at 0 set 14 0 27 minecraft:stone
+at 0 set 14 0 28 minecraft:stone
+at 0 set 14 0 29 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 15 0 8 minecraft:stone
+at 0 set 15 0 9 minecraft:stone
+at 0 set 15 0 10 minecraft:stone
+at 0 set 15 0 11 minecraft:stone
+at 0 set 15 0 12 minecraft:stone
+at 0 set 15 0 13 minecraft:stone
+at 0 set 15 0 14 minecraft:stone
+at 0 set 15 0 15 minecraft:stone
+at 0 set 15 0 16 minecraft:stone
+at 0 set 15 0 17 minecraft:stone
+at 0 set 15 0 18 minecraft:stone
+at 0 set 15 0 19 minecraft:stone
+at 0 set 15 0 20 minecraft:stone
+at 0 set 15 0 21 minecraft:stone
+at 0 set 15 0 22 minecraft:stone
+at 0 set 15 0 23 minecraft:stone
+at 0 set 15 0 24 minecraft:stone
+at 0 set 15 0 25 minecraft:stone
+at 0 set 15 0 26 minecraft:stone
+at 0 set 15 0 27 minecraft:stone
+at 0 set 15 0 28 minecraft:stone
+at 0 set 15 0 29 minecraft:stone
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 0 1 minecraft:stone
+at 0 set 16 0 2 minecraft:stone
+at 0 set 16 0 3 minecraft:stone
+at 0 set 16 0 4 minecraft:stone
+at 0 set 16 0 5 minecraft:stone
+at 0 set 16 0 6 minecraft:stone
+at 0 set 16 0 7 minecraft:stone
+at 0 set 16 0 8 minecraft:stone
+at 0 set 16 0 9 minecraft:stone
+at 0 set 16 0 10 minecraft:stone
+at 0 set 16 0 11 minecraft:stone
+at 0 set 16 0 12 minecraft:stone
+at 0 set 16 0 13 minecraft:stone
+at 0 set 16 0 14 minecraft:stone
+at 0 set 16 0 15 minecraft:stone
+at 0 set 16 0 16 minecraft:stone
+at 0 set 16 0 17 minecraft:stone
+at 0 set 16 0 18 minecraft:stone
+at 0 set 16 0 19 minecraft:stone
+at 0 set 16 0 20 minecraft:stone
+at 0 set 16 0 21 minecraft:stone
+at 0 set 16 0 22 minecraft:stone
+at 0 set 16 0 23 minecraft:stone
+at 0 set 16 0 24 minecraft:stone
+at 0 set 16 0 25 minecraft:stone
+at 0 set 16 0 26 minecraft:stone
+at 0 set 16 0 27 minecraft:stone
+at 0 set 16 0 28 minecraft:stone
+at 0 set 16 0 29 minecraft:stone
+at 0 set 17 0 0 minecraft:stone
+at 0 set 17 0 1 minecraft:stone
+at 0 set 17 0 2 minecraft:stone
+at 0 set 17 0 3 minecraft:stone
+at 0 set 17 0 4 minecraft:stone
+at 0 set 17 0 5 minecraft:stone
+at 0 set 17 0 6 minecraft:stone
+at 0 set 17 0 7 minecraft:stone
+at 0 set 17 0 8 minecraft:stone
+at 0 set 17 0 9 minecraft:stone
+at 0 set 17 0 10 minecraft:stone
+at 0 set 17 0 11 minecraft:stone
+at 0 set 17 0 12 minecraft:stone
+at 0 set 17 0 13 minecraft:stone
+at 0 set 17 0 14 minecraft:stone
+at 0 set 17 0 15 minecraft:stone
+at 0 set 17 0 16 minecraft:stone
+at 0 set 17 0 17 minecraft:stone
+at 0 set 17 0 18 minecraft:stone
+at 0 set 17 0 19 minecraft:stone
+at 0 set 17 0 20 minecraft:stone
+at 0 set 17 0 21 minecraft:stone
+at 0 set 17 0 22 minecraft:stone
+at 0 set 17 0 23 minecraft:stone
+at 0 set 17 0 24 minecraft:stone
+at 0 set 17 0 25 minecraft:stone
+at 0 set 17 0 26 minecraft:stone
+at 0 set 17 0 27 minecraft:stone
+at 0 set 17 0 28 minecraft:stone
+at 0 set 17 0 29 minecraft:stone
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 0 1 minecraft:stone
+at 0 set 18 0 2 minecraft:stone
+at 0 set 18 0 3 minecraft:stone
+at 0 set 18 0 4 minecraft:stone
+at 0 set 18 0 5 minecraft:stone
+at 0 set 18 0 6 minecraft:stone
+at 0 set 18 0 7 minecraft:stone
+at 0 set 18 0 8 minecraft:stone
+at 0 set 18 0 9 minecraft:stone
+at 0 set 18 0 10 minecraft:stone
+at 0 set 18 0 11 minecraft:stone
+at 0 set 18 0 12 minecraft:stone
+at 0 set 18 0 13 minecraft:stone
+at 0 set 18 0 14 minecraft:stone
+at 0 set 18 0 15 minecraft:stone
+at 0 set 18 0 16 minecraft:stone
+at 0 set 18 0 17 minecraft:stone
+at 0 set 18 0 18 minecraft:stone
+at 0 set 18 0 19 minecraft:stone
+at 0 set 18 0 20 minecraft:stone
+at 0 set 18 0 21 minecraft:stone
+at 0 set 18 0 22 minecraft:stone
+at 0 set 18 0 23 minecraft:stone
+at 0 set 18 0 24 minecraft:stone
+at 0 set 18 0 25 minecraft:stone
+at 0 set 18 0 26 minecraft:stone
+at 0 set 18 0 27 minecraft:stone
+at 0 set 18 0 28 minecraft:stone
+at 0 set 18 0 29 minecraft:stone
+at 0 set 19 0 0 minecraft:stone
+at 0 set 19 0 1 minecraft:stone
+at 0 set 19 0 2 minecraft:stone
+at 0 set 19 0 3 minecraft:stone
+at 0 set 19 0 4 minecraft:stone
+at 0 set 19 0 5 minecraft:stone
+at 0 set 19 0 6 minecraft:stone
+at 0 set 19 0 7 minecraft:stone
+at 0 set 19 0 8 minecraft:stone
+at 0 set 19 0 9 minecraft:stone
+at 0 set 19 0 10 minecraft:stone
+at 0 set 19 0 11 minecraft:stone
+at 0 set 19 0 12 minecraft:stone
+at 0 set 19 0 13 minecraft:stone
+at 0 set 19 0 14 minecraft:stone
+at 0 set 19 0 15 minecraft:stone
+at 0 set 19 0 16 minecraft:stone
+at 0 set 19 0 17 minecraft:stone
+at 0 set 19 0 18 minecraft:stone
+at 0 set 19 0 19 minecraft:stone
+at 0 set 19 0 20 minecraft:stone
+at 0 set 19 0 21 minecraft:stone
+at 0 set 19 0 22 minecraft:stone
+at 0 set 19 0 23 minecraft:stone
+at 0 set 19 0 24 minecraft:stone
+at 0 set 19 0 25 minecraft:stone
+at 0 set 19 0 26 minecraft:stone
+at 0 set 19 0 27 minecraft:stone
+at 0 set 19 0 28 minecraft:stone
+at 0 set 19 0 29 minecraft:stone
+at 0 set 20 0 0 minecraft:stone
+at 0 set 20 0 1 minecraft:stone
+at 0 set 20 0 2 minecraft:stone
+at 0 set 20 0 3 minecraft:stone
+at 0 set 20 0 4 minecraft:stone
+at 0 set 20 0 5 minecraft:stone
+at 0 set 20 0 6 minecraft:stone
+at 0 set 20 0 7 minecraft:stone
+at 0 set 20 0 8 minecraft:stone
+at 0 set 20 0 9 minecraft:stone
+at 0 set 20 0 10 minecraft:stone
+at 0 set 20 0 11 minecraft:stone
+at 0 set 20 0 12 minecraft:stone
+at 0 set 20 0 13 minecraft:stone
+at 0 set 20 0 14 minecraft:stone
+at 0 set 20 0 15 minecraft:stone
+at 0 set 20 0 16 minecraft:stone
+at 0 set 20 0 17 minecraft:stone
+at 0 set 20 0 18 minecraft:stone
+at 0 set 20 0 19 minecraft:stone
+at 0 set 20 0 20 minecraft:stone
+at 0 set 20 0 21 minecraft:stone
+at 0 set 20 0 22 minecraft:stone
+at 0 set 20 0 23 minecraft:stone
+at 0 set 20 0 24 minecraft:stone
+at 0 set 20 0 25 minecraft:stone
+at 0 set 20 0 26 minecraft:stone
+at 0 set 20 0 27 minecraft:stone
+at 0 set 20 0 28 minecraft:stone
+at 0 set 20 0 29 minecraft:stone
+at 0 set 21 0 0 minecraft:stone
+at 0 set 21 0 1 minecraft:stone
+at 0 set 21 0 2 minecraft:stone
+at 0 set 21 0 3 minecraft:stone
+at 0 set 21 0 4 minecraft:stone
+at 0 set 21 0 5 minecraft:stone
+at 0 set 21 0 6 minecraft:stone
+at 0 set 21 0 7 minecraft:stone
+at 0 set 21 0 8 minecraft:stone
+at 0 set 21 0 9 minecraft:stone
+at 0 set 21 0 10 minecraft:stone
+at 0 set 21 0 11 minecraft:stone
+at 0 set 21 0 12 minecraft:stone
+at 0 set 21 0 13 minecraft:stone
+at 0 set 21 0 14 minecraft:stone
+at 0 set 21 0 15 minecraft:stone
+at 0 set 21 0 16 minecraft:stone
+at 0 set 21 0 17 minecraft:stone
+at 0 set 21 0 18 minecraft:stone
+at 0 set 21 0 19 minecraft:stone
+at 0 set 21 0 20 minecraft:stone
+at 0 set 21 0 21 minecraft:stone
+at 0 set 21 0 22 minecraft:stone
+at 0 set 21 0 23 minecraft:stone
+at 0 set 21 0 24 minecraft:stone
+at 0 set 21 0 25 minecraft:stone
+at 0 set 21 0 26 minecraft:stone
+at 0 set 21 0 27 minecraft:stone
+at 0 set 21 0 28 minecraft:stone
+at 0 set 21 0 29 minecraft:stone
+at 0 set 22 0 0 minecraft:stone
+at 0 set 22 0 1 minecraft:stone
+at 0 set 22 0 2 minecraft:stone
+at 0 set 22 0 3 minecraft:stone
+at 0 set 22 0 4 minecraft:stone
+at 0 set 22 0 5 minecraft:stone
+at 0 set 22 0 6 minecraft:stone
+at 0 set 22 0 7 minecraft:stone
+at 0 set 22 0 8 minecraft:stone
+at 0 set 22 0 9 minecraft:stone
+at 0 set 22 0 10 minecraft:stone
+at 0 set 22 0 11 minecraft:stone
+at 0 set 22 0 12 minecraft:stone
+at 0 set 22 0 13 minecraft:stone
+at 0 set 22 0 14 minecraft:stone
+at 0 set 22 0 15 minecraft:stone
+at 0 set 22 0 16 minecraft:stone
+at 0 set 22 0 17 minecraft:stone
+at 0 set 22 0 18 minecraft:stone
+at 0 set 22 0 19 minecraft:stone
+at 0 set 22 0 20 minecraft:stone
+at 0 set 22 0 21 minecraft:stone
+at 0 set 22 0 22 minecraft:stone
+at 0 set 22 0 23 minecraft:stone
+at 0 set 22 0 24 minecraft:stone
+at 0 set 22 0 25 minecraft:stone
+at 0 set 22 0 26 minecraft:stone
+at 0 set 22 0 27 minecraft:stone
+at 0 set 22 0 28 minecraft:stone
+at 0 set 22 0 29 minecraft:stone
+at 0 set 23 0 0 minecraft:stone
+at 0 set 23 0 1 minecraft:stone
+at 0 set 23 0 2 minecraft:stone
+at 0 set 23 0 3 minecraft:stone
+at 0 set 23 0 4 minecraft:stone
+at 0 set 23 0 5 minecraft:stone
+at 0 set 23 0 6 minecraft:stone
+at 0 set 23 0 7 minecraft:stone
+at 0 set 23 0 8 minecraft:stone
+at 0 set 23 0 9 minecraft:stone
+at 0 set 23 0 10 minecraft:stone
+at 0 set 23 0 11 minecraft:stone
+at 0 set 23 0 12 minecraft:stone
+at 0 set 23 0 13 minecraft:stone
+at 0 set 23 0 14 minecraft:stone
+at 0 set 23 0 15 minecraft:stone
+at 0 set 23 0 16 minecraft:stone
+at 0 set 23 0 17 minecraft:stone
+at 0 set 23 0 18 minecraft:stone
+at 0 set 23 0 19 minecraft:stone
+at 0 set 23 0 20 minecraft:stone
+at 0 set 23 0 21 minecraft:stone
+at 0 set 23 0 22 minecraft:stone
+at 0 set 23 0 23 minecraft:stone
+at 0 set 23 0 24 minecraft:stone
+at 0 set 23 0 25 minecraft:stone
+at 0 set 23 0 26 minecraft:stone
+at 0 set 23 0 27 minecraft:stone
+at 0 set 23 0 28 minecraft:stone
+at 0 set 23 0 29 minecraft:stone
+at 0 set 24 0 0 minecraft:stone
+at 0 set 24 0 1 minecraft:stone
+at 0 set 24 0 2 minecraft:stone
+at 0 set 24 0 3 minecraft:stone
+at 0 set 24 0 4 minecraft:stone
+at 0 set 24 0 5 minecraft:stone
+at 0 set 24 0 6 minecraft:stone
+at 0 set 24 0 7 minecraft:stone
+at 0 set 24 0 8 minecraft:stone
+at 0 set 24 0 9 minecraft:stone
+at 0 set 24 0 10 minecraft:stone
+at 0 set 24 0 11 minecraft:stone
+at 0 set 24 0 12 minecraft:stone
+at 0 set 24 0 13 minecraft:stone
+at 0 set 24 0 14 minecraft:stone
+at 0 set 24 0 15 minecraft:stone
+at 0 set 24 0 16 minecraft:stone
+at 0 set 24 0 17 minecraft:stone
+at 0 set 24 0 18 minecraft:stone
+at 0 set 24 0 19 minecraft:stone
+at 0 set 24 0 20 minecraft:stone
+at 0 set 24 0 21 minecraft:stone
+at 0 set 24 0 22 minecraft:stone
+at 0 set 24 0 23 minecraft:stone
+at 0 set 24 0 24 minecraft:stone
+at 0 set 24 0 25 minecraft:stone
+at 0 set 24 0 26 minecraft:stone
+at 0 set 24 0 27 minecraft:stone
+at 0 set 24 0 28 minecraft:stone
+at 0 set 24 0 29 minecraft:stone
+at 0 set 25 0 0 minecraft:stone
+at 0 set 25 0 1 minecraft:stone
+at 0 set 25 0 2 minecraft:stone
+at 0 set 25 0 3 minecraft:stone
+at 0 set 25 0 4 minecraft:stone
+at 0 set 25 0 5 minecraft:stone
+at 0 set 25 0 6 minecraft:stone
+at 0 set 25 0 7 minecraft:stone
+at 0 set 25 0 8 minecraft:stone
+at 0 set 25 0 9 minecraft:stone
+at 0 set 25 0 10 minecraft:stone
+at 0 set 25 0 11 minecraft:stone
+at 0 set 25 0 12 minecraft:stone
+at 0 set 25 0 13 minecraft:stone
+at 0 set 25 0 14 minecraft:stone
+at 0 set 25 0 15 minecraft:stone
+at 0 set 25 0 16 minecraft:stone
+at 0 set 25 0 17 minecraft:stone
+at 0 set 25 0 18 minecraft:stone
+at 0 set 25 0 19 minecraft:stone
+at 0 set 25 0 20 minecraft:stone
+at 0 set 25 0 21 minecraft:stone
+at 0 set 25 0 22 minecraft:stone
+at 0 set 25 0 23 minecraft:stone
+at 0 set 25 0 24 minecraft:stone
+at 0 set 25 0 25 minecraft:stone
+at 0 set 25 0 26 minecraft:stone
+at 0 set 25 0 27 minecraft:stone
+at 0 set 25 0 28 minecraft:stone
+at 0 set 25 0 29 minecraft:stone
+at 0 set 26 0 0 minecraft:stone
+at 0 set 26 0 1 minecraft:stone
+at 0 set 26 0 2 minecraft:stone
+at 0 set 26 0 3 minecraft:stone
+at 0 set 26 0 4 minecraft:stone
+at 0 set 26 0 5 minecraft:stone
+at 0 set 26 0 6 minecraft:stone
+at 0 set 26 0 7 minecraft:stone
+at 0 set 26 0 8 minecraft:stone
+at 0 set 26 0 9 minecraft:stone
+at 0 set 26 0 10 minecraft:stone
+at 0 set 26 0 11 minecraft:stone
+at 0 set 26 0 12 minecraft:stone
+at 0 set 26 0 13 minecraft:stone
+at 0 set 26 0 14 minecraft:stone
+at 0 set 26 0 15 minecraft:stone
+at 0 set 26 0 16 minecraft:stone
+at 0 set 26 0 17 minecraft:stone
+at 0 set 26 0 18 minecraft:stone
+at 0 set 26 0 19 minecraft:stone
+at 0 set 26 0 20 minecraft:stone
+at 0 set 26 0 21 minecraft:stone
+at 0 set 26 0 22 minecraft:stone
+at 0 set 26 0 23 minecraft:stone
+at 0 set 26 0 24 minecraft:stone
+at 0 set 26 0 25 minecraft:stone
+at 0 set 26 0 26 minecraft:stone
+at 0 set 26 0 27 minecraft:stone
+at 0 set 26 0 28 minecraft:stone
+at 0 set 26 0 29 minecraft:stone
+at 0 set 27 0 0 minecraft:stone
+at 0 set 27 0 1 minecraft:stone
+at 0 set 27 0 2 minecraft:stone
+at 0 set 27 0 3 minecraft:stone
+at 0 set 27 0 4 minecraft:stone
+at 0 set 27 0 5 minecraft:stone
+at 0 set 27 0 6 minecraft:stone
+at 0 set 27 0 7 minecraft:stone
+at 0 set 27 0 8 minecraft:stone
+at 0 set 27 0 9 minecraft:stone
+at 0 set 27 0 10 minecraft:stone
+at 0 set 27 0 11 minecraft:stone
+at 0 set 27 0 12 minecraft:stone
+at 0 set 27 0 13 minecraft:stone
+at 0 set 27 0 14 minecraft:stone
+at 0 set 27 0 15 minecraft:stone
+at 0 set 27 0 16 minecraft:stone
+at 0 set 27 0 17 minecraft:stone
+at 0 set 27 0 18 minecraft:stone
+at 0 set 27 0 19 minecraft:stone
+at 0 set 27 0 20 minecraft:stone
+at 0 set 27 0 21 minecraft:stone
+at 0 set 27 0 22 minecraft:stone
+at 0 set 27 0 23 minecraft:stone
+at 0 set 27 0 24 minecraft:stone
+at 0 set 27 0 25 minecraft:stone
+at 0 set 27 0 26 minecraft:stone
+at 0 set 27 0 27 minecraft:stone
+at 0 set 27 0 28 minecraft:stone
+at 0 set 27 0 29 minecraft:stone
+at 0 set 28 0 0 minecraft:stone
+at 0 set 28 0 1 minecraft:stone
+at 0 set 28 0 2 minecraft:stone
+at 0 set 28 0 3 minecraft:stone
+at 0 set 28 0 4 minecraft:stone
+at 0 set 28 0 5 minecraft:stone
+at 0 set 28 0 6 minecraft:stone
+at 0 set 28 0 7 minecraft:stone
+at 0 set 28 0 8 minecraft:stone
+at 0 set 28 0 9 minecraft:stone
+at 0 set 28 0 10 minecraft:stone
+at 0 set 28 0 11 minecraft:stone
+at 0 set 28 0 12 minecraft:stone
+at 0 set 28 0 13 minecraft:stone
+at 0 set 28 0 14 minecraft:stone
+at 0 set 28 0 15 minecraft:stone
+at 0 set 28 0 16 minecraft:stone
+at 0 set 28 0 17 minecraft:stone
+at 0 set 28 0 18 minecraft:stone
+at 0 set 28 0 19 minecraft:stone
+at 0 set 28 0 20 minecraft:stone
+at 0 set 28 0 21 minecraft:stone
+at 0 set 28 0 22 minecraft:stone
+at 0 set 28 0 23 minecraft:stone
+at 0 set 28 0 24 minecraft:stone
+at 0 set 28 0 25 minecraft:stone
+at 0 set 28 0 26 minecraft:stone
+at 0 set 28 0 27 minecraft:stone
+at 0 set 28 0 28 minecraft:stone
+at 0 set 28 0 29 minecraft:stone
+at 0 set 29 0 0 minecraft:stone
+at 0 set 29 0 1 minecraft:stone
+at 0 set 29 0 2 minecraft:stone
+at 0 set 29 0 3 minecraft:stone
+at 0 set 29 0 4 minecraft:stone
+at 0 set 29 0 5 minecraft:stone
+at 0 set 29 0 6 minecraft:stone
+at 0 set 29 0 7 minecraft:stone
+at 0 set 29 0 8 minecraft:stone
+at 0 set 29 0 9 minecraft:stone
+at 0 set 29 0 10 minecraft:stone
+at 0 set 29 0 11 minecraft:stone
+at 0 set 29 0 12 minecraft:stone
+at 0 set 29 0 13 minecraft:stone
+at 0 set 29 0 14 minecraft:stone
+at 0 set 29 0 15 minecraft:stone
+at 0 set 29 0 16 minecraft:stone
+at 0 set 29 0 17 minecraft:stone
+at 0 set 29 0 18 minecraft:stone
+at 0 set 29 0 19 minecraft:stone
+at 0 set 29 0 20 minecraft:stone
+at 0 set 29 0 21 minecraft:stone
+at 0 set 29 0 22 minecraft:stone
+at 0 set 29 0 23 minecraft:stone
+at 0 set 29 0 24 minecraft:stone
+at 0 set 29 0 25 minecraft:stone
+at 0 set 29 0 26 minecraft:stone
+at 0 set 29 0 27 minecraft:stone
+at 0 set 29 0 28 minecraft:stone
+at 0 set 29 0 29 minecraft:stone
+at 0 set 30 0 0 minecraft:stone
+at 0 set 30 0 1 minecraft:stone
+at 0 set 30 0 2 minecraft:stone
+at 0 set 30 0 3 minecraft:stone
+at 0 set 30 0 4 minecraft:stone
+at 0 set 30 0 5 minecraft:stone
+at 0 set 30 0 6 minecraft:stone
+at 0 set 30 0 7 minecraft:stone
+at 0 set 30 0 8 minecraft:stone
+at 0 set 30 0 9 minecraft:stone
+at 0 set 30 0 10 minecraft:stone
+at 0 set 30 0 11 minecraft:stone
+at 0 set 30 0 12 minecraft:stone
+at 0 set 30 0 13 minecraft:stone
+at 0 set 30 0 14 minecraft:stone
+at 0 set 30 0 15 minecraft:stone
+at 0 set 30 0 16 minecraft:stone
+at 0 set 30 0 17 minecraft:stone
+at 0 set 30 0 18 minecraft:stone
+at 0 set 30 0 19 minecraft:stone
+at 0 set 30 0 20 minecraft:stone
+at 0 set 30 0 21 minecraft:stone
+at 0 set 30 0 22 minecraft:stone
+at 0 set 30 0 23 minecraft:stone
+at 0 set 30 0 24 minecraft:stone
+at 0 set 30 0 25 minecraft:stone
+at 0 set 30 0 26 minecraft:stone
+at 0 set 30 0 27 minecraft:stone
+at 0 set 30 0 28 minecraft:stone
+at 0 set 30 0 29 minecraft:stone
+at 0 set 31 0 0 minecraft:stone
+at 0 set 31 0 1 minecraft:stone
+at 0 set 31 0 2 minecraft:stone
+at 0 set 31 0 3 minecraft:stone
+at 0 set 31 0 4 minecraft:stone
+at 0 set 31 0 5 minecraft:stone
+at 0 set 31 0 6 minecraft:stone
+at 0 set 31 0 7 minecraft:stone
+at 0 set 31 0 8 minecraft:stone
+at 0 set 31 0 9 minecraft:stone
+at 0 set 31 0 10 minecraft:stone
+at 0 set 31 0 11 minecraft:stone
+at 0 set 31 0 12 minecraft:stone
+at 0 set 31 0 13 minecraft:stone
+at 0 set 31 0 14 minecraft:stone
+at 0 set 31 0 15 minecraft:stone
+at 0 set 31 0 16 minecraft:stone
+at 0 set 31 0 17 minecraft:stone
+at 0 set 31 0 18 minecraft:stone
+at 0 set 31 0 19 minecraft:stone
+at 0 set 31 0 20 minecraft:stone
+at 0 set 31 0 21 minecraft:stone
+at 0 set 31 0 22 minecraft:stone
+at 0 set 31 0 23 minecraft:stone
+at 0 set 31 0 24 minecraft:stone
+at 0 set 31 0 25 minecraft:stone
+at 0 set 31 0 26 minecraft:stone
+at 0 set 31 0 27 minecraft:stone
+at 0 set 31 0 28 minecraft:stone
+at 0 set 31 0 29 minecraft:stone
+
+at 1 set 2 1 1 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 1 1 1 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 3 0 1 minecraft:farmland[moisture=7]
+at 1 set 2 1 4 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 1 1 4 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 3 0 4 minecraft:farmland[moisture=7]
+at 1 set 2 1 7 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 1 1 7 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 3 0 7 minecraft:farmland[moisture=7]
+at 1 set 2 1 10 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 1 1 10 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 3 0 10 minecraft:farmland[moisture=7]
+at 1 set 2 1 13 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 1 1 13 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 3 0 13 minecraft:farmland[moisture=7]
+at 1 set 2 1 16 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 1 1 16 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 3 0 16 minecraft:farmland[moisture=7]
+at 1 set 2 1 19 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 1 1 19 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 4 1 19 minecraft:jungle_log[axis=y]
+at 1 set 2 1 22 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 1 1 22 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 3 0 22 minecraft:grass_block
+at 1 set 2 1 25 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 1 1 25 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 3 0 25 minecraft:grass_block
+at 1 set 16 1 1 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 15 1 1 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 17 0 1 minecraft:clay
+at 1 set 16 1 4 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 15 1 4 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 17 0 4 minecraft:clay
+at 1 set 17 2 4 minecraft:small_dripleaf[facing=north,half=upper,waterlogged=false]
+at 1 set 16 1 7 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 15 1 7 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 17 0 7 minecraft:grass_block
+at 1 set 16 1 10 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 15 1 10 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 17 2 10 minecraft:netherrack
+at 1 set 16 1 13 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 15 1 13 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 17 2 13 minecraft:stone
+at 1 set 16 1 16 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 15 1 16 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 16 1 19 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 15 1 19 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 16 1 22 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 15 1 22 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 17 0 22 minecraft:netherrack
+at 1 set 20 1 28 minecraft:dispenser[facing=east,triggered=false]
+at 1 set 19 1 28 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 set 21 1 29 minecraft:glass
+at 1 set 21 1 27 minecraft:glass
+at 1 set 22 1 28 minecraft:glass
+at 1 set 21 1 28 minecraft:water[level=0]
+at 1 set 21 2 29 minecraft:glass
+at 1 set 21 2 27 minecraft:glass
+at 1 set 22 2 28 minecraft:glass
+at 1 set 20 2 28 minecraft:glass
+at 1 set 21 2 28 minecraft:water[level=0]
+at 1 set 21 3 29 minecraft:glass
+at 1 set 21 3 27 minecraft:glass
+at 1 set 22 3 28 minecraft:glass
+at 1 set 20 3 28 minecraft:glass
+at 1 set 21 3 28 minecraft:water[level=0]
+at 1 set 21 4 29 minecraft:glass
+at 1 set 21 4 27 minecraft:glass
+at 1 set 22 4 28 minecraft:glass
+at 1 set 20 4 28 minecraft:glass
+at 1 set 21 4 28 minecraft:water[level=0]
+at 1 set 21 5 29 minecraft:glass
+at 1 set 21 5 27 minecraft:glass
+at 1 set 22 5 28 minecraft:glass
+at 1 set 20 5 28 minecraft:glass
+at 1 set 21 5 28 minecraft:water[level=0]
+at 1 set 21 6 28 minecraft:glass
+change 1 commands 2 1 1 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 1 1 1 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 3 0 1 minecraft:stone minecraft:farmland[moisture=7]
+change 1 commands 2 1 4 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 1 1 4 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 3 0 4 minecraft:stone minecraft:farmland[moisture=7]
+change 1 commands 2 1 7 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 1 1 7 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 3 0 7 minecraft:stone minecraft:farmland[moisture=7]
+change 1 commands 2 1 10 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 1 1 10 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 3 0 10 minecraft:stone minecraft:farmland[moisture=7]
+change 1 commands 2 1 13 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 1 1 13 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 3 0 13 minecraft:stone minecraft:farmland[moisture=7]
+change 1 commands 2 1 16 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 1 1 16 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 3 0 16 minecraft:stone minecraft:farmland[moisture=7]
+change 1 commands 2 1 19 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 1 1 19 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 4 1 19 minecraft:air minecraft:jungle_log[axis=y]
+change 1 commands 2 1 22 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 1 1 22 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 3 0 22 minecraft:stone minecraft:grass_block[snowy=false]
+change 1 commands 2 1 25 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 1 1 25 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 3 0 25 minecraft:stone minecraft:grass_block[snowy=false]
+change 1 commands 16 1 1 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 15 1 1 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 17 0 1 minecraft:stone minecraft:clay
+change 1 commands 16 1 4 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 15 1 4 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 17 0 4 minecraft:stone minecraft:clay
+change 1 commands 17 2 4 minecraft:air minecraft:small_dripleaf[facing=north,half=upper,waterlogged=false]
+change 1 commands 16 1 7 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 15 1 7 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 17 0 7 minecraft:stone minecraft:grass_block[snowy=false]
+change 1 commands 16 1 10 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 15 1 10 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 17 2 10 minecraft:air minecraft:netherrack
+change 1 commands 16 1 13 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 15 1 13 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 17 2 13 minecraft:air minecraft:stone
+change 1 commands 16 1 16 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 15 1 16 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 16 1 19 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 15 1 19 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 16 1 22 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 15 1 22 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 17 0 22 minecraft:stone minecraft:netherrack
+change 1 commands 20 1 28 minecraft:air minecraft:dispenser[facing=east,triggered=false]
+change 1 commands 19 1 28 minecraft:air minecraft:lever[face=floor,facing=north,powered=false]
+change 1 commands 21 1 29 minecraft:air minecraft:glass
+change 1 commands 21 1 27 minecraft:air minecraft:glass
+change 1 commands 22 1 28 minecraft:air minecraft:glass
+change 1 commands 21 1 28 minecraft:air minecraft:water[level=0]
+change 1 commands 21 2 29 minecraft:air minecraft:glass
+change 1 commands 21 2 27 minecraft:air minecraft:glass
+change 1 commands 22 2 28 minecraft:air minecraft:glass
+change 1 commands 20 2 28 minecraft:air minecraft:glass
+change 1 commands 21 2 28 minecraft:air minecraft:water[level=0]
+change 1 commands 21 3 29 minecraft:air minecraft:glass
+change 1 commands 21 3 27 minecraft:air minecraft:glass
+change 1 commands 22 3 28 minecraft:air minecraft:glass
+change 1 commands 20 3 28 minecraft:air minecraft:glass
+change 1 commands 21 3 28 minecraft:air minecraft:water[level=0]
+change 1 commands 21 4 29 minecraft:air minecraft:glass
+change 1 commands 21 4 27 minecraft:air minecraft:glass
+change 1 commands 22 4 28 minecraft:air minecraft:glass
+change 1 commands 20 4 28 minecraft:air minecraft:glass
+change 1 commands 21 4 28 minecraft:air minecraft:water[level=0]
+change 1 commands 21 5 29 minecraft:air minecraft:glass
+change 1 commands 21 5 27 minecraft:air minecraft:glass
+change 1 commands 22 5 28 minecraft:air minecraft:glass
+change 1 commands 20 5 28 minecraft:air minecraft:glass
+change 1 commands 21 5 28 minecraft:air minecraft:water[level=0]
+change 1 commands 21 6 28 minecraft:air minecraft:glass
+
+at 2 insert 2 1 1 0 minecraft:bone_meal 16
+at 2 set 3 1 1 minecraft:wheat[age=0]
+at 2 insert 2 1 4 0 minecraft:bone_meal 16
+at 2 set 3 1 4 minecraft:carrots[age=0]
+at 2 insert 2 1 7 0 minecraft:bone_meal 16
+at 2 set 3 1 7 minecraft:beetroots[age=0]
+at 2 insert 2 1 10 0 minecraft:bone_meal 16
+at 2 set 3 1 10 minecraft:torchflower_crop[age=0]
+at 2 insert 2 1 13 0 minecraft:bone_meal 16
+at 2 set 3 1 13 minecraft:pitcher_crop[age=0,half=lower]
+at 2 insert 2 1 16 0 minecraft:bone_meal 16
+at 2 set 3 1 16 minecraft:melon_stem[age=0]
+at 2 insert 2 1 19 0 minecraft:bone_meal 16
+at 2 set 3 1 19 minecraft:cocoa[age=0,facing=east]
+at 2 insert 2 1 22 0 minecraft:bone_meal 16
+at 2 set 3 1 22 minecraft:sweet_berry_bush[age=0]
+at 2 insert 2 1 25 0 minecraft:bone_meal 16
+at 2 set 3 1 25 minecraft:bamboo_sapling
+at 2 insert 16 1 1 0 minecraft:bone_meal 16
+at 2 set 17 1 1 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+at 2 insert 16 1 4 0 minecraft:bone_meal 16
+at 2 set 17 1 4 minecraft:small_dripleaf[facing=north,half=lower,waterlogged=false]
+at 2 insert 16 1 7 0 minecraft:bone_meal 16
+at 2 set 17 1 7 minecraft:pink_petals[facing=north,flower_amount=1]
+at 2 insert 16 1 10 0 minecraft:bone_meal 16
+at 2 set 17 1 10 minecraft:weeping_vines[age=0]
+at 2 insert 16 1 13 0 minecraft:bone_meal 16
+at 2 set 17 1 13 minecraft:cave_vines[age=0,berries=false]
+at 2 insert 16 1 16 0 minecraft:bone_meal 16
+at 2 insert 16 1 19 0 minecraft:bone_meal 16
+at 2 set 17 1 19 minecraft:stone
+at 2 insert 16 1 22 0 minecraft:bone_meal 16
+at 2 set 17 1 22 minecraft:twisting_vines[age=0]
+at 2 insert 20 1 28 0 minecraft:bone_meal 16
+at 2 set 21 1 28 minecraft:kelp[age=0]
+change 2 commands 3 1 1 minecraft:air minecraft:wheat[age=0]
+change 2 commands 3 1 4 minecraft:air minecraft:carrots[age=0]
+change 2 commands 3 1 7 minecraft:air minecraft:beetroots[age=0]
+change 2 commands 3 1 10 minecraft:air minecraft:torchflower_crop[age=0]
+change 2 commands 3 1 13 minecraft:air minecraft:pitcher_crop[age=0,half=lower]
+change 2 commands 3 1 16 minecraft:air minecraft:melon_stem[age=0]
+change 2 commands 3 1 19 minecraft:air minecraft:cocoa[age=0,facing=east]
+change 2 commands 3 1 22 minecraft:air minecraft:sweet_berry_bush[age=0]
+change 2 commands 3 1 25 minecraft:air minecraft:bamboo_sapling
+change 2 commands 17 1 1 minecraft:air minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+change 2 commands 17 1 4 minecraft:air minecraft:small_dripleaf[facing=north,half=lower,waterlogged=false]
+change 2 commands 17 1 7 minecraft:air minecraft:pink_petals[facing=north,flower_amount=1]
+change 2 commands 17 1 10 minecraft:air minecraft:weeping_vines[age=0]
+change 2 commands 17 1 13 minecraft:air minecraft:cave_vines[age=0,berries=false]
+change 2 commands 17 1 19 minecraft:air minecraft:stone
+change 2 commands 17 1 22 minecraft:air minecraft:twisting_vines[age=0]
+change 2 commands 21 1 28 minecraft:water[level=0] minecraft:kelp[age=0]
+
+at 5 use 1 1 1
+at 5 use 1 1 4
+at 5 use 1 1 7
+at 5 use 1 1 10
+at 5 use 1 1 13
+at 5 use 1 1 16
+at 5 use 1 1 19
+at 5 use 1 1 22
+at 5 use 1 1 25
+at 5 use 15 1 1
+at 5 use 15 1 4
+at 5 use 15 1 7
+at 5 use 15 1 10
+at 5 use 15 1 13
+at 5 use 15 1 16
+at 5 use 15 1 19
+at 5 use 15 1 22
+at 5 use 19 1 28
+change 5 commands 1 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 2 1 1 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 1 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 2 1 4 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 1 1 7 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 2 1 7 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 1 1 10 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 2 1 10 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 1 1 13 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 2 1 13 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 1 1 16 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 2 1 16 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 1 1 19 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 2 1 19 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 1 1 22 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 2 1 22 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 1 1 25 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 2 1 25 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 15 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 16 1 1 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 15 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 16 1 4 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 15 1 7 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 16 1 7 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 15 1 10 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 16 1 10 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 15 1 13 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 16 1 13 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 15 1 16 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 16 1 16 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 15 1 19 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 16 1 19 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 15 1 22 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 16 1 22 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 5 commands 19 1 28 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 5 commands 20 1 28 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+
+change 8 block_ticks 3 1 1 minecraft:wheat[age=0] minecraft:wheat[age=5]
+change 8 block_ticks 3 1 4 minecraft:carrots[age=0] minecraft:carrots[age=4]
+change 8 block_ticks 3 1 7 minecraft:beetroots[age=0] minecraft:beetroots[age=1]
+change 8 block_ticks 3 1 10 minecraft:torchflower_crop[age=0] minecraft:torchflower_crop[age=1]
+change 8 block_ticks 3 1 13 minecraft:pitcher_crop[age=0,half=lower] minecraft:pitcher_crop[age=1,half=lower]
+change 8 block_ticks 3 1 16 minecraft:melon_stem[age=0] minecraft:melon_stem[age=5]
+change 8 block_ticks 3 1 19 minecraft:cocoa[age=0,facing=east] minecraft:cocoa[age=1,facing=east]
+change 8 block_ticks 3 1 22 minecraft:sweet_berry_bush[age=0] minecraft:sweet_berry_bush[age=1]
+change 8 block_ticks 3 2 25 minecraft:air minecraft:bamboo[age=0,leaves=small,stage=0]
+change 8 block_ticks 3 1 25 minecraft:bamboo_sapling minecraft:bamboo[age=0,leaves=none,stage=0]
+change 8 block_ticks 17 1 1 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false] minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+change 8 block_ticks 17 2 1 minecraft:air minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+change 8 block_ticks 17 2 4 minecraft:small_dripleaf[facing=north,half=upper,waterlogged=false] minecraft:air
+change 8 block_ticks 17 1 4 minecraft:small_dripleaf[facing=north,half=lower,waterlogged=false] minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+change 8 block_ticks 17 2 4 minecraft:air minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+change 8 block_ticks 17 3 4 minecraft:air minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+change 8 block_ticks 17 4 4 minecraft:air minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+change 8 block_ticks 17 5 4 minecraft:air minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+change 8 block_ticks 17 1 7 minecraft:pink_petals[facing=north,flower_amount=1] minecraft:pink_petals[facing=north,flower_amount=2]
+change 8 block_ticks 17 1 13 minecraft:cave_vines[age=0,berries=false] minecraft:cave_vines[age=0,berries=true]
+change 8 block_ticks 17 2 22 minecraft:air minecraft:twisting_vines[age=1]
+change 8 block_ticks 17 1 22 minecraft:twisting_vines[age=0] minecraft:twisting_vines_plant
+change 8 block_ticks 17 3 22 minecraft:air minecraft:twisting_vines[age=2]
+change 8 block_ticks 17 2 22 minecraft:twisting_vines[age=1] minecraft:twisting_vines_plant
+change 8 block_ticks 17 4 22 minecraft:air minecraft:twisting_vines[age=3]
+change 8 block_ticks 17 3 22 minecraft:twisting_vines[age=2] minecraft:twisting_vines_plant
+change 8 block_ticks 17 5 22 minecraft:air minecraft:twisting_vines[age=4]
+change 8 block_ticks 17 4 22 minecraft:twisting_vines[age=3] minecraft:twisting_vines_plant
+change 8 block_ticks 21 2 28 minecraft:water[level=0] minecraft:kelp[age=1]
+change 8 block_ticks 21 1 28 minecraft:kelp[age=0] minecraft:kelp_plant
+draws 8 block_ticks level 33
+
+at 10 use 1 1 1
+at 10 use 1 1 4
+at 10 use 1 1 7
+at 10 use 1 1 10
+at 10 use 1 1 13
+at 10 use 1 1 16
+at 10 use 1 1 19
+at 10 use 1 1 22
+at 10 use 1 1 25
+at 10 use 15 1 1
+at 10 use 15 1 4
+at 10 use 15 1 7
+at 10 use 15 1 10
+at 10 use 15 1 13
+at 10 use 15 1 16
+at 10 use 15 1 19
+at 10 use 15 1 22
+at 10 use 19 1 28
+change 10 commands 1 1 1 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 2 1 1 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 1 1 4 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 2 1 4 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 1 1 7 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 2 1 7 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 1 1 10 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 2 1 10 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 1 1 13 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 2 1 13 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 1 1 16 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 2 1 16 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 1 1 19 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 2 1 19 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 1 1 22 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 2 1 22 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 1 1 25 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 2 1 25 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 15 1 1 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 16 1 1 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 15 1 4 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 16 1 4 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 15 1 7 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 16 1 7 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 15 1 10 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 16 1 10 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 15 1 13 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 16 1 13 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 15 1 16 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 16 1 16 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 15 1 19 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 16 1 19 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 15 1 22 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 16 1 22 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 10 commands 19 1 28 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 10 commands 20 1 28 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+
+at 15 use 1 1 1
+at 15 use 1 1 4
+at 15 use 1 1 7
+at 15 use 1 1 10
+at 15 use 1 1 13
+at 15 use 1 1 16
+at 15 use 1 1 19
+at 15 use 1 1 22
+at 15 use 1 1 25
+at 15 use 15 1 1
+at 15 use 15 1 4
+at 15 use 15 1 7
+at 15 use 15 1 10
+at 15 use 15 1 13
+at 15 use 15 1 16
+at 15 use 15 1 19
+at 15 use 15 1 22
+at 15 use 19 1 28
+change 15 commands 1 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 2 1 1 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 1 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 2 1 4 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 1 1 7 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 2 1 7 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 1 1 10 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 2 1 10 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 1 1 13 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 2 1 13 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 1 1 16 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 2 1 16 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 1 1 19 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 2 1 19 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 1 1 22 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 2 1 22 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 1 1 25 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 2 1 25 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 15 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 16 1 1 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 15 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 16 1 4 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 15 1 7 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 16 1 7 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 15 1 10 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 16 1 10 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 15 1 13 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 16 1 13 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 15 1 16 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 16 1 16 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 15 1 19 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 16 1 19 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 15 1 22 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 16 1 22 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 15 commands 19 1 28 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 15 commands 20 1 28 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+
+change 18 block_ticks 3 1 1 minecraft:wheat[age=5] minecraft:wheat[age=7]
+change 18 block_ticks 3 1 4 minecraft:carrots[age=4] minecraft:carrots[age=7]
+change 18 block_ticks 3 1 7 minecraft:beetroots[age=1] minecraft:beetroots[age=2]
+change 18 block_ticks 3 1 10 minecraft:torchflower_crop[age=1] minecraft:torchflower
+change 18 block_ticks 3 1 13 minecraft:pitcher_crop[age=1,half=lower] minecraft:pitcher_crop[age=2,half=lower]
+change 18 block_ticks 3 1 16 minecraft:melon_stem[age=5] minecraft:melon_stem[age=7]
+change 18 block_ticks 3 1 19 minecraft:cocoa[age=1,facing=east] minecraft:cocoa[age=2,facing=east]
+change 18 block_ticks 3 1 22 minecraft:sweet_berry_bush[age=1] minecraft:sweet_berry_bush[age=2]
+change 18 block_ticks 3 3 25 minecraft:air minecraft:bamboo[age=0,leaves=small,stage=0]
+change 18 block_ticks 3 4 25 minecraft:air minecraft:bamboo[age=1,leaves=large,stage=0]
+change 18 block_ticks 3 3 25 minecraft:bamboo[age=0,leaves=small,stage=0] minecraft:bamboo[age=1,leaves=small,stage=0]
+change 18 block_ticks 3 2 25 minecraft:bamboo[age=0,leaves=small,stage=0] minecraft:bamboo[age=1,leaves=small,stage=0]
+change 18 block_ticks 3 1 25 minecraft:bamboo[age=0,leaves=none,stage=0] minecraft:bamboo[age=1,leaves=none,stage=0]
+change 18 block_ticks 17 2 1 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false] minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+change 18 block_ticks 17 3 1 minecraft:air minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+change 18 block_ticks 17 5 4 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false] minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+change 18 block_ticks 17 6 4 minecraft:air minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+change 18 block_ticks 17 1 7 minecraft:pink_petals[facing=north,flower_amount=2] minecraft:pink_petals[facing=north,flower_amount=3]
+change 18 block_ticks 17 6 22 minecraft:air minecraft:twisting_vines[age=5]
+change 18 block_ticks 17 5 22 minecraft:twisting_vines[age=4] minecraft:twisting_vines_plant
+change 18 block_ticks 17 7 22 minecraft:air minecraft:twisting_vines[age=6]
+change 18 block_ticks 17 6 22 minecraft:twisting_vines[age=5] minecraft:twisting_vines_plant
+change 18 block_ticks 17 7 22 minecraft:twisting_vines[age=6] minecraft:twisting_vines_plant
+change 18 block_ticks 21 3 28 minecraft:water[level=0] minecraft:kelp[age=2]
+change 18 block_ticks 21 2 28 minecraft:kelp[age=1] minecraft:kelp_plant
+draws 18 block_ticks level 33
+
+at 20 use 1 1 1
+at 20 use 1 1 4
+at 20 use 1 1 7
+at 20 use 1 1 10
+at 20 use 1 1 13
+at 20 use 1 1 16
+at 20 use 1 1 19
+at 20 use 1 1 22
+at 20 use 1 1 25
+at 20 use 15 1 1
+at 20 use 15 1 4
+at 20 use 15 1 7
+at 20 use 15 1 10
+at 20 use 15 1 13
+at 20 use 15 1 16
+at 20 use 15 1 19
+at 20 use 15 1 22
+at 20 use 19 1 28
+change 20 commands 1 1 1 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 2 1 1 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 1 1 4 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 2 1 4 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 1 1 7 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 2 1 7 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 1 1 10 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 2 1 10 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 1 1 13 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 2 1 13 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 1 1 16 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 2 1 16 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 1 1 19 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 2 1 19 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 1 1 22 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 2 1 22 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 1 1 25 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 2 1 25 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 15 1 1 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 16 1 1 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 15 1 4 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 16 1 4 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 15 1 7 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 16 1 7 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 15 1 10 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 16 1 10 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 15 1 13 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 16 1 13 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 15 1 16 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 16 1 16 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 15 1 19 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 16 1 19 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 15 1 22 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 16 1 22 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 20 commands 19 1 28 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 20 commands 20 1 28 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+
+at 25 use 1 1 1
+at 25 use 1 1 4
+at 25 use 1 1 7
+at 25 use 1 1 10
+at 25 use 1 1 13
+at 25 use 1 1 16
+at 25 use 1 1 19
+at 25 use 1 1 22
+at 25 use 1 1 25
+at 25 use 15 1 1
+at 25 use 15 1 4
+at 25 use 15 1 7
+at 25 use 15 1 10
+at 25 use 15 1 13
+at 25 use 15 1 16
+at 25 use 15 1 19
+at 25 use 15 1 22
+at 25 use 19 1 28
+change 25 commands 1 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 2 1 1 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 1 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 2 1 4 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 1 1 7 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 2 1 7 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 1 1 10 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 2 1 10 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 1 1 13 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 2 1 13 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 1 1 16 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 2 1 16 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 1 1 19 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 2 1 19 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 1 1 22 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 2 1 22 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 1 1 25 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 2 1 25 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 15 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 16 1 1 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 15 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 16 1 4 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 15 1 7 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 16 1 7 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 15 1 10 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 16 1 10 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 15 1 13 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 16 1 13 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 15 1 16 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 16 1 16 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 15 1 19 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 16 1 19 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 15 1 22 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 16 1 22 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 25 commands 19 1 28 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 25 commands 20 1 28 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+
+change 28 block_ticks 3 1 7 minecraft:beetroots[age=2] minecraft:beetroots[age=3]
+change 28 block_ticks 3 1 13 minecraft:pitcher_crop[age=2,half=lower] minecraft:pitcher_crop[age=3,half=lower]
+change 28 block_ticks 3 2 13 minecraft:air minecraft:pitcher_crop[age=3,half=upper]
+change 28 block_ticks 3 1 22 minecraft:sweet_berry_bush[age=2] minecraft:sweet_berry_bush[age=3]
+change 28 block_ticks 3 2 25 minecraft:bamboo[age=1,leaves=small,stage=0] minecraft:bamboo[age=1,leaves=none,stage=0]
+change 28 block_ticks 3 5 25 minecraft:air minecraft:bamboo[age=1,leaves=large,stage=0]
+change 28 block_ticks 17 3 1 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false] minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+change 28 block_ticks 17 4 1 minecraft:air minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+change 28 block_ticks 17 6 4 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false] minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+change 28 block_ticks 17 7 4 minecraft:air minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+change 28 block_ticks 17 1 7 minecraft:pink_petals[facing=north,flower_amount=3] minecraft:pink_petals[facing=north,flower_amount=4]
+change 28 block_ticks 21 4 28 minecraft:water[level=0] minecraft:kelp[age=3]
+change 28 block_ticks 21 3 28 minecraft:kelp[age=2] minecraft:kelp_plant
+draws 28 block_ticks level 34
+
+at 30 use 1 1 1
+at 30 use 1 1 4
+at 30 use 1 1 7
+at 30 use 1 1 10
+at 30 use 1 1 13
+at 30 use 1 1 16
+at 30 use 1 1 19
+at 30 use 1 1 22
+at 30 use 1 1 25
+at 30 use 15 1 1
+at 30 use 15 1 4
+at 30 use 15 1 7
+at 30 use 15 1 10
+at 30 use 15 1 13
+at 30 use 15 1 16
+at 30 use 15 1 19
+at 30 use 15 1 22
+at 30 use 19 1 28
+change 30 commands 1 1 1 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 2 1 1 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 1 1 4 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 2 1 4 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 1 1 7 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 2 1 7 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 1 1 10 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 2 1 10 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 1 1 13 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 2 1 13 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 1 1 16 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 2 1 16 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 1 1 19 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 2 1 19 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 1 1 22 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 2 1 22 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 1 1 25 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 2 1 25 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 15 1 1 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 16 1 1 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 15 1 4 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 16 1 4 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 15 1 7 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 16 1 7 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 15 1 10 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 16 1 10 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 15 1 13 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 16 1 13 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 15 1 16 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 16 1 16 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 15 1 19 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 16 1 19 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 15 1 22 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 16 1 22 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 30 commands 19 1 28 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 30 commands 20 1 28 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+
+at 35 use 1 1 1
+at 35 use 1 1 4
+at 35 use 1 1 7
+at 35 use 1 1 10
+at 35 use 1 1 13
+at 35 use 1 1 16
+at 35 use 1 1 19
+at 35 use 1 1 22
+at 35 use 1 1 25
+at 35 use 15 1 1
+at 35 use 15 1 4
+at 35 use 15 1 7
+at 35 use 15 1 10
+at 35 use 15 1 13
+at 35 use 15 1 16
+at 35 use 15 1 19
+at 35 use 15 1 22
+at 35 use 19 1 28
+change 35 commands 1 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 2 1 1 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 1 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 2 1 4 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 1 1 7 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 2 1 7 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 1 1 10 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 2 1 10 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 1 1 13 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 2 1 13 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 1 1 16 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 2 1 16 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 1 1 19 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 2 1 19 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 1 1 22 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 2 1 22 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 1 1 25 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 2 1 25 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 15 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 16 1 1 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 15 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 16 1 4 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 15 1 7 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 16 1 7 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 15 1 10 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 16 1 10 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 15 1 13 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 16 1 13 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 15 1 16 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 16 1 16 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 15 1 19 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 16 1 19 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 15 1 22 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 16 1 22 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 35 commands 19 1 28 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 35 commands 20 1 28 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+
+change 38 block_ticks 3 1 13 minecraft:pitcher_crop[age=3,half=lower] minecraft:pitcher_crop[age=4,half=lower]
+change 38 block_ticks 3 2 13 minecraft:pitcher_crop[age=3,half=upper] minecraft:pitcher_crop[age=4,half=upper]
+change 38 block_ticks 3 4 25 minecraft:bamboo[age=1,leaves=large,stage=0] minecraft:bamboo[age=1,leaves=small,stage=0]
+change 38 block_ticks 3 3 25 minecraft:bamboo[age=1,leaves=small,stage=0] minecraft:bamboo[age=1,leaves=none,stage=0]
+change 38 block_ticks 3 6 25 minecraft:air minecraft:bamboo[age=1,leaves=large,stage=0]
+change 38 block_ticks 3 5 25 minecraft:bamboo[age=1,leaves=large,stage=0] minecraft:bamboo[age=1,leaves=small,stage=0]
+change 38 block_ticks 3 4 25 minecraft:bamboo[age=1,leaves=small,stage=0] minecraft:bamboo[age=1,leaves=none,stage=0]
+change 38 block_ticks 3 7 25 minecraft:air minecraft:bamboo[age=1,leaves=large,stage=0]
+change 38 block_ticks 17 4 1 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false] minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+change 38 block_ticks 17 5 1 minecraft:air minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+change 38 block_ticks 17 7 4 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false] minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+entity-added 38 block_ticks e1 minecraft:item 17.71497025335932 1.283149651312116 7.489405931311038 -0.07125098716596093 0.2 -0.06187663160474591 item=minecraft:pink_petals count=1
+change 38 block_ticks 21 5 28 minecraft:water[level=0] minecraft:kelp[age=4]
+change 38 block_ticks 21 4 28 minecraft:kelp[age=3] minecraft:kelp_plant
+draws 38 block_ticks level 35
+entity-order 38 entities e1
+entity 38 e1 17.643719266193358 1.4431496513121158 7.427529299706292 -0.06982596878164644 0.1568 -0.06063910015285408 item=minecraft:pink_petals count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 39 entities e1
+entity 39 e1 17.57389329741171 1.5599496513121158 7.3668901995534375 -0.06842945073783818 0.11446399999999998 -0.059426319306396046 item=minecraft:pink_petals count=1 age=2 pickup-delay=8 on-ground=false
+
+at 40 use 1 1 1
+at 40 use 1 1 4
+at 40 use 1 1 7
+at 40 use 1 1 10
+at 40 use 1 1 13
+at 40 use 1 1 16
+at 40 use 1 1 19
+at 40 use 1 1 22
+at 40 use 1 1 25
+at 40 use 15 1 1
+at 40 use 15 1 4
+at 40 use 15 1 7
+at 40 use 15 1 10
+at 40 use 15 1 13
+at 40 use 15 1 16
+at 40 use 15 1 19
+at 40 use 15 1 22
+at 40 use 19 1 28
+change 40 commands 1 1 1 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 2 1 1 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 1 1 4 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 2 1 4 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 1 1 7 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 2 1 7 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 1 1 10 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 2 1 10 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 1 1 13 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 2 1 13 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 1 1 16 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 2 1 16 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 1 1 19 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 2 1 19 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 1 1 22 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 2 1 22 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 1 1 25 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 2 1 25 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 15 1 1 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 16 1 1 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 15 1 4 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 16 1 4 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 15 1 7 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 16 1 7 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 15 1 10 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 16 1 10 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 15 1 13 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 16 1 13 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 15 1 16 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 16 1 16 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 15 1 19 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 16 1 19 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 15 1 22 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 16 1 22 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 40 commands 19 1 28 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 40 commands 20 1 28 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+entity-order 40 entities e1
+entity 40 e1 17.505463846673873 1.6344136513121157 7.307463880247042 -0.06706086302826961 0.07297471999999998 -0.05823779405373521 item=minecraft:pink_petals count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 41 entities e1
+entity 41 e1 17.438402983645602 1.6673883713121156 7.249226086193307 -0.06571964704678866 0.032315225599999976 -0.05707303928345828 item=minecraft:pink_petals count=1 age=4 pickup-delay=6 on-ground=false
+
+entity-order 42 entities e1
+entity 42 e1 17.372683336598815 1.6597035969121157 7.192153046909849 -0.06440525535935568 -0.007531078912000024 -0.05593157958637095 item=minecraft:pink_petals count=1 age=5 pickup-delay=5 on-ground=false
+
+entity-order 43 entities e1
+entity 43 e1 17.30827808123946 1.6121725180001156 7.136221467323478 -0.06311715148060132 -0.04658045733376002 -0.054812949061453745 item=minecraft:pink_petals count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 44 entities e1
+entity 44 e1 17.24516092975886 1.5255920606663556 7.081408518262024 -0.06185480965485342 -0.08484884818708481 -0.053716691125698705 item=minecraft:pink_petals count=1 age=7 pickup-delay=3 on-ground=false
+
+at 45 use 1 1 1
+at 45 use 1 1 4
+at 45 use 1 1 7
+at 45 use 1 1 10
+at 45 use 1 1 13
+at 45 use 1 1 16
+at 45 use 1 1 19
+at 45 use 1 1 22
+at 45 use 1 1 25
+at 45 use 15 1 1
+at 45 use 15 1 4
+at 45 use 15 1 7
+at 45 use 15 1 10
+at 45 use 15 1 13
+at 45 use 15 1 16
+at 45 use 15 1 19
+at 45 use 15 1 22
+at 45 use 19 1 28
+change 45 commands 1 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 2 1 1 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 1 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 2 1 4 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 1 1 7 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 2 1 7 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 1 1 10 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 2 1 10 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 1 1 13 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 2 1 13 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 1 1 16 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 2 1 16 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 1 1 19 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 2 1 19 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 1 1 22 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 2 1 22 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 1 1 25 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 2 1 25 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 15 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 16 1 1 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 15 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 16 1 4 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 15 1 7 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 16 1 7 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 15 1 10 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 16 1 10 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 15 1 13 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 16 1 13 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 15 1 16 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 16 1 16 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 15 1 19 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 16 1 19 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 15 1 22 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 16 1 22 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 45 commands 19 1 28 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 45 commands 20 1 28 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+entity-order 45 entities e1
+entity 45 e1 17.183306120104007 1.4007432124792707 7.027691827136326 -0.06061771464154322 -0.12235187122334311 -0.05264235832774931 item=minecraft:pink_petals count=1 age=8 pickup-delay=2 on-ground=false
+
+entity-order 46 entities e1
+entity 46 e1 17.125 1.2383913412559275 6.975049468808576 0 -0.15910483379887624 -0.05158951216526762 item=minecraft:pink_petals count=1 age=9 pickup-delay=1 on-ground=false
+
+entity-order 47 entities e1
+entity 47 e1 17.125 1.0392865074570512 6.923459956643309 0 -0.1951227371228987 -0.050557722905954124 item=minecraft:pink_petals count=1 age=10 pickup-delay=0 on-ground=false
+
+change 48 block_ticks 3 6 25 minecraft:bamboo[age=1,leaves=large,stage=0] minecraft:bamboo[age=1,leaves=small,stage=0]
+change 48 block_ticks 3 5 25 minecraft:bamboo[age=1,leaves=small,stage=0] minecraft:bamboo[age=1,leaves=none,stage=0]
+change 48 block_ticks 17 5 1 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false] minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+change 48 block_ticks 17 6 1 minecraft:air minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+entity-added 48 block_ticks e2 minecraft:item 17.49183509505255 1.6109750604768727 7.744558575375703 0.05348842060309797 0.2 0.00027947020244598053 item=minecraft:pink_petals count=1
+draws 48 block_ticks level 37
+entity-order 48 entities e1 e2
+entity 48 e1 17.125 1 6.872902233737355 0 0 -0.029727944058068338 item=minecraft:pink_petals count=1 age=11 pickup-delay=0 on-ground=true
+entity 48 e2 17.54532351565565 1.7709750604768726 7.744838045578149 0.05241865321124667 0.1568 0.000273880803727532 item=minecraft:pink_petals count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 49 entities e1 e2
+entity 49 e1 17.125 1 6.843174289679286 0 0 -0.01748003286389234 item=minecraft:pink_petals count=1 age=12 pickup-delay=0 on-ground=true
+entity 49 e2 17.597742168866898 1.8877750604768726 7.745111926381877 0.0513702811468282 0.11446399999999998 0.00026840319287684314 item=minecraft:pink_petals count=1 age=2 pickup-delay=8 on-ground=false
+
+at 50 use 1 1 1
+at 50 use 1 1 4
+at 50 use 1 1 7
+at 50 use 1 1 10
+at 50 use 1 1 13
+at 50 use 1 1 16
+at 50 use 1 1 19
+at 50 use 1 1 22
+at 50 use 1 1 25
+at 50 use 15 1 1
+at 50 use 15 1 4
+at 50 use 15 1 7
+at 50 use 15 1 10
+at 50 use 15 1 13
+at 50 use 15 1 16
+at 50 use 15 1 19
+at 50 use 15 1 22
+at 50 use 19 1 28
+change 50 commands 1 1 1 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 2 1 1 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 1 1 4 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 2 1 4 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 1 1 7 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 2 1 7 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 1 1 10 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 2 1 10 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 1 1 13 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 2 1 13 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 1 1 16 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 2 1 16 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 1 1 19 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 2 1 19 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 1 1 22 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 2 1 22 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 1 1 25 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 2 1 25 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 15 1 1 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 16 1 1 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 15 1 4 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 16 1 4 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 15 1 7 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 16 1 7 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 15 1 10 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 16 1 10 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 15 1 13 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 16 1 13 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 15 1 16 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 16 1 16 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 15 1 19 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 16 1 19 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 15 1 22 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 16 1 22 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 50 commands 19 1 28 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 50 commands 20 1 28 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+entity-order 50 entities e1 e2
+entity 50 e1 17.125 1 6.825694256815394 0 0 -0.010278260357524716 item=minecraft:pink_petals count=1 age=13 pickup-delay=0 on-ground=true
+entity 50 e2 17.649112450013725 1.9622390604768727 7.745380329574753 0.05034287650370199 0.07297471999999998 0.00026303513413869094 item=minecraft:pink_petals count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 51 entities e1 e2
+entity 51 e1 17.125 1 6.81541599645787 0 0 -0.006043617697955534 item=minecraft:pink_petals count=1 age=14 pickup-delay=0 on-ground=true
+entity 51 e2 17.699455326517427 1.9952137804768726 7.745643364708892 0.04933601993384212 0.032315225599999976 0.00025777443647291413 item=minecraft:pink_petals count=1 age=4 pickup-delay=6 on-ground=false
+
+entity-order 52 entities e1 e2
+entity 52 e1 17.125 1 6.809372378759914 0 0 -0.0035536475637437184 item=minecraft:pink_petals count=1 age=15 pickup-delay=0 on-ground=true
+entity 52 e2 17.74879134645127 1.9875290060768727 7.7459011391453645 0.048349300476175174 -0.007531078912000024 0.00025261895266011304 item=minecraft:pink_petals count=1 age=5 pickup-delay=5 on-ground=false
+
+entity-order 53 entities e1 e2
+entity 53 e1 17.125 1 6.80581873119617 0 0 -0.0020895449776006957 item=minecraft:pink_petals count=1 age=16 pickup-delay=0 on-ground=true
+entity 53 e2 17.797140646927446 1.9399979271648726 7.746153758098025 0.04738231538884139 -0.04658045733376002 0.0002475665784252349 item=minecraft:pink_petals count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 54 entities e1 e2
+entity 54 e1 17.125 1 6.80581873119617 0 -0.04 -0.0020895449776006957 item=minecraft:pink_petals count=1 age=17 pickup-delay=0 on-ground=true
+entity 54 e2 17.844522962316287 1.8534174698311126 7.74640132467645 0.04643466998481051 -0.08484884818708481 0.00024261525157868796 item=minecraft:pink_petals count=1 age=7 pickup-delay=3 on-ground=false
+
+at 55 use 1 1 1
+at 55 use 1 1 4
+at 55 use 1 1 7
+at 55 use 1 1 10
+at 55 use 1 1 13
+at 55 use 1 1 16
+at 55 use 1 1 19
+at 55 use 1 1 22
+at 55 use 1 1 25
+at 55 use 15 1 1
+at 55 use 15 1 4
+at 55 use 15 1 7
+at 55 use 15 1 10
+at 55 use 15 1 13
+at 55 use 15 1 16
+at 55 use 15 1 19
+at 55 use 15 1 22
+at 55 use 19 1 28
+change 55 commands 1 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 2 1 1 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 1 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 2 1 4 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 1 1 7 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 2 1 7 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 1 1 10 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 2 1 10 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 1 1 13 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 2 1 13 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 1 1 16 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 2 1 16 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 1 1 19 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 2 1 19 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 1 1 22 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 2 1 22 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 1 1 25 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 2 1 25 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 15 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 16 1 1 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 15 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 16 1 4 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 15 1 7 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 16 1 7 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 15 1 10 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 16 1 10 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 15 1 13 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 16 1 13 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 15 1 16 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 16 1 16 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 15 1 19 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 16 1 19 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 15 1 22 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 16 1 22 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 55 commands 19 1 28 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 55 commands 20 1 28 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+entity-order 55 entities e1 e2
+entity 55 e1 17.125 1 6.80581873119617 0 -0.08 -0.0020895449776006957 item=minecraft:pink_petals count=1 age=18 pickup-delay=0 on-ground=true
+entity 55 e2 17.8909576323011 1.7285686216440277 7.7466439399280285 0.045505977470785344 -0.12235187122334311 0.00023776295117463288 item=minecraft:pink_petals count=1 age=8 pickup-delay=2 on-ground=false
+
+entity-order 56 entities e1 e2
+entity 56 e1 17.125 1 6.803729186218569 0 0 -0.0012286525703794225 item=minecraft:pink_petals count=1 age=19 pickup-delay=0 on-ground=true
+entity 56 e2 17.936463609771884 1.5662167504206845 7.746881702879203 0.04459585878932728 -0.15910483379887624 0.00023300769668610862 item=minecraft:pink_petals count=1 age=9 pickup-delay=1 on-ground=false
+
+entity-order 57 entities e1 e2
+entity 57 e1 17.125 1 6.803729186218569 0 -0.04 -0.0012286525703794225 item=minecraft:pink_petals count=1 age=20 pickup-delay=0 on-ground=true
+entity 57 e2 17.981059468561213 1.3671119166218082 7.7471147105758895 0.04370394246413924 -0.1951227371228987 0.00022834754719665558 item=minecraft:pink_petals count=1 age=10 pickup-delay=0 on-ground=false
+
+change 58 block_ticks 3 7 25 minecraft:bamboo[age=1,leaves=large,stage=0] minecraft:bamboo[age=1,leaves=small,stage=0]
+change 58 block_ticks 3 6 25 minecraft:bamboo[age=1,leaves=small,stage=0] minecraft:bamboo[age=1,leaves=none,stage=0]
+change 58 block_ticks 17 6 1 minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false] minecraft:big_dripleaf_stem[facing=north,waterlogged=false]
+change 58 block_ticks 17 7 1 minecraft:air minecraft:big_dripleaf[facing=north,tilt=none,waterlogged=false]
+entity-added 58 block_ticks e3 minecraft:item 17.635117147936533 1.3982211121070327 7.324302859935839 0.09547560407735081 0.2 -0.035926340529907466 item=minecraft:pink_petals count=1
+draws 58 block_ticks level 35
+entity-order 58 entities e1 e2 e3
+entity 58 e1 17.125 1 6.803729186218569 0 -0.08 -0.0012286525703794225 item=minecraft:pink_petals count=1 age=21 pickup-delay=0 on-ground=true
+entity 58 e2 18.02476341102535 1.1319891794989094 7.747343058123086 0.042829864448443 -0.23042028238044074 0.0002237806006081063 item=minecraft:pink_petals count=1 age=11 pickup-delay=0 on-ground=false
+entity 58 e3 17.730592752013884 1.5582211121070326 7.288376519405932 0.09356609381685642 0.1568 -0.035207814404549884 item=minecraft:pink_petals count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 59 entities e1 e2 e3
+entity 59 e1 17.125 1 6.803729186218569 0 -0.12 -0.0012286525703794225 item=minecraft:pink_petals count=1 age=22 pickup-delay=0 on-ground=true
+entity 59 e2 18.067593275473794 1 7.747566838723694 0.02518396282812047 0 0.0001315830063892228 item=minecraft:pink_petals count=1 age=12 pickup-delay=0 on-ground=true
+entity 59 e3 17.82415884583074 1.6750211121070326 7.253168705001382 0.0916947737251509 0.11446399999999998 -0.034503658787994655 item=minecraft:pink_petals count=1 age=2 pickup-delay=8 on-ground=false
+
+at 60 use 1 1 1
+at 60 use 1 1 4
+at 60 use 1 1 7
+at 60 use 1 1 10
+at 60 use 1 1 13
+at 60 use 1 1 16
+at 60 use 1 1 19
+at 60 use 1 1 22
+at 60 use 1 1 25
+at 60 use 15 1 1
+at 60 use 15 1 4
+at 60 use 15 1 7
+at 60 use 15 1 10
+at 60 use 15 1 13
+at 60 use 15 1 16
+at 60 use 15 1 19
+at 60 use 15 1 22
+at 60 use 19 1 28
+change 60 commands 1 1 1 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 2 1 1 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 1 1 4 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 2 1 4 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 1 1 7 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 2 1 7 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 1 1 10 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 2 1 10 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 1 1 13 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 2 1 13 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 1 1 16 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 2 1 16 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 1 1 19 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 2 1 19 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 1 1 22 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 2 1 22 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 1 1 25 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 2 1 25 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 15 1 1 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 16 1 1 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 15 1 4 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 16 1 4 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 15 1 7 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 16 1 7 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 15 1 10 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 16 1 10 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 15 1 13 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 16 1 13 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 15 1 16 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 16 1 16 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 15 1 19 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 16 1 19 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 15 1 22 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 16 1 22 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+change 60 commands 19 1 28 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 60 commands 20 1 28 minecraft:dispenser[facing=east,triggered=true] minecraft:dispenser[facing=east,triggered=false]
+entity-order 60 entities e1 e2 e3
+entity 60 e1 17.125 1 6.80250053364819 0 0 -0.0007224477840306333 item=minecraft:pink_petals count=1 age=23 pickup-delay=0 on-ground=true
+entity 60 e2 18.092777238301913 1 7.7476984217300835 0.014808171632007344 0 7.73708155370777e-05 item=minecraft:pink_petals count=1 age=13 pickup-delay=0 on-ground=true
+entity 60 e3 17.915853619555893 1.7494851121070325 7.2186650462133874 0.0898608799995869 0.07297471999999998 -0.03381358627033983 item=minecraft:pink_petals count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 61 entities e1 e2 e3
+entity 61 e1 17.125 1 6.80250053364819 0 -0.04 -0.0007224477840306333 item=minecraft:pink_petals count=1 age=24 pickup-delay=0 on-ground=true
+entity 61 e2 18.10758540993392 1 7.747775792545621 0.008707205795195043 0 4.549404411056838e-05 item=minecraft:pink_petals count=1 age=14 pickup-delay=0 on-ground=true
+entity 61 e3 18.00571449955548 1.7824598321070324 7.184851459943047 0.08806366411355543 0.032315225599999976 -0.033137315189876004 item=minecraft:pink_petals count=1 age=4 pickup-delay=6 on-ground=false
+
+entity-order 62 entities e1 e2 e3
+entity 62 e1 17.125 1 6.80250053364819 0 -0.08 -0.0007224477840306333 item=minecraft:pink_petals count=1 age=25 pickup-delay=0 on-ground=true
+entity 62 e2 18.116292615729115 1 7.747821286589732 0.005119837522412674 0 2.67505006269773e-05 item=minecraft:pink_petals count=1 age=15 pickup-delay=0 on-ground=true
+entity 62 e3 18.093778163669036 1.7747750577070325 7.151714144753171 0.08630239251096541 -0.007531078912000024 -0.03247456951812261 item=minecraft:pink_petals count=1 age=5 pickup-delay=5 on-ground=false
+
+entity-order 63 entities e1 e2 e3
+entity 63 e1 17.125 1 6.80250053364819 0 -0.12 -0.0007224477840306333 item=minecraft:pink_petals count=1 age=26 pickup-delay=0 on-ground=true
+entity 63 e2 18.121412453251526 1 7.747848037090359 0.0030104647659034206 0 1.5729295950361106e-05 item=minecraft:pink_petals count=1 age=16 pickup-delay=0 on-ground=true
+entity 63 e3 18.180080556180002 1.7272439787950324 7.119239575235048 0.08457634630683361 -0.04658045733376002 -0.031825078747163414 item=minecraft:pink_petals count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 64 entities e1 e2 e3
+entity 64 e1 17.125 1 6.801778085864159 0 0 -0.00042479933972676593 item=minecraft:pink_petals count=1 age=27 pickup-delay=0 on-ground=true
+entity 64 e2 18.121412453251526 1 7.747848037090359 0.0030104647659034206 -0.04 1.5729295950361106e-05 item=minecraft:pink_petals count=1 age=17 pickup-delay=0 on-ground=true
+entity 64 e3 18.264656902486834 1.6406635214612724 7.087414496487885 0.08288482099386273 -0.08484884818708481 -0.031188577779235352 item=minecraft:pink_petals count=1 age=7 pickup-delay=3 on-ground=false
+
+entity-order 65 entities e1 e2 e3
+entity 65 e1 17.125 1 6.801778085864159 0 -0.04 -0.00042479933972676593 item=minecraft:pink_petals count=1 age=28 pickup-delay=0 on-ground=true
+entity 65 e2 18.12442291801743 1 7.747863766386309 0.0017701534603533928 0 9.248826948851115e-06 item=minecraft:pink_petals count=1 age=18 pickup-delay=0 on-ground=true
+entity 65 e3 18.347541723480695 1.5158146732741875 7.05622591870865 0.08122712615488797 -0.12235187122334311 -0.030564806818525556 item=minecraft:pink_petals count=1 age=8 pickup-delay=2 on-ground=false
+
+entity-order 66 entities e1 e2 e3
+entity 66 e1 17.125 1 6.801778085864159 0 -0.08 -0.00042479933972676593 item=minecraft:pink_petals count=1 age=29 pickup-delay=0 on-ground=true
+entity 66 e2 18.12442291801743 1 7.747863766386309 0.0017701534603533928 -0.04 9.248826948851115e-06 item=minecraft:pink_petals count=1 age=19 pickup-delay=0 on-ground=true
+entity 66 e3 18.428768849635585 1.3534628020508443 7.025661111890124 0.0796025851810747 -0.15910483379887624 -0.02995351126513247 item=minecraft:pink_petals count=1 age=9 pickup-delay=1 on-ground=false
+
+entity-order 67 entities e1 e2 e3
+entity 67 e1 17.125 1 6.801778085864159 0 -0.12 -0.00042479933972676593 item=minecraft:pink_petals count=1 age=30 pickup-delay=0 on-ground=true
+entity 67 e2 18.12442291801743 1 7.747863766386309 0.0017701534603533928 -0.08 9.248826948851115e-06 item=minecraft:pink_petals count=1 age=20 pickup-delay=0 on-ground=true
+entity 67 e3 18.50837143481666 1.154357968251968 6.995707600624992 0.07801053499575203 -0.1951227371228987 -0.029354441611147707 item=minecraft:pink_petals count=1 age=10 pickup-delay=0 on-ground=false
+
+entity-order 68 entities e1 e2 e3
+entity 68 e1 17.125 1 6.801353286524432 0 0 -0.000249782036876792 item=minecraft:pink_petals count=1 age=31 pickup-delay=0 on-ground=true
+entity 68 e2 18.12442291801743 1 7.747863766386309 0.0017701534603533928 -0.12 9.248826948851115e-06 item=minecraft:pink_petals count=1 age=21 pickup-delay=0 on-ground=true
+entity 68 e3 18.58638196981241 1 6.9663531590138446 0.0458701991900941 0 -0.017260413403018628 item=minecraft:pink_petals count=1 age=11 pickup-delay=0 on-ground=true
+
+entity-order 69 entities e1 e2 e3
+entity 69 e1 17.125 1 6.801353286524432 0 -0.04 -0.000249782036876792 item=minecraft:pink_petals count=1 age=32 pickup-delay=0 on-ground=true
+entity 69 e2 18.126193071477783 1 7.7478730152132576 0.0010408503393530882 0 5.4383107927873166e-06 item=minecraft:pink_petals count=1 age=22 pickup-delay=0 on-ground=true
+entity 69 e3 18.632252169002506 1 6.949092745610826 0.026971679835979645 0 -0.010149124101545356 item=minecraft:pink_petals count=1 age=12 pickup-delay=0 on-ground=true
+
+entity-order 70 entities e1 e2 e3
+entity 70 e1 17.125 1 6.801353286524432 0 -0.08 -0.000249782036876792 item=minecraft:pink_petals count=1 age=33 pickup-delay=0 on-ground=true
+entity 70 e2 18.126193071477783 1 7.7478730152132576 0.0010408503393530882 -0.04 5.4383107927873166e-06 item=minecraft:pink_petals count=1 age=23 pickup-delay=0 on-ground=true
+entity 70 e3 18.659223848838487 1 6.938943621509281 0.01585934933833233 0 -0.005967685571804127 item=minecraft:pink_petals count=1 age=13 pickup-delay=0 on-ground=true
+
+entity-order 71 entities e1 e2 e3
+entity 71 e1 17.125 1 6.801353286524432 0 -0.12 -0.000249782036876792 item=minecraft:pink_petals count=1 age=34 pickup-delay=0 on-ground=true
+entity 71 e2 18.126193071477783 1 7.7478730152132576 0.0010408503393530882 -0.08 5.4383107927873166e-06 item=minecraft:pink_petals count=1 age=24 pickup-delay=0 on-ground=true
+entity 71 e3 18.675083198176818 1 6.932975935937477 0.009325298348667967 0 -0.003508999469076991 item=minecraft:pink_petals count=1 age=14 pickup-delay=0 on-ground=true
+
+entity-order 72 entities e1 e2 e3
+entity 72 e1 17.125 1 6.801353286524432 0 0 -0.00014687185245261793 item=minecraft:pink_petals count=1 age=35 pickup-delay=0 on-ground=true
+entity 72 e2 18.126193071477783 1 7.7478730152132576 0.0010408503393530882 -0.12 5.4383107927873166e-06 item=minecraft:pink_petals count=1 age=25 pickup-delay=0 on-ground=true
+entity 72 e3 18.684408496525485 1 6.929466936468399 0.005483275980401212 0 -0.002063291895296716 item=minecraft:pink_petals count=1 age=15 pickup-delay=0 on-ground=true
+
+entity-order 73 entities e1 e2 e3
+entity 73 e1 17.125 1 6.801353286524432 0 -0.04 -0.00014687185245261793 item=minecraft:pink_petals count=1 age=36 pickup-delay=0 on-ground=true
+entity 73 e2 18.127233921817137 1 7.74787845352405 0.0006120200610828145 0 3.1977270677143363e-06 item=minecraft:pink_petals count=1 age=26 pickup-delay=0 on-ground=true
+entity 73 e3 18.689891772505888 1 6.927403644573102 0.0032241666006899996 0 -0.0012132157564323954 item=minecraft:pink_petals count=1 age=16 pickup-delay=0 on-ground=true
+
+entity-order 74 entities e1 e2 e3
+entity 74 e1 17.125 1 6.801353286524432 0 -0.08 -0.00014687185245261793 item=minecraft:pink_petals count=1 age=37 pickup-delay=0 on-ground=true
+entity 74 e2 18.127233921817137 1 7.74787845352405 0.0006120200610828145 -0.04 3.1977270677143363e-06 item=minecraft:pink_petals count=1 age=27 pickup-delay=0 on-ground=true
+entity 74 e3 18.693115939106576 1 6.92619042881667 0.0018958101518436223 0 -0.0007133709365170363 item=minecraft:pink_petals count=1 age=17 pickup-delay=0 on-ground=true
+
+entity-order 75 entities e1 e2 e3
+entity 75 e1 17.125 1 6.801353286524432 0 -0.12 -0.00014687185245261793 item=minecraft:pink_petals count=1 age=38 pickup-delay=0 on-ground=true
+entity 75 e2 18.127233921817137 1 7.74787845352405 0.0006120200610828145 -0.08 3.1977270677143363e-06 item=minecraft:pink_petals count=1 age=28 pickup-delay=0 on-ground=true
+entity 75 e3 18.693115939106576 1 6.92619042881667 0.0018958101518436223 -0.04 -0.0007133709365170363 item=minecraft:pink_petals count=1 age=18 pickup-delay=0 on-ground=true
+
+entity-order 76 entities e1 e2 e3
+entity 76 e1 17.125 1 6.801353286524432 0 0 -8.636065792634998e-05 item=minecraft:pink_petals count=1 age=39 pickup-delay=0 on-ground=true
+entity 76 e2 18.127233921817137 1 7.74787845352405 0.0006120200610828145 -0.12 3.1977270677143363e-06 item=minecraft:pink_petals count=1 age=29 pickup-delay=0 on-ground=true
+entity 76 e3 18.693115939106576 1 6.92619042881667 0.0018958101518436223 -0.08 -0.0007133709365170363 item=minecraft:pink_petals count=1 age=19 pickup-delay=0 on-ground=true
+
+entity-order 77 entities e1 e2 e3
+entity 77 e1 17.125 1 6.801353286524432 0 -0.04 -8.636065792634998e-05 item=minecraft:pink_petals count=1 age=40 pickup-delay=0 on-ground=true
+entity 77 e2 18.12784594187822 1 7.747881651251118 0.00035986783210409937 0 1.8802637048906207e-06 item=minecraft:pink_petals count=1 age=30 pickup-delay=0 on-ground=true
+entity 77 e3 18.693115939106576 1 6.92619042881667 0.0018958101518436223 -0.12 -0.0007133709365170363 item=minecraft:pink_petals count=1 age=20 pickup-delay=0 on-ground=true
+
+entity-order 78 entities e1 e2 e3
+entity 78 e1 17.125 1 6.801353286524432 0 -0.08 -8.636065792634998e-05 item=minecraft:pink_petals count=1 age=41 pickup-delay=0 on-ground=true
+entity 78 e2 18.12784594187822 1 7.747881651251118 0.00035986783210409937 -0.04 1.8802637048906207e-06 item=minecraft:pink_petals count=1 age=31 pickup-delay=0 on-ground=true
+entity 78 e3 18.69501174925842 1 6.925477057880153 0.0011147364813791478 0 -0.0004194621528520768 item=minecraft:pink_petals count=1 age=21 pickup-delay=0 on-ground=true
+
+entity-order 79 entities e1 e2 e3
+entity 79 e1 17.125 1 6.801353286524432 0 -0.12 -8.636065792634998e-05 item=minecraft:pink_petals count=1 age=42 pickup-delay=0 on-ground=true
+entity 79 e2 18.12784594187822 1 7.747881651251118 0.00035986783210409937 -0.08 1.8802637048906207e-06 item=minecraft:pink_petals count=1 age=32 pickup-delay=0 on-ground=true
+entity 79 e3 18.69501174925842 1 6.925477057880153 0.0011147364813791478 -0.04 -0.0004194621528520768 item=minecraft:pink_petals count=1 age=22 pickup-delay=0 on-ground=true
+
+entity-order 80 entities e1 e2 e3
+entity 80 e1 17.125 1 6.801353286524432 0 0 -5.0780071967010156e-05 item=minecraft:pink_petals count=1 age=43 pickup-delay=0 on-ground=true
+entity 80 e2 18.12784594187822 1 7.747881651251118 0.00035986783210409937 -0.12 1.8802637048906207e-06 item=minecraft:pink_petals count=1 age=33 pickup-delay=0 on-ground=true
+entity 80 e3 18.69501174925842 1 6.925477057880153 0.0011147364813791478 -0.08 -0.0004194621528520768 item=minecraft:pink_petals count=1 age=23 pickup-delay=0 on-ground=true

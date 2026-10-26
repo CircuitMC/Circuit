@@ -1034,7 +1034,6 @@
           ],
           "deviations": [
             "crops do not break in darkness",
-            "bone meal and pitcher crops are not modeled",
             "1.21.4's growth is not compared (its random ticks run only near players, and the harness has none)"
           ]
         },
@@ -1121,8 +1120,16 @@
           "id": "bone_meal",
           "name": "Bone meal",
           "milestone": "C5",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "note": "Dispensers' bone meal on crops, stems, cocoa, berry bushes, bamboo, dripleaves, petals and vines, used up only when it acts, as both official servers do draw for draw; players' bone meal acts the same way",
+          "cases": [
+            "trace/bonemeal_dispensers"
+          ],
+          "deviations": [
+            "players' bone meal is not compared",
+            "saplings, grass, moss, mushrooms and nylium (their features), glow lichen, sea pickles, seagrass, coral and propagules take none"
+          ]
         },
         {
           "id": "coral",
@@ -1474,7 +1481,7 @@
             "trace/dispenser_tnt_rule"
           ],
           "deviations": [
-            "dispensed projectiles, fire, bone meal, shears, boats, bottles, honeycomb, glowstone and water bottles at their targets, golem and wither heads, other fluids, other minecarts, spawn eggs, armor stands and shulker boxes are not modeled: those items stay",
+            "dispensed projectiles, fire, shears, boats, bottles, honeycomb, glowstone and water bottles at their targets, golem and wither heads, other fluids, other minecarts, spawn eggs, armor stands and shulker boxes are not modeled: those items stay",
             "equipping players is not modeled"
           ],
           "note": "Fired 4 ticks after power reaches them or the block above them, from a random filled slot (level-random draws); droppers fill the container in front or eject; dispensers eject items (position, motion and draws exact), prime TNT, pour and fill water and lava buckets, set minecarts on rails and eject equipment"

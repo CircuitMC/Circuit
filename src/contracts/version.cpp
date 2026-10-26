@@ -168,6 +168,15 @@ constexpr std::array reference_v4_mechanisms{
         "10 d later; turtle eggs crack on sand when nextInt(500) is 0 (or by night's end), drawing their sound's pitch "
         "(eggs_blossoms). Gaps: chorus flowers and saplings are not modeled; hatching turtles are not spawned; "
         "1.21.4's growth is not compared (its random ticks run only near players)."},
+    MechanismEntry{"bone_meal", l0_exact, l2_declared_deviation, harness_trace,
+        "Dispensers use bone meal on the block in front as the official 1.21.8 server does (bonemeal_dispensers): crops "
+        "and stems grow 2 + nextInt(4) stages (beetroots a third of that), torchflower and pitcher crops, cocoa and berry "
+        "bushes one; bamboo grows 1 + nextInt(2) blocks; big dripleaves grow a block, small ones become big ones "
+        "2 + nextInt(4) tall; petals get a flower; cave vines get berries; weeping and twisting vines grow heads while "
+        "nextDouble() < 0.826, kelp one; the bone meal is used only when it acts (minecraft.wiki \"Bone Meal\"). Gaps: "
+        "players' bone meal is not compared; saplings, grass, moss, mushrooms, nylium, glow lichen, sea pickles, "
+        "seagrass, coral and propagules take none (their growth needs world generation's features or is not "
+        "modeled)."},
     MechanismEntry{"dripstone", l0_exact, l2_declared_deviation, harness_trace,
         "Pointed dripstone stands on a face sturdy toward its tip or on dripstone pointing the same way; every update "
         "from above or below sets its thickness from the pieces in front of and behind it (tip, tip_merge, frustum, "

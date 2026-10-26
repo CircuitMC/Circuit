@@ -537,6 +537,10 @@ bool is_growing_plant(BlockState s);
 // An eyeblossom's block tick or random tick: it turns if it should (true).
 bool turn_eyeblossom(RuleContext& ctx, BlockPos pos, BlockState s);
 bool is_bamboo(BlockState s);
+// A bamboo stalk `height` tall grows a block above its top `pos` (plants.cpp).
+void grow_bamboo_stalk(RuleContext& ctx, BlockPos pos, BlockState s, int height);
+// Bone meal used on the block at `pos`; whether it acted (bone_meal.cpp).
+bool apply_bone_meal(RuleContext& ctx, BlockPos pos);
 // Bamboo's update from above (true when it changed).
 bool bamboo_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d);
 void plant_random_tick(RuleContext& ctx, BlockPos pos, BlockState s);

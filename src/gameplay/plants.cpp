@@ -72,7 +72,9 @@ std::string leaves_of(BlockState s) {
 // leaves that one small and the one under it bare; it is thick when the stalk
 // is or two of its blocks are below; it stops growing when the stalk is 11 or
 // more tall and nextFloat() < 0.25, or 15 tall.
-void grow_bamboo(RuleContext& ctx, BlockPos pos, BlockState s, int height) {
+} // namespace
+
+void grow_bamboo_stalk(RuleContext& ctx, BlockPos pos, BlockState s, int height) {
     const BlockPos down{pos.x, pos.y - 1, pos.z}, down2{pos.x, pos.y - 2, pos.z};
     const auto b1 = ctx.block(down), b2 = ctx.block(down2);
     std::string_view leaves = "small";
@@ -87,7 +89,6 @@ void grow_bamboo(RuleContext& ctx, BlockPos pos, BlockState s, int height) {
     const int stage = (height >= 11 && ctx.random_float() < 0.25F) || height == 15 ? 1 : 0;
     set_block(ctx, pos.relative(Direction::up), bamboo(ctx, thick, leaves, stage));
 }
-} // namespace
 
 bool is_bamboo(BlockState s) {
     if (!s.is(BlockType::other)) return false;
@@ -121,7 +122,7 @@ void bamboo_random_tick(RuleContext& ctx, BlockPos pos, BlockState s) {
     if (ctx.random_int(3) != 0 || !ctx.block(up).is_air() || ctx.light(up) < 9) return;
     int below = 0;
     while (below < 16 && name_of(ctx.block({pos.x, pos.y - below - 1, pos.z})) == "bamboo") ++below;
-    if (below + 1 < 16) grow_bamboo(ctx, pos, s, below + 1);
+    if (below + 1 < 16) grow_bamboo_stalk(ctx, pos, s, below + 1);
 }
 } // namespace
 
