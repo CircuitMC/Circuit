@@ -490,7 +490,7 @@ constexpr std::array reference_v4_mechanisms{
         "and weather in random ticks; powder snow; snow and ice in the Nether are not compared."},
     MechanismEntry{"container_menus", l0_exact, l2_declared_deviation, controlled_experiment,
         "Player windows and chest, double chest, hopper, furnace, crafter, brewing stand, crafting table, stonecutter, smithing "
-        "table, grindstone and loom menus with every click mode, applied as commands. "
+        "table, grindstone, loom and anvil menus with every click mode, applied as commands. "
         "A 48-step client scenario (every click mode, double chests, hoppers, the own window, throws and "
         "pickups) gives the same windows, carried stacks and inventories as the official 1.21.8 and 1.21.4 "
         "servers. With data packs the own window's 2x2 grid crafts: a 48-step scenario (results, every way "
@@ -504,9 +504,12 @@ constexpr std::array reference_v4_mechanisms{
         "result shown), a 25-step scenario at a grindstone (curses kept, durabilities merged, books) and a 32-step "
         "scenario at a loom (pattern buttons, the choice following the slots, layers), and a 36-step scenario at a brewing "
         "stand (slot rules, quick moves to fuel, ingredient and bottles, brews stopped and started by the ingredient, "
-        "brewed bottles losing their other components, the brew time and fuel properties). Gaps: no "
+        "brewed bottles losing their other components, the brew time and fuel properties), and a 48-step scenario at an anvil "
+        "(repairs with materials and by combining, enchantments from books, typed names kept between items, filtered and "
+        "limited, the 39-level cap for renaming, too expensive results, levels taken, the /xp command). Gaps: no "
         "special recipes or recipe book; a grindstone's experience draws from the level random, so the client "
-        "scenario checks only its range (client/furnace_xp); trim materials of 1.21.5 "
+        "scenario checks only its range (client/furnace_xp); an anvil wears by a random of Circuit's own (the official "
+        "servers' is unseeded) and anvils do not fall; trim materials of 1.21.5 "
         "and later from the vanilla materials' items; no harness traces of menus."},
     MechanismEntry{"survival_actions", l0_exact, l2_declared_deviation, documented_behavior,
         "Placement uses up items; dig progress from hardness, tool speed and tier, ground and water; drops by "

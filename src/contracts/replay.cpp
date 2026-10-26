@@ -7,6 +7,7 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
+// 22: names typed into anvils (tag 32) and experience changes (tag 33);
 // 21: summoned experience orbs carry their value, count and age (tag 31);
 // 20: slots enabled and disabled (tag 30);
 // 19: window buttons (tag 29);
@@ -23,7 +24,7 @@ constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
 // block registry id; 3: stacks carry damage, player commands carry their
 // player. Commands of versions before 6 are the overworld's. Tickets of
 // versions before 7 (tags 5 and 9) read as forced squares.
-constexpr std::uint16_t format_version = 21;
+constexpr std::uint16_t format_version = 22;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -129,10 +130,13 @@ private:
 // 25 PlayerUse with where it clicked and the player's yaw, 26 PlayerUseItem,
 // 27 SetDifficulty, 28 CloseContainer whose items drop (tag 14 returns them),
 // 29 ContainerButton, 30 SetSlotEnabled, 31 SummonEntity with an experience
-// orb's value, count and age (tag 23 has none).
+// orb's value, count and age (tag 23 has none), 32 RenameItem,
+// 33 ChangeExperience.
 std::uint8_t tag_of(const CommandBody& body) {
     if (const auto* summon = std::get_if<SummonEntity>(&body); summon && (summon->value != 0 || summon->count != 1 || summon->age != 0))
         return 31;
+    if (std::holds_alternative<ChangeExperience>(body)) return 33;
+    if (std::holds_alternative<RenameItem>(body)) return 32;
     if (std::holds_alternative<SetSlotEnabled>(body)) return 30;
     if (std::holds_alternative<ContainerButton>(body)) return 29;
     if (const auto* close = std::get_if<CloseContainer>(&body); close && close->drop) return 28;
@@ -292,6 +296,16 @@ void encode_command(Writer& w, const Command& c) {
             if (body.container) w.pos(*body.container);
             w.put(body.slot);
             w.put(static_cast<std::uint8_t>(body.enabled));
+        } else if constexpr (std::is_same_v<T, RenameItem>) {
+            w.player(body.player);
+            w.put(static_cast<std::uint16_t>(body.name.size()));
+            for (const char ch : body.name) w.put(static_cast<std::uint8_t>(ch));
+            w.put(static_cast<std::uint8_t>(body.creative));
+        } else if constexpr (std::is_same_v<T, ChangeExperience>) {
+            w.player(body.player);
+            w.put(body.amount);
+            w.put(static_cast<std::uint8_t>(body.levels));
+            w.put(static_cast<std::uint8_t>(body.set));
         } else if constexpr (std::is_same_v<T, PlayerDeath>) {
             w.player(body.player);
             w.vec(body.position);
@@ -529,6 +543,25 @@ bool decode_command(Reader& r, Command& c) {
             b.container = p;
         }
         if (!r.get(b.button)) return false;
+        c.body = b;
+        return true;
+    }
+    case 32: {
+        RenameItem b;
+        std::uint16_t length{};
+        std::uint8_t creative{};
+        if (!r.player(b.player) || !r.get(length) || length > 4 * max_item_name || !r.bytes(length, b.name) || !r.get(creative) || creative > 1)
+            return false;
+        b.creative = creative == 1;
+        c.body = b;
+        return true;
+    }
+    case 33: {
+        ChangeExperience b;
+        std::uint8_t levels{}, set{};
+        if (!r.player(b.player) || !r.get(b.amount) || !r.get(levels) || levels > 1 || !r.get(set) || set > 1) return false;
+        b.levels = levels == 1;
+        b.set = set == 1;
         c.body = b;
         return true;
     }

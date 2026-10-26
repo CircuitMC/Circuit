@@ -100,6 +100,29 @@ struct GameData {
     // above the first), by id of the synchronized registry: what a
     // grindstone's experience counts.
     std::unordered_map<std::uint32_t, std::pair<std::int32_t, std::int32_t>> enchantment_min_cost;
+    // What an anvil asks of an enchantment (by id): its anvil cost, its
+    // highest level, the items it can go on (ascending) and the enchantments
+    // it excludes (its exclusive_set, ascending).
+    struct EnchantmentRules {
+        std::int32_t anvil_cost{1};
+        std::int32_t max_level{1};
+        std::vector<std::uint16_t> supported;
+        std::vector<std::uint32_t> exclusive;
+    };
+    std::unordered_map<std::uint32_t, EnchantmentRules> enchantment_rules;
+    // The items that repair an item at an anvil (minecraft.wiki "Anvil"), by
+    // the item: the members of its material's item tag.
+    std::unordered_map<std::uint16_t, std::vector<std::uint16_t>> repair_materials;
+    // A stack's repair cost (0 when none) and its custom name's plain text
+    // (nullopt without one), and its components with the custom name set to
+    // plain text or removed; set by the server.
+    std::function<std::int32_t(const contracts::ComponentPatch&)> repair_cost_of;
+    std::function<std::optional<std::string>(const contracts::ComponentPatch&)> custom_name_of;
+    std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, const std::optional<std::string>&)> with_custom_name;
+    // A stack's name as a player sees it (in English): its custom name, else
+    // its potion's or its item's name; set by the server from the language
+    // file of the official jar. Without it the rules name items by their id.
+    std::function<std::string(const contracts::ItemStack&)> display_name;
 };
 
 } // namespace circuit::gameplay

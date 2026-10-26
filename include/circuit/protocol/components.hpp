@@ -116,6 +116,15 @@ public:
     [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_potion(const contracts::ComponentPatch& base, std::uint32_t potion,
                                                                                     const ComponentContext& ctx) const;
 
+    // The patch's repair cost (0 when absent), and its custom name's plain
+    // text (nullopt without one).
+    [[nodiscard]] std::int32_t repair_cost_of(const contracts::ComponentPatch& patch) const;
+    [[nodiscard]] std::optional<std::string> custom_name_of(const contracts::ComponentPatch& patch) const;
+    // `base` with its custom name set to plain text, or removed (nullopt).
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_custom_name(const contracts::ComponentPatch& base,
+                                                                                         const std::optional<std::string>& name,
+                                                                                         const ComponentContext& ctx) const;
+
     explicit ComponentCodec(const void* schema) noexcept : schema_(schema) {}
 
 private:

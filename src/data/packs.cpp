@@ -47,6 +47,7 @@ std::string text_of(std::span<const std::byte> b) { return std::string(reinterpr
 struct PackFiles {
     PackInfo info;
     std::map<std::string, std::string> files;
+    std::string language; // the jar's English language file (JSON), when it has one
 };
 
 // pack.mcmeta must declare the bundle's data pack format, or a supported
@@ -125,6 +126,8 @@ std::expected<PackFiles, std::string> vanilla_pack(const fs::path& jar, const co
         out.files.emplace(e.name, text_of(*content));
     }
     out.info.files = out.files.size();
+    if (const auto* lang = inner->find("assets/minecraft/lang/en_us.json"))
+        if (auto content = inner->read(*lang, std::size_t{16} << 20)) out.language = text_of(*content);
     return out;
 }
 
@@ -274,6 +277,10 @@ std::expected<DataPacks, std::string> DataPacks::load(const contracts::VersionBu
             values.insert(values.end(), parsed->second.begin(), parsed->second.end());
         }
         out.packs_.push_back(pack.info);
+        if (!pack.language.empty())
+            if (const auto json = Json::parse(pack.language); json && json->kind() == Json::Kind::object)
+                for (const auto& [key, value] : json->members())
+                    if (value.kind() == Json::Kind::string) out.language_[key] = value.as_string();
     }
     for (const auto& s : skipped) out.notes_.push_back(std::format("tags of {} are not loaded: Circuit cannot list that registry", s));
     // Flattening: references resolve recursively; a cycle or a missing

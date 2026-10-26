@@ -129,6 +129,13 @@ inline constexpr std::uint8_t grind_first = 63;
 // 0-3), recorded as slots 66-69.
 inline constexpr std::uint8_t loom_slots = 4;
 inline constexpr std::uint8_t loom_first = 66;
+// The anvil window: the left and right inputs and the result (window
+// slots 0-2), recorded as slots 70-72.
+inline constexpr std::uint8_t anvil_slots = 3;
+inline constexpr std::uint8_t anvil_first = 70;
+// The longest name an anvil gives, in UTF-16 code units as the protocol
+// counts them (minecraft.wiki "Anvil").
+inline constexpr std::size_t max_item_name = 50;
 
 // A creative player sets a slot of their inventory (an empty stack clears it).
 struct SetPlayerSlot {
@@ -352,10 +359,29 @@ struct SetSlotEnabled {
     bool operator==(const SetSlotEnabled&) const = default;
 };
 
+// A player types a name into their anvil window (UTF-8, at most
+// max_item_name UTF-16 code units; empty removes a name).
+struct RenameItem {
+    PlayerKey player;
+    std::string name;
+    bool creative{};
+    bool operator==(const RenameItem&) const = default;
+};
+
+// An operator changes a player's experience (the /xp command): `amount`
+// levels or points, added or set.
+struct ChangeExperience {
+    PlayerKey player;
+    std::int32_t amount{};
+    bool levels{};
+    bool set{};
+    bool operator==(const ChangeExperience&) const = default;
+};
+
 using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket,
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
                                  PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity, PlayerUseItem,
-                                 SetDifficulty, ContainerButton, SetSlotEnabled>;
+                                 SetDifficulty, ContainerButton, SetSlotEnabled, RenameItem, ChangeExperience>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.

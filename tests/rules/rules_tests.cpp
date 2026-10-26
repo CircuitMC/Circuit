@@ -3967,6 +3967,216 @@ int main() {
         require(player().grind[0].empty() && player().slots[36].item == items::iron_pickaxe, "closing gives the input back");
     });
 
+    suite.run("anvils repair, combine, enchant and rename for levels", [] {
+        using circuit::contracts::ChangeExperience;
+        using circuit::contracts::CloseContainer;
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::RenameItem;
+        using circuit::contracts::SetPlayerSlot;
+        using Levels = std::vector<std::pair<std::uint32_t, std::int32_t>>;
+        // Stand-ins for the server's encoding: type 1 the enchantments, 2 the
+        // stored ones (one byte per id and level), 3 the repair cost, 4 the
+        // custom name (its bytes).
+        struct Parts {
+            Levels plain{}, stored{};
+            std::int32_t cost{};
+            std::optional<std::string> name{};
+        };
+        const auto make = [](const Parts& parts) {
+            std::vector<ComponentPatch::Added> added;
+            for (const auto& [type, list] : {std::pair{std::uint16_t{1}, parts.plain}, std::pair{std::uint16_t{2}, parts.stored}}) {
+                if (list.empty()) continue;
+                std::vector<std::byte> bytes;
+                for (const auto& [id, level] : list) {
+                    bytes.push_back(static_cast<std::byte>(id));
+                    bytes.push_back(static_cast<std::byte>(level));
+                }
+                added.push_back({type, bytes});
+            }
+            if (parts.cost > 0) added.push_back({3, {static_cast<std::byte>(parts.cost)}});
+            if (parts.name) {
+                std::vector<std::byte> bytes;
+                for (const auto ch : *parts.name) bytes.push_back(static_cast<std::byte>(ch));
+                added.push_back({4, bytes});
+            }
+            return added.empty() ? ComponentPatch{} : ComponentPatch::make(772, std::move(added), {}, {});
+        };
+        const auto parts_of = [](const ComponentPatch& p) {
+            Parts out;
+            for (const auto& a : p.added()) {
+                if (a.type == 1 || a.type == 2)
+                    for (std::size_t k = 0; k + 1 < a.value.size(); k += 2)
+                        (a.type == 1 ? out.plain : out.stored)
+                            .emplace_back(static_cast<std::uint32_t>(a.value[k]), static_cast<std::int32_t>(a.value[k + 1]));
+                if (a.type == 3) out.cost = static_cast<std::int32_t>(a.value[0]);
+                if (a.type == 4) {
+                    out.name.emplace();
+                    for (const auto b : a.value) *out.name += static_cast<char>(b);
+                }
+            }
+            return out;
+        };
+        const auto stack = [&](std::uint16_t item, Parts parts, std::uint16_t damage = 0) {
+            return ItemStack{item, 1, damage, make(parts)};
+        };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->enchantments_of = [&](const ComponentPatch& p, bool stored) { return stored ? parts_of(p).stored : parts_of(p).plain; };
+        data->with_enchantments = [&](const ComponentPatch& base, bool stored, const Levels& levels, bool, std::int32_t cost) {
+            auto parts = parts_of(base);
+            (stored ? parts.stored : parts.plain) = levels;
+            parts.cost = cost;
+            return std::optional(make(parts));
+        };
+        data->repair_cost_of = [&](const ComponentPatch& p) { return parts_of(p).cost; };
+        data->custom_name_of = [&](const ComponentPatch& p) { return parts_of(p).name; };
+        data->with_custom_name = [&](const ComponentPatch& base, const std::optional<std::string>& name) {
+            auto parts = parts_of(base);
+            parts.name = name;
+            return std::optional(make(parts));
+        };
+        // Efficiency (8): cost 1, up to V on pickaxes; Unbreaking (34): cost
+        // 2, up to III on pickaxes and swords; Fortune (13) and Silk Touch
+        // (20) exclude each other.
+        data->enchantment_rules[8] = {1, 5, {items::iron_pickaxe, items::diamond_pickaxe}, {}};
+        data->enchantment_rules[34] = {2, 3, {items::iron_pickaxe, items::diamond_pickaxe, items::diamond_sword}, {}};
+        data->enchantment_rules[13] = {4, 3, {items::diamond_pickaxe}, {13, 20}};
+        data->enchantment_rules[20] = {8, 1, {items::diamond_pickaxe}, {13, 20}};
+        for (auto& [id, rules] : data->enchantment_rules) std::ranges::sort(rules.supported);
+        data->repair_materials[items::iron_pickaxe] = {items::iron_ingot};
+        const PlayerKey alex{4, 2};
+        const BlockPos anvil{0, 0, 0};
+        Sim s(bundle(), 7, 2, data);
+        s.tick({place(anvil, registry_block("anvil", {{"facing", "north"}}))});
+        // Anvil window: 0 and 1 the inputs, 2 the result, 3-29 the main inventory, 30-38 the hotbar.
+        const auto click = [&](std::int16_t slot, std::uint8_t button = 0, std::uint8_t mode = 1, bool creative = false) {
+            return ContainerClick{alex, std::optional(anvil), slot, button, mode, creative, at_block(0.5, 2, 0.5), {}};
+        };
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+        };
+        s.tick({SetPlayerSlot{alex, 36, {items::iron_pickaxe, 1, 200}}, SetPlayerSlot{alex, 37, {items::iron_ingot, 3}},
+                SetPlayerSlot{alex, 38, {items::iron_pickaxe, 1, 150}}, SetPlayerSlot{alex, 39, stack(items::diamond_pickaxe, {{{8, 1}}})},
+                SetPlayerSlot{alex, 40, stack(items::enchanted_book, {{}, {{8, 1}}})}, SetPlayerSlot{alex, 41, {items::stone, 1}},
+                ChangeExperience{alex, 30, true, true}});
+        s.tick({click(30), click(31)});
+        require(player().anvil[2] == stack(items::iron_pickaxe, {{}, {}, 1}, 14) && player().anvil_cost == 3,
+                "three ingots each repair a quarter, a level each; the repair cost 1");
+        s.tick({click(2)});
+        require(player().anvil[0].empty() && player().anvil[1].empty() && player().slots[44] == stack(items::iron_pickaxe, {{}, {}, 1}, 14)
+                    && player().xp_level == 27 && player().anvil_cost == 0,
+                "taken for three levels; all three ingots used");
+        s.tick({click(38), click(32)});
+        require(player().anvil[2] == stack(items::iron_pickaxe, {{}, {}, 3}) && player().anvil_cost == 3,
+                "two pickaxes: both durabilities and 12%, 2 levels and the prior 1; the repair cost 1 doubled and one more");
+        s.tick({click(2), click(33), click(34)});
+        require(player().xp_level == 24 && player().anvil[2] == stack(items::diamond_pickaxe, {{{8, 2}}, {}, 1}) && player().anvil_cost == 2,
+                "Efficiency I and a book of it: Efficiency II, half its cost per level");
+        s.tick({RenameItem{alex, "Digger", false}});
+        require(player().anvil[2] == stack(items::diamond_pickaxe, {{{8, 2}}, {}, 1, "Digger"}) && player().anvil_cost == 3,
+                "a name costs a level more");
+        s.tick({click(2), click(35)});
+        require(player().xp_level == 21 && player().anvil[2] == stack(items::stone, {{}, {}, 0, "Digger"}) && player().anvil_cost == 1,
+                "the typed name stays for the next item; renaming alone keeps the repair cost");
+        s.tick({click(0), RenameItem{alex, "Stone", false}, click(30)});
+        require(player().anvil[2].empty() && player().anvil_cost == 0, "the name the stone shows already: nothing to do");
+        s.tick({click(0)});
+
+        // Conflicts: Silk Touch and Unbreaking onto a Fortune pickaxe.
+        s.tick({SetPlayerSlot{alex, 9, stack(items::diamond_pickaxe, {{{13, 3}}})}, SetPlayerSlot{alex, 10, stack(items::enchanted_book, {{}, {{20, 1}}})},
+                SetPlayerSlot{alex, 11, stack(items::enchanted_book, {{}, {{20, 1}, {34, 1}}})}, RenameItem{alex, "", false}});
+        s.tick({click(3), click(4)});
+        require(player().anvil[2].empty() && player().anvil_cost == 0, "Silk Touch alone conflicts with Fortune: no result");
+        s.tick({click(1), click(5)});
+        require(player().anvil[2] == stack(items::diamond_pickaxe, {{{13, 3}, {34, 1}}, {}, 1}) && player().anvil_cost == 2,
+                "Unbreaking joins (1 level), the conflict costs another");
+        s.tick({click(0), click(1)});
+
+        // Too expensive: 39 prior levels and a repair; renaming alone stays at 39.
+        s.tick({SetPlayerSlot{alex, 12, stack(items::iron_pickaxe, {{}, {}, 39}, 100)}, SetPlayerSlot{alex, 13, {items::iron_ingot, 1}}});
+        s.tick({click(6), click(7)});
+        require(player().anvil[0].item == items::iron_pickaxe && player().anvil[1].item == items::iron_ingot && player().anvil[2].empty()
+                    && player().anvil_cost == 40,
+                "40 levels is too expensive: no result, the cost shown");
+        s.tick({click(2, 0, 1, true)});
+        require(player().anvil[0].item == items::iron_pickaxe, "nothing to take");
+        s.tick({click(1), RenameItem{alex, "Old", false}});
+        require(player().anvil_cost == 39 && player().anvil[2] == stack(items::iron_pickaxe, {{}, {}, 39, "Old"}, 100),
+                "renaming alone is capped at 39");
+        s.tick({click(2)});
+        require(player().anvil[0].item == items::iron_pickaxe && player().xp_level == 21, "21 levels are too few");
+        s.tick({ChangeExperience{alex, 40, true, true}});
+        s.tick({click(2)});
+        require(player().anvil[0].empty() && player().xp_level == 1, "with 40 it is taken for 39");
+
+        // Closing gives the inputs back and forgets the name.
+        s.tick({RenameItem{alex, "Kept", false}, click(4)});
+        require(!player().anvil[0].empty() && player().anvil_name == "Kept", "an input and a name");
+        s.tick({CloseContainer{alex, at_block(0.5, 2, 0.5), {}}});
+        require(player().anvil[0].empty() && player().anvil[2].empty() && player().anvil_name.empty() && player().anvil_cost == 0,
+                "closed: the input back, the name gone");
+
+        // Names are refused with control characters or the section sign, or
+        // longer than 50 UTF-16 code units.
+        const auto refused = [&](CommandBody body) {
+            s.tick({std::move(body)});
+            return of_kind(s.last, TraceKind::command_rejected).size() == 1;
+        };
+        require(!refused(RenameItem{alex, std::string(50, 'y'), false}) && refused(RenameItem{alex, std::string(51, 'y'), false})
+                    && refused(RenameItem{alex, "a\xC2\xA7" "b", false}) && refused(RenameItem{alex, "a\nb", false})
+                    && !refused(RenameItem{alex, "", false}),
+                "name limits");
+
+        // Each use wears the anvil with a chance: chipped, damaged, then gone.
+        std::vector<std::string> worn;
+        for (int use = 0; use < 400 && worn.size() < 3; ++use) {
+            s.tick({ChangeExperience{alex, 10, true, true}, SetPlayerSlot{alex, 42, {items::stone, 1}}, SetPlayerSlot{alex, 44, {}},
+                    RenameItem{alex, use % 2 == 0 ? "a" : "b", false}, click(36)});
+            s.tick({click(2)});
+            const auto here = state_at(s.oracle.dump(), anvil);
+            const auto name = here.is_air() ? std::string("air")
+                                            : std::string(registry::game_name(*registry::block_of(here.registry_state())));
+            if (worn.empty() ? name != "anvil" : name != worn.back()) worn.push_back(name);
+        }
+        require(worn == std::vector<std::string>{"chipped_anvil", "damaged_anvil", "air"}, "worn down to nothing");
+    });
+
+    suite.run("experience changes as the /xp command makes them", [] {
+        using circuit::contracts::ChangeExperience;
+        const PlayerKey alex{4, 2};
+        Sim s(bundle(), 7, 2);
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+        };
+        const auto xp = [&] {
+            const auto p = player();
+            return std::tuple{p.xp_level, p.xp_progress, p.xp_total};
+        };
+        // The official servers' levels, progress and totals, step by step.
+        s.tick({ChangeExperience{alex, 1, true, true}});
+        s.tick({ChangeExperience{alex, 10, false, false}});
+        require(xp() == std::tuple{2, 0.09090913087129593f, 10}, "10 points from level 1");
+        s.tick({ChangeExperience{alex, -20, false, false}});
+        require(xp() == std::tuple{0, 0.0f, 0}, "20 taken: down to nothing");
+        s.tick({ChangeExperience{alex, 3, true, false}, ChangeExperience{alex, -100, true, false}});
+        require(xp() == std::tuple{0, 0.0f, 0}, "levels below 0");
+        s.tick({ChangeExperience{alex, 30, false, false}});
+        require(xp() == std::tuple{3, 0.23076921701431274f, 30}, "30 points");
+        s.tick({ChangeExperience{alex, 5, false, true}, ChangeExperience{alex, 3, true, true}});
+        require(xp() == std::tuple{3, 0.38461539149284363f, 30}, "5 points set, then the same level");
+        const auto refused = [&](CommandBody body) {
+            s.tick({std::move(body)});
+            return of_kind(s.last, TraceKind::command_rejected).size() == 1;
+        };
+        require(refused(ChangeExperience{alex, 13, false, true}) && refused(ChangeExperience{alex, -1, true, true})
+                    && !refused(ChangeExperience{alex, 12, false, true}) && xp() == std::tuple{3, 12.0f / 13.0f, 30},
+                "points beyond the level's need, or a level below 0, are refused");
+        s.tick({ChangeExperience{alex, 2147483647, false, false}});
+        require(xp() == std::tuple{21863, 0.3686237931251526f, 0}, "the largest int: the total wraps to 0");
+    });
+
     suite.run("stonecutters cut by the chosen recipe until the input runs out", [] {
         namespace recipes = circuit::gameplay::recipes;
         using circuit::contracts::CloseContainer;

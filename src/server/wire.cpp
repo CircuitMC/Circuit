@@ -22,7 +22,7 @@ struct Wire::Ids {
         player_position, keep_alive, system_chat, player_info_update, player_info_remove, add_entity,
         set_entity_data, remove_entities, entity_position_sync, rotate_head, container_set_content, disconnect, take_item_entity,
         open_screen, container_close, container_set_slot, container_set_data, set_cursor_item, respawn, combat_kill, damage_event, sb_container_click,
-        sb_container_close, sb_container_button_click, sb_container_slot_state_changed, update_recipes,
+        sb_container_close, sb_container_button_click, sb_container_slot_state_changed, sb_rename_item, update_recipes,
         commands, explode, set_experience;
     // The orb spawn packet of protocols before 1.21.5's (-1: none; orbs are
     // entities with their value as data).
@@ -97,6 +97,7 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->sb_container_close = sb(State::play, "container_close");
     ids->sb_container_button_click = sb(State::play, "container_button_click");
     ids->sb_container_slot_state_changed = sb(State::play, "container_slot_state_changed");
+    ids->sb_rename_item = sb(State::play, "rename_item");
     ids->update_recipes = cb(State::play, "update_recipes");
     ids->disconnect = cb(State::play, "disconnect");
     ids->commands = cb(State::play, "commands");
@@ -621,6 +622,10 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
         TRY(window, r.varint());
         TRY(button, r.varint());
         return done(intent::ContainerButton{*window, *button});
+    }
+    if (id == i.sb_rename_item) {
+        TRY(name, r.string(32767));
+        return done(intent::RenameItem{std::move(*name)});
     }
     if (id == i.sb_container_slot_state_changed) {
         TRY(slot_index, r.varint());

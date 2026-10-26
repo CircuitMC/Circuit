@@ -28,7 +28,8 @@ circuit-server --data-report --game-version java-1.21.8 --vanilla-jar /path/to/s
 The built-in pack is read from the jar in memory, as it is packed:
 - the bundled game jar under `META-INF/versions/`;
 - its `data/` directory;
-- not the experimental packs it contains.
+- not the experimental packs it contains;
+- and its English language file (`assets/minecraft/lang/en_us.json`), for the names items show (an anvil compares a typed name with them).
 
 Other packs need a `pack.mcmeta` whose `pack_format`, or `supported_formats` range, includes the version's data pack format: 81 for 1.21.8, 61 for 1.21.4. Packs with `filter` or `overlays` are refused; they are not supported yet.
 
@@ -54,6 +55,7 @@ The tags of game events, points of interest, structures, world presets and the 1
 - **Tags for clients:** clients that share the vanilla pack receive every loaded tag of the registries Circuit numbers. With the official packs that is the same number of tags per registry as the official servers send. Clients then predict mining speeds from the same block tags as the server.
 - **Enchantments:** with tags loaded, the enchantment registry is synchronized, because the client's enchantment definitions refer to item and enchantment tags. Item components with enchantments are then accepted, and enchantments convert to and from the Anvil save form.
   - Packs must define exactly the vanilla enchantments; packs that add or remove some are refused, since clients only know the vanilla definitions by name.
+  - Anvils use each enchantment's `anvil_cost`, `max_level`, `supported_items` and `exclusive_set`, and grindstones its `min_cost`; the item tags `*_tool_materials` and `repairs_*` give what repairs an item at an anvil.
 - **Block tools:** the `mineable/*` and `needs_*_tool` block tags give the effective tool and harvest tier of blocks without rules of their own. A block that needs a tool of another kind (a sword or shears) keeps that from the public data.
   - With the official packs, 44 blocks of 1.21.4 and 2 of 1.21.8 get another tool or tier than the public data gave. Most are plants, which the official tags put in `mineable/axe`; the crafter needs a stone pickaxe.
 - **Block loot:** blocks without rules of their own drop from their loot tables (`data/<namespace>/loot_table/blocks/`) when the tool harvests them; wheat drops from its table too. A wall torch, sign, hanging sign, banner or head uses the table of the standing one. Circuit compiles (`gameplay/loot.hpp`):

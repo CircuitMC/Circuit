@@ -15,8 +15,16 @@ constexpr std::int32_t needed(std::int32_t level) noexcept {
 
 // Gives a player experience points: the progress grows by the points over
 // what the level needs, in single precision; each whole level carries what
-// is left over, rescaled to the next level's need. The total grows too, up
-// to the largest int.
+// is left over, rescaled to the next level's need. The total grows too, as
+// a 32-bit sum that wraps, and is kept from going below 0. Negative points
+// take progress away, and levels while the progress is below 0 (at level 0
+// all experience is gone).
 void give_points(PlayerInventory& player, std::int32_t points) noexcept;
+// Gives (or takes) levels; the total stays. Below level 0 the player has no
+// level, progress or total.
+void give_levels(PlayerInventory& player, std::int32_t levels) noexcept;
+// Sets the progress to `points` of what the level needs (at most one less
+// than all of it); the level and total stay.
+void set_points(PlayerInventory& player, std::int32_t points) noexcept;
 
 } // namespace circuit::gameplay::experience

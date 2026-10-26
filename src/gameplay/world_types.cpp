@@ -248,6 +248,9 @@ std::string text(const PlayerInventory& p) {
     for (std::size_t i = 0; i < p.loom.size(); ++i)
         if (!p.loom[i].empty()) slots += std::format("loom{}:{}x{}/{} ", i, p.loom[i].item, p.loom[i].count, p.loom[i].damage);
     if (p.loom_pattern >= 0) slots += std::format("pattern:{} ", p.loom_pattern);
+    for (std::size_t i = 0; i < p.anvil.size(); ++i)
+        if (!p.anvil[i].empty()) slots += std::format("anvil{}:{}x{}/{} ", i, p.anvil[i].item, p.anvil[i].count, p.anvil[i].damage);
+    if (!p.anvil_name.empty() || p.anvil_cost != 0) slots += std::format("name:\"{}\" cost:{} ", p.anvil_name, p.anvil_cost);
     return std::format("player {:016x}{:016x} cursor={}x{} slots=[{}] xp={}+{}/{} xp_ready={}", p.player.hi, p.player.lo, p.cursor.item,
                        p.cursor.count, slots, p.xp_level, p.xp_progress, p.xp_total, p.xp_ready);
 }
@@ -426,6 +429,10 @@ std::uint64_t digest(const WorldDump& d) {
         for (const auto& s : p.grind) { h.add(contracts::pack_stack(s)); h.add(s.components.hash()); }
         for (const auto& s : p.loom) { h.add(contracts::pack_stack(s)); h.add(s.components.hash()); }
         h.add(static_cast<std::uint16_t>(p.loom_pattern));
+        for (const auto& s : p.anvil) { h.add(contracts::pack_stack(s)); h.add(s.components.hash()); }
+        h.add(p.anvil_name.size());
+        for (const char ch : p.anvil_name) h.add(static_cast<std::uint8_t>(ch));
+        h.add(static_cast<std::uint32_t>(p.anvil_cost));
         h.add(static_cast<std::uint32_t>(p.xp_level)); h.add(std::bit_cast<std::uint32_t>(p.xp_progress));
         h.add(static_cast<std::uint32_t>(p.xp_total)); h.add(p.xp_ready);
         h.add(p.drag_stage); h.add(p.drag_type); h.add(p.drag_slots.size());

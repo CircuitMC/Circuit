@@ -110,6 +110,7 @@ bool has_collision(BlockState s) {
 
 void record_slot(RuleContext& ctx, const PlayerInventory& inventory, std::uint8_t slot) {
     const auto stack = slot == contracts::player_slots ? inventory.cursor
+                     : slot >= contracts::anvil_first  ? inventory.anvil[slot - contracts::anvil_first]
                      : slot >= contracts::loom_first   ? inventory.loom[slot - contracts::loom_first]
                      : slot >= contracts::grind_first  ? inventory.grind[slot - contracts::grind_first]
                      : slot >= contracts::smith_first  ? inventory.smith[slot - contracts::smith_first]
@@ -202,7 +203,7 @@ namespace circuit::gameplay::detail {
 namespace {
 enum class Building {
     none, plain, pillar, stairs, slab, connector, toward_player, toward_look, clicked_face, fixed, torch, lantern, ladder, resting, tall,
-    sign, head, bed, snowy, mounted
+    sign, head, bed, snowy, mounted, sideways
 };
 
 Building building_kind(std::uint32_t block) {
@@ -228,6 +229,8 @@ Building building_kind(std::uint32_t block) {
     if (name == "barrel") return Building::toward_look;
     // Mounted on the clicked face as levers are, without needing support.
     if (name == "grindstone") return Building::mounted;
+    // Anvils lie across the player's way (they do not fall yet).
+    if (name == "anvil" || name == "chipped_anvil" || name == "damaged_anvil") return Building::sideways;
     if (name == "end_rod" || name == "lightning_rod" || name.ends_with("shulker_box")) return Building::clicked_face;
     if (name == "beacon" || name == "enchanting_table" || name == "jukebox" || name == "brewing_stand") return Building::fixed;
     // Blocks that need support (support.cpp).
@@ -471,6 +474,7 @@ std::optional<BlockState> placed_building(RuleContext& ctx, std::uint32_t block,
     case Building::connector: return joined_state(ctx, target, with(s, {{"waterlogged", water}}));
     case Building::toward_player: return with(s, {{"facing", std::string(name_of(contracts::opposite(c.horizontal)))}, {"waterlogged", water}});
     case Building::toward_look: return with(s, {{"facing", std::string(name_of(contracts::opposite(c.look)))}});
+    case Building::sideways: return with(s, {{"facing", std::string(name_of(contracts::clockwise(c.horizontal)))}});
     case Building::clicked_face: {
         // An end rod set on an end rod pointing at it points back.
         const auto behind = ctx.block(target.relative(contracts::opposite(c.face)));

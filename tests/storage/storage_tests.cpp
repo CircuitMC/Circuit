@@ -290,6 +290,10 @@ int main() {
             p.grind[0] = {circuit::gameplay::items::iron_pickaxe, 1, 30};
             p.loom[1] = {circuit::gameplay::items::stone, 3};
             p.loom_pattern = 5;
+            p.anvil[0] = named(circuit::gameplay::items::stone, 2, "Rock");
+            p.anvil[2] = {circuit::gameplay::items::iron_pickaxe, 1, 3};
+            p.anvil_name = "Rock \xE2\x9B\x8F";
+            p.anvil_cost = 41;
             p.xp_level = 9;
             p.xp_progress = 0.6000000834465027f;
             p.xp_total = 150;

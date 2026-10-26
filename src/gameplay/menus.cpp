@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Container menus: a player's own window and the windows of chests, double
 // chests, hoppers, furnaces, crafters, crafting tables, stonecutters,
-// smithing tables, grindstones and looms, with every click mode of the protocol,
+// smithing tables, grindstones, looms and anvils, with every click mode of the protocol,
 // applied as the target version's menus apply them (documented in the
 // protocol pages and compared with the official server through a protocol
 // client).
@@ -31,6 +31,7 @@ bool offhand_item(std::uint16_t item) { return item == items::shield; }
 // A player slot by its slot-record number: the inventory, or the open
 // crafting table's result and grid.
 ItemStack& player_slot(PlayerInventory& inv, std::uint8_t index) {
+    if (index >= contracts::anvil_first) return inv.anvil[index - contracts::anvil_first];
     if (index >= contracts::loom_first) return inv.loom[index - contracts::loom_first];
     if (index >= contracts::grind_first) return inv.grind[index - contracts::grind_first];
     if (index >= contracts::smith_first) return inv.smith[index - contracts::smith_first];
@@ -254,13 +255,17 @@ constexpr CraftingGrid table_grid{contracts::table_first, 3};
 // One menu: a list of slots, each a container slot or a player slot.
 class Menu {
 public:
-    Menu(RuleContext& ctx, PlayerInventory& inv, std::vector<BlockPos> parts) : ctx_(ctx), inv_(inv) {
+    Menu(RuleContext& ctx, PlayerInventory& inv, std::vector<BlockPos> parts, bool creative) : ctx_(ctx), inv_(inv), creative_(creative) {
         table_ = parts.size() == 1 && is_crafting_table(ctx.block(parts[0]));
         cutter_ = parts.size() == 1 && is_stonecutter(ctx.block(parts[0]));
         smith_ = parts.size() == 1 && is_smithing_table(ctx.block(parts[0]));
         grind_ = parts.size() == 1 && is_grindstone(ctx.block(parts[0]));
         loom_ = parts.size() == 1 && is_loom(ctx.block(parts[0]));
-        if (loom_) {
+        anvil_ = parts.size() == 1 && is_anvil(ctx.block(parts[0]));
+        if (anvil_) {
+            for (std::uint8_t i = 0; i < contracts::anvil_slots; ++i)
+                slots_.push_back({{}, static_cast<std::uint8_t>(contracts::anvil_first + i), false});
+        } else if (loom_) {
             for (std::uint8_t i = 0; i < contracts::loom_slots; ++i)
                 slots_.push_back({{}, static_cast<std::uint8_t>(contracts::loom_first + i), false});
         } else if (grind_) {
@@ -316,6 +321,7 @@ public:
             if (s.index == contracts::cutter_first) cutter_input_changed(ctx_, inv_, before);
             if (s.index >= contracts::smith_first && s.index < contracts::smith_first + 3) set_smith_result(ctx_, inv_);
             if (s.index >= contracts::grind_first && s.index < contracts::grind_first + 2) set_grind_result(ctx_, inv_);
+            if (s.index >= contracts::anvil_first && s.index < contracts::anvil_first + 2) set_anvil_result(ctx_, inv_, creative_);
             if (s.index >= contracts::loom_first && s.index < contracts::loom_first + 3) {
                 const auto banner = s.index == contracts::loom_first ? before : inv_.loom[0];
                 const auto dye = s.index == contracts::loom_first + 1 ? before : inv_.loom[1];
@@ -343,9 +349,9 @@ public:
     // The crafting result of the own window or a crafting table: taking
     // from it crafts (see click_result); nothing is placed in it.
     [[nodiscard]] bool result(std::size_t i) const {
-        return ((own_ || table_) && i == 0) || (cutter_ && i == 1) || ((smith_ || loom_) && i == 3) || (grind_ && i == 2);
+        return ((own_ || table_) && i == 0) || (cutter_ && i == 1) || ((smith_ || loom_) && i == 3) || ((grind_ || anvil_) && i == 2);
     }
-    [[nodiscard]] std::size_t result_slot() const { return smith_ || loom_ ? 3 : grind_ ? 2 : cutter_ ? 1 : 0; }
+    [[nodiscard]] std::size_t result_slot() const { return smith_ || loom_ ? 3 : grind_ || anvil_ ? 2 : cutter_ ? 1 : 0; }
     [[nodiscard]] bool may_place(std::size_t i, ItemStack stack) const {
         if (result(i)) return false;
         if (own_ && i >= 5 && i <= 8) return armor_slot(stack.item) == i;
@@ -481,6 +487,20 @@ public:
             else if (may_place(1, stack) && get(1).empty()) moved = move_into(stack, 1, 2, false);
             else if (i < 30) moved = move_into(stack, 30, 39, false);
             else moved = move_into(stack, 3, 30, false);
+        } else if (anvil_) {
+            // The inputs go to the inventory from its start; from the
+            // inventory an item goes into the first input that is empty or
+            // holds its kind with room, else between the main inventory and
+            // the hotbar.
+            std::optional<std::size_t> to;
+            for (std::size_t k = 0; k < 2 && i >= 3 && !to; ++k) {
+                const auto there = get(k);
+                if (there.empty() || (there.same_kind(stack) && there.count < max_stack(k, there))) to = k;
+            }
+            if (i < 2) moved = move_into(stack, 3, 39, false);
+            else if (to) moved = move_into(stack, *to, *to + 1, false);
+            else if (i < 30) moved = move_into(stack, 30, 39, false);
+            else moved = move_into(stack, 3, 30, false);
         } else if (smith_) {
             // The template, base and addition go to the inventory from its
             // start; from the inventory an item goes into the first of them
@@ -571,10 +591,12 @@ public:
     [[nodiscard]] bool smith() const { return smith_; }
     [[nodiscard]] bool grind() const { return grind_; }
     [[nodiscard]] bool loom() const { return loom_; }
+    [[nodiscard]] bool anvil() const { return anvil_; }
+    [[nodiscard]] bool creative() const { return creative_; }
     [[nodiscard]] CraftingGrid grid() const { return table_ ? table_grid : own_grid; }
     // The window slots of the main inventory and the hotbar.
-    [[nodiscard]] std::size_t inventory_first() const { return smith_ || loom_ ? 4 : grind_ ? 3 : cutter_ ? 2 : table_ ? 10 : 9; }
-    [[nodiscard]] std::size_t inventory_end() const { return smith_ || loom_ ? 40 : grind_ ? 39 : cutter_ ? 38 : table_ ? 46 : 45; }
+    [[nodiscard]] std::size_t inventory_first() const { return smith_ || loom_ ? 4 : grind_ || anvil_ ? 3 : cutter_ ? 2 : table_ ? 10 : 9; }
+    [[nodiscard]] std::size_t inventory_end() const { return smith_ || loom_ ? 40 : grind_ || anvil_ ? 39 : cutter_ ? 38 : table_ ? 46 : 45; }
     [[nodiscard]] PlayerInventory& inventory() const { return inv_; }
 
 private:
@@ -595,7 +617,9 @@ private:
     bool smith_{};
     bool grind_{};
     bool loom_{};
+    bool anvil_{};
     bool brewing_{};
+    bool creative_{};
 };
 
 void throw_item(RuleContext& ctx, const contracts::Vec3& position, const contracts::Vec3& velocity, ItemStack stack) {
@@ -721,12 +745,16 @@ void use_loom(RuleContext& ctx, PlayerInventory& inv) {
 
 // Clicks on a crafting, stonecutting or smithing result. Each take crafts
 // once: the whole result leaves the slot and the grid or the inputs are used.
+// An anvil's result is taken only with its cost in levels (any in creative
+// mode).
 void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick& c) {
     auto& inv = menu.inventory();
+    if (menu.anvil() && !anvil_result_takeable(inv, c.creative)) return;
     const auto made_now = [&] { return menu.get(menu.result_slot()); };
     const auto use = [&] {
         if (menu.smith()) use_smith(ctx, inv);
         else if (menu.grind()) use_grind(ctx, inv, c.container);
+        else if (menu.anvil()) use_anvil(ctx, inv, c.container, c.creative);
         else if (menu.loom()) use_loom(ctx, inv);
         else if (menu.cutter()) use_cutter(ctx, inv);
         else use_grid(ctx, inv, menu.grid(), c);
@@ -801,7 +829,7 @@ void update_crafting(RuleContext& ctx, PlayerInventory& inv) {
 contracts::Result<std::vector<BlockPos>> menu_parts(RuleContext& ctx, std::optional<BlockPos> container) {
     if (!container) return std::vector<BlockPos>{};
     const auto s = ctx.block(*container);
-    if (!s.is_unloaded() && (is_crafting_table(s) || is_stonecutter(s) || is_smithing_table(s) || is_grindstone(s) || is_loom(s)))
+    if (!s.is_unloaded() && (is_crafting_table(s) || is_stonecutter(s) || is_smithing_table(s) || is_grindstone(s) || is_loom(s) || is_anvil(s)))
         return std::vector<BlockPos>{*container};
     if (s.is_unloaded() || !is_container(s.type())) return std::unexpected(contracts::ErrorCode::not_a_container);
     return container_parts(ctx, *container);
@@ -857,7 +885,7 @@ contracts::Result<std::function<void()>> plan_click(RuleContext& ctx, const cont
     if (c.mode > 6) return std::unexpected(contracts::ErrorCode::invalid_argument);
     return [&ctx, c, parts = std::move(*parts)] {
         auto& inv = ctx.player(c.player);
-        Menu menu(ctx, inv, parts);
+        Menu menu(ctx, inv, parts, c.creative);
         if (c.slot != outside && !menu.valid(c.slot) && !(c.mode == 5 && (c.button & 3) != 1)) return;
         // The grid's result follows whatever the click changed.
         struct Recraft {
@@ -1120,7 +1148,8 @@ contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const cont
         for (const auto slot : {contracts::cutter_first, contracts::smith_first, static_cast<std::uint8_t>(contracts::smith_first + 1),
                                 static_cast<std::uint8_t>(contracts::smith_first + 2), contracts::grind_first,
                                 static_cast<std::uint8_t>(contracts::grind_first + 1), contracts::loom_first,
-                                static_cast<std::uint8_t>(contracts::loom_first + 1), static_cast<std::uint8_t>(contracts::loom_first + 2)}) {
+                                static_cast<std::uint8_t>(contracts::loom_first + 1), static_cast<std::uint8_t>(contracts::loom_first + 2),
+                                contracts::anvil_first, static_cast<std::uint8_t>(contracts::anvil_first + 1)}) {
             auto& held = player_slot(inv, slot);
             const auto input = held;
             if (input.empty()) continue;
@@ -1134,6 +1163,9 @@ contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const cont
         set_grind_result(ctx, inv);
         inv.loom_pattern = -1;
         set_loom_result(ctx, inv);
+        // An anvil's typed name goes with its window.
+        inv.anvil_name.clear();
+        set_anvil_result(ctx, inv, false);
         if (!inv.cursor.empty()) {
             const auto carried = inv.cursor;
             inv.cursor = {};
@@ -1180,6 +1212,7 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
         for (std::uint8_t k = 0; k < 3; ++k) order.push_back(static_cast<std::uint8_t>(contracts::smith_first + k));
         for (std::uint8_t k = 0; k < 2; ++k) order.push_back(static_cast<std::uint8_t>(contracts::grind_first + k));
         for (std::uint8_t k = 0; k < 3; ++k) order.push_back(static_cast<std::uint8_t>(contracts::loom_first + k));
+        for (std::uint8_t k = 0; k < 2; ++k) order.push_back(static_cast<std::uint8_t>(contracts::anvil_first + k));
         std::size_t n = 0;
         const auto drop = [&](ItemStack stack) {
             if (in_world) spawn_dropped(ctx, cell, c.position, death_drop_velocity(n++), stack, 40);
@@ -1199,6 +1232,8 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
         set_grind_result(ctx, inv);
         inv.loom_pattern = -1;
         set_loom_result(ctx, inv);
+        inv.anvil_name.clear();
+        set_anvil_result(ctx, inv, false);
         if (!inv.cursor.empty()) {
             const auto stack = inv.cursor;
             inv.cursor = {};
@@ -1244,5 +1279,9 @@ bool is_grindstone(BlockState s) {
 bool is_loom(BlockState s) {
     static const auto block = find_registry_block("loom");
     return of_block(s, block);
+}
+bool is_anvil(BlockState s) {
+    static const std::array blocks{find_registry_block("anvil"), find_registry_block("chipped_anvil"), find_registry_block("damaged_anvil")};
+    return std::ranges::any_of(blocks, [&](const auto& block) { return of_block(s, block); });
 }
 } // namespace circuit::gameplay

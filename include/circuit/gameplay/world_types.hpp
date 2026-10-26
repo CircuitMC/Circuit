@@ -217,6 +217,12 @@ struct PlayerInventory {
     // result, and the pattern chosen among the selectable ones (-1: none).
     std::array<ItemStack, contracts::loom_slots> loom{};
     std::int16_t loom_pattern{-1};
+    // The anvil window the player has open: its two inputs and result, the
+    // name the player typed (kept for the next item, as the official servers
+    // keep it) and the result's level cost.
+    std::array<ItemStack, contracts::anvil_slots> anvil{};
+    std::string anvil_name;
+    std::int32_t anvil_cost{};
     // A drag across slots in progress (several clicks): its stage (0 none,
     // 1 collecting slots), its type (0 split evenly, 1 one each, 2 full
     // stacks) and the slots collected so far, in window numbering.
@@ -235,7 +241,8 @@ struct PlayerInventory {
         const auto none = [](const ItemStack& s) { return s.empty(); };
         return cursor.empty() && drag_stage == 0 && std::ranges::all_of(slots, none) && std::ranges::all_of(table, none)
             && std::ranges::all_of(cutter, none) && cutter_recipe == -1 && std::ranges::all_of(smith, none)
-            && std::ranges::all_of(grind, none) && std::ranges::all_of(loom, none) && loom_pattern == -1 && xp_level == 0
+            && std::ranges::all_of(grind, none) && std::ranges::all_of(loom, none) && loom_pattern == -1
+            && std::ranges::all_of(anvil, none) && anvil_name.empty() && anvil_cost == 0 && xp_level == 0
             && xp_progress == 0.0f && xp_total == 0 && xp_ready == 0;
     }
     bool operator==(const PlayerInventory&) const = default;

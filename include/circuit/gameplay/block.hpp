@@ -401,6 +401,8 @@ bool is_stonecutter(BlockState s);
 bool is_smithing_table(BlockState s);
 bool is_grindstone(BlockState s);
 bool is_loom(BlockState s);
+// An anvil, chipped or damaged.
+bool is_anvil(BlockState s);
 // Full collision cell for item entities. Blocks without rules of their own
 // are solid when they have any collision shape (cell-level approximation).
 inline bool is_solid(BlockState s) noexcept {

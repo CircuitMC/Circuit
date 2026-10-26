@@ -6,6 +6,7 @@
 #include "movement.hpp"
 #include "world_meta.hpp"
 #include <circuit/evidence/fixture_runner.hpp>
+#include <circuit/gameplay/experience.hpp>
 #include <circuit/gameplay/rules.hpp>
 #include <circuit/gameplay/survival.hpp>
 #include <circuit/storage/world_directory.hpp>
@@ -844,6 +845,9 @@ struct Game::Impl final : GameServices {
             if (gameplay::is_loom(at(p.window->pos)))
                 for (std::size_t i = 0; i < contracts::loom_slots; ++i)
                     slots.push_back(inv && *inv ? wire_stack((*inv)->loom[i]) : WireStack{});
+            if (gameplay::is_anvil(at(p.window->pos)))
+                for (std::size_t i = 0; i < contracts::anvil_slots; ++i)
+                    slots.push_back(inv && *inv ? wire_stack((*inv)->anvil[i]) : WireStack{});
             for (const auto part : container_parts_of(p.window->pos))
                 if (const auto be = view.block_entity(overworld, part); be && *be)
                     for (const auto& s : (*be)->slots) slots.push_back(wire_stack(s));
@@ -886,6 +890,14 @@ struct Game::Impl final : GameServices {
             if (p.window->data[0] != recipe) {
                 p.peer->send(wire.container_data(p.window->id, 0, static_cast<std::int16_t>(recipe)));
                 p.window->data[0] = recipe;
+            }
+        }
+        // An anvil window's property: the level cost of its result.
+        if (p.window && gameplay::is_anvil(at(p.window->pos))) {
+            const std::int32_t cost = inv && *inv ? (*inv)->anvil_cost : 0;
+            if (p.window->data[0] != cost) {
+                p.peer->send(wire.container_data(p.window->id, 0, static_cast<std::int16_t>(std::clamp(cost, -32768, 32767))));
+                p.window->data[0] = cost;
             }
         }
         // A brewing stand window's properties: its brew time and its fuel.
@@ -944,6 +956,7 @@ struct Game::Impl final : GameServices {
         if (gameplay::is_smithing_table(at(pos))) return contracts::smith_slots;
         if (gameplay::is_grindstone(at(pos))) return contracts::grind_slots;
         if (gameplay::is_loom(at(pos))) return contracts::loom_slots;
+        if (gameplay::is_anvil(at(pos))) return contracts::anvil_slots;
         std::size_t n = 0;
         for (const auto part : container_parts_of(pos)) n += gameplay::container_size(at(part).type());
         return n;
@@ -964,7 +977,7 @@ struct Game::Impl final : GameServices {
         const auto block = at(pos);
         // Menu types of the protocol's menu registry (minecraft.wiki, Java
         // Edition protocol/Inventory, and observed from the target version):
-        // generic_9x3 2, generic_9x6 5, generic_3x3 6, crafter_3x3 7,
+        // generic_9x3 2, generic_9x6 5, generic_3x3 6, crafter_3x3 7, anvil 8,
         // blast_furnace 10, brewing_stand 11, crafting 12, furnace 14,
         // grindstone 15, hopper 16, loom 18, smithing 21, smoker 22, stonecutter 24.
         constexpr std::array<std::int32_t, 3> furnace_menus{14, 22, 10};
@@ -973,10 +986,11 @@ struct Game::Impl final : GameServices {
         const bool smith = gameplay::is_smithing_table(block);
         const bool grind = gameplay::is_grindstone(block);
         const bool loom = gameplay::is_loom(block);
+        const bool anvil = gameplay::is_anvil(block);
         const std::int32_t type = block.is(BlockType::furnace) ? furnace_menus[block.variant() % 3]
                                 : block.is(BlockType::crafter) ? 7
                                 : block.is(BlockType::brewing_stand) ? 11
-                                : table ? 12 : cutter ? 24 : smith ? 21 : grind ? 15 : loom ? 18 : slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
+                                : table ? 12 : cutter ? 24 : smith ? 21 : grind ? 15 : loom ? 18 : anvil ? 8 : slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
         // A container's custom name is its title (for a double chest, the
         // first named half's).
         constexpr std::array<std::string_view, 3> furnace_titles{"Furnace", "Smoker", "Blast Furnace"};
@@ -984,7 +998,7 @@ struct Game::Impl final : GameServices {
                                          : block.is(BlockType::crafter) ? "Crafter"
                                          : block.is(BlockType::brewing_stand) ? "Brewing Stand"
                                          : table ? "Crafting" : cutter ? "Stonecutter" : smith ? "Upgrade Gear" : grind ? "Repair & Disenchant"
-                                         : loom ? "Loom"
+                                         : loom ? "Loom" : anvil ? "Repair & Name"
                                          : slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper"
                                          : block.is(BlockType::dispenser) ? (block.variant() == 1 ? "Dropper" : "Dispenser")
                                                                           : "Chest");
@@ -1689,6 +1703,27 @@ struct Game::Impl final : GameServices {
         admit(contracts::ContainerButton{key_of(p), p.window->pos, c.button});
     }
 
+    // The name typed into an open anvil window, as both official servers
+    // take it: without the section sign and control characters, and ignored
+    // when it is still longer than 50 UTF-16 code units.
+    void handle(Player& p, intent::RenameItem& r) {
+        if (!p.window || !gameplay::is_anvil(at(p.window->pos))) return;
+        std::string name;
+        std::size_t units = 0;
+        for (std::size_t i = 0; i < r.name.size();) {
+            const auto lead = static_cast<unsigned char>(r.name[i]);
+            const std::size_t length = lead < 0x80 ? 1 : (lead & 0xE0) == 0xC0 ? 2 : (lead & 0xF0) == 0xE0 ? 3 : 4;
+            if (i + length > r.name.size()) return;
+            const auto ch = std::string_view(r.name).substr(i, length);
+            i += length;
+            if ((length == 1 && (lead < 0x20 || lead == 0x7F)) || ch == "\xC2\xA7") continue;
+            name += ch;
+            units += length == 4 ? 2 : 1;
+        }
+        if (units > contracts::max_item_name) return;
+        admit(contracts::RenameItem{key_of(p), std::move(name), p.game_mode == creative});
+    }
+
     void handle(Player& p, intent::Chat& c) {
         std::string text;
         for (const char ch : c.text)
@@ -1712,7 +1747,8 @@ struct Game::Impl final : GameServices {
             for (const auto& [name, usage] : extensions->commands()) extra += std::format(", /{}{}{}", name, usage.empty() ? "" : " ", usage);
             message(p, "Commands: /help, /players, /tp [<own name>] <x> <y> <z>, /gamemode <survival|creative|spectator>, "
                        "/forceload add|remove <x> <z> [<x> <z>], /forceload remove all, /forceload query [<x> <z>], /gamerule <rule> [<value>], "
-                       "/time set|add <time>, /time query daytime|gametime|day, /weather clear|rain|thunder [<duration>], /kill [<own name>], /summon <entity> <x> <y> <z> [{...}], /tps" + extra);
+                       "/time set|add <time>, /time query daytime|gametime|day, /weather clear|rain|thunder [<duration>], /kill [<own name>], /summon <entity> <x> <y> <z> [{...}], "
+                       "/xp add|set <player> <amount> [levels|points], /xp query <player> levels|points, /tps" + extra);
         } else if (args[0] == "players") {
             std::string names;
             for (const auto& [id, o] : players) names += (names.empty() ? "" : ", ") + o.name;
@@ -1768,6 +1804,8 @@ struct Game::Impl final : GameServices {
             const auto type = summon->type;
             admit(std::move(*summon), overworld);
             message(p, std::format("Summoned new {}", type));
+        } else if ((args[0] == "xp" || args[0] == "experience") && c.text.starts_with(args[0])) {
+            experience(p, c.text, args[0]);
         } else if (args[0] == "tps") {
             message(p, std::format("tick {}", engine->time()));
         } else if (const auto reply = extensions->command(p.name, args[0], std::span(args).subspan(1))) {
@@ -1853,6 +1891,59 @@ struct Game::Impl final : GameServices {
         }
         admit(contracts::SetWeather{kind, duration});
         send_translation(p, std::format("commands.weather.set.{}", name), nbt::Tag::list(nbt::TagType::string));
+    }
+
+    // `/xp` (or `/experience`) `add|set <player> <amount> [levels|points]`
+    // and `query <player> levels|points`: a player by name, or @s or @p for
+    // the player themself. Setting points stays below what the level needs.
+    void experience(Player& p, std::string_view input, std::string_view literal) {
+        CommandReader r(input, literal.size());
+        if (r.done()) return syntax_error(p, input, r.incomplete());
+        if (auto e = r.child()) return syntax_error(p, input, *e);
+        const auto action = r.word();
+        if (action != "add" && action != "set" && action != "query") return syntax_error(p, input, r.error("command.unknown.argument"));
+        r.skip(action.size());
+        if (r.done()) return syntax_error(p, input, r.incomplete());
+        if (auto e = r.child()) return syntax_error(p, input, *e);
+        const auto name = std::string(r.word());
+        r.skip(name.size());
+        Player* target = name == "@s" || name == "@p" ? &p : nullptr;
+        for (auto& [id, o] : players)
+            if (!target && o.name == name) target = &o;
+        if (r.done()) return syntax_error(p, input, r.incomplete());
+        if (auto e = r.child()) return syntax_error(p, input, *e);
+        std::int32_t amount = 0;
+        if (action != "query") {
+            const auto value = r.integer(action == "set" ? 0 : std::numeric_limits<std::int32_t>::min(), std::numeric_limits<std::int32_t>::max());
+            if (!value) return syntax_error(p, input, value.error());
+            amount = *value;
+        }
+        bool levels = false;
+        if (action == "query" || !r.done()) {
+            if (action != "query")
+                if (auto e = r.child()) return syntax_error(p, input, *e);
+            const auto unit = r.word();
+            if (unit != "levels" && unit != "points") return syntax_error(p, input, r.error("command.unknown.argument"));
+            levels = unit == "levels";
+            r.skip(unit.size());
+        }
+        if (auto e = r.end()) return syntax_error(p, input, *e);
+        if (!target) return message(p, "No player was found", "red");
+        const auto view = engine->view();
+        const auto inv = view.player(key_of(*target));
+        const auto level = inv && *inv ? (*inv)->xp_level : 0;
+        const auto unit = levels ? "levels" : "points";
+        if (action == "query") {
+            const auto value = levels ? level
+                                      : inv && *inv ? static_cast<std::int32_t>((*inv)->xp_progress * static_cast<float>(gameplay::experience::needed(level)))
+                                                    : 0;
+            return send_translation(p, std::format("commands.experience.query.{}", unit), string_arguments({target->name, std::to_string(value)}));
+        }
+        if (action == "set" && !levels && amount >= gameplay::experience::needed(level))
+            return message(p, "Cannot set experience points above the maximum points for the player's current level", "red");
+        admit(contracts::ChangeExperience{key_of(*target), amount, levels, action == "set"});
+        send_translation(p, std::format("commands.experience.{}.{}.success.single", action, unit),
+                         string_arguments({std::to_string(amount), target->name}));
     }
 
     // The day time with the commands of the coming tick applied.

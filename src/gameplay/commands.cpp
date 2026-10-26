@@ -230,7 +230,8 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
                     return std::unexpected(ErrorCode::not_usable);
             return [&ctx, c] { ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo); };
         }
-        if (is_crafting_table(clicked) || is_stonecutter(clicked) || is_smithing_table(clicked) || is_grindstone(clicked) || is_loom(clicked))
+        if (is_crafting_table(clicked) || is_stonecutter(clicked) || is_smithing_table(clicked) || is_grindstone(clicked) || is_loom(clicked)
+            || is_anvil(clicked))
             return [&ctx, c] { ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo); };
     }
     // Bone meal acts on the clicked block as a dispenser's does, used up in
@@ -418,6 +419,37 @@ Plan plan(RuleContext& ctx, const contracts::CloseContainer& c) { return detail:
 Plan plan(RuleContext& ctx, const contracts::ContainerButton& c) { return detail::plan_button(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::SetSlotEnabled& c) { return detail::plan_slot_enabled(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::PlayerUseItem& c) { return detail::plan_use_item(ctx, c); }
+
+// The name a player types into their anvil window: the result follows it.
+Plan plan(RuleContext& ctx, const contracts::RenameItem& c) {
+    if (!detail::valid_item_name(c.name)) return std::unexpected(ErrorCode::invalid_argument);
+    return [&ctx, c] {
+        auto& inv = ctx.player(c.player);
+        if (inv.anvil_name == c.name) return;
+        inv.anvil_name = c.name;
+        detail::set_anvil_result(ctx, inv, c.creative);
+    };
+}
+
+// The /xp command: levels set or added (below 0 none, and no experience at
+// all), points added (taking levels away when negative) or set within the
+// level (below what it needs).
+Plan plan(RuleContext& ctx, const contracts::ChangeExperience& c) {
+    const auto* inv = ctx.peek_player(c.player);
+    if (c.set && c.amount < 0) return std::unexpected(ErrorCode::invalid_argument);
+    if (c.set && !c.levels && c.amount >= experience::needed(inv ? inv->xp_level : 0)) return std::unexpected(ErrorCode::invalid_argument);
+    return [&ctx, c] {
+        auto& player = ctx.player(c.player);
+        const auto before = player.xp_total;
+        if (c.levels && c.set) player.xp_level = c.amount;
+        else if (c.levels) experience::give_levels(player, c.amount);
+        else if (c.set) experience::set_points(player, c.amount);
+        else experience::give_points(player, c.amount);
+        if (player.xp_total != before)
+            ctx.record(TraceKind::player_experience_changed, {}, c.player.hi, c.player.lo,
+                       static_cast<std::uint64_t>(static_cast<std::uint32_t>(player.xp_total)));
+    };
+}
 
 Plan plan(RuleContext&, const contracts::AddTicket&) { return std::unexpected(ErrorCode::unknown_command); }
 Plan plan(RuleContext&, const contracts::RemoveTicket&) { return std::unexpected(ErrorCode::unknown_command); }

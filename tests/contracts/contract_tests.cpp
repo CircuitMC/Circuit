@@ -166,6 +166,9 @@ int main() {
                                  {24, CloseContainer{alex, {7, 8, 9}, {0, 0.3, 0}, true}}, {25, ContainerButton{alex, BlockPos{1, -2, 3}, 17}},
                                  {26, ContainerButton{alex, std::nullopt, -1}}, {27, SetSlotEnabled{alex, BlockPos{4, 5, -6}, 8, false}},
                                  {28, SetSlotEnabled{alex, BlockPos{4, 5, -6}, 0, true}}}});
+        // Anvil names (tag 32) and experience changes (tag 33).
+        log.ticks.push_back({8, {{29, RenameItem{alex, "Digger \xE2\x9B\x8F", true}}, {30, RenameItem{alex, "", false}},
+                                 {31, ChangeExperience{alex, -2147483647 - 1, false, false}}, {32, ChangeExperience{alex, 30, true, true}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);

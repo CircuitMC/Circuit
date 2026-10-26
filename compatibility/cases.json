@@ -339,6 +339,17 @@
       "description": "25 steps at a grindstone: a cursed and enchanted pickaxe disenchanted (the curse and a repair cost of 1 kept), two damaged pickaxes merged, enchanted books into books (1.21.4 keeps an empty stored_enchantments, 1.21.8 none), a plain damaged pickaxe alone making nothing, quick moves into both inputs and across, stone refused, closing; experience orbs left out; Circuit and both official servers give identical windows"
     },
     {
+      "id": "client/anvil",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/anvil.js",
+      "status": "passing",
+      "description": "48 steps at an anvil placed across the player's way: a worn iron pickaxe repaired by three ingots, two pickaxes combined, Efficiency I and a book of it made Efficiency II, names typed and kept for the next items (a blank one removing a name, one too long ignored, a section sign removed), renaming alone capped at 39 levels with prior work penalties, a repair too expensive at 41, a result refused with too few levels and taken with enough, then /xp adding and setting levels and points (the total wrapping at the largest int); Circuit and both official servers give identical windows, costs, components, levels, progress and totals"
+    },
+    {
       "id": "client/furnace_xp",
       "kind": "black_box",
       "versions": [

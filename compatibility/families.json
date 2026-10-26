@@ -2378,8 +2378,25 @@
           ]
         },
         {
+          "id": "anvil",
+          "name": "Anvils",
+          "milestone": "C5",
+          "impl": "partial",
+          "evidence": "compared",
+          "note": "Anvils repair with their items' materials and by combining two of a kind, join enchantments from books and like items within their highest levels, supported items and exclusive sets, and rename by the typed name (filtered and at most 50 UTF-16 code units, kept for the next items, compared with the names items show in English); prior work penalties, the 39-level cap for renaming, too expensive results and the level cost taken from the player as both official servers give them; the /xp command sets and adds levels and points; 48 steps give the same windows, costs, components and experience as both official servers",
+          "deviations": [
+            "an anvil wears by a random of Circuit's own; the official servers draw it from an unseeded random",
+            "anvils do not fall",
+            "stacks with several enchantments keep the left's order with the new ones after it; the official servers keep a hash order of their own",
+            "names items show come from the jar's English names: a written book's title, a player head's owner and item_name components are not used"
+          ],
+          "cases": [
+            "client/anvil"
+          ]
+        },
+        {
           "id": "other_menus",
-          "name": "Enchanting, anvils, cartography, beacons, merchants, lecterns and mount inventories",
+          "name": "Enchanting, cartography, beacons, merchants, lecterns and mount inventories",
           "milestone": "C5",
           "impl": "missing",
           "evidence": "none"

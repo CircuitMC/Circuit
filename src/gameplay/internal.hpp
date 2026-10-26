@@ -403,6 +403,18 @@ void furnace_input_set(RuleContext& ctx, BlockPos pos, const ItemStack& before);
 // who gets it at their feet.
 void award_cooked(RuleContext& ctx, const std::vector<std::pair<std::string, std::int32_t>>& recipes, contracts::Vec3 at);
 void furnace_result_taken(RuleContext& ctx, BlockPos pos, contracts::PlayerKey player);
+
+// ---- anvils (anvils.cpp) ----
+// Sets an anvil window's result and level cost from its inputs and typed
+// name; whether the player may take the result (its cost in levels, any in
+// creative mode); and what taking it does: the levels and inputs it uses,
+// and the anvil at `at` worn with a chance.
+void set_anvil_result(RuleContext& ctx, PlayerInventory& inv, bool creative);
+bool anvil_result_takeable(const PlayerInventory& inv, bool creative);
+void use_anvil(RuleContext& ctx, PlayerInventory& inv, std::optional<BlockPos> at, bool creative);
+// Whether a typed name may name an item: UTF-8 without control characters
+// or the section sign, of at most contracts::max_item_name UTF-16 code units.
+bool valid_item_name(std::string_view name);
 void tick_furnace(RuleContext& ctx, BlockPos pos, BlockState s);
 std::vector<std::size_t> furnace_slots(Direction face);
 bool furnace_accepts(const BlockEntity& be, std::size_t slot, const ItemStack& stack);

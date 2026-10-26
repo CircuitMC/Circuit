@@ -8,8 +8,12 @@
 #include <circuit/protocol/content.hpp>
 #include <algorithm>
 #include <array>
+#include <cctype>
 #include <format>
+#include <initializer_list>
 #include <set>
+#include <tuple>
+#include <unordered_map>
 
 namespace circuit::server {
 namespace {
@@ -247,6 +251,135 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
                         game->block_experience_set.emplace_back(*id, static_cast<float>(value->as_number()));
                 }
             }
+        }
+        // Anvils: each enchantment's cost, highest level, items and exclusions;
+        // each item's repair materials (the material's item tag).
+        const auto items_of = [&](const auth::Json* spec) {
+            std::vector<std::uint16_t> ids;
+            const auto add = [&](const std::string& name) {
+                if (name.starts_with("#")) {
+                    if (const auto* tag = packs->tag("item", name.substr(1)))
+                        for (const auto& member : *tag)
+                            if (const auto id = gameplay::items::by_name(member)) ids.push_back(*id);
+                } else if (const auto id = gameplay::items::by_name(name)) {
+                    ids.push_back(*id);
+                }
+            };
+            if (spec && spec->kind() == auth::Json::Kind::string) add(spec->as_string());
+            if (spec && spec->kind() == auth::Json::Kind::array)
+                for (const auto& e : spec->items())
+                    if (e.kind() == auth::Json::Kind::string) add(e.as_string());
+            std::ranges::sort(ids);
+            ids.erase(std::ranges::unique(ids).begin(), ids.end());
+            return ids;
+        };
+        if (const auto* defined = packs->resources("enchantment")) {
+            const auto ctx = component_context(bundle, out.registries);
+            for (const auto& [name, text] : *defined) {
+                const auto json = auth::Json::parse(text);
+                const auto id = ctx.id_of("enchantment", name);
+                if (!json || !id) continue;
+                gameplay::GameData::EnchantmentRules rules;
+                if (const auto* cost = json->find("anvil_cost")) rules.anvil_cost = static_cast<std::int32_t>(cost->as_number());
+                if (const auto* level = json->find("max_level")) rules.max_level = static_cast<std::int32_t>(level->as_number());
+                rules.supported = items_of(json->find("supported_items"));
+                if (const auto* set = json->find("exclusive_set")) {
+                    std::vector<std::string> names;
+                    if (set->kind() == auth::Json::Kind::string && set->as_string().starts_with("#")) {
+                        if (const auto* tag = packs->tag("enchantment", set->as_string().substr(1))) names = *tag;
+                    } else if (set->kind() == auth::Json::Kind::string) {
+                        names.push_back(set->as_string());
+                    } else if (set->kind() == auth::Json::Kind::array) {
+                        for (const auto& e : set->items()) names.push_back(e.as_string());
+                    }
+                    for (const auto& other : names)
+                        if (const auto o = ctx.id_of("enchantment", other)) rules.exclusive.push_back(*o);
+                    std::ranges::sort(rules.exclusive);
+                }
+                game->enchantment_rules.emplace(*id, std::move(rules));
+            }
+        }
+        for (std::uint16_t item = 1; const auto* info = gameplay::items::info(item); ++item) {
+            std::string_view n = info->name;
+            n.remove_prefix(10);
+            const auto tool = n.ends_with("_sword") || n.ends_with("_shovel") || n.ends_with("_pickaxe") || n.ends_with("_axe") || n.ends_with("_hoe");
+            const auto armor = n.ends_with("_helmet") || n.ends_with("_chestplate") || n.ends_with("_leggings") || n.ends_with("_boots");
+            std::string tag;
+            for (const auto& [material, tools, armors] : std::initializer_list<std::tuple<std::string_view, std::string_view, std::string_view>>{
+                     {"wooden_", "wooden_tool_materials", ""}, {"stone_", "stone_tool_materials", ""},
+                     {"iron_", "iron_tool_materials", "repairs_iron_armor"}, {"golden_", "gold_tool_materials", "repairs_gold_armor"},
+                     {"diamond_", "diamond_tool_materials", "repairs_diamond_armor"},
+                     {"netherite_", "netherite_tool_materials", "repairs_netherite_armor"}, {"leather_", "", "repairs_leather_armor"},
+                     {"chainmail_", "", "repairs_chain_armor"}})
+                if (n.starts_with(material)) tag = std::string(tool ? tools : armor ? armors : "");
+            if (n == "turtle_helmet") tag = "repairs_turtle_helmet";
+            if (n == "wolf_armor") tag = "repairs_wolf_armor";
+            if (n == "shield") tag = "wooden_tool_materials";
+            std::vector<std::uint16_t> materials;
+            if (!tag.empty()) {
+                if (const auto* members = packs->tag("item", "minecraft:" + tag))
+                    for (const auto& member : *members)
+                        if (const auto id = gameplay::items::by_name(member)) materials.push_back(*id);
+            } else if (n == "elytra") {
+                materials.push_back(gameplay::items::phantom_membrane);
+            } else if (n == "mace") {
+                materials.push_back(gameplay::items::breeze_rod);
+            }
+            std::ranges::sort(materials);
+            if (!materials.empty()) game->repair_materials.emplace(item, std::move(materials));
+        }
+        if (const auto* codec = protocol::ComponentCodec::for_protocol(bundle.schema.component_schema)) {
+            game->repair_cost_of = [codec](const contracts::ComponentPatch& patch) { return codec->repair_cost_of(patch); };
+            game->custom_name_of = [codec](const contracts::ComponentPatch& patch) { return codec->custom_name_of(patch); };
+            game->with_custom_name = [codec, ctx = component_context(bundle, out.registries)](
+                                         const contracts::ComponentPatch& base, const std::optional<std::string>& name) -> std::optional<contracts::ComponentPatch> {
+                auto patch = codec->with_custom_name(base, name, ctx);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
+        }
+        // Names as a player sees them, in English: what an anvil compares a
+        // typed name with. A custom name's text; else a potion's name (its
+        // potion without long_ or strong_); else the item's, from the jar's
+        // language file (or its id in title case without one).
+        {
+            const auto& language = packs->language();
+            std::unordered_map<std::uint16_t, std::string> names;
+            for (std::uint16_t item = 1; const auto* info = gameplay::items::info(item); ++item) {
+                const auto id = info->name.substr(10);
+                std::string name;
+                for (const auto* prefix : {"item.minecraft.", "block.minecraft."})
+                    if (const auto it = language.find(prefix + std::string(id)); name.empty() && it != language.end()) name = it->second;
+                if (name.empty()) {
+                    bool start = true;
+                    for (const char ch : id) {
+                        name += ch == '_' ? ' ' : start ? static_cast<char>(std::toupper(static_cast<unsigned char>(ch))) : ch;
+                        start = ch == '_';
+                    }
+                }
+                names.emplace(item, std::move(name));
+            }
+            std::unordered_map<std::string, std::string> potion_names;
+            for (const auto& [key, text] : language)
+                if (key.find(".effect.") != std::string::npos && key.starts_with("item.minecraft.")) potion_names.emplace(key, text);
+            game->display_name = [codec = protocol::ComponentCodec::for_protocol(bundle.schema.component_schema), names = std::move(names),
+                                  potion_names = std::move(potion_names)](const contracts::ItemStack& stack) -> std::string {
+                if (codec)
+                    if (auto custom = codec->custom_name_of(stack.components)) return std::move(*custom);
+                const auto item = gameplay::items::info(stack.item);
+                if (codec && item
+                    && (stack.item == gameplay::items::potion || stack.item == gameplay::items::splash_potion
+                        || stack.item == gameplay::items::lingering_potion || stack.item == gameplay::items::tipped_arrow)) {
+                    const auto id = codec->potion_of(stack.components);
+                    const auto all = gameplay::potions::names();
+                    std::string potion = id && *id < all.size() ? std::string(all[*id].substr(10)) : "empty";
+                    for (const std::string_view prefix : {"long_", "strong_"})
+                        if (potion.starts_with(prefix)) potion.erase(0, prefix.size());
+                    const auto key = std::format("item.minecraft.{}.effect.{}", item->name.substr(10), potion);
+                    if (const auto it = potion_names.find(key); it != potion_names.end()) return it->second;
+                }
+                const auto it = names.find(stack.item);
+                return it == names.end() ? std::string{} : it->second;
+            };
         }
         if (const auto* curses = packs->tag("enchantment", "minecraft:curse")) {
             const auto ctx = component_context(bundle, out.registries);

@@ -55,6 +55,9 @@ public:
     // Other resources by kind ("loot_table", "recipe", "enchantment"): id -> JSON text.
     [[nodiscard]] const std::map<std::string, std::string>* resources(std::string_view kind) const;
     [[nodiscard]] const std::vector<std::string>& notes() const noexcept { return notes_; }
+    // The official jar's English translations (assets/minecraft/lang/en_us.json):
+    // key -> text; empty without the jar.
+    [[nodiscard]] const std::map<std::string, std::string>& language() const noexcept { return language_; }
 
 private:
     std::vector<PackInfo> packs_;
@@ -63,6 +66,7 @@ private:
     std::map<std::string, std::map<std::string, std::vector<std::string>>> ordered_tags_;
     std::map<std::string, std::map<std::string, std::string>> resources_;
     std::vector<std::string> notes_;
+    std::map<std::string, std::string> language_;
 };
 
 // The tag registries Circuit reads: tag directories under data/<namespace>/tags/.

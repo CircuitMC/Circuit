@@ -946,4 +946,72 @@ std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_potio
     return contracts::ComponentPatch::make(protocol(), std::move(added), std::move(removed), base.typed());
 }
 
+
+std::int32_t ComponentCodec::repair_cost_of(const contracts::ComponentPatch& patch) const {
+    const auto type = type_id("repair_cost");
+    if (patch.empty() || patch.protocol() != protocol() || !type) return 0;
+    for (const auto& a : patch.added())
+        if (a.type == *type) {
+            Reader r(a.value);
+            if (const auto v = r.varint()) return *v;
+        }
+    return 0;
+}
+
+namespace {
+// A text component's plain text: its own text and its children's, in
+// order, without their style (translations and other contents count as
+// their key or nothing).
+void plain_text(const nbt::Tag& tag, std::string& out, int depth) {
+    if (depth > 32) return;
+    if (tag.type() == nbt::TagType::string) {
+        out += tag.text();
+    } else if (tag.type() == nbt::TagType::list) {
+        for (const auto& e : tag.items()) plain_text(e, out, depth + 1);
+    } else if (tag.type() == nbt::TagType::compound) {
+        if (const auto* text = tag.find("text"); text && text->type() == nbt::TagType::string) out += text->text();
+        else if (const auto* key = tag.find("translate"); key && key->type() == nbt::TagType::string) out += key->text();
+        if (const auto* extra = tag.find("extra")) plain_text(*extra, out, depth + 1);
+    }
+}
+} // namespace
+
+std::optional<std::string> ComponentCodec::custom_name_of(const contracts::ComponentPatch& patch) const {
+    const auto type = type_id("custom_name");
+    if (patch.empty() || patch.protocol() != protocol() || !type) return std::nullopt;
+    for (const auto& a : patch.added()) {
+        if (a.type != *type) continue;
+        Reader r(a.value);
+        const auto tag = nbt::read_network(r);
+        if (!tag) return std::string{};
+        std::string out;
+        plain_text(*tag, out, 0);
+        return out;
+    }
+    return std::nullopt;
+}
+
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_custom_name(const contracts::ComponentPatch& base,
+                                                                                       const std::optional<std::string>& name,
+                                                                                       const ComponentContext& ctx) const {
+    const auto type = type_id("custom_name");
+    if (!type) return std::unexpected("no custom_name component");
+    std::vector<contracts::ComponentPatch::Added> added;
+    for (const auto& a : base.added())
+        if (a.type != *type) added.push_back(a);
+    if (name) {
+        Writer w;
+        nbt::write_network(w, nbt::Tag::string(*name));
+        auto value = canonical_value(*type, w.bytes(), ctx);
+        if (!value) return std::unexpected(value.error());
+        added.push_back({*type, std::move(*value)});
+    }
+    std::ranges::sort(added, {}, &contracts::ComponentPatch::Added::type);
+    std::vector<std::uint16_t> removed;
+    for (const auto r : base.removed())
+        if (r != *type) removed.push_back(r);
+    if (added.empty() && removed.empty()) return contracts::ComponentPatch{};
+    return contracts::ComponentPatch::make(protocol(), std::move(added), std::move(removed), base.typed());
+}
+
 } // namespace circuit::protocol
