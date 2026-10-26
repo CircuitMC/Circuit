@@ -45,6 +45,10 @@ struct BlockEntity {
     // Furnace: ticks its fuel still burns and the fuel's whole burn time,
     // the input's cooking progress and the time it needs.
     std::int32_t lit_time{}, lit_total{}, cook_time{}, cook_total{};
+    // Crafter: its disabled slots (bit k: slot k) and the ticks it still
+    // shows that it crafted.
+    std::uint16_t disabled{};
+    std::int32_t crafting_ticks{};
     // Data components of the block entity (a container's custom name), in
     // the item component form of the world's protocol.
     contracts::ComponentPatch components{};

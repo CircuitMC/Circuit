@@ -1703,6 +1703,54 @@ int main() {
                 "the result goes to the hotbar from its end");
     });
 
+    suite.run("crafters craft on power and fill evenly from hoppers", [] {
+        namespace recipes = circuit::gameplay::recipes;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->crafting = {
+            {recipes::Recipe::Kind::shapeless, "test:planks", 0, 0, {recipes::Ingredient{{items::oak_log}}}, {items::oak_planks, 4}},
+            {recipes::Recipe::Kind::shapeless, "test:sugar", 0, 0, {recipes::Ingredient{{items::milk_bucket}}}, {item("minecraft:sugar"), 1}},
+        };
+        Sim s(bundle(), 7, 2, data);
+        s.tick(floor(-3, 12, -1, 6));
+        const auto slots = [&](circuit::contracts::BlockPos p) {
+            const auto d = s.oracle.dump();
+            for (const auto& [pos, be] : d.overworld().block_entities)
+                if (pos == p) return be.slots;
+            return std::vector<ItemStack>{};
+        };
+        // A crafter facing a chest, powered from the side; another powered
+        // only through the block above it (no quasi-connectivity).
+        s.tick({place({0, 0, 0}, blocks::crafter(Direction::east)), place({1, 0, 0}, blocks::chest(Direction::west)),
+                place({4, 0, 0}, blocks::crafter(Direction::east)), place({4, 1, 0}, blocks::stone()),
+                insert({0, 0, 0}, 4, items::oak_log, 2), insert({4, 0, 0}, 4, items::oak_log, 2)});
+        s.tick({place({0, 0, 1}, blocks::redstone_block()), place({4, 2, 0}, blocks::redstone_block())});
+        require(s.at({0, 0, 0}).flag() && !s.at({4, 0, 0}).flag(), "triggered by power at the block only");
+        s.until(s.oracle.time() + 3);
+        require(slots({0, 0, 0})[4].count == 1 && slots({1, 0, 0})[0] == ItemStack{items::oak_planks, 4} && s.at({0, 0, 0}).extra() == 1,
+                "crafted into the chest, and shows it");
+        s.until(s.oracle.time() + 6);
+        require(s.at({0, 0, 0}).extra() == 0 && slots({4, 0, 0})[4].count == 2, "for six ticks; the other never crafted");
+        // A milk bucket's remainder is thrown out after the result.
+        s.tick({place({8, 0, 0}, blocks::crafter(Direction::east)), insert({8, 0, 0}, 0, items::milk_bucket, 1)});
+        const auto before = s.oracle.dump().overworld().entities.size();
+        s.tick({place({8, 0, 1}, blocks::redstone_block())});
+        s.until(s.oracle.time() + 4);
+        const auto d = s.oracle.dump();
+        require(d.overworld().entities.size() == before + 2 && d.overworld().entities[before].stack.item == item("minecraft:sugar") &&
+                    d.overworld().entities[before + 1].stack.item == items::bucket && slots({8, 0, 0})[0].empty(),
+                "sugar, then the bucket");
+        // A hopper fills the grid evenly: empty slots first (around a stick),
+        // then the smallest stacks of its kind.
+        s.tick({place({12, 0, 0}, blocks::crafter(Direction::east)), place({12, 1, 0}, blocks::hopper(Direction::down)),
+                insert({12, 0, 0}, 4, item("minecraft:stick"), 1), insert({12, 1, 0}, 0, items::oak_planks, 10)});
+        s.until(s.oracle.time() + 80);
+        const auto grid = slots({12, 0, 0});
+        require(grid[0].count == 2 && grid[1].count == 2 && grid[2].count == 1 && grid[8].count == 1 && grid[4].item == item("minecraft:stick") &&
+                    grid[4].count == 1,
+                "eight planks around the stick, then a second in slots 0 and 1");
+    });
+
     suite.run("idle levels and random tick ranges", [] {
         // A level is awake while active, and for 300 ticks after it was last
         // active or started.

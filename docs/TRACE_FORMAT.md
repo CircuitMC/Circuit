@@ -93,6 +93,7 @@ A wrong convention makes fixtures fail rather than pass.
 | `note_block` | `instrument`, `note` 0–24, `powered` | — |
 | `dispenser`, `dropper` | `facing`, `triggered` | absent properties take the default state's (`north`, `false`) |
 | `furnace`, `smoker`, `blast_furnace` | `facing` (horizontal), `lit` | absent properties take the default state's (`north`, `false`) |
+| `crafter` | `orientation`, `triggered`, `crafting` | absent properties take the default state's (`north_up`, `false`, `false`) |
 | `rail` | `shape` | `waterlogged` |
 | `*_coral_fan`, `*_coral_wall_fan` (living and dead) | `waterlogged`, `facing` | — |
 | `powered_rail`, `activator_rail`, `detector_rail` | `powered`, `shape` | `waterlogged` |

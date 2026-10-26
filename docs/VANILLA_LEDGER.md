@@ -39,7 +39,7 @@ Feature counts per implementation state, then the number of features with compar
 | V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 113 / 118 | 193 / 202 | 0 / 0 | 14 / 0 | 113 / 118 |
 | V14 Redstone sources and signal consumers | C4, C5 | 138 | 7 / 7 | 97 / 97 | 33 / 33 | 1 / 1 | 0 / 0 | 39 / 41 |
 | V15 Pistons and moving structures | C3, C4 | 16 | 2 / 2 | 14 / 14 | 0 / 0 | 0 / 0 | 0 / 0 | 12 / 12 |
-| V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 29 / 29 | 28 / 28 | 2 / 2 | 0 / 0 | 29 / 29 |
+| V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 30 / 30 | 28 / 28 | 1 / 1 | 0 / 0 | 30 / 30 |
 | V17 TNT and explosions | C3, C4 | 11 | 0 / 1 | 8 / 8 | 0 / 0 | 2 / 2 | 1 / 0 | 8 / 9 |
 | V18 Technical machines and vanilla quirks | C4, C6, C7 | 6 | 0 / 0 | 4 / 4 | 0 / 0 | 2 / 2 | 0 / 0 | 4 / 4 |
 | V19 General entity lifecycle | C3 | 17 | 0 / 0 | 4 / 4 | 0 / 0 | 13 / 13 | 0 / 0 | 3 / 3 |
@@ -130,7 +130,7 @@ Their counts are unknown, not zero.
 | black_box | passing | 54 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 193 |
+| official_trace | passing | 196 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -315,7 +315,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Chests and double chests | C4 | implemented, compared | implemented, compared | `client/chests`, `trace/double_chest`, `trace/double_chest_left_input` |
 | Hopper transfers, cooldowns and pickup | C4 | implemented, compared | implemented, compared | `trace/hopper_chain`, `trace/hopper_chained`, `trace/hopper_competition` |
 | Dispensers and droppers with dispense behaviors | C4 | partial, compared | partial, compared | `trace/dispenser_cases`, `trace/dispenser_items`, `trace/dispenser_tnt_rule`, `trace/dispensers`, `trace/dispensers_more`; dispensed projectiles, fire, shears, boats, bottles, honeycomb, glowstone and water bottles at their targets, golem and wither heads, other fluids, other minecarts, spawn eggs, armor stands and shulker boxes are not modeled: those items stay; equipping players is not modeled; Fired 4 ticks after power reaches them or the block above them, from a random filled slot (level-random draws); droppers fill the container in front or eject; dispensers eject items (position, motion and draws exact), prime TNT, pour and fill water and lava buckets, set minecarts on rails and eject equipment |
-| The Crafter | C5 | missing, none | missing, none |  |
+| The Crafter | C5 | partial, compared | partial, compared | `trace/crafters`, `trace/crafters_more`, `trace/crafters_partial`; an item thrown into the cell of a full container in front is pushed out by an unseeded random and is not compared; players cannot open their menus yet: slots are disabled only in saved worlds; Crafters triggered by power at the block craft their grid 4 ticks later by the official data packs' crafting recipes, deliver the result and the remainders to the container in front or throw them out whole as dispensers throw items, show that they crafted for 6 ticks, fill evenly from hoppers and droppers, give items to hoppers and drive comparators by their filled slots, as both official servers do tick by tick |
 | Barrels, shulker boxes, ender chests, trapped chests, chiseled bookshelves, composters | C5 | missing, none | missing, none |  |
 | Component-aware automation (stacking of items with components) | C5 | implemented, none | implemented, none | Stacks merge only with equal item, damage and components; hoppers, pickups, inserts and menus keep components |
 

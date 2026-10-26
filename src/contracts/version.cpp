@@ -179,6 +179,14 @@ constexpr std::array reference_v4_mechanisms{
         "and empty buckets from below; players use their menus (client/furnace_menus). Gaps: the experience of what they "
         "cooked and minecarts with hoppers are not modeled; checkpoints before version 28 bring their furnaces back "
         "empty."},
+    MechanismEntry{"crafter", l0_exact, l2_declared_deviation, harness_trace,
+        "Crafters as both official servers run them (crafters; with the official data packs' crafting recipes): power at "
+        "the block (not above it) sets them triggered and crafts 4 ticks later by the first recipe that takes the grid, "
+        "each slot giving one item; the result and then each remainder go into the container in front or are thrown "
+        "out through the front whole, as dispensers throw items; they show that they crafted for 6 ticks; hoppers fill "
+        "them evenly and take from them; comparators read their filled slots. Gaps: their menus (players cannot open "
+        "them yet, so no slot is disabled but in saved worlds); items thrown into a full container's cell are pushed "
+        "out by an unseeded random and are not compared."},
     MechanismEntry{"bone_meal", l0_exact, l2_declared_deviation, harness_trace,
         "Dispensers use bone meal on the block in front as the official 1.21.8 server does (bonemeal_dispensers): crops "
         "and stems grow 2 + nextInt(4) stages (beetroots a third of that), torchflower and pitcher crops, cocoa and berry "

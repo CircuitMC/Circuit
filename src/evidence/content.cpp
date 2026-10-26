@@ -214,6 +214,20 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
                         : id == "minecraft:blast_furnace" ? blocks::FurnaceKind::blast_furnace : blocks::FurnaceKind::furnace;
         return simple(blocks::furnace(kind, facing, lit == 1));
     }
+    if (id == "minecraft:crafter") {
+        // Absent properties take the default state's (north_up, neither triggered nor crafting).
+        CIRCUIT_TRY(crafting, p.choice("crafting", {"false", "true"}, 0));
+        CIRCUIT_TRY(triggered, p.choice("triggered", {"false", "true"}, 0));
+        // The front, then the direction the top faces.
+        CIRCUIT_TRY(orientation, p.choice("orientation", {"down_east", "down_north", "down_south", "down_west", "up_east", "up_north", "up_south",
+                                                          "up_west", "west_up", "east_up", "north_up", "south_up"},
+                                          10));
+        using D = Direction;
+        constexpr std::array<std::pair<D, D>, 12> sides{{{D::down, D::east}, {D::down, D::north}, {D::down, D::south}, {D::down, D::west},
+                                                         {D::up, D::east}, {D::up, D::north}, {D::up, D::south}, {D::up, D::west},
+                                                         {D::west, D::up}, {D::east, D::up}, {D::north, D::up}, {D::south, D::up}}};
+        return simple(blocks::crafter(sides[orientation].first, sides[orientation].second, triggered == 1, crafting == 1));
+    }
     if (id == "minecraft:piston" || id == "minecraft:sticky_piston") {
         CIRCUIT_TRY(facing, p.direction("facing"));
         CIRCUIT_TRY(extended, p.flag("extended"));

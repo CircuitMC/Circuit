@@ -232,6 +232,7 @@ struct Extensions::Impl {
             case gameplay::BlockType::moving_piston: return "minecraft:piston";
             case gameplay::BlockType::dispenser: return "minecraft:dispenser";
             case gameplay::BlockType::furnace: return "minecraft:furnace";
+            case gameplay::BlockType::crafter: return "minecraft:crafter";
             default: return "unknown";
             }
         }

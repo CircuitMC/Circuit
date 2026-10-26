@@ -27,6 +27,7 @@ void run_scheduled_tick(RuleContext& ctx, TickList list, const ScheduledTick& ti
     case BlockType::rail: tick_rail(ctx, tick.pos, s); break;
     case BlockType::coral_fan: case BlockType::coral_wall_fan: tick_coral(ctx, tick.pos, s); break;
     case BlockType::dispenser: tick_dispenser(ctx, tick.pos, s); break;
+    case BlockType::crafter: tick_crafter(ctx, tick.pos, s); break;
     case BlockType::other:
         if (checks_later(s)) support_tick(ctx, tick.pos, s);
         else if (is_big_dripleaf(s)) tick_dripleaf(ctx, tick.pos, s);
@@ -59,6 +60,7 @@ void run_block_entity(RuleContext& ctx, BlockPos pos) {
     else if (s.is(BlockType::moving_piston)) tick_moving_piston(ctx, pos);
     else if (s.is(BlockType::daylight_detector)) tick_daylight_detector(ctx, pos, s);
     else if (s.is(BlockType::furnace)) tick_furnace(ctx, pos, s);
+    else if (s.is(BlockType::crafter)) tick_crafter_entity(ctx, pos, s);
 }
 
 } // namespace circuit::gameplay

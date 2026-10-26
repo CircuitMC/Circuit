@@ -794,6 +794,14 @@ private:
             out.cook_total = time("cooking_total_time");
             out.lit_time = time("lit_time_remaining");
             out.lit_total = time("lit_total_time");
+        } else if (id == "minecraft:crafter" && expect(BlockType::crafter)) {
+            out = {BlockType::crafter, 0, std::vector<contracts::ItemStack>(9), 0};
+            read_items(be, out, "crafter");
+            // Its disabled slots and crafting ticks; `triggered` is the block state's.
+            if (const auto* disabled = be.find("disabled_slots"); disabled && disabled->type() == TagType::int_array)
+                for (const auto slot : disabled->array())
+                    if (slot >= 0 && slot < 9) out.disabled = static_cast<std::uint16_t>(out.disabled | 1u << slot);
+            out.crafting_ticks = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(be, "crafting_ticks_remaining").value_or(0), 0, 6));
         } else if (id == "minecraft:comparator" && expect(BlockType::comparator)) {
             out = {BlockType::comparator, 0, {}, 0};
             out.signal = static_cast<std::uint8_t>(std::clamp<std::int64_t>(integer(be, "OutputSignal").value_or(0), 0, 15));
@@ -1289,6 +1297,17 @@ private:
             t.set("cooking_total_time", Tag::short_(static_cast<std::int16_t>(be.cook_total)));
             t.set("lit_time_remaining", Tag::short_(static_cast<std::int16_t>(be.lit_time)));
             t.set("lit_total_time", Tag::short_(static_cast<std::int16_t>(be.lit_total)));
+            break;
+        }
+        case BlockType::crafter: {
+            t.set("id", Tag::string("minecraft:crafter"));
+            t.set("Items", items(be.slots));
+            std::vector<std::int32_t> disabled;
+            for (std::int32_t k = 0; k < 9; ++k)
+                if (be.disabled >> k & 1) disabled.push_back(k);
+            t.set("crafting_ticks_remaining", Tag::int_(be.crafting_ticks));
+            t.set("disabled_slots", Tag::int_array(std::move(disabled)));
+            t.set("triggered", Tag::int_(at(pos).flag() ? 1 : 0));
             break;
         }
         case BlockType::comparator:

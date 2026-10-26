@@ -379,6 +379,9 @@ void tick_hopper(RuleContext& ctx, BlockPos pos);
 // One of `stack` into the container at `pos`, coming in by `face` (which
 // picks a furnace's slots).
 bool insert_one(RuleContext& ctx, BlockPos pos, const ItemStack& stack, std::optional<Direction> face = std::nullopt);
+// As much of `stack` as the container takes, slot by slot in its order (a
+// crafter's result); returns what is left.
+ItemStack insert_stack(RuleContext& ctx, BlockPos pos, ItemStack stack, std::optional<Direction> face = std::nullopt);
 // Furnaces (furnace.cpp).
 std::int32_t burn_time(std::uint16_t item);
 // The cooking time of an input; without a recipe 200, or 0 with `recipe_only`.
@@ -394,6 +397,19 @@ bool furnace_gives(std::size_t slot, const ItemStack& stack, Direction face);
 void check_dispenser(RuleContext& ctx, BlockPos pos);
 // Its scheduled tick: one item from a random slot.
 void tick_dispenser(RuleContext& ctx, BlockPos pos, BlockState s);
+// A stack thrown out through a front as dispensers throw items (`whole`:
+// the stack as it is, else one item of it).
+void eject_from(RuleContext& ctx, BlockPos pos, Direction facing, ItemStack stack, bool whole);
+
+// ---- crafters (crafter.cpp) ----
+// A neighbor update: triggered by power at the block.
+void check_crafter(RuleContext& ctx, BlockPos pos);
+// Its scheduled tick: crafts its grid, or fails.
+void tick_crafter(RuleContext& ctx, BlockPos pos, BlockState s);
+// Its block-entity tick: how long it still shows that it crafted.
+void tick_crafter_entity(RuleContext& ctx, BlockPos pos, BlockState s);
+// Whether a crafter's slot takes one more item of `stack` (hoppers, droppers).
+bool crafter_accepts(const BlockEntity& be, std::size_t slot, const ItemStack& stack);
 // An item that moved inside a hopper's cell: the hopper takes what it can of
 // it when it is enabled, not cooling down, and the item reaches the space it
 // collects from. Returns whether the item was taken whole (it is removed).

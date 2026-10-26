@@ -271,6 +271,10 @@ int main() {
             furnace.cook_total = 200;
             auto& bes = c.state.level(circuit::contracts::DimensionId::overworld).block_entities;
             bes.push_back({{29999, 0, 29999}, furnace});
+            circuit::gameplay::BlockEntity crafter{circuit::gameplay::BlockType::crafter, 98, std::vector<circuit::contracts::ItemStack>(9), 0};
+            crafter.disabled = 0x105;
+            crafter.crafting_ticks = 4;
+            bes.push_back({{29998, 0, 29999}, crafter});
             std::ranges::sort(bes, {}, &std::pair<circuit::contracts::BlockPos, circuit::gameplay::BlockEntity>::first);
         }
         // A player's open crafting table, stonecutter and smithing table.
@@ -290,7 +294,7 @@ int main() {
         const auto encoded = circuit::storage::encode_checkpoint(c);
         const auto decoded = circuit::storage::decode_checkpoint(encoded);
         require(decoded.has_value(), decoded ? "" : decoded.error());
-        require(*decoded == c && circuit::storage::encode_checkpoint(*decoded) == encoded, "the sequences, settings, furnace times and player menus round-trip");
+        require(*decoded == c && circuit::storage::encode_checkpoint(*decoded) == encoded, "the sequences, settings, furnace and crafter block entities and player menus round-trip");
         auto swapped = c;
         auto& sequences = swapped.state.level(circuit::contracts::DimensionId::overworld).sequences;
         std::swap(sequences[0], sequences[1]);

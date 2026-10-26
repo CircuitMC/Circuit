@@ -494,6 +494,29 @@ int main() {
         require(be->lit_time == 700 && be->lit_total == 800 && be->cook_time == 42 && be->cook_total == 100, "its times");
     });
 
+    suite.run("crafters round-trip through Anvil with their grid, disabled slots and crafting ticks", [&] {
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine.advance(admit({place({2, 0, 2}, blocks::crafter(Direction::down, Direction::west, true, true)),
+                              insert({2, 0, 2}, 4, circuit::gameplay::items::by_name("minecraft:oak_log").value(), 7)}));
+        auto state = engine.dump();
+        for (auto& level : state.levels)
+            for (auto& [pos, be] : level.block_entities)
+                if (be.kind == BlockType::crafter) {
+                    be.disabled = 0b100000001;
+                    be.crafting_ticks = 3;
+                }
+        const auto target = root / "crafter";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "crafter", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        require(state_at(back->state, {2, 0, 2}) == blocks::crafter(Direction::down, Direction::west, true, true), "the crafter");
+        const auto* be = block_entity_at(back->state, {2, 0, 2});
+        require(be && be->kind == BlockType::crafter && be->slots.size() == 9 && be->slots[4].count == 7, "its grid");
+        require(be->disabled == 0b100000001 && be->crafting_ticks == 3, "its disabled slots and crafting ticks");
+    });
+
     suite.run("daylight detectors round-trip through Anvil with their block entities", [&] {
         Engine engine(bundle(), 5);
         Admissions admit;

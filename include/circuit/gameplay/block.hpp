@@ -53,6 +53,8 @@ enum class BlockType : std::uint8_t {
     coral_wall_fan,      // facing: away from the block it hangs on (horizontal); flag: waterlogged; variant: as coral_fan
     dispenser,           // facing: front (any side); flag: triggered; variant: 0 dispenser, 1 dropper. Block entity: nine slots
     furnace,             // facing: front (horizontal); flag: lit; variant: FurnaceKind. Block entity: input, fuel and result slots, its times
+    crafter,             // facing: front (any side); variant: the top's direction (up for a horizontal front); flag: triggered;
+                         // extra: crafting. Block entity: nine grid slots, the disabled ones, its crafting ticks
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -255,6 +257,12 @@ enum class FurnaceKind : std::uint8_t { furnace, smoker, blast_furnace };
 constexpr BlockState furnace(FurnaceKind kind, Direction front, bool lit = false) {
     return BlockState::of(BlockType::furnace).with_facing(front).with_variant(static_cast<std::uint8_t>(kind)).with_flag(lit);
 }
+// A crafter: its front, the direction its top faces (up unless the front
+// is up or down), triggered and crafting.
+constexpr BlockState crafter(Direction front, Direction top = Direction::up, bool triggered = false, bool crafting = false) {
+    return BlockState::of(BlockType::crafter).with_facing(front).with_variant(static_cast<std::uint8_t>(top)).with_flag(triggered)
+        .with_extra(crafting ? 1 : 0);
+}
 // A note block; `instrument` is a registry::Instrument.
 constexpr BlockState note_block(std::uint8_t instrument = 0, std::uint8_t note = 0, bool powered = false) {
     return BlockState::of(BlockType::note_block).with_variant(instrument).with_level(static_cast<std::uint8_t>(note & 15))
@@ -306,7 +314,7 @@ inline constexpr std::uint8_t note_instruments = 23;
 constexpr bool has_variant(BlockType t) noexcept {
     return t == BlockType::button || t == BlockType::pressure_plate || t == BlockType::weighted_plate || t == BlockType::door
         || t == BlockType::trapdoor || t == BlockType::fence_gate || t == BlockType::rail || t == BlockType::coral_fan
-        || t == BlockType::coral_wall_fan || t == BlockType::dispenser || t == BlockType::furnace;
+        || t == BlockType::coral_wall_fan || t == BlockType::dispenser || t == BlockType::furnace || t == BlockType::crafter;
 }
 constexpr bool is_coral_fan(BlockType t) noexcept { return t == BlockType::coral_fan || t == BlockType::coral_wall_fan; }
 constexpr bool dead_coral(BlockState s) noexcept { return s.variant() >= blocks::coral_kinds; }
@@ -319,6 +327,7 @@ constexpr std::uint8_t variant_count(BlockType t) noexcept {
     case BlockType::coral_fan: case BlockType::coral_wall_fan: return 2 * blocks::coral_kinds;
     case BlockType::dispenser: return 2;
     case BlockType::furnace: return 3;
+    case BlockType::crafter: return 6;
     default: return has_variant(t) ? blocks::button_kinds : 1;
     }
 }
@@ -347,7 +356,7 @@ constexpr bool repeater_locked(BlockState s) noexcept { return s.is(BlockType::r
 template <class F>
 void for_each_block_state(F&& f);
 constexpr bool is_container(BlockType t) noexcept {
-    return t == BlockType::hopper || t == BlockType::chest || t == BlockType::dispenser || t == BlockType::furnace;
+    return t == BlockType::hopper || t == BlockType::chest || t == BlockType::dispenser || t == BlockType::furnace || t == BlockType::crafter;
 }
 // Block entities hold container slots, hopper cooldowns, comparator output
 // signals and moving blocks; a daylight detector's ticks it.
@@ -363,7 +372,8 @@ constexpr std::optional<Direction> chest_partner(BlockState s) noexcept {
     return std::nullopt;
 }
 constexpr std::uint8_t container_size(BlockType t) noexcept {
-    return t == BlockType::hopper ? 5 : t == BlockType::chest ? 27 : t == BlockType::dispenser ? 9 : t == BlockType::furnace ? 3 : 0;
+    return t == BlockType::hopper ? 5 : t == BlockType::chest ? 27 : t == BlockType::dispenser || t == BlockType::crafter ? 9
+         : t == BlockType::furnace ? 3 : 0;
 }
 // Whether a block state takes random ticks (random_ticks.cpp; checked
 // against both official servers for every state): sections without such
@@ -390,7 +400,7 @@ inline bool is_solid(BlockState s) noexcept {
     case BlockType::redstone_lamp: case BlockType::observer: case BlockType::piston: case BlockType::sticky_piston:
     case BlockType::piston_head: case BlockType::slime_block: case BlockType::hopper: case BlockType::chest:
     case BlockType::moving_piston: case BlockType::target: case BlockType::honey_block: case BlockType::daylight_detector:
-    case BlockType::note_block: case BlockType::dispenser: case BlockType::furnace:
+    case BlockType::note_block: case BlockType::dispenser: case BlockType::furnace: case BlockType::crafter:
         return true;
     case BlockType::other: return other_has_collision(s);
     default:

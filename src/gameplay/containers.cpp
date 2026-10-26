@@ -26,6 +26,7 @@ struct Inventory {
     std::vector<BlockEntity*> entities;
     std::optional<Direction> face;
     bool furnace = false;
+    bool crafter = false;
 
     static Inventory open(RuleContext& ctx, BlockPos pos, std::optional<Direction> face = std::nullopt) {
         Inventory inv;
@@ -37,6 +38,7 @@ struct Inventory {
         }
         inv.face = face;
         inv.furnace = inv.parts.size() == 1 && ctx.block(pos).is(BlockType::furnace);
+        inv.crafter = inv.parts.size() == 1 && ctx.block(pos).is(BlockType::crafter);
         return inv;
     }
     [[nodiscard]] bool valid() const { return !parts.empty(); }
@@ -54,6 +56,7 @@ struct Inventory {
             for (const auto j : slots(i)) {
                 const auto& s = entities[i]->slots[j];
                 if (furnace && !furnace_accepts(*entities[i], j, stack)) continue;
+                if (crafter && !crafter_accepts(*entities[i], j, stack)) continue;
                 if (s.empty() || (s.same_kind(stack) && s.count < slot_limit(s))) return std::pair{i, j};
             }
         return std::nullopt;
@@ -195,6 +198,14 @@ std::vector<BlockPos> container_parts(RuleContext& ctx, BlockPos pos) {
 // each slot's count over its limit, divided by the number of slots; 0 when
 // empty, else 1 + floor(14 * fullness).
 std::uint8_t container_signal(RuleContext& ctx, BlockPos pos) {
+    // A crafter's: its slots that hold something or are disabled.
+    if (ctx.block(pos).is(BlockType::crafter)) {
+        const auto* be = ctx.peek_block_entity(pos);
+        std::uint8_t n = 0;
+        for (std::size_t k = 0; be && k < be->slots.size(); ++k)
+            if (!be->slots[k].empty() || (be->disabled >> k & 1)) ++n;
+        return n;
+    }
     float fullness = 0.0f;
     std::size_t slots = 0;
     for (const auto p : container_parts(ctx, pos)) {
@@ -316,6 +327,37 @@ bool insert_one(RuleContext& ctx, BlockPos pos, const ItemStack& stack, std::opt
     if (receiving_hopper) receiving_hopper->cooldown = hopper_cooldown;
     to.changed(ctx);
     return true;
+}
+
+ItemStack insert_stack(RuleContext& ctx, BlockPos pos, ItemStack stack, std::optional<Direction> face) {
+    const auto to = Inventory::open(ctx, pos, face);
+    if (!to.valid()) return stack;
+    BlockEntity* receiving_hopper = nullptr;
+    if (to.parts.size() == 1 && ctx.block(to.parts[0]).is(BlockType::hopper) && all_empty(*to.entities[0])) receiving_hopper = to.entities[0];
+    bool moved = false;
+    while (!stack.empty()) {
+        const auto target = to.insert_slot(stack);
+        if (!target) break;
+        auto& slot = to.entities[target->first]->slots[target->second];
+        const auto before = slot;
+        const int room = slot.empty() ? slot_limit(stack) : slot_limit(slot) - slot.count;
+        const int n = std::min<int>(room, stack.count);
+        if (slot.empty()) {
+            slot = stack;
+            slot.count = static_cast<std::uint8_t>(n);
+        } else {
+            slot.count = static_cast<std::uint8_t>(slot.count + n);
+        }
+        stack.count = static_cast<std::uint8_t>(stack.count - n);
+        if (stack.count == 0) stack = {};
+        ctx.record(TraceKind::inventory_changed, to.parts[target->first], target->second, pack_stack(before), pack_stack(slot));
+        to.set_into(ctx, target->first, target->second, before);
+        moved = true;
+    }
+    if (!moved) return stack;
+    if (receiving_hopper) receiving_hopper->cooldown = hopper_cooldown;
+    to.changed(ctx);
+    return stack;
 }
 
 bool hopper_takes_item(RuleContext& ctx, BlockPos pos, EntityId item) {

@@ -321,6 +321,7 @@ void on_neighbor_changed(RuleContext& ctx, BlockPos target, BlockPos from, Block
     case BlockType::piston: case BlockType::sticky_piston: check_piston(ctx, target); break;
     case BlockType::hopper: check_hopper(ctx, target); break;
     case BlockType::dispenser: check_dispenser(ctx, target); break;
+    case BlockType::crafter: check_crafter(ctx, target); break;
     case BlockType::water: schedule(ctx, TickList::fluid, target, BlockType::water, 5, 0); break;
     case BlockType::other:
         if (is_lava(s)) lava_changed(ctx, target, s);

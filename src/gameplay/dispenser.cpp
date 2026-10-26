@@ -129,9 +129,9 @@ bool has_target(RuleContext& ctx, Use use, BlockPos front, const ItemStack& stac
 
 Vec3 center(BlockPos p) { return {p.x + 0.5, p.y + 0.5, p.z + 0.5}; }
 
-// Ejects one item of `stack` through the front.
-void eject(RuleContext& ctx, BlockPos pos, Direction facing, ItemStack stack) {
-    stack.count = 1;
+// Ejects one item of `stack` through the front, or the whole stack.
+void eject(RuleContext& ctx, BlockPos pos, Direction facing, ItemStack stack, bool whole = false) {
+    if (!whole) stack.count = 1;
     const auto o = contracts::offset(facing);
     const auto c = center(pos);
     const Vec3 at{c.x + 0.7 * o.dx, c.y + 0.7 * o.dy, c.z + 0.7 * o.dz};
@@ -255,6 +255,8 @@ void dispense_from(RuleContext& ctx, BlockPos pos, Direction facing, std::size_t
     set_slot(ctx, pos, slot, less_one(stack));
 }
 } // namespace
+
+void eject_from(RuleContext& ctx, BlockPos pos, Direction facing, ItemStack stack, bool whole) { eject(ctx, pos, facing, stack, whole); }
 
 void check_dispenser(RuleContext& ctx, BlockPos pos) {
     const auto s = ctx.block(pos);
