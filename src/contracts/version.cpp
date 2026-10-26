@@ -187,8 +187,11 @@ constexpr std::array reference_v4_mechanisms{
         "taking in the orbs of their value whose ids are 40 apart every 20 ticks from their first, keeping the younger "
         "age, and going at age 6000; the nearest player within 8 blocks draws them, and a player who touches one takes "
         "one of its orbs every 2 ticks, gaining its experience with the official servers' levels and progress "
-        "(client/orbs). Gaps: how players draw orbs is not compared tick by tick; Mending; in lava they rise without "
-        "the official servers' unseeded random jump, which is not compared."},
+        "(client/orbs); experience at a point comes in orbs of the official values, each drawing a slot of 40 from the "
+        "level random to join an orb of its value nearby, a new orb drawing its first motion from its own random "
+        "(seeded with its id, as harness 0.36.0 seeds it); mined ores and sculk give their experience (xp_ores, "
+        "xp_merge, xp_merge_more), none to Silk Touch; lava makes orbs jump by their own random. Gaps: how players draw "
+        "orbs is not compared tick by tick; Mending; furnaces and grindstones give no experience yet."},
     MechanismEntry{"brewing", l0_exact, l2_declared_deviation, harness_trace,
         "Brewing stands as both official servers run them (brewing, brewing_hoppers; with the official data packs' "
         "brewing fuel and component encoding): blaze powder gives fuel for 20 brews when none is left; with fuel and a "

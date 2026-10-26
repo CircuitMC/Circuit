@@ -124,6 +124,12 @@ struct Entity {
     // into it (it holds `orbs` times `experience`).
     std::int32_t experience{};
     std::int32_t orbs{1};
+    // The entity's own random (a java.util.Random state, LevelRandom), which
+    // an experience orb's first motion and its jumps in lava draw from;
+    // seeded with the entity's id when first used (`seeded`), as the
+    // reference harness seeds it (the official servers seed it from the clock).
+    bool seeded{};
+    std::uint64_t own_random{};
     // Falling blocks: the block it carries and the ticks it has fallen.
     BlockState carried{};
     std::uint32_t fall_time{};

@@ -445,6 +445,8 @@ int main() {
         orb.experience = 37;
         orb.orbs = 3;
         orb.age = 120;
+        orb.seeded = true;
+        orb.own_random = 0x123456789ABCULL;
         never.state.level(circuit::contracts::DimensionId::overworld).entities.push_back(orb);
         // And one waiting to come back with its reloaded chunk.
         auto returning = item;

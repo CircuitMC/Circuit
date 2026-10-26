@@ -3,6 +3,7 @@
 #include <circuit/server/data_report.hpp>
 #include <circuit/gameplay/block.hpp>
 #include <circuit/gameplay/block_registry.hpp>
+#include <circuit/auth/json.hpp>
 #include <circuit/gameplay/potions.hpp>
 #include <circuit/protocol/content.hpp>
 #include <algorithm>
@@ -221,6 +222,24 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
             for (const auto& name : *fuel)
                 if (const auto item = gameplay::items::by_name(name)) game->brewing_fuel.push_back(*item);
             std::ranges::sort(game->brewing_fuel);
+        }
+        // Enchantments that set a broken block's experience (Silk Touch).
+        if (const auto* defined = packs->resources("enchantment")) {
+            const auto ctx = component_context(bundle, out.registries);
+            for (const auto& [name, text] : *defined) {
+                const auto json = auth::Json::parse(text);
+                const auto* effects = json ? json->find("effects") : nullptr;
+                const auto* list = effects ? effects->find("minecraft:block_experience") : nullptr;
+                if (!list || list->kind() != auth::Json::Kind::array) continue;
+                for (const auto& entry : list->items()) {
+                    const auto* effect = entry.find("effect");
+                    const auto* type = effect ? effect->find("type") : nullptr;
+                    const auto* value = effect ? effect->find("value") : nullptr;
+                    if (!type || type->as_string() != "minecraft:set" || !value || value->kind() != auth::Json::Kind::number) continue;
+                    if (const auto id = ctx.id_of("enchantment", name))
+                        game->block_experience_set.emplace_back(*id, static_cast<float>(value->as_number()));
+                }
+            }
         }
         if (const auto* curses = packs->tag("enchantment", "minecraft:curse")) {
             const auto ctx = component_context(bundle, out.registries);

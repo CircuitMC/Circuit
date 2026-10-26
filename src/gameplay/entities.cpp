@@ -487,9 +487,8 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
 // - its age goes up; at 6000 it is gone.
 // The nearest player within 8 blocks draws it, and a player who touches it
 // takes it (contracts::PickUp). Fire and lava hurt it as they hurt items (5
-// health). In lava the official
-// servers make it jump by an unseeded random of its own; Circuit lifts it
-// by 0.2 without the random, which is not compared.
+// health); lava in its cell makes it jump by its own random (seeded with
+// its id, as the reference harness seeds it).
 constexpr double orb_size = 0.5;
 constexpr double orb_gravity = 0.03;
 const double orb_eye = static_cast<double>(0.425f);
@@ -529,18 +528,28 @@ void merge_orbs(RuleContext& ctx, EntityId id) {
 
 void run_orb(RuleContext& ctx, EntityId id, Entity& e) {
     ++e.tick_count;
+    // Lava its box reaches at the tick's start hurts it, also in its first tick.
+    if (detail::in_lava(ctx, detail::entity_box(e)) && detail::hurt_item(ctx, id, 4)) return;
     const bool settling = ctx.bundle().rules->orbs == contracts::OrbMotion::settling;
     const auto start = e.position;
     auto v = e.velocity;
     auto p = e.position;
-    double lava_depth = 0.0;
     if (eye_in_water(ctx, p)) {
         constexpr double drag = 0.99f, rise = 0.0005f;
         v = {v.x * drag, v.y + (v.y < 0.06 ? rise : 0.0), v.z * drag};
     } else {
         v.y -= orb_gravity;
     }
-    if (detail::in_lava(ctx, detail::entity_box(e), &lava_depth)) v.y = 0.2;
+    // Lava in its cell makes it jump: up by 0.2 and sideways by the
+    // difference of two of its own random's floats times 0.2, on each axis,
+    // in single precision.
+    if (const auto cell = contracts::block_of(p); ctx.world().contains_y(cell.y) && is_lava(ctx.block(cell))) {
+        auto r = detail::own_random(e);
+        const float dx = (r.next_float() - r.next_float()) * 0.2f;
+        const float dz = (r.next_float() - r.next_float()) * 0.2f;
+        v = {static_cast<double>(dx), static_cast<double>(0.2f), static_cast<double>(dz)};
+        detail::keep_random(e, r);
+    }
     // The nearest player within 8 blocks draws it toward the middle of their
     // body, the more the nearer they are (not compared tick by tick).
     if (const auto player = ctx.nearest_player(p, 8.0)) {
@@ -571,7 +580,6 @@ void run_orb(RuleContext& ctx, EntityId id, Entity& e) {
         const auto box = detail::entity_box(*self);
         int damage = 0;
         if (const int fire = detail::fire_contact(ctx, box); fire >= 0) damage += fire;
-        if (detail::in_lava(ctx, box)) damage += 4;
         if (detail::hurt_item(ctx, id, damage)) return;
     }
     if (ctx.peek_entity(id)->tick_count % 20 == 1) merge_orbs(ctx, id);
@@ -584,6 +592,66 @@ void run_orb(RuleContext& ctx, EntityId id, Entity& e) {
 } // namespace
 
 namespace detail {
+LevelRandom own_random(const Entity& e) {
+    return e.seeded ? LevelRandom::from_state(e.own_random) : LevelRandom(static_cast<std::int64_t>(e.id.value));
+}
+void keep_random(Entity& e, const LevelRandom& r) {
+    e.seeded = true;
+    e.own_random = r.state();
+}
+
+void award_experience(RuleContext& ctx, Vec3 at, std::int32_t amount) {
+    // The orbs it comes in (minecraft.wiki "Experience orb"): the largest of
+    // these values not above what is left, each in turn.
+    static constexpr std::array<std::int32_t, 11> values{2477, 1237, 617, 307, 149, 73, 37, 17, 7, 3, 1};
+    while (amount > 0) {
+        const auto value = *std::ranges::find_if(values, [&](std::int32_t v) { return v <= amount; });
+        amount -= value;
+        // An orb of the value within half a block whose id is a draw of 40
+        // more than a multiple of 40 takes it in; else a new orb comes.
+        const auto slot = static_cast<std::uint64_t>(ctx.random_int(40));
+        const physics::Aabb area{at.x - 0.5, at.y - 0.5, at.z - 0.5, at.x + 0.5, at.y + 0.5, at.z + 0.5};
+        bool merged = false;
+        for (const auto id : entities_intersecting(ctx, area)) {
+            auto* o = ctx.entity(id);
+            if (!o || o->kind != EntityKind::experience_orb || o->experience != value || id.value % 40 != slot) continue;
+            o->orbs = static_cast<std::int32_t>(std::min<std::int64_t>(std::int64_t{o->orbs} + 1, INT32_MAX));
+            o->age = 0;
+            merged = true;
+            break;
+        }
+        if (merged) continue;
+        // A new orb's first motion comes from its own random: a draw for its
+        // yaw, then up to 0.2 to each side and up to 0.4 up.
+        Entity e;
+        e.kind = EntityKind::experience_orb;
+        e.position = at;
+        e.experience = value;
+        const auto id = ctx.spawn_entity(e);
+        auto* orb = ctx.entity(id);
+        // 1.21.4 draws a double for the yaw and works sideways in single
+        // precision factors (OrbMotion::bouncing).
+        auto r = own_random(*orb);
+        const bool settling = ctx.bundle().rules->orbs == contracts::OrbMotion::settling;
+        double vx{}, vy{}, vz{};
+        if (settling) {
+            (void)r.next_float();
+            vx = (r.next_double() * 0.2 - 0.1) * 2.0;
+            vy = r.next_double() * 0.2 * 2.0;
+            vz = (r.next_double() * 0.2 - 0.1) * 2.0;
+        } else {
+            (void)r.next_double();
+            constexpr double fifth = 0.2f, tenth = 0.1f;
+            vx = (r.next_double() * fifth - tenth) * 2.0;
+            vy = r.next_double() * 0.2 * 2.0;
+            vz = (r.next_double() * fifth - tenth) * 2.0;
+        }
+        orb->velocity = {vx, vy, vz};
+        keep_random(*orb, r);
+        record_spawn(ctx, id, *orb);
+    }
+}
+
 physics::Aabb entity_box(const Entity& e) {
     switch (e.kind) {
     case EntityKind::item: case EntityKind::snowball: return physics::box_at(e.position, item_size, item_size);

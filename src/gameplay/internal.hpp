@@ -213,6 +213,16 @@ void pop_resource(RuleContext& ctx, BlockPos pos, ItemStack stack);
 // Scatters a removed container's contents around its cell, as both target
 // versions do, drawing from the level random for every slot, empty or not.
 void drop_contents(RuleContext& ctx, BlockPos pos, const std::vector<ItemStack>& slots);
+// An entity's own random (Entity::own_random: seeded with its id when first
+// used), and the state to keep after drawing from it.
+LevelRandom own_random(const Entity& e);
+void keep_random(Entity& e, const LevelRandom& r);
+// Experience at a point as experience orbs (entities.cpp). Called in the
+// command phase: a new orb's first motion depends on its id.
+void award_experience(RuleContext& ctx, contracts::Vec3 at, std::int32_t amount);
+// The experience a block a player harvests gives (drops.cpp; drawn from the
+// level random after its drops), dropped as orbs at its center.
+void drop_experience(RuleContext& ctx, BlockPos pos, BlockState destroyed, const ItemStack& tool);
 // Records a spawned entity: entity_spawned (b: its stack, c: its kind), then
 // entity_spawn_position and entity_spawn_velocity with their exact values.
 void record_spawn(RuleContext& ctx, EntityId id, const Entity& e);

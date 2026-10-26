@@ -130,7 +130,7 @@ Their counts are unknown, not zero.
 | black_box | passing | 60 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 201 |
+| official_trace | passing | 204 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -360,7 +360,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Item merging | C3 | implemented, compared | implemented, compared | `trace/item_merge`, `trace/item_merge_crossing`, `trace/item_merge_moving`, `trace/item_merge_timers`, `trace/item_merge_vertical`; Every 40 ticks of the item's own count, or every 2 after a move into another block; reach half a block sideways; stacks of one kind within their limit; the smaller joins the larger (equal: the other survives); younger age and longer pickup delay kept |
 | Pickup by players and hoppers, pickup delays | C3 | partial, compared | partial, compared | `client/vitals`, `client/windows`, `trace/item_hopper_area`, `trace/item_hopper_inside`, `trace/item_hopper_pickup`, `trace/item_merge_timers` |
 | Despawning | C3 | implemented, compared | implemented, compared | `trace/item_merge_timers`; Age 6000, -32768 never; the age goes up after the item's move and merges |
-| Experience orbs | C6 | partial, compared | partial, compared | `client/orbs`, `trace/orbs`, `trace/orbs_merge`, `trace/orbs_more`; Mending and death drops of experience are not modeled; how players draw orbs is not compared tick by tick; in lava they rise without the official servers' unseeded random jump (not compared); nothing drops them yet: no furnace, grindstone, block or mob experience; Summoned experience orbs fall, slide, bounce on the ground (each version its own way), float with their eye in water, take in orbs of their value 40 ids apart every 20 ticks and go at age 6000, as both official servers do tick by tick; players within 8 blocks draw them and take one orb every 2 ticks, gaining the official servers' levels, totals and progress |
+| Experience orbs | C6 | partial, compared | partial, compared | `client/orbs`, `trace/orbs`, `trace/orbs_merge`, `trace/orbs_more`, `trace/xp_merge`, `trace/xp_merge_more`, `trace/xp_ores`; Mending and death drops of experience are not modeled; furnaces, grindstones, mobs, breeding, fishing and trading give no experience yet; how players draw orbs is not compared tick by tick; Experience orbs fall, slide, bounce on the ground (each version its own way), float with their eye in water, jump in lava, take in orbs of their value 40 ids apart every 20 ticks and go at age 6000, as both official servers do tick by tick; experience comes in orbs of the official values that join orbs nearby by a draw of 40; mined ores and sculk give theirs, Silk Touch none; players within 8 blocks draw orbs and take one every 2 ticks, gaining the official servers' levels, totals and progress |
 
 ### V21 Projectiles, vehicles and mounts
 

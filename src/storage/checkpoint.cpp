@@ -21,6 +21,7 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 38: entities carry their own random;
 // 37: player inventories carry the player's experience;
 // 36: entities carry an experience orb's experience and orbs;
 // 35: brewing stands have rules of their own (their block entities keep
@@ -69,7 +70,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 37;
+constexpr std::uint32_t version = 38;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -192,6 +193,7 @@ void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
         w.f32(e.yaw).boolean(e.flipped);
         w.f64(e.fall_distance);
         w.varint(e.experience).varint(e.orbs);
+        w.boolean(e.seeded).i64(static_cast<std::int64_t>(e.own_random));
     }
     w.varint(static_cast<std::int32_t>(l.ticks.size()));
     for (const auto& t : l.ticks) {
@@ -485,6 +487,15 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
         if (b.version >= 23 && (!b.get(b.r.f32(), e.yaw) || !b.get(b.r.boolean(), e.flipped))) return false;
         if (b.version >= 25 && !b.get(b.r.f64(), e.fall_distance)) return false;
         if (b.version >= 36 && (!b.get(b.r.varint(), e.experience) || !b.get(b.r.varint(), e.orbs))) return false;
+        if (b.version >= 38) {
+            std::int64_t state{};
+            if (!b.get(b.r.boolean(), e.seeded) || !b.get(b.r.i64(), state)) return false;
+            e.own_random = static_cast<std::uint64_t>(state);
+            if (e.own_random >> 48 || (!e.seeded && e.own_random != 0)) {
+                b.error = "invalid entity random";
+                return false;
+            }
+        }
         if (e.experience < 0 || e.orbs < 1) {
             b.error = "invalid experience orb";
             return false;

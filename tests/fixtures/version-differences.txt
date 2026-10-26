@@ -4,6 +4,9 @@ entities_in_lava.ctrace lava reaches entities at the start of their ticks on 1.2
 orbs.ctrace experience orbs bounce on the ground and drag in double precision on 1.21.4 (OrbMotion)
 orbs_merge.ctrace experience orbs bounce on the ground and drag in double precision on 1.21.4 (OrbMotion)
 orbs_more.ctrace experience orbs bounce on the ground and drag in double precision on 1.21.4 (OrbMotion)
+xp_ores.ctrace awarded experience orbs draw their first motion otherwise on 1.21.4, and bounce there (OrbMotion)
+xp_merge.ctrace awarded experience orbs draw their first motion otherwise on 1.21.4, and bounce there (OrbMotion)
+xp_merge_more.ctrace awarded experience orbs draw their first motion otherwise on 1.21.4, and bounce there (OrbMotion)
 random_ticks_farmland.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none
 random_ticks_chunks.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none
 random_ticks_sections.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none

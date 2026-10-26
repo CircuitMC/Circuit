@@ -1790,6 +1790,37 @@ int main() {
         require(player().xp_total == 10 && player().xp_level == 1 && orbs().size() == 2, "the second two ticks on, and the orb is gone");
     });
 
+    suite.run("mined ores give experience as orbs at their center, but not to Silk Touch", [] {
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::PlayerBreak;
+        using circuit::contracts::PlayerKey;
+        using circuit::contracts::SetPlayerSlot;
+        using circuit::gameplay::EntityKind;
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        // A stand-in Silk Touch (id 5): a stack with any component has it.
+        data->block_experience_set = {{5, 0.0f}};
+        data->enchantment_level = [](const ItemStack& stack, std::uint32_t enchantment) -> long {
+            return enchantment == 5 && !stack.components.empty() ? 1 : 0;
+        };
+        const PlayerKey alex{2, 2};
+        Sim s(bundle(), 7, 2, data);
+        s.tick(floor(-3, 12, -1, 6));
+        const auto silk = ComponentPatch::make(772, {{1, {std::byte{1}}}}, {}, {});
+        s.tick({place({2, 0, 2}, registry_block("diamond_ore")), place({6, 0, 2}, registry_block("diamond_ore")),
+                place({10, 0, 2}, registry_block("iron_ore")), SetPlayerSlot{alex, 36, {items::diamond_pickaxe, 1, 0}},
+                SetPlayerSlot{alex, 37, {items::diamond_pickaxe, 1, 0, silk}}});
+        s.tick({PlayerBreak{alex, {2, 0, 2}, true, 36}, PlayerBreak{alex, {6, 0, 2}, true, 37}, PlayerBreak{alex, {10, 0, 2}, true, 36}});
+        const auto d = s.oracle.dump();
+        std::int32_t total = 0;
+        bool centered = true;
+        for (const auto& e : d.overworld().entities)
+            if (e.kind == EntityKind::experience_orb) {
+                total += e.experience * e.orbs;
+                centered = centered && e.position.x > 2.0 && e.position.x < 3.0 && e.seeded;
+            }
+        require(total >= 3 && total <= 7 && centered, std::format("3 to 7 experience from the plain pickaxe's diamond ore: {}", total));
+    });
+
     suite.run("brewing stands brew the bottles that mix with their ingredient", [] {
         using circuit::contracts::ComponentPatch;
         const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
@@ -3491,7 +3522,8 @@ int main() {
                 require(s.at(p).is_air(), "broken");
                 const auto d = s.oracle.dump();
                 std::vector<ItemStack> out;
-                for (auto i = before; i < d.overworld().entities.size(); ++i) out.push_back(d.overworld().entities[i].stack);
+                for (auto i = before; i < d.overworld().entities.size(); ++i)
+                    if (d.overworld().entities[i].kind == circuit::gameplay::EntityKind::item) out.push_back(d.overworld().entities[i].stack);
                 drops.push_back(out);
             }
             return drops;

@@ -92,6 +92,10 @@ struct GameData {
     std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, std::string_view potion)> with_potion;
     // What fuels brewing stands: the items of the item tag brewing_fuel, ascending.
     std::vector<std::uint16_t> brewing_fuel;
+    // Enchantments that set the experience a broken block gives (their
+    // minecraft:block_experience effect of type minecraft:set: Silk Touch's
+    // 0), as ids of the synchronized registry and the value.
+    std::vector<std::pair<std::uint32_t, float>> block_experience_set;
 };
 
 } // namespace circuit::gameplay

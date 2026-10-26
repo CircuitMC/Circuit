@@ -5849,10 +5849,13 @@
           "trace/orbs",
           "trace/orbs_merge",
           "trace/orbs_more",
+          "trace/xp_ores",
+          "trace/xp_merge",
+          "trace/xp_merge_more",
           "client/orbs"
         ],
         "deviations": [
-          "nothing drops them yet; how players draw them is not compared tick by tick; Mending is not modeled"
+          "furnaces, grindstones and mobs give none yet; how players draw them is not compared tick by tick; Mending is not modeled"
         ]
       },
       "snowball": {

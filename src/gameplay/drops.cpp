@@ -2,7 +2,10 @@
 #include "internal.hpp"
 #include <algorithm>
 #include <circuit/gameplay/game_data.hpp>
+#include <circuit/gameplay/block_registry.hpp>
 #include <circuit/gameplay/survival.hpp>
+#include <array>
+#include <string_view>
 
 namespace circuit::gameplay::detail {
 namespace {
@@ -126,6 +129,37 @@ void pop_resource(RuleContext& ctx, BlockPos pos, ItemStack stack) { spawn(ctx, 
 // A destroyed block's drops.
 void drop_items(RuleContext& ctx, BlockPos pos, BlockState destroyed, ItemStack tool, bool by_entity) {
     for (auto& d : block_drops(ctx, pos, destroyed, tool, false, by_entity)) spawn(ctx, pos, std::move(d));
+}
+
+void drop_experience(RuleContext& ctx, BlockPos pos, BlockState destroyed, const ItemStack& tool) {
+    // minecraft.wiki "Experience": ores and the sculk family give a uniform
+    // amount (one draw of the level random), sculk and its catalyst,
+    // sensors and shrieker a constant one, a spawner 15 and two draws of 15;
+    // checked against both official servers' traces of mined ores.
+    if (!destroyed.is(BlockType::other)) return;
+    const auto block = registry::block_of(destroyed.registry_state());
+    if (!block) return;
+    const auto name = registry::game_name(*block);
+    struct Range {
+        std::string_view block;
+        std::int32_t low, high;
+    };
+    static constexpr std::array<Range, 18> ranges{{
+        {"coal_ore", 0, 2}, {"deepslate_coal_ore", 0, 2}, {"diamond_ore", 3, 7}, {"deepslate_diamond_ore", 3, 7},
+        {"emerald_ore", 3, 7}, {"deepslate_emerald_ore", 3, 7}, {"lapis_ore", 2, 5}, {"deepslate_lapis_ore", 2, 5},
+        {"redstone_ore", 1, 5}, {"deepslate_redstone_ore", 1, 5}, {"nether_quartz_ore", 2, 5}, {"nether_gold_ore", 0, 1},
+        {"sculk", 1, 1}, {"sculk_catalyst", 5, 5}, {"sculk_sensor", 5, 5}, {"calibrated_sculk_sensor", 5, 5},
+        {"sculk_shrieker", 5, 5}, {"spawner", 15, 43}}};
+    const auto it = std::ranges::find(ranges, name, &Range::block);
+    if (it == ranges.end()) return;
+    std::int32_t amount = it->low;
+    if (it->block == "spawner") amount = 15 + ctx.random_int(15) + ctx.random_int(15);
+    else if (it->high > it->low) amount = it->low + ctx.random_int(it->high - it->low + 1);
+    // Silk Touch sets it to 0 (an enchantment's block_experience effect).
+    if (const auto* data = ctx.data(); data && data->enchantment_level && !tool.empty())
+        for (const auto& [enchantment, value] : data->block_experience_set)
+            if (data->enchantment_level(tool, enchantment) > 0) amount = static_cast<std::int32_t>(value);
+    if (amount > 0) award_experience(ctx, {pos.x + 0.5, pos.y + 0.5, pos.z + 0.5}, amount);
 }
 
 void drop_contents(RuleContext& ctx, BlockPos pos, const std::vector<ItemStack>& slots) {
