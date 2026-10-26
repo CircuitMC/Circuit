@@ -1,0 +1,953 @@
+circuit-trace 2
+title Ice and snow melting, copper weathering, redstone ore and amethyst in random ticks
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v12
+mechanisms random_ticks weathering
+area 0 0 0 15 15 15
+ticks 200
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 300
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 0 0 10 minecraft:stone
+at 0 set 0 0 11 minecraft:stone
+at 0 set 0 0 12 minecraft:stone
+at 0 set 0 0 13 minecraft:stone
+at 0 set 0 0 14 minecraft:stone
+at 0 set 0 0 15 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:stone
+at 0 set 1 0 11 minecraft:stone
+at 0 set 1 0 12 minecraft:stone
+at 0 set 1 0 13 minecraft:stone
+at 0 set 1 0 14 minecraft:stone
+at 0 set 1 0 15 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 2 0 10 minecraft:stone
+at 0 set 2 0 11 minecraft:stone
+at 0 set 2 0 12 minecraft:stone
+at 0 set 2 0 13 minecraft:stone
+at 0 set 2 0 14 minecraft:stone
+at 0 set 2 0 15 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 3 0 10 minecraft:stone
+at 0 set 3 0 11 minecraft:stone
+at 0 set 3 0 12 minecraft:stone
+at 0 set 3 0 13 minecraft:stone
+at 0 set 3 0 14 minecraft:stone
+at 0 set 3 0 15 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 4 0 11 minecraft:stone
+at 0 set 4 0 12 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 4 0 14 minecraft:stone
+at 0 set 4 0 15 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 5 0 10 minecraft:stone
+at 0 set 5 0 11 minecraft:stone
+at 0 set 5 0 12 minecraft:stone
+at 0 set 5 0 13 minecraft:stone
+at 0 set 5 0 14 minecraft:stone
+at 0 set 5 0 15 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 6 0 10 minecraft:stone
+at 0 set 6 0 11 minecraft:stone
+at 0 set 6 0 12 minecraft:stone
+at 0 set 6 0 13 minecraft:stone
+at 0 set 6 0 14 minecraft:stone
+at 0 set 6 0 15 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 7 0 10 minecraft:stone
+at 0 set 7 0 11 minecraft:stone
+at 0 set 7 0 12 minecraft:stone
+at 0 set 7 0 13 minecraft:stone
+at 0 set 7 0 14 minecraft:stone
+at 0 set 7 0 15 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 8 0 10 minecraft:stone
+at 0 set 8 0 11 minecraft:stone
+at 0 set 8 0 12 minecraft:stone
+at 0 set 8 0 13 minecraft:stone
+at 0 set 8 0 14 minecraft:stone
+at 0 set 8 0 15 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 9 0 10 minecraft:stone
+at 0 set 9 0 11 minecraft:stone
+at 0 set 9 0 12 minecraft:stone
+at 0 set 9 0 13 minecraft:stone
+at 0 set 9 0 14 minecraft:stone
+at 0 set 9 0 15 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 10 0 10 minecraft:stone
+at 0 set 10 0 11 minecraft:stone
+at 0 set 10 0 12 minecraft:stone
+at 0 set 10 0 13 minecraft:stone
+at 0 set 10 0 14 minecraft:stone
+at 0 set 10 0 15 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 11 0 10 minecraft:stone
+at 0 set 11 0 11 minecraft:stone
+at 0 set 11 0 12 minecraft:stone
+at 0 set 11 0 13 minecraft:stone
+at 0 set 11 0 14 minecraft:stone
+at 0 set 11 0 15 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 12 0 8 minecraft:stone
+at 0 set 12 0 9 minecraft:stone
+at 0 set 12 0 10 minecraft:stone
+at 0 set 12 0 11 minecraft:stone
+at 0 set 12 0 12 minecraft:stone
+at 0 set 12 0 13 minecraft:stone
+at 0 set 12 0 14 minecraft:stone
+at 0 set 12 0 15 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 13 0 8 minecraft:stone
+at 0 set 13 0 9 minecraft:stone
+at 0 set 13 0 10 minecraft:stone
+at 0 set 13 0 11 minecraft:stone
+at 0 set 13 0 12 minecraft:stone
+at 0 set 13 0 13 minecraft:stone
+at 0 set 13 0 14 minecraft:stone
+at 0 set 13 0 15 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 14 0 8 minecraft:stone
+at 0 set 14 0 9 minecraft:stone
+at 0 set 14 0 10 minecraft:stone
+at 0 set 14 0 11 minecraft:stone
+at 0 set 14 0 12 minecraft:stone
+at 0 set 14 0 13 minecraft:stone
+at 0 set 14 0 14 minecraft:stone
+at 0 set 14 0 15 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 15 0 8 minecraft:stone
+at 0 set 15 0 9 minecraft:stone
+at 0 set 15 0 10 minecraft:stone
+at 0 set 15 0 11 minecraft:stone
+at 0 set 15 0 12 minecraft:stone
+at 0 set 15 0 13 minecraft:stone
+at 0 set 15 0 14 minecraft:stone
+at 0 set 15 0 15 minecraft:stone
+draws 0 random_ticks level 2700
+
+at 1 set 2 1 2 minecraft:glowstone
+at 1 set 3 1 2 minecraft:ice
+at 1 set 3 1 3 minecraft:snow[layers=1]
+at 1 set 3 1 1 minecraft:snow_block
+at 1 set 3 2 2 minecraft:packed_ice
+at 1 set 4 1 2 minecraft:ice
+at 1 set 4 1 3 minecraft:snow[layers=2]
+at 1 set 4 1 1 minecraft:snow_block
+at 1 set 4 2 2 minecraft:packed_ice
+at 1 set 5 1 2 minecraft:ice
+at 1 set 5 1 3 minecraft:snow[layers=3]
+at 1 set 5 1 1 minecraft:snow_block
+at 1 set 5 2 2 minecraft:packed_ice
+at 1 set 6 1 2 minecraft:ice
+at 1 set 6 1 3 minecraft:snow[layers=4]
+at 1 set 6 1 1 minecraft:snow_block
+at 1 set 6 2 2 minecraft:packed_ice
+at 1 set 7 1 2 minecraft:ice
+at 1 set 7 1 3 minecraft:snow[layers=5]
+at 1 set 7 1 1 minecraft:snow_block
+at 1 set 7 2 2 minecraft:packed_ice
+at 1 set 9 1 2 minecraft:ice
+at 1 set 10 1 2 minecraft:ice
+at 1 set 11 1 2 minecraft:ice
+at 1 set 12 1 2 minecraft:ice
+at 1 set 10 2 2 minecraft:stone
+at 1 set 0 1 6 minecraft:copper_block
+at 1 set 1 1 6 minecraft:exposed_copper
+at 1 set 2 1 6 minecraft:weathered_copper
+at 1 set 3 1 6 minecraft:cut_copper
+at 1 set 4 1 6 minecraft:exposed_cut_copper
+at 1 set 5 1 6 minecraft:cut_copper_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]
+at 1 set 6 1 6 minecraft:cut_copper_slab[type=bottom,waterlogged=false]
+at 1 set 7 1 6 minecraft:copper_grate[waterlogged=false]
+at 1 set 8 1 6 minecraft:chiseled_copper
+at 1 set 9 1 6 minecraft:waxed_copper_block
+at 1 set 0 1 8 minecraft:weathered_copper
+at 1 set 0 1 9 minecraft:copper_block
+at 1 set 0 1 10 minecraft:exposed_copper
+at 1 set 1 1 8 minecraft:copper_block
+at 1 set 1 1 9 minecraft:exposed_copper
+at 1 set 1 1 10 minecraft:weathered_copper
+at 1 set 2 1 8 minecraft:exposed_copper
+at 1 set 2 1 9 minecraft:weathered_copper
+at 1 set 2 1 10 minecraft:copper_block
+at 1 set 3 1 8 minecraft:weathered_copper
+at 1 set 3 1 9 minecraft:copper_block
+at 1 set 3 1 10 minecraft:exposed_copper
+at 1 set 4 1 8 minecraft:copper_block
+at 1 set 4 1 9 minecraft:exposed_copper
+at 1 set 4 1 10 minecraft:weathered_copper
+at 1 set 5 1 8 minecraft:exposed_copper
+at 1 set 5 1 9 minecraft:weathered_copper
+at 1 set 5 1 10 minecraft:copper_block
+at 1 set 6 1 8 minecraft:weathered_copper
+at 1 set 6 1 9 minecraft:copper_block
+at 1 set 6 1 10 minecraft:exposed_copper
+at 1 set 7 1 8 minecraft:copper_block
+at 1 set 7 1 9 minecraft:exposed_copper
+at 1 set 7 1 10 minecraft:weathered_copper
+at 1 set 8 1 8 minecraft:exposed_copper
+at 1 set 8 1 9 minecraft:weathered_copper
+at 1 set 8 1 10 minecraft:copper_block
+at 1 set 9 1 8 minecraft:weathered_copper
+at 1 set 9 1 9 minecraft:copper_block
+at 1 set 9 1 10 minecraft:exposed_copper
+at 1 set 10 1 8 minecraft:copper_block
+at 1 set 10 1 9 minecraft:exposed_copper
+at 1 set 10 1 10 minecraft:weathered_copper
+at 1 set 11 1 8 minecraft:exposed_copper
+at 1 set 11 1 9 minecraft:weathered_copper
+at 1 set 11 1 10 minecraft:copper_block
+at 1 set 12 1 8 minecraft:weathered_copper
+at 1 set 12 1 9 minecraft:copper_block
+at 1 set 12 1 10 minecraft:exposed_copper
+at 1 set 13 1 8 minecraft:copper_block
+at 1 set 13 1 9 minecraft:exposed_copper
+at 1 set 13 1 10 minecraft:weathered_copper
+at 1 set 14 1 8 minecraft:exposed_copper
+at 1 set 14 1 9 minecraft:weathered_copper
+at 1 set 14 1 10 minecraft:copper_block
+at 1 set 15 1 8 minecraft:weathered_copper
+at 1 set 15 1 9 minecraft:copper_block
+at 1 set 15 1 10 minecraft:exposed_copper
+at 1 set 0 1 13 minecraft:redstone_ore[lit=true]
+at 1 set 1 1 13 minecraft:redstone_ore[lit=true]
+at 1 set 2 1 13 minecraft:redstone_ore[lit=true]
+at 1 set 3 1 13 minecraft:redstone_ore[lit=true]
+at 1 set 4 1 13 minecraft:redstone_ore[lit=true]
+at 1 set 5 1 13 minecraft:redstone_ore[lit=true]
+at 1 set 7 1 13 minecraft:deepslate_redstone_ore[lit=true]
+at 1 set 10 3 13 minecraft:budding_amethyst
+at 1 set 13 3 13 minecraft:budding_amethyst
+at 1 set 13 4 13 minecraft:stone
+at 1 set 13 3 14 minecraft:water[level=0]
+change 1 commands 2 1 2 minecraft:air minecraft:glowstone
+change 1 commands 3 1 2 minecraft:air minecraft:ice
+change 1 commands 3 1 3 minecraft:air minecraft:snow[layers=1]
+change 1 commands 3 1 1 minecraft:air minecraft:snow_block
+change 1 commands 3 2 2 minecraft:air minecraft:packed_ice
+change 1 commands 4 1 2 minecraft:air minecraft:ice
+change 1 commands 4 1 3 minecraft:air minecraft:snow[layers=2]
+change 1 commands 4 1 1 minecraft:air minecraft:snow_block
+change 1 commands 4 2 2 minecraft:air minecraft:packed_ice
+change 1 commands 5 1 2 minecraft:air minecraft:ice
+change 1 commands 5 1 3 minecraft:air minecraft:snow[layers=3]
+change 1 commands 5 1 1 minecraft:air minecraft:snow_block
+change 1 commands 5 2 2 minecraft:air minecraft:packed_ice
+change 1 commands 6 1 2 minecraft:air minecraft:ice
+change 1 commands 6 1 3 minecraft:air minecraft:snow[layers=4]
+change 1 commands 6 1 1 minecraft:air minecraft:snow_block
+change 1 commands 6 2 2 minecraft:air minecraft:packed_ice
+change 1 commands 7 1 2 minecraft:air minecraft:ice
+change 1 commands 7 1 3 minecraft:air minecraft:snow[layers=5]
+change 1 commands 7 1 1 minecraft:air minecraft:snow_block
+change 1 commands 7 2 2 minecraft:air minecraft:packed_ice
+change 1 commands 9 1 2 minecraft:air minecraft:ice
+change 1 commands 10 1 2 minecraft:air minecraft:ice
+change 1 commands 11 1 2 minecraft:air minecraft:ice
+change 1 commands 12 1 2 minecraft:air minecraft:ice
+change 1 commands 10 2 2 minecraft:air minecraft:stone
+change 1 commands 0 1 6 minecraft:air minecraft:copper_block
+change 1 commands 1 1 6 minecraft:air minecraft:exposed_copper
+change 1 commands 2 1 6 minecraft:air minecraft:weathered_copper
+change 1 commands 3 1 6 minecraft:air minecraft:cut_copper
+change 1 commands 4 1 6 minecraft:air minecraft:exposed_cut_copper
+change 1 commands 5 1 6 minecraft:air minecraft:cut_copper_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]
+change 1 commands 6 1 6 minecraft:air minecraft:cut_copper_slab[type=bottom,waterlogged=false]
+change 1 commands 7 1 6 minecraft:air minecraft:copper_grate[waterlogged=false]
+change 1 commands 8 1 6 minecraft:air minecraft:chiseled_copper
+change 1 commands 9 1 6 minecraft:air minecraft:waxed_copper_block
+change 1 commands 0 1 8 minecraft:air minecraft:weathered_copper
+change 1 commands 0 1 9 minecraft:air minecraft:copper_block
+change 1 commands 0 1 10 minecraft:air minecraft:exposed_copper
+change 1 commands 1 1 8 minecraft:air minecraft:copper_block
+change 1 commands 1 1 9 minecraft:air minecraft:exposed_copper
+change 1 commands 1 1 10 minecraft:air minecraft:weathered_copper
+change 1 commands 2 1 8 minecraft:air minecraft:exposed_copper
+change 1 commands 2 1 9 minecraft:air minecraft:weathered_copper
+change 1 commands 2 1 10 minecraft:air minecraft:copper_block
+change 1 commands 3 1 8 minecraft:air minecraft:weathered_copper
+change 1 commands 3 1 9 minecraft:air minecraft:copper_block
+change 1 commands 3 1 10 minecraft:air minecraft:exposed_copper
+change 1 commands 4 1 8 minecraft:air minecraft:copper_block
+change 1 commands 4 1 9 minecraft:air minecraft:exposed_copper
+change 1 commands 4 1 10 minecraft:air minecraft:weathered_copper
+change 1 commands 5 1 8 minecraft:air minecraft:exposed_copper
+change 1 commands 5 1 9 minecraft:air minecraft:weathered_copper
+change 1 commands 5 1 10 minecraft:air minecraft:copper_block
+change 1 commands 6 1 8 minecraft:air minecraft:weathered_copper
+change 1 commands 6 1 9 minecraft:air minecraft:copper_block
+change 1 commands 6 1 10 minecraft:air minecraft:exposed_copper
+change 1 commands 7 1 8 minecraft:air minecraft:copper_block
+change 1 commands 7 1 9 minecraft:air minecraft:exposed_copper
+change 1 commands 7 1 10 minecraft:air minecraft:weathered_copper
+change 1 commands 8 1 8 minecraft:air minecraft:exposed_copper
+change 1 commands 8 1 9 minecraft:air minecraft:weathered_copper
+change 1 commands 8 1 10 minecraft:air minecraft:copper_block
+change 1 commands 9 1 8 minecraft:air minecraft:weathered_copper
+change 1 commands 9 1 9 minecraft:air minecraft:copper_block
+change 1 commands 9 1 10 minecraft:air minecraft:exposed_copper
+change 1 commands 10 1 8 minecraft:air minecraft:copper_block
+change 1 commands 10 1 9 minecraft:air minecraft:exposed_copper
+change 1 commands 10 1 10 minecraft:air minecraft:weathered_copper
+change 1 commands 11 1 8 minecraft:air minecraft:exposed_copper
+change 1 commands 11 1 9 minecraft:air minecraft:weathered_copper
+change 1 commands 11 1 10 minecraft:air minecraft:copper_block
+change 1 commands 12 1 8 minecraft:air minecraft:weathered_copper
+change 1 commands 12 1 9 minecraft:air minecraft:copper_block
+change 1 commands 12 1 10 minecraft:air minecraft:exposed_copper
+change 1 commands 13 1 8 minecraft:air minecraft:copper_block
+change 1 commands 13 1 9 minecraft:air minecraft:exposed_copper
+change 1 commands 13 1 10 minecraft:air minecraft:weathered_copper
+change 1 commands 14 1 8 minecraft:air minecraft:exposed_copper
+change 1 commands 14 1 9 minecraft:air minecraft:weathered_copper
+change 1 commands 14 1 10 minecraft:air minecraft:copper_block
+change 1 commands 15 1 8 minecraft:air minecraft:weathered_copper
+change 1 commands 15 1 9 minecraft:air minecraft:copper_block
+change 1 commands 15 1 10 minecraft:air minecraft:exposed_copper
+change 1 commands 0 1 13 minecraft:air minecraft:redstone_ore[lit=true]
+change 1 commands 1 1 13 minecraft:air minecraft:redstone_ore[lit=true]
+change 1 commands 2 1 13 minecraft:air minecraft:redstone_ore[lit=true]
+change 1 commands 3 1 13 minecraft:air minecraft:redstone_ore[lit=true]
+change 1 commands 4 1 13 minecraft:air minecraft:redstone_ore[lit=true]
+change 1 commands 5 1 13 minecraft:air minecraft:redstone_ore[lit=true]
+change 1 commands 7 1 13 minecraft:air minecraft:deepslate_redstone_ore[lit=true]
+change 1 commands 10 3 13 minecraft:air minecraft:budding_amethyst
+change 1 commands 13 3 13 minecraft:air minecraft:budding_amethyst
+change 1 commands 13 4 13 minecraft:air minecraft:stone
+change 1 commands 13 3 14 minecraft:air minecraft:water[level=0]
+draws 1 random_ticks level 2708
+
+draws 2 random_ticks level 2704
+
+change 3 random_ticks 4 1 2 minecraft:ice minecraft:water[level=0]
+change 3 random_ticks 4 1 13 minecraft:redstone_ore[lit=true] minecraft:redstone_ore[lit=false]
+draws 3 random_ticks level 2704
+
+draws 4 random_ticks level 2701
+
+change 5 fluid_ticks 13 2 14 minecraft:air minecraft:water[level=8]
+change 5 random_ticks 5 1 2 minecraft:ice minecraft:water[level=0]
+change 5 random_ticks 14 3 13 minecraft:air minecraft:small_amethyst_bud[facing=east,waterlogged=false]
+change 5 random_ticks 5 1 13 minecraft:redstone_ore[lit=true] minecraft:redstone_ore[lit=false]
+change 5 random_ticks 2 1 13 minecraft:redstone_ore[lit=true] minecraft:redstone_ore[lit=false]
+change 5 random_ticks 4 1 3 minecraft:snow[layers=2] minecraft:air
+draws 5 random_ticks level 2708
+
+draws 6 random_ticks level 2701
+
+draws 7 random_ticks level 2711
+
+change 8 fluid_ticks 4 1 3 minecraft:air minecraft:water[level=1]
+draws 8 random_ticks level 2706
+
+change 9 random_ticks 10 2 13 minecraft:air minecraft:small_amethyst_bud[facing=down,waterlogged=false]
+draws 9 random_ticks level 2704
+
+change 10 fluid_ticks 13 1 14 minecraft:air minecraft:water[level=8]
+change 10 fluid_ticks 13 3 15 minecraft:air minecraft:water[level=1]
+change 10 fluid_ticks 12 3 14 minecraft:air minecraft:water[level=1]
+change 10 fluid_ticks 14 3 14 minecraft:air minecraft:water[level=1]
+change 10 fluid_ticks 5 1 3 minecraft:snow[layers=3] minecraft:water[level=1]
+change 10 random_ticks 12 3 13 minecraft:air minecraft:small_amethyst_bud[facing=west,waterlogged=false]
+draws 10 random_ticks level 2704
+
+change 11 random_ticks 7 1 13 minecraft:deepslate_redstone_ore[lit=true] minecraft:deepslate_redstone_ore[lit=false]
+draws 11 random_ticks level 2703
+
+change 12 random_ticks 3 1 2 minecraft:ice minecraft:water[level=0]
+change 12 random_ticks 1 1 13 minecraft:redstone_ore[lit=true] minecraft:redstone_ore[lit=false]
+draws 12 random_ticks level 2702
+
+change 13 fluid_ticks 3 1 3 minecraft:snow[layers=1] minecraft:water[level=1]
+draws 13 random_ticks level 2705
+
+change 14 random_ticks 3 1 6 minecraft:cut_copper minecraft:exposed_cut_copper
+change 14 random_ticks 3 1 13 minecraft:redstone_ore[lit=true] minecraft:redstone_ore[lit=false]
+draws 14 random_ticks level 2705
+
+change 15 fluid_ticks 13 1 15 minecraft:air minecraft:water[level=1]
+change 15 fluid_ticks 13 2 15 minecraft:air minecraft:water[level=8]
+change 15 fluid_ticks 12 2 14 minecraft:air minecraft:water[level=8]
+change 15 fluid_ticks 14 2 14 minecraft:air minecraft:water[level=8]
+change 15 fluid_ticks 5 1 4 minecraft:air minecraft:water[level=2]
+change 15 fluid_ticks 6 1 3 minecraft:snow[layers=4] minecraft:water[level=2]
+draws 15 random_ticks level 2707
+
+draws 16 random_ticks level 2703
+
+draws 17 random_ticks level 2707
+
+change 18 fluid_ticks 2 1 3 minecraft:air minecraft:water[level=2]
+draws 18 random_ticks level 2701
+
+change 19 random_ticks 14 1 10 minecraft:copper_block minecraft:exposed_copper
+draws 19 random_ticks level 2703
+
+change 20 fluid_ticks 13 1 15 minecraft:water[level=1] minecraft:water[level=8]
+change 20 fluid_ticks 12 1 14 minecraft:air minecraft:water[level=8]
+change 20 fluid_ticks 14 1 14 minecraft:air minecraft:water[level=8]
+change 20 fluid_ticks 5 1 5 minecraft:air minecraft:water[level=3]
+change 20 fluid_ticks 4 1 4 minecraft:air minecraft:water[level=2]
+change 20 fluid_ticks 6 1 4 minecraft:air minecraft:water[level=3]
+change 20 fluid_ticks 7 1 3 minecraft:snow[layers=5] minecraft:water[level=3]
+change 20 random_ticks 6 1 2 minecraft:ice minecraft:water[level=0]
+draws 20 random_ticks level 2705
+
+draws 21 random_ticks level 2705
+
+draws 22 random_ticks level 2706
+
+change 23 fluid_ticks 1 1 3 minecraft:air minecraft:water[level=3]
+change 23 random_ticks 11 3 13 minecraft:air minecraft:small_amethyst_bud[facing=east,waterlogged=false]
+draws 23 random_ticks level 2704
+
+draws 24 random_ticks level 2709
+
+change 25 fluid_ticks 12 1 15 minecraft:air minecraft:water[level=1]
+change 25 fluid_ticks 14 1 15 minecraft:air minecraft:water[level=1]
+change 25 fluid_ticks 15 1 14 minecraft:air minecraft:water[level=1]
+change 25 fluid_ticks 4 1 5 minecraft:air minecraft:water[level=3]
+change 25 fluid_ticks 6 1 5 minecraft:air minecraft:water[level=4]
+change 25 fluid_ticks 3 1 4 minecraft:air minecraft:water[level=2]
+change 25 fluid_ticks 7 1 4 minecraft:air minecraft:water[level=4]
+change 25 fluid_ticks 6 1 3 minecraft:water[level=2] minecraft:water[level=1]
+change 25 fluid_ticks 7 1 3 minecraft:water[level=3] minecraft:water[level=2]
+change 25 fluid_ticks 8 1 3 minecraft:air minecraft:water[level=3]
+draws 25 random_ticks level 2705
+
+draws 26 random_ticks level 2704
+
+draws 27 random_ticks level 2704
+
+change 28 fluid_ticks 0 1 3 minecraft:air minecraft:water[level=4]
+draws 28 random_ticks level 2705
+
+draws 29 random_ticks level 2707
+
+change 30 fluid_ticks 3 1 5 minecraft:air minecraft:water[level=3]
+change 30 fluid_ticks 7 1 5 minecraft:air minecraft:water[level=5]
+change 30 fluid_ticks 6 1 4 minecraft:water[level=3] minecraft:water[level=2]
+change 30 fluid_ticks 2 1 4 minecraft:air minecraft:water[level=3]
+change 30 fluid_ticks 7 1 4 minecraft:water[level=4] minecraft:water[level=3]
+change 30 fluid_ticks 8 1 4 minecraft:air minecraft:water[level=4]
+change 30 fluid_ticks 8 1 2 minecraft:air minecraft:water[level=4]
+draws 30 random_ticks level 2704
+
+draws 31 random_ticks level 2703
+
+draws 32 random_ticks level 2704
+
+change 33 random_ticks 0 1 13 minecraft:redstone_ore[lit=true] minecraft:redstone_ore[lit=false]
+draws 33 random_ticks level 2706
+
+draws 34 random_ticks level 2707
+
+change 35 fluid_ticks 2 1 5 minecraft:air minecraft:water[level=4]
+change 35 fluid_ticks 7 1 5 minecraft:water[level=5] minecraft:water[level=4]
+change 35 fluid_ticks 8 1 5 minecraft:air minecraft:water[level=5]
+change 35 fluid_ticks 6 1 5 minecraft:water[level=4] minecraft:water[level=3]
+change 35 fluid_ticks 1 1 4 minecraft:air minecraft:water[level=4]
+change 35 fluid_ticks 8 1 1 minecraft:air minecraft:water[level=5]
+draws 35 random_ticks level 2709
+
+draws 36 random_ticks level 2703
+
+draws 37 random_ticks level 2709
+
+draws 38 random_ticks level 2703
+
+draws 39 random_ticks level 2705
+
+change 40 fluid_ticks 1 1 5 minecraft:air minecraft:water[level=5]
+change 40 fluid_ticks 9 1 5 minecraft:air minecraft:water[level=6]
+change 40 fluid_ticks 0 1 4 minecraft:air minecraft:water[level=5]
+change 40 fluid_ticks 8 1 0 minecraft:air minecraft:water[level=6]
+draws 40 random_ticks level 2707
+
+draws 41 random_ticks level 2707
+
+draws 42 random_ticks level 2703
+
+draws 43 random_ticks level 2702
+
+change 44 random_ticks 13 3 12 minecraft:air minecraft:small_amethyst_bud[facing=north,waterlogged=false]
+draws 44 random_ticks level 2709
+
+change 45 fluid_ticks 0 1 5 minecraft:air minecraft:water[level=6]
+change 45 fluid_ticks 9 1 4 minecraft:air minecraft:water[level=5]
+change 45 fluid_ticks 10 1 5 minecraft:air minecraft:water[level=7]
+draws 45 random_ticks level 2702
+
+draws 46 random_ticks level 2704
+
+draws 47 random_ticks level 2703
+
+draws 48 random_ticks level 2703
+
+draws 49 random_ticks level 2702
+
+change 50 fluid_ticks 9 1 3 minecraft:air minecraft:water[level=4]
+change 50 fluid_ticks 10 1 4 minecraft:air minecraft:water[level=6]
+draws 50 random_ticks level 2703
+
+change 51 random_ticks 13 3 14 minecraft:water[level=0] minecraft:small_amethyst_bud[facing=south,waterlogged=true]
+draws 51 random_ticks level 2708
+
+draws 52 random_ticks level 2704
+
+draws 53 random_ticks level 2701
+
+draws 54 random_ticks level 2702
+
+change 55 fluid_ticks 10 1 3 minecraft:air minecraft:water[level=5]
+change 55 fluid_ticks 11 1 4 minecraft:air minecraft:water[level=7]
+draws 55 random_ticks level 2705
+
+draws 56 random_ticks level 2706
+
+draws 57 random_ticks level 2702
+
+draws 58 random_ticks level 2708
+
+draws 59 random_ticks level 2704
+
+change 60 fluid_ticks 11 1 3 minecraft:air minecraft:water[level=6]
+draws 60 random_ticks level 2702
+
+draws 61 random_ticks level 2703
+
+draws 62 random_ticks level 2705
+
+draws 63 random_ticks level 2704
+
+draws 64 random_ticks level 2704
+
+change 65 fluid_ticks 12 1 3 minecraft:air minecraft:water[level=7]
+draws 65 random_ticks level 2705
+
+draws 66 random_ticks level 2701
+
+draws 67 random_ticks level 2703
+
+draws 68 random_ticks level 2703
+
+draws 69 random_ticks level 2702
+
+draws 70 random_ticks level 2705
+
+draws 71 random_ticks level 2702
+
+draws 72 random_ticks level 2707
+
+draws 73 random_ticks level 2704
+
+draws 74 random_ticks level 2703
+
+draws 75 random_ticks level 2707
+
+draws 76 random_ticks level 2704
+
+draws 77 random_ticks level 2703
+
+draws 78 random_ticks level 2705
+
+draws 79 random_ticks level 2706
+
+draws 80 random_ticks level 2704
+
+draws 81 random_ticks level 2704
+
+draws 82 random_ticks level 2705
+
+change 83 random_ticks 0 1 9 minecraft:copper_block minecraft:exposed_copper
+draws 83 random_ticks level 2703
+
+draws 84 random_ticks level 2703
+
+draws 85 random_ticks level 2704
+
+change 86 random_ticks 6 1 9 minecraft:copper_block minecraft:exposed_copper
+draws 86 random_ticks level 2705
+
+draws 87 random_ticks level 2706
+
+draws 88 random_ticks level 2704
+
+draws 89 random_ticks level 2701
+
+draws 90 random_ticks level 2701
+
+draws 91 random_ticks level 2702
+
+change 92 random_ticks 12 3 13 minecraft:small_amethyst_bud[facing=west,waterlogged=false] minecraft:medium_amethyst_bud[facing=west,waterlogged=false]
+draws 92 random_ticks level 2706
+
+draws 93 random_ticks level 2704
+
+draws 94 random_ticks level 2700
+
+draws 95 random_ticks level 2702
+
+draws 96 random_ticks level 2706
+
+draws 97 random_ticks level 2703
+
+draws 98 random_ticks level 2705
+
+draws 99 random_ticks level 2704
+
+draws 100 random_ticks level 2706
+
+draws 101 random_ticks level 2702
+
+draws 102 random_ticks level 2705
+
+draws 103 random_ticks level 2702
+
+draws 104 random_ticks level 2702
+
+draws 105 random_ticks level 2705
+
+draws 106 random_ticks level 2701
+
+change 107 random_ticks 8 1 6 minecraft:chiseled_copper minecraft:exposed_chiseled_copper
+draws 107 random_ticks level 2709
+
+draws 108 random_ticks level 2704
+
+draws 109 random_ticks level 2703
+
+draws 110 random_ticks level 2701
+
+change 111 random_ticks 12 1 9 minecraft:copper_block minecraft:exposed_copper
+draws 111 random_ticks level 2705
+
+draws 112 random_ticks level 2704
+
+draws 113 random_ticks level 2702
+
+draws 114 random_ticks level 2704
+
+draws 115 random_ticks level 2701
+
+change 116 random_ticks 13 3 14 minecraft:small_amethyst_bud[facing=south,waterlogged=true] minecraft:medium_amethyst_bud[facing=south,waterlogged=true]
+draws 116 random_ticks level 2706
+
+draws 117 random_ticks level 2703
+
+draws 118 random_ticks level 2701
+
+draws 119 random_ticks level 2703
+
+draws 120 random_ticks level 2702
+
+draws 121 random_ticks level 2709
+
+draws 122 random_ticks level 2703
+
+change 123 random_ticks 3 1 9 minecraft:copper_block minecraft:exposed_copper
+draws 123 random_ticks level 2708
+
+draws 124 random_ticks level 2702
+
+draws 125 random_ticks level 2704
+
+draws 126 random_ticks level 2703
+
+draws 127 random_ticks level 2703
+
+draws 128 random_ticks level 2705
+
+draws 129 random_ticks level 2704
+
+draws 130 random_ticks level 2706
+
+draws 131 random_ticks level 2704
+
+draws 132 random_ticks level 2703
+
+draws 133 random_ticks level 2706
+
+draws 134 random_ticks level 2704
+
+draws 135 random_ticks level 2704
+
+draws 136 random_ticks level 2706
+
+draws 137 random_ticks level 2705
+
+draws 138 random_ticks level 2705
+
+draws 139 random_ticks level 2704
+
+draws 140 random_ticks level 2703
+
+change 141 random_ticks 14 3 13 minecraft:small_amethyst_bud[facing=east,waterlogged=false] minecraft:medium_amethyst_bud[facing=east,waterlogged=false]
+draws 141 random_ticks level 2710
+
+draws 142 random_ticks level 2707
+
+draws 143 random_ticks level 2704
+
+change 144 random_ticks 1 1 8 minecraft:copper_block minecraft:exposed_copper
+draws 144 random_ticks level 2705
+
+change 145 random_ticks 10 3 14 minecraft:air minecraft:small_amethyst_bud[facing=south,waterlogged=false]
+draws 145 random_ticks level 2708
+
+draws 146 random_ticks level 2708
+
+draws 147 random_ticks level 2707
+
+draws 148 random_ticks level 2708
+
+draws 149 random_ticks level 2704
+
+draws 150 random_ticks level 2704
+
+draws 151 random_ticks level 2706
+
+draws 152 random_ticks level 2710
+
+draws 153 random_ticks level 2706
+
+draws 154 random_ticks level 2710
+
+draws 155 random_ticks level 2707
+
+draws 156 random_ticks level 2705
+
+draws 157 random_ticks level 2704
+
+draws 158 random_ticks level 2704
+
+draws 159 random_ticks level 2702
+
+draws 160 random_ticks level 2704
+
+draws 161 random_ticks level 2701
+
+draws 162 random_ticks level 2703
+
+draws 163 random_ticks level 2705
+
+draws 164 random_ticks level 2703
+
+draws 165 random_ticks level 2705
+
+draws 166 random_ticks level 2703
+
+draws 167 random_ticks level 2702
+
+draws 168 random_ticks level 2701
+
+draws 169 random_ticks level 2701
+
+draws 170 random_ticks level 2707
+
+draws 171 random_ticks level 2702
+
+change 172 random_ticks 10 3 14 minecraft:small_amethyst_bud[facing=south,waterlogged=false] minecraft:medium_amethyst_bud[facing=south,waterlogged=false]
+draws 172 random_ticks level 2709
+
+draws 173 random_ticks level 2703
+
+draws 174 random_ticks level 2702
+
+draws 175 random_ticks level 2703
+
+draws 176 random_ticks level 2702
+
+draws 177 random_ticks level 2708
+
+draws 178 random_ticks level 2705
+
+draws 179 random_ticks level 2704
+
+change 180 random_ticks 14 3 13 minecraft:medium_amethyst_bud[facing=east,waterlogged=false] minecraft:large_amethyst_bud[facing=east,waterlogged=false]
+draws 180 random_ticks level 2707
+
+draws 181 random_ticks level 2703
+
+draws 182 random_ticks level 2703
+
+draws 183 random_ticks level 2705
+
+draws 184 random_ticks level 2701
+
+draws 185 random_ticks level 2704
+
+draws 186 random_ticks level 2708
+
+draws 187 random_ticks level 2703
+
+draws 188 random_ticks level 2704
+
+draws 189 random_ticks level 2705
+
+draws 190 random_ticks level 2704
+
+draws 191 random_ticks level 2706
+
+draws 192 random_ticks level 2705
+
+draws 193 random_ticks level 2705
+
+draws 194 random_ticks level 2703
+
+change 195 random_ticks 5 1 10 minecraft:copper_block minecraft:exposed_copper
+draws 195 random_ticks level 2706
+
+draws 196 random_ticks level 2703
+
+draws 197 random_ticks level 2705
+
+draws 198 random_ticks level 2708
+
+draws 199 random_ticks level 2702
+
+draws 200 random_ticks level 2705

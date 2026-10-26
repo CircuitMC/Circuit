@@ -856,8 +856,17 @@
           "id": "weathering",
           "name": "Copper weathering, waxing and scraping",
           "milestone": "C5",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "note": "Copper blocks, cut copper, its stairs and slabs, chiseled copper, grates and bulbs weather in random ticks by their chance and the copper around them, as the official 1.21.8 server does draw for draw",
+          "cases": [
+            "trace/melt_weather"
+          ],
+          "deviations": [
+            "copper doors and trapdoors do not weather",
+            "waxing with honeycomb and scraping with axes are not modeled",
+            "1.21.4's weathering is not compared (its random ticks run only near players, and the harness has none)"
+          ]
         }
       ]
     },
@@ -947,13 +956,15 @@
             "trace/fire_wool",
             "trace/fire_spread",
             "trace/items_in_fire",
-            "trace/entities_in_lava"
+            "trace/entities_in_lava",
+            "trace/lava_fire",
+            "collision/lava_ignites"
           ],
-          "note": "Fire stays on sturdy tops and beside flammable blocks, soul fire on soul sand and soil; its block ticks age it, burn it out, burn its neighbors by their burn odds and spread it by their ignite odds and the difficulty, as both official servers do; on 1.21.8 only near players unless allowFireTicksAwayFromPlayer; items and arrows in fire, soul fire and lava burn, by each version's timing in lava",
+          "note": "Fire stays on sturdy tops and beside flammable blocks, soul fire on soul sand and soil; its block ticks age it, burn it out, burn its neighbors by their burn odds and spread it by their ignite odds and the difficulty, as both official servers do; on 1.21.8 only near players unless allowFireTicksAwayFromPlayer; items and arrows in fire, soul fire and lava burn, by each version's timing in lava; lava sets fire beside the blocks it ignites in its random ticks, as the official 1.21.8 server does draw for draw",
           "deviations": [
             "rain and humid biomes do not put it out sooner",
             "entities other than items and arrows are not hurt or set burning",
-            "lava, lightning and flint and steel do not set fire"
+            "lightning and flint and steel do not set fire"
           ]
         },
         {
@@ -969,11 +980,12 @@
             "trace/frosted_ice",
             "trace/frosted_ice_ticks",
             "trace/snow_explosion",
-            "client/snow"
+            "client/snow",
+            "trace/melt_weather"
           ],
-          "note": "Snow layers on their supports and breaking without them, snowy grass, podzol and mycelium, ice and frosted ice turning to water when players break them, frosted ice aging and melting in its block ticks and by updates, snow's drops, and players stacking snow layers and replacing single ones, as both official servers do",
+          "note": "Snow layers on their supports and breaking without them, snowy grass, podzol and mycelium, ice and frosted ice turning to water when players break them, frosted ice aging and melting in its block ticks and by updates, snow's drops, and players stacking snow layers and replacing single ones, as both official servers do; ice and snow layers melting by block light in random ticks, as the official 1.21.8 server does",
           "deviations": [
-            "melting and freezing by light and weather (random ticks) are not modeled",
+            "freezing and melting by weather are not modeled",
             "powder snow is not modeled"
           ]
         },

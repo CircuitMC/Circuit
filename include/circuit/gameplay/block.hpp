@@ -365,6 +365,9 @@ bool takes_random_ticks(BlockState s);
 // official servers, 1.21.8: the picks advance through sections that hold
 // only water, waterlogged blocks included).
 bool ticks_section_randomly(BlockState s);
+// Whether lava sets fire in the air beside a state (weathering.cpp; checked
+// against both official servers for every state).
+bool ignited_by_lava(BlockState s);
 // Full collision cell for item entities. Blocks without rules of their own
 // are solid when they have any collision shape (cell-level approximation).
 inline bool is_solid(BlockState s) noexcept {

@@ -1,0 +1,998 @@
+circuit-trace 2
+title Lava setting fire to flammable blocks near it in random ticks
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v12
+mechanisms random_ticks fire lava
+area 0 0 0 15 15 15
+ticks 200
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 300
+gamerule allowFireTicksAwayFromPlayer true
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 0 0 10 minecraft:stone
+at 0 set 0 0 11 minecraft:stone
+at 0 set 0 0 12 minecraft:stone
+at 0 set 0 0 13 minecraft:stone
+at 0 set 0 0 14 minecraft:stone
+at 0 set 0 0 15 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:stone
+at 0 set 1 0 11 minecraft:stone
+at 0 set 1 0 12 minecraft:stone
+at 0 set 1 0 13 minecraft:stone
+at 0 set 1 0 14 minecraft:stone
+at 0 set 1 0 15 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 2 0 10 minecraft:stone
+at 0 set 2 0 11 minecraft:stone
+at 0 set 2 0 12 minecraft:stone
+at 0 set 2 0 13 minecraft:stone
+at 0 set 2 0 14 minecraft:stone
+at 0 set 2 0 15 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 3 0 10 minecraft:stone
+at 0 set 3 0 11 minecraft:stone
+at 0 set 3 0 12 minecraft:stone
+at 0 set 3 0 13 minecraft:stone
+at 0 set 3 0 14 minecraft:stone
+at 0 set 3 0 15 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 4 0 11 minecraft:stone
+at 0 set 4 0 12 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 4 0 14 minecraft:stone
+at 0 set 4 0 15 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 5 0 10 minecraft:stone
+at 0 set 5 0 11 minecraft:stone
+at 0 set 5 0 12 minecraft:stone
+at 0 set 5 0 13 minecraft:stone
+at 0 set 5 0 14 minecraft:stone
+at 0 set 5 0 15 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 6 0 10 minecraft:stone
+at 0 set 6 0 11 minecraft:stone
+at 0 set 6 0 12 minecraft:stone
+at 0 set 6 0 13 minecraft:stone
+at 0 set 6 0 14 minecraft:stone
+at 0 set 6 0 15 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 7 0 10 minecraft:stone
+at 0 set 7 0 11 minecraft:stone
+at 0 set 7 0 12 minecraft:stone
+at 0 set 7 0 13 minecraft:stone
+at 0 set 7 0 14 minecraft:stone
+at 0 set 7 0 15 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 8 0 10 minecraft:stone
+at 0 set 8 0 11 minecraft:stone
+at 0 set 8 0 12 minecraft:stone
+at 0 set 8 0 13 minecraft:stone
+at 0 set 8 0 14 minecraft:stone
+at 0 set 8 0 15 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 9 0 10 minecraft:stone
+at 0 set 9 0 11 minecraft:stone
+at 0 set 9 0 12 minecraft:stone
+at 0 set 9 0 13 minecraft:stone
+at 0 set 9 0 14 minecraft:stone
+at 0 set 9 0 15 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 10 0 10 minecraft:stone
+at 0 set 10 0 11 minecraft:stone
+at 0 set 10 0 12 minecraft:stone
+at 0 set 10 0 13 minecraft:stone
+at 0 set 10 0 14 minecraft:stone
+at 0 set 10 0 15 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 11 0 10 minecraft:stone
+at 0 set 11 0 11 minecraft:stone
+at 0 set 11 0 12 minecraft:stone
+at 0 set 11 0 13 minecraft:stone
+at 0 set 11 0 14 minecraft:stone
+at 0 set 11 0 15 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 12 0 8 minecraft:stone
+at 0 set 12 0 9 minecraft:stone
+at 0 set 12 0 10 minecraft:stone
+at 0 set 12 0 11 minecraft:stone
+at 0 set 12 0 12 minecraft:stone
+at 0 set 12 0 13 minecraft:stone
+at 0 set 12 0 14 minecraft:stone
+at 0 set 12 0 15 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 13 0 8 minecraft:stone
+at 0 set 13 0 9 minecraft:stone
+at 0 set 13 0 10 minecraft:stone
+at 0 set 13 0 11 minecraft:stone
+at 0 set 13 0 12 minecraft:stone
+at 0 set 13 0 13 minecraft:stone
+at 0 set 13 0 14 minecraft:stone
+at 0 set 13 0 15 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 14 0 8 minecraft:stone
+at 0 set 14 0 9 minecraft:stone
+at 0 set 14 0 10 minecraft:stone
+at 0 set 14 0 11 minecraft:stone
+at 0 set 14 0 12 minecraft:stone
+at 0 set 14 0 13 minecraft:stone
+at 0 set 14 0 14 minecraft:stone
+at 0 set 14 0 15 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 15 0 8 minecraft:stone
+at 0 set 15 0 9 minecraft:stone
+at 0 set 15 0 10 minecraft:stone
+at 0 set 15 0 11 minecraft:stone
+at 0 set 15 0 12 minecraft:stone
+at 0 set 15 0 13 minecraft:stone
+at 0 set 15 0 14 minecraft:stone
+at 0 set 15 0 15 minecraft:stone
+draws 0 random_ticks level 2700
+
+at 1 set 2 1 2 minecraft:lava[level=0]
+at 1 set 3 1 2 minecraft:stone
+at 1 set 1 1 2 minecraft:stone
+at 1 set 2 1 3 minecraft:stone
+at 1 set 2 1 1 minecraft:stone
+at 1 set 3 2 2 minecraft:oak_planks
+at 1 set 1 3 3 minecraft:white_wool
+at 1 set 2 1 6 minecraft:lava[level=0]
+at 1 set 3 1 6 minecraft:stone
+at 1 set 1 1 6 minecraft:stone
+at 1 set 2 1 7 minecraft:stone
+at 1 set 2 1 5 minecraft:stone
+at 1 set 3 2 6 minecraft:oak_planks
+at 1 set 1 3 7 minecraft:white_wool
+at 1 set 2 1 10 minecraft:lava[level=0]
+at 1 set 3 1 10 minecraft:stone
+at 1 set 1 1 10 minecraft:stone
+at 1 set 2 1 11 minecraft:stone
+at 1 set 2 1 9 minecraft:stone
+at 1 set 3 2 10 minecraft:oak_planks
+at 1 set 1 3 11 minecraft:white_wool
+at 1 set 6 1 2 minecraft:lava[level=0]
+at 1 set 7 1 2 minecraft:stone
+at 1 set 5 1 2 minecraft:stone
+at 1 set 6 1 3 minecraft:stone
+at 1 set 6 1 1 minecraft:stone
+at 1 set 7 2 2 minecraft:oak_planks
+at 1 set 5 3 3 minecraft:white_wool
+at 1 set 6 1 6 minecraft:lava[level=0]
+at 1 set 7 1 6 minecraft:stone
+at 1 set 5 1 6 minecraft:stone
+at 1 set 6 1 7 minecraft:stone
+at 1 set 6 1 5 minecraft:stone
+at 1 set 7 2 6 minecraft:oak_planks
+at 1 set 5 3 7 minecraft:white_wool
+at 1 set 6 1 10 minecraft:lava[level=0]
+at 1 set 7 1 10 minecraft:stone
+at 1 set 5 1 10 minecraft:stone
+at 1 set 6 1 11 minecraft:stone
+at 1 set 6 1 9 minecraft:stone
+at 1 set 7 2 10 minecraft:oak_planks
+at 1 set 5 3 11 minecraft:white_wool
+at 1 set 10 1 2 minecraft:lava[level=0]
+at 1 set 11 1 2 minecraft:stone
+at 1 set 9 1 2 minecraft:stone
+at 1 set 10 1 3 minecraft:stone
+at 1 set 10 1 1 minecraft:stone
+at 1 set 11 2 2 minecraft:oak_planks
+at 1 set 9 3 3 minecraft:white_wool
+at 1 set 10 1 6 minecraft:lava[level=0]
+at 1 set 11 1 6 minecraft:stone
+at 1 set 9 1 6 minecraft:stone
+at 1 set 10 1 7 minecraft:stone
+at 1 set 10 1 5 minecraft:stone
+at 1 set 11 2 6 minecraft:oak_planks
+at 1 set 9 3 7 minecraft:white_wool
+at 1 set 10 1 10 minecraft:lava[level=0]
+at 1 set 11 1 10 minecraft:stone
+at 1 set 9 1 10 minecraft:stone
+at 1 set 10 1 11 minecraft:stone
+at 1 set 10 1 9 minecraft:stone
+at 1 set 11 2 10 minecraft:oak_planks
+at 1 set 9 3 11 minecraft:white_wool
+change 1 commands 2 1 2 minecraft:air minecraft:lava[level=0]
+change 1 commands 3 1 2 minecraft:air minecraft:stone
+change 1 commands 1 1 2 minecraft:air minecraft:stone
+change 1 commands 2 1 3 minecraft:air minecraft:stone
+change 1 commands 2 1 1 minecraft:air minecraft:stone
+change 1 commands 3 2 2 minecraft:air minecraft:oak_planks
+change 1 commands 1 3 3 minecraft:air minecraft:white_wool
+change 1 commands 2 1 6 minecraft:air minecraft:lava[level=0]
+change 1 commands 3 1 6 minecraft:air minecraft:stone
+change 1 commands 1 1 6 minecraft:air minecraft:stone
+change 1 commands 2 1 7 minecraft:air minecraft:stone
+change 1 commands 2 1 5 minecraft:air minecraft:stone
+change 1 commands 3 2 6 minecraft:air minecraft:oak_planks
+change 1 commands 1 3 7 minecraft:air minecraft:white_wool
+change 1 commands 2 1 10 minecraft:air minecraft:lava[level=0]
+change 1 commands 3 1 10 minecraft:air minecraft:stone
+change 1 commands 1 1 10 minecraft:air minecraft:stone
+change 1 commands 2 1 11 minecraft:air minecraft:stone
+change 1 commands 2 1 9 minecraft:air minecraft:stone
+change 1 commands 3 2 10 minecraft:air minecraft:oak_planks
+change 1 commands 1 3 11 minecraft:air minecraft:white_wool
+change 1 commands 6 1 2 minecraft:air minecraft:lava[level=0]
+change 1 commands 7 1 2 minecraft:air minecraft:stone
+change 1 commands 5 1 2 minecraft:air minecraft:stone
+change 1 commands 6 1 3 minecraft:air minecraft:stone
+change 1 commands 6 1 1 minecraft:air minecraft:stone
+change 1 commands 7 2 2 minecraft:air minecraft:oak_planks
+change 1 commands 5 3 3 minecraft:air minecraft:white_wool
+change 1 commands 6 1 6 minecraft:air minecraft:lava[level=0]
+change 1 commands 7 1 6 minecraft:air minecraft:stone
+change 1 commands 5 1 6 minecraft:air minecraft:stone
+change 1 commands 6 1 7 minecraft:air minecraft:stone
+change 1 commands 6 1 5 minecraft:air minecraft:stone
+change 1 commands 7 2 6 minecraft:air minecraft:oak_planks
+change 1 commands 5 3 7 minecraft:air minecraft:white_wool
+change 1 commands 6 1 10 minecraft:air minecraft:lava[level=0]
+change 1 commands 7 1 10 minecraft:air minecraft:stone
+change 1 commands 5 1 10 minecraft:air minecraft:stone
+change 1 commands 6 1 11 minecraft:air minecraft:stone
+change 1 commands 6 1 9 minecraft:air minecraft:stone
+change 1 commands 7 2 10 minecraft:air minecraft:oak_planks
+change 1 commands 5 3 11 minecraft:air minecraft:white_wool
+change 1 commands 10 1 2 minecraft:air minecraft:lava[level=0]
+change 1 commands 11 1 2 minecraft:air minecraft:stone
+change 1 commands 9 1 2 minecraft:air minecraft:stone
+change 1 commands 10 1 3 minecraft:air minecraft:stone
+change 1 commands 10 1 1 minecraft:air minecraft:stone
+change 1 commands 11 2 2 minecraft:air minecraft:oak_planks
+change 1 commands 9 3 3 minecraft:air minecraft:white_wool
+change 1 commands 10 1 6 minecraft:air minecraft:lava[level=0]
+change 1 commands 11 1 6 minecraft:air minecraft:stone
+change 1 commands 9 1 6 minecraft:air minecraft:stone
+change 1 commands 10 1 7 minecraft:air minecraft:stone
+change 1 commands 10 1 5 minecraft:air minecraft:stone
+change 1 commands 11 2 6 minecraft:air minecraft:oak_planks
+change 1 commands 9 3 7 minecraft:air minecraft:white_wool
+change 1 commands 10 1 10 minecraft:air minecraft:lava[level=0]
+change 1 commands 11 1 10 minecraft:air minecraft:stone
+change 1 commands 9 1 10 minecraft:air minecraft:stone
+change 1 commands 10 1 11 minecraft:air minecraft:stone
+change 1 commands 10 1 9 minecraft:air minecraft:stone
+change 1 commands 11 2 10 minecraft:air minecraft:oak_planks
+change 1 commands 9 3 11 minecraft:air minecraft:white_wool
+draws 1 random_ticks level 2700
+
+draws 2 random_ticks level 2700
+
+draws 3 random_ticks level 2700
+
+change 4 random_ticks 11 2 11 minecraft:air minecraft:fire[age=0,east=false,north=true,south=false,up=false,west=false]
+draws 4 random_ticks level 2715
+
+draws 5 random_ticks level 2700
+
+change 6 random_ticks 10 2 6 minecraft:air minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false]
+change 6 random_ticks 11 2 5 minecraft:air minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false]
+draws 6 random_ticks level 2708
+
+change 7 random_ticks 6 2 10 minecraft:air minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false]
+draws 7 random_ticks level 2707
+
+draws 8 random_ticks level 2700
+
+change 9 random_ticks 11 2 9 minecraft:air minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false]
+draws 9 random_ticks level 2711
+
+draws 10 random_ticks level 2700
+
+draws 11 random_ticks level 2714
+
+draws 12 random_ticks level 2706
+
+draws 13 random_ticks level 2700
+
+change 14 random_ticks 7 2 11 minecraft:air minecraft:fire[age=0,east=false,north=true,south=false,up=false,west=false]
+draws 14 random_ticks level 2711
+
+draws 15 random_ticks level 2700
+
+draws 16 random_ticks level 2700
+
+draws 17 random_ticks level 2700
+
+draws 18 random_ticks level 2700
+
+draws 19 random_ticks level 2700
+
+change 20 random_ticks 3 2 5 minecraft:air minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false]
+change 20 random_ticks 11 2 1 minecraft:air minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false]
+draws 20 random_ticks level 2756
+
+draws 21 random_ticks level 2700
+
+draws 22 random_ticks level 2700
+
+change 23 random_ticks 2 2 10 minecraft:air minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false]
+draws 23 random_ticks level 2717
+
+draws 24 random_ticks level 2700
+
+draws 25 random_ticks level 2700
+
+draws 26 random_ticks level 2700
+
+draws 27 random_ticks level 2700
+
+draws 28 random_ticks level 2700
+
+change 29 random_ticks 9 2 3 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=true,west=false]
+draws 29 random_ticks level 2707
+
+draws 30 random_ticks level 2712
+
+change 31 random_ticks 1 2 7 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=true,west=false]
+change 31 random_ticks 6 3 11 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=true]
+draws 31 random_ticks level 2720
+
+draws 32 random_ticks level 2700
+
+change 33 random_ticks 10 3 11 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=true]
+draws 33 random_ticks level 2719
+
+draws 34 random_ticks level 2700
+
+change 35 random_ticks 3 2 1 minecraft:air minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false]
+draws 35 block_ticks level 11
+draws 35 random_ticks level 2707
+
+draws 36 random_ticks level 2700
+
+change 37 random_ticks 7 2 9 minecraft:air minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false]
+draws 37 random_ticks level 2721
+
+change 38 random_ticks 3 2 7 minecraft:air minecraft:fire[age=0,east=false,north=true,south=false,up=false,west=false]
+draws 38 random_ticks level 2717
+
+draws 39 random_ticks level 2700
+
+draws 40 block_ticks level 22
+draws 40 random_ticks level 2700
+
+change 41 random_ticks 10 2 2 minecraft:air minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false]
+draws 41 random_ticks level 2709
+
+draws 42 random_ticks level 2700
+
+draws 43 random_ticks level 2700
+
+change 44 block_ticks 10 2 6 minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=true,north=false,south=false,up=false,west=false]
+draws 44 block_ticks level 15
+draws 44 random_ticks level 2710
+
+change 45 block_ticks 11 2 10 minecraft:oak_planks minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+change 45 block_ticks 11 2 9 minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false] minecraft:air
+change 45 block_ticks 11 2 11 minecraft:fire[age=0,east=false,north=true,south=false,up=false,west=false] minecraft:air
+draws 45 block_ticks level 11
+draws 45 random_ticks level 2706
+
+draws 46 random_ticks level 2714
+
+change 47 random_ticks 6 2 2 minecraft:air minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false]
+draws 47 random_ticks level 2711
+
+draws 48 random_ticks level 2710
+
+draws 49 random_ticks level 2710
+
+draws 50 random_ticks level 2712
+
+change 51 block_ticks 7 2 11 minecraft:fire[age=0,east=false,north=true,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=true,south=false,up=false,west=false]
+change 51 random_ticks 7 2 3 minecraft:air minecraft:fire[age=0,east=false,north=true,south=false,up=false,west=false]
+draws 51 block_ticks level 12
+draws 51 random_ticks level 2711
+
+draws 52 random_ticks level 2700
+
+draws 53 random_ticks level 2712
+
+draws 54 random_ticks level 2728
+
+draws 55 block_ticks level 15
+draws 55 random_ticks level 2700
+
+draws 56 random_ticks level 2706
+
+draws 57 random_ticks level 2700
+
+draws 58 block_ticks level 10
+draws 58 random_ticks level 2700
+
+change 59 block_ticks 3 2 5 minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=true,up=false,west=false]
+change 59 block_ticks 4 2 6 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=true]
+draws 59 block_ticks level 14
+draws 59 random_ticks level 2700
+
+draws 60 block_ticks level 14
+draws 60 random_ticks level 2722
+
+draws 61 random_ticks level 2708
+
+change 62 block_ticks 1 3 7 minecraft:white_wool minecraft:air
+change 62 block_ticks 1 2 7 minecraft:fire[age=0,east=false,north=false,south=false,up=true,west=false] minecraft:air
+draws 62 block_ticks level 10
+draws 62 random_ticks level 2700
+
+draws 63 random_ticks level 2700
+
+draws 64 random_ticks level 2710
+
+change 65 block_ticks 6 3 11 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=true] minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=true]
+draws 65 block_ticks level 26
+draws 65 random_ticks level 2700
+
+draws 66 random_ticks level 2714
+
+draws 67 random_ticks level 2700
+
+draws 68 random_ticks level 2700
+
+draws 69 random_ticks level 2700
+
+draws 70 block_ticks level 21
+draws 70 random_ticks level 2710
+
+draws 71 random_ticks level 2700
+
+change 72 random_ticks 5 2 11 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=true,west=false]
+draws 72 random_ticks level 2715
+
+change 73 random_ticks 5 3 6 minecraft:air minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false]
+draws 73 random_ticks level 2713
+
+change 74 block_ticks 11 2 5 minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=true,up=false,west=false]
+draws 74 block_ticks level 11
+draws 74 random_ticks level 2700
+
+change 75 block_ticks 6 2 10 minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=true,north=false,south=false,up=false,west=false]
+change 75 block_ticks 7 2 10 minecraft:oak_planks minecraft:air
+change 75 block_ticks 6 2 10 minecraft:fire[age=1,east=true,north=false,south=false,up=false,west=false] minecraft:air
+change 75 block_ticks 7 2 9 minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false] minecraft:air
+change 75 block_ticks 7 2 11 minecraft:fire[age=1,east=false,north=true,south=false,up=false,west=false] minecraft:air
+draws 75 block_ticks level 12
+draws 75 random_ticks level 2708
+
+draws 76 random_ticks level 2700
+
+draws 77 block_ticks level 11
+draws 77 random_ticks level 2700
+
+draws 78 random_ticks level 2712
+
+draws 79 random_ticks level 2700
+
+change 80 block_ticks 11 2 10 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false]
+change 80 random_ticks 2 2 6 minecraft:air minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false]
+draws 80 block_ticks level 16
+draws 80 random_ticks level 2707
+
+draws 81 random_ticks level 2710
+
+draws 82 random_ticks level 2700
+
+change 83 block_ticks 6 2 2 minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=true,north=false,south=false,up=false,west=false]
+draws 83 block_ticks level 29
+draws 83 random_ticks level 2722
+
+change 84 random_ticks 2 2 2 minecraft:air minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false]
+change 84 random_ticks 1 3 4 minecraft:air minecraft:fire[age=0,east=false,north=true,south=false,up=false,west=false]
+draws 84 random_ticks level 2738
+
+draws 85 block_ticks level 12
+draws 85 random_ticks level 2700
+
+change 86 random_ticks 11 2 7 minecraft:air minecraft:fire[age=0,east=false,north=true,south=false,up=false,west=false]
+draws 86 random_ticks level 2711
+
+draws 87 random_ticks level 2710
+
+draws 88 random_ticks level 2712
+
+change 89 random_ticks 6 2 6 minecraft:air minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false]
+draws 89 block_ticks level 9
+draws 89 random_ticks level 2709
+
+change 90 block_ticks 4 2 6 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=true] minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=true]
+draws 90 block_ticks level 13
+draws 90 random_ticks level 2708
+
+change 91 block_ticks 11 2 1 minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=true,up=false,west=false]
+draws 91 block_ticks level 26
+draws 91 random_ticks level 2700
+
+draws 92 random_ticks level 2700
+
+draws 93 random_ticks level 2706
+
+draws 94 random_ticks level 2708
+
+draws 95 random_ticks level 2700
+
+change 96 random_ticks 11 2 3 minecraft:air minecraft:fire[age=0,east=false,north=true,south=false,up=false,west=false]
+draws 96 block_ticks level 26
+draws 96 random_ticks level 2711
+
+draws 97 random_ticks level 2700
+
+draws 98 random_ticks level 2710
+
+draws 99 random_ticks level 2708
+
+change 100 block_ticks 6 3 11 minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=true] minecraft:fire[age=2,east=false,north=false,south=false,up=false,west=true]
+change 100 block_ticks 5 3 12 minecraft:air minecraft:fire[age=2,east=false,north=true,south=false,up=false,west=false]
+draws 100 block_ticks level 24
+draws 100 random_ticks level 2700
+
+change 101 random_ticks 9 2 7 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=true,west=false]
+draws 101 random_ticks level 2709
+
+draws 102 random_ticks level 2700
+
+draws 103 random_ticks level 2710
+
+draws 104 random_ticks level 2710
+
+draws 105 block_ticks level 10
+draws 105 random_ticks level 2700
+
+draws 106 random_ticks level 2708
+
+change 107 random_ticks 9 2 11 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=true,west=false]
+draws 107 random_ticks level 2709
+
+draws 108 block_ticks level 10
+draws 108 random_ticks level 2708
+
+draws 109 block_ticks level 12
+draws 109 random_ticks level 2700
+
+draws 110 block_ticks level 21
+draws 110 random_ticks level 2714
+
+draws 111 block_ticks level 12
+draws 111 random_ticks level 2700
+
+change 112 random_ticks 6 3 3 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=true]
+draws 112 block_ticks level 2
+draws 112 random_ticks level 2729
+
+draws 113 random_ticks level 2700
+
+change 114 block_ticks 1 3 2 minecraft:air minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false]
+draws 114 block_ticks level 16
+draws 114 random_ticks level 2700
+
+draws 115 random_ticks level 2700
+
+change 116 random_ticks 2 3 3 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=true]
+change 116 random_ticks 11 3 2 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+draws 116 random_ticks level 2726
+
+draws 117 random_ticks level 2700
+
+change 118 block_ticks 6 2 2 minecraft:fire[age=1,east=true,north=false,south=false,up=false,west=false] minecraft:fire[age=2,east=true,north=false,south=false,up=false,west=false]
+draws 118 block_ticks level 25
+draws 118 random_ticks level 2700
+
+change 119 block_ticks 11 2 7 minecraft:fire[age=0,east=false,north=true,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=true,south=false,up=false,west=false]
+draws 119 block_ticks level 12
+draws 119 random_ticks level 2700
+
+draws 120 random_ticks level 2706
+
+change 121 block_ticks 3 2 5 minecraft:fire[age=1,east=false,north=false,south=true,up=false,west=false] minecraft:fire[age=2,east=false,north=false,south=true,up=false,west=false]
+change 121 block_ticks 4 2 6 minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=true] minecraft:fire[age=2,east=false,north=false,south=false,up=false,west=true]
+change 121 random_ticks 3 2 9 minecraft:air minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false]
+draws 121 block_ticks level 23
+draws 121 random_ticks level 2707
+
+change 122 block_ticks 1 2 3 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=true,west=false]
+change 122 random_ticks 5 2 3 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=true,west=false]
+change 122 random_ticks 7 2 1 minecraft:air minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false]
+draws 122 block_ticks level 25
+draws 122 random_ticks level 2708
+
+change 123 block_ticks 7 2 6 minecraft:oak_planks minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+change 123 block_ticks 6 2 6 minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false] minecraft:air
+draws 123 block_ticks level 14
+draws 123 random_ticks level 2710
+
+change 124 block_ticks 2 2 10 minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=true,north=false,south=false,up=false,west=false]
+draws 124 block_ticks level 24
+draws 124 random_ticks level 2710
+
+draws 125 random_ticks level 2700
+
+draws 126 random_ticks level 2714
+
+draws 127 random_ticks level 2700
+
+change 128 random_ticks 3 2 3 minecraft:air minecraft:fire[age=0,east=false,north=true,south=false,up=false,west=false]
+draws 128 random_ticks level 2711
+
+change 129 random_ticks 8 3 7 minecraft:air minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false]
+draws 129 random_ticks level 2723
+
+change 130 block_ticks 11 2 3 minecraft:fire[age=0,east=false,north=true,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=true,south=false,up=false,west=false]
+change 130 block_ticks 11 2 2 minecraft:oak_planks minecraft:air
+change 130 block_ticks 10 2 2 minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false] minecraft:air
+change 130 block_ticks 11 2 1 minecraft:fire[age=1,east=false,north=false,south=true,up=false,west=false] minecraft:air
+change 130 block_ticks 11 2 3 minecraft:fire[age=1,east=false,north=true,south=false,up=false,west=false] minecraft:air
+change 130 block_ticks 11 3 2 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false] minecraft:air
+change 130 block_ticks 10 3 3 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=true]
+draws 130 block_ticks level 23
+draws 130 random_ticks level 2710
+
+draws 131 block_ticks level 10
+draws 131 random_ticks level 2710
+
+draws 132 random_ticks level 2714
+
+draws 133 random_ticks level 2700
+
+draws 134 block_ticks level 23
+draws 134 random_ticks level 2700
+
+change 135 block_ticks 9 3 11 minecraft:white_wool minecraft:air
+change 135 block_ticks 10 3 11 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=true] minecraft:air
+change 135 block_ticks 9 2 11 minecraft:fire[age=0,east=false,north=false,south=false,up=true,west=false] minecraft:air
+change 135 block_ticks 9 2 7 minecraft:fire[age=0,east=false,north=false,south=false,up=true,west=false] minecraft:fire[age=1,east=false,north=false,south=false,up=true,west=false]
+draws 135 block_ticks level 22
+draws 135 random_ticks level 2700
+
+draws 136 random_ticks level 2700
+
+draws 137 random_ticks level 2714
+
+change 138 block_ticks 11 2 5 minecraft:fire[age=1,east=false,north=false,south=true,up=false,west=false] minecraft:fire[age=2,east=false,north=false,south=true,up=false,west=false]
+draws 138 block_ticks level 11
+draws 138 random_ticks level 2700
+
+draws 139 random_ticks level 2712
+
+draws 140 random_ticks level 2700
+
+change 141 block_ticks 5 3 6 minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=true,up=false,west=false]
+change 141 block_ticks 5 3 7 minecraft:white_wool minecraft:air
+change 141 block_ticks 5 3 6 minecraft:fire[age=1,east=false,north=false,south=true,up=false,west=false] minecraft:air
+change 141 block_ticks 2 2 6 minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=true,north=false,south=false,up=false,west=false]
+change 141 block_ticks 3 3 6 minecraft:air minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false]
+draws 141 block_ticks level 32
+draws 141 random_ticks level 2712
+
+draws 142 random_ticks level 2708
+
+draws 143 block_ticks level 2
+draws 143 random_ticks level 2700
+
+draws 144 random_ticks level 2700
+
+draws 145 random_ticks level 2726
+
+draws 146 random_ticks level 2700
+
+draws 147 block_ticks level 32
+draws 147 random_ticks level 2700
+
+draws 148 block_ticks level 23
+draws 148 random_ticks level 2700
+
+draws 149 block_ticks level 10
+draws 149 random_ticks level 2700
+
+draws 150 random_ticks level 2708
+
+draws 151 random_ticks level 2700
+
+change 152 block_ticks 10 3 7 minecraft:air minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=true]
+draws 152 block_ticks level 23
+draws 152 random_ticks level 2700
+
+change 153 block_ticks 3 2 9 minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=true,up=false,west=false]
+change 153 block_ticks 7 2 6 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false]
+draws 153 block_ticks level 24
+draws 153 random_ticks level 2708
+
+draws 154 block_ticks level 11
+draws 154 random_ticks level 2700
+
+change 155 block_ticks 11 2 6 minecraft:oak_planks minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false]
+change 155 block_ticks 10 2 6 minecraft:fire[age=1,east=true,north=false,south=false,up=false,west=false] minecraft:air
+change 155 block_ticks 11 2 5 minecraft:fire[age=2,east=false,north=false,south=true,up=false,west=false] minecraft:air
+change 155 block_ticks 11 2 7 minecraft:fire[age=1,east=false,north=true,south=false,up=false,west=false] minecraft:air
+draws 155 block_ticks level 31
+draws 155 random_ticks level 2700
+
+draws 156 random_ticks level 2710
+
+change 157 block_ticks 4 2 2 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=true]
+draws 157 block_ticks level 15
+draws 157 random_ticks level 2700
+
+draws 158 random_ticks level 2730
+
+change 159 random_ticks 5 3 2 minecraft:air minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false]
+draws 159 block_ticks level 8
+draws 159 random_ticks level 2711
+
+draws 160 block_ticks level 11
+draws 160 random_ticks level 2712
+
+draws 161 random_ticks level 2700
+
+draws 162 random_ticks level 2716
+
+draws 163 block_ticks level 14
+draws 163 random_ticks level 2700
+
+change 164 block_ticks 6 3 11 minecraft:fire[age=2,east=false,north=false,south=false,up=false,west=true] minecraft:fire[age=3,east=false,north=false,south=false,up=false,west=true]
+draws 164 block_ticks level 11
+draws 164 random_ticks level 2700
+
+draws 165 block_ticks level 11
+draws 165 random_ticks level 2714
+
+change 166 block_ticks 3 2 3 minecraft:fire[age=0,east=false,north=true,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=true,south=false,up=false,west=false]
+change 166 block_ticks 3 2 1 minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=true,up=false,west=false]
+draws 166 block_ticks level 21
+draws 166 random_ticks level 2710
+
+draws 167 random_ticks level 2718
+
+draws 168 block_ticks level 10
+draws 168 random_ticks level 2700
+
+draws 169 block_ticks level 13
+draws 169 random_ticks level 2710
+
+draws 170 random_ticks level 2708
+
+draws 171 random_ticks level 2700
+
+draws 172 block_ticks level 11
+draws 172 random_ticks level 2700
+
+change 173 block_ticks 3 2 7 minecraft:fire[age=0,east=false,north=true,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=true,south=false,up=false,west=false]
+change 173 block_ticks 3 2 6 minecraft:oak_planks minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+change 173 block_ticks 2 2 6 minecraft:fire[age=1,east=true,north=false,south=false,up=false,west=false] minecraft:air
+change 173 block_ticks 4 2 6 minecraft:fire[age=2,east=false,north=false,south=false,up=false,west=true] minecraft:air
+change 173 block_ticks 3 2 5 minecraft:fire[age=2,east=false,north=false,south=true,up=false,west=false] minecraft:air
+change 173 block_ticks 3 2 7 minecraft:fire[age=1,east=false,north=true,south=false,up=false,west=false] minecraft:air
+change 173 block_ticks 3 3 6 minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false] minecraft:air
+draws 173 block_ticks level 12
+draws 173 random_ticks level 2700
+
+draws 174 random_ticks level 2700
+
+draws 175 random_ticks level 2700
+
+draws 176 random_ticks level 2700
+
+draws 177 random_ticks level 2700
+
+change 178 random_ticks 3 2 11 minecraft:air minecraft:fire[age=0,east=false,north=true,south=false,up=false,west=false]
+draws 178 block_ticks level 10
+draws 178 random_ticks level 2709
+
+draws 179 random_ticks level 2710
+
+draws 180 random_ticks level 2700
+
+draws 181 block_ticks level 10
+draws 181 random_ticks level 2700
+
+change 182 block_ticks 11 2 10 minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=2,east=false,north=false,south=false,up=false,west=false]
+draws 182 block_ticks level 14
+draws 182 random_ticks level 2716
+
+draws 183 random_ticks level 2700
+
+draws 184 random_ticks level 2700
+
+change 185 block_ticks 1 3 2 minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=true,up=false,west=false]
+draws 185 block_ticks level 23
+draws 185 random_ticks level 2700
+
+draws 186 block_ticks level 20
+draws 186 random_ticks level 2700
+
+change 187 block_ticks 5 2 11 minecraft:fire[age=0,east=false,north=false,south=false,up=true,west=false] minecraft:fire[age=1,east=false,north=false,south=false,up=true,west=false]
+change 187 block_ticks 1 3 4 minecraft:fire[age=0,east=false,north=true,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=true,south=false,up=false,west=false]
+draws 187 block_ticks level 24
+draws 187 random_ticks level 2700
+
+change 188 block_ticks 10 3 7 minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=true] minecraft:fire[age=2,east=false,north=false,south=false,up=false,west=true]
+draws 188 block_ticks level 14
+draws 188 random_ticks level 2708
+
+change 189 block_ticks 8 2 2 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=true]
+change 189 block_ticks 8 3 3 minecraft:air minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false]
+draws 189 block_ticks level 15
+draws 189 random_ticks level 2700
+
+draws 190 random_ticks level 2700
+
+draws 191 block_ticks level 11
+draws 191 random_ticks level 2700
+
+draws 192 block_ticks level 11
+draws 192 random_ticks level 2710
+
+draws 193 random_ticks level 2700
+
+change 194 block_ticks 7 2 1 minecraft:fire[age=0,east=false,north=false,south=true,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=true,up=false,west=false]
+draws 194 block_ticks level 10
+draws 194 random_ticks level 2700
+
+draws 195 block_ticks level 13
+draws 195 random_ticks level 2700
+
+change 196 random_ticks 4 3 3 minecraft:air minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false]
+draws 196 random_ticks level 2709
+
+change 197 block_ticks 9 3 7 minecraft:white_wool minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+change 197 block_ticks 9 3 7 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false] minecraft:air
+change 197 block_ticks 8 3 7 minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false] minecraft:air
+change 197 block_ticks 10 3 7 minecraft:fire[age=2,east=false,north=false,south=false,up=false,west=true] minecraft:air
+change 197 block_ticks 9 2 7 minecraft:fire[age=1,east=false,north=false,south=false,up=true,west=false] minecraft:air
+draws 197 block_ticks level 11
+draws 197 random_ticks level 2706
+
+change 198 block_ticks 6 3 11 minecraft:fire[age=3,east=false,north=false,south=false,up=false,west=true] minecraft:fire[age=4,east=false,north=false,south=false,up=false,west=true]
+change 198 block_ticks 3 2 2 minecraft:oak_planks minecraft:air
+change 198 block_ticks 2 2 2 minecraft:fire[age=0,east=true,north=false,south=false,up=false,west=false] minecraft:air
+change 198 block_ticks 4 2 2 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=true] minecraft:air
+change 198 block_ticks 3 2 1 minecraft:fire[age=1,east=false,north=false,south=true,up=false,west=false] minecraft:air
+change 198 block_ticks 3 2 3 minecraft:fire[age=1,east=false,north=true,south=false,up=false,west=false] minecraft:air
+draws 198 block_ticks level 29
+draws 198 random_ticks level 2700
+
+draws 199 block_ticks level 11
+draws 199 random_ticks level 2700
+
+draws 200 random_ticks level 2712

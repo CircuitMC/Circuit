@@ -1040,6 +1040,40 @@ int main(int argc, char** argv) {
         std::cout << std::format("  {} states, {} take random ticks\n", checked, ticking);
     });
 
+    suite.run("the blocks lava sets fire beside are the official servers'", [&] {
+        // tests/fixtures/collision/lava-ignites-*.txt: every block of both versions.
+        namespace registry = circuit::gameplay::registry;
+        const auto table = [&](const char* file) {
+            std::map<std::string, char> out;
+            std::istringstream lines(read_text(fixtures / "collision" / file));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto space = line.find(' ');
+                out[line.substr(0, space)] = line[space + 1];
+            }
+            return out;
+        };
+        const auto newest = table("lava-ignites-1.21.8.txt");
+        const auto older = table("lava-ignites-1.21.4-only.txt");
+        std::size_t checked = 0, ignited = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            const auto* mapping = ContentMapping::for_game_version(release);
+            for (std::uint32_t wire = 0; wire < registry::wire_state_count(release); ++wire) {
+                const auto notation = registry::notation(registry::from_wire(release, static_cast<std::int32_t>(wire)).value());
+                const auto name = notation.substr(0, notation.find('['));
+                auto it = release == std::string_view("1.21.4") ? older.find(name) : older.end();
+                if (it == older.end()) it = newest.find(name);
+                require(it != newest.end(), std::format("{} {}: a row", release, name));
+                const char got = circuit::gameplay::ignited_by_lava(mapping->block(notation).value()) ? '1' : '0';
+                require(it->second == got, std::format("{} {}: official {}, Circuit {}", release, notation, it->second, got));
+                ++checked;
+                ignited += got == '1' ? 1 : 0;
+            }
+        }
+        std::cout << std::format("  {} states, {} ignited by lava\n", checked, ignited);
+        require(ignited > 0, "lava ignites some");
+    });
+
     suite.run("snow layers stay where both official servers keep them", [&] {
         // tests/fixtures/collision/snow-*.txt: a snow layer on every state.
         // States that did not stay where they were set (?) are left out.

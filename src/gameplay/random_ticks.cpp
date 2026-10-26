@@ -161,6 +161,13 @@ void run_random_ticks(RuleContext& ctx, ChunkPos chunk, std::int32_t sections) {
             else if (detail::is_farmland(s)) detail::farmland_random_tick(ctx, pos, s);
             else if (detail::is_growing_plant(s)) detail::plant_random_tick(ctx, pos, s);
             else if (detail::is_leaves(s)) detail::leaves_random_tick(ctx, pos, s);
+            else if (detail::is_weathering(s)) detail::weathering_random_tick(ctx, pos, s);
+            else if (is_lava(s)) {
+                // Lava takes it twice: as a block, which passes it to its
+                // fluid, and as the fluid (lava_fire).
+                detail::lava_random_tick(ctx, pos);
+                detail::lava_random_tick(ctx, pos);
+            }
         }
     }
 }

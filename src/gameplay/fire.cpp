@@ -177,6 +177,58 @@ int ignite_odds_at(RuleContext& ctx, BlockPos pos) {
 
 bool is_fire(BlockState s) { return s.is(BlockType::other) && name_of(s) == "fire"; }
 
+// Lava setting fire in its random ticks (the official 1.21.8 server;
+// lava_fire; minecraft.wiki "Lava"): with doFireTick (and, from 1.21.5, a
+// player near or allowFireTicksAwayFromPlayer), it draws n = nextInt(3). For
+// n > 0 it steps n times from itself, each step to x - 1 + nextInt(3), one
+// up, z - 1 + nextInt(3) from the last: air there with a neighbor that lava
+// ignites (ignited_by_lava) takes fire, which ends it, and a block that
+// blocks motion ends it. For n = 0 it tries three cells x - 1 + nextInt(3),
+// z - 1 + nextInt(3) at its own height: one that lava ignites with air above
+// sets fire above it. Fire on soul sand or soul soil is soul fire.
+void lava_random_tick(RuleContext& ctx, BlockPos pos) {
+    if (ctx.game_rule("doFireTick") == 0) return;
+    if (ctx.bundle().schema.game_rule("allowFireTicksAwayFromPlayer") && ctx.game_rule("allowFireTicksAwayFromPlayer") == 0
+        && !ctx.player_near(contracts::chunk_of(pos)))
+        return;
+    const auto ignites = [&](BlockPos p) {
+        const auto s = ctx.block(p);
+        return !s.is_unloaded() && ignited_by_lava(s);
+    };
+    const auto set_fire = [&](BlockPos p) {
+        const auto below = name_of(ctx.block(p.relative(Direction::down)));
+        const auto release = ctx.bundle().schema.content_release;
+        const auto soul = below == "soul_sand" || below == "soul_soil";
+        set_block(ctx, p, soul ? BlockState::registered(registry::block(*registry::find_block(release, "soul_fire")).default_state)
+                               : fire_of_age(ctx, p, 0));
+    };
+    const int n = ctx.random_int(3);
+    if (n > 0) {
+        auto p = pos;
+        for (int i = 0; i < n; ++i) {
+            p = {p.x + ctx.random_int(3) - 1, p.y + 1, p.z + ctx.random_int(3) - 1};
+            if (!ctx.world().contains_y(p.y)) return;
+            const auto s = ctx.block(p);
+            if (s.is_unloaded()) return;
+            if (s.is_air()) {
+                if (std::ranges::any_of(contracts::all_directions, [&](Direction d) { return ignites(p.relative(d)); })) {
+                    set_fire(p);
+                    return;
+                }
+            } else if (const auto state = physics::registry_state_of(s); state && registry::solid(*state)) {
+                return;
+            }
+        }
+        return;
+    }
+    for (int i = 0; i < 3; ++i) {
+        const BlockPos p{pos.x + ctx.random_int(3) - 1, pos.y, pos.z + ctx.random_int(3) - 1};
+        if (ctx.block(p).is_unloaded()) return;
+        const auto up = p.relative(Direction::up);
+        if (ctx.world().contains_y(up.y) && ctx.block(up).is_air() && ignites(p)) set_fire(up);
+    }
+}
+
 int fire_contact(RuleContext& ctx, const physics::Aabb& entity) {
     const auto box = entity.deflate(1.0e-5);
     const auto cell = [](double v) { return static_cast<std::int32_t>(std::floor(v)); };

@@ -1516,6 +1516,39 @@ int main() {
         require(name({4, height - 1, 4}).find("leaves=large") != std::string::npos, "large leaves on top: " + name({4, height - 1, 4}));
     });
 
+    suite.run("ice melts by light, copper weathers, ore goes out, amethyst buds and lava sets fire", [] {
+        Sim s(bundle(), 19, 1);
+        const auto name = [&](BlockPos p) { return circuit::gameplay::block_notation(s.at(p)); };
+        std::vector<CommandBody> build;
+        for (int x = 0; x < 16; ++x)
+            for (int z = 0; z < 16; ++z) build.push_back(place({x, -1, z}, blocks::stone()));
+        // Ice beside glowstone and in a box of stone; copper alone; lit ore;
+        // budding amethyst; lava in stone beside planks above it.
+        build.push_back(place({1, 0, 1}, registry_block("glowstone")));
+        build.push_back(place({2, 0, 1}, registry_block("ice")));
+        build.push_back(place({6, 0, 6}, registry_block("copper_block")));
+        build.push_back(place({9, 0, 1}, registry_block("redstone_ore", {{"lit", "true"}})));
+        build.push_back(place({12, 2, 12}, registry_block("budding_amethyst")));
+        build.push_back(place({4, 0, 12}, circuit::gameplay::lava_source()));
+        for (const BlockPos p : {BlockPos{3, 0, 12}, BlockPos{5, 0, 12}, BlockPos{4, 0, 11}, BlockPos{4, 0, 13}}) build.push_back(place(p, blocks::stone()));
+        build.push_back(place({5, 1, 12}, registry_block("oak_planks")));
+        build.push_back(SetGameRule{"allowFireTicksAwayFromPlayer", 1});
+        s.tick(build);
+        s.tick({SetGameRule{"randomTickSpeed", 4096}});
+        s.until(s.oracle.time() + 40);
+        require(name({2, 0, 1}).starts_with("minecraft:water"), "ice by glowstone melts: " + name({2, 0, 1}));
+        require(!name({6, 0, 6}).starts_with("minecraft:copper_block"), "copper weathers: " + name({6, 0, 6}));
+        require(name({9, 0, 1}) == "minecraft:redstone_ore[lit=false]", "the ore goes out: " + name({9, 0, 1}));
+        int buds = 0;
+        for (const auto d : circuit::contracts::all_directions) buds += name(BlockPos{12, 2, 12}.relative(d)).find("amethyst") != std::string::npos ? 1 : 0;
+        require(buds > 0, "budding amethyst grows buds");
+        bool fire = false;
+        for (int x = 3; x <= 7; ++x)
+            for (int z = 10; z <= 14; ++z)
+                for (int y = 1; y <= 3; ++y) fire = fire || name({x, y, z}).starts_with("minecraft:fire") || s.at({5, 1, 12}).is_air();
+        require(fire, "lava sets fire by the planks");
+    });
+
     suite.run("idle levels and random tick ranges", [] {
         // A level is awake while active, and for 300 ticks after it was last
         // active or started.

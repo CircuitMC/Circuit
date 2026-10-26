@@ -325,6 +325,7 @@ void fire_placed(RuleContext& ctx, BlockPos pos, BlockState s, BlockState previo
 // A shape update: gone unsupported, else its faces again.
 void fire_shape_update(RuleContext& ctx, BlockPos pos, BlockState s);
 void tick_fire(RuleContext& ctx, BlockPos pos, BlockState s);
+void lava_random_tick(RuleContext& ctx, BlockPos pos);
 // The damage of the fire cells an entity's box reaches (fire 1, soul fire
 // 2), or -1 when it reaches none.
 int fire_contact(RuleContext& ctx, const physics::Aabb& entity);
@@ -510,6 +511,10 @@ void lava_changed(RuleContext& ctx, BlockPos pos, BlockState state);
 // Grass blocks and mycelium (grass.cpp).
 bool is_spreading_dirt(BlockState s);
 void spreading_dirt_random_tick(RuleContext& ctx, BlockPos pos, BlockState s);
+// Ice, snow, redstone ore, budding amethyst and copper in random ticks
+// (weathering.cpp).
+bool is_weathering(BlockState s);
+void weathering_random_tick(RuleContext& ctx, BlockPos pos, BlockState s);
 // Leaves' distance and decay (leaves.cpp).
 bool is_leaves(BlockState s);
 void leaves_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d);

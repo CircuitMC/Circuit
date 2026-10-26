@@ -1,0 +1,4 @@
+# Whether lava sets fire in the air beside each block state (1) or not (0), as both official servers report it
+# (harness 0.31.0 lava report: ignitedByLava; the same for every state of a block). A bare block name stands for
+# all its states.
+# Java Edition 1.21.4: the blocks whose codes lava-ignites-1.21.8.txt does not give; every other block as there.

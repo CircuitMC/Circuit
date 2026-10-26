@@ -389,10 +389,21 @@ constexpr std::array reference_v4_mechanisms{
         "ignite odds and the difficulty; netherrack and magma blocks keep it (fire_basics, fire_stone, fire_netherrack, "
         "fire_planks, fire_log, fire_tnt, fire_wool, fire_spread; the odds from minecraft.wiki \"Fire\", which blocks burn in "
         "tests/fixtures/collision/fire-*.txt); items and arrows in fire burn (items_in_fire, see item_entity and "
-        "projectile). Gaps: rain and humid biomes do not put it out sooner; other entities in fire, and lava, lightning "
-        "and flint and steel setting fire are not modeled; the player range on 1.21.8 is that of "
+        "projectile). Lava sets fire in its random ticks (taken twice: as a block and as its fluid), stepping up to two "
+        "cells up and around to air beside a block lava ignites, or setting fire on such a block beside it "
+        "(lava_fire; which blocks lava ignites in tests/fixtures/collision/lava-ignites-*.txt). Gaps: rain and humid "
+        "biomes do not put it out sooner; other entities in fire, and lightning and flint and steel setting fire are "
+        "not modeled; the player range on 1.21.8 is that of "
         "random ticks, not observed for fire; the pending tick of fire that went out stands for any block without rules "
         "of its own set there before it is due (as their ticks do for each other), and Anvil export leaves it out."},
+    MechanismEntry{"weathering", l0_exact, l2_declared_deviation, harness_trace,
+        "As the official 1.21.8 server in random ticks (melt_weather): ice melts when its block light is more than 11 "
+        "less its light dampening, a snow layer goes with its drops above block light 11; lit redstone ore goes out; "
+        "budding amethyst draws nextInt(5) and a side (nextInt(6)), setting a small bud in air or water there or growing "
+        "a bud facing that side; copper that can still weather draws nextFloat() < 64 / 1125 and, unless less "
+        "weathered copper is within a taxicab distance of 4, weathers at nextFloat() < m c^2 (minecraft.wiki "
+        "\"Oxidation\"). Gaps: copper doors and trapdoors do not weather; rain, snowfall and freezing are not modeled; "
+        "1.21.4's random ticks are not compared (they run only near players)."},
     MechanismEntry{"snow_and_ice", l0_exact, l2_declared_deviation, harness_trace,
         "Snow layers lie on whole collision tops, honey, soul sand, mud and eight layers of snow, but not on ice, packed "
         "ice or barriers, and an update that finds them unsupported breaks them without drops; grass blocks, podzol and "
