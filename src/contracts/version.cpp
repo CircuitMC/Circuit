@@ -176,8 +176,8 @@ constexpr std::array reference_v4_mechanisms{
         "recipe's cooking time, then the input becomes its result; without fuel the progress falls by 2; a new input "
         "starts it over; a wet sponge dried over an empty bucket fills it; they show whether they are lit and "
         "comparators read them; hoppers fill the input from above and the fuel from the sides and take the result "
-        "and empty buckets from below. Gaps: their menus (players cannot open them yet), the experience of what they "
-        "cooked, and minecarts with hoppers are not modeled; checkpoints before version 28 bring their furnaces back "
+        "and empty buckets from below; players use their menus (client/furnace_menus). Gaps: the experience of what they "
+        "cooked and minecarts with hoppers are not modeled; checkpoints before version 28 bring their furnaces back "
         "empty."},
     MechanismEntry{"bone_meal", l0_exact, l2_declared_deviation, harness_trace,
         "Dispensers use bone meal on the block in front as the official 1.21.8 server does (bonemeal_dispensers): crops "
@@ -453,11 +453,13 @@ constexpr std::array reference_v4_mechanisms{
         "tests/fixtures/collision/snow-*.txt; a protocol client's 40 placed states). Gaps: melting and freezing by light "
         "and weather in random ticks; powder snow; snow and ice in the Nether are not compared."},
     MechanismEntry{"container_menus", l0_exact, l2_declared_deviation, controlled_experiment,
-        "Player windows and chest, double chest and hopper menus with every click mode, applied as commands. "
+        "Player windows and chest, double chest, hopper and furnace menus with every click mode, applied as commands. "
         "A 48-step client scenario (every click mode, double chests, hoppers, the own window, throws and "
         "pickups) gives the same windows, carried stacks and inventories as the official 1.21.8 and 1.21.4 "
         "servers. With data packs the own window's 2x2 grid crafts: a 48-step scenario (results, every way "
-        "of taking them, shapes, remainders, transmuting) matches both official servers. Gaps: no crafting "
+        "of taking them, shapes, remainders, transmuting) matches both official servers, and a 26-step scenario "
+        "in furnace, smoker and blast furnace windows (slot rules, quick moves by recipe and fuel, cooking, their "
+        "properties) matches both too. Gaps: no crafting "
         "table, special recipes or recipe book; no harness traces of menus."},
     MechanismEntry{"survival_actions", l0_exact, l2_declared_deviation, documented_behavior,
         "Placement uses up items; dig progress from hardness, tool speed and tier, ground and water; drops by "

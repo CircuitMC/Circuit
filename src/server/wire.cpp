@@ -21,7 +21,8 @@ struct Wire::Ids {
         chunk_batch_start, chunk_batch_finished, level_chunk, light_update, forget_chunk, block_update, block_changed_ack,
         player_position, keep_alive, system_chat, player_info_update, player_info_remove, add_entity,
         set_entity_data, remove_entities, entity_position_sync, rotate_head, container_set_content, disconnect, take_item_entity,
-        open_screen, container_close, container_set_slot, set_cursor_item, respawn, combat_kill, damage_event, sb_container_click, sb_container_close,
+        open_screen, container_close, container_set_slot, container_set_data, set_cursor_item, respawn, combat_kill, damage_event, sb_container_click,
+        sb_container_close,
         commands, explode;
     // Serverbound play.
     std::int32_t sb_accept_teleportation, sb_move_pos, sb_move_pos_rot, sb_move_rot, sb_move_status,
@@ -84,6 +85,7 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->open_screen = cb(State::play, "open_screen");
     ids->container_close = cb(State::play, "container_close");
     ids->container_set_slot = cb(State::play, "container_set_slot");
+    ids->container_set_data = cb(State::play, "container_set_data");
     ids->set_cursor_item = cb(State::play, "set_cursor_item");
     ids->respawn = cb(State::play, "respawn");
     ids->combat_kill = cb(State::play, "player_combat_kill");
@@ -377,6 +379,11 @@ Bytes Wire::container_slot(std::int32_t window, std::int32_t state_id, std::int1
     w.varint(window).varint(state_id).i16(index);
     slot(w, stack);
     return packet(id_->container_set_slot, w);
+}
+Bytes Wire::container_data(std::int32_t window, std::int16_t property, std::int16_t value) const {
+    Writer w;
+    w.varint(window).i16(property).i16(value);
+    return packet(id_->container_set_data, w);
 }
 Bytes Wire::cursor_item(const WireStack& stack) const {
     Writer w;

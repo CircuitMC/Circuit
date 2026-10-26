@@ -2812,36 +2812,42 @@
         "evidence": "compared",
         "cases": [
           "collision/block_entities",
-          "placement/official_items"
+          "placement/official_items",
+          "trace/furnaces",
+          "client/furnace_menus"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the experience of what it cooked is not kept"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; it burns fuel and cooks by the official data packs' recipes, and players use its menu, as both official servers do"
       },
       "smoker": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
           "collision/block_entities",
-          "placement/official_items"
+          "placement/official_items",
+          "trace/furnaces",
+          "client/furnace_menus"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the experience of what it cooked is not kept"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; it burns fuel and cooks by the official data packs' recipes, and players use its menu, as both official servers do"
       },
       "blast_furnace": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
           "collision/block_entities",
-          "placement/official_items"
+          "placement/official_items",
+          "trace/furnaces",
+          "client/furnace_menus"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the experience of what it cooked is not kept"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; it burns fuel and cooks by the official data packs' recipes, and players use its menu, as both official servers do"
       },
       "lectern": {
         "impl": "partial",

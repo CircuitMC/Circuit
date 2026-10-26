@@ -114,9 +114,9 @@ std::int32_t burn_time(std::uint16_t item) {
     return item < table.size() ? table[item] : 0;
 }
 
-std::int32_t cooking_time(RuleContext& ctx, BlockState furnace, const ItemStack& input) {
+std::int32_t cooking_time(RuleContext& ctx, BlockState furnace, const ItemStack& input, bool recipe_only) {
     const auto* r = recipe_for(ctx, furnace, input);
-    return r ? r->time : 200;
+    return r ? r->time : recipe_only ? 0 : 200;
 }
 
 void furnace_input_set(RuleContext& ctx, BlockPos pos, const ItemStack& before) {

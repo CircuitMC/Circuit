@@ -380,7 +380,8 @@ void tick_hopper(RuleContext& ctx, BlockPos pos);
 bool insert_one(RuleContext& ctx, BlockPos pos, const ItemStack& stack, std::optional<Direction> face = std::nullopt);
 // Furnaces (furnace.cpp).
 std::int32_t burn_time(std::uint16_t item);
-std::int32_t cooking_time(RuleContext& ctx, BlockState furnace, const ItemStack& input);
+// The cooking time of an input; without a recipe 200, or 0 with `recipe_only`.
+std::int32_t cooking_time(RuleContext& ctx, BlockState furnace, const ItemStack& input, bool recipe_only = false);
 void furnace_input_set(RuleContext& ctx, BlockPos pos, const ItemStack& before);
 void tick_furnace(RuleContext& ctx, BlockPos pos, BlockState s);
 std::vector<std::size_t> furnace_slots(Direction face);

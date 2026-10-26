@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Container menus: a player's own window and the windows of chests, double
-// chests and hoppers, with every click mode of the protocol, applied as the
-// target version's menus apply them (documented in the protocol pages and
-// compared with the official server through a protocol client).
+// chests, hoppers and furnaces, with every click mode of the protocol,
+// applied as the target version's menus apply them (documented in the
+// protocol pages and compared with the official server through a protocol
+// client).
 #include "internal.hpp"
 #include <circuit/gameplay/game_data.hpp>
 #include <algorithm>
@@ -36,6 +37,7 @@ public:
         }
         container_size_ = slots_.size();
         own_ = parts.empty();
+        furnace_ = parts.size() == 1 && ctx.block(parts[0]).is(BlockType::furnace);
         if (own_) {
             for (std::uint8_t i = 0; i < player_slots; ++i) slots_.push_back({{}, i, false});
         } else {
@@ -68,6 +70,7 @@ public:
         const auto before = be->slots[s.index];
         be->slots[s.index] = stack;
         ctx_.record(TraceKind::inventory_changed, s.pos, s.index, contracts::pack_stack(before), contracts::pack_stack(stack));
+        if (furnace_ && s.index == 0) furnace_input_set(ctx_, s.pos, before);
         for (const auto part : container_parts(ctx_, s.pos)) container_changed(ctx_, part);
     }
     void set_cursor(ItemStack stack) {
@@ -83,11 +86,15 @@ public:
     [[nodiscard]] bool may_place(std::size_t i, ItemStack stack) const {
         if (result(i)) return false;
         if (own_ && i >= 5 && i <= 8) return armor_slot(stack.item) == i;
+        // A furnace's result slot takes nothing; its fuel slot fuels and buckets.
+        if (furnace_ && i == 2) return false;
+        if (furnace_ && i == 1) return burn_time(stack.item) > 0 || stack.item == items::bucket;
         return true;
     }
     [[nodiscard]] bool may_pickup(std::size_t i) const { return !result(i); }
     [[nodiscard]] int max_stack(std::size_t i, ItemStack stack) const {
         if (own_ && i >= 5 && i <= 8) return 1;
+        if (furnace_ && i == 1 && stack.item == items::bucket) return 1;
         return std::min<int>(contracts::max_stack_size, items::max_stack(stack));
     }
 
@@ -140,7 +147,20 @@ public:
         if (stack.empty()) return {};
         const auto original = stack;
         bool moved = false;
-        if (!own_) {
+        if (furnace_) {
+            // The result goes to the inventory from the hotbar's end; the
+            // input and fuel to the inventory from its start; from the
+            // inventory what the furnace cooks goes into its input, a fuel
+            // into its fuel slot, the rest between the main inventory and
+            // the hotbar.
+            const auto furnace = ctx_.block(slots_[0].pos);
+            if (i == 2) moved = move_into(stack, 3, 39, true);
+            else if (i < 2) moved = move_into(stack, 3, 39, false);
+            else if (cooking_time(ctx_, furnace, stack, true) > 0) moved = move_into(stack, 0, 1, false);
+            else if (burn_time(stack.item) > 0) moved = move_into(stack, 1, 2, false);
+            else if (i < 30) moved = move_into(stack, 30, 39, false);
+            else moved = move_into(stack, 3, 30, false);
+        } else if (!own_) {
             moved = i < container_size_ ? move_into(stack, container_size_, size(), true) : move_into(stack, 0, container_size_, false);
         } else {
             const auto armor = armor_slot(stack.item);
@@ -210,6 +230,7 @@ private:
     std::vector<Ref> slots_;
     std::size_t container_size_{};
     bool own_{};
+    bool furnace_{};
 };
 
 void throw_item(RuleContext& ctx, const contracts::Vec3& position, const contracts::Vec3& velocity, ItemStack stack) {

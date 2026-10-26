@@ -94,6 +94,9 @@ struct Player {
         std::int32_t id{};
         BlockPos pos;
         std::size_t container_slots{};
+        // A furnace's properties as last sent: its fuel's ticks left and burn
+        // time, its cooking progress and time (-1: not sent yet).
+        std::array<std::int32_t, 4> data{-1, -1, -1, -1};
     };
     std::optional<Window> window;
     std::int32_t next_window{1};
@@ -796,6 +799,16 @@ struct Game::Impl final : GameServices {
             p.peer->send(wire.cursor_item(carried));
             p.remote_carried = carried;
         }
+        // A furnace window's properties, each when it changed.
+        if (p.window && at(p.window->pos).is(BlockType::furnace))
+            if (const auto be = view.block_entity(overworld, p.window->pos); be && *be) {
+                const std::array<std::int32_t, 4> now{(*be)->lit_time, (*be)->lit_total, (*be)->cook_time, (*be)->cook_total};
+                for (std::size_t k = 0; k < now.size(); ++k)
+                    if (p.window->data[k] != now[k]) {
+                        p.peer->send(wire.container_data(p.window->id, static_cast<std::int16_t>(k), static_cast<std::int16_t>(now[k])));
+                        p.window->data[k] = now[k];
+                    }
+            }
     }
 
     // The parts of the container at `pos` in the menu's slot order: the right
@@ -830,17 +843,20 @@ struct Game::Impl final : GameServices {
     }
 
     void open_window(Player& p, BlockPos pos) {
-        // Furnaces have no menu yet (C5.7): nothing opens.
-        if (at(pos).is(BlockType::furnace)) return;
         const auto slots = container_slot_count(pos);
+        const auto block = at(pos);
         // Menu types of the protocol's menu registry (minecraft.wiki, Java
         // Edition protocol/Inventory, and observed from the target version):
-        // generic_9x3 2, generic_9x6 5, generic_3x3 6, hopper 16.
-        const std::int32_t type = slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
+        // generic_9x3 2, generic_9x6 5, generic_3x3 6, blast_furnace 10,
+        // furnace 14, hopper 16, smoker 22.
+        constexpr std::array<std::int32_t, 3> furnace_menus{14, 22, 10};
+        const std::int32_t type = block.is(BlockType::furnace) ? furnace_menus[block.variant() % 3]
+                                : slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
         // A container's custom name is its title (for a double chest, the
         // first named half's).
-        const auto block = at(pos);
-        auto title = protocol::nbt::text(slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper"
+        constexpr std::array<std::string_view, 3> furnace_titles{"Furnace", "Smoker", "Blast Furnace"};
+        auto title = protocol::nbt::text(block.is(BlockType::furnace) ? std::string(furnace_titles[block.variant() % 3])
+                                         : slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper"
                                          : block.is(BlockType::dispenser) ? (block.variant() == 1 ? "Dropper" : "Dispenser")
                                                                           : "Chest");
         const auto view = engine->view();

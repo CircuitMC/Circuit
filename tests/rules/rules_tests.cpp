@@ -1658,6 +1658,51 @@ int main() {
         require(slots({4, 0, 0})[2].count == 1, std::format("the smoker cooked one beef: {}", slots({4, 0, 0})[2].count));
     });
 
+    suite.run("furnace menus take fuel in the fuel slot and shift-click by recipe and fuel", [] {
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::PlayerKey;
+        using circuit::gameplay::blocks::FurnaceKind;
+        namespace recipes = circuit::gameplay::recipes;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->cooking.push_back({recipes::Cooking::Kind::smelting, "minecraft:iron_ingot", {{item("minecraft:raw_iron")}},
+                                 {item("minecraft:iron_ingot"), 1}, 0.7f, 200});
+        Sim s(bundle(), 7, 2, data);
+        const PlayerKey alex{7, 8};
+        const BlockPos furnace{0, 0, 0};
+        s.tick({place(furnace, blocks::furnace(FurnaceKind::furnace, Direction::south)),
+                circuit::contracts::SetPlayerSlot{alex, 36, {item("minecraft:raw_iron"), 3, 0}},
+                circuit::contracts::SetPlayerSlot{alex, 37, {item("minecraft:coal"), 2, 0}},
+                circuit::contracts::SetPlayerSlot{alex, 38, {items::stone, 4, 0}},
+                circuit::contracts::SetPlayerSlot{alex, 39, {items::bucket, 1, 0}}});
+        // Furnace menu: 0 input, 1 fuel, 2 result, 3-29 the main inventory, 30-38 the hotbar.
+        const auto click = [&](std::int16_t slot, std::uint8_t button, std::uint8_t mode) {
+            return ContainerClick{alex, std::optional(furnace), slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+        };
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+        };
+        const auto furnace_slot = [&](std::size_t i) { return block_entity_at(s.oracle.dump(), furnace)->slots[i]; };
+        s.tick({click(32, 0, 0), click(1, 0, 0), click(2, 0, 0)});
+        require(player().cursor.count == 4 && furnace_slot(1).empty() && furnace_slot(2).empty(), "stone fits neither fuel nor result");
+        s.tick({click(32, 0, 0), click(32, 0, 1)});
+        require(player().slots[38].empty() && player().slots[9] == ItemStack{items::stone, 4, 0}, "no recipe, no fuel: into the inventory");
+        s.tick({click(33, 0, 1)});
+        require(furnace_slot(1).empty() && player().slots[10].item == items::bucket, "a bucket is no fuel to shift-click");
+        s.tick({click(4, 0, 0), click(1, 0, 0), click(31, 0, 1), click(30, 0, 1)});
+        require(furnace_slot(1).item == items::bucket && player().slots[37].count == 2, "but goes in the fuel slot; coal waits");
+        require(furnace_slot(0) == ItemStack{item("minecraft:raw_iron"), 3, 0}, "raw iron goes to the input");
+        s.tick({click(1, 0, 1), click(31, 0, 1)});
+        require(furnace_slot(1) == ItemStack{item("minecraft:coal"), 1, 0} && s.at(furnace).flag() && player().slots[10].item == items::bucket,
+                "the bucket back to the first empty inventory slot, then coal lights it");
+        s.until(s.oracle.time() + 205);
+        require(furnace_slot(2).item == item("minecraft:iron_ingot"), "an ingot");
+        s.tick({click(2, 0, 1)});
+        require(furnace_slot(2).empty() && player().slots[44].item == item("minecraft:iron_ingot"),
+                "the result goes to the hotbar from its end");
+    });
+
     suite.run("idle levels and random tick ranges", [] {
         // A level is awake while active, and for 300 ticks after it was last
         // active or started.

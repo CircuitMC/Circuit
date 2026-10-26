@@ -213,6 +213,8 @@ public:
     Bytes head_rotation(std::int32_t id, float head_yaw) const;
     Bytes container_content(std::int32_t window, std::int32_t state_id, const std::vector<WireStack>& slots, const WireStack& carried) const;
     Bytes container_slot(std::int32_t window, std::int32_t state_id, std::int16_t slot, const WireStack& stack) const;
+    // One property of a window (a furnace's burn and cooking times).
+    Bytes container_data(std::int32_t window, std::int16_t property, std::int16_t value) const;
     Bytes cursor_item(const WireStack& stack) const;
     // What item components may refer to on this protocol.
     [[nodiscard]] const protocol::ComponentContext& component_context() const noexcept { return components_ctx_; }

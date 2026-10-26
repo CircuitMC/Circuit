@@ -2268,10 +2268,10 @@
           "cases": [
             "trace/furnaces",
             "trace/furnaces_more",
-            "collision/fuel"
+            "collision/fuel",
+            "client/furnace_menus"
           ],
           "deviations": [
-            "players cannot open their menus yet",
             "the experience of what they cooked is not kept",
             "campfires do not cook"
           ]
@@ -3119,7 +3119,7 @@
       "id": "menu_types",
       "family": "V25",
       "milestone": "C5",
-      "note": "Menu types of the protocol registry; generic_9x3, generic_9x6 and hopper are verified"
+      "note": "Menu types of the protocol registry; generic_9x3, generic_9x6, hopper, furnace, smoker and blast_furnace are verified"
     },
     {
       "id": "ticket_types",
