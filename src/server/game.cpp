@@ -670,9 +670,10 @@ struct Game::Impl final : GameServices {
                 items.erase(std::ranges::unique(items).begin(), items.end());
                 sets.push_back({name, ids(items)});
             }
-            sets.push_back({"minecraft:smithing_template", ids(data.recipes.smithing_template)});
-            sets.push_back({"minecraft:smithing_base", ids(data.recipes.smithing_base)});
-            sets.push_back({"minecraft:smithing_addition", ids(data.recipes.smithing_addition)});
+            const std::vector<std::uint16_t> none;
+            sets.push_back({"minecraft:smithing_template", ids(game ? game->smithing_template : none)});
+            sets.push_back({"minecraft:smithing_base", ids(game ? game->smithing_base : none)});
+            sets.push_back({"minecraft:smithing_addition", ids(game ? game->smithing_addition : none)});
             if (game)
                 for (const auto& r : game->stonecutting) cutter.push_back({ids(r.ingredient.items), wire_stack(r.result)});
             recipes_bytes = wire.update_recipes(sets, cutter);
@@ -829,6 +830,9 @@ struct Game::Impl final : GameServices {
             if (gameplay::is_stonecutter(at(p.window->pos)))
                 for (std::size_t i = 0; i < contracts::cutter_slots; ++i)
                     slots.push_back(inv && *inv ? wire_stack((*inv)->cutter[i]) : WireStack{});
+            if (gameplay::is_smithing_table(at(p.window->pos)))
+                for (std::size_t i = 0; i < contracts::smith_slots; ++i)
+                    slots.push_back(inv && *inv ? wire_stack((*inv)->smith[i]) : WireStack{});
             for (const auto part : container_parts_of(p.window->pos))
                 if (const auto be = view.block_entity(overworld, part); be && *be)
                     for (const auto& s : (*be)->slots) slots.push_back(wire_stack(s));
@@ -889,6 +893,7 @@ struct Game::Impl final : GameServices {
     std::size_t container_slot_count(BlockPos pos) const {
         if (gameplay::is_crafting_table(at(pos))) return contracts::table_slots;
         if (gameplay::is_stonecutter(at(pos))) return contracts::cutter_slots;
+        if (gameplay::is_smithing_table(at(pos))) return contracts::smith_slots;
         std::size_t n = 0;
         for (const auto part : container_parts_of(pos)) n += gameplay::container_size(at(part).type());
         return n;
@@ -910,17 +915,19 @@ struct Game::Impl final : GameServices {
         // Menu types of the protocol's menu registry (minecraft.wiki, Java
         // Edition protocol/Inventory, and observed from the target version):
         // generic_9x3 2, generic_9x6 5, generic_3x3 6, blast_furnace 10,
-        // crafting 12, furnace 14, hopper 16, smoker 22, stonecutter 24.
+        // crafting 12, furnace 14, hopper 16, smithing 21, smoker 22, stonecutter 24.
         constexpr std::array<std::int32_t, 3> furnace_menus{14, 22, 10};
         const bool table = gameplay::is_crafting_table(block);
         const bool cutter = gameplay::is_stonecutter(block);
+        const bool smith = gameplay::is_smithing_table(block);
         const std::int32_t type = block.is(BlockType::furnace) ? furnace_menus[block.variant() % 3]
-                                : table ? 12 : cutter ? 24 : slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
+                                : table ? 12 : cutter ? 24 : smith ? 21 : slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
         // A container's custom name is its title (for a double chest, the
         // first named half's).
         constexpr std::array<std::string_view, 3> furnace_titles{"Furnace", "Smoker", "Blast Furnace"};
         auto title = protocol::nbt::text(block.is(BlockType::furnace) ? std::string(furnace_titles[block.variant() % 3])
-                                         : table ? "Crafting" : cutter ? "Stonecutter" : slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper"
+                                         : table ? "Crafting" : cutter ? "Stonecutter" : smith ? "Upgrade Gear"
+                                         : slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper"
                                          : block.is(BlockType::dispenser) ? (block.variant() == 1 ? "Dropper" : "Dispenser")
                                                                           : "Chest");
         const auto view = engine->view();

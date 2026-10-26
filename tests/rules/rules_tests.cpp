@@ -3424,6 +3424,83 @@ int main() {
         require(p.size() == 1 && p[0].slots[0].empty(), "no result without data");
     });
 
+    suite.run("smithing tables upgrade and trim by the data packs' recipes", [] {
+        namespace recipes = circuit::gameplay::recipes;
+        using circuit::contracts::CloseContainer;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::SetPlayerSlot;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        const auto upgrade = item("minecraft:netherite_upgrade_smithing_template"), coast = item("minecraft:coast_armor_trim_smithing_template");
+        const auto netherite = item("minecraft:netherite_ingot"), chestplate = item("minecraft:iron_chestplate");
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->smithing = {
+            {recipes::Smithing::Kind::transform, "minecraft:netherite_pickaxe_smithing", recipes::Ingredient{{upgrade}},
+             recipes::Ingredient{{items::diamond_pickaxe}}, recipes::Ingredient{{netherite}}, {item("minecraft:netherite_pickaxe"), 1}, {}},
+            {recipes::Smithing::Kind::trim, "minecraft:coast_armor_trim_smithing_template_smithing_trim", recipes::Ingredient{{coast}},
+             recipes::Ingredient{{chestplate}}, recipes::Ingredient{{items::iron_ingot, netherite}}, {}, "minecraft:coast"},
+        };
+        data->smithing_template = {upgrade, coast};
+        std::ranges::sort(data->smithing_template);
+        data->smithing_base = {items::diamond_pickaxe, chestplate};
+        std::ranges::sort(data->smithing_base);
+        data->smithing_addition = {items::iron_ingot, netherite};
+        std::ranges::sort(data->smithing_addition);
+        data->trim_materials = {{items::iron_ingot, "minecraft:iron"}, {netherite, "minecraft:netherite"}};
+        // A stand-in for the server's encoding: the trim as one component holding its names.
+        data->trimmed = [](const circuit::contracts::ComponentPatch&, std::string_view material, std::string_view pattern) {
+            const auto text = std::string(material) + "/" + std::string(pattern);
+            std::vector<std::byte> bytes;
+            for (const char ch : text) bytes.push_back(static_cast<std::byte>(ch));
+            return std::optional(circuit::contracts::ComponentPatch::make(772, {{1, bytes}}, {}, {}));
+        };
+        const PlayerKey alex{4, 2};
+        const BlockPos table{0, 0, 0};
+        Sim s(bundle(), 7, 2, data);
+        s.tick({place(table, registry_block("smithing_table"))});
+        // Smithing window: 0 template, 1 base, 2 addition, 3 result, 4-30 the main inventory, 31-39 the hotbar.
+        const auto click = [&](std::int16_t slot, std::uint8_t button, std::uint8_t mode) {
+            return ContainerClick{alex, std::optional(table), slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+        };
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            const auto it = std::ranges::find(d.players, alex, &PlayerInventory::player);
+            if (it != d.players.end()) return *it;
+            PlayerInventory none;
+            none.player = alex;
+            return none;
+        };
+        s.tick({SetPlayerSlot{alex, 36, {upgrade, 2}}, SetPlayerSlot{alex, 37, {items::diamond_pickaxe, 1, 40}},
+                SetPlayerSlot{alex, 38, {netherite, 2}}, SetPlayerSlot{alex, 39, {items::stone, 5}}, SetPlayerSlot{alex, 40, {coast, 1}},
+                SetPlayerSlot{alex, 41, {chestplate, 1}}, SetPlayerSlot{alex, 42, {items::iron_ingot, 1}}});
+        s.tick({click(31, 0, 1), click(32, 0, 1), click(34, 0, 1), click(33, 0, 1)});
+        require(player().smith[0] == ItemStack{upgrade, 2} && player().smith[1].item == items::diamond_pickaxe &&
+                    player().slots[9] == ItemStack{items::stone, 5} && player().smith[3] == ItemStack{item("minecraft:netherite_pickaxe"), 1, 40},
+                "each input to its slot, the stone across; the result keeps the damage");
+        s.tick({click(3, 0, 0)});
+        require(player().cursor.item == item("minecraft:netherite_pickaxe") && player().smith[0].count == 1 && player().smith[1].empty() &&
+                    player().smith[2].count == 1 && player().smith[3].empty(),
+                "taken: one of each input used");
+        // The addition slot holds netherite: iron finds no slot and goes across.
+        s.tick({click(5, 0, 0), click(0, 0, 1), click(35, 0, 1), click(36, 0, 1), click(37, 0, 1)});
+        require(player().smith[0] == ItemStack{coast, 1} && player().smith[1].item == chestplate && player().smith[2].item == netherite &&
+                    player().slots[12].item == items::iron_ingot,
+                "the iron went across, to the first empty slot of the main inventory");
+        require(player().smith[3].item == chestplate && !player().smith[3].components.empty(), "a netherite trim");
+        const auto trimmed = player().smith[3];
+        s.tick({click(3, 7, 2)});
+        require(player().slots[43] == trimmed && player().smith[0].empty() && player().smith[1].empty(), "a number key takes it");
+        // The trimmed chestplate again, with its own trim: nothing.
+        s.tick({SetPlayerSlot{alex, 40, {coast, 1}}});
+        s.tick({click(35, 0, 1), click(38, 0, 1)});
+        require(player().smith[1] == trimmed && player().smith[3].empty(), "the same trim makes nothing");
+        s.tick({click(4, 0, 0), click(3, 0, 0), click(1, 0, 0), click(0, 0, 0), click(4, 0, 0)});
+        require(player().smith[3].empty() && player().slots[9] == ItemStack{items::stone, 5} && player().smith[0].item == coast &&
+                    player().smith[1] == trimmed,
+                "stone fits no smithing slot");
+        s.tick({CloseContainer{alex, at_block(0.5, 2, 0.5), {}}});
+        require(std::ranges::all_of(player().smith, &ItemStack::empty), "closing gives the inputs back");
+    });
+
     suite.run("stonecutters cut by the chosen recipe until the input runs out", [] {
         namespace recipes = circuit::gameplay::recipes;
         using circuit::contracts::CloseContainer;

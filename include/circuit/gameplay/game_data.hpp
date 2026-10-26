@@ -38,6 +38,19 @@ struct GameData {
     // The stonecutting recipes, ordered by id path and then namespace, as
     // both official servers list them to clients and number their buttons.
     std::vector<recipes::Stonecutting> stonecutting;
+    // The smithing recipes, in recipe id order, and the items they take as
+    // templates, bases and additions (ascending; what the smithing table's
+    // slots accept, and the property sets clients receive).
+    std::vector<recipes::Smithing> smithing;
+    std::vector<std::uint16_t> smithing_template, smithing_base, smithing_addition;
+    // Trim materials by the item that gives them, and (for packs before
+    // 1.21.5) trim patterns by their template item: ids of the trim
+    // registries ("minecraft:iron").
+    std::unordered_map<std::uint16_t, std::string> trim_materials, trim_patterns;
+    // A stack's components with a trim of this material and pattern (ids of
+    // the trim registries); nullopt when the registries lack them. Set by
+    // the server, which knows the components' encoding.
+    std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, std::string_view material, std::string_view pattern)> trimmed;
     // The level of an enchantment (an id of the synchronized registry) on a
     // stack; 0 when absent. Set by the server, which reads the components.
     std::function<long(const contracts::ItemStack&, std::uint32_t enchantment)> enchantment_level;

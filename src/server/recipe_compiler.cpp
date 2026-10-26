@@ -129,11 +129,25 @@ public:
             const auto taken = template_ ? ingredient(template_) : recipes::Ingredient{};
             const auto added = addition ? ingredient(addition) : recipes::Ingredient{};
             const auto base = ingredient(j.find("base"));
-            if (type == "minecraft:smithing_transform") result(j.find("result"));
+            gameplay::recipes::Smithing s;
+            s.id = std::string(id);
+            if (template_) s.template_item = taken;
+            if (addition) s.addition = added;
+            s.base = base;
+            // A transform's result with components of its own is not made.
+            bool made = true;
+            if (type == "minecraft:smithing_transform") {
+                const auto [stack, has_components] = result(j.find("result"));
+                s.result = stack;
+                made = !has_components;
+            } else {
+                s.kind = gameplay::recipes::Smithing::Kind::trim;
+            }
             if (type == "minecraft:smithing_trim" && bundle_.schema.data_pack_format >= format_1_21_5) {
                 const auto* pattern = j.string("pattern");
                 if (!pattern) invalid("no trim pattern");
                 if (!registry_index(registries_, "minecraft:trim_pattern", with_namespace(*pattern))) invalid("unknown trim pattern");
+                s.pattern = with_namespace(*pattern);
             }
             // A valid recipe's items join the property sets.
             const auto add = [](std::vector<std::uint16_t>* to, const recipes::Ingredient& i) {
@@ -142,6 +156,7 @@ public:
             add(smithing_template_, taken);
             add(smithing_addition_, added);
             add(smithing_base_, base);
+            if (smithing_ && made) smithing_->push_back(std::move(s));
             return std::nullopt;
         }
         invalid(std::format("unknown type {}", type));
@@ -276,6 +291,7 @@ private:
 public:
     std::vector<gameplay::recipes::Cooking>* cooking_ = nullptr;
     std::vector<gameplay::recipes::Stonecutting>* stonecutting_ = nullptr;
+    std::vector<gameplay::recipes::Smithing>* smithing_ = nullptr;
     std::vector<std::uint16_t>* smithing_template_ = nullptr;
     std::vector<std::uint16_t>* smithing_base_ = nullptr;
     std::vector<std::uint16_t>* smithing_addition_ = nullptr;
@@ -287,6 +303,51 @@ private:
     const protocol::ContentTables* tables_;
     const protocol::ComponentCodec* components_;
 };
+// An item of the version's registry by its id, if it has one.
+std::optional<std::uint16_t> known_item(const contracts::VersionBundle& bundle, std::string_view name) {
+    const auto* tables = protocol::ContentTables::for_protocol(bundle.protocol);
+    const auto full = with_namespace(name);
+    return tables && tables->item_id(full) ? gameplay::items::by_name(full) : std::nullopt;
+}
+
+// Trim materials by the item that gives them: before 1.21.5 each material's
+// `ingredient`; since, the items' provides_trim_material component, which
+// is no data pack's, so the vanilla materials' items (minecraft.wiki
+// "Smithing template") for those the registry has.
+std::unordered_map<std::uint16_t, std::string> trim_materials(const data::DataPacks& packs, const contracts::VersionBundle& bundle,
+                                                              const std::vector<RegistryEntries>& registries) {
+    std::unordered_map<std::uint16_t, std::string> out;
+    if (bundle.schema.data_pack_format < format_1_21_5) {
+        if (const auto* all = packs.resources("trim_material"))
+            for (const auto& [id, text] : *all) {
+                const auto json = Json::parse(text);
+                const auto* ingredient = json && json->kind() == Json::Kind::object ? json->string("ingredient") : nullptr;
+                if (const auto item = ingredient ? known_item(bundle, *ingredient) : std::nullopt) out.emplace(*item, id);
+            }
+        return out;
+    }
+    static constexpr std::array<std::pair<std::string_view, std::string_view>, 11> vanilla{{
+        {"amethyst_shard", "amethyst"}, {"copper_ingot", "copper"}, {"diamond", "diamond"}, {"emerald", "emerald"},
+        {"gold_ingot", "gold"}, {"iron_ingot", "iron"}, {"lapis_lazuli", "lapis"}, {"netherite_ingot", "netherite"},
+        {"quartz", "quartz"}, {"redstone", "redstone"}, {"resin_brick", "resin"}}};
+    for (const auto& [item, material] : vanilla) {
+        const auto id = std::string("minecraft:") + std::string(material);
+        if (const auto i = known_item(bundle, item); i && registry_index(registries, "minecraft:trim_material", id)) out.emplace(*i, id);
+    }
+    return out;
+}
+// Before 1.21.5, trim patterns by their `template_item`.
+std::unordered_map<std::uint16_t, std::string> trim_patterns(const data::DataPacks& packs, const contracts::VersionBundle& bundle) {
+    std::unordered_map<std::uint16_t, std::string> out;
+    if (bundle.schema.data_pack_format >= format_1_21_5) return out;
+    if (const auto* all = packs.resources("trim_pattern"))
+        for (const auto& [id, text] : *all) {
+            const auto json = Json::parse(text);
+            const auto* item = json && json->kind() == Json::Kind::object ? json->string("template_item") : nullptr;
+            if (const auto i = item ? known_item(bundle, *item) : std::nullopt) out.emplace(*i, id);
+        }
+    return out;
+}
 } // namespace
 
 RecipeCompilation compile_recipes(const data::DataPacks& packs, const contracts::VersionBundle& bundle,
@@ -297,6 +358,7 @@ RecipeCompilation compile_recipes(const data::DataPacks& packs, const contracts:
     Compiler compiler(packs, bundle, registries);
     compiler.cooking_ = &out.cooking;
     compiler.stonecutting_ = &out.stonecutting;
+    compiler.smithing_ = &out.smithing;
     compiler.smithing_template_ = &out.smithing_template;
     compiler.smithing_base_ = &out.smithing_base;
     compiler.smithing_addition_ = &out.smithing_addition;
@@ -334,6 +396,8 @@ RecipeCompilation compile_recipes(const data::DataPacks& packs, const contracts:
         const auto [first, last] = std::ranges::unique(*items);
         items->erase(first, last);
     }
+    out.trim_materials = trim_materials(packs, bundle, registries);
+    out.trim_patterns = trim_patterns(packs, bundle);
     return out;
 }
 

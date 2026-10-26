@@ -140,6 +140,13 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
         out.recipes.cooking.clear();
         game->stonecutting = std::move(out.recipes.stonecutting);
         out.recipes.stonecutting.clear();
+        game->smithing = std::move(out.recipes.smithing);
+        out.recipes.smithing.clear();
+        game->smithing_template = out.recipes.smithing_template;
+        game->smithing_base = out.recipes.smithing_base;
+        game->smithing_addition = out.recipes.smithing_addition;
+        game->trim_materials = out.recipes.trim_materials;
+        game->trim_patterns = out.recipes.trim_patterns;
         if (const auto* codec = protocol::ComponentCodec::for_protocol(bundle.schema.component_schema)) {
             game->enchantment_level = [codec](const contracts::ItemStack& stack, std::uint32_t enchantment) {
                 return codec->enchantment_level(stack.components, enchantment);
@@ -153,6 +160,16 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
                     ids.emplace_back(*id, level);
                 }
                 auto patch = codec->enchanted(ids, ctx);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
+        }
+        if (const auto* codec = protocol::ComponentCodec::for_protocol(bundle.schema.component_schema)) {
+            game->trimmed = [codec, ctx = component_context(bundle, out.registries)](const contracts::ComponentPatch& base, std::string_view material,
+                                                                                     std::string_view pattern) -> std::optional<contracts::ComponentPatch> {
+                const auto m = ctx.id_of("trim_material", material);
+                const auto p = ctx.id_of("trim_pattern", pattern);
+                if (!m || !p) return std::nullopt;
+                auto patch = codec->with_trim(base, *m, *p, ctx);
                 return patch ? std::optional(std::move(*patch)) : std::nullopt;
             };
         }

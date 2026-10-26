@@ -6,6 +6,7 @@
 #include <circuit/gameplay/recipes.hpp>
 #include <cstddef>
 #include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -16,9 +17,12 @@ struct RecipeCompilation {
     std::vector<gameplay::recipes::Cooking> cooking; // the cooking recipes, by id
     // The stonecutting recipes, by id path and then namespace (the official order).
     std::vector<gameplay::recipes::Stonecutting> stonecutting;
+    std::vector<gameplay::recipes::Smithing> smithing; // the smithing recipes, by id
     // The items smithing recipes take as templates, bases and additions, ascending
     // (clients receive them as property sets).
     std::vector<std::uint16_t> smithing_template, smithing_base, smithing_addition;
+    // Trim materials by their item and, before 1.21.5, patterns by their template item.
+    std::unordered_map<std::uint16_t, std::string> trim_materials, trim_patterns;
     std::map<std::string, std::size_t> valid;        // valid recipes, by type
     std::map<std::string, std::size_t> invalid;      // recipes the target version would skip too, by reason
     std::map<std::string, std::size_t> not_crafted;  // valid crafting recipes the rules do not match yet, by reason

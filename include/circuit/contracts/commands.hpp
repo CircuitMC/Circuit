@@ -112,6 +112,10 @@ inline constexpr std::uint8_t table_first = 47;
 // (window slots 0-1), recorded as slots 57-58.
 inline constexpr std::uint8_t cutter_slots = 2;
 inline constexpr std::uint8_t cutter_first = 57;
+// The smithing table window: template, base, addition and result (window
+// slots 0-3), recorded as slots 59-62.
+inline constexpr std::uint8_t smith_slots = 4;
+inline constexpr std::uint8_t smith_first = 59;
 
 // A creative player sets a slot of their inventory (an empty stack clears it).
 struct SetPlayerSlot {

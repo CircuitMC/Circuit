@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Container menus: a player's own window and the windows of chests, double
-// chests, hoppers, furnaces, crafting tables and stonecutters, with every
-// click mode of the protocol, applied as the target version's menus apply
-// them (documented in the protocol pages and compared with the official
-// server through a protocol client).
+// chests, hoppers, furnaces, crafting tables, stonecutters and smithing
+// tables, with every click mode of the protocol, applied as the target
+// version's menus apply them (documented in the protocol pages and compared
+// with the official server through a protocol client).
 #include "internal.hpp"
 #include <circuit/gameplay/game_data.hpp>
 #include <algorithm>
@@ -30,6 +30,7 @@ bool offhand_item(std::uint16_t item) { return item == items::shield; }
 // A player slot by its slot-record number: the inventory, or the open
 // crafting table's result and grid.
 ItemStack& player_slot(PlayerInventory& inv, std::uint8_t index) {
+    if (index >= contracts::smith_first) return inv.smith[index - contracts::smith_first];
     if (index >= contracts::cutter_first) return inv.cutter[index - contracts::cutter_first];
     return index >= contracts::table_first ? inv.table[index - contracts::table_first] : inv.slots[index];
 }
@@ -53,6 +54,51 @@ void cutter_input_changed(RuleContext& ctx, PlayerInventory& inv, const ItemStac
     if (inv.cutter[0].empty() || inv.cutter[0].item != before.item) inv.cutter_recipe = -1;
     set_cutter_result(ctx, inv);
 }
+// What a smithing table makes of a template, a base and an addition: the
+// first recipe (in id order) that takes them decides. A transform gives
+// its result the base's damage and components; a trim gives the base the
+// addition's material in the recipe's pattern (the template item's before
+// 1.21.5), and nothing when it already has that trim.
+ItemStack smithed(const GameData& data, const ItemStack& template_item, const ItemStack& base, const ItemStack& addition) {
+    const auto fits = [](const std::optional<recipes::Ingredient>& i, const ItemStack& s) {
+        return i ? !s.empty() && i->test(s.item) : s.empty();
+    };
+    for (const auto& r : data.smithing) {
+        if (!fits(r.template_item, template_item) || base.empty() || !r.base.test(base.item) || !fits(r.addition, addition)) continue;
+        auto made = base;
+        if (r.kind == recipes::Smithing::Kind::transform) {
+            made.item = r.result.item;
+            made.count = r.result.count;
+            return made;
+        }
+        const auto material = data.trim_materials.find(addition.item);
+        auto pattern = r.pattern;
+        if (const auto it = data.trim_patterns.find(template_item.item); pattern.empty() && it != data.trim_patterns.end()) pattern = it->second;
+        if (material == data.trim_materials.end() || pattern.empty() || !data.trimmed) return {};
+        const auto patch = data.trimmed(base.components, material->second, pattern);
+        if (!patch || *patch == base.components) return {};
+        made.count = 1;
+        made.components = *patch;
+        return made;
+    }
+    return {};
+}
+void set_smith_result(RuleContext& ctx, PlayerInventory& inv) {
+    const auto* data = ctx.data();
+    const auto result = data ? smithed(*data, inv.smith[0], inv.smith[1], inv.smith[2]) : ItemStack{};
+    if (inv.smith[3] == result) return;
+    inv.smith[3] = result;
+    record_slot(ctx, inv, contracts::smith_first + 3);
+}
+// Whether a smithing table's template (0), base (1) or addition (2) slot
+// takes an item: those some recipe takes there.
+bool smith_takes(const RuleContext& ctx, std::size_t slot, std::uint16_t item) {
+    const auto* data = ctx.data();
+    if (!data || slot > 2) return false;
+    const auto& items = slot == 0 ? data->smithing_template : slot == 1 ? data->smithing_base : data->smithing_addition;
+    return std::ranges::binary_search(items, item);
+}
+
 bool cuts(const RuleContext& ctx, std::uint16_t item) {
     const auto* data = ctx.data();
     return data && std::ranges::any_of(data->stonecutting, [&](const auto& r) { return r.ingredient.test(item); });
@@ -75,7 +121,11 @@ public:
     Menu(RuleContext& ctx, PlayerInventory& inv, std::vector<BlockPos> parts) : ctx_(ctx), inv_(inv) {
         table_ = parts.size() == 1 && is_crafting_table(ctx.block(parts[0]));
         cutter_ = parts.size() == 1 && is_stonecutter(ctx.block(parts[0]));
-        if (table_) {
+        smith_ = parts.size() == 1 && is_smithing_table(ctx.block(parts[0]));
+        if (smith_) {
+            for (std::uint8_t i = 0; i < contracts::smith_slots; ++i)
+                slots_.push_back({{}, static_cast<std::uint8_t>(contracts::smith_first + i), false});
+        } else if (table_) {
             for (std::uint8_t i = 0; i < contracts::table_slots; ++i)
                 slots_.push_back({{}, static_cast<std::uint8_t>(contracts::table_first + i), false});
         } else if (cutter_) {
@@ -118,6 +168,7 @@ public:
             slot = stack;
             record_slot(ctx_, inv_, s.index);
             if (s.index == contracts::cutter_first) cutter_input_changed(ctx_, inv_, before);
+            if (s.index >= contracts::smith_first && s.index < contracts::smith_first + 3) set_smith_result(ctx_, inv_);
             return;
         }
         auto* be = ctx_.block_entity(s.pos);
@@ -137,14 +188,15 @@ public:
 
     // The crafting result of the own window or a crafting table: taking
     // from it crafts (see click_result); nothing is placed in it.
-    [[nodiscard]] bool result(std::size_t i) const { return ((own_ || table_) && i == 0) || (cutter_ && i == 1); }
-    [[nodiscard]] std::size_t result_slot() const { return cutter_ ? 1 : 0; }
+    [[nodiscard]] bool result(std::size_t i) const { return ((own_ || table_) && i == 0) || (cutter_ && i == 1) || (smith_ && i == 3); }
+    [[nodiscard]] std::size_t result_slot() const { return smith_ ? 3 : cutter_ ? 1 : 0; }
     [[nodiscard]] bool may_place(std::size_t i, ItemStack stack) const {
         if (result(i)) return false;
         if (own_ && i >= 5 && i <= 8) return armor_slot(stack.item) == i;
         // A furnace's result slot takes nothing; its fuel slot fuels and buckets.
         if (furnace_ && i == 2) return false;
         if (furnace_ && i == 1) return burn_time(stack.item) > 0 || stack.item == items::bucket;
+        if (smith_ && i < 3) return smith_takes(ctx_, i, stack.item);
         return true;
     }
     [[nodiscard]] bool may_pickup(std::size_t i) const { return !result(i); }
@@ -216,6 +268,20 @@ public:
             else if (burn_time(stack.item) > 0) moved = move_into(stack, 1, 2, false);
             else if (i < 30) moved = move_into(stack, 30, 39, false);
             else moved = move_into(stack, 3, 30, false);
+        } else if (smith_) {
+            // The template, base and addition go to the inventory from its
+            // start; from the inventory an item goes into the first of them
+            // that takes it while empty or holding its kind with room, the
+            // rest between the main inventory and the hotbar.
+            std::optional<std::size_t> to;
+            for (std::size_t k = 0; k < 3 && i >= 4 && !to; ++k) {
+                const auto there = get(k);
+                if (may_place(k, stack) && (there.empty() || (there.same_kind(stack) && there.count < max_stack(k, there)))) to = k;
+            }
+            if (i < 3) moved = move_into(stack, 4, 40, false);
+            else if (to) moved = move_into(stack, *to, *to + 1, false);
+            else if (i < 31) moved = move_into(stack, 31, 40, false);
+            else moved = move_into(stack, 4, 31, false);
         } else if (cutter_) {
             // The input goes to the inventory from its start; from the
             // inventory an item a recipe cuts goes into the input, the rest
@@ -289,10 +355,11 @@ public:
     [[nodiscard]] bool own() const { return own_; }
     [[nodiscard]] bool table() const { return table_; }
     [[nodiscard]] bool cutter() const { return cutter_; }
+    [[nodiscard]] bool smith() const { return smith_; }
     [[nodiscard]] CraftingGrid grid() const { return table_ ? table_grid : own_grid; }
     // The window slots of the main inventory and the hotbar.
-    [[nodiscard]] std::size_t inventory_first() const { return cutter_ ? 2 : table_ ? 10 : 9; }
-    [[nodiscard]] std::size_t inventory_end() const { return cutter_ ? 38 : table_ ? 46 : 45; }
+    [[nodiscard]] std::size_t inventory_first() const { return smith_ ? 4 : cutter_ ? 2 : table_ ? 10 : 9; }
+    [[nodiscard]] std::size_t inventory_end() const { return smith_ ? 40 : cutter_ ? 38 : table_ ? 46 : 45; }
     [[nodiscard]] PlayerInventory& inventory() const { return inv_; }
 
 private:
@@ -309,6 +376,7 @@ private:
     bool furnace_{};
     bool table_{};
     bool cutter_{};
+    bool smith_{};
 };
 
 void throw_item(RuleContext& ctx, const contracts::Vec3& position, const contracts::Vec3& velocity, ItemStack stack) {
@@ -375,13 +443,27 @@ void use_cutter(RuleContext& ctx, PlayerInventory& inv) {
     cutter_input_changed(ctx, inv, before);
 }
 
-// Clicks on a crafting or stonecutting result. Each take crafts once: the
-// whole result leaves the slot and the grid or the input is used.
+// A smithing table's result was taken: the template, base and addition
+// each give one item, and the result follows what is left.
+void use_smith(RuleContext& ctx, PlayerInventory& inv) {
+    for (std::size_t k = 0; k < 3; ++k) {
+        auto& slot = inv.smith[k];
+        if (slot.empty()) continue;
+        slot.count = static_cast<std::uint8_t>(slot.count - 1);
+        if (slot.count == 0) slot = {};
+        record_slot(ctx, inv, static_cast<std::uint8_t>(contracts::smith_first + k));
+    }
+    set_smith_result(ctx, inv);
+}
+
+// Clicks on a crafting, stonecutting or smithing result. Each take crafts
+// once: the whole result leaves the slot and the grid or the inputs are used.
 void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick& c) {
     auto& inv = menu.inventory();
     const auto made_now = [&] { return menu.get(menu.result_slot()); };
     const auto use = [&] {
-        if (menu.cutter()) use_cutter(ctx, inv);
+        if (menu.smith()) use_smith(ctx, inv);
+        else if (menu.cutter()) use_cutter(ctx, inv);
         else use_grid(ctx, inv, menu.grid(), c);
     };
     const auto result = made_now();
@@ -454,7 +536,7 @@ void update_crafting(RuleContext& ctx, PlayerInventory& inv) {
 contracts::Result<std::vector<BlockPos>> menu_parts(RuleContext& ctx, std::optional<BlockPos> container) {
     if (!container) return std::vector<BlockPos>{};
     const auto s = ctx.block(*container);
-    if (!s.is_unloaded() && (is_crafting_table(s) || is_stonecutter(s))) return std::vector<BlockPos>{*container};
+    if (!s.is_unloaded() && (is_crafting_table(s) || is_stonecutter(s) || is_smithing_table(s))) return std::vector<BlockPos>{*container};
     if (s.is_unloaded() || !is_container(s.type())) return std::unexpected(contracts::ErrorCode::not_a_container);
     return container_parts(ctx, *container);
 }
@@ -738,14 +820,20 @@ contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const cont
                 throw_item(ctx, c.drop_position, c.drop_velocity, put_back(s));
             }
         update_crafting(ctx, inv);
-        // An open stonecutter's input too; its result and recipe clear.
-        if (const auto input = inv.cutter[0]; !input.empty()) {
-            inv.cutter[0] = {};
-            record_slot(ctx, inv, contracts::cutter_first);
+        // An open stonecutter's input and smithing table's inputs too; their
+        // results and the stonecutter's recipe clear.
+        for (const auto slot : {contracts::cutter_first, contracts::smith_first, static_cast<std::uint8_t>(contracts::smith_first + 1),
+                                static_cast<std::uint8_t>(contracts::smith_first + 2)}) {
+            auto& held = player_slot(inv, slot);
+            const auto input = held;
+            if (input.empty()) continue;
+            held = {};
+            record_slot(ctx, inv, slot);
             throw_item(ctx, c.drop_position, c.drop_velocity, put_back(input));
         }
         inv.cutter_recipe = -1;
         set_cutter_result(ctx, inv);
+        set_smith_result(ctx, inv);
         if (!inv.cursor.empty()) {
             const auto carried = inv.cursor;
             inv.cursor = {};
@@ -789,6 +877,7 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
         for (std::uint8_t s = 1; s <= 4; ++s) order.push_back(s);
         for (std::size_t k = 1; k <= table_grid.size(); ++k) order.push_back(table_grid.record(k));
         order.push_back(contracts::cutter_first);
+        for (std::uint8_t k = 0; k < 3; ++k) order.push_back(static_cast<std::uint8_t>(contracts::smith_first + k));
         std::size_t n = 0;
         const auto drop = [&](ItemStack stack) {
             if (in_world) spawn_dropped(ctx, cell, c.position, death_drop_velocity(n++), stack, 40);
@@ -804,6 +893,7 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
         update_crafting(ctx, inv);
         inv.cutter_recipe = -1;
         set_cutter_result(ctx, inv);
+        set_smith_result(ctx, inv);
         if (!inv.cursor.empty()) {
             const auto stack = inv.cursor;
             inv.cursor = {};
@@ -836,6 +926,10 @@ bool is_crafting_table(BlockState s) {
 }
 bool is_stonecutter(BlockState s) {
     static const auto block = find_registry_block("stonecutter");
+    return of_block(s, block);
+}
+bool is_smithing_table(BlockState s) {
+    static const auto block = find_registry_block("smithing_table");
     return of_block(s, block);
 }
 } // namespace circuit::gameplay

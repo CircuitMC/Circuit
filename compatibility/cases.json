@@ -306,6 +306,17 @@
       "description": "27 steps at a stonecutter: shift-clicks into the input by recipe and across the inventory, recipe buttons (one beyond the list), results by click, onto the cursor, by number key and shift-clicked until the input runs out, another item clearing the choice, the input given back on closing and dropped when the player leaves; and the update_recipes packet (254 stonecutter recipes in order, seven property sets) equal to both official servers'"
     },
     {
+      "id": "client/smithing",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/smithing.js",
+      "status": "passing",
+      "description": "24 steps at a smithing table: shift-clicks into the template, base and addition slots and across the inventory (an item whose slot holds another), a netherite upgrade keeping an enchantment, a coast trim of netherite and of iron (the trim components' registry ids), the same trim again making nothing, results by click, shift-click and number key, stone refused by every slot, the inputs given back on closing; Circuit and both official servers give identical windows"
+    },
+    {
       "id": "data/block_drops",
       "kind": "black_box",
       "versions": [

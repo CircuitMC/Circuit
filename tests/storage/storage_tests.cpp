@@ -273,7 +273,7 @@ int main() {
             bes.push_back({{29999, 0, 29999}, furnace});
             std::ranges::sort(bes, {}, &std::pair<circuit::contracts::BlockPos, circuit::gameplay::BlockEntity>::first);
         }
-        // A player's open crafting table and stonecutter.
+        // A player's open crafting table, stonecutter and smithing table.
         {
             circuit::gameplay::PlayerInventory p;
             p.player = {0, 77};
@@ -281,6 +281,7 @@ int main() {
             p.table[5] = {circuit::gameplay::items::oak_log, 2};
             p.cutter[0] = {circuit::gameplay::items::stone, 9};
             p.cutter_recipe = 3;
+            p.smith[1] = {circuit::gameplay::items::diamond_pickaxe, 1, 17};
             c.state.players.insert(std::ranges::upper_bound(c.state.players, p.player, {}, &circuit::gameplay::PlayerInventory::player), p);
         }
         c.state.level(circuit::contracts::DimensionId::overworld).sequences = {
@@ -289,7 +290,7 @@ int main() {
         const auto encoded = circuit::storage::encode_checkpoint(c);
         const auto decoded = circuit::storage::decode_checkpoint(encoded);
         require(decoded.has_value(), decoded ? "" : decoded.error());
-        require(*decoded == c && circuit::storage::encode_checkpoint(*decoded) == encoded, "the sequences, settings, furnace times, crafting table and stonecutter round-trip");
+        require(*decoded == c && circuit::storage::encode_checkpoint(*decoded) == encoded, "the sequences, settings, furnace times and player menus round-trip");
         auto swapped = c;
         auto& sequences = swapped.state.level(circuit::contracts::DimensionId::overworld).sequences;
         std::swap(sequences[0], sequences[1]);

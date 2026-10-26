@@ -65,6 +65,23 @@ struct Stonecutting {
 // given (the stonecutter's buttons).
 std::vector<const Stonecutting*> cuttings(std::span<const Stonecutting> recipes, std::uint16_t item);
 
+// A smithing recipe: a template, a base and an addition (an absent
+// template or addition wants an empty slot). A transform makes its result
+// with the base's damage and components; a trim gives the base a trim of
+// the addition's material in its pattern (or the template item's, for
+// packs before 1.21.5).
+struct Smithing {
+    enum class Kind : std::uint8_t { transform, trim };
+    Kind kind{};
+    std::string id;
+    std::optional<Ingredient> template_item;
+    Ingredient base;
+    std::optional<Ingredient> addition;
+    contracts::ItemStack result; // transform
+    std::string pattern;         // trim; empty: the template item's
+    bool operator==(const Smithing&) const = default;
+};
+
 // A crafting grid's slots, row by row.
 struct Grid {
     std::uint8_t width{}, height{};

@@ -463,6 +463,28 @@ int main() {
         trim.set("pattern", nbt::Tag::string("minecraft:coast"));
         const auto t = codec.from_save(*codec.type_id("trim"), trim, ctx).value();
         require(codec.to_save(*codec.type_id("trim"), t, ctx).value() == trim, "trim round-trips");
+        // A smithing table's trim, set on a stack with other components and
+        // replacing its trim; on both protocols (1.21.4's tooltip flag shown).
+        for (const std::int32_t protocol : {769, 772}) {
+            const auto& c = *ComponentCodec::for_protocol(protocol);
+            auto pctx = open_context(protocol);
+            pctx.name_of = ctx.name_of;
+            pctx.id_of = ctx.id_of;
+            const auto made = c.enchanted(std::vector<std::pair<std::uint32_t, std::int32_t>>{{1, 5}}, pctx);
+            require(made.has_value(), std::format("{}: {}", protocol, made ? "" : made.error()));
+            const auto& enchanted = *made;
+            const auto trimmed = c.with_trim(enchanted, 0, 0, pctx);
+            require(trimmed.has_value(), trimmed ? "" : trimmed.error());
+            require(trimmed->added().size() == 2 && c.enchantment_level(*trimmed, 1) == 5, std::format("{}: the enchantment kept", protocol));
+            const auto trim_type = *c.type_id("trim");
+            const auto it = std::ranges::find(trimmed->added(), trim_type, &circuit::contracts::ComponentPatch::Added::type);
+            // Both holders as references to entry 0 (id + 1), then 1.21.4's flag.
+            const std::vector<std::byte> expected = protocol == 769 ? std::vector{std::byte{1}, std::byte{1}, std::byte{1}}
+                                                                    : std::vector{std::byte{1}, std::byte{1}};
+            require(it != trimmed->added().end() && it->value == expected, std::format("{}: the trim's value", protocol));
+            const auto again = c.with_trim(*trimmed, 0, 0, pctx);
+            require(again.has_value() && *again == *trimmed, std::format("{}: the same trim again changes nothing", protocol));
+        }
     });
 
     suite.run("random input never escapes its bounds", [] {

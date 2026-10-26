@@ -85,6 +85,11 @@ public:
     // shown).
     [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> enchanted(std::span<const std::pair<std::uint32_t, std::int32_t>> levels,
                                                                                   const ComponentContext& ctx) const;
+    // `base` (canonical for this protocol) with its trim component set to
+    // `material` and `pattern` (ids of the synchronized trim registries;
+    // 1.21.4's tooltip flag shown), its other components kept.
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_trim(const contracts::ComponentPatch& base, std::uint32_t material,
+                                                                                  std::uint32_t pattern, const ComponentContext& ctx) const;
 
     explicit ComponentCodec(const void* schema) noexcept : schema_(schema) {}
 

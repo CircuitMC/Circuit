@@ -781,4 +781,29 @@ std::expected<contracts::ComponentPatch, std::string> ComponentCodec::enchanted(
     return contracts::ComponentPatch::make(protocol(), {{*type, std::move(*value)}}, {}, {});
 }
 
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_trim(const contracts::ComponentPatch& base, std::uint32_t material,
+                                                                                std::uint32_t pattern, const ComponentContext& ctx) const {
+    const auto type = type_id("trim");
+    if (!type) return std::unexpected("no trim component");
+    // Both holders as registry references (id + 1).
+    Writer w;
+    w.varint(static_cast<std::int32_t>(material) + 1).varint(static_cast<std::int32_t>(pattern) + 1);
+    auto value = canonical_value(*type, w.bytes(), ctx);
+    if (!value) {
+        // 1.21.4's form ends with whether the tooltip shows it.
+        w.boolean(true);
+        value = canonical_value(*type, w.bytes(), ctx);
+    }
+    if (!value) return std::unexpected(value.error());
+    std::vector<contracts::ComponentPatch::Added> added;
+    for (const auto& a : base.added())
+        if (a.type != *type) added.push_back(a);
+    added.push_back({*type, std::move(*value)});
+    std::ranges::sort(added, {}, &contracts::ComponentPatch::Added::type);
+    std::vector<std::uint16_t> removed;
+    for (const auto r : base.removed())
+        if (r != *type) removed.push_back(r);
+    return contracts::ComponentPatch::make(protocol(), std::move(added), std::move(removed), base.typed());
+}
+
 } // namespace circuit::protocol
