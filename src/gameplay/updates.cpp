@@ -211,6 +211,7 @@ void on_shape_changed(RuleContext& ctx, BlockPos target, BlockPos from) {
         else if (is_fire(s) || is_soul_fire(s)) fire_shape_update(ctx, target, s);
         else if (is_snowy_dirt(s)) snowy_shape_update(ctx, target, s, *d);
         else if (is_leaves(s)) leaves_shape_update(ctx, target, s, *d);
+        else if (is_pointed_dripstone(s)) dripstone_shape_update(ctx, target, s, *d);
         break;
     default: break;
     }

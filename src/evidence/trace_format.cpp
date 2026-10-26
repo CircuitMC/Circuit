@@ -293,8 +293,9 @@ private:
             const auto key = t[i].substr(0, eq), value = t[i].substr(eq + 1);
             for (char c : key)
                 if (!key_char(c) && c != '-') return fail(line_, "invalid property name");
+            // A value may hold `=` itself (a falling block's state).
             for (char c : value)
-                if (!property_char(c)) return fail(line_, "invalid property value");
+                if (!property_char(c) && c != '=') return fail(line_, "invalid property value");
             if (!keys.insert(key).second) return fail(line_, std::format("duplicate property `{}`", key));
             out.emplace_back(std::string(key), std::string(value));
         }

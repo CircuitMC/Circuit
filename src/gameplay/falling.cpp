@@ -106,6 +106,10 @@ void tick_falling_block(RuleContext& ctx, BlockPos pos, BlockState s) {
         const auto below = ctx.block(under);
         if (below.is_unloaded() || !block_replaceable(below)) return;
     }
+    spawn_falling_block(ctx, pos, s);
+}
+
+void spawn_falling_block(RuleContext& ctx, BlockPos pos, BlockState s) {
     // The entity exists before the block goes (its id comes first); the
     // official servers report the block change, then the new entity.
     Entity e;
@@ -170,6 +174,8 @@ void run_falling_block(RuleContext& ctx, EntityId id, Entity& e) {
             for (const auto& [key, value] : registry::properties(here.registry_state()))
                 if (key == "layers" && value != "1") fits = false;
     }
+    // Pointed dripstone lands only where it stands (dripstone_shapes).
+    if (fits && is_pointed_dripstone(carried) && !dripstone_supported(ctx, cell, carried)) fits = false;
     if (fits) {
         // The block, then the entity goes, then the block reacts to its
         // landing: concrete powder in water becomes concrete.

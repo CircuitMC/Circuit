@@ -168,6 +168,17 @@ constexpr std::array reference_v4_mechanisms{
         "10 d later; turtle eggs crack on sand when nextInt(500) is 0 (or by night's end), drawing their sound's pitch "
         "(eggs_blossoms). Gaps: chorus flowers and saplings are not modeled; hatching turtles are not spawned; "
         "1.21.4's growth is not compared (its random ticks run only near players)."},
+    MechanismEntry{"dripstone", l0_exact, l2_declared_deviation, harness_trace,
+        "Pointed dripstone stands on a face sturdy toward its tip or on dripstone pointing the same way; every update "
+        "from above or below sets its thickness from the pieces in front of and behind it (tip, tip_merge, frustum, "
+        "middle, base); one left unsupported from behind breaks with its drops a tick later as a stalagmite, or two "
+        "ticks later turns with every piece below it into falling blocks, which break into their items where they "
+        "cannot stand (dripstone_shapes). In random ticks it draws two floats: under water (or mud) or lava above the "
+        "block it hangs from, a stalactite's drip below 45/256 or 15/256 gives the cauldron below its tip a block tick "
+        "50 + its distance later, which fills it (or turns the mud to clay), and below 64/5625 under a dripstone block "
+        "with water above it grows down or raises a stalagmite (dripstone_growth; minecraft.wiki \"Pointed "
+        "Dripstone\"). Gaps: falling dripstone hurts nothing; 1.21.4's random ticks are not compared (they run only "
+        "near players)."},
     MechanismEntry{"leaves", l0_exact, l2_declared_deviation, harness_trace,
         "As the official 1.21.8 server (leaves_decay): a leaf's update from a neighbor schedules its block tick a tick "
         "later (unless the neighbor is a log and it is at distance 1), the tick setting its distance, one more than the "

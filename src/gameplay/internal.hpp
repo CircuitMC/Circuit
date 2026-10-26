@@ -517,6 +517,16 @@ void spreading_dirt_random_tick(RuleContext& ctx, BlockPos pos, BlockState s);
 // (weathering.cpp).
 bool is_weathering(BlockState s);
 void weathering_random_tick(RuleContext& ctx, BlockPos pos, BlockState s);
+// Pointed dripstone (dripstone.cpp).
+bool is_pointed_dripstone(BlockState s);
+bool dripstone_supported(RuleContext& ctx, BlockPos pos, BlockState s);
+void dripstone_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction from);
+void tick_dripstone(RuleContext& ctx, BlockPos pos, BlockState s);
+void dripstone_random_tick(RuleContext& ctx, BlockPos pos, BlockState s);
+bool is_cauldron(BlockState s);
+void tick_cauldron(RuleContext& ctx, BlockPos pos, BlockState s);
+// A block turned into a falling block entity where it is (falling.cpp).
+void spawn_falling_block(RuleContext& ctx, BlockPos pos, BlockState s);
 // Leaves' distance and decay (leaves.cpp).
 bool is_leaves(BlockState s);
 void leaves_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Direction d);

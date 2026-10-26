@@ -1,0 +1,864 @@
+circuit-trace 2
+title Pointed dripstone growing and dripping water and lava into cauldrons in random ticks
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v12
+mechanisms random_ticks dripstone
+area 0 0 0 15 15 15
+ticks 200
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 400
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 0 0 6 minecraft:stone
+at 0 set 0 0 7 minecraft:stone
+at 0 set 0 0 8 minecraft:stone
+at 0 set 0 0 9 minecraft:stone
+at 0 set 0 0 10 minecraft:stone
+at 0 set 0 0 11 minecraft:stone
+at 0 set 0 0 12 minecraft:stone
+at 0 set 0 0 13 minecraft:stone
+at 0 set 0 0 14 minecraft:stone
+at 0 set 0 0 15 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 1 0 6 minecraft:stone
+at 0 set 1 0 7 minecraft:stone
+at 0 set 1 0 8 minecraft:stone
+at 0 set 1 0 9 minecraft:stone
+at 0 set 1 0 10 minecraft:stone
+at 0 set 1 0 11 minecraft:stone
+at 0 set 1 0 12 minecraft:stone
+at 0 set 1 0 13 minecraft:stone
+at 0 set 1 0 14 minecraft:stone
+at 0 set 1 0 15 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 2 0 6 minecraft:stone
+at 0 set 2 0 7 minecraft:stone
+at 0 set 2 0 8 minecraft:stone
+at 0 set 2 0 9 minecraft:stone
+at 0 set 2 0 10 minecraft:stone
+at 0 set 2 0 11 minecraft:stone
+at 0 set 2 0 12 minecraft:stone
+at 0 set 2 0 13 minecraft:stone
+at 0 set 2 0 14 minecraft:stone
+at 0 set 2 0 15 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 3 0 6 minecraft:stone
+at 0 set 3 0 7 minecraft:stone
+at 0 set 3 0 8 minecraft:stone
+at 0 set 3 0 9 minecraft:stone
+at 0 set 3 0 10 minecraft:stone
+at 0 set 3 0 11 minecraft:stone
+at 0 set 3 0 12 minecraft:stone
+at 0 set 3 0 13 minecraft:stone
+at 0 set 3 0 14 minecraft:stone
+at 0 set 3 0 15 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 4 0 6 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 4 0 8 minecraft:stone
+at 0 set 4 0 9 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 4 0 11 minecraft:stone
+at 0 set 4 0 12 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 4 0 14 minecraft:stone
+at 0 set 4 0 15 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 5 0 6 minecraft:stone
+at 0 set 5 0 7 minecraft:stone
+at 0 set 5 0 8 minecraft:stone
+at 0 set 5 0 9 minecraft:stone
+at 0 set 5 0 10 minecraft:stone
+at 0 set 5 0 11 minecraft:stone
+at 0 set 5 0 12 minecraft:stone
+at 0 set 5 0 13 minecraft:stone
+at 0 set 5 0 14 minecraft:stone
+at 0 set 5 0 15 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 6 0 6 minecraft:stone
+at 0 set 6 0 7 minecraft:stone
+at 0 set 6 0 8 minecraft:stone
+at 0 set 6 0 9 minecraft:stone
+at 0 set 6 0 10 minecraft:stone
+at 0 set 6 0 11 minecraft:stone
+at 0 set 6 0 12 minecraft:stone
+at 0 set 6 0 13 minecraft:stone
+at 0 set 6 0 14 minecraft:stone
+at 0 set 6 0 15 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 7 0 6 minecraft:stone
+at 0 set 7 0 7 minecraft:stone
+at 0 set 7 0 8 minecraft:stone
+at 0 set 7 0 9 minecraft:stone
+at 0 set 7 0 10 minecraft:stone
+at 0 set 7 0 11 minecraft:stone
+at 0 set 7 0 12 minecraft:stone
+at 0 set 7 0 13 minecraft:stone
+at 0 set 7 0 14 minecraft:stone
+at 0 set 7 0 15 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 8 0 6 minecraft:stone
+at 0 set 8 0 7 minecraft:stone
+at 0 set 8 0 8 minecraft:stone
+at 0 set 8 0 9 minecraft:stone
+at 0 set 8 0 10 minecraft:stone
+at 0 set 8 0 11 minecraft:stone
+at 0 set 8 0 12 minecraft:stone
+at 0 set 8 0 13 minecraft:stone
+at 0 set 8 0 14 minecraft:stone
+at 0 set 8 0 15 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 9 0 6 minecraft:stone
+at 0 set 9 0 7 minecraft:stone
+at 0 set 9 0 8 minecraft:stone
+at 0 set 9 0 9 minecraft:stone
+at 0 set 9 0 10 minecraft:stone
+at 0 set 9 0 11 minecraft:stone
+at 0 set 9 0 12 minecraft:stone
+at 0 set 9 0 13 minecraft:stone
+at 0 set 9 0 14 minecraft:stone
+at 0 set 9 0 15 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 10 0 6 minecraft:stone
+at 0 set 10 0 7 minecraft:stone
+at 0 set 10 0 8 minecraft:stone
+at 0 set 10 0 9 minecraft:stone
+at 0 set 10 0 10 minecraft:stone
+at 0 set 10 0 11 minecraft:stone
+at 0 set 10 0 12 minecraft:stone
+at 0 set 10 0 13 minecraft:stone
+at 0 set 10 0 14 minecraft:stone
+at 0 set 10 0 15 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 11 0 6 minecraft:stone
+at 0 set 11 0 7 minecraft:stone
+at 0 set 11 0 8 minecraft:stone
+at 0 set 11 0 9 minecraft:stone
+at 0 set 11 0 10 minecraft:stone
+at 0 set 11 0 11 minecraft:stone
+at 0 set 11 0 12 minecraft:stone
+at 0 set 11 0 13 minecraft:stone
+at 0 set 11 0 14 minecraft:stone
+at 0 set 11 0 15 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 12 0 6 minecraft:stone
+at 0 set 12 0 7 minecraft:stone
+at 0 set 12 0 8 minecraft:stone
+at 0 set 12 0 9 minecraft:stone
+at 0 set 12 0 10 minecraft:stone
+at 0 set 12 0 11 minecraft:stone
+at 0 set 12 0 12 minecraft:stone
+at 0 set 12 0 13 minecraft:stone
+at 0 set 12 0 14 minecraft:stone
+at 0 set 12 0 15 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 13 0 6 minecraft:stone
+at 0 set 13 0 7 minecraft:stone
+at 0 set 13 0 8 minecraft:stone
+at 0 set 13 0 9 minecraft:stone
+at 0 set 13 0 10 minecraft:stone
+at 0 set 13 0 11 minecraft:stone
+at 0 set 13 0 12 minecraft:stone
+at 0 set 13 0 13 minecraft:stone
+at 0 set 13 0 14 minecraft:stone
+at 0 set 13 0 15 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 14 0 6 minecraft:stone
+at 0 set 14 0 7 minecraft:stone
+at 0 set 14 0 8 minecraft:stone
+at 0 set 14 0 9 minecraft:stone
+at 0 set 14 0 10 minecraft:stone
+at 0 set 14 0 11 minecraft:stone
+at 0 set 14 0 12 minecraft:stone
+at 0 set 14 0 13 minecraft:stone
+at 0 set 14 0 14 minecraft:stone
+at 0 set 14 0 15 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 0 set 15 0 6 minecraft:stone
+at 0 set 15 0 7 minecraft:stone
+at 0 set 15 0 8 minecraft:stone
+at 0 set 15 0 9 minecraft:stone
+at 0 set 15 0 10 minecraft:stone
+at 0 set 15 0 11 minecraft:stone
+at 0 set 15 0 12 minecraft:stone
+at 0 set 15 0 13 minecraft:stone
+at 0 set 15 0 14 minecraft:stone
+at 0 set 15 0 15 minecraft:stone
+draws 0 random_ticks level 3600
+
+at 1 set 1 12 2 minecraft:dripstone_block
+at 1 set 1 13 2 minecraft:water[level=0]
+at 1 set 2 13 2 minecraft:glass
+at 1 set 0 13 2 minecraft:glass
+at 1 set 1 13 3 minecraft:glass
+at 1 set 1 13 1 minecraft:glass
+at 1 set 1 1 2 minecraft:cauldron
+at 1 set 1 12 8 minecraft:dripstone_block
+at 1 set 1 13 8 minecraft:lava[level=0]
+at 1 set 2 13 8 minecraft:glass
+at 1 set 0 13 8 minecraft:glass
+at 1 set 1 13 9 minecraft:glass
+at 1 set 1 13 7 minecraft:glass
+at 1 set 1 1 8 minecraft:cauldron
+at 1 set 4 12 2 minecraft:dripstone_block
+at 1 set 4 13 2 minecraft:water[level=0]
+at 1 set 5 13 2 minecraft:glass
+at 1 set 3 13 2 minecraft:glass
+at 1 set 4 13 3 minecraft:glass
+at 1 set 4 13 1 minecraft:glass
+at 1 set 4 1 2 minecraft:stone
+at 1 set 4 12 8 minecraft:dripstone_block
+at 1 set 4 13 8 minecraft:lava[level=0]
+at 1 set 5 13 8 minecraft:glass
+at 1 set 3 13 8 minecraft:glass
+at 1 set 4 13 9 minecraft:glass
+at 1 set 4 13 7 minecraft:glass
+at 1 set 4 1 8 minecraft:stone
+at 1 set 7 12 2 minecraft:dripstone_block
+at 1 set 7 13 2 minecraft:water[level=0]
+at 1 set 8 13 2 minecraft:glass
+at 1 set 6 13 2 minecraft:glass
+at 1 set 7 13 3 minecraft:glass
+at 1 set 7 13 1 minecraft:glass
+at 1 set 7 1 2 minecraft:cauldron
+at 1 set 7 12 8 minecraft:dripstone_block
+at 1 set 7 13 8 minecraft:lava[level=0]
+at 1 set 8 13 8 minecraft:glass
+at 1 set 6 13 8 minecraft:glass
+at 1 set 7 13 9 minecraft:glass
+at 1 set 7 13 7 minecraft:glass
+at 1 set 7 1 8 minecraft:cauldron
+at 1 set 10 12 2 minecraft:dripstone_block
+at 1 set 10 13 2 minecraft:water[level=0]
+at 1 set 11 13 2 minecraft:glass
+at 1 set 9 13 2 minecraft:glass
+at 1 set 10 13 3 minecraft:glass
+at 1 set 10 13 1 minecraft:glass
+at 1 set 10 1 2 minecraft:stone
+at 1 set 10 12 8 minecraft:dripstone_block
+at 1 set 10 13 8 minecraft:lava[level=0]
+at 1 set 11 13 8 minecraft:glass
+at 1 set 9 13 8 minecraft:glass
+at 1 set 10 13 9 minecraft:glass
+at 1 set 10 13 7 minecraft:glass
+at 1 set 10 1 8 minecraft:stone
+at 1 set 13 12 2 minecraft:dripstone_block
+at 1 set 13 13 2 minecraft:water[level=0]
+at 1 set 14 13 2 minecraft:glass
+at 1 set 12 13 2 minecraft:glass
+at 1 set 13 13 3 minecraft:glass
+at 1 set 13 13 1 minecraft:glass
+at 1 set 13 1 2 minecraft:cauldron
+at 1 set 13 12 8 minecraft:dripstone_block
+at 1 set 13 13 8 minecraft:lava[level=0]
+at 1 set 14 13 8 minecraft:glass
+at 1 set 12 13 8 minecraft:glass
+at 1 set 13 13 9 minecraft:glass
+at 1 set 13 13 7 minecraft:glass
+at 1 set 13 1 8 minecraft:cauldron
+change 1 commands 1 12 2 minecraft:air minecraft:dripstone_block
+change 1 commands 1 13 2 minecraft:air minecraft:water[level=0]
+change 1 commands 2 13 2 minecraft:air minecraft:glass
+change 1 commands 0 13 2 minecraft:air minecraft:glass
+change 1 commands 1 13 3 minecraft:air minecraft:glass
+change 1 commands 1 13 1 minecraft:air minecraft:glass
+change 1 commands 1 1 2 minecraft:air minecraft:cauldron
+change 1 commands 1 12 8 minecraft:air minecraft:dripstone_block
+change 1 commands 1 13 8 minecraft:air minecraft:lava[level=0]
+change 1 commands 2 13 8 minecraft:air minecraft:glass
+change 1 commands 0 13 8 minecraft:air minecraft:glass
+change 1 commands 1 13 9 minecraft:air minecraft:glass
+change 1 commands 1 13 7 minecraft:air minecraft:glass
+change 1 commands 1 1 8 minecraft:air minecraft:cauldron
+change 1 commands 4 12 2 minecraft:air minecraft:dripstone_block
+change 1 commands 4 13 2 minecraft:air minecraft:water[level=0]
+change 1 commands 5 13 2 minecraft:air minecraft:glass
+change 1 commands 3 13 2 minecraft:air minecraft:glass
+change 1 commands 4 13 3 minecraft:air minecraft:glass
+change 1 commands 4 13 1 minecraft:air minecraft:glass
+change 1 commands 4 1 2 minecraft:air minecraft:stone
+change 1 commands 4 12 8 minecraft:air minecraft:dripstone_block
+change 1 commands 4 13 8 minecraft:air minecraft:lava[level=0]
+change 1 commands 5 13 8 minecraft:air minecraft:glass
+change 1 commands 3 13 8 minecraft:air minecraft:glass
+change 1 commands 4 13 9 minecraft:air minecraft:glass
+change 1 commands 4 13 7 minecraft:air minecraft:glass
+change 1 commands 4 1 8 minecraft:air minecraft:stone
+change 1 commands 7 12 2 minecraft:air minecraft:dripstone_block
+change 1 commands 7 13 2 minecraft:air minecraft:water[level=0]
+change 1 commands 8 13 2 minecraft:air minecraft:glass
+change 1 commands 6 13 2 minecraft:air minecraft:glass
+change 1 commands 7 13 3 minecraft:air minecraft:glass
+change 1 commands 7 13 1 minecraft:air minecraft:glass
+change 1 commands 7 1 2 minecraft:air minecraft:cauldron
+change 1 commands 7 12 8 minecraft:air minecraft:dripstone_block
+change 1 commands 7 13 8 minecraft:air minecraft:lava[level=0]
+change 1 commands 8 13 8 minecraft:air minecraft:glass
+change 1 commands 6 13 8 minecraft:air minecraft:glass
+change 1 commands 7 13 9 minecraft:air minecraft:glass
+change 1 commands 7 13 7 minecraft:air minecraft:glass
+change 1 commands 7 1 8 minecraft:air minecraft:cauldron
+change 1 commands 10 12 2 minecraft:air minecraft:dripstone_block
+change 1 commands 10 13 2 minecraft:air minecraft:water[level=0]
+change 1 commands 11 13 2 minecraft:air minecraft:glass
+change 1 commands 9 13 2 minecraft:air minecraft:glass
+change 1 commands 10 13 3 minecraft:air minecraft:glass
+change 1 commands 10 13 1 minecraft:air minecraft:glass
+change 1 commands 10 1 2 minecraft:air minecraft:stone
+change 1 commands 10 12 8 minecraft:air minecraft:dripstone_block
+change 1 commands 10 13 8 minecraft:air minecraft:lava[level=0]
+change 1 commands 11 13 8 minecraft:air minecraft:glass
+change 1 commands 9 13 8 minecraft:air minecraft:glass
+change 1 commands 10 13 9 minecraft:air minecraft:glass
+change 1 commands 10 13 7 minecraft:air minecraft:glass
+change 1 commands 10 1 8 minecraft:air minecraft:stone
+change 1 commands 13 12 2 minecraft:air minecraft:dripstone_block
+change 1 commands 13 13 2 minecraft:air minecraft:water[level=0]
+change 1 commands 14 13 2 minecraft:air minecraft:glass
+change 1 commands 12 13 2 minecraft:air minecraft:glass
+change 1 commands 13 13 3 minecraft:air minecraft:glass
+change 1 commands 13 13 1 minecraft:air minecraft:glass
+change 1 commands 13 1 2 minecraft:air minecraft:cauldron
+change 1 commands 13 12 8 minecraft:air minecraft:dripstone_block
+change 1 commands 13 13 8 minecraft:air minecraft:lava[level=0]
+change 1 commands 14 13 8 minecraft:air minecraft:glass
+change 1 commands 12 13 8 minecraft:air minecraft:glass
+change 1 commands 13 13 9 minecraft:air minecraft:glass
+change 1 commands 13 13 7 minecraft:air minecraft:glass
+change 1 commands 13 1 8 minecraft:air minecraft:cauldron
+draws 1 random_ticks level 3600
+
+at 2 set 1 11 2 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+at 2 set 1 11 8 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+at 2 set 4 11 2 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+at 2 set 4 11 8 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+at 2 set 7 11 2 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+at 2 set 7 11 8 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+at 2 set 10 11 2 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+at 2 set 10 11 8 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+at 2 set 13 11 2 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+at 2 set 13 11 8 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 2 commands 1 11 2 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 2 commands 1 11 8 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 2 commands 4 11 2 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 2 commands 4 11 8 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 2 commands 7 11 2 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 2 commands 7 11 8 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 2 commands 10 11 2 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 2 commands 10 11 8 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 2 commands 13 11 2 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 2 commands 13 11 8 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+draws 2 random_ticks level 3602
+
+at 3 set 4 10 2 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+at 3 set 4 10 8 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+at 3 set 7 10 2 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+at 3 set 7 10 8 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+at 3 set 13 10 2 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+at 3 set 13 10 8 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 3 commands 4 10 2 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 3 commands 4 11 2 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false] minecraft:pointed_dripstone[thickness=frustum,vertical_direction=down,waterlogged=false]
+change 3 commands 4 10 8 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 3 commands 4 11 8 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false] minecraft:pointed_dripstone[thickness=frustum,vertical_direction=down,waterlogged=false]
+change 3 commands 7 10 2 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 3 commands 7 11 2 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false] minecraft:pointed_dripstone[thickness=frustum,vertical_direction=down,waterlogged=false]
+change 3 commands 7 10 8 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 3 commands 7 11 8 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false] minecraft:pointed_dripstone[thickness=frustum,vertical_direction=down,waterlogged=false]
+change 3 commands 13 10 2 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 3 commands 13 11 2 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false] minecraft:pointed_dripstone[thickness=frustum,vertical_direction=down,waterlogged=false]
+change 3 commands 13 10 8 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 3 commands 13 11 8 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false] minecraft:pointed_dripstone[thickness=frustum,vertical_direction=down,waterlogged=false]
+draws 3 random_ticks level 3600
+
+at 4 set 7 9 2 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+at 4 set 7 9 8 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 4 commands 7 9 2 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 4 commands 7 10 2 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false] minecraft:pointed_dripstone[thickness=frustum,vertical_direction=down,waterlogged=false]
+change 4 commands 7 11 2 minecraft:pointed_dripstone[thickness=frustum,vertical_direction=down,waterlogged=false] minecraft:pointed_dripstone[thickness=base,vertical_direction=down,waterlogged=false]
+change 4 commands 7 9 8 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false]
+change 4 commands 7 10 8 minecraft:pointed_dripstone[thickness=tip,vertical_direction=down,waterlogged=false] minecraft:pointed_dripstone[thickness=frustum,vertical_direction=down,waterlogged=false]
+change 4 commands 7 11 8 minecraft:pointed_dripstone[thickness=frustum,vertical_direction=down,waterlogged=false] minecraft:pointed_dripstone[thickness=base,vertical_direction=down,waterlogged=false]
+draws 4 random_ticks level 3600
+
+draws 5 random_ticks level 3604
+
+draws 6 random_ticks level 3602
+
+draws 7 random_ticks level 3606
+
+draws 8 random_ticks level 3602
+
+draws 9 random_ticks level 3606
+
+draws 10 random_ticks level 3602
+
+draws 11 random_ticks level 3606
+
+draws 12 random_ticks level 3608
+
+draws 13 random_ticks level 3600
+
+draws 14 random_ticks level 3600
+
+draws 15 random_ticks level 3604
+
+draws 16 random_ticks level 3606
+
+draws 17 random_ticks level 3608
+
+draws 18 random_ticks level 3612
+
+draws 19 random_ticks level 3606
+
+draws 20 random_ticks level 3602
+
+draws 21 random_ticks level 3606
+
+draws 22 random_ticks level 3602
+
+draws 23 random_ticks level 3602
+
+draws 24 random_ticks level 3602
+
+draws 25 random_ticks level 3600
+
+draws 26 random_ticks level 3602
+
+draws 27 random_ticks level 3602
+
+draws 28 random_ticks level 3602
+
+draws 29 random_ticks level 3604
+
+draws 30 random_ticks level 3604
+
+draws 31 random_ticks level 3600
+
+draws 32 random_ticks level 3604
+
+draws 33 random_ticks level 3604
+
+draws 34 random_ticks level 3605
+
+draws 35 random_ticks level 3606
+
+draws 36 random_ticks level 3610
+
+draws 37 random_ticks level 3604
+
+draws 38 random_ticks level 3602
+
+draws 39 random_ticks level 3604
+
+draws 40 random_ticks level 3600
+
+draws 41 random_ticks level 3606
+
+draws 42 random_ticks level 3604
+
+draws 43 random_ticks level 3606
+
+draws 44 random_ticks level 3602
+
+draws 45 random_ticks level 3602
+
+draws 46 random_ticks level 3602
+
+draws 47 random_ticks level 3600
+
+draws 48 random_ticks level 3606
+
+draws 49 random_ticks level 3602
+
+draws 50 random_ticks level 3600
+
+draws 51 random_ticks level 3602
+
+draws 52 random_ticks level 3604
+
+draws 53 random_ticks level 3604
+
+draws 54 random_ticks level 3602
+
+draws 55 random_ticks level 3602
+
+draws 56 random_ticks level 3606
+
+draws 57 random_ticks level 3602
+
+draws 58 random_ticks level 3604
+
+draws 59 random_ticks level 3602
+
+draws 60 random_ticks level 3602
+
+draws 61 random_ticks level 3604
+
+draws 62 random_ticks level 3606
+
+draws 63 random_ticks level 3604
+
+draws 64 random_ticks level 3602
+
+draws 65 random_ticks level 3606
+
+draws 66 random_ticks level 3604
+
+draws 67 random_ticks level 3608
+
+draws 68 random_ticks level 3602
+
+draws 69 random_ticks level 3604
+
+draws 70 random_ticks level 3600
+
+draws 71 random_ticks level 3604
+
+draws 72 random_ticks level 3602
+
+draws 73 random_ticks level 3600
+
+draws 74 random_ticks level 3606
+
+draws 75 random_ticks level 3604
+
+change 76 block_ticks 13 1 2 minecraft:cauldron minecraft:water_cauldron[level=1]
+draws 76 random_ticks level 3610
+
+draws 77 random_ticks level 3600
+
+change 78 block_ticks 1 1 2 minecraft:cauldron minecraft:water_cauldron[level=1]
+draws 78 random_ticks level 3600
+
+draws 79 random_ticks level 3602
+
+draws 80 random_ticks level 3602
+
+draws 81 random_ticks level 3608
+
+change 82 block_ticks 7 1 2 minecraft:cauldron minecraft:water_cauldron[level=1]
+draws 82 random_ticks level 3600
+
+draws 83 random_ticks level 3602
+
+draws 84 random_ticks level 3604
+
+draws 85 random_ticks level 3602
+
+draws 86 random_ticks level 3602
+
+draws 87 random_ticks level 3602
+
+draws 88 random_ticks level 3602
+
+draws 89 random_ticks level 3602
+
+draws 90 random_ticks level 3610
+
+draws 91 random_ticks level 3602
+
+draws 92 random_ticks level 3606
+
+draws 93 random_ticks level 3604
+
+draws 94 random_ticks level 3606
+
+draws 95 random_ticks level 3602
+
+draws 96 random_ticks level 3606
+
+draws 97 random_ticks level 3604
+
+draws 98 random_ticks level 3602
+
+draws 99 random_ticks level 3606
+
+draws 100 random_ticks level 3600
+
+draws 101 random_ticks level 3602
+
+draws 102 random_ticks level 3606
+
+draws 103 random_ticks level 3604
+
+draws 104 random_ticks level 3608
+
+draws 105 random_ticks level 3604
+
+draws 106 random_ticks level 3600
+
+draws 107 random_ticks level 3600
+
+draws 108 random_ticks level 3602
+
+draws 109 random_ticks level 3604
+
+draws 110 random_ticks level 3604
+
+draws 111 random_ticks level 3602
+
+draws 112 random_ticks level 3602
+
+draws 113 random_ticks level 3604
+
+draws 114 random_ticks level 3600
+
+draws 115 random_ticks level 3604
+
+draws 116 random_ticks level 3602
+
+draws 117 random_ticks level 3606
+
+draws 118 random_ticks level 3604
+
+draws 119 random_ticks level 3602
+
+draws 120 random_ticks level 3606
+
+draws 121 random_ticks level 3602
+
+draws 122 random_ticks level 3600
+
+draws 123 random_ticks level 3604
+
+draws 124 random_ticks level 3602
+
+draws 125 random_ticks level 3600
+
+draws 126 random_ticks level 3602
+
+draws 127 random_ticks level 3602
+
+draws 128 random_ticks level 3602
+
+draws 129 random_ticks level 3602
+
+draws 130 random_ticks level 3600
+
+draws 131 random_ticks level 3602
+
+draws 132 random_ticks level 3600
+
+draws 133 random_ticks level 3602
+
+draws 134 random_ticks level 3604
+
+draws 135 random_ticks level 3600
+
+change 136 block_ticks 1 1 8 minecraft:cauldron minecraft:lava_cauldron
+draws 136 random_ticks level 3606
+
+draws 137 random_ticks level 3606
+
+draws 138 random_ticks level 3600
+
+draws 139 random_ticks level 3602
+
+draws 140 random_ticks level 3602
+
+draws 141 random_ticks level 3604
+
+draws 142 random_ticks level 3602
+
+draws 143 random_ticks level 3602
+
+draws 144 random_ticks level 3606
+
+draws 145 random_ticks level 3606
+
+draws 146 random_ticks level 3608
+
+draws 147 random_ticks level 3600
+
+draws 148 random_ticks level 3602
+
+draws 149 random_ticks level 3602
+
+draws 150 random_ticks level 3604
+
+draws 151 random_ticks level 3602
+
+change 152 block_ticks 13 1 2 minecraft:water_cauldron[level=1] minecraft:water_cauldron[level=2]
+draws 152 random_ticks level 3604
+
+draws 153 random_ticks level 3602
+
+draws 154 random_ticks level 3606
+
+draws 155 random_ticks level 3604
+
+draws 156 random_ticks level 3600
+
+draws 157 random_ticks level 3602
+
+draws 158 random_ticks level 3602
+
+draws 159 random_ticks level 3602
+
+draws 160 random_ticks level 3604
+
+draws 161 random_ticks level 3600
+
+draws 162 random_ticks level 3600
+
+draws 163 random_ticks level 3604
+
+draws 164 random_ticks level 3604
+
+draws 165 random_ticks level 3600
+
+draws 166 random_ticks level 3604
+
+draws 167 random_ticks level 3602
+
+draws 168 random_ticks level 3602
+
+draws 169 random_ticks level 3600
+
+draws 170 random_ticks level 3600
+
+change 171 block_ticks 13 1 8 minecraft:cauldron minecraft:lava_cauldron
+change 171 random_ticks 10 2 2 minecraft:air minecraft:pointed_dripstone[thickness=tip,vertical_direction=up,waterlogged=false]
+draws 171 random_ticks level 3607
+
+draws 172 random_ticks level 3602
+
+draws 173 random_ticks level 3608
+
+draws 174 random_ticks level 3606
+
+draws 175 random_ticks level 3606
+
+draws 176 random_ticks level 3600
+
+draws 177 random_ticks level 3604
+
+draws 178 random_ticks level 3602
+
+draws 179 random_ticks level 3606
+
+draws 180 random_ticks level 3604
+
+draws 181 random_ticks level 3606
+
+draws 182 random_ticks level 3608
+
+draws 183 random_ticks level 3602
+
+draws 184 random_ticks level 3602
+
+draws 185 random_ticks level 3606
+
+draws 186 random_ticks level 3604
+
+draws 187 random_ticks level 3602
+
+draws 188 random_ticks level 3602
+
+draws 189 random_ticks level 3602
+
+draws 190 random_ticks level 3610
+
+draws 191 random_ticks level 3600
+
+draws 192 random_ticks level 3604
+
+draws 193 random_ticks level 3600
+
+draws 194 random_ticks level 3602
+
+change 195 block_ticks 7 1 2 minecraft:water_cauldron[level=1] minecraft:water_cauldron[level=2]
+draws 195 random_ticks level 3604
+
+draws 196 random_ticks level 3602
+
+draws 197 random_ticks level 3602
+
+draws 198 random_ticks level 3606
+
+draws 199 random_ticks level 3600
+
+draws 200 random_ticks level 3606

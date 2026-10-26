@@ -1575,6 +1575,38 @@ int main() {
                 std::format("both halves weather: {}, {}", lower, upper));
     });
 
+    suite.run("pointed dripstone takes its thickness, falls without support and drips into cauldrons", [] {
+        Sim s(bundle(), 29, 1);
+        const auto name = [&](BlockPos p) { return circuit::gameplay::block_notation(s.at(p)); };
+        const auto piece = [](std::string_view d) {
+            return registry_block("pointed_dripstone", {{"thickness", "tip"}, {"vertical_direction", std::string(d)}, {"waterlogged", "false"}});
+        };
+        const auto thick = [](std::string_view t, std::string_view d) {
+            return std::format("minecraft:pointed_dripstone[thickness={},vertical_direction={},waterlogged=false]", t, d);
+        };
+        std::vector<CommandBody> build;
+        for (int x = 0; x < 16; ++x)
+            for (int z = 0; z < 16; ++z) build.push_back(place({x, -1, z}, blocks::stone()));
+        build.push_back(place({2, 8, 2}, registry_block("dripstone_block")));
+        build.push_back(place({2, 9, 2}, blocks::water_source()));
+        for (const auto& [dx, dz] : {std::pair{1, 0}, std::pair{-1, 0}, std::pair{0, 1}, std::pair{0, -1}})
+            build.push_back(place({2 + dx, 9, 2 + dz}, registry_block("glass")));
+        build.push_back(place({2, 0, 2}, registry_block("cauldron")));
+        build.push_back(place({6, 8, 6}, registry_block("dripstone_block")));
+        s.tick(build);
+        for (int y = 7; y >= 5; --y) s.tick({place({2, y, 2}, piece("down")), place({6, y, 6}, piece("down"))});
+        require(name({2, 7, 2}) == thick("base", "down") && name({2, 6, 2}) == thick("frustum", "down") && name({2, 5, 2}) == thick("tip", "down"),
+                std::format("a stalactite of three: {}, {}, {}", name({2, 7, 2}), name({2, 6, 2}), name({2, 5, 2})));
+        // Without the block it hangs from it falls, its pieces breaking on the floor.
+        s.tick({place({6, 8, 6}, blocks::air())});
+        s.until(s.oracle.time() + 30);
+        require(s.at({6, 7, 6}).is_air() && s.at({6, 5, 6}).is_air() && s.at({6, 0, 6}).is_air(), "the stalactite fell and broke");
+        // Water drips into the cauldron below the other.
+        s.tick({SetGameRule{"randomTickSpeed", 4096}});
+        s.until(s.oracle.time() + 200);
+        require(name({2, 0, 2}).starts_with("minecraft:water_cauldron"), "water drips into the cauldron: " + name({2, 0, 2}));
+    });
+
     suite.run("idle levels and random tick ranges", [] {
         // A level is awake while active, and for 300 ticks after it was last
         // active or started.
