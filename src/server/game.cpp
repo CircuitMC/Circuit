@@ -862,7 +862,13 @@ struct Game::Impl final : GameServices {
             for (const auto part : container_parts_of(p.window->pos))
                 if (const auto be = view.block_entity(overworld, part); be && *be)
                     for (const auto& s : (*be)->slots) slots.push_back(wire_stack(s));
-            for (std::size_t i = 9; i < 45; ++i) slots.push_back(player_slot(i));
+            // A lectern's window shows its book alone.
+            if (at(p.window->pos).is(BlockType::lectern)) {
+                const auto be = view.block_entity(overworld, p.window->pos);
+                slots.push_back(be && *be && !(*be)->slots.empty() ? wire_stack((*be)->slots[0]) : WireStack{});
+            } else {
+                for (std::size_t i = 9; i < 45; ++i) slots.push_back(player_slot(i));
+            }
             // A crafter's window ends with what its grid would make.
             if (at(p.window->pos).is(BlockType::crafter)) slots.push_back(wire_stack(crafter_result(p.window->pos)));
         }
@@ -940,6 +946,12 @@ struct Game::Impl final : GameServices {
                     p.window->data[k] = now[k];
                 }
         }
+        // A lectern window's property: the page its book is open at.
+        if (p.window && at(p.window->pos).is(BlockType::lectern))
+            if (const auto be = view.block_entity(overworld, p.window->pos); be && *be && p.window->data[0] != (*be)->cook_time) {
+                p.peer->send(wire.container_data(p.window->id, 0, static_cast<std::int16_t>((*be)->cook_time)));
+                p.window->data[0] = (*be)->cook_time;
+            }
         // A brewing stand window's properties: its brew time and its fuel.
         if (p.window && at(p.window->pos).is(BlockType::brewing_stand))
             if (const auto be = view.block_entity(overworld, p.window->pos); be && *be) {
@@ -998,6 +1010,7 @@ struct Game::Impl final : GameServices {
         if (gameplay::is_loom(at(pos))) return contracts::loom_slots;
         if (gameplay::is_anvil(at(pos))) return contracts::anvil_slots;
         if (gameplay::is_enchanting_table(at(pos))) return contracts::enchant_slots;
+        if (at(pos).is(BlockType::lectern)) return 1;
         std::size_t n = 0;
         for (const auto part : container_parts_of(pos)) n += gameplay::container_size(at(part).type());
         return n;
@@ -1019,7 +1032,7 @@ struct Game::Impl final : GameServices {
         // Menu types of the protocol's menu registry (minecraft.wiki, Java
         // Edition protocol/Inventory, and observed from the target version):
         // generic_9x3 2, generic_9x6 5, generic_3x3 6, crafter_3x3 7, anvil 8,
-        // blast_furnace 10, brewing_stand 11, crafting 12, enchantment 13, furnace 14,
+        // blast_furnace 10, brewing_stand 11, crafting 12, enchantment 13, furnace 14, lectern 17,
         // grindstone 15, hopper 16, loom 18, smithing 21, smoker 22, stonecutter 24.
         constexpr std::array<std::int32_t, 3> furnace_menus{14, 22, 10};
         const bool table = gameplay::is_crafting_table(block);
@@ -1032,6 +1045,7 @@ struct Game::Impl final : GameServices {
         const std::int32_t type = block.is(BlockType::furnace) ? furnace_menus[block.variant() % 3]
                                 : block.is(BlockType::crafter) ? 7
                                 : block.is(BlockType::brewing_stand) ? 11
+                                : block.is(BlockType::lectern) ? 17
                                 : table ? 12 : cutter ? 24 : smith ? 21 : grind ? 15 : loom ? 18 : anvil ? 8 : enchanting ? 13 : slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
         // A container's custom name is its title (for a double chest, the
         // first named half's).
@@ -1039,6 +1053,7 @@ struct Game::Impl final : GameServices {
         auto title = protocol::nbt::text(block.is(BlockType::furnace) ? std::string(furnace_titles[block.variant() % 3])
                                          : block.is(BlockType::crafter) ? "Crafter"
                                          : block.is(BlockType::brewing_stand) ? "Brewing Stand"
+                                         : block.is(BlockType::lectern) ? "Lectern"
                                          : table ? "Crafting" : cutter ? "Stonecutter" : smith ? "Upgrade Gear" : grind ? "Repair & Disenchant"
                                          : loom ? "Loom" : anvil ? "Repair & Name" : enchanting ? "Enchant"
                                          : slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper"
@@ -2406,7 +2421,10 @@ struct Game::Impl final : GameServices {
             if (p.window) {
                 const auto size = container_slot_count(p.window->pos);
                 const bool near = in_reach_plus(p, p.window->pos, 4.0);
-                if (size != p.window->container_slots || !near) close_window(p, true);
+                // A lectern's window closes with its book gone.
+                const auto block = at(p.window->pos);
+                const bool bookless = block.is(BlockType::lectern) && block.extra() == 0;
+                if (size != p.window->container_slots || !near || bookless) close_window(p, true);
             }
             send_put_back(p);
             sync_inventory(p);

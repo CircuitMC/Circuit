@@ -116,6 +116,10 @@ public:
     [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_potion(const contracts::ComponentPatch& base, std::uint32_t potion,
                                                                                     const ComponentContext& ctx) const;
 
+    // A writable book's content of pages "1" to "n" (fixtures' books).
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> writable_book(std::int32_t pages, const ComponentContext& ctx) const;
+    // The pages of the patch's writable or written book content (0 without one).
+    [[nodiscard]] std::int32_t book_pages_of(const contracts::ComponentPatch& patch) const;
     // The patch's repair cost (0 when absent), and its custom name's plain
     // text (nullopt without one).
     [[nodiscard]] std::int32_t repair_cost_of(const contracts::ComponentPatch& patch) const;

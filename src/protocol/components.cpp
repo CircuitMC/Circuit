@@ -899,6 +899,42 @@ std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_trim(
 }
 
 
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::writable_book(std::int32_t pages, const ComponentContext& ctx) const {
+    const auto type = type_id("writable_book_content");
+    if (!type) return std::unexpected("no writable_book_content component");
+    // Pages "1" to "n", none filtered.
+    Writer w;
+    w.varint(pages);
+    for (std::int32_t k = 1; k <= pages; ++k) w.string(std::to_string(k)).boolean(false);
+    auto value = canonical_value(*type, w.bytes(), ctx);
+    if (!value) return std::unexpected(value.error());
+    return contracts::ComponentPatch::make(protocol(), {{*type, std::move(*value)}}, {}, {});
+}
+
+std::int32_t ComponentCodec::book_pages_of(const contracts::ComponentPatch& patch) const {
+    const auto writable = type_id("writable_book_content");
+    const auto written = type_id("written_book_content");
+    if (patch.empty() || patch.protocol() != protocol()) return 0;
+    for (const auto& a : patch.added()) {
+        Reader r(a.value);
+        if (writable && a.type == *writable) {
+            // The pages first.
+            const auto n = r.varint();
+            return n && *n > 0 ? *n : 0;
+        }
+        if (written && a.type == *written) {
+            // The title (and its filtered form), the author and the generation, then the pages.
+            const auto title = r.string();
+            const auto filtered = r.boolean();
+            if (!title || !filtered || (*filtered && !r.string())) return 0;
+            if (!r.string() || !r.varint()) return 0;
+            const auto n = r.varint();
+            return n && *n > 0 ? *n : 0;
+        }
+    }
+    return 0;
+}
+
 std::optional<std::uint32_t> ComponentCodec::potion_of(const contracts::ComponentPatch& patch) const {
     const auto type = type_id("potion_contents");
     if (patch.empty() || patch.protocol() != protocol() || !type) return std::nullopt;

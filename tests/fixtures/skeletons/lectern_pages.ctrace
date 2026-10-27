@@ -1,0 +1,75 @@
+circuit-trace 2
+title A lectern's book, page buttons, pulses and comparator reading, taken and broken
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms lectern comparator loot
+area -4 0 -3 4 4 4
+ticks 120
+changes ordered
+entities observed
+rng observed
+
+at 0 set -3 0 -2 minecraft:stone
+at 0 set -3 0 -1 minecraft:stone
+at 0 set -3 0 0 minecraft:stone
+at 0 set -3 0 1 minecraft:stone
+at 0 set -3 0 2 minecraft:stone
+at 0 set -3 0 3 minecraft:stone
+at 0 set -2 0 -2 minecraft:stone
+at 0 set -2 0 -1 minecraft:stone
+at 0 set -2 0 0 minecraft:stone
+at 0 set -2 0 1 minecraft:stone
+at 0 set -2 0 2 minecraft:stone
+at 0 set -2 0 3 minecraft:stone
+at 0 set -1 0 -2 minecraft:stone
+at 0 set -1 0 -1 minecraft:stone
+at 0 set -1 0 0 minecraft:stone
+at 0 set -1 0 1 minecraft:stone
+at 0 set -1 0 2 minecraft:stone
+at 0 set -1 0 3 minecraft:stone
+at 0 set 0 0 -2 minecraft:stone
+at 0 set 0 0 -1 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 1 0 -2 minecraft:stone
+at 0 set 1 0 -1 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 2 0 -2 minecraft:stone
+at 0 set 2 0 -1 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 3 0 -2 minecraft:stone
+at 0 set 3 0 -1 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 0 1 0 minecraft:stone
+at 0 set -1 1 0 minecraft:stone
+at 0 set 0 1 1 minecraft:stone
+at 0 set 0 1 2 minecraft:stone
+at 0 set 0 2 0 minecraft:lectern[facing=north]
+at 0 set -1 2 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 1 1 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 0 2 1 minecraft:comparator[facing=north,mode=compare,powered=false]
+at 0 set 0 2 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 2 use-with 0 2 0 minecraft:writable_book pages=3
+at 10 button 0 2 0 2
+at 20 button 0 2 0 2
+at 30 button 0 2 0 2
+at 40 button 0 2 0 1
+at 41 button 0 2 0 1
+at 50 button 0 2 0 102
+at 55 button 0 2 0 108
+at 60 button 0 2 0 3
+at 70 use-with 0 2 0 minecraft:writable_book pages=1
+at 80 button 0 2 0 2
+at 90 break 0 2 0 minecraft:air

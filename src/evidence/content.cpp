@@ -228,6 +228,14 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
                                                          {D::west, D::up}, {D::east, D::up}, {D::north, D::up}, {D::south, D::up}}};
         return simple(blocks::crafter(sides[orientation].first, sides[orientation].second, triggered == 1, crafting == 1));
     }
+    if (id == "minecraft:lectern") {
+        // Absent properties take the default state's (facing north, no book, not powered).
+        CIRCUIT_TRY(facing, p.direction_or("facing", Direction::north));
+        if (!contracts::is_horizontal(facing)) return std::unexpected(std::format("{}: `facing` must be horizontal", id));
+        CIRCUIT_TRY(has_book, p.choice("has_book", {"false", "true"}, 0));
+        CIRCUIT_TRY(powered, p.choice("powered", {"false", "true"}, 0));
+        return simple(blocks::lectern(facing, has_book == 1, powered == 1));
+    }
     if (id == "minecraft:brewing_stand") {
         // Absent properties take the default state's (no bottles).
         std::uint8_t bottles = 0;

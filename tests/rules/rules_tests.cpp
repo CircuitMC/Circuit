@@ -4265,6 +4265,86 @@ int main() {
         }
     });
 
+    suite.run("lecterns take a book, turn its pages with a pulse and give it back", [] {
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::ContainerButton;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::PlayerBreak;
+        using circuit::contracts::PlayerUse;
+        using circuit::contracts::SetPlayerSlot;
+        // Stand-ins for the server's encoding: component 1 holds the page count.
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->lectern_books = {items::writable_book, items::written_book};
+        std::ranges::sort(data->lectern_books);
+        data->book_pages = [](const ItemStack& s) {
+            for (const auto& a : s.components.added())
+                if (a.type == 1 && !a.value.empty()) return static_cast<std::int32_t>(a.value[0]);
+            return 0;
+        };
+        const auto book = [](std::uint8_t pages) {
+            return ItemStack{items::writable_book, 1, 0, ComponentPatch::make(772, {{1, {static_cast<std::byte>(pages)}}}, {}, {})};
+        };
+        const PlayerKey alex{4, 2};
+        const BlockPos lectern{0, 1, 0};
+        Sim s(bundle(), 7, 2, data);
+        // A lectern on the floor, a comparator behind it reading it and dust after it.
+        std::vector<CommandBody> build;
+        for (std::int32_t x = -1; x <= 1; ++x)
+            for (std::int32_t z = -1; z <= 3; ++z) build.push_back(place({x, 0, z}, blocks::stone()));
+        build.push_back(place(lectern, blocks::lectern(Direction::north)));
+        build.push_back(place({0, 1, 1}, blocks::comparator(Direction::south)));
+        build.push_back(place({0, 1, 2}, blocks::wire()));
+        s.tick(build);
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+        };
+        const auto page = [&] {
+            const auto d = s.oracle.dump();
+            const auto* be = block_entity_at(d, lectern);
+            return be && !be->slots.empty() ? be->cook_time : -1;
+        };
+        const auto dust = [&] { return s.at({0, 1, 2}).level(); };
+        const auto use = [&](std::uint8_t slot) { return PlayerUse{alex, slot, lectern, Direction::up, Direction::south, Direction::south, false, true, 3, 3}; };
+        s.tick({SetPlayerSlot{alex, 36, {items::book, 1}}, SetPlayerSlot{alex, 37, book(3)}});
+        s.tick({use(36)});
+        require(s.at(lectern) == blocks::lectern(Direction::north), "a plain book does not go on");
+        s.tick({use(37)});
+        require(s.at(lectern) == blocks::lectern(Direction::north, true) && player().slots[37].empty() && page() == 0, "the book on, used up");
+        s.tick();
+        s.tick();
+        require(dust() == 1, "the comparator reads the first of three pages");
+        s.tick({ContainerButton{alex, lectern, 2}});
+        require(s.at(lectern) == blocks::lectern(Direction::north, true, true) && page() == 1, "the next page, a pulse");
+        s.tick();
+        require(s.at(lectern) == blocks::lectern(Direction::north, true) && dust() == 8, "the pulse ends; the second page");
+        s.tick({ContainerButton{alex, lectern, 108}});
+        s.tick();
+        require(page() == 2 && dust() == 15, "a page beyond the book: its last");
+        s.tick();
+        s.tick({ContainerButton{alex, lectern, 2}});
+        require(page() == 2 && !s.at(lectern).flag(), "no page after the last: no pulse");
+        s.tick({ContainerButton{alex, lectern, 3}});
+        require(s.at(lectern) == blocks::lectern(Direction::north) && player().slots[36].item == items::book && player().slots[37] == book(3),
+                "the book taken into the inventory");
+        s.tick();
+        s.tick();
+        require(dust() == 0, "nothing to read");
+        // A click on the window's slot takes the book onto the cursor.
+        s.tick({use(37)});
+        s.tick({ContainerClick{alex, lectern, 0, 0, 0, false, at_block(0.5, 2, 0.5), {}}});
+        require(player().cursor == book(3) && s.at(lectern) == blocks::lectern(Direction::north), "clicked off");
+        // Broken, the lectern's book pops out on top, a quarter of a block toward its front.
+        s.tick({SetPlayerSlot{alex, 38, book(1)}, use(38)});
+        s.tick({PlayerBreak{alex, lectern, true}});
+        const auto d = s.oracle.dump();
+        const auto popped = std::ranges::find_if(d.overworld().entities, [&](const Entity& e) { return e.kind == EntityKind::item && e.stack == book(1); });
+        // (It has made its first move, of at most 0.1 to each side.)
+        require(s.at(lectern).is_air() && popped != d.overworld().entities.end() && std::abs(popped->position.x - 0.5) <= 0.1
+                    && std::abs(popped->position.z - 0.25) <= 0.1 && popped->position.y > 2.0,
+                "the book on top, toward the front");
+    });
+
     suite.run("experience changes as the /xp command makes them", [] {
         using circuit::contracts::ChangeExperience;
         const PlayerKey alex{4, 2};

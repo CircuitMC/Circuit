@@ -137,6 +137,13 @@ struct GameData {
     std::vector<TableEnchantment> table_enchantments;
     std::vector<std::uint32_t> power_providers;
     std::vector<std::uint32_t> power_transmitters;
+    // The books a lectern takes (the item tag lectern_books, ascending), and
+    // the pages of a book (its writable or written book content); set by the
+    // server, which knows the components' encoding.
+    std::vector<std::uint16_t> lectern_books;
+    std::function<std::int32_t(const contracts::ItemStack&)> book_pages;
+    // A writable book's components with pages "1" to "n" (fixtures' books).
+    std::function<std::optional<contracts::ComponentPatch>(std::int32_t pages)> writable_book;
     // A stack's name as a player sees it (in English): its custom name, else
     // its potion's or its item's name; set by the server from the language
     // file of the official jar. Without it the rules name items by their id.

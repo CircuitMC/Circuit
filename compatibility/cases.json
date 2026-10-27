@@ -361,6 +361,17 @@
       "description": "An enchanting table with 0 to 16 bookshelves placed around it, a stone halfway to three of them and two raised ones: the ten window properties for 35 items (costs, the seed's low bits, the clues), lapis and items moved in and out, an offer refused with too few levels and too little lapis, a diamond sword enchanted by the third offer for 3 levels and 3 lapis, an enchanted item offered nothing, and enchanting in creative mode, with the player's enchantment seed set on the official servers to Circuit's; enchantments are compared as sets (the official servers send them in a hash order); Circuit and both official servers give identical output, and 320 windows recorded with two other seeds match the fitted model"
     },
     {
+      "id": "client/lectern",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/lectern.js",
+      "status": "passing",
+      "description": "22 steps at a lectern with a comparator reading it: placed facing the player, a plain book refused, a three-page writable book put on and used up, its window (type 17, the book, the page property), next and previous pages with their pulses and the comparator's 1, 8 and 15, pages by number (clamped to the book), the book taken by its button into the inventory and the window closed, a one-page book reading 15, the lectern broken dropping itself and its book, a book put on in creative mode kept in the hand, and a click on the window's book slot taking the book; Circuit and both official servers give identical output"
+    },
+    {
       "id": "client/furnace_xp",
       "kind": "black_box",
       "versions": [

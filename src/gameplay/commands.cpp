@@ -233,6 +233,21 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
         if (is_crafting_table(clicked) || is_stonecutter(clicked) || is_smithing_table(clicked) || is_grindstone(clicked) || is_loom(clicked)
             || is_anvil(clicked) || is_enchanting_table(clicked))
             return [&ctx, c] { ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo); };
+        // A lectern with a book opens its window; one without takes a book
+        // (the item tag lectern_books; used up outside creative mode), and
+        // another item goes on to its own use.
+        if (clicked.is(BlockType::lectern)) {
+            if (clicked.extra() != 0) return [&ctx, c] { ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo); };
+            if (detail::lectern_takes(ctx, held))
+                return [&ctx, c, held] {
+                    detail::put_lectern_book(ctx, c.pos, held);
+                    if (!c.survival) return;
+                    auto& inv = ctx.player(c.player);
+                    auto& slot = inv.slots[c.slot];
+                    if (--slot.count == 0) slot = {};
+                    detail::record_slot(ctx, inv, c.slot);
+                };
+        }
     }
     // Bone meal acts on the clicked block as a dispenser's does, used up in
     // survival when it acts (not compared with a client yet).

@@ -6,19 +6,22 @@ namespace circuit::gameplay::detail {
 namespace {
 constexpr std::uint32_t comparator_delay = 2;
 
-// Rear input: a container behind, or the power behind (dust whatever its
-// shape); a container behind a conductor replaces a weaker signal.
+// Rear input: a container or lectern behind, or the power behind (dust
+// whatever its shape); a container or lectern behind a conductor replaces a
+// weaker signal.
 std::uint8_t rear_input(RuleContext& ctx, BlockPos pos, BlockState s) {
     const auto back = contracts::opposite(s.facing());
     const auto behind = pos.relative(back);
     const auto b = ctx.block(behind);
     if (is_container(b.type())) return container_signal(ctx, behind);
+    if (b.is(BlockType::lectern)) return lectern_signal(ctx, behind);
     // A detector rail is read too: 0, as no minecart has contents.
     if (is_detector_rail(b)) return 0;
     auto power = diode_input(ctx, pos, s);
     if (power < 15 && is_conductor(b)) {
         const auto further = behind.relative(back);
         if (is_container(ctx.block(further).type())) power = container_signal(ctx, further);
+        else if (ctx.block(further).is(BlockType::lectern)) power = lectern_signal(ctx, further);
         else if (is_detector_rail(ctx.block(further))) power = 0;
     }
     return power;

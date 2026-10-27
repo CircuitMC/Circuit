@@ -57,6 +57,7 @@ enum class BlockType : std::uint8_t {
                          // extra: crafting. Block entity: nine grid slots, the disabled ones, its crafting ticks
     brewing_stand,       // level: its bottles (bit k: has_bottle_k). Block entity: three bottles, the ingredient, the fuel; its
                          // fuel, brew time and the ingredient it brews with
+    lectern,             // facing: front (horizontal); flag: powered; extra: has_book. Block entity: the book; cook_time its page
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -269,6 +270,10 @@ constexpr BlockState crafter(Direction front, Direction top = Direction::up, boo
 constexpr BlockState brewing_stand(std::uint8_t bottles = 0) {
     return BlockState::of(BlockType::brewing_stand).with_level(static_cast<std::uint8_t>(bottles & 7));
 }
+// A lectern facing `front`, holding a book or not, powered or not.
+constexpr BlockState lectern(Direction front, bool has_book = false, bool powered = false) {
+    return BlockState::of(BlockType::lectern).with_facing(front).with_flag(powered).with_extra(has_book ? 1 : 0);
+}
 // A note block; `instrument` is a registry::Instrument.
 constexpr BlockState note_block(std::uint8_t instrument = 0, std::uint8_t note = 0, bool powered = false) {
     return BlockState::of(BlockType::note_block).with_variant(instrument).with_level(static_cast<std::uint8_t>(note & 15))
@@ -368,7 +373,8 @@ constexpr bool is_container(BlockType t) noexcept {
 // Block entities hold container slots, hopper cooldowns, comparator output
 // signals and moving blocks; a daylight detector's ticks it.
 constexpr bool has_block_entity(BlockType t) noexcept {
-    return is_container(t) || t == BlockType::comparator || t == BlockType::moving_piston || t == BlockType::daylight_detector;
+    return is_container(t) || t == BlockType::comparator || t == BlockType::moving_piston || t == BlockType::daylight_detector
+        || t == BlockType::lectern;
 }
 // Direction from a chest half to its partner (reference convention: left pairs
 // clockwise, right counter-clockwise, seen from above); nullopt for single chests.

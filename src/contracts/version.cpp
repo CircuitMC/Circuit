@@ -215,6 +215,14 @@ constexpr std::array reference_v4_mechanisms{
         "them evenly and take from them; comparators read their filled and disabled slots; players disable and enable "
         "empty slots in their windows (client/crafter_menu). Gaps: items thrown into a full container's cell are pushed "
         "out by an unseeded random and are not compared."},
+    MechanismEntry{"lectern", l0_exact, l2_declared_deviation, harness_trace,
+        "Lecterns as both official servers run them (lectern_pages; client/lectern): a writable or written book (the item "
+        "tag lectern_books) goes on one without a book, used up outside creative mode; a lectern with a book opens its "
+        "window, whose buttons turn to the previous or next page, to a page by its number (within the book) or take the "
+        "book; a page turn powers the lectern until its block tick 2 ticks later (every neighbor, the block below "
+        "strongly), a turn while it is powered adding nothing; comparators read 1 more than 14 times the page's place in "
+        "the book (15 for one page); dust connects to it; a removed lectern's book pops out on top, a quarter of a block "
+        "toward its front. Gaps: a book put on from the off hand; written books' pages resolved for the player."},
     MechanismEntry{"bone_meal", l0_exact, l2_declared_deviation, harness_trace,
         "Dispensers use bone meal on the block in front as the official 1.21.8 server does (bonemeal_dispensers): crops "
         "and stems grow 2 + nextInt(4) stages (beetroots a third of that), torchflower and pitcher crops, cocoa and berry "
@@ -492,7 +500,7 @@ constexpr std::array reference_v4_mechanisms{
         "and weather in random ticks; powder snow; snow and ice in the Nether are not compared."},
     MechanismEntry{"container_menus", l0_exact, l2_declared_deviation, controlled_experiment,
         "Player windows and chest, double chest, hopper, furnace, crafter, brewing stand, crafting table, stonecutter, smithing "
-        "table, grindstone, loom, anvil and enchanting table menus with every click mode, applied as commands. "
+        "table, grindstone, loom, anvil, enchanting table and lectern menus with every click mode, applied as commands. "
         "A 48-step client scenario (every click mode, double chests, hoppers, the own window, throws and "
         "pickups) gives the same windows, carried stacks and inventories as the official 1.21.8 and 1.21.4 "
         "servers. With data packs the own window's 2x2 grid crafts: a 48-step scenario (results, every way "

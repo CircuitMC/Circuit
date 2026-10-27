@@ -2857,9 +2857,9 @@
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "a book put on from the off hand is not modeled"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; it takes a book, turns its pages with a pulse and a comparator reading, and players use its window, as both official servers do (lectern_pages, client/lectern)"
       },
       "bee_nest": {
         "impl": "partial",

@@ -39,13 +39,17 @@ using Vec3d = std::array<double, 3>;
 using Properties = std::vector<std::pair<std::string, std::string>>;
 
 struct Action {
-    enum class Kind : std::uint8_t { set, use, insert, spawn_item, command, break_block };
+    enum class Kind : std::uint8_t { set, use, insert, spawn_item, command, break_block, use_with, button };
     Tick tick{};
     Kind kind{};
-    BlockPos pos;                // set, use, insert; the block of `position` for spawn_item
+    BlockPos pos;                // set, use, insert, use_with, button; the block of `position` for spawn_item
     std::string state;           // set
     std::uint8_t slot{};         // insert
-    std::string item;            // insert, spawn_item, break_block
+    std::string item;            // insert, spawn_item, break_block, use_with
+    // use_with (v2): the pages of a writable book held (`pages=<n>`, 0: none);
+    // button (v2): the window button pressed.
+    std::int32_t pages{};
+    std::int32_t button{};
     std::uint8_t count{};        // insert, spawn_item
     std::string potion;          // insert (v2): optional `potion=<id>`, the potion of a bottle
     Vec3d position{}, velocity{};// spawn_item (v2)

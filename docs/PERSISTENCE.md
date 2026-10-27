@@ -101,7 +101,8 @@ The server fails closed on storage errors. If a log record cannot be written, th
 
 ## Checkpoint format
 
-A checkpoint file is `CIRCKPT\0`, a format version (41; versions 1–40 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+A checkpoint file is `CIRCKPT\0`, a format version (42; versions 1–41 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+- versions before 42 have no lecterns with rules of their own: they come back as the modeled blocks with empty block entities;
 - versions before 41 have no open enchanting tables and no enchantment seeds: none is open, and each player's seed is Circuit's own from the player;
 - versions before 40 have no open anvils: none is open;
 - versions before 39 have no recipes a furnace cooked: none are kept;

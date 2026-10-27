@@ -35,8 +35,8 @@ bool is_conductor(BlockState s) noexcept {
 bool face_sturdy(BlockState s, Direction face) noexcept {
     switch (s.type()) {
     case BlockType::other: return registry::sturdy_face(s.registry_state(), face);
-    // Doors, trapdoors and fence gates by the shape of the state they stand for.
-    case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: {
+    // Doors, trapdoors, fence gates and lecterns by the shape of the state they stand for.
+    case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: case BlockType::lectern: {
         const auto state = physics::registry_state_of(s);
         return state && registry::face_covered(*state, face);
     }
@@ -121,6 +121,8 @@ std::uint8_t emitted(RuleContext& ctx, BlockPos pos, BlockState s, Direction tow
         return be ? be->signal : 0;
     }
     case BlockType::observer: return s.flag() && toward == contracts::opposite(s.facing()) ? 15 : 0;
+    // A powered lectern (a page just turned) powers every neighbor.
+    case BlockType::lectern: return s.flag() ? 15 : 0;
     case BlockType::redstone_wire: {
         if (!wires || s.level() == 0 || toward == Direction::up) return 0;
         if (toward == Direction::down) return s.level();
@@ -137,6 +139,8 @@ std::uint8_t direct(RuleContext& ctx, BlockPos pos, BlockState s, Direction towa
     case BlockType::redstone_torch: case BlockType::redstone_wall_torch: return s.flag() && toward == Direction::up ? 15 : 0;
     case BlockType::pressure_plate: case BlockType::weighted_plate: return toward == Direction::down ? plate_output(s) : 0;
     case BlockType::rail: return toward == Direction::down ? emitted(ctx, pos, s, toward, wires) : 0;
+    // ... and the block below it strongly (lectern_pages).
+    case BlockType::lectern: return s.flag() && toward == Direction::down ? 15 : 0;
     case BlockType::repeater: case BlockType::comparator: case BlockType::observer: case BlockType::redstone_wire:
         return emitted(ctx, pos, s, toward, wires);
     default: return 0;

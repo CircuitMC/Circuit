@@ -547,6 +547,32 @@ int main() {
         require(be->cook_time == 123 && be->lit_time == 17 && be->cook_total == wart, "its brew time, fuel and the ingredient in its slot");
     });
 
+    suite.run("lecterns round-trip through Anvil with their book and page", [&] {
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine.advance(admit({place({2, 0, 2}, blocks::lectern(Direction::east, true)), place({4, 0, 2}, blocks::lectern(Direction::south))}));
+        auto state = engine.dump();
+        for (auto& level : state.levels)
+            for (auto& [pos, be] : level.block_entities)
+                if (be.kind == BlockType::lectern && pos == BlockPos{2, 0, 2}) {
+                    be.slots = {named(circuit::gameplay::items::writable_book, 1, "Notes")};
+                    be.cook_time = 2;
+                }
+        const auto target = root / "lectern";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "lectern", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        require(state_at(back->state, {2, 0, 2}) == blocks::lectern(Direction::east, true) && state_at(back->state, {4, 0, 2}) == blocks::lectern(Direction::south),
+                "the lecterns, one with a book");
+        const auto* be = block_entity_at(back->state, {2, 0, 2});
+        require(be && be->kind == BlockType::lectern && be->slots.size() == 1 && be->slots[0] == named(circuit::gameplay::items::writable_book, 1, "Notes")
+                    && be->cook_time == 2,
+                "its book and page");
+        const auto* empty = block_entity_at(back->state, {4, 0, 2});
+        require(empty && empty->kind == BlockType::lectern && empty->slots.empty() && empty->cook_time == 0, "the other without");
+    });
+
     suite.run("daylight detectors round-trip through Anvil with their block entities", [&] {
         Engine engine(bundle(), 5);
         Admissions admit;

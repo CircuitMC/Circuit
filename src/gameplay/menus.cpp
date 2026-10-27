@@ -910,6 +910,29 @@ void pickup(RuleContext& ctx, Menu& menu, const contracts::ContainerClick& c, st
 } // namespace
 
 contracts::Result<std::function<void()>> plan_click(RuleContext& ctx, const contracts::ContainerClick& c) {
+    // A lectern's window has one slot, its book: a click takes it onto the
+    // cursor, a number key into an empty hotbar slot, a throw out of the
+    // window (client/lectern); nothing else moves it.
+    if (c.container && ctx.block(*c.container).is(BlockType::lectern))
+        return [&ctx, c] {
+            if (c.slot != 0 || !(c.mode == 0 || c.mode == 2 || c.mode == 4)) return;
+            auto& inv = ctx.player(c.player);
+            if (c.mode == 0 && (c.button > 1 || !inv.cursor.empty())) return;
+            const std::uint8_t hand = c.button == 40 ? contracts::offhand_slot : static_cast<std::uint8_t>(contracts::hotbar_first + c.button);
+            if (c.mode == 2 && (!(c.button < 9 || c.button == 40) || !inv.slots[hand].empty())) return;
+            if (c.mode == 4 && !inv.cursor.empty()) return;
+            const auto book = take_lectern_book(ctx, *c.container);
+            if (book.empty()) return;
+            if (c.mode == 0) {
+                inv.cursor = book;
+                record_slot(ctx, inv, player_slots);
+            } else if (c.mode == 2) {
+                inv.slots[hand] = book;
+                record_slot(ctx, inv, hand);
+            } else {
+                throw_item(ctx, c.drop_position, c.drop_velocity, book);
+            }
+        };
     auto parts = menu_parts(ctx, c.container);
     if (!parts) return std::unexpected(parts.error());
     if (c.mode > 6) return std::unexpected(contracts::ErrorCode::invalid_argument);
@@ -1111,6 +1134,9 @@ contracts::Result<std::function<void()>> plan_click(RuleContext& ctx, const cont
 // A stonecutter's recipe button: one of the input's recipes, by its place
 // in their list; another number does nothing.
 contracts::Result<std::function<void()>> plan_button(RuleContext& ctx, const contracts::ContainerButton& c) {
+    // A lectern's buttons turn its book's pages or take the book.
+    if (c.container && ctx.block(*c.container).is(BlockType::lectern))
+        return [&ctx, c] { press_lectern_button(ctx, ctx.player(c.player), *c.container, c.button); };
     auto parts = menu_parts(ctx, c.container);
     if (!parts) return std::unexpected(parts.error());
     const bool cutter = parts->size() == 1 && is_stonecutter(ctx.block(parts->front()));

@@ -91,6 +91,15 @@ struct Prepared {
         std::size_t line{};
     };
     std::vector<Bottle> bottles;
+    // The writable books fixtures' players hold, which the executor's data
+    // gives their pages: the input and the pages.
+    struct Book {
+        Tick tick{};
+        std::size_t index{};
+        std::int32_t pages{};
+        std::size_t line{};
+    };
+    std::vector<Book> books;
 };
 
 // The potion of a slot probe's bottle (`<item>#<potion>`); empty without one.
@@ -286,6 +295,14 @@ std::optional<FixtureReport> enchant(Prepared& p, const FixtureExecutor& exec) {
         if (!patch) return report(Outcome::unsupported, std::format("line {}: an enchantment the data packs do not define", t.line));
         std::get<contracts::SetPlayerSlot>(p.inputs[t.tick][t.index].body).stack.components = std::move(*patch);
     }
+    for (const auto& b : p.books) {
+        const auto* data = exec.data();
+        if (!data || !data->writable_book)
+            return report(Outcome::unsupported, std::format("line {}: written pages need the official data packs (--vanilla-jar)", b.line));
+        auto patch = data->writable_book(b.pages);
+        if (!patch) return report(Outcome::unsupported, std::format("line {}: no writable book content", b.line));
+        std::get<contracts::SetPlayerSlot>(p.inputs[b.tick][b.index].body).stack.components = std::move(*patch);
+    }
     for (const auto& b : p.bottles) {
         const auto* data = exec.data();
         if (!data || !data->with_potion)
@@ -380,6 +397,29 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
             }
             continue;
         }
+        // A player uses the block holding the item (as a click on its top),
+        // or presses a button of its window.
+        if (a.kind == Action::Kind::use_with) {
+            const auto item = p.mapping->item(a.item);
+            if (!item) return fail_line(a.line, item.error());
+            auto& tick = p.inputs[a.tick + 2];
+            if (a.pages > 0) p.books.push_back({a.tick + 2, tick.size(), a.pages, a.line});
+            contracts::PlayerUse use{breaker, contracts::hotbar_first, a.pos, contracts::Direction::up};
+            use.survival = true;
+            use.reach = 3;
+            use.free = 3;
+            for (auto body : {contracts::CommandBody{contracts::SetPlayerSlot{breaker, contracts::hotbar_first, {*item, 1}}},
+                              contracts::CommandBody{use}}) {
+                p.action_lines[admission] = a.line;
+                tick.push_back({admission++, std::move(body)});
+            }
+            continue;
+        }
+        if (a.kind == Action::Kind::button) {
+            p.action_lines[admission] = a.line;
+            p.inputs[a.tick + 2].push_back({admission++, contracts::ContainerButton{breaker, a.pos, a.button}});
+            continue;
+        }
         if (a.kind == Action::Kind::break_block) {
             contracts::ItemStack tool{};
             if (a.item != "minecraft:air") {
@@ -398,7 +438,7 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
         }
         contracts::CommandBody body;
         switch (a.kind) {
-        case Action::Kind::command: case Action::Kind::break_block: break;
+        case Action::Kind::command: case Action::Kind::break_block: case Action::Kind::use_with: case Action::Kind::button: break;
         case Action::Kind::set: {
             const auto s = p.mapping->block(a.state);
             if (!s) return fail_line(a.line, s.error());

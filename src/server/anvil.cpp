@@ -800,6 +800,17 @@ private:
             out.cook_total = time("cooking_total_time");
             out.lit_time = time("lit_time_remaining");
             out.lit_total = time("lit_total_time");
+        } else if (id == "minecraft:lectern" && expect(BlockType::lectern)) {
+            // Its book and the page it is open at (none without a book).
+            out = {BlockType::lectern, 0, {}, 0};
+            if (const auto* book = child(be, "Book", TagType::compound)) {
+                if (auto stack = content_.stack(*book)) {
+                    out.slots = {std::move(*stack)};
+                    out.cook_time = static_cast<std::int32_t>(std::clamp<std::int64_t>(integer(be, "Page").value_or(0), 0, 32767));
+                } else {
+                    unsupported(stack.error());
+                }
+            }
         } else if (id == "minecraft:brewing_stand" && expect(BlockType::brewing_stand)) {
             out = {BlockType::brewing_stand, 0, std::vector<contracts::ItemStack>(5), 0};
             read_items(be, out, "brewing_stand");
@@ -1324,6 +1335,17 @@ private:
             t.set("lit_total_time", Tag::short_(static_cast<std::int16_t>(be.lit_total)));
             break;
         }
+        case BlockType::lectern:
+            t.set("id", Tag::string("minecraft:lectern"));
+            if (!be.slots.empty() && !be.slots[0].empty()) {
+                auto book = Tag::compound();
+                book.set("id", Tag::string(content_.item_name(be.slots[0].item)));
+                book.set("count", Tag::int_(be.slots[0].count));
+                components(book, be.slots[0]);
+                t.set("Book", std::move(book));
+                t.set("Page", Tag::int_(be.cook_time));
+            }
+            break;
         case BlockType::brewing_stand:
             t.set("id", Tag::string("minecraft:brewing_stand"));
             t.set("BrewTime", Tag::short_(static_cast<std::int16_t>(be.cook_time)));

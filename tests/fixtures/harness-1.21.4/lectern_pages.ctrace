@@ -1,0 +1,262 @@
+circuit-trace 2
+title A lectern's book, page buttons, pulses and comparator reading, taken and broken
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.37.0+mc1.21.4
+mechanisms lectern comparator loot
+area -4 0 -3 4 4 4
+ticks 120
+changes ordered
+entities observed
+rng observed
+
+at 0 set -3 0 -2 minecraft:stone
+at 0 set -3 0 -1 minecraft:stone
+at 0 set -3 0 0 minecraft:stone
+at 0 set -3 0 1 minecraft:stone
+at 0 set -3 0 2 minecraft:stone
+at 0 set -3 0 3 minecraft:stone
+at 0 set -2 0 -2 minecraft:stone
+at 0 set -2 0 -1 minecraft:stone
+at 0 set -2 0 0 minecraft:stone
+at 0 set -2 0 1 minecraft:stone
+at 0 set -2 0 2 minecraft:stone
+at 0 set -2 0 3 minecraft:stone
+at 0 set -1 0 -2 minecraft:stone
+at 0 set -1 0 -1 minecraft:stone
+at 0 set -1 0 0 minecraft:stone
+at 0 set -1 0 1 minecraft:stone
+at 0 set -1 0 2 minecraft:stone
+at 0 set -1 0 3 minecraft:stone
+at 0 set 0 0 -2 minecraft:stone
+at 0 set 0 0 -1 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 1 0 -2 minecraft:stone
+at 0 set 1 0 -1 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 2 0 -2 minecraft:stone
+at 0 set 2 0 -1 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 3 0 -2 minecraft:stone
+at 0 set 3 0 -1 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 0 1 0 minecraft:stone
+at 0 set -1 1 0 minecraft:stone
+at 0 set 0 1 1 minecraft:stone
+at 0 set 0 1 2 minecraft:stone
+at 0 set 0 2 0 minecraft:lectern[facing=north]
+at 0 set -1 2 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 1 1 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 0 2 1 minecraft:comparator[facing=north,mode=compare,powered=false]
+at 0 set 0 2 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+
+at 2 use-with 0 2 0 minecraft:writable_book pages=3
+change 2 commands 0 2 0 minecraft:lectern[facing=north,has_book=false,powered=false] minecraft:lectern[facing=north,has_book=true,powered=false]
+change 2 commands -1 2 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+
+change 3 block_ticks 0 2 1 minecraft:comparator[facing=north,mode=compare,powered=false] minecraft:comparator[facing=north,mode=compare,powered=true]
+change 3 block_ticks 0 2 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:redstone_wire[east=none,north=none,power=1,south=none,west=none]
+change 3 block_ticks 0 2 2 minecraft:redstone_wire[east=none,north=none,power=1,south=none,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+
+at 10 button 0 2 0 2
+change 10 commands 0 2 0 minecraft:lectern[facing=north,has_book=true,powered=false] minecraft:lectern[facing=north,has_book=true,powered=true]
+change 10 commands -1 2 0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=15,south=none,west=side]
+change 10 commands 1 1 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:redstone_wire[east=none,north=none,power=15,south=none,west=none]
+
+change 11 block_ticks 0 2 2 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=8,south=side,west=none]
+change 11 block_ticks 0 2 0 minecraft:lectern[facing=north,has_book=true,powered=true] minecraft:lectern[facing=north,has_book=true,powered=false]
+change 11 block_ticks -1 2 0 minecraft:redstone_wire[east=side,north=none,power=15,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 11 block_ticks 1 1 0 minecraft:redstone_wire[east=none,north=none,power=15,south=none,west=none] minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+
+at 20 button 0 2 0 2
+change 20 commands 0 2 0 minecraft:lectern[facing=north,has_book=true,powered=false] minecraft:lectern[facing=north,has_book=true,powered=true]
+change 20 commands -1 2 0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=15,south=none,west=side]
+change 20 commands 1 1 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:redstone_wire[east=none,north=none,power=15,south=none,west=none]
+
+change 21 block_ticks 0 2 2 minecraft:redstone_wire[east=none,north=side,power=8,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 21 block_ticks 0 2 0 minecraft:lectern[facing=north,has_book=true,powered=true] minecraft:lectern[facing=north,has_book=true,powered=false]
+change 21 block_ticks -1 2 0 minecraft:redstone_wire[east=side,north=none,power=15,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 21 block_ticks 1 1 0 minecraft:redstone_wire[east=none,north=none,power=15,south=none,west=none] minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+
+at 30 button 0 2 0 2
+
+at 40 button 0 2 0 1
+change 40 commands 0 2 0 minecraft:lectern[facing=north,has_book=true,powered=false] minecraft:lectern[facing=north,has_book=true,powered=true]
+change 40 commands -1 2 0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=15,south=none,west=side]
+change 40 commands 1 1 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:redstone_wire[east=none,north=none,power=15,south=none,west=none]
+
+at 41 button 0 2 0 1
+change 41 block_ticks 0 2 2 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+change 41 block_ticks 0 2 0 minecraft:lectern[facing=north,has_book=true,powered=true] minecraft:lectern[facing=north,has_book=true,powered=false]
+change 41 block_ticks -1 2 0 minecraft:redstone_wire[east=side,north=none,power=15,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 41 block_ticks 1 1 0 minecraft:redstone_wire[east=none,north=none,power=15,south=none,west=none] minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+
+at 50 button 0 2 0 102
+change 50 commands 0 2 0 minecraft:lectern[facing=north,has_book=true,powered=false] minecraft:lectern[facing=north,has_book=true,powered=true]
+change 50 commands -1 2 0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=15,south=none,west=side]
+change 50 commands 1 1 0 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:redstone_wire[east=none,north=none,power=15,south=none,west=none]
+
+change 51 block_ticks 0 2 2 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+change 51 block_ticks 0 2 0 minecraft:lectern[facing=north,has_book=true,powered=true] minecraft:lectern[facing=north,has_book=true,powered=false]
+change 51 block_ticks -1 2 0 minecraft:redstone_wire[east=side,north=none,power=15,south=none,west=side] minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side]
+change 51 block_ticks 1 1 0 minecraft:redstone_wire[east=none,north=none,power=15,south=none,west=none] minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+
+at 55 button 0 2 0 108
+
+at 60 button 0 2 0 3
+change 60 commands 0 2 0 minecraft:lectern[facing=north,has_book=true,powered=false] minecraft:lectern[facing=north,has_book=false,powered=false]
+
+change 61 block_ticks 0 2 1 minecraft:comparator[facing=north,mode=compare,powered=true] minecraft:comparator[facing=north,mode=compare,powered=false]
+change 61 block_ticks 0 2 2 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+
+at 70 use-with 0 2 0 minecraft:writable_book pages=1
+change 70 commands 0 2 0 minecraft:lectern[facing=north,has_book=false,powered=false] minecraft:lectern[facing=north,has_book=true,powered=false]
+
+change 71 block_ticks 0 2 1 minecraft:comparator[facing=north,mode=compare,powered=false] minecraft:comparator[facing=north,mode=compare,powered=true]
+change 71 block_ticks 0 2 2 minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none]
+
+at 80 button 0 2 0 2
+
+at 90 break 0 2 0 minecraft:air
+change 90 commands 0 2 0 minecraft:lectern[facing=north,has_book=true,powered=false] minecraft:air
+entity-added 90 commands e1 minecraft:item 0.5 3.0 0.25 0.04619355747533141 0.2 -0.05189271686570283 item=minecraft:writable_book count=1
+change 90 commands -1 2 0 minecraft:redstone_wire[east=side,north=none,power=0,south=none,west=side] minecraft:redstone_wire[east=side,north=side,power=0,south=side,west=side]
+entity-added 90 commands e2 minecraft:item 0.5687087126750541 2.400218502558817 0.548772638898601 -0.033356320104670045 0.2 -0.022962163051856305 item=minecraft:lectern count=1
+draws 90 commands level 14
+entity-order 90 entities e1 e2
+entity 90 e1 0.5461935574753314 3.16 0.19810728313429718 0.04526968720689697 0.1568 -0.0508548635181638 item=minecraft:writable_book count=1 age=1 pickup-delay=9 on-ground=false
+entity 90 e2 0.535352392570384 2.560218502558817 0.5258104758467447 -0.03268919433879796 0.1568 -0.022502920228787682 item=minecraft:lectern count=1 age=1 pickup-delay=9 on-ground=false
+
+change 91 block_ticks 0 2 1 minecraft:comparator[facing=north,mode=compare,powered=true] minecraft:comparator[facing=north,mode=compare,powered=false]
+change 91 block_ticks 0 2 2 minecraft:redstone_wire[east=none,north=side,power=15,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=0,south=side,west=none]
+entity-order 91 entities e1 e2
+entity 91 e1 0.5914632446822283 3.2768 0.1472524196161334 0.04436429432620979 0.11446399999999998 -0.04983776721778006 item=minecraft:writable_book count=1 age=2 pickup-delay=8 on-ground=false
+entity 91 e2 0.5026631982315861 2.677018502558817 0.503307555617957 -0.0320354110755189 0.11446399999999998 -0.022052862253421072 item=minecraft:lectern count=1 age=2 pickup-delay=8 on-ground=false
+
+entity-order 92 entities e1 e2
+entity 92 e1 0.6358275390084381 3.351264 0.09741465239835333 0.043477009285867355 0.07297471999999998 -0.04884101282400443 item=minecraft:writable_book count=1 age=3 pickup-delay=7 on-ground=false
+entity 92 e2 0.47062778715606723 2.751482502558817 0.48125469336453597 -0.0313947034650355 0.07297471999999998 -0.02161180542897762 item=minecraft:lectern count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 93 entities e1 e2
+entity 93 e1 0.6793045482943055 3.38423872 0.0485736395743489 0.04260746992940815 0.032315225599999976 -0.04786419349909273 item=minecraft:writable_book count=1 age=4 pickup-delay=6 on-ground=false
+entity 93 e2 0.43923308369103176 2.784457222558817 0.45964288793555835 -0.030766809994541237 0.032315225599999976 -0.02117956973261054 item=minecraft:lectern count=1 age=4 pickup-delay=6 on-ground=false
+
+entity-order 94 entities e1 e2
+entity 94 e1 0.7219120182237136 3.3765539456 7.094460752561649E-4 0.04175532134349298 -0.007531078912000024 -0.04690691054204792 item=minecraft:writable_book count=1 age=5 pickup-delay=5 on-ground=false
+entity 94 e2 0.4084662736964905 2.776772448158817 0.4384633182029478 -0.03015147438148074 -0.007531078912000024 -0.020755978741926563 item=minecraft:lectern count=1 age=5 pickup-delay=5 on-ground=false
+
+entity-order 95 entities e1 e2
+entity 95 e1 0.7636673395672067 3.329022866688 -0.04619746446679175 0.040920215713042676 -0.04658045733376002 -0.04596877322588527 item=minecraft:writable_book count=1 age=6 pickup-delay=4 on-ground=false
+entity 95 e2 0.3783147993150098 2.729241369246817 0.41770733946102123 -0.02954844546894486 -0.04658045733376002 -0.020340859562976907 item=minecraft:lectern count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 96 entities e1 e2
+entity 96 e1 0.8045875552802494 3.2424424093542403 -0.09216623769267702 0.040101812179273 -0.08484884818708481 -0.045049398638152334 item=minecraft:writable_book count=1 age=7 pickup-delay=3 on-ground=false
+entity 96 e2 0.3487663538460649 2.6426609119130573 0.3973664798980443 -0.028957477123157833 -0.08484884818708481 -0.019934042759688478 item=minecraft:lectern count=1 age=7 pickup-delay=3 on-ground=false
+
+entity-order 97 entities e1 e2
+entity 97 e1 0.8446893674595224 3.1175935611671557 -0.13721563633082937 0.0392997767005689 -0.12235187122334311 -0.04414841152463837 item=minecraft:writable_book count=1 age=8 pickup-delay=2 on-ground=false
+entity 97 e2 0.3198088767229071 2.5178120637259727 0.37743243713835584 -0.028378328133014722 -0.12235187122334311 -0.0195353622847064 item=minecraft:lectern count=1 age=8 pickup-delay=2 on-ground=false
+
+entity-order 98 entities e1 e2
+entity 98 e1 0.8839891441600913 2.9552416899438128 -0.18136404785546772 0.03851378191614128 -0.15910483379887624 -0.04326544413620973 item=minecraft:writable_book count=1 age=9 pickup-delay=1 on-ground=false
+entity 98 e2 0.29143054858989237 2.3554601925026297 0.3578970748536494 -0.02781076211162808 -0.15910483379887624 -0.01914465541161974 item=minecraft:lectern count=1 age=9 pickup-delay=1 on-ground=false
+
+entity-order 99 entities e1 e2
+entity 99 e1 0.9225029260762326 2.7561368561449364 -0.22462949199167745 0.03774350701241055 -0.1951227371228987 -0.04240013607870839 item=minecraft:writable_book count=1 age=10 pickup-delay=0 on-ground=false
+entity 99 e2 0.2636197864782643 2.1563553587037534 0.33875241944202966 -0.02725454739984371 -0.1951227371228987 -0.018761762668542667 item=minecraft:lectern count=1 age=10 pickup-delay=0 on-ground=false
+
+entity-order 100 entities e1 e2
+entity 100 e1 0.9602464330886432 2.5210141190220376 -0.2670296280703858 0.0369886375920626 -0.23042028238044074 -0.04155213416585264 item=minecraft:writable_book count=1 age=11 pickup-delay=0 on-ground=false
+entity 100 e2 0.23636523907842058 2.0 0.319990656773487 -0.016025675482609737 0 -0.011031917558444982 item=minecraft:lectern count=1 age=11 pickup-delay=0 on-ground=true
+
+entity-order 101 entities e1 e2
+entity 101 e1 0.9972350706807058 2.2505938366415967 -0.30858176223623845 0.03624886554572362 -0.26501187673283194 -0.040721092275079654 item=minecraft:writable_book count=1 age=12 pickup-delay=0 on-ground=false
+entity 101 e2 0.22033956359581083 2.0 0.308958739215042 -0.009423098131337583 0 -0.006486768176658748 item=minecraft:lectern count=1 age=12 pickup-delay=0 on-ground=true
+
+entity-order 102 entities e1 e2
+entity 102 e1 1.0334839362264294 1.9455819599087647 -0.3493028545113181 0.03552388892620138 -0.29891163919817526 -0.039906671206271255 item=minecraft:writable_book count=1 age=13 pickup-delay=0 on-ground=false
+entity 102 e2 0.21091646546447326 2.0 0.30247197103838325 -0.005540782258393632 0 -0.0038142200714237247 item=minecraft:lectern count=1 age=13 pickup-delay=0 on-ground=true
+
+entity-order 103 entities e1 e2
+entity 103 e1 1.0690078251526307 1.6066703207105895 -0.3892095257175894 0.034813411825241766 -0.33213340641421174 -0.03910853854330518 item=minecraft:writable_book count=1 age=14 pickup-delay=0 on-ground=false
+entity 103 e2 0.20537568320607963 2.0 0.2986577509669595 -0.003257980295549763 0 -0.0022427616275236205 item=minecraft:lectern count=1 age=14 pickup-delay=0 on-ground=true
+
+entity-order 104 entities e1 e2
+entity 104 e1 1.1038212369778724 1.2345369142963778 -0.4283180642608946 0.034117144252750066 -0.36469073828592746 -0.03832636851837525 item=minecraft:writable_book count=1 age=15 pickup-delay=0 on-ground=false
+entity 104 e2 0.20211770291052986 2.0 0.2964149893394359 -0.001915692606420493 0 -0.001318743969593467 item=minecraft:lectern count=1 age=15 pickup-delay=0 on-ground=true
+
+entity-order 105 entities e1 e2
+entity 105 e1 1.1379383812306225 1.0 -0.4666444327792698 0.02006088283788898 0 -0.022535906954958794 item=minecraft:writable_book count=1 age=16 pickup-delay=0 on-ground=true
+entity 105 e2 0.20211770291052986 2.0 0.2964149893394359 -0.001915692606420493 -0.04 -0.001318743969593467 item=minecraft:lectern count=1 age=16 pickup-delay=0 on-ground=true
+
+entity-order 106 entities e1 e2
+entity 106 e1 1.1579992640685115 1.0 -0.4891803397342286 0.01179580029483474 0 -0.013251114622014542 item=minecraft:writable_book count=1 age=17 pickup-delay=0 on-ground=true
+entity 106 e2 0.20211770291052986 2.0 0.2964149893394359 -0.001915692606420493 -0.08 -0.001318743969593467 item=minecraft:lectern count=1 age=17 pickup-delay=0 on-ground=true
+
+entity-order 107 entities e1 e2
+entity 107 e1 1.1697950643633463 1.0 -0.5024314543562431 0.006935931270822638 0 -0.007791656181253907 item=minecraft:writable_book count=1 age=18 pickup-delay=0 on-ground=true
+entity 107 e2 0.20020201030410936 2.0 0.2950962453698424 -0.0011264273658459537 0 -7.754215320953983E-4 item=minecraft:lectern count=1 age=18 pickup-delay=0 on-ground=true
+
+entity-order 108 entities e1 e2
+entity 108 e1 1.176730995634169 1.0 -0.510223110537497 0.0040783279973501205 0 -0.004581494295280845 item=minecraft:writable_book count=1 age=19 pickup-delay=0 on-ground=true
+entity 108 e2 0.20020201030410936 2.0 0.2950962453698424 -0.0011264273658459537 -0.04 -7.754215320953983E-4 item=minecraft:lectern count=1 age=19 pickup-delay=0 on-ground=true
+
+entity-order 109 entities e1 e2
+entity 109 e1 1.1808093236315191 1.0 -0.5148046048327779 0.0023980571035844642 0 -0.0026939189165188504 item=minecraft:writable_book count=1 age=20 pickup-delay=0 on-ground=true
+entity 109 e2 0.20020201030410936 2.0 0.2950962453698424 -0.0011264273658459537 -0.08 -7.754215320953983E-4 item=minecraft:lectern count=1 age=20 pickup-delay=0 on-ground=true
+
+entity-order 110 entities e1 e2
+entity 110 e1 1.1832073807351036 1.0 -0.5174985237492967 0.001410057718699524 0 -0.0015840244821986034 item=minecraft:writable_book count=1 age=21 pickup-delay=0 on-ground=true
+entity 110 e2 0.20020201030410936 2.0 0.2950962453698424 -0.0011264273658459537 -0.12 -7.754215320953983E-4 item=minecraft:lectern count=1 age=21 pickup-delay=0 on-ground=true
+
+entity-order 111 entities e1 e2
+entity 111 e1 1.1832073807351036 1.0 -0.5174985237492967 0.001410057718699524 -0.04 -0.0015840244821986034 item=minecraft:writable_book count=1 age=22 pickup-delay=0 on-ground=true
+entity 111 e2 0.1990755829382634 2.0 0.294320823837747 -6.623393577206014E-4 0 -4.559479067210694E-4 item=minecraft:lectern count=1 age=22 pickup-delay=0 on-ground=true
+
+entity-order 112 entities e1 e2
+entity 112 e1 1.184617438453803 1.0 -0.5190825482314954 8.291140219689417E-4 0 -9.314064891926736E-4 item=minecraft:writable_book count=1 age=23 pickup-delay=0 on-ground=true
+entity 112 e2 0.1990755829382634 2.0 0.294320823837747 -6.623393577206014E-4 -0.04 -4.559479067210694E-4 item=minecraft:lectern count=1 age=23 pickup-delay=0 on-ground=true
+
+entity-order 113 entities e1 e2
+entity 113 e1 1.184617438453803 1.0 -0.5190825482314954 8.291140219689417E-4 -0.04 -9.314064891926736E-4 item=minecraft:writable_book count=1 age=24 pickup-delay=0 on-ground=true
+entity 113 e2 0.1990755829382634 2.0 0.294320823837747 -6.623393577206014E-4 -0.08 -4.559479067210694E-4 item=minecraft:lectern count=1 age=24 pickup-delay=0 on-ground=true
+
+entity-order 114 entities e1 e2
+entity 114 e1 1.184617438453803 1.0 -0.5190825482314954 8.291140219689417E-4 -0.08 -9.314064891926736E-4 item=minecraft:writable_book count=1 age=25 pickup-delay=0 on-ground=true
+entity 114 e2 0.1990755829382634 2.0 0.294320823837747 -6.623393577206014E-4 -0.12 -4.559479067210694E-4 item=minecraft:lectern count=1 age=25 pickup-delay=0 on-ground=true
+
+entity-order 115 entities e1 e2
+entity 115 e1 1.184617438453803 1.0 -0.5190825482314954 8.291140219689417E-4 -0.12 -9.314064891926736E-4 item=minecraft:writable_book count=1 age=26 pickup-delay=0 on-ground=true
+entity 115 e2 0.1984132435805428 2.0 0.29386487593102595 -3.894555815023877E-4 0 -2.680973961111889E-4 item=minecraft:lectern count=1 age=26 pickup-delay=0 on-ground=true
+
+entity-order 116 entities e1 e2
+entity 116 e1 1.185446552475772 1.0 -0.520013954720688 4.875190939414321E-4 0 -5.476670707173158E-4 item=minecraft:writable_book count=1 age=27 pickup-delay=0 on-ground=true
+entity 116 e2 0.1984132435805428 2.0 0.29386487593102595 -3.894555815023877E-4 -0.04 -2.680973961111889E-4 item=minecraft:lectern count=1 age=27 pickup-delay=0 on-ground=true
+
+entity-order 117 entities e1 e2
+entity 117 e1 1.185446552475772 1.0 -0.520013954720688 4.875190939414321E-4 -0.04 -5.476670707173158E-4 item=minecraft:writable_book count=1 age=28 pickup-delay=0 on-ground=true
+entity 117 e2 0.1984132435805428 2.0 0.29386487593102595 -3.894555815023877E-4 -0.08 -2.680973961111889E-4 item=minecraft:lectern count=1 age=28 pickup-delay=0 on-ground=true
+
+entity-order 118 entities e1 e2
+entity 118 e1 1.185446552475772 1.0 -0.520013954720688 4.875190939414321E-4 -0.08 -5.476670707173158E-4 item=minecraft:writable_book count=1 age=29 pickup-delay=0 on-ground=true
+entity 118 e2 0.1984132435805428 2.0 0.29386487593102595 -3.894555815023877E-4 -0.12 -2.680973961111889E-4 item=minecraft:lectern count=1 age=29 pickup-delay=0 on-ground=true
+
+entity-order 119 entities e1 e2
+entity 119 e1 1.185446552475772 1.0 -0.520013954720688 4.875190939414321E-4 -0.12 -5.476670707173158E-4 item=minecraft:writable_book count=1 age=30 pickup-delay=0 on-ground=true
+entity 119 e2 0.1980237879990404 2.0 0.2935967785349148 -2.289999049510587E-4 0 -1.5764128476539034E-4 item=minecraft:lectern count=1 age=30 pickup-delay=0 on-ground=true
+
+entity-order 120 entities e1 e2
+entity 120 e1 1.1859340715697135 1.0 -0.5205616217914053 2.866612560634973E-4 0 -3.220282699641349E-4 item=minecraft:writable_book count=1 age=31 pickup-delay=0 on-ground=true
+entity 120 e2 0.1980237879990404 2.0 0.2935967785349148 -2.289999049510587E-4 -0.04 -1.5764128476539034E-4 item=minecraft:lectern count=1 age=31 pickup-delay=0 on-ground=true

@@ -424,6 +424,21 @@ std::optional<BlockState> worn_anvil(BlockState s);
 // enchants the item by an offer (0-2) for its levels and lapis.
 void set_enchant_offers(RuleContext& ctx, PlayerInventory& inv, BlockPos table);
 void enchant_by_offer(RuleContext& ctx, PlayerInventory& inv, BlockPos table, std::int32_t offer, bool creative);
+
+// ---- lecterns (lectern.cpp) ----
+// Whether a lectern takes the held item (the item tag lectern_books); a book
+// put on one; the signal a comparator reads from one (by its page); a button
+// of its window (1 the previous page, 2 the next, 3 take the book, 100 and
+// more a page by its number); its block tick, which ends a page turn's pulse;
+// and the book a removed lectern drops.
+bool lectern_takes(RuleContext& ctx, const ItemStack& held);
+void put_lectern_book(RuleContext& ctx, BlockPos pos, ItemStack book);
+std::uint8_t lectern_signal(RuleContext& ctx, BlockPos pos);
+void press_lectern_button(RuleContext& ctx, PlayerInventory& inv, BlockPos pos, std::int32_t button);
+// Takes a lectern's book (none without one), the lectern left without it.
+ItemStack take_lectern_book(RuleContext& ctx, BlockPos pos);
+void tick_lectern(RuleContext& ctx, BlockPos pos, BlockState s);
+void drop_lectern_book(RuleContext& ctx, BlockPos pos, BlockState lectern, const ItemStack& book);
 void tick_furnace(RuleContext& ctx, BlockPos pos, BlockState s);
 std::vector<std::size_t> furnace_slots(Direction face);
 bool furnace_accepts(const BlockEntity& be, std::size_t slot, const ItemStack& stack);

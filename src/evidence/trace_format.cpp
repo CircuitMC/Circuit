@@ -387,6 +387,24 @@ private:
                     return fail(line_, "invalid enchantment (<id>=<level>)");
                 a.enchantments.emplace_back(std::string(t[i].substr(0, eq)), static_cast<std::uint8_t>(level));
             }
+        } else if (t[2] == "use-with" && (t.size() == 7 || t.size() == 8)) {
+            // A player uses the block holding one of the item; a writable book
+            // with `pages=<n>` has pages "1" to "n".
+            if (f_.format < 2) return fail(line_, "use-with needs circuit-trace 2");
+            a.kind = Action::Kind::use_with;
+            if (auto ok = item_of(t[6], false, a.item); !ok) return ok;
+            if (t.size() == 8) {
+                unsigned pages{};
+                if (!t[7].starts_with("pages=") || !number(t[7].substr(6), pages) || pages > 100) return fail(line_, "invalid pages (pages=<n>)");
+                a.pages = static_cast<std::int32_t>(pages);
+            }
+        } else if (t[2] == "button" && t.size() == 7) {
+            // A player presses a button of the block's window.
+            if (f_.format < 2) return fail(line_, "button needs circuit-trace 2");
+            a.kind = Action::Kind::button;
+            unsigned id{};
+            if (!number(t[6], id) || id > 255) return fail(line_, "invalid button");
+            a.button = static_cast<std::int32_t>(id);
         } else if (t[2] == "insert" && (t.size() == 9 || t.size() == 10)) {
             a.kind = Action::Kind::insert;
             unsigned slot{}, count{};
@@ -725,6 +743,11 @@ std::string write_fixture(const Fixture& f) {
             body[a.tick].push_back(std::move(line));
             break;
         }
+        case Action::Kind::use_with:
+            body[a.tick].push_back(std::format("at {} use-with {} {}{}", a.tick, pos_text(a.pos), a.item,
+                                               a.pages != 0 ? std::format(" pages={}", a.pages) : ""));
+            break;
+        case Action::Kind::button: body[a.tick].push_back(std::format("at {} button {} {}", a.tick, pos_text(a.pos), a.button)); break;
         }
     }
     if (f.format < 2) {

@@ -21,6 +21,8 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 42: lecterns have rules of their own (their block entities keep the book
+// and, in the furnace times, its page);
 // 41: player inventories carry an open enchanting table's slots and offers
 // and the player's enchantment seed;
 // 40: player inventories carry an open anvil's slots, name and cost;
@@ -74,7 +76,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 41;
+constexpr std::uint32_t version = 42;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -473,6 +475,7 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
     newly_modeled(gameplay::BlockType::furnace, 28);
     newly_modeled(gameplay::BlockType::crafter, 32);
     newly_modeled(gameplay::BlockType::brewing_stand, 35);
+    newly_modeled(gameplay::BlockType::lectern, 42);
     if (!b.count(n, 55)) return false;
     for (std::size_t i = 0; i < n; ++i) {
         gameplay::Entity e;

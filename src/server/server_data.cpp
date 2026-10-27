@@ -335,6 +335,19 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
             std::ranges::sort(blocks);
             return blocks;
         };
+        // Lecterns: the books they take, and a book's pages.
+        if (const auto* books = packs->tag("item", "minecraft:lectern_books"))
+            for (const auto& member : *books)
+                if (const auto id = gameplay::items::by_name(member)) game->lectern_books.push_back(*id);
+        std::ranges::sort(game->lectern_books);
+        if (const auto* codec = protocol::ComponentCodec::for_protocol(bundle.schema.component_schema))
+        {
+            game->book_pages = [codec](const contracts::ItemStack& book) { return codec->book_pages_of(book.components); };
+            game->writable_book = [codec, ctx = component_context(bundle, out.registries)](std::int32_t pages) -> std::optional<contracts::ComponentPatch> {
+                auto patch = codec->writable_book(pages, ctx);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
+        }
         game->power_providers = blocks_of("minecraft:enchantment_power_provider");
         game->power_transmitters = blocks_of("minecraft:enchantment_power_transmitter");
         for (std::uint16_t item = 1; const auto* info = gameplay::items::info(item); ++item) {
