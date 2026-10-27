@@ -24,6 +24,7 @@ bool connects_to(BlockState n, std::optional<Direction> d) {
     case BlockType::weighted_plate: case BlockType::target: case BlockType::daylight_detector: case BlockType::lectern:
         return true;
     case BlockType::rail: return n.variant() == static_cast<std::uint8_t>(blocks::RailKind::detector);
+    case BlockType::chest: return n.variant() == 1; // trapped
     default: return false;
     }
 }

@@ -11,12 +11,12 @@ namespace circuit::gameplay {
 namespace {
 // Registry blocks with a BlockType of their own (see evidence::ContentMapping),
 // besides the buttons and pressure plates of each kind.
-constexpr std::array<std::string_view, 38> modeled_names{
+constexpr std::array<std::string_view, 39> modeled_names{
     "air", "cave_air", "void_air", "stone", "glass", "obsidian", "redstone_block", "slime_block", "lever", "redstone_wire",
     "repeater", "redstone_lamp", "observer", "piston", "sticky_piston", "piston_head", "moving_piston", "hopper", "chest",
     "comparator", "water", "wheat", "redstone_torch", "redstone_wall_torch", "light_weighted_pressure_plate",
     "heavy_weighted_pressure_plate", "target", "honey_block", "daylight_detector", "note_block", "dispenser", "dropper", "furnace", "smoker",
-    "blast_furnace", "crafter", "brewing_stand", "lectern"};
+    "blast_furnace", "crafter", "brewing_stand", "lectern", "trapped_chest"};
 constexpr std::array<std::string_view, note_instruments> instrument_names{
     "harp", "basedrum", "snare", "hat", "bass", "flute", "bell", "guitar", "chime", "xylophone", "iron_xylophone", "cow_bell",
     "didgeridoo", "bit", "banjo", "pling", "zombie", "skeleton", "creeper", "dragon", "wither_skeleton", "piglin", "custom_head"};
@@ -297,8 +297,8 @@ std::string block_notation(BlockState s) {
         return std::format("minecraft:hopper[enabled={},facing={}]", b(s.flag()), direction_name(s.facing()));
     case BlockType::chest: {
         static constexpr std::string_view types[]{"single", "left", "right"};
-        return std::format("minecraft:chest[facing={},type={},waterlogged={}]", direction_name(s.facing()), types[s.level() % 3],
-                           b(s.flag()));
+        return std::format("minecraft:{}[facing={},type={},waterlogged={}]", s.variant() == 1 ? "trapped_chest" : "chest",
+                           direction_name(s.facing()), types[s.level() % 3], b(s.flag()));
     }
     case BlockType::comparator:
         return std::format("minecraft:comparator[facing={},mode={},powered={}]", direction_name(contracts::opposite(s.facing())),

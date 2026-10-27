@@ -21,6 +21,8 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 43: block entities carry a chest's viewers, player inventories the
+// container a player views;
 // 42: lecterns have rules of their own (their block entities keep the book
 // and, in the furnace times, its page);
 // 41: player inventories carry an open enchanting table's slots and offers
@@ -76,7 +78,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 42;
+constexpr std::uint32_t version = 43;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -183,6 +185,8 @@ void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
         w.u16(be.disabled).i32(be.crafting_ticks);
         w.varint(static_cast<std::int32_t>(be.recipes_used.size()));
         for (const auto& [id, count] : be.recipes_used) w.string(id, 256).varint(count);
+        w.varint(static_cast<std::int32_t>(be.viewers.size()));
+        for (const auto& v : be.viewers) w.i64(static_cast<std::int64_t>(v.hi)).i64(static_cast<std::int64_t>(v.lo));
     }
     w.varint(static_cast<std::int32_t>(l.entities.size()));
     for (const auto& e : l.entities) {
@@ -266,6 +270,8 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
         for (const auto& st : p.enchant) stack(w, st);
         for (std::size_t i = 0; i < 3; ++i) w.varint(p.enchant_costs[i]).varint(p.enchant_clues[i]).varint(p.enchant_clue_levels[i]);
         w.i32(p.xp_seed);
+        w.boolean(p.viewing.has_value());
+        if (p.viewing) pos(w, *p.viewing);
     }
     w.varint(static_cast<std::int32_t>(c.extras.size()));
     for (const auto& [name, bytes] : c.extras) w.string(name, 256).prefixed_bytes(bytes);
@@ -448,11 +454,21 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
                 be.recipes_used.emplace_back(std::move(id), count);
             }
         }
+        if (b.version >= 43) {
+            std::int32_t viewers{};
+            if (!b.get(b.r.varint(), viewers) || viewers < 0 || viewers > 256) return false;
+            for (std::int32_t k = 0; k < viewers; ++k) {
+                std::int64_t hi{}, lo{};
+                if (!b.get(b.r.i64(), hi) || !b.get(b.r.i64(), lo)) return false;
+                be.viewers.push_back({static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)});
+            }
+        }
         be.moving = static_cast<std::uint32_t>(moving);
         s.block_entities.push_back({p, std::move(be)});
     }
     // Before version 28 furnaces, smokers and blast furnaces, before 32
-    // crafters and before 35 brewing stands had no rules of their own: their
+    // crafters, before 35 brewing stands, before 42 lecterns and before 43
+    // trapped chests (modeled as chests) had no rules of their own: their
     // registry states become the modeled ones, and their block entities
     // start empty (they could hold nothing the rules used).
     const auto newly_modeled = [&](gameplay::BlockType type, std::uint32_t since) {
@@ -476,6 +492,7 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
     newly_modeled(gameplay::BlockType::crafter, 32);
     newly_modeled(gameplay::BlockType::brewing_stand, 35);
     newly_modeled(gameplay::BlockType::lectern, 42);
+    newly_modeled(gameplay::BlockType::chest, 43);
     if (!b.count(n, 55)) return false;
     for (std::size_t i = 0; i < n; ++i) {
         gameplay::Entity e;
@@ -759,6 +776,15 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
                         || p.enchant_clue_levels[k] < -1)
                         return false;
                 if (!b.get(b.r.i32(), p.xp_seed)) return false;
+            }
+            if (b.version >= 43) {
+                bool viewing{};
+                if (!b.get(b.r.boolean(), viewing)) return false;
+                if (viewing) {
+                    contracts::BlockPos at;
+                    if (!b.pos(at)) return false;
+                    p.viewing = at;
+                }
             }
             p.player = {static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)};
             s.players.push_back(p);

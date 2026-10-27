@@ -30,7 +30,7 @@ enum class BlockType : std::uint8_t {
     piston_head,    // facing: same as its piston; flag: sticky; level: 1 short
     slime_block,
     hopper,         // facing: output side (not up); flag: enabled
-    chest,          // facing: front (horizontal); level: ChestType; flag: waterlogged (not simulated)
+    chest,          // facing: front (horizontal); level: ChestType; flag: waterlogged (not simulated); variant: 1 trapped
     water,          // level 0: source, 1-7: flowing distance; flag: falling (level: stored level - 8, display only)
     wheat,          // level: age 0-7
     comparator,     // facing: output side (horizontal); level: 0 compare, 1 subtract; flag: powered
@@ -185,8 +185,8 @@ constexpr BlockState hopper(Direction output = Direction::down, bool enabled = t
     return BlockState::of(BlockType::hopper).with_facing(output).with_flag(enabled);
 }
 enum class ChestType : std::uint8_t { single = 0, left = 1, right = 2 };
-constexpr BlockState chest(Direction facing = Direction::north, ChestType type = ChestType::single) {
-    return BlockState::of(BlockType::chest).with_facing(facing).with_level(static_cast<std::uint8_t>(type));
+constexpr BlockState chest(Direction facing = Direction::north, ChestType type = ChestType::single, bool trapped = false) {
+    return BlockState::of(BlockType::chest).with_facing(facing).with_level(static_cast<std::uint8_t>(type)).with_variant(trapped ? 1 : 0);
 }
 constexpr BlockState moving_piston(Direction facing, bool sticky) {
     return BlockState::of(BlockType::moving_piston).with_facing(facing).with_flag(sticky);
@@ -325,7 +325,8 @@ inline constexpr std::uint8_t note_instruments = 23;
 constexpr bool has_variant(BlockType t) noexcept {
     return t == BlockType::button || t == BlockType::pressure_plate || t == BlockType::weighted_plate || t == BlockType::door
         || t == BlockType::trapdoor || t == BlockType::fence_gate || t == BlockType::rail || t == BlockType::coral_fan
-        || t == BlockType::coral_wall_fan || t == BlockType::dispenser || t == BlockType::furnace || t == BlockType::crafter;
+        || t == BlockType::coral_wall_fan || t == BlockType::dispenser || t == BlockType::furnace || t == BlockType::crafter
+        || t == BlockType::chest;
 }
 constexpr bool is_coral_fan(BlockType t) noexcept { return t == BlockType::coral_fan || t == BlockType::coral_wall_fan; }
 constexpr bool dead_coral(BlockState s) noexcept { return s.variant() >= blocks::coral_kinds; }
@@ -336,7 +337,7 @@ constexpr std::uint8_t variant_count(BlockType t) noexcept {
     case BlockType::fence_gate: return blocks::fence_gate_kinds;
     case BlockType::rail: return blocks::rail_kinds;
     case BlockType::coral_fan: case BlockType::coral_wall_fan: return 2 * blocks::coral_kinds;
-    case BlockType::dispenser: return 2;
+    case BlockType::dispenser: case BlockType::chest: return 2;
     case BlockType::furnace: return 3;
     case BlockType::crafter: return 6;
     default: return has_variant(t) ? blocks::button_kinds : 1;

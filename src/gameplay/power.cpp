@@ -123,6 +123,8 @@ std::uint8_t emitted(RuleContext& ctx, BlockPos pos, BlockState s, Direction tow
     case BlockType::observer: return s.flag() && toward == contracts::opposite(s.facing()) ? 15 : 0;
     // A powered lectern (a page just turned) powers every neighbor.
     case BlockType::lectern: return s.flag() ? 15 : 0;
+    // A trapped chest by its viewers (client/openers).
+    case BlockType::chest: return trapped_power(ctx, pos, s);
     case BlockType::redstone_wire: {
         if (!wires || s.level() == 0 || toward == Direction::up) return 0;
         if (toward == Direction::down) return s.level();
@@ -141,6 +143,7 @@ std::uint8_t direct(RuleContext& ctx, BlockPos pos, BlockState s, Direction towa
     case BlockType::rail: return toward == Direction::down ? emitted(ctx, pos, s, toward, wires) : 0;
     // ... and the block below it strongly (lectern_pages).
     case BlockType::lectern: return s.flag() && toward == Direction::down ? 15 : 0;
+    case BlockType::chest: return toward == Direction::down ? trapped_power(ctx, pos, s) : 0;
     case BlockType::repeater: case BlockType::comparator: case BlockType::observer: case BlockType::redstone_wire:
         return emitted(ctx, pos, s, toward, wires);
     default: return 0;

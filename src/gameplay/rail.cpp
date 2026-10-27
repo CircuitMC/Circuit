@@ -259,9 +259,10 @@ bool signal_source(BlockState s) {
     case BlockType::lever: case BlockType::redstone_wire: case BlockType::repeater: case BlockType::comparator:
     case BlockType::observer: case BlockType::redstone_block: case BlockType::redstone_torch: case BlockType::redstone_wall_torch:
     case BlockType::button: case BlockType::pressure_plate: case BlockType::weighted_plate: case BlockType::target:
-    case BlockType::daylight_detector:
+    case BlockType::daylight_detector: case BlockType::lectern:
         return true;
     case BlockType::rail: return s.variant() == static_cast<std::uint8_t>(RailKind::detector);
+    case BlockType::chest: return s.variant() == 1; // trapped
     default: return false;
     }
 }

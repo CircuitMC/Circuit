@@ -771,7 +771,8 @@ private:
         else
             out.components = std::move(patch->rest);
         const auto components = out.components;
-        if (id == "minecraft:chest" && expect(BlockType::chest)) {
+        if ((id == "minecraft:chest" || id == "minecraft:trapped_chest") && expect(BlockType::chest)
+            && (block->variant() == 1) == (id == "minecraft:trapped_chest")) {
             out = {BlockType::chest, 0, std::vector<contracts::ItemStack>(27), 0};
             read_items(be, out, "chest");
         } else if (id == "minecraft:hopper" && expect(BlockType::hopper)) {
@@ -1310,7 +1311,7 @@ private:
         };
         switch (be.kind) {
         case BlockType::chest:
-            t.set("id", Tag::string("minecraft:chest"));
+            t.set("id", Tag::string(at(pos).variant() == 1 ? "minecraft:trapped_chest" : "minecraft:chest"));
             t.set("Items", items(be.slots));
             break;
         case BlockType::hopper:

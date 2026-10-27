@@ -171,6 +171,9 @@ int main() {
                                  {31, ChangeExperience{alex, -2147483647 - 1, false, false}}, {32, ChangeExperience{alex, 30, true, true}}}});
         // A creative player's window button (tag 34).
         log.ticks.push_back({9, {{33, ContainerButton{alex, BlockPos{0, 1, 2}, 2, true}}}});
+        // Closed windows naming their block (tag 35), kept or dropped.
+        log.ticks.push_back({10, {{34, CloseContainer{alex, {1, 2, 3}, {}, false, BlockPos{-5, -60, 3}}},
+                                  {35, CloseContainer{alex, {1, 2, 3}, {0, 0.3, 0}, true, BlockPos{4, 5, 6}}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);

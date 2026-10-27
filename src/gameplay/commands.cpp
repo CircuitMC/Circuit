@@ -228,7 +228,11 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
             for (const auto part : detail::container_parts(ctx, c.pos))
                 if (ctx.block(part).is(BlockType::chest) && detail::is_conductor(ctx.block(part.relative(Direction::up))))
                     return std::unexpected(ErrorCode::not_usable);
-            return [&ctx, c] { ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo); };
+            // A chest counts its viewers.
+            return [&ctx, c, clicked] {
+                if (detail::counts_viewers(clicked)) detail::start_viewing(ctx, ctx.player(c.player), c.pos);
+                ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo);
+            };
         }
         if (is_crafting_table(clicked) || is_stonecutter(clicked) || is_smithing_table(clicked) || is_grindstone(clicked) || is_loom(clicked)
             || is_anvil(clicked) || is_enchanting_table(clicked))

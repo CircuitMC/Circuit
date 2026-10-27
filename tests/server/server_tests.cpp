@@ -1476,6 +1476,43 @@ int main() {
         require(has(window_packets(), "close", 3, 0), "closed out of reach");
     });
 
+    suite.run("chests send their lids' block events and trapped chests power by their viewers", [] {
+        using I = server::Intent;
+        GameFixture f;
+        auto peer = f.join(1, "Clerk");
+        f.game->submit(1, I{server::intent::Command{"setblock 2 -60 1 minecraft:trapped_chest[facing=north,type=single,waterlogged=false]"}});
+        f.game->submit(1, I{server::intent::Command{"setblock 3 -60 1 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]"}});
+        f.game->tick();
+        require(f.at({2, -60, 1}).starts_with("minecraft:trapped_chest[") && f.at({3, -60, 1}).starts_with("minecraft:redstone_wire["), "set");
+        // Block events since the last call: (x, y, z, event, parameter, block id).
+        std::size_t seen = 0;
+        const auto events = [&] {
+            const auto id = f.wire.ids().id(State::play, Bound::clientbound, "block_event");
+            std::vector<std::tuple<std::int32_t, std::int32_t, std::int32_t, std::uint8_t, std::uint8_t, std::int32_t>> out;
+            std::lock_guard lock(peer->mutex);
+            for (; seen < peer->packets.size(); ++seen) {
+                auto pk = protocol::open_packet(peer->packets[seen]);
+                if (!pk || pk->id != id) continue;
+                const auto pos = pk->fields.position().value();
+                const auto event = pk->fields.u8().value();
+                const auto param = pk->fields.u8().value();
+                out.emplace_back(pos.x, pos.y, pos.z, event, param, pk->fields.varint().value());
+            }
+            return out;
+        };
+        const auto trapped = content().block_id("minecraft:trapped_chest").value();
+        using Event = std::tuple<std::int32_t, std::int32_t, std::int32_t, std::uint8_t, std::uint8_t, std::int32_t>;
+        (void)events();
+        f.game->submit(1, GameFixture::click({2, -60, 1}, 1));
+        f.game->tick();
+        require(events() == std::vector<Event>{{2, -60, 1, 1, 1, trapped}} && f.at({3, -60, 1}).contains("power=1"), "opened: the lid and power 1");
+        for (int i = 0; i < 5; ++i) f.game->tick();
+        require(events() == std::vector<Event>{{2, -60, 1, 1, 1, trapped}}, "the recheck 5 ticks later sends the lid again");
+        f.game->submit(1, I{server::intent::ContainerClose{1}});
+        f.game->tick();
+        require(events() == std::vector<Event>{{2, -60, 1, 1, 0, trapped}} && f.at({3, -60, 1}).contains("power=0"), "closed: the lid and no power");
+    });
+
     suite.run("survival movement is replayed against block shapes", [] {
         using I = server::Intent;
         GameFixture f;
@@ -2453,8 +2490,8 @@ int main() {
         // wall torches, signs, hanging signs, banners and heads count with the
         // standing ones' tables (the banners' and the player head's are
         // refused: they copy components).
-        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 946, 888, 1407, 984},
-                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 938, 880, 1370, 948}}) {
+        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 945, 888, 1407, 984},
+                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 937, 880, 1370, 948}}) {
             const char* jar = std::getenv(e.variable);
             if (!jar || !*jar) continue;
             const auto& bundle = **contracts::BundleRegistry::find(e.bundle);

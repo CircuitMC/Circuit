@@ -48,6 +48,9 @@ struct BlockEntity {
     // Furnace: the recipes it cooked since a player last took their
     // experience, by recipe id (ascending), and how often.
     std::vector<std::pair<std::string, std::int32_t>> recipes_used{};
+    // Chest (and trapped chest): the players viewing it, in the order they
+    // opened it (its openers: a trapped chest's power, its lid).
+    std::vector<contracts::PlayerKey> viewers{};
     // Brewing stand: lit_time its fuel (the brews it has left), cook_time
     // the ticks its brew still takes and cook_total the item it brews with.
     // Crafter: its disabled slots (bit k: slot k) and the ticks it still
@@ -233,6 +236,9 @@ struct PlayerInventory {
     // The player's enchantment seed once enchanting changed it; 0 before
     // (experience::enchantment_seed).
     std::int32_t xp_seed{};
+    // The container block whose window the player has open, when it counts
+    // its viewers (a chest).
+    std::optional<BlockPos> viewing{};
     // A drag across slots in progress (several clicks): its stage (0 none,
     // 1 collecting slots), its type (0 split evenly, 1 one each, 2 full
     // stacks) and the slots collected so far, in window numbering.
@@ -254,7 +260,7 @@ struct PlayerInventory {
             && std::ranges::all_of(grind, none) && std::ranges::all_of(loom, none) && loom_pattern == -1
             && std::ranges::all_of(anvil, none) && anvil_name.empty() && anvil_cost == 0 && std::ranges::all_of(enchant, none)
             && enchant_costs == std::array<std::int32_t, 3>{} && enchant_clues == std::array<std::int32_t, 3>{-1, -1, -1}
-            && enchant_clue_levels == std::array<std::int32_t, 3>{-1, -1, -1} && xp_seed == 0 && xp_level == 0
+            && enchant_clue_levels == std::array<std::int32_t, 3>{-1, -1, -1} && xp_seed == 0 && !viewing && xp_level == 0
             && xp_progress == 0.0f && xp_total == 0 && xp_ready == 0;
     }
     bool operator==(const PlayerInventory&) const = default;

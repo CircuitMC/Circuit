@@ -276,6 +276,10 @@ int main() {
             crafter.disabled = 0x105;
             crafter.crafting_ticks = 4;
             bes.push_back({{29998, 0, 29999}, crafter});
+            // A chest's viewers.
+            circuit::gameplay::BlockEntity chest{circuit::gameplay::BlockType::chest, 97, std::vector<circuit::contracts::ItemStack>(27), 0};
+            chest.viewers = {{0, 77}, {0xFFFFFFFFFFFFFFFFULL, 1}};
+            bes.push_back({{29997, 0, 29999}, chest});
             std::ranges::sort(bes, {}, &std::pair<circuit::contracts::BlockPos, circuit::gameplay::BlockEntity>::first);
         }
         // A player's open crafting table, stonecutter and smithing table.
@@ -300,6 +304,7 @@ int main() {
             p.enchant_clues = {32, -1, 39};
             p.enchant_clue_levels = {1, -1, 3};
             p.xp_seed = -1987654321;
+            p.viewing = circuit::contracts::BlockPos{29997, 0, 29999};
             p.xp_level = 9;
             p.xp_progress = 0.6000000834465027f;
             p.xp_total = 150;
@@ -312,7 +317,7 @@ int main() {
         const auto encoded = circuit::storage::encode_checkpoint(c);
         const auto decoded = circuit::storage::decode_checkpoint(encoded);
         require(decoded.has_value(), decoded ? "" : decoded.error());
-        require(*decoded == c && circuit::storage::encode_checkpoint(*decoded) == encoded, "the sequences, settings, furnace and crafter block entities, player menus and experience round-trip");
+        require(*decoded == c && circuit::storage::encode_checkpoint(*decoded) == encoded, "the sequences, settings, furnace, crafter and chest block entities, player menus, viewing and experience round-trip");
         auto swapped = c;
         auto& sequences = swapped.state.level(circuit::contracts::DimensionId::overworld).sequences;
         std::swap(sequences[0], sequences[1]);

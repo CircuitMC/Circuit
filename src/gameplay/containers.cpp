@@ -12,8 +12,9 @@ constexpr std::uint8_t hopper_cooldown = 8;
 // A container slot holds at most 64 of an item, and no more than the item stacks.
 std::uint8_t slot_limit(const ItemStack& s) { return std::min(contracts::max_stack_size, items::max_stack(s)); }
 
+// Chests pair with chests of their kind (a trapped chest with a trapped chest).
 bool paired(BlockState a, BlockState b) {
-    if (!a.is(BlockType::chest) || !b.is(BlockType::chest) || a.facing() != b.facing()) return false;
+    if (!a.is(BlockType::chest) || !b.is(BlockType::chest) || a.facing() != b.facing() || a.variant() != b.variant()) return false;
     const auto ta = static_cast<ChestType>(a.level()), tb = static_cast<ChestType>(b.level());
     return (ta == ChestType::left && tb == ChestType::right) || (ta == ChestType::right && tb == ChestType::left);
 }
@@ -235,7 +236,7 @@ void check_chest(RuleContext& ctx, BlockPos pos) {
         const auto partner_pos = pos.relative(*d);
         const auto partner = ctx.block(partner_pos);
         if (paired(s, partner)) return;
-        if (partner.is(BlockType::chest) && partner.facing() == s.facing()
+        if (partner.is(BlockType::chest) && partner.facing() == s.facing() && partner.variant() == s.variant()
             && static_cast<ChestType>(partner.level()) == ChestType::single) {
             // A new half claims a single chest of the same facing as its partner.
             const auto type = static_cast<ChestType>(s.level()) == ChestType::left ? ChestType::right : ChestType::left;
@@ -249,7 +250,8 @@ void check_chest(RuleContext& ctx, BlockPos pos) {
     // A single chest next to a half that points at it completes the pair.
     for (auto dir : {contracts::clockwise(s.facing()), contracts::counter_clockwise(s.facing())}) {
         const auto n = ctx.block(pos.relative(dir));
-        if (!n.is(BlockType::chest) || n.facing() != s.facing() || chest_partner(n) != contracts::opposite(dir)) continue;
+        if (!n.is(BlockType::chest) || n.facing() != s.facing() || n.variant() != s.variant() || chest_partner(n) != contracts::opposite(dir))
+            continue;
         const auto type = dir == contracts::clockwise(s.facing()) ? ChestType::left : ChestType::right;
         set_block_quiet(ctx, pos, s.with_level(static_cast<std::uint8_t>(type)));
         return;
@@ -269,7 +271,7 @@ BlockState placed_chest(RuleContext& ctx, BlockPos pos, BlockState placed, Direc
     auto type = ChestType::single;
     const auto single_facing = [&](Direction d) -> std::optional<Direction> {
         const auto n = ctx.block(pos.relative(d));
-        if (n.is(BlockType::chest) && static_cast<ChestType>(n.level()) == ChestType::single) return n.facing();
+        if (n.is(BlockType::chest) && n.variant() == placed.variant() && static_cast<ChestType>(n.level()) == ChestType::single) return n.facing();
         return std::nullopt;
     };
     if (sneaking && contracts::is_horizontal(face)) {
@@ -283,7 +285,7 @@ BlockState placed_chest(RuleContext& ctx, BlockPos pos, BlockState placed, Direc
         if (single_facing(contracts::clockwise(facing)) == facing) type = ChestType::left;
         else if (single_facing(contracts::counter_clockwise(facing)) == facing) type = ChestType::right;
     }
-    return blocks::chest(facing, type);
+    return blocks::chest(facing, type, placed.variant() == 1);
 }
 
 void check_hopper(RuleContext& ctx, BlockPos pos) {

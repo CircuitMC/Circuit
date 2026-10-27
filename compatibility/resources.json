@@ -5032,6 +5032,19 @@
           "moisture and drying are not modeled",
           "nothing tramples it yet"
         ]
+      },
+      "trapped_chest": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/trapped_chest_pairs",
+          "client/openers"
+        ],
+        "deviations": [
+          "waterlogging",
+          "the open and close sounds"
+        ],
+        "note": "Placed and paired with trapped chests only; a container as chests are, powering by its viewers as both official servers do (trapped_chest_pairs, client/openers)"
       }
     },
     "item": {
@@ -5769,6 +5782,14 @@
         "deviations": [
           "placing powder snow from it is not modeled"
         ]
+      },
+      "trapped_chest": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed facing the player and paired",
+        "cases": [
+          "trace/trapped_chest_pairs"
+        ]
       }
     },
     "entity": {
@@ -6026,6 +6047,14 @@
           "no permissions; the overworld only",
           "query lists chunks in coordinate order"
         ]
+      },
+      "setblock": {
+        "impl": "partial",
+        "evidence": "none",
+        "note": "A block state with every property at whole or ~ coordinates, placed with normal updates and an empty block entity, with the official feedback keys",
+        "deviations": [
+          "no permissions, modes (destroy, keep, strict) or block entity data"
+        ]
       }
     },
     "packet": {
@@ -6103,6 +6132,16 @@
         "evidence": "compared",
         "cases": [
           "client/windows"
+        ]
+      },
+      "play/clientbound/block_event": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/openers"
+        ],
+        "deviations": [
+          "sent for chests' lids only, not for pistons or note blocks"
         ]
       }
     }

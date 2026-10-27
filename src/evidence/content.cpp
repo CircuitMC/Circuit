@@ -271,7 +271,7 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
         if (facing == Direction::up) return std::unexpected("minecraft:hopper: facing cannot be up");
         return simple(blocks::hopper(facing, enabled));
     }
-    if (id == "minecraft:chest") {
+    if (id == "minecraft:chest" || id == "minecraft:trapped_chest") {
         CIRCUIT_TRY(facing, p.direction("facing"));
         CIRCUIT_TRY(type, p.required("type"));
         CIRCUIT_TRY(waterlogged, p.choice("waterlogged", {"false", "true"}, 0));
@@ -282,7 +282,7 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
                         : type == "right"  ? blocks::ChestType::right
                                            : static_cast<blocks::ChestType>(255);
         if (static_cast<int>(kind) == 255) return std::unexpected("minecraft:chest: invalid type");
-        return simple(blocks::chest(facing, kind).with_flag(waterlogged == 1));
+        return simple(blocks::chest(facing, kind, id == "minecraft:trapped_chest").with_flag(waterlogged == 1));
     }
     if (id == "minecraft:comparator") {
         CIRCUIT_TRY(facing, p.direction("facing"));

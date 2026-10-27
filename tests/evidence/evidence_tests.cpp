@@ -1554,8 +1554,10 @@ int main(int argc, char** argv) {
         require(m->block("minecraft:chest[facing=north,type=single,waterlogged=true]")
                     == circuit::gameplay::blocks::chest(circuit::contracts::Direction::north).with_flag(true),
                 "waterlogged chests are represented");
-        require(m->block("minecraft:trapped_chest[facing=north,type=single,waterlogged=false]")->is(circuit::gameplay::BlockType::other),
-                "blocks without rules of their own are registry states");
+        require(m->block("minecraft:white_wool")->is(circuit::gameplay::BlockType::other), "blocks without rules of their own are registry states");
+        require(m->block("minecraft:trapped_chest[facing=north,type=right,waterlogged=false]")
+                    == circuit::gameplay::blocks::chest(circuit::contracts::Direction::north, circuit::gameplay::blocks::ChestType::right, true),
+                "trapped chests are chests of their own kind");
         require(m->block("minecraft:chest[facing=north,type=left,waterlogged=false]")
                     == circuit::gameplay::blocks::chest(circuit::contracts::Direction::north, circuit::gameplay::blocks::ChestType::left),
                 "double chest halves are modeled");

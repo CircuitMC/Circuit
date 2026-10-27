@@ -223,6 +223,14 @@ constexpr std::array reference_v4_mechanisms{
         "strongly), a turn while it is powered adding nothing; comparators read 1 more than 14 times the page's place in "
         "the book (15 for one page); dust connects to it; a removed lectern's book pops out on top, a quarter of a block "
         "toward its front. Gaps: a book put on from the off hand; written books' pages resolved for the player."},
+    MechanismEntry{"trapped_chest", l0_exact, l2_declared_deviation, harness_trace,
+        "Trapped chests and chest openers as both official servers run them (trapped_chest_pairs; client/openers): "
+        "trapped chests pair with trapped chests only and are containers as chests are; each chest half counts the "
+        "players viewing it, queues its lid's block event with the count at every change and at a recheck every 5 "
+        "ticks while viewed (viewers stay ones as far as their windows reach), and a trapped chest gives its count as power "
+        "on every side and strongly to the block below, telling its neighbors and the block below's when the count "
+        "changes; dust connects to trapped chests. Gaps: the open and close sounds and the game events sculk sensors "
+        "hear are not modeled."},
     MechanismEntry{"bone_meal", l0_exact, l2_declared_deviation, harness_trace,
         "Dispensers use bone meal on the block in front as the official 1.21.8 server does (bonemeal_dispensers): crops "
         "and stems grow 2 + nextInt(4) stages (beetroots a third of that), torchflower and pitcher crops, cocoa and berry "

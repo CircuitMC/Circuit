@@ -11,8 +11,9 @@
 namespace circuit::storage {
 namespace {
 constexpr std::string_view manifest_file = "manifest";
-// Log segments: "CIRCWAL" and a format byte. 16: window buttons of creative
-// players (tag 34); 15 (read only): names typed into anvils and experience
+// Log segments: "CIRCWAL" and a format byte. 17: closed windows that name
+// their block (tag 35); 16 (read only): window buttons of creative players
+// (tag 34); 15 (read only): names typed into anvils and experience
 // changes (tags 32-33); 14 (read only): summoned experience orbs
 // with their value, count and age (tag 31); 13 (read only): slots enabled and disabled
 // (tag 30); 12 (read only): window buttons (tag 29); 11 (read only): closed
@@ -30,10 +31,10 @@ constexpr std::string_view manifest_file = "manifest";
 // none of tag 27, a format 10 record none of tag 28, a format 11 record none
 // of tag 29, a format 12 record none of tag 30, a format 13 record none of
 // tag 31, a format 14 record none of tags 32-33, a format 15 record none of
-// tag 34. Formats 7 to 16 write
+// tag 34, a format 16 record none of tag 35. Formats 7 to 17 write
 // positions and velocities as doubles instead of 1/4096 block units.
 constexpr std::string_view segment_prefix{"CIRCWAL", 7};
-constexpr char segment_format = 16;
+constexpr char segment_format = 17;
 constexpr std::size_t segment_magic_size = 8;
 constexpr std::size_t max_record = std::size_t{64} << 20;
 

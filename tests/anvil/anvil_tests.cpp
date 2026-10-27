@@ -573,6 +573,30 @@ int main() {
         require(empty && empty->kind == BlockType::lectern && empty->slots.empty() && empty->cook_time == 0, "the other without");
     });
 
+    suite.run("trapped chests round-trip through Anvil as trapped chests with their contents", [&] {
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine.advance(admit({place({2, 0, 2}, blocks::chest(Direction::north, blocks::ChestType::left, true)),
+                              place({3, 0, 2}, blocks::chest(Direction::north, blocks::ChestType::right, true)),
+                              place({5, 0, 2}, blocks::chest(Direction::south))}));
+        auto state = engine.dump();
+        for (auto& level : state.levels)
+            for (auto& [pos, be] : level.block_entities)
+                if (pos == BlockPos{3, 0, 2}) be.slots[4] = {circuit::gameplay::items::stone, 9};
+        const auto target = root / "trapped";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "trapped", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        require(state_at(back->state, {2, 0, 2}) == blocks::chest(Direction::north, blocks::ChestType::left, true)
+                    && state_at(back->state, {3, 0, 2}) == blocks::chest(Direction::north, blocks::ChestType::right, true)
+                    && state_at(back->state, {5, 0, 2}) == blocks::chest(Direction::south),
+                "the trapped halves and the chest");
+        const auto* be = block_entity_at(back->state, {3, 0, 2});
+        require(be && be->kind == BlockType::chest && be->slots.size() == 27 && be->slots[4] == circuit::contracts::ItemStack{circuit::gameplay::items::stone, 9},
+                "the trapped half's contents");
+    });
+
     suite.run("daylight detectors round-trip through Anvil with their block entities", [&] {
         Engine engine(bundle(), 5);
         Admissions admit;

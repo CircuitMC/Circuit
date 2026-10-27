@@ -50,7 +50,7 @@ std::optional<ItemStack> own_item(BlockState s) {
     case BlockType::piston: return ItemStack{items::piston, 1};
     case BlockType::sticky_piston: return ItemStack{items::sticky_piston, 1};
     case BlockType::hopper: return ItemStack{items::hopper, 1};
-    case BlockType::chest: return ItemStack{items::chest, 1};
+    case BlockType::chest: return ItemStack{s.variant() == 1 ? items::trapped_chest : items::chest, 1};
     case BlockType::dispenser: return ItemStack{s.variant() == 1 ? items::dropper : items::dispenser, 1};
     case BlockType::crafter: return ItemStack{items::crafter, 1};
     case BlockType::brewing_stand: return ItemStack{items::brewing_stand, 1};

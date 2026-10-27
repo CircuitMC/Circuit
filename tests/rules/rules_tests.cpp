@@ -4345,6 +4345,71 @@ int main() {
                 "the book on top, toward the front");
     });
 
+    suite.run("chests count their viewers; trapped chests give the count as power", [] {
+        using circuit::contracts::CloseContainer;
+        using circuit::contracts::PlayerDeath;
+        using circuit::contracts::PlayerPresence;
+        using circuit::contracts::PlayerUse;
+        const PlayerKey alex{4, 2}, bob{4, 3};
+        const BlockPos chest{0, 1, 0};
+        Sim s(bundle(), 7, 2);
+        // A trapped chest on a stone block, dust beside it and beside the stone.
+        std::vector<CommandBody> build;
+        for (std::int32_t x = -2; x <= 3; ++x)
+            for (std::int32_t z = -1; z <= 1; ++z) build.push_back(place({x, -1, z}, blocks::stone()));
+        build.push_back(place({0, 0, 0}, blocks::stone()));
+        build.push_back(place({-1, 0, 0}, blocks::stone()));
+        build.push_back(place(chest, blocks::chest(Direction::north, blocks::ChestType::single, true)));
+        build.push_back(place({-1, 1, 0}, blocks::wire()));
+        build.push_back(place({1, 0, 0}, blocks::wire()));
+        s.tick(build);
+        s.tick({PlayerPresence{alex, at_block(0.5, 1, 2.5)}, PlayerPresence{bob, at_block(1.5, 1, 2.5)}});
+        const auto beside = [&] { return std::pair{s.at({-1, 1, 0}).level(), s.at({1, 0, 0}).level()}; };
+        const auto use = [&](PlayerKey who) { return PlayerUse{who, 36, chest, Direction::up, Direction::south, Direction::south, false, true, 3, 3}; };
+        const auto close = [&](PlayerKey who, BlockPos at) { return CloseContainer{who, at_block(0.5, 2, 2.5), {}, false, at}; };
+        const auto lids = [&] {
+            std::vector<std::uint64_t> counts;
+            for (const auto& r : of_kind(s.last, TraceKind::block_event_queued))
+                if (r.pos == chest) counts.push_back(r.c);
+            return counts;
+        };
+        const auto viewing = [&](PlayerKey who) {
+            const auto d = s.oracle.dump();
+            const auto it = std::ranges::find(d.players, who, &PlayerInventory::player);
+            return it == d.players.end() ? std::nullopt : it->viewing;
+        };
+        s.tick({use(alex)});
+        require(beside() == std::pair<std::uint8_t, std::uint8_t>{1, 1} && lids() == std::vector<std::uint64_t>{1} && viewing(alex) == chest,
+                "one viewer: power 1 beside it and through the block below");
+        s.tick({use(bob)});
+        require(beside() == std::pair<std::uint8_t, std::uint8_t>{2, 2} && lids() == std::vector<std::uint64_t>{2}, "two viewers");
+        // Rechecks every 5 ticks queue the lid again with the same count.
+        std::size_t rechecks = 0;
+        for (int i = 0; i < 10; ++i) {
+            s.tick();
+            rechecks += lids().size();
+        }
+        require(rechecks == 2 && beside() == std::pair<std::uint8_t, std::uint8_t>{2, 2}, "rechecked twice in 10 ticks, both still near");
+        s.tick({close(alex, {5, 1, 5})});
+        require(beside() == std::pair<std::uint8_t, std::uint8_t>{2, 2} && viewing(alex) == chest, "a close naming another block");
+        s.tick({close(alex, chest)});
+        require(beside() == std::pair<std::uint8_t, std::uint8_t>{1, 1} && lids() == std::vector<std::uint64_t>{1} && !viewing(alex),
+                "alex closes it");
+        // Bob walks 8 blocks away and stays a viewer; gone from the level, the
+        // next recheck drops him.
+        s.tick({PlayerPresence{bob, at_block(1.5, 1, 8.5)}});
+        for (int i = 0; i < 5; ++i) s.tick();
+        require(beside() == std::pair<std::uint8_t, std::uint8_t>{1, 1}, "a viewer farther away stays one");
+        s.tick({PlayerPresence{bob, {}, false, false}});
+        for (int i = 0; i < 5; ++i) s.tick();
+        require(beside() == std::pair<std::uint8_t, std::uint8_t>{0, 0}, "a viewer gone from the level is dropped");
+        // A player who dies stops viewing.
+        s.tick({use(alex)});
+        require(beside().first == 1, "alex again");
+        s.tick({PlayerDeath{alex, at_block(0.5, 1, 2.5)}});
+        require(beside() == std::pair<std::uint8_t, std::uint8_t>{0, 0} && !viewing(alex), "and dies");
+    });
+
     suite.run("experience changes as the /xp command makes them", [] {
         using circuit::contracts::ChangeExperience;
         const PlayerKey alex{4, 2};

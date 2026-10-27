@@ -263,11 +263,14 @@ struct ContainerClick {
 // (the own window's and an open crafting table's) go back into the
 // inventory; what does not fit drops. When `drop` (the player left), they
 // all drop instead, as the target versions drop a departed player's menus.
+// `container` is the window's block: a container the player views (a chest)
+// loses the player as a viewer.
 struct CloseContainer {
     PlayerKey player;
     Vec3 drop_position;
     Vec3 drop_velocity;
     bool drop{};
+    std::optional<BlockPos> container{};
     bool operator==(const CloseContainer&) const = default;
 };
 

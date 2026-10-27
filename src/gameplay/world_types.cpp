@@ -257,6 +257,7 @@ std::string text(const PlayerInventory& p) {
         if (p.enchant_costs[i] != 0 || p.enchant_clues[i] != -1 || p.enchant_clue_levels[i] != -1)
             slots += std::format("offer{}:{}/{}/{} ", i, p.enchant_costs[i], p.enchant_clues[i], p.enchant_clue_levels[i]);
     if (p.xp_seed != 0) slots += std::format("seed:{} ", p.xp_seed);
+    if (p.viewing) slots += std::format("viewing:{},{},{} ", p.viewing->x, p.viewing->y, p.viewing->z);
     return std::format("player {:016x}{:016x} cursor={}x{} slots=[{}] xp={}+{}/{} xp_ready={}", p.player.hi, p.player.lo, p.cursor.item,
                        p.cursor.count, slots, p.xp_level, p.xp_progress, p.xp_total, p.xp_ready);
 }
@@ -388,6 +389,8 @@ std::uint64_t digest(const WorldDump& d) {
             h.add(static_cast<std::uint32_t>(be.lit_time)); h.add(static_cast<std::uint32_t>(be.lit_total));
             h.add(static_cast<std::uint32_t>(be.cook_time)); h.add(static_cast<std::uint32_t>(be.cook_total));
             h.add(be.disabled); h.add(static_cast<std::uint32_t>(be.crafting_ticks));
+            h.add(be.viewers.size());
+            for (const auto& v : be.viewers) { h.add(v.hi); h.add(v.lo); }
             h.add(be.recipes_used.size());
             for (const auto& [id, count] : be.recipes_used) {
                 h.add(id.size());
@@ -446,6 +449,8 @@ std::uint64_t digest(const WorldDump& d) {
             h.add(static_cast<std::uint32_t>(p.enchant_clue_levels[i]));
         }
         h.add(static_cast<std::uint32_t>(p.xp_seed));
+        h.add(p.viewing.has_value());
+        if (p.viewing) h.add(*p.viewing);
         h.add(static_cast<std::uint32_t>(p.xp_level)); h.add(std::bit_cast<std::uint32_t>(p.xp_progress));
         h.add(static_cast<std::uint32_t>(p.xp_total)); h.add(p.xp_ready);
         h.add(p.drag_stage); h.add(p.drag_type); h.add(p.drag_slots.size());

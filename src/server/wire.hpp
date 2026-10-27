@@ -211,6 +211,9 @@ public:
     Bytes light_update(std::int32_t x, std::int32_t z, Bytes light) const; // light from write_light
     Bytes forget_chunk(std::int32_t x, std::int32_t z) const;
     Bytes block_update(WirePosition pos, std::int32_t state) const;
+    // A block event (a chest's lid: event 1 with its viewers), with the
+    // block's registry id.
+    Bytes block_event(WirePosition pos, std::uint8_t event, std::uint8_t param, std::int32_t block) const;
     Bytes block_changed_ack(std::int32_t sequence) const;
     Bytes player_position(std::int32_t teleport_id, Vec3 pos, float yaw, float pitch) const;
     Bytes keep_alive(std::int64_t id) const;

@@ -25,6 +25,7 @@
 #include <tuple>
 #include <cstdlib>
 #include <format>
+#include <deque>
 #include <map>
 #include <mutex>
 #include <set>
@@ -290,6 +291,10 @@ struct Game::Impl final : GameServices {
         orb_entity_type{},
         player_entity_type{};
     std::array<std::int32_t, gameplay::boat_types.size()> boat_entity_types{};
+    std::int32_t chest_block{}, trapped_chest_block{};
+    // Parameters of block events queued and not yet run, by event in queue
+    // order (the trace of a run names none).
+    std::map<std::tuple<BlockPos, std::uint64_t, std::uint64_t>, std::deque<std::uint8_t>> queued_events;
     std::unordered_map<std::uint16_t, std::int32_t> item_wire; // reference item -> wire item id
     Bytes recipes_bytes;                                        // update_recipes, once built
     bool started{false};
@@ -317,6 +322,8 @@ struct Game::Impl final : GameServices {
         orb_entity_type = content.entity_type("minecraft:experience_orb").value();
         for (std::size_t i = 0; i < gameplay::boat_types.size(); ++i) boat_entity_types[i] = content.entity_type(gameplay::boat_types[i]).value();
         player_entity_type = content.entity_type("minecraft:player").value();
+        chest_block = content.block_id("minecraft:chest").value();
+        trapped_chest_block = content.block_id("minecraft:trapped_chest").value();
         for (std::uint16_t i = 1; i <= gameplay::items::max_id; ++i)
             if (const auto id = content.item_id(mapping.item_name(i))) item_wire[i] = *id;
         open_world();
@@ -729,7 +736,9 @@ struct Game::Impl final : GameServices {
         // was, as the official servers drop a departed player's menus.
         if (!p.dead) {
             const auto [position, velocity] = throw_from(p);
-            admit(contracts::CloseContainer{key_of(p), position, velocity, true});
+            std::optional<BlockPos> container;
+            if (p.window) container = p.window->pos;
+            admit(contracts::CloseContainer{key_of(p), position, velocity, true, container});
         }
         remove_tickets(p);
         admit(contracts::PlayerPresence{key_of(p), {}, false, false}, overworld);
@@ -995,7 +1004,7 @@ struct Game::Impl final : GameServices {
         if (const auto d = gameplay::chest_partner(s)) {
             const auto other = pos.relative(*d);
             const auto o = at(other);
-            if (o.is(BlockType::chest) && o.facing() == s.facing() && gameplay::chest_partner(o) == contracts::opposite(*d)) {
+            if (o.is(BlockType::chest) && o.facing() == s.facing() && o.variant() == s.variant() && gameplay::chest_partner(o) == contracts::opposite(*d)) {
                 if (s.level() == static_cast<std::uint8_t>(gameplay::blocks::ChestType::right)) return {pos, other};
                 return {other, pos};
             }
@@ -1101,7 +1110,9 @@ struct Game::Impl final : GameServices {
     }
     void admit_close(Player& p) {
         const auto [position, velocity] = throw_from(p);
-        if (const auto id = queue.admit(contracts::CloseContainer{key_of(p), position, velocity}, overworld)) p.closing = *id;
+        std::optional<BlockPos> container;
+        if (p.window) container = p.window->pos;
+        if (const auto id = queue.admit(contracts::CloseContainer{key_of(p), position, velocity, false, container}, overworld)) p.closing = *id;
         else log_warn("game: command queue full; input dropped");
     }
     // The stacks a close put back into the player's inventory, each as the
@@ -1852,7 +1863,7 @@ struct Game::Impl final : GameServices {
             message(p, "Commands: /help, /players, /tp [<own name>] <x> <y> <z>, /gamemode <survival|creative|spectator>, "
                        "/forceload add|remove <x> <z> [<x> <z>], /forceload remove all, /forceload query [<x> <z>], /gamerule <rule> [<value>], "
                        "/time set|add <time>, /time query daytime|gametime|day, /weather clear|rain|thunder [<duration>], /kill [<own name>], /summon <entity> <x> <y> <z> [{...}], "
-                       "/xp add|set <player> <amount> [levels|points], /xp query <player> levels|points, /tps" + extra);
+                       "/setblock <x> <y> <z> <block>, /xp add|set <player> <amount> [levels|points], /xp query <player> levels|points, /tps" + extra);
         } else if (args[0] == "players") {
             std::string names;
             for (const auto& [id, o] : players) names += (names.empty() ? "" : ", ") + o.name;
@@ -1908,6 +1919,8 @@ struct Game::Impl final : GameServices {
             const auto type = summon->type;
             admit(std::move(*summon), overworld);
             message(p, std::format("Summoned new {}", type));
+        } else if (args[0] == "setblock" && args.size() == 5) {
+            setblock(p, args);
         } else if ((args[0] == "xp" || args[0] == "experience") && c.text.starts_with(args[0])) {
             experience(p, c.text, args[0]);
         } else if (args[0] == "tps") {
@@ -1995,6 +2008,31 @@ struct Game::Impl final : GameServices {
         }
         admit(contracts::SetWeather{kind, duration});
         send_translation(p, std::format("commands.weather.set.{}", name), nbt::Tag::list(nbt::TagType::string));
+    }
+
+    // `/setblock <x> <y> <z> <block>`: a block state in full notation (every
+    // property, as the fixtures' notation writes them) at whole or `~`
+    // coordinates, placed as a set command places it (its block entity
+    // empty).
+    void setblock(Player& p, const std::vector<std::string>& args) {
+        std::array<std::int32_t, 3> coords{};
+        const std::array<double, 3> here{p.pos.x, p.pos.y, p.pos.z};
+        for (std::size_t k = 0; k < 3; ++k) {
+            std::string_view a = args[k + 1];
+            const bool relative = a.starts_with('~');
+            if (relative) a.remove_prefix(1);
+            std::int32_t v = 0;
+            if (!a.empty() && std::from_chars(a.data(), a.data() + a.size(), v).ec != std::errc{})
+                return message(p, "Usage: /setblock <x> <y> <z> <block>", "red");
+            coords[k] = relative ? static_cast<std::int32_t>(std::floor(here[k])) + v : v;
+        }
+        const BlockPos pos{coords[0], coords[1], coords[2]};
+        auto state = mapping.block(args[4].find(':') == std::string::npos ? "minecraft:" + args[4] : args[4]);
+        if (!state) return message(p, state.error(), "red");
+        if (!bundle.world.contains_y(pos.y)) return message(p, "Cannot place blocks outside of the world", "red");
+        if (at(pos) == *state) return send_translation(p, "commands.setblock.failed", nbt::Tag::list(nbt::TagType::string));
+        admit(contracts::SetBlock{pos, state->raw(), std::nullopt});
+        send_translation(p, "commands.setblock.success", int_arguments({pos.x, pos.y, pos.z}));
     }
 
     // `/xp` (or `/experience`) `add|set <player> <amount> [levels|points]`
@@ -2292,6 +2330,33 @@ struct Game::Impl final : GameServices {
         for (auto& [id, p] : players)
             for (const auto c : unloaded)
                 if (p.sent.erase(c)) forget(p, c);
+    }
+
+    // Block events that ran: chests' lids, to players within 64 blocks that
+    // have the chunk, as the official servers send them.
+    void publish_block_events() {
+        for (const auto& r : engine->trace()) {
+            if (r.dimension != overworld) continue;
+            if (r.kind == contracts::TraceKind::block_event_queued) {
+                auto& params = queued_events[{r.pos, r.a, r.b}];
+                params.push_back(static_cast<std::uint8_t>(r.c));
+                continue;
+            }
+            if (r.kind != contracts::TraceKind::block_event_executed) continue;
+            const auto it = queued_events.find({r.pos, r.a, r.b});
+            if (it == queued_events.end()) continue;
+            const auto param = it->second.front();
+            it->second.pop_front();
+            if (it->second.empty()) queued_events.erase(it);
+            if (r.c == 0 || r.a != static_cast<std::uint64_t>(BlockType::chest)) continue;
+            const auto block = at(r.pos).variant() == 1 ? trapped_chest_block : chest_block;
+            const auto packet = wire.block_event(wire_pos(r.pos), static_cast<std::uint8_t>(r.b), param, block);
+            const auto c = contracts::chunk_of(r.pos);
+            for (auto& [id, p] : players) {
+                const double dx = p.pos.x - (r.pos.x + 0.5), dy = p.pos.y - (r.pos.y + 0.5), dz = p.pos.z - (r.pos.z + 0.5);
+                if (p.sent.contains(c) && dx * dx + dy * dy + dz * dz < 4096.0) p.peer->send(packet);
+            }
+        }
     }
 
     void forget(Player& p, ChunkPos c) {
@@ -2715,6 +2780,7 @@ struct Game::Impl final : GameServices {
         pending_day_time.reset();
         publish_weather();
         publish_blocks();
+        publish_block_events();
         publish_pickups(commands); // before the picked-up entities are removed
         publish_entities();
         publish_inventories();

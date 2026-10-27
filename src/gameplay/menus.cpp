@@ -1191,6 +1191,9 @@ contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const cont
     return [&ctx, c] {
         auto& inv = ctx.player(c.player);
         reset_drag(inv);
+        // The player stops viewing the window's container (a close naming
+        // another block, which the player left for this one, does not).
+        if (!c.container || inv.viewing == c.container) stop_viewing(ctx, inv);
         // The crafting grids (the own window's, an open crafting table's)
         // and the carried stack go back into the inventory, or drop when the
         // player left.
@@ -1264,6 +1267,7 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
         if (!ctx.peek_player(c.player)) return; // nothing to drop
         auto& inv = ctx.player(c.player);
         reset_drag(inv);
+        stop_viewing(ctx, inv);
         // The target version's order: hotbar, main inventory, armor from the
         // feet up, off hand; then the crafting grids (an open crafting
         // table's after the own one) and the carried stack.

@@ -39,7 +39,7 @@ Feature counts per implementation state, then the number of features with compar
 | V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 113 / 118 | 193 / 202 | 0 / 0 | 14 / 0 | 113 / 118 |
 | V14 Redstone sources and signal consumers | C4, C5 | 139 | 7 / 7 | 98 / 98 | 33 / 33 | 1 / 1 | 0 / 0 | 40 / 42 |
 | V15 Pistons and moving structures | C3, C4 | 16 | 2 / 2 | 14 / 14 | 0 / 0 | 0 / 0 | 0 / 0 | 12 / 12 |
-| V16 Automation and storage blocks | C4, C5 | 62 | 3 / 3 | 30 / 30 | 28 / 28 | 1 / 1 | 0 / 0 | 30 / 30 |
+| V16 Automation and storage blocks | C4, C5 | 63 | 3 / 3 | 33 / 33 | 26 / 26 | 1 / 1 | 0 / 0 | 33 / 33 |
 | V17 TNT and explosions | C3, C4 | 11 | 0 / 1 | 8 / 8 | 0 / 0 | 2 / 2 | 1 / 0 | 8 / 9 |
 | V18 Technical machines and vanilla quirks | C4, C6, C7 | 6 | 0 / 0 | 4 / 4 | 0 / 0 | 2 / 2 | 0 / 0 | 4 / 4 |
 | V19 General entity lifecycle | C3 | 17 | 0 / 0 | 4 / 4 | 0 / 0 | 13 / 13 | 0 / 0 | 3 / 3 |
@@ -54,8 +54,8 @@ Feature counts per implementation state, then the number of features with compar
 | V28 Villages, raids and trading | C8 | 15 | 0 / 0 | 0 / 0 | 0 / 0 | 15 / 15 | 0 / 0 | 0 / 0 |
 | V29 Bosses and progression | C8 | 11 | 0 / 0 | 0 / 0 | 4 / 4 | 7 / 7 | 0 / 0 | 0 / 0 |
 | V30 Data-pack execution | C1, C5, C9 | 8 | 0 / 0 | 1 / 1 | 0 / 0 | 6 / 7 | 1 / 0 | 0 / 0 |
-| V31 Commands and administration | C9 | 117 | 0 / 0 | 7 / 7 | 16 / 20 | 85 / 90 | 9 / 0 | 1 / 1 |
-| V32 Client-visible world state | C10 | 287 | 5 / 5 | 56 / 56 | 0 / 0 | 219 / 225 | 7 / 1 | 6 / 6 |
+| V31 Commands and administration | C9 | 117 | 0 / 0 | 8 / 8 | 16 / 20 | 84 / 89 | 9 / 0 | 1 / 1 |
+| V32 Client-visible world state | C10 | 287 | 5 / 5 | 57 / 57 | 0 / 0 | 218 / 224 | 7 / 1 | 7 / 7 |
 | V33 Communication and connection lifecycle | C10 | 85 | 17 / 17 | 19 / 19 | 0 / 0 | 41 / 49 | 8 / 0 | 0 / 0 |
 | V34 Save compatibility | C11 | 6 | 1 / 1 | 0 / 1 | 0 / 0 | 4 / 3 | 1 / 1 | 0 / 1 |
 | V35 Version-specific gameplay and optional profiles | C12 | 6 | 0 / 0 | 0 / 0 | 1 / 3 | 3 / 3 | 2 / 0 | 0 / 0 |
@@ -67,8 +67,8 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 510 / 515 | 581 / 586 | 0 / 0 |
-| item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 130 / 130 | 1254 / 1285 | 0 / 0 |
+| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 511 / 516 | 580 / 585 | 0 / 0 |
+| item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 131 / 131 | 1253 / 1284 | 0 / 0 |
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 18 / 18 | 0 / 0 | 131 / 133 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
 | enchantment | approximate: minecraft-data pc/1.21.1/enchantments.json / minecraft-data pc/1.21.8/enchantments.json | 42 / 42 | 0 / 0 | 0 / 0 | 0 / 0 | 42 / 42 |
@@ -76,8 +76,8 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 | damage_type | src/server/registries.cpp (minecraft.wiki "Damage type") / src/server/registries.cpp (minecraft.wiki "Damage type") | 49 / 49 | 0 / 0 | 3 / 3 | 46 / 46 | 0 / 0 |
 | biome | minecraft-data pc/1.21.4/biomes.json / minecraft-data pc/1.21.8/biomes.json | 65 / 65 | 0 / 0 | 1 / 1 | 64 / 64 | 0 / 0 |
 | particle | minecraft-data pc/1.21.4/particles.json / minecraft-data pc/1.21.8/particles.json | 112 / 114 | 0 / 0 | 0 / 0 | 0 / 0 | 112 / 114 |
-| command | approximate: minecraft-data pc/1.20.5/commands.json / approximate: minecraft-data pc/1.21.6/commands.json | 83 / 88 | 0 / 0 | 4 / 4 | 0 / 0 | 79 / 84 |
-| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 20 / 20 | 71 / 71 | 0 / 0 | 143 / 153 |
+| command | approximate: minecraft-data pc/1.20.5/commands.json / approximate: minecraft-data pc/1.21.6/commands.json | 83 / 88 | 0 / 0 | 5 / 5 | 0 / 0 | 78 / 83 |
+| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 20 / 20 | 72 / 72 | 0 / 0 | 142 / 152 |
 | block_state | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 27866 / 27946 | — | — | — | — |
 | sound_event | minecraft-data pc/1.21.4/sounds.json / minecraft-data pc/1.21.8/sounds.json | 1651 / 1728 | — | — | — | — |
 | recipe | minecraft-data pc/1.21.4/recipes.json / minecraft-data pc/1.21.8/recipes.json | 1557 / 1607 | — | — | — | — |
@@ -127,10 +127,10 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 64 |
+| black_box | passing | 65 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 210 |
+| official_trace | passing | 211 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -317,7 +317,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Hopper transfers, cooldowns and pickup | C4 | implemented, compared | implemented, compared | `trace/hopper_chain`, `trace/hopper_chained`, `trace/hopper_competition` |
 | Dispensers and droppers with dispense behaviors | C4 | partial, compared | partial, compared | `trace/dispenser_cases`, `trace/dispenser_items`, `trace/dispenser_tnt_rule`, `trace/dispensers`, `trace/dispensers_more`; dispensed projectiles, fire, shears, boats, bottles, honeycomb, glowstone and water bottles at their targets, golem and wither heads, other fluids, other minecarts, spawn eggs, armor stands and shulker boxes are not modeled: those items stay; equipping players is not modeled; Fired 4 ticks after power reaches them or the block above them, from a random filled slot (level-random draws); droppers fill the container in front or eject; dispensers eject items (position, motion and draws exact), prime TNT, pour and fill water and lava buckets, set minecarts on rails and eject equipment |
 | The Crafter | C5 | partial, compared | partial, compared | `client/crafter_menu`, `trace/crafters`, `trace/crafters_more`, `trace/crafters_partial`; an item thrown into the cell of a full container in front is pushed out by an unseeded random and is not compared; Crafters triggered by power at the block craft their grid 4 ticks later by the official data packs' crafting recipes, deliver the result and the remainders to the container in front or throw them out whole as dispensers throw items, show that they crafted for 6 ticks, fill evenly from hoppers and droppers, give items to hoppers and drive comparators by their filled slots, as both official servers do tick by tick |
-| Barrels, shulker boxes, ender chests, trapped chests, chiseled bookshelves, composters | C5 | missing, none | missing, none |  |
+| Trapped chests and chest openers | C5 | partial, compared | partial, compared | `client/openers`, `trace/trapped_chest_pairs`; the open and close sounds and the game events sculk sensors hear are not modeled; Trapped chests pair with trapped chests only and are containers as chests are; each chest half counts the players viewing it and queues its lid's block event with the count at every change and every 5-tick recheck while viewed; a trapped chest gives its count as power on every side and strongly to the block below, and dust connects to it; the harness traces and a 14-step client scenario with two players match both official servers |
+| Barrels, shulker boxes, ender chests, chiseled bookshelves, composters | C5 | missing, none | missing, none |  |
 | Component-aware automation (stacking of items with components) | C5 | implemented, none | implemented, none | Stacks merge only with equal item, damage and components; hoppers, pickups, inserts and menus keep components |
 
 ### V17 TNT and explosions

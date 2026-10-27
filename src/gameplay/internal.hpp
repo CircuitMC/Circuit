@@ -425,6 +425,18 @@ std::optional<BlockState> worn_anvil(BlockState s);
 void set_enchant_offers(RuleContext& ctx, PlayerInventory& inv, BlockPos table);
 void enchant_by_offer(RuleContext& ctx, PlayerInventory& inv, BlockPos table, std::int32_t offer, bool creative);
 
+// ---- container openers (openers.cpp) ----
+// Whether a container counts the players viewing it (chests); a player
+// starting to view the container at `pos` (after they stop viewing another)
+// and stopping; a chest half's viewers as power (up to 15); a trapped
+// chest's power; and a chest half's recheck tick.
+bool counts_viewers(BlockState s);
+void start_viewing(RuleContext& ctx, PlayerInventory& inv, BlockPos pos);
+void stop_viewing(RuleContext& ctx, PlayerInventory& inv);
+std::uint8_t viewer_count(RuleContext& ctx, BlockPos pos);
+std::uint8_t trapped_power(RuleContext& ctx, BlockPos pos, BlockState s);
+void tick_chest(RuleContext& ctx, BlockPos pos);
+
 // ---- lecterns (lectern.cpp) ----
 // Whether a lectern takes the held item (the item tag lectern_books); a book
 // put on one; the signal a comparator reads from one (by its page); a button

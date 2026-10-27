@@ -7,6 +7,7 @@
 namespace circuit::contracts {
 namespace {
 constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
+// 24: closed windows that name their block (tag 35);
 // 23: window buttons of creative players (tag 34);
 // 22: names typed into anvils (tag 32) and experience changes (tag 33);
 // 21: summoned experience orbs carry their value, count and age (tag 31);
@@ -25,7 +26,7 @@ constexpr std::uint8_t magic[4]{'C', 'R', 'P', 'L'};
 // block registry id; 3: stacks carry damage, player commands carry their
 // player. Commands of versions before 6 are the overworld's. Tickets of
 // versions before 7 (tags 5 and 9) read as forced squares.
-constexpr std::uint16_t format_version = 23;
+constexpr std::uint16_t format_version = 24;
 constexpr std::uint16_t oldest_version = 3;
 // The registry of version 3 records, which store only states that predate it.
 constexpr std::string_view version_3_registry = "circuit-blocks-1";
@@ -133,7 +134,8 @@ private:
 // 29 ContainerButton, 30 SetSlotEnabled, 31 SummonEntity with an experience
 // orb's value, count and age (tag 23 has none), 32 RenameItem,
 // 33 ChangeExperience, 34 ContainerButton of a creative player (tag 29's
-// players are not).
+// players are not), 35 CloseContainer naming its window's block (tags 14 and
+// 28 name none).
 std::uint8_t tag_of(const CommandBody& body) {
     if (const auto* summon = std::get_if<SummonEntity>(&body); summon && (summon->value != 0 || summon->count != 1 || summon->age != 0))
         return 31;
@@ -141,6 +143,7 @@ std::uint8_t tag_of(const CommandBody& body) {
     if (std::holds_alternative<RenameItem>(body)) return 32;
     if (std::holds_alternative<SetSlotEnabled>(body)) return 30;
     if (const auto* button = std::get_if<ContainerButton>(&body)) return button->creative ? 34 : 29;
+    if (const auto* close = std::get_if<CloseContainer>(&body); close && close->container) return 35;
     if (const auto* close = std::get_if<CloseContainer>(&body); close && close->drop) return 28;
     if (std::holds_alternative<SummonEntity>(body)) return 23;
     if (std::holds_alternative<PlayerUse>(body)) return 25;
@@ -287,6 +290,10 @@ void encode_command(Writer& w, const Command& c) {
             w.player(body.player);
             w.vec(body.drop_position);
             w.vec(body.drop_velocity);
+            if (body.container) {
+                w.put(static_cast<std::uint8_t>(body.drop));
+                w.pos(*body.container);
+            }
         } else if constexpr (std::is_same_v<T, ContainerButton>) {
             w.player(body.player);
             w.put(static_cast<std::uint8_t>(body.container.has_value()));
@@ -482,10 +489,18 @@ bool decode_command(Reader& r, Command& c) {
         return true;
     }
     case 14:
-    case 28: {
+    case 28:
+    case 35: {
         CloseContainer b;
         if (!r.player(b.player) || !r.vec(b.drop_position) || !r.vec(b.drop_velocity)) return false;
         b.drop = tag == 28;
+        if (tag == 35) {
+            std::uint8_t drop{};
+            BlockPos p;
+            if (!r.get(drop) || drop > 1 || !r.pos(p)) return false;
+            b.drop = drop == 1;
+            b.container = p;
+        }
         c.body = b;
         return true;
     }
