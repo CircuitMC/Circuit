@@ -214,6 +214,9 @@ public:
     // A block event (a chest's lid: event 1 with its viewers), with the
     // block's registry id.
     Bytes block_event(WirePosition pos, std::uint8_t event, std::uint8_t param, std::int32_t block) const;
+    // A level event (sounds and particles clients make themselves; 1500 a
+    // composter taking an item), heard within its volume.
+    Bytes level_event(std::int32_t event, WirePosition pos, std::int32_t data) const;
     Bytes block_changed_ack(std::int32_t sequence) const;
     Bytes player_position(std::int32_t teleport_id, Vec3 pos, float yaw, float pitch) const;
     Bytes keep_alive(std::int64_t id) const;

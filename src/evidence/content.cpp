@@ -236,6 +236,11 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
         CIRCUIT_TRY(powered, p.choice("powered", {"false", "true"}, 0));
         return simple(blocks::lectern(facing, has_book == 1, powered == 1));
     }
+    if (id == "minecraft:composter") {
+        // An absent level is the default state's (empty).
+        CIRCUIT_TRY(level, p.choice("level", {"0", "1", "2", "3", "4", "5", "6", "7", "8"}, 0));
+        return simple(blocks::composter(static_cast<std::uint8_t>(level)));
+    }
     if (id == "minecraft:barrel") {
         // Absent properties take the default state's (facing north, closed).
         CIRCUIT_TRY(facing, p.direction_or("facing", Direction::north));

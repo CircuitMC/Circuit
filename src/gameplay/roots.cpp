@@ -30,6 +30,7 @@ void run_scheduled_tick(RuleContext& ctx, TickList list, const ScheduledTick& ti
     case BlockType::crafter: tick_crafter(ctx, tick.pos, s); break;
     case BlockType::lectern: tick_lectern(ctx, tick.pos, s); break;
     case BlockType::chest: case BlockType::barrel: tick_viewers(ctx, tick.pos); break;
+    case BlockType::composter: tick_composter(ctx, tick.pos, s); break;
     case BlockType::other:
         if (checks_later(s)) support_tick(ctx, tick.pos, s);
         else if (is_big_dripleaf(s)) tick_dripleaf(ctx, tick.pos, s);

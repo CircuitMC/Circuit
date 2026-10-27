@@ -437,6 +437,23 @@ std::uint8_t viewer_count(RuleContext& ctx, BlockPos pos);
 std::uint8_t trapped_power(RuleContext& ctx, BlockPos pos, BlockState s);
 void tick_viewers(RuleContext& ctx, BlockPos pos);
 
+// ---- composters (composter.cpp) ----
+// An item's chance to add a layer (0 when it does not compost); whether a
+// composter takes an item now (below level 7); an item composted (the level
+// random decides the layer); the tick that makes a full composter ready;
+// whether it is ready; emptying it; and a player's taking its bone meal (it
+// pops out on top, the composter emptied).
+float compost_chance(const ItemStack& stack);
+bool composter_takes(BlockState s, const ItemStack& stack);
+void compost(RuleContext& ctx, BlockPos pos, const ItemStack& stack);
+void tick_composter(RuleContext& ctx, BlockPos pos, BlockState s);
+bool composter_ready(BlockState s);
+// One item of `stack` composted when it comes in through the composter's
+// `face`: only the top takes items.
+bool compost_through(RuleContext& ctx, BlockPos pos, Direction face, const ItemStack& stack);
+void empty_composter(RuleContext& ctx, BlockPos pos);
+void pop_bone_meal(RuleContext& ctx, BlockPos pos);
+
 // ---- lecterns (lectern.cpp) ----
 // Whether a lectern takes the held item (the item tag lectern_books); a book
 // put on one; the signal a comparator reads from one (by its page); a button

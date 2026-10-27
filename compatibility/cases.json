@@ -416,6 +416,17 @@
       "description": "The window type and title of 19 containers and workstations opened once (chest, trapped chest, barrel, hopper, dispenser, dropper, furnace, smoker, blast furnace, crafter, brewing stand, crafting table, stonecutter, smithing table, grindstone, loom, anvil, enchanting table and a double chest): each title is a translation, as is a lectern's (titles-lectern.js, container.lectern); Circuit and both official servers give identical output"
     },
     {
+      "id": "client/composter",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/composter.js",
+      "status": "passing",
+      "description": "9 steps of a survival player at a composter with a comparator behind it: a seed into an empty composter (always a layer), dirt placed on it, pumpkin pies until level 7 (each a layer, used up), a pie at level 7 taking nothing, ready a second later, emptied by hand dropping its bone meal; the level, the held stack, the dust's power and the level events (1500 with 1 or 0) the player receives; Circuit and both official servers give identical output"
+    },
+    {
       "id": "client/furnace_xp",
       "kind": "black_box",
       "versions": [

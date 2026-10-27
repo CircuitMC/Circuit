@@ -1,0 +1,150 @@
+circuit-trace 2
+title Composters used by a player: items composted by their chance, bone meal released at level 8, comparators reading the level
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms composter comparator
+area -1 0 -1 6 2 3
+ticks 60
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 0 1 0 minecraft:composter[level=0]
+at 0 set 0 1 1 minecraft:comparator[facing=north,mode=compare,powered=false]
+at 0 set 0 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 1 1 0 minecraft:composter[level=3]
+at 0 set 1 1 1 minecraft:comparator[facing=north,mode=compare,powered=false]
+at 0 set 1 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 2 1 0 minecraft:composter[level=6]
+at 0 set 2 1 1 minecraft:comparator[facing=north,mode=compare,powered=false]
+at 0 set 2 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 3 1 0 minecraft:composter[level=7]
+at 0 set 3 1 1 minecraft:comparator[facing=north,mode=compare,powered=false]
+at 0 set 3 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 4 1 0 minecraft:composter[level=8]
+at 0 set 4 1 1 minecraft:comparator[facing=north,mode=compare,powered=false]
+at 0 set 4 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 5 1 0 minecraft:composter[level=1]
+at 0 set 5 1 1 minecraft:comparator[facing=north,mode=compare,powered=false]
+at 0 set 5 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 2 use-with 0 1 0 minecraft:wheat_seeds
+at 3 use-with 1 1 0 minecraft:cake
+at 4 use-with 2 1 0 minecraft:pumpkin_pie
+at 5 use 3 1 0
+at 6 use 4 1 0
+at 8 use-with 5 1 0 minecraft:wheat_seeds
+at 9 use-with 5 1 0 minecraft:wheat_seeds
+at 10 use-with 5 1 0 minecraft:wheat_seeds
+at 11 use-with 5 1 0 minecraft:wheat_seeds
+at 12 use-with 5 1 0 minecraft:wheat_seeds
+at 13 use-with 5 1 0 minecraft:wheat_seeds
+at 14 use-with 5 1 0 minecraft:wheat_seeds
+at 15 use-with 5 1 0 minecraft:wheat_seeds
+at 16 use-with 5 1 0 minecraft:wheat_seeds
+at 17 use-with 5 1 0 minecraft:wheat_seeds
+at 30 use 2 1 0
+at 32 use-with 3 1 0 minecraft:wheat_seeds
+
+block 1 0 1 0 ?
+block 1 0 1 2 ?
+block 1 1 1 0 ?
+block 1 1 1 2 ?
+block 1 2 1 0 ?
+block 1 2 1 2 ?
+block 1 3 1 0 ?
+block 1 3 1 2 ?
+block 1 4 1 0 ?
+block 1 4 1 2 ?
+block 1 5 1 0 ?
+block 1 5 1 2 ?
+block 2 0 1 0 ?
+block 2 0 1 2 ?
+block 2 1 1 0 ?
+block 2 1 1 2 ?
+block 2 2 1 0 ?
+block 2 2 1 2 ?
+block 2 3 1 0 ?
+block 2 3 1 2 ?
+block 2 4 1 0 ?
+block 2 4 1 2 ?
+block 2 5 1 0 ?
+block 2 5 1 2 ?
+block 6 0 1 0 ?
+block 6 0 1 2 ?
+block 6 1 1 0 ?
+block 6 1 1 2 ?
+block 6 2 1 0 ?
+block 6 2 1 2 ?
+block 6 3 1 0 ?
+block 6 3 1 2 ?
+block 6 4 1 0 ?
+block 6 4 1 2 ?
+block 6 5 1 0 ?
+block 6 5 1 2 ?
+block 17 0 1 0 ?
+block 17 0 1 2 ?
+block 17 1 1 0 ?
+block 17 1 1 2 ?
+block 17 2 1 0 ?
+block 17 2 1 2 ?
+block 17 3 1 0 ?
+block 17 3 1 2 ?
+block 17 4 1 0 ?
+block 17 4 1 2 ?
+block 17 5 1 0 ?
+block 17 5 1 2 ?
+block 30 0 1 0 ?
+block 30 0 1 2 ?
+block 30 1 1 0 ?
+block 30 1 1 2 ?
+block 30 2 1 0 ?
+block 30 2 1 2 ?
+block 30 3 1 0 ?
+block 30 3 1 2 ?
+block 30 4 1 0 ?
+block 30 4 1 2 ?
+block 30 5 1 0 ?
+block 30 5 1 2 ?
+block 40 0 1 0 ?
+block 40 0 1 2 ?
+block 40 1 1 0 ?
+block 40 1 1 2 ?
+block 40 2 1 0 ?
+block 40 2 1 2 ?
+block 40 3 1 0 ?
+block 40 3 1 2 ?
+block 40 4 1 0 ?
+block 40 4 1 2 ?
+block 40 5 1 0 ?
+block 40 5 1 2 ?
+block 60 0 1 0 ?
+block 60 0 1 2 ?
+block 60 1 1 0 ?
+block 60 1 1 2 ?
+block 60 2 1 0 ?
+block 60 2 1 2 ?
+block 60 3 1 0 ?
+block 60 3 1 2 ?
+block 60 4 1 0 ?
+block 60 4 1 2 ?
+block 60 5 1 0 ?
+block 60 5 1 2 ?

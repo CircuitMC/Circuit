@@ -219,6 +219,12 @@ void drop_from(RuleContext& ctx, BlockPos pos, Direction facing, std::size_t slo
         if (insert_one(ctx, front, stack, contracts::opposite(facing))) set_slot(ctx, pos, slot, less_one(stack));
         return;
     }
+    // A composter takes the item through its top or keeps the dropper from
+    // dropping it (composter_inputs).
+    if (ctx.block(front).is(BlockType::composter)) {
+        if (compost_through(ctx, front, contracts::opposite(facing), stack)) set_slot(ctx, pos, slot, less_one(stack));
+        return;
+    }
     eject(ctx, pos, facing, stack);
     set_slot(ctx, pos, slot, less_one(stack));
 }

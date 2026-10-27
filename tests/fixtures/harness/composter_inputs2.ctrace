@@ -1,0 +1,213 @@
+circuit-trace 2
+title Composters under crafters making eight cookies and bread at level 7, and under a dropper at level 8
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.37.0+mc1.21.8
+mechanisms composter dispenser crafter loot
+area -1 -1 -1 6 3 2
+ticks 40
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 -1 0 minecraft:stone
+at 0 set 0 -1 1 minecraft:stone
+at 0 set 1 -1 0 minecraft:stone
+at 0 set 1 -1 1 minecraft:stone
+at 0 set 2 -1 0 minecraft:stone
+at 0 set 2 -1 1 minecraft:stone
+at 0 set 3 -1 0 minecraft:stone
+at 0 set 3 -1 1 minecraft:stone
+at 0 set 4 -1 0 minecraft:stone
+at 0 set 4 -1 1 minecraft:stone
+at 0 set 5 -1 0 minecraft:stone
+at 0 set 5 -1 1 minecraft:stone
+at 0 set 0 0 0 minecraft:composter[level=1]
+at 0 set 0 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=false]
+at 0 set 1 1 0 minecraft:lever[face=wall,facing=east,powered=false]
+at 0 set 3 0 0 minecraft:composter[level=8]
+at 0 set 3 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=false]
+at 0 set 4 1 0 minecraft:lever[face=wall,facing=east,powered=false]
+at 0 set 5 0 1 minecraft:composter[level=8]
+at 0 set 5 1 1 minecraft:dropper[facing=down,triggered=false]
+at 0 set 4 1 1 minecraft:lever[face=wall,facing=west,powered=false]
+
+at 1 insert 0 1 0 0 minecraft:wheat 1
+at 1 insert 0 1 0 1 minecraft:cocoa_beans 1
+at 1 insert 0 1 0 2 minecraft:wheat 1
+at 1 insert 3 1 0 0 minecraft:wheat 1
+at 1 insert 3 1 0 1 minecraft:wheat 1
+at 1 insert 3 1 0 2 minecraft:wheat 1
+at 1 insert 5 1 1 0 minecraft:wheat_seeds 3
+
+at 2 use 1 1 0
+change 2 commands 1 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 2 commands 0 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=false] minecraft:crafter[crafting=false,orientation=down_north,triggered=true]
+at 2 use 4 1 0
+change 2 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 2 commands 3 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=false] minecraft:crafter[crafting=false,orientation=down_north,triggered=true]
+at 2 use 4 1 1
+change 2 commands 4 1 1 minecraft:lever[face=wall,facing=west,powered=false] minecraft:lever[face=wall,facing=west,powered=true]
+change 2 commands 5 1 1 minecraft:dropper[facing=down,triggered=false] minecraft:dropper[facing=down,triggered=true]
+block 2 0 0 0 minecraft:composter[level=1]
+block 2 3 0 0 minecraft:composter[level=8]
+block 2 5 0 1 minecraft:composter[level=8]
+
+change 5 block_ticks 0 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=true] minecraft:crafter[crafting=true,orientation=down_north,triggered=true]
+change 5 block_ticks 0 0 0 minecraft:composter[level=1] minecraft:composter[level=2]
+entity-added 5 block_ticks e1 minecraft:item 0.5 0.675 0.5 0.027322147777603858 0.13801693427797113 -0.006415520477279845 item=minecraft:cookie count=7
+change 5 block_ticks 3 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=true] minecraft:crafter[crafting=true,orientation=down_north,triggered=true]
+entity-added 5 block_ticks e2 minecraft:item 3.5 0.675 0.5 -0.05411174647227216 0.28889350456953095 0.02215630511268394 item=minecraft:bread count=1
+draws 5 block_ticks level 39
+entity-order 5 entities e1 e2
+entity 5 e1 0.5273221477776039 0.75 0.49358447952272017 0.026775705343180394 0 -0.00628721019010059 item=minecraft:cookie count=7 age=1 pickup-delay=0 on-ground=false
+entity 5 e2 3.4458882535277278 0.75 0.522156305112684 -0.05302951257492637 0 0.021713179433028244 item=minecraft:bread count=1 age=1 pickup-delay=0 on-ground=false
+
+entity-order 6 entities e1 e2
+entity 6 e1 0.5540978531207843 0.71 0.4872972693326196 0.026240191747022835 -0.0392 -0.006161466106217596 item=minecraft:cookie count=7 age=2 pickup-delay=0 on-ground=false
+entity 6 e2 3.3928587409528013 0.71 0.5438694845457122 -0.05196892333488553 -0.0392 0.02127891625851371 item=minecraft:bread count=1 age=2 pickup-delay=0 on-ground=false
+
+entity-order 7 entities e1 e2
+entity 7 e1 0.5803380448678072 0.6308 0.481135803226402 0.025715388412574317 -0.07761599999999999 -0.006038236901613884 item=minecraft:cookie count=7 age=3 pickup-delay=0 on-ground=false
+entity 7 e2 3.340889817617916 0.6308 0.5651484008042259 -0.050929545859416364 -0.07761599999999999 0.020853338339206554 item=minecraft:bread count=1 age=3 pickup-delay=0 on-ground=false
+
+entity-order 8 entities e1 e2
+entity 8 e1 0.6060534332803815 0.5131840000000001 0.4750975663247881 0.02520108113480494 -0.11526368 -0.005917472278751835 item=minecraft:cookie count=7 age=4 pickup-delay=0 on-ground=false
+entity 8 e2 3.2899602717584995 0.5131840000000001 0.5860017391434325 -0.04991095591363203 -0.11526368 0.02043627197016829 item=minecraft:bread count=1 age=4 pickup-delay=0 on-ground=false
+
+entity-order 9 entities e1 e2
+entity 9 e1 0.6312545144151864 0.35792032000000007 0.4691800940460363 0.02469705999278132 -0.15215840639999997 -0.005799122946043625 item=minecraft:cookie count=7 age=5 pickup-delay=0 on-ground=false
+entity 9 e2 3.25 0.35792032000000007 0.6064380111136007 0 -0.15215840639999997 0.02002754692055588 item=minecraft:bread count=1 age=5 pickup-delay=0 on-ground=false
+
+change 10 block_entities 0 1 0 minecraft:crafter[crafting=true,orientation=down_north,triggered=true] minecraft:crafter[crafting=false,orientation=down_north,triggered=true]
+change 10 block_entities 3 1 0 minecraft:crafter[crafting=true,orientation=down_north,triggered=true] minecraft:crafter[crafting=false,orientation=down_north,triggered=true]
+entity-order 10 entities e1 e2
+entity 10 e1 0.6559515744079677 0.1657619136000001 0.46338097109999266 0.02420311926398473 -0.18831523827199997 -0.0056831405977322445 item=minecraft:cookie count=7 age=6 pickup-delay=0 on-ground=false
+entity 10 e2 3.25 0.1657619136000001 0.6264655580341566 0 -0.18831523827199997 0.019626996364139903 item=minecraft:bread count=1 age=6 pickup-delay=0 on-ground=false
+block 10 0 0 0 minecraft:composter[level=2]
+block 10 3 0 0 minecraft:composter[level=8]
+block 10 5 0 1 minecraft:composter[level=8]
+
+entity-order 11 entities e1 e2
+entity 11 e1 0.6801546936719525 0.125 0.4576978305022604 0.0142314355583004 0 -0.0033416870074982038 item=minecraft:cookie count=7 age=7 pickup-delay=0 on-ground=true
+entity 11 e2 3.25 0.125 0.6460925543982965 0 0 0.011540675022615528 item=minecraft:bread count=1 age=7 pickup-delay=0 on-ground=true
+
+entity-order 12 entities e1 e2
+entity 12 e1 0.6943861292302529 0.125 0.4543561434947622 0.00836808494975422 0 -0.0019649121579955703 item=minecraft:cookie count=7 age=8 pickup-delay=0 on-ground=true
+entity 12 e2 3.25 0.125 0.6576332294209121 0 0 0.006785917595672743 item=minecraft:bread count=1 age=8 pickup-delay=0 on-ground=true
+
+entity-order 13 entities e1 e2
+entity 13 e1 0.7027542141800072 0.125 0.4523912313367667 0.004920434445241998 0 -0.0011553684650823434 item=minecraft:cookie count=7 age=9 pickup-delay=0 on-ground=true
+entity 13 e2 3.25 0.125 0.6644191470165848 0 0 0.003990119947492003 item=minecraft:bread count=1 age=9 pickup-delay=0 on-ground=true
+
+entity-order 14 entities e1 e2
+entity 14 e1 0.7076746486252492 0.125 0.4512358628716843 0.0028932157447367963 0 -6.793567257828223E-4 item=minecraft:cookie count=7 age=10 pickup-delay=0 on-ground=true
+entity 14 e2 3.25 0.125 0.6684092669640768 0 0 0.0023461907650523424 item=minecraft:bread count=1 age=10 pickup-delay=0 on-ground=true
+
+entity-order 15 entities e1 e2
+entity 15 e1 0.710567864369986 0.125 0.4505565061459015 0.0017012110289747401 0 -3.994617949291733E-4 item=minecraft:cookie count=7 age=11 pickup-delay=0 on-ground=true
+entity 15 e2 3.25 0.125 0.6684092669640768 0 -0.04 0.0023461907650523424 item=minecraft:bread count=1 age=11 pickup-delay=0 on-ground=true
+
+entity-order 16 entities e1 e2
+entity 16 e1 0.710567864369986 0.125 0.4505565061459015 0.0017012110289747401 -0.04 -3.994617949291733E-4 item=minecraft:cookie count=7 age=12 pickup-delay=0 on-ground=true
+entity 16 e2 3.25 0.125 0.6684092669640768 0 -0.08 0.0023461907650523424 item=minecraft:bread count=1 age=12 pickup-delay=0 on-ground=true
+
+entity-order 17 entities e1 e2
+entity 17 e1 0.710567864369986 0.125 0.4505565061459015 0.0017012110289747401 -0.08 -3.994617949291733E-4 item=minecraft:cookie count=7 age=13 pickup-delay=0 on-ground=true
+entity 17 e2 3.25 0.125 0.6684092669640768 0 -0.12 0.0023461907650523424 item=minecraft:bread count=1 age=13 pickup-delay=0 on-ground=true
+
+entity-order 18 entities e1 e2
+entity 18 e1 0.710567864369986 0.125 0.4505565061459015 0.0017012110289747401 -0.12 -3.994617949291733E-4 item=minecraft:cookie count=7 age=14 pickup-delay=0 on-ground=true
+entity 18 e2 3.25 0.125 0.6707554577291291 0 0 0.0013795603085758935 item=minecraft:bread count=1 age=14 pickup-delay=0 on-ground=true
+
+entity-order 19 entities e1 e2
+entity 19 e1 0.7122690753989607 0.125 0.4501570443509723 0.0010003121856260256 0 -2.3488355903765408E-4 item=minecraft:cookie count=7 age=15 pickup-delay=0 on-ground=true
+entity 19 e2 3.25 0.125 0.6707554577291291 0 -0.04 0.0013795603085758935 item=minecraft:bread count=1 age=15 pickup-delay=0 on-ground=true
+
+entity-order 20 entities e1 e2
+entity 20 e1 0.7122690753989607 0.125 0.4501570443509723 0.0010003121856260256 -0.04 -2.3488355903765408E-4 item=minecraft:cookie count=7 age=16 pickup-delay=0 on-ground=true
+entity 20 e2 3.25 0.125 0.6707554577291291 0 -0.08 0.0013795603085758935 item=minecraft:bread count=1 age=16 pickup-delay=0 on-ground=true
+
+entity-order 21 entities e1 e2
+entity 21 e1 0.7122690753989607 0.125 0.4501570443509723 0.0010003121856260256 -0.08 -2.3488355903765408E-4 item=minecraft:cookie count=7 age=17 pickup-delay=0 on-ground=true
+entity 21 e2 3.25 0.125 0.6707554577291291 0 -0.12 0.0013795603085758935 item=minecraft:bread count=1 age=17 pickup-delay=0 on-ground=true
+
+entity-order 22 entities e1 e2
+entity 22 e1 0.7122690753989607 0.125 0.4501570443509723 0.0010003121856260256 -0.12 -2.3488355903765408E-4 item=minecraft:cookie count=7 age=18 pickup-delay=0 on-ground=true
+entity 22 e2 3.25 0.125 0.672135018037705 0 0 8.111815430130019E-4 item=minecraft:bread count=1 age=18 pickup-delay=0 on-ground=true
+
+entity-order 23 entities e1 e2
+entity 23 e1 0.7132693875845867 0.125 0.44992216079193464 5.881836242943695E-4 0 -1.3811154660229048E-4 item=minecraft:cookie count=7 age=19 pickup-delay=0 on-ground=true
+entity 23 e2 3.25 0.125 0.672135018037705 0 -0.04 8.111815430130019E-4 item=minecraft:bread count=1 age=19 pickup-delay=0 on-ground=true
+
+entity-order 24 entities e1 e2
+entity 24 e1 0.7132693875845867 0.125 0.44992216079193464 5.881836242943695E-4 -0.04 -1.3811154660229048E-4 item=minecraft:cookie count=7 age=20 pickup-delay=0 on-ground=true
+entity 24 e2 3.25 0.125 0.672135018037705 0 -0.08 8.111815430130019E-4 item=minecraft:bread count=1 age=20 pickup-delay=0 on-ground=true
+
+entity-order 25 entities e1 e2
+entity 25 e1 0.7132693875845867 0.125 0.44992216079193464 5.881836242943695E-4 -0.08 -1.3811154660229048E-4 item=minecraft:cookie count=7 age=21 pickup-delay=0 on-ground=true
+entity 25 e2 3.25 0.125 0.672135018037705 0 -0.12 8.111815430130019E-4 item=minecraft:bread count=1 age=21 pickup-delay=0 on-ground=true
+
+entity-order 26 entities e1 e2
+entity 26 e1 0.7132693875845867 0.125 0.44992216079193464 5.881836242943695E-4 -0.12 -1.3811154660229048E-4 item=minecraft:cookie count=7 age=22 pickup-delay=0 on-ground=true
+entity 26 e2 3.25 0.125 0.672946199580718 0 0 4.7697479525503133E-4 item=minecraft:bread count=1 age=22 pickup-delay=0 on-ground=true
+
+entity-order 27 entities e1 e2
+entity 27 e1 0.713857571208881 0.125 0.44978404924533233 3.4585200586309745E-4 0 -8.120959756837976E-5 item=minecraft:cookie count=7 age=23 pickup-delay=0 on-ground=true
+entity 27 e2 3.25 0.125 0.672946199580718 0 -0.04 4.7697479525503133E-4 item=minecraft:bread count=1 age=23 pickup-delay=0 on-ground=true
+
+entity-order 28 entities e1 e2
+entity 28 e1 0.713857571208881 0.125 0.44978404924533233 3.4585200586309745E-4 -0.04 -8.120959756837976E-5 item=minecraft:cookie count=7 age=24 pickup-delay=0 on-ground=true
+entity 28 e2 3.25 0.125 0.672946199580718 0 -0.08 4.7697479525503133E-4 item=minecraft:bread count=1 age=24 pickup-delay=0 on-ground=true
+
+entity-order 29 entities e1 e2
+entity 29 e1 0.713857571208881 0.125 0.44978404924533233 3.4585200586309745E-4 -0.08 -8.120959756837976E-5 item=minecraft:cookie count=7 age=25 pickup-delay=0 on-ground=true
+entity 29 e2 3.25 0.125 0.672946199580718 0 -0.12 4.7697479525503133E-4 item=minecraft:bread count=1 age=25 pickup-delay=0 on-ground=true
+
+entity-order 30 entities e1 e2
+entity 30 e1 0.713857571208881 0.125 0.44978404924533233 3.4585200586309745E-4 -0.12 -8.120959756837976E-5 item=minecraft:cookie count=7 age=26 pickup-delay=0 on-ground=true
+entity 30 e2 3.25 0.125 0.673423174375973 0 0 2.804612078124324E-4 item=minecraft:bread count=1 age=26 pickup-delay=0 on-ground=true
+
+entity-order 31 entities e1 e2
+entity 31 e1 0.7142034232147442 0.125 0.449702839647764 2.0336099989697216E-4 0 -4.775124817195276E-5 item=minecraft:cookie count=7 age=27 pickup-delay=0 on-ground=true
+entity 31 e2 3.25 0.125 0.673423174375973 0 -0.04 2.804612078124324E-4 item=minecraft:bread count=1 age=27 pickup-delay=0 on-ground=true
+
+entity-order 32 entities e1 e2
+entity 32 e1 0.7142034232147442 0.125 0.449702839647764 2.0336099989697216E-4 -0.04 -4.775124817195276E-5 item=minecraft:cookie count=7 age=28 pickup-delay=0 on-ground=true
+entity 32 e2 3.25 0.125 0.673423174375973 0 -0.08 2.804612078124324E-4 item=minecraft:bread count=1 age=28 pickup-delay=0 on-ground=true
+
+entity-order 33 entities e1 e2
+entity 33 e1 0.7142034232147442 0.125 0.449702839647764 2.0336099989697216E-4 -0.08 -4.775124817195276E-5 item=minecraft:cookie count=7 age=29 pickup-delay=0 on-ground=true
+entity 33 e2 3.25 0.125 0.673423174375973 0 -0.12 2.804612078124324E-4 item=minecraft:bread count=1 age=29 pickup-delay=0 on-ground=true
+
+entity-order 34 entities e1 e2
+entity 34 e1 0.7142034232147442 0.125 0.449702839647764 2.0336099989697216E-4 -0.12 -4.775124817195276E-5 item=minecraft:cookie count=7 age=30 pickup-delay=0 on-ground=true
+entity 34 e2 3.25 0.125 0.673423174375973 0 0 1.649112067767666E-4 item=minecraft:bread count=1 age=30 pickup-delay=0 on-ground=true
+
+entity-order 35 entities e1 e2
+entity 35 e1 0.7142034232147442 0.125 0.449702839647764 1.1957627996370971E-4 0 -2.807773674853484E-5 item=minecraft:cookie count=7 age=31 pickup-delay=0 on-ground=true
+entity 35 e2 3.25 0.125 0.673423174375973 0 -0.04 1.649112067767666E-4 item=minecraft:bread count=1 age=31 pickup-delay=0 on-ground=true
+
+entity-order 36 entities e1 e2
+entity 36 e1 0.7142034232147442 0.125 0.449702839647764 1.1957627996370971E-4 -0.04 -2.807773674853484E-5 item=minecraft:cookie count=7 age=32 pickup-delay=0 on-ground=true
+entity 36 e2 3.25 0.125 0.673423174375973 0 -0.08 1.649112067767666E-4 item=minecraft:bread count=1 age=32 pickup-delay=0 on-ground=true
+
+entity-order 37 entities e1 e2
+entity 37 e1 0.7142034232147442 0.125 0.449702839647764 1.1957627996370971E-4 -0.08 -2.807773674853484E-5 item=minecraft:cookie count=7 age=33 pickup-delay=0 on-ground=true
+entity 37 e2 3.25 0.125 0.673423174375973 0 -0.12 1.649112067767666E-4 item=minecraft:bread count=1 age=33 pickup-delay=0 on-ground=true
+
+entity-order 38 entities e1 e2
+entity 38 e1 0.7142034232147442 0.125 0.449702839647764 1.1957627996370971E-4 -0.12 -2.807773674853484E-5 item=minecraft:cookie count=7 age=34 pickup-delay=0 on-ground=true
+entity 38 e2 3.25 0.125 0.673423174375973 0 0 9.696779933557686E-5 item=minecraft:bread count=1 age=34 pickup-delay=0 on-ground=true
+
+entity-order 39 entities e1 e2
+entity 39 e1 0.7142034232147442 0.125 0.449702839647764 7.031085968894458E-5 0 -1.65097108683135E-5 item=minecraft:cookie count=7 age=35 pickup-delay=0 on-ground=true
+entity 39 e2 3.25 0.125 0.673423174375973 0 -0.04 9.696779933557686E-5 item=minecraft:bread count=1 age=35 pickup-delay=0 on-ground=true
+
+entity-order 40 entities e1 e2
+entity 40 e1 0.7142034232147442 0.125 0.449702839647764 7.031085968894458E-5 -0.04 -1.65097108683135E-5 item=minecraft:cookie count=7 age=36 pickup-delay=0 on-ground=true
+entity 40 e2 3.25 0.125 0.673423174375973 0 -0.08 9.696779933557686E-5 item=minecraft:bread count=1 age=36 pickup-delay=0 on-ground=true
+block 40 0 0 0 minecraft:composter[level=2]
+block 40 3 0 0 minecraft:composter[level=8]
+block 40 5 0 1 minecraft:composter[level=8]
+slot 40 5 1 1 0 minecraft:wheat_seeds 3

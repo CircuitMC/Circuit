@@ -252,6 +252,11 @@ void on_placed(RuleContext& ctx, BlockPos pos, BlockState state, BlockState prev
     case BlockType::chest:
         if (fresh) check_chest(ctx, pos);
         break;
+    // Every full composter, however it came to be, gets ready 20 ticks later
+    // (composter_break: one set full).
+    case BlockType::composter:
+        if (state.level() == 7) schedule(ctx, TickList::block, pos, BlockType::composter, 20, 0);
+        break;
     // Every state of a torch updates around it.
     case BlockType::redstone_torch: case BlockType::redstone_wall_torch: torch_updates(ctx, pos, state); break;
     case BlockType::observer:

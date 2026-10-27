@@ -2342,10 +2342,19 @@ struct Game::Impl final : GameServices {
     }
 
     // Block events that ran: chests' lids, to players within 64 blocks that
-    // have the chunk, as the official servers send them.
+    // have the chunk, as the official servers send them; and level events,
+    // to players within 64 blocks.
     void publish_block_events() {
         for (const auto& r : engine->trace()) {
             if (r.dimension != overworld) continue;
+            if (r.kind == contracts::TraceKind::level_event) {
+                const auto packet = wire.level_event(static_cast<std::int32_t>(r.a), wire_pos(r.pos), static_cast<std::int32_t>(r.b));
+                for (auto& [id, p] : players) {
+                    const double dx = p.pos.x - (r.pos.x + 0.5), dy = p.pos.y - (r.pos.y + 0.5), dz = p.pos.z - (r.pos.z + 0.5);
+                    if (dx * dx + dy * dy + dz * dz < 4096.0) p.peer->send(packet);
+                }
+                continue;
+            }
             if (r.kind == contracts::TraceKind::block_event_queued) {
                 auto& params = queued_events[{r.pos, r.a, r.b}];
                 params.push_back(static_cast<std::uint8_t>(r.c));

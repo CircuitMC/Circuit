@@ -1,0 +1,2280 @@
+circuit-trace 2
+title Composters: every compostable item of both versions fed by hoppers, composting by its chance, bone meal taken from below
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.37.0+mc1.21.8
+mechanisms composter hopper
+area 0 0 0 57 2 2
+ticks 300
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 0 1 0 minecraft:composter[level=0]
+at 0 set 0 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 1 0 minecraft:composter[level=0]
+at 0 set 1 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 2 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 2 1 0 minecraft:composter[level=0]
+at 0 set 2 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 3 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 3 1 0 minecraft:composter[level=0]
+at 0 set 3 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 4 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 4 1 0 minecraft:composter[level=0]
+at 0 set 4 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 5 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 5 1 0 minecraft:composter[level=0]
+at 0 set 5 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 6 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 6 1 0 minecraft:composter[level=0]
+at 0 set 6 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 7 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 7 1 0 minecraft:composter[level=0]
+at 0 set 7 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 8 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 8 1 0 minecraft:composter[level=0]
+at 0 set 8 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 9 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 9 1 0 minecraft:composter[level=0]
+at 0 set 9 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 10 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 10 1 0 minecraft:composter[level=0]
+at 0 set 10 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 11 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 11 1 0 minecraft:composter[level=0]
+at 0 set 11 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 12 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 12 1 0 minecraft:composter[level=0]
+at 0 set 12 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 13 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 13 1 0 minecraft:composter[level=0]
+at 0 set 13 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 14 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 14 1 0 minecraft:composter[level=0]
+at 0 set 14 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 15 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 15 1 0 minecraft:composter[level=0]
+at 0 set 15 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 16 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 16 1 0 minecraft:composter[level=0]
+at 0 set 16 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 17 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 17 1 0 minecraft:composter[level=0]
+at 0 set 17 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 18 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 18 1 0 minecraft:composter[level=0]
+at 0 set 18 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 19 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 19 1 0 minecraft:composter[level=0]
+at 0 set 19 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 20 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 20 1 0 minecraft:composter[level=0]
+at 0 set 20 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 21 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 21 1 0 minecraft:composter[level=0]
+at 0 set 21 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 22 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 22 1 0 minecraft:composter[level=0]
+at 0 set 22 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 23 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 23 1 0 minecraft:composter[level=0]
+at 0 set 23 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 24 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 24 1 0 minecraft:composter[level=0]
+at 0 set 24 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 25 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 25 1 0 minecraft:composter[level=0]
+at 0 set 25 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 26 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 26 1 0 minecraft:composter[level=0]
+at 0 set 26 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 27 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 27 1 0 minecraft:composter[level=0]
+at 0 set 27 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 28 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 28 1 0 minecraft:composter[level=0]
+at 0 set 28 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 29 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 29 1 0 minecraft:composter[level=0]
+at 0 set 29 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 30 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 30 1 0 minecraft:composter[level=0]
+at 0 set 30 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 31 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 31 1 0 minecraft:composter[level=0]
+at 0 set 31 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 32 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 32 1 0 minecraft:composter[level=0]
+at 0 set 32 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 33 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 33 1 0 minecraft:composter[level=0]
+at 0 set 33 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 34 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 34 1 0 minecraft:composter[level=0]
+at 0 set 34 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 35 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 35 1 0 minecraft:composter[level=0]
+at 0 set 35 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 36 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 36 1 0 minecraft:composter[level=0]
+at 0 set 36 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 37 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 37 1 0 minecraft:composter[level=0]
+at 0 set 37 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 38 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 38 1 0 minecraft:composter[level=0]
+at 0 set 38 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 39 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 39 1 0 minecraft:composter[level=0]
+at 0 set 39 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 40 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 40 1 0 minecraft:composter[level=0]
+at 0 set 40 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 41 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 41 1 0 minecraft:composter[level=0]
+at 0 set 41 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 42 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 42 1 0 minecraft:composter[level=0]
+at 0 set 42 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 43 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 43 1 0 minecraft:composter[level=0]
+at 0 set 43 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 44 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 44 1 0 minecraft:composter[level=0]
+at 0 set 44 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 45 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 45 1 0 minecraft:composter[level=0]
+at 0 set 45 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 46 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 46 1 0 minecraft:composter[level=0]
+at 0 set 46 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 47 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 47 1 0 minecraft:composter[level=0]
+at 0 set 47 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 48 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 48 1 0 minecraft:composter[level=0]
+at 0 set 48 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 49 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 49 1 0 minecraft:composter[level=0]
+at 0 set 49 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 50 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 50 1 0 minecraft:composter[level=0]
+at 0 set 50 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 51 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 51 1 0 minecraft:composter[level=0]
+at 0 set 51 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 52 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 52 1 0 minecraft:composter[level=0]
+at 0 set 52 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 53 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 53 1 0 minecraft:composter[level=0]
+at 0 set 53 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 54 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 54 1 0 minecraft:composter[level=0]
+at 0 set 54 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 55 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 55 1 0 minecraft:composter[level=0]
+at 0 set 55 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 56 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 56 1 0 minecraft:composter[level=0]
+at 0 set 56 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 57 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 57 1 0 minecraft:composter[level=0]
+at 0 set 57 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 0 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 0 1 2 minecraft:composter[level=0]
+at 0 set 0 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 1 2 minecraft:composter[level=0]
+at 0 set 1 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 2 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 2 1 2 minecraft:composter[level=0]
+at 0 set 2 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 3 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 3 1 2 minecraft:composter[level=0]
+at 0 set 3 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 4 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 4 1 2 minecraft:composter[level=0]
+at 0 set 4 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 5 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 5 1 2 minecraft:composter[level=0]
+at 0 set 5 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 6 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 6 1 2 minecraft:composter[level=0]
+at 0 set 6 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 7 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 7 1 2 minecraft:composter[level=0]
+at 0 set 7 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 8 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 8 1 2 minecraft:composter[level=0]
+at 0 set 8 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 9 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 9 1 2 minecraft:composter[level=0]
+at 0 set 9 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 10 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 10 1 2 minecraft:composter[level=0]
+at 0 set 10 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 11 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 11 1 2 minecraft:composter[level=0]
+at 0 set 11 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 12 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 12 1 2 minecraft:composter[level=0]
+at 0 set 12 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 13 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 13 1 2 minecraft:composter[level=0]
+at 0 set 13 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 14 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 14 1 2 minecraft:composter[level=0]
+at 0 set 14 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 15 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 15 1 2 minecraft:composter[level=0]
+at 0 set 15 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 16 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 16 1 2 minecraft:composter[level=0]
+at 0 set 16 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 17 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 17 1 2 minecraft:composter[level=0]
+at 0 set 17 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 18 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 18 1 2 minecraft:composter[level=0]
+at 0 set 18 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 19 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 19 1 2 minecraft:composter[level=0]
+at 0 set 19 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 20 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 20 1 2 minecraft:composter[level=0]
+at 0 set 20 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 21 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 21 1 2 minecraft:composter[level=0]
+at 0 set 21 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 22 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 22 1 2 minecraft:composter[level=0]
+at 0 set 22 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 23 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 23 1 2 minecraft:composter[level=0]
+at 0 set 23 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 24 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 24 1 2 minecraft:composter[level=0]
+at 0 set 24 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 25 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 25 1 2 minecraft:composter[level=0]
+at 0 set 25 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 26 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 26 1 2 minecraft:composter[level=0]
+at 0 set 26 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 27 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 27 1 2 minecraft:composter[level=0]
+at 0 set 27 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 28 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 28 1 2 minecraft:composter[level=0]
+at 0 set 28 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 29 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 29 1 2 minecraft:composter[level=0]
+at 0 set 29 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 30 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 30 1 2 minecraft:composter[level=0]
+at 0 set 30 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 31 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 31 1 2 minecraft:composter[level=0]
+at 0 set 31 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 32 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 32 1 2 minecraft:composter[level=0]
+at 0 set 32 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 33 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 33 1 2 minecraft:composter[level=0]
+at 0 set 33 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 34 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 34 1 2 minecraft:composter[level=0]
+at 0 set 34 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 35 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 35 1 2 minecraft:composter[level=0]
+at 0 set 35 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 36 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 36 1 2 minecraft:composter[level=0]
+at 0 set 36 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 37 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 37 1 2 minecraft:composter[level=0]
+at 0 set 37 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 38 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 38 1 2 minecraft:composter[level=0]
+at 0 set 38 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 39 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 39 1 2 minecraft:composter[level=0]
+at 0 set 39 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 40 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 40 1 2 minecraft:composter[level=0]
+at 0 set 40 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 41 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 41 1 2 minecraft:composter[level=0]
+at 0 set 41 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 42 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 42 1 2 minecraft:composter[level=0]
+at 0 set 42 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 43 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 43 1 2 minecraft:composter[level=0]
+at 0 set 43 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 44 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 44 1 2 minecraft:composter[level=0]
+at 0 set 44 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 45 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 45 1 2 minecraft:composter[level=0]
+at 0 set 45 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 46 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 46 1 2 minecraft:composter[level=0]
+at 0 set 46 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 47 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 47 1 2 minecraft:composter[level=0]
+at 0 set 47 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 48 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 48 1 2 minecraft:composter[level=0]
+at 0 set 48 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 49 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 49 1 2 minecraft:composter[level=0]
+at 0 set 49 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 50 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 50 1 2 minecraft:composter[level=0]
+at 0 set 50 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 51 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 51 1 2 minecraft:composter[level=0]
+at 0 set 51 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 52 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 52 1 2 minecraft:composter[level=0]
+at 0 set 52 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 53 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 53 1 2 minecraft:composter[level=0]
+at 0 set 53 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 54 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 54 1 2 minecraft:composter[level=0]
+at 0 set 54 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 55 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 55 1 2 minecraft:composter[level=0]
+at 0 set 55 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 56 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 56 1 2 minecraft:composter[level=0]
+at 0 set 56 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 57 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 57 1 2 minecraft:composter[level=0]
+at 0 set 57 0 2 minecraft:hopper[enabled=true,facing=down]
+
+at 1 insert 0 2 0 0 minecraft:beetroot_seeds 20
+at 1 insert 1 2 0 0 minecraft:dried_kelp 20
+at 1 insert 2 2 0 0 minecraft:glow_berries 20
+at 1 insert 3 2 0 0 minecraft:hanging_roots 20
+at 1 insert 4 2 0 0 minecraft:kelp 20
+at 1 insert 5 2 0 0 minecraft:oak_leaves 20
+at 1 insert 6 2 0 0 minecraft:spruce_leaves 20
+at 1 insert 7 2 0 0 minecraft:birch_leaves 20
+at 1 insert 8 2 0 0 minecraft:jungle_leaves 20
+at 1 insert 9 2 0 0 minecraft:acacia_leaves 20
+at 1 insert 10 2 0 0 minecraft:cherry_leaves 20
+at 1 insert 11 2 0 0 minecraft:dark_oak_leaves 20
+at 1 insert 12 2 0 0 minecraft:pale_oak_leaves 20
+at 1 insert 13 2 0 0 minecraft:mangrove_leaves 20
+at 1 insert 14 2 0 0 minecraft:azalea_leaves 20
+at 1 insert 15 2 0 0 minecraft:mangrove_propagule 20
+at 1 insert 16 2 0 0 minecraft:mangrove_roots 20
+at 1 insert 17 2 0 0 minecraft:melon_seeds 20
+at 1 insert 18 2 0 0 minecraft:moss_carpet 20
+at 1 insert 19 2 0 0 minecraft:pale_hanging_moss 20
+at 1 insert 20 2 0 0 minecraft:pale_moss_carpet 20
+at 1 insert 21 2 0 0 minecraft:pink_petals 20
+at 1 insert 22 2 0 0 minecraft:pitcher_pod 20
+at 1 insert 23 2 0 0 minecraft:pumpkin_seeds 20
+at 1 insert 24 2 0 0 minecraft:oak_sapling 20
+at 1 insert 25 2 0 0 minecraft:spruce_sapling 20
+at 1 insert 26 2 0 0 minecraft:birch_sapling 20
+at 1 insert 27 2 0 0 minecraft:jungle_sapling 20
+at 1 insert 28 2 0 0 minecraft:acacia_sapling 20
+at 1 insert 29 2 0 0 minecraft:cherry_sapling 20
+at 1 insert 30 2 0 0 minecraft:dark_oak_sapling 20
+at 1 insert 31 2 0 0 minecraft:pale_oak_sapling 20
+at 1 insert 32 2 0 0 minecraft:seagrass 20
+at 1 insert 33 2 0 0 minecraft:short_grass 20
+at 1 insert 34 2 0 0 minecraft:small_dripleaf 20
+at 1 insert 35 2 0 0 minecraft:sweet_berries 20
+at 1 insert 36 2 0 0 minecraft:torchflower_seeds 20
+at 1 insert 37 2 0 0 minecraft:wheat_seeds 20
+at 1 insert 38 2 0 0 minecraft:cactus 20
+at 1 insert 39 2 0 0 minecraft:dried_kelp_block 20
+at 1 insert 40 2 0 0 minecraft:flowering_azalea_leaves 20
+at 1 insert 41 2 0 0 minecraft:glow_lichen 20
+at 1 insert 42 2 0 0 minecraft:melon_slice 20
+at 1 insert 43 2 0 0 minecraft:nether_sprouts 20
+at 1 insert 44 2 0 0 minecraft:sugar_cane 20
+at 1 insert 45 2 0 0 minecraft:tall_grass 20
+at 1 insert 46 2 0 0 minecraft:twisting_vines 20
+at 1 insert 47 2 0 0 minecraft:vine 20
+at 1 insert 48 2 0 0 minecraft:weeping_vines 20
+at 1 insert 49 2 0 0 minecraft:apple 20
+at 1 insert 50 2 0 0 minecraft:azalea 20
+at 1 insert 51 2 0 0 minecraft:beetroot 20
+at 1 insert 52 2 0 0 minecraft:big_dripleaf 20
+at 1 insert 53 2 0 0 minecraft:brown_mushroom 20
+at 1 insert 54 2 0 0 minecraft:carrot 20
+at 1 insert 55 2 0 0 minecraft:carved_pumpkin 20
+at 1 insert 56 2 0 0 minecraft:cocoa_beans 20
+at 1 insert 57 2 0 0 minecraft:crimson_roots 20
+at 1 insert 0 2 2 0 minecraft:fern 20
+at 1 insert 1 2 2 0 minecraft:dandelion 20
+at 1 insert 2 2 2 0 minecraft:poppy 20
+at 1 insert 3 2 2 0 minecraft:blue_orchid 20
+at 1 insert 4 2 2 0 minecraft:allium 20
+at 1 insert 5 2 2 0 minecraft:azure_bluet 20
+at 1 insert 6 2 2 0 minecraft:red_tulip 20
+at 1 insert 7 2 2 0 minecraft:orange_tulip 20
+at 1 insert 8 2 2 0 minecraft:white_tulip 20
+at 1 insert 9 2 2 0 minecraft:pink_tulip 20
+at 1 insert 10 2 2 0 minecraft:oxeye_daisy 20
+at 1 insert 11 2 2 0 minecraft:cornflower 20
+at 1 insert 12 2 2 0 minecraft:lily_of_the_valley 20
+at 1 insert 13 2 2 0 minecraft:sunflower 20
+at 1 insert 14 2 2 0 minecraft:lilac 20
+at 1 insert 15 2 2 0 minecraft:rose_bush 20
+at 1 insert 16 2 2 0 minecraft:peony 20
+at 1 insert 17 2 2 0 minecraft:open_eyeblossom 20
+at 1 insert 18 2 2 0 minecraft:closed_eyeblossom 20
+at 1 insert 19 2 2 0 minecraft:large_fern 20
+at 1 insert 20 2 2 0 minecraft:lily_pad 20
+at 1 insert 21 2 2 0 minecraft:melon 20
+at 1 insert 22 2 2 0 minecraft:moss_block 20
+at 1 insert 23 2 2 0 minecraft:mushroom_stem 20
+at 1 insert 24 2 2 0 minecraft:crimson_fungus 20
+at 1 insert 25 2 2 0 minecraft:warped_fungus 20
+at 1 insert 26 2 2 0 minecraft:nether_wart 20
+at 1 insert 27 2 2 0 minecraft:pale_moss_block 20
+at 1 insert 28 2 2 0 minecraft:potato 20
+at 1 insert 29 2 2 0 minecraft:pumpkin 20
+at 1 insert 30 2 2 0 minecraft:red_mushroom 20
+at 1 insert 31 2 2 0 minecraft:sea_pickle 20
+at 1 insert 32 2 2 0 minecraft:shroomlight 20
+at 1 insert 33 2 2 0 minecraft:spore_blossom 20
+at 1 insert 34 2 2 0 minecraft:warped_roots 20
+at 1 insert 35 2 2 0 minecraft:wheat 20
+at 1 insert 36 2 2 0 minecraft:wither_rose 20
+at 1 insert 37 2 2 0 minecraft:baked_potato 20
+at 1 insert 38 2 2 0 minecraft:bread 20
+at 1 insert 39 2 2 0 minecraft:cookie 20
+at 1 insert 40 2 2 0 minecraft:flowering_azalea 20
+at 1 insert 41 2 2 0 minecraft:hay_block 20
+at 1 insert 42 2 2 0 minecraft:brown_mushroom_block 20
+at 1 insert 43 2 2 0 minecraft:red_mushroom_block 20
+at 1 insert 44 2 2 0 minecraft:nether_wart_block 20
+at 1 insert 45 2 2 0 minecraft:pitcher_plant 20
+at 1 insert 46 2 2 0 minecraft:torchflower 20
+at 1 insert 47 2 2 0 minecraft:warped_wart_block 20
+at 1 insert 48 2 2 0 minecraft:cake 1
+at 1 insert 48 2 2 1 minecraft:cake 1
+at 1 insert 48 2 2 2 minecraft:cake 1
+at 1 insert 48 2 2 3 minecraft:cake 1
+at 1 insert 48 2 2 4 minecraft:cake 1
+at 1 insert 49 2 2 0 minecraft:pumpkin_pie 20
+at 1 insert 50 2 2 0 minecraft:bamboo 20
+at 1 insert 51 2 2 0 minecraft:dead_bush 20
+at 1 insert 52 2 2 0 minecraft:poisonous_potato 20
+at 1 insert 53 2 2 0 minecraft:chorus_fruit 20
+at 1 insert 54 2 2 0 minecraft:bone 20
+at 1 insert 55 2 2 0 minecraft:beef 20
+at 1 insert 56 2 2 0 minecraft:golden_carrot 20
+at 1 insert 57 2 2 0 minecraft:grass_block 20
+change 1 block_entities 0 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 1 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 2 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 3 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 4 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 5 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 6 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 7 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 8 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 9 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 10 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 11 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 12 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 13 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 14 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 15 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 16 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 17 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 18 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 19 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 20 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 21 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 22 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 23 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 24 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 25 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 26 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 27 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 28 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 29 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 30 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 31 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 32 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 33 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 34 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 35 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 36 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 37 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 38 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 39 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 40 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 41 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 42 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 43 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 44 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 45 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 46 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 47 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 48 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 49 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 50 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 51 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 52 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 53 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 54 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 55 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 56 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 57 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 0 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 1 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 2 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 3 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 4 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 5 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 6 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 7 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 8 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 9 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 10 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 11 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 12 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 13 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 14 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 15 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 16 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 17 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 18 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 19 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 20 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 21 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 22 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 23 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 24 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 25 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 26 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 27 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 28 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 29 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 30 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 31 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 32 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 33 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 34 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 35 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 36 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 37 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 38 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 39 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 40 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 41 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 42 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 43 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 44 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 45 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 46 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 47 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 48 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 49 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+
+change 9 block_entities 1 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 10 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 11 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 12 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 13 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 16 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 28 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 29 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 33 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 35 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 36 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 38 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 43 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 44 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 46 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 50 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 53 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 54 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 1 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 6 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 7 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 9 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 12 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 13 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 14 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 15 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 16 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 20 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 21 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 22 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 24 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 25 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 26 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 27 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 29 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 30 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 31 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 33 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 35 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 37 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 38 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 39 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 40 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 41 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 42 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 43 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 44 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 45 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 46 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 47 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 48 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 9 block_entities 49 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+draws 9 block_entities level 216
+
+change 17 block_entities 0 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 3 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 4 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 5 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 7 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 21 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 29 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 30 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 35 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 36 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 38 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 42 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 43 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 44 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 46 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 47 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 48 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 49 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 51 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 52 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 54 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 55 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 56 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 57 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 0 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 2 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 4 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 5 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 6 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 7 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 9 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 11 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 12 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 14 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 15 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 16 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 17 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 18 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 20 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 21 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 22 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 23 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 24 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 26 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 28 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 30 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 31 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 32 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 34 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 35 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 37 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 39 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 40 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 41 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 43 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 44 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 45 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 46 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 47 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 48 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 17 block_entities 49 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+draws 17 block_entities level 216
+
+change 25 block_entities 5 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 8 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 25 block_entities 14 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 25 block_entities 19 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 25 block_entities 22 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 25 block_entities 25 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 25 block_entities 26 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 25 block_entities 29 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 30 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 32 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 25 block_entities 34 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 25 block_entities 40 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 25 block_entities 44 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 45 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 25 block_entities 47 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 48 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 50 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 52 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 53 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 54 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 55 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 56 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 57 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 2 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 3 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 25 block_entities 4 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 5 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 8 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 25 block_entities 9 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 11 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 14 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 18 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 19 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 25 block_entities 20 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 21 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 22 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 23 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 24 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 25 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 28 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 30 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 32 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 33 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 34 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 35 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 37 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 38 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 39 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 40 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 41 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 42 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 25 block_entities 43 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 44 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 45 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 46 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 47 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 48 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 25 block_entities 49 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+draws 25 block_entities level 216
+
+change 33 block_entities 6 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 33 block_entities 7 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 33 block_entities 12 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 33 block_entities 13 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 33 block_entities 16 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 33 block_entities 20 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 33 block_entities 22 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 33 block_entities 27 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 33 block_entities 30 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 31 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 33 block_entities 34 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 33 block_entities 41 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 33 block_entities 42 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 33 block_entities 43 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 44 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 33 block_entities 49 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 33 block_entities 51 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 33 block_entities 52 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 53 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 56 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 0 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 33 block_entities 1 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 33 block_entities 2 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 4 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 5 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 6 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 9 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 33 block_entities 10 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 33 block_entities 11 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 12 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 14 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 33 block_entities 16 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 18 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 19 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 33 block_entities 20 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 33 block_entities 21 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 33 block_entities 22 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 33 block_entities 23 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 26 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 27 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 33 block_entities 30 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 33 block_entities 32 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 33 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 34 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 37 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 33 block_entities 38 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 39 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 33 block_entities 41 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 33 block_entities 42 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 33 block_entities 43 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 33 block_entities 44 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 33 block_entities 45 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 33 block_entities 46 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 33 block_entities 47 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 33 block_entities 48 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 33 block_entities 49 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+draws 33 block_entities level 216
+
+change 41 block_entities 0 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 41 block_entities 3 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 41 block_entities 6 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 41 block_entities 7 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 41 block_entities 8 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 41 block_entities 10 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 41 block_entities 13 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 41 block_entities 18 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 41 block_entities 20 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 41 block_entities 22 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 41 block_entities 24 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 41 block_entities 25 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 41 block_entities 32 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 41 block_entities 37 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 41 block_entities 38 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 41 block_entities 41 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 41 block_entities 43 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 41 block_entities 45 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 41 block_entities 48 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 41 block_entities 49 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 41 block_entities 52 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 41 block_entities 54 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 41 block_entities 55 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 41 block_entities 56 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 41 block_entities 57 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 41 block_entities 1 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 41 block_entities 2 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 41 block_entities 3 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 41 block_entities 4 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 41 block_entities 5 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 41 block_entities 6 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 41 block_entities 7 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 41 block_entities 8 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 41 block_entities 9 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 41 block_entities 10 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 41 block_entities 12 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 41 block_entities 16 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 41 block_entities 20 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 41 block_entities 21 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 41 block_entities 24 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 41 block_entities 25 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 41 block_entities 27 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 41 block_entities 28 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 41 block_entities 29 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 41 block_entities 30 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 41 block_entities 32 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 41 block_entities 35 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 41 block_entities 36 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 41 block_entities 37 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 41 block_entities 38 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 41 block_entities 39 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 41 block_entities 40 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 41 block_entities 41 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 41 block_entities 42 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 41 block_entities 43 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 41 block_entities 44 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 41 block_entities 45 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 41 block_entities 46 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 41 block_entities 47 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 41 block_entities 49 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+draws 41 block_entities level 214
+
+change 49 block_entities 2 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 49 block_entities 6 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 49 block_entities 8 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 49 block_entities 9 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 49 block_entities 11 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 49 block_entities 16 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 49 block_entities 17 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 49 block_entities 19 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 49 block_entities 28 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 49 block_entities 41 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 49 block_entities 42 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 49 block_entities 43 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 49 block_entities 45 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 49 block_entities 47 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 49 block_entities 48 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 49 block_entities 50 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 49 block_entities 51 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 49 block_entities 52 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 49 block_entities 53 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 49 block_entities 54 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 49 block_entities 55 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 49 block_entities 56 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 49 block_entities 1 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 49 block_entities 2 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 49 block_entities 3 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 49 block_entities 4 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 49 block_entities 6 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 49 block_entities 9 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 49 block_entities 10 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 49 block_entities 11 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 49 block_entities 13 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 49 block_entities 14 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 49 block_entities 17 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 49 block_entities 18 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 49 block_entities 19 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 49 block_entities 20 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 49 block_entities 22 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 49 block_entities 23 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 49 block_entities 24 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 49 block_entities 25 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 49 block_entities 26 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 49 block_entities 27 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 49 block_entities 29 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 49 block_entities 31 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 49 block_entities 32 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 49 block_entities 33 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 49 block_entities 34 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 49 block_entities 35 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 49 block_entities 37 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 49 block_entities 38 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 49 block_entities 40 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 49 block_entities 41 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 49 block_entities 42 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 49 block_entities 44 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 49 block_entities 45 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 49 block_entities 46 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 49 block_entities 47 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 49 block_entities 49 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 49 block_entities level 214
+
+change 57 block_entities 6 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 57 block_entities 9 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 57 block_entities 12 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 57 block_entities 13 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 57 block_entities 14 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 57 block_entities 17 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 57 block_entities 23 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 57 block_entities 24 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 57 block_entities 25 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 57 block_entities 28 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 57 block_entities 29 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 57 block_entities 34 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 57 block_entities 38 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 57 block_entities 40 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 57 block_entities 41 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 57 block_entities 43 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 57 block_entities 44 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 57 block_entities 45 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 57 block_entities 46 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 57 block_entities 47 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 57 block_entities 48 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 57 block_entities 51 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 57 block_entities 53 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 57 block_entities 54 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 57 block_entities 57 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 57 block_entities 0 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 57 block_entities 1 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 57 block_entities 2 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 57 block_entities 6 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 57 block_entities 7 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 57 block_entities 8 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 57 block_entities 10 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 57 block_entities 13 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 57 block_entities 14 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 57 block_entities 15 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 57 block_entities 16 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 57 block_entities 17 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 57 block_entities 18 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 57 block_entities 23 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 57 block_entities 24 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 57 block_entities 27 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 57 block_entities 28 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 57 block_entities 30 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 57 block_entities 31 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 57 block_entities 32 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 57 block_entities 33 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 57 block_entities 35 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 57 block_entities 36 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 57 block_entities 38 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 57 block_entities 39 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 57 block_entities 40 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 57 block_entities 42 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 57 block_entities 43 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 57 block_entities level 196
+
+change 65 block_entities 3 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 65 block_entities 4 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 65 block_entities 7 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 65 block_entities 10 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 65 block_entities 17 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 65 block_entities 21 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 65 block_entities 24 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 65 block_entities 30 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 65 block_entities 37 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 65 block_entities 38 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 65 block_entities 48 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 65 block_entities 49 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 65 block_entities 50 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 65 block_entities 51 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 65 block_entities 53 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 65 block_entities 57 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 65 block_entities 1 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 65 block_entities 3 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 65 block_entities 4 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 65 block_entities 5 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 65 block_entities 7 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 65 block_entities 8 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 65 block_entities 11 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 65 block_entities 12 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 65 block_entities 13 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 65 block_entities 15 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 65 block_entities 16 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 65 block_entities 17 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 65 block_entities 25 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 65 block_entities 26 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 65 block_entities 28 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 65 block_entities 33 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 65 block_entities 36 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+draws 65 block_entities level 168
+
+change 69 block_ticks 9 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 69 block_ticks 20 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 69 block_ticks 37 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 69 block_ticks 41 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 69 block_ticks 44 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 69 block_ticks 45 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 69 block_ticks 46 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 69 block_ticks 47 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 69 block_ticks 49 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 69 block_entities 9 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 69 block_entities 20 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 69 block_entities 37 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 69 block_entities 41 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 69 block_entities 44 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 69 block_entities 45 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 69 block_entities 46 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 69 block_entities 47 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 69 block_entities 49 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 70 block_entities 9 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 70 block_entities 20 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 70 block_entities 37 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 70 block_entities 41 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 70 block_entities 44 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 70 block_entities 45 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 70 block_entities 46 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 70 block_entities 47 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 70 block_entities 49 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+
+change 73 block_entities 1 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 73 block_entities 3 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 73 block_entities 8 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 73 block_entities 14 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 73 block_entities 16 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 73 block_entities 18 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 73 block_entities 27 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 73 block_entities 28 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 73 block_entities 29 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 73 block_entities 32 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 73 block_entities 34 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 73 block_entities 35 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 73 block_entities 39 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 73 block_entities 40 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 73 block_entities 42 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 73 block_entities 45 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 73 block_entities 50 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 73 block_entities 55 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 73 block_entities 0 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 73 block_entities 7 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 73 block_entities 8 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 73 block_entities 10 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 73 block_entities 11 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 73 block_entities 12 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 73 block_entities 13 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 73 block_entities 17 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 73 block_entities 18 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 73 block_entities 19 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 73 block_entities 21 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 73 block_entities 22 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 73 block_entities 23 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 73 block_entities 25 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 73 block_entities 28 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 73 block_entities 29 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 73 block_entities 36 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+draws 73 block_entities level 156
+
+change 77 block_ticks 43 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 77 block_ticks 54 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 77 block_ticks 2 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 77 block_ticks 6 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 77 block_ticks 14 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 77 block_ticks 24 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 77 block_ticks 30 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 77 block_ticks 32 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 77 block_ticks 35 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 77 block_ticks 38 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 77 block_ticks 39 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 77 block_ticks 40 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 77 block_ticks 42 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 77 block_ticks 43 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 77 block_entities 43 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 77 block_entities 54 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 77 block_entities 2 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 77 block_entities 6 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 77 block_entities 14 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 77 block_entities 24 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 77 block_entities 30 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 77 block_entities 32 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 77 block_entities 35 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 77 block_entities 38 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 77 block_entities 39 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 77 block_entities 40 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 77 block_entities 42 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 77 block_entities 43 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 78 block_entities 43 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 78 block_entities 54 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 78 block_entities 2 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 78 block_entities 6 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 78 block_entities 9 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 78 block_entities 14 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 78 block_entities 20 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 78 block_entities 24 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 78 block_entities 30 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 78 block_entities 32 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 78 block_entities 35 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 78 block_entities 37 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 78 block_entities 38 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 78 block_entities 39 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 78 block_entities 40 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 78 block_entities 41 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 78 block_entities 42 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 78 block_entities 43 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 78 block_entities 44 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 78 block_entities 45 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 78 block_entities 46 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 78 block_entities 47 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 78 block_entities 49 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+draws 78 block_entities level 18
+
+change 81 block_entities 13 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 81 block_entities 14 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 81 block_entities 15 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 81 block_entities 18 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 81 block_entities 19 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 81 block_entities 21 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 81 block_entities 25 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 81 block_entities 36 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 81 block_entities 39 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 81 block_entities 41 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 81 block_entities 42 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 81 block_entities 44 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 81 block_entities 45 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 81 block_entities 46 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 81 block_entities 47 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 81 block_entities 49 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 81 block_entities 50 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 81 block_entities 52 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 81 block_entities 56 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 81 block_entities 0 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 81 block_entities 3 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 81 block_entities 5 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 81 block_entities 8 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 81 block_entities 15 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 81 block_entities 17 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 81 block_entities 19 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 81 block_entities 29 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 81 block_entities 31 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 81 block_entities 36 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+draws 81 block_entities level 138
+
+change 85 block_ticks 48 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 85 block_ticks 53 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 85 block_ticks 1 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 85 block_ticks 4 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 85 block_ticks 16 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 85 block_ticks 33 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 85 block_entities 48 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 85 block_entities 53 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 85 block_entities 1 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 85 block_entities 4 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 85 block_entities 16 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 85 block_entities 33 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 86 block_entities 43 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 86 block_entities 48 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 86 block_entities 53 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 86 block_entities 1 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 86 block_entities 2 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 86 block_entities 4 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 86 block_entities 9 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 86 block_entities 14 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 86 block_entities 16 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 86 block_entities 20 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 86 block_entities 30 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 86 block_entities 32 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 86 block_entities 33 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 86 block_entities 37 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 86 block_entities 38 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 86 block_entities 39 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 86 block_entities 40 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 86 block_entities 42 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 86 block_entities 43 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 86 block_entities 44 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 86 block_entities 45 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 86 block_entities 46 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 86 block_entities 47 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 86 block_entities 49 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+draws 86 block_entities level 46
+
+change 89 block_entities 1 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 89 block_entities 5 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 89 block_entities 8 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 89 block_entities 9 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 89 block_entities 17 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 89 block_entities 22 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 89 block_entities 32 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 89 block_entities 34 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 89 block_entities 40 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 89 block_entities 41 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 89 block_entities 42 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 89 block_entities 49 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 89 block_entities 55 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 89 block_entities 57 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 89 block_entities 3 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 89 block_entities 10 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 89 block_entities 26 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 89 block_entities 29 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 89 block_entities 31 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 89 block_entities 34 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 89 block_entities 36 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 89 block_entities level 122
+
+change 93 block_ticks 7 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 93 block_ticks 11 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 93 block_ticks 12 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 93 block_ticks 18 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 93 block_ticks 21 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 93 block_ticks 22 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 93 block_ticks 23 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 93 block_ticks 25 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 93 block_ticks 28 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 93 block_entities 7 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 93 block_entities 11 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 93 block_entities 12 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 93 block_entities 18 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 93 block_entities 21 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 93 block_entities 22 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 93 block_entities 23 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 93 block_entities 25 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 93 block_entities 28 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 94 block_entities 43 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 94 block_entities 53 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 94 block_entities 2 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 94 block_entities 4 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 94 block_entities 6 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 94 block_entities 7 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 94 block_entities 9 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 94 block_entities 11 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 94 block_entities 12 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 94 block_entities 14 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 94 block_entities 18 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 94 block_entities 20 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 94 block_entities 21 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 94 block_entities 22 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 94 block_entities 23 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 94 block_entities 24 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 94 block_entities 25 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 94 block_entities 28 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 94 block_entities 30 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 94 block_entities 32 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 94 block_entities 33 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 94 block_entities 35 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 94 block_entities 37 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 94 block_entities 38 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 94 block_entities 39 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 94 block_entities 40 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 94 block_entities 42 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 94 block_entities 43 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 94 block_entities 44 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 94 block_entities 45 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 94 block_entities 46 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 94 block_entities 47 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 94 block_entities 49 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+draws 94 block_entities level 58
+
+change 97 block_entities 0 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 97 block_entities 2 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 97 block_entities 7 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 97 block_entities 14 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 97 block_entities 15 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 97 block_entities 17 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 97 block_entities 18 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 97 block_entities 26 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 97 block_entities 30 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 97 block_entities 31 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 97 block_entities 33 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 97 block_entities 35 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 97 block_entities 36 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 97 block_entities 37 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 97 block_entities 39 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 97 block_entities 51 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 97 block_entities 0 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 97 block_entities 15 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 97 block_entities 27 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 97 block_entities level 100
+
+change 101 block_ticks 44 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 101 block_ticks 45 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 101 block_ticks 50 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 101 block_ticks 52 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 101 block_ticks 56 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 101 block_ticks 5 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 101 block_ticks 8 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 101 block_ticks 17 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 101 block_entities 44 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 101 block_entities 45 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 101 block_entities 50 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 101 block_entities 52 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 101 block_entities 56 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 101 block_entities 5 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 101 block_entities 8 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 101 block_entities 17 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 102 block_entities 44 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 102 block_entities 45 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 102 block_entities 48 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 102 block_entities 50 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 102 block_entities 52 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 102 block_entities 56 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 102 block_entities 2 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 102 block_entities 5 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 102 block_entities 7 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 102 block_entities 8 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 102 block_entities 16 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 102 block_entities 17 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 102 block_entities 20 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 102 block_entities 21 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 102 block_entities 23 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 102 block_entities 30 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 102 block_entities 32 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 102 block_entities 33 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 102 block_entities 35 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 102 block_entities 37 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 102 block_entities 38 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 102 block_entities 40 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 102 block_entities 41 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 102 block_entities 42 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 102 block_entities 43 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 102 block_entities 44 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 102 block_entities 45 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 102 block_entities 46 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 102 block_entities 47 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 102 block_entities 49 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+draws 102 block_entities level 76
+
+change 105 block_entities 1 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 105 block_entities 5 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 105 block_entities 11 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 105 block_entities 18 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 105 block_entities 22 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 105 block_entities 31 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 105 block_entities 32 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 105 block_entities 39 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 105 block_entities 40 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 105 block_entities 46 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 105 block_entities 13 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 105 block_entities 19 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 105 block_entities 34 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 105 block_entities level 92
+
+change 109 block_ticks 41 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 109 block_ticks 42 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 109 block_ticks 49 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 109 block_ticks 55 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 109 block_ticks 57 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 109 block_ticks 3 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 109 block_ticks 10 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 109 block_ticks 26 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 109 block_ticks 29 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 109 block_ticks 31 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 109 block_ticks 36 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 109 block_entities 41 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 109 block_entities 42 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 109 block_entities 49 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 109 block_entities 55 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 109 block_entities 57 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 109 block_entities 3 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 109 block_entities 10 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 109 block_entities 26 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 109 block_entities 29 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 109 block_entities 31 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 109 block_entities 36 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 110 block_entities 41 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 110 block_entities 42 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 110 block_entities 43 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 110 block_entities 45 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 110 block_entities 48 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 110 block_entities 49 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 110 block_entities 52 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 110 block_entities 53 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 110 block_entities 54 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 110 block_entities 55 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 110 block_entities 56 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 110 block_entities 57 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 110 block_entities 1 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 110 block_entities 3 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 110 block_entities 5 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 110 block_entities 6 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 110 block_entities 7 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 110 block_entities 9 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 110 block_entities 10 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 110 block_entities 14 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 110 block_entities 16 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 110 block_entities 18 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 110 block_entities 20 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 110 block_entities 21 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 110 block_entities 23 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 110 block_entities 24 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 110 block_entities 26 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 110 block_entities 28 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 110 block_entities 29 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 110 block_entities 30 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 110 block_entities 31 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 110 block_entities 32 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 110 block_entities 33 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 110 block_entities 36 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 110 block_entities 37 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 110 block_entities 38 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 110 block_entities 39 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 110 block_entities 40 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 110 block_entities 42 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 110 block_entities 44 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 110 block_entities 45 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 110 block_entities 46 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 110 block_entities 47 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 110 block_entities 49 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+draws 110 block_entities level 92
+
+change 113 block_entities 0 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 113 block_entities 2 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 113 block_entities 8 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 113 block_entities 10 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 113 block_entities 13 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 113 block_entities 16 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 113 block_entities 17 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 113 block_entities 20 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 113 block_entities 25 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 113 block_entities 30 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 113 block_entities 31 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 113 block_entities 34 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 113 block_entities 37 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 113 block_entities 39 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 113 block_entities 46 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 113 block_entities level 86
+
+change 117 block_ticks 51 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 117 block_ticks 0 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 117 block_ticks 15 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 117 block_ticks 27 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 117 block_entities 51 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 117 block_entities 0 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 117 block_entities 15 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 117 block_entities 27 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 118 block_entities 43 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 118 block_entities 44 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 118 block_entities 50 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 118 block_entities 51 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 118 block_entities 53 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 118 block_entities 54 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 118 block_entities 55 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 118 block_entities 57 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 118 block_entities 0 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 118 block_entities 2 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 118 block_entities 6 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 118 block_entities 7 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 118 block_entities 9 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 118 block_entities 10 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 118 block_entities 11 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 118 block_entities 12 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 118 block_entities 14 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 118 block_entities 15 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 118 block_entities 20 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 118 block_entities 21 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 118 block_entities 23 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 118 block_entities 26 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 118 block_entities 27 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 118 block_entities 28 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 118 block_entities 29 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 118 block_entities 31 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 118 block_entities 32 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 118 block_entities 35 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 118 block_entities 36 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 118 block_entities 37 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 118 block_entities 38 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 118 block_entities 39 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 118 block_entities 40 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 118 block_entities 41 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 118 block_entities 42 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 118 block_entities 43 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 118 block_entities 44 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 118 block_entities 45 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 118 block_entities 46 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 118 block_entities 47 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 118 block_entities 49 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 118 block_entities level 114
+
+change 121 block_entities 0 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 121 block_entities 4 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 121 block_entities 12 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 121 block_entities 15 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 121 block_entities 16 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 121 block_entities 19 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 121 block_entities 22 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 121 block_entities 23 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 121 block_entities 24 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 121 block_entities 25 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 121 block_entities 27 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 121 block_entities 32 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 121 block_entities 36 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 121 block_entities 39 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 121 block_entities 40 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 121 block_entities level 74
+
+change 125 block_ticks 13 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 125 block_ticks 19 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 125 block_ticks 34 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 125 block_entities 13 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 125 block_entities 19 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 125 block_entities 34 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 126 block_entities 42 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 126 block_entities 45 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 126 block_entities 49 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 126 block_entities 50 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 126 block_entities 54 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 126 block_entities 55 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 126 block_entities 56 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 126 block_entities 1 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 126 block_entities 2 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 126 block_entities 5 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 126 block_entities 6 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 126 block_entities 7 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 126 block_entities 8 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 126 block_entities 9 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 126 block_entities 10 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 126 block_entities 11 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 126 block_entities 13 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 126 block_entities 14 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 126 block_entities 15 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 126 block_entities 16 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 126 block_entities 17 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 126 block_entities 18 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 126 block_entities 19 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 126 block_entities 22 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 126 block_entities 23 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 126 block_entities 24 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 126 block_entities 25 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 126 block_entities 27 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 126 block_entities 28 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 126 block_entities 29 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 126 block_entities 30 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 126 block_entities 31 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 126 block_entities 33 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 126 block_entities 34 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 126 block_entities 35 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 126 block_entities 36 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 126 block_entities 38 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 126 block_entities 39 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 126 block_entities 40 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 126 block_entities 41 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 126 block_entities 43 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+draws 126 block_entities level 108
+
+change 129 block_entities 3 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 129 block_entities 5 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 129 block_entities 26 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 129 block_entities 28 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 129 block_entities 31 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 129 block_entities 33 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 129 block_entities 35 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 129 block_entities 38 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 129 block_entities level 62
+
+change 133 block_ticks 8 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 133 block_ticks 13 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 133 block_ticks 17 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 133 block_ticks 30 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 133 block_ticks 34 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 133 block_ticks 46 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 133 block_entities 8 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 133 block_entities 13 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 133 block_entities 17 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 133 block_entities 30 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 133 block_entities 34 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 133 block_entities 46 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 134 block_entities 8 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 134 block_entities 13 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 134 block_entities 17 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 134 block_entities 30 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 134 block_entities 34 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 134 block_entities 45 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 134 block_entities 46 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 134 block_entities 51 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 134 block_entities 52 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 134 block_entities 56 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 134 block_entities 57 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 134 block_entities 0 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 134 block_entities 1 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 134 block_entities 3 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 134 block_entities 4 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 134 block_entities 6 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 134 block_entities 7 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 134 block_entities 12 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 134 block_entities 13 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 134 block_entities 14 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 134 block_entities 15 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 134 block_entities 16 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 134 block_entities 17 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 134 block_entities 18 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 134 block_entities 19 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 134 block_entities 21 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 134 block_entities 22 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 134 block_entities 23 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 134 block_entities 24 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 134 block_entities 26 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 134 block_entities 27 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 134 block_entities 28 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 134 block_entities 31 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 134 block_entities 33 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 134 block_entities 35 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 134 block_entities 36 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 134 block_entities 39 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 134 block_entities 41 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 134 block_entities 42 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 134 block_entities 43 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 134 block_entities level 108
+
+change 137 block_entities 1 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 137 block_entities 3 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 137 block_entities 4 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 137 block_entities 10 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 137 block_entities 11 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 137 block_entities 18 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 137 block_entities 19 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 137 block_entities 21 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 137 block_entities 24 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 137 block_entities 27 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 137 block_entities 28 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 137 block_entities level 60
+
+change 138 block_ticks 20 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 138 block_ticks 37 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 138 block_ticks 44 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 138 block_ticks 45 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 138 block_ticks 46 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 138 block_ticks 47 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 138 block_ticks 49 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 138 block_entities 20 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 138 block_entities 37 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 138 block_entities 44 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 138 block_entities 45 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 138 block_entities 46 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 138 block_entities 47 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 138 block_entities 49 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 139 block_entities 20 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 139 block_entities 37 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 139 block_entities 44 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 139 block_entities 45 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 139 block_entities 46 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 139 block_entities 47 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 139 block_entities 49 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+
+change 141 block_ticks 16 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 141 block_ticks 22 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 141 block_ticks 25 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 141 block_ticks 32 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 141 block_ticks 39 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 141 block_ticks 40 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 141 block_entities 16 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 141 block_entities 22 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 141 block_entities 25 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 141 block_entities 32 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 141 block_entities 39 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 141 block_entities 40 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 142 block_entities 8 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 142 block_entities 16 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 142 block_entities 22 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 142 block_entities 25 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 142 block_entities 32 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 142 block_entities 34 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 142 block_entities 39 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 142 block_entities 40 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 142 block_entities 43 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 142 block_entities 44 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 142 block_entities 46 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 142 block_entities 49 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 142 block_entities 53 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 142 block_entities 55 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 142 block_entities 56 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 142 block_entities 1 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 142 block_entities 2 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 142 block_entities 4 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 142 block_entities 5 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 142 block_entities 6 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 142 block_entities 8 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 142 block_entities 10 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 142 block_entities 11 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 142 block_entities 13 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 142 block_entities 15 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 142 block_entities 16 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 142 block_entities 18 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 142 block_entities 19 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 142 block_entities 22 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 142 block_entities 23 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 142 block_entities 24 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 142 block_entities 25 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 142 block_entities 26 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 142 block_entities 27 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 142 block_entities 28 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 142 block_entities 30 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 142 block_entities 31 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 142 block_entities 33 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 142 block_entities 34 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 142 block_entities 35 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 142 block_entities 36 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+draws 142 block_entities level 112
+
+change 145 block_entities 1 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 145 block_entities 4 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 145 block_entities 5 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 145 block_entities 11 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 145 block_entities 15 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 145 block_entities 24 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 145 block_entities 27 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 145 block_entities 31 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 145 block_entities 36 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 145 block_entities 47 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 145 block_entities level 54
+
+change 146 block_ticks 9 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 146 block_ticks 38 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 146 block_ticks 40 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 146 block_entities 9 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 146 block_entities 38 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 146 block_entities 40 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 147 block_entities 9 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 147 block_entities 20 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 147 block_entities 37 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 147 block_entities 38 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 147 block_entities 40 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 147 block_entities 44 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 147 block_entities 47 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 147 block_entities 49 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+draws 147 block_entities level 14
+
+change 149 block_ticks 38 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 149 block_entities 38 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 150 block_entities 32 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 150 block_entities 38 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 150 block_entities 39 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 150 block_entities 40 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 150 block_entities 45 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 150 block_entities 46 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 150 block_entities 48 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 150 block_entities 49 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 150 block_entities 50 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 150 block_entities 52 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 150 block_entities 0 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 150 block_entities 1 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 150 block_entities 3 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 150 block_entities 8 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 150 block_entities 11 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 150 block_entities 12 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 150 block_entities 16 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 150 block_entities 17 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 150 block_entities 18 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 150 block_entities 22 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 150 block_entities 27 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 150 block_entities 28 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 150 block_entities 32 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 150 block_entities 36 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 150 block_entities 41 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 150 block_entities level 112
+
+change 153 block_entities 2 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 153 block_entities 4 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 153 block_entities 6 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 153 block_entities 10 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 153 block_entities 19 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 153 block_entities 21 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 153 block_entities 27 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 153 block_entities 33 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 153 block_entities 35 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 153 block_entities level 42
+
+change 154 block_ticks 14 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 154 block_ticks 39 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 154 block_ticks 42 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 154 block_ticks 43 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 154 block_entities 14 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 154 block_entities 39 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 154 block_entities 42 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 154 block_entities 43 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 155 block_entities 9 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 155 block_entities 14 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 155 block_entities 20 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 155 block_entities 37 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 155 block_entities 38 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 155 block_entities 39 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 155 block_entities 40 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 155 block_entities 42 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 155 block_entities 43 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 155 block_entities 44 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 155 block_entities 45 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 155 block_entities 47 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 155 block_entities 49 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+draws 155 block_entities level 20
+
+change 157 block_ticks 3 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 157 block_ticks 18 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 157 block_ticks 28 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 157 block_entities 3 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 157 block_entities 18 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 157 block_entities 28 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 158 block_entities 3 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 158 block_entities 8 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 158 block_entities 18 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 158 block_entities 22 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 158 block_entities 28 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 158 block_entities 38 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 158 block_entities 41 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 158 block_entities 43 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 158 block_entities 48 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 158 block_entities 51 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 158 block_entities 53 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 158 block_entities 54 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 158 block_entities 55 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 158 block_entities 0 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 158 block_entities 1 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 158 block_entities 3 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 158 block_entities 4 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 158 block_entities 7 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 158 block_entities 11 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 158 block_entities 13 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 158 block_entities 21 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 158 block_entities 24 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 158 block_entities 25 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 158 block_entities 26 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 158 block_entities 27 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 158 block_entities 29 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 158 block_entities 36 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 158 block_entities level 106
+
+change 162 block_ticks 2 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 162 block_ticks 6 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 162 block_ticks 23 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 162 block_ticks 30 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 162 block_ticks 33 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 162 block_ticks 35 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 162 block_entities 2 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 162 block_entities 6 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 162 block_entities 23 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 162 block_entities 30 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 162 block_entities 33 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 162 block_entities 35 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 163 block_entities 2 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 163 block_entities 6 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 163 block_entities 9 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 163 block_entities 14 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 163 block_entities 23 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 163 block_entities 30 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 163 block_entities 33 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 163 block_entities 35 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 163 block_entities 37 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 163 block_entities 38 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 163 block_entities 39 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 163 block_entities 40 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 163 block_entities 42 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 163 block_entities 43 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 163 block_entities 44 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 163 block_entities 45 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 163 block_entities 46 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 163 block_entities 47 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 163 block_entities 49 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+draws 163 block_entities level 28
+
+change 165 block_ticks 1 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 165 block_ticks 5 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 165 block_ticks 24 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 165 block_ticks 31 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 165 block_ticks 36 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 165 block_ticks 47 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 165 block_entities 1 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 165 block_entities 5 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 165 block_entities 24 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 165 block_entities 31 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 165 block_entities 36 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 165 block_entities 47 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 166 block_entities 1 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 166 block_entities 5 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 166 block_entities 16 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 166 block_entities 24 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 166 block_entities 31 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 166 block_entities 36 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 166 block_entities 38 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 166 block_entities 39 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 166 block_entities 45 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 166 block_entities 46 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 166 block_entities 47 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 166 block_entities 48 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 166 block_entities 49 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 166 block_entities 52 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 166 block_entities 53 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 166 block_entities 54 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 166 block_entities 57 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 166 block_entities 4 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 166 block_entities 5 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 166 block_entities 8 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 166 block_entities 11 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 166 block_entities 12 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 166 block_entities 13 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 166 block_entities 15 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 166 block_entities 17 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 166 block_entities 18 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 166 block_entities 19 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 166 block_entities 21 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 166 block_entities 22 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 166 block_entities 26 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 166 block_entities 27 1 2 minecraft:composter[level=6] minecraft:composter[level=7]
+change 166 block_entities 34 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+draws 166 block_entities level 102
+
+change 170 block_ticks 16 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 170 block_ticks 28 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 170 block_ticks 32 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 170 block_ticks 41 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 170 block_entities 16 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 170 block_entities 28 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 170 block_entities 32 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 170 block_entities 41 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 171 block_entities 2 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 171 block_entities 6 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 171 block_entities 14 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 171 block_entities 16 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 171 block_entities 20 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 171 block_entities 23 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 171 block_entities 28 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 171 block_entities 30 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 171 block_entities 32 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 171 block_entities 38 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 171 block_entities 39 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 171 block_entities 40 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 171 block_entities 41 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 171 block_entities 42 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 171 block_entities 43 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 171 block_entities 44 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 171 block_entities 45 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 171 block_entities 46 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 171 block_entities 47 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 171 block_entities 49 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+draws 171 block_entities level 40
+
+change 173 block_ticks 4 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 173 block_ticks 10 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 173 block_ticks 19 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 173 block_ticks 27 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 173 block_ticks 35 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 173 block_entities 4 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 173 block_entities 10 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 173 block_entities 19 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 173 block_entities 27 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 173 block_entities 35 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 178 block_ticks 43 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 178 block_ticks 1 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 178 block_ticks 7 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 178 block_ticks 24 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 178 block_ticks 36 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 178 block_entities 43 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 178 block_entities 1 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 178 block_entities 7 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 178 block_entities 24 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 178 block_entities 36 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 179 block_entities 43 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 179 block_entities 1 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 179 block_entities 7 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 179 block_entities 16 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 179 block_entities 24 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 179 block_entities 28 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 179 block_entities 30 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+change 179 block_entities 32 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 179 block_entities 33 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 179 block_entities 36 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 179 block_entities 38 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 179 block_entities 39 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 179 block_entities 40 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 179 block_entities 41 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 179 block_entities 43 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 179 block_entities 44 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 179 block_entities 45 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 179 block_entities 46 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+change 179 block_entities 47 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+change 179 block_entities 49 1 2 minecraft:composter[level=5] minecraft:composter[level=6]
+draws 179 block_entities level 48
+
+change 186 block_ticks 53 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 186 block_ticks 11 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 186 block_ticks 18 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 186 block_ticks 21 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 186 block_ticks 27 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 186 block_entities 53 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+change 186 block_entities 11 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 186 block_entities 18 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 186 block_entities 21 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+change 186 block_entities 27 1 2 minecraft:composter[level=8] minecraft:composter[level=0]
+
+slot 300 0 2 0 0 empty 0
+slot 300 0 0 0 0 empty 0
+slot 300 1 2 0 0 empty 0
+slot 300 1 0 0 0 minecraft:bone_meal 1
+slot 300 2 2 0 0 empty 0
+slot 300 2 0 0 0 empty 0
+slot 300 3 2 0 0 empty 0
+slot 300 3 0 0 0 minecraft:bone_meal 1
+slot 300 4 2 0 0 empty 0
+slot 300 4 0 0 0 minecraft:bone_meal 1
+slot 300 5 2 0 0 empty 0
+slot 300 5 0 0 0 minecraft:bone_meal 1
+slot 300 6 2 0 0 empty 0
+slot 300 6 0 0 0 empty 0
+slot 300 7 2 0 0 empty 0
+slot 300 7 0 0 0 empty 0
+slot 300 8 2 0 0 empty 0
+slot 300 8 0 0 0 minecraft:bone_meal 1
+slot 300 9 2 0 0 empty 0
+slot 300 9 0 0 0 empty 0
+slot 300 10 2 0 0 empty 0
+slot 300 10 0 0 0 minecraft:bone_meal 1
+slot 300 11 2 0 0 empty 0
+slot 300 11 0 0 0 empty 0
+slot 300 12 2 0 0 empty 0
+slot 300 12 0 0 0 empty 0
+slot 300 13 2 0 0 empty 0
+slot 300 13 0 0 0 minecraft:bone_meal 1
+slot 300 14 2 0 0 empty 0
+slot 300 14 0 0 0 empty 0
+slot 300 15 2 0 0 empty 0
+slot 300 15 0 0 0 empty 0
+slot 300 16 2 0 0 empty 0
+slot 300 16 0 0 0 minecraft:bone_meal 1
+slot 300 17 2 0 0 empty 0
+slot 300 17 0 0 0 minecraft:bone_meal 1
+slot 300 18 2 0 0 empty 0
+slot 300 18 0 0 0 minecraft:bone_meal 1
+slot 300 19 2 0 0 empty 0
+slot 300 19 0 0 0 minecraft:bone_meal 1
+slot 300 20 2 0 0 empty 0
+slot 300 20 0 0 0 empty 0
+slot 300 21 2 0 0 empty 0
+slot 300 21 0 0 0 empty 0
+slot 300 22 2 0 0 empty 0
+slot 300 22 0 0 0 minecraft:bone_meal 1
+slot 300 23 2 0 0 empty 0
+slot 300 23 0 0 0 empty 0
+slot 300 24 2 0 0 empty 0
+slot 300 24 0 0 0 minecraft:bone_meal 1
+slot 300 25 2 0 0 empty 0
+slot 300 25 0 0 0 minecraft:bone_meal 1
+slot 300 26 2 0 0 empty 0
+slot 300 26 0 0 0 empty 0
+slot 300 27 2 0 0 empty 0
+slot 300 27 0 0 0 minecraft:bone_meal 1
+slot 300 28 2 0 0 empty 0
+slot 300 28 0 0 0 minecraft:bone_meal 1
+slot 300 29 2 0 0 empty 0
+slot 300 29 0 0 0 empty 0
+slot 300 30 2 0 0 empty 0
+slot 300 30 0 0 0 minecraft:bone_meal 1
+slot 300 31 2 0 0 empty 0
+slot 300 31 0 0 0 minecraft:bone_meal 1
+slot 300 32 2 0 0 empty 0
+slot 300 32 0 0 0 minecraft:bone_meal 1
+slot 300 33 2 0 0 empty 0
+slot 300 33 0 0 0 empty 0
+slot 300 34 2 0 0 empty 0
+slot 300 34 0 0 0 minecraft:bone_meal 1
+slot 300 35 2 0 0 empty 0
+slot 300 35 0 0 0 minecraft:bone_meal 1
+slot 300 36 2 0 0 empty 0
+slot 300 36 0 0 0 minecraft:bone_meal 1
+slot 300 37 2 0 0 empty 0
+slot 300 37 0 0 0 empty 0
+slot 300 38 2 0 0 empty 0
+slot 300 38 0 0 0 minecraft:bone_meal 1
+slot 300 39 2 0 0 empty 0
+slot 300 39 0 0 0 minecraft:bone_meal 1
+slot 300 40 2 0 0 empty 0
+slot 300 40 0 0 0 minecraft:bone_meal 1
+slot 300 41 2 0 0 empty 0
+slot 300 41 0 0 0 minecraft:bone_meal 1
+slot 300 42 2 0 0 empty 0
+slot 300 42 0 0 0 minecraft:bone_meal 1
+slot 300 43 2 0 0 empty 0
+slot 300 43 0 0 0 minecraft:bone_meal 2
+slot 300 44 2 0 0 empty 0
+slot 300 44 0 0 0 minecraft:bone_meal 1
+slot 300 45 2 0 0 empty 0
+slot 300 45 0 0 0 minecraft:bone_meal 1
+slot 300 46 2 0 0 empty 0
+slot 300 46 0 0 0 minecraft:bone_meal 1
+slot 300 47 2 0 0 empty 0
+slot 300 47 0 0 0 minecraft:bone_meal 1
+slot 300 48 2 0 0 empty 0
+slot 300 48 0 0 0 minecraft:bone_meal 1
+slot 300 49 2 0 0 empty 0
+slot 300 49 0 0 0 minecraft:bone_meal 1
+slot 300 50 2 0 0 empty 0
+slot 300 50 0 0 0 minecraft:bone_meal 1
+slot 300 51 2 0 0 empty 0
+slot 300 51 0 0 0 minecraft:bone_meal 1
+slot 300 52 2 0 0 empty 0
+slot 300 52 0 0 0 minecraft:bone_meal 1
+slot 300 53 2 0 0 empty 0
+slot 300 53 0 0 0 minecraft:bone_meal 2
+slot 300 54 2 0 0 empty 0
+slot 300 54 0 0 0 minecraft:bone_meal 1
+slot 300 55 2 0 0 empty 0
+slot 300 55 0 0 0 minecraft:bone_meal 1
+slot 300 56 2 0 0 empty 0
+slot 300 56 0 0 0 minecraft:bone_meal 1
+slot 300 57 2 0 0 empty 0
+slot 300 57 0 0 0 minecraft:bone_meal 1
+slot 300 0 2 2 0 empty 0
+slot 300 0 0 2 0 minecraft:bone_meal 1
+slot 300 1 2 2 0 empty 0
+slot 300 1 0 2 0 minecraft:bone_meal 2
+slot 300 2 2 2 0 empty 0
+slot 300 2 0 2 0 minecraft:bone_meal 2
+slot 300 3 2 2 0 empty 0
+slot 300 3 0 2 0 minecraft:bone_meal 1
+slot 300 4 2 2 0 empty 0
+slot 300 4 0 2 0 minecraft:bone_meal 1
+slot 300 5 2 2 0 empty 0
+slot 300 5 0 2 0 minecraft:bone_meal 1
+slot 300 6 2 2 0 empty 0
+slot 300 6 0 2 0 minecraft:bone_meal 2
+slot 300 7 2 2 0 empty 0
+slot 300 7 0 2 0 minecraft:bone_meal 2
+slot 300 8 2 2 0 empty 0
+slot 300 8 0 2 0 minecraft:bone_meal 1
+slot 300 9 2 2 0 empty 0
+slot 300 9 0 2 0 minecraft:bone_meal 2
+slot 300 10 2 2 0 empty 0
+slot 300 10 0 2 0 minecraft:bone_meal 1
+slot 300 11 2 2 0 empty 0
+slot 300 11 0 2 0 minecraft:bone_meal 2
+slot 300 12 2 2 0 empty 0
+slot 300 12 0 2 0 minecraft:bone_meal 1
+slot 300 13 2 2 0 empty 0
+slot 300 13 0 2 0 minecraft:bone_meal 1
+slot 300 14 2 2 0 empty 0
+slot 300 14 0 2 0 minecraft:bone_meal 2
+slot 300 15 2 2 0 empty 0
+slot 300 15 0 2 0 minecraft:bone_meal 1
+slot 300 16 2 2 0 empty 0
+slot 300 16 0 2 0 minecraft:bone_meal 2
+slot 300 17 2 2 0 empty 0
+slot 300 17 0 2 0 minecraft:bone_meal 1
+slot 300 18 2 2 0 empty 0
+slot 300 18 0 2 0 minecraft:bone_meal 2
+slot 300 19 2 2 0 empty 0
+slot 300 19 0 2 0 minecraft:bone_meal 1
+slot 300 20 2 2 0 empty 0
+slot 300 20 0 2 0 minecraft:bone_meal 2
+slot 300 21 2 2 0 empty 0
+slot 300 21 0 2 0 minecraft:bone_meal 2
+slot 300 22 2 2 0 empty 0
+slot 300 22 0 2 0 minecraft:bone_meal 1
+slot 300 23 2 2 0 empty 0
+slot 300 23 0 2 0 minecraft:bone_meal 2
+slot 300 24 2 2 0 empty 0
+slot 300 24 0 2 0 minecraft:bone_meal 2
+slot 300 25 2 2 0 empty 0
+slot 300 25 0 2 0 minecraft:bone_meal 1
+slot 300 26 2 2 0 empty 0
+slot 300 26 0 2 0 minecraft:bone_meal 1
+slot 300 27 2 2 0 empty 0
+slot 300 27 0 2 0 minecraft:bone_meal 2
+slot 300 28 2 2 0 empty 0
+slot 300 28 0 2 0 minecraft:bone_meal 2
+slot 300 29 2 2 0 empty 0
+slot 300 29 0 2 0 minecraft:bone_meal 1
+slot 300 30 2 2 0 empty 0
+slot 300 30 0 2 0 minecraft:bone_meal 2
+slot 300 31 2 2 0 empty 0
+slot 300 31 0 2 0 minecraft:bone_meal 1
+slot 300 32 2 2 0 empty 0
+slot 300 32 0 2 0 minecraft:bone_meal 2
+slot 300 33 2 2 0 empty 0
+slot 300 33 0 2 0 minecraft:bone_meal 2
+slot 300 34 2 2 0 empty 0
+slot 300 34 0 2 0 minecraft:bone_meal 1
+slot 300 35 2 2 0 empty 0
+slot 300 35 0 2 0 minecraft:bone_meal 2
+slot 300 36 2 2 0 empty 0
+slot 300 36 0 2 0 minecraft:bone_meal 2
+slot 300 37 2 2 0 empty 0
+slot 300 37 0 2 0 minecraft:bone_meal 2
+slot 300 38 2 2 0 empty 0
+slot 300 38 0 2 0 minecraft:bone_meal 2
+slot 300 39 2 2 0 empty 0
+slot 300 39 0 2 0 minecraft:bone_meal 2
+slot 300 40 2 2 0 empty 0
+slot 300 40 0 2 0 minecraft:bone_meal 2
+slot 300 41 2 2 0 empty 0
+slot 300 41 0 2 0 minecraft:bone_meal 2
+slot 300 42 2 2 0 empty 0
+slot 300 42 0 2 0 minecraft:bone_meal 2
+slot 300 43 2 2 0 empty 0
+slot 300 43 0 2 0 minecraft:bone_meal 2
+slot 300 44 2 2 0 empty 0
+slot 300 44 0 2 0 minecraft:bone_meal 2
+slot 300 45 2 2 0 empty 0
+slot 300 45 0 2 0 minecraft:bone_meal 2
+slot 300 46 2 2 0 empty 0
+slot 300 46 0 2 0 minecraft:bone_meal 2
+slot 300 47 2 2 0 empty 0
+slot 300 47 0 2 0 minecraft:bone_meal 2
+slot 300 48 2 2 0 empty 0
+slot 300 48 0 2 0 empty 0
+slot 300 49 2 2 0 empty 0
+slot 300 49 0 2 0 minecraft:bone_meal 2
+slot 300 50 2 2 0 minecraft:bamboo 20
+slot 300 50 0 2 0 empty 0
+slot 300 51 2 2 0 minecraft:dead_bush 20
+slot 300 51 0 2 0 empty 0
+slot 300 52 2 2 0 minecraft:poisonous_potato 20
+slot 300 52 0 2 0 empty 0
+slot 300 53 2 2 0 minecraft:chorus_fruit 20
+slot 300 53 0 2 0 empty 0
+slot 300 54 2 2 0 minecraft:bone 20
+slot 300 54 0 2 0 empty 0
+slot 300 55 2 2 0 minecraft:beef 20
+slot 300 55 0 2 0 empty 0
+slot 300 56 2 2 0 minecraft:golden_carrot 20
+slot 300 56 0 2 0 empty 0
+slot 300 57 2 2 0 minecraft:grass_block 20
+slot 300 57 0 2 0 empty 0

@@ -1,0 +1,67 @@
+circuit-trace 2
+title Composters: 1.21.5's compostable items fed by hoppers, composting by their chance
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms composter hopper
+area 0 0 0 4 2 2
+ticks 300
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 0 1 0 minecraft:composter[level=0]
+at 0 set 0 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 1 0 minecraft:composter[level=0]
+at 0 set 1 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 2 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 2 1 0 minecraft:composter[level=0]
+at 0 set 2 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 3 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 3 1 0 minecraft:composter[level=0]
+at 0 set 3 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 4 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 4 1 0 minecraft:composter[level=0]
+at 0 set 4 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 0 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 0 1 2 minecraft:composter[level=0]
+at 0 set 0 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 1 2 minecraft:composter[level=0]
+at 0 set 1 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 2 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 2 1 2 minecraft:composter[level=0]
+at 0 set 2 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 3 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 3 1 2 minecraft:composter[level=0]
+at 0 set 3 0 2 minecraft:hopper[enabled=true,facing=down]
+at 1 insert 0 2 0 0 minecraft:bush 20
+at 1 insert 1 2 0 0 minecraft:cactus_flower 20
+at 1 insert 2 2 0 0 minecraft:firefly_bush 20
+at 1 insert 3 2 0 0 minecraft:leaf_litter 20
+at 1 insert 4 2 0 0 minecraft:short_dry_grass 20
+at 1 insert 0 2 2 0 minecraft:tall_dry_grass 20
+at 1 insert 1 2 2 0 minecraft:wildflowers 20
+at 1 insert 2 2 2 0 minecraft:bamboo 20
+at 1 insert 3 2 2 0 minecraft:dead_bush 20
+
+slot 300 0 2 0 0 ?
+slot 300 0 0 0 0 ?
+slot 300 1 2 0 0 ?
+slot 300 1 0 0 0 ?
+slot 300 2 2 0 0 ?
+slot 300 2 0 0 0 ?
+slot 300 3 2 0 0 ?
+slot 300 3 0 0 0 ?
+slot 300 4 2 0 0 ?
+slot 300 4 0 0 0 ?
+slot 300 0 2 2 0 ?
+slot 300 0 0 2 0 ?
+slot 300 1 2 2 0 ?
+slot 300 1 0 2 0 ?
+slot 300 2 2 2 0 ?
+slot 300 2 0 2 0 ?
+slot 300 3 2 2 0 ?
+slot 300 3 0 2 0 ?

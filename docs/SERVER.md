@@ -62,7 +62,7 @@ Players never touch engine state directly.
 - which of the two possible positions, the clicked block or its neighbor, is within reach and free of players.
 
 When the command is applied:
-- **Use:** a lever, button, repeater, comparator, door, trapdoor or fence gate is used (iron doors and trapdoors are not), unless the player sneaks while holding an item.
+- **Use:** a lever, button, repeater, comparator, door, trapdoor or fence gate is used (iron doors and trapdoors are not), unless the player sneaks while holding an item. A composter takes a compostable held item or gives its bone meal when ready; players within 64 blocks get the composting level event (`level_event` 1500, with 1 when a layer was added), as from both official servers (`composter.js`: the same levels, held stacks, events and comparator readings on both versions).
 - **Placement:**
   - the block replaces the clicked block if that is air or water, otherwise it goes next to it;
   - the target must be air or water;

@@ -5046,6 +5046,19 @@
           "the open and close sounds"
         ],
         "note": "Placed and paired with trapped chests only; a container as chests are, powering by its viewers as both official servers do (trapped_chest_pairs, client/openers)"
+      },
+      "composter": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "trace/composter_use",
+          "trace/composters_items",
+          "client/composter"
+        ],
+        "deviations": [
+          "the sounds"
+        ],
+        "note": "Composts by its items' chances and gives bone meal as both official servers do (composters_items, composter_use, client/composter)"
       }
     },
     "item": {
@@ -5799,6 +5812,14 @@
         "cases": [
           "placement/official_items"
         ]
+      },
+      "composter": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed as it is",
+        "cases": [
+          "placement/official_items"
+        ]
       }
     },
     "entity": {
@@ -6151,6 +6172,16 @@
         ],
         "deviations": [
           "sent for chests' lids only, not for pistons or note blocks"
+        ]
+      },
+      "play/clientbound/level_event": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/composter"
+        ],
+        "deviations": [
+          "sent for composters only; other level events (sounds and particles of other blocks) are not sent"
         ]
       }
     }

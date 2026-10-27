@@ -101,7 +101,8 @@ The server fails closed on storage errors. If a log record cannot be written, th
 
 ## Checkpoint format
 
-A checkpoint file is `CIRCKPT\0`, a format version (44; versions 1–43 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+A checkpoint file is `CIRCKPT\0`, a format version (45; versions 1–44 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+- versions before 45 have no composters with rules of their own: they come back as the modeled blocks;
 - versions before 44 have no barrels with rules of their own: they come back as the modeled blocks with empty block entities;
 - versions before 43 have no chest viewers and no trapped chests with rules of their own: nobody views a chest, and trapped chests come back as the modeled chests with empty block entities;
 - versions before 42 have no lecterns with rules of their own: they come back as the modeled blocks with empty block entities;

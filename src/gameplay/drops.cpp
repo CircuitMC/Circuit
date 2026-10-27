@@ -56,6 +56,7 @@ std::optional<ItemStack> own_item(BlockState s) {
     case BlockType::brewing_stand: return ItemStack{items::brewing_stand, 1};
     case BlockType::lectern: return ItemStack{items::lectern, 1};
     case BlockType::barrel: return ItemStack{items::barrel, 1};
+    case BlockType::composter: return ItemStack{items::composter, 1};
     case BlockType::furnace: {
         constexpr std::array<std::uint16_t, 3> kinds{items::furnace, items::smoker, items::blast_furnace};
         return ItemStack{kinds[s.variant() % 3], 1};
@@ -122,6 +123,8 @@ std::vector<ItemStack> block_drops(RuleContext& ctx, BlockPos pos, BlockState de
         if (const auto own = supported_drop(destroyed)) return {*own};
         return {};
     }
+    // A composter with bone meal ready drops it after itself (composter_break).
+    if (composter_ready(destroyed)) return {{items::composter, 1}, {items::bone_meal, 1}};
     if (const auto item = own_item(destroyed)) return {*item};
     return {};
 }

@@ -4443,6 +4443,51 @@ int main() {
         require(s.at(barrel) == blocks::barrel(Direction::north), "the recheck closes it");
     });
 
+    suite.run("composters fill by their items' chances and give bone meal when ready", [] {
+        using circuit::contracts::PlayerUse;
+        using circuit::contracts::SetPlayerSlot;
+        const PlayerKey alex{4, 2};
+        const BlockPos composter{0, 1, 0};
+        Sim s(bundle(), 7, 2);
+        // A composter on stone with a comparator behind it and dust after it.
+        std::vector<CommandBody> build;
+        for (std::int32_t z = 0; z <= 2; ++z) build.push_back(place({0, 0, z}, blocks::stone()));
+        build.push_back(place(composter, blocks::composter()));
+        build.push_back(place({0, 1, 1}, blocks::comparator(Direction::south)));
+        build.push_back(place({0, 1, 2}, blocks::wire()));
+        s.tick(build);
+        const auto pie = items::by_name("minecraft:pumpkin_pie").value();
+        const auto use = [&] { return PlayerUse{alex, 36, composter, Direction::up, Direction::south, Direction::south, false, true, 3, 3}; };
+        const auto held = [&] {
+            const auto d = s.oracle.dump();
+            return std::ranges::find(d.players, alex, &PlayerInventory::player)->slots[36];
+        };
+        s.tick({SetPlayerSlot{alex, 36, {items::wheat_seeds, 2}}});
+        s.tick({use()});
+        require(s.at(composter) == blocks::composter(1) && held() == ItemStack{items::wheat_seeds, 1}
+                    && of_kind(s.last, TraceKind::level_event).size() == 1 && of_kind(s.last, TraceKind::level_random_draw).empty(),
+                "the first item always adds a layer, drawing nothing");
+        s.tick({SetPlayerSlot{alex, 36, {pie, 8}}});
+        for (int i = 0; i < 6; ++i) s.tick({use()});
+        require(s.at(composter) == blocks::composter(7) && held() == ItemStack{pie, 2}, "pies fill it");
+        s.tick({use()});
+        require(held() == ItemStack{pie, 2}, "a full composter takes nothing");
+        for (int i = 0; i < 20; ++i) s.tick();
+        require(s.at(composter) == blocks::composter(8) && s.at({0, 1, 2}).level() == 8, "ready 20 ticks after; the comparator reads 8");
+        s.tick({use()});
+        const auto d = s.oracle.dump();
+        const auto meal = std::ranges::find_if(d.overworld().entities, [](const Entity& e) { return e.stack.item == items::bone_meal; });
+        require(s.at(composter) == blocks::composter() && meal != d.overworld().entities.end() && meal->position.y > 1.65,
+                "a use pops the bone meal out on top");
+        // A hopper below takes the bone meal of a ready composter; a dropper
+        // below does not put items in.
+        s.tick({place({2, 1, 0}, blocks::composter(8)), place({2, 0, 0}, blocks::hopper(Direction::down))});
+        s.tick();
+        const auto after = s.oracle.dump();
+        require(s.at({2, 1, 0}) == blocks::composter() && block_entity_at(after, {2, 0, 0})->slots[0] == ItemStack{items::bone_meal, 1},
+                "the hopper below takes the bone meal");
+    });
+
     suite.run("experience changes as the /xp command makes them", [] {
         using circuit::contracts::ChangeExperience;
         const PlayerKey alex{4, 2};

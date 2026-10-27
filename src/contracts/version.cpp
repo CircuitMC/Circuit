@@ -237,6 +237,14 @@ constexpr std::array reference_v4_mechanisms{
         "blocks; they open with a solid block above them, are open from their first viewer to their last (the "
         "viewer counts and rechecks of chests, without block events), and a set open state stays until a viewer "
         "changes it. Gaps: the open and close sounds and the game events sculk sensors hear are not modeled."},
+    MechanismEntry{"composter", l0_exact, l2_declared_deviation, harness_trace,
+        "Composters as both official servers run them (composters_items, composters_items_new, composter_use, "
+        "composter_break, composter_inputs, composter_inputs2; client/composter): items compost by the chance of "
+        "minecraft.wiki's table, drawn from the level random (the first item into an empty composter always adds a "
+        "layer), below level 7, from players and through the top from hoppers, droppers and crafters one item at a "
+        "time; level 7 turns into 8 at a block tick 20 ticks later; at level 8 a player pops the bone meal out on top "
+        "and a hopper below takes it; broken at level 8 it also drops the bone meal; comparators read the level. "
+        "Gaps: villagers, the sounds and the game events sculk sensors hear are not modeled."},
     MechanismEntry{"bone_meal", l0_exact, l2_declared_deviation, harness_trace,
         "Dispensers use bone meal on the block in front as the official 1.21.8 server does (bonemeal_dispensers): crops "
         "and stems grow 2 + nextInt(4) stages (beetroots a third of that), torchflower and pitcher crops, cocoa and berry "

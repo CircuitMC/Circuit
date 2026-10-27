@@ -1548,6 +1548,36 @@ int main() {
         require(f.at({2, -60, 1}) == "minecraft:barrel[facing=up,open=false]", "and closes");
     });
 
+    suite.run("composters take held items and the players nearby get the level event", [] {
+        using I = server::Intent;
+        GameFixture f;
+        auto peer = f.join(1, "Clerk");
+        f.game->submit(1, I{server::intent::Command{"setblock 2 -60 1 minecraft:composter[level=0]"}});
+        f.hold(1, "minecraft:pumpkin_pie");
+        f.game->tick();
+        std::size_t seen = 0;
+        // Level events since the last call: (event, x, y, z, data).
+        const auto events = [&] {
+            const auto id = f.wire.ids().id(State::play, Bound::clientbound, "level_event");
+            std::vector<std::tuple<std::int32_t, std::int32_t, std::int32_t, std::int32_t, std::int32_t>> out;
+            std::lock_guard lock(peer->mutex);
+            for (; seen < peer->packets.size(); ++seen) {
+                auto pk = protocol::open_packet(peer->packets[seen]);
+                if (!pk || pk->id != id) continue;
+                const auto event = pk->fields.i32().value();
+                const auto pos = pk->fields.position().value();
+                out.emplace_back(event, pos.x, pos.y, pos.z, pk->fields.i32().value());
+            }
+            return out;
+        };
+        (void)events();
+        f.game->submit(1, GameFixture::click({2, -60, 1}, 1));
+        f.game->tick();
+        using Event = std::tuple<std::int32_t, std::int32_t, std::int32_t, std::int32_t, std::int32_t>;
+        require(events() == std::vector<Event>{{1500, 2, -60, 1, 1}} && f.at({2, -60, 1}) == "minecraft:composter[level=1]",
+                "a layer added, and the event with 1");
+    });
+
     suite.run("survival movement is replayed against block shapes", [] {
         using I = server::Intent;
         GameFixture f;
@@ -2525,8 +2555,8 @@ int main() {
         // wall torches, signs, hanging signs, banners and heads count with the
         // standing ones' tables (the banners' and the player head's are
         // refused: they copy components).
-        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 944, 888, 1407, 984},
-                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 936, 880, 1370, 948}}) {
+        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 943, 887, 1407, 984},
+                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 935, 879, 1370, 948}}) {
             const char* jar = std::getenv(e.variable);
             if (!jar || !*jar) continue;
             const auto& bundle = **contracts::BundleRegistry::find(e.bundle);

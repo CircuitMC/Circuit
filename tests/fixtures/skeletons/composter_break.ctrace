@@ -1,0 +1,92 @@
+circuit-trace 2
+title Composters broken at each stage, filled by a dropper, and their level after a hopper empties them
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms composter dispenser hopper
+area -1 -1 -1 8 3 3
+ticks 80
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 -1 0 minecraft:stone
+at 0 set 0 -1 1 minecraft:stone
+at 0 set 0 -1 2 minecraft:stone
+at 0 set 1 -1 0 minecraft:stone
+at 0 set 1 -1 1 minecraft:stone
+at 0 set 1 -1 2 minecraft:stone
+at 0 set 2 -1 0 minecraft:stone
+at 0 set 2 -1 1 minecraft:stone
+at 0 set 2 -1 2 minecraft:stone
+at 0 set 3 -1 0 minecraft:stone
+at 0 set 3 -1 1 minecraft:stone
+at 0 set 3 -1 2 minecraft:stone
+at 0 set 4 -1 0 minecraft:stone
+at 0 set 4 -1 1 minecraft:stone
+at 0 set 4 -1 2 minecraft:stone
+at 0 set 5 -1 0 minecraft:stone
+at 0 set 5 -1 1 minecraft:stone
+at 0 set 5 -1 2 minecraft:stone
+at 0 set 6 -1 0 minecraft:stone
+at 0 set 6 -1 1 minecraft:stone
+at 0 set 6 -1 2 minecraft:stone
+at 0 set 7 -1 0 minecraft:stone
+at 0 set 7 -1 1 minecraft:stone
+at 0 set 7 -1 2 minecraft:stone
+at 0 set 0 0 0 minecraft:composter[level=8]
+at 0 set 1 0 0 minecraft:composter[level=7]
+at 0 set 2 0 0 minecraft:composter[level=3]
+at 0 set 4 0 0 minecraft:dropper[facing=up,triggered=false]
+at 0 set 4 1 0 minecraft:composter[level=0]
+at 0 set 5 0 0 minecraft:lever[face=wall,facing=east,powered=false]
+at 0 set 7 1 0 minecraft:composter[level=8]
+at 0 set 7 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 7 1 2 minecraft:composter[level=7]
+at 1 insert 4 0 0 0 minecraft:melon_slice 12
+at 2 use 5 0 0
+at 3 break 0 0 0 minecraft:air
+at 4 break 1 0 0 minecraft:air
+at 5 break 2 0 0 minecraft:air
+at 6 use 5 0 0
+at 10 use 5 0 0
+at 14 use 5 0 0
+at 18 use 5 0 0
+at 22 use 5 0 0
+at 26 use 5 0 0
+at 30 use 5 0 0
+at 34 use 5 0 0
+at 38 use 5 0 0
+
+block 3 4 1 0 ?
+block 3 7 1 0 ?
+block 3 7 1 2 ?
+block 3 0 0 0 ?
+block 3 1 0 0 ?
+block 3 2 0 0 ?
+block 5 4 1 0 ?
+block 5 7 1 0 ?
+block 5 7 1 2 ?
+block 5 0 0 0 ?
+block 5 1 0 0 ?
+block 5 2 0 0 ?
+block 10 4 1 0 ?
+block 10 7 1 0 ?
+block 10 7 1 2 ?
+block 10 0 0 0 ?
+block 10 1 0 0 ?
+block 10 2 0 0 ?
+block 40 4 1 0 ?
+block 40 7 1 0 ?
+block 40 7 1 2 ?
+block 40 0 0 0 ?
+block 40 1 0 0 ?
+block 40 2 0 0 ?
+block 80 4 1 0 ?
+block 80 7 1 0 ?
+block 80 7 1 2 ?
+block 80 0 0 0 ?
+block 80 1 0 0 ?
+block 80 2 0 0 ?
+slot 80 4 0 0 0 ?
+slot 80 7 0 0 0 ?

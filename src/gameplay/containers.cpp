@@ -133,6 +133,37 @@ bool transfer_one(RuleContext& ctx, const Inventory& from, const Inventory& to, 
     return false;
 }
 
+// The first item of the hopper's that a composter in front takes (through
+// its top; composters_items).
+bool compost_one(RuleContext& ctx, const Inventory& from, BlockPos composter, Direction face) {
+    for (std::size_t i = 0; i < from.entities.size(); ++i)
+        for (const auto j : from.slots(i)) {
+            auto& source = from.entities[i]->slots[j];
+            if (source.empty() || face != Direction::up || !composter_takes(ctx.block(composter), source)) continue;
+            const auto before = source;
+            take_one(source);
+            ctx.record(TraceKind::inventory_changed, from.parts[i], j, pack_stack(before), pack_stack(source));
+            compost(ctx, composter, before);
+            from.changed(ctx);
+            return true;
+        }
+    return false;
+}
+
+// A ready composter's bone meal into the hopper below it, emptying it.
+bool take_bone_meal(RuleContext& ctx, const Inventory& to, BlockPos composter) {
+    const ItemStack meal{items::bone_meal, 1};
+    const auto target = to.insert_slot(meal);
+    if (!target) return false;
+    auto& slot = to.entities[target->first]->slots[target->second];
+    const auto before = slot;
+    add_one(slot, meal);
+    ctx.record(TraceKind::inventory_changed, to.parts[target->first], target->second, pack_stack(before), pack_stack(slot));
+    empty_composter(ctx, composter);
+    to.changed(ctx);
+    return true;
+}
+
 // Moves what fits of an item entity into a container, one item at a time.
 // Returns whether anything moved.
 bool take_entity(RuleContext& ctx, const Inventory& self, EntityId id) {
@@ -308,11 +339,17 @@ void tick_hopper(RuleContext& ctx, BlockPos pos) {
     if (!s.flag()) return;
     const auto self = Inventory::open(ctx, pos);
     bool moved = false;
-    if (const auto target = Inventory::open(ctx, pos.relative(s.facing()), contracts::opposite(s.facing())); target.valid())
+    const auto front = pos.relative(s.facing());
+    if (ctx.block(front).is(BlockType::composter)) moved = compost_one(ctx, self, front, contracts::opposite(s.facing()));
+    else if (const auto target = Inventory::open(ctx, front, contracts::opposite(s.facing())); target.valid())
         moved = transfer_one(ctx, self, target, true);
     const auto above_pos = pos.relative(Direction::up);
     const auto above = ctx.block(above_pos);
-    if (is_container(above.type())) {
+    // A composter above gives its bone meal when it is ready; the hopper takes
+    // no items through it.
+    if (above.is(BlockType::composter)) {
+        if (composter_ready(above)) moved = take_bone_meal(ctx, self, above_pos) || moved;
+    } else if (is_container(above.type())) {
         if (const auto source = Inventory::open(ctx, above_pos, Direction::down); source.valid())
             moved = transfer_one(ctx, source, self) || moved;
     } else if (!above.is_unloaded() && !is_solid(above)) {

@@ -71,6 +71,11 @@ Plan plan(RuleContext& ctx, const contracts::UseBlock& c) {
         };
     case BlockType::daylight_detector: return [&ctx, pos = c.pos, s] { detail::use_daylight_detector(ctx, pos, s); };
     case BlockType::note_block: return [&ctx, pos = c.pos, s] { detail::use_note_block(ctx, pos, s); };
+    // A ready composter gives its bone meal; another does nothing.
+    case BlockType::composter:
+        return [&ctx, pos = c.pos, s] {
+            if (detail::composter_ready(s)) detail::pop_bone_meal(ctx, pos);
+        };
     default: return std::unexpected(ErrorCode::not_usable);
     }
 }
@@ -220,6 +225,24 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
     const auto clicked = ctx.block(c.pos);
     // Blocks are used with the main hand only, and not while sneaking with an item.
     if (!off_hand && !(c.sneaking && holding)) {
+        // A composter gives its bone meal when ready; below that it takes a
+        // compostable item (used up outside creative mode, whether or not it
+        // adds a layer), and at level 7 it takes nothing and the item does
+        // nothing else (composter_use, client/composter).
+        if (clicked.is(BlockType::composter)) {
+            if (detail::composter_ready(clicked)) return [&ctx, c] { detail::pop_bone_meal(ctx, c.pos); };
+            if (detail::compost_chance(held) > 0.0f) {
+                if (clicked.level() == 7) return [] {};
+                return [&ctx, c, held] {
+                    detail::compost(ctx, c.pos, held);
+                    if (!c.survival) return;
+                    auto& inv = ctx.player(c.player);
+                    auto& slot = inv.slots[c.slot];
+                    if (--slot.count == 0) slot = {};
+                    detail::record_slot(ctx, inv, c.slot);
+                };
+            }
+        }
         if (is_opening(clicked.type()) && opens_by_hand(clicked))
             return [&ctx, c, clicked] { detail::use_opening(ctx, c.pos, clicked, c.horizontal); };
         if (usable(clicked)) return plan(ctx, contracts::UseBlock{c.pos});

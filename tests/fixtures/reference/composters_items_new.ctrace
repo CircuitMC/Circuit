@@ -1,0 +1,170 @@
+circuit-trace 2
+title Composters: 1.21.5's compostable items fed by hoppers, composting by their chance
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v12
+mechanisms composter hopper
+area 0 0 0 4 2 2
+ticks 300
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 0 1 0 minecraft:composter[level=0]
+at 0 set 0 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 1 0 minecraft:composter[level=0]
+at 0 set 1 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 2 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 2 1 0 minecraft:composter[level=0]
+at 0 set 2 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 3 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 3 1 0 minecraft:composter[level=0]
+at 0 set 3 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 4 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 4 1 0 minecraft:composter[level=0]
+at 0 set 4 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 0 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 0 1 2 minecraft:composter[level=0]
+at 0 set 0 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 1 1 2 minecraft:composter[level=0]
+at 0 set 1 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 2 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 2 1 2 minecraft:composter[level=0]
+at 0 set 2 0 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 3 2 2 minecraft:hopper[enabled=true,facing=down]
+at 0 set 3 1 2 minecraft:composter[level=0]
+at 0 set 3 0 2 minecraft:hopper[enabled=true,facing=down]
+
+at 1 insert 0 2 0 0 minecraft:bush 20
+at 1 insert 1 2 0 0 minecraft:cactus_flower 20
+at 1 insert 2 2 0 0 minecraft:firefly_bush 20
+at 1 insert 3 2 0 0 minecraft:leaf_litter 20
+at 1 insert 4 2 0 0 minecraft:short_dry_grass 20
+at 1 insert 0 2 2 0 minecraft:tall_dry_grass 20
+at 1 insert 1 2 2 0 minecraft:wildflowers 20
+at 1 insert 2 2 2 0 minecraft:bamboo 20
+at 1 insert 3 2 2 0 minecraft:dead_bush 20
+change 1 block_entities 0 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 1 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 2 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 3 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 4 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 0 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+change 1 block_entities 1 1 2 minecraft:composter[level=0] minecraft:composter[level=1]
+
+change 9 block_entities 1 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+draws 9 block_entities level 14
+
+change 17 block_entities 3 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 4 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 0 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+change 17 block_entities 1 1 2 minecraft:composter[level=1] minecraft:composter[level=2]
+draws 17 block_entities level 14
+
+change 25 block_entities 2 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+draws 25 block_entities level 14
+
+draws 33 block_entities level 14
+
+change 41 block_entities 0 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+change 41 block_entities 1 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 41 block_entities 0 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+draws 41 block_entities level 14
+
+change 49 block_entities 0 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 49 block_entities 1 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+draws 49 block_entities level 14
+
+change 57 block_entities 1 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 57 block_entities 2 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+change 57 block_entities 4 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+draws 57 block_entities level 14
+
+change 65 block_entities 1 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 65 block_entities 4 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+draws 65 block_entities level 14
+
+change 73 block_entities 3 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+draws 73 block_entities level 14
+
+draws 81 block_entities level 14
+
+change 89 block_entities 1 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+change 89 block_entities 2 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 89 block_entities 3 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+draws 89 block_entities level 14
+
+change 97 block_entities 3 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 97 block_entities 1 1 2 minecraft:composter[level=2] minecraft:composter[level=3]
+draws 97 block_entities level 12
+
+change 105 block_entities 0 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+change 105 block_entities 3 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+change 105 block_entities 0 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+draws 105 block_entities level 12
+
+change 109 block_ticks 1 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 109 block_entities 1 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 110 block_entities 1 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+
+change 113 block_entities 3 1 0 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 113 block_entities level 12
+
+change 118 block_entities 1 1 0 minecraft:composter[level=1] minecraft:composter[level=2]
+draws 118 block_entities level 2
+
+draws 121 block_entities level 10
+
+draws 126 block_entities level 2
+
+change 129 block_entities 4 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+draws 129 block_entities level 10
+
+change 133 block_ticks 3 1 0 minecraft:composter[level=7] minecraft:composter[level=8]
+change 133 block_entities 3 1 0 minecraft:composter[level=8] minecraft:composter[level=0]
+
+change 134 block_entities 3 1 0 minecraft:composter[level=0] minecraft:composter[level=1]
+draws 134 block_entities level 2
+
+change 137 block_entities 0 1 0 minecraft:composter[level=4] minecraft:composter[level=5]
+change 137 block_entities 0 1 2 minecraft:composter[level=4] minecraft:composter[level=5]
+change 137 block_entities 1 1 2 minecraft:composter[level=3] minecraft:composter[level=4]
+draws 137 block_entities level 10
+
+change 142 block_entities 1 1 0 minecraft:composter[level=2] minecraft:composter[level=3]
+draws 142 block_entities level 4
+
+change 145 block_entities 0 1 0 minecraft:composter[level=5] minecraft:composter[level=6]
+draws 145 block_entities level 10
+
+draws 150 block_entities level 4
+
+draws 153 block_entities level 10
+
+draws 158 block_entities level 4
+
+change 166 block_entities 1 1 0 minecraft:composter[level=3] minecraft:composter[level=4]
+draws 166 block_entities level 4
+
+slot 300 0 0 0 0 empty 0
+slot 300 0 0 2 0 empty 0
+slot 300 0 2 0 0 empty 0
+slot 300 0 2 2 0 empty 0
+slot 300 1 0 0 0 minecraft:bone_meal 1
+slot 300 1 0 2 0 empty 0
+slot 300 1 2 0 0 empty 0
+slot 300 1 2 2 0 empty 0
+slot 300 2 0 0 0 empty 0
+slot 300 2 0 2 0 empty 0
+slot 300 2 2 0 0 empty 0
+slot 300 2 2 2 0 minecraft:bamboo 20
+slot 300 3 0 0 0 minecraft:bone_meal 1
+slot 300 3 0 2 0 empty 0
+slot 300 3 2 0 0 empty 0
+slot 300 3 2 2 0 minecraft:dead_bush 20
+slot 300 4 0 0 0 empty 0
+slot 300 4 2 0 0 empty 0

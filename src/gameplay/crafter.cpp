@@ -38,6 +38,9 @@ void set_crafter(RuleContext& ctx, BlockPos pos, BlockState now) {
 void deliver(RuleContext& ctx, BlockPos pos, Direction front, ItemStack stack) {
     const auto there = pos.relative(front);
     if (is_container(ctx.block(there).type())) stack = insert_stack(ctx, there, stack, contracts::opposite(front));
+    // A composter below takes one item of it; the rest goes out (composter_inputs2).
+    if (ctx.block(there).is(BlockType::composter) && compost_through(ctx, there, contracts::opposite(front), stack))
+        if (--stack.count == 0) stack = {};
     if (!stack.empty()) eject_from(ctx, pos, front, stack, true);
 }
 } // namespace
@@ -63,7 +66,8 @@ void check_crafter(RuleContext& ctx, BlockPos pos) {
         schedule(ctx, TickList::block, pos, BlockType::crafter, craft_delay, 0);
         set_crafter(ctx, pos, s.with_flag(true));
     } else if (!powered && s.flag()) {
-        set_crafter(ctx, pos, s.with_flag(false));
+        // It stops showing that it crafted, too (composter_inputs).
+        set_crafter(ctx, pos, s.with_flag(false).with_extra(0));
     }
 }
 

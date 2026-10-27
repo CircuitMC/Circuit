@@ -1,0 +1,174 @@
+circuit-trace 2
+title Composters filled from above by a dropper and a crafter, refusing a hopper at their side and a hopper above while full
+game-version 1.21.4
+source harness_trace
+harness circuit-harness:0.37.0+mc1.21.4
+mechanisms composter dispenser crafter hopper loot
+area -1 -1 -1 9 3 3
+ticks 80
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 -1 0 minecraft:stone
+at 0 set 0 -1 1 minecraft:stone
+at 0 set 0 -1 2 minecraft:stone
+at 0 set 1 -1 0 minecraft:stone
+at 0 set 1 -1 1 minecraft:stone
+at 0 set 1 -1 2 minecraft:stone
+at 0 set 2 -1 0 minecraft:stone
+at 0 set 2 -1 1 minecraft:stone
+at 0 set 2 -1 2 minecraft:stone
+at 0 set 3 -1 0 minecraft:stone
+at 0 set 3 -1 1 minecraft:stone
+at 0 set 3 -1 2 minecraft:stone
+at 0 set 4 -1 0 minecraft:stone
+at 0 set 4 -1 1 minecraft:stone
+at 0 set 4 -1 2 minecraft:stone
+at 0 set 5 -1 0 minecraft:stone
+at 0 set 5 -1 1 minecraft:stone
+at 0 set 5 -1 2 minecraft:stone
+at 0 set 6 -1 0 minecraft:stone
+at 0 set 6 -1 1 minecraft:stone
+at 0 set 6 -1 2 minecraft:stone
+at 0 set 7 -1 0 minecraft:stone
+at 0 set 7 -1 1 minecraft:stone
+at 0 set 7 -1 2 minecraft:stone
+at 0 set 8 -1 0 minecraft:stone
+at 0 set 8 -1 1 minecraft:stone
+at 0 set 8 -1 2 minecraft:stone
+at 0 set 0 0 0 minecraft:composter[level=0]
+at 0 set 0 1 0 minecraft:dropper[facing=down,triggered=false]
+at 0 set 1 1 0 minecraft:lever[face=wall,facing=east,powered=false]
+at 0 set 3 0 0 minecraft:composter[level=0]
+at 0 set 3 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=false]
+at 0 set 4 1 0 minecraft:lever[face=wall,facing=east,powered=false]
+at 0 set 6 0 0 minecraft:composter[level=2]
+at 0 set 7 0 0 minecraft:hopper[enabled=true,facing=west]
+at 0 set 6 0 2 minecraft:composter[level=6]
+at 0 set 6 1 2 minecraft:hopper[enabled=true,facing=down]
+
+at 1 insert 0 1 0 0 minecraft:wheat_seeds 10
+at 1 insert 3 1 0 0 minecraft:wheat 4
+at 1 insert 3 1 0 1 minecraft:wheat 4
+at 1 insert 3 1 0 2 minecraft:wheat 4
+at 1 insert 7 0 0 0 minecraft:wheat_seeds 10
+at 1 insert 6 1 2 0 minecraft:pumpkin_pie 10
+change 1 block_entities 6 0 2 minecraft:composter[level=6] minecraft:composter[level=7]
+draws 1 block_entities level 2
+
+at 2 use 1 1 0
+change 2 commands 1 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 2 commands 0 1 0 minecraft:dropper[facing=down,triggered=false] minecraft:dropper[facing=down,triggered=true]
+at 2 use 4 1 0
+change 2 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 2 commands 3 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=false] minecraft:crafter[crafting=false,orientation=down_north,triggered=true]
+
+change 5 block_ticks 0 0 0 minecraft:composter[level=0] minecraft:composter[level=1]
+change 5 block_ticks 3 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=true] minecraft:crafter[crafting=true,orientation=down_north,triggered=true]
+change 5 block_ticks 3 0 0 minecraft:composter[level=0] minecraft:composter[level=1]
+draws 5 block_ticks level 1
+
+at 6 use 1 1 0
+change 6 commands 1 1 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 6 commands 0 1 0 minecraft:dropper[facing=down,triggered=true] minecraft:dropper[facing=down,triggered=false]
+at 6 use 4 1 0
+change 6 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 6 commands 3 1 0 minecraft:crafter[crafting=true,orientation=down_north,triggered=true] minecraft:crafter[crafting=false,orientation=down_north,triggered=false]
+
+at 10 use 1 1 0
+change 10 commands 1 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 10 commands 0 1 0 minecraft:dropper[facing=down,triggered=false] minecraft:dropper[facing=down,triggered=true]
+at 10 use 4 1 0
+change 10 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 10 commands 3 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=false] minecraft:crafter[crafting=false,orientation=down_north,triggered=true]
+block 10 0 0 0 minecraft:composter[level=1]
+block 10 3 0 0 minecraft:composter[level=1]
+block 10 6 0 0 minecraft:composter[level=2]
+block 10 6 0 2 minecraft:composter[level=7]
+slot 10 0 1 0 0 minecraft:wheat_seeds 9
+slot 10 3 1 0 0 minecraft:wheat 3
+slot 10 7 0 0 0 minecraft:wheat_seeds 10
+slot 10 6 1 2 0 minecraft:pumpkin_pie 9
+
+change 13 block_ticks 3 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=true] minecraft:crafter[crafting=true,orientation=down_north,triggered=true]
+change 13 block_ticks 3 0 0 minecraft:composter[level=1] minecraft:composter[level=2]
+draws 13 block_ticks level 5
+
+at 14 use 1 1 0
+change 14 commands 1 1 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 14 commands 0 1 0 minecraft:dropper[facing=down,triggered=true] minecraft:dropper[facing=down,triggered=false]
+at 14 use 4 1 0
+change 14 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 14 commands 3 1 0 minecraft:crafter[crafting=true,orientation=down_north,triggered=true] minecraft:crafter[crafting=false,orientation=down_north,triggered=false]
+
+at 18 use 1 1 0
+change 18 commands 1 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 18 commands 0 1 0 minecraft:dropper[facing=down,triggered=false] minecraft:dropper[facing=down,triggered=true]
+at 18 use 4 1 0
+change 18 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 18 commands 3 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=false] minecraft:crafter[crafting=false,orientation=down_north,triggered=true]
+
+change 21 block_ticks 6 0 2 minecraft:composter[level=7] minecraft:composter[level=8]
+change 21 block_ticks 3 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=true] minecraft:crafter[crafting=true,orientation=down_north,triggered=true]
+change 21 block_ticks 3 0 0 minecraft:composter[level=2] minecraft:composter[level=3]
+draws 21 block_ticks level 5
+
+at 22 use 1 1 0
+change 22 commands 1 1 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 22 commands 0 1 0 minecraft:dropper[facing=down,triggered=true] minecraft:dropper[facing=down,triggered=false]
+at 22 use 4 1 0
+change 22 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 22 commands 3 1 0 minecraft:crafter[crafting=true,orientation=down_north,triggered=true] minecraft:crafter[crafting=false,orientation=down_north,triggered=false]
+
+at 26 use 1 1 0
+change 26 commands 1 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 26 commands 0 1 0 minecraft:dropper[facing=down,triggered=false] minecraft:dropper[facing=down,triggered=true]
+at 26 use 4 1 0
+change 26 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 26 commands 3 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=false] minecraft:crafter[crafting=false,orientation=down_north,triggered=true]
+
+change 29 block_ticks 3 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=true] minecraft:crafter[crafting=true,orientation=down_north,triggered=true]
+draws 29 block_ticks level 5
+
+at 30 use 1 1 0
+change 30 commands 1 1 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 30 commands 0 1 0 minecraft:dropper[facing=down,triggered=true] minecraft:dropper[facing=down,triggered=false]
+at 30 use 4 1 0
+change 30 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 30 commands 3 1 0 minecraft:crafter[crafting=true,orientation=down_north,triggered=true] minecraft:crafter[crafting=false,orientation=down_north,triggered=false]
+
+at 34 use 1 1 0
+change 34 commands 1 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 34 commands 0 1 0 minecraft:dropper[facing=down,triggered=false] minecraft:dropper[facing=down,triggered=true]
+at 34 use 4 1 0
+change 34 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 34 commands 3 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=false] minecraft:crafter[crafting=false,orientation=down_north,triggered=true]
+
+change 37 block_ticks 0 0 0 minecraft:composter[level=1] minecraft:composter[level=2]
+draws 37 block_ticks level 3
+
+at 38 use 1 1 0
+change 38 commands 1 1 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 38 commands 0 1 0 minecraft:dropper[facing=down,triggered=true] minecraft:dropper[facing=down,triggered=false]
+at 38 use 4 1 0
+change 38 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 38 commands 3 1 0 minecraft:crafter[crafting=false,orientation=down_north,triggered=true] minecraft:crafter[crafting=false,orientation=down_north,triggered=false]
+
+block 40 0 0 0 minecraft:composter[level=2]
+block 40 3 0 0 minecraft:composter[level=3]
+block 40 6 0 0 minecraft:composter[level=2]
+block 40 6 0 2 minecraft:composter[level=8]
+slot 40 0 1 0 0 minecraft:wheat_seeds 5
+slot 40 3 1 0 0 empty 0
+slot 40 7 0 0 0 minecraft:wheat_seeds 10
+slot 40 6 1 2 0 minecraft:pumpkin_pie 9
+
+block 80 0 0 0 minecraft:composter[level=2]
+block 80 3 0 0 minecraft:composter[level=3]
+block 80 6 0 0 minecraft:composter[level=2]
+block 80 6 0 2 minecraft:composter[level=8]
+slot 80 0 1 0 0 minecraft:wheat_seeds 5
+slot 80 3 1 0 0 empty 0
+slot 80 7 0 0 0 minecraft:wheat_seeds 10
+slot 80 6 1 2 0 minecraft:pumpkin_pie 9

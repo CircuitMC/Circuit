@@ -1554,8 +1554,28 @@
           ]
         },
         {
+          "id": "composters",
+          "name": "Composters",
+          "milestone": "C5",
+          "impl": "partial",
+          "evidence": "compared",
+          "note": "Items compost by the wiki's chances, drawn from the level random (the first item into an empty composter always adds a layer), below level 7, from players and through the top from hoppers, droppers and crafters one item at a time; full composters get ready 20 ticks later; players and hoppers below take the bone meal; a broken ready composter drops it; comparators read the level; the harness traces (every compostable item of both versions) and a client scenario match both official servers",
+          "cases": [
+            "trace/composters_items",
+            "trace/composters_items_new",
+            "trace/composter_use",
+            "trace/composter_break",
+            "trace/composter_inputs",
+            "trace/composter_inputs2",
+            "client/composter"
+          ],
+          "deviations": [
+            "villagers composting and the sounds are not modeled"
+          ]
+        },
+        {
           "id": "other_storage",
-          "name": "Shulker boxes, ender chests, chiseled bookshelves, composters",
+          "name": "Shulker boxes, ender chests, chiseled bookshelves",
           "milestone": "C5",
           "impl": "missing",
           "evidence": "none"

@@ -59,6 +59,7 @@ enum class BlockType : std::uint8_t {
                          // fuel, brew time and the ingredient it brews with
     lectern,             // facing: front (horizontal); flag: powered; extra: has_book. Block entity: the book; cook_time its page
     barrel,              // facing: front (any side); flag: open. Block entity: 27 slots, its viewers
+    composter,           // level: 0-8 (7 full, 8 bone meal ready)
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -277,6 +278,8 @@ constexpr BlockState lectern(Direction front, bool has_book = false, bool powere
 }
 // A barrel facing `front` (any side), open or not.
 constexpr BlockState barrel(Direction front, bool open = false) { return BlockState::of(BlockType::barrel).with_facing(front).with_flag(open); }
+// A composter at `level` (0 to 8).
+constexpr BlockState composter(std::uint8_t level = 0) { return BlockState::of(BlockType::composter).with_level(level); }
 // A note block; `instrument` is a registry::Instrument.
 constexpr BlockState note_block(std::uint8_t instrument = 0, std::uint8_t note = 0, bool powered = false) {
     return BlockState::of(BlockType::note_block).with_variant(instrument).with_level(static_cast<std::uint8_t>(note & 15))
@@ -449,6 +452,7 @@ inline bool is_movable(BlockState s) noexcept {
     case BlockType::stone: case BlockType::glass: case BlockType::redstone_block: case BlockType::redstone_lamp:
     case BlockType::observer: case BlockType::slime_block: case BlockType::target: case BlockType::trapdoor:
     case BlockType::fence_gate: case BlockType::honey_block: case BlockType::note_block: case BlockType::rail:
+    case BlockType::composter:
         return true;
     case BlockType::piston: case BlockType::sticky_piston:
         return !s.flag();

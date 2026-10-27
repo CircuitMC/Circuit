@@ -18,7 +18,7 @@ struct Wire::Ids {
     std::int32_t cfg_custom_payload, cfg_disconnect, cfg_finish, cfg_keep_alive, cfg_registry_data, cfg_features,
         cfg_known_packs, cfg_update_tags;
     std::int32_t login, set_health, game_event, player_abilities, set_held_slot, spawn_position, set_time, chunk_center,
-        chunk_batch_start, chunk_batch_finished, level_chunk, light_update, forget_chunk, block_update, block_event, block_changed_ack,
+        chunk_batch_start, chunk_batch_finished, level_chunk, light_update, forget_chunk, block_update, block_event, level_event, block_changed_ack,
         player_position, keep_alive, system_chat, player_info_update, player_info_remove, add_entity,
         set_entity_data, remove_entities, entity_position_sync, rotate_head, container_set_content, disconnect, take_item_entity,
         open_screen, container_close, container_set_slot, container_set_data, set_cursor_item, set_player_inventory, respawn, combat_kill, damage_event, sb_container_click,
@@ -73,6 +73,7 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->forget_chunk = cb(State::play, "forget_level_chunk");
     ids->block_update = cb(State::play, "block_update");
     ids->block_event = cb(State::play, "block_event");
+    ids->level_event = cb(State::play, "level_event");
     ids->block_changed_ack = cb(State::play, "block_changed_ack");
     ids->player_position = cb(State::play, "player_position");
     ids->keep_alive = cb(State::play, "keep_alive");
@@ -287,6 +288,9 @@ Bytes Wire::block_update(WirePosition pos, std::int32_t state) const {
 }
 Bytes Wire::block_event(WirePosition pos, std::uint8_t event, std::uint8_t param, std::int32_t block) const {
     return packet(id_->block_event, Writer().position(pos).u8(event).u8(param).varint(block));
+}
+Bytes Wire::level_event(std::int32_t event, WirePosition pos, std::int32_t data) const {
+    return packet(id_->level_event, Writer().i32(event).position(pos).i32(data).boolean(false));
 }
 Bytes Wire::block_changed_ack(std::int32_t sequence) const { return packet(id_->block_changed_ack, Writer().varint(sequence)); }
 Bytes Wire::player_position(std::int32_t teleport_id, Vec3 pos, float yaw, float pitch) const {

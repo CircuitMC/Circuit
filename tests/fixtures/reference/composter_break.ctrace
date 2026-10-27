@@ -1,0 +1,557 @@
+circuit-trace 2
+title Composters broken at each stage, filled by a dropper, and their level after a hopper empties them
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v12
+mechanisms composter dispenser hopper
+area -1 -1 -1 8 3 3
+ticks 80
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 -1 0 minecraft:stone
+at 0 set 0 -1 1 minecraft:stone
+at 0 set 0 -1 2 minecraft:stone
+at 0 set 1 -1 0 minecraft:stone
+at 0 set 1 -1 1 minecraft:stone
+at 0 set 1 -1 2 minecraft:stone
+at 0 set 2 -1 0 minecraft:stone
+at 0 set 2 -1 1 minecraft:stone
+at 0 set 2 -1 2 minecraft:stone
+at 0 set 3 -1 0 minecraft:stone
+at 0 set 3 -1 1 minecraft:stone
+at 0 set 3 -1 2 minecraft:stone
+at 0 set 4 -1 0 minecraft:stone
+at 0 set 4 -1 1 minecraft:stone
+at 0 set 4 -1 2 minecraft:stone
+at 0 set 5 -1 0 minecraft:stone
+at 0 set 5 -1 1 minecraft:stone
+at 0 set 5 -1 2 minecraft:stone
+at 0 set 6 -1 0 minecraft:stone
+at 0 set 6 -1 1 minecraft:stone
+at 0 set 6 -1 2 minecraft:stone
+at 0 set 7 -1 0 minecraft:stone
+at 0 set 7 -1 1 minecraft:stone
+at 0 set 7 -1 2 minecraft:stone
+at 0 set 0 0 0 minecraft:composter[level=8]
+at 0 set 1 0 0 minecraft:composter[level=7]
+at 0 set 2 0 0 minecraft:composter[level=3]
+at 0 set 4 0 0 minecraft:dropper[facing=up,triggered=false]
+at 0 set 4 1 0 minecraft:composter[level=0]
+at 0 set 5 0 0 minecraft:lever[face=wall,facing=east,powered=false]
+at 0 set 7 1 0 minecraft:composter[level=8]
+at 0 set 7 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 7 1 2 minecraft:composter[level=7]
+
+at 1 insert 4 0 0 0 minecraft:melon_slice 12
+
+at 2 use 5 0 0
+change 2 commands 5 0 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 2 commands 4 0 0 minecraft:dropper[facing=up,triggered=false] minecraft:dropper[facing=up,triggered=true]
+
+at 3 break 0 0 0 minecraft:air
+change 3 commands 0 0 0 minecraft:composter[level=8] minecraft:air
+entity-added 3 commands e1 minecraft:item 0.6154838936883285 0.24526820783574294 0.5687087126750541 0.010087401023526787 0.2 0.019509055559440353 item=minecraft:composter count=1
+entity-added 3 commands e2 minecraft:item 0.4166091997383249 0.31759459237035925 0.7424207700999045 0.07583650357449603 0.2 0.08824983589642288 item=minecraft:bone_meal count=1
+draws 3 commands level 20
+entity-order 3 entities e1 e2
+block 3 0 0 0 minecraft:air
+block 3 1 0 0 minecraft:composter[level=7]
+block 3 2 0 0 minecraft:composter[level=3]
+block 3 4 1 0 minecraft:composter[level=0]
+block 3 7 1 0 minecraft:composter[level=0]
+block 3 7 1 2 minecraft:composter[level=7]
+entity 3 e1 0.6255712947118552 0.4052682078357429 0.5882177682344945 0.009885653195458158 0.1568 0.01911887482035725 item=minecraft:composter count=1 age=1 pickup-delay=9 on-ground=false
+entity 3 e2 0.4924457033128209 0.4775945923703593 0.8306706059963274 0.07431977494947263 0.1568 0.08648484086172646 item=minecraft:bone_meal count=1 age=1 pickup-delay=9 on-ground=false
+
+at 4 break 1 0 0 minecraft:air
+change 4 commands 1 0 0 minecraft:composter[level=7] minecraft:air
+entity-added 4 commands e3 minecraft:item 1.3874769830177425 0.18944857543688837 0.3233008288232591 -0.09535237550322212 0.2 0.009347951439693108 item=minecraft:composter count=1
+draws 4 commands level 10
+entity-order 4 entities e1 e2 e3
+entity 4 e1 0.6354569479073134 0.5220682078357429 0.6073366430548517 0.009687940320102865 0.11446399999999998 0.018736497688613702 item=minecraft:composter count=1 age=2 pickup-delay=8 on-ground=false
+entity 4 e2 0.5667654782622935 0.5943945923703593 0.9171554468580538 0.0728333808680204 0.11446399999999998 0.08475514569405936 item=minecraft:bone_meal count=1 age=2 pickup-delay=8 on-ground=false
+entity 4 e3 1.2921246075145203 0.34944857543688834 0.3326487802629522 -0.0934453298118599 0.1568 0.00916099258919727 item=minecraft:composter count=1 age=1 pickup-delay=9 on-ground=false
+
+at 5 break 2 0 0 minecraft:air
+change 5 commands 2 0 0 minecraft:composter[level=3] minecraft:air
+entity-added 5 commands e4 minecraft:item 2.732243430338425 0.17724534312548584 0.5625731817327797 -0.017840760901787656 0.2 0.05526245825498652 item=minecraft:composter count=1
+draws 5 block_ticks level 1
+draws 5 commands level 10
+entity-order 5 entities e1 e2 e3 e4
+block 5 0 0 0 minecraft:air
+block 5 1 0 0 minecraft:air
+block 5 2 0 0 minecraft:air
+block 5 4 1 0 minecraft:composter[level=0]
+block 5 7 1 0 minecraft:composter[level=0]
+block 5 7 1 2 minecraft:composter[level=7]
+entity 5 e1 0.6451448882274163 0.5965322078357429 0.6260731407434654 0.009494181698483605 0.07297471999999998 0.01836176809221176 item=minecraft:composter count=1 age=3 pickup-delay=7 on-ground=false
+entity 5 e2 0.6395988591303139 0.6688585923703593 1.0019105925521132 0.07137671463984648 0.07297471999999998 0.08306004439675428 item=minecraft:bone_meal count=1 age=3 pickup-delay=7 on-ground=false
+entity 5 e3 1.1986792777026605 0.46624857543688836 0.3418097728521495 -0.09157642499795093 0.11446399999999998 0.008977772912145392 item=minecraft:composter count=1 age=2 pickup-delay=8 on-ground=false
+entity 5 e4 2.7144026694366374 0.3372453431254858 0.6178356399877662 -0.01748394602403741 0.1568 0.05415721014393453 item=minecraft:composter count=1 age=1 pickup-delay=9 on-ground=false
+
+at 6 use 5 0 0
+change 6 commands 5 0 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 6 commands 4 0 0 minecraft:dropper[facing=up,triggered=true] minecraft:dropper[facing=up,triggered=false]
+entity-order 6 entities e1 e2 e3 e4
+entity 6 e1 0.6546390699258999 0.6295069278357429 0.6444349088356772 0.009304298245601078 0.032315225599999976 0.017994533080590458 item=minecraft:composter count=1 age=4 pickup-delay=6 on-ground=false
+entity 6 e2 0.7109755737701604 0.7018333123703593 1.0849706369488674 0.06994918170845234 0.032315225599999976 0.08139884509306382 item=minecraft:bone_meal count=1 age=4 pickup-delay=6 on-ground=false
+entity 6 e3 1.1071028527047095 0.5407125754368883 0.3507875457642949 -0.0897448982446736 0.07297471999999998 0.008798217625139913 item=minecraft:composter count=1 age=3 pickup-delay=7 on-ground=false
+entity 6 e4 2.6969187234126 0.45404534312548583 0.6719928501317007 -0.017134267437036468 0.11446399999999998 0.05307406697402264 item=minecraft:composter count=1 age=2 pickup-delay=8 on-ground=false
+
+entity-order 7 entities e1 e2 e3 e4
+entity 7 e1 0.663943368171501 0.6218221534357429 0.6624294419162677 0.009118212458154463 -0.007531078912000024 0.01763464276219713 item=minecraft:composter count=1 age=5 pickup-delay=5 on-ground=false
+entity 7 e2 0.7809247554786127 0.6941485379703592 1.1663694820419312 0.06855019940845805 -0.007531078912000024 0.0797708697437623 item=minecraft:bone_meal count=1 age=5 pickup-delay=5 on-ground=false
+entity 7 e3 1.017357954460036 0.5736872954368883 0.3595857633894348 -0.08795000199152822 0.032315225599999976 0.008622253440449798 item=minecraft:composter count=1 age=4 pickup-delay=6 on-ground=false
+entity 7 e4 2.6797844559755637 0.5285093431254858 0.7250669171057234 -0.016791582415105952 0.07297471999999998 0.052012586646849684 item=minecraft:composter count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 8 entities e1 e2 e3 e4
+entity 8 e1 0.6730615806296555 0.5742910745237428 0.6800640846784649 0.008935848382907475 -0.04658045733376002 0.017281950243307306 item=minecraft:composter count=1 age=6 pickup-delay=4 on-ground=false
+entity 8 e2 0.8494749548870708 0.6466174590583592 1.2461403517856935 0.06717919672778018 -0.04658045733376002 0.07817545387039565 item=minecraft:bone_meal count=1 age=6 pickup-delay=4 on-ground=false
+entity 8 e3 0.9294079524685077 0.5660025210368883 0.36820801682988463 -0.08619100362921081 -0.007531078912000024 0.008449808536097236 item=minecraft:composter count=1 age=5 pickup-delay=5 on-ground=false
+entity 8 e4 2.6629928735604578 0.5614840631254858 0.7770795037525731 -0.01645575108707785 0.032315225599999976 0.05097233590597405 item=minecraft:composter count=1 age=4 pickup-delay=6 on-ground=false
+
+entity-order 9 entities e1 e2 e3 e4
+entity 9 e1 0.681997429012563 0.4877106171899828 0.6973460349217722 0.008757131585687108 -0.08484884818708481 0.016936311568068203 item=minecraft:composter count=1 age=7 pickup-delay=3 on-ground=false
+entity 9 e2 0.916654151614851 0.5600370017245992 1.324315805656089 0.06583561407456606 -0.08484884818708481 0.07661194628406619 item=minecraft:bone_meal count=1 age=7 pickup-delay=3 on-ground=false
+entity 9 e3 0.8432169488392969 0.5184714421248883 0.37665782536598186 -0.08446718520058952 -0.04658045733376002 0.008280812526542598 item=minecraft:composter count=1 age=6 pickup-delay=4 on-ground=false
+entity 9 e4 2.64653712247338 0.5537992887254858 0.8280518396585471 -0.016126636379204837 -0.007531078912000024 0.049952890160074724 item=minecraft:composter count=1 age=5 pickup-delay=5 on-ground=false
+
+at 10 use 5 0 0
+change 10 commands 5 0 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 10 commands 4 0 0 minecraft:dropper[facing=up,triggered=false] minecraft:dropper[facing=up,triggered=true]
+entity-order 10 entities e1 e2 e3 e4
+block 10 0 0 0 minecraft:air
+block 10 1 0 0 minecraft:air
+block 10 2 0 0 minecraft:air
+block 10 4 1 0 minecraft:composter[level=0]
+block 10 7 1 0 minecraft:composter[level=0]
+block 10 7 1 2 minecraft:composter[level=7]
+entity 10 e1 0.6907545605982501 0.362861769002898 0.7142823464898403 0.008581989121002396 -0.12235187122334311 0.016597585659741346 item=minecraft:composter count=1 age=8 pickup-delay=2 on-ground=false
+entity 10 e2 0.982489765689417 0.43518815353751444 1.4009277519401553 0.06451890304878942 -0.12235187122334311 0.07507970881964178 item=minecraft:bone_meal count=1 age=8 pickup-delay=2 on-ground=false
+entity 10 e3 0.7587497636387074 0.43189098479112825 0.38493863789252447 -0.08277784310766143 -0.08484884818708481 0.00811519643395571 item=minecraft:composter count=1 age=7 pickup-delay=3 on-ground=false
+entity 10 e4 2.630410486094175 0.5062682098134857 0.8780047298186219 -0.015804103959211918 -0.04658045733376002 0.048953833309648996 item=minecraft:composter count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 11 entities e1 e2 e3 e4
+entity 11 e1 0.6993365497192525 0.2005098977795549 0.7308799321495817 0.0084103495022708 -0.15910483379887624 0.016265634263120343 item=minecraft:composter count=1 age=9 pickup-delay=1 on-ground=false
+entity 11 e2 1.0470086687382065 0.27283628231417134 1.476007460759797 0.06322852621841404 -0.15910483379887624 0.07357811607528074 item=minecraft:bone_meal count=1 age=9 pickup-delay=1 on-ground=false
+entity 11 e3 0.6759719205310459 0.30704213660404345 0.39305383432648017 -0.08112228782437025 -0.12235187122334311 0.007952892660061684 item=minecraft:composter count=1 age=8 pickup-delay=2 on-ground=false
+entity 11 e4 2.614606382134963 0.41968775247972573 0.9269585631282709 -0.01548802218146704 -0.08484884818708481 0.047974757577176286 item=minecraft:composter count=1 age=7 pickup-delay=3 on-ground=false
+
+entity-order 12 entities e1 e2 e3 e4
+entity 12 e1 0.7077468992215233 0.0014050639806786613 0.747145566412702 0.008242142672640071 -0.1951227371228987 0.015940321888100288 item=minecraft:composter count=1 age=10 pickup-delay=0 on-ground=false
+entity 12 e2 1.1102371949566205 0.07373144851529509 1.5495855768350777 0.061963956900034194 -0.1951227371228987 0.07210655515716631 item=minecraft:bone_meal count=1 age=10 pickup-delay=0 on-ground=false
+entity 12 e3 0.5948496327066757 0.14469026538070034 0.40100672698654183 -0.0794998436151677 -0.15910483379887624 0.00779383495854984 item=minecraft:composter count=1 age=9 pickup-delay=1 on-ground=false
+entity 12 e4 2.599118359953496 0.2948389042926409 0.9749333207054471 -0.015178262033248279 -0.12235187122334311 0.04701526334067864 item=minecraft:composter count=1 age=8 pickup-delay=2 on-ground=false
+
+draws 13 block_ticks level 1
+entity-order 13 entities e1 e2 e3 e4
+entity 13 e1 0.7159890418941635 0 0.7630858883008023 0.004846380378852188 0 0.009372910212719255 item=minecraft:composter count=1 age=11 pickup-delay=0 on-ground=true
+entity 13 e2 1.1722011518566546 0 1.621692131992244 0.03643481032101303 0 0.04239865869591631 item=minecraft:bone_meal count=1 age=11 pickup-delay=0 on-ground=true
+entity 13 e3 0.515349789091508 0 0.4088005619450917 -0.046745912746370064 0 0.00458277541645968 item=minecraft:composter count=1 age=10 pickup-delay=0 on-ground=true
+entity 13 e4 2.583940097920248 0.13248703306929782 1.0219485840461258 -0.014874697082085686 -0.15910483379887624 0.04607495897061005 item=minecraft:composter count=1 age=9 pickup-delay=1 on-ground=false
+
+at 14 use 5 0 0
+change 14 commands 5 0 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 14 commands 4 0 0 minecraft:dropper[facing=up,triggered=true] minecraft:dropper[facing=up,triggered=false]
+entity-order 14 entities e1 e2 e3 e4
+entity 14 e1 0.7208354222730157 0 0.7724587985135215 0.0028496719493209333 0 0.005511271759278554 item=minecraft:composter count=1 age=12 pickup-delay=0 on-ground=true
+entity 14 e2 1.2086359621776677 0 1.6640907906881603 0.021423670623066115 0 0.024930413820138525 item=minecraft:bone_meal count=1 age=12 pickup-delay=0 on-ground=true
+entity 14 e3 0.4686038763451379 0 0.41338333736155136 -0.02748659945884893 0 0.002694672215847755 item=minecraft:composter count=1 age=11 pickup-delay=0 on-ground=true
+entity 14 e4 2.5690654008381624 0 1.0680235430167357 -0.00874632276377461 0 0.02709207859903002 item=minecraft:composter count=1 age=10 pickup-delay=0 on-ground=true
+
+entity-order 15 entities e1 e2 e3 e4
+entity 15 e1 0.7236850942223366 0 0.7779700702728001 0.0016756072746955636 0 0.003240628120325206 item=minecraft:composter count=1 age=13 pickup-delay=0 on-ground=true
+entity 15 e2 1.2300596328007338 0 1.6890212045082988 0.01259711959309755 0 0.014659084800322165 item=minecraft:bone_meal count=1 age=13 pickup-delay=0 on-ground=true
+entity 15 e3 0.441117276886289 0 0.4160780095773991 -0.016162122107025535 0 0.0015844674222485404 item=minecraft:composter count=1 age=12 pickup-delay=0 on-ground=true
+entity 15 e4 2.5603190780743876 0 1.0951156216157658 -0.00514283830225036 0 0.015930143818124864 item=minecraft:composter count=1 age=11 pickup-delay=0 on-ground=true
+
+entity-order 16 entities e1 e2 e3 e4
+entity 16 e1 0.7253607014970321 0 0.7812106983931253 0.000985257176595976 0 0.0019054895263624573 item=minecraft:composter count=1 age=14 pickup-delay=0 on-ground=true
+entity 16 e2 1.2426567523938314 0 1.703680289308621 0.0074071070655814236 0 0.00861954272934898 item=minecraft:bone_meal count=1 age=14 pickup-delay=0 on-ground=true
+entity 16 e3 0.42495515477926343 0 0.41766247699964765 -0.009503328754561861 0 0.0009316669379682267 item=minecraft:composter count=1 age=13 pickup-delay=0 on-ground=true
+entity 16 e4 2.555176239772137 0 1.1110457654338908 -0.0030239892258079656 0 0.009366925506971898 item=minecraft:composter count=1 age=12 pickup-delay=0 on-ground=true
+
+entity-order 17 entities e1 e2 e3 e4
+entity 17 e1 0.7263459586736281 0 0.7831161879194878 0.0005793312780945307 0 0.001120427954168543 item=minecraft:composter count=1 age=15 pickup-delay=0 on-ground=true
+entity 17 e2 1.250063859459413 0 1.7122998320379699 0.004355379392527879 0 0.005068291634511864 item=minecraft:bone_meal count=1 age=15 pickup-delay=0 on-ground=true
+entity 17 e3 0.4154518260247016 0 0.41859414393761585 -0.005587957869593369 0 0.0005478202146127407 item=minecraft:composter count=1 age=14 pickup-delay=0 on-ground=true
+entity 17 e4 2.552152250546329 0 1.1204126909408627 -0.001778105843576937 0 0.005507752751945246 item=minecraft:composter count=1 age=13 pickup-delay=0 on-ground=true
+
+at 18 use 5 0 0
+change 18 commands 5 0 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 18 commands 4 0 0 minecraft:dropper[facing=up,triggered=false] minecraft:dropper[facing=up,triggered=true]
+entity-order 18 entities e1 e2 e3 e4
+entity 18 e1 0.7263459586736281 0 0.7831161879194878 0.0005793312780945307 -0.04 0.001120427954168543 item=minecraft:composter count=1 age=16 pickup-delay=0 on-ground=true
+entity 18 e2 1.2544192388519408 0 1.7173681236724818 0.0025609633403304273 0 0.0029801557807699487 item=minecraft:bone_meal count=1 age=16 pickup-delay=0 on-ground=true
+entity 18 e3 0.4098638681551082 0 0.4191419641522286 -0.0032857195577245986 0 0.0003221183185836998 item=minecraft:composter count=1 age=15 pickup-delay=0 on-ground=true
+entity 18 e4 2.550374144702752 0 1.1259204436928079 -0.0010455263411587392 0 0.00323855894380515 item=minecraft:composter count=1 age=14 pickup-delay=0 on-ground=true
+
+change 19 block_ticks 7 1 2 minecraft:composter[level=7] minecraft:composter[level=8]
+entity-order 19 entities e1 e2 e3 e4
+entity 19 e1 0.7263459586736281 0 0.7831161879194878 0.0005793312780945307 -0.08 0.001120427954168543 item=minecraft:composter count=1 age=17 pickup-delay=0 on-ground=true
+entity 19 e2 1.2569802021922714 0 1.7203482794532519 0.001505846595538439 0 0.0017523317753028074 item=minecraft:bone_meal count=1 age=17 pickup-delay=0 on-ground=true
+entity 19 e3 0.4065781485973836 0 0.4194640824708123 -0.0019320032942194579 0 0.00018940559037336548 item=minecraft:composter count=1 age=16 pickup-delay=0 on-ground=true
+entity 19 e4 2.5493286183615935 0 1.129159002636613 -0.000614769550421019 0 0.0019042728504463182 item=minecraft:composter count=1 age=15 pickup-delay=0 on-ground=true
+
+entity-order 20 entities e1 e2 e3 e4
+entity 20 e1 0.7263459586736281 0 0.7831161879194878 0.0005793312780945307 -0.12 0.001120427954168543 item=minecraft:composter count=1 age=18 pickup-delay=0 on-ground=true
+entity 20 e2 1.2584860487878098 0 1.7221006112285546 0.0008854378872140099 0 0.0010303711874895868 item=minecraft:bone_meal count=1 age=18 pickup-delay=0 on-ground=true
+entity 20 e3 0.4046461453031642 0 0.4196534880611857 -0.0011360180512361604 0 0.0001113704983386762 item=minecraft:composter count=1 age=17 pickup-delay=0 on-ground=true
+entity 20 e4 2.5487138488111727 0 1.1310632754870593 -0.0003614845319975349 0 0.001119712548657914 item=minecraft:composter count=1 age=16 pickup-delay=0 on-ground=true
+
+draws 21 block_ticks level 1
+entity-order 21 entities e1 e2 e3 e4
+entity 21 e1 0.7269252899517226 0 0.7842366158736563 0.0003406468257741724 0 0.0006588117032995518 item=minecraft:composter count=1 age=19 pickup-delay=0 on-ground=true
+entity 21 e2 1.2584860487878098 0 1.7221006112285546 0.0008854378872140099 -0.04 0.0010303711874895868 item=minecraft:bone_meal count=1 age=19 pickup-delay=0 on-ground=true
+entity 21 e3 0.4046461453031642 0 0.4196534880611857 -0.0011360180512361604 -0.04 0.0001113704983386762 item=minecraft:composter count=1 age=18 pickup-delay=0 on-ground=true
+entity 21 e4 2.5487138488111727 0 1.1310632754870593 -0.0003614845319975349 -0.04 0.001119712548657914 item=minecraft:composter count=1 age=17 pickup-delay=0 on-ground=true
+
+at 22 use 5 0 0
+change 22 commands 5 0 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 22 commands 4 0 0 minecraft:dropper[facing=up,triggered=true] minecraft:dropper[facing=up,triggered=false]
+entity-order 22 entities e1 e2 e3 e4
+entity 22 e1 0.7269252899517226 0 0.7842366158736563 0.0003406468257741724 -0.04 0.0006588117032995518 item=minecraft:composter count=1 age=20 pickup-delay=0 on-ground=true
+entity 22 e2 1.2584860487878098 0 1.7221006112285546 0.0008854378872140099 -0.08 0.0010303711874895868 item=minecraft:bone_meal count=1 age=20 pickup-delay=0 on-ground=true
+entity 22 e3 0.4046461453031642 0 0.4196534880611857 -0.0011360180512361604 -0.08 0.0001113704983386762 item=minecraft:composter count=1 age=19 pickup-delay=0 on-ground=true
+entity 22 e4 2.5487138488111727 0 1.1310632754870593 -0.0003614845319975349 -0.08 0.001119712548657914 item=minecraft:composter count=1 age=18 pickup-delay=0 on-ground=true
+
+entity-order 23 entities e1 e2 e3 e4
+entity 23 e1 0.7269252899517226 0 0.7842366158736563 0.0003406468257741724 -0.08 0.0006588117032995518 item=minecraft:composter count=1 age=21 pickup-delay=0 on-ground=true
+entity 23 e2 1.2584860487878098 0 1.7221006112285546 0.0008854378872140099 -0.12 0.0010303711874895868 item=minecraft:bone_meal count=1 age=21 pickup-delay=0 on-ground=true
+entity 23 e3 0.4046461453031642 0 0.4196534880611857 -0.0011360180512361604 -0.12 0.0001113704983386762 item=minecraft:composter count=1 age=20 pickup-delay=0 on-ground=true
+entity 23 e4 2.5487138488111727 0 1.1310632754870593 -0.0003614845319975349 -0.12 0.001119712548657914 item=minecraft:composter count=1 age=19 pickup-delay=0 on-ground=true
+
+entity-order 24 entities e1 e2 e3 e4
+entity 24 e1 0.7269252899517226 0 0.7842366158736563 0.0003406468257741724 -0.12 0.0006588117032995518 item=minecraft:composter count=1 age=22 pickup-delay=0 on-ground=true
+entity 24 e2 1.2593714866750239 0 1.7231309824160441 0.0005206375300358389 0 0.0006058583191674664 item=minecraft:bone_meal count=1 age=22 pickup-delay=0 on-ground=true
+entity 24 e3 0.40351012725192803 0 0.4197648585595244 -0.0006679786812971192 0 6.5485859608235e-05 item=minecraft:composter count=1 age=21 pickup-delay=0 on-ground=true
+entity 24 e4 2.548352364279175 0 1.1321829880357173 -0.0002125529261883384 0 0.0006583910448170016 item=minecraft:composter count=1 age=20 pickup-delay=0 on-ground=true
+
+entity-order 25 entities e1 e2 e3 e4
+entity 25 e1 0.7272659367774967 0 0.7848954275769559 0.00020030035369691335 0 0.00038738132049422806 item=minecraft:composter count=1 age=23 pickup-delay=0 on-ground=true
+entity 25 e2 1.2593714866750239 0 1.7231309824160441 0.0005206375300358389 -0.04 0.0006058583191674664 item=minecraft:bone_meal count=1 age=23 pickup-delay=0 on-ground=true
+entity 25 e3 0.40351012725192803 0 0.4197648585595244 -0.0006679786812971192 -0.04 6.5485859608235e-05 item=minecraft:composter count=1 age=22 pickup-delay=0 on-ground=true
+entity 25 e4 2.548352364279175 0 1.1321829880357173 -0.0002125529261883384 -0.04 0.0006583910448170016 item=minecraft:composter count=1 age=21 pickup-delay=0 on-ground=true
+
+at 26 use 5 0 0
+change 26 commands 5 0 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 26 commands 4 0 0 minecraft:dropper[facing=up,triggered=false] minecraft:dropper[facing=up,triggered=true]
+entity-order 26 entities e1 e2 e3 e4
+entity 26 e1 0.7272659367774967 0 0.7848954275769559 0.00020030035369691335 -0.04 0.00038738132049422806 item=minecraft:composter count=1 age=24 pickup-delay=0 on-ground=true
+entity 26 e2 1.2593714866750239 0 1.7231309824160441 0.0005206375300358389 -0.08 0.0006058583191674664 item=minecraft:bone_meal count=1 age=24 pickup-delay=0 on-ground=true
+entity 26 e3 0.40351012725192803 0 0.4197648585595244 -0.0006679786812971192 -0.08 6.5485859608235e-05 item=minecraft:composter count=1 age=23 pickup-delay=0 on-ground=true
+entity 26 e4 2.548352364279175 0 1.1321829880357173 -0.0002125529261883384 -0.08 0.0006583910448170016 item=minecraft:composter count=1 age=22 pickup-delay=0 on-ground=true
+
+entity-order 27 entities e1 e2 e3 e4
+entity 27 e1 0.7272659367774967 0 0.7848954275769559 0.00020030035369691335 -0.08 0.00038738132049422806 item=minecraft:composter count=1 age=25 pickup-delay=0 on-ground=true
+entity 27 e2 1.2593714866750239 0 1.7231309824160441 0.0005206375300358389 -0.12 0.0006058583191674664 item=minecraft:bone_meal count=1 age=25 pickup-delay=0 on-ground=true
+entity 27 e3 0.40351012725192803 0 0.4197648585595244 -0.0006679786812971192 -0.12 6.5485859608235e-05 item=minecraft:composter count=1 age=24 pickup-delay=0 on-ground=true
+entity 27 e4 2.548352364279175 0 1.1321829880357173 -0.0002125529261883384 -0.12 0.0006583910448170016 item=minecraft:composter count=1 age=23 pickup-delay=0 on-ground=true
+
+entity-order 28 entities e1 e2 e3 e4
+entity 28 e1 0.7272659367774967 0 0.7848954275769559 0.00020030035369691335 -0.12 0.00038738132049422806 item=minecraft:composter count=1 age=26 pickup-delay=0 on-ground=true
+entity 28 e2 1.2598921242050596 0 1.7237368407352116 0.000306134898445229 0 0.00035624472749354433 item=minecraft:bone_meal count=1 age=26 pickup-delay=0 on-ground=true
+entity 28 e3 0.4028421485706309 0 0.41983034441913264 -0.00039277150409882105 0 3.850568932167749e-05 item=minecraft:composter count=1 age=25 pickup-delay=0 on-ground=true
+entity 28 e4 2.548139811352987 0 1.1328413790805343 -0.00012498113316653151 0 0.00038713397328161595 item=minecraft:composter count=1 age=24 pickup-delay=0 on-ground=true
+
+draws 29 block_ticks level 1
+entity-order 29 entities e1 e2 e3 e4
+entity 29 e1 0.7274662371311936 0 0.7852828088974501 0.00011777661981710584 0 0.00022778023935561429 item=minecraft:composter count=1 age=27 pickup-delay=0 on-ground=true
+entity 29 e2 1.2598921242050596 0 1.7237368407352116 0.000306134898445229 -0.04 0.00035624472749354433 item=minecraft:bone_meal count=1 age=27 pickup-delay=0 on-ground=true
+entity 29 e3 0.4028421485706309 0 0.41983034441913264 -0.00039277150409882105 -0.04 3.850568932167749e-05 item=minecraft:composter count=1 age=26 pickup-delay=0 on-ground=true
+entity 29 e4 2.548139811352987 0 1.1328413790805343 -0.00012498113316653151 -0.04 0.00038713397328161595 item=minecraft:composter count=1 age=25 pickup-delay=0 on-ground=true
+
+at 30 use 5 0 0
+change 30 commands 5 0 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 30 commands 4 0 0 minecraft:dropper[facing=up,triggered=true] minecraft:dropper[facing=up,triggered=false]
+entity-order 30 entities e1 e2 e3 e4
+entity 30 e1 0.7274662371311936 0 0.7852828088974501 0.00011777661981710584 -0.04 0.00022778023935561429 item=minecraft:composter count=1 age=28 pickup-delay=0 on-ground=true
+entity 30 e2 1.2598921242050596 0 1.7237368407352116 0.000306134898445229 -0.08 0.00035624472749354433 item=minecraft:bone_meal count=1 age=28 pickup-delay=0 on-ground=true
+entity 30 e3 0.4028421485706309 0 0.41983034441913264 -0.00039277150409882105 -0.08 3.850568932167749e-05 item=minecraft:composter count=1 age=27 pickup-delay=0 on-ground=true
+entity 30 e4 2.548139811352987 0 1.1328413790805343 -0.00012498113316653151 -0.08 0.00038713397328161595 item=minecraft:composter count=1 age=26 pickup-delay=0 on-ground=true
+
+entity-order 31 entities e1 e2 e3 e4
+entity 31 e1 0.7274662371311936 0 0.7852828088974501 0.00011777661981710584 -0.08 0.00022778023935561429 item=minecraft:composter count=1 age=29 pickup-delay=0 on-ground=true
+entity 31 e2 1.2598921242050596 0 1.7237368407352116 0.000306134898445229 -0.12 0.00035624472749354433 item=minecraft:bone_meal count=1 age=29 pickup-delay=0 on-ground=true
+entity 31 e3 0.4028421485706309 0 0.41983034441913264 -0.00039277150409882105 -0.12 3.850568932167749e-05 item=minecraft:composter count=1 age=28 pickup-delay=0 on-ground=true
+entity 31 e4 2.548139811352987 0 1.1328413790805343 -0.00012498113316653151 -0.12 0.00038713397328161595 item=minecraft:composter count=1 age=27 pickup-delay=0 on-ground=true
+
+entity-order 32 entities e1 e2 e3 e4
+entity 32 e1 0.7274662371311936 0 0.7852828088974501 0.00011777661981710584 -0.12 0.00022778023935561429 item=minecraft:composter count=1 age=30 pickup-delay=0 on-ground=true
+entity 32 e2 1.2601982591035048 0 1.7240930854627052 0.00018000733838688003 0 0.00020947192083017378 item=minecraft:bone_meal count=1 age=30 pickup-delay=0 on-ground=true
+entity 32 e3 0.40244937706653205 0 0.4198688501084543 -0.0002309496676338247 0 2.2641347597903354e-05 item=minecraft:composter count=1 age=29 pickup-delay=0 on-ground=true
+entity 32 e4 2.5480148302198202 0 1.133228513053816 -7.348891369178092e-05 0 0.00022763479917997328 item=minecraft:composter count=1 age=28 pickup-delay=0 on-ground=true
+
+entity-order 33 entities e1 e2 e3 e4
+entity 33 e1 0.7274662371311936 0 0.7852828088974501 6.925265941633155e-05 0 0.00013393479420924738 item=minecraft:composter count=1 age=31 pickup-delay=0 on-ground=true
+entity 33 e2 1.2601982591035048 0 1.7240930854627052 0.00018000733838688003 -0.04 0.00020947192083017378 item=minecraft:bone_meal count=1 age=31 pickup-delay=0 on-ground=true
+entity 33 e3 0.40244937706653205 0 0.4198688501084543 -0.0002309496676338247 -0.04 2.2641347597903354e-05 item=minecraft:composter count=1 age=30 pickup-delay=0 on-ground=true
+entity 33 e4 2.5480148302198202 0 1.133228513053816 -7.348891369178092e-05 -0.04 0.00022763479917997328 item=minecraft:composter count=1 age=29 pickup-delay=0 on-ground=true
+
+at 34 use 5 0 0
+change 34 commands 5 0 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 34 commands 4 0 0 minecraft:dropper[facing=up,triggered=false] minecraft:dropper[facing=up,triggered=true]
+entity-order 34 entities e1 e2 e3 e4
+entity 34 e1 0.7274662371311936 0 0.7852828088974501 6.925265941633155e-05 -0.04 0.00013393479420924738 item=minecraft:composter count=1 age=32 pickup-delay=0 on-ground=true
+entity 34 e2 1.2601982591035048 0 1.7240930854627052 0.00018000733838688003 -0.08 0.00020947192083017378 item=minecraft:bone_meal count=1 age=32 pickup-delay=0 on-ground=true
+entity 34 e3 0.40244937706653205 0 0.4198688501084543 -0.0002309496676338247 -0.08 2.2641347597903354e-05 item=minecraft:composter count=1 age=31 pickup-delay=0 on-ground=true
+entity 34 e4 2.5480148302198202 0 1.133228513053816 -7.348891369178092e-05 -0.08 0.00022763479917997328 item=minecraft:composter count=1 age=30 pickup-delay=0 on-ground=true
+
+entity-order 35 entities e1 e2 e3 e4
+entity 35 e1 0.7274662371311936 0 0.7852828088974501 6.925265941633155e-05 -0.08 0.00013393479420924738 item=minecraft:composter count=1 age=33 pickup-delay=0 on-ground=true
+entity 35 e2 1.2601982591035048 0 1.7240930854627052 0.00018000733838688003 -0.12 0.00020947192083017378 item=minecraft:bone_meal count=1 age=33 pickup-delay=0 on-ground=true
+entity 35 e3 0.40244937706653205 0 0.4198688501084543 -0.0002309496676338247 -0.12 2.2641347597903354e-05 item=minecraft:composter count=1 age=32 pickup-delay=0 on-ground=true
+entity 35 e4 2.5480148302198202 0 1.133228513053816 -7.348891369178092e-05 -0.12 0.00022763479917997328 item=minecraft:composter count=1 age=31 pickup-delay=0 on-ground=true
+
+entity-order 36 entities e1 e2 e3 e4
+entity 36 e1 0.7274662371311936 0 0.7852828088974501 6.925265941633155e-05 -0.12 0.00013393479420924738 item=minecraft:composter count=1 age=34 pickup-delay=0 on-ground=true
+entity 36 e2 1.2601982591035048 0 1.7240930854627052 0.00010584432561492472 0 0.0001231695018337576 item=minecraft:bone_meal count=1 age=34 pickup-delay=0 on-ground=true
+entity 36 e3 0.40244937706653205 0 0.4198688501084543 -0.00013579841822423646 0 1.3313113726300417e-05 item=minecraft:composter count=1 age=33 pickup-delay=0 on-ground=true
+entity 36 e4 2.5480148302198202 0 1.133228513053816 -4.3211485596005535e-05 0 0.0001338492753773709 item=minecraft:composter count=1 age=32 pickup-delay=0 on-ground=true
+
+draws 37 block_ticks level 1
+entity-order 37 entities e1 e2 e3 e4
+entity 37 e1 0.7274662371311936 0 0.7852828088974501 4.0720567831560875e-05 0 7.875366691430821e-05 item=minecraft:composter count=1 age=35 pickup-delay=0 on-ground=true
+entity 37 e2 1.2601982591035048 0 1.7240930854627052 0.00010584432561492472 -0.04 0.0001231695018337576 item=minecraft:bone_meal count=1 age=35 pickup-delay=0 on-ground=true
+entity 37 e3 0.40244937706653205 0 0.4198688501084543 -0.00013579841822423646 -0.04 1.3313113726300417e-05 item=minecraft:composter count=1 age=34 pickup-delay=0 on-ground=true
+entity 37 e4 2.5480148302198202 0 1.133228513053816 -4.3211485596005535e-05 -0.04 0.0001338492753773709 item=minecraft:composter count=1 age=33 pickup-delay=0 on-ground=true
+
+at 38 use 5 0 0
+change 38 commands 5 0 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 38 commands 4 0 0 minecraft:dropper[facing=up,triggered=true] minecraft:dropper[facing=up,triggered=false]
+entity-order 38 entities e1 e2 e3 e4
+entity 38 e1 0.7274662371311936 0 0.7852828088974501 4.0720567831560875e-05 -0.04 7.875366691430821e-05 item=minecraft:composter count=1 age=36 pickup-delay=0 on-ground=true
+entity 38 e2 1.2601982591035048 0 1.7240930854627052 0.00010584432561492472 -0.08 0.0001231695018337576 item=minecraft:bone_meal count=1 age=36 pickup-delay=0 on-ground=true
+entity 38 e3 0.40244937706653205 0 0.4198688501084543 -0.00013579841822423646 -0.08 1.3313113726300417e-05 item=minecraft:composter count=1 age=35 pickup-delay=0 on-ground=true
+entity 38 e4 2.5480148302198202 0 1.133228513053816 -4.3211485596005535e-05 -0.08 0.0001338492753773709 item=minecraft:composter count=1 age=34 pickup-delay=0 on-ground=true
+
+entity-order 39 entities e1 e2 e3 e4
+entity 39 e1 0.7274662371311936 0 0.7852828088974501 4.0720567831560875e-05 -0.08 7.875366691430821e-05 item=minecraft:composter count=1 age=37 pickup-delay=0 on-ground=true
+entity 39 e2 1.2601982591035048 0 1.7240930854627052 0.00010584432561492472 -0.12 0.0001231695018337576 item=minecraft:bone_meal count=1 age=37 pickup-delay=0 on-ground=true
+entity 39 e3 0.40244937706653205 0 0.4198688501084543 -0.00013579841822423646 -0.12 1.3313113726300417e-05 item=minecraft:composter count=1 age=36 pickup-delay=0 on-ground=true
+entity 39 e4 2.5480148302198202 0 1.133228513053816 -4.3211485596005535e-05 -0.12 0.0001338492753773709 item=minecraft:composter count=1 age=35 pickup-delay=0 on-ground=true
+
+entity-order 40 entities e1 e2 e3 e4
+block 40 0 0 0 minecraft:air
+block 40 1 0 0 minecraft:air
+block 40 2 0 0 minecraft:air
+block 40 4 1 0 minecraft:composter[level=0]
+block 40 7 1 0 minecraft:composter[level=0]
+block 40 7 1 2 minecraft:composter[level=8]
+entity 40 e1 0.7274662371311936 0 0.7852828088974501 4.0720567831560875e-05 -0.12 7.875366691430821e-05 item=minecraft:composter count=1 age=38 pickup-delay=0 on-ground=true
+entity 40 e2 1.2601982591035048 0 1.7240930854627052 6.223646971991866e-05 0 7.242367436099209e-05 item=minecraft:bone_meal count=1 age=38 pickup-delay=0 on-ground=true
+entity 40 e3 0.40244937706653205 0 0.4198688501084543 -7.984947794531378e-05 0 7.828111658239871e-06 item=minecraft:composter count=1 age=37 pickup-delay=0 on-ground=true
+entity 40 e4 2.5480148302198202 0 1.133228513053816 -2.540835608545166e-05 0 7.87033818361083e-05 item=minecraft:composter count=1 age=36 pickup-delay=0 on-ground=true
+
+entity-order 41 entities e1 e2 e3 e4
+entity 41 e1 0.7274662371311936 0 0.7852828088974501 2.3943696292675696e-05 0 4.63071608021449e-05 item=minecraft:composter count=1 age=39 pickup-delay=0 on-ground=true
+entity 41 e2 1.2601982591035048 0 1.7240930854627052 6.223646971991866e-05 -0.04 7.242367436099209e-05 item=minecraft:bone_meal count=1 age=39 pickup-delay=0 on-ground=true
+entity 41 e3 0.40244937706653205 0 0.4198688501084543 -7.984947794531378e-05 -0.04 7.828111658239871e-06 item=minecraft:composter count=1 age=38 pickup-delay=0 on-ground=true
+entity 41 e4 2.5480148302198202 0 1.133228513053816 -2.540835608545166e-05 -0.04 7.87033818361083e-05 item=minecraft:composter count=1 age=37 pickup-delay=0 on-ground=true
+
+entity-changed 42 entities e3 count=2
+entity-removed 42 entities e1 discarded
+entity-order 42 entities e1 e2 e3 e4
+entity 42 e2 1.2601982591035048 0 1.7240930854627052 6.223646971991866e-05 -0.08 7.242367436099209e-05 item=minecraft:bone_meal count=1 age=40 pickup-delay=0 on-ground=true
+entity 42 e3 0.40244937706653205 0 0.4198688501084543 -7.984947794531378e-05 -0.08 7.828111658239871e-06 item=minecraft:composter count=2 age=39 pickup-delay=0 on-ground=true
+entity 42 e4 2.5480148302198202 0 1.133228513053816 -2.540835608545166e-05 -0.08 7.87033818361083e-05 item=minecraft:composter count=1 age=38 pickup-delay=0 on-ground=true
+
+entity-order 43 entities e2 e3 e4
+entity 43 e2 1.2601982591035048 0 1.7240930854627052 6.223646971991866e-05 -0.12 7.242367436099209e-05 item=minecraft:bone_meal count=1 age=41 pickup-delay=0 on-ground=true
+entity 43 e3 0.40244937706653205 0 0.4198688501084543 -7.984947794531378e-05 -0.12 7.828111658239871e-06 item=minecraft:composter count=2 age=40 pickup-delay=0 on-ground=true
+entity 43 e4 2.5480148302198202 0 1.133228513053816 -2.540835608545166e-05 -0.12 7.87033818361083e-05 item=minecraft:composter count=1 age=39 pickup-delay=0 on-ground=true
+
+entity-order 44 entities e2 e3 e4
+entity 44 e2 1.2601982591035048 0 1.7240930854627052 3.659504787521818e-05 0 4.258512480651643e-05 item=minecraft:bone_meal count=1 age=42 pickup-delay=0 on-ground=true
+entity 44 e3 0.40244937706653205 0 0.4198688501084543 -4.695149775316907e-05 0 4.602930117904125e-06 item=minecraft:composter count=2 age=41 pickup-delay=0 on-ground=true
+entity 44 e4 2.5480148302198202 0 1.133228513053816 -1.4940114880585966e-05 0 4.62775931731901e-05 item=minecraft:composter count=1 age=40 pickup-delay=0 on-ground=true
+
+entity-order 45 entities e2 e3 e4
+entity 45 e2 1.2601982591035048 0 1.7240930854627052 3.659504787521818e-05 -0.04 4.258512480651643e-05 item=minecraft:bone_meal count=1 age=43 pickup-delay=0 on-ground=true
+entity 45 e3 0.40244937706653205 0 0.4198688501084543 -4.695149775316907e-05 -0.04 4.602930117904125e-06 item=minecraft:composter count=2 age=42 pickup-delay=0 on-ground=true
+entity 45 e4 2.5480148302198202 0 1.133228513053816 -1.4940114880585966e-05 -0.04 4.62775931731901e-05 item=minecraft:composter count=1 age=41 pickup-delay=0 on-ground=true
+
+entity-order 46 entities e2 e3 e4
+entity 46 e2 1.2601982591035048 0 1.7240930854627052 3.659504787521818e-05 -0.08 4.258512480651643e-05 item=minecraft:bone_meal count=1 age=44 pickup-delay=0 on-ground=true
+entity 46 e3 0.40244937706653205 0 0.4198688501084543 -4.695149775316907e-05 -0.08 4.602930117904125e-06 item=minecraft:composter count=2 age=43 pickup-delay=0 on-ground=true
+entity 46 e4 2.5480148302198202 0 1.133228513053816 -1.4940114880585966e-05 -0.08 4.62775931731901e-05 item=minecraft:composter count=1 age=42 pickup-delay=0 on-ground=true
+
+entity-order 47 entities e2 e3 e4
+entity 47 e2 1.2601982591035048 0 1.7240930854627052 3.659504787521818e-05 -0.12 4.258512480651643e-05 item=minecraft:bone_meal count=1 age=45 pickup-delay=0 on-ground=true
+entity 47 e3 0.40244937706653205 0 0.4198688501084543 -4.695149775316907e-05 -0.12 4.602930117904125e-06 item=minecraft:composter count=2 age=44 pickup-delay=0 on-ground=true
+entity 47 e4 2.5480148302198202 0 1.133228513053816 -1.4940114880585966e-05 -0.12 4.62775931731901e-05 item=minecraft:composter count=1 age=43 pickup-delay=0 on-ground=true
+
+entity-order 48 entities e2 e3 e4
+entity 48 e2 1.2601982591035048 0 1.7240930854627052 2.1517890314413238e-05 0 2.504005590419673e-05 item=minecraft:bone_meal count=1 age=46 pickup-delay=0 on-ground=true
+entity 48 e3 0.40244937706653205 0 0.4198688501084543 -2.760748345500254e-05 0 2.7065231814887918e-06 item=minecraft:composter count=2 age=45 pickup-delay=0 on-ground=true
+entity 48 e4 2.5480148302198202 0 1.133228513053816 -8.784788433160787e-06 0 2.7211227522128407e-05 item=minecraft:composter count=1 age=44 pickup-delay=0 on-ground=true
+
+entity-order 49 entities e2 e3 e4
+entity 49 e2 1.2601982591035048 0 1.7240930854627052 2.1517890314413238e-05 -0.04 2.504005590419673e-05 item=minecraft:bone_meal count=1 age=47 pickup-delay=0 on-ground=true
+entity 49 e3 0.40244937706653205 0 0.4198688501084543 -2.760748345500254e-05 -0.04 2.7065231814887918e-06 item=minecraft:composter count=2 age=46 pickup-delay=0 on-ground=true
+entity 49 e4 2.5480148302198202 0 1.133228513053816 -8.784788433160787e-06 -0.04 2.7211227522128407e-05 item=minecraft:composter count=1 age=45 pickup-delay=0 on-ground=true
+
+entity-order 50 entities e2 e3 e4
+entity 50 e2 1.2601982591035048 0 1.7240930854627052 2.1517890314413238e-05 -0.08 2.504005590419673e-05 item=minecraft:bone_meal count=1 age=48 pickup-delay=0 on-ground=true
+entity 50 e3 0.40244937706653205 0 0.4198688501084543 -2.760748345500254e-05 -0.08 2.7065231814887918e-06 item=minecraft:composter count=2 age=47 pickup-delay=0 on-ground=true
+entity 50 e4 2.5480148302198202 0 1.133228513053816 -8.784788433160787e-06 -0.08 2.7211227522128407e-05 item=minecraft:composter count=1 age=46 pickup-delay=0 on-ground=true
+
+entity-order 51 entities e2 e3 e4
+entity 51 e2 1.2601982591035048 0 1.7240930854627052 2.1517890314413238e-05 -0.12 2.504005590419673e-05 item=minecraft:bone_meal count=1 age=49 pickup-delay=0 on-ground=true
+entity 51 e3 0.40244937706653205 0 0.4198688501084543 -2.760748345500254e-05 -0.12 2.7065231814887918e-06 item=minecraft:composter count=2 age=48 pickup-delay=0 on-ground=true
+entity 51 e4 2.5480148302198202 0 1.133228513053816 -8.784788433160787e-06 -0.12 2.7211227522128407e-05 item=minecraft:composter count=1 age=47 pickup-delay=0 on-ground=true
+
+entity-order 52 entities e2 e3 e4
+entity 52 e2 1.2601982591035048 0 1.7240930854627052 1.2652520777180664e-05 0 1.4723554352231285e-05 item=minecraft:bone_meal count=1 age=50 pickup-delay=0 on-ground=true
+entity 52 e3 0.40244937706653205 0 0.4198688501084543 -1.6233201903911466e-05 0 1.5914357907461915e-06 item=minecraft:composter count=2 age=49 pickup-delay=0 on-ground=true
+entity 52 e4 2.5480148302198202 0 1.133228513053816 -5.165456118123824e-06 0 1.6000203391951728e-05 item=minecraft:composter count=1 age=48 pickup-delay=0 on-ground=true
+
+entity-order 53 entities e2 e3 e4
+entity 53 e2 1.2601982591035048 0 1.7240930854627052 1.2652520777180664e-05 -0.04 1.4723554352231285e-05 item=minecraft:bone_meal count=1 age=51 pickup-delay=0 on-ground=true
+entity 53 e3 0.40244937706653205 0 0.4198688501084543 -1.6233201903911466e-05 -0.04 1.5914357907461915e-06 item=minecraft:composter count=2 age=50 pickup-delay=0 on-ground=true
+entity 53 e4 2.5480148302198202 0 1.133228513053816 -5.165456118123824e-06 -0.04 1.6000203391951728e-05 item=minecraft:composter count=1 age=49 pickup-delay=0 on-ground=true
+
+entity-order 54 entities e2 e3 e4
+entity 54 e2 1.2601982591035048 0 1.7240930854627052 1.2652520777180664e-05 -0.08 1.4723554352231285e-05 item=minecraft:bone_meal count=1 age=52 pickup-delay=0 on-ground=true
+entity 54 e3 0.40244937706653205 0 0.4198688501084543 -1.6233201903911466e-05 -0.08 1.5914357907461915e-06 item=minecraft:composter count=2 age=51 pickup-delay=0 on-ground=true
+entity 54 e4 2.5480148302198202 0 1.133228513053816 -5.165456118123824e-06 -0.08 1.6000203391951728e-05 item=minecraft:composter count=1 age=50 pickup-delay=0 on-ground=true
+
+entity-order 55 entities e2 e3 e4
+entity 55 e2 1.2601982591035048 0 1.7240930854627052 1.2652520777180664e-05 -0.12 1.4723554352231285e-05 item=minecraft:bone_meal count=1 age=53 pickup-delay=0 on-ground=true
+entity 55 e3 0.40244937706653205 0 0.4198688501084543 -1.6233201903911466e-05 -0.12 1.5914357907461915e-06 item=minecraft:composter count=2 age=52 pickup-delay=0 on-ground=true
+entity 55 e4 2.5480148302198202 0 1.133228513053816 -5.165456118123824e-06 -0.12 1.6000203391951728e-05 item=minecraft:composter count=1 age=51 pickup-delay=0 on-ground=true
+
+entity-order 56 entities e2 e3 e4
+entity 56 e2 1.2601982591035048 0 1.7240930854627052 7.439682965098045e-06 0 8.657450829683484e-06 item=minecraft:bone_meal count=1 age=54 pickup-delay=0 on-ground=true
+entity 56 e3 0.40244937706653205 0 0.4198688501084543 -9.54512367933358e-06 0 9.357643390568698e-07 item=minecraft:composter count=2 age=53 pickup-delay=0 on-ground=true
+entity 56 e4 2.5480148302198202 0 1.133228513053816 -3.037288502878904e-06 0 9.408120540524563e-06 item=minecraft:composter count=1 age=52 pickup-delay=0 on-ground=true
+
+entity-order 57 entities e2 e3 e4
+entity 57 e2 1.2601982591035048 0 1.7240930854627052 7.439682965098045e-06 -0.04 8.657450829683484e-06 item=minecraft:bone_meal count=1 age=55 pickup-delay=0 on-ground=true
+entity 57 e3 0.40244937706653205 0 0.4198688501084543 -9.54512367933358e-06 -0.04 9.357643390568698e-07 item=minecraft:composter count=2 age=54 pickup-delay=0 on-ground=true
+entity 57 e4 2.5480148302198202 0 1.133228513053816 -3.037288502878904e-06 -0.04 9.408120540524563e-06 item=minecraft:composter count=1 age=53 pickup-delay=0 on-ground=true
+
+entity-order 58 entities e2 e3 e4
+entity 58 e2 1.2601982591035048 0 1.7240930854627052 7.439682965098045e-06 -0.08 8.657450829683484e-06 item=minecraft:bone_meal count=1 age=56 pickup-delay=0 on-ground=true
+entity 58 e3 0.40244937706653205 0 0.4198688501084543 -9.54512367933358e-06 -0.08 9.357643390568698e-07 item=minecraft:composter count=2 age=55 pickup-delay=0 on-ground=true
+entity 58 e4 2.5480148302198202 0 1.133228513053816 -3.037288502878904e-06 -0.08 9.408120540524563e-06 item=minecraft:composter count=1 age=54 pickup-delay=0 on-ground=true
+
+entity-order 59 entities e2 e3 e4
+entity 59 e2 1.2601982591035048 0 1.7240930854627052 7.439682965098045e-06 -0.12 8.657450829683484e-06 item=minecraft:bone_meal count=1 age=57 pickup-delay=0 on-ground=true
+entity 59 e3 0.40244937706653205 0 0.4198688501084543 -9.54512367933358e-06 -0.12 9.357643390568698e-07 item=minecraft:composter count=2 age=56 pickup-delay=0 on-ground=true
+entity 59 e4 2.5480148302198202 0 1.133228513053816 -3.037288502878904e-06 -0.12 9.408120540524563e-06 item=minecraft:composter count=1 age=55 pickup-delay=0 on-ground=true
+
+entity-order 60 entities e2 e3 e4
+entity 60 e2 1.2601982591035048 0 1.7240930854627052 4.374534023369794e-06 0 5.0905815997499755e-06 item=minecraft:bone_meal count=1 age=58 pickup-delay=0 on-ground=true
+entity 60 e3 0.40244937706653205 0 0.4198688501084543 -5.612533287830382e-06 0 5.502294866951332e-07 item=minecraft:composter count=2 age=57 pickup-delay=0 on-ground=true
+entity 60 e4 2.5480148302198202 0 1.133228513053816 -1.7859258192810058e-06 0 5.531975434109985e-06 item=minecraft:composter count=1 age=56 pickup-delay=0 on-ground=true
+
+entity-order 61 entities e2 e3 e4
+entity 61 e2 1.2601982591035048 0 1.7240930854627052 4.374534023369794e-06 -0.04 5.0905815997499755e-06 item=minecraft:bone_meal count=1 age=59 pickup-delay=0 on-ground=true
+entity 61 e3 0.40244937706653205 0 0.4198688501084543 -5.612533287830382e-06 -0.04 5.502294866951332e-07 item=minecraft:composter count=2 age=58 pickup-delay=0 on-ground=true
+entity 61 e4 2.5480148302198202 0 1.133228513053816 -1.7859258192810058e-06 -0.04 5.531975434109985e-06 item=minecraft:composter count=1 age=57 pickup-delay=0 on-ground=true
+
+entity-order 62 entities e2 e3 e4
+entity 62 e2 1.2601982591035048 0 1.7240930854627052 4.374534023369794e-06 -0.08 5.0905815997499755e-06 item=minecraft:bone_meal count=1 age=60 pickup-delay=0 on-ground=true
+entity 62 e3 0.40244937706653205 0 0.4198688501084543 -5.612533287830382e-06 -0.08 5.502294866951332e-07 item=minecraft:composter count=2 age=59 pickup-delay=0 on-ground=true
+entity 62 e4 2.5480148302198202 0 1.133228513053816 -1.7859258192810058e-06 -0.08 5.531975434109985e-06 item=minecraft:composter count=1 age=58 pickup-delay=0 on-ground=true
+
+entity-order 63 entities e2 e3 e4
+entity 63 e2 1.2601982591035048 0 1.7240930854627052 4.374534023369794e-06 -0.12 5.0905815997499755e-06 item=minecraft:bone_meal count=1 age=61 pickup-delay=0 on-ground=true
+entity 63 e3 0.40244937706653205 0 0.4198688501084543 -5.612533287830382e-06 -0.12 5.502294866951332e-07 item=minecraft:composter count=2 age=60 pickup-delay=0 on-ground=true
+entity 63 e4 2.5480148302198202 0 1.133228513053816 -1.7859258192810058e-06 -0.12 5.531975434109985e-06 item=minecraft:composter count=1 age=59 pickup-delay=0 on-ground=true
+
+entity-order 64 entities e2 e3 e4
+entity 64 e2 1.2601982591035048 0 1.7240930854627052 2.572226264398045e-06 0 2.993262281647915e-06 item=minecraft:bone_meal count=1 age=62 pickup-delay=0 on-ground=true
+entity 64 e3 0.40244937706653205 0 0.4198688501084543 -3.3001699051010533e-06 0 3.235349707106016e-07 item=minecraft:composter count=2 age=61 pickup-delay=0 on-ground=true
+entity 64 e4 2.5480148302198202 0 1.133228513053816 -1.0501244873351096e-06 0 3.2528018823502505e-06 item=minecraft:composter count=1 age=60 pickup-delay=0 on-ground=true
+
+entity-order 65 entities e2 e3 e4
+entity 65 e2 1.2601982591035048 0 1.7240930854627052 2.572226264398045e-06 -0.04 2.993262281647915e-06 item=minecraft:bone_meal count=1 age=63 pickup-delay=0 on-ground=true
+entity 65 e3 0.40244937706653205 0 0.4198688501084543 -3.3001699051010533e-06 -0.04 3.235349707106016e-07 item=minecraft:composter count=2 age=62 pickup-delay=0 on-ground=true
+entity 65 e4 2.5480148302198202 0 1.133228513053816 -1.0501244873351096e-06 -0.04 3.2528018823502505e-06 item=minecraft:composter count=1 age=61 pickup-delay=0 on-ground=true
+
+entity-order 66 entities e2 e3 e4
+entity 66 e2 1.2601982591035048 0 1.7240930854627052 2.572226264398045e-06 -0.08 2.993262281647915e-06 item=minecraft:bone_meal count=1 age=64 pickup-delay=0 on-ground=true
+entity 66 e3 0.40244937706653205 0 0.4198688501084543 -3.3001699051010533e-06 -0.08 3.235349707106016e-07 item=minecraft:composter count=2 age=63 pickup-delay=0 on-ground=true
+entity 66 e4 2.5480148302198202 0 1.133228513053816 -1.0501244873351096e-06 -0.08 3.2528018823502505e-06 item=minecraft:composter count=1 age=62 pickup-delay=0 on-ground=true
+
+entity-order 67 entities e2 e3 e4
+entity 67 e2 1.2601982591035048 0 1.7240930854627052 2.572226264398045e-06 -0.12 2.993262281647915e-06 item=minecraft:bone_meal count=1 age=65 pickup-delay=0 on-ground=true
+entity 67 e3 0.40244937706653205 0 0.4198688501084543 -3.3001699051010533e-06 -0.12 3.235349707106016e-07 item=minecraft:composter count=2 age=64 pickup-delay=0 on-ground=true
+entity 67 e4 2.5480148302198202 0 1.133228513053816 -1.0501244873351096e-06 -0.12 3.2528018823502505e-06 item=minecraft:composter count=1 age=63 pickup-delay=0 on-ground=true
+
+entity-order 68 entities e2 e3 e4
+entity 68 e2 1.2601982591035048 0 1.7240930854627052 1.5124691955561503e-06 0 1.7600383985940105e-06 item=minecraft:bone_meal count=1 age=66 pickup-delay=0 on-ground=true
+entity 68 e3 0.40244937706653205 0 0.4198688501084543 -1.9405000993312305e-06 0 1.9023858190774724e-07 item=minecraft:composter count=2 age=65 pickup-delay=0 on-ground=true
+entity 68 e4 2.5480148302198202 0 1.133228513053816 -6.174732606446031e-07 0 1.912647699152991e-06 item=minecraft:composter count=1 age=64 pickup-delay=0 on-ground=true
+
+entity-order 69 entities e2 e3 e4
+entity 69 e2 1.2601982591035048 0 1.7240930854627052 1.5124691955561503e-06 -0.04 1.7600383985940105e-06 item=minecraft:bone_meal count=1 age=67 pickup-delay=0 on-ground=true
+entity 69 e3 0.40244937706653205 0 0.4198688501084543 -1.9405000993312305e-06 -0.04 1.9023858190774724e-07 item=minecraft:composter count=2 age=66 pickup-delay=0 on-ground=true
+entity 69 e4 2.5480148302198202 0 1.133228513053816 -6.174732606446031e-07 -0.04 1.912647699152991e-06 item=minecraft:composter count=1 age=65 pickup-delay=0 on-ground=true
+
+entity-order 70 entities e2 e3 e4
+entity 70 e2 1.2601982591035048 0 1.7240930854627052 1.5124691955561503e-06 -0.08 1.7600383985940105e-06 item=minecraft:bone_meal count=1 age=68 pickup-delay=0 on-ground=true
+entity 70 e3 0.40244937706653205 0 0.4198688501084543 -1.9405000993312305e-06 -0.08 1.9023858190774724e-07 item=minecraft:composter count=2 age=67 pickup-delay=0 on-ground=true
+entity 70 e4 2.5480148302198202 0 1.133228513053816 -6.174732606446031e-07 -0.08 1.912647699152991e-06 item=minecraft:composter count=1 age=66 pickup-delay=0 on-ground=true
+
+entity-order 71 entities e2 e3 e4
+entity 71 e2 1.2601982591035048 0 1.7240930854627052 1.5124691955561503e-06 -0.12 1.7600383985940105e-06 item=minecraft:bone_meal count=1 age=69 pickup-delay=0 on-ground=true
+entity 71 e3 0.40244937706653205 0 0.4198688501084543 -1.9405000993312305e-06 -0.12 1.9023858190774724e-07 item=minecraft:composter count=2 age=68 pickup-delay=0 on-ground=true
+entity 71 e4 2.5480148302198202 0 1.133228513053816 -6.174732606446031e-07 -0.12 1.912647699152991e-06 item=minecraft:composter count=1 age=67 pickup-delay=0 on-ground=true
+
+entity-order 72 entities e2 e3 e4
+entity 72 e2 1.2601982591035048 0 1.7240930854627052 8.89331976416004e-07 0 1.03490268244049e-06 item=minecraft:bone_meal count=1 age=70 pickup-delay=0 on-ground=true
+entity 72 e3 0.40244937706653205 0 0.4198688501084543 -1.14101417314428e-06 0 1.1186029741014565e-07 item=minecraft:composter count=2 age=69 pickup-delay=0 on-ground=true
+entity 72 e4 2.5480148302198202 0 1.133228513053816 -3.630743137688668e-07 0 1.124636960192624e-06 item=minecraft:composter count=1 age=68 pickup-delay=0 on-ground=true
+
+entity-order 73 entities e2 e3 e4
+entity 73 e2 1.2601982591035048 0 1.7240930854627052 8.89331976416004e-07 -0.04 1.03490268244049e-06 item=minecraft:bone_meal count=1 age=71 pickup-delay=0 on-ground=true
+entity 73 e3 0.40244937706653205 0 0.4198688501084543 -1.14101417314428e-06 -0.04 1.1186029741014565e-07 item=minecraft:composter count=2 age=70 pickup-delay=0 on-ground=true
+entity 73 e4 2.5480148302198202 0 1.133228513053816 -3.630743137688668e-07 -0.04 1.124636960192624e-06 item=minecraft:composter count=1 age=69 pickup-delay=0 on-ground=true
+
+entity-order 74 entities e2 e3 e4
+entity 74 e2 1.2601982591035048 0 1.7240930854627052 8.89331976416004e-07 -0.08 1.03490268244049e-06 item=minecraft:bone_meal count=1 age=72 pickup-delay=0 on-ground=true
+entity 74 e3 0.40244937706653205 0 0.4198688501084543 -1.14101417314428e-06 -0.08 1.1186029741014565e-07 item=minecraft:composter count=2 age=71 pickup-delay=0 on-ground=true
+entity 74 e4 2.5480148302198202 0 1.133228513053816 -3.630743137688668e-07 -0.08 1.124636960192624e-06 item=minecraft:composter count=1 age=70 pickup-delay=0 on-ground=true
+
+entity-order 75 entities e2 e3 e4
+entity 75 e2 1.2601982591035048 0 1.7240930854627052 8.89331976416004e-07 -0.12 1.03490268244049e-06 item=minecraft:bone_meal count=1 age=73 pickup-delay=0 on-ground=true
+entity 75 e3 0.40244937706653205 0 0.4198688501084543 -1.14101417314428e-06 -0.12 1.1186029741014565e-07 item=minecraft:composter count=2 age=72 pickup-delay=0 on-ground=true
+entity 75 e4 2.5480148302198202 0 1.133228513053816 -3.630743137688668e-07 -0.12 1.124636960192624e-06 item=minecraft:composter count=1 age=71 pickup-delay=0 on-ground=true
+
+entity-order 76 entities e2 e3 e4
+entity 76 e2 1.2601982591035048 0 1.7240930854627052 5.229272547168604e-07 0 6.085228384665349e-07 item=minecraft:bone_meal count=1 age=74 pickup-delay=0 on-ground=true
+entity 76 e3 0.40244937706653205 0 0.4198688501084543 -6.709164012745032e-07 0 6.577386149121979e-08 item=minecraft:composter count=2 age=73 pickup-delay=0 on-ground=true
+entity 76 e4 2.5480148302198202 0 1.133228513053816 -2.1348771796388185e-07 0 6.612865990905808e-07 item=minecraft:composter count=1 age=72 pickup-delay=0 on-ground=true
+
+entity-order 77 entities e2 e3 e4
+entity 77 e2 1.2601982591035048 0 1.7240930854627052 5.229272547168604e-07 -0.04 6.085228384665349e-07 item=minecraft:bone_meal count=1 age=75 pickup-delay=0 on-ground=true
+entity 77 e3 0.40244937706653205 0 0.4198688501084543 -6.709164012745032e-07 -0.04 6.577386149121979e-08 item=minecraft:composter count=2 age=74 pickup-delay=0 on-ground=true
+entity 77 e4 2.5480148302198202 0 1.133228513053816 -2.1348771796388185e-07 -0.04 6.612865990905808e-07 item=minecraft:composter count=1 age=73 pickup-delay=0 on-ground=true
+
+entity-order 78 entities e2 e3 e4
+entity 78 e2 1.2601982591035048 0 1.7240930854627052 5.229272547168604e-07 -0.08 6.085228384665349e-07 item=minecraft:bone_meal count=1 age=76 pickup-delay=0 on-ground=true
+entity 78 e3 0.40244937706653205 0 0.4198688501084543 -6.709164012745032e-07 -0.08 6.577386149121979e-08 item=minecraft:composter count=2 age=75 pickup-delay=0 on-ground=true
+entity 78 e4 2.5480148302198202 0 1.133228513053816 -2.1348771796388185e-07 -0.08 6.612865990905808e-07 item=minecraft:composter count=1 age=74 pickup-delay=0 on-ground=true
+
+entity-order 79 entities e2 e3 e4
+entity 79 e2 1.2601982591035048 0 1.7240930854627052 5.229272547168604e-07 -0.12 6.085228384665349e-07 item=minecraft:bone_meal count=1 age=77 pickup-delay=0 on-ground=true
+entity 79 e3 0.40244937706653205 0 0.4198688501084543 -6.709164012745032e-07 -0.12 6.577386149121979e-08 item=minecraft:composter count=2 age=76 pickup-delay=0 on-ground=true
+entity 79 e4 2.5480148302198202 0 1.133228513053816 -2.1348771796388185e-07 -0.12 6.612865990905808e-07 item=minecraft:composter count=1 age=75 pickup-delay=0 on-ground=true
+
+entity-order 80 entities e2 e3 e4
+block 80 0 0 0 minecraft:air
+block 80 1 0 0 minecraft:air
+block 80 2 0 0 minecraft:air
+block 80 4 1 0 minecraft:composter[level=0]
+block 80 7 1 0 minecraft:composter[level=0]
+block 80 7 1 2 minecraft:composter[level=8]
+slot 80 4 0 0 0 minecraft:melon_slice 12
+slot 80 7 0 0 0 minecraft:bone_meal 1
+entity 80 e2 1.2601982591035048 0 1.7240930854627052 3.07481256693056e-07 0 3.578114649989438e-07 item=minecraft:bone_meal count=1 age=78 pickup-delay=0 on-ground=true
+entity 80 e3 0.40244937706653205 0 0.4198688501084543 -3.9449888361922377e-07 0 3.867503444590147e-08 item=minecraft:composter count=2 age=77 pickup-delay=0 on-ground=true
+entity 80 e4 2.5480148302198202 0 1.133228513053816 -1.2553079078582324e-07 0 3.888365593656883e-07 item=minecraft:composter count=1 age=76 pickup-delay=0 on-ground=true
