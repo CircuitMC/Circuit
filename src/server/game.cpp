@@ -292,6 +292,7 @@ struct Game::Impl final : GameServices {
         player_entity_type{};
     std::array<std::int32_t, gameplay::boat_types.size()> boat_entity_types{};
     std::int32_t chest_block{}, trapped_chest_block{}, ender_chest_block{};
+    std::array<std::int32_t, gameplay::blocks::shulker_box_names.size()> shulker_blocks{};
     // Blocks /setblock set for the next tick: a later /setblock compares with
     // them, as commands run one after another on the official servers.
     std::map<BlockPos, BlockState> pending_setblocks;
@@ -328,6 +329,8 @@ struct Game::Impl final : GameServices {
         chest_block = content.block_id("minecraft:chest").value();
         trapped_chest_block = content.block_id("minecraft:trapped_chest").value();
         ender_chest_block = content.block_id("minecraft:ender_chest").value();
+        for (std::size_t k = 0; k < shulker_blocks.size(); ++k)
+            shulker_blocks[k] = content.block_id("minecraft:" + std::string(gameplay::blocks::shulker_box_names[k])).value();
         for (std::uint16_t i = 1; i <= gameplay::items::max_id; ++i)
             if (const auto id = content.item_id(mapping.item_name(i))) item_wire[i] = *id;
         open_world();
@@ -1051,7 +1054,7 @@ struct Game::Impl final : GameServices {
         // Edition protocol/Inventory, and observed from the target version):
         // generic_9x3 2, generic_9x6 5, generic_3x3 6, crafter_3x3 7, anvil 8,
         // blast_furnace 10, brewing_stand 11, crafting 12, enchantment 13, furnace 14, lectern 17,
-        // grindstone 15, hopper 16, loom 18, smithing 21, smoker 22, stonecutter 24.
+        // grindstone 15, hopper 16, loom 18, shulker_box 20, smithing 21, smoker 22, stonecutter 24.
         constexpr std::array<std::int32_t, 3> furnace_menus{14, 22, 10};
         const bool table = gameplay::is_crafting_table(block);
         const bool cutter = gameplay::is_stonecutter(block);
@@ -1064,6 +1067,7 @@ struct Game::Impl final : GameServices {
                                 : block.is(BlockType::crafter) ? 7
                                 : block.is(BlockType::brewing_stand) ? 11
                                 : block.is(BlockType::lectern) ? 17
+                                : block.is(BlockType::shulker_box) ? 20
                                 : table ? 12 : cutter ? 24 : smith ? 21 : grind ? 15 : loom ? 18 : anvil ? 8 : enchanting ? 13 : slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
         // The title is the translation the official servers send for the
         // window (client/titles, both versions); a container's custom name
@@ -1075,6 +1079,7 @@ struct Game::Impl final : GameServices {
                                    : block.is(BlockType::lectern) ? "container.lectern"
                                    : block.is(BlockType::barrel) ? "container.barrel"
                                    : block.is(BlockType::ender_chest) ? "container.enderchest"
+                                   : block.is(BlockType::shulker_box) ? "container.shulkerBox"
                                    : table ? "container.crafting" : cutter ? "container.stonecutter" : smith ? "container.upgrade"
                                    : grind ? "container.grindstone_title" : loom ? "container.loom" : anvil ? "container.repair"
                                    : enchanting ? "container.enchant" : slots == 54 ? "container.chestDouble" : slots == 5 ? "container.hopper"
@@ -2374,8 +2379,10 @@ struct Game::Impl final : GameServices {
             it->second.pop_front();
             if (it->second.empty()) queued_events.erase(it);
             const bool ender = r.a == static_cast<std::uint64_t>(BlockType::ender_chest);
-            if (r.c == 0 || (r.a != static_cast<std::uint64_t>(BlockType::chest) && !ender)) continue;
-            const auto block = ender ? ender_chest_block : at(r.pos).variant() == 1 ? trapped_chest_block : chest_block;
+            const bool shulker = r.a == static_cast<std::uint64_t>(BlockType::shulker_box);
+            if (r.c == 0 || (r.a != static_cast<std::uint64_t>(BlockType::chest) && !ender && !shulker)) continue;
+            const auto block = shulker ? shulker_blocks.at(at(r.pos).variant() % shulker_blocks.size())
+                             : ender  ? ender_chest_block : at(r.pos).variant() == 1 ? trapped_chest_block : chest_block;
             const auto packet = wire.block_event(wire_pos(r.pos), static_cast<std::uint8_t>(r.b), param, block);
             const auto c = contracts::chunk_of(r.pos);
             for (auto& [id, p] : players) {

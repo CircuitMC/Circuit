@@ -775,6 +775,10 @@ private:
             && (block->variant() == 1) == (id == "minecraft:trapped_chest")) {
             out = {BlockType::chest, 0, std::vector<contracts::ItemStack>(27), 0};
             read_items(be, out, "chest");
+        } else if (id == "minecraft:shulker_box" && expect(BlockType::shulker_box)) {
+            // The block entity of every color is a shulker_box.
+            out = {BlockType::shulker_box, 0, std::vector<contracts::ItemStack>(27), 0};
+            read_items(be, out, "shulker_box");
         } else if (id == "minecraft:barrel" && expect(BlockType::barrel)) {
             out = {BlockType::barrel, 0, std::vector<contracts::ItemStack>(27), 0};
             read_items(be, out, "barrel");
@@ -1324,6 +1328,10 @@ private:
             t.set("id", Tag::string("minecraft:hopper"));
             t.set("Items", items(be.slots));
             t.set("TransferCooldown", Tag::int_(be.cooldown));
+            break;
+        case BlockType::shulker_box:
+            t.set("id", Tag::string("minecraft:shulker_box"));
+            t.set("Items", items(be.slots));
             break;
         case BlockType::barrel:
             t.set("id", Tag::string("minecraft:barrel"));

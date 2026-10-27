@@ -1,0 +1,100 @@
+circuit-trace 2
+title Shulker boxes: hoppers fill them but with shulker boxes, empty them from below, comparators read them, and broken ones drop one item
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms shulker_box hopper comparator loot
+area -1 -1 -2 9 3 3
+ticks 60
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 0 -1 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 1 0 -1 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 2 0 -1 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 3 0 -1 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 4 0 -1 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 5 0 -1 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 6 0 -1 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 7 0 -1 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 8 0 -1 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 0 1 0 minecraft:shulker_box[facing=up]
+at 0 set 0 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 0 1 1 minecraft:comparator[facing=north,mode=compare,powered=false]
+at 0 set 0 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 2 1 0 minecraft:red_shulker_box[facing=north]
+at 0 set 2 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 6 1 0 minecraft:shulker_box[facing=east]
+at 0 set 8 1 0 minecraft:white_shulker_box[facing=up]
+at 1 insert 0 2 0 0 minecraft:green_shulker_box 1
+at 1 insert 0 2 0 1 minecraft:iron_ingot 5
+at 1 insert 2 1 0 0 minecraft:gold_ingot 3
+at 1 insert 2 1 0 26 minecraft:oak_planks 7
+at 1 insert 6 1 0 0 minecraft:iron_ingot 64
+at 1 insert 6 1 0 1 minecraft:oak_planks 64
+at 32 break 6 1 0 minecraft:diamond_pickaxe
+at 34 break 8 1 0 minecraft:diamond_pickaxe
+
+block 1 0 1 0 ?
+block 1 2 1 0 ?
+block 1 6 1 0 ?
+block 1 8 1 0 ?
+block 1 0 1 2 ?
+block 10 0 1 0 ?
+block 10 2 1 0 ?
+block 10 6 1 0 ?
+block 10 8 1 0 ?
+block 10 0 1 2 ?
+block 30 0 1 0 ?
+block 30 2 1 0 ?
+block 30 6 1 0 ?
+block 30 8 1 0 ?
+block 30 0 1 2 ?
+block 40 0 1 0 ?
+block 40 2 1 0 ?
+block 40 6 1 0 ?
+block 40 8 1 0 ?
+block 40 0 1 2 ?
+block 60 0 1 0 ?
+block 60 2 1 0 ?
+block 60 6 1 0 ?
+block 60 8 1 0 ?
+block 60 0 1 2 ?
+slot 10 0 2 0 0 ?
+slot 10 0 2 0 1 ?
+slot 10 0 1 0 0 ?
+slot 10 2 0 0 0 ?
+slot 10 2 1 0 26 ?
+slot 60 0 2 0 0 ?
+slot 60 0 2 0 1 ?
+slot 60 0 1 0 0 ?
+slot 60 2 0 0 0 ?
+slot 60 2 1 0 26 ?

@@ -39,7 +39,7 @@ Feature counts per implementation state, then the number of features with compar
 | V13 Crops, growth and ecology | C5 | 320 | 0 / 0 | 113 / 118 | 193 / 202 | 0 / 0 | 14 / 0 | 113 / 118 |
 | V14 Redstone sources and signal consumers | C4, C5 | 139 | 7 / 7 | 98 / 98 | 33 / 33 | 1 / 1 | 0 / 0 | 40 / 42 |
 | V15 Pistons and moving structures | C3, C4 | 16 | 2 / 2 | 14 / 14 | 0 / 0 | 0 / 0 | 0 / 0 | 12 / 12 |
-| V16 Automation and storage blocks | C4, C5 | 66 | 3 / 3 | 40 / 40 | 22 / 22 | 1 / 1 | 0 / 0 | 40 / 40 |
+| V16 Automation and storage blocks | C4, C5 | 67 | 3 / 3 | 58 / 58 | 5 / 5 | 1 / 1 | 0 / 0 | 58 / 58 |
 | V17 TNT and explosions | C3, C4 | 11 | 0 / 1 | 8 / 8 | 0 / 0 | 2 / 2 | 1 / 0 | 8 / 9 |
 | V18 Technical machines and vanilla quirks | C4, C6, C7 | 6 | 0 / 0 | 4 / 4 | 0 / 0 | 2 / 2 | 0 / 0 | 4 / 4 |
 | V19 General entity lifecycle | C3 | 17 | 0 / 0 | 4 / 4 | 0 / 0 | 13 / 13 | 0 / 0 | 3 / 3 |
@@ -68,7 +68,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 512 / 517 | 579 / 584 | 0 / 0 |
-| item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 134 / 134 | 1250 / 1281 | 0 / 0 |
+| item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 151 / 151 | 1233 / 1264 | 0 / 0 |
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 18 / 18 | 0 / 0 | 131 / 133 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
 | enchantment | approximate: minecraft-data pc/1.21.1/enchantments.json / minecraft-data pc/1.21.8/enchantments.json | 42 / 42 | 0 / 0 | 0 / 0 | 0 / 0 | 42 / 42 |
@@ -127,10 +127,10 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 70 |
+| black_box | passing | 72 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 219 |
+| official_trace | passing | 220 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -321,7 +321,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Barrels | C5 | partial, compared | partial, compared | `client/barrel`, `client/openers`, `trace/barrel_containers`; the open and close sounds and the game events sculk sensors hear are not modeled; Barrels facing any side are 27-slot containers that hoppers fill and empty and comparators read, conducting power as solid blocks; they open under a solid block, are open from their first viewer to their last by the viewer counts and rechecks of chests (no block events), keep an open state they were set to, and drop their contents when removed; the harness traces and client scenarios match both official servers |
 | Composters | C5 | partial, compared | partial, compared | `client/composter`, `trace/composter_break`, `trace/composter_inputs`, `trace/composter_inputs2`, `trace/composter_use`, `trace/composters_items`, `trace/composters_items_new`; villagers composting and the sounds are not modeled; Items compost by the wiki's chances, drawn from the level random (the first item into an empty composter always adds a layer), below level 7, from players and through the top from hoppers, droppers and crafters one item at a time; full composters get ready 20 ticks later; players and hoppers below take the bone meal; a broken ready composter drops it; comparators read the level; the harness traces (every compostable item of both versions) and a client scenario match both official servers |
 | Ender chests | C5 | partial, compared | partial, compared | `client/enderchest`, `trace/ender_chests`; ender inventories are not carried through Anvil import and export (player data is not); the open and close sounds and the game events sculk sensors hear are not modeled; Each player's 27-slot ender inventory, saved with the player and kept on death, through every ender chest's window; viewers counted with lid events and rechecks as chests; no opening under a conductor; comparators, hoppers and pistons do not act on them; drops by the loot table; the harness trace and a two-player client scenario match both official servers |
-| Shulker boxes, chiseled bookshelves | C5 | missing, none | missing, none |  |
+| Shulker boxes | C5 | partial, compared | partial, compared | `client/shulker`, `client/shulker_creative`, `trace/shulker_boxes`; Anvil interchange refuses items whose container component holds stacks; the lid's push of entities, the neighbor updates when it finishes opening or closing, and the sounds are not modeled; without data packs a broken box drops its contents beside it; 27-slot containers of every color facing any side that refuse shulker boxes, open only when their lid can rise, count their viewers with lid events (no rechecks), and drop one item keeping their contents and name, which gives them back when placed; a creative player's break drops a filled box only; the harness trace and client scenarios match both official servers |
+| Chiseled bookshelves | C5 | missing, none | missing, none |  |
 | Component-aware automation (stacking of items with components) | C5 | implemented, none | implemented, none | Stacks merge only with equal item, damage and components; hoppers, pickups, inserts and menus keep components |
 
 ### V17 TNT and explosions

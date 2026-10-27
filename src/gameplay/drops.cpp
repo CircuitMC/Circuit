@@ -59,6 +59,10 @@ std::optional<ItemStack> own_item(BlockState s) {
     case BlockType::composter: return ItemStack{items::composter, 1};
     // Without its loot table, an ender chest drops what one does without Silk Touch.
     case BlockType::ender_chest: return ItemStack{items::obsidian, 8};
+    case BlockType::shulker_box: {
+        const auto item = items::by_name(std::string("minecraft:") + std::string(blocks::shulker_box_names[s.variant() % 17]));
+        return ItemStack{item.value_or(0), 1};
+    }
     case BlockType::furnace: {
         constexpr std::array<std::uint16_t, 3> kinds{items::furnace, items::smoker, items::blast_furnace};
         return ItemStack{kinds[s.variant() % 3], 1};
@@ -125,6 +129,9 @@ std::vector<ItemStack> block_drops(RuleContext& ctx, BlockPos pos, BlockState de
         if (const auto own = supported_drop(destroyed)) return {*own};
         return {};
     }
+    // A shulker box drops one of itself that keeps its contents and name
+    // (shulker_boxes, client/shulker).
+    if (destroyed.is(BlockType::shulker_box) && shulker_keeps_contents(ctx)) return {shulker_box_item(ctx, pos, destroyed)};
     // An ender chest drops by its loot table (itself with Silk Touch, else obsidian).
     if (destroyed.is(BlockType::ender_chest))
         if (auto drops = table_drops(ctx, pos, destroyed, tool, by_entity)) return std::move(*drops);

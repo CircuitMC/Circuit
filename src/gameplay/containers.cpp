@@ -29,6 +29,7 @@ struct Inventory {
     bool furnace = false;
     bool crafter = false;
     bool brewing = false;
+    bool shulker = false;
     const GameData* data = nullptr;
 
     static Inventory open(RuleContext& ctx, BlockPos pos, std::optional<Direction> face = std::nullopt) {
@@ -43,6 +44,7 @@ struct Inventory {
         inv.furnace = inv.parts.size() == 1 && ctx.block(pos).is(BlockType::furnace);
         inv.crafter = inv.parts.size() == 1 && ctx.block(pos).is(BlockType::crafter);
         inv.brewing = inv.parts.size() == 1 && ctx.block(pos).is(BlockType::brewing_stand);
+        inv.shulker = inv.parts.size() == 1 && ctx.block(pos).is(BlockType::shulker_box);
         inv.data = ctx.data();
         return inv;
     }
@@ -64,6 +66,7 @@ struct Inventory {
                 if (furnace && !furnace_accepts(*entities[i], j, stack)) continue;
                 if (crafter && !crafter_accepts(*entities[i], j, stack)) continue;
                 if (brewing && !brewing_accepts(data, *entities[i], j, stack)) continue;
+                if (shulker && is_shulker_box_item(stack.item)) continue;
                 if (s.empty() || (s.same_kind(stack) && s.count < slot_limit(s))) return std::pair{i, j};
             }
         return std::nullopt;

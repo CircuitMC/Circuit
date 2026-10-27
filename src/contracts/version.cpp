@@ -237,6 +237,14 @@ constexpr std::array reference_v4_mechanisms{
         "blocks; they open with a solid block above them, are open from their first viewer to their last (the "
         "viewer counts and rechecks of chests, without block events), and a set open state stays until a viewer "
         "changes it. Gaps: the open and close sounds and the game events sculk sensors hear are not modeled."},
+    MechanismEntry{"shulker_box", l0_exact, l2_declared_deviation, harness_trace,
+        "Shulker boxes as both official servers run them (shulker_boxes; client/shulker): 27-slot containers facing "
+        "any side that take everything but shulker boxes, from players' windows and from hoppers, droppers and crafters; "
+        "hoppers below take from them and comparators read them; one opens only when its lid can rise (nothing collides "
+        "with the half block beyond its front); its viewers are counted, each change queuing its lid's block event "
+        "with the count, without rechecks; broken by a player, a piston or an explosion, it drops one item of itself "
+        "that keeps its contents and name, which a placed box takes back. Gaps: the lid's push of entities, the "
+        "neighbor updates when it finishes opening or closing, and the sounds are not modeled."},
     MechanismEntry{"ender_chest", l0_exact, l2_declared_deviation, harness_trace,
         "Ender chests as both official servers run them (ender_chests; client/enderchest): their window shows the "
         "viewing player's own ender inventory, the same through every ender chest; they count their viewers and "

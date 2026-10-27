@@ -9,7 +9,7 @@
 //   queues the half's block event 1 with the count (the lid clients show);
 //   an ender chest's count is of the players viewing their ender inventory
 //   through it. A barrel queues none: it is open from its first viewer to
-//   its last.
+//   its last. A shulker box queues one at each change only.
 // - The first viewer schedules a recheck 5 ticks later, which keeps the
 //   viewers still in the level, and comes again while any remain. A viewer
 //   stays one as far as their window reaches (client/openers2: 9 blocks
@@ -43,7 +43,7 @@ std::vector<BlockPos> viewed_parts(RuleContext& ctx, BlockPos pos) {
 
 void count_changed(RuleContext& ctx, BlockPos pos, std::size_t before, std::size_t now) {
     const auto type = ctx.block(pos).type();
-    if (type != BlockType::chest && type != BlockType::ender_chest) return;
+    if (type != BlockType::chest && type != BlockType::ender_chest && type != BlockType::shulker_box) return;
     queue_block_event(ctx, {pos, type, lid_event, static_cast<std::uint8_t>(std::min<std::size_t>(now, 255))});
     if (before == now || !is_trapped(ctx.block(pos))) return;
     notify_neighbors(ctx, pos);
@@ -57,7 +57,9 @@ bool still_here(RuleContext& ctx, contracts::PlayerKey player) {
 }
 } // namespace
 
-bool counts_viewers(BlockState s) { return s.is(BlockType::chest) || s.is(BlockType::barrel) || s.is(BlockType::ender_chest); }
+bool counts_viewers(BlockState s) {
+    return s.is(BlockType::chest) || s.is(BlockType::barrel) || s.is(BlockType::ender_chest) || s.is(BlockType::shulker_box);
+}
 
 void start_viewing(RuleContext& ctx, PlayerInventory& inv, BlockPos pos) {
     stop_viewing(ctx, inv);
@@ -70,7 +72,8 @@ void start_viewing(RuleContext& ctx, PlayerInventory& inv, BlockPos pos) {
         const auto now = be->viewers.size();
         if (now == 1) {
             opened(ctx, part, true);
-            schedule(ctx, TickList::block, part, ctx.block(part).type(), recheck_ticks, 0);
+            // A shulker box's viewers are not rechecked (client/shulker).
+            if (!ctx.block(part).is(BlockType::shulker_box)) schedule(ctx, TickList::block, part, ctx.block(part).type(), recheck_ticks, 0);
         }
         count_changed(ctx, part, now - 1, now);
     }

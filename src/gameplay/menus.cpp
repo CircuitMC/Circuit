@@ -304,6 +304,7 @@ public:
         furnace_ = parts.size() == 1 && ctx.block(parts[0]).is(BlockType::furnace);
         crafter_ = parts.size() == 1 && ctx.block(parts[0]).is(BlockType::crafter);
         brewing_ = parts.size() == 1 && ctx.block(parts[0]).is(BlockType::brewing_stand);
+        shulker_ = parts.size() == 1 && ctx.block(parts[0]).is(BlockType::shulker_box);
         if (own_) {
             for (std::uint8_t i = 0; i < player_slots; ++i) slots_.push_back({{}, i, false});
         } else {
@@ -380,6 +381,8 @@ public:
         if (loom_ && i < 3) return loom_takes(i, stack.item);
         // An enchanting table's lapis slot takes lapis lazuli.
         if (enchant_ && i == 1) return stack.item == items::lapis_lazuli;
+        // A shulker box takes no shulker box (client/shulker).
+        if (shulker_ && i < container_size_) return !is_shulker_box_item(stack.item);
         // A crafter's disabled slots take nothing.
         if (crafter_ && i < container_size_) {
             const auto* be = ctx_.peek_block_entity(slots_[i].pos);
@@ -654,6 +657,7 @@ private:
     bool anvil_{};
     bool enchant_{};
     bool brewing_{};
+    bool shulker_{};
     bool creative_{};
     std::optional<BlockPos> block_;
 };

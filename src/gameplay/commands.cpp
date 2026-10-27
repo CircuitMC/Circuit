@@ -246,6 +246,14 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
         if (is_opening(clicked.type()) && opens_by_hand(clicked))
             return [&ctx, c, clicked] { detail::use_opening(ctx, c.pos, clicked, c.horizontal); };
         if (usable(clicked)) return plan(ctx, contracts::UseBlock{c.pos});
+        // A shulker box opens when its lid can rise (client/shulker).
+        if (clicked.is(BlockType::shulker_box)) {
+            if (!detail::lid_can_rise(ctx, c.pos, clicked)) return [] {};
+            return [&ctx, c] {
+                detail::start_viewing(ctx, ctx.player(c.player), c.pos);
+                ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo);
+            };
+        }
         if (is_container(clicked.type())) {
             // A chest under a solid block does not open.
             for (const auto part : detail::container_parts(ctx, c.pos))
@@ -339,6 +347,8 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
             detail::record_slot(ctx, inv, c.slot);
         }
         set_block(ctx, target, s);
+        // A shulker box takes its item's contents and name.
+        if (s.is(BlockType::shulker_box)) detail::fill_shulker_box(ctx, target, held);
         // A door's upper half follows its lower half.
         if (s.is(BlockType::door)) set_block(ctx, target.relative(Direction::up), s.with_level(static_cast<std::uint8_t>(s.level() | 1)));
         // A diode placed with its input on starts after one tick.
@@ -386,8 +396,18 @@ Plan plan(RuleContext& ctx, const contracts::PlayerBreak& c) {
                 detail::record_slot(ctx, inv, c.slot);
             }
         }
+        // A shulker box's item takes its contents before it goes; it drops
+        // after the block changes (shulker_boxes), also for a creative player
+        // when it holds something (client/shulker; where it appears is not
+        // compared).
+        const auto box = s.is(BlockType::shulker_box) && detail::shulker_keeps_contents(ctx)
+                             ? std::optional(detail::shulker_box_item(ctx, c.pos, s)) : std::nullopt;
+        const auto* held_contents = box ? ctx.peek_block_entity(c.pos) : nullptr;
+        const bool filled = held_contents && std::ranges::any_of(held_contents->slots, [](const ItemStack& st) { return !st.empty(); });
         set_block(ctx, c.pos, blocks::air());
-        if (c.survival) {
+        if (box && (c.survival || filled)) {
+            detail::pop_resource(ctx, c.pos, *box);
+        } else if (c.survival) {
             detail::drop_items(ctx, c.pos, s, tool, true);
             // What the tool harvests gives experience too.
             if (harvests(s, tool, ctx.data())) detail::drop_experience(ctx, c.pos, s, tool);

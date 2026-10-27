@@ -2979,205 +2979,222 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "white_shulker_box": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "orange_shulker_box": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "magenta_shulker_box": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "light_blue_shulker_box": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "yellow_shulker_box": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "lime_shulker_box": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "pink_shulker_box": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "gray_shulker_box": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "light_gray_shulker_box": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "cyan_shulker_box": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "purple_shulker_box": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "blue_shulker_box": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "brown_shulker_box": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "green_shulker_box": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "red_shulker_box": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "black_shulker_box": {
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/shulker_boxes",
+          "client/shulker",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the lid's push of entities and the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container keeping its contents in its item, as both official servers run it (shulker_boxes, client/shulker)"
       },
       "oak_sign": {
         "impl": "partial",
@@ -5827,6 +5844,159 @@
         "evidence": "compared",
         "note": "Placed facing the player",
         "cases": [
+          "placement/official_items"
+        ]
+      },
+      "shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "white_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "orange_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "magenta_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "light_blue_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "yellow_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "lime_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "pink_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "gray_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "light_gray_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "cyan_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "purple_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "blue_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "brown_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "green_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "red_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "black_shulker_box": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed out of the clicked face; its contents and name carried",
+        "cases": [
+          "client/shulker",
           "placement/official_items"
         ]
       }

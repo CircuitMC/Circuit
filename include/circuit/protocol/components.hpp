@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
 #include <circuit/contracts/components.hpp>
+#include <circuit/contracts/ids.hpp>
 #include <circuit/protocol/codec.hpp>
 #include <circuit/protocol/nbt.hpp>
 #include <expected>
@@ -120,6 +121,17 @@ public:
     [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> writable_book(std::int32_t pages, const ComponentContext& ctx) const;
     // The pages of the patch's writable or written book content (0 without one).
     [[nodiscard]] std::int32_t book_pages_of(const contracts::ComponentPatch& patch) const;
+    // The stacks of a patch's container component (a shulker box item's
+    // contents, slot by slot up to its last stack; none without one), their
+    // protocol item ids mapped by `item_of`; and the patch with its container
+    // holding `stacks` (trailing empty slots left out; all empty: no container
+    // component), the items mapped by `wire_of`.
+    [[nodiscard]] std::expected<std::vector<contracts::ItemStack>, std::string> container_of(
+        const contracts::ComponentPatch& patch, const ComponentContext& ctx,
+        const std::function<std::optional<std::uint16_t>(std::int32_t)>& item_of) const;
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_container(
+        const contracts::ComponentPatch& base, std::span<const contracts::ItemStack> stacks, const ComponentContext& ctx,
+        const std::function<std::optional<std::int32_t>(std::uint16_t)>& wire_of) const;
     // The patch's repair cost (0 when absent), and its custom name's plain
     // text (nullopt without one).
     [[nodiscard]] std::int32_t repair_cost_of(const contracts::ComponentPatch& patch) const;

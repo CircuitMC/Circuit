@@ -1,0 +1,226 @@
+circuit-trace 2
+title Shulker boxes: hoppers fill them but with shulker boxes, empty them from below, comparators read them, and broken ones drop one item
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.37.0+mc1.21.8
+mechanisms shulker_box hopper comparator loot
+area -1 -1 -2 9 3 3
+ticks 60
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 0 -1 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 1 0 -1 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 2 0 -1 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 3 0 -1 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 4 0 -1 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 5 0 -1 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 6 0 -1 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 7 0 -1 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 8 0 -1 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 0 1 0 minecraft:shulker_box[facing=up]
+at 0 set 0 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 0 1 1 minecraft:comparator[facing=north,mode=compare,powered=false]
+at 0 set 0 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 2 1 0 minecraft:red_shulker_box[facing=north]
+at 0 set 2 0 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 6 1 0 minecraft:shulker_box[facing=east]
+at 0 set 8 1 0 minecraft:white_shulker_box[facing=up]
+
+at 1 insert 0 2 0 0 minecraft:green_shulker_box 1
+at 1 insert 0 2 0 1 minecraft:iron_ingot 5
+at 1 insert 2 1 0 0 minecraft:gold_ingot 3
+at 1 insert 2 1 0 26 minecraft:oak_planks 7
+at 1 insert 6 1 0 0 minecraft:iron_ingot 64
+at 1 insert 6 1 0 1 minecraft:oak_planks 64
+block 1 0 1 0 minecraft:shulker_box[facing=up]
+block 1 2 1 0 minecraft:red_shulker_box[facing=north]
+block 1 6 1 0 minecraft:shulker_box[facing=east]
+block 1 8 1 0 minecraft:white_shulker_box[facing=up]
+block 1 0 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+
+change 3 block_ticks 0 1 1 minecraft:comparator[facing=north,mode=compare,powered=false] minecraft:comparator[facing=north,mode=compare,powered=true]
+change 3 block_ticks 0 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:redstone_wire[east=none,north=none,power=1,south=none,west=none]
+change 3 block_ticks 0 1 2 minecraft:redstone_wire[east=none,north=none,power=1,south=none,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+
+block 10 0 1 0 minecraft:shulker_box[facing=up]
+block 10 2 1 0 minecraft:red_shulker_box[facing=north]
+block 10 6 1 0 minecraft:shulker_box[facing=east]
+block 10 8 1 0 minecraft:white_shulker_box[facing=up]
+block 10 0 1 2 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+slot 10 0 2 0 0 minecraft:green_shulker_box 1
+slot 10 0 2 0 1 minecraft:iron_ingot 3
+slot 10 0 1 0 0 minecraft:iron_ingot 2
+slot 10 2 0 0 0 minecraft:gold_ingot 2
+slot 10 2 1 0 26 minecraft:oak_planks 7
+
+block 30 0 1 0 minecraft:shulker_box[facing=up]
+block 30 2 1 0 minecraft:red_shulker_box[facing=north]
+block 30 6 1 0 minecraft:shulker_box[facing=east]
+block 30 8 1 0 minecraft:white_shulker_box[facing=up]
+block 30 0 1 2 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+
+at 32 break 6 1 0 minecraft:diamond_pickaxe
+change 32 commands 6 1 0 minecraft:shulker_box[facing=east] minecraft:air
+entity-added 32 commands e1 minecraft:item 6.615483893688329 1.2452682078357429 0.5687087126750541 0.010087401023526787 0.2 0.019509055559440353 item=minecraft:shulker_box count=1
+draws 32 commands level 10
+entity-order 32 entities e1
+entity 32 e1 6.625571294711856 1.4052682078357428 0.5882177682344945 0.009885653195458158 0.1568 0.01911887482035725 item=minecraft:shulker_box count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 33 entities e1
+entity 33 e1 6.635456947907314 1.5220682078357428 0.6073366430548517 0.009687940320102865 0.11446399999999998 0.018736497688613702 item=minecraft:shulker_box count=1 age=2 pickup-delay=8 on-ground=false
+
+at 34 break 8 1 0 minecraft:diamond_pickaxe
+change 34 commands 8 1 0 minecraft:white_shulker_box[facing=up] minecraft:air
+entity-added 34 commands e2 minecraft:item 8.416609199738325 1.3175945923703591 0.7424207700999045 0.07583650357449603 0.2 0.08824983589642288 item=minecraft:white_shulker_box count=1
+draws 34 commands level 10
+entity-order 34 entities e1 e2
+entity 34 e1 6.645144888227417 1.5965322078357427 0.6260731407434654 0.009494181698483605 0.07297471999999998 0.01836176809221176 item=minecraft:shulker_box count=1 age=3 pickup-delay=7 on-ground=false
+entity 34 e2 8.492445703312821 1.477594592370359 0.8306706059963274 0.07431977494947263 0.1568 0.08648484086172646 item=minecraft:white_shulker_box count=1 age=1 pickup-delay=9 on-ground=false
+
+entity-order 35 entities e1 e2
+entity 35 e1 6.654639069925901 1.6295069278357426 0.6444349088356772 0.009304298245601078 0.032315225599999976 0.017994533080590458 item=minecraft:shulker_box count=1 age=4 pickup-delay=6 on-ground=false
+entity 35 e2 8.566765478262294 1.594394592370359 0.9171554468580538 0.0728333808680204 0.11446399999999998 0.08475514569405936 item=minecraft:white_shulker_box count=1 age=2 pickup-delay=8 on-ground=false
+
+entity-order 36 entities e1 e2
+entity 36 e1 6.663943368171502 1.6218221534357427 0.6624294419162677 0.009118212458154463 -0.007531078912000024 0.01763464276219713 item=minecraft:shulker_box count=1 age=5 pickup-delay=5 on-ground=false
+entity 36 e2 8.639598859130315 1.6688585923703592 1.0019105925521132 0.07137671463984648 0.07297471999999998 0.08306004439675428 item=minecraft:white_shulker_box count=1 age=3 pickup-delay=7 on-ground=false
+
+entity-order 37 entities e1 e2
+entity 37 e1 6.673061580629656 1.5742910745237426 0.6800640846784649 0.008935848382907475 -0.04658045733376002 0.017281950243307306 item=minecraft:shulker_box count=1 age=6 pickup-delay=4 on-ground=false
+entity 37 e2 8.710975573770162 1.701833312370359 1.0849706369488674 0.06994918170845234 0.032315225599999976 0.08139884509306382 item=minecraft:white_shulker_box count=1 age=4 pickup-delay=6 on-ground=false
+
+entity-order 38 entities e1 e2
+entity 38 e1 6.681997429012563 1.4877106171899825 0.6973460349217722 0.008757131585687108 -0.08484884818708481 0.016936311568068203 item=minecraft:shulker_box count=1 age=7 pickup-delay=3 on-ground=false
+entity 38 e2 8.780924755478614 1.6941485379703591 1.1663694820419312 0.06855019940845805 -0.007531078912000024 0.0797708697437623 item=minecraft:white_shulker_box count=1 age=5 pickup-delay=5 on-ground=false
+
+entity-order 39 entities e1 e2
+entity 39 e1 6.690754560598251 1.3628617690028977 0.7142823464898403 0.008581989121002396 -0.12235187122334311 0.016597585659741346 item=minecraft:shulker_box count=1 age=8 pickup-delay=2 on-ground=false
+entity 39 e2 8.849474954887071 1.646617459058359 1.2461403517856935 0.06717919672778018 -0.04658045733376002 0.07817545387039565 item=minecraft:white_shulker_box count=1 age=6 pickup-delay=4 on-ground=false
+
+entity-order 40 entities e1 e2
+entity 40 e1 6.699336549719253 1.2005098977795545 0.7308799321495817 0.0084103495022708 -0.15910483379887624 0.016265634263120343 item=minecraft:shulker_box count=1 age=9 pickup-delay=1 on-ground=false
+entity 40 e2 8.916654151614852 1.560037001724599 1.324315805656089 0.06583561407456606 -0.08484884818708481 0.07661194628406619 item=minecraft:white_shulker_box count=1 age=7 pickup-delay=3 on-ground=false
+block 40 0 1 0 minecraft:shulker_box[facing=up]
+block 40 2 1 0 minecraft:red_shulker_box[facing=north]
+block 40 6 1 0 minecraft:air
+block 40 8 1 0 minecraft:air
+block 40 0 1 2 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+
+entity-order 41 entities e1 e2
+entity 41 e1 6.707746899221524 1.0014050639806782 0.747145566412702 0.008242142672640071 -0.1951227371228987 0.015940321888100288 item=minecraft:shulker_box count=1 age=10 pickup-delay=0 on-ground=false
+entity 41 e2 8.982489765689417 1.4351881535375142 1.4009277519401553 0.06451890304878942 -0.12235187122334311 0.07507970881964178 item=minecraft:white_shulker_box count=1 age=8 pickup-delay=2 on-ground=false
+
+entity-order 42 entities e1 e2
+entity 42 e1 6.715989041894164 1.0 0.7630858883008023 0.004846380378852188 0 0.009372910212719255 item=minecraft:shulker_box count=1 age=11 pickup-delay=0 on-ground=true
+entity 42 e2 9.047008668738206 1.272836282314171 1.476007460759797 0.06322852621841404 -0.15910483379887624 0.07357811607528074 item=minecraft:white_shulker_box count=1 age=9 pickup-delay=1 on-ground=false
+
+entity-order 43 entities e1 e2
+entity 43 e1 6.720835422273017 1.0 0.7724587985135215 0.0028496719493209333 0 0.005511271759278554 item=minecraft:shulker_box count=1 age=12 pickup-delay=0 on-ground=true
+entity 43 e2 9.11023719495662 1.0737314485152947 1.5495855768350777 0.061963956900034194 -0.1951227371228987 0.07210655515716631 item=minecraft:white_shulker_box count=1 age=10 pickup-delay=0 on-ground=false
+
+entity-order 44 entities e1 e2
+entity 44 e1 6.723685094222337 1.0 0.7779700702728001 0.0016756072746955636 0 0.003240628120325206 item=minecraft:shulker_box count=1 age=13 pickup-delay=0 on-ground=true
+entity 44 e2 9.172201151856653 1.0 1.621692131992244 0.03643481032101303 0 0.04239865869591631 item=minecraft:white_shulker_box count=1 age=11 pickup-delay=0 on-ground=true
+
+entity-order 45 entities e1 e2
+entity 45 e1 6.725360701497033 1.0 0.7812106983931253 9.85257176595976E-4 0 0.0019054895263624573 item=minecraft:shulker_box count=1 age=14 pickup-delay=0 on-ground=true
+entity 45 e2 9.208635962177667 0.96 1.6640907906881603 0.03570611480953162 -0.0392 0.04155068633068822 item=minecraft:white_shulker_box count=1 age=12 pickup-delay=0 on-ground=false
+
+entity-order 46 entities e1 e2
+entity 46 e1 6.726345958673629 1.0 0.7831161879194878 5.793312780945307E-4 0 0.001120427954168543 item=minecraft:shulker_box count=1 age=15 pickup-delay=0 on-ground=true
+entity 46 e2 9.244342076987198 0.8808 1.7056414770188486 0.03499199319438108 -0.07761599999999999 0.040719673396590904 item=minecraft:white_shulker_box count=1 age=13 pickup-delay=0 on-ground=false
+
+entity-order 47 entities e1 e2
+entity 47 e1 6.726345958673629 1.0 0.7831161879194878 5.793312780945307E-4 -0.04 0.001120427954168543 item=minecraft:shulker_box count=1 age=16 pickup-delay=0 on-ground=true
+entity 47 e2 9.27933407018158 0.7631840000000001 1.7463611504154395 0.034292153997912765 -0.11526368 0.039905280705325216 item=minecraft:white_shulker_box count=1 age=14 pickup-delay=0 on-ground=false
+
+entity-order 48 entities e1 e2
+entity 48 e1 6.726345958673629 1.0 0.7831161879194878 5.793312780945307E-4 -0.08 0.001120427954168543 item=minecraft:shulker_box count=1 age=17 pickup-delay=0 on-ground=true
+entity 48 e2 9.313626224179492 0.6079203200000001 1.7862664311207648 0.03360631157202544 -0.15215840639999997 0.03910717585235154 item=minecraft:white_shulker_box count=1 age=15 pickup-delay=0 on-ground=false
+
+entity-order 49 entities e1 e2
+entity 49 e1 6.726345958673629 1.0 0.7831161879194878 5.793312780945307E-4 -0.12 0.001120427954168543 item=minecraft:shulker_box count=1 age=18 pickup-delay=0 on-ground=true
+entity 49 e2 9.347232535751518 0.4157619136000001 1.8253736069731163 0.03293418598157446 -0.18831523827199997 0.03832503308121469 item=minecraft:white_shulker_box count=1 age=16 pickup-delay=0 on-ground=false
+
+entity-order 50 entities e1 e2
+entity 50 e1 6.726925289951724 1.0 0.7842366158736563 3.406468257741724E-4 0 6.588117032995518E-4 item=minecraft:shulker_box count=1 age=19 pickup-delay=0 on-ground=true
+entity 50 e2 9.380166721733092 0.1874466753280001 1.863698640054331 0.03227550289011272 -0.22374893350655997 0.03755853315058239 item=minecraft:white_shulker_box count=1 age=17 pickup-delay=0 on-ground=false
+
+entity-order 51 entities e1 e2
+entity 51 e1 6.726925289951724 1.0 0.7842366158736563 3.406468257741724E-4 -0.04 6.588117032995518E-4 item=minecraft:shulker_box count=1 age=20 pickup-delay=0 on-ground=true
+entity 51 e2 9.412442224623204 -0.07630225817855987 1.9012571732049133 0.031629993447916824 -0.25847395483642877 0.036807363203942914 item=minecraft:white_shulker_box count=1 age=18 pickup-delay=0 on-ground=false
+
+entity-order 52 entities e1 e2
+entity 52 e1 6.726925289951724 1.0 0.7842366158736563 3.406468257741724E-4 -0.08 6.588117032995518E-4 item=minecraft:shulker_box count=1 age=21 pickup-delay=0 on-ground=true
+entity 52 e2 9.44407221807112 -0.37477621301498865 1.9380645364088562 0.030997394182252735 -0.2925044757397002 0.03607121664190879 item=minecraft:white_shulker_box count=1 age=19 pickup-delay=0 on-ground=false
+
+entity-order 53 entities e1 e2
+entity 53 e1 6.726925289951724 1.0 0.7842366158736563 3.406468257741724E-4 -0.12 6.588117032995518E-4 item=minecraft:shulker_box count=1 age=22 pickup-delay=0 on-ground=true
+entity 53 e2 9.475069612253373 -0.7072806887546887 1.974135753050765 0.030377446889836054 -0.32585438622490615 0.035349792997074476 item=minecraft:white_shulker_box count=1 age=20 pickup-delay=0 on-ground=false
+
+entity-order 54 entities e1 e2
+entity 54 e1 6.727265936777497 1.0 0.7848954275769559 2.0030035369691335E-4 0 3.8738132049422806E-4 item=minecraft:shulker_box count=1 age=23 pickup-delay=0 on-ground=true
+entity 54 e2 9.50544705914321 -1.073135074979595 2.0094855460478396 0.029769898531443153 -0.358537298500408 0.03464279781137678 item=minecraft:white_shulker_box count=1 age=21 pickup-delay=0 on-ground=false
+
+entity-order 55 entities e1 e2
+entity 55 e1 6.727265936777497 1.0 0.7848954275769559 2.0030035369691335E-4 -0.04 3.8738132049422806E-4 item=minecraft:shulker_box count=1 age=24 pickup-delay=0 on-ground=true
+entity 55 e2 9.535216957674653 -1.4716723734800028 2.0441283438592164 0.029174501128630043 -0.3905665525303998 0.033949942515908174 item=minecraft:white_shulker_box count=1 age=22 pickup-delay=0 on-ground=false
+
+entity-order 56 entities e1 e2
+entity 56 e1 6.727265936777497 1.0 0.7848954275769559 2.0030035369691335E-4 -0.08 3.8738132049422806E-4 item=minecraft:shulker_box count=1 age=25 pickup-delay=0 on-ground=true
+entity 56 e2 9.564391458803282 -1.9022389260104027 2.0780782863751246 0.02859101166251689 -0.42195522147979175 0.03327094431313377 item=minecraft:white_shulker_box count=1 age=23 pickup-delay=0 on-ground=false
+
+entity-order 57 entities e1 e2
+entity 57 e1 6.727265936777497 1.0 0.7848954275769559 2.0030035369691335E-4 -0.12 3.8738132049422806E-4 item=minecraft:shulker_box count=1 age=26 pickup-delay=0 on-ground=true
+entity 57 e2 9.592982470465799 -2.3641941474901946 2.1113492306882584 0.028019191974596822 -0.4527161170501959 0.032605526061463996 item=minecraft:white_shulker_box count=1 age=24 pickup-delay=0 on-ground=false
+
+entity-order 58 entities e1 e2
+entity 58 e1 6.727466237131194 1.0 0.7852828088974501 1.1777661981710584E-4 0 2.2778023935561429E-4 item=minecraft:shulker_box count=1 age=27 pickup-delay=0 on-ground=true
+entity 58 e2 9.621001662440396 -2.8569102645403905 2.1439547567497224 0.027458808669528562 -0.48286179470919194 0.031953416162135775 item=minecraft:white_shulker_box count=1 age=25 pickup-delay=0 on-ground=false
+
+entity-order 59 entities e1 e2
+entity 59 e1 6.727466237131194 1.0 0.7852828088974501 1.1777661981710584E-4 -0.04 2.2778023935561429E-4 item=minecraft:shulker_box count=1 age=28 pickup-delay=0 on-ground=true
+entity 59 e2 9.648460471109924 -3.3797720592495826 2.1759081729118583 0.026909633019873203 -0.512404558815008 0.03131434844835611 item=minecraft:white_shulker_box count=1 age=26 pickup-delay=0 on-ground=false
+
+entity-order 60 entities e1 e2
+entity 60 e1 6.727466237131194 1.0 0.7852828088974501 1.1777661981710584E-4 -0.08 2.2778023935561429E-4 item=minecraft:shulker_box count=1 age=29 pickup-delay=0 on-ground=true
+entity 60 e2 9.675370104129797 -3.9321766180645907 2.2072225213602144 0.026371440872736258 -0.5413564676387079 0.030688062076662782 item=minecraft:white_shulker_box count=1 age=27 pickup-delay=0 on-ground=false
+block 60 0 1 0 minecraft:shulker_box[facing=up]
+block 60 2 1 0 minecraft:red_shulker_box[facing=north]
+block 60 6 1 0 minecraft:air
+block 60 8 1 0 minecraft:air
+block 60 0 1 2 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+slot 60 0 2 0 0 minecraft:green_shulker_box 1
+slot 60 0 2 0 1 empty 0
+slot 60 0 1 0 0 minecraft:iron_ingot 5
+slot 60 2 0 0 0 minecraft:gold_ingot 3
+slot 60 2 1 0 26 minecraft:oak_planks 2

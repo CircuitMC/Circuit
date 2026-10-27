@@ -1555,6 +1555,14 @@ int main() {
         f.game->tick();
         require((opened() == std::vector<std::tuple<std::int32_t, std::int32_t, std::string>>{{2, 2, "container.enderchest"}}),
                 "an ender chest opens a generic_9x3 window titled container.enderchest");
+        // A shulker box's window is its own.
+        f.game->submit(1, I{server::intent::Command{"setblock 6 -60 1 minecraft:purple_shulker_box[facing=up]"}});
+        f.game->tick();
+        (void)opened();
+        f.game->submit(1, GameFixture::click({6, -60, 1}, 3, 3));
+        f.game->tick();
+        require((opened() == std::vector<std::tuple<std::int32_t, std::int32_t, std::string>>{{3, 20, "container.shulkerBox"}}),
+                "a shulker box opens a shulker_box window titled container.shulkerBox");
     });
 
     suite.run("composters take held items and the players nearby get the level event", [] {
@@ -2564,8 +2572,8 @@ int main() {
         // wall torches, signs, hanging signs, banners and heads count with the
         // standing ones' tables (the banners' and the player head's are
         // refused: they copy components).
-        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 943, 887, 1407, 984},
-                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 935, 879, 1370, 948}}) {
+        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 926, 887, 1407, 984},
+                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 918, 879, 1370, 948}}) {
             const char* jar = std::getenv(e.variable);
             if (!jar || !*jar) continue;
             const auto& bundle = **contracts::BundleRegistry::find(e.bundle);

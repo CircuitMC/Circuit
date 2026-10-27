@@ -2913,7 +2913,7 @@ int main() {
         // when that block conducts.
         const std::array<std::pair<BlockState, bool>, 8> lanes{{
             {blocks::slime(), true}, {registry_block("oak_slab", {{"type", "double"}}), true}, {registry_block("soul_sand"), true},
-            {registry_block("shulker_box"), true}, {registry_block("oak_slab", {{"type", "bottom"}}), false},
+            {blocks::shulker_box(D::up), true}, {registry_block("oak_slab", {{"type", "bottom"}}), false},
             {registry_block("glowstone"), false}, {blocks::glass(), false}, {registry_block("sea_lantern"), false}}};
         Sim s;
         std::vector<CommandBody> build = floor(-2, 6, -1, 2 * static_cast<int>(lanes.size()));
@@ -3066,22 +3066,24 @@ int main() {
     });
 
     suite.run("a block entity block placed from an item with components places nothing", [] {
-        // A named shulker box would lose its name: nothing is placed, and the
-        // item stays; an unnamed one is placed with an empty block entity.
+        // A named beacon would lose its name: nothing is placed, and the item
+        // stays; an unnamed one is placed with an empty block entity. (A
+        // shulker box, with rules of its own, keeps its name and contents.)
         const circuit::contracts::PlayerKey alex{1, 2};
+        const auto beacon = items::by_name("minecraft:beacon").value();
         Sim s;
         s.tick(with_floor(floor(-1, 4, -1, 1), {}));
-        s.tick({circuit::contracts::SetPlayerSlot{alex, 36, named(items::red_shulker_box, 1, "Box")},
+        s.tick({circuit::contracts::SetPlayerSlot{alex, 36, named(beacon, 1, "Box")},
                 circuit::contracts::PlayerUse{alex, 36, {0, -1, 0}, D::up, D::north, D::north, false, true, 3, 3},
-                circuit::contracts::SetPlayerSlot{alex, 37, {items::red_shulker_box, 1, 0}},
+                circuit::contracts::SetPlayerSlot{alex, 37, {beacon, 1, 0}},
                 circuit::contracts::PlayerUse{alex, 37, {2, -1, 0}, D::up, D::north, D::north, false, true, 3, 3}});
-        require(s.at({0, 0, 0}).is_air(), "the named box is not placed");
+        require(s.at({0, 0, 0}).is_air(), "the named beacon is not placed");
         const auto d = s.oracle.dump();
         const auto inventory = std::ranges::find(d.players, alex, &PlayerInventory::player);
-        require(inventory != d.players.end() && inventory->slots[36] == named(items::red_shulker_box, 1, "Box") && inventory->slots[37].empty(),
-                "the named box stays in the hand, the other was used");
+        require(inventory != d.players.end() && inventory->slots[36] == named(beacon, 1, "Box") && inventory->slots[37].empty(),
+                "the named beacon stays in the hand, the other was used");
         const auto* be = block_entity_at(d, {2, 0, 0});
-        require(s.at({2, 0, 0}).is(BlockType::other) && be && be->kind == BlockType::other, "the unnamed box is placed with its block entity");
+        require(s.at({2, 0, 0}).is(BlockType::other) && be && be->kind == BlockType::other, "the unnamed beacon is placed with its block entity");
     });
 
     suite.run("buckets take and pour fluids along the player's view as both official servers do", [] {
@@ -4534,6 +4536,83 @@ int main() {
                 "the other ender chest holds the same iron; shift-clicked out to the hotbar's end");
         s.tick({use(alex, covered)});
         require(of_kind(s.last, TraceKind::container_opened).empty() && lids(covered).empty(), "one under a stone does not open");
+    });
+
+    suite.run("shulker boxes open when their lid can rise and keep their contents in their item", [] {
+        using circuit::contracts::ComponentPatch;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::PlayerBreak;
+        using circuit::contracts::PlayerUse;
+        using circuit::contracts::SetPlayerSlot;
+        // Stand-ins for the server's encoding: component 1 holds the slots,
+        // each as an item id (2 bytes) and a count.
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->container_of = [](const ComponentPatch& p) {
+            std::vector<ItemStack> out;
+            for (const auto& a : p.added())
+                if (a.type == 1)
+                    for (std::size_t k = 0; k + 2 < a.value.size(); k += 3)
+                        out.push_back({static_cast<std::uint16_t>(std::to_integer<int>(a.value[k]) | std::to_integer<int>(a.value[k + 1]) << 8),
+                                       static_cast<std::uint8_t>(a.value[k + 2])});
+            return out;
+        };
+        data->with_container = [](const ComponentPatch&, std::span<const ItemStack> stacks) -> std::optional<ComponentPatch> {
+            std::vector<std::byte> bytes;
+            for (const auto& st : stacks) {
+                bytes.push_back(static_cast<std::byte>(st.item & 0xFF));
+                bytes.push_back(static_cast<std::byte>(st.item >> 8));
+                bytes.push_back(static_cast<std::byte>(st.count));
+            }
+            if (std::ranges::all_of(stacks, [](const ItemStack& st) { return st.empty(); })) return ComponentPatch{};
+            return ComponentPatch::make(772, {{1, std::move(bytes)}}, {}, {});
+        };
+        const PlayerKey alex{4, 2};
+        const BlockPos open_box{0, 1, 0}, covered{2, 1, 0}, sideways{4, 1, 0};
+        Sim s(bundle(), 7, 2, data);
+        std::vector<CommandBody> build;
+        for (std::int32_t x = 0; x <= 5; ++x) build.push_back(place({x, 0, 0}, blocks::stone()));
+        build.push_back(place(open_box, blocks::shulker_box(Direction::up)));
+        build.push_back(place(covered, blocks::shulker_box(Direction::up, 15)));
+        build.push_back(place({2, 2, 0}, blocks::stone()));
+        build.push_back(place(sideways, blocks::shulker_box(Direction::north)));
+        build.push_back(place({4, 2, 0}, blocks::stone()));
+        s.tick(build);
+        const auto box = items::by_name("minecraft:shulker_box").value();
+        s.tick({SetPlayerSlot{alex, 36, {items::iron_ingot, 64}}, SetPlayerSlot{alex, 37, {items::by_name("minecraft:blue_shulker_box").value(), 1}}});
+        const auto use = [&](BlockPos at) { return PlayerUse{alex, 38, at, Direction::up, Direction::north, Direction::north, false, true, 3, 3}; };
+        const auto lids = [&](BlockPos at) {
+            std::vector<std::uint64_t> counts;
+            for (const auto& r : of_kind(s.last, TraceKind::block_event_queued))
+                if (r.pos == at) counts.push_back(r.c);
+            return counts;
+        };
+        s.tick({use(covered)});
+        require(of_kind(s.last, TraceKind::container_opened).empty(), "a stone over its lid keeps it shut");
+        s.tick({use(sideways)});
+        require(of_kind(s.last, TraceKind::container_opened).size() == 1 && lids(sideways) == std::vector<std::uint64_t>{1},
+                "a box facing north opens with a stone above it");
+        s.tick({use(open_box)});
+        // Shift-clicks: the iron goes in, the blue shulker box does not.
+        s.tick({ContainerClick{alex, std::optional(open_box), 54, 0, 1, false, at_block(0.5, 2, 2.5), {}},
+                ContainerClick{alex, std::optional(open_box), 55, 0, 1, false, at_block(0.5, 2, 2.5), {}}});
+        const auto d = s.oracle.dump();
+        const auto* be = block_entity_at(d, open_box);
+        require(be && be->slots[0] == ItemStack{items::iron_ingot, 64} && be->slots[1].empty(), "iron in, no shulker box");
+        for (int i = 0; i < 10; ++i) s.tick();
+        require(lids(open_box).empty(), "no rechecks");
+        // Broken, it drops one item that keeps the iron; placed, it gives it back.
+        s.tick({PlayerBreak{alex, open_box, true}});
+        const auto after = s.oracle.dump();
+        const auto dropped = std::ranges::find_if(after.overworld().entities, [&](const Entity& e) { return e.stack.item == box; });
+        require(dropped != after.overworld().entities.end() && dropped->stack.count == 1 && !dropped->stack.components.empty()
+                    && std::ranges::none_of(after.overworld().entities, [](const Entity& e) { return e.stack.item == items::iron_ingot; }),
+                "one box item with the iron in it, nothing scattered");
+        s.tick({SetPlayerSlot{alex, 39, dropped->stack}});
+        s.tick({PlayerUse{alex, 39, {1, 0, 0}, Direction::up, Direction::north, Direction::north, false, true, 3, 3}});
+        const auto again = s.oracle.dump();
+        const auto* refilled = block_entity_at(again, {1, 1, 0});
+        require(refilled && refilled->kind == BlockType::shulker_box && refilled->slots[0] == ItemStack{items::iron_ingot, 64},
+                "placed again with its iron");
     });
 
     suite.run("experience changes as the /xp command makes them", [] {

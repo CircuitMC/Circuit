@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <functional>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -144,6 +145,12 @@ struct GameData {
     std::function<std::int32_t(const contracts::ItemStack&)> book_pages;
     // A writable book's components with pages "1" to "n" (fixtures' books).
     std::function<std::optional<contracts::ComponentPatch>(std::int32_t pages)> writable_book;
+    // A shulker box item's contents (its container component, slot by slot
+    // up to its last stack), and components with the container set to
+    // `stacks` (none: without it); set by the server. Without them a broken
+    // shulker box drops its contents beside it.
+    std::function<std::vector<contracts::ItemStack>(const contracts::ComponentPatch&)> container_of;
+    std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, std::span<const contracts::ItemStack>)> with_container;
     // A stack's name as a player sees it (in English): its custom name, else
     // its potion's or its item's name; set by the server from the language
     // file of the official jar. Without it the rules name items by their id.

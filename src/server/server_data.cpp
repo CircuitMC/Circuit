@@ -347,6 +347,25 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
                 auto patch = codec->writable_book(pages, ctx);
                 return patch ? std::optional(std::move(*patch)) : std::nullopt;
             };
+            // Shulker box items' contents: their stacks' protocol item ids
+            // are the version's.
+            const auto item_of = [tables](std::int32_t wire) -> std::optional<std::uint16_t> {
+                const auto name = tables->item_name(wire);
+                return name ? gameplay::items::by_name(*name) : std::nullopt;
+            };
+            const auto wire_of = [tables](std::uint16_t item) -> std::optional<std::int32_t> {
+                const auto* info = gameplay::items::info(item);
+                return info ? tables->item_id(info->name) : std::nullopt;
+            };
+            game->container_of = [codec, item_of, ctx = component_context(bundle, out.registries)](const contracts::ComponentPatch& patch) {
+                auto stacks = codec->container_of(patch, ctx, item_of);
+                return stacks ? std::move(*stacks) : std::vector<contracts::ItemStack>{};
+            };
+            game->with_container = [codec, wire_of, ctx = component_context(bundle, out.registries)](
+                                       const contracts::ComponentPatch& base, std::span<const contracts::ItemStack> stacks) -> std::optional<contracts::ComponentPatch> {
+                auto patch = codec->with_container(base, stacks, ctx, wire_of);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
         }
         game->power_providers = blocks_of("minecraft:enchantment_power_provider");
         game->power_transmitters = blocks_of("minecraft:enchantment_power_transmitter");

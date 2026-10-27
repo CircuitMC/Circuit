@@ -11,12 +11,15 @@ namespace circuit::gameplay {
 namespace {
 // Registry blocks with a BlockType of their own (see evidence::ContentMapping),
 // besides the buttons and pressure plates of each kind.
-constexpr std::array<std::string_view, 42> modeled_names{
+constexpr std::array<std::string_view, 59> modeled_names{
     "air", "cave_air", "void_air", "stone", "glass", "obsidian", "redstone_block", "slime_block", "lever", "redstone_wire",
     "repeater", "redstone_lamp", "observer", "piston", "sticky_piston", "piston_head", "moving_piston", "hopper", "chest",
     "comparator", "water", "wheat", "redstone_torch", "redstone_wall_torch", "light_weighted_pressure_plate",
     "heavy_weighted_pressure_plate", "target", "honey_block", "daylight_detector", "note_block", "dispenser", "dropper", "furnace", "smoker",
-    "blast_furnace", "crafter", "brewing_stand", "lectern", "trapped_chest", "barrel", "composter", "ender_chest"};
+    "blast_furnace", "crafter", "brewing_stand", "lectern", "trapped_chest", "barrel", "composter", "ender_chest",
+    "shulker_box", "white_shulker_box", "orange_shulker_box", "magenta_shulker_box", "light_blue_shulker_box", "yellow_shulker_box",
+    "lime_shulker_box", "pink_shulker_box", "gray_shulker_box", "light_gray_shulker_box", "cyan_shulker_box", "purple_shulker_box",
+    "blue_shulker_box", "brown_shulker_box", "green_shulker_box", "red_shulker_box", "black_shulker_box"};
 constexpr std::array<std::string_view, note_instruments> instrument_names{
     "harp", "basedrum", "snare", "hat", "bass", "flute", "bell", "guitar", "chime", "xylophone", "iron_xylophone", "cow_bell",
     "didgeridoo", "bit", "banjo", "pling", "zombie", "skeleton", "creeper", "dragon", "wither_skeleton", "piglin", "custom_head"};
@@ -63,6 +66,7 @@ constexpr Properties properties(BlockType t) noexcept {
     case BlockType::barrel: return {true, false, true, false};
     case BlockType::composter: return {false, true, false, false};
     case BlockType::ender_chest: return {true, false, true, false};
+    case BlockType::shulker_box: return {true, false, false, false};
     default: return {false, false, false, false};
     }
 }
@@ -371,6 +375,8 @@ std::string block_notation(BlockState s) {
     case BlockType::composter: return std::format("minecraft:composter[level={}]", s.level());
     case BlockType::ender_chest:
         return std::format("minecraft:ender_chest[facing={},waterlogged={}]", direction_name(s.facing()), b(s.flag()));
+    case BlockType::shulker_box:
+        return std::format("minecraft:{}[facing={}]", blocks::shulker_box_names[s.variant() % blocks::shulker_box_names.size()], direction_name(s.facing()));
     case BlockType::other: return registry::notation(s.registry_state());
     default: return std::format("circuit:unrepresentable[raw={}]", s.raw());
     }

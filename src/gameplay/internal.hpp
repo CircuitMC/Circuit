@@ -437,6 +437,18 @@ std::uint8_t viewer_count(RuleContext& ctx, BlockPos pos);
 std::uint8_t trapped_power(RuleContext& ctx, BlockPos pos, BlockState s);
 void tick_viewers(RuleContext& ctx, BlockPos pos);
 
+// ---- shulker boxes (shulker.cpp) ----
+// A shulker box item's color (nullopt for other items); whether an item is
+// a shulker box (which shulker boxes refuse); the item a box drops (its
+// contents and name kept, when the server encodes them); whether they are
+// kept; a placed box filled from its item; and whether its lid can rise.
+std::optional<std::uint8_t> shulker_box_color(std::uint16_t item);
+bool is_shulker_box_item(std::uint16_t item);
+ItemStack shulker_box_item(RuleContext& ctx, BlockPos pos, BlockState s);
+bool shulker_keeps_contents(RuleContext& ctx);
+void fill_shulker_box(RuleContext& ctx, BlockPos pos, const ItemStack& item);
+bool lid_can_rise(RuleContext& ctx, BlockPos pos, BlockState s);
+
 // ---- composters (composter.cpp) ----
 // An item's chance to add a layer (0 when it does not compost); whether a
 // composter takes an item now (below level 7); an item composted (the level

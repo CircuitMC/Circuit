@@ -14,7 +14,9 @@ bool set_block(RuleContext& ctx, BlockPos pos, BlockState next) {
     std::vector<std::pair<std::string, std::int32_t>> cooked;
     contracts::ItemStack book;
     if (replaced && has_block_entity(prev.type())) {
-        if (is_container(prev.type()))
+        // A shulker box's contents go with its item (shulker_box_item), when
+        // the server encodes them; else they drop as a chest's.
+        if (is_container(prev.type()) && !(prev.is(BlockType::shulker_box) && shulker_keeps_contents(ctx)))
             if (const auto* be = ctx.peek_block_entity(pos)) {
                 contents = be->slots;
                 cooked = be->recipes_used;

@@ -432,7 +432,7 @@ int main() {
     });
 
     suite.run("blocks with block entities that players place export their official defaults", [&] {
-        // A beacon, a shulker box and a jukebox placed on stone: each keeps an
+        // A beacon, a bee nest and a jukebox placed on stone: each keeps an
         // empty block entity, written out as its type's defaults and read back
         // as saved data.
         namespace registry = circuit::gameplay::registry;
@@ -441,7 +441,7 @@ int main() {
         const circuit::contracts::PlayerKey alex{1, 2};
         engine.advance(admit({ticket(1, {0, 0}, 1)}));
         std::vector<CommandBody> commands;
-        for (const auto& [x, item] : {std::pair{1, "minecraft:beacon"}, std::pair{3, "minecraft:red_shulker_box"}, std::pair{5, "minecraft:jukebox"}}) {
+        for (const auto& [x, item] : {std::pair{1, "minecraft:beacon"}, std::pair{3, "minecraft:bee_nest"}, std::pair{5, "minecraft:jukebox"}}) {
             commands.push_back(place({x, 0, 3}, blocks::stone()));
             commands.push_back(circuit::contracts::SetPlayerSlot{alex, 36, {circuit::gameplay::items::by_name(item).value(), 1, 0}});
             commands.push_back(circuit::contracts::PlayerUse{alex, 36, {x, 0, 3}, Direction::up, Direction::north, Direction::north, false, false, 3, 3});
@@ -456,7 +456,7 @@ int main() {
         require(anvil::export_world(state, bundle(), target, {.level_name = "placed", .seed = 5}).has_value(), "export");
         const auto back = anvil::import_world(target, bundle());
         require(back.has_value(), back ? "" : back.error());
-        for (const auto& [x, saved] : {std::pair{1, "beacon"}, std::pair{3, "shulker_box"}, std::pair{5, "jukebox"}}) {
+        for (const auto& [x, saved] : {std::pair{1, "beacon"}, std::pair{3, "bee_nest"}, std::pair{5, "jukebox"}}) {
             const auto* be = block_entity_at(back->state, {x, 1, 3});
             require(be && be->kind == BlockType::other, std::format("{}: imported", saved));
             circuit::protocol::Reader r(be->saved.bytes());
@@ -616,6 +616,25 @@ int main() {
         require(be && be->kind == BlockType::barrel && be->slots.size() == 27
                     && be->slots[26] == circuit::contracts::ItemStack{circuit::gameplay::items::oak_planks, 12},
                 "its contents");
+    });
+
+    suite.run("shulker boxes round-trip through Anvil with their color and contents", [&] {
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine.advance(admit({place({2, 0, 2}, blocks::shulker_box(Direction::east, 12))}));
+        auto state = engine.dump();
+        for (auto& level : state.levels)
+            for (auto& [pos, be] : level.block_entities)
+                if (pos == BlockPos{2, 0, 2}) be.slots[5] = {circuit::gameplay::items::iron_ingot, 7};
+        const auto target = root / "shulker";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "shulker", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        const auto* be = block_entity_at(back->state, {2, 0, 2});
+        require(state_at(back->state, {2, 0, 2}) == blocks::shulker_box(Direction::east, 12) && be && be->kind == BlockType::shulker_box
+                    && be->slots.size() == 27 && be->slots[5] == circuit::contracts::ItemStack{circuit::gameplay::items::iron_ingot, 7},
+                "the blue box and its iron");
     });
 
     suite.run("ender chests round-trip through Anvil", [&] {

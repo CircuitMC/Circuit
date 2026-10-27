@@ -236,6 +236,15 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
         CIRCUIT_TRY(powered, p.choice("powered", {"false", "true"}, 0));
         return simple(blocks::lectern(facing, has_book == 1, powered == 1));
     }
+    if (id.ends_with("shulker_box")) {
+        const auto& names = blocks::shulker_box_names;
+        const auto it = std::ranges::find(names, id.substr(10));
+        if (id.starts_with("minecraft:") && it != names.end()) {
+            // An absent facing is the default state's (up).
+            CIRCUIT_TRY(facing, p.direction_or("facing", Direction::up));
+            return simple(blocks::shulker_box(facing, static_cast<std::uint8_t>(it - names.begin())));
+        }
+    }
     if (id == "minecraft:ender_chest") {
         // Absent properties take the default state's (facing north, dry).
         CIRCUIT_TRY(facing, p.direction_or("facing", Direction::north));

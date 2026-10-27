@@ -1590,8 +1590,26 @@
           ]
         },
         {
+          "id": "shulker_boxes",
+          "name": "Shulker boxes",
+          "milestone": "C5",
+          "impl": "partial",
+          "evidence": "compared",
+          "note": "27-slot containers of every color facing any side that refuse shulker boxes, open only when their lid can rise, count their viewers with lid events (no rechecks), and drop one item keeping their contents and name, which gives them back when placed; a creative player's break drops a filled box only; the harness trace and client scenarios match both official servers",
+          "cases": [
+            "trace/shulker_boxes",
+            "client/shulker",
+            "client/shulker_creative"
+          ],
+          "deviations": [
+            "the lid's push of entities, the neighbor updates when it finishes opening or closing, and the sounds are not modeled",
+            "without data packs a broken box drops its contents beside it",
+            "Anvil interchange refuses items whose container component holds stacks"
+          ]
+        },
+        {
           "id": "other_storage",
-          "name": "Shulker boxes, chiseled bookshelves",
+          "name": "Chiseled bookshelves",
           "milestone": "C5",
           "impl": "missing",
           "evidence": "none"

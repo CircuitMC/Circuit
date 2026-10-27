@@ -29,6 +29,8 @@ std::uint16_t plate_item(BlockState s) {
 std::optional<BlockState> placed_by(std::uint16_t item, const contracts::PlayerUse& use) {
     const auto face = use.face, horizontal = use.horizontal, look = use.look;
     if (const auto opening = placed_opening_by(item, face, horizontal, use.cursor_y > 0.5f)) return opening;
+    // A shulker box faces out of the clicked face (tests/fixtures/placement).
+    if (const auto color = shulker_box_color(item)) return blocks::shulker_box(face, *color);
     // Mounted on the clicked face as levers are.
     if (const auto it = std::ranges::find(button_items, item); it != button_items.end()) {
         const auto kind = static_cast<blocks::ButtonKind>(it - button_items.begin());

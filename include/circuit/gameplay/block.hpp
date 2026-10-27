@@ -3,6 +3,7 @@
 #include <circuit/contracts/errors.hpp>
 #include <circuit/contracts/ids.hpp>
 #include <circuit/gameplay/items.hpp>
+#include <array>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -61,6 +62,7 @@ enum class BlockType : std::uint8_t {
     barrel,              // facing: front (any side); flag: open. Block entity: 27 slots, its viewers
     composter,           // level: 0-8 (7 full, 8 bone meal ready)
     ender_chest,         // facing: front (horizontal); flag: waterlogged (not simulated). Block entity: its viewers
+    shulker_box,         // facing: front (any side); variant: 0 plain, 1-16 the colors. Block entity: 27 slots, its viewers
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -279,6 +281,18 @@ constexpr BlockState lectern(Direction front, bool has_book = false, bool powere
 }
 // A barrel facing `front` (any side), open or not.
 constexpr BlockState barrel(Direction front, bool open = false) { return BlockState::of(BlockType::barrel).with_facing(front).with_flag(open); }
+// The shulker boxes by color: the plain one, then the dye colors in the
+// registry's order.
+inline constexpr std::array<std::string_view, 17> shulker_box_names{
+    "shulker_box",       "white_shulker_box",      "orange_shulker_box", "magenta_shulker_box", "light_blue_shulker_box",
+    "yellow_shulker_box", "lime_shulker_box",      "pink_shulker_box",   "gray_shulker_box",    "light_gray_shulker_box",
+    "cyan_shulker_box",  "purple_shulker_box",     "blue_shulker_box",   "brown_shulker_box",   "green_shulker_box",
+    "red_shulker_box",   "black_shulker_box"};
+// A shulker box facing `front` (any side), of `color` (an index of
+// shulker_box_names).
+constexpr BlockState shulker_box(Direction front, std::uint8_t color = 0) {
+    return BlockState::of(BlockType::shulker_box).with_facing(front).with_variant(color);
+}
 // An ender chest facing `front` (horizontal).
 constexpr BlockState ender_chest(Direction front) { return BlockState::of(BlockType::ender_chest).with_facing(front); }
 // A composter at `level` (0 to 8).
@@ -335,7 +349,7 @@ constexpr bool has_variant(BlockType t) noexcept {
     return t == BlockType::button || t == BlockType::pressure_plate || t == BlockType::weighted_plate || t == BlockType::door
         || t == BlockType::trapdoor || t == BlockType::fence_gate || t == BlockType::rail || t == BlockType::coral_fan
         || t == BlockType::coral_wall_fan || t == BlockType::dispenser || t == BlockType::furnace || t == BlockType::crafter
-        || t == BlockType::chest;
+        || t == BlockType::chest || t == BlockType::shulker_box;
 }
 constexpr bool is_coral_fan(BlockType t) noexcept { return t == BlockType::coral_fan || t == BlockType::coral_wall_fan; }
 constexpr bool dead_coral(BlockState s) noexcept { return s.variant() >= blocks::coral_kinds; }
@@ -349,6 +363,7 @@ constexpr std::uint8_t variant_count(BlockType t) noexcept {
     case BlockType::dispenser: case BlockType::chest: return 2;
     case BlockType::furnace: return 3;
     case BlockType::crafter: return 6;
+    case BlockType::shulker_box: return 17;
     default: return has_variant(t) ? blocks::button_kinds : 1;
     }
 }
@@ -378,7 +393,7 @@ template <class F>
 void for_each_block_state(F&& f);
 constexpr bool is_container(BlockType t) noexcept {
     return t == BlockType::hopper || t == BlockType::chest || t == BlockType::dispenser || t == BlockType::furnace || t == BlockType::crafter
-        || t == BlockType::brewing_stand || t == BlockType::barrel;
+        || t == BlockType::brewing_stand || t == BlockType::barrel || t == BlockType::shulker_box;
 }
 // Block entities hold container slots, hopper cooldowns, comparator output
 // signals and moving blocks; a daylight detector's ticks it.
@@ -395,7 +410,7 @@ constexpr std::optional<Direction> chest_partner(BlockState s) noexcept {
     return std::nullopt;
 }
 constexpr std::uint8_t container_size(BlockType t) noexcept {
-    return t == BlockType::hopper ? 5 : t == BlockType::chest || t == BlockType::barrel ? 27 : t == BlockType::dispenser || t == BlockType::crafter ? 9
+    return t == BlockType::hopper ? 5 : t == BlockType::chest || t == BlockType::barrel || t == BlockType::shulker_box ? 27 : t == BlockType::dispenser || t == BlockType::crafter ? 9
          : t == BlockType::furnace ? 3 : t == BlockType::brewing_stand ? 5 : 0;
 }
 // Whether a block state takes random ticks (random_ticks.cpp; checked
@@ -474,6 +489,7 @@ constexpr bool destroyed_by_piston(BlockType t) noexcept {
     case BlockType::redstone_wire: case BlockType::lever: case BlockType::repeater: case BlockType::comparator:
     case BlockType::water: case BlockType::wheat: case BlockType::redstone_torch: case BlockType::redstone_wall_torch:
     case BlockType::button: case BlockType::pressure_plate: case BlockType::weighted_plate: case BlockType::door:
+    case BlockType::shulker_box:
         return true;
     default:
         return false;

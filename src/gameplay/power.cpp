@@ -28,6 +28,11 @@ bool is_conductor(BlockState s) noexcept {
     case BlockType::dispenser: case BlockType::furnace: case BlockType::crafter: case BlockType::slime_block: case BlockType::barrel:
         return true;
     case BlockType::other: return registry::conducts(s.registry_state());
+    // A shulker box by the registry's rule for the state it stands for.
+    case BlockType::shulker_box: {
+        const auto state = physics::registry_state_of(s);
+        return state && registry::conducts(*state);
+    }
     default: return false;
     }
 }
@@ -37,7 +42,7 @@ bool face_sturdy(BlockState s, Direction face) noexcept {
     case BlockType::other: return registry::sturdy_face(s.registry_state(), face);
     // Doors, trapdoors, fence gates, lecterns, composters and ender chests by the shape of the state they stand for.
     case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: case BlockType::lectern: case BlockType::composter:
-    case BlockType::ender_chest: {
+    case BlockType::ender_chest: case BlockType::shulker_box: {
         const auto state = physics::registry_state_of(s);
         return state && registry::face_covered(*state, face);
     }

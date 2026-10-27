@@ -935,6 +935,74 @@ std::int32_t ComponentCodec::book_pages_of(const contracts::ComponentPatch& patc
     return 0;
 }
 
+std::expected<std::vector<contracts::ItemStack>, std::string> ComponentCodec::container_of(
+    const contracts::ComponentPatch& patch, const ComponentContext& ctx,
+    const std::function<std::optional<std::uint16_t>(std::int32_t)>& item_of) const {
+    const auto type = type_id("container");
+    std::vector<contracts::ItemStack> out;
+    if (!type || patch.empty() || patch.protocol() != protocol()) return out;
+    for (const auto& a : patch.added()) {
+        if (a.type != *type) continue;
+        // The slots as optional stacks: a count, then (when not 0) the item
+        // and its components (client/shulker: both versions).
+        Reader r(a.value);
+        const auto n = r.varint();
+        if (!n || *n < 0 || *n > 256) return std::unexpected("container: invalid slot count");
+        for (std::int32_t k = 0; k < *n; ++k) {
+            const auto count = r.varint();
+            if (!count || *count < 0 || *count > 99) return std::unexpected("container: invalid count");
+            if (*count == 0) {
+                out.emplace_back();
+                continue;
+            }
+            const auto wire = r.varint();
+            if (!wire) return std::unexpected("container: truncated item");
+            const auto item = item_of(*wire);
+            if (!item) return std::unexpected(std::format("container: unknown item {}", *wire));
+            auto components = read(r, ctx);
+            if (!components) return std::unexpected("container: " + components.error());
+            out.push_back({*item, static_cast<std::uint8_t>(*count), static_cast<std::uint16_t>(components->damage.value_or(0)),
+                           std::move(components->rest)});
+        }
+        return out;
+    }
+    return out;
+}
+
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_container(
+    const contracts::ComponentPatch& base, std::span<const contracts::ItemStack> stacks, const ComponentContext& ctx,
+    const std::function<std::optional<std::int32_t>(std::uint16_t)>& wire_of) const {
+    const auto type = type_id("container");
+    if (!type) return std::unexpected("no container component");
+    std::vector<contracts::ComponentPatch::Added> added;
+    for (const auto& a : base.added())
+        if (a.type != *type) added.push_back(a);
+    std::size_t last = stacks.size();
+    while (last > 0 && stacks[last - 1].empty()) --last;
+    if (last > 0) {
+        Writer w;
+        w.varint(static_cast<std::int32_t>(last));
+        for (std::size_t k = 0; k < last; ++k) {
+            const auto& s = stacks[k];
+            w.varint(s.empty() ? 0 : s.count);
+            if (s.empty()) continue;
+            const auto wire = wire_of(s.item);
+            if (!wire) return std::unexpected(std::format("container: item {} has no id in this protocol", s.item));
+            w.varint(*wire);
+            write(w, s.damage > 0 ? std::optional<std::int32_t>(s.damage) : std::nullopt, s.components);
+        }
+        auto value = canonical_value(*type, w.bytes(), ctx);
+        if (!value) return std::unexpected(value.error());
+        added.push_back({*type, std::move(*value)});
+    }
+    std::ranges::sort(added, {}, &contracts::ComponentPatch::Added::type);
+    std::vector<std::uint16_t> removed;
+    for (const auto r : base.removed())
+        if (r != *type) removed.push_back(r);
+    if (added.empty() && removed.empty()) return contracts::ComponentPatch{};
+    return contracts::ComponentPatch::make(protocol(), std::move(added), std::move(removed), base.typed());
+}
+
 std::optional<std::uint32_t> ComponentCodec::potion_of(const contracts::ComponentPatch& patch) const {
     const auto type = type_id("potion_contents");
     if (patch.empty() || patch.protocol() != protocol() || !type) return std::nullopt;
