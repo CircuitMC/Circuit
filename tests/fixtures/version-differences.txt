@@ -1,5 +1,5 @@
 # Scenarios whose 1.21.4 recording differs from the 1.21.8 one by a difference the bundles declare (the rule set's
-# LavaContact, RandomTickRange or OrbMotion): one per line, the trace's file name and the difference.
+# LavaContact, RandomTickRange, OrbMotion or FallDistance): one per line, the trace's file name and the difference.
 entities_in_lava.ctrace lava reaches entities at the start of their ticks on 1.21.4, after their moves on 1.21.8
 orbs.ctrace experience orbs bounce on the ground and drag in double precision on 1.21.4 (OrbMotion)
 orbs_merge.ctrace experience orbs bounce on the ground and drag in double precision on 1.21.4 (OrbMotion)
@@ -23,3 +23,4 @@ bamboo_growth.ctrace random ticks run only near players on 1.21.4 (RandomTickRan
 melt_weather.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none
 eggs_blossoms.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none
 dripstone_growth.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none
+anvils_falling_far.ctrace a falling anvil wears by its fall before the landing move on 1.21.4, with it on 1.21.8 (FallDistance)

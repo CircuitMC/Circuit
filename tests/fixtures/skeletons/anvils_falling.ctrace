@@ -1,0 +1,33 @@
+circuit-trace 2
+title Anvils of each kind dropped from several heights land, wear or break
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms falling_block
+area -7 0 -2 7 34 2
+ticks 120
+changes ordered
+entities observed
+rng observed
+
+at 0 set -6 0 0 minecraft:stone
+at 0 set -5 0 0 minecraft:stone
+at 0 set -4 0 0 minecraft:stone
+at 0 set -3 0 0 minecraft:stone
+at 0 set -2 0 0 minecraft:stone
+at 0 set -1 0 0 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 1 0 minecraft:torch
+at 1 set -6 2 0 minecraft:anvil[facing=north]
+at 1 set -4 3 0 minecraft:anvil[facing=east]
+at 1 set -2 6 0 minecraft:chipped_anvil[facing=south]
+at 1 set 0 11 0 minecraft:anvil[facing=west]
+at 1 set 2 21 0 minecraft:damaged_anvil[facing=north]
+at 1 set 4 31 0 minecraft:anvil[facing=north]
+at 1 set 6 5 0 minecraft:anvil[facing=east]

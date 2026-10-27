@@ -1,0 +1,396 @@
+circuit-trace 2
+title Anvils fall from two to thirteen blocks and wear by chance as they land
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v12
+mechanisms falling_block
+area -7 0 -3 7 16 3
+ticks 100
+changes ordered
+entities observed
+rng observed
+
+at 0 set -6 0 -2 minecraft:stone
+at 0 set -6 0 2 minecraft:stone
+at 0 set -5 0 -2 minecraft:stone
+at 0 set -5 0 2 minecraft:stone
+at 0 set -4 0 -2 minecraft:stone
+at 0 set -4 0 2 minecraft:stone
+at 0 set -3 0 -2 minecraft:stone
+at 0 set -3 0 2 minecraft:stone
+at 0 set -2 0 -2 minecraft:stone
+at 0 set -2 0 2 minecraft:stone
+at 0 set -1 0 -2 minecraft:stone
+at 0 set -1 0 2 minecraft:stone
+at 0 set 0 0 -2 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 1 0 -2 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 2 0 -2 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 3 0 -2 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 4 0 -2 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 5 0 -2 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 6 0 -2 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+
+at 1 set -6 3 -2 minecraft:anvil[facing=north]
+at 1 set -4 4 -2 minecraft:chipped_anvil[facing=east]
+at 1 set -2 5 -2 minecraft:damaged_anvil[facing=south]
+at 1 set 0 6 -2 minecraft:anvil[facing=west]
+at 1 set 2 7 -2 minecraft:chipped_anvil[facing=north]
+at 1 set 4 8 -2 minecraft:damaged_anvil[facing=east]
+at 1 set 6 9 -2 minecraft:anvil[facing=south]
+at 1 set -6 10 2 minecraft:chipped_anvil[facing=west]
+at 1 set -4 11 2 minecraft:damaged_anvil[facing=north]
+at 1 set -2 12 2 minecraft:anvil[facing=east]
+at 1 set 0 13 2 minecraft:chipped_anvil[facing=south]
+at 1 set 2 14 2 minecraft:damaged_anvil[facing=west]
+change 1 commands -6 3 -2 minecraft:air minecraft:anvil[facing=north]
+change 1 commands -4 4 -2 minecraft:air minecraft:chipped_anvil[facing=east]
+change 1 commands -2 5 -2 minecraft:air minecraft:damaged_anvil[facing=south]
+change 1 commands 0 6 -2 minecraft:air minecraft:anvil[facing=west]
+change 1 commands 2 7 -2 minecraft:air minecraft:chipped_anvil[facing=north]
+change 1 commands 4 8 -2 minecraft:air minecraft:damaged_anvil[facing=east]
+change 1 commands 6 9 -2 minecraft:air minecraft:anvil[facing=south]
+change 1 commands -6 10 2 minecraft:air minecraft:chipped_anvil[facing=west]
+change 1 commands -4 11 2 minecraft:air minecraft:damaged_anvil[facing=north]
+change 1 commands -2 12 2 minecraft:air minecraft:anvil[facing=east]
+change 1 commands 0 13 2 minecraft:air minecraft:chipped_anvil[facing=south]
+change 1 commands 2 14 2 minecraft:air minecraft:damaged_anvil[facing=west]
+
+change 2 block_ticks -6 3 -2 minecraft:anvil[facing=north] minecraft:air
+entity-added 2 block_ticks e1 minecraft:falling_block -5.5 3 -1.5 0 0 0 block=minecraft:anvil[facing=north]
+change 2 block_ticks -4 4 -2 minecraft:chipped_anvil[facing=east] minecraft:air
+entity-added 2 block_ticks e2 minecraft:falling_block -3.5 4 -1.5 0 0 0 block=minecraft:chipped_anvil[facing=east]
+change 2 block_ticks -2 5 -2 minecraft:damaged_anvil[facing=south] minecraft:air
+entity-added 2 block_ticks e3 minecraft:falling_block -1.5 5 -1.5 0 0 0 block=minecraft:damaged_anvil[facing=south]
+change 2 block_ticks 0 6 -2 minecraft:anvil[facing=west] minecraft:air
+entity-added 2 block_ticks e4 minecraft:falling_block 0.5 6 -1.5 0 0 0 block=minecraft:anvil[facing=west]
+change 2 block_ticks 2 7 -2 minecraft:chipped_anvil[facing=north] minecraft:air
+entity-added 2 block_ticks e5 minecraft:falling_block 2.5 7 -1.5 0 0 0 block=minecraft:chipped_anvil[facing=north]
+change 2 block_ticks 4 8 -2 minecraft:damaged_anvil[facing=east] minecraft:air
+entity-added 2 block_ticks e6 minecraft:falling_block 4.5 8 -1.5 0 0 0 block=minecraft:damaged_anvil[facing=east]
+change 2 block_ticks 6 9 -2 minecraft:anvil[facing=south] minecraft:air
+entity-added 2 block_ticks e7 minecraft:falling_block 6.5 9 -1.5 0 0 0 block=minecraft:anvil[facing=south]
+change 2 block_ticks -6 10 2 minecraft:chipped_anvil[facing=west] minecraft:air
+entity-added 2 block_ticks e8 minecraft:falling_block -5.5 10 2.5 0 0 0 block=minecraft:chipped_anvil[facing=west]
+change 2 block_ticks -4 11 2 minecraft:damaged_anvil[facing=north] minecraft:air
+entity-added 2 block_ticks e9 minecraft:falling_block -3.5 11 2.5 0 0 0 block=minecraft:damaged_anvil[facing=north]
+change 2 block_ticks -2 12 2 minecraft:anvil[facing=east] minecraft:air
+entity-added 2 block_ticks e10 minecraft:falling_block -1.5 12 2.5 0 0 0 block=minecraft:anvil[facing=east]
+change 2 block_ticks 0 13 2 minecraft:chipped_anvil[facing=south] minecraft:air
+entity-added 2 block_ticks e11 minecraft:falling_block 0.5 13 2.5 0 0 0 block=minecraft:chipped_anvil[facing=south]
+change 2 block_ticks 2 14 2 minecraft:damaged_anvil[facing=west] minecraft:air
+entity-added 2 block_ticks e12 minecraft:falling_block 2.5 14 2.5 0 0 0 block=minecraft:damaged_anvil[facing=west]
+entity-order 2 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 2 e1 -5.5 2.96 -1.5 0 -0.0392 0 time=1 on-ground=false
+entity 2 e2 -3.5 3.96 -1.5 0 -0.0392 0 time=1 on-ground=false
+entity 2 e3 -1.5 4.96 -1.5 0 -0.0392 0 time=1 on-ground=false
+entity 2 e4 0.5 5.96 -1.5 0 -0.0392 0 time=1 on-ground=false
+entity 2 e5 2.5 6.96 -1.5 0 -0.0392 0 time=1 on-ground=false
+entity 2 e6 4.5 7.96 -1.5 0 -0.0392 0 time=1 on-ground=false
+entity 2 e7 6.5 8.96 -1.5 0 -0.0392 0 time=1 on-ground=false
+entity 2 e8 -5.5 9.96 2.5 0 -0.0392 0 time=1 on-ground=false
+entity 2 e9 -3.5 10.96 2.5 0 -0.0392 0 time=1 on-ground=false
+entity 2 e10 -1.5 11.96 2.5 0 -0.0392 0 time=1 on-ground=false
+entity 2 e11 0.5 12.96 2.5 0 -0.0392 0 time=1 on-ground=false
+entity 2 e12 2.5 13.96 2.5 0 -0.0392 0 time=1 on-ground=false
+
+entity-order 3 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 3 e1 -5.5 2.8808 -1.5 0 -0.07761599999999999 0 time=2 on-ground=false
+entity 3 e2 -3.5 3.8808 -1.5 0 -0.07761599999999999 0 time=2 on-ground=false
+entity 3 e3 -1.5 4.8808 -1.5 0 -0.07761599999999999 0 time=2 on-ground=false
+entity 3 e4 0.5 5.8808 -1.5 0 -0.07761599999999999 0 time=2 on-ground=false
+entity 3 e5 2.5 6.8808 -1.5 0 -0.07761599999999999 0 time=2 on-ground=false
+entity 3 e6 4.5 7.8808 -1.5 0 -0.07761599999999999 0 time=2 on-ground=false
+entity 3 e7 6.5 8.8808 -1.5 0 -0.07761599999999999 0 time=2 on-ground=false
+entity 3 e8 -5.5 9.8808 2.5 0 -0.07761599999999999 0 time=2 on-ground=false
+entity 3 e9 -3.5 10.8808 2.5 0 -0.07761599999999999 0 time=2 on-ground=false
+entity 3 e10 -1.5 11.8808 2.5 0 -0.07761599999999999 0 time=2 on-ground=false
+entity 3 e11 0.5 12.8808 2.5 0 -0.07761599999999999 0 time=2 on-ground=false
+entity 3 e12 2.5 13.8808 2.5 0 -0.07761599999999999 0 time=2 on-ground=false
+
+entity-order 4 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 4 e1 -5.5 2.763184 -1.5 0 -0.11526368 0 time=3 on-ground=false
+entity 4 e2 -3.5 3.763184 -1.5 0 -0.11526368 0 time=3 on-ground=false
+entity 4 e3 -1.5 4.763184 -1.5 0 -0.11526368 0 time=3 on-ground=false
+entity 4 e4 0.5 5.763184 -1.5 0 -0.11526368 0 time=3 on-ground=false
+entity 4 e5 2.5 6.763184 -1.5 0 -0.11526368 0 time=3 on-ground=false
+entity 4 e6 4.5 7.763184 -1.5 0 -0.11526368 0 time=3 on-ground=false
+entity 4 e7 6.5 8.763184 -1.5 0 -0.11526368 0 time=3 on-ground=false
+entity 4 e8 -5.5 9.763184 2.5 0 -0.11526368 0 time=3 on-ground=false
+entity 4 e9 -3.5 10.763184 2.5 0 -0.11526368 0 time=3 on-ground=false
+entity 4 e10 -1.5 11.763184 2.5 0 -0.11526368 0 time=3 on-ground=false
+entity 4 e11 0.5 12.763184 2.5 0 -0.11526368 0 time=3 on-ground=false
+entity 4 e12 2.5 13.763184 2.5 0 -0.11526368 0 time=3 on-ground=false
+
+entity-order 5 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 5 e1 -5.5 2.60792032 -1.5 0 -0.15215840639999997 0 time=4 on-ground=false
+entity 5 e2 -3.5 3.60792032 -1.5 0 -0.15215840639999997 0 time=4 on-ground=false
+entity 5 e3 -1.5 4.60792032 -1.5 0 -0.15215840639999997 0 time=4 on-ground=false
+entity 5 e4 0.5 5.60792032 -1.5 0 -0.15215840639999997 0 time=4 on-ground=false
+entity 5 e5 2.5 6.60792032 -1.5 0 -0.15215840639999997 0 time=4 on-ground=false
+entity 5 e6 4.5 7.60792032 -1.5 0 -0.15215840639999997 0 time=4 on-ground=false
+entity 5 e7 6.5 8.607920320000002 -1.5 0 -0.15215840639999997 0 time=4 on-ground=false
+entity 5 e8 -5.5 9.607920320000002 2.5 0 -0.15215840639999997 0 time=4 on-ground=false
+entity 5 e9 -3.5 10.607920320000002 2.5 0 -0.15215840639999997 0 time=4 on-ground=false
+entity 5 e10 -1.5 11.607920320000002 2.5 0 -0.15215840639999997 0 time=4 on-ground=false
+entity 5 e11 0.5 12.607920320000002 2.5 0 -0.15215840639999997 0 time=4 on-ground=false
+entity 5 e12 2.5 13.607920320000002 2.5 0 -0.15215840639999997 0 time=4 on-ground=false
+
+entity-order 6 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 6 e1 -5.5 2.4157619136 -1.5 0 -0.18831523827199997 0 time=5 on-ground=false
+entity 6 e2 -3.5 3.4157619136 -1.5 0 -0.18831523827199997 0 time=5 on-ground=false
+entity 6 e3 -1.5 4.4157619136 -1.5 0 -0.18831523827199997 0 time=5 on-ground=false
+entity 6 e4 0.5 5.4157619136 -1.5 0 -0.18831523827199997 0 time=5 on-ground=false
+entity 6 e5 2.5 6.4157619136 -1.5 0 -0.18831523827199997 0 time=5 on-ground=false
+entity 6 e6 4.5 7.4157619136 -1.5 0 -0.18831523827199997 0 time=5 on-ground=false
+entity 6 e7 6.5 8.4157619136 -1.5 0 -0.18831523827199997 0 time=5 on-ground=false
+entity 6 e8 -5.5 9.4157619136 2.5 0 -0.18831523827199997 0 time=5 on-ground=false
+entity 6 e9 -3.5 10.4157619136 2.5 0 -0.18831523827199997 0 time=5 on-ground=false
+entity 6 e10 -1.5 11.4157619136 2.5 0 -0.18831523827199997 0 time=5 on-ground=false
+entity 6 e11 0.5 12.4157619136 2.5 0 -0.18831523827199997 0 time=5 on-ground=false
+entity 6 e12 2.5 13.4157619136 2.5 0 -0.18831523827199997 0 time=5 on-ground=false
+
+entity-order 7 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 7 e1 -5.5 2.1874466753279997 -1.5 0 -0.22374893350655997 0 time=6 on-ground=false
+entity 7 e2 -3.5 3.1874466753279997 -1.5 0 -0.22374893350655997 0 time=6 on-ground=false
+entity 7 e3 -1.5 4.187446675328 -1.5 0 -0.22374893350655997 0 time=6 on-ground=false
+entity 7 e4 0.5 5.187446675328 -1.5 0 -0.22374893350655997 0 time=6 on-ground=false
+entity 7 e5 2.5 6.187446675328 -1.5 0 -0.22374893350655997 0 time=6 on-ground=false
+entity 7 e6 4.5 7.187446675328 -1.5 0 -0.22374893350655997 0 time=6 on-ground=false
+entity 7 e7 6.5 8.187446675328001 -1.5 0 -0.22374893350655997 0 time=6 on-ground=false
+entity 7 e8 -5.5 9.187446675328001 2.5 0 -0.22374893350655997 0 time=6 on-ground=false
+entity 7 e9 -3.5 10.187446675328001 2.5 0 -0.22374893350655997 0 time=6 on-ground=false
+entity 7 e10 -1.5 11.187446675328001 2.5 0 -0.22374893350655997 0 time=6 on-ground=false
+entity 7 e11 0.5 12.187446675328001 2.5 0 -0.22374893350655997 0 time=6 on-ground=false
+entity 7 e12 2.5 13.187446675328001 2.5 0 -0.22374893350655997 0 time=6 on-ground=false
+
+entity-order 8 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 8 e1 -5.5 1.9236977418214398 -1.5 0 -0.25847395483642877 0 time=7 on-ground=false
+entity 8 e2 -3.5 2.9236977418214396 -1.5 0 -0.25847395483642877 0 time=7 on-ground=false
+entity 8 e3 -1.5 3.92369774182144 -1.5 0 -0.25847395483642877 0 time=7 on-ground=false
+entity 8 e4 0.5 4.9236977418214405 -1.5 0 -0.25847395483642877 0 time=7 on-ground=false
+entity 8 e5 2.5 5.9236977418214405 -1.5 0 -0.25847395483642877 0 time=7 on-ground=false
+entity 8 e6 4.5 6.9236977418214405 -1.5 0 -0.25847395483642877 0 time=7 on-ground=false
+entity 8 e7 6.5 7.923697741821441 -1.5 0 -0.25847395483642877 0 time=7 on-ground=false
+entity 8 e8 -5.5 8.92369774182144 2.5 0 -0.25847395483642877 0 time=7 on-ground=false
+entity 8 e9 -3.5 9.92369774182144 2.5 0 -0.25847395483642877 0 time=7 on-ground=false
+entity 8 e10 -1.5 10.92369774182144 2.5 0 -0.25847395483642877 0 time=7 on-ground=false
+entity 8 e11 0.5 11.92369774182144 2.5 0 -0.25847395483642877 0 time=7 on-ground=false
+entity 8 e12 2.5 12.92369774182144 2.5 0 -0.25847395483642877 0 time=7 on-ground=false
+
+entity-order 9 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 9 e1 -5.5 1.625223786985011 -1.5 0 -0.2925044757397002 0 time=8 on-ground=false
+entity 9 e2 -3.5 2.625223786985011 -1.5 0 -0.2925044757397002 0 time=8 on-ground=false
+entity 9 e3 -1.5 3.6252237869850115 -1.5 0 -0.2925044757397002 0 time=8 on-ground=false
+entity 9 e4 0.5 4.6252237869850115 -1.5 0 -0.2925044757397002 0 time=8 on-ground=false
+entity 9 e5 2.5 5.6252237869850115 -1.5 0 -0.2925044757397002 0 time=8 on-ground=false
+entity 9 e6 4.5 6.6252237869850115 -1.5 0 -0.2925044757397002 0 time=8 on-ground=false
+entity 9 e7 6.5 7.625223786985012 -1.5 0 -0.2925044757397002 0 time=8 on-ground=false
+entity 9 e8 -5.5 8.625223786985012 2.5 0 -0.2925044757397002 0 time=8 on-ground=false
+entity 9 e9 -3.5 9.625223786985012 2.5 0 -0.2925044757397002 0 time=8 on-ground=false
+entity 9 e10 -1.5 10.625223786985012 2.5 0 -0.2925044757397002 0 time=8 on-ground=false
+entity 9 e11 0.5 11.625223786985012 2.5 0 -0.2925044757397002 0 time=8 on-ground=false
+entity 9 e12 2.5 12.625223786985012 2.5 0 -0.2925044757397002 0 time=8 on-ground=false
+
+entity-order 10 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 10 e1 -5.5 1.2927193112453108 -1.5 0 -0.32585438622490615 0 time=9 on-ground=false
+entity 10 e2 -3.5 2.292719311245311 -1.5 0 -0.32585438622490615 0 time=9 on-ground=false
+entity 10 e3 -1.5 3.2927193112453113 -1.5 0 -0.32585438622490615 0 time=9 on-ground=false
+entity 10 e4 0.5 4.292719311245311 -1.5 0 -0.32585438622490615 0 time=9 on-ground=false
+entity 10 e5 2.5 5.292719311245311 -1.5 0 -0.32585438622490615 0 time=9 on-ground=false
+entity 10 e6 4.5 6.292719311245311 -1.5 0 -0.32585438622490615 0 time=9 on-ground=false
+entity 10 e7 6.5 7.292719311245312 -1.5 0 -0.32585438622490615 0 time=9 on-ground=false
+entity 10 e8 -5.5 8.292719311245312 2.5 0 -0.32585438622490615 0 time=9 on-ground=false
+entity 10 e9 -3.5 9.292719311245312 2.5 0 -0.32585438622490615 0 time=9 on-ground=false
+entity 10 e10 -1.5 10.292719311245312 2.5 0 -0.32585438622490615 0 time=9 on-ground=false
+entity 10 e11 0.5 11.292719311245312 2.5 0 -0.32585438622490615 0 time=9 on-ground=false
+entity 10 e12 2.5 12.292719311245312 2.5 0 -0.32585438622490615 0 time=9 on-ground=false
+
+change 11 entities -6 1 -2 minecraft:air minecraft:anvil[facing=north]
+entity-removed 11 entities e1 discarded
+entity-order 11 entities e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 11 e2 -3.5 1.9268649250204046 -1.5 0 -0.358537298500408 0 time=10 on-ground=false
+entity 11 e3 -1.5 2.9268649250204053 -1.5 0 -0.358537298500408 0 time=10 on-ground=false
+entity 11 e4 0.5 3.9268649250204053 -1.5 0 -0.358537298500408 0 time=10 on-ground=false
+entity 11 e5 2.5 4.926864925020405 -1.5 0 -0.358537298500408 0 time=10 on-ground=false
+entity 11 e6 4.5 5.926864925020405 -1.5 0 -0.358537298500408 0 time=10 on-ground=false
+entity 11 e7 6.5 6.926864925020406 -1.5 0 -0.358537298500408 0 time=10 on-ground=false
+entity 11 e8 -5.5 7.926864925020406 2.5 0 -0.358537298500408 0 time=10 on-ground=false
+entity 11 e9 -3.5 8.926864925020405 2.5 0 -0.358537298500408 0 time=10 on-ground=false
+entity 11 e10 -1.5 9.926864925020405 2.5 0 -0.358537298500408 0 time=10 on-ground=false
+entity 11 e11 0.5 10.926864925020405 2.5 0 -0.358537298500408 0 time=10 on-ground=false
+entity 11 e12 2.5 11.926864925020405 2.5 0 -0.358537298500408 0 time=10 on-ground=false
+
+entity-order 12 entities e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 12 e2 -3.5 1.5283276265199968 -1.5 0 -0.3905665525303998 0 time=11 on-ground=false
+entity 12 e3 -1.5 2.528327626519997 -1.5 0 -0.3905665525303998 0 time=11 on-ground=false
+entity 12 e4 0.5 3.528327626519997 -1.5 0 -0.3905665525303998 0 time=11 on-ground=false
+entity 12 e5 2.5 4.528327626519998 -1.5 0 -0.3905665525303998 0 time=11 on-ground=false
+entity 12 e6 4.5 5.528327626519998 -1.5 0 -0.3905665525303998 0 time=11 on-ground=false
+entity 12 e7 6.5 6.5283276265199985 -1.5 0 -0.3905665525303998 0 time=11 on-ground=false
+entity 12 e8 -5.5 7.5283276265199985 2.5 0 -0.3905665525303998 0 time=11 on-ground=false
+entity 12 e9 -3.5 8.528327626519998 2.5 0 -0.3905665525303998 0 time=11 on-ground=false
+entity 12 e10 -1.5 9.528327626519998 2.5 0 -0.3905665525303998 0 time=11 on-ground=false
+entity 12 e11 0.5 10.528327626519998 2.5 0 -0.3905665525303998 0 time=11 on-ground=false
+entity 12 e12 2.5 11.528327626519998 2.5 0 -0.3905665525303998 0 time=11 on-ground=false
+
+entity-order 13 entities e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 13 e2 -3.5 1.0977610739895969 -1.5 0 -0.42195522147979175 0 time=12 on-ground=false
+entity 13 e3 -1.5 2.0977610739895973 -1.5 0 -0.42195522147979175 0 time=12 on-ground=false
+entity 13 e4 0.5 3.0977610739895973 -1.5 0 -0.42195522147979175 0 time=12 on-ground=false
+entity 13 e5 2.5 4.097761073989598 -1.5 0 -0.42195522147979175 0 time=12 on-ground=false
+entity 13 e6 4.5 5.097761073989598 -1.5 0 -0.42195522147979175 0 time=12 on-ground=false
+entity 13 e7 6.5 6.097761073989599 -1.5 0 -0.42195522147979175 0 time=12 on-ground=false
+entity 13 e8 -5.5 7.097761073989599 2.5 0 -0.42195522147979175 0 time=12 on-ground=false
+entity 13 e9 -3.5 8.097761073989599 2.5 0 -0.42195522147979175 0 time=12 on-ground=false
+entity 13 e10 -1.5 9.097761073989599 2.5 0 -0.42195522147979175 0 time=12 on-ground=false
+entity 13 e11 0.5 10.097761073989599 2.5 0 -0.42195522147979175 0 time=12 on-ground=false
+entity 13 e12 2.5 11.097761073989599 2.5 0 -0.42195522147979175 0 time=12 on-ground=false
+
+change 14 entities -4 1 -2 minecraft:air minecraft:chipped_anvil[facing=east]
+entity-removed 14 entities e2 discarded
+entity-order 14 entities e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 14 e3 -1.5 1.6358058525098056 -1.5 0 -0.4527161170501959 0 time=13 on-ground=false
+entity 14 e4 0.5 2.6358058525098054 -1.5 0 -0.4527161170501959 0 time=13 on-ground=false
+entity 14 e5 2.5 3.6358058525098063 -1.5 0 -0.4527161170501959 0 time=13 on-ground=false
+entity 14 e6 4.5 4.635805852509806 -1.5 0 -0.4527161170501959 0 time=13 on-ground=false
+entity 14 e7 6.5 5.635805852509807 -1.5 0 -0.4527161170501959 0 time=13 on-ground=false
+entity 14 e8 -5.5 6.635805852509807 2.5 0 -0.4527161170501959 0 time=13 on-ground=false
+entity 14 e9 -3.5 7.635805852509807 2.5 0 -0.4527161170501959 0 time=13 on-ground=false
+entity 14 e10 -1.5 8.635805852509806 2.5 0 -0.4527161170501959 0 time=13 on-ground=false
+entity 14 e11 0.5 9.635805852509806 2.5 0 -0.4527161170501959 0 time=13 on-ground=false
+entity 14 e12 2.5 10.635805852509806 2.5 0 -0.4527161170501959 0 time=13 on-ground=false
+
+entity-order 15 entities e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 15 e3 -1.5 1.1430897354596097 -1.5 0 -0.48286179470919194 0 time=14 on-ground=false
+entity 15 e4 0.5 2.1430897354596095 -1.5 0 -0.48286179470919194 0 time=14 on-ground=false
+entity 15 e5 2.5 3.1430897354596103 -1.5 0 -0.48286179470919194 0 time=14 on-ground=false
+entity 15 e6 4.5 4.14308973545961 -1.5 0 -0.48286179470919194 0 time=14 on-ground=false
+entity 15 e7 6.5 5.143089735459611 -1.5 0 -0.48286179470919194 0 time=14 on-ground=false
+entity 15 e8 -5.5 6.143089735459611 2.5 0 -0.48286179470919194 0 time=14 on-ground=false
+entity 15 e9 -3.5 7.143089735459611 2.5 0 -0.48286179470919194 0 time=14 on-ground=false
+entity 15 e10 -1.5 8.143089735459611 2.5 0 -0.48286179470919194 0 time=14 on-ground=false
+entity 15 e11 0.5 9.143089735459611 2.5 0 -0.48286179470919194 0 time=14 on-ground=false
+entity 15 e12 2.5 10.143089735459611 2.5 0 -0.48286179470919194 0 time=14 on-ground=false
+
+change 16 entities -2 1 -2 minecraft:air minecraft:damaged_anvil[facing=south]
+entity-removed 16 entities e3 discarded
+entity-order 16 entities e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 16 e4 0.5 1.6202279407504174 -1.5 0 -0.512404558815008 0 time=15 on-ground=false
+entity 16 e5 2.5 2.6202279407504183 -1.5 0 -0.512404558815008 0 time=15 on-ground=false
+entity 16 e6 4.5 3.6202279407504183 -1.5 0 -0.512404558815008 0 time=15 on-ground=false
+entity 16 e7 6.5 4.62022794075042 -1.5 0 -0.512404558815008 0 time=15 on-ground=false
+entity 16 e8 -5.5 5.62022794075042 2.5 0 -0.512404558815008 0 time=15 on-ground=false
+entity 16 e9 -3.5 6.62022794075042 2.5 0 -0.512404558815008 0 time=15 on-ground=false
+entity 16 e10 -1.5 7.62022794075042 2.5 0 -0.512404558815008 0 time=15 on-ground=false
+entity 16 e11 0.5 8.62022794075042 2.5 0 -0.512404558815008 0 time=15 on-ground=false
+entity 16 e12 2.5 9.62022794075042 2.5 0 -0.512404558815008 0 time=15 on-ground=false
+
+entity-order 17 entities e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 17 e4 0.5 1.0678233819354093 -1.5 0 -0.5413564676387079 0 time=16 on-ground=false
+entity 17 e5 2.5 2.06782338193541 -1.5 0 -0.5413564676387079 0 time=16 on-ground=false
+entity 17 e6 4.5 3.06782338193541 -1.5 0 -0.5413564676387079 0 time=16 on-ground=false
+entity 17 e7 6.5 4.067823381935412 -1.5 0 -0.5413564676387079 0 time=16 on-ground=false
+entity 17 e8 -5.5 5.067823381935412 2.5 0 -0.5413564676387079 0 time=16 on-ground=false
+entity 17 e9 -3.5 6.067823381935412 2.5 0 -0.5413564676387079 0 time=16 on-ground=false
+entity 17 e10 -1.5 7.067823381935412 2.5 0 -0.5413564676387079 0 time=16 on-ground=false
+entity 17 e11 0.5 8.067823381935412 2.5 0 -0.5413564676387079 0 time=16 on-ground=false
+entity 17 e12 2.5 9.067823381935412 2.5 0 -0.5413564676387079 0 time=16 on-ground=false
+
+change 18 entities 0 1 -2 minecraft:air minecraft:anvil[facing=west]
+entity-removed 18 entities e4 discarded
+entity-order 18 entities e4 e5 e6 e7 e8 e9 e10 e11 e12
+entity 18 e5 2.5 1.4864669142967022 -1.5 0 -0.5697293382859338 0 time=17 on-ground=false
+entity 18 e6 4.5 2.4864669142967024 -1.5 0 -0.5697293382859338 0 time=17 on-ground=false
+entity 18 e7 6.5 3.486466914296704 -1.5 0 -0.5697293382859338 0 time=17 on-ground=false
+entity 18 e8 -5.5 4.486466914296704 2.5 0 -0.5697293382859338 0 time=17 on-ground=false
+entity 18 e9 -3.5 5.486466914296704 2.5 0 -0.5697293382859338 0 time=17 on-ground=false
+entity 18 e10 -1.5 6.486466914296704 2.5 0 -0.5697293382859338 0 time=17 on-ground=false
+entity 18 e11 0.5 7.486466914296704 2.5 0 -0.5697293382859338 0 time=17 on-ground=false
+entity 18 e12 2.5 8.486466914296704 2.5 0 -0.5697293382859338 0 time=17 on-ground=false
+
+change 19 entities 2 1 -2 minecraft:air minecraft:chipped_anvil[facing=north]
+entity-removed 19 entities e5 discarded
+entity-order 19 entities e5 e6 e7 e8 e9 e10 e11 e12
+entity 19 e6 4.5 1.8767375760107687 -1.5 0 -0.5975347515202151 0 time=18 on-ground=false
+entity 19 e7 6.5 2.8767375760107705 -1.5 0 -0.5975347515202151 0 time=18 on-ground=false
+entity 19 e8 -5.5 3.8767375760107705 2.5 0 -0.5975347515202151 0 time=18 on-ground=false
+entity 19 e9 -3.5 4.87673757601077 2.5 0 -0.5975347515202151 0 time=18 on-ground=false
+entity 19 e10 -1.5 5.87673757601077 2.5 0 -0.5975347515202151 0 time=18 on-ground=false
+entity 19 e11 0.5 6.87673757601077 2.5 0 -0.5975347515202151 0 time=18 on-ground=false
+entity 19 e12 2.5 7.87673757601077 2.5 0 -0.5975347515202151 0 time=18 on-ground=false
+
+entity-order 20 entities e6 e7 e8 e9 e10 e11 e12
+entity 20 e6 4.5 1.2392028244905537 -1.5 0 -0.6247840564898108 0 time=19 on-ground=false
+entity 20 e7 6.5 2.2392028244905555 -1.5 0 -0.6247840564898108 0 time=19 on-ground=false
+entity 20 e8 -5.5 3.2392028244905555 2.5 0 -0.6247840564898108 0 time=19 on-ground=false
+entity 20 e9 -3.5 4.239202824490555 2.5 0 -0.6247840564898108 0 time=19 on-ground=false
+entity 20 e10 -1.5 5.239202824490555 2.5 0 -0.6247840564898108 0 time=19 on-ground=false
+entity 20 e11 0.5 6.239202824490555 2.5 0 -0.6247840564898108 0 time=19 on-ground=false
+entity 20 e12 2.5 7.239202824490555 2.5 0 -0.6247840564898108 0 time=19 on-ground=false
+
+change 21 entities 4 1 -2 minecraft:air minecraft:damaged_anvil[facing=east]
+entity-removed 21 entities e6 discarded
+entity-order 21 entities e6 e7 e8 e9 e10 e11 e12
+entity 21 e7 6.5 1.5744187680007447 -1.5 0 -0.6514883753600147 0 time=20 on-ground=false
+entity 21 e8 -5.5 2.5744187680007444 2.5 0 -0.6514883753600147 0 time=20 on-ground=false
+entity 21 e9 -3.5 3.5744187680007435 2.5 0 -0.6514883753600147 0 time=20 on-ground=false
+entity 21 e10 -1.5 4.5744187680007435 2.5 0 -0.6514883753600147 0 time=20 on-ground=false
+entity 21 e11 0.5 5.5744187680007435 2.5 0 -0.6514883753600147 0 time=20 on-ground=false
+entity 21 e12 2.5 6.5744187680007435 2.5 0 -0.6514883753600147 0 time=20 on-ground=false
+
+change 22 entities 6 1 -2 minecraft:air minecraft:anvil[facing=south]
+entity-removed 22 entities e7 discarded
+entity-order 22 entities e7 e8 e9 e10 e11 e12
+entity 22 e8 -5.5 1.8829303926407297 2.5 0 -0.6776586078528144 0 time=21 on-ground=false
+entity 22 e9 -3.5 2.882930392640729 2.5 0 -0.6776586078528144 0 time=21 on-ground=false
+entity 22 e10 -1.5 3.882930392640729 2.5 0 -0.6776586078528144 0 time=21 on-ground=false
+entity 22 e11 0.5 4.882930392640729 2.5 0 -0.6776586078528144 0 time=21 on-ground=false
+entity 22 e12 2.5 5.882930392640729 2.5 0 -0.6776586078528144 0 time=21 on-ground=false
+
+entity-order 23 entities e8 e9 e10 e11 e12
+entity 23 e8 -5.5 1.1652717847879153 2.5 0 -0.7033054356957581 0 time=22 on-ground=false
+entity 23 e9 -3.5 2.1652717847879144 2.5 0 -0.7033054356957581 0 time=22 on-ground=false
+entity 23 e10 -1.5 3.1652717847879144 2.5 0 -0.7033054356957581 0 time=22 on-ground=false
+entity 23 e11 0.5 4.165271784787914 2.5 0 -0.7033054356957581 0 time=22 on-ground=false
+entity 23 e12 2.5 5.165271784787914 2.5 0 -0.7033054356957581 0 time=22 on-ground=false
+
+change 24 entities -6 1 2 minecraft:air minecraft:chipped_anvil[facing=west]
+entity-removed 24 entities e8 discarded
+entity-order 24 entities e8 e9 e10 e11 e12
+entity 24 e9 -3.5 1.4219663490921564 2.5 0 -0.728439326981843 0 time=23 on-ground=false
+entity 24 e10 -1.5 2.4219663490921564 2.5 0 -0.728439326981843 0 time=23 on-ground=false
+entity 24 e11 0.5 3.4219663490921564 2.5 0 -0.728439326981843 0 time=23 on-ground=false
+entity 24 e12 2.5 4.421966349092156 2.5 0 -0.728439326981843 0 time=23 on-ground=false
+
+change 25 entities -4 1 2 minecraft:air minecraft:damaged_anvil[facing=north]
+entity-removed 25 entities e9 discarded
+entity-order 25 entities e9 e10 e11 e12
+entity 25 e10 -1.5 1.6535270221103133 2.5 0 -0.7530705404422061 0 time=24 on-ground=false
+entity 25 e11 0.5 2.653527022110313 2.5 0 -0.7530705404422061 0 time=24 on-ground=false
+entity 25 e12 2.5 3.653527022110313 2.5 0 -0.7530705404422061 0 time=24 on-ground=false
+
+change 26 entities -2 1 2 minecraft:air minecraft:anvil[facing=east]
+entity-removed 26 entities e10 discarded
+entity-order 26 entities e10 e11 e12
+entity 26 e11 0.5 1.8604564816681068 2.5 0 -0.777209129633362 0 time=25 on-ground=false
+entity 26 e12 2.5 2.860456481668107 2.5 0 -0.777209129633362 0 time=25 on-ground=false
+
+entity-order 27 entities e11 e12
+entity 27 e11 0.5 1.043247352034745 2.5 0 -0.8008649470406948 0 time=26 on-ground=false
+entity 27 e12 2.5 2.043247352034745 2.5 0 -0.8008649470406948 0 time=26 on-ground=false
+
+change 28 entities 0 1 2 minecraft:air minecraft:chipped_anvil[facing=south]
+entity-removed 28 entities e11 discarded
+entity-order 28 entities e11 e12
+entity 28 e12 2.5 1.2023824049940501 2.5 0 -0.8240476480998808 0 time=27 on-ground=false
+
+change 29 entities 2 1 2 minecraft:air minecraft:damaged_anvil[facing=west]
+entity-removed 29 entities e12 discarded
+entity-order 29 entities e12

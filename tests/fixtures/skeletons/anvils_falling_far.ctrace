@@ -1,0 +1,28 @@
+circuit-trace 2
+title Anvils fall thirteen to seventeen blocks, around the chance their first draw meets
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms falling_block
+area -6 0 -2 6 20 2
+ticks 100
+changes ordered
+entities observed
+rng observed
+
+at 0 set -5 0 0 minecraft:stone
+at 0 set -4 0 0 minecraft:stone
+at 0 set -3 0 0 minecraft:stone
+at 0 set -2 0 0 minecraft:stone
+at 0 set -1 0 0 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 1 set -4 14 0 minecraft:anvil[facing=north]
+at 1 set -2 15 0 minecraft:anvil[facing=north]
+at 1 set 0 16 0 minecraft:anvil[facing=north]
+at 1 set 2 17 0 minecraft:anvil[facing=north]
+at 1 set 4 18 0 minecraft:anvil[facing=north]

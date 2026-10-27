@@ -282,12 +282,14 @@ constexpr std::array reference_v4_mechanisms{
         "Gaps: durations come from Circuit's own stream, not the level's random sequence; no lightning, snow, "
         "ice or other effects of rain; compared through a protocol client, not harness traces."},
     MechanismEntry{"falling_block", l0_exact, l2_declared_deviation, harness_trace,
-        "Sand, red sand, gravel and concrete powders fall two ticks after they are placed or a neighbor changes, "
+        "Sand, red sand, gravel, concrete powders and anvils fall two ticks after they are placed or a neighbor changes, "
         "when the block below can be replaced; the falling block moves like an item in the air and becomes its "
         "block where it lands if that cell can be replaced and the one below cannot, or drops its item; concrete "
-        "powder becomes concrete when it falls into water (falling_drop, falling_column, falling_onto); in machines "
-        "they ride slime, fall off ledges and from pulled supports and land on moving pistons (gravity_machines). Gaps: "
-        "concrete powder beside water, anvils, pointed dripstone, scaffolding and suspicious blocks; falling "
+        "powder becomes concrete when it falls into water (falling_drop, falling_column, falling_onto); an anvil "
+        "wears as it lands by its own random, after more than a block, and is gone worn past damaged, its fall the "
+        "version's (anvils_falling, anvils_falling_more, anvils_falling_far); "
+        "in machines they ride slime, fall off ledges and from pulled supports and land on moving pistons "
+        "(gravity_machines). Gaps: concrete powder beside water, scaffolding and suspicious blocks; falling "
         "blocks hurt nothing."},
     MechanismEntry{"tnt", l0_exact, l2_declared_deviation, harness_trace,
         "TNT with a redstone signal from a neighbor when it is placed, moved in by a piston or updated becomes "
@@ -511,7 +513,7 @@ constexpr std::array reference_v4_mechanisms{
         "player's seed, refusals for levels and lapis, enchanting a sword and a book). Gaps: no "
         "special recipes or recipe book; a grindstone's experience draws from the level random, so the client "
         "scenario checks only its range (client/furnace_xp); an anvil wears by a random of Circuit's own (the official "
-        "servers' is unseeded) and anvils do not fall; a new player's enchantment seed and the one after enchanting "
+        "servers' is unseeded); a new player's enchantment seed and the one after enchanting "
         "are Circuit's own; trim materials of 1.21.5 "
         "and later from the vanilla materials' items; no harness traces of menus."},
     MechanismEntry{"survival_actions", l0_exact, l2_declared_deviation, documented_behavior,
@@ -659,20 +661,21 @@ constexpr std::array game_rules_1_21_4{
 // every pair). What differs is the bundles' own: content, component schema,
 // registries and game rules (fire acts away from players only with 1.21.8's
 // allowFireTicksAwayFromPlayer), and where random ticks run
-// (RandomTickRange), when lava reaches entities (LavaContact) and how
-// experience orbs come to rest (OrbMotion), which the official servers
-// showed differ.
+// (RandomTickRange), when lava reaches entities (LavaContact), how
+// experience orbs come to rest (OrbMotion) and the fall an anvil wears by
+// (FallDistance), which the official servers showed differ.
 constexpr RuleSet rules_1_21_8{"circuit-reference-rules-v12", RngPolicy::level_random_in_target_order, reference_v4_mechanisms,
                                "circuit-blocks-1", "harness traces of 1.21.8 (tests/fixtures/harness)", RandomTickRange::entity_ticking,
-                               LavaContact::after_move, OrbMotion::settling};
+                               LavaContact::after_move, OrbMotion::settling, FallDistance::with_landing};
 constexpr RuleSet rules_1_21_4{"circuit-reference-rules-v12", RngPolicy::level_random_in_target_order, reference_v4_mechanisms,
                                "circuit-blocks-1",
                                "harness traces of 1.21.4 (tests/fixtures/harness-1.21.4), each identical to its 1.21.8 recording "
                                "(fire's with 1.21.8's allowFireTicksAwayFromPlayer on) but those of entities in lava, which "
                                "reaches them at the start of their ticks, and of experience orbs, which bounce on the ground "
-                               "and drag in double precision; random ticks run only near players (observed on the official "
-                               "1.21.4 server)",
-                               RandomTickRange::block_ticking_near_player, LavaContact::tick_start, OrbMotion::bouncing};
+                               "and drag in double precision, and of anvils, which wear by their fall before landing; random "
+                               "ticks run only near players (observed on the official 1.21.4 server)",
+                               RandomTickRange::block_ticking_near_player, LavaContact::tick_start, OrbMotion::bouncing,
+                               FallDistance::before_landing};
 
 constexpr std::array bundles{
     VersionBundle{

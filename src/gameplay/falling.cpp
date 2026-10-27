@@ -2,13 +2,14 @@
 #include "internal.hpp"
 #include <circuit/gameplay/items.hpp>
 #include <array>
+#include <cmath>
 #include <string>
 #include <string_view>
 #include <vector>
 
 // Falling blocks, as both official servers run them (checked against their
-// traces; minecraft.wiki "Falling Block"). Sand, red sand, gravel and the
-// concrete powders check two ticks after they are placed or a neighbor
+// traces; minecraft.wiki "Falling Block", "Anvil"). Sand, red sand, gravel,
+// the concrete powders and anvils check two ticks after they are placed or a neighbor
 // changes whether the cell below is free (a block that can be replaced:
 // air, water, grass, snow and the others of `block_replaceable`); if it is, the
 // block becomes air and a falling block 0.98 wide and tall starts at the
@@ -16,6 +17,7 @@
 // 2% of its speed. When it lands (or, for concrete powder, reaches water)
 // it becomes its block again where its bottom center is, if that cell can be
 // replaced and the cell below cannot; otherwise it breaks and drops its item.
+// An anvil may wear as it lands (anvils_falling).
 namespace circuit::gameplay::detail {
 namespace {
 using contracts::Vec3;
@@ -25,7 +27,7 @@ constexpr double gravity = 0.04;
 constexpr double size = static_cast<double>(0.98f);
 constexpr std::uint16_t drop_delay = 10;
 
-enum class Gravity : std::uint8_t { none, falls, concrete_powder };
+enum class Gravity : std::uint8_t { none, falls, concrete_powder, anvil };
 
 // Per registry block: whether it falls, and whether it can be replaced.
 struct Kinds {
@@ -50,6 +52,7 @@ const Kinds& kinds() {
             if (const auto at = name.find('@'); at != std::string_view::npos) name = name.substr(0, at);
             if (name == "sand" || name == "red_sand" || name == "gravel") out.gravity[b] = Gravity::falls;
             if (name.ends_with("_concrete_powder")) out.gravity[b] = Gravity::concrete_powder;
+            if (name == "anvil" || name == "chipped_anvil" || name == "damaged_anvil") out.gravity[b] = Gravity::anvil;
             for (const auto r : replaced)
                 if (name == r) out.replaceable[b] = true;
         }
@@ -130,6 +133,26 @@ void run_falling_block(RuleContext& ctx, EntityId id, Entity& e) {
     v.y -= gravity;
     Vec3 moved{};
     e.on_ground = move_entity(ctx, p, v, size, size, &e, &moved);
+    // Landing after a fall of more than a block, an anvil wears one stage
+    // by a draw of its own random below 5%, and 5% more for each block
+    // beyond the first (the fall less one, rounded up): worn past damaged,
+    // it is gone without a trace. The fall is the version's (FallDistance):
+    // with the landing move in double precision, or before it in single.
+    bool gone = false;
+    const bool with_landing = ctx.bundle().rules->falls == contracts::FallDistance::with_landing;
+    const double fallen = with_landing && moved.y < 0.0 ? e.fall_distance - moved.y : e.fall_distance;
+    if (e.on_ground && fallen > 0.0 && gravity_of(e.carried) == Gravity::anvil) {
+        const auto beyond = static_cast<std::int32_t>(with_landing ? std::ceil(fallen - 1.0) : std::ceil(static_cast<float>(fallen) - 1.0f));
+        if (beyond > 0) {
+            auto r = own_random(e);
+            const bool wears = r.next_float() < 0.05f + static_cast<float>(beyond) * 0.05f;
+            keep_random(e, r);
+            if (wears) {
+                if (const auto next = worn_anvil(e.carried)) e.carried = *next;
+                else gone = true;
+            }
+        }
+    }
     entity_fell(ctx, e, p, moved, e.on_ground);
     const auto cell = contracts::block_of(p);
     const auto here = ctx.block(cell);
@@ -159,6 +182,10 @@ void run_falling_block(RuleContext& ctx, EntityId id, Entity& e) {
             return;
         }
         self->velocity = {self->velocity.x * 0.98, self->velocity.y * 0.98, self->velocity.z * 0.98};
+        return;
+    }
+    if (gone) {
+        remove(RemovalReason::despawned);
         return;
     }
     // Landed: back to its block where its bottom center is, when that cell

@@ -171,8 +171,9 @@ Forged forge(const GameData& data, const ItemStack& left, const ItemStack& right
     return out;
 }
 
-// The anvil a used one becomes: anvil, chipped, damaged, then none.
-std::optional<BlockState> worn(BlockState s) {
+} // namespace
+
+std::optional<BlockState> worn_anvil(BlockState s) {
     const auto state = physics::registry_state_of(s);
     const auto block = state ? registry::block_of(*state) : std::nullopt;
     if (!block) return std::nullopt;
@@ -184,8 +185,6 @@ std::optional<BlockState> worn(BlockState s) {
             if (const auto worn_state = registry::state_of(b, registry::properties(*state))) return BlockState::registered(*worn_state);
     return std::nullopt;
 }
-
-} // namespace
 
 void set_anvil_result(RuleContext& ctx, PlayerInventory& inv, bool creative) {
     const auto* data = ctx.data();
@@ -232,7 +231,7 @@ void use_anvil(RuleContext& ctx, PlayerInventory& inv, std::optional<BlockPos> a
                                    static_cast<std::uint64_t>(static_cast<std::uint32_t>(at->y)),
                                    static_cast<std::uint64_t>(static_cast<std::uint32_t>(at->z)), 0x414E56494CULL});
         if (static_cast<float>(chance.bounded(1u << 24)) / static_cast<float>(1u << 24) < 0.12f) {
-            if (const auto next = worn(ctx.block(*at))) set_block_quiet(ctx, *at, *next);
+            if (const auto next = worn_anvil(ctx.block(*at))) set_block_quiet(ctx, *at, *next);
             else set_block(ctx, *at, blocks::air());
         }
     }

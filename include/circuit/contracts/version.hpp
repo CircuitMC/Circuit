@@ -98,6 +98,17 @@ enum class OrbMotion : std::uint8_t {
     bouncing,
 };
 
+// The fall a falling anvil wears by (observed on both official servers,
+// 2026-10-26, anvils_falling_far).
+enum class FallDistance : std::uint8_t {
+    // Every downward move counts, the landing one too, in double precision
+    // (1.21.8).
+    with_landing,
+    // The downward moves before the landing tick count, in single precision
+    // (1.21.4).
+    before_landing,
+};
+
 // A level with neither players nor forced chunks stops ticking its entities
 // and block entities after this many ticks (both versions; minecraft.wiki
 // "Chunk", observed on both official servers).
@@ -116,6 +127,7 @@ struct RuleSet {
     RandomTickRange random_ticks{};
     LavaContact lava{};
     OrbMotion orbs{};
+    FallDistance falls{};
 };
 
 enum class GameRuleType : std::uint8_t { boolean, integer };

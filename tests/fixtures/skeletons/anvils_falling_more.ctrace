@@ -1,0 +1,50 @@
+circuit-trace 2
+title Anvils fall from two to thirteen blocks and wear by chance as they land
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms falling_block
+area -7 0 -3 7 16 3
+ticks 100
+changes ordered
+entities observed
+rng observed
+
+at 0 set -6 0 -2 minecraft:stone
+at 0 set -6 0 2 minecraft:stone
+at 0 set -5 0 -2 minecraft:stone
+at 0 set -5 0 2 minecraft:stone
+at 0 set -4 0 -2 minecraft:stone
+at 0 set -4 0 2 minecraft:stone
+at 0 set -3 0 -2 minecraft:stone
+at 0 set -3 0 2 minecraft:stone
+at 0 set -2 0 -2 minecraft:stone
+at 0 set -2 0 2 minecraft:stone
+at 0 set -1 0 -2 minecraft:stone
+at 0 set -1 0 2 minecraft:stone
+at 0 set 0 0 -2 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 1 0 -2 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 2 0 -2 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 3 0 -2 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 4 0 -2 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 5 0 -2 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 6 0 -2 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 1 set -6 3 -2 minecraft:anvil[facing=north]
+at 1 set -4 4 -2 minecraft:chipped_anvil[facing=east]
+at 1 set -2 5 -2 minecraft:damaged_anvil[facing=south]
+at 1 set 0 6 -2 minecraft:anvil[facing=west]
+at 1 set 2 7 -2 minecraft:chipped_anvil[facing=north]
+at 1 set 4 8 -2 minecraft:damaged_anvil[facing=east]
+at 1 set 6 9 -2 minecraft:anvil[facing=south]
+at 1 set -6 10 2 minecraft:chipped_anvil[facing=west]
+at 1 set -4 11 2 minecraft:damaged_anvil[facing=north]
+at 1 set -2 12 2 minecraft:anvil[facing=east]
+at 1 set 0 13 2 minecraft:chipped_anvil[facing=south]
+at 1 set 2 14 2 minecraft:damaged_anvil[facing=west]

@@ -4047,7 +4047,8 @@ int main() {
         const PlayerKey alex{4, 2};
         const BlockPos anvil{0, 0, 0};
         Sim s(bundle(), 7, 2, data);
-        s.tick({place(anvil, registry_block("anvil", {{"facing", "north"}}))});
+        // On a floor: an anvil falls without one.
+        s.tick({place({0, -1, 0}, blocks::stone()), place(anvil, registry_block("anvil", {{"facing", "north"}}))});
         // Anvil window: 0 and 1 the inputs, 2 the result, 3-29 the main inventory, 30-38 the hotbar.
         const auto click = [&](std::int16_t slot, std::uint8_t button = 0, std::uint8_t mode = 1, bool creative = false) {
             return ContainerClick{alex, std::optional(anvil), slot, button, mode, creative, at_block(0.5, 2, 0.5), {}};

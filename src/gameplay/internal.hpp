@@ -415,6 +415,8 @@ void use_anvil(RuleContext& ctx, PlayerInventory& inv, std::optional<BlockPos> a
 // Whether a typed name may name an item: UTF-8 without control characters
 // or the section sign, of at most contracts::max_item_name UTF-16 code units.
 bool valid_item_name(std::string_view name);
+// The anvil a worn one becomes: anvil, chipped, damaged, then none.
+std::optional<BlockState> worn_anvil(BlockState s);
 
 // ---- enchanting tables (enchanting.cpp) ----
 // Sets an enchanting table window's offers from its item, the bookshelves
