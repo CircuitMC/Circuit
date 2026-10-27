@@ -154,6 +154,12 @@ struct GameData {
     // shulker box drops its contents beside it.
     std::function<std::vector<contracts::ItemStack>(const contracts::ComponentPatch&)> container_of;
     std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, std::span<const contracts::ItemStack>)> with_container;
+    // A component holding one integer (map_id, map_post_processing): its
+    // value, and components with it set, or removed (nullopt); set by the
+    // server. Without them empty maps and cartography tables do nothing.
+    std::function<std::optional<std::int32_t>(const contracts::ComponentPatch&, std::string_view)> int_component;
+    std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, std::string_view, std::optional<std::int32_t>)>
+        with_int_component;
     // A stack's name as a player sees it (in English): its custom name, else
     // its potion's or its item's name; set by the server from the language
     // file of the official jar. Without it the rules name items by their id.

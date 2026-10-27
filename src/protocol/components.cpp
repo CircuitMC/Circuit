@@ -1051,6 +1051,40 @@ std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_potio
 }
 
 
+std::optional<std::int32_t> ComponentCodec::varint_of(const contracts::ComponentPatch& patch, std::string_view component) const {
+    const auto type = type_id(component);
+    if (patch.empty() || patch.protocol() != protocol() || !type) return std::nullopt;
+    for (const auto& a : patch.added())
+        if (a.type == *type) {
+            Reader r(a.value);
+            if (const auto v = r.varint()) return *v;
+        }
+    return std::nullopt;
+}
+
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_varint(const contracts::ComponentPatch& base,
+                                                                                  std::string_view component,
+                                                                                  std::optional<std::int32_t> value,
+                                                                                  const ComponentContext& ctx) const {
+    const auto type = type_id(component);
+    if (!type) return std::unexpected(std::format("no {} component", component));
+    std::vector<contracts::ComponentPatch::Added> added;
+    for (const auto& a : base.added())
+        if (a.type != *type) added.push_back(a);
+    if (value) {
+        Writer w;
+        w.varint(*value);
+        auto canonical = canonical_value(*type, w.bytes(), ctx);
+        if (!canonical) return std::unexpected(canonical.error());
+        added.push_back({*type, std::move(*canonical)});
+        std::ranges::sort(added, {}, &contracts::ComponentPatch::Added::type);
+    }
+    std::vector<std::uint16_t> removed;
+    for (const auto r : base.removed())
+        if (r != *type) removed.push_back(r);
+    return contracts::ComponentPatch::make(protocol(), std::move(added), std::move(removed), base.typed());
+}
+
 std::int32_t ComponentCodec::repair_cost_of(const contracts::ComponentPatch& patch) const {
     const auto type = type_id("repair_cost");
     if (patch.empty() || patch.protocol() != protocol() || !type) return 0;

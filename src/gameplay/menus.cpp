@@ -31,6 +31,7 @@ bool offhand_item(std::uint16_t item) { return item == items::shield; }
 // A player slot by its slot-record number: the inventory, the slots of an
 // open workstation's window, or the ender inventory.
 ItemStack& player_slot(PlayerInventory& inv, std::uint8_t index) {
+    if (index >= contracts::cartography_first) return inv.cartography[index - contracts::cartography_first];
     if (index >= contracts::ender_first) return inv.ender[index - contracts::ender_first];
     if (index >= contracts::enchant_first) return inv.enchant[index - contracts::enchant_first];
     if (index >= contracts::anvil_first) return inv.anvil[index - contracts::anvil_first];
@@ -254,6 +255,60 @@ struct CraftingGrid {
 constexpr CraftingGrid own_grid{0, 2};
 constexpr CraftingGrid table_grid{contracts::table_first, 3};
 
+// A cartography table (both official servers; client/maps): its map slot
+// takes filled maps, the slot beside it paper, empty maps and glass panes.
+bool cartography_takes(std::size_t slot, std::uint16_t item) {
+    return slot == 0 ? item == items::filled_map : item == items::paper || item == items::map || item == items::glass_pane;
+}
+
+// What a cartography table makes of a filled map whose data exists: with an
+// empty map two of it; with paper, while it is unlocked and below the
+// largest scale, one of it marked to be zoomed; with a glass pane, while
+// unlocked, one marked to be locked (map_post_processing 1 and 0). The
+// marked map becomes a new map as it is taken.
+constexpr std::int32_t map_locks = 0, map_zooms = 1;
+void set_cartography_result(RuleContext& ctx, PlayerInventory& inv) {
+    const auto* data = ctx.data();
+    const auto& map = inv.cartography[0];
+    const auto& extra = inv.cartography[1];
+    ItemStack result;
+    if (data && data->int_component && data->with_int_component && map.item == items::filled_map && !map.empty() && !extra.empty()) {
+        const auto id = data->int_component(map.components, "map_id");
+        const auto* found = id ? ctx.peek_map(*id) : nullptr;
+        const auto marked = [&](std::int32_t how) {
+            auto out = map;
+            out.count = 1;
+            if (const auto components = data->with_int_component(map.components, "map_post_processing", how)) out.components = *components;
+            else out = {};
+            return out;
+        };
+        if (found && extra.item == items::map) {
+            result = map;
+            result.count = 2;
+        } else if (found && extra.item == items::paper && !found->locked && found->scale < max_map_scale) {
+            result = marked(map_zooms);
+        } else if (found && extra.item == items::glass_pane && !found->locked) {
+            result = marked(map_locks);
+        }
+    }
+    if (inv.cartography[2] == result) return;
+    inv.cartography[2] = result;
+    record_slot(ctx, inv, contracts::cartography_first + 2);
+}
+
+// The map a marked result becomes as it is taken: the next map's id (which
+// use_cartography then adds) and no mark.
+ItemStack taken_cartography_result(RuleContext& ctx, const ItemStack& result) {
+    const auto* data = ctx.data();
+    if (!data || !data->int_component || !data->with_int_component || !data->int_component(result.components, "map_post_processing"))
+        return result;
+    auto out = result;
+    auto components = data->with_int_component(result.components, "map_post_processing", std::nullopt);
+    if (components) components = data->with_int_component(*components, "map_id", ctx.last_map_id() + 1);
+    if (components) out.components = *components;
+    return out;
+}
+
 // One menu: a list of slots, each a container slot or a player slot.
 class Menu {
 public:
@@ -265,6 +320,7 @@ public:
         loom_ = parts.size() == 1 && is_loom(ctx.block(parts[0]));
         anvil_ = parts.size() == 1 && is_anvil(ctx.block(parts[0]));
         enchant_ = parts.size() == 1 && is_enchanting_table(ctx.block(parts[0]));
+        cartography_ = parts.size() == 1 && is_cartography_table(ctx.block(parts[0]));
         const bool ender = parts.size() == 1 && ctx.block(parts[0]).is(BlockType::ender_chest);
         if (parts.size() == 1) block_ = parts[0];
         if (ender) {
@@ -272,6 +328,9 @@ public:
             // works as a chest's.
             for (std::uint8_t i = 0; i < contracts::ender_slots; ++i)
                 slots_.push_back({{}, static_cast<std::uint8_t>(contracts::ender_first + i), false});
+        } else if (cartography_) {
+            for (std::uint8_t i = 0; i < contracts::cartography_slots; ++i)
+                slots_.push_back({{}, static_cast<std::uint8_t>(contracts::cartography_first + i), false});
         } else if (enchant_) {
             for (std::uint8_t i = 0; i < contracts::enchant_slots; ++i)
                 slots_.push_back({{}, static_cast<std::uint8_t>(contracts::enchant_first + i), false});
@@ -335,6 +394,7 @@ public:
             if (s.index == contracts::cutter_first) cutter_input_changed(ctx_, inv_, before);
             if (s.index >= contracts::smith_first && s.index < contracts::smith_first + 3) set_smith_result(ctx_, inv_);
             if (s.index >= contracts::grind_first && s.index < contracts::grind_first + 2) set_grind_result(ctx_, inv_);
+            if (s.index >= contracts::cartography_first && s.index < contracts::cartography_first + 2) set_cartography_result(ctx_, inv_);
             if (s.index >= contracts::anvil_first && s.index < contracts::anvil_first + 2) set_anvil_result(ctx_, inv_, creative_);
             if (enchant_ && s.index >= contracts::enchant_first && s.index < contracts::enchant_first + 2) set_enchant_offers(ctx_, inv_, *block_);
             if (s.index >= contracts::loom_first && s.index < contracts::loom_first + 3) {
@@ -364,9 +424,9 @@ public:
     // The crafting result of the own window or a crafting table: taking
     // from it crafts (see click_result); nothing is placed in it.
     [[nodiscard]] bool result(std::size_t i) const {
-        return ((own_ || table_) && i == 0) || (cutter_ && i == 1) || ((smith_ || loom_) && i == 3) || ((grind_ || anvil_) && i == 2);
+        return ((own_ || table_) && i == 0) || (cutter_ && i == 1) || ((smith_ || loom_) && i == 3) || ((grind_ || anvil_ || cartography_) && i == 2);
     }
-    [[nodiscard]] std::size_t result_slot() const { return smith_ || loom_ ? 3 : grind_ || anvil_ ? 2 : cutter_ ? 1 : 0; }
+    [[nodiscard]] std::size_t result_slot() const { return smith_ || loom_ ? 3 : grind_ || anvil_ || cartography_ ? 2 : cutter_ ? 1 : 0; }
     [[nodiscard]] bool may_place(std::size_t i, ItemStack stack) const {
         if (result(i)) return false;
         if (own_ && i >= 5 && i <= 8) return armor_slot(stack.item) == i;
@@ -378,6 +438,7 @@ public:
         if (brewing_ && i < 5) return brewing_slot_takes(ctx_.data(), i, stack.item);
         if (smith_ && i < 3) return smith_takes(ctx_, i, stack.item);
         if (grind_ && i < 2) return grinds(ctx_, stack);
+        if (cartography_ && i < 2) return cartography_takes(i, stack.item);
         if (loom_ && i < 3) return loom_takes(i, stack.item);
         // An enchanting table's lapis slot takes lapis lazuli.
         if (enchant_ && i == 1) return stack.item == items::lapis_lazuli;
@@ -497,6 +558,16 @@ public:
             else if (to) moved = move_into(stack, *to, *to + 1, false);
             else if (i < 31) moved = move_into(stack, 31, 40, false);
             else moved = move_into(stack, 4, 31, false);
+        } else if (cartography_) {
+            // The inputs go to the inventory from its start; from the
+            // inventory a filled map goes into the map slot, paper, empty maps
+            // and glass panes beside it, else nowhere; the rest between the
+            // main inventory and the hotbar.
+            if (i < 2) moved = move_into(stack, 3, 39, false);
+            else if (cartography_takes(0, stack.item)) moved = move_into(stack, 0, 1, false);
+            else if (cartography_takes(1, stack.item)) moved = move_into(stack, 1, 2, false);
+            else if (i < 30) moved = move_into(stack, 30, 39, false);
+            else moved = move_into(stack, 3, 30, false);
         } else if (grind_) {
             // The inputs go to the inventory from its start; from the
             // inventory an item the grindstone takes goes into the upper
@@ -629,11 +700,16 @@ public:
     [[nodiscard]] bool loom() const { return loom_; }
     [[nodiscard]] bool anvil() const { return anvil_; }
     [[nodiscard]] bool enchant() const { return enchant_; }
+    [[nodiscard]] bool cartography() const { return cartography_; }
     [[nodiscard]] bool creative() const { return creative_; }
     [[nodiscard]] CraftingGrid grid() const { return table_ ? table_grid : own_grid; }
     // The window slots of the main inventory and the hotbar.
-    [[nodiscard]] std::size_t inventory_first() const { return smith_ || loom_ ? 4 : grind_ || anvil_ ? 3 : cutter_ || enchant_ ? 2 : table_ ? 10 : 9; }
-    [[nodiscard]] std::size_t inventory_end() const { return smith_ || loom_ ? 40 : grind_ || anvil_ ? 39 : cutter_ || enchant_ ? 38 : table_ ? 46 : 45; }
+    [[nodiscard]] std::size_t inventory_first() const {
+        return smith_ || loom_ ? 4 : grind_ || anvil_ || cartography_ ? 3 : cutter_ || enchant_ ? 2 : table_ ? 10 : 9;
+    }
+    [[nodiscard]] std::size_t inventory_end() const {
+        return smith_ || loom_ ? 40 : grind_ || anvil_ || cartography_ ? 39 : cutter_ || enchant_ ? 38 : table_ ? 46 : 45;
+    }
     [[nodiscard]] PlayerInventory& inventory() const { return inv_; }
 
 private:
@@ -656,6 +732,7 @@ private:
     bool loom_{};
     bool anvil_{};
     bool enchant_{};
+    bool cartography_{};
     bool brewing_{};
     bool shulker_{};
     bool creative_{};
@@ -772,6 +849,25 @@ void use_grind(RuleContext& ctx, PlayerInventory& inv, std::optional<BlockPos> a
 
 // A loom's result was taken: the banner and the dye each give one item
 // (the pattern item stays), and the result follows what is left.
+// A cartography table's result was taken: a marked map's new map is added
+// (the id taken_cartography_result gave it), and one of each input is used.
+void use_cartography(RuleContext& ctx, PlayerInventory& inv) {
+    const auto* data = ctx.data();
+    if (data && data->int_component) {
+        const auto how = data->int_component(inv.cartography[2].components, "map_post_processing");
+        const auto id = data->int_component(inv.cartography[0].components, "map_id");
+        if (const auto* map = how && id ? ctx.peek_map(*id) : nullptr) ctx.add_map(*how == map_zooms ? zoomed_map(*map) : locked_map(*map));
+    }
+    for (std::size_t k = 0; k < 2; ++k) {
+        auto& slot = inv.cartography[k];
+        if (slot.empty()) continue;
+        slot.count = static_cast<std::uint8_t>(slot.count - 1);
+        if (slot.count == 0) slot = {};
+        record_slot(ctx, inv, static_cast<std::uint8_t>(contracts::cartography_first + k));
+    }
+    set_cartography_result(ctx, inv);
+}
+
 void use_loom(RuleContext& ctx, PlayerInventory& inv) {
     for (std::size_t k = 0; k < 2; ++k) {
         auto& slot = inv.loom[k];
@@ -796,9 +892,12 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
         else if (menu.grind()) use_grind(ctx, inv, c.container);
         else if (menu.anvil()) use_anvil(ctx, inv, c.container, c.creative);
         else if (menu.loom()) use_loom(ctx, inv);
+        else if (menu.cartography()) use_cartography(ctx, inv);
         else if (menu.cutter()) use_cutter(ctx, inv);
         else use_grid(ctx, inv, menu.grid(), c);
     };
+    // A cartography table's marked map becomes the new map it makes.
+    const auto taken = [&](const ItemStack& s) { return menu.cartography() ? taken_cartography_result(ctx, s) : s; };
     const auto result = made_now();
     if (result.empty()) return;
     switch (c.mode) {
@@ -806,7 +905,7 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
         if (c.button > 1) return;
         auto carried = menu.cursor();
         if (carried.empty()) {
-            carried = result;
+            carried = taken(result);
         } else if (carried.same_kind(result) && carried.count + result.count <= items::max_stack(carried)) {
             carried.count = static_cast<std::uint8_t>(carried.count + result.count);
         } else {
@@ -819,7 +918,7 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
     case 1: { // into the inventory, hotbar first from its end, as long as the result stays the same item
         if (c.button > 1) return;
         for (auto made = made_now(); !made.empty() && made.item == result.item; made = made_now()) {
-            auto stack = made;
+            auto stack = taken(made);
             if (!menu.move_into(stack, menu.inventory_first(), menu.inventory_end(), true)) return;
             use();
             // What did not fit drops.
@@ -831,7 +930,7 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
         if (!(c.button < 9 || c.button == 40)) return;
         const std::uint8_t slot = c.button == 40 ? contracts::offhand_slot : static_cast<std::uint8_t>(contracts::hotbar_first + c.button);
         if (!inv.slots[slot].empty()) return;
-        inv.slots[slot] = result;
+        inv.slots[slot] = taken(result);
         record_slot(ctx, inv, slot);
         use();
         return;
@@ -839,7 +938,7 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
     case 4: { // thrown; with button 1, again while the result stays the same item
         if (!menu.cursor().empty()) return;
         for (auto made = made_now(); !made.empty() && made.item == result.item; made = made_now()) {
-            throw_item(ctx, c.drop_position, c.drop_velocity, made);
+            throw_item(ctx, c.drop_position, c.drop_velocity, taken(made));
             use();
             if (c.button != 1) return;
         }
@@ -870,7 +969,7 @@ contracts::Result<std::vector<BlockPos>> menu_parts(RuleContext& ctx, std::optio
     if (!container) return std::vector<BlockPos>{};
     const auto s = ctx.block(*container);
     if (!s.is_unloaded()
-        && (is_crafting_table(s) || is_stonecutter(s) || is_smithing_table(s) || is_grindstone(s) || is_loom(s) || is_anvil(s) || is_enchanting_table(s)
+        && (is_crafting_table(s) || is_stonecutter(s) || is_smithing_table(s) || is_grindstone(s) || is_loom(s) || is_anvil(s) || is_enchanting_table(s) || is_cartography_table(s)
             || s.is(BlockType::ender_chest)))
         return std::vector<BlockPos>{*container};
     if (s.is_unloaded() || !is_container(s.type())) return std::unexpected(contracts::ErrorCode::not_a_container);
@@ -1227,7 +1326,8 @@ contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const cont
                                 static_cast<std::uint8_t>(contracts::grind_first + 1), contracts::loom_first,
                                 static_cast<std::uint8_t>(contracts::loom_first + 1), static_cast<std::uint8_t>(contracts::loom_first + 2),
                                 contracts::anvil_first, static_cast<std::uint8_t>(contracts::anvil_first + 1), contracts::enchant_first,
-                                static_cast<std::uint8_t>(contracts::enchant_first + 1)}) {
+                                static_cast<std::uint8_t>(contracts::enchant_first + 1), contracts::cartography_first,
+                                static_cast<std::uint8_t>(contracts::cartography_first + 1)}) {
             auto& held = player_slot(inv, slot);
             const auto input = held;
             if (input.empty()) continue;
@@ -1239,6 +1339,7 @@ contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const cont
         set_cutter_result(ctx, inv);
         set_smith_result(ctx, inv);
         set_grind_result(ctx, inv);
+        set_cartography_result(ctx, inv);
         inv.loom_pattern = -1;
         set_loom_result(ctx, inv);
         // An anvil's typed name goes with its window, and an enchanting
@@ -1296,6 +1397,7 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
         for (std::uint8_t k = 0; k < 3; ++k) order.push_back(static_cast<std::uint8_t>(contracts::loom_first + k));
         for (std::uint8_t k = 0; k < 2; ++k) order.push_back(static_cast<std::uint8_t>(contracts::anvil_first + k));
         for (std::uint8_t k = 0; k < 2; ++k) order.push_back(static_cast<std::uint8_t>(contracts::enchant_first + k));
+        for (std::uint8_t k = 0; k < 2; ++k) order.push_back(static_cast<std::uint8_t>(contracts::cartography_first + k));
         std::size_t n = 0;
         const auto drop = [&](ItemStack stack) {
             if (in_world) spawn_dropped(ctx, cell, c.position, death_drop_velocity(n++), stack, 40);
@@ -1313,6 +1415,7 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
         set_cutter_result(ctx, inv);
         set_smith_result(ctx, inv);
         set_grind_result(ctx, inv);
+        set_cartography_result(ctx, inv);
         inv.loom_pattern = -1;
         set_loom_result(ctx, inv);
         inv.anvil_name.clear();
@@ -1363,6 +1466,10 @@ bool is_grindstone(BlockState s) {
 }
 bool is_loom(BlockState s) {
     static const auto block = find_registry_block("loom");
+    return of_block(s, block);
+}
+bool is_cartography_table(BlockState s) {
+    static const auto block = find_registry_block("cartography_table");
     return of_block(s, block);
 }
 bool is_enchanting_table(BlockState s) {

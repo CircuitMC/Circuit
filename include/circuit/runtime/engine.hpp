@@ -128,6 +128,8 @@ public:
     [[nodiscard]] contracts::Result<std::optional<gameplay::Entity>> entity(contracts::DimensionId level, contracts::EntityId id) const;
     // A player's inventory; nullopt when the player holds nothing.
     [[nodiscard]] contracts::Result<std::optional<gameplay::PlayerInventory>> player(contracts::PlayerKey key) const;
+    // A map's data, valid while the view is (null for an id no map has).
+    [[nodiscard]] contracts::Result<const gameplay::MapData*> map(std::int32_t id) const;
 
 private:
     friend class Engine;

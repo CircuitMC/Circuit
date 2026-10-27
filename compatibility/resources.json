@@ -5076,6 +5076,15 @@
           "the sounds"
         ],
         "note": "Composts by its items' chances and gives bone meal as both official servers do (composters_items, composter_use, client/composter)"
+      },
+      "cartography_table": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/maps",
+          "placement/official_items"
+        ],
+        "note": "Placed by players as both official servers place it; its window copies, zooms and locks filled maps as both official servers do (client/maps)"
       }
     },
     "item": {
@@ -6006,6 +6015,25 @@
         "cases": [
           "placement/official_items"
         ]
+      },
+      "map": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/maps"
+        ],
+        "note": "Used, it becomes a filled map of a new map as on both official servers (with the official data packs)"
+      },
+      "filled_map": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/maps"
+        ],
+        "deviations": [
+          "filled maps do not explore: their colors stay unexplored, and banners and item frames do not show on them"
+        ],
+        "note": "Its map's data reaches the players carrying it, with their markers, as on both official servers"
       }
     },
     "entity": {
@@ -6368,6 +6396,16 @@
         ],
         "deviations": [
           "sent for composters only; other level events (sounds and particles of other blocks) are not sent"
+        ]
+      },
+      "play/clientbound/map_item_data": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/maps"
+        ],
+        "deviations": [
+          "the colors are those of unexplored maps; banner and frame markers are never sent"
         ]
       }
     }

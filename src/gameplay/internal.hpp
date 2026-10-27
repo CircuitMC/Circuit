@@ -646,6 +646,8 @@ std::optional<BlockState> with_water(BlockState s, bool wet);
 bool pour_fluid(RuleContext& ctx, BlockPos pos, bool lava);
 std::optional<std::uint16_t> take_fluid(RuleContext& ctx, BlockPos pos);
 contracts::Result<std::function<void()>> plan_use_item(RuleContext& ctx, const contracts::PlayerUseItem& c);
+// An empty map used: a new map and its filled map (cartography.cpp).
+contracts::Result<std::function<void()>> plan_use_empty_map(RuleContext& ctx, const contracts::PlayerUseItem& c);
 // Lava's fluid tick, and a change of it or beside it (hardening or a fluid
 // tick; nature.cpp).
 void tick_lava(RuleContext& ctx, BlockPos pos, BlockState state);

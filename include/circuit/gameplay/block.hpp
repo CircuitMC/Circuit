@@ -440,6 +440,7 @@ bool is_stonecutter(BlockState s);
 bool is_smithing_table(BlockState s);
 bool is_grindstone(BlockState s);
 bool is_loom(BlockState s);
+bool is_cartography_table(BlockState s);
 // An anvil, chipped or damaged.
 bool is_anvil(BlockState s);
 bool is_enchanting_table(BlockState s);

@@ -132,6 +132,13 @@ public:
     [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_container(
         const contracts::ComponentPatch& base, std::span<const contracts::ItemStack> stacks, const ComponentContext& ctx,
         const std::function<std::optional<std::int32_t>(std::uint16_t)>& wire_of) const;
+    // A component holding one VarInt (map_id, map_post_processing): its value
+    // (nullopt when absent), and `base` with it set, or removed (nullopt).
+    [[nodiscard]] std::optional<std::int32_t> varint_of(const contracts::ComponentPatch& patch, std::string_view component) const;
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_varint(const contracts::ComponentPatch& base,
+                                                                                  std::string_view component,
+                                                                                  std::optional<std::int32_t> value,
+                                                                                  const ComponentContext& ctx) const;
     // The patch's repair cost (0 when absent), and its custom name's plain
     // text (nullopt without one).
     [[nodiscard]] std::int32_t repair_cost_of(const contracts::ComponentPatch& patch) const;

@@ -1072,6 +1072,8 @@ void fill_dump(const WorldStore& world, const contracts::VersionBundle& bundle, 
     }
     d.tickets = world.tickets.list();
     for (const auto& [key, inv] : world.players) d.players.push_back(inv);
+    d.last_map_id = world.last_map_id;
+    for (const auto& [id, map] : world.maps) d.maps.push_back(map);
     gameplay::canonicalize(d);
 }
 } // namespace
@@ -1316,6 +1318,16 @@ void Engine::Impl::restore(const WorldDump& state) {
             bad("player inventory");
         if (!world.players.emplace(p.player, p).second) bad("duplicate player");
     }
+    // Maps of ids up to the last given, each once, of a scale up to 4 in a
+    // known dimension, with all their pixels.
+    if (state.last_map_id < -1) bad("last map id");
+    world.last_map_id = state.last_map_id;
+    for (const auto& m : state.maps) {
+        if (m.id < 0 || m.id > state.last_map_id || m.scale > gameplay::max_map_scale
+            || !contracts::valid_dimension(static_cast<std::uint8_t>(m.dimension)) || m.colors.size() != gameplay::map_pixels)
+            bad("map");
+        if (!world.maps.emplace(m.id, m).second) bad("duplicate map");
+    }
 }
 Engine::~Engine() = default;
 void Engine::advance(const std::vector<Command>& commands) { impl_->advance(commands); }
@@ -1403,6 +1415,13 @@ contracts::Result<std::optional<gameplay::PlayerInventory>> WorldView::player(co
     const auto it = impl.world.players.find(key);
     if (it == impl.world.players.end()) return std::optional<gameplay::PlayerInventory>{};
     return std::optional<gameplay::PlayerInventory>{it->second};
+}
+
+contracts::Result<const gameplay::MapData*> WorldView::map(std::int32_t id) const {
+    const auto& impl = *engine_->impl_;
+    if (impl.epoch != epoch_) return std::unexpected(contracts::ErrorCode::stale_view);
+    const auto it = impl.world.maps.find(id);
+    return it == impl.world.maps.end() ? nullptr : &it->second;
 }
 
 contracts::Result<std::optional<gameplay::Entity>> WorldView::entity(DimensionId level, EntityId id) const {

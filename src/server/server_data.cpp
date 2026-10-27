@@ -404,6 +404,13 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
         }
         if (const auto* codec = protocol::ComponentCodec::for_protocol(bundle.schema.component_schema)) {
             game->repair_cost_of = [codec](const contracts::ComponentPatch& patch) { return codec->repair_cost_of(patch); };
+            game->int_component = [codec](const contracts::ComponentPatch& patch, std::string_view component) { return codec->varint_of(patch, component); };
+            game->with_int_component = [codec, ctx = component_context(bundle, out.registries)](
+                                           const contracts::ComponentPatch& base, std::string_view component,
+                                           std::optional<std::int32_t> value) -> std::optional<contracts::ComponentPatch> {
+                auto patch = codec->with_varint(base, component, value, ctx);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
             game->custom_name_of = [codec](const contracts::ComponentPatch& patch) { return codec->custom_name_of(patch); };
             game->with_custom_name = [codec, ctx = component_context(bundle, out.registries)](
                                          const contracts::ComponentPatch& base, const std::optional<std::string>& name) -> std::optional<contracts::ComponentPatch> {

@@ -395,6 +395,25 @@ gameplay::PlayerInventory& RegionContext::player(contracts::PlayerKey player) {
     return it->second;
 }
 
+const gameplay::MapData* RegionContext::peek_map(std::int32_t id) {
+    if (phase_ != Phase::commands) throw std::logic_error("runtime: maps outside the command phase");
+    const auto it = world_.maps.find(id);
+    return it == world_.maps.end() ? nullptr : &it->second;
+}
+
+std::int32_t RegionContext::add_map(gameplay::MapData data) {
+    if (phase_ != Phase::commands) throw std::logic_error("runtime: maps outside the command phase");
+    if (world_.last_map_id == INT32_MAX) throw std::overflow_error("runtime: map ids exhausted");
+    data.id = ++world_.last_map_id; // Serial command phase.
+    world_.maps.insert_or_assign(data.id, std::move(data));
+    return world_.last_map_id;
+}
+
+std::int32_t RegionContext::last_map_id() {
+    if (phase_ != Phase::commands) throw std::logic_error("runtime: maps outside the command phase");
+    return world_.last_map_id;
+}
+
 std::uint32_t RegionContext::record(TraceKind kind, BlockPos pos, std::uint64_t a, std::uint64_t b, std::uint64_t c) {
     const auto seq = seq_++;
     // The command phase precedes every level's phases (OrderKey).

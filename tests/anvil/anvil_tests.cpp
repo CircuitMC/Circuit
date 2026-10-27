@@ -789,6 +789,30 @@ int main() {
         require(orbs(state).size() == 2 && orbs(state) == orbs(back->state), "orbs kept with their state");
     });
 
+    suite.run("maps round-trip through Anvil, saved as the official servers save them", [&] {
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        auto state = engine.dump();
+        circuit::gameplay::MapData zoomed;
+        zoomed.id = 2;
+        zoomed.x_center = 320;
+        zoomed.z_center = -192;
+        zoomed.scale = 1;
+        zoomed.locked = true;
+        zoomed.colors[5] = 34;
+        state.last_map_id = 2;
+        state.maps = {circuit::gameplay::MapData{}, zoomed};
+        const auto target = root / "maps";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "maps", .seed = 5}).has_value(), "export");
+        require(std::filesystem::exists(target / "data" / "idcounts.dat") && std::filesystem::exists(target / "data" / "map_0.dat")
+                    && std::filesystem::exists(target / "data" / "map_2.dat") && !std::filesystem::exists(target / "data" / "map_1.dat"),
+                "idcounts.dat and a file for each map");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        require(back->state.last_map_id == 2 && back->state.maps == state.maps, "the maps and the last id come back");
+    });
+
     suite.run("minecarts and boats round-trip through Anvil", [&] {
         Engine engine(bundle(), 5);
         Admissions admit;

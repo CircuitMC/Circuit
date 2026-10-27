@@ -1565,6 +1565,75 @@ int main() {
                 "a shulker box opens a shulker_box window titled container.shulkerBox");
     });
 
+    suite.run("empty maps become filled maps whose data the player gets, and cartography tables open", [] {
+        // Item components come from the official data packs (CIRCUIT_VANILLA_JAR_1_21_8).
+        const char* jar = std::getenv("CIRCUIT_VANILLA_JAR_1_21_8");
+        if (!jar || !*jar) {
+            std::puts("  (no official 1.21.8 server jar given: the map checks did not run)");
+            return;
+        }
+        using I = server::Intent;
+        const auto& bundle = **contracts::BundleRegistry::find("java-1.21.8");
+        auto d = server::load_server_data(bundle, {jar, {}});
+        require(d.has_value(), d ? "" : d.error());
+        GameFixture f(offline_config(), std::move(*d));
+        auto peer = f.join(1, "Mapper");
+        f.hold(1, "minecraft:map");
+        f.game->tick();
+        f.game->submit(1, server::intent::Use{0, 1, 0.0f, 0.0f});
+        f.game->tick();
+        f.game->tick();
+        // Each map data packet: the map's id, scale, lock, markers' types, and its colors' size.
+        std::vector<std::tuple<std::int32_t, std::uint8_t, bool, std::vector<std::int32_t>, std::size_t>> maps;
+        {
+            const auto id = f.wire.ids().id(State::play, Bound::clientbound, "map_item_data");
+            std::lock_guard lock(peer->mutex);
+            for (const auto& bytes : peer->packets) {
+                auto pk = protocol::open_packet(bytes);
+                if (!pk || pk->id != id) continue;
+                auto& r = pk->fields;
+                const auto map = r.varint().value();
+                const auto scale = r.u8().value();
+                const auto locked = r.boolean().value();
+                std::vector<std::int32_t> types;
+                if (r.boolean().value()) {
+                    const auto n = r.varint().value();
+                    for (std::int32_t k = 0; k < n; ++k) {
+                        types.push_back(r.varint().value());
+                        (void)r.u8(); (void)r.u8(); (void)r.u8();
+                        require(!r.boolean().value(), "markers without names");
+                    }
+                }
+                std::size_t colors = 0;
+                if (const auto columns = r.u8().value(); columns > 0) {
+                    (void)r.u8(); (void)r.u8(); (void)r.u8();
+                    colors = r.prefixed_bytes(1 << 16).value().size();
+                }
+                maps.emplace_back(map, scale, locked, types, colors);
+            }
+        }
+        require((maps == decltype(maps){{0, 0, false, {0}, 128 * 128}}), "map 0 of scale 0 with the player's marker and its colors, once");
+        f.game->submit(1, I{server::intent::Command{"setblock 2 -60 1 minecraft:cartography_table"}});
+        f.game->tick();
+        f.game->submit(1, GameFixture::click({2, -60, 1}, 1, 3));
+        f.game->tick();
+        bool opened = false;
+        {
+            const auto open = f.wire.ids().id(State::play, Bound::clientbound, "open_screen");
+            std::lock_guard lock(peer->mutex);
+            for (const auto& bytes : peer->packets) {
+                auto pk = protocol::open_packet(bytes);
+                if (!pk || pk->id != open) continue;
+                (void)pk->fields.varint();
+                const auto type = pk->fields.varint().value();
+                const auto title = protocol::nbt::read_network(pk->fields).value();
+                const auto* key = title.find("translate");
+                opened = type == 23 && key && key->text() == "container.cartography_table";
+            }
+        }
+        require(opened, "a cartography table opens a cartography_table window titled container.cartography_table");
+    });
+
     suite.run("composters take held items and the players nearby get the level event", [] {
         using I = server::Intent;
         GameFixture f;

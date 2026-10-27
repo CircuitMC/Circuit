@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
 #include "registries.hpp"
+#include <circuit/gameplay/maps.hpp>
 #include <circuit/protocol/codec.hpp>
 #include <circuit/protocol/components.hpp>
 #include <circuit/protocol/nbt.hpp>
@@ -8,6 +9,7 @@
 #include <expected>
 #include <memory>
 #include <optional>
+#include <span>
 #include <utility>
 #include <string>
 #include <variant>
@@ -214,6 +216,10 @@ public:
     // A block event (a chest's lid: event 1 with its viewers), with the
     // block's registry id.
     Bytes block_event(WirePosition pos, std::uint8_t event, std::uint8_t param, std::int32_t block) const;
+    // A map's data for a player carrying it: its scale, lock and markers, and
+    // its colors (128 by 128 from the corner), or none (empty).
+    Bytes map_item_data(std::int32_t map, std::uint8_t scale, bool locked, std::span<const gameplay::MapMarker> markers,
+                        std::span<const std::uint8_t> colors) const;
     // A level event (sounds and particles clients make themselves; 1500 a
     // composter taking an item), heard within its volume.
     Bytes level_event(std::int32_t event, WirePosition pos, std::int32_t data) const;

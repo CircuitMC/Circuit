@@ -143,6 +143,21 @@ public:
         if (fresh) it->second.player = player;
         return it->second;
     }
+    const MapData* peek_map(std::int32_t id) override {
+        if (phase_ != Phase::commands) throw std::logic_error("oracle: maps outside the command phase");
+        const auto it = o_.maps_.find(id);
+        return it == o_.maps_.end() ? nullptr : &it->second;
+    }
+    std::int32_t add_map(MapData data) override {
+        if (phase_ != Phase::commands) throw std::logic_error("oracle: maps outside the command phase");
+        data.id = ++o_.last_map_id_;
+        o_.maps_.insert_or_assign(data.id, std::move(data));
+        return o_.last_map_id_;
+    }
+    std::int32_t last_map_id() override {
+        if (phase_ != Phase::commands) throw std::logic_error("oracle: maps outside the command phase");
+        return o_.last_map_id_;
+    }
 
     std::uint32_t record(TraceKind kind, BlockPos pos, std::uint64_t a, std::uint64_t b, std::uint64_t c) override {
         const auto seq = seq_++;
@@ -531,6 +546,8 @@ WorldDump Oracle::dump() const {
     }
     d.tickets = tickets_.list();
     for (const auto& [key, inv] : players_) d.players.push_back(inv);
+    d.last_map_id = last_map_id_;
+    for (const auto& [id, map] : maps_) d.maps.push_back(map);
     canonicalize(d);
     return d;
 }

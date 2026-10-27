@@ -103,6 +103,8 @@ private:
     std::array<Level, contracts::dimension_count> levels_;
     gameplay::TicketSet tickets_;
     std::map<contracts::PlayerKey, gameplay::PlayerInventory> players_;
+    std::int32_t last_map_id_{-1};
+    std::map<std::int32_t, gameplay::MapData> maps_;
     std::uint64_t next_entity_id_{1};
     std::vector<contracts::TraceRecord> trace_;
     std::array<std::unique_ptr<LightSnapshot>, contracts::dimension_count> light_;

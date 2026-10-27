@@ -68,6 +68,9 @@ public:
     void remove_entity(EntityId id) override;
     const gameplay::PlayerInventory* peek_player(contracts::PlayerKey player) override;
     gameplay::PlayerInventory& player(contracts::PlayerKey player) override;
+    const gameplay::MapData* peek_map(std::int32_t id) override;
+    std::int32_t add_map(gameplay::MapData data) override;
+    std::int32_t last_map_id() override;
     std::uint32_t record(TraceKind kind, BlockPos pos, std::uint64_t a, std::uint64_t b, std::uint64_t c) override;
 
     // Staged results, consumed by the engine's commit.

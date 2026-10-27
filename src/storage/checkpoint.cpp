@@ -21,6 +21,8 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 49: the world keeps its maps, and player inventories an open cartography
+// table's slots;
 // 48: chiseled bookshelves have rules of their own;
 // 47: shulker boxes have rules of their own;
 // 46: ender chests have rules of their own, and players their ender
@@ -84,7 +86,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 48;
+constexpr std::uint32_t version = 49;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -279,6 +281,13 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
         w.boolean(p.viewing.has_value());
         if (p.viewing) pos(w, *p.viewing);
         for (const auto& st : p.ender) stack(w, st);
+        for (const auto& st : p.cartography) stack(w, st);
+    }
+    w.varint(s.last_map_id).varint(static_cast<std::int32_t>(s.maps.size()));
+    for (const auto& m : s.maps) {
+        w.varint(m.id).i32(m.x_center).i32(m.z_center).u8(m.scale).u8(static_cast<std::uint8_t>(m.dimension));
+        w.u8(static_cast<std::uint8_t>(m.locked | m.tracking_position << 1 | m.unlimited_tracking << 2));
+        w.raw(std::as_bytes(std::span(m.colors)));
     }
     w.varint(static_cast<std::int32_t>(c.extras.size()));
     for (const auto& [name, bytes] : c.extras) w.string(name, 256).prefixed_bytes(bytes);
@@ -803,8 +812,33 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
             if (b.version >= 46)
                 for (auto& st : p.ender)
                     if (!b.stack(st)) return false;
+            if (b.version >= 49)
+                for (auto& st : p.cartography)
+                    if (!b.stack(st)) return false;
             p.player = {static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)};
             s.players.push_back(p);
+        }
+    }
+    if (b.version >= 49) {
+        if (!b.get(b.r.varint(), s.last_map_id) || !b.count(n, 22 + gameplay::map_pixels)) return false;
+        for (std::size_t i = 0; i < n; ++i) {
+            gameplay::MapData m;
+            std::uint8_t dimension{}, flags{};
+            if (!b.get(b.r.varint(), m.id) || !b.get(b.r.i32(), m.x_center) || !b.get(b.r.i32(), m.z_center) || !b.get(b.r.u8(), m.scale)
+                || !b.get(b.r.u8(), dimension) || !b.get(b.r.u8(), flags))
+                return false;
+            std::span<const std::byte> pixels;
+            if (!b.get(b.r.raw(gameplay::map_pixels), pixels)) return false;
+            for (std::size_t k = 0; k < gameplay::map_pixels; ++k) m.colors[k] = static_cast<std::uint8_t>(pixels[k]);
+            if (!contracts::valid_dimension(dimension) || flags > 7 || m.scale > gameplay::max_map_scale) {
+                b.error = "invalid map";
+                return false;
+            }
+            m.dimension = static_cast<contracts::DimensionId>(dimension);
+            m.locked = flags & 1;
+            m.tracking_position = flags & 2;
+            m.unlimited_tracking = flags & 4;
+            s.maps.push_back(std::move(m));
         }
     }
     if (!b.count(n, 2)) return false;

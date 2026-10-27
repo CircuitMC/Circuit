@@ -47,15 +47,15 @@ Feature counts per implementation state, then the number of features with compar
 | V21 Projectiles, vehicles and mounts | C3, C6 | 109 | 0 / 0 | 17 / 17 | 38 / 56 | 33 / 35 | 21 / 1 | 8 / 8 |
 | V22 Movement and player modes | C6 | 7 | 3 / 3 | 2 / 2 | 0 / 0 | 2 / 2 | 0 / 0 | 5 / 5 |
 | V23 Combat, attributes and effects | C6 | 219 | 1 / 1 | 6 / 6 | 91 / 91 | 118 / 121 | 3 / 0 | 6 / 6 |
-| V24 Food, equipment and item use | C5, C6 | 143 | 0 / 0 | 19 / 19 | 118 / 120 | 4 / 4 | 2 / 0 | 5 / 6 |
-| V25 Menus, recipes and production | C5 | 193 | 3 / 3 | 16 / 16 | 171 / 171 | 3 / 3 | 0 / 0 | 17 / 18 |
+| V24 Food, equipment and item use | C5, C6 | 143 | 0 / 0 | 21 / 21 | 116 / 118 | 4 / 4 | 2 / 0 | 7 / 8 |
+| V25 Menus, recipes and production | C5 | 194 | 4 / 4 | 17 / 17 | 170 / 170 | 3 / 3 | 0 / 0 | 19 / 20 |
 | V26 Mob AI and navigation | C8 | 94 | 0 / 0 | 2 / 2 | 12 / 14 | 77 / 78 | 3 / 0 | 2 / 2 |
 | V27 Spawning and farms | C8 | 104 | 0 / 0 | 0 / 0 | 99 / 100 | 4 / 4 | 1 / 0 | 0 / 0 |
 | V28 Villages, raids and trading | C8 | 15 | 0 / 0 | 0 / 0 | 0 / 0 | 15 / 15 | 0 / 0 | 0 / 0 |
 | V29 Bosses and progression | C8 | 11 | 0 / 0 | 0 / 0 | 4 / 4 | 7 / 7 | 0 / 0 | 0 / 0 |
 | V30 Data-pack execution | C1, C5, C9 | 8 | 0 / 0 | 1 / 1 | 0 / 0 | 6 / 7 | 1 / 0 | 0 / 0 |
 | V31 Commands and administration | C9 | 117 | 0 / 0 | 8 / 8 | 16 / 20 | 84 / 89 | 9 / 0 | 1 / 1 |
-| V32 Client-visible world state | C10 | 287 | 5 / 5 | 58 / 58 | 0 / 0 | 217 / 223 | 7 / 1 | 8 / 8 |
+| V32 Client-visible world state | C10 | 287 | 5 / 5 | 60 / 60 | 0 / 0 | 215 / 221 | 7 / 1 | 10 / 10 |
 | V33 Communication and connection lifecycle | C10 | 85 | 17 / 17 | 19 / 19 | 0 / 0 | 41 / 49 | 8 / 0 | 0 / 0 |
 | V34 Save compatibility | C11 | 6 | 1 / 1 | 0 / 1 | 0 / 0 | 4 / 3 | 1 / 1 | 0 / 1 |
 | V35 Version-specific gameplay and optional profiles | C12 | 6 | 0 / 0 | 0 / 0 | 1 / 3 | 3 / 3 | 2 / 0 | 0 / 0 |
@@ -67,8 +67,8 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 
 | Kind | Source | Count | Implemented | Partial | Data only | Missing |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 512 / 517 | 579 / 584 | 0 / 0 |
-| item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 152 / 152 | 1232 / 1263 | 0 / 0 |
+| block | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 1095 / 1105 | 4 / 4 | 513 / 518 | 578 / 583 | 0 / 0 |
+| item | minecraft-data pc/1.21.4/items.json / minecraft-data pc/1.21.8/items.json | 1384 / 1415 | 0 / 0 | 154 / 154 | 1230 / 1261 | 0 / 0 |
 | entity | minecraft-data pc/1.21.4/entities.json / minecraft-data pc/1.21.8/entities.json | 149 / 151 | 0 / 0 | 18 / 18 | 0 / 0 | 131 / 133 |
 | effect | minecraft-data pc/1.21.4/effects.json / minecraft-data pc/1.21.8/effects.json | 39 / 39 | 0 / 0 | 0 / 0 | 0 / 0 | 39 / 39 |
 | enchantment | approximate: minecraft-data pc/1.21.1/enchantments.json / minecraft-data pc/1.21.8/enchantments.json | 42 / 42 | 0 / 0 | 0 / 0 | 0 / 0 | 42 / 42 |
@@ -77,7 +77,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 | biome | minecraft-data pc/1.21.4/biomes.json / minecraft-data pc/1.21.8/biomes.json | 65 / 65 | 0 / 0 | 1 / 1 | 64 / 64 | 0 / 0 |
 | particle | minecraft-data pc/1.21.4/particles.json / minecraft-data pc/1.21.8/particles.json | 112 / 114 | 0 / 0 | 0 / 0 | 0 / 0 | 112 / 114 |
 | command | approximate: minecraft-data pc/1.20.5/commands.json / approximate: minecraft-data pc/1.21.6/commands.json | 83 / 88 | 0 / 0 | 5 / 5 | 0 / 0 | 78 / 83 |
-| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 20 / 20 | 73 / 73 | 0 / 0 | 141 / 151 |
+| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 20 / 20 | 74 / 74 | 0 / 0 | 140 / 150 |
 | block_state | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 27866 / 27946 | — | — | — | — |
 | sound_event | minecraft-data pc/1.21.4/sounds.json / minecraft-data pc/1.21.8/sounds.json | 1651 / 1728 | — | — | — | — |
 | recipe | minecraft-data pc/1.21.4/recipes.json / minecraft-data pc/1.21.8/recipes.json | 1557 / 1607 | — | — | — | — |
@@ -127,7 +127,7 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 73 |
+| black_box | passing | 74 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
 | official_trace | passing | 225 |
@@ -428,7 +428,8 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Brewing stands | C5 | partial, compared | partial, compared | `client/brewing`, `collision/brewing`, `trace/brewing`, `trace/brewing_hoppers`, `trace/item_inside_thrown`; Brewing stands take blaze powder as fuel for 20 brews, brew for 400 ticks each bottle that mixes with the ingredient into its mix (every mix of both official servers' brewing reports), stop when the ingredient changes or nothing is left to brew, throw out dragon's breath's glass bottle, show their bottles, take from and give to hoppers by face and drive comparators, as both official servers do tick by tick (with the official data packs); players use their menus as on both official servers, and a brewed bottle is a new one of its mix without the old one's other components |
 | Anvils | C5 | partial, compared | partial, compared | `client/anvil`; an anvil wears by a random of Circuit's own; the official servers draw it from an unseeded random; names items show come from the jar's English names: a written book's title, a player head's owner and item_name components are not used; stacks with several enchantments keep the left's order with the new ones after it; the official servers keep a hash order of their own; Anvils repair with their items' materials and by combining two of a kind, join enchantments from books and like items within their highest levels, supported items and exclusive sets, and rename by the typed name (filtered and at most 50 UTF-16 code units, kept for the next items, compared with the names items show in English); prior work penalties, the 39-level cap for renaming, too expensive results and the level cost taken from the player as both official servers give them; the /xp command sets and adds levels and points; 48 steps give the same windows, costs, components and experience as both official servers |
 | Enchanting tables | C5 | partial, compared | partial, compared | `client/enchanting`; a new player's enchantment seed and the seed after enchanting are Circuit's own; the official servers draw them at random; stacks with several enchantments keep the order they were drawn in; the official servers keep a hash order of their own; Enchanting tables make three offers from the bookshelves around them (the power provider and transmitter block tags) and the player's enchantment seed: their level costs, the enchantments each shows and their levels, drawn as both official servers draw them from the data packs' in_enchanting_table enchantments, weights, cost ranges, primary items and exclusive sets and the wiki's enchantability by material; an offer is taken for its place in levels and lapis (any in creative mode), a book becoming an enchanted book that loses one enchantment; 320 windows of the official servers with two other seeds and a 97-step scenario and a 64-step survey give the same windows, offers, enchantments and levels as both official servers |
-| Cartography, beacons, merchants and mount inventories | C5 | missing, none | missing, none |  |
+| Cartography tables | C5 | implemented, compared | implemented, compared | `client/maps`; The cartography table's window copies a filled map with an empty map, zooms it with paper to a new map of the next scale (up to 4) and locks it with a glass pane to a new locked map, taking only the items each slot takes, with shift-clicks, as both official servers do (with the official data packs) |
+| Beacons, merchants and mount inventories | C5 | missing, none | missing, none |  |
 | Loot tables for blocks, entities and containers | C5 | partial, compared | partial, compared | `data/block_drops`, `trace/farmland`, `trace/loot_bonus`, `trace/loot_many`, `trace/loot_rolls`, `trace/loot_single`, `trace/loot_tools`; each level keeps its own random sequences; the official servers keep one set for the world; entity, container and archaeology tables are not used; modeled blocks ignore their tables, so silk touch does not change their drops; tables that choose between weighted entries drop nothing (no block table has them); tables that copy components or name dynamic contents (shulker boxes, banners, decorated pots) are not used; Blocks without rules of their own, and wheat, drop from their loot tables (888 of 952 tables in 1.21.8, 880 of 944 in 1.21.4; wall torches, signs, banners and heads by the standing ones' tables), with harvest tools, silk touch and shears; random counts, chances, table bonuses and fortune's ore, uniform and binomial bonuses roll from each table's random sequence, which checkpoints and Anvil worlds keep, as both official servers roll them; other modeled blocks keep fixed drops |
 
 ### V26 Mob AI and navigation
@@ -498,7 +499,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Entity metadata, equipment, animations and events | C10 | partial, none | partial, none | Items, players and damage events |
 | Sounds and particles | C10 | missing, none | missing, none |  |
 | Boss bars, titles, scoreboards, world border and tab list | C10 | partial, none | partial, none | Tab list |
-| Maps, books, signs and displays | C10 | missing, none | missing, none |  |
+| Maps, books, signs and displays | C10 | partial, compared | partial, compared | `client/maps`; books, signs and displays are not shown; filled maps do not explore: their colors stay unexplored, without banners or item frames; Empty maps become filled maps of new maps, and the players carrying them get their data and markers (on the map, on its edge, or none far off), as both official servers send them |
 | Inventory and window synchronization | C10 | implemented, compared | implemented, compared | `client/windows` |
 
 ### V33 Communication and connection lifecycle

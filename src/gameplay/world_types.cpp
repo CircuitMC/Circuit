@@ -168,6 +168,7 @@ void canonicalize(WorldDump& d) {
     std::ranges::sort(d.tickets, {}, &Ticket::id);
     std::erase_if(d.players, [](const PlayerInventory& p) { return p.empty(); });
     std::ranges::sort(d.players, {}, &PlayerInventory::player);
+    std::ranges::sort(d.maps, {}, &MapData::id);
 }
 
 std::string_view entity_kind_name(EntityKind kind) noexcept {
@@ -322,6 +323,10 @@ std::string first_difference(const WorldDump& a, const WorldDump& b) {
     }
     for (auto s : {compare("tickets", a.tickets, b.tickets), compare("players", a.players, b.players)})
         if (!s.empty()) return s;
+    if (a.last_map_id != b.last_map_id) return std::format("last map id {} != {}", a.last_map_id, b.last_map_id);
+    if (a.maps.size() != b.maps.size()) return std::format("maps: {} != {}", a.maps.size(), b.maps.size());
+    for (std::size_t i = 0; i < a.maps.size(); ++i)
+        if (a.maps[i] != b.maps[i]) return std::format("map {} (#{} in the second)", a.maps[i].id, b.maps[i].id);
     return {};
 }
 
@@ -458,6 +463,19 @@ std::uint64_t digest(const WorldDump& d) {
         h.add(static_cast<std::uint32_t>(p.xp_total)); h.add(p.xp_ready);
         h.add(p.drag_stage); h.add(p.drag_type); h.add(p.drag_slots.size());
         for (const auto slot : p.drag_slots) h.add(static_cast<std::uint16_t>(slot));
+    }
+    h.add(static_cast<std::uint32_t>(d.last_map_id));
+    h.add(d.maps.size());
+    for (const auto& m : d.maps) {
+        h.add(static_cast<std::uint32_t>(m.id));
+        h.add(static_cast<std::uint32_t>(m.x_center)); h.add(static_cast<std::uint32_t>(m.z_center));
+        h.add(m.scale); h.add(static_cast<std::uint64_t>(m.dimension));
+        h.add(static_cast<std::uint64_t>(m.locked) | static_cast<std::uint64_t>(m.tracking_position) << 1 | static_cast<std::uint64_t>(m.unlimited_tracking) << 2);
+        for (std::size_t k = 0; k < m.colors.size(); k += 8) {
+            std::uint64_t word{};
+            for (std::size_t b = 0; b < 8 && k + b < m.colors.size(); ++b) word |= static_cast<std::uint64_t>(m.colors[k + b]) << (8 * b);
+            h.add(word);
+        }
     }
     return h.value();
 }

@@ -163,6 +163,11 @@ public:
     // reference stays valid until the current root finishes.
     virtual const PlayerInventory* peek_player(contracts::PlayerKey player) = 0;
     virtual PlayerInventory& player(contracts::PlayerKey player) = 0; // created empty when absent
+    // Maps, in the command phase only, as player inventories: a map's data,
+    // and a new map's id, the world's next, given to `data` as it is added.
+    virtual const MapData* peek_map(std::int32_t id) = 0;
+    virtual std::int32_t add_map(MapData data) = 0;
+    virtual std::int32_t last_map_id() = 0; // -1 before the first
 
     // Appends a trace record at the next sequence of the current root and
     // returns that sequence.

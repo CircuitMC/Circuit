@@ -9,6 +9,7 @@
 #include <circuit/contracts/trace.hpp>
 #include <circuit/contracts/version.hpp>
 #include <circuit/gameplay/block.hpp>
+#include <circuit/gameplay/maps.hpp>
 #include <circuit/gameplay/random_sequence.hpp>
 #include <circuit/gameplay/weather.hpp>
 #include <compare>
@@ -244,6 +245,9 @@ struct PlayerInventory {
     // The player's ender inventory: their own, whichever ender chest they
     // open; kept when they die.
     std::array<ItemStack, contracts::ender_slots> ender{};
+    // The cartography table window the player has open: its map, the item
+    // beside it and the result.
+    std::array<ItemStack, contracts::cartography_slots> cartography{};
     // A drag across slots in progress (several clicks): its stage (0 none,
     // 1 collecting slots), its type (0 split evenly, 1 one each, 2 full
     // stacks) and the slots collected so far, in window numbering.
@@ -265,7 +269,7 @@ struct PlayerInventory {
             && std::ranges::all_of(grind, none) && std::ranges::all_of(loom, none) && loom_pattern == -1
             && std::ranges::all_of(anvil, none) && anvil_name.empty() && anvil_cost == 0 && std::ranges::all_of(enchant, none)
             && enchant_costs == std::array<std::int32_t, 3>{} && enchant_clues == std::array<std::int32_t, 3>{-1, -1, -1}
-            && enchant_clue_levels == std::array<std::int32_t, 3>{-1, -1, -1} && xp_seed == 0 && !viewing && std::ranges::all_of(ender, none) && xp_level == 0
+            && enchant_clue_levels == std::array<std::int32_t, 3>{-1, -1, -1} && xp_seed == 0 && !viewing && std::ranges::all_of(ender, none) && std::ranges::all_of(cartography, none) && xp_level == 0
             && xp_progress == 0.0f && xp_total == 0 && xp_ready == 0;
     }
     bool operator==(const PlayerInventory&) const = default;
@@ -534,6 +538,10 @@ struct WorldDump {
     std::vector<LevelDump> levels;        // ascending dimension; listed with a column, a presence or an active tick
     std::vector<Ticket> tickets;          // ascending id
     std::vector<PlayerInventory> players; // ascending player, non-empty only
+    // The maps players made, and the last id given (-1 before the first): a
+    // new map takes the next (idcounts.dat's "map").
+    std::int32_t last_map_id{-1};
+    std::vector<MapData> maps; // ascending id
     bool operator==(const WorldDump&) const = default;
     // A level's state; an empty one when the level has no column.
     [[nodiscard]] const LevelDump& level(contracts::DimensionId dimension) const;

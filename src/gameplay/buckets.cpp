@@ -275,6 +275,7 @@ contracts::Result<std::function<void()>> plan_use_item(RuleContext& ctx, const c
             record_slot(ctx, inv, c.slot);
         };
     }
+    if (held.item == items::map && !held.empty()) return plan_use_empty_map(ctx, c);
     return std::unexpected(ErrorCode::not_usable);
 }
 

@@ -2524,8 +2524,19 @@
           ]
         },
         {
+          "id": "cartography_tables",
+          "name": "Cartography tables",
+          "milestone": "C5",
+          "impl": "implemented",
+          "evidence": "compared",
+          "note": "The cartography table's window copies a filled map with an empty map, zooms it with paper to a new map of the next scale (up to 4) and locks it with a glass pane to a new locked map, taking only the items each slot takes, with shift-clicks, as both official servers do (with the official data packs)",
+          "cases": [
+            "client/maps"
+          ]
+        },
+        {
           "id": "other_menus",
-          "name": "Cartography, beacons, merchants and mount inventories",
+          "name": "Beacons, merchants and mount inventories",
           "milestone": "C5",
           "impl": "missing",
           "evidence": "none"
@@ -2885,8 +2896,16 @@
           "id": "maps_books_signs",
           "name": "Maps, books, signs and displays",
           "milestone": "C10",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "deviations": [
+            "filled maps do not explore: their colors stay unexplored, without banners or item frames",
+            "books, signs and displays are not shown"
+          ],
+          "note": "Empty maps become filled maps of new maps, and the players carrying them get their data and markers (on the map, on its edge, or none far off), as both official servers send them",
+          "cases": [
+            "client/maps"
+          ]
         },
         {
           "id": "inventories",

@@ -445,7 +445,8 @@ public:
         if (fs::exists(source / "playerdata")) note("player data is not imported");
         if (const auto file = source / "data" / "random_sequences.dat"; fs::exists(file))
             if (auto ok = read_sequences(file); !ok) return std::unexpected(ok.error());
-        if (fs::exists(source / "data")) note("saved data other than random sequences (maps, raids, scoreboards, world border) is not imported");
+        if (auto ok = read_maps(source / "data"); !ok) return std::unexpected(ok.error());
+        if (fs::exists(source / "data")) note("saved data other than random sequences and maps (raids, scoreboards, world border) is not imported");
         note("light and heightmaps are not imported; Circuit has no lighting engine");
         // Containers that lost their data to unsupported content still need a block entity.
         for (const auto& [pos, raw] : result_.state.level(contracts::DimensionId::overworld).blocks) {
@@ -509,6 +510,79 @@ private:
         result_.state.sequence_settings = settings;
         auto& level = result_.state.level(contracts::DimensionId::overworld).sequences;
         level.assign(sequences.begin(), sequences.end());
+        return {};
+    }
+
+    // The maps (data/map_<id>.dat) and the last map id given (idcounts.dat),
+    // as both official servers save them: fields at their defaults (scale 0,
+    // unlocked, tracking, not unlimited) are absent; banners and frames are
+    // not imported.
+    std::expected<void, std::string> read_maps(const fs::path& dir) {
+        const auto root_of = [&](const fs::path& file) -> std::expected<std::optional<Tag>, std::string> {
+            auto data = read_file(file, max_level_bytes);
+            if (!data) return std::unexpected(data.error());
+            auto raw = inflate_any(*data, max_level_bytes);
+            if (!raw) return std::unexpected(raw.error());
+            auto root = parse_nbt(*raw, max_level_bytes);
+            if (!root) return std::unexpected(root.error());
+            const auto version = integer(*root, "DataVersion");
+            if (version != supported_data_version) {
+                unsupported(std::format("saved data of DataVersion {}", version ? std::to_string(*version) : "none"));
+                return std::optional<Tag>{};
+            }
+            return std::optional<Tag>{std::move(*root)};
+        };
+        std::error_code ec;
+        if (const auto file = dir / "idcounts.dat"; fs::exists(file)) {
+            auto root = root_of(file);
+            if (!root) return std::unexpected("data/idcounts.dat: " + root.error());
+            if (*root)
+                if (const auto* d = child(**root, "data", TagType::compound))
+                    if (const auto last = integer(*d, "map")) {
+                        if (*last < -1 || *last > INT32_MAX) return std::unexpected("data/idcounts.dat: invalid map id");
+                        result_.state.last_map_id = static_cast<std::int32_t>(*last);
+                    }
+        }
+        static const std::regex name_pattern{"map_(0|[1-9][0-9]{0,9})\\.dat"};
+        for (const auto& e : fs::directory_iterator(dir, ec)) {
+            std::smatch m;
+            const auto name = e.path().filename().string();
+            if (!e.is_regular_file() || !std::regex_match(name, m, name_pattern)) continue;
+            const auto id = std::stoll(m[1].str());
+            const auto fail = [&](std::string what) { return std::unexpected(std::format("data/{}: {}", name, what)); };
+            if (id > INT32_MAX) return fail("invalid map id");
+            auto root = root_of(e.path());
+            if (!root) return fail(root.error());
+            if (!*root) continue;
+            const auto* d = child(**root, "data", TagType::compound);
+            if (!d) return fail("no data compound");
+            gameplay::MapData map;
+            map.id = static_cast<std::int32_t>(id);
+            const auto x = integer(*d, "xCenter"), z = integer(*d, "zCenter");
+            if (!x || !z || *x < INT32_MIN || *x > INT32_MAX || *z < INT32_MIN || *z > INT32_MAX) return fail("no center");
+            map.x_center = static_cast<std::int32_t>(*x);
+            map.z_center = static_cast<std::int32_t>(*z);
+            const auto scale = integer(*d, "scale").value_or(0);
+            if (scale < 0 || scale > gameplay::max_map_scale) return fail("invalid scale");
+            map.scale = static_cast<std::uint8_t>(scale);
+            const auto dimension = text(*d, "dimension");
+            const auto level = dimension ? contracts::dimension_by_name(*dimension) : std::nullopt;
+            if (!level) {
+                unsupported(std::format("maps of dimension {}", dimension.value_or("none")));
+                continue;
+            }
+            map.dimension = *level;
+            map.locked = integer(*d, "locked").value_or(0) != 0;
+            map.tracking_position = integer(*d, "trackingPosition").value_or(1) != 0;
+            map.unlimited_tracking = integer(*d, "unlimitedTracking").value_or(0) != 0;
+            if (const auto* colors = child(*d, "colors", TagType::byte_array)) {
+                if (colors->array().size() != gameplay::map_pixels) return fail("colors are not 128 by 128");
+                for (std::size_t k = 0; k < gameplay::map_pixels; ++k) map.colors[k] = static_cast<std::uint8_t>(colors->array()[k]);
+            }
+            result_.state.last_map_id = std::max(result_.state.last_map_id, map.id);
+            result_.state.maps.push_back(std::move(map));
+        }
+        std::ranges::sort(result_.state.maps, {}, &gameplay::MapData::id);
         return {};
     }
 
@@ -1152,6 +1226,32 @@ private:
         report_.notes.push_back("light and heightmaps are left for the game to compute");
         report_.notes.push_back("biomes are written as minecraft:plains");
         if (auto ok = write_file(dir / "data" / "random_sequences.dat", gzip(named_nbt(sequences_tag()))); !ok) return ok;
+        // Maps as the official servers save them, defaults left out.
+        if (world_.last_map_id >= 0) {
+            auto counts = Tag::compound();
+            counts.set("map", Tag::int_(world_.last_map_id));
+            auto root = Tag::compound();
+            root.set("data", std::move(counts));
+            root.set("DataVersion", Tag::int_(supported_data_version));
+            if (auto ok = write_file(dir / "data" / "idcounts.dat", gzip(named_nbt(root))); !ok) return ok;
+        }
+        for (const auto& map : world_.maps) {
+            auto data = Tag::compound();
+            data.set("xCenter", Tag::int_(map.x_center));
+            data.set("zCenter", Tag::int_(map.z_center));
+            data.set("dimension", Tag::string(std::string(contracts::dimension_name(map.dimension))));
+            if (map.scale != 0) data.set("scale", Tag::byte(static_cast<std::int8_t>(map.scale)));
+            if (map.locked) data.set("locked", Tag::boolean(true));
+            if (!map.tracking_position) data.set("trackingPosition", Tag::boolean(false));
+            if (map.unlimited_tracking) data.set("unlimitedTracking", Tag::boolean(true));
+            std::vector<std::int8_t> colors(map.colors.size());
+            for (std::size_t k = 0; k < colors.size(); ++k) colors[k] = static_cast<std::int8_t>(map.colors[k]);
+            data.set("colors", Tag::byte_array(std::move(colors)));
+            auto root = Tag::compound();
+            root.set("data", std::move(data));
+            root.set("DataVersion", Tag::int_(supported_data_version));
+            if (auto ok = write_file(dir / "data" / std::format("map_{}.dat", map.id), gzip(named_nbt(root))); !ok) return ok;
+        }
         return write_file(dir / "level.dat", gzip(named_nbt(level_tag())));
     }
 

@@ -141,6 +141,10 @@ inline constexpr std::uint8_t enchant_first = 73;
 // the player who opens it (window slots 0-26), recorded as slots 75-101.
 inline constexpr std::uint8_t ender_slots = 27;
 inline constexpr std::uint8_t ender_first = 75;
+// The cartography table window: the map, the paper, empty map or glass pane
+// beside it, and the result (window slots 0-2), recorded as slots 102-104.
+inline constexpr std::uint8_t cartography_slots = 3;
+inline constexpr std::uint8_t cartography_first = 102;
 // The longest name an anvil gives, in UTF-16 code units as the protocol
 // counts them (minecraft.wiki "Anvil").
 inline constexpr std::size_t max_item_name = 50;

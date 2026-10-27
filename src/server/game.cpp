@@ -149,6 +149,8 @@ struct Player {
     float sent_health{-1.0f};
     std::int32_t sent_food{-1};
     bool sent_saturation_zero{};
+    // The maps the client was sent, with the markers it last got for each.
+    std::map<std::int32_t, std::vector<gameplay::MapMarker>> maps_sent;
 };
 
 // What the world keeps of a player between sessions besides the inventory,
@@ -875,6 +877,9 @@ struct Game::Impl final : GameServices {
             if (gameplay::is_enchanting_table(at(p.window->pos)))
                 for (std::size_t i = 0; i < contracts::enchant_slots; ++i)
                     slots.push_back(inv && *inv ? wire_stack((*inv)->enchant[i]) : WireStack{});
+            if (gameplay::is_cartography_table(at(p.window->pos)))
+                for (std::size_t i = 0; i < contracts::cartography_slots; ++i)
+                    slots.push_back(inv && *inv ? wire_stack((*inv)->cartography[i]) : WireStack{});
             // An ender chest's window shows the player's own ender inventory.
             if (at(p.window->pos).is(BlockType::ender_chest))
                 for (std::size_t i = 0; i < contracts::ender_slots; ++i)
@@ -1030,6 +1035,7 @@ struct Game::Impl final : GameServices {
         if (gameplay::is_loom(at(pos))) return contracts::loom_slots;
         if (gameplay::is_anvil(at(pos))) return contracts::anvil_slots;
         if (gameplay::is_enchanting_table(at(pos))) return contracts::enchant_slots;
+        if (gameplay::is_cartography_table(at(pos))) return contracts::cartography_slots;
         if (at(pos).is(BlockType::lectern)) return 1;
         if (at(pos).is(BlockType::ender_chest)) return contracts::ender_slots;
         std::size_t n = 0;
@@ -1054,7 +1060,8 @@ struct Game::Impl final : GameServices {
         // Edition protocol/Inventory, and observed from the target version):
         // generic_9x3 2, generic_9x6 5, generic_3x3 6, crafter_3x3 7, anvil 8,
         // blast_furnace 10, brewing_stand 11, crafting 12, enchantment 13, furnace 14, lectern 17,
-        // grindstone 15, hopper 16, loom 18, shulker_box 20, smithing 21, smoker 22, stonecutter 24.
+        // grindstone 15, hopper 16, loom 18, shulker_box 20, smithing 21, smoker 22, cartography_table 23,
+        // stonecutter 24.
         constexpr std::array<std::int32_t, 3> furnace_menus{14, 22, 10};
         const bool table = gameplay::is_crafting_table(block);
         const bool cutter = gameplay::is_stonecutter(block);
@@ -1063,12 +1070,13 @@ struct Game::Impl final : GameServices {
         const bool loom = gameplay::is_loom(block);
         const bool anvil = gameplay::is_anvil(block);
         const bool enchanting = gameplay::is_enchanting_table(block);
+        const bool cartography = gameplay::is_cartography_table(block);
         const std::int32_t type = block.is(BlockType::furnace) ? furnace_menus[block.variant() % 3]
                                 : block.is(BlockType::crafter) ? 7
                                 : block.is(BlockType::brewing_stand) ? 11
                                 : block.is(BlockType::lectern) ? 17
                                 : block.is(BlockType::shulker_box) ? 20
-                                : table ? 12 : cutter ? 24 : smith ? 21 : grind ? 15 : loom ? 18 : anvil ? 8 : enchanting ? 13 : slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
+                                : table ? 12 : cutter ? 24 : smith ? 21 : grind ? 15 : loom ? 18 : anvil ? 8 : enchanting ? 13 : cartography ? 23 : slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
         // The title is the translation the official servers send for the
         // window (client/titles, both versions); a container's custom name
         // replaces it (for a double chest, the first named half's).
@@ -1082,7 +1090,7 @@ struct Game::Impl final : GameServices {
                                    : block.is(BlockType::shulker_box) ? "container.shulkerBox"
                                    : table ? "container.crafting" : cutter ? "container.stonecutter" : smith ? "container.upgrade"
                                    : grind ? "container.grindstone_title" : loom ? "container.loom" : anvil ? "container.repair"
-                                   : enchanting ? "container.enchant" : slots == 54 ? "container.chestDouble" : slots == 5 ? "container.hopper"
+                                   : enchanting ? "container.enchant" : cartography ? "container.cartography_table" : slots == 54 ? "container.chestDouble" : slots == 5 ? "container.hopper"
                                    : block.is(BlockType::dispenser) ? (block.variant() == 1 ? "container.dropper" : "container.dispenser")
                                                                     : "container.chest";
         auto title = translation(key, protocol::nbt::Tag::list(protocol::nbt::TagType::string));
@@ -1722,16 +1730,18 @@ struct Game::Impl final : GameServices {
         admit(use);
     }
 
-    // A use of the held item along the player's view: buckets. The client
-    // sends it after a click on the block its view meets, if any, in the
-    // same tick, as both official servers expect.
+    // A use of the held item along the player's view: buckets and empty
+    // maps. The client sends it after a click on the block its view meets,
+    // if any, in the same tick, as both official servers expect.
     void handle(Player& p, intent::Use& u) {
         p.acks.push_back(u.sequence);
         const auto used_on = std::exchange(p.used_on, std::nullopt);
         if (p.dead || p.game_mode == spectator) return;
         const auto slot = static_cast<std::uint8_t>(u.hand == 0 ? contracts::hotbar_first + p.held : contracts::offhand_slot);
         const auto item = slot_of(p, slot).item;
-        if (item != gameplay::items::bucket && item != gameplay::items::water_bucket && item != gameplay::items::lava_bucket) return;
+        if (item != gameplay::items::bucket && item != gameplay::items::water_bucket && item != gameplay::items::lava_bucket
+            && item != gameplay::items::map)
+            return;
         if (std::isfinite(u.yaw) && std::isfinite(u.pitch)) {
             p.yaw = std::fmod(u.yaw, 360.0f);
             p.pitch = std::clamp(u.pitch, -90.0f, 90.0f);
@@ -1886,15 +1896,31 @@ struct Game::Impl final : GameServices {
             std::string names;
             for (const auto& [id, o] : players) names += (names.empty() ? "" : ", ") + o.name;
             message(p, std::format("{} online: {}", players.size(), names));
-        } else if (args[0] == "tp" && (args.size() == 4 || (args.size() == 5 && args[1] == p.name))) {
-            // `/tp <x> <y> <z>`, or `/tp <own name> <x> <y> <z>`.
-            const std::size_t first = args.size() - 3;
+        } else if (args[0] == "tp" && (args.size() == 4 || ((args.size() == 5 || args.size() == 7) && args[1] == p.name))) {
+            // `/tp <x> <y> <z>`, or `/tp <own name> <x> <y> <z> [<yaw> <pitch>]`.
+            // A whole number for x or z is the middle of its block, as on the
+            // official servers (client/maps).
+            const std::size_t first = args.size() == 7 ? 2 : args.size() - 3;
+            const auto coordinate = [](const std::string& text, bool centered) {
+                const auto v = std::stod(text);
+                return centered && text.find('.') == std::string::npos ? v + 0.5 : v;
+            };
             Vec3 to;
+            std::optional<std::pair<float, float>> rotation;
             try {
-                to = {std::stod(args[first]), std::stod(args[first + 1]), std::stod(args[first + 2])};
+                to = {coordinate(args[first], true), coordinate(args[first + 1], false), coordinate(args[first + 2], true)};
+                if (args.size() == 7) rotation = std::pair{std::stof(args[5]), std::stof(args[6])};
             } catch (const std::exception&) {
                 message(p, "Usage: /tp <x> <y> <z>", "red");
                 return;
+            }
+            if (rotation && (!std::isfinite(rotation->first) || !std::isfinite(rotation->second))) {
+                message(p, "Usage: /tp <x> <y> <z>", "red");
+                return;
+            }
+            if (rotation) {
+                p.yaw = std::fmod(rotation->first, 360.0f);
+                p.pitch = std::clamp(rotation->second, -90.0f, 90.0f);
             }
             if (!finite(to) || std::abs(to.x) >= 3.0e7 || std::abs(to.z) >= 3.0e7 || std::abs(to.y) > 4096.0) {
                 message(p, "Destination out of range", "red");
@@ -2527,6 +2553,42 @@ struct Game::Impl final : GameServices {
             send_put_back(p);
             sync_inventory(p);
             sync_experience(p);
+            sync_maps(p);
+        }
+    }
+
+    // The filled maps a player's inventory holds (not the cursor), by id.
+    std::set<std::int32_t> carried_maps(const runtime::WorldView& view, const Player& p) const {
+        std::set<std::int32_t> ids;
+        const auto inv = view.player(key_of(p));
+        if (!inv || !*inv) return ids;
+        for (const auto& s : (*inv)->slots)
+            if (s.item == gameplay::items::filled_map && !s.empty())
+                if (const auto id = wire.components().varint_of(s.components, "map_id")) ids.insert(*id);
+        return ids;
+    }
+    // Map data for the filled maps a player carries (client/maps, both
+    // versions identical): the whole map the first time, then its markers
+    // when they change. A map's markers are those of the players carrying it
+    // in its dimension; its colors stay 0, as maps do not explore yet.
+    void sync_maps(Player& p) {
+        const auto view = engine->view();
+        for (const auto id : carried_maps(view, p)) {
+            const auto map = view.map(id);
+            if (!map || !*map) continue;
+            const auto& data = **map;
+            std::vector<gameplay::MapMarker> markers;
+            for (const auto& [other_id, other] : players)
+                if (!other.dead && data.dimension == overworld && carried_maps(view, other).contains(id))
+                    if (const auto marker = gameplay::player_marker_on(data, other.pos.x, other.pos.z, other.yaw)) markers.push_back(*marker);
+            const auto sent = p.maps_sent.find(id);
+            if (sent == p.maps_sent.end()) {
+                p.peer->send(wire.map_item_data(id, data.scale, data.locked, markers, data.colors));
+                p.maps_sent.emplace(id, std::move(markers));
+            } else if (sent->second != markers) {
+                p.peer->send(wire.map_item_data(id, data.scale, data.locked, markers, {}));
+                sent->second = std::move(markers);
+            }
         }
     }
     // A player's experience, when it changed (and once on joining).

@@ -23,7 +23,7 @@ struct Wire::Ids {
         set_entity_data, remove_entities, entity_position_sync, rotate_head, container_set_content, disconnect, take_item_entity,
         open_screen, container_close, container_set_slot, container_set_data, set_cursor_item, set_player_inventory, respawn, combat_kill, damage_event, sb_container_click,
         sb_container_close, sb_container_button_click, sb_container_slot_state_changed, sb_rename_item, update_recipes,
-        commands, explode, set_experience;
+        commands, explode, set_experience, map_item_data;
     // The orb spawn packet of protocols before 1.21.5's (-1: none; orbs are
     // entities with their value as data).
     std::int32_t add_experience_orb{-1};
@@ -73,6 +73,7 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->forget_chunk = cb(State::play, "forget_level_chunk");
     ids->block_update = cb(State::play, "block_update");
     ids->block_event = cb(State::play, "block_event");
+    ids->map_item_data = cb(State::play, "map_item_data");
     ids->level_event = cb(State::play, "level_event");
     ids->block_changed_ack = cb(State::play, "block_changed_ack");
     ids->player_position = cb(State::play, "player_position");
@@ -286,6 +287,21 @@ Bytes Wire::forget_chunk(std::int32_t x, std::int32_t z) const { return packet(i
 Bytes Wire::block_update(WirePosition pos, std::int32_t state) const {
     return packet(id_->block_update, Writer().position(pos).varint(state));
 }
+Bytes Wire::map_item_data(std::int32_t map, std::uint8_t scale, bool locked, std::span<const gameplay::MapMarker> markers,
+                          std::span<const std::uint8_t> colors) const {
+    Writer w;
+    w.varint(map).u8(scale).boolean(locked).boolean(true).varint(static_cast<std::int32_t>(markers.size()));
+    for (const auto& m : markers) w.varint(m.type).u8(static_cast<std::uint8_t>(m.x)).u8(static_cast<std::uint8_t>(m.z)).u8(m.direction).boolean(false);
+    // The whole map's colors, or none.
+    if (colors.empty()) {
+        w.u8(0);
+    } else {
+        w.u8(static_cast<std::uint8_t>(gameplay::map_side)).u8(static_cast<std::uint8_t>(gameplay::map_side)).u8(0).u8(0);
+        w.prefixed_bytes(std::as_bytes(colors));
+    }
+    return packet(id_->map_item_data, w);
+}
+
 Bytes Wire::block_event(WirePosition pos, std::uint8_t event, std::uint8_t param, std::int32_t block) const {
     return packet(id_->block_event, Writer().position(pos).u8(event).u8(param).varint(block));
 }
