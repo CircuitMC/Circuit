@@ -1513,6 +1513,41 @@ int main() {
         require(events() == std::vector<Event>{{2, -60, 1, 1, 0, trapped}} && f.at({3, -60, 1}).contains("power=0"), "closed: the lid and no power");
     });
 
+    suite.run("barrels open under a solid block with their translated title", [] {
+        using I = server::Intent;
+        GameFixture f;
+        auto peer = f.join(1, "Clerk");
+        f.game->submit(1, I{server::intent::Command{"setblock 2 -60 1 minecraft:barrel[facing=up,open=false]"}});
+        f.game->submit(1, I{server::intent::Command{"setblock 2 -59 1 minecraft:stone"}});
+        f.game->tick();
+        std::size_t seen = 0;
+        // Windows opened since the last call: (window id, menu type, translation key).
+        const auto opened = [&] {
+            const auto open = f.wire.ids().id(State::play, Bound::clientbound, "open_screen");
+            std::vector<std::tuple<std::int32_t, std::int32_t, std::string>> out;
+            std::lock_guard lock(peer->mutex);
+            for (; seen < peer->packets.size(); ++seen) {
+                auto pk = protocol::open_packet(peer->packets[seen]);
+                if (!pk || pk->id != open) continue;
+                const auto window = pk->fields.varint().value();
+                const auto type = pk->fields.varint().value();
+                const auto title = protocol::nbt::read_network(pk->fields).value();
+                const auto* key = title.find("translate");
+                out.emplace_back(window, type, key ? key->text() : std::string{});
+            }
+            return out;
+        };
+        (void)opened();
+        f.game->submit(1, GameFixture::click({2, -60, 1}, 1, 3));
+        f.game->tick();
+        require((opened() == std::vector<std::tuple<std::int32_t, std::int32_t, std::string>>{{1, 2, "container.barrel"}})
+                    && f.at({2, -60, 1}) == "minecraft:barrel[facing=up,open=true]",
+                "a generic_9x3 window titled container.barrel; the barrel opens");
+        f.game->submit(1, I{server::intent::ContainerClose{1}});
+        f.game->tick();
+        require(f.at({2, -60, 1}) == "minecraft:barrel[facing=up,open=false]", "and closes");
+    });
+
     suite.run("survival movement is replayed against block shapes", [] {
         using I = server::Intent;
         GameFixture f;
@@ -2490,8 +2525,8 @@ int main() {
         // wall torches, signs, hanging signs, banners and heads count with the
         // standing ones' tables (the banners' and the player head's are
         // refused: they copy components).
-        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 945, 888, 1407, 984},
-                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 937, 880, 1370, 948}}) {
+        for (const auto& e : {Expected{"CIRCUIT_VANILLA_JAR_1_21_8", "java-1.21.8", "1.21.8", 944, 888, 1407, 984},
+                              Expected{"CIRCUIT_VANILLA_JAR_1_21_4", "java-1.21.4", "1.21.4", 936, 880, 1370, 948}}) {
             const char* jar = std::getenv(e.variable);
             if (!jar || !*jar) continue;
             const auto& bundle = **contracts::BundleRegistry::find(e.bundle);

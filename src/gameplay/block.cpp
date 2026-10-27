@@ -11,12 +11,12 @@ namespace circuit::gameplay {
 namespace {
 // Registry blocks with a BlockType of their own (see evidence::ContentMapping),
 // besides the buttons and pressure plates of each kind.
-constexpr std::array<std::string_view, 39> modeled_names{
+constexpr std::array<std::string_view, 40> modeled_names{
     "air", "cave_air", "void_air", "stone", "glass", "obsidian", "redstone_block", "slime_block", "lever", "redstone_wire",
     "repeater", "redstone_lamp", "observer", "piston", "sticky_piston", "piston_head", "moving_piston", "hopper", "chest",
     "comparator", "water", "wheat", "redstone_torch", "redstone_wall_torch", "light_weighted_pressure_plate",
     "heavy_weighted_pressure_plate", "target", "honey_block", "daylight_detector", "note_block", "dispenser", "dropper", "furnace", "smoker",
-    "blast_furnace", "crafter", "brewing_stand", "lectern", "trapped_chest"};
+    "blast_furnace", "crafter", "brewing_stand", "lectern", "trapped_chest", "barrel"};
 constexpr std::array<std::string_view, note_instruments> instrument_names{
     "harp", "basedrum", "snare", "hat", "bass", "flute", "bell", "guitar", "chime", "xylophone", "iron_xylophone", "cow_bell",
     "didgeridoo", "bit", "banjo", "pling", "zombie", "skeleton", "creeper", "dragon", "wither_skeleton", "piglin", "custom_head"};
@@ -60,6 +60,7 @@ constexpr Properties properties(BlockType t) noexcept {
     case BlockType::crafter: return {true, false, true, true};
     case BlockType::brewing_stand: return {false, true, false, false};
     case BlockType::lectern: return {true, false, true, true};
+    case BlockType::barrel: return {true, false, true, false};
     default: return {false, false, false, false};
     }
 }
@@ -358,6 +359,7 @@ std::string block_notation(BlockState s) {
                            b(s.level() & 4));
     case BlockType::lectern:
         return std::format("minecraft:lectern[facing={},has_book={},powered={}]", direction_name(s.facing()), b(s.extra() == 1), b(s.flag()));
+    case BlockType::barrel: return std::format("minecraft:barrel[facing={},open={}]", direction_name(s.facing()), b(s.flag()));
     case BlockType::other: return registry::notation(s.registry_state());
     default: return std::format("circuit:unrepresentable[raw={}]", s.raw());
     }

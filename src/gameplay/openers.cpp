@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 // Container openers: the players viewing a chest, counted by each chest half,
-// as both official servers count them (client/openers; minecraft.wiki
-// "Chest", "Trapped Chest"):
+// or a barrel, as both official servers count them (client/openers,
+// client/barrel; minecraft.wiki "Chest", "Trapped Chest", "Barrel"):
 // - A player opening a chest views each of its halves; closing its window
 //   (leaving too), dying or opening another container stops that.
 // - Every change of a half's count, and every recheck while it is viewed,
 //   queues the half's block event 1 with the count (the lid clients show).
+//   A barrel queues none: it is open from its first viewer to its last.
 // - The first viewer schedules a recheck 5 ticks later, which keeps the
 //   viewers still in the level, and comes again while any remain. A viewer
 //   stays one as far as their window reaches (client/openers2: 9 blocks
@@ -24,7 +25,14 @@ constexpr std::uint8_t lid_event = 1;
 
 bool is_trapped(BlockState s) { return s.is(BlockType::chest) && s.variant() == 1; }
 
+// The first viewer opens a barrel, the last one gone closes it.
+void opened(RuleContext& ctx, BlockPos pos, bool open) {
+    const auto s = ctx.block(pos);
+    if (s.is(BlockType::barrel)) set_block(ctx, pos, s.with_flag(open));
+}
+
 void count_changed(RuleContext& ctx, BlockPos pos, std::size_t before, std::size_t now) {
+    if (!ctx.block(pos).is(BlockType::chest)) return;
     queue_block_event(ctx, {pos, BlockType::chest, lid_event, static_cast<std::uint8_t>(std::min<std::size_t>(now, 255))});
     if (before == now || !is_trapped(ctx.block(pos))) return;
     notify_neighbors(ctx, pos);
@@ -38,7 +46,7 @@ bool still_here(RuleContext& ctx, contracts::PlayerKey player) {
 }
 } // namespace
 
-bool counts_viewers(BlockState s) { return s.is(BlockType::chest); }
+bool counts_viewers(BlockState s) { return s.is(BlockType::chest) || s.is(BlockType::barrel); }
 
 void start_viewing(RuleContext& ctx, PlayerInventory& inv, BlockPos pos) {
     stop_viewing(ctx, inv);
@@ -49,7 +57,10 @@ void start_viewing(RuleContext& ctx, PlayerInventory& inv, BlockPos pos) {
         if (!be || std::ranges::find(be->viewers, inv.player) != be->viewers.end()) continue;
         be->viewers.push_back(inv.player);
         const auto now = be->viewers.size();
-        if (now == 1) schedule(ctx, TickList::block, part, BlockType::chest, recheck_ticks, 0);
+        if (now == 1) {
+            opened(ctx, part, true);
+            schedule(ctx, TickList::block, part, ctx.block(part).type(), recheck_ticks, 0);
+        }
         count_changed(ctx, part, now - 1, now);
     }
 }
@@ -65,6 +76,7 @@ void stop_viewing(RuleContext& ctx, PlayerInventory& inv) {
         if (it == be->viewers.end()) continue;
         be->viewers.erase(it);
         const auto now = be->viewers.size();
+        if (now == 0) opened(ctx, part, false);
         count_changed(ctx, part, now + 1, now);
     }
 }
@@ -76,14 +88,15 @@ std::uint8_t viewer_count(RuleContext& ctx, BlockPos pos) {
 
 std::uint8_t trapped_power(RuleContext& ctx, BlockPos pos, BlockState s) { return is_trapped(s) ? viewer_count(ctx, pos) : 0; }
 
-void tick_chest(RuleContext& ctx, BlockPos pos) {
+void tick_viewers(RuleContext& ctx, BlockPos pos) {
     auto* be = ctx.block_entity(pos);
     if (!be) return;
     const auto before = be->viewers.size();
     std::erase_if(be->viewers, [&](contracts::PlayerKey v) { return !still_here(ctx, v); });
     const auto now = be->viewers.size();
+    if (before > 0 && now == 0) opened(ctx, pos, false);
     count_changed(ctx, pos, before, now);
-    if (now > 0) schedule(ctx, TickList::block, pos, BlockType::chest, recheck_ticks, 0);
+    if (now > 0) schedule(ctx, TickList::block, pos, ctx.block(pos).type(), recheck_ticks, 0);
 }
 
 } // namespace circuit::gameplay::detail

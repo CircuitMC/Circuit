@@ -380,7 +380,40 @@
       ],
       "location": "external: circuit-clienttest/openers.js",
       "status": "passing",
-      "description": "14 steps with two players and a scene built with /setblock: a trapped chest opened by one player and then the other, an item moved in, each closing it; a double trapped chest opened and closed; a barrel and a chest opened and closed; the power of dust beside the trapped chest and beside the block below it, the dust beside the double trapped chest and a comparator reading the trapped chest, and the lid block events (positions, counts and rechecks) the first player receives; Circuit and both official servers give identical output for the chests (barrels are not modeled yet)"
+      "description": "14 steps with two players and a scene built with /setblock: a trapped chest opened by one player and then the other, an item moved in, each closing it; a double trapped chest opened and closed; a barrel and a chest opened and closed; the power of dust beside the trapped chest and beside the block below it, the dust beside the double trapped chest and a comparator reading the trapped chest, and the lid block events (positions, counts and rechecks) the first player receives; Circuit and both official servers give identical output"
+    },
+    {
+      "id": "client/openers2",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/openers2.js",
+      "status": "passing",
+      "description": "12 steps for a trapped chest and then a barrel: opened, the player walking 6 blocks away with the window open and back, closed, opened and closed again; the power beside the trapped chest, the barrel's open state, the window and the lid events received (the player stays a viewer while the window is open); Circuit and both official servers give identical output"
+    },
+    {
+      "id": "client/barrel",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/barrel.js",
+      "status": "passing",
+      "description": "5 steps at a barrel under a stone with a comparator reading it: its window (type 2, title container.barrel, 63 slots) opening the barrel, three stacks moved in by shift-clicks (the comparator 2), closed, and broken in survival dropping itself and its contents (totals by item, the stacks splitting at random); Circuit and both official servers give identical output"
+    },
+    {
+      "id": "client/titles",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/titles.js",
+      "status": "passing",
+      "description": "The window type and title of 19 containers and workstations opened once (chest, trapped chest, barrel, hopper, dispenser, dropper, furnace, smoker, blast furnace, crafter, brewing stand, crafting table, stonecutter, smithing table, grindstone, loom, anvil, enchanting table and a double chest): each title is a translation, as is a lectern's (titles-lectern.js, container.lectern); Circuit and both official servers give identical output"
     },
     {
       "id": "client/furnace_xp",

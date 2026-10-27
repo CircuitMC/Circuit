@@ -236,6 +236,12 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
         CIRCUIT_TRY(powered, p.choice("powered", {"false", "true"}, 0));
         return simple(blocks::lectern(facing, has_book == 1, powered == 1));
     }
+    if (id == "minecraft:barrel") {
+        // Absent properties take the default state's (facing north, closed).
+        CIRCUIT_TRY(facing, p.direction_or("facing", Direction::north));
+        CIRCUIT_TRY(open, p.choice("open", {"false", "true"}, 0));
+        return simple(blocks::barrel(facing, open == 1));
+    }
     if (id == "minecraft:brewing_stand") {
         // Absent properties take the default state's (no bottles).
         std::uint8_t bottles = 0;

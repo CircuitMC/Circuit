@@ -55,6 +55,7 @@ std::optional<ItemStack> own_item(BlockState s) {
     case BlockType::crafter: return ItemStack{items::crafter, 1};
     case BlockType::brewing_stand: return ItemStack{items::brewing_stand, 1};
     case BlockType::lectern: return ItemStack{items::lectern, 1};
+    case BlockType::barrel: return ItemStack{items::barrel, 1};
     case BlockType::furnace: {
         constexpr std::array<std::uint16_t, 3> kinds{items::furnace, items::smoker, items::blast_furnace};
         return ItemStack{kinds[s.variant() % 3], 1};

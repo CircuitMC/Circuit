@@ -73,6 +73,8 @@ std::optional<BlockState> placed_by(std::uint16_t item, const contracts::PlayerU
     case items::brewing_stand: return blocks::brewing_stand();
     // Lecterns face the player (both official servers, client/lectern).
     case items::lectern: return blocks::lectern(contracts::opposite(horizontal));
+    // Barrels look back along the player's view (tests/fixtures/placement).
+    case items::barrel: return blocks::barrel(contracts::opposite(look));
     case items::smoker: return blocks::furnace(blocks::FurnaceKind::smoker, contracts::opposite(horizontal));
     case items::blast_furnace: return blocks::furnace(blocks::FurnaceKind::blast_furnace, contracts::opposite(horizontal));
     case items::hopper:

@@ -21,6 +21,7 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 44: barrels have rules of their own;
 // 43: block entities carry a chest's viewers, player inventories the
 // container a player views;
 // 42: lecterns have rules of their own (their block entities keep the book
@@ -78,7 +79,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 43;
+constexpr std::uint32_t version = 44;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -467,8 +468,9 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
         s.block_entities.push_back({p, std::move(be)});
     }
     // Before version 28 furnaces, smokers and blast furnaces, before 32
-    // crafters, before 35 brewing stands, before 42 lecterns and before 43
-    // trapped chests (modeled as chests) had no rules of their own: their
+    // crafters, before 35 brewing stands, before 42 lecterns, before 43
+    // trapped chests (modeled as chests) and before 44 barrels had no rules
+    // of their own: their
     // registry states become the modeled ones, and their block entities
     // start empty (they could hold nothing the rules used).
     const auto newly_modeled = [&](gameplay::BlockType type, std::uint32_t since) {
@@ -493,6 +495,7 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
     newly_modeled(gameplay::BlockType::brewing_stand, 35);
     newly_modeled(gameplay::BlockType::lectern, 42);
     newly_modeled(gameplay::BlockType::chest, 43);
+    newly_modeled(gameplay::BlockType::barrel, 44);
     if (!b.count(n, 55)) return false;
     for (std::size_t i = 0; i < n; ++i) {
         gameplay::Entity e;

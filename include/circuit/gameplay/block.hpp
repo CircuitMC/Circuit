@@ -58,6 +58,7 @@ enum class BlockType : std::uint8_t {
     brewing_stand,       // level: its bottles (bit k: has_bottle_k). Block entity: three bottles, the ingredient, the fuel; its
                          // fuel, brew time and the ingredient it brews with
     lectern,             // facing: front (horizontal); flag: powered; extra: has_book. Block entity: the book; cook_time its page
+    barrel,              // facing: front (any side); flag: open. Block entity: 27 slots, its viewers
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -274,6 +275,8 @@ constexpr BlockState brewing_stand(std::uint8_t bottles = 0) {
 constexpr BlockState lectern(Direction front, bool has_book = false, bool powered = false) {
     return BlockState::of(BlockType::lectern).with_facing(front).with_flag(powered).with_extra(has_book ? 1 : 0);
 }
+// A barrel facing `front` (any side), open or not.
+constexpr BlockState barrel(Direction front, bool open = false) { return BlockState::of(BlockType::barrel).with_facing(front).with_flag(open); }
 // A note block; `instrument` is a registry::Instrument.
 constexpr BlockState note_block(std::uint8_t instrument = 0, std::uint8_t note = 0, bool powered = false) {
     return BlockState::of(BlockType::note_block).with_variant(instrument).with_level(static_cast<std::uint8_t>(note & 15))
@@ -369,7 +372,7 @@ template <class F>
 void for_each_block_state(F&& f);
 constexpr bool is_container(BlockType t) noexcept {
     return t == BlockType::hopper || t == BlockType::chest || t == BlockType::dispenser || t == BlockType::furnace || t == BlockType::crafter
-        || t == BlockType::brewing_stand;
+        || t == BlockType::brewing_stand || t == BlockType::barrel;
 }
 // Block entities hold container slots, hopper cooldowns, comparator output
 // signals and moving blocks; a daylight detector's ticks it.
@@ -386,7 +389,7 @@ constexpr std::optional<Direction> chest_partner(BlockState s) noexcept {
     return std::nullopt;
 }
 constexpr std::uint8_t container_size(BlockType t) noexcept {
-    return t == BlockType::hopper ? 5 : t == BlockType::chest ? 27 : t == BlockType::dispenser || t == BlockType::crafter ? 9
+    return t == BlockType::hopper ? 5 : t == BlockType::chest || t == BlockType::barrel ? 27 : t == BlockType::dispenser || t == BlockType::crafter ? 9
          : t == BlockType::furnace ? 3 : t == BlockType::brewing_stand ? 5 : 0;
 }
 // Whether a block state takes random ticks (random_ticks.cpp; checked

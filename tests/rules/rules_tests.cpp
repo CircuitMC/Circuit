@@ -4410,6 +4410,39 @@ int main() {
         require(beside() == std::pair<std::uint8_t, std::uint8_t>{0, 0} && !viewing(alex), "and dies");
     });
 
+    suite.run("barrels are open from their first viewer to their last", [] {
+        using circuit::contracts::CloseContainer;
+        using circuit::contracts::PlayerPresence;
+        using circuit::contracts::PlayerUse;
+        const PlayerKey alex{4, 2}, bob{4, 3};
+        const BlockPos barrel{0, 0, 0};
+        Sim s(bundle(), 7, 2);
+        // A barrel under a stone (which does not keep it from opening), and
+        // one set open.
+        s.tick({place(barrel, blocks::barrel(Direction::north)), place({0, 1, 0}, blocks::stone()),
+                place({3, 0, 0}, blocks::barrel(Direction::up, true))});
+        s.tick({PlayerPresence{alex, at_block(0.5, 0, 2.5)}, PlayerPresence{bob, at_block(1.5, 0, 2.5)}});
+        const auto use = [&](PlayerKey who) { return PlayerUse{who, 36, barrel, Direction::south, Direction::north, Direction::north, false, true, 3, 3}; };
+        const auto close = [&](PlayerKey who) { return CloseContainer{who, at_block(0.5, 1, 2.5), {}, false, barrel}; };
+        s.tick({use(alex)});
+        require(s.at(barrel) == blocks::barrel(Direction::north, true) && of_kind(s.last, TraceKind::container_opened).size() == 1
+                    && of_kind(s.last, TraceKind::block_event_queued).empty(),
+                "opened, with a block above it; no block event");
+        s.tick({use(bob)});
+        for (int i = 0; i < 10; ++i) s.tick();
+        s.tick({close(alex)});
+        require(s.at(barrel).flag(), "open while bob views it");
+        s.tick({close(bob)});
+        require(s.at(barrel) == blocks::barrel(Direction::north), "closed with the last viewer");
+        for (int i = 0; i < 10; ++i) s.tick();
+        require(s.at({3, 0, 0}) == blocks::barrel(Direction::up, true), "a barrel set open stays so");
+        // Gone from the level, a viewer is dropped at the next recheck.
+        s.tick({use(alex)});
+        s.tick({PlayerPresence{alex, {}, false, false}});
+        for (int i = 0; i < 5; ++i) s.tick();
+        require(s.at(barrel) == blocks::barrel(Direction::north), "the recheck closes it");
+    });
+
     suite.run("experience changes as the /xp command makes them", [] {
         using circuit::contracts::ChangeExperience;
         const PlayerKey alex{4, 2};

@@ -235,6 +235,7 @@ struct Extensions::Impl {
             case gameplay::BlockType::crafter: return "minecraft:crafter";
             case gameplay::BlockType::brewing_stand: return "minecraft:brewing_stand";
             case gameplay::BlockType::lectern: return "minecraft:lectern";
+            case gameplay::BlockType::barrel: return "minecraft:barrel";
             default: return "unknown";
             }
         }

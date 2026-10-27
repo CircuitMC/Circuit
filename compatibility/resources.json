@@ -2913,13 +2913,14 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/barrel_containers",
+          "client/barrel",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the open and close sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; a container open while viewed, as both official servers run it (barrel_containers, client/barrel, client/openers)"
       },
       "beacon": {
         "impl": "partial",
@@ -5789,6 +5790,14 @@
         "note": "Placed facing the player and paired",
         "cases": [
           "trace/trapped_chest_pairs"
+        ]
+      },
+      "barrel": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed looking back along the player's view",
+        "cases": [
+          "placement/official_items"
         ]
       }
     },

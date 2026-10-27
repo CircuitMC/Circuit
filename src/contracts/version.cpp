@@ -231,6 +231,12 @@ constexpr std::array reference_v4_mechanisms{
         "on every side and strongly to the block below, telling its neighbors and the block below's when the count "
         "changes; dust connects to trapped chests. Gaps: the open and close sounds and the game events sculk sensors "
         "hear are not modeled."},
+    MechanismEntry{"barrel", l0_exact, l2_declared_deviation, harness_trace,
+        "Barrels as both official servers run them (barrel_containers; client/barrel, client/openers): 27-slot "
+        "containers facing any side that hoppers fill and empty and comparators read, conducting power as solid "
+        "blocks; they open with a solid block above them, are open from their first viewer to their last (the "
+        "viewer counts and rechecks of chests, without block events), and a set open state stays until a viewer "
+        "changes it. Gaps: the open and close sounds and the game events sculk sensors hear are not modeled."},
     MechanismEntry{"bone_meal", l0_exact, l2_declared_deviation, harness_trace,
         "Dispensers use bone meal on the block in front as the official 1.21.8 server does (bonemeal_dispensers): crops "
         "and stems grow 2 + nextInt(4) stages (beetroots a third of that), torchflower and pitcher crops, cocoa and berry "

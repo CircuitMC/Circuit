@@ -292,6 +292,9 @@ struct Game::Impl final : GameServices {
         player_entity_type{};
     std::array<std::int32_t, gameplay::boat_types.size()> boat_entity_types{};
     std::int32_t chest_block{}, trapped_chest_block{};
+    // Blocks /setblock set for the next tick: a later /setblock compares with
+    // them, as commands run one after another on the official servers.
+    std::map<BlockPos, BlockState> pending_setblocks;
     // Parameters of block events queued and not yet run, by event in queue
     // order (the trace of a run names none).
     std::map<std::tuple<BlockPos, std::uint64_t, std::uint64_t>, std::deque<std::uint8_t>> queued_events;
@@ -1056,18 +1059,21 @@ struct Game::Impl final : GameServices {
                                 : block.is(BlockType::brewing_stand) ? 11
                                 : block.is(BlockType::lectern) ? 17
                                 : table ? 12 : cutter ? 24 : smith ? 21 : grind ? 15 : loom ? 18 : anvil ? 8 : enchanting ? 13 : slots == 54 ? 5 : slots == 5 ? 16 : slots == 9 ? 6 : 2;
-        // A container's custom name is its title (for a double chest, the
-        // first named half's).
-        constexpr std::array<std::string_view, 3> furnace_titles{"Furnace", "Smoker", "Blast Furnace"};
-        auto title = protocol::nbt::text(block.is(BlockType::furnace) ? std::string(furnace_titles[block.variant() % 3])
-                                         : block.is(BlockType::crafter) ? "Crafter"
-                                         : block.is(BlockType::brewing_stand) ? "Brewing Stand"
-                                         : block.is(BlockType::lectern) ? "Lectern"
-                                         : table ? "Crafting" : cutter ? "Stonecutter" : smith ? "Upgrade Gear" : grind ? "Repair & Disenchant"
-                                         : loom ? "Loom" : anvil ? "Repair & Name" : enchanting ? "Enchant"
-                                         : slots == 54 ? "Large Chest" : slots == 5 ? "Item Hopper"
-                                         : block.is(BlockType::dispenser) ? (block.variant() == 1 ? "Dropper" : "Dispenser")
-                                                                          : "Chest");
+        // The title is the translation the official servers send for the
+        // window (client/titles, both versions); a container's custom name
+        // replaces it (for a double chest, the first named half's).
+        constexpr std::array<std::string_view, 3> furnace_titles{"container.furnace", "container.smoker", "container.blast_furnace"};
+        const std::string_view key = block.is(BlockType::furnace) ? furnace_titles[block.variant() % 3]
+                                   : block.is(BlockType::crafter) ? "container.crafter"
+                                   : block.is(BlockType::brewing_stand) ? "container.brewing"
+                                   : block.is(BlockType::lectern) ? "container.lectern"
+                                   : block.is(BlockType::barrel) ? "container.barrel"
+                                   : table ? "container.crafting" : cutter ? "container.stonecutter" : smith ? "container.upgrade"
+                                   : grind ? "container.grindstone_title" : loom ? "container.loom" : anvil ? "container.repair"
+                                   : enchanting ? "container.enchant" : slots == 54 ? "container.chestDouble" : slots == 5 ? "container.hopper"
+                                   : block.is(BlockType::dispenser) ? (block.variant() == 1 ? "container.dropper" : "container.dispenser")
+                                                                    : "container.chest";
+        auto title = translation(key, protocol::nbt::Tag::list(protocol::nbt::TagType::string));
         const auto view = engine->view();
         const auto name_type = wire.components().type_id("custom_name");
         for (const auto part : container_parts_of(pos)) {
@@ -2030,8 +2036,11 @@ struct Game::Impl final : GameServices {
         auto state = mapping.block(args[4].find(':') == std::string::npos ? "minecraft:" + args[4] : args[4]);
         if (!state) return message(p, state.error(), "red");
         if (!bundle.world.contains_y(pos.y)) return message(p, "Cannot place blocks outside of the world", "red");
-        if (at(pos) == *state) return send_translation(p, "commands.setblock.failed", nbt::Tag::list(nbt::TagType::string));
+        const auto pending = pending_setblocks.find(pos);
+        if ((pending != pending_setblocks.end() ? pending->second : at(pos)) == *state)
+            return send_translation(p, "commands.setblock.failed", nbt::Tag::list(nbt::TagType::string));
         admit(contracts::SetBlock{pos, state->raw(), std::nullopt});
+        pending_setblocks[pos] = *state;
         send_translation(p, "commands.setblock.success", int_arguments({pos.x, pos.y, pos.z}));
     }
 
@@ -2778,6 +2787,7 @@ struct Game::Impl final : GameServices {
         }
         engine->advance(commands);
         pending_day_time.reset();
+        pending_setblocks.clear();
         publish_weather();
         publish_blocks();
         publish_block_events();
