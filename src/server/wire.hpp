@@ -238,6 +238,9 @@ public:
     // One property of a window (a furnace's burn and cooking times).
     Bytes container_data(std::int32_t window, std::int16_t property, std::int16_t value) const;
     Bytes cursor_item(const WireStack& stack) const;
+    // A slot of the player's inventory by its inventory index (hotbar 0-8,
+    // main 9-35, armor 36-39 from the feet, off hand 40), outside any window.
+    Bytes player_inventory(std::int32_t index, const WireStack& stack) const;
     // The recipe data clients need: item property sets (furnace inputs,
     // smithing slots) and the stonecutter's recipes in their button order.
     struct PropertySet {

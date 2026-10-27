@@ -1369,6 +1369,7 @@ int main() {
             const auto slot_id = f.wire.ids().id(State::play, Bound::clientbound, "container_set_slot");
             const auto cursor_id = f.wire.ids().id(State::play, Bound::clientbound, "set_cursor_item");
             const auto close = f.wire.ids().id(State::play, Bound::clientbound, "container_close");
+            const auto put = f.wire.ids().id(State::play, Bound::clientbound, "set_player_inventory");
             std::vector<std::tuple<std::string, std::int32_t, std::int32_t>> out;
             std::lock_guard lock(peer->mutex);
             for (; seen < peer->packets.size(); ++seen) {
@@ -1389,6 +1390,8 @@ int main() {
                     out.emplace_back("cursor", 0, 0);
                 } else if (pk->id == close) {
                     out.emplace_back("close", pk->fields.varint().value(), 0);
+                } else if (pk->id == put) {
+                    out.emplace_back("inventory", pk->fields.varint().value(), 0);
                 }
             }
             return out;
@@ -1438,12 +1441,21 @@ int main() {
         f.game->submit(1, window_click(1, 0, 1, 0));
         f.game->tick();
         require(inventory().cursor == contracts::ItemStack{gameplay::items::redstone, 32, 0} && chest_slots()[0].count == 32, "half picked up");
+        (void)window_packets();
         f.game->submit(1, I{server::intent::ContainerClose{1}});
         f.game->tick();
         require(inventory().cursor.empty(), "closing returns the carried stack");
-        bool returned = false;
-        for (const auto& st : inventory().slots) returned |= st == contracts::ItemStack{gameplay::items::redstone, 32, 0};
-        require(returned, "into the inventory");
+        std::int32_t returned = -1;
+        for (std::size_t n = 0; n < inventory().slots.size(); ++n)
+            if (inventory().slots[n] == contracts::ItemStack{gameplay::items::redstone, 32, 0}) returned = static_cast<std::int32_t>(n);
+        require(returned >= 9 && returned < 45, "into the inventory");
+        // As both official servers send it: the stack put back by its
+        // inventory index, then the own window's slot that differs; the
+        // client keeps the rest from the chest window.
+        packets = window_packets();
+        require(packets.size() == 2 && std::get<0>(packets[0]) == "inventory" && std::get<1>(packets[0]) == (returned >= 36 ? returned - 36 : returned)
+                    && has(packets, "slot", 0, returned),
+                "the put-back stack, then its slot");
         // A dropper opens a generic_3x3 window: 9 slots, then the 36 inventory slots.
         require(f.at({2, -60, 3}).starts_with("minecraft:dropper"), "dropper placed");
         f.game->submit(1, GameFixture::click({2, -60, 3}, 3));
@@ -1452,6 +1464,7 @@ int main() {
         require(has(packets, "open", 2, 6) && has(packets, "content", 2, 45), "a generic_3x3 window opened");
         f.game->submit(1, I{server::intent::ContainerClose{2}});
         f.game->tick();
+        require(window_packets().empty(), "closing a window changed nothing: nothing is sent");
         // A window whose container goes out of reach closes, and the client is told.
         f.game->submit(1, GameFixture::click({2, -60, 1}, 4));
         f.game->tick();

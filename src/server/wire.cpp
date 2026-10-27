@@ -21,7 +21,7 @@ struct Wire::Ids {
         chunk_batch_start, chunk_batch_finished, level_chunk, light_update, forget_chunk, block_update, block_changed_ack,
         player_position, keep_alive, system_chat, player_info_update, player_info_remove, add_entity,
         set_entity_data, remove_entities, entity_position_sync, rotate_head, container_set_content, disconnect, take_item_entity,
-        open_screen, container_close, container_set_slot, container_set_data, set_cursor_item, respawn, combat_kill, damage_event, sb_container_click,
+        open_screen, container_close, container_set_slot, container_set_data, set_cursor_item, set_player_inventory, respawn, combat_kill, damage_event, sb_container_click,
         sb_container_close, sb_container_button_click, sb_container_slot_state_changed, sb_rename_item, update_recipes,
         commands, explode, set_experience;
     // The orb spawn packet of protocols before 1.21.5's (-1: none; orbs are
@@ -90,6 +90,7 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->container_set_slot = cb(State::play, "container_set_slot");
     ids->container_set_data = cb(State::play, "container_set_data");
     ids->set_cursor_item = cb(State::play, "set_cursor_item");
+    ids->set_player_inventory = cb(State::play, "set_player_inventory");
     ids->respawn = cb(State::play, "respawn");
     ids->combat_kill = cb(State::play, "player_combat_kill");
     ids->damage_event = cb(State::play, "damage_event");
@@ -438,6 +439,12 @@ Bytes Wire::cursor_item(const WireStack& stack) const {
     Writer w;
     slot(w, stack);
     return packet(id_->set_cursor_item, w);
+}
+Bytes Wire::player_inventory(std::int32_t index, const WireStack& stack) const {
+    Writer w;
+    w.varint(index);
+    slot(w, stack);
+    return packet(id_->set_player_inventory, w);
 }
 Bytes Wire::open_screen(std::int32_t window, std::int32_t menu_type, const protocol::nbt::Tag& title) const {
     Writer w;

@@ -114,6 +114,14 @@ struct Player {
     std::int32_t remote_window{-1};
     std::vector<std::optional<WireStack>> remote;
     std::optional<WireStack> remote_carried;
+    // While another window is open, the client's view of its own window (as
+    // the target version's player menu keeps it): the player slots the open
+    // window shows follow it, the others stay as last sent; empty when not
+    // known. Closing the window makes it the window the client describes.
+    std::vector<std::optional<WireStack>> own;
+    // A CloseContainer of this player not yet applied: the stacks it puts
+    // back into the inventory are sent as the official servers send them.
+    std::optional<std::uint64_t> closing;
     std::int32_t inventory_state{};
     std::vector<std::int32_t> acks;
     bool moved{};
@@ -859,11 +867,17 @@ struct Game::Impl final : GameServices {
             if (at(p.window->pos).is(BlockType::crafter)) slots.push_back(wire_stack(crafter_result(p.window->pos)));
         }
         const auto id = p.window ? p.window->id : 0;
+        // An open window's player slots are the client's own window's too.
+        const auto mirror = [&] {
+            if (p.window && p.own.size() == inventory_slots && p.remote.size() >= p.window->container_slots + 36)
+                for (std::size_t k = 0; k < 36; ++k) p.own[9 + k] = p.remote[p.window->container_slots + k];
+        };
         if (p.remote_window != id || p.remote.size() != slots.size()) {
             p.peer->send(wire.container_content(id, ++p.inventory_state, slots, carried));
             p.remote_window = id;
             p.remote.assign(slots.begin(), slots.end());
             p.remote_carried = carried;
+            mirror();
             return;
         }
         for (std::size_t i = 0; i < slots.size(); ++i)
@@ -875,6 +889,7 @@ struct Game::Impl final : GameServices {
             p.peer->send(wire.cursor_item(carried));
             p.remote_carried = carried;
         }
+        mirror();
         // A crafter window's properties: each slot disabled (1) or not, and
         // whether it is triggered.
         if (p.window && at(p.window->pos).is(BlockType::crafter))
@@ -1044,6 +1059,9 @@ struct Game::Impl final : GameServices {
             }
         }
         if (p.window) close_window(p, true);
+        // The client's own window as last sent, which the new window's player
+        // slots will update.
+        p.own = p.remote_window == 0 ? p.remote : std::vector<std::optional<WireStack>>{};
         p.window = Player::Window{p.next_window, pos, slots};
         p.next_window = p.next_window % 100 + 1;
         p.peer->send(wire.open_screen(p.window->id, type, title));
@@ -1053,9 +1071,54 @@ struct Game::Impl final : GameServices {
     void close_window(Player& p, bool tell) {
         if (!p.window) return;
         if (tell) p.peer->send(wire.close_screen(p.window->id));
-        const auto [position, velocity] = throw_from(p);
-        admit(contracts::CloseContainer{key_of(p), position, velocity});
+        admit_close(p);
         p.window.reset();
+        // The client keeps the player slots the window showed and carries
+        // nothing in its own window: only what differs from that is sent.
+        if (p.own.size() == inventory_slots) {
+            p.remote_window = 0;
+            p.remote = std::move(p.own);
+            p.remote_carried = WireStack{};
+        } else {
+            p.remote_window = -1;
+        }
+        p.own.clear();
+    }
+    void admit_close(Player& p) {
+        const auto [position, velocity] = throw_from(p);
+        if (const auto id = queue.admit(contracts::CloseContainer{key_of(p), position, velocity}, overworld)) p.closing = *id;
+        else log_warn("game: command queue full; input dropped");
+    }
+    // The stacks a close put back into the player's inventory, each as the
+    // official servers send it (by its inventory index) before the window's
+    // differences.
+    void send_put_back(Player& p) {
+        if (!p.closing) return;
+        const auto& trace = engine->trace();
+        const auto applied = std::ranges::find_if(trace, [&](const contracts::TraceRecord& r) {
+            return (r.kind == contracts::TraceKind::command_applied || r.kind == contracts::TraceKind::command_rejected) && r.a == *p.closing;
+        });
+        if (applied == trace.end()) return;
+        p.closing.reset();
+        if (applied->kind != contracts::TraceKind::command_applied) return;
+        const auto key = key_of(p);
+        const auto view = engine->view();
+        const auto inv = view.player(key);
+        if (!inv || !*inv) return;
+        for (auto r = std::next(applied); r != trace.end(); ++r) {
+            if (r->kind == contracts::TraceKind::command_applied || r->kind == contracts::TraceKind::command_rejected) break;
+            if (r->kind != contracts::TraceKind::player_slot_changed || r->a != key.hi || r->b != key.lo) continue;
+            const auto slot = static_cast<std::int32_t>(r->c >> 48);
+            const std::int32_t index = slot >= 36 && slot <= 44 ? slot - 36 : slot >= 9 && slot <= 35 ? slot : slot >= 5 && slot <= 8 ? 44 - slot : slot == 45 ? 40 : -1;
+            if (index < 0) continue;
+            // The stack as the record has it then (its components as the
+            // slot's now, where it is still that item).
+            const auto& now = (*inv)->slots[static_cast<std::size_t>(slot)];
+            contracts::ItemStack then{static_cast<std::uint16_t>(r->c >> 8 & 0xFFFF), static_cast<std::uint8_t>(r->c & 0xFF),
+                                      static_cast<std::uint16_t>(r->c >> 24 & 0xFFFF), {}};
+            if (then.item == now.item) then.components = now.components;
+            p.peer->send(wire.player_inventory(index, wire_stack(then.count == 0 ? contracts::ItemStack{} : then)));
+        }
     }
 
     // ---- intents ----------------------------------------------------------
@@ -1711,8 +1774,7 @@ struct Game::Impl final : GameServices {
         if (p.window && c.window == p.window->id) {
             close_window(p, false);
         } else if (!p.window && c.window == 0) {
-            const auto [position, velocity] = throw_from(p);
-            admit(contracts::CloseContainer{key_of(p), position, velocity});
+            admit_close(p);
         }
     }
 
@@ -2346,6 +2408,7 @@ struct Game::Impl final : GameServices {
                 const bool near = in_reach_plus(p, p.window->pos, 4.0);
                 if (size != p.window->container_slots || !near) close_window(p, true);
             }
+            send_put_back(p);
             sync_inventory(p);
             sync_experience(p);
         }
