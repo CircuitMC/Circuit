@@ -4488,6 +4488,54 @@ int main() {
                 "the hopper below takes the bone meal");
     });
 
+    suite.run("ender chests show each player their own ender inventory", [] {
+        using circuit::contracts::CloseContainer;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::PlayerPresence;
+        using circuit::contracts::PlayerUse;
+        using circuit::contracts::SetPlayerSlot;
+        const PlayerKey alex{4, 2}, bob{4, 3};
+        const BlockPos one{0, 1, 0}, two{3, 1, 0}, covered{6, 1, 0};
+        Sim s(bundle(), 7, 2);
+        std::vector<CommandBody> build;
+        for (std::int32_t x = 0; x <= 6; ++x) build.push_back(place({x, 0, 0}, blocks::stone()));
+        build.push_back(place(one, blocks::ender_chest(Direction::south)));
+        build.push_back(place(two, blocks::ender_chest(Direction::south)));
+        build.push_back(place(covered, blocks::ender_chest(Direction::south)));
+        build.push_back(place({6, 2, 0}, blocks::stone()));
+        s.tick(build);
+        s.tick({PlayerPresence{alex, at_block(0.5, 1, 2.5)}, PlayerPresence{bob, at_block(1.5, 1, 2.5)},
+                SetPlayerSlot{alex, 36, {items::iron_ingot, 64}}});
+        const auto use = [&](PlayerKey who, BlockPos at) { return PlayerUse{who, 37, at, Direction::up, Direction::north, Direction::north, false, true, 3, 3}; };
+        const auto click = [&](PlayerKey who, BlockPos at, std::int16_t slot) {
+            return ContainerClick{who, std::optional(at), slot, 0, 1, false, at_block(0.5, 2, 2.5), {}};
+        };
+        const auto player = [&](PlayerKey who) {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, who, &PlayerInventory::player);
+        };
+        const auto lids = [&](BlockPos at) {
+            std::vector<std::uint64_t> counts;
+            for (const auto& r : of_kind(s.last, TraceKind::block_event_queued))
+                if (r.pos == at) counts.push_back(r.c);
+            return counts;
+        };
+        s.tick({use(alex, one)});
+        require(lids(one) == std::vector<std::uint64_t>{1} && of_kind(s.last, TraceKind::container_opened).size() == 1, "opened: its lid");
+        // A shift-click of the hotbar's first slot (window slot 27 + 27) moves the iron in.
+        s.tick({click(alex, one, 54)});
+        require(player(alex).ender[0] == ItemStack{items::iron_ingot, 64} && player(alex).slots[36].empty(), "into alex's ender inventory");
+        s.tick({use(bob, one)});
+        require(lids(one) == std::vector<std::uint64_t>{2} && player(bob).ender[0].empty(), "bob opens it too: his own, empty");
+        s.tick({CloseContainer{alex, at_block(0.5, 2, 2.5), {}, false, one}, CloseContainer{bob, at_block(1.5, 2, 2.5), {}, false, one}});
+        s.tick({use(alex, two)});
+        s.tick({click(alex, two, 0)});
+        require(player(alex).ender[0].empty() && player(alex).slots[44] == ItemStack{items::iron_ingot, 64},
+                "the other ender chest holds the same iron; shift-clicked out to the hotbar's end");
+        s.tick({use(alex, covered)});
+        require(of_kind(s.last, TraceKind::container_opened).empty() && lids(covered).empty(), "one under a stone does not open");
+    });
+
     suite.run("experience changes as the /xp command makes them", [] {
         using circuit::contracts::ChangeExperience;
         const PlayerKey alex{4, 2};

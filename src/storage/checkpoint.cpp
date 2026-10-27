@@ -21,6 +21,8 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 46: ender chests have rules of their own, and players their ender
+// inventories;
 // 45: composters have rules of their own;
 // 44: barrels have rules of their own;
 // 43: block entities carry a chest's viewers, player inventories the
@@ -80,7 +82,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 45;
+constexpr std::uint32_t version = 46;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -274,6 +276,7 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
         w.i32(p.xp_seed);
         w.boolean(p.viewing.has_value());
         if (p.viewing) pos(w, *p.viewing);
+        for (const auto& st : p.ender) stack(w, st);
     }
     w.varint(static_cast<std::int32_t>(c.extras.size()));
     for (const auto& [name, bytes] : c.extras) w.string(name, 256).prefixed_bytes(bytes);
@@ -470,8 +473,8 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
     }
     // Before version 28 furnaces, smokers and blast furnaces, before 32
     // crafters, before 35 brewing stands, before 42 lecterns, before 43
-    // trapped chests (modeled as chests), before 44 barrels and before 45
-    // composters had no rules of their own: their
+    // trapped chests (modeled as chests), before 44 barrels, before 45
+    // composters and before 46 ender chests had no rules of their own: their
     // registry states become the modeled ones, and their block entities
     // start empty (they could hold nothing the rules used).
     const auto newly_modeled = [&](gameplay::BlockType type, std::uint32_t since) {
@@ -498,6 +501,7 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
     newly_modeled(gameplay::BlockType::chest, 43);
     newly_modeled(gameplay::BlockType::barrel, 44);
     newly_modeled(gameplay::BlockType::composter, 45);
+    newly_modeled(gameplay::BlockType::ender_chest, 46);
     if (!b.count(n, 55)) return false;
     for (std::size_t i = 0; i < n; ++i) {
         gameplay::Entity e;
@@ -791,6 +795,9 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
                     p.viewing = at;
                 }
             }
+            if (b.version >= 46)
+                for (auto& st : p.ender)
+                    if (!b.stack(st)) return false;
             p.player = {static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)};
             s.players.push_back(p);
         }

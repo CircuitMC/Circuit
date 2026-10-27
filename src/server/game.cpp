@@ -291,7 +291,7 @@ struct Game::Impl final : GameServices {
         orb_entity_type{},
         player_entity_type{};
     std::array<std::int32_t, gameplay::boat_types.size()> boat_entity_types{};
-    std::int32_t chest_block{}, trapped_chest_block{};
+    std::int32_t chest_block{}, trapped_chest_block{}, ender_chest_block{};
     // Blocks /setblock set for the next tick: a later /setblock compares with
     // them, as commands run one after another on the official servers.
     std::map<BlockPos, BlockState> pending_setblocks;
@@ -327,6 +327,7 @@ struct Game::Impl final : GameServices {
         player_entity_type = content.entity_type("minecraft:player").value();
         chest_block = content.block_id("minecraft:chest").value();
         trapped_chest_block = content.block_id("minecraft:trapped_chest").value();
+        ender_chest_block = content.block_id("minecraft:ender_chest").value();
         for (std::uint16_t i = 1; i <= gameplay::items::max_id; ++i)
             if (const auto id = content.item_id(mapping.item_name(i))) item_wire[i] = *id;
         open_world();
@@ -871,6 +872,10 @@ struct Game::Impl final : GameServices {
             if (gameplay::is_enchanting_table(at(p.window->pos)))
                 for (std::size_t i = 0; i < contracts::enchant_slots; ++i)
                     slots.push_back(inv && *inv ? wire_stack((*inv)->enchant[i]) : WireStack{});
+            // An ender chest's window shows the player's own ender inventory.
+            if (at(p.window->pos).is(BlockType::ender_chest))
+                for (std::size_t i = 0; i < contracts::ender_slots; ++i)
+                    slots.push_back(inv && *inv ? wire_stack((*inv)->ender[i]) : WireStack{});
             for (const auto part : container_parts_of(p.window->pos))
                 if (const auto be = view.block_entity(overworld, part); be && *be)
                     for (const auto& s : (*be)->slots) slots.push_back(wire_stack(s));
@@ -1023,6 +1028,7 @@ struct Game::Impl final : GameServices {
         if (gameplay::is_anvil(at(pos))) return contracts::anvil_slots;
         if (gameplay::is_enchanting_table(at(pos))) return contracts::enchant_slots;
         if (at(pos).is(BlockType::lectern)) return 1;
+        if (at(pos).is(BlockType::ender_chest)) return contracts::ender_slots;
         std::size_t n = 0;
         for (const auto part : container_parts_of(pos)) n += gameplay::container_size(at(part).type());
         return n;
@@ -1068,6 +1074,7 @@ struct Game::Impl final : GameServices {
                                    : block.is(BlockType::brewing_stand) ? "container.brewing"
                                    : block.is(BlockType::lectern) ? "container.lectern"
                                    : block.is(BlockType::barrel) ? "container.barrel"
+                                   : block.is(BlockType::ender_chest) ? "container.enderchest"
                                    : table ? "container.crafting" : cutter ? "container.stonecutter" : smith ? "container.upgrade"
                                    : grind ? "container.grindstone_title" : loom ? "container.loom" : anvil ? "container.repair"
                                    : enchanting ? "container.enchant" : slots == 54 ? "container.chestDouble" : slots == 5 ? "container.hopper"
@@ -2366,8 +2373,9 @@ struct Game::Impl final : GameServices {
             const auto param = it->second.front();
             it->second.pop_front();
             if (it->second.empty()) queued_events.erase(it);
-            if (r.c == 0 || r.a != static_cast<std::uint64_t>(BlockType::chest)) continue;
-            const auto block = at(r.pos).variant() == 1 ? trapped_chest_block : chest_block;
+            const bool ender = r.a == static_cast<std::uint64_t>(BlockType::ender_chest);
+            if (r.c == 0 || (r.a != static_cast<std::uint64_t>(BlockType::chest) && !ender)) continue;
+            const auto block = ender ? ender_chest_block : at(r.pos).variant() == 1 ? trapped_chest_block : chest_block;
             const auto packet = wire.block_event(wire_pos(r.pos), static_cast<std::uint8_t>(r.b), param, block);
             const auto c = contracts::chunk_of(r.pos);
             for (auto& [id, p] : players) {

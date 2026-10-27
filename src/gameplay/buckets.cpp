@@ -49,7 +49,8 @@ std::string property_of(BlockState s, std::string_view key) {
 
 bool has_water_property(BlockState s) {
     switch (s.type()) {
-    case BlockType::coral_fan: case BlockType::coral_wall_fan: case BlockType::chest: case BlockType::trapdoor: case BlockType::rail:
+    case BlockType::coral_fan: case BlockType::coral_wall_fan: case BlockType::chest: case BlockType::ender_chest: case BlockType::trapdoor:
+    case BlockType::rail:
         return true;
     case BlockType::other:
         for (const auto& [key, value] : registry::properties(s.registry_state()))
@@ -166,7 +167,7 @@ Vec3 view(float yaw, float pitch) {
 
 std::optional<BlockState> with_water(BlockState s, bool wet) {
     switch (s.type()) {
-    case BlockType::coral_fan: case BlockType::coral_wall_fan: case BlockType::chest: return s.with_flag(wet);
+    case BlockType::coral_fan: case BlockType::coral_wall_fan: case BlockType::chest: case BlockType::ender_chest: return s.with_flag(wet);
     case BlockType::trapdoor: return s.with_level(static_cast<std::uint8_t>((s.level() & 1) | (wet ? 2 : 0)));
     case BlockType::rail: return s.with_extra(wet ? 1 : 0);
     case BlockType::other: {

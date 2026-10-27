@@ -258,6 +258,8 @@ std::string text(const PlayerInventory& p) {
             slots += std::format("offer{}:{}/{}/{} ", i, p.enchant_costs[i], p.enchant_clues[i], p.enchant_clue_levels[i]);
     if (p.xp_seed != 0) slots += std::format("seed:{} ", p.xp_seed);
     if (p.viewing) slots += std::format("viewing:{},{},{} ", p.viewing->x, p.viewing->y, p.viewing->z);
+    for (std::size_t i = 0; i < p.ender.size(); ++i)
+        if (!p.ender[i].empty()) slots += std::format("ender{}:{}x{}/{} ", i, p.ender[i].item, p.ender[i].count, p.ender[i].damage);
     return std::format("player {:016x}{:016x} cursor={}x{} slots=[{}] xp={}+{}/{} xp_ready={}", p.player.hi, p.player.lo, p.cursor.item,
                        p.cursor.count, slots, p.xp_level, p.xp_progress, p.xp_total, p.xp_ready);
 }
@@ -451,6 +453,7 @@ std::uint64_t digest(const WorldDump& d) {
         h.add(static_cast<std::uint32_t>(p.xp_seed));
         h.add(p.viewing.has_value());
         if (p.viewing) h.add(*p.viewing);
+        for (const auto& s : p.ender) { h.add(contracts::pack_stack(s)); h.add(s.components.hash()); }
         h.add(static_cast<std::uint32_t>(p.xp_level)); h.add(std::bit_cast<std::uint32_t>(p.xp_progress));
         h.add(static_cast<std::uint32_t>(p.xp_total)); h.add(p.xp_ready);
         h.add(p.drag_stage); h.add(p.drag_type); h.add(p.drag_slots.size());

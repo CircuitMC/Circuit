@@ -804,6 +804,9 @@ private:
             out.cook_total = time("cooking_total_time");
             out.lit_time = time("lit_time_remaining");
             out.lit_total = time("lit_total_time");
+        } else if (id == "minecraft:ender_chest" && expect(BlockType::ender_chest)) {
+            // Nothing of its own: the contents are each player's.
+            out = {BlockType::ender_chest, 0, {}, 0};
         } else if (id == "minecraft:lectern" && expect(BlockType::lectern)) {
             // Its book and the page it is open at (none without a book).
             out = {BlockType::lectern, 0, {}, 0};
@@ -1343,6 +1346,7 @@ private:
             t.set("lit_total_time", Tag::short_(static_cast<std::int16_t>(be.lit_total)));
             break;
         }
+        case BlockType::ender_chest: t.set("id", Tag::string("minecraft:ender_chest")); break;
         case BlockType::lectern:
             t.set("id", Tag::string("minecraft:lectern"));
             if (!be.slots.empty() && !be.slots[0].empty()) {

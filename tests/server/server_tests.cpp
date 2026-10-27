@@ -9,6 +9,7 @@
 #include "../../src/server/server_data.hpp"
 #include <circuit/gameplay/items.hpp>
 #include <circuit/gameplay/loot.hpp>
+#include <circuit/gameplay/physics.hpp>
 #include <circuit/gameplay/recipes.hpp>
 #include <circuit/gameplay/survival.hpp>
 #include "../../src/server/world_meta.hpp"
@@ -1513,7 +1514,7 @@ int main() {
         require(events() == std::vector<Event>{{2, -60, 1, 1, 0, trapped}} && f.at({3, -60, 1}).contains("power=0"), "closed: the lid and no power");
     });
 
-    suite.run("barrels open under a solid block with their translated title", [] {
+    suite.run("barrels open under a solid block and ender chests open, with their translated titles", [] {
         using I = server::Intent;
         GameFixture f;
         auto peer = f.join(1, "Clerk");
@@ -1546,6 +1547,14 @@ int main() {
         f.game->submit(1, I{server::intent::ContainerClose{1}});
         f.game->tick();
         require(f.at({2, -60, 1}) == "minecraft:barrel[facing=up,open=false]", "and closes");
+        // An ender chest's window has its own title and 27 slots.
+        f.game->submit(1, I{server::intent::Command{"setblock 4 -60 1 minecraft:ender_chest[facing=south,waterlogged=false]"}});
+        f.game->tick();
+        (void)opened();
+        f.game->submit(1, GameFixture::click({4, -60, 1}, 2, 3));
+        f.game->tick();
+        require((opened() == std::vector<std::tuple<std::int32_t, std::int32_t, std::string>>{{2, 2, "container.enderchest"}}),
+                "an ender chest opens a generic_9x3 window titled container.enderchest");
     });
 
     suite.run("composters take held items and the players nearby get the level event", [] {
@@ -2598,10 +2607,12 @@ int main() {
                                                                       {{*codec.type_id("enchantments"), w.take()}}, {}, {});
                 }
                 std::string got;
-                const auto block = gameplay::registry::block_of(state->registry_state());
+                // A block with rules of its own (an ender chest) by the registry state it stands for.
+                const auto registered = gameplay::physics::registry_state_of(*state);
+                const auto block = registered ? gameplay::registry::block_of(*registered) : std::nullopt;
                 const auto table = block ? d->game->block_loot.find(*block) : d->game->block_loot.end();
                 if (gameplay::harvests(*state, tool, d->game.get()) && table != d->game->block_loot.end()) {
-                    const gameplay::loot::BreakContext context{gameplay::registry::properties(state->registry_state()), tool,
+                    const gameplay::loot::BreakContext context{gameplay::registry::properties(*registered), tool,
                                                                [&](std::uint32_t en) { return d->game->enchantment_level(tool, en); },
                                                                nullptr, {}};
                     if (const auto made = gameplay::loot::drops(table->second, context))

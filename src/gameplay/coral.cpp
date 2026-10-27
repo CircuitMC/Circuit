@@ -54,7 +54,7 @@ void tick_coral(RuleContext& ctx, BlockPos pos, BlockState s) {
 
 bool waterlogged(BlockState s) {
     switch (s.type()) {
-    case BlockType::coral_fan: case BlockType::coral_wall_fan: case BlockType::chest: return s.flag();
+    case BlockType::coral_fan: case BlockType::coral_wall_fan: case BlockType::chest: case BlockType::ender_chest: return s.flag();
     case BlockType::trapdoor: return (s.level() & 2) != 0;
     case BlockType::rail: return s.extra() != 0;
     case BlockType::other:

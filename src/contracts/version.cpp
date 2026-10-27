@@ -237,6 +237,13 @@ constexpr std::array reference_v4_mechanisms{
         "blocks; they open with a solid block above them, are open from their first viewer to their last (the "
         "viewer counts and rechecks of chests, without block events), and a set open state stays until a viewer "
         "changes it. Gaps: the open and close sounds and the game events sculk sensors hear are not modeled."},
+    MechanismEntry{"ender_chest", l0_exact, l2_declared_deviation, harness_trace,
+        "Ender chests as both official servers run them (ender_chests; client/enderchest): their window shows the "
+        "viewing player's own ender inventory, the same through every ender chest; they count their viewers and "
+        "queue their lid's block event with the count at every change and every 5-tick recheck as chests do; they do "
+        "not open under a conductor; comparators read nothing from them, hoppers neither fill nor empty them, and "
+        "pistons do not move them; broken, they drop by their loot table (itself with Silk Touch, else 8 obsidian). "
+        "Gaps: the open and close sounds and the game events sculk sensors hear are not modeled."},
     MechanismEntry{"composter", l0_exact, l2_declared_deviation, harness_trace,
         "Composters as both official servers run them (composters_items, composters_items_new, composter_use, "
         "composter_break, composter_inputs, composter_inputs2; client/composter): items compost by the chance of "

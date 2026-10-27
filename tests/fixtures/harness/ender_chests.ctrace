@@ -1,0 +1,289 @@
+circuit-trace 2
+title Ender chests broken with a pickaxe, with Silk Touch and by hand, read by a comparator, under a hopper and before a piston
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.37.0+mc1.21.8
+mechanisms ender_chest comparator hopper piston loot
+area -1 -1 -3 6 3 3
+ticks 40
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 0 -2 minecraft:stone
+at 0 set 0 0 -1 minecraft:stone
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 1 0 -2 minecraft:stone
+at 0 set 1 0 -1 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 2 0 -2 minecraft:stone
+at 0 set 2 0 -1 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 3 0 -2 minecraft:stone
+at 0 set 3 0 -1 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 4 0 -2 minecraft:stone
+at 0 set 4 0 -1 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 5 0 -2 minecraft:stone
+at 0 set 5 0 -1 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 0 1 0 minecraft:ender_chest[facing=south,waterlogged=false]
+at 0 set 1 1 0 minecraft:ender_chest[facing=south,waterlogged=false]
+at 0 set 2 1 0 minecraft:ender_chest[facing=south,waterlogged=false]
+at 0 set 3 1 0 minecraft:ender_chest[facing=south,waterlogged=false]
+at 0 set 4 1 0 minecraft:ender_chest[facing=south,waterlogged=false]
+at 0 set 3 1 1 minecraft:comparator[facing=north,mode=compare,powered=false]
+at 0 set 3 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 2 2 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 4 1 -1 minecraft:piston[extended=false,facing=south]
+at 0 set 5 1 -1 minecraft:lever[face=wall,facing=east,powered=false]
+
+at 1 insert 2 2 0 0 minecraft:iron_ingot 5
+block 1 0 1 0 minecraft:ender_chest[facing=south,waterlogged=false]
+block 1 1 1 0 minecraft:ender_chest[facing=south,waterlogged=false]
+block 1 2 1 0 minecraft:ender_chest[facing=south,waterlogged=false]
+block 1 3 1 0 minecraft:ender_chest[facing=south,waterlogged=false]
+block 1 4 1 0 minecraft:ender_chest[facing=south,waterlogged=false]
+block 1 3 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+block 1 4 1 -1 minecraft:piston[extended=false,facing=south]
+
+at 2 break 0 1 0 minecraft:diamond_pickaxe
+change 2 commands 0 1 0 minecraft:ender_chest[facing=south,waterlogged=false] minecraft:air
+entity-added 2 commands e1 minecraft:item 0.6154838936883285 1.2452682078357429 0.5687087126750541 0.010087401023526787 0.2 0.019509055559440353 item=minecraft:obsidian count=8
+draws 2 commands level 10
+entity-order 2 entities e1
+entity 2 e1 0.6255712947118552 1.4052682078357428 0.5882177682344945 0.009885653195458158 0.1568 0.01911887482035725 item=minecraft:obsidian count=8 age=1 pickup-delay=9 on-ground=false
+
+at 3 break 1 1 0 minecraft:diamond_pickaxe minecraft:silk_touch=1
+change 3 commands 1 1 0 minecraft:ender_chest[facing=south,waterlogged=false] minecraft:air
+entity-added 3 commands e2 minecraft:item 1.4166091997383248 1.3175945923703591 0.7424207700999045 0.07583650357449603 0.2 0.08824983589642288 item=minecraft:ender_chest count=1
+draws 3 commands level 10
+entity-order 3 entities e1 e2
+entity 3 e1 0.6354569479073134 1.5220682078357428 0.6073366430548517 0.009687940320102865 0.11446399999999998 0.018736497688613702 item=minecraft:obsidian count=8 age=2 pickup-delay=8 on-ground=false
+entity 3 e2 1.492445703312821 1.477594592370359 0.8306706059963274 0.07431977494947263 0.1568 0.08648484086172646 item=minecraft:ender_chest count=1 age=1 pickup-delay=9 on-ground=false
+
+at 4 break 2 1 0 minecraft:air
+change 4 commands 2 1 0 minecraft:ender_chest[facing=south,waterlogged=false] minecraft:air
+entity-added 4 commands e3 minecraft:item 2.3874769830177422 1.1894485754368884 0.3233008288232591 -0.09535237550322212 0.2 0.009347951439693108 item=minecraft:obsidian count=8
+draws 4 commands level 10
+entity-order 4 entities e1 e2 e3
+entity 4 e1 0.6451448882274163 1.5965322078357427 0.6260731407434654 0.009494181698483605 0.07297471999999998 0.01836176809221176 item=minecraft:obsidian count=8 age=3 pickup-delay=7 on-ground=false
+entity 4 e2 1.5667654782622935 1.594394592370359 0.9171554468580538 0.0728333808680204 0.11446399999999998 0.08475514569405936 item=minecraft:ender_chest count=1 age=2 pickup-delay=8 on-ground=false
+entity 4 e3 2.2921246075145203 1.3494485754368883 0.3326487802629522 -0.0934453298118599 0.1568 0.00916099258919727 item=minecraft:obsidian count=8 age=1 pickup-delay=9 on-ground=false
+
+at 5 use 5 1 -1
+change 5 commands 5 1 -1 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+entity-order 5 entities e1 e2 e3
+entity 5 e1 0.6546390699258999 1.6295069278357426 0.6444349088356772 0.009304298245601078 0.032315225599999976 0.017994533080590458 item=minecraft:obsidian count=8 age=4 pickup-delay=6 on-ground=false
+entity 5 e2 1.639598859130314 1.6688585923703592 1.0019105925521132 0.07137671463984648 0.07297471999999998 0.08306004439675428 item=minecraft:ender_chest count=1 age=3 pickup-delay=7 on-ground=false
+entity 5 e3 2.1986792777026603 1.4662485754368884 0.3418097728521495 -0.09157642499795093 0.11446399999999998 0.008977772912145392 item=minecraft:obsidian count=8 age=2 pickup-delay=8 on-ground=false
+block 5 0 1 0 minecraft:air
+block 5 1 1 0 minecraft:air
+block 5 2 1 0 minecraft:air
+block 5 3 1 0 minecraft:ender_chest[facing=south,waterlogged=false]
+block 5 4 1 0 minecraft:ender_chest[facing=south,waterlogged=false]
+block 5 3 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+block 5 4 1 -1 minecraft:piston[extended=false,facing=south]
+
+entity-order 6 entities e1 e2 e3
+entity 6 e1 0.663943368171501 1.6218221534357427 0.6624294419162677 0.009118212458154463 -0.007531078912000024 0.01763464276219713 item=minecraft:obsidian count=8 age=5 pickup-delay=5 on-ground=false
+entity 6 e2 1.7109755737701604 1.701833312370359 1.0849706369488674 0.06994918170845234 0.032315225599999976 0.08139884509306382 item=minecraft:ender_chest count=1 age=4 pickup-delay=6 on-ground=false
+entity 6 e3 2.1071028527047093 1.5407125754368884 0.3507875457642949 -0.0897448982446736 0.07297471999999998 0.008798217625139913 item=minecraft:obsidian count=8 age=3 pickup-delay=7 on-ground=false
+
+entity-order 7 entities e1 e2 e3
+entity 7 e1 0.6730615806296555 1.5742910745237426 0.6800640846784649 0.008935848382907475 -0.04658045733376002 0.017281950243307306 item=minecraft:obsidian count=8 age=6 pickup-delay=4 on-ground=false
+entity 7 e2 1.7809247554786127 1.6941485379703591 1.1663694820419312 0.06855019940845805 -0.007531078912000024 0.0797708697437623 item=minecraft:ender_chest count=1 age=5 pickup-delay=5 on-ground=false
+entity 7 e3 2.0173579544600355 1.5736872954368883 0.3595857633894348 -0.08795000199152822 0.032315225599999976 0.008622253440449798 item=minecraft:obsidian count=8 age=4 pickup-delay=6 on-ground=false
+
+entity-order 8 entities e1 e2 e3
+entity 8 e1 0.681997429012563 1.4877106171899825 0.6973460349217722 0.008757131585687108 -0.08484884818708481 0.016936311568068203 item=minecraft:obsidian count=8 age=7 pickup-delay=3 on-ground=false
+entity 8 e2 1.8494749548870708 1.646617459058359 1.2461403517856935 0.06717919672778018 -0.04658045733376002 0.07817545387039565 item=minecraft:ender_chest count=1 age=6 pickup-delay=4 on-ground=false
+entity 8 e3 1.9294079524685073 1.5660025210368884 0.36820801682988463 -0.08619100362921081 -0.007531078912000024 0.008449808536097236 item=minecraft:obsidian count=8 age=5 pickup-delay=5 on-ground=false
+
+entity-order 9 entities e1 e2 e3
+entity 9 e1 0.6907545605982501 1.3628617690028977 0.7142823464898403 0.008581989121002396 -0.12235187122334311 0.016597585659741346 item=minecraft:obsidian count=8 age=8 pickup-delay=2 on-ground=false
+entity 9 e2 1.916654151614851 1.560037001724599 1.324315805656089 0.06583561407456606 -0.08484884818708481 0.07661194628406619 item=minecraft:ender_chest count=1 age=7 pickup-delay=3 on-ground=false
+entity 9 e3 1.8432169488392964 1.5184714421248884 0.37665782536598186 -0.08446718520058952 -0.04658045733376002 0.008280812526542598 item=minecraft:obsidian count=8 age=6 pickup-delay=4 on-ground=false
+
+entity-order 10 entities e1 e2 e3
+entity 10 e1 0.6993365497192525 1.2005098977795545 0.7308799321495817 0.0084103495022708 -0.15910483379887624 0.016265634263120343 item=minecraft:obsidian count=8 age=9 pickup-delay=1 on-ground=false
+entity 10 e2 1.982489765689417 1.4351881535375142 1.4009277519401553 0.06451890304878942 -0.12235187122334311 0.07507970881964178 item=minecraft:ender_chest count=1 age=8 pickup-delay=2 on-ground=false
+entity 10 e3 1.7587497636387068 1.4318909847911283 0.38493863789252447 -0.08277784310766143 -0.08484884818708481 0.00811519643395571 item=minecraft:obsidian count=8 age=7 pickup-delay=3 on-ground=false
+block 10 0 1 0 minecraft:air
+block 10 1 1 0 minecraft:air
+block 10 2 1 0 minecraft:air
+block 10 3 1 0 minecraft:ender_chest[facing=south,waterlogged=false]
+block 10 4 1 0 minecraft:ender_chest[facing=south,waterlogged=false]
+block 10 3 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+block 10 4 1 -1 minecraft:piston[extended=false,facing=south]
+
+entity-order 11 entities e1 e2 e3
+entity 11 e1 0.7077468992215233 1.0014050639806782 0.747145566412702 0.008242142672640071 -0.1951227371228987 0.015940321888100288 item=minecraft:obsidian count=8 age=10 pickup-delay=0 on-ground=false
+entity 11 e2 2.0470086687382065 1.272836282314171 1.476007460759797 0.06322852621841404 -0.15910483379887624 0.07357811607528074 item=minecraft:ender_chest count=1 age=9 pickup-delay=1 on-ground=false
+entity 11 e3 1.6759719205310455 1.3070421366040434 0.39305383432648017 -0.08112228782437025 -0.12235187122334311 0.007952892660061684 item=minecraft:obsidian count=8 age=8 pickup-delay=2 on-ground=false
+
+entity-order 12 entities e1 e2 e3
+entity 12 e1 0.7159890418941635 1.0 0.7630858883008023 0.004846380378852188 0 0.009372910212719255 item=minecraft:obsidian count=8 age=11 pickup-delay=0 on-ground=true
+entity 12 e2 2.1102371949566208 1.0737314485152947 1.5495855768350777 0.061963956900034194 -0.1951227371228987 0.07210655515716631 item=minecraft:ender_chest count=1 age=10 pickup-delay=0 on-ground=false
+entity 12 e3 1.5948496327066752 1.1446902653807003 0.40100672698654183 -0.0794998436151677 -0.15910483379887624 0.00779383495854984 item=minecraft:obsidian count=8 age=9 pickup-delay=1 on-ground=false
+
+entity-order 13 entities e1 e2 e3
+entity 13 e1 0.7208354222730157 1.0 0.7724587985135215 0.0028496719493209333 0 0.005511271759278554 item=minecraft:obsidian count=8 age=12 pickup-delay=0 on-ground=true
+entity 13 e2 2.172201151856655 1.0 1.621692131992244 0.03643481032101303 0 0.04239865869591631 item=minecraft:ender_chest count=1 age=11 pickup-delay=0 on-ground=true
+entity 13 e3 1.5153497890915075 1.0 0.4088005619450917 -0.046745912746370064 0 0.00458277541645968 item=minecraft:obsidian count=8 age=10 pickup-delay=0 on-ground=true
+
+entity-order 14 entities e1 e2 e3
+entity 14 e1 0.7236850942223366 1.0 0.7779700702728001 0.0016756072746955636 0 0.003240628120325206 item=minecraft:obsidian count=8 age=13 pickup-delay=0 on-ground=true
+entity 14 e2 2.208635962177668 1.0 1.6640907906881603 0.021423670623066115 0 0.024930413820138525 item=minecraft:ender_chest count=1 age=12 pickup-delay=0 on-ground=true
+entity 14 e3 1.4686038763451374 1.0 0.41338333736155136 -0.02748659945884893 0 0.002694672215847755 item=minecraft:obsidian count=8 age=11 pickup-delay=0 on-ground=true
+
+entity-order 15 entities e1 e2 e3
+entity 15 e1 0.7253607014970321 1.0 0.7812106983931253 9.85257176595976E-4 0 0.0019054895263624573 item=minecraft:obsidian count=8 age=14 pickup-delay=0 on-ground=true
+entity 15 e2 2.230059632800734 1.0 1.6890212045082988 0.01259711959309755 0 0.014659084800322165 item=minecraft:ender_chest count=1 age=13 pickup-delay=0 on-ground=true
+entity 15 e3 1.4411172768862885 1.0 0.4160780095773991 -0.016162122107025535 0 0.0015844674222485404 item=minecraft:obsidian count=8 age=12 pickup-delay=0 on-ground=true
+
+entity-order 16 entities e1 e2 e3
+entity 16 e1 0.7263459586736281 1.0 0.7831161879194878 5.793312780945307E-4 0 0.001120427954168543 item=minecraft:obsidian count=8 age=15 pickup-delay=0 on-ground=true
+entity 16 e2 2.2426567523938314 1.0 1.703680289308621 0.0074071070655814236 0 0.00861954272934898 item=minecraft:ender_chest count=1 age=14 pickup-delay=0 on-ground=true
+entity 16 e3 1.424955154779263 1.0 0.41766247699964765 -0.009503328754561861 0 9.316669379682267E-4 item=minecraft:obsidian count=8 age=13 pickup-delay=0 on-ground=true
+
+entity-order 17 entities e1 e2 e3
+entity 17 e1 0.7263459586736281 1.0 0.7831161879194878 5.793312780945307E-4 -0.04 0.001120427954168543 item=minecraft:obsidian count=8 age=16 pickup-delay=0 on-ground=true
+entity 17 e2 2.250063859459413 1.0 1.7122998320379699 0.004355379392527879 0 0.005068291634511864 item=minecraft:ender_chest count=1 age=15 pickup-delay=0 on-ground=true
+entity 17 e3 1.415451826024701 1.0 0.41859414393761585 -0.005587957869593369 0 5.478202146127407E-4 item=minecraft:obsidian count=8 age=14 pickup-delay=0 on-ground=true
+
+entity-order 18 entities e1 e2 e3
+entity 18 e1 0.7263459586736281 1.0 0.7831161879194878 5.793312780945307E-4 -0.08 0.001120427954168543 item=minecraft:obsidian count=8 age=17 pickup-delay=0 on-ground=true
+entity 18 e2 2.254419238851941 1.0 1.7173681236724818 0.0025609633403304273 0 0.0029801557807699487 item=minecraft:ender_chest count=1 age=16 pickup-delay=0 on-ground=true
+entity 18 e3 1.4098638681551077 1.0 0.4191419641522286 -0.0032857195577245986 0 3.221183185836998E-4 item=minecraft:obsidian count=8 age=15 pickup-delay=0 on-ground=true
+
+entity-order 19 entities e1 e2 e3
+entity 19 e1 0.7263459586736281 1.0 0.7831161879194878 5.793312780945307E-4 -0.12 0.001120427954168543 item=minecraft:obsidian count=8 age=18 pickup-delay=0 on-ground=true
+entity 19 e2 2.2569802021922714 1.0 1.7203482794532519 0.001505846595538439 0 0.0017523317753028074 item=minecraft:ender_chest count=1 age=17 pickup-delay=0 on-ground=true
+entity 19 e3 1.4065781485973832 1.0 0.4194640824708123 -0.0019320032942194579 0 1.8940559037336548E-4 item=minecraft:obsidian count=8 age=16 pickup-delay=0 on-ground=true
+
+entity-order 20 entities e1 e2 e3
+entity 20 e1 0.7269252899517226 1.0 0.7842366158736563 3.406468257741724E-4 0 6.588117032995518E-4 item=minecraft:obsidian count=8 age=19 pickup-delay=0 on-ground=true
+entity 20 e2 2.25848604878781 1.0 1.7221006112285546 8.854378872140099E-4 0 0.0010303711874895868 item=minecraft:ender_chest count=1 age=18 pickup-delay=0 on-ground=true
+entity 20 e3 1.4046461453031638 1.0 0.4196534880611857 -0.0011360180512361604 0 1.113704983386762E-4 item=minecraft:obsidian count=8 age=17 pickup-delay=0 on-ground=true
+
+entity-order 21 entities e1 e2 e3
+entity 21 e1 0.7269252899517226 1.0 0.7842366158736563 3.406468257741724E-4 -0.04 6.588117032995518E-4 item=minecraft:obsidian count=8 age=20 pickup-delay=0 on-ground=true
+entity 21 e2 2.25848604878781 1.0 1.7221006112285546 8.854378872140099E-4 -0.04 0.0010303711874895868 item=minecraft:ender_chest count=1 age=19 pickup-delay=0 on-ground=true
+entity 21 e3 1.4046461453031638 1.0 0.4196534880611857 -0.0011360180512361604 -0.04 1.113704983386762E-4 item=minecraft:obsidian count=8 age=18 pickup-delay=0 on-ground=true
+
+entity-order 22 entities e1 e2 e3
+entity 22 e1 0.7269252899517226 1.0 0.7842366158736563 3.406468257741724E-4 -0.08 6.588117032995518E-4 item=minecraft:obsidian count=8 age=21 pickup-delay=0 on-ground=true
+entity 22 e2 2.25848604878781 1.0 1.7221006112285546 8.854378872140099E-4 -0.08 0.0010303711874895868 item=minecraft:ender_chest count=1 age=20 pickup-delay=0 on-ground=true
+entity 22 e3 1.4046461453031638 1.0 0.4196534880611857 -0.0011360180512361604 -0.08 1.113704983386762E-4 item=minecraft:obsidian count=8 age=19 pickup-delay=0 on-ground=true
+
+entity-order 23 entities e1 e2 e3
+entity 23 e1 0.7269252899517226 1.0 0.7842366158736563 3.406468257741724E-4 -0.12 6.588117032995518E-4 item=minecraft:obsidian count=8 age=22 pickup-delay=0 on-ground=true
+entity 23 e2 2.25848604878781 1.0 1.7221006112285546 8.854378872140099E-4 -0.12 0.0010303711874895868 item=minecraft:ender_chest count=1 age=21 pickup-delay=0 on-ground=true
+entity 23 e3 1.4046461453031638 1.0 0.4196534880611857 -0.0011360180512361604 -0.12 1.113704983386762E-4 item=minecraft:obsidian count=8 age=20 pickup-delay=0 on-ground=true
+
+entity-order 24 entities e1 e2 e3
+entity 24 e1 0.7272659367774967 1.0 0.7848954275769559 2.0030035369691335E-4 0 3.8738132049422806E-4 item=minecraft:obsidian count=8 age=23 pickup-delay=0 on-ground=true
+entity 24 e2 2.2593714866750236 1.0 1.7231309824160441 5.206375300358389E-4 0 6.058583191674664E-4 item=minecraft:ender_chest count=1 age=22 pickup-delay=0 on-ground=true
+entity 24 e3 1.4035101272519277 1.0 0.4197648585595244 -6.679786812971192E-4 0 6.5485859608235E-5 item=minecraft:obsidian count=8 age=21 pickup-delay=0 on-ground=true
+
+entity-order 25 entities e1 e2 e3
+entity 25 e1 0.7272659367774967 1.0 0.7848954275769559 2.0030035369691335E-4 -0.04 3.8738132049422806E-4 item=minecraft:obsidian count=8 age=24 pickup-delay=0 on-ground=true
+entity 25 e2 2.2593714866750236 1.0 1.7231309824160441 5.206375300358389E-4 -0.04 6.058583191674664E-4 item=minecraft:ender_chest count=1 age=23 pickup-delay=0 on-ground=true
+entity 25 e3 1.4035101272519277 1.0 0.4197648585595244 -6.679786812971192E-4 -0.04 6.5485859608235E-5 item=minecraft:obsidian count=8 age=22 pickup-delay=0 on-ground=true
+
+entity-order 26 entities e1 e2 e3
+entity 26 e1 0.7272659367774967 1.0 0.7848954275769559 2.0030035369691335E-4 -0.08 3.8738132049422806E-4 item=minecraft:obsidian count=8 age=25 pickup-delay=0 on-ground=true
+entity 26 e2 2.2593714866750236 1.0 1.7231309824160441 5.206375300358389E-4 -0.08 6.058583191674664E-4 item=minecraft:ender_chest count=1 age=24 pickup-delay=0 on-ground=true
+entity 26 e3 1.4035101272519277 1.0 0.4197648585595244 -6.679786812971192E-4 -0.08 6.5485859608235E-5 item=minecraft:obsidian count=8 age=23 pickup-delay=0 on-ground=true
+
+entity-order 27 entities e1 e2 e3
+entity 27 e1 0.7272659367774967 1.0 0.7848954275769559 2.0030035369691335E-4 -0.12 3.8738132049422806E-4 item=minecraft:obsidian count=8 age=26 pickup-delay=0 on-ground=true
+entity 27 e2 2.2593714866750236 1.0 1.7231309824160441 5.206375300358389E-4 -0.12 6.058583191674664E-4 item=minecraft:ender_chest count=1 age=25 pickup-delay=0 on-ground=true
+entity 27 e3 1.4035101272519277 1.0 0.4197648585595244 -6.679786812971192E-4 -0.12 6.5485859608235E-5 item=minecraft:obsidian count=8 age=24 pickup-delay=0 on-ground=true
+
+entity-order 28 entities e1 e2 e3
+entity 28 e1 0.7274662371311936 1.0 0.7852828088974501 1.1777661981710584E-4 0 2.2778023935561429E-4 item=minecraft:obsidian count=8 age=27 pickup-delay=0 on-ground=true
+entity 28 e2 2.2598921242050594 1.0 1.7237368407352116 3.06134898445229E-4 0 3.5624472749354433E-4 item=minecraft:ender_chest count=1 age=26 pickup-delay=0 on-ground=true
+entity 28 e3 1.4028421485706306 1.0 0.41983034441913264 -3.9277150409882105E-4 0 3.850568932167749E-5 item=minecraft:obsidian count=8 age=25 pickup-delay=0 on-ground=true
+
+entity-order 29 entities e1 e2 e3
+entity 29 e1 0.7274662371311936 1.0 0.7852828088974501 1.1777661981710584E-4 -0.04 2.2778023935561429E-4 item=minecraft:obsidian count=8 age=28 pickup-delay=0 on-ground=true
+entity 29 e2 2.2598921242050594 1.0 1.7237368407352116 3.06134898445229E-4 -0.04 3.5624472749354433E-4 item=minecraft:ender_chest count=1 age=27 pickup-delay=0 on-ground=true
+entity 29 e3 1.4028421485706306 1.0 0.41983034441913264 -3.9277150409882105E-4 -0.04 3.850568932167749E-5 item=minecraft:obsidian count=8 age=26 pickup-delay=0 on-ground=true
+
+entity-order 30 entities e1 e2 e3
+entity 30 e1 0.7274662371311936 1.0 0.7852828088974501 1.1777661981710584E-4 -0.08 2.2778023935561429E-4 item=minecraft:obsidian count=8 age=29 pickup-delay=0 on-ground=true
+entity 30 e2 2.2598921242050594 1.0 1.7237368407352116 3.06134898445229E-4 -0.08 3.5624472749354433E-4 item=minecraft:ender_chest count=1 age=28 pickup-delay=0 on-ground=true
+entity 30 e3 1.4028421485706306 1.0 0.41983034441913264 -3.9277150409882105E-4 -0.08 3.850568932167749E-5 item=minecraft:obsidian count=8 age=27 pickup-delay=0 on-ground=true
+
+entity-order 31 entities e1 e2 e3
+entity 31 e1 0.7274662371311936 1.0 0.7852828088974501 1.1777661981710584E-4 -0.12 2.2778023935561429E-4 item=minecraft:obsidian count=8 age=30 pickup-delay=0 on-ground=true
+entity 31 e2 2.2598921242050594 1.0 1.7237368407352116 3.06134898445229E-4 -0.12 3.5624472749354433E-4 item=minecraft:ender_chest count=1 age=29 pickup-delay=0 on-ground=true
+entity 31 e3 1.4028421485706306 1.0 0.41983034441913264 -3.9277150409882105E-4 -0.12 3.850568932167749E-5 item=minecraft:obsidian count=8 age=28 pickup-delay=0 on-ground=true
+
+entity-order 32 entities e1 e2 e3
+entity 32 e1 0.7274662371311936 1.0 0.7852828088974501 6.925265941633155E-5 0 1.3393479420924738E-4 item=minecraft:obsidian count=8 age=31 pickup-delay=0 on-ground=true
+entity 32 e2 2.260198259103505 1.0 1.7240930854627052 1.8000733838688003E-4 0 2.0947192083017378E-4 item=minecraft:ender_chest count=1 age=30 pickup-delay=0 on-ground=true
+entity 32 e3 1.4024493770665318 1.0 0.4198688501084543 -2.309496676338247E-4 0 2.2641347597903354E-5 item=minecraft:obsidian count=8 age=29 pickup-delay=0 on-ground=true
+
+entity-order 33 entities e1 e2 e3
+entity 33 e1 0.7274662371311936 1.0 0.7852828088974501 6.925265941633155E-5 -0.04 1.3393479420924738E-4 item=minecraft:obsidian count=8 age=32 pickup-delay=0 on-ground=true
+entity 33 e2 2.260198259103505 1.0 1.7240930854627052 1.8000733838688003E-4 -0.04 2.0947192083017378E-4 item=minecraft:ender_chest count=1 age=31 pickup-delay=0 on-ground=true
+entity 33 e3 1.4024493770665318 1.0 0.4198688501084543 -2.309496676338247E-4 -0.04 2.2641347597903354E-5 item=minecraft:obsidian count=8 age=30 pickup-delay=0 on-ground=true
+
+entity-order 34 entities e1 e2 e3
+entity 34 e1 0.7274662371311936 1.0 0.7852828088974501 6.925265941633155E-5 -0.08 1.3393479420924738E-4 item=minecraft:obsidian count=8 age=33 pickup-delay=0 on-ground=true
+entity 34 e2 2.260198259103505 1.0 1.7240930854627052 1.8000733838688003E-4 -0.08 2.0947192083017378E-4 item=minecraft:ender_chest count=1 age=32 pickup-delay=0 on-ground=true
+entity 34 e3 1.4024493770665318 1.0 0.4198688501084543 -2.309496676338247E-4 -0.08 2.2641347597903354E-5 item=minecraft:obsidian count=8 age=31 pickup-delay=0 on-ground=true
+
+entity-order 35 entities e1 e2 e3
+entity 35 e1 0.7274662371311936 1.0 0.7852828088974501 6.925265941633155E-5 -0.12 1.3393479420924738E-4 item=minecraft:obsidian count=8 age=34 pickup-delay=0 on-ground=true
+entity 35 e2 2.260198259103505 1.0 1.7240930854627052 1.8000733838688003E-4 -0.12 2.0947192083017378E-4 item=minecraft:ender_chest count=1 age=33 pickup-delay=0 on-ground=true
+entity 35 e3 1.4024493770665318 1.0 0.4198688501084543 -2.309496676338247E-4 -0.12 2.2641347597903354E-5 item=minecraft:obsidian count=8 age=32 pickup-delay=0 on-ground=true
+
+entity-order 36 entities e1 e2 e3
+entity 36 e1 0.7274662371311936 1.0 0.7852828088974501 4.0720567831560875E-5 0 7.875366691430821E-5 item=minecraft:obsidian count=8 age=35 pickup-delay=0 on-ground=true
+entity 36 e2 2.260198259103505 1.0 1.7240930854627052 1.0584432561492472E-4 0 1.231695018337576E-4 item=minecraft:ender_chest count=1 age=34 pickup-delay=0 on-ground=true
+entity 36 e3 1.4024493770665318 1.0 0.4198688501084543 -1.3579841822423646E-4 0 1.3313113726300417E-5 item=minecraft:obsidian count=8 age=33 pickup-delay=0 on-ground=true
+
+entity-order 37 entities e1 e2 e3
+entity 37 e1 0.7274662371311936 1.0 0.7852828088974501 4.0720567831560875E-5 -0.04 7.875366691430821E-5 item=minecraft:obsidian count=8 age=36 pickup-delay=0 on-ground=true
+entity 37 e2 2.260198259103505 1.0 1.7240930854627052 1.0584432561492472E-4 -0.04 1.231695018337576E-4 item=minecraft:ender_chest count=1 age=35 pickup-delay=0 on-ground=true
+entity 37 e3 1.4024493770665318 1.0 0.4198688501084543 -1.3579841822423646E-4 -0.04 1.3313113726300417E-5 item=minecraft:obsidian count=8 age=34 pickup-delay=0 on-ground=true
+
+entity-order 38 entities e1 e2 e3
+entity 38 e1 0.7274662371311936 1.0 0.7852828088974501 4.0720567831560875E-5 -0.08 7.875366691430821E-5 item=minecraft:obsidian count=8 age=37 pickup-delay=0 on-ground=true
+entity 38 e2 2.260198259103505 1.0 1.7240930854627052 1.0584432561492472E-4 -0.08 1.231695018337576E-4 item=minecraft:ender_chest count=1 age=36 pickup-delay=0 on-ground=true
+entity 38 e3 1.4024493770665318 1.0 0.4198688501084543 -1.3579841822423646E-4 -0.08 1.3313113726300417E-5 item=minecraft:obsidian count=8 age=35 pickup-delay=0 on-ground=true
+
+entity-order 39 entities e1 e2 e3
+entity 39 e1 0.7274662371311936 1.0 0.7852828088974501 4.0720567831560875E-5 -0.12 7.875366691430821E-5 item=minecraft:obsidian count=8 age=38 pickup-delay=0 on-ground=true
+entity 39 e2 2.260198259103505 1.0 1.7240930854627052 1.0584432561492472E-4 -0.12 1.231695018337576E-4 item=minecraft:ender_chest count=1 age=37 pickup-delay=0 on-ground=true
+entity 39 e3 1.4024493770665318 1.0 0.4198688501084543 -1.3579841822423646E-4 -0.12 1.3313113726300417E-5 item=minecraft:obsidian count=8 age=36 pickup-delay=0 on-ground=true
+
+entity-order 40 entities e1 e2 e3
+entity 40 e1 0.7274662371311936 1.0 0.7852828088974501 2.3943696292675696E-5 0 4.63071608021449E-5 item=minecraft:obsidian count=8 age=39 pickup-delay=0 on-ground=true
+entity 40 e2 2.260198259103505 1.0 1.7240930854627052 6.223646971991866E-5 0 7.242367436099209E-5 item=minecraft:ender_chest count=1 age=38 pickup-delay=0 on-ground=true
+entity 40 e3 1.4024493770665318 1.0 0.4198688501084543 -7.984947794531378E-5 0 7.828111658239871E-6 item=minecraft:obsidian count=8 age=37 pickup-delay=0 on-ground=true
+block 40 0 1 0 minecraft:air
+block 40 1 1 0 minecraft:air
+block 40 2 1 0 minecraft:air
+block 40 3 1 0 minecraft:ender_chest[facing=south,waterlogged=false]
+block 40 4 1 0 minecraft:ender_chest[facing=south,waterlogged=false]
+block 40 3 1 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+block 40 4 1 -1 minecraft:piston[extended=false,facing=south]
+slot 40 2 2 0 0 minecraft:iron_ingot 5

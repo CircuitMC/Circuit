@@ -76,6 +76,8 @@ std::optional<BlockState> placed_by(std::uint16_t item, const contracts::PlayerU
     // Barrels look back along the player's view (tests/fixtures/placement).
     case items::barrel: return blocks::barrel(contracts::opposite(look));
     case items::composter: return blocks::composter();
+    // Ender chests face the player (tests/fixtures/placement).
+    case items::ender_chest: return blocks::ender_chest(contracts::opposite(horizontal));
     case items::smoker: return blocks::furnace(blocks::FurnaceKind::smoker, contracts::opposite(horizontal));
     case items::blast_furnace: return blocks::furnace(blocks::FurnaceKind::blast_furnace, contracts::opposite(horizontal));
     case items::hopper:
@@ -116,6 +118,7 @@ bool has_collision(BlockState s) {
 
 void record_slot(RuleContext& ctx, const PlayerInventory& inventory, std::uint8_t slot) {
     const auto stack = slot == contracts::player_slots ? inventory.cursor
+                     : slot >= contracts::ender_first ? inventory.ender[slot - contracts::ender_first]
                      : slot >= contracts::enchant_first ? inventory.enchant[slot - contracts::enchant_first]
                      : slot >= contracts::anvil_first  ? inventory.anvil[slot - contracts::anvil_first]
                      : slot >= contracts::loom_first   ? inventory.loom[slot - contracts::loom_first]

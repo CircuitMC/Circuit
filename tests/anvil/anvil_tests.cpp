@@ -618,6 +618,21 @@ int main() {
                 "its contents");
     });
 
+    suite.run("ender chests round-trip through Anvil", [&] {
+        Engine engine(bundle(), 5);
+        Admissions admit;
+        engine.advance(admit({ticket(1, {0, 0}, 1)}));
+        engine.advance(admit({place({2, 0, 2}, blocks::ender_chest(Direction::west))}));
+        const auto state = engine.dump();
+        const auto target = root / "ender";
+        require(anvil::export_world(state, bundle(), target, {.level_name = "ender", .seed = 5}).has_value(), "export");
+        const auto back = anvil::import_world(target, bundle());
+        require(back.has_value(), back ? "" : back.error());
+        const auto* be = block_entity_at(back->state, {2, 0, 2});
+        require(state_at(back->state, {2, 0, 2}) == blocks::ender_chest(Direction::west) && be && be->kind == BlockType::ender_chest && be->slots.empty(),
+                "the ender chest and its block entity");
+    });
+
     suite.run("daylight detectors round-trip through Anvil with their block entities", [&] {
         Engine engine(bundle(), 5);
         Admissions admit;

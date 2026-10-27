@@ -257,6 +257,15 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
                 ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo);
             };
         }
+        // An ender chest opens the player's ender inventory, but not under a
+        // conductor (client/enderchest).
+        if (clicked.is(BlockType::ender_chest)) {
+            if (detail::is_conductor(ctx.block(c.pos.relative(Direction::up)))) return [] {};
+            return [&ctx, c] {
+                detail::start_viewing(ctx, ctx.player(c.player), c.pos);
+                ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo);
+            };
+        }
         if (is_crafting_table(clicked) || is_stonecutter(clicked) || is_smithing_table(clicked) || is_grindstone(clicked) || is_loom(clicked)
             || is_anvil(clicked) || is_enchanting_table(clicked))
             return [&ctx, c] { ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo); };

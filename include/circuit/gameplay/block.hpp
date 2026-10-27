@@ -60,6 +60,7 @@ enum class BlockType : std::uint8_t {
     lectern,             // facing: front (horizontal); flag: powered; extra: has_book. Block entity: the book; cook_time its page
     barrel,              // facing: front (any side); flag: open. Block entity: 27 slots, its viewers
     composter,           // level: 0-8 (7 full, 8 bone meal ready)
+    ender_chest,         // facing: front (horizontal); flag: waterlogged (not simulated). Block entity: its viewers
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -278,6 +279,8 @@ constexpr BlockState lectern(Direction front, bool has_book = false, bool powere
 }
 // A barrel facing `front` (any side), open or not.
 constexpr BlockState barrel(Direction front, bool open = false) { return BlockState::of(BlockType::barrel).with_facing(front).with_flag(open); }
+// An ender chest facing `front` (horizontal).
+constexpr BlockState ender_chest(Direction front) { return BlockState::of(BlockType::ender_chest).with_facing(front); }
 // A composter at `level` (0 to 8).
 constexpr BlockState composter(std::uint8_t level = 0) { return BlockState::of(BlockType::composter).with_level(level); }
 // A note block; `instrument` is a registry::Instrument.
@@ -381,7 +384,7 @@ constexpr bool is_container(BlockType t) noexcept {
 // signals and moving blocks; a daylight detector's ticks it.
 constexpr bool has_block_entity(BlockType t) noexcept {
     return is_container(t) || t == BlockType::comparator || t == BlockType::moving_piston || t == BlockType::daylight_detector
-        || t == BlockType::lectern;
+        || t == BlockType::lectern || t == BlockType::ender_chest;
 }
 // Direction from a chest half to its partner (reference convention: left pairs
 // clockwise, right counter-clockwise, seen from above); nullopt for single chests.

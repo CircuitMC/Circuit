@@ -137,6 +137,10 @@ inline constexpr std::uint8_t anvil_first = 70;
 // recorded as slots 73-74.
 inline constexpr std::uint8_t enchant_slots = 2;
 inline constexpr std::uint8_t enchant_first = 73;
+// The player's ender inventory, which every ender chest's window shows to
+// the player who opens it (window slots 0-26), recorded as slots 75-101.
+inline constexpr std::uint8_t ender_slots = 27;
+inline constexpr std::uint8_t ender_first = 75;
 // The longest name an anvil gives, in UTF-16 code units as the protocol
 // counts them (minecraft.wiki "Anvil").
 inline constexpr std::size_t max_item_name = 50;

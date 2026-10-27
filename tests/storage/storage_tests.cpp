@@ -305,6 +305,8 @@ int main() {
             p.enchant_clue_levels = {1, -1, 3};
             p.xp_seed = -1987654321;
             p.viewing = circuit::contracts::BlockPos{29997, 0, 29999};
+            p.ender[0] = {circuit::gameplay::items::iron_ingot, 64};
+            p.ender[26] = named(circuit::gameplay::items::stone, 3, "Kept");
             p.xp_level = 9;
             p.xp_progress = 0.6000000834465027f;
             p.xp_total = 150;
@@ -317,7 +319,7 @@ int main() {
         const auto encoded = circuit::storage::encode_checkpoint(c);
         const auto decoded = circuit::storage::decode_checkpoint(encoded);
         require(decoded.has_value(), decoded ? "" : decoded.error());
-        require(*decoded == c && circuit::storage::encode_checkpoint(*decoded) == encoded, "the sequences, settings, furnace, crafter and chest block entities, player menus, viewing and experience round-trip");
+        require(*decoded == c && circuit::storage::encode_checkpoint(*decoded) == encoded, "the sequences, settings, furnace, crafter and chest block entities, player menus, viewing, ender inventories and experience round-trip");
         auto swapped = c;
         auto& sequences = swapped.state.level(circuit::contracts::DimensionId::overworld).sequences;
         std::swap(sequences[0], sequences[1]);

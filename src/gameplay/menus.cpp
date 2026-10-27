@@ -28,9 +28,10 @@ std::uint8_t armor_slot(std::uint16_t item) {
 }
 bool offhand_item(std::uint16_t item) { return item == items::shield; }
 
-// A player slot by its slot-record number: the inventory, or the open
-// crafting table's result and grid.
+// A player slot by its slot-record number: the inventory, the slots of an
+// open workstation's window, or the ender inventory.
 ItemStack& player_slot(PlayerInventory& inv, std::uint8_t index) {
+    if (index >= contracts::ender_first) return inv.ender[index - contracts::ender_first];
     if (index >= contracts::enchant_first) return inv.enchant[index - contracts::enchant_first];
     if (index >= contracts::anvil_first) return inv.anvil[index - contracts::anvil_first];
     if (index >= contracts::loom_first) return inv.loom[index - contracts::loom_first];
@@ -264,8 +265,14 @@ public:
         loom_ = parts.size() == 1 && is_loom(ctx.block(parts[0]));
         anvil_ = parts.size() == 1 && is_anvil(ctx.block(parts[0]));
         enchant_ = parts.size() == 1 && is_enchanting_table(ctx.block(parts[0]));
+        const bool ender = parts.size() == 1 && ctx.block(parts[0]).is(BlockType::ender_chest);
         if (parts.size() == 1) block_ = parts[0];
-        if (enchant_) {
+        if (ender) {
+            // An ender chest's window holds the player's ender inventory, and
+            // works as a chest's.
+            for (std::uint8_t i = 0; i < contracts::ender_slots; ++i)
+                slots_.push_back({{}, static_cast<std::uint8_t>(contracts::ender_first + i), false});
+        } else if (enchant_) {
             for (std::uint8_t i = 0; i < contracts::enchant_slots; ++i)
                 slots_.push_back({{}, static_cast<std::uint8_t>(contracts::enchant_first + i), false});
         } else if (anvil_) {
@@ -859,7 +866,8 @@ contracts::Result<std::vector<BlockPos>> menu_parts(RuleContext& ctx, std::optio
     if (!container) return std::vector<BlockPos>{};
     const auto s = ctx.block(*container);
     if (!s.is_unloaded()
-        && (is_crafting_table(s) || is_stonecutter(s) || is_smithing_table(s) || is_grindstone(s) || is_loom(s) || is_anvil(s) || is_enchanting_table(s)))
+        && (is_crafting_table(s) || is_stonecutter(s) || is_smithing_table(s) || is_grindstone(s) || is_loom(s) || is_anvil(s) || is_enchanting_table(s)
+            || s.is(BlockType::ender_chest)))
         return std::vector<BlockPos>{*container};
     if (s.is_unloaded() || !is_container(s.type())) return std::unexpected(contracts::ErrorCode::not_a_container);
     return container_parts(ctx, *container);

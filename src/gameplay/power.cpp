@@ -35,8 +35,9 @@ bool is_conductor(BlockState s) noexcept {
 bool face_sturdy(BlockState s, Direction face) noexcept {
     switch (s.type()) {
     case BlockType::other: return registry::sturdy_face(s.registry_state(), face);
-    // Doors, trapdoors, fence gates, lecterns and composters by the shape of the state they stand for.
-    case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: case BlockType::lectern: case BlockType::composter: {
+    // Doors, trapdoors, fence gates, lecterns, composters and ender chests by the shape of the state they stand for.
+    case BlockType::door: case BlockType::trapdoor: case BlockType::fence_gate: case BlockType::lectern: case BlockType::composter:
+    case BlockType::ender_chest: {
         const auto state = physics::registry_state_of(s);
         return state && registry::face_covered(*state, face);
     }
