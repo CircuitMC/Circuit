@@ -4615,6 +4615,46 @@ int main() {
                 "placed again with its iron");
     });
 
+    suite.run("chiseled bookshelves take books by the slot clicked and give them back", [] {
+        using circuit::contracts::PlayerUse;
+        using circuit::contracts::SetPlayerSlot;
+        const PlayerKey alex{4, 2};
+        const BlockPos shelf{0, 1, 0};
+        Sim s(bundle(), 7, 2);
+        // A bookshelf facing south on stone, a comparator behind it and dust after it.
+        std::vector<CommandBody> build;
+        for (std::int32_t z = -2; z <= 0; ++z) build.push_back(place({0, 0, z}, blocks::stone()));
+        build.push_back(place(shelf, blocks::chiseled_bookshelf(Direction::south)));
+        build.push_back(place({0, 1, -1}, blocks::comparator(Direction::north)));
+        build.push_back(place({0, 1, -2}, blocks::wire()));
+        s.tick(build);
+        const auto click = [&](float x, float y) {
+            PlayerUse u{alex, 36, shelf, Direction::south, Direction::north, Direction::north, false, true, 3, 3};
+            u.cursor_x = x;
+            u.cursor_y = y;
+            u.cursor_z = 1.0f;
+            return u;
+        };
+        const auto held = [&] {
+            const auto d = s.oracle.dump();
+            return std::ranges::find(d.players, alex, &PlayerInventory::player)->slots[36];
+        };
+        s.tick({SetPlayerSlot{alex, 36, {items::book, 3}}});
+        s.tick({click(0.83f, 0.75f)});
+        s.tick();
+        s.tick();
+        require(s.at(shelf) == blocks::chiseled_bookshelf(Direction::south, 0b000100) && held() == ItemStack{items::book, 2} && s.at({0, 1, -2}).level() == 3,
+                "upper right (slot 2): one book in, the comparator at 3");
+        s.tick({click(0.17f, 0.25f)});
+        require(s.at(shelf) == blocks::chiseled_bookshelf(Direction::south, 0b001100), "lower left (slot 3)");
+        // A book on a full slot takes its book back into the hand.
+        s.tick({click(0.83f, 0.75f)});
+        require(s.at(shelf) == blocks::chiseled_bookshelf(Direction::south, 0b001000) && held() == ItemStack{items::book, 2}, "taken back");
+        // A stick on an empty slot does nothing of the bookshelf's.
+        s.tick({SetPlayerSlot{alex, 36, {items::stick, 1}}, click(0.5f, 0.75f)});
+        require(s.at(shelf) == blocks::chiseled_bookshelf(Direction::south, 0b001000), "nothing for a stick");
+    });
+
     suite.run("experience changes as the /xp command makes them", [] {
         using circuit::contracts::ChangeExperience;
         const PlayerKey alex{4, 2};

@@ -30,6 +30,8 @@ struct Inventory {
     bool crafter = false;
     bool brewing = false;
     bool shulker = false;
+    bool bookshelf = false;
+    RuleContext* context = nullptr;
     const GameData* data = nullptr;
 
     static Inventory open(RuleContext& ctx, BlockPos pos, std::optional<Direction> face = std::nullopt) {
@@ -45,6 +47,8 @@ struct Inventory {
         inv.crafter = inv.parts.size() == 1 && ctx.block(pos).is(BlockType::crafter);
         inv.brewing = inv.parts.size() == 1 && ctx.block(pos).is(BlockType::brewing_stand);
         inv.shulker = inv.parts.size() == 1 && ctx.block(pos).is(BlockType::shulker_box);
+        inv.bookshelf = inv.parts.size() == 1 && ctx.block(pos).is(BlockType::chiseled_bookshelf);
+        inv.context = &ctx;
         inv.data = ctx.data();
         return inv;
     }
@@ -67,6 +71,8 @@ struct Inventory {
                 if (crafter && !crafter_accepts(*entities[i], j, stack)) continue;
                 if (brewing && !brewing_accepts(data, *entities[i], j, stack)) continue;
                 if (shulker && is_shulker_box_item(stack.item)) continue;
+                // A chiseled bookshelf takes a book into an empty slot only.
+                if (bookshelf && (!s.empty() || !is_bookshelf_book(*context, stack.item))) continue;
                 if (s.empty() || (s.same_kind(stack) && s.count < slot_limit(s))) return std::pair{i, j};
             }
         return std::nullopt;
@@ -76,9 +82,14 @@ struct Inventory {
         if (brewing) return brewing_gives(j, stack);
         return !furnace || furnace_gives(j, stack, face.value_or(Direction::down));
     }
-    // A furnace's input set anew starts its cooking over.
+    // A furnace's input set anew starts its cooking over; a chiseled
+    // bookshelf shows its slots and remembers the slot touched.
     void set_into(RuleContext& ctx, std::size_t i, std::size_t j, const ItemStack& before) const {
         if (furnace && j == 0) furnace_input_set(ctx, parts[i], before);
+        if (bookshelf) bookshelf_slot_changed(ctx, parts[i], j);
+    }
+    void taken_from(RuleContext& ctx, std::size_t i, std::size_t j) const {
+        if (bookshelf) bookshelf_slot_changed(ctx, parts[i], j);
     }
     void changed(RuleContext& ctx) const {
         for (const auto p : parts) container_changed(ctx, p);
@@ -124,6 +135,7 @@ bool transfer_one(RuleContext& ctx, const Inventory& from, const Inventory& to, 
             take_one(source);
             add_one(destination, kind);
             ctx.record(TraceKind::inventory_changed, from.parts[i], j, pack_stack(before_from), pack_stack(source));
+            from.taken_from(ctx, i, j);
             ctx.record(TraceKind::inventory_changed, to.parts[target->first], target->second, pack_stack(before_to),
                        pack_stack(destination));
             to.set_into(ctx, target->first, target->second, before_to);
@@ -389,7 +401,8 @@ ItemStack insert_stack(RuleContext& ctx, BlockPos pos, ItemStack stack, std::opt
         if (!target) break;
         auto& slot = to.entities[target->first]->slots[target->second];
         const auto before = slot;
-        const int room = slot.empty() ? slot_limit(stack) : slot_limit(slot) - slot.count;
+        // A chiseled bookshelf's slots hold one book each.
+        const int room = to.bookshelf ? 1 : slot.empty() ? slot_limit(stack) : slot_limit(slot) - slot.count;
         const int n = std::min<int>(room, stack.count);
         if (slot.empty()) {
             slot = stack;

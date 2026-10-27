@@ -370,9 +370,11 @@ LootCompilation compile_block_loot(const data::DataPacks& packs, const contracts
     const auto release = bundle.schema.content_release;
     Compiler compiler(packs, *content, registries, release);
     for (std::uint32_t b = 0; b < registry::block_count(); ++b) {
-        // Blocks with rules of their own drop as their rules say, but wheat
-        // and ender chests, which drop by their tables.
-        if (gameplay::modeled_block(b) && registry::game_name(b) != "wheat" && registry::game_name(b) != "ender_chest") continue;
+        // Blocks with rules of their own drop as their rules say, but wheat,
+        // ender chests and chiseled bookshelves, which drop by their tables.
+        if (gameplay::modeled_block(b) && registry::game_name(b) != "wheat" && registry::game_name(b) != "ender_chest"
+            && registry::game_name(b) != "chiseled_bookshelf")
+            continue;
         const auto name = std::string(registry::game_name(b));
         if (registry::find_block(release, "minecraft:" + name) != b) continue;
         if (!tables) break;

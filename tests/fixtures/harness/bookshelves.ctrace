@@ -1,0 +1,176 @@
+circuit-trace 2
+title Chiseled bookshelves filled by hoppers and a dropper with books of every kind, emptied by a hopper below, read by a comparator
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.37.0+mc1.21.8
+mechanisms chiseled_bookshelf hopper comparator dispenser loot
+area -1 -1 -1 7 3 3
+ticks 120
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 -1 0 minecraft:stone
+at 0 set 0 -1 1 minecraft:stone
+at 0 set 0 -1 2 minecraft:stone
+at 0 set 1 -1 0 minecraft:stone
+at 0 set 1 -1 1 minecraft:stone
+at 0 set 1 -1 2 minecraft:stone
+at 0 set 2 -1 0 minecraft:stone
+at 0 set 2 -1 1 minecraft:stone
+at 0 set 2 -1 2 minecraft:stone
+at 0 set 3 -1 0 minecraft:stone
+at 0 set 3 -1 1 minecraft:stone
+at 0 set 3 -1 2 minecraft:stone
+at 0 set 4 -1 0 minecraft:stone
+at 0 set 4 -1 1 minecraft:stone
+at 0 set 4 -1 2 minecraft:stone
+at 0 set 5 -1 0 minecraft:stone
+at 0 set 5 -1 1 minecraft:stone
+at 0 set 5 -1 2 minecraft:stone
+at 0 set 6 -1 0 minecraft:stone
+at 0 set 6 -1 1 minecraft:stone
+at 0 set 6 -1 2 minecraft:stone
+at 0 set 0 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+at 0 set 0 1 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 0 0 1 minecraft:comparator[facing=north,mode=compare,powered=false]
+at 0 set 0 0 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 3 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+at 0 set 3 -1 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 3 1 0 minecraft:dropper[facing=down,triggered=false]
+at 0 set 4 1 0 minecraft:lever[face=wall,facing=east,powered=false]
+
+at 1 insert 0 1 0 0 minecraft:book 3
+at 1 insert 0 1 0 1 minecraft:stone 2
+at 1 insert 0 1 0 2 minecraft:enchanted_book 1
+at 1 insert 0 1 0 3 minecraft:writable_book 1
+at 1 insert 0 1 0 4 minecraft:knowledge_book 1
+at 1 insert 3 1 0 0 minecraft:book 4
+at 1 insert 3 1 0 1 minecraft:written_book 1
+change 1 block_entities 0 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false] minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+
+at 2 use 4 1 0
+change 2 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 2 commands 3 1 0 minecraft:dropper[facing=down,triggered=false] minecraft:dropper[facing=down,triggered=true]
+
+change 3 block_ticks 0 0 1 minecraft:comparator[facing=north,mode=compare,powered=false] minecraft:comparator[facing=north,mode=compare,powered=true]
+change 3 block_ticks 0 0 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none] minecraft:redstone_wire[east=none,north=none,power=1,south=none,west=none]
+change 3 block_ticks 0 0 2 minecraft:redstone_wire[east=none,north=none,power=1,south=none,west=none] minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+
+change 5 block_ticks 3 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false] minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+change 5 block_entities 3 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false] minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+draws 5 block_ticks level 2
+
+at 6 use 4 1 0
+change 6 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 6 commands 3 1 0 minecraft:dropper[facing=down,triggered=true] minecraft:dropper[facing=down,triggered=false]
+
+change 9 block_entities 0 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false] minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=true,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+
+at 10 use 4 1 0
+change 10 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 10 commands 3 1 0 minecraft:dropper[facing=down,triggered=false] minecraft:dropper[facing=down,triggered=true]
+block 10 0 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=true,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+block 10 3 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+block 10 0 0 1 minecraft:comparator[facing=north,mode=compare,powered=true]
+block 10 0 0 2 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none]
+slot 10 0 1 0 0 minecraft:book 1
+slot 10 0 1 0 1 minecraft:stone 2
+slot 10 3 -1 0 0 minecraft:book 1
+slot 10 3 1 0 0 minecraft:book 3
+
+change 11 block_ticks 0 0 2 minecraft:redstone_wire[east=none,north=side,power=1,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=2,south=side,west=none]
+
+change 13 block_ticks 3 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false] minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+change 13 block_entities 3 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false] minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+draws 13 block_ticks level 2
+
+at 14 use 4 1 0
+change 14 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 14 commands 3 1 0 minecraft:dropper[facing=down,triggered=true] minecraft:dropper[facing=down,triggered=false]
+
+change 17 block_entities 0 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=true,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false] minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=true,slot_2_occupied=true,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+
+at 18 use 4 1 0
+change 18 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 18 commands 3 1 0 minecraft:dropper[facing=down,triggered=false] minecraft:dropper[facing=down,triggered=true]
+
+change 19 block_ticks 0 0 2 minecraft:redstone_wire[east=none,north=side,power=2,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none]
+
+change 21 block_ticks 3 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false] minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+change 21 block_entities 3 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false] minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+draws 21 block_ticks level 2
+
+at 22 use 4 1 0
+change 22 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 22 commands 3 1 0 minecraft:dropper[facing=down,triggered=true] minecraft:dropper[facing=down,triggered=false]
+
+change 25 block_entities 0 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=true,slot_2_occupied=true,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false] minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=true,slot_2_occupied=true,slot_3_occupied=true,slot_4_occupied=false,slot_5_occupied=false]
+
+at 26 use 4 1 0
+change 26 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 26 commands 3 1 0 minecraft:dropper[facing=down,triggered=false] minecraft:dropper[facing=down,triggered=true]
+
+change 27 block_ticks 0 0 2 minecraft:redstone_wire[east=none,north=side,power=3,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=4,south=side,west=none]
+
+change 29 block_ticks 3 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false] minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+change 29 block_entities 3 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false] minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+draws 29 block_ticks level 1
+
+at 30 use 4 1 0
+change 30 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 30 commands 3 1 0 minecraft:dropper[facing=down,triggered=true] minecraft:dropper[facing=down,triggered=false]
+block 30 0 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=true,slot_2_occupied=true,slot_3_occupied=true,slot_4_occupied=false,slot_5_occupied=false]
+block 30 3 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+block 30 0 0 1 minecraft:comparator[facing=north,mode=compare,powered=true]
+block 30 0 0 2 minecraft:redstone_wire[east=none,north=side,power=4,south=side,west=none]
+slot 30 0 1 0 0 empty 0
+slot 30 0 1 0 1 minecraft:stone 2
+slot 30 3 -1 0 0 minecraft:book 3
+slot 30 3 1 0 0 minecraft:book 1
+
+change 33 block_entities 0 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=true,slot_2_occupied=true,slot_3_occupied=true,slot_4_occupied=false,slot_5_occupied=false] minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=true,slot_2_occupied=true,slot_3_occupied=true,slot_4_occupied=true,slot_5_occupied=false]
+
+at 34 use 4 1 0
+change 34 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 34 commands 3 1 0 minecraft:dropper[facing=down,triggered=false] minecraft:dropper[facing=down,triggered=true]
+
+change 35 block_ticks 0 0 2 minecraft:redstone_wire[east=none,north=side,power=4,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none]
+
+change 37 block_ticks 3 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false] minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+change 37 block_entities 3 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false] minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+draws 37 block_ticks level 1
+
+at 38 use 4 1 0
+change 38 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 38 commands 3 1 0 minecraft:dropper[facing=down,triggered=true] minecraft:dropper[facing=down,triggered=false]
+
+change 41 block_entities 0 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=true,slot_2_occupied=true,slot_3_occupied=true,slot_4_occupied=true,slot_5_occupied=false] minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=true,slot_2_occupied=true,slot_3_occupied=true,slot_4_occupied=true,slot_5_occupied=true]
+
+at 42 use 4 1 0
+change 42 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=false] minecraft:lever[face=wall,facing=east,powered=true]
+change 42 commands 3 1 0 minecraft:dropper[facing=down,triggered=false] minecraft:dropper[facing=down,triggered=true]
+
+change 43 block_ticks 0 0 2 minecraft:redstone_wire[east=none,north=side,power=5,south=side,west=none] minecraft:redstone_wire[east=none,north=side,power=6,south=side,west=none]
+
+at 46 use 4 1 0
+change 46 commands 4 1 0 minecraft:lever[face=wall,facing=east,powered=true] minecraft:lever[face=wall,facing=east,powered=false]
+change 46 commands 3 1 0 minecraft:dropper[facing=down,triggered=true] minecraft:dropper[facing=down,triggered=false]
+
+block 60 0 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=true,slot_2_occupied=true,slot_3_occupied=true,slot_4_occupied=true,slot_5_occupied=true]
+block 60 3 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+block 60 0 0 1 minecraft:comparator[facing=north,mode=compare,powered=true]
+block 60 0 0 2 minecraft:redstone_wire[east=none,north=side,power=6,south=side,west=none]
+slot 60 0 1 0 0 empty 0
+slot 60 0 1 0 1 minecraft:stone 2
+slot 60 3 -1 0 0 minecraft:book 4
+slot 60 3 1 0 0 empty 0
+
+block 120 0 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=true,slot_1_occupied=true,slot_2_occupied=true,slot_3_occupied=true,slot_4_occupied=true,slot_5_occupied=true]
+block 120 3 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+block 120 0 0 1 minecraft:comparator[facing=north,mode=compare,powered=true]
+block 120 0 0 2 minecraft:redstone_wire[east=none,north=side,power=6,south=side,west=none]
+slot 120 0 1 0 0 empty 0
+slot 120 0 1 0 1 minecraft:stone 2
+slot 120 3 -1 0 0 minecraft:book 4
+slot 120 3 1 0 0 empty 0

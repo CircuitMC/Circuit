@@ -775,6 +775,11 @@ private:
             && (block->variant() == 1) == (id == "minecraft:trapped_chest")) {
             out = {BlockType::chest, 0, std::vector<contracts::ItemStack>(27), 0};
             read_items(be, out, "chest");
+        } else if (id == "minecraft:chiseled_bookshelf" && expect(BlockType::chiseled_bookshelf)) {
+            // Its books and the last slot touched (-1: none).
+            out = {BlockType::chiseled_bookshelf, 0, std::vector<contracts::ItemStack>(6), 0};
+            read_items(be, out, "chiseled_bookshelf");
+            out.signal = static_cast<std::uint8_t>(std::clamp<std::int64_t>(integer(be, "last_interacted_slot").value_or(-1), -1, 5) + 1);
         } else if (id == "minecraft:shulker_box" && expect(BlockType::shulker_box)) {
             // The block entity of every color is a shulker_box.
             out = {BlockType::shulker_box, 0, std::vector<contracts::ItemStack>(27), 0};
@@ -1328,6 +1333,11 @@ private:
             t.set("id", Tag::string("minecraft:hopper"));
             t.set("Items", items(be.slots));
             t.set("TransferCooldown", Tag::int_(be.cooldown));
+            break;
+        case BlockType::chiseled_bookshelf:
+            t.set("id", Tag::string("minecraft:chiseled_bookshelf"));
+            t.set("Items", items(be.slots));
+            t.set("last_interacted_slot", Tag::int_(static_cast<std::int32_t>(be.signal) - 1));
             break;
         case BlockType::shulker_box:
             t.set("id", Tag::string("minecraft:shulker_box"));

@@ -246,6 +246,16 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
         if (is_opening(clicked.type()) && opens_by_hand(clicked))
             return [&ctx, c, clicked] { detail::use_opening(ctx, c.pos, clicked, c.horizontal); };
         if (usable(clicked)) return plan(ctx, contracts::UseBlock{c.pos});
+        // A chiseled bookshelf's front: a book into the slot clicked, or its
+        // book out; elsewhere, or an empty slot with another item, the held
+        // item's own use (client/bookshelf).
+        if (clicked.is(BlockType::chiseled_bookshelf)) {
+            const auto slot = detail::bookshelf_slot_at(clicked, c.face, c.cursor_x, c.cursor_y, c.cursor_z);
+            const auto* be = ctx.peek_block_entity(c.pos);
+            const bool full = slot && be && be->slots.size() == 6 && !be->slots[*slot].empty();
+            if (slot && (full || (!held.empty() && detail::is_bookshelf_book(ctx, held.item))))
+                return [&ctx, c, slot] { (void)detail::use_bookshelf(ctx, ctx.player(c.player), c.pos, *slot, c.slot, c.survival); };
+        }
         // A shulker box opens when its lid can rise (client/shulker).
         if (clicked.is(BlockType::shulker_box)) {
             if (!detail::lid_can_rise(ctx, c.pos, clicked)) return [] {};
@@ -254,7 +264,7 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
                 ctx.record(TraceKind::container_opened, c.pos, c.player.hi, c.player.lo);
             };
         }
-        if (is_container(clicked.type())) {
+        if (is_container(clicked.type()) && !clicked.is(BlockType::chiseled_bookshelf)) {
             // A chest under a solid block does not open.
             for (const auto part : detail::container_parts(ctx, c.pos))
                 if (ctx.block(part).is(BlockType::chest) && detail::is_conductor(ctx.block(part.relative(Direction::up))))

@@ -142,6 +142,9 @@ struct GameData {
     // the pages of a book (its writable or written book content); set by the
     // server, which knows the components' encoding.
     std::vector<std::uint16_t> lectern_books;
+    // The books a chiseled bookshelf takes (the item tag bookshelf_books,
+    // ascending).
+    std::vector<std::uint16_t> bookshelf_books;
     std::function<std::int32_t(const contracts::ItemStack&)> book_pages;
     // A writable book's components with pages "1" to "n" (fixtures' books).
     std::function<std::optional<contracts::ComponentPatch>(std::int32_t pages)> writable_book;

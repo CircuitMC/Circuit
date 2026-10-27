@@ -13,6 +13,12 @@ std::uint8_t rear_input(RuleContext& ctx, BlockPos pos, BlockState s) {
     const auto back = contracts::opposite(s.facing());
     const auto behind = pos.relative(back);
     const auto b = ctx.block(behind);
+    // A chiseled bookshelf gives the last slot touched, plus one.
+    const auto shelf = [&](BlockPos at) {
+        const auto* be = ctx.peek_block_entity(at);
+        return be ? be->signal : std::uint8_t{0};
+    };
+    if (b.is(BlockType::chiseled_bookshelf)) return shelf(behind);
     if (is_container(b.type())) return container_signal(ctx, behind);
     if (b.is(BlockType::lectern)) return lectern_signal(ctx, behind);
     if (b.is(BlockType::composter)) return b.level();
@@ -21,7 +27,8 @@ std::uint8_t rear_input(RuleContext& ctx, BlockPos pos, BlockState s) {
     auto power = diode_input(ctx, pos, s);
     if (power < 15 && is_conductor(b)) {
         const auto further = behind.relative(back);
-        if (is_container(ctx.block(further).type())) power = container_signal(ctx, further);
+        if (ctx.block(further).is(BlockType::chiseled_bookshelf)) power = shelf(further);
+        else if (is_container(ctx.block(further).type())) power = container_signal(ctx, further);
         else if (ctx.block(further).is(BlockType::lectern)) power = lectern_signal(ctx, further);
         else if (ctx.block(further).is(BlockType::composter)) power = ctx.block(further).level();
         else if (is_detector_rail(ctx.block(further))) power = 0;

@@ -237,6 +237,13 @@ constexpr std::array reference_v4_mechanisms{
         "blocks; they open with a solid block above them, are open from their first viewer to their last (the "
         "viewer counts and rechecks of chests, without block events), and a set open state stays until a viewer "
         "changes it. Gaps: the open and close sounds and the game events sculk sensors hear are not modeled."},
+    MechanismEntry{"chiseled_bookshelf", l0_exact, l2_declared_deviation, harness_trace,
+        "Chiseled bookshelves as both official servers run them (bookshelves; client/bookshelf): six slots of one book "
+        "each (the item tag bookshelf_books) shown by the block's state; a player's click on the front picks a slot "
+        "(top row first, from the left), putting a held book into an empty one and taking a full one's book into the "
+        "inventory; hoppers and droppers fill the first empty slot and hoppers below take from the first full one; "
+        "comparators read the last slot touched, plus one. Gaps: the sounds and the game events sculk sensors hear are "
+        "not modeled."},
     MechanismEntry{"shulker_box", l0_exact, l2_declared_deviation, harness_trace,
         "Shulker boxes as both official servers run them (shulker_boxes; client/shulker): 27-slot containers facing "
         "any side that take everything but shulker boxes, from players' windows and from hoppers, droppers and crafters; "

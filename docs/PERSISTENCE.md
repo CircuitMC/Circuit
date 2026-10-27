@@ -101,7 +101,8 @@ The server fails closed on storage errors. If a log record cannot be written, th
 
 ## Checkpoint format
 
-A checkpoint file is `CIRCKPT\0`, a format version (47; versions 1–46 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+A checkpoint file is `CIRCKPT\0`, a format version (48; versions 1–47 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+- versions before 48 have no chiseled bookshelves with rules of their own: they come back as the modeled blocks with empty block entities;
 - versions before 47 have no shulker boxes with rules of their own: they come back as the modeled blocks with empty block entities (contents an earlier Anvil import kept in their saved data are not carried over);
 - versions before 46 have no ender chests with rules of their own and no ender inventories: ender chests come back as the modeled blocks with empty block entities, and players' ender inventories are empty;
 - versions before 45 have no composters with rules of their own: they come back as the modeled blocks;

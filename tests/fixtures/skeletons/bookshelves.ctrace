@@ -1,0 +1,93 @@
+circuit-trace 2
+title Chiseled bookshelves filled by hoppers and a dropper with books of every kind, emptied by a hopper below, read by a comparator
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms chiseled_bookshelf hopper comparator dispenser loot
+area -1 -1 -1 7 3 3
+ticks 120
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 -1 0 minecraft:stone
+at 0 set 0 -1 1 minecraft:stone
+at 0 set 0 -1 2 minecraft:stone
+at 0 set 1 -1 0 minecraft:stone
+at 0 set 1 -1 1 minecraft:stone
+at 0 set 1 -1 2 minecraft:stone
+at 0 set 2 -1 0 minecraft:stone
+at 0 set 2 -1 1 minecraft:stone
+at 0 set 2 -1 2 minecraft:stone
+at 0 set 3 -1 0 minecraft:stone
+at 0 set 3 -1 1 minecraft:stone
+at 0 set 3 -1 2 minecraft:stone
+at 0 set 4 -1 0 minecraft:stone
+at 0 set 4 -1 1 minecraft:stone
+at 0 set 4 -1 2 minecraft:stone
+at 0 set 5 -1 0 minecraft:stone
+at 0 set 5 -1 1 minecraft:stone
+at 0 set 5 -1 2 minecraft:stone
+at 0 set 6 -1 0 minecraft:stone
+at 0 set 6 -1 1 minecraft:stone
+at 0 set 6 -1 2 minecraft:stone
+at 0 set 0 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+at 0 set 0 1 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 0 0 1 minecraft:comparator[facing=north,mode=compare,powered=false]
+at 0 set 0 0 2 minecraft:redstone_wire[east=none,north=none,power=0,south=none,west=none]
+at 0 set 3 0 0 minecraft:chiseled_bookshelf[facing=south,slot_0_occupied=false,slot_1_occupied=false,slot_2_occupied=false,slot_3_occupied=false,slot_4_occupied=false,slot_5_occupied=false]
+at 0 set 3 -1 0 minecraft:hopper[enabled=true,facing=down]
+at 0 set 3 1 0 minecraft:dropper[facing=down,triggered=false]
+at 0 set 4 1 0 minecraft:lever[face=wall,facing=east,powered=false]
+at 1 insert 0 1 0 0 minecraft:book 3
+at 1 insert 0 1 0 1 minecraft:stone 2
+at 1 insert 0 1 0 2 minecraft:enchanted_book 1
+at 1 insert 0 1 0 3 minecraft:writable_book 1
+at 1 insert 0 1 0 4 minecraft:knowledge_book 1
+at 1 insert 3 1 0 0 minecraft:book 4
+at 1 insert 3 1 0 1 minecraft:written_book 1
+at 2 use 4 1 0
+at 6 use 4 1 0
+at 10 use 4 1 0
+at 14 use 4 1 0
+at 18 use 4 1 0
+at 22 use 4 1 0
+at 26 use 4 1 0
+at 30 use 4 1 0
+at 34 use 4 1 0
+at 38 use 4 1 0
+at 42 use 4 1 0
+at 46 use 4 1 0
+
+block 10 0 0 0 ?
+block 10 3 0 0 ?
+block 10 0 0 1 ?
+block 10 0 0 2 ?
+slot 10 0 1 0 0 ?
+slot 10 0 1 0 1 ?
+slot 10 3 -1 0 0 ?
+slot 10 3 1 0 0 ?
+block 30 0 0 0 ?
+block 30 3 0 0 ?
+block 30 0 0 1 ?
+block 30 0 0 2 ?
+slot 30 0 1 0 0 ?
+slot 30 0 1 0 1 ?
+slot 30 3 -1 0 0 ?
+slot 30 3 1 0 0 ?
+block 60 0 0 0 ?
+block 60 3 0 0 ?
+block 60 0 0 1 ?
+block 60 0 0 2 ?
+slot 60 0 1 0 0 ?
+slot 60 0 1 0 1 ?
+slot 60 3 -1 0 0 ?
+slot 60 3 1 0 0 ?
+block 120 0 0 0 ?
+block 120 3 0 0 ?
+block 120 0 0 1 ?
+block 120 0 0 2 ?
+slot 120 0 1 0 0 ?
+slot 120 0 1 0 1 ?
+slot 120 3 -1 0 0 ?
+slot 120 3 1 0 0 ?

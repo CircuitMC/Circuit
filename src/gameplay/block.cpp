@@ -11,7 +11,7 @@ namespace circuit::gameplay {
 namespace {
 // Registry blocks with a BlockType of their own (see evidence::ContentMapping),
 // besides the buttons and pressure plates of each kind.
-constexpr std::array<std::string_view, 59> modeled_names{
+constexpr std::array<std::string_view, 60> modeled_names{
     "air", "cave_air", "void_air", "stone", "glass", "obsidian", "redstone_block", "slime_block", "lever", "redstone_wire",
     "repeater", "redstone_lamp", "observer", "piston", "sticky_piston", "piston_head", "moving_piston", "hopper", "chest",
     "comparator", "water", "wheat", "redstone_torch", "redstone_wall_torch", "light_weighted_pressure_plate",
@@ -19,7 +19,7 @@ constexpr std::array<std::string_view, 59> modeled_names{
     "blast_furnace", "crafter", "brewing_stand", "lectern", "trapped_chest", "barrel", "composter", "ender_chest",
     "shulker_box", "white_shulker_box", "orange_shulker_box", "magenta_shulker_box", "light_blue_shulker_box", "yellow_shulker_box",
     "lime_shulker_box", "pink_shulker_box", "gray_shulker_box", "light_gray_shulker_box", "cyan_shulker_box", "purple_shulker_box",
-    "blue_shulker_box", "brown_shulker_box", "green_shulker_box", "red_shulker_box", "black_shulker_box"};
+    "blue_shulker_box", "brown_shulker_box", "green_shulker_box", "red_shulker_box", "black_shulker_box", "chiseled_bookshelf"};
 constexpr std::array<std::string_view, note_instruments> instrument_names{
     "harp", "basedrum", "snare", "hat", "bass", "flute", "bell", "guitar", "chime", "xylophone", "iron_xylophone", "cow_bell",
     "didgeridoo", "bit", "banjo", "pling", "zombie", "skeleton", "creeper", "dragon", "wither_skeleton", "piglin", "custom_head"};
@@ -67,6 +67,7 @@ constexpr Properties properties(BlockType t) noexcept {
     case BlockType::composter: return {false, true, false, false};
     case BlockType::ender_chest: return {true, false, true, false};
     case BlockType::shulker_box: return {true, false, false, false};
+    case BlockType::chiseled_bookshelf: return {true, false, false, false};
     default: return {false, false, false, false};
     }
 }
@@ -131,7 +132,9 @@ std::uint32_t registry_state_count() noexcept { return registry::state_count(); 
 
 bool same_block(BlockState a, BlockState b) noexcept {
     if (a.type() != b.type()) return false;
-    // Each kind of button or pressure plate is a block of its own.
+    // Each kind of button or pressure plate is a block of its own; a chiseled
+    // bookshelf's variant is its slots' state.
+    if (a.is(BlockType::chiseled_bookshelf)) return true;
     if (has_variant(a.type())) return a.variant() == b.variant();
     return !a.is(BlockType::other) || registry::block_of(a.registry_state()) == registry::block_of(b.registry_state());
 }
@@ -232,7 +235,7 @@ contracts::Result<BlockState> BlockState::decode(std::uint32_t raw) noexcept {
     case BlockType::composter:
         if (s.level() > 8) return invalid;
         break;
-    case BlockType::ender_chest:
+    case BlockType::ender_chest: case BlockType::chiseled_bookshelf:
         if (!contracts::is_horizontal(s.facing())) return invalid;
         break;
     case BlockType::comparator:
@@ -375,6 +378,11 @@ std::string block_notation(BlockState s) {
     case BlockType::composter: return std::format("minecraft:composter[level={}]", s.level());
     case BlockType::ender_chest:
         return std::format("minecraft:ender_chest[facing={},waterlogged={}]", direction_name(s.facing()), b(s.flag()));
+    case BlockType::chiseled_bookshelf: {
+        std::string out = std::format("minecraft:chiseled_bookshelf[facing={}", direction_name(s.facing()));
+        for (int k = 0; k < 6; ++k) out += std::format(",slot_{}_occupied={}", k, b((s.variant() >> k) & 1));
+        return out + "]";
+    }
     case BlockType::shulker_box:
         return std::format("minecraft:{}[facing={}]", blocks::shulker_box_names[s.variant() % blocks::shulker_box_names.size()], direction_name(s.facing()));
     case BlockType::other: return registry::notation(s.registry_state());

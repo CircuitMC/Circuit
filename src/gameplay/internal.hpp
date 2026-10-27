@@ -437,6 +437,16 @@ std::uint8_t viewer_count(RuleContext& ctx, BlockPos pos);
 std::uint8_t trapped_power(RuleContext& ctx, BlockPos pos, BlockState s);
 void tick_viewers(RuleContext& ctx, BlockPos pos);
 
+// ---- chiseled bookshelves (bookshelf.cpp) ----
+// Whether a bookshelf takes an item (the item tag bookshelf_books); a slot's
+// change shown in its state and remembered as the last touched; the slot a
+// player's click on its front picks (nullopt elsewhere); and a player's use
+// of a slot (false: nothing of the bookshelf's own happens).
+bool is_bookshelf_book(RuleContext& ctx, std::uint16_t item);
+void bookshelf_slot_changed(RuleContext& ctx, BlockPos pos, std::size_t slot);
+std::optional<std::size_t> bookshelf_slot_at(BlockState s, Direction face, float x, float y, float z);
+bool use_bookshelf(RuleContext& ctx, PlayerInventory& inv, BlockPos pos, std::size_t slot, std::uint8_t hand, bool survival);
+
 // ---- shulker boxes (shulker.cpp) ----
 // A shulker box item's color (nullopt for other items); whether an item is
 // a shulker box (which shulker boxes refuse); the item a box drops (its

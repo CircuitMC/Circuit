@@ -460,6 +460,17 @@
       "description": "A creative player breaks a shulker box holding iron (one box item drops) and an empty one (nothing drops); Circuit and both official servers give identical output"
     },
     {
+      "id": "client/bookshelf",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/bookshelf.js",
+      "status": "passing",
+      "description": "12 steps of a survival player at a chiseled bookshelf facing south with a comparator behind it: a book clicked into each sixth of the front (upper and lower row, from the left: slots 0 to 5, each book used up), a book on a full slot taking its book back, an empty hand taking two books, a stick on an empty slot doing nothing and on a full one taking its book into the inventory; the slots, the held stack, the inventory and the comparator's last slot touched; Circuit and both official servers give identical output"
+    },
+    {
       "id": "client/furnace_xp",
       "kind": "black_box",
       "versions": [

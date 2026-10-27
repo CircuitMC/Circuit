@@ -245,6 +245,17 @@ std::expected<BlockState, std::string> ContentMapping::block(std::string_view no
             return simple(blocks::shulker_box(facing, static_cast<std::uint8_t>(it - names.begin())));
         }
     }
+    if (id == "minecraft:chiseled_bookshelf") {
+        // Absent properties take the default state's (facing north, empty).
+        CIRCUIT_TRY(facing, p.direction_or("facing", Direction::north));
+        if (!contracts::is_horizontal(facing)) return std::unexpected(std::format("{}: `facing` must be horizontal", id));
+        std::uint8_t slots = 0;
+        for (int k = 0; k < 6; ++k) {
+            CIRCUIT_TRY(occupied, p.choice(std::format("slot_{}_occupied", k), {"false", "true"}, 0));
+            if (occupied == 1) slots = static_cast<std::uint8_t>(slots | 1u << k);
+        }
+        return simple(blocks::chiseled_bookshelf(facing, slots));
+    }
     if (id == "minecraft:ender_chest") {
         // Absent properties take the default state's (facing north, dry).
         CIRCUIT_TRY(facing, p.direction_or("facing", Direction::north));

@@ -340,6 +340,10 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
             for (const auto& member : *books)
                 if (const auto id = gameplay::items::by_name(member)) game->lectern_books.push_back(*id);
         std::ranges::sort(game->lectern_books);
+        if (const auto* books = packs->tag("item", "minecraft:bookshelf_books"))
+            for (const auto& member : *books)
+                if (const auto id = gameplay::items::by_name(member)) game->bookshelf_books.push_back(*id);
+        std::ranges::sort(game->bookshelf_books);
         if (const auto* codec = protocol::ComponentCodec::for_protocol(bundle.schema.component_schema))
         {
             game->book_pages = [codec](const contracts::ItemStack& book) { return codec->book_pages_of(book.components); };

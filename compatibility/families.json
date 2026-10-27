@@ -1608,11 +1608,19 @@
           ]
         },
         {
-          "id": "other_storage",
+          "id": "chiseled_bookshelves",
           "name": "Chiseled bookshelves",
           "milestone": "C5",
-          "impl": "missing",
-          "evidence": "none"
+          "impl": "partial",
+          "evidence": "compared",
+          "note": "Six book slots shown in the block state, filled and emptied by players by the sixth of the front they click, filled by hoppers and droppers and emptied by hoppers below; comparators read the last slot touched; the harness trace and a client scenario match both official servers",
+          "cases": [
+            "trace/bookshelves",
+            "client/bookshelf"
+          ],
+          "deviations": [
+            "the sounds are not modeled"
+          ]
         },
         {
           "id": "component_aware_transfer",

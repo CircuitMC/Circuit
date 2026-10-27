@@ -21,6 +21,7 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 48: chiseled bookshelves have rules of their own;
 // 47: shulker boxes have rules of their own;
 // 46: ender chests have rules of their own, and players their ender
 // inventories;
@@ -83,7 +84,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 47;
+constexpr std::uint32_t version = 48;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -475,8 +476,8 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
     // Before version 28 furnaces, smokers and blast furnaces, before 32
     // crafters, before 35 brewing stands, before 42 lecterns, before 43
     // trapped chests (modeled as chests), before 44 barrels, before 45
-    // composters, before 46 ender chests and before 47 shulker boxes had no
-    // rules of their own: their
+    // composters, before 46 ender chests, before 47 shulker boxes and before
+    // 48 chiseled bookshelves had no rules of their own: their
     // registry states become the modeled ones, and their block entities
     // start empty (they could hold nothing the rules used).
     const auto newly_modeled = [&](gameplay::BlockType type, std::uint32_t since) {
@@ -505,6 +506,7 @@ bool decode_level_lists(BodyReader& b, gameplay::LevelDump& l) {
     newly_modeled(gameplay::BlockType::composter, 45);
     newly_modeled(gameplay::BlockType::ender_chest, 46);
     newly_modeled(gameplay::BlockType::shulker_box, 47);
+    newly_modeled(gameplay::BlockType::chiseled_bookshelf, 48);
     if (!b.count(n, 55)) return false;
     for (std::size_t i = 0; i < n; ++i) {
         gameplay::Entity e;

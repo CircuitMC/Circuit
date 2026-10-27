@@ -80,6 +80,8 @@ std::optional<BlockState> placed_by(std::uint16_t item, const contracts::PlayerU
     case items::composter: return blocks::composter();
     // Ender chests face the player (tests/fixtures/placement).
     case items::ender_chest: return blocks::ender_chest(contracts::opposite(horizontal));
+    // Chiseled bookshelves face the player (tests/fixtures/placement).
+    case items::chiseled_bookshelf: return blocks::chiseled_bookshelf(contracts::opposite(horizontal));
     case items::smoker: return blocks::furnace(blocks::FurnaceKind::smoker, contracts::opposite(horizontal));
     case items::blast_furnace: return blocks::furnace(blocks::FurnaceKind::blast_furnace, contracts::opposite(horizontal));
     case items::hopper:

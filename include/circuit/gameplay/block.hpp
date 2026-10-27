@@ -63,6 +63,8 @@ enum class BlockType : std::uint8_t {
     composter,           // level: 0-8 (7 full, 8 bone meal ready)
     ender_chest,         // facing: front (horizontal); flag: waterlogged (not simulated). Block entity: its viewers
     shulker_box,         // facing: front (any side); variant: 0 plain, 1-16 the colors. Block entity: 27 slots, its viewers
+    chiseled_bookshelf,  // facing: front (horizontal); variant: bit k slot k occupied. Block entity: six slots; signal the
+                         // last slot touched, plus one (0: none)
     count_,
     unloaded = 255, // Read sentinel for unloaded chunks and positions outside the world height.
 };
@@ -293,6 +295,11 @@ inline constexpr std::array<std::string_view, 17> shulker_box_names{
 constexpr BlockState shulker_box(Direction front, std::uint8_t color = 0) {
     return BlockState::of(BlockType::shulker_box).with_facing(front).with_variant(color);
 }
+// A chiseled bookshelf facing `front` (horizontal), its slots occupied by
+// the bits of `slots`.
+constexpr BlockState chiseled_bookshelf(Direction front, std::uint8_t slots = 0) {
+    return BlockState::of(BlockType::chiseled_bookshelf).with_facing(front).with_variant(slots);
+}
 // An ender chest facing `front` (horizontal).
 constexpr BlockState ender_chest(Direction front) { return BlockState::of(BlockType::ender_chest).with_facing(front); }
 // A composter at `level` (0 to 8).
@@ -349,7 +356,7 @@ constexpr bool has_variant(BlockType t) noexcept {
     return t == BlockType::button || t == BlockType::pressure_plate || t == BlockType::weighted_plate || t == BlockType::door
         || t == BlockType::trapdoor || t == BlockType::fence_gate || t == BlockType::rail || t == BlockType::coral_fan
         || t == BlockType::coral_wall_fan || t == BlockType::dispenser || t == BlockType::furnace || t == BlockType::crafter
-        || t == BlockType::chest || t == BlockType::shulker_box;
+        || t == BlockType::chest || t == BlockType::shulker_box || t == BlockType::chiseled_bookshelf;
 }
 constexpr bool is_coral_fan(BlockType t) noexcept { return t == BlockType::coral_fan || t == BlockType::coral_wall_fan; }
 constexpr bool dead_coral(BlockState s) noexcept { return s.variant() >= blocks::coral_kinds; }
@@ -364,6 +371,7 @@ constexpr std::uint8_t variant_count(BlockType t) noexcept {
     case BlockType::furnace: return 3;
     case BlockType::crafter: return 6;
     case BlockType::shulker_box: return 17;
+    case BlockType::chiseled_bookshelf: return 64;
     default: return has_variant(t) ? blocks::button_kinds : 1;
     }
 }
@@ -393,7 +401,7 @@ template <class F>
 void for_each_block_state(F&& f);
 constexpr bool is_container(BlockType t) noexcept {
     return t == BlockType::hopper || t == BlockType::chest || t == BlockType::dispenser || t == BlockType::furnace || t == BlockType::crafter
-        || t == BlockType::brewing_stand || t == BlockType::barrel || t == BlockType::shulker_box;
+        || t == BlockType::brewing_stand || t == BlockType::barrel || t == BlockType::shulker_box || t == BlockType::chiseled_bookshelf;
 }
 // Block entities hold container slots, hopper cooldowns, comparator output
 // signals and moving blocks; a daylight detector's ticks it.
@@ -411,7 +419,7 @@ constexpr std::optional<Direction> chest_partner(BlockState s) noexcept {
 }
 constexpr std::uint8_t container_size(BlockType t) noexcept {
     return t == BlockType::hopper ? 5 : t == BlockType::chest || t == BlockType::barrel || t == BlockType::shulker_box ? 27 : t == BlockType::dispenser || t == BlockType::crafter ? 9
-         : t == BlockType::furnace ? 3 : t == BlockType::brewing_stand ? 5 : 0;
+         : t == BlockType::furnace ? 3 : t == BlockType::brewing_stand ? 5 : t == BlockType::chiseled_bookshelf ? 6 : 0;
 }
 // Whether a block state takes random ticks (random_ticks.cpp; checked
 // against both official servers for every state): sections without such

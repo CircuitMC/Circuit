@@ -2902,13 +2902,14 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "collision/block_entities",
+          "trace/bookshelves",
+          "client/bookshelf",
           "placement/official_items"
         ],
         "deviations": [
-          "its block entity and menu have no behavior"
+          "the sounds"
         ],
-        "note": "Placed by players as both official servers place it, with an empty block entity written out as the official defaults"
+        "note": "Placed by players as both official servers place it; takes and gives books by the slot clicked as both official servers do (bookshelves, client/bookshelf)"
       },
       "barrel": {
         "impl": "partial",
@@ -5997,6 +5998,14 @@
         "note": "Placed out of the clicked face; its contents and name carried",
         "cases": [
           "client/shulker",
+          "placement/official_items"
+        ]
+      },
+      "chiseled_bookshelf": {
+        "impl": "partial",
+        "evidence": "compared",
+        "note": "Placed facing the player",
+        "cases": [
           "placement/official_items"
         ]
       }

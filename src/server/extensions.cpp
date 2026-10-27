@@ -237,6 +237,7 @@ struct Extensions::Impl {
             case gameplay::BlockType::lectern: return "minecraft:lectern";
             case gameplay::BlockType::barrel: return "minecraft:barrel";
             case gameplay::BlockType::shulker_box: return "minecraft:shulker_box";
+            case gameplay::BlockType::chiseled_bookshelf: return "minecraft:chiseled_bookshelf";
             default: return "unknown";
             }
         }
