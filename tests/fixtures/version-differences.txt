@@ -24,3 +24,6 @@ melt_weather.ctrace random ticks run only near players on 1.21.4 (RandomTickRang
 eggs_blossoms.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none
 dripstone_growth.ctrace random ticks run only near players on 1.21.4 (RandomTickRange), and the harness has none
 anvils_falling_far.ctrace a falling anvil wears by its fall before the landing move on 1.21.4, with it on 1.21.8 (FallDistance)
+item_inside_block.ctrace an experience orb in a block falls and moves out of it as items do on 1.21.4, and does not fall there on 1.21.8 (OrbMotion)
+item_inside_ways.ctrace an experience orb in a block falls and moves out of it as items do on 1.21.4, and does not fall there on 1.21.8 (OrbMotion)
+item_inside_piston.ctrace an experience orb in a block falls and moves out of it as items do on 1.21.4, and does not fall there on 1.21.8 (OrbMotion)

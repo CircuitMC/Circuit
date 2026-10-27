@@ -1516,10 +1516,8 @@
             "trace/crafters",
             "trace/crafters_more",
             "trace/crafters_partial",
+            "trace/item_inside_thrown",
             "client/crafter_menu"
-          ],
-          "deviations": [
-            "an item thrown into the cell of a full container in front is pushed out by an unseeded random and is not compared"
           ]
         },
         {
@@ -1980,9 +1978,13 @@
             "trace/item_water_still",
             "trace/cactus_damage",
             "trace/items_in_fire",
-            "trace/entities_in_lava"
+            "trace/entities_in_lava",
+            "trace/item_inside_block",
+            "trace/item_inside_ways",
+            "trace/item_inside_piston",
+            "trace/item_inside_thrown"
           ],
-          "note": "Double-precision gravity, drag, collision with every state's collision boxes, bouncing, the resting rule, currents and buoyancy in water (water surfaces in single precision), damage from cacti, burning in fire, soul fire and lava and floating in lava (netherite), identical with both official servers in the passing traces"
+          "note": "Double-precision gravity, drag, collision with every state's collision boxes, bouncing, the resting rule, currents and buoyancy in water (water surfaces in single precision), damage from cacti, burning in fire, soul fire and lava and floating in lava (netherite), moving out of blocks (through the nearest face free of a full cube, at a speed from the item's own random, through blocks), identical with both official servers in the passing traces"
         },
         {
           "id": "merging",
@@ -2031,7 +2033,7 @@
           "milestone": "C6",
           "impl": "partial",
           "evidence": "compared",
-          "note": "Experience orbs fall, slide, bounce on the ground (each version its own way), float with their eye in water, jump in lava, take in orbs of their value 40 ids apart every 20 ticks and go at age 6000, as both official servers do tick by tick; experience comes in orbs of the official values that join orbs nearby by a draw of 40; mined ores and sculk give theirs, Silk Touch none; players within 8 blocks draw orbs and take one every 2 ticks, gaining the official servers' levels, totals and progress",
+          "note": "Experience orbs fall, slide, bounce on the ground (each version its own way), float with their eye in water, jump in lava, take in orbs of their value 40 ids apart every 20 ticks, move out of blocks (each version its own way) and go at age 6000, as both official servers do tick by tick; experience comes in orbs of the official values that join orbs nearby by a draw of 40; mined ores and sculk give theirs, Silk Touch none; players within 8 blocks draw orbs and take one every 2 ticks, gaining the official servers' levels, totals and progress",
           "cases": [
             "trace/orbs",
             "trace/orbs_merge",
@@ -2041,6 +2043,9 @@
             "trace/xp_merge_more",
             "trace/xp_furnaces",
             "trace/xp_explosion",
+            "trace/item_inside_block",
+            "trace/item_inside_ways",
+            "trace/item_inside_piston",
             "client/orbs",
             "client/furnace_xp"
           ],
@@ -2483,10 +2488,8 @@
             "trace/brewing",
             "trace/brewing_hoppers",
             "collision/brewing",
+            "trace/item_inside_thrown",
             "client/brewing"
-          ],
-          "deviations": [
-            "a thrown-out glass bottle is pushed out of the stand by an unseeded random and is not compared"
           ]
         },
         {

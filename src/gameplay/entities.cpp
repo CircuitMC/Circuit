@@ -18,6 +18,9 @@
 // - currents push it (also after the move), and in water it floats up
 //   instead of falling; otherwise gravity takes 0.04 from the vertical
 //   velocity;
+// - inside a block it moves out of it (see "inside blocks"): it moves
+//   through blocks then, keeping whether it was on the ground, without
+//   being slowed by the block it is in;
 // - the item moves, unless it rests on the ground with a horizontal velocity
 //   whose square is at most 1e-5, in which case it moves only when its tick
 //   count plus its id is a multiple of 4; an item that moves inside a hopper
@@ -52,6 +55,59 @@ physics::ShapeAt shapes(RuleContext& ctx) {
         }
         return physics::collision_boxes(s, ctx.bundle().schema.content_release);
     };
+}
+
+// ---- inside blocks ---------------------------------------------------------
+//
+// Items and experience orbs inside a block move out of it (minecraft.wiki
+// "Item (entity)" and "Entity"; fitted to both official servers' traces of
+// items and orbs in stone, glass, slabs, chests, fences and soul sand, under
+// a block set on them and under landed sand, every value exact):
+// - one is inside when its box, less 1e-7 on each side, overlaps a collision
+//   box;
+// - moving out, its velocity is scaled by 0.75 and then set, along the way
+//   out, to 0.1 plus 0.2 times a float of its own random, in single
+//   precision;
+// - the way out leaves the cell holding the middle of its box through the
+//   nearest of the cell's north, south, west, east and top faces (ties in
+//   that order) whose neighbor is not a full cube, or through the top when
+//   none is; never down.
+bool inside_blocks(RuleContext& ctx, const physics::Aabb& box) {
+    return !physics::colliders(box.deflate(1.0e-7), shapes(ctx)).empty();
+}
+
+bool full_cube_at(RuleContext& ctx, BlockPos p) {
+    const auto at = shapes(ctx);
+    const auto boxes = at(p);
+    if (boxes.size() != 1) return false;
+    const auto& b = boxes.front();
+    return b.min_x == 0.0 && b.min_y == 0.0 && b.min_z == 0.0 && b.max_x == 1.0 && b.max_y == 1.0 && b.max_z == 1.0;
+}
+
+void move_out(RuleContext& ctx, Entity& e, const physics::Aabb& box, Vec3& v) {
+    const Vec3 middle{e.position.x, (box.min_y + box.max_y) / 2.0, e.position.z};
+    const auto cell = contracts::block_of(middle);
+    const double fx = middle.x - cell.x, fy = middle.y - cell.y, fz = middle.z - cell.z;
+    const std::array<std::pair<Direction, double>, 5> ways{
+        {{Direction::north, fz}, {Direction::south, 1.0 - fz}, {Direction::west, fx}, {Direction::east, 1.0 - fx}, {Direction::up, 1.0 - fy}}};
+    auto way = Direction::up;
+    double nearest = std::numeric_limits<double>::max();
+    for (const auto& [d, distance] : ways)
+        if (distance < nearest && !full_cube_at(ctx, cell.relative(d))) {
+            way = d;
+            nearest = distance;
+        }
+    auto r = detail::own_random(e);
+    const auto speed = static_cast<double>(r.next_float() * 0.2f + 0.1f);
+    detail::keep_random(e, r);
+    v = {v.x * 0.75, v.y * 0.75, v.z * 0.75};
+    switch (way) {
+    case Direction::north: v.z = -speed; break;
+    case Direction::south: v.z = speed; break;
+    case Direction::west: v.x = -speed; break;
+    case Direction::east: v.x = speed; break;
+    default: v.y = speed; break;
+    }
 }
 
 } // namespace
@@ -411,12 +467,21 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
     } else {
         v.y -= gravity;
     }
+    // Inside a block it moves out of it, through blocks, keeping whether it
+    // was on the ground; a push alone does not make an item at rest move.
+    const auto box = detail::entity_box(e);
+    const bool inside = inside_blocks(ctx, box);
+    if (inside) move_out(ctx, e, box, v);
     const bool moves = !(e.on_ground && v.x * v.x + v.z * v.z <= 1.0e-5 && (ticks + id.value) % 4 != 0);
     if (moves) {
-        Vec3 moved{};
-        e.on_ground = detail::move_entity(ctx, p, v, item_size, item_size, &e, &moved);
-        detail::entity_fell(ctx, e, p, moved, e.on_ground);
-        detail::honey_slide(ctx, p, v, item_size, item_size, e.on_ground);
+        if (inside) {
+            p = {p.x + v.x, p.y + v.y, p.z + v.z};
+        } else {
+            Vec3 moved{};
+            e.on_ground = detail::move_entity(ctx, p, v, item_size, item_size, &e, &moved);
+            detail::entity_fell(ctx, e, p, moved, e.on_ground);
+            detail::honey_slide(ctx, p, v, item_size, item_size, e.on_ground);
+        }
         float f = 0.98f;
         if (e.on_ground) f = slipperiness(ctx.block(contracts::block_of(Vec3{p.x, p.y - 0.5000001, p.z}))) * 0.98f;
         v = {v.x * static_cast<double>(f), v.y * 0.98, v.z * static_cast<double>(f)};
@@ -473,7 +538,11 @@ void run_item(RuleContext& ctx, EntityId id, Entity& e) {
 // - with its eye (0.425 above its feet) in water it floats up by 0.0005 a
 //   tick (while slower than 0.06) and loses 1% of its horizontal speed,
 //   whether the eye was in water decided where it was at the tick's start;
-//   otherwise gravity takes 0.03 from the vertical velocity;
+//   otherwise gravity takes 0.03 from the vertical velocity, but not inside
+//   a block on 1.21.8 (OrbMotion::settling);
+// - inside a block it moves out of it as items do (see "inside blocks"), on
+//   1.21.8 only when its velocity would leave its box inside a block; it
+//   still collides as it moves, also with the blocks around it;
 // - it moves; its velocity is damped by 0.98 (the block's slipperiness
 //   times 0.98 on the ground) in single precision, but on 1.21.4 its
 //   vertical velocity by 0.98 in double precision (OrbMotion); on the ground
@@ -534,10 +603,13 @@ void run_orb(RuleContext& ctx, EntityId id, Entity& e) {
     const auto start = e.position;
     auto v = e.velocity;
     auto p = e.position;
+    // Inside a block it does not fall on 1.21.8 (OrbMotion::settling).
+    const auto box = detail::entity_box(e);
+    const bool inside = inside_blocks(ctx, box);
     if (eye_in_water(ctx, p)) {
         constexpr double drag = 0.99f, rise = 0.0005f;
         v = {v.x * drag, v.y + (v.y < 0.06 ? rise : 0.0), v.z * drag};
-    } else {
+    } else if (!settling || !inside) {
         v.y -= orb_gravity;
     }
     // Lava in its cell makes it jump: up by 0.2 and sideways by the
@@ -550,6 +622,9 @@ void run_orb(RuleContext& ctx, EntityId id, Entity& e) {
         v = {static_cast<double>(dx), static_cast<double>(0.2f), static_cast<double>(dz)};
         detail::keep_random(e, r);
     }
+    // Inside a block it moves out of it (still colliding as it moves); on
+    // 1.21.8 only while its velocity would leave its box inside one.
+    if (inside && (!settling || inside_blocks(ctx, box.move(v)))) move_out(ctx, e, box, v);
     // The nearest player within 8 blocks draws it toward the middle of their
     // body, the more the nearer they are (not compared tick by tick).
     if (const auto player = ctx.nearest_player(p, 8.0)) {
@@ -593,7 +668,14 @@ void run_orb(RuleContext& ctx, EntityId id, Entity& e) {
 
 namespace detail {
 LevelRandom own_random(const Entity& e) {
-    return e.seeded ? LevelRandom::from_state(e.own_random) : LevelRandom(static_cast<std::int64_t>(e.id.value));
+    if (e.seeded) return LevelRandom::from_state(e.own_random);
+    LevelRandom r(static_cast<std::int64_t>(e.id.value));
+    // An item has drawn two floats for its look when it was made.
+    if (e.kind == EntityKind::item) {
+        (void)r.next_float();
+        (void)r.next_float();
+    }
+    return r;
 }
 void keep_random(Entity& e, const LevelRandom& r) {
     e.seeded = true;

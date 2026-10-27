@@ -2957,10 +2957,8 @@
           "trace/brewing",
           "trace/brewing_hoppers",
           "collision/brewing",
+          "trace/item_inside_thrown",
           "client/brewing"
-        ],
-        "deviations": [
-          "a glass bottle thrown out of a larger stack of dragon's breath is not compared"
         ],
         "note": "Placed by players as both official servers place it; it brews with fuel, ingredients and bottles from hoppers, and players use its menu, as both official servers do"
       },

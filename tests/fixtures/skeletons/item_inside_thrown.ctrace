@@ -1,0 +1,196 @@
+circuit-trace 2
+title Items thrown into a full hopper's and a full chest's cells and out of a brewing stand move out of them
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms crafter hopper brewing loot item_entity
+area 0 0 0 15 3 5
+ticks 440
+changes ordered
+entities observed
+rng observed
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 0 1 minecraft:stone
+at 0 set 0 0 2 minecraft:stone
+at 0 set 0 0 3 minecraft:stone
+at 0 set 0 0 4 minecraft:stone
+at 0 set 0 0 5 minecraft:stone
+at 0 set 1 0 0 minecraft:stone
+at 0 set 1 0 1 minecraft:stone
+at 0 set 1 0 2 minecraft:stone
+at 0 set 1 0 3 minecraft:stone
+at 0 set 1 0 4 minecraft:stone
+at 0 set 1 0 5 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 0 1 minecraft:stone
+at 0 set 2 0 2 minecraft:stone
+at 0 set 2 0 3 minecraft:stone
+at 0 set 2 0 4 minecraft:stone
+at 0 set 2 0 5 minecraft:stone
+at 0 set 3 0 0 minecraft:stone
+at 0 set 3 0 1 minecraft:stone
+at 0 set 3 0 2 minecraft:stone
+at 0 set 3 0 3 minecraft:stone
+at 0 set 3 0 4 minecraft:stone
+at 0 set 3 0 5 minecraft:stone
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 4 0 2 minecraft:stone
+at 0 set 4 0 3 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 4 0 5 minecraft:stone
+at 0 set 5 0 0 minecraft:stone
+at 0 set 5 0 1 minecraft:stone
+at 0 set 5 0 2 minecraft:stone
+at 0 set 5 0 3 minecraft:stone
+at 0 set 5 0 4 minecraft:stone
+at 0 set 5 0 5 minecraft:stone
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 0 1 minecraft:stone
+at 0 set 6 0 2 minecraft:stone
+at 0 set 6 0 3 minecraft:stone
+at 0 set 6 0 4 minecraft:stone
+at 0 set 6 0 5 minecraft:stone
+at 0 set 7 0 0 minecraft:stone
+at 0 set 7 0 1 minecraft:stone
+at 0 set 7 0 2 minecraft:stone
+at 0 set 7 0 3 minecraft:stone
+at 0 set 7 0 4 minecraft:stone
+at 0 set 7 0 5 minecraft:stone
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 0 1 minecraft:stone
+at 0 set 8 0 2 minecraft:stone
+at 0 set 8 0 3 minecraft:stone
+at 0 set 8 0 4 minecraft:stone
+at 0 set 8 0 5 minecraft:stone
+at 0 set 9 0 0 minecraft:stone
+at 0 set 9 0 1 minecraft:stone
+at 0 set 9 0 2 minecraft:stone
+at 0 set 9 0 3 minecraft:stone
+at 0 set 9 0 4 minecraft:stone
+at 0 set 9 0 5 minecraft:stone
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 0 1 minecraft:stone
+at 0 set 10 0 2 minecraft:stone
+at 0 set 10 0 3 minecraft:stone
+at 0 set 10 0 4 minecraft:stone
+at 0 set 10 0 5 minecraft:stone
+at 0 set 11 0 0 minecraft:stone
+at 0 set 11 0 1 minecraft:stone
+at 0 set 11 0 2 minecraft:stone
+at 0 set 11 0 3 minecraft:stone
+at 0 set 11 0 4 minecraft:stone
+at 0 set 11 0 5 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 0 1 minecraft:stone
+at 0 set 12 0 2 minecraft:stone
+at 0 set 12 0 3 minecraft:stone
+at 0 set 12 0 4 minecraft:stone
+at 0 set 12 0 5 minecraft:stone
+at 0 set 13 0 0 minecraft:stone
+at 0 set 13 0 1 minecraft:stone
+at 0 set 13 0 2 minecraft:stone
+at 0 set 13 0 3 minecraft:stone
+at 0 set 13 0 4 minecraft:stone
+at 0 set 13 0 5 minecraft:stone
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 0 1 minecraft:stone
+at 0 set 14 0 2 minecraft:stone
+at 0 set 14 0 3 minecraft:stone
+at 0 set 14 0 4 minecraft:stone
+at 0 set 14 0 5 minecraft:stone
+at 0 set 15 0 0 minecraft:stone
+at 0 set 15 0 1 minecraft:stone
+at 0 set 15 0 2 minecraft:stone
+at 0 set 15 0 3 minecraft:stone
+at 0 set 15 0 4 minecraft:stone
+at 0 set 15 0 5 minecraft:stone
+at 1 set 2 1 2 minecraft:crafter[crafting=false,orientation=east_up,triggered=false]
+at 1 set 3 1 2 minecraft:hopper[enabled=false,facing=down]
+at 1 set 7 1 2 minecraft:crafter[crafting=false,orientation=east_up,triggered=false]
+at 1 set 8 1 2 minecraft:chest[facing=west,type=single,waterlogged=false]
+at 1 set 12 1 2 minecraft:brewing_stand[has_bottle_0=false,has_bottle_1=false,has_bottle_2=false]
+at 2 insert 3 1 2 0 minecraft:stone 64
+at 2 insert 3 1 2 1 minecraft:stone 64
+at 2 insert 3 1 2 2 minecraft:stone 64
+at 2 insert 3 1 2 3 minecraft:stone 64
+at 2 insert 3 1 2 4 minecraft:oak_planks 62
+at 2 insert 2 1 2 4 minecraft:oak_log 2
+at 2 insert 8 1 2 0 minecraft:stone 64
+at 2 insert 8 1 2 1 minecraft:stone 64
+at 2 insert 8 1 2 2 minecraft:stone 64
+at 2 insert 8 1 2 3 minecraft:stone 64
+at 2 insert 8 1 2 4 minecraft:stone 64
+at 2 insert 8 1 2 5 minecraft:stone 64
+at 2 insert 8 1 2 6 minecraft:stone 64
+at 2 insert 8 1 2 7 minecraft:stone 64
+at 2 insert 8 1 2 8 minecraft:stone 64
+at 2 insert 8 1 2 9 minecraft:stone 64
+at 2 insert 8 1 2 10 minecraft:stone 64
+at 2 insert 8 1 2 11 minecraft:stone 64
+at 2 insert 8 1 2 12 minecraft:stone 64
+at 2 insert 8 1 2 13 minecraft:stone 64
+at 2 insert 8 1 2 14 minecraft:stone 64
+at 2 insert 8 1 2 15 minecraft:stone 64
+at 2 insert 8 1 2 16 minecraft:stone 64
+at 2 insert 8 1 2 17 minecraft:stone 64
+at 2 insert 8 1 2 18 minecraft:stone 64
+at 2 insert 8 1 2 19 minecraft:stone 64
+at 2 insert 8 1 2 20 minecraft:stone 64
+at 2 insert 8 1 2 21 minecraft:stone 64
+at 2 insert 8 1 2 22 minecraft:stone 64
+at 2 insert 8 1 2 23 minecraft:stone 64
+at 2 insert 8 1 2 24 minecraft:stone 64
+at 2 insert 8 1 2 25 minecraft:stone 64
+at 2 insert 8 1 2 26 minecraft:stone 64
+at 2 insert 7 1 2 4 minecraft:oak_log 1
+at 2 insert 12 1 2 0 minecraft:splash_potion 1 potion=minecraft:swiftness
+at 2 insert 12 1 2 3 minecraft:dragon_breath 2
+at 2 insert 12 1 2 4 minecraft:blaze_powder 1
+at 14 set 2 1 1 minecraft:redstone_block
+at 16 set 7 1 1 minecraft:redstone_block
+slot 20 3 1 2 0 ?
+slot 20 3 1 2 1 ?
+slot 20 3 1 2 2 ?
+slot 20 3 1 2 3 ?
+slot 20 3 1 2 4 ?
+slot 20 12 1 2 0 ?
+slot 20 12 1 2 1 ?
+slot 20 12 1 2 2 ?
+slot 20 12 1 2 3 ?
+slot 20 12 1 2 4 ?
+slot 20 8 1 2 0 ?
+slot 30 3 1 2 0 ?
+slot 30 3 1 2 1 ?
+slot 30 3 1 2 2 ?
+slot 30 3 1 2 3 ?
+slot 30 3 1 2 4 ?
+slot 30 12 1 2 0 ?
+slot 30 12 1 2 1 ?
+slot 30 12 1 2 2 ?
+slot 30 12 1 2 3 ?
+slot 30 12 1 2 4 ?
+slot 30 8 1 2 0 ?
+slot 410 3 1 2 0 ?
+slot 410 3 1 2 1 ?
+slot 410 3 1 2 2 ?
+slot 410 3 1 2 3 ?
+slot 410 3 1 2 4 ?
+slot 410 12 1 2 0 ?
+slot 410 12 1 2 1 ?
+slot 410 12 1 2 2 ?
+slot 410 12 1 2 3 ?
+slot 410 12 1 2 4 ?
+slot 410 8 1 2 0 ?
+slot 440 3 1 2 0 ?
+slot 440 3 1 2 1 ?
+slot 440 3 1 2 2 ?
+slot 440 3 1 2 3 ?
+slot 440 3 1 2 4 ?
+slot 440 12 1 2 0 ?
+slot 440 12 1 2 1 ?
+slot 440 12 1 2 2 ?
+slot 440 12 1 2 3 ?
+slot 440 12 1 2 4 ?
+slot 440 8 1 2 0 ?

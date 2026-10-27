@@ -1331,6 +1331,51 @@ int main() {
         require(newer[2] == 0 && older[2] == 0, "netherite survives fire");
     });
 
+    suite.run("items and orbs inside blocks move out of them, orbs by the version", [] {
+        using circuit::contracts::SummonEntity;
+        using circuit::gameplay::EntityKind;
+        const auto stick = *circuit::gameplay::items::by_name("minecraft:stick");
+        struct Seen {
+            circuit::gameplay::Entity item, orb, covered;
+        };
+        const auto find = [](Sim& s, double x0, double x1) {
+            const auto dump = s.oracle.dump();
+            for (const auto& e : dump.overworld().entities)
+                if (e.position.x >= x0 && e.position.x < x1) return e;
+            require(false, "an entity there");
+            return circuit::gameplay::Entity{};
+        };
+        // An item and an orb in stones near their west faces after their
+        // first tick, and an item at rest a tick after a stone was set on it.
+        const auto run = [&](const VersionBundle& b) {
+            Sim s(b);
+            auto build = floor(-4, 12, -4, 4);
+            build.push_back(place({0, 0, 0}, blocks::stone()));
+            build.push_back(place({4, 0, 0}, blocks::stone()));
+            s.tick(build);
+            s.tick({SpawnItem{at_block(0.2, 0.3, 0.5), {}, {stick, 1}, 0}, SpawnItem{at_block(8.5, 0.0, 0.5), {}, {stick, 1}, 0},
+                    SummonEntity{"minecraft:experience_orb", {4.2, 0.3, 0.5}, {}, 80, 0, 3, 1, 0}});
+            Seen seen{find(s, -1.0, 2.0), find(s, 3.0, 6.0), {}};
+            s.until(s.oracle.time() + 5);
+            s.tick({place({8, 0, 0}, blocks::stone())});
+            seen.covered = find(s, 7.0, 10.0);
+            return seen;
+        };
+        const auto newer = run(bundle());
+        const auto older = run(**BundleRegistry::select_for_simulation("java-1.21.4"));
+        for (const auto* seen : {&newer, &older}) {
+            const double west = 0.2 - seen->item.position.x;
+            require(west >= 0.1 && west <= 0.3 && seen->item.position.y == 0.3 - 0.03 && seen->item.position.z == 0.5,
+                    "the item goes west at 0.1 to 0.3 and falls by 0.04 times 0.75");
+            require(seen->orb.kind == EntityKind::experience_orb && 4.2 - seen->orb.position.x >= 0.1 && 4.2 - seen->orb.position.x <= 0.3,
+                    "the orb goes west too");
+            require(seen->covered.position.z < 0.5 && seen->covered.position.y < 0.0 && seen->covered.position.x == 8.5,
+                    "the covered item goes north and through the floor below");
+        }
+        require(newer.item.position == older.item.position, "items move out the same way on both versions");
+        require(newer.orb.position.y == 0.3 && older.orb.position.y == 0.3 - 0.0225, "on 1.21.8 an orb in a block does not fall");
+    });
+
     suite.run("the weather follows its timers and its levels follow the flags", [] {
         Sim s;
         // What both official servers did after /weather rain 100.

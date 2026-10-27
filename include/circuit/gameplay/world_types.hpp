@@ -131,9 +131,11 @@ struct Entity {
     std::int32_t experience{};
     std::int32_t orbs{1};
     // The entity's own random (a java.util.Random state, LevelRandom), which
-    // an experience orb's first motion and its jumps in lava draw from;
-    // seeded with the entity's id when first used (`seeded`), as the
-    // reference harness seeds it (the official servers seed it from the clock).
+    // an experience orb's first motion and its jumps in lava, an anvil's wear
+    // and the way items and orbs move out of blocks draw from; seeded with
+    // the entity's id when first used (`seeded`), as the reference harness
+    // seeds it (the official servers seed it from the clock), an item's after
+    // the two floats it drew when it was made.
     bool seeded{};
     std::uint64_t own_random{};
     // An experience orb given outside the command phase, whose first motion

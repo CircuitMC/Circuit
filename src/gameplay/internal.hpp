@@ -214,7 +214,8 @@ void pop_resource(RuleContext& ctx, BlockPos pos, ItemStack stack);
 // versions do, drawing from the level random for every slot, empty or not.
 void drop_contents(RuleContext& ctx, BlockPos pos, const std::vector<ItemStack>& slots);
 // An entity's own random (Entity::own_random: seeded with its id when first
-// used), and the state to keep after drawing from it.
+// used, an item's after its two draws when it was made), and the state to
+// keep after drawing from it.
 LevelRandom own_random(const Entity& e);
 void keep_random(Entity& e, const LevelRandom& r);
 // Experience at a point as experience orbs (entities.cpp). Called in the

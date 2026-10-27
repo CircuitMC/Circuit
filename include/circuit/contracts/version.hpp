@@ -91,10 +91,13 @@ enum class LavaContact : std::uint8_t {
 enum class OrbMotion : std::uint8_t {
     // Their vertical drag is in single precision, and an orb on the ground
     // bounces back at 0.4 of its speed only when it fell faster than gravity
-    // alone makes it fall in a tick; else it rests (1.21.8).
+    // alone makes it fall in a tick; else it rests. Inside a block an orb
+    // does not fall, and moves out only while its velocity would leave its
+    // box inside a block (1.21.8, 2026-10-27).
     settling,
     // Their vertical drag is in double precision, and an orb on the ground
-    // always bounces back at 0.4 of its speed (1.21.4).
+    // always bounces back at 0.4 of its speed. Inside a block an orb falls
+    // and moves out of it as items do (1.21.4).
     bouncing,
 };
 

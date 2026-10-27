@@ -479,7 +479,7 @@
       ],
       "location": "external: circuit-clienttest/furnace-xp.js",
       "status": "passing",
-      "description": "A blast furnace cooks five raw gold; shift-clicking the ingots out gives 5 experience at the player (three orbs, level 0 with the official progress), putting them back none; a grindstone takes Efficiency III off an iron pickaxe and gives 11 to 21 experience (its amount draws from the level random); Circuit and both official servers give identical windows, pickups and experience"
+      "description": "A blast furnace cooks five raw gold; shift-clicking the ingots out gives 5 experience at the player (three orbs, level 0 with the official progress), putting them back none; a grindstone takes Efficiency III off an iron pickaxe and gives 11 to 21 experience (its amount draws from the level random) to the player standing on it; Circuit and both official servers give identical windows, pickups and experience"
     },
     {
       "id": "client/orbs",
