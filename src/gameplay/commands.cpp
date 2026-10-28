@@ -499,6 +499,7 @@ Plan plan(RuleContext& ctx, const contracts::ContainerClick& c) { return detail:
 Plan plan(RuleContext& ctx, const contracts::CloseContainer& c) { return detail::plan_close(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::ContainerButton& c) { return detail::plan_button(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::SetSlotEnabled& c) { return detail::plan_slot_enabled(ctx, c); }
+Plan plan(RuleContext& ctx, const contracts::PlaceRecipe& c) { return detail::plan_place_recipe(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::PlayerUseItem& c) { return detail::plan_use_item(ctx, c); }
 
 // The name a player types into their anvil window: the result follows it.

@@ -378,6 +378,23 @@ struct SetSlotEnabled {
     bool operator==(const SetSlotEnabled&) const = default;
 };
 
+// A player places a recipe of their recipe book into their window: the own
+// window's or a crafting table's grid, or a furnace's input, filled from the
+// inventory once more (`all`: as many times as fit). `kind` and `recipe` name
+// the recipe as TraceKind::recipe_used does (0 crafting, 1 cooking, 2
+// stonecutting, 3 smithing, and its index). `container` is the window's block;
+// `selected` the main hand's inventory slot, which the grid's items going back
+// fill first.
+struct PlaceRecipe {
+    PlayerKey player;
+    std::optional<BlockPos> container;
+    std::uint8_t kind{};
+    std::uint32_t recipe{};
+    bool all{};
+    std::uint8_t selected{hotbar_first};
+    bool operator==(const PlaceRecipe&) const = default;
+};
+
 // A player types a name into their anvil window (UTF-8, at most
 // max_item_name UTF-16 code units; empty removes a name).
 struct RenameItem {
@@ -400,7 +417,7 @@ struct ChangeExperience {
 using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket,
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
                                  PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity, PlayerUseItem,
-                                 SetDifficulty, ContainerButton, SetSlotEnabled, RenameItem, ChangeExperience>;
+                                 SetDifficulty, ContainerButton, SetSlotEnabled, RenameItem, ChangeExperience, PlaceRecipe>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.

@@ -23,7 +23,7 @@ struct Wire::Ids {
         set_entity_data, remove_entities, entity_position_sync, rotate_head, container_set_content, disconnect, take_item_entity,
         open_screen, container_close, container_set_slot, container_set_data, set_cursor_item, set_player_inventory, respawn, combat_kill, damage_event, sb_container_click,
         sb_container_close, sb_container_button_click, sb_container_slot_state_changed, sb_rename_item, update_recipes,
-        commands, explode, set_experience, map_item_data, recipe_book_add, recipe_book_remove, recipe_book_settings;
+        commands, explode, set_experience, map_item_data, recipe_book_add, recipe_book_remove, recipe_book_settings, place_ghost_recipe;
     // The orb spawn packet of protocols before 1.21.5's (-1: none; orbs are
     // entities with their value as data).
     std::int32_t add_experience_orb{-1};
@@ -31,7 +31,7 @@ struct Wire::Ids {
     std::int32_t sb_accept_teleportation, sb_move_pos, sb_move_pos_rot, sb_move_rot, sb_move_status,
         sb_player_action, sb_use_item_on, sb_use_item, sb_set_carried_item, sb_set_creative_slot, sb_chat_command,
         sb_chat_command_signed, sb_chat, sb_player_input, sb_player_abilities, sb_player_loaded, sb_client_command, sb_player_command,
-        sb_recipe_book_seen_recipe, sb_recipe_book_change_settings;
+        sb_recipe_book_seen_recipe, sb_recipe_book_change_settings, sb_place_recipe;
 };
 
 Wire::Wire(std::int32_t protocol) : Wire(protocol, server::component_context(protocol)) {}
@@ -105,10 +105,12 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->sb_rename_item = sb(State::play, "rename_item");
     ids->sb_recipe_book_seen_recipe = sb(State::play, "recipe_book_seen_recipe");
     ids->sb_recipe_book_change_settings = sb(State::play, "recipe_book_change_settings");
+    ids->sb_place_recipe = sb(State::play, "place_recipe");
     ids->update_recipes = cb(State::play, "update_recipes");
     ids->recipe_book_add = cb(State::play, "recipe_book_add");
     ids->recipe_book_remove = cb(State::play, "recipe_book_remove");
     ids->recipe_book_settings = cb(State::play, "recipe_book_settings");
+    ids->place_ghost_recipe = cb(State::play, "place_ghost_recipe");
     ids->disconnect = cb(State::play, "disconnect");
     ids->commands = cb(State::play, "commands");
     ids->explode = cb(State::play, "explode");
@@ -484,42 +486,50 @@ Bytes Wire::recipe_book_settings(const std::array<bool, 8>& settings) const {
     return packet(id_->recipe_book_settings, w);
 }
 
+namespace {
+// A recipe as clients show it (RecipeDisplay): its kind, then its slots.
+void recipe_display(Writer& w, const RecipeDisplay& d, const std::function<std::int32_t(std::uint16_t)>& item,
+                    const std::function<void(Writer&, const WireStack&)>& stack) {
+    const auto display = [&](const SlotDisplay& s) { slot_display(w, s, item, stack); };
+    w.varint(static_cast<std::int32_t>(d.kind));
+    switch (d.kind) {
+    case RecipeDisplay::Kind::shaped:
+        w.varint(d.width).varint(d.height);
+        [[fallthrough]];
+    case RecipeDisplay::Kind::shapeless:
+        w.varint(static_cast<std::int32_t>(d.slots.size()));
+        for (const auto& s : d.slots) display(s);
+        display(d.result);
+        display(d.station);
+        break;
+    case RecipeDisplay::Kind::furnace:
+        display(d.slots.at(0));
+        display({.kind = SlotDisplay::Kind::any_fuel});
+        display(d.result);
+        display(d.station);
+        w.varint(d.duration).f32(d.experience);
+        break;
+    case RecipeDisplay::Kind::stonecutter:
+        display(d.slots.at(0));
+        display(d.result);
+        display(d.station);
+        break;
+    case RecipeDisplay::Kind::smithing:
+        for (std::size_t k = 0; k < 3; ++k) display(d.slots.at(k));
+        display(d.result);
+        display(d.station);
+        break;
+    }
+}
+} // namespace
+
 Bytes Wire::recipe_book_add(std::span<const BookEntry> entries, bool replace, const std::function<std::int32_t(std::uint16_t)>& item) const {
     Writer w;
     const auto stack = [this](Writer& out, const WireStack& s) { slot(out, s); };
-    const auto display = [&](const SlotDisplay& d) { slot_display(w, d, item, stack); };
     w.varint(static_cast<std::int32_t>(entries.size()));
     for (const auto& e : entries) {
-        const auto& d = e.recipe->display;
-        w.varint(e.display).varint(static_cast<std::int32_t>(d.kind));
-        switch (d.kind) {
-        case RecipeDisplay::Kind::shaped:
-            w.varint(d.width).varint(d.height);
-            [[fallthrough]];
-        case RecipeDisplay::Kind::shapeless:
-            w.varint(static_cast<std::int32_t>(d.slots.size()));
-            for (const auto& s : d.slots) display(s);
-            display(d.result);
-            display(d.station);
-            break;
-        case RecipeDisplay::Kind::furnace:
-            display(d.slots.at(0));
-            display({.kind = SlotDisplay::Kind::any_fuel});
-            display(d.result);
-            display(d.station);
-            w.varint(d.duration).f32(d.experience);
-            break;
-        case RecipeDisplay::Kind::stonecutter:
-            display(d.slots.at(0));
-            display(d.result);
-            display(d.station);
-            break;
-        case RecipeDisplay::Kind::smithing:
-            for (std::size_t k = 0; k < 3; ++k) display(d.slots.at(k));
-            display(d.result);
-            display(d.station);
-            break;
-        }
+        w.varint(e.display);
+        recipe_display(w, e.recipe->display, item, stack);
         w.varint(e.recipe->group).varint(e.recipe->category);
         w.boolean(true).varint(static_cast<std::int32_t>(e.recipe->requirements.size()));
         for (const auto& r : e.recipe->requirements) {
@@ -534,6 +544,14 @@ Bytes Wire::recipe_book_add(std::span<const BookEntry> entries, bool replace, co
     }
     w.boolean(replace);
     return packet(id_->recipe_book_add, w);
+}
+
+Bytes Wire::place_ghost_recipe(std::int32_t window, const BookRecipe& recipe, const std::function<std::int32_t(std::uint16_t)>& item) const {
+    Writer w;
+    const auto stack = [this](Writer& out, const WireStack& s) { slot(out, s); };
+    w.varint(window);
+    recipe_display(w, recipe.display, item, stack);
+    return packet(id_->place_ghost_recipe, w);
 }
 
 Bytes Wire::recipe_book_remove(std::span<const std::int32_t> ids) const {
@@ -764,6 +782,12 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
     if (id == i.sb_recipe_book_seen_recipe) {
         TRY(display, r.varint());
         return done(intent::RecipeSeen{*display});
+    }
+    if (id == i.sb_place_recipe) {
+        TRY(window, r.varint());
+        TRY(display, r.varint());
+        TRY(all, r.boolean());
+        return done(intent::PlaceRecipe{*window, *display, *all});
     }
     if (id == i.sb_recipe_book_change_settings) {
         TRY(book, r.varint());

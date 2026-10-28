@@ -6434,6 +6434,23 @@
           "client/recipes"
         ]
       },
+      "play/clientbound/place_ghost_recipe": {
+        "impl": "implemented",
+        "evidence": "compared",
+        "cases": [
+          "client/recipes_place"
+        ]
+      },
+      "play/serverbound/place_recipe": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/recipes_place"
+        ],
+        "deviations": [
+          "among several kinds of items for one ingredient, the kinds are taken in the order the inventory first holds them; the official servers' choice varies"
+        ]
+      },
       "play/serverbound/recipe_book_change_settings": {
         "impl": "implemented",
         "evidence": "compared",

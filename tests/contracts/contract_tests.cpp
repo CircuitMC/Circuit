@@ -174,6 +174,8 @@ int main() {
         // Closed windows naming their block (tag 35), kept or dropped.
         log.ticks.push_back({10, {{34, CloseContainer{alex, {1, 2, 3}, {}, false, BlockPos{-5, -60, 3}}},
                                   {35, CloseContainer{alex, {1, 2, 3}, {0, 0.3, 0}, true, BlockPos{4, 5, 6}}}}});
+        // Recipes placed from the recipe book (tag 37).
+        log.ticks.push_back({11, {{36, PlaceRecipe{alex, std::nullopt, 0, 805, false}}, {37, PlaceRecipe{alex, BlockPos{-2, -60, 3}, 1, 4294967295u, true, 44}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);

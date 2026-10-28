@@ -339,6 +339,8 @@ struct Game::Impl final : GameServices {
     std::atomic<std::uint64_t> tick_count{0};
 
     std::map<std::uint64_t, Player> players;
+    // The rules' recipes by id (rule_recipe), filled when first asked.
+    std::map<std::string, std::pair<std::uint8_t, std::uint32_t>, std::less<>> rule_recipes;
     std::uint32_t next_ticket{1000};
     std::map<ChunkPos, std::uint32_t> forced; // the overworld's force-loaded chunks and their tickets
     // The world's game rules as set, including changes admitted this tick.
@@ -1973,6 +1975,63 @@ struct Game::Impl final : GameServices {
         p.book.settings[static_cast<std::size_t>(2 * r.book + 1)] = r.filtering;
     }
 
+    // A recipe of the book placed into the open window (the own window while
+    // none is open), as both official servers take it: one the player knows,
+    // asked for in the window's id; spectators place none.
+    void handle(Player& p, intent::PlaceRecipe& r) {
+        const auto* book = data.recipe_book.get();
+        if (!book || p.game_mode == spectator || r.display < 0 || r.window != (p.window ? p.window->id : 0)) return;
+        const auto display = static_cast<std::size_t>(r.display);
+        if (display >= book->recipes.size() || !p.book.known.contains(display)) return;
+        const auto recipe = rule_recipe(book->recipes[display].id);
+        if (!recipe) return;
+        std::optional<BlockPos> container;
+        if (p.window) container = p.window->pos;
+        admit(contracts::PlaceRecipe{key_of(p), container, recipe->first, recipe->second, r.all, main_hand(p)});
+    }
+
+    // The rules' recipes by id, and the id of one by kind and index (as
+    // TraceKind::recipe_used names them: 0 crafting, 1 cooking, 2
+    // stonecutting, 3 smithing).
+    std::optional<std::pair<std::uint8_t, std::uint32_t>> rule_recipe(std::string_view id) {
+        if (!data.game) return std::nullopt;
+        if (rule_recipes.empty()) {
+            const auto& g = *data.game;
+            const auto add = [&](std::uint8_t kind, const auto& list) {
+                for (std::size_t k = 0; k < list.size(); ++k) rule_recipes.emplace(list[k].id, std::pair{kind, static_cast<std::uint32_t>(k)});
+            };
+            add(0, g.crafting);
+            add(1, g.cooking);
+            add(2, g.stonecutting);
+            add(3, g.smithing);
+        }
+        const auto it = rule_recipes.find(id);
+        if (it == rule_recipes.end()) return std::nullopt;
+        return it->second;
+    }
+    const std::string* rule_recipe_id(std::uint64_t kind, std::size_t index) const {
+        if (!data.game) return nullptr;
+        const auto& g = *data.game;
+        return kind == 0 && index < g.crafting.size()       ? &g.crafting[index].id
+             : kind == 1 && index < g.cooking.size()        ? &g.cooking[index].id
+             : kind == 2 && index < g.stonecutting.size()   ? &g.stonecutting[index].id
+             : kind == 3 && index < g.smithing.size()       ? &g.smithing[index].id
+                                                            : nullptr;
+    }
+    // The ghosts of recipes a player asked to place without the items
+    // (TraceKind::recipe_ghost), shown in the player's window.
+    void send_ghosts(Player& p) {
+        const auto* book = data.recipe_book.get();
+        if (!book) return;
+        const auto key = key_of(p);
+        for (const auto& r : engine->trace()) {
+            if (r.kind != contracts::TraceKind::recipe_ghost || r.a != key.hi || r.b != key.lo) continue;
+            const auto* id = rule_recipe_id(r.c >> 32, static_cast<std::size_t>(r.c & 0xFFFFFFFFu));
+            const auto it = id ? book->by_id.find(*id) : book->by_id.end();
+            if (it != book->by_id.end()) p.peer->send(wire.place_ghost_recipe(p.window ? p.window->id : 0, book->recipes[it->second], wire_item()));
+        }
+    }
+
     std::function<std::int32_t(std::uint16_t)> wire_item() const {
         return [this](std::uint16_t i) {
             const auto it = item_wire.find(i);
@@ -2002,14 +2061,7 @@ struct Game::Impl final : GameServices {
         const auto key = key_of(p);
         for (const auto& r : engine->trace()) {
             if (r.kind != contracts::TraceKind::recipe_used || r.a != key.hi || r.b != key.lo) continue;
-            const auto kind = r.c >> 32;
-            const auto index = static_cast<std::size_t>(r.c & 0xFFFFFFFFu);
-            const auto& g = *data.game;
-            const std::string* id = kind == 0 && index < g.crafting.size()      ? &g.crafting[index].id
-                                  : kind == 1 && index < g.cooking.size()       ? &g.cooking[index].id
-                                  : kind == 2 && index < g.stonecutting.size()  ? &g.stonecutting[index].id
-                                  : kind == 3 && index < g.smithing.size()      ? &g.smithing[index].id
-                                                                                : nullptr;
+            const auto* id = rule_recipe_id(r.c >> 32, static_cast<std::size_t>(r.c & 0xFFFFFFFFu));
             if (!id) continue;
             if (const auto it = book->by_id.find(*id); it != book->by_id.end()) send_unlocks(p, server::award(*book, p.book, std::array{it->second}));
         }
@@ -2816,6 +2868,7 @@ struct Game::Impl final : GameServices {
                 if (size != p.window->container_slots || !near || bookless) close_window(p, true);
             }
             send_put_back(p);
+            send_ghosts(p);
             sync_inventory(p);
             sync_experience(p);
             sync_maps(p);

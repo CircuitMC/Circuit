@@ -159,13 +159,15 @@ int free_slot(const PlayerInventory& inv) {
         if (inv.slots[player_window_slot(i)].empty()) return player_window_slot(i);
     return -1;
 }
-// Adds as much of `stack` as fits; returns what is left.
-ItemStack add_to_player(RuleContext& ctx, PlayerInventory& inv, ItemStack stack, std::uint8_t selected) {
+namespace {
+// Adds as much of `stack` as fits, telling `changed` each slot it fills;
+// returns what is left.
+template <class Changed> ItemStack add_to_slots(PlayerInventory& inv, ItemStack stack, std::uint8_t selected, Changed&& changed) {
     if (stack.damage > 0) {
         // Damaged items take a free slot whole.
         if (const auto slot = free_slot(inv); slot >= 0) {
             inv.slots[static_cast<std::size_t>(slot)] = stack;
-            record_slot(ctx, inv, static_cast<std::uint8_t>(slot));
+            changed(static_cast<std::uint8_t>(slot));
             return {};
         }
         return stack;
@@ -182,10 +184,18 @@ ItemStack add_to_player(RuleContext& ctx, PlayerInventory& inv, ItemStack stack,
         const auto moved = std::min<int>(stack.count, items::max_stack(s) - s.count);
         s.count = static_cast<std::uint8_t>(s.count + moved);
         stack.count = static_cast<std::uint8_t>(stack.count - moved);
-        record_slot(ctx, inv, static_cast<std::uint8_t>(slot));
+        changed(static_cast<std::uint8_t>(slot));
     }
     if (stack.count == 0) stack = {};
     return stack;
+}
+} // namespace
+
+ItemStack add_to_player(RuleContext& ctx, PlayerInventory& inv, ItemStack stack, std::uint8_t selected) {
+    return add_to_slots(inv, stack, selected, [&](std::uint8_t slot) { record_slot(ctx, inv, slot); });
+}
+ItemStack add_unrecorded(PlayerInventory& inv, ItemStack stack, std::uint8_t selected) {
+    return add_to_slots(inv, stack, selected, [](std::uint8_t) {});
 }
 
 bool player_has_room(const PlayerInventory& inv, ItemStack stack, std::uint8_t selected) {

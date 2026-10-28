@@ -3823,6 +3823,145 @@ int main() {
         require(p.size() == 1 && p[0].slots[0].empty(), "no result without data");
     });
 
+    suite.run("recipes of the recipe book are placed into grids and furnaces", [] {
+        namespace recipes = circuit::gameplay::recipes;
+        using circuit::contracts::PlaceRecipe;
+        using circuit::contracts::SetPlayerSlot;
+        using circuit::gameplay::blocks::FurnaceKind;
+        using recipes::Ingredient;
+        using recipes::Recipe;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        const auto raw_iron = item("minecraft:raw_iron"), egg = item("minecraft:egg"), sugar = item("minecraft:sugar"),
+                   pumpkin = item("minecraft:pumpkin");
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        const Ingredient log{{items::oak_log}}, p{{items::oak_planks}};
+        data->crafting = {
+            {Recipe::Kind::shapeless, "test:planks", 0, 0, {log}, {items::oak_planks, 4}},
+            {Recipe::Kind::shaped, "test:table", 2, 2, {p, p, p, p}, {item("minecraft:crafting_table"), 1}},
+            {Recipe::Kind::shaped, "test:sticks", 1, 2, {p, p}, {item("minecraft:stick"), 4}},
+            {Recipe::Kind::shaped, "test:chest", 3, 3, {p, p, p, p, {}, p, p, p, p}, {item("minecraft:chest"), 1}},
+            {Recipe::Kind::shaped, "test:slab", 3, 1, {p, p, p}, {item("minecraft:oak_slab"), 6}},
+            {Recipe::Kind::shapeless, "test:pie", 0, 0, {Ingredient{{pumpkin}}, Ingredient{{sugar}}, Ingredient{{egg}}}, {item("minecraft:pumpkin_pie"), 1}},
+        };
+        data->cooking = {{recipes::Cooking::Kind::smelting, "test:iron", {{raw_iron}}, {item("minecraft:iron_ingot"), 1}, 0.7f, 200}};
+        data->stonecutting = {{"test:stone_slab", {{items::stone}}, {item("minecraft:stone_slab"), 2}}};
+        const PlayerKey alex{4, 2};
+        const BlockPos table{0, 0, 0}, furnace{2, 0, 0};
+        Sim s(bundle(), 7, 2, data);
+        s.tick({place(table, registry_block("crafting_table")), place(furnace, blocks::furnace(FurnaceKind::furnace, Direction::south))});
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            const auto it = std::ranges::find(d.players, alex, &PlayerInventory::player);
+            if (it != d.players.end()) return *it;
+            PlayerInventory none;
+            none.player = alex;
+            return none;
+        };
+        const auto slot = [&](std::size_t i) { return player().slots[i]; };
+        const auto counts = [&](std::span<const std::size_t> slots) {
+            std::vector<int> out;
+            for (const auto i : slots) out.push_back(slot(i).item == items::oak_planks || slot(i).empty() ? slot(i).count : -1);
+            return out;
+        };
+        const auto own = [&](std::uint8_t kind, std::uint32_t recipe, bool all) { return PlaceRecipe{alex, std::nullopt, kind, recipe, all}; };
+        const auto ghosts = [&] {
+            std::vector<std::uint64_t> out;
+            for (const auto& r : of_kind(s.last, TraceKind::recipe_ghost))
+                if (r.a == alex.hi && r.b == alex.lo) out.push_back(r.c);
+            return out;
+        };
+        const std::array<std::size_t, 4> grid{1, 2, 3, 4};
+        // Once, once more, as many as fit: from the hotbar first.
+        s.tick({SetPlayerSlot{alex, 9, {items::oak_log, 2}}, SetPlayerSlot{alex, 36, {items::oak_log, 2}}});
+        s.tick({own(0, 0, false)});
+        require(slot(1) == ItemStack{items::oak_log, 1} && slot(36).count == 1 && slot(9).count == 2 && slot(0) == ItemStack{items::oak_planks, 4},
+                "once, from the hotbar");
+        s.tick({own(0, 0, false)});
+        require(slot(1).count == 2 && slot(36).empty() && slot(9).count == 2 && ghosts().empty(), "once more");
+        s.tick({own(0, 0, true)});
+        require(slot(1).count == 4 && slot(9).empty(), "as many as fit");
+        // Too little for one: the grid goes back (the first free slot of the
+        // hotbar) and the ghost is shown.
+        s.tick({own(0, 1, false)});
+        require(slot(1).empty() && slot(0).empty() && slot(36) == ItemStack{items::oak_log, 4}, "the grid went back");
+        require(ghosts() == std::vector<std::uint64_t>{1}, "the table's ghost");
+        // Shapes: a narrow recipe at the left, a big one cut to the grid
+        // (still needing all its items); the grid's own items count.
+        s.tick({SetPlayerSlot{alex, 36, {}}, SetPlayerSlot{alex, 10, {items::oak_planks, 8}}});
+        s.tick({own(0, 2, false)});
+        require(counts(grid) == std::vector{1, 0, 1, 0} && slot(10).count == 6, "sticks in the left column");
+        s.tick({own(0, 3, false)});
+        require(counts(grid) == std::vector{1, 1, 1, 1} && slot(10).count == 4, "a chest cut to the grid");
+        s.tick({SetPlayerSlot{alex, 10, {items::oak_planks, 3}}});
+        s.tick({own(0, 3, false)});
+        require(counts(grid) == std::vector{0, 0, 0, 0} && slot(10).count == 7 && ghosts() == std::vector<std::uint64_t>{3}, "seven planks make no chest");
+        // Once more than the grid's smallest stack.
+        s.tick({SetPlayerSlot{alex, 1, {items::oak_planks, 2}}, SetPlayerSlot{alex, 2, {items::oak_planks, 1}},
+                SetPlayerSlot{alex, 3, {items::oak_planks, 1}}, SetPlayerSlot{alex, 4, {items::oak_planks, 1}}, SetPlayerSlot{alex, 10, {items::oak_planks, 3}}});
+        s.tick({own(0, 1, false)});
+        require(counts(grid) == std::vector{2, 2, 2, 2} && slot(10).empty(), "2 1 1 1 becomes 2 2 2 2");
+        // As many as fit is limited by each item's stack size (16 eggs).
+        s.tick({SetPlayerSlot{alex, 11, {pumpkin, 30}}, SetPlayerSlot{alex, 12, {sugar, 30}}, SetPlayerSlot{alex, 13, {egg, 16}},
+                SetPlayerSlot{alex, 14, {egg, 16}}});
+        s.tick({own(0, 5, true)});
+        require(slot(1) == ItemStack{pumpkin, 16} && slot(2) == ItemStack{sugar, 16} && slot(3) == ItemStack{egg, 16} && slot(13).empty() &&
+                    slot(14).count == 16 && slot(36) == ItemStack{items::oak_planks, 8},
+                "sixteen pies");
+        // A cooking recipe in a crafting grid: nothing when there is raw
+        // iron, else the grid goes back and the ghost is shown.
+        s.tick({SetPlayerSlot{alex, 15, {raw_iron, 1}}});
+        s.tick({own(1, 0, false)});
+        require(slot(1) == ItemStack{pumpkin, 16} && ghosts().empty(), "a cooking recipe changes nothing");
+        s.tick({SetPlayerSlot{alex, 15, {}}});
+        s.tick({own(1, 0, false)});
+        require(slot(1).empty() && slot(11) == ItemStack{pumpkin, 30} && ghosts() == std::vector<std::uint64_t>{std::uint64_t{1} << 32}, "no raw iron");
+        // A full inventory: the grid cannot go back, and nothing happens.
+        std::vector<CommandBody> full;
+        for (std::uint8_t i = 9; i < 45; ++i) full.push_back(SetPlayerSlot{alex, i, {items::cobblestone, 64}});
+        full.push_back(SetPlayerSlot{alex, 1, {items::oak_log, 1}});
+        s.tick(std::move(full));
+        s.tick({own(0, 1, false)});
+        require(slot(1) == ItemStack{items::oak_log, 1} && ghosts().empty(), "nothing without room");
+        std::vector<CommandBody> empty;
+        for (std::uint8_t i = 1; i < 45; ++i) empty.push_back(SetPlayerSlot{alex, i, {}});
+        s.tick(std::move(empty));
+        // Going back, the grid's items fill the main hand's slot first.
+        s.tick({SetPlayerSlot{alex, 36, {items::oak_log, 10}}, SetPlayerSlot{alex, 38, {items::oak_log, 10}}, SetPlayerSlot{alex, 1, {items::oak_log, 1}}});
+        s.tick({PlaceRecipe{alex, std::nullopt, 0, 1, false, 38}});
+        require(slot(1).empty() && slot(36).count == 10 && slot(38).count == 11, "the log into the selected slot");
+        s.tick({SetPlayerSlot{alex, 36, {}}, SetPlayerSlot{alex, 38, {}}});
+        // A crafting table centers narrow and low recipes; it shows no ghost
+        // of a cooking recipe.
+        const auto at_table = [&](std::uint32_t recipe, bool all, std::uint8_t kind = 0) { return PlaceRecipe{alex, table, kind, recipe, all}; };
+        const auto cells = [&] {
+            std::vector<int> out;
+            for (std::size_t k = 1; k <= 9; ++k) out.push_back(player().table[k].count);
+            return out;
+        };
+        s.tick({SetPlayerSlot{alex, 36, {items::oak_planks, 6}}});
+        s.tick({at_table(2, false)});
+        require(cells() == std::vector{0, 1, 0, 0, 1, 0, 0, 0, 0}, "sticks in the middle column");
+        s.tick({at_table(4, false)});
+        require(cells() == std::vector{0, 0, 0, 1, 1, 1, 0, 0, 0} && player().table[0].item == item("minecraft:oak_slab"), "a slab in the middle row");
+        s.tick({at_table(1, true)});
+        require(cells() == std::vector{1, 1, 0, 1, 1, 0, 0, 0, 0}, "a table at the top left");
+        s.tick({at_table(0, false, 1)});
+        require(cells() == std::vector<int>(9, 0) && slot(36).count == 6 && ghosts().empty(), "no ghost of a cooking recipe at a table");
+        // A furnace's input: once, as many as fit; recipes of other kinds.
+        const auto at_furnace = [&](std::uint8_t kind, std::uint32_t recipe, bool all) { return PlaceRecipe{alex, furnace, kind, recipe, all}; };
+        const auto input = [&] { return block_entity_at(s.oracle.dump(), furnace)->slots[0]; };
+        s.tick({SetPlayerSlot{alex, 37, {raw_iron, 10}}, SetPlayerSlot{alex, 38, {items::oak_log, 1}}});
+        s.tick({at_furnace(1, 0, false)});
+        require(input() == ItemStack{raw_iron, 1} && slot(37).count == 9, "one raw iron");
+        s.tick({at_furnace(1, 0, true)});
+        require(input() == ItemStack{raw_iron, 10} && slot(37).empty(), "all of it");
+        s.tick({at_furnace(0, 0, false)});
+        require(input() == ItemStack{raw_iron, 10} && ghosts().empty(), "a crafting recipe with its items changes nothing");
+        s.tick({at_furnace(2, 0, false)});
+        require(input().empty() && slot(37) == ItemStack{raw_iron, 10} && ghosts() == std::vector<std::uint64_t>{std::uint64_t{2} << 32},
+                "a stonecutting recipe without stone");
+    });
+
     suite.run("smithing tables upgrade and trim by the data packs' recipes", [] {
         namespace recipes = circuit::gameplay::recipes;
         using circuit::contracts::CloseContainer;

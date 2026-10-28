@@ -548,6 +548,17 @@
       "description": "A new player joins, gets oak logs, crafts oak planks after /recipe took the recipe, fills ten slots, stands in water, cuts a cobblestone slab whose recipe was taken, sees a recipe, changes the books' settings, is given recipes (map extending, a known one, every one) and has one taken and given, joins again and has every recipe taken: per step the recipe-book packets (ids sorted within each and the packets sorted), each recipe's full entry, and the replies; Circuit and both official servers give identical output"
     },
     {
+      "id": "client/recipes_place",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/recipes-place.js",
+      "status": "passing",
+      "description": "79 steps placing recipes from the book in the own window, at crafting tables and in a furnace, blast furnace and smoker: once, once more and as many as fit (the stack each item fills, eggs and milk buckets), uneven stacks of the recipe, shapes centered and recipes too big for the grid, too few items (ghosts), full inventories, recipes of other kinds, a recipe not known, another window's id, the selected slot and creative mode; Circuit and both official servers give identical windows and ghosts"
+    },
+    {
       "id": "client/loom",
       "kind": "black_box",
       "versions": [

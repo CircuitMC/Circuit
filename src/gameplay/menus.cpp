@@ -694,6 +694,7 @@ public:
     }
     [[nodiscard]] bool own() const { return own_; }
     [[nodiscard]] bool table() const { return table_; }
+    [[nodiscard]] bool furnace() const { return furnace_; }
     [[nodiscard]] bool cutter() const { return cutter_; }
     [[nodiscard]] bool smith() const { return smith_; }
     [[nodiscard]] bool grind() const { return grind_; }
@@ -1326,6 +1327,199 @@ contracts::Result<std::function<void()>> plan_slot_enabled(RuleContext& ctx, con
         if (!c.enabled && !be->slots[c.slot].empty()) return;
         be->disabled = static_cast<std::uint16_t>(c.enabled ? be->disabled & ~bit : be->disabled | bit);
         container_changed(ctx, pos);
+    };
+}
+
+namespace {
+// A recipe's ingredients as placing it lays them out: its cells row by row
+// (an empty ingredient for an empty cell), `width` and `height` for a shaped
+// recipe; the others fill the grid row by row.
+struct Layout {
+    std::vector<const recipes::Ingredient*> cells;
+    std::uint8_t width{}, height{};
+};
+std::optional<Layout> layout_of(const GameData& data, std::uint8_t kind, std::uint32_t index) {
+    Layout l;
+    if (kind == 0 && index < data.crafting.size()) {
+        const auto& r = data.crafting[index];
+        for (const auto& i : r.ingredients) l.cells.push_back(&i);
+        if (r.kind == recipes::Recipe::Kind::shaped) {
+            l.width = r.width;
+            l.height = r.height;
+        }
+    } else if (kind == 1 && index < data.cooking.size()) {
+        l.cells.push_back(&data.cooking[index].ingredient);
+    } else if (kind == 2 && index < data.stonecutting.size()) {
+        l.cells.push_back(&data.stonecutting[index].ingredient);
+    } else if (kind == 3 && index < data.smithing.size()) {
+        const auto& r = data.smithing[index];
+        if (r.template_item) l.cells.push_back(&*r.template_item);
+        l.cells.push_back(&r.base);
+        if (r.addition) l.cells.push_back(&*r.addition);
+    } else {
+        return std::nullopt;
+    }
+    return l;
+}
+
+// The inventory's slots placing takes from: the hotbar, then the main inventory.
+constexpr auto placing_order = [] {
+    std::array<std::uint8_t, 36> order{};
+    for (std::size_t i = 0; i < 36; ++i) order[i] = static_cast<std::uint8_t>(i < 9 ? contracts::hotbar_first + i : i);
+    return order;
+}();
+// Stacks without damage or components of their own.
+bool plain(const ItemStack& s) { return !s.empty() && s.damage == 0 && s.components.empty(); }
+
+// The item each non-empty cell takes `count` of: each of `kinds` (items and
+// how many the inventory holds, in the order it first holds them) fills as
+// many cells as it has `count`s, at most its stack limit each. Cells try the
+// kinds in order, earlier cells giving way to later ones where needed; none
+// when they cannot all be filled.
+std::optional<std::vector<std::uint16_t>> choose_items(const Layout& l, const std::vector<std::pair<std::uint16_t, int>>& kinds, int count) {
+    std::vector<std::size_t> cells;
+    for (std::size_t j = 0; j < l.cells.size(); ++j)
+        if (!l.cells[j]->empty()) cells.push_back(j);
+    std::vector<std::size_t> room(kinds.size());
+    for (std::size_t t = 0; t < kinds.size(); ++t)
+        room[t] = items::max_stack(ItemStack{kinds[t].first, 1}) >= count ? static_cast<std::size_t>(kinds[t].second / count) : 0;
+    std::vector<std::size_t> owner(cells.size());
+    std::vector<std::vector<std::size_t>> holders(kinds.size());
+    std::vector<bool> seen;
+    std::function<bool(std::size_t)> augment = [&](std::size_t c) {
+        for (std::size_t t = 0; t < kinds.size(); ++t) {
+            if (seen[t] || room[t] == 0 || !l.cells[cells[c]]->test(kinds[t].first)) continue;
+            seen[t] = true;
+            if (holders[t].size() < room[t]) {
+                owner[c] = t;
+                holders[t].push_back(c);
+                return true;
+            }
+            for (auto& other : holders[t])
+                if (augment(other)) {
+                    other = c;
+                    owner[c] = t;
+                    return true;
+                }
+        }
+        return false;
+    };
+    for (std::size_t c = 0; c < cells.size(); ++c) {
+        seen.assign(kinds.size(), false);
+        if (!augment(c)) return std::nullopt;
+    }
+    std::vector<std::uint16_t> chosen(l.cells.size());
+    for (std::size_t c = 0; c < cells.size(); ++c) chosen[cells[c]] = kinds[owner[c]].first;
+    return chosen;
+}
+
+// Placing a recipe from the recipe book (both official servers;
+// client/recipes_place). The window's grid (the own window's 2x2, a crafting
+// table's 3x3, a furnace's input) goes back into the inventory first, as
+// picked-up items go; when it would not all fit, nothing happens. With the
+// inventory's items (the hotbar's and main inventory's stacks without damage
+// or components of their own, in that order) the recipe is then made once more
+// than the grid already holds it (its smallest stack), or as many times as
+// fit: at most the stack limit of each item taken, and within what the
+// inventory holds. A recipe the window does not take (a cooking recipe in a
+// crafting grid, a crafting recipe in a furnace) changes nothing when there is
+// enough of it. With too little for one, the grid is emptied, and the ghost
+// recipe shown (TraceKind::recipe_ghost; a crafting table shows none of other
+// recipes). The cells go into the grid row by row: a recipe narrower or lower
+// than half the grid is centered, and what does not fit is left out.
+void place_recipe(RuleContext& ctx, Menu& menu, const contracts::PlaceRecipe& c, const Layout& l) {
+    const bool crafting = menu.own() || menu.table();
+    if (!crafting && !menu.furnace()) return;
+    const std::size_t width = crafting ? menu.grid().width : 1;
+    const std::size_t first = crafting ? 1 : 0;
+    auto& inv = menu.inventory();
+    const auto* data = ctx.data();
+    std::vector<ItemStack> grid;
+    for (std::size_t k = 0; k < width * width; ++k) grid.push_back(menu.get(first + k));
+    auto after = inv;
+    for (const auto& s : grid)
+        if (!s.empty() && !add_unrecorded(after, s, c.selected).empty()) return;
+    std::vector<std::pair<std::uint16_t, int>> kinds;
+    for (const auto slot : placing_order) {
+        const auto& s = after.slots[slot];
+        if (!plain(s)) continue;
+        const auto it = std::ranges::find(kinds, s.item, &std::pair<std::uint16_t, int>::first);
+        if (it == kinds.end()) kinds.emplace_back(s.item, s.count);
+        else it->second += s.count;
+    }
+    int most = 0;
+    for (const auto& [item, n] : kinds) most = std::max(most, n);
+    most = std::min<int>(most, contracts::max_stack_size);
+    int biggest = 0;
+    for (int k = most; k >= 1 && biggest == 0; --k)
+        if (choose_items(l, kinds, k)) biggest = k;
+    const bool takes = crafting ? c.kind == 0 : c.kind == 1;
+    if (biggest > 0 && !takes) return;
+    // The grid goes back.
+    for (std::size_t k = 0; k < grid.size(); ++k) {
+        if (grid[k].empty()) continue;
+        menu.set(first + k, {});
+        add_to_player(ctx, inv, grid[k], c.selected);
+    }
+    if (biggest == 0) {
+        if (crafting) update_crafting(ctx, inv);
+        if (!(menu.table() && c.kind != 0)) ctx.record(TraceKind::recipe_ghost, {}, inv.player.hi, inv.player.lo, std::uint64_t{c.kind} << 32 | c.recipe);
+        return;
+    }
+    // How many times the grid held the recipe: its smallest stack.
+    int held = 0;
+    const auto smallest = [&] {
+        int n = 0;
+        for (const auto& s : grid)
+            if (!s.empty()) n = n == 0 ? s.count : std::min<int>(n, s.count);
+        return n;
+    };
+    if (crafting) {
+        if (recipes::match(std::span(&data->crafting[c.recipe], 1), {static_cast<std::uint8_t>(width), static_cast<std::uint8_t>(width), grid}))
+            held = smallest();
+    } else if (!grid[0].empty() && data->cooking[c.recipe].ingredient.test(grid[0].item)) {
+        held = grid[0].count;
+    }
+    const int count = c.all ? biggest : std::min(held + 1, biggest);
+    const auto chosen = choose_items(l, kinds, count);
+    if (!chosen) return;
+    const auto take = [&](std::uint16_t item) {
+        int left = count;
+        for (const auto slot : placing_order) {
+            auto& s = inv.slots[slot];
+            if (left == 0) break;
+            if (!plain(s) || s.item != item) continue;
+            const int n = std::min<int>(left, s.count);
+            s.count = static_cast<std::uint8_t>(s.count - n);
+            if (s.count == 0) s = {};
+            record_slot(ctx, inv, slot);
+            left -= n;
+        }
+        return ItemStack{item, static_cast<std::uint8_t>(count - left)};
+    };
+    const std::size_t w = l.width ? l.width : width, h = l.height ? l.height : width;
+    const std::size_t across = std::min(w, width);
+    const std::size_t x0 = w < width ? (width - w) / 2 : 0, y0 = h < width ? (width - h) / 2 : 0;
+    for (std::size_t j = 0; j < l.cells.size(); ++j) {
+        const auto x = x0 + j % across, y = y0 + j / across;
+        if (y >= width) break;
+        if (!l.cells[j]->empty()) menu.set(first + y * width + x, take((*chosen)[j]));
+    }
+    if (crafting) update_crafting(ctx, inv);
+}
+} // namespace
+
+contracts::Result<std::function<void()>> plan_place_recipe(RuleContext& ctx, const contracts::PlaceRecipe& c) {
+    auto parts = menu_parts(ctx, c.container);
+    if (!parts) return std::unexpected(parts.error());
+    if (c.kind > 3) return std::unexpected(contracts::ErrorCode::invalid_argument);
+    return [&ctx, c, parts = std::move(*parts)] {
+        const auto* data = ctx.data();
+        if (!data) return;
+        const auto layout = layout_of(*data, c.kind, c.recipe);
+        if (!layout) return;
+        Menu menu(ctx, ctx.player(c.player), parts, false);
+        place_recipe(ctx, menu, c, *layout);
     };
 }
 

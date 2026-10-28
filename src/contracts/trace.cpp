@@ -34,6 +34,7 @@ std::string_view kind_name(TraceKind kind) {
     case TraceKind::player_experience_changed: return "player_experience_changed";
     case TraceKind::level_event: return "level_event";
     case TraceKind::recipe_used: return "recipe_used";
+    case TraceKind::recipe_ghost: return "recipe_ghost";
     }
     return "unknown";
 }

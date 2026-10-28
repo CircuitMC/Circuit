@@ -136,8 +136,9 @@ private:
 // 33 ChangeExperience, 34 ContainerButton of a creative player (tag 29's
 // players are not), 35 CloseContainer naming its window's block (tags 14 and
 // 28 name none), 36 PlayerPresence with the hotbar slot in the main hand
-// (tag 17's is the first).
+// (tag 17's is the first), 37 PlaceRecipe.
 std::uint8_t tag_of(const CommandBody& body) {
+    if (std::holds_alternative<PlaceRecipe>(body)) return 37;
     if (const auto* summon = std::get_if<SummonEntity>(&body); summon && (summon->value != 0 || summon->count != 1 || summon->age != 0))
         return 31;
     if (std::holds_alternative<ChangeExperience>(body)) return 33;
@@ -311,6 +312,14 @@ void encode_command(Writer& w, const Command& c) {
             w.put(static_cast<std::uint16_t>(body.name.size()));
             for (const char ch : body.name) w.put(static_cast<std::uint8_t>(ch));
             w.put(static_cast<std::uint8_t>(body.creative));
+        } else if constexpr (std::is_same_v<T, PlaceRecipe>) {
+            w.player(body.player);
+            w.put(static_cast<std::uint8_t>(body.container.has_value()));
+            if (body.container) w.pos(*body.container);
+            w.put(body.kind);
+            w.put(body.recipe);
+            w.put(static_cast<std::uint8_t>(body.all));
+            w.put(body.selected);
         } else if constexpr (std::is_same_v<T, ChangeExperience>) {
             w.player(body.player);
             w.put(body.amount);
@@ -585,6 +594,21 @@ bool decode_command(Reader& r, Command& c) {
         if (!r.player(b.player) || !r.get(b.amount) || !r.get(levels) || levels > 1 || !r.get(set) || set > 1) return false;
         b.levels = levels == 1;
         b.set = set == 1;
+        c.body = b;
+        return true;
+    }
+    case 37: {
+        PlaceRecipe b;
+        std::uint8_t has{}, all{};
+        if (!r.player(b.player) || !r.get(has) || has > 1) return false;
+        if (has) {
+            BlockPos p;
+            if (!r.pos(p)) return false;
+            b.container = p;
+        }
+        if (!r.get(b.kind) || b.kind > 3 || !r.get(b.recipe) || !r.get(all) || all > 1 || !r.get(b.selected)) return false;
+        if (b.selected < hotbar_first || b.selected >= hotbar_first + 9) return false;
+        b.all = all == 1;
         c.body = b;
         return true;
     }

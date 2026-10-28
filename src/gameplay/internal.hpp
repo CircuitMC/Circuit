@@ -106,12 +106,15 @@ void record_slot(RuleContext& ctx, const PlayerInventory& inventory, std::uint8_
 // Adds a stack to a player's inventory in the target version's order for
 // picked-up items; returns what does not fit.
 ItemStack add_to_player(RuleContext& ctx, PlayerInventory& inv, ItemStack stack, std::uint8_t selected);
+// The same without records, for a copy of an inventory.
+ItemStack add_unrecorded(PlayerInventory& inv, ItemStack stack, std::uint8_t selected);
 bool player_has_room(const PlayerInventory& inv, ItemStack stack, std::uint8_t selected);
 // Container menus (menus.cpp).
 contracts::Result<std::function<void()>> plan_click(RuleContext& ctx, const contracts::ContainerClick& c);
 contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const contracts::CloseContainer& c);
 contracts::Result<std::function<void()>> plan_button(RuleContext& ctx, const contracts::ContainerButton& c);
 contracts::Result<std::function<void()>> plan_slot_enabled(RuleContext& ctx, const contracts::SetSlotEnabled& c);
+contracts::Result<std::function<void()>> plan_place_recipe(RuleContext& ctx, const contracts::PlaceRecipe& c);
 contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const contracts::PlayerDeath& c);
 // Sets the crafting result (slot 0) from the player's 2x2 grid (slots 1-4)
 // and the data packs' recipes. Without data packs crafting is not modeled.

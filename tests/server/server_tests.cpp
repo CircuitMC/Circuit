@@ -1733,6 +1733,58 @@ int main() {
         require((back == std::vector<std::string>{"settings", "add 1 3 148 0"}), "back: the known recipes, oak wood seen: " + seen);
     });
 
+    suite.run("recipes of the book are placed into windows, with ghosts for those missing items", [] {
+        const char* jar = std::getenv("CIRCUIT_VANILLA_JAR_1_21_8");
+        if (!jar || !*jar) {
+            std::puts("  (no official 1.21.8 server jar given: the recipe placement checks did not run)");
+            return;
+        }
+        using I = server::Intent;
+        auto d = server::load_server_data(**contracts::BundleRegistry::find("java-1.21.8"), {jar, {}});
+        require(d.has_value() && d->recipe_book, d ? "" : d.error());
+        GameFixture f(offline_config(), std::move(*d));
+        auto peer = f.join(1, "Chef");
+        const contracts::PlayerKey key{1, 1};
+        const auto slot = [&](std::size_t i) {
+            const auto inv = f.game->engine().view().player(key).value();
+            return inv ? inv->slots[i] : contracts::ItemStack{};
+        };
+        // Ghosts since the last call: (window, display kind).
+        std::size_t seen = 0;
+        const auto ghosts = [&] {
+            const auto id = f.wire.ids().id(State::play, Bound::clientbound, "place_ghost_recipe");
+            std::vector<std::pair<std::int32_t, std::int32_t>> out;
+            std::lock_guard lock(peer->mutex);
+            for (; seen < peer->packets.size(); ++seen) {
+                auto pk = protocol::open_packet(peer->packets[seen]);
+                if (!pk || pk->id != id) continue;
+                const auto window = pk->fields.varint().value();
+                out.emplace_back(window, pk->fields.varint().value());
+            }
+            return out;
+        };
+        f.hold(1, "minecraft:oak_log");
+        f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
+        f.game->tick();
+        (void)ghosts();
+        // Oak planks (805, known from the log) into the own window.
+        f.game->submit(1, I{server::intent::PlaceRecipe{0, 805, false}});
+        f.game->tick();
+        require(slot(1).count == 1 && slot(36).empty() && slot(0).count == 4 && ghosts().empty(), "the log in the grid");
+        // A crafting table (262) without planks: the log goes back, the ghost (shaped: 1) is shown.
+        f.game->submit(1, I{server::intent::PlaceRecipe{0, 262, false}});
+        f.game->tick();
+        require(slot(1).empty() && slot(36).count == 1 && (ghosts() == std::vector<std::pair<std::int32_t, std::int32_t>>{{0, 1}}),
+                "the table's ghost in window 0");
+        // Another window's id, and a recipe the player does not know, do nothing.
+        f.game->submit(1, I{server::intent::PlaceRecipe{3, 805, false}});
+        f.game->submit(1, I{server::intent::Command{"recipe take Chef minecraft:crafting_table"}});
+        f.game->tick();
+        f.game->submit(1, I{server::intent::PlaceRecipe{0, 262, false}});
+        f.game->tick();
+        require(slot(1).empty() && slot(36).count == 1 && ghosts().empty(), "ignored");
+    });
+
     suite.run("composters take held items and the players nearby get the level event", [] {
         using I = server::Intent;
         GameFixture f;

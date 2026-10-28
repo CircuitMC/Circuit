@@ -156,12 +156,19 @@ struct RecipeBookSettings {
     bool open{};
     bool filtering{};
 };
+// A recipe of the book placed into a window (by display id), once more or
+// as many times as fit.
+struct PlaceRecipe {
+    std::int32_t window{};
+    std::int32_t display{};
+    bool all{};
+};
 } // namespace intent
 using Intent = std::variant<intent::Move, intent::ConfirmTeleport, intent::Dig, intent::UseOn, intent::Use,
                             intent::HeldSlot, intent::CreativeSlot, intent::Command, intent::Chat, intent::Sneak,
                             intent::Flying, intent::Loaded, intent::ContainerClick, intent::ContainerClose,
                             intent::ClientCommand, intent::Sprint, intent::ContainerButton, intent::SlotState, intent::RenameItem,
-                            intent::RecipeSeen, intent::RecipeBookSettings>;
+                            intent::RecipeSeen, intent::RecipeBookSettings, intent::PlaceRecipe>;
 
 class Wire {
 public:
@@ -295,6 +302,8 @@ public:
     Bytes recipe_book_settings(const std::array<bool, 8>& settings) const;
     Bytes recipe_book_add(std::span<const BookEntry> entries, bool replace, const std::function<std::int32_t(std::uint16_t)>& item) const;
     Bytes recipe_book_remove(std::span<const std::int32_t> ids) const;
+    // The ghost of a recipe that could not be placed, shown in a window's grid.
+    Bytes place_ghost_recipe(std::int32_t window, const BookRecipe& recipe, const std::function<std::int32_t(std::uint16_t)>& item) const;
     // What item components may refer to on this protocol.
     [[nodiscard]] const protocol::ComponentContext& component_context() const noexcept { return components_ctx_; }
     [[nodiscard]] const protocol::ComponentCodec& components() const noexcept { return *components_; }
