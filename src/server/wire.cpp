@@ -23,14 +23,15 @@ struct Wire::Ids {
         set_entity_data, remove_entities, entity_position_sync, rotate_head, container_set_content, disconnect, take_item_entity,
         open_screen, container_close, container_set_slot, container_set_data, set_cursor_item, set_player_inventory, respawn, combat_kill, damage_event, sb_container_click,
         sb_container_close, sb_container_button_click, sb_container_slot_state_changed, sb_rename_item, update_recipes,
-        commands, explode, set_experience, map_item_data;
+        commands, explode, set_experience, map_item_data, recipe_book_add, recipe_book_remove, recipe_book_settings;
     // The orb spawn packet of protocols before 1.21.5's (-1: none; orbs are
     // entities with their value as data).
     std::int32_t add_experience_orb{-1};
     // Serverbound play.
     std::int32_t sb_accept_teleportation, sb_move_pos, sb_move_pos_rot, sb_move_rot, sb_move_status,
         sb_player_action, sb_use_item_on, sb_use_item, sb_set_carried_item, sb_set_creative_slot, sb_chat_command,
-        sb_chat_command_signed, sb_chat, sb_player_input, sb_player_abilities, sb_player_loaded, sb_client_command, sb_player_command;
+        sb_chat_command_signed, sb_chat, sb_player_input, sb_player_abilities, sb_player_loaded, sb_client_command, sb_player_command,
+        sb_recipe_book_seen_recipe, sb_recipe_book_change_settings;
 };
 
 Wire::Wire(std::int32_t protocol) : Wire(protocol, server::component_context(protocol)) {}
@@ -102,7 +103,12 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->sb_container_button_click = sb(State::play, "container_button_click");
     ids->sb_container_slot_state_changed = sb(State::play, "container_slot_state_changed");
     ids->sb_rename_item = sb(State::play, "rename_item");
+    ids->sb_recipe_book_seen_recipe = sb(State::play, "recipe_book_seen_recipe");
+    ids->sb_recipe_book_change_settings = sb(State::play, "recipe_book_change_settings");
     ids->update_recipes = cb(State::play, "update_recipes");
+    ids->recipe_book_add = cb(State::play, "recipe_book_add");
+    ids->recipe_book_remove = cb(State::play, "recipe_book_remove");
+    ids->recipe_book_settings = cb(State::play, "recipe_book_settings");
     ids->disconnect = cb(State::play, "disconnect");
     ids->commands = cb(State::play, "commands");
     ids->explode = cb(State::play, "explode");
@@ -442,6 +448,101 @@ Bytes Wire::container_data(std::int32_t window, std::int16_t property, std::int1
     w.varint(window).i16(property).i16(value);
     return packet(id_->container_set_data, w);
 }
+namespace {
+void slot_display(Writer& w, const SlotDisplay& d, const std::function<std::int32_t(std::uint16_t)>& item,
+                  const std::function<void(Writer&, const WireStack&)>& stack) {
+    w.varint(static_cast<std::int32_t>(d.kind));
+    switch (d.kind) {
+    case SlotDisplay::Kind::empty:
+    case SlotDisplay::Kind::any_fuel: return;
+    case SlotDisplay::Kind::item: w.varint(item(d.item)); return;
+    case SlotDisplay::Kind::item_stack: stack(w, {item(d.stack.item), d.stack.count, d.stack.damage, d.stack.components}); return;
+    case SlotDisplay::Kind::tag: w.string(d.tag); return;
+    case SlotDisplay::Kind::smithing_trim:
+        slot_display(w, d.parts[0], item, stack);
+        slot_display(w, d.parts[1], item, stack);
+        // A trim pattern by its registry entry (holder: index + 1), or before
+        // 1.21.5 its template's display.
+        if (d.pattern >= 0) w.varint(d.pattern + 1);
+        else slot_display(w, d.parts[2], item, stack);
+        return;
+    case SlotDisplay::Kind::with_remainder:
+        slot_display(w, d.parts[0], item, stack);
+        slot_display(w, d.parts[1], item, stack);
+        return;
+    case SlotDisplay::Kind::composite:
+        w.varint(static_cast<std::int32_t>(d.parts.size()));
+        for (const auto& p : d.parts) slot_display(w, p, item, stack);
+        return;
+    }
+}
+} // namespace
+
+Bytes Wire::recipe_book_settings(const std::array<bool, 8>& settings) const {
+    Writer w;
+    for (const bool b : settings) w.boolean(b);
+    return packet(id_->recipe_book_settings, w);
+}
+
+Bytes Wire::recipe_book_add(std::span<const BookEntry> entries, bool replace, const std::function<std::int32_t(std::uint16_t)>& item) const {
+    Writer w;
+    const auto stack = [this](Writer& out, const WireStack& s) { slot(out, s); };
+    const auto display = [&](const SlotDisplay& d) { slot_display(w, d, item, stack); };
+    w.varint(static_cast<std::int32_t>(entries.size()));
+    for (const auto& e : entries) {
+        const auto& d = e.recipe->display;
+        w.varint(e.display).varint(static_cast<std::int32_t>(d.kind));
+        switch (d.kind) {
+        case RecipeDisplay::Kind::shaped:
+            w.varint(d.width).varint(d.height);
+            [[fallthrough]];
+        case RecipeDisplay::Kind::shapeless:
+            w.varint(static_cast<std::int32_t>(d.slots.size()));
+            for (const auto& s : d.slots) display(s);
+            display(d.result);
+            display(d.station);
+            break;
+        case RecipeDisplay::Kind::furnace:
+            display(d.slots.at(0));
+            display({.kind = SlotDisplay::Kind::any_fuel});
+            display(d.result);
+            display(d.station);
+            w.varint(d.duration).f32(d.experience);
+            break;
+        case RecipeDisplay::Kind::stonecutter:
+            display(d.slots.at(0));
+            display(d.result);
+            display(d.station);
+            break;
+        case RecipeDisplay::Kind::smithing:
+            for (std::size_t k = 0; k < 3; ++k) display(d.slots.at(k));
+            display(d.result);
+            display(d.station);
+            break;
+        }
+        w.varint(e.recipe->group).varint(e.recipe->category);
+        w.boolean(true).varint(static_cast<std::int32_t>(e.recipe->requirements.size()));
+        for (const auto& r : e.recipe->requirements) {
+            if (!r.tag.empty()) {
+                w.varint(0).string(r.tag);
+            } else {
+                w.varint(static_cast<std::int32_t>(r.items.size()) + 1);
+                for (const auto i : r.items) w.varint(item(i));
+            }
+        }
+        w.u8(e.flags);
+    }
+    w.boolean(replace);
+    return packet(id_->recipe_book_add, w);
+}
+
+Bytes Wire::recipe_book_remove(std::span<const std::int32_t> ids) const {
+    Writer w;
+    w.varint(static_cast<std::int32_t>(ids.size()));
+    for (const auto id : ids) w.varint(id);
+    return packet(id_->recipe_book_remove, w);
+}
+
 Bytes Wire::update_recipes(const std::vector<PropertySet>& property_sets, const std::vector<StonecutterEntry>& stonecutter) const {
     Writer w;
     w.varint(static_cast<std::int32_t>(property_sets.size()));
@@ -659,6 +760,16 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
     if (id == i.sb_rename_item) {
         TRY(name, r.string(32767));
         return done(intent::RenameItem{std::move(*name)});
+    }
+    if (id == i.sb_recipe_book_seen_recipe) {
+        TRY(display, r.varint());
+        return done(intent::RecipeSeen{*display});
+    }
+    if (id == i.sb_recipe_book_change_settings) {
+        TRY(book, r.varint());
+        TRY(open, r.boolean());
+        TRY(filtering, r.boolean());
+        return done(intent::RecipeBookSettings{*book, *open, *filtering});
     }
     if (id == i.sb_container_slot_state_changed) {
         TRY(slot_index, r.varint());

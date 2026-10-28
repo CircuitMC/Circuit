@@ -43,6 +43,8 @@ enum class TraceKind : std::uint8_t {
     explosion = 25,             // an explosion at pos's cell: a, b, c = the bits of its center (double_bits)
     player_experience_changed = 26, // a = player key high half, b = low half, c = the player's total experience points
     level_event = 27,           // pos, a = the event (1500: a composter took an item), b = its data (1: it added a layer)
+    recipe_used = 28,           // a player took what a recipe made: a = player key high half, b = low half, c = kind << 32 | index
+                                // (kind 0 crafting, 1 cooking, 2 stonecutting, 3 smithing: the index in that list of the game data)
 };
 
 struct TraceRecord {

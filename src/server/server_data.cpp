@@ -140,6 +140,7 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
         game->block_loot = std::move(out.loot.tables);
         out.loot.tables.clear();
         out.recipes = compile_recipes(*packs, bundle, out.registries);
+        out.recipe_book = std::make_shared<const RecipeBook>(compile_recipe_book(*packs, bundle, out.registries));
         game->crafting = std::move(out.recipes.crafting);
         out.recipes.crafting.clear();
         game->cooking = std::move(out.recipes.cooking);

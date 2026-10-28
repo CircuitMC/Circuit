@@ -6409,6 +6409,44 @@
         "deviations": [
           "banner and frame markers are never sent"
         ]
+      },
+      "play/clientbound/recipe_book_add": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/recipes"
+        ],
+        "deviations": [
+          "the recipes unlocked in one tick come in advancement id order; the official servers' order varies"
+        ]
+      },
+      "play/clientbound/recipe_book_remove": {
+        "impl": "implemented",
+        "evidence": "compared",
+        "cases": [
+          "client/recipes"
+        ]
+      },
+      "play/clientbound/recipe_book_settings": {
+        "impl": "implemented",
+        "evidence": "compared",
+        "cases": [
+          "client/recipes"
+        ]
+      },
+      "play/serverbound/recipe_book_change_settings": {
+        "impl": "implemented",
+        "evidence": "compared",
+        "cases": [
+          "client/recipes"
+        ]
+      },
+      "play/serverbound/recipe_book_seen_recipe": {
+        "impl": "implemented",
+        "evidence": "compared",
+        "cases": [
+          "client/recipes"
+        ]
       }
     }
   }

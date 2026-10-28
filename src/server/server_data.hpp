@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
 #include "loot_compiler.hpp"
+#include "recipe_book.hpp"
 #include "recipe_compiler.hpp"
 #include "registries.hpp"
 #include <circuit/contracts/version.hpp>
@@ -29,6 +30,9 @@ struct ServerData {
     // recipes themselves are in `game`), and why they left the rest.
     LootCompilation loot;
     RecipeCompilation recipes;
+    // The recipe book and the advancements that unlock its recipes; null
+    // without data packs.
+    std::shared_ptr<const RecipeBook> recipe_book;
     [[nodiscard]] const std::string& fingerprint() const;
 };
 

@@ -883,11 +883,43 @@ void use_loom(RuleContext& ctx, PlayerInventory& inv) {
 // once: the whole result leaves the slot and the grid or the inputs are used.
 // An anvil's result is taken only with its cost in levels (any in creative
 // mode).
+// The recipe whose result a player takes from a crafting grid, stonecutter
+// or smithing table, for the server's recipe book (TraceKind::recipe_used).
+void record_recipe_used(RuleContext& ctx, const Menu& menu, PlayerInventory& inv) {
+    const auto* data = ctx.data();
+    if (!data) return;
+    const auto record = [&](std::uint64_t kind, std::size_t index) {
+        ctx.record(TraceKind::recipe_used, {}, inv.player.hi, inv.player.lo, kind << 32 | index);
+    };
+    if (menu.smith()) {
+        const auto fits = [](const std::optional<recipes::Ingredient>& i, const ItemStack& s) {
+            return i ? !s.empty() && i->test(s.item) : s.empty();
+        };
+        for (std::size_t k = 0; k < data->smithing.size(); ++k) {
+            const auto& r = data->smithing[k];
+            if (fits(r.template_item, inv.smith[0]) && !inv.smith[1].empty() && r.base.test(inv.smith[1].item) && fits(r.addition, inv.smith[2]))
+                return record(3, k);
+        }
+    } else if (menu.cutter()) {
+        if (inv.cutter_recipe < 0 || inv.cutter[0].empty()) return;
+        const auto list = recipes::cuttings(data->stonecutting, inv.cutter[0].item);
+        if (static_cast<std::size_t>(inv.cutter_recipe) < list.size())
+            record(2, static_cast<std::size_t>(list[static_cast<std::size_t>(inv.cutter_recipe)] - data->stonecutting.data()));
+    } else if (!menu.grind() && !menu.anvil() && !menu.loom() && !menu.cartography()) {
+        const auto grid = menu.grid();
+        std::vector<ItemStack> stacks;
+        for (std::size_t k = 1; k <= grid.size(); ++k) stacks.push_back(player_slot(inv, grid.record(k)));
+        if (const auto made = recipes::match(data->crafting, {grid.width, grid.width, stacks}); made && made->recipe)
+            record(0, static_cast<std::size_t>(made->recipe - data->crafting.data()));
+    }
+}
+
 void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick& c) {
     auto& inv = menu.inventory();
     if (menu.anvil() && !anvil_result_takeable(inv, c.creative)) return;
     const auto made_now = [&] { return menu.get(menu.result_slot()); };
     const auto use = [&] {
+        record_recipe_used(ctx, menu, inv);
         if (menu.smith()) use_smith(ctx, inv);
         else if (menu.grind()) use_grind(ctx, inv, c.container);
         else if (menu.anvil()) use_anvil(ctx, inv, c.container, c.creative);

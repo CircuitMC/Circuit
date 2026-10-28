@@ -217,6 +217,14 @@ void furnace_result_taken(RuleContext& ctx, BlockPos pos, contracts::PlayerKey p
     if (!be || be->recipes_used.empty()) return;
     const auto recipes = std::move(be->recipes_used);
     be->recipes_used.clear();
+    // The recipes go to the player's recipe book (TraceKind::recipe_used).
+    if (const auto* data = ctx.data())
+        for (const auto& [id, count] : recipes)
+            for (std::size_t k = 0; k < data->cooking.size(); ++k)
+                if (data->cooking[k].id == id) {
+                    ctx.record(TraceKind::recipe_used, {}, player.hi, player.lo, std::uint64_t{1} << 32 | k);
+                    break;
+                }
     // At the player's feet.
     const auto presence = ctx.presence_of(player);
     award_cooked(ctx, recipes, presence ? presence->position : contracts::Vec3{pos.x + 0.5, pos.y + 0.5, pos.z + 0.5});

@@ -150,6 +150,10 @@ struct Player {
     std::int32_t sent_food{-1};
     bool sent_saturation_zero{};
     // The maps the client was sent, with the markers it last got for each.
+    // The player's recipe book, and their inventory (armor, main, hotbar,
+    // off hand) as its triggers last saw it.
+    PlayerBook book;
+    std::vector<contracts::ItemStack> book_inventory = std::vector<contracts::ItemStack>(41);
     // Per map the player carries: the markers and colors last sent.
     struct SentMap {
         std::vector<gameplay::MapMarker> markers;
@@ -160,6 +164,13 @@ struct Player {
 
 // What the world keeps of a player between sessions besides the inventory,
 // which is simulation state.
+// A recipe book by recipe and advancement ids (kept across data pack changes).
+struct SavedBook {
+    std::vector<std::string> known, highlighted;
+    std::array<bool, 8> settings{};
+    std::vector<std::string> done;
+    std::vector<std::pair<std::string, std::vector<std::string>>> progress; // advancement, criteria done
+};
 struct SavedPlayer {
     Vec3 pos;
     float yaw{}, pitch{};
@@ -169,22 +180,51 @@ struct SavedPlayer {
     std::int32_t food{20};
     float saturation{5.0f};
     float exhaustion{};
+    SavedBook book;
 };
+
+void write_strings(protocol::Writer& w, const std::vector<std::string>& v) {
+    w.varint(static_cast<std::int32_t>(v.size()));
+    for (const auto& s : v) w.string(s);
+}
+std::optional<std::vector<std::string>> read_strings(protocol::Reader& r) {
+    const auto n = r.length(1u << 20, 1);
+    if (!n) return std::nullopt;
+    std::vector<std::string> out;
+    for (std::size_t i = 0; i < *n; ++i) {
+        auto s = r.string(32767);
+        if (!s) return std::nullopt;
+        out.push_back(std::move(*s));
+    }
+    return out;
+}
 
 std::vector<std::byte> encode_players(const std::map<Uuid, SavedPlayer>& players) {
     protocol::Writer w;
-    w.varint(3).varint(static_cast<std::int32_t>(players.size()));
-    for (const auto& [uuid, p] : players)
+    w.varint(4).varint(static_cast<std::int32_t>(players.size()));
+    for (const auto& [uuid, p] : players) {
         w.uuid(uuid).f64(p.pos.x).f64(p.pos.y).f64(p.pos.z).f32(p.yaw).f32(p.pitch).u8(p.game_mode).varint(p.held).f32(p.health)
             .varint(p.food).f32(p.saturation).f32(p.exhaustion);
+        write_strings(w, p.book.known);
+        write_strings(w, p.book.highlighted);
+        std::uint8_t bits = 0;
+        for (std::size_t k = 0; k < 8; ++k) bits |= static_cast<std::uint8_t>(p.book.settings[k] ? 1u << k : 0u);
+        w.u8(bits);
+        write_strings(w, p.book.done);
+        w.varint(static_cast<std::int32_t>(p.book.progress.size()));
+        for (const auto& [id, criteria] : p.book.progress) {
+            w.string(id);
+            write_strings(w, criteria);
+        }
+    }
     return w.take();
 }
 std::optional<std::map<Uuid, SavedPlayer>> decode_players(std::span<const std::byte> bytes) {
     protocol::Reader r(bytes);
     const auto version = r.varint();
     const auto count = r.length(1u << 20, 30);
-    // Version 2 had no health.
-    if (!version || (*version != 2 && *version != 3) || !count) return std::nullopt;
+    // Version 2 had no health, version 3 no recipe book.
+    if (!version || *version < 2 || *version > 4 || !count) return std::nullopt;
     std::map<Uuid, SavedPlayer> out;
     for (std::size_t i = 0; i < *count; ++i) {
         SavedPlayer p;
@@ -194,7 +234,7 @@ std::optional<std::map<Uuid, SavedPlayer>> decode_players(std::span<const std::b
         const auto mode = r.u8();
         const auto held = r.varint();
         if (!uuid || !x || !y || !z || !yaw || !pitch || !mode || !held) return std::nullopt;
-        if (*version == 3) {
+        if (*version >= 3) {
             const auto health = r.f32();
             const auto food = r.varint();
             const auto saturation = r.f32(), exhaustion = r.f32();
@@ -209,6 +249,23 @@ std::optional<std::map<Uuid, SavedPlayer>> decode_players(std::span<const std::b
         p.pitch = *pitch;
         p.game_mode = *mode;
         p.held = *held;
+        if (*version >= 4) {
+            auto known = read_strings(r), highlighted = read_strings(r);
+            const auto bits = r.u8();
+            auto done = read_strings(r);
+            const auto n = r.length(1u << 20, 2);
+            if (!known || !highlighted || !bits || !done || !n) return std::nullopt;
+            p.book.known = std::move(*known);
+            p.book.highlighted = std::move(*highlighted);
+            for (std::size_t k = 0; k < 8; ++k) p.book.settings[k] = (*bits >> k) & 1;
+            p.book.done = std::move(*done);
+            for (std::size_t k = 0; k < *n; ++k) {
+                auto id = r.string(32767);
+                auto criteria = read_strings(r);
+                if (!id || !criteria) return std::nullopt;
+                p.book.progress.emplace_back(std::move(*id), std::move(*criteria));
+            }
+        }
         out[*uuid] = std::move(p);
     }
     if (r.remaining() != 0) return std::nullopt;
@@ -462,7 +519,48 @@ struct Game::Impl final : GameServices {
     }
 
     SavedPlayer snapshot(const Player& p) const {
-        return {p.pos, p.yaw, p.pitch, p.game_mode, p.held, p.dead ? 0.0f : p.health, p.food, p.saturation, p.exhaustion};
+        return {p.pos, p.yaw, p.pitch, p.game_mode, p.held, p.dead ? 0.0f : p.health, p.food, p.saturation, p.exhaustion, saved_book(p.book)};
+    }
+    // A recipe book by ids, and back (ids the data packs no longer have are left out).
+    SavedBook saved_book(const PlayerBook& b) const {
+        SavedBook out;
+        out.settings = b.settings;
+        const auto* book = data.recipe_book.get();
+        if (!book) return out;
+        for (const auto r : b.known) out.known.push_back(book->recipes[r].id);
+        for (const auto r : b.highlighted) out.highlighted.push_back(book->recipes[r].id);
+        for (const auto a : b.done) out.done.push_back(book->advancements[a].id);
+        for (const auto& [a, criteria] : b.progress) {
+            std::vector<std::string> names;
+            for (const auto c : criteria) names.push_back(book->advancements[a].criteria[c].name);
+            if (!names.empty()) out.progress.emplace_back(book->advancements[a].id, std::move(names));
+        }
+        return out;
+    }
+    PlayerBook player_book(const SavedBook& s) const {
+        PlayerBook out;
+        out.settings = s.settings;
+        const auto* book = data.recipe_book.get();
+        if (!book) return out;
+        const auto recipe = [&](const std::string& id) {
+            const auto it = book->by_id.find(id);
+            return it != book->by_id.end() && book->recipes[it->second].in_book ? std::optional(it->second) : std::nullopt;
+        };
+        for (const auto& id : s.known)
+            if (const auto r = recipe(id)) out.known.insert(*r);
+        for (const auto& id : s.highlighted)
+            if (const auto r = recipe(id); r && out.known.contains(*r)) out.highlighted.insert(*r);
+        for (const auto& id : s.done)
+            if (const auto it = book->advancement_ids.find(id); it != book->advancement_ids.end()) out.done.insert(it->second);
+        for (const auto& [id, names] : s.progress) {
+            const auto it = book->advancement_ids.find(id);
+            if (it == book->advancement_ids.end() || out.done.contains(it->second)) continue;
+            const auto& criteria = book->advancements[it->second].criteria;
+            for (const auto& n : names)
+                for (std::size_t c = 0; c < criteria.size(); ++c)
+                    if (criteria[c].name == n) out.progress[it->second].insert(c);
+        }
+        return out;
     }
 
     // ---- checkpoints --------------------------------------------------------
@@ -655,6 +753,14 @@ struct Game::Impl final : GameServices {
         send_vitals(p);
         peer.send(wire.empty_commands());
         peer.send(recipes_packet());
+        // The recipe book: its settings, then every recipe the player knows.
+        if (data.recipe_book) {
+            peer.send(wire.recipe_book_settings(p.book.settings));
+            std::vector<Wire::BookEntry> entries;
+            for (const auto r : p.book.known)
+                entries.push_back({static_cast<std::int32_t>(r), &data.recipe_book->recipes[r], static_cast<std::uint8_t>(p.book.highlighted.contains(r) ? 2 : 0)});
+            peer.send(wire.recipe_book_add(entries, true, wire_item()));
+        }
         peer.send(wire.spawn_position(wire_pos({meta.spawn.x, meta.spawn.y + 1, meta.spawn.z}), 0.0f));
         peer.send(time_packet());
         // Rain, as both official servers report it on joining.
@@ -735,6 +841,7 @@ struct Game::Impl final : GameServices {
         } else {
             p.pos = spawn_point();
         }
+        p.book = player_book(s.book);
     }
     Vec3 spawn_point() const { return {meta.spawn.x + 0.5, static_cast<double>(meta.spawn.y) + 1.0, meta.spawn.z + 0.5}; }
 
@@ -1855,6 +1962,119 @@ struct Game::Impl final : GameServices {
     // The name typed into an open anvil window, as both official servers
     // take it: without the section sign and control characters, and ignored
     // when it is still longer than 50 UTF-16 code units.
+    // The recipe book: a recipe seen loses its highlight; a book's settings
+    // are kept (both official servers keep them for the player's next join).
+    void handle(Player& p, intent::RecipeSeen& r) {
+        if (r.display >= 0) p.book.highlighted.erase(static_cast<std::size_t>(r.display));
+    }
+    void handle(Player& p, intent::RecipeBookSettings& r) {
+        if (r.book < 0 || r.book > 3) return;
+        p.book.settings[static_cast<std::size_t>(2 * r.book)] = r.open;
+        p.book.settings[static_cast<std::size_t>(2 * r.book + 1)] = r.filtering;
+    }
+
+    std::function<std::int32_t(std::uint16_t)> wire_item() const {
+        return [this](std::uint16_t i) {
+            const auto it = item_wire.find(i);
+            return it == item_wire.end() ? 0 : it->second;
+        };
+    }
+    // What unlocking gave a player: each list of new recipes as one packet,
+    // a notification for those that show one, all highlighted.
+    void send_unlocks(Player& p, const Unlocks& unlocks) {
+        for (const auto& recipes : unlocks) {
+            std::vector<Wire::BookEntry> entries;
+            for (const auto r : recipes) {
+                const auto& recipe = data.recipe_book->recipes[r];
+                entries.push_back({static_cast<std::int32_t>(r), &recipe, static_cast<std::uint8_t>((recipe.notification ? 1 : 0) | 2)});
+            }
+            p.peer->send(wire.recipe_book_add(entries, false, wire_item()));
+        }
+    }
+    // After each tick, in order: the recipes the player's taken results came
+    // from (TraceKind::recipe_used), then the triggers of the inventory's
+    // changed stacks and filled slots, the first tick and water around the
+    // player (both official servers trigger them in their own orders; the
+    // recipes of advancements completed at once follow their ids here).
+    void update_recipe_book(Player& p, const runtime::WorldView& view) {
+        const auto* book = data.recipe_book.get();
+        if (!book || !data.game) return;
+        const auto key = key_of(p);
+        for (const auto& r : engine->trace()) {
+            if (r.kind != contracts::TraceKind::recipe_used || r.a != key.hi || r.b != key.lo) continue;
+            const auto kind = r.c >> 32;
+            const auto index = static_cast<std::size_t>(r.c & 0xFFFFFFFFu);
+            const auto& g = *data.game;
+            const std::string* id = kind == 0 && index < g.crafting.size()      ? &g.crafting[index].id
+                                  : kind == 1 && index < g.cooking.size()       ? &g.cooking[index].id
+                                  : kind == 2 && index < g.stonecutting.size()  ? &g.stonecutting[index].id
+                                  : kind == 3 && index < g.smithing.size()      ? &g.smithing[index].id
+                                                                                : nullptr;
+            if (!id) continue;
+            if (const auto it = book->by_id.find(*id); it != book->by_id.end()) send_unlocks(p, server::award(*book, p.book, std::array{it->second}));
+        }
+        const auto inv = view.player(key);
+        std::vector<std::uint16_t> changed;
+        std::int32_t occupied = 0;
+        for (std::size_t k = 0; k < p.book_inventory.size(); ++k) {
+            const auto now = inv && *inv ? (*inv)->slots[k + 5] : contracts::ItemStack{};
+            if (!now.empty()) ++occupied;
+            if (now == p.book_inventory[k]) continue;
+            p.book_inventory[k] = now;
+            if (!now.empty()) changed.push_back(now.item);
+        }
+        if (!changed.empty()) send_unlocks(p, server::trigger(*book, p.book, server::inventory_criteria(*book, p.book, changed, occupied)));
+        send_unlocks(p, server::trigger(*book, p.book, book->on_tick));
+        bool water = false;
+        for (auto x = static_cast<std::int32_t>(std::floor(p.pos.x - 0.3)); x <= static_cast<std::int32_t>(std::floor(p.pos.x + 0.3)); ++x)
+            for (auto y = static_cast<std::int32_t>(std::floor(p.pos.y)); y <= static_cast<std::int32_t>(std::floor(p.pos.y + 1.8)); ++y)
+                for (auto z = static_cast<std::int32_t>(std::floor(p.pos.z - 0.3)); z <= static_cast<std::int32_t>(std::floor(p.pos.z + 0.3)); ++z)
+                    water = water || at({x, y, z}).is(BlockType::water);
+        if (water) send_unlocks(p, server::trigger(*book, p.book, book->in_water));
+    }
+
+    // `/recipe give|take <player> <recipe>|*`, with both official servers'
+    // replies: the recipes of the book, given or taken.
+    void recipe_command(Player& p, const std::vector<std::string>& args) {
+        if (args.size() != 4 || (args[1] != "give" && args[1] != "take")) return message(p, "Usage: /recipe (give|take) <player> (<recipe>|*)", "red");
+        const auto* book = data.recipe_book.get();
+        Player* target = args[2] == "@s" || args[2] == "@p" ? &p : nullptr;
+        for (auto& [id, o] : players)
+            if (!target && o.name == args[2]) target = &o;
+        if (!target) return message(p, "No player was found", "red");
+        std::vector<std::size_t> recipes;
+        if (args[3] == "*") {
+            if (book)
+                for (std::size_t r = 0; r < book->recipes.size(); ++r)
+                    if (book->recipes[r].in_book) recipes.push_back(r);
+        } else {
+            const auto id = args[3].find(':') == std::string::npos ? "minecraft:" + args[3] : args[3];
+            const auto it = book ? book->by_id.find(id) : decltype(book->by_id.end()){};
+            if (!book || it == book->by_id.end()) return message(p, std::format("Unknown recipe: {}", id), "red");
+            recipes.push_back(it->second);
+        }
+        bool changed = false;
+        if (args[1] == "give") {
+            const auto unlocks = book ? server::award(*book, target->book, recipes) : Unlocks{};
+            changed = !unlocks.empty();
+            // One packet with the recipes given, then what they complete.
+            send_unlocks(*target, unlocks);
+        } else {
+            const auto taken = server::forget(target->book, recipes);
+            changed = !taken.empty();
+            if (changed) {
+                std::vector<std::int32_t> ids(taken.begin(), taken.end());
+                target->peer->send(wire.recipe_book_remove(ids));
+            }
+        }
+        // The reply counts the recipes named (every recipe for *, special
+        // ones too), as both official servers count them, once any changed.
+        const auto action = args[1];
+        if (!changed) return send_translation(p, std::format("commands.recipe.{}.failed", action), nbt::Tag::list(nbt::TagType::string));
+        const auto named = args[3] == "*" ? book->all : std::size_t{1};
+        send_translation(p, std::format("commands.recipe.{}.success.single", action), string_arguments({std::to_string(named), target->name}));
+    }
+
     void handle(Player& p, intent::RenameItem& r) {
         if (!p.window || !gameplay::is_anvil(at(p.window->pos))) return;
         std::string name;
@@ -1973,6 +2193,8 @@ struct Game::Impl final : GameServices {
             setblock(p, args);
         } else if (args[0] == "fill" && args.size() == 8) {
             fill(p, args);
+        } else if (args[0] == "recipe") {
+            recipe_command(p, args);
         } else if ((args[0] == "xp" || args[0] == "experience") && c.text.starts_with(args[0])) {
             experience(p, c.text, args[0]);
         } else if (args[0] == "tps") {
@@ -2597,6 +2819,7 @@ struct Game::Impl final : GameServices {
             sync_inventory(p);
             sync_experience(p);
             sync_maps(p);
+            update_recipe_book(p, engine->view());
         }
     }
 

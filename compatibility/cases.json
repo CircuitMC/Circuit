@@ -537,6 +537,17 @@
       "description": "The base color a held map drew on each official server for every block's default state, each state differing from it in one property, every waterlogged state likewise and blocks on their supports (6639 and 6538 states); evidence_tests checks Circuit's color of each"
     },
     {
+      "id": "client/recipes",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/recipes.js",
+      "status": "passing",
+      "description": "A new player joins, gets oak logs, crafts oak planks after /recipe took the recipe, fills ten slots, stands in water, cuts a cobblestone slab whose recipe was taken, sees a recipe, changes the books' settings, is given recipes (map extending, a known one, every one) and has one taken and given, joins again and has every recipe taken: per step the recipe-book packets (ids sorted within each and the packets sorted), each recipe's full entry, and the replies; Circuit and both official servers give identical output"
+    },
+    {
       "id": "client/loom",
       "kind": "black_box",
       "versions": [

@@ -3760,14 +3760,23 @@ int main() {
             return none;
         };
         const auto slot = [&](std::size_t i) { return player().slots[i]; };
+        // The recipes taken results came from, for the recipe book (kind 0: crafting, by index).
+        const auto used = [&] {
+            std::vector<std::uint64_t> out;
+            for (const auto& r : of_kind(s.last, TraceKind::recipe_used))
+                if (r.a == alex.hi && r.b == alex.lo) out.push_back(r.c);
+            return out;
+        };
         // Placing a log shows planks; taking them uses one log each time.
         s.tick({SetPlayerSlot{alex, 9, {items::oak_log, 3}}});
         s.tick({click(9, 0, 0)});
         s.tick({click(1, 1, 0)});
         require(slot(0) == ItemStack{items::oak_planks, 4} && slot(1) == ItemStack{items::oak_log, 1}, "the result follows the grid");
+        require(used().empty(), "no recipe used before a take");
         s.tick({click(1, 0, 0)});
         s.tick({click(0, 0, 0)});
         require(player().cursor == ItemStack{items::oak_planks, 4} && slot(1).count == 2 && slot(0).count == 4, "taken onto the cursor");
+        require(used() == std::vector<std::uint64_t>{0}, "the planks' recipe used");
         s.tick({click(0, 1, 0)});
         require(player().cursor.count == 8 && slot(1).count == 1, "a right click takes the whole result too");
         s.tick({click(20, 0, 0)});
@@ -3781,6 +3790,7 @@ int main() {
         s.tick({SetPlayerSlot{alex, 2, {}}, SetPlayerSlot{alex, 4, {items::iron_ingot, 1}}});
         s.tick({click(0, 2, 2)});
         require(slot(38) == ItemStack{items::shears, 1} && slot(1).empty() && slot(4).empty(), "a number key crafts into the hotbar");
+        require(used() == std::vector<std::uint64_t>{1}, "the shears' recipe used");
         // A honey bottle leaves its bottle: in the inventory while honey is
         // left, else in the grid.
         s.tick({SetPlayerSlot{alex, 2, {items::honey_bottle, 2}}});

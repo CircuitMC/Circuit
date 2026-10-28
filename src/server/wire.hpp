@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 #pragma once
+#include "recipe_book.hpp"
 #include "registries.hpp"
 #include <circuit/gameplay/maps.hpp>
 #include <circuit/protocol/codec.hpp>
 #include <circuit/protocol/components.hpp>
 #include <circuit/protocol/nbt.hpp>
 #include <circuit/protocol/packets.hpp>
+#include <array>
 #include <expected>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <span>
@@ -143,11 +146,22 @@ struct ClientCommand {
 struct Sprint {
     bool sprinting{};
 };
+// A recipe the player saw in the recipe book (by display id), and a book's
+// settings (0 crafting, 1 furnace, 2 blast furnace, 3 smoker).
+struct RecipeSeen {
+    std::int32_t display{};
+};
+struct RecipeBookSettings {
+    std::int32_t book{};
+    bool open{};
+    bool filtering{};
+};
 } // namespace intent
 using Intent = std::variant<intent::Move, intent::ConfirmTeleport, intent::Dig, intent::UseOn, intent::Use,
                             intent::HeldSlot, intent::CreativeSlot, intent::Command, intent::Chat, intent::Sneak,
                             intent::Flying, intent::Loaded, intent::ContainerClick, intent::ContainerClose,
-                            intent::ClientCommand, intent::Sprint, intent::ContainerButton, intent::SlotState, intent::RenameItem>;
+                            intent::ClientCommand, intent::Sprint, intent::ContainerButton, intent::SlotState, intent::RenameItem,
+                            intent::RecipeSeen, intent::RecipeBookSettings>;
 
 class Wire {
 public:
@@ -269,6 +283,18 @@ public:
         WireStack result;
     };
     Bytes update_recipes(const std::vector<PropertySet>& property_sets, const std::vector<StonecutterEntry>& stonecutter) const;
+    // The recipe book (client/recipes, both protocols): the four books'
+    // settings; recipes added, or all a player knows replacing the book, by
+    // display id with their flags (1 a notification, 2 highlighted); and
+    // recipes removed. `item` gives an item's wire id.
+    struct BookEntry {
+        std::int32_t display{};
+        const BookRecipe* recipe{};
+        std::uint8_t flags{};
+    };
+    Bytes recipe_book_settings(const std::array<bool, 8>& settings) const;
+    Bytes recipe_book_add(std::span<const BookEntry> entries, bool replace, const std::function<std::int32_t(std::uint16_t)>& item) const;
+    Bytes recipe_book_remove(std::span<const std::int32_t> ids) const;
     // What item components may refer to on this protocol.
     [[nodiscard]] const protocol::ComponentContext& component_context() const noexcept { return components_ctx_; }
     [[nodiscard]] const protocol::ComponentCodec& components() const noexcept { return *components_; }

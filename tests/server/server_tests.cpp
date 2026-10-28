@@ -1652,6 +1652,87 @@ int main() {
         require(opened, "a cartography table opens a cartography_table window titled container.cartography_table");
     });
 
+    suite.run("the recipe book: displays, unlocking and the books of players who come back", [] {
+        // Recipes and advancements come from the official data packs (CIRCUIT_VANILLA_JAR_1_21_8, _1_21_4).
+        const char* jar = std::getenv("CIRCUIT_VANILLA_JAR_1_21_8");
+        if (!jar || !*jar) {
+            std::puts("  (no official 1.21.8 server jar given: the recipe book checks did not run)");
+            return;
+        }
+        if (const char* old = std::getenv("CIRCUIT_VANILLA_JAR_1_21_4"); old && *old) {
+            const auto d = server::load_server_data(**contracts::BundleRegistry::find("java-1.21.4"), {old, {}});
+            require(d.has_value() && d->recipe_book, "1.21.4 data");
+            const auto& b = *d->recipe_book;
+            require(b.by_id.at("minecraft:crafting_table") == 259 && b.by_id.at("minecraft:oak_planks") == 777
+                        && b.by_id.at("minecraft:black_bundle") == 66 && b.recipes[66].display.result.kind == server::SlotDisplay::Kind::item,
+                    "1.21.4's display ids, and a transmute's result as an item");
+        }
+        const auto& bundle = **contracts::BundleRegistry::find("java-1.21.8");
+        auto d = server::load_server_data(bundle, {jar, {}});
+        require(d.has_value() && d->recipe_book, d ? "" : d.error());
+        {
+            const auto& b = *d->recipe_book;
+            const auto& planks = b.recipes[b.by_id.at("minecraft:oak_planks")];
+            require(b.recipes.size() == 1396 && b.all == 1407 && b.by_id.at("minecraft:crafting_table") == 262 && b.by_id.at("minecraft:oak_planks") == 805
+                        && planks.group == 8 && planks.notification && !b.recipes[262].notification
+                        && !b.recipes[b.by_id.at("minecraft:map_extending")].in_book,
+                    "display ids by sorted recipe ids, groups, notifications, map extending numbered but not in books");
+            require(b.advancements.size() == 1395 && b.unsupported == 0 && b.on_tick.size() == 1 && b.in_water.size() == 10 && b.occupied.size() == 1,
+                    std::format("{} advancements, {} criteria not triggered", b.advancements.size(), b.unsupported));
+        }
+        GameFixture f(offline_config(), std::move(*d));
+        const auto book_packets = [&](const std::shared_ptr<Recorder>& peer, std::size_t from) {
+            // Per packet: "settings", "add <replace> <count> <first id> <flags of the last>", "remove <ids>".
+            std::vector<std::string> out;
+            const auto add = f.wire.ids().id(State::play, Bound::clientbound, "recipe_book_add");
+            const auto remove = f.wire.ids().id(State::play, Bound::clientbound, "recipe_book_remove");
+            const auto settings = f.wire.ids().id(State::play, Bound::clientbound, "recipe_book_settings");
+            std::lock_guard lock(peer->mutex);
+            for (std::size_t i = from; i < peer->packets.size(); ++i) {
+                const auto& bytes = peer->packets[i];
+                auto pk = protocol::open_packet(bytes);
+                if (!pk) continue;
+                if (pk->id == settings) out.push_back("settings");
+                if (pk->id == remove) {
+                    const auto n = pk->fields.varint().value();
+                    std::string ids = "remove";
+                    for (std::int32_t k = 0; k < n; ++k) ids += " " + std::to_string(pk->fields.varint().value());
+                    out.push_back(ids);
+                }
+                if (pk->id == add) {
+                    const auto n = pk->fields.varint().value();
+                    const auto first = n > 0 ? pk->fields.varint().value() : -1;
+                    out.push_back(std::format("add {} {} {} {}", static_cast<int>(bytes.back()), n, first,
+                                              n > 0 ? static_cast<int>(bytes[bytes.size() - 2]) : -1));
+                }
+            }
+            return out;
+        };
+        auto peer = f.join(1, "Chef");
+        require((book_packets(peer, 0) == std::vector<std::string>{"settings", "add 1 0 -1 -1", "add 0 1 262 2"}),
+                "settings, the empty book, then the crafting table (no notification)");
+        auto mark = [&] { std::lock_guard lock(peer->mutex); return peer->packets.size(); }();
+        f.hold(1, "minecraft:oak_log");
+        f.game->tick();
+        const auto unlocked = book_packets(peer, mark);
+        require((unlocked == std::vector<std::string>{"add 0 1 805 3", "add 0 1 811 3", "add 0 1 148 3"}),
+                std::format("an oak log unlocks oak planks, oak wood and charcoal, each by its advancement, in their ids' order: {}",
+                            unlocked.empty() ? "none" : unlocked.front()));
+        mark = [&] { std::lock_guard lock(peer->mutex); return peer->packets.size(); }();
+        f.game->submit(1, server::Intent{server::intent::Command{"recipe take Chef minecraft:oak_planks"}});
+        f.game->submit(1, server::Intent{server::intent::RecipeSeen{811}});
+        f.game->submit(1, server::Intent{server::intent::RecipeBookSettings{2, true, false}});
+        f.game->tick();
+        require((book_packets(peer, mark) == std::vector<std::string>{"remove 805"}), "/recipe take removes it");
+        f.game->leave(1);
+        f.game->tick();
+        peer = f.join(1, "Chef");
+        const auto back = book_packets(peer, 0);
+        std::string seen;
+        for (const auto& b : back) seen += b + "; ";
+        require((back == std::vector<std::string>{"settings", "add 1 3 148 0"}), "back: the known recipes, oak wood seen: " + seen);
+    });
+
     suite.run("composters take held items and the players nearby get the level event", [] {
         using I = server::Intent;
         GameFixture f;
@@ -2212,6 +2293,54 @@ int main() {
             s.stop();
         }
         require(block_at(recovered_state(config.world_directory), {0, -60, 2}) == 0, "break saved");
+        std::filesystem::remove_all(dir);
+    });
+
+    suite.run("recipe books are saved with the players", [] {
+        // The recipe book needs the official data packs (CIRCUIT_VANILLA_JAR_1_21_8).
+        const char* jar = std::getenv("CIRCUIT_VANILLA_JAR_1_21_8");
+        if (!jar || !*jar) {
+            std::puts("  (no official 1.21.8 server jar given: the saved recipe book checks did not run)");
+            return;
+        }
+        const auto dir = temporary_directory();
+        auto config = offline_config();
+        config.world_directory = dir / "world";
+        config.vanilla_server_jar = jar;
+        {
+            server::Server s(config);
+            s.start();
+            TestClient c(s.port());
+            c.join("Reader");
+            confirm_spawn(c);
+            // The blast furnace's book opened; the crafting table came on the first tick.
+            c.send(State::play, "chat_command", Writer().string("time query gametime"));
+            require(c.until(State::play, "system_chat").has_value(), "joined");
+            c.send(State::play, "recipe_book_change_settings", Writer().varint(2).boolean(true).boolean(false));
+            c.send(State::play, "chat_command", Writer().string("time query gametime"));
+            require(c.until(State::play, "system_chat").has_value(), "the command after the settings answered");
+            s.stop();
+        }
+        {
+            server::Server s(config);
+            s.start();
+            TestClient c(s.port());
+            c.join("Reader");
+            const auto settings = c.until(State::play, "recipe_book_settings");
+            require(settings.has_value(), "settings sent");
+            auto r = settings->reader();
+            std::vector<bool> books;
+            for (int k = 0; k < 8; ++k) books.push_back(r.boolean().value());
+            require((books == std::vector<bool>{false, false, false, false, true, false, false, false}), "the blast furnace's book open");
+            const auto book = c.until(State::play, "recipe_book_add");
+            require(book.has_value(), "the book sent");
+            auto b = book->reader();
+            const auto n = b.varint().value();
+            const auto first = b.varint().value();
+            require(n == 1 && first == 262 && book->fields.back() == std::byte{1} && book->fields[book->fields.size() - 2] == std::byte{2},
+                    "the crafting table, still highlighted, replacing the book");
+            s.stop();
+        }
         std::filesystem::remove_all(dir);
     });
 
