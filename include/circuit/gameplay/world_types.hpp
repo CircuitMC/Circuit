@@ -379,6 +379,7 @@ struct Presence {
     contracts::PlayerKey player;
     Vec3 position;
     bool spectator{};
+    std::uint8_t held{}; // the hotbar slot (0-8) in the main hand
     bool operator==(const Presence&) const = default;
 };
 

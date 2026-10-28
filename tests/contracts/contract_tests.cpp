@@ -293,8 +293,9 @@ int main() {
                                        {2, AddTicket{4, {5, -6}, 0, TicketType::post_teleport, 32, 5}},
                                        {3, PlayerPresence{{1, 2}, {4096, -8192, 12}, true, true}},
                                        {4, PlayerPresence{{1, 2}, {}, false, false}},
-                                       {5, LevelsStarted{}}}});
-            require(decode_replay(encode_replay(typed).value()).value() == typed, "typed tickets, presences and starts round-trip");
+                                       {5, LevelsStarted{}},
+                                       {6, PlayerPresence{{1, 2}, {0.5, -60, 0.5}, false, true, 8}}}});
+            require(decode_replay(encode_replay(typed).value()).value() == typed, "typed tickets, presences (with a held slot: tag 36) and starts round-trip");
             auto bad_type = encode_replay(one).value();
             bad_type[bad_type.size() - 6] = std::byte{9};
             require(decode_replay(bad_type).error() == ErrorCode::malformed_record, "an unknown ticket type is refused");

@@ -101,7 +101,8 @@ The server fails closed on storage errors. If a log record cannot be written, th
 
 ## Checkpoint format
 
-A checkpoint file is `CIRCKPT\0`, a format version (49; versions 1–48 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+A checkpoint file is `CIRCKPT\0`, a format version (50; versions 1–49 are still read), the bundle and rule-set ids, the block registry id, the seed and tick, the raw and compressed body sizes, the zlib-compressed body, and a SHA-256 digest of everything before it. Block states are stored in the encoding of the named block registry, and a checkpoint of another registry is refused. Older versions are read as follows:
+- versions before 50 name no hotbar slot in players' presences, and their maps no holders: the first slot is in the main hand, and no one has explored a map;
 - versions before 49 have no maps and no open cartography tables: none was made, none is open;
 - versions before 48 have no chiseled bookshelves with rules of their own: they come back as the modeled blocks with empty block entities;
 - versions before 47 have no shulker boxes with rules of their own: they come back as the modeled blocks with empty block entities (contents an earlier Anvil import kept in their saved data are not carried over);
@@ -205,7 +206,7 @@ Import reads the source world and never writes to it. It creates a new world dir
 | Level data | Time, day time, difficulty (`Difficulty`, normal when absent; the server sets its configured difficulty at every start, as the official dedicated server does), weather (flags and timers; the levels follow the flags, as when the official servers load a world), game rules (rules the version lacks, or has only with experiments, are ignored with a note; invalid values are refused), seed, spawn point and level name. An exported world holds every rule of the version; the official 1.21.8 server read the day time and rules of one |
 | Random ticks | The official servers do not save the state random ticks pick positions from (each start gives it a random value); an imported level's starts at 0 |
 | Random sequences | `data/random_sequences.dat`: the loot tables' random sequences (id and 128-bit state) and the settings new ones start with (salt, and the flags, written only when false as the official server writes them). The official 1.21.8 server continued the sequences of an exported world and started new ones with its settings |
-| Maps | `data/map_<id>.dat` (center, scale, dimension, lock, tracking flags and colors; fields at their defaults absent, as the official servers save them) and `data/idcounts.dat` (the last map id given) |
+| Maps | `data/map_<id>.dat` (center, scale, dimension, lock, tracking flags and colors; fields at their defaults absent, as the official servers save them) and `data/idcounts.dat` (the last map id given); the players who held a map, with their steps, are not saved, as on the official servers |
 
 Every block property round-trips unchanged, including dust shapes, lever mounting, repeater locks, cave air and properties the rules only store, such as a chest's `waterlogged`.
 

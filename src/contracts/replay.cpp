@@ -135,7 +135,8 @@ private:
 // orb's value, count and age (tag 23 has none), 32 RenameItem,
 // 33 ChangeExperience, 34 ContainerButton of a creative player (tag 29's
 // players are not), 35 CloseContainer naming its window's block (tags 14 and
-// 28 name none).
+// 28 name none), 36 PlayerPresence with the hotbar slot in the main hand
+// (tag 17's is the first).
 std::uint8_t tag_of(const CommandBody& body) {
     if (const auto* summon = std::get_if<SummonEntity>(&body); summon && (summon->value != 0 || summon->count != 1 || summon->age != 0))
         return 31;
@@ -154,7 +155,7 @@ std::uint8_t tag_of(const CommandBody& body) {
     if (std::holds_alternative<SetDayTime>(body)) return 20;
     if (std::holds_alternative<SetWeather>(body)) return 21;
     if (std::holds_alternative<AddTicket>(body)) return 16;
-    if (std::holds_alternative<PlayerPresence>(body)) return 17;
+    if (const auto* presence = std::get_if<PlayerPresence>(&body)) return presence->held != 0 ? 36 : 17;
     if (std::holds_alternative<LevelsStarted>(body)) return 18;
     if (std::holds_alternative<SetPlayerSlot>(body)) return 10;
     if (std::holds_alternative<PickUp>(body)) return 11;
@@ -323,6 +324,7 @@ void encode_command(Writer& w, const Command& c) {
             w.vec(body.position);
             w.put(static_cast<std::uint8_t>(body.spectator));
             w.put(static_cast<std::uint8_t>(body.present));
+            if (body.held != 0) w.put(body.held);
         }
     }, c.body);
 }
@@ -520,10 +522,12 @@ bool decode_command(Reader& r, Command& c) {
         c.body = b;
         return true;
     }
-    case 17: {
+    case 17:
+    case 36: {
         PlayerPresence b;
         std::uint8_t spectator{}, present{};
         if (!r.player(b.player) || !r.vec(b.position) || !r.get(spectator) || !r.get(present) || spectator > 1 || present > 1) return false;
+        if (tag == 36 && (!r.get(b.held) || b.held == 0 || b.held > 8)) return false;
         b.spectator = spectator == 1;
         b.present = present == 1;
         c.body = b;

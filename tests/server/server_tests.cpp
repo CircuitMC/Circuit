@@ -1583,12 +1583,14 @@ int main() {
         f.game->submit(1, server::intent::Use{0, 1, 0.0f, 0.0f});
         f.game->tick();
         f.game->tick();
-        // Each map data packet: the map's id, scale, lock, markers' types, and its colors' size.
-        std::vector<std::tuple<std::int32_t, std::uint8_t, bool, std::vector<std::int32_t>, std::size_t>> maps;
-        {
+        // Each map data packet: the map's id, scale, lock, markers' types (-1: none sent), and its colors' size.
+        using MapPackets = std::vector<std::tuple<std::int32_t, std::uint8_t, bool, std::vector<std::int32_t>, std::size_t>>;
+        const auto map_packets = [&](std::size_t from) {
+            MapPackets maps;
             const auto id = f.wire.ids().id(State::play, Bound::clientbound, "map_item_data");
             std::lock_guard lock(peer->mutex);
-            for (const auto& bytes : peer->packets) {
+            for (std::size_t i = from; i < peer->packets.size(); ++i) {
+                const auto& bytes = peer->packets[i];
                 auto pk = protocol::open_packet(bytes);
                 if (!pk || pk->id != id) continue;
                 auto& r = pk->fields;
@@ -1596,7 +1598,9 @@ int main() {
                 const auto scale = r.u8().value();
                 const auto locked = r.boolean().value();
                 std::vector<std::int32_t> types;
-                if (r.boolean().value()) {
+                if (!r.boolean().value()) {
+                    types.push_back(-1);
+                } else {
                     const auto n = r.varint().value();
                     for (std::int32_t k = 0; k < n; ++k) {
                         types.push_back(r.varint().value());
@@ -1611,8 +1615,22 @@ int main() {
                 }
                 maps.emplace_back(map, scale, locked, types, colors);
             }
+            return maps;
+        };
+        require((map_packets(0) == MapPackets{{0, 0, false, {0}, 128 * 128}}), "map 0 of scale 0 with the player's marker and its colors, once");
+        // Held (the creative player's filled map went to hotbar 1), it explores in the tick: every column
+        // but the first (its step is 1), the stone floor; the patch comes without markers.
+        const auto before = [&] { std::lock_guard lock(peer->mutex); return peer->packets.size(); }();
+        f.game->submit(1, server::intent::HeldSlot{1});
+        f.game->tick();
+        f.game->tick();
+        require((map_packets(before) == MapPackets{{0, 0, false, {-1}, 127 * 128}}), "a patch of 127 columns, once");
+        {
+            const auto map = f.game->engine().view().map(0).value();
+            require(map && map->holders.size() == 1 && map->holders.front().step == 2 && map->colors[64 + 64 * 128] == 11 * 4 + 1
+                        && map->colors[0] == 0,
+                    "map 0 explored twice; the floor stone level, column 0 not yet");
         }
-        require((maps == decltype(maps){{0, 0, false, {0}, 128 * 128}}), "map 0 of scale 0 with the player's marker and its colors, once");
         f.game->submit(1, I{server::intent::Command{"setblock 2 -60 1 minecraft:cartography_table"}});
         f.game->tick();
         f.game->submit(1, GameFixture::click({2, -60, 1}, 1, 3));

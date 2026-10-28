@@ -2899,12 +2899,14 @@
           "impl": "partial",
           "evidence": "compared",
           "deviations": [
-            "filled maps do not explore: their colors stay unexplored, without banners or item frames",
+            "maps in the Nether do not explore (the official servers draw a pattern not described publicly); banners and item frames are not modeled",
             "books, signs and displays are not shown"
           ],
-          "note": "Empty maps become filled maps of new maps, and the players carrying them get their data and markers (on the map, on its edge, or none far off), as both official servers send them",
+          "note": "Empty maps become filled maps of new maps, and the players carrying them get their data and markers (on the map, on its edge, or none far off), as both official servers send them; maps held in a hand explore the terrain around their holder, every block state's color, shading and water depth drawn as both official servers draw them",
           "cases": [
-            "client/maps"
+            "client/maps",
+            "client/maps_explore",
+            "maps/colors"
           ]
         },
         {

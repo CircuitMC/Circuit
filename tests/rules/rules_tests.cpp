@@ -4864,5 +4864,76 @@ int main() {
                 "the log dropped at death");
     });
 
+    suite.run("held maps explore the terrain as both official servers draw it", [] {
+        using circuit::contracts::PlayerPresence;
+        using circuit::contracts::PlayerUseItem;
+        using circuit::contracts::SetPlayerSlot;
+        // Components as one byte: the map's id (the server reads them through the data packs).
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        data->int_component = [](const ComponentPatch& p, std::string_view) -> std::optional<std::int32_t> {
+            if (p.empty() || p.added().empty()) return std::nullopt;
+            return static_cast<std::int32_t>(p.added()[0].value[0]);
+        };
+        data->with_int_component = [](const ComponentPatch&, std::string_view, std::optional<std::int32_t> v) -> std::optional<ComponentPatch> {
+            return ComponentPatch::make(772, {{1, {static_cast<std::byte>(v.value_or(0))}}}, {}, {});
+        };
+        Sim s(bundle(), 7, 4, data);
+        const PlayerKey alex{1, 2};
+        const auto stone = blocks::stone(), grass = registry_block("grass_block"), glass = registry_block("glass");
+        // Grass at y 0 under x and z -8 to 7; on it a stone pillar, two pools of water 3 deep in stone rings
+        // (at pixels of both parities), and glass on stone.
+        std::vector<CommandBody> build;
+        for (int x = -8; x < 8; ++x)
+            for (int z = -8; z < 8; ++z) build.push_back(place({x, 0, z}, grass));
+        build.push_back(place({2, 1, 2}, stone));
+        for (const int cx : {-4, -1})
+            for (int x = cx - 1; x <= cx + 1; ++x)
+                for (int z = -5; z <= -3; ++z)
+                    for (int y = 1; y <= 3; ++y) build.push_back(place({x, y, z}, x == cx && z == -4 ? blocks::water_source() : stone));
+        build.push_back(place({4, 1, -4}, stone));
+        build.push_back(place({4, 2, -4}, glass));
+        s.tick(build);
+        const auto pixel = [&](int x, int z) {
+            const auto d = s.oracle.dump();
+            return d.maps.empty() ? 0 : d.maps.front().colors[static_cast<std::size_t>((x + 64) + (z + 64) * 128)];
+        };
+        s.tick({SetPlayerSlot{alex, 36, {items::map, 1}}, PlayerPresence{alex, {0.5, 1, 0.5}, false, true, 0}});
+        s.tick({PlayerUseItem{alex, 36, {0.5, 2.62, 0.5}, 0.0f, 90.0f, 4.5, true, {}}});
+        // In the tick the map is made, held, it explores: every column but the first (the step is 1).
+        require(s.oracle.dump().maps.size() == 1 && s.oracle.dump().maps.front().holders == std::vector<MapHolder>{{alex, 1}},
+                "map 0 made and explored once");
+        require(pixel(2, 2) == 11 * 4 + 2 && pixel(2, 3) == 1 * 4 + 0 && pixel(2, 1) == 1 * 4 + 1 && pixel(0, 0) == 1 * 4 + 1,
+                "the pillar bright, the grass south of it dark, grass level");
+        require(pixel(-4, -4) == 12 * 4 + 2 && pixel(-1, -4) == 12 * 4 + 1, "water 3 deep: bright on an even pixel, normal on an odd one");
+        require(pixel(4, -4) == 11 * 4 + 2, "the stone under the glass");
+        // Outside the grass the void draws as stone; the first column waits for the 16th explore.
+        require(pixel(20, 20) == 11 * 4 + 1 && pixel(-64, 0) == 0, "void as stone; column 0 unexplored");
+        for (int i = 0; i < 14; ++i) s.tick();
+        require(pixel(-64, 0) == 0, "column 0 after 15 explores");
+        s.tick();
+        require(pixel(-64, 0) == 11 * 4 + 1 && s.oracle.dump().maps.front().holders.front().step == 16, "column 0 at the 16th");
+        // Changes show where the step or a changed column next to it reaches; in 16 ticks everywhere.
+        s.tick({place({-6, 1, 6}, stone)});
+        for (int i = 0; i < 16; ++i) s.tick();
+        require(pixel(-6, 6) == 11 * 4 + 2, "a new block drawn");
+        // Not held (another hotbar slot), the map does not explore and its step stays.
+        s.tick({PlayerPresence{alex, {0.5, 1, 0.5}, false, true, 1}, place({-6, 1, 5}, stone)});
+        for (int i = 0; i < 20; ++i) s.tick();
+        require(pixel(-6, 5) == 1 * 4 + 1 && s.oracle.dump().maps.front().holders.front().step == 33, "unheld: no change, the step kept");
+        // In the off hand it explores.
+        const auto filled = s.oracle.dump().players.front().slots[36];
+        s.tick({SetPlayerSlot{alex, 36, {}}, SetPlayerSlot{alex, 45, filled}});
+        for (int i = 0; i < 16; ++i) s.tick();
+        require(pixel(-6, 5) == 11 * 4 + 2, "the off hand explores");
+        // A player who no longer carries the map is forgotten: holding it again starts at step 1.
+        s.tick({SetPlayerSlot{alex, 45, {}}});
+        require(s.oracle.dump().maps.front().holders.empty(), "forgotten");
+        s.tick({SetPlayerSlot{alex, 36, filled}, PlayerPresence{alex, {0.5, 1, 0.5}, false, true, 0}});
+        require(s.oracle.dump().maps.front().holders == std::vector<MapHolder>{{alex, 1}}, "a new step");
+        // The main hand is one of the nine hotbar slots.
+        s.tick({PlayerPresence{alex, {0.5, 1, 0.5}, false, true, 9}});
+        require(of_kind(s.last, TraceKind::command_rejected).size() == 1, "hotbar slot 9 refused");
+    });
+
     return suite.finish();
 }

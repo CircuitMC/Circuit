@@ -291,15 +291,17 @@ struct PlayerDeath {
     bool operator==(const PlayerDeath&) const = default;
 };
 
-// A player in the command's level: where they are and whether they are a
-// spectator, for the rules that depend on players (random ticks near players
-// in 1.21.4; whether a level is idle). `present = false` takes them out. A
+// A player in the command's level: where they are, whether they are a
+// spectator and the hotbar slot in their main hand, for the rules that
+// depend on players (random ticks near players in 1.21.4; whether a level is
+// idle; the maps they hold explore). `present = false` takes them out. A
 // player is in at most one level: presence in one removes it from the others.
 struct PlayerPresence {
     PlayerKey player;
     Vec3 position;
     bool spectator{};
     bool present{true};
+    std::uint8_t held{}; // 0-8; others are refused
     bool operator==(const PlayerPresence&) const = default;
 };
 

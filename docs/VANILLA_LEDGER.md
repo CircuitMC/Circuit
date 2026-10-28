@@ -127,7 +127,7 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 74 |
+| black_box | passing | 76 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
 | official_trace | passing | 225 |
@@ -499,7 +499,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Entity metadata, equipment, animations and events | C10 | partial, none | partial, none | Items, players and damage events |
 | Sounds and particles | C10 | missing, none | missing, none |  |
 | Boss bars, titles, scoreboards, world border and tab list | C10 | partial, none | partial, none | Tab list |
-| Maps, books, signs and displays | C10 | partial, compared | partial, compared | `client/maps`; books, signs and displays are not shown; filled maps do not explore: their colors stay unexplored, without banners or item frames; Empty maps become filled maps of new maps, and the players carrying them get their data and markers (on the map, on its edge, or none far off), as both official servers send them |
+| Maps, books, signs and displays | C10 | partial, compared | partial, compared | `client/maps`, `client/maps_explore`, `maps/colors`; books, signs and displays are not shown; maps in the Nether do not explore (the official servers draw a pattern not described publicly); banners and item frames are not modeled; Empty maps become filled maps of new maps, and the players carrying them get their data and markers (on the map, on its edge, or none far off), as both official servers send them; maps held in a hand explore the terrain around their holder, every block state's color, shading and water depth drawn as both official servers draw them |
 | Inventory and window synchronization | C10 | implemented, compared | implemented, compared | `client/windows` |
 
 ### V33 Communication and connection lifecycle

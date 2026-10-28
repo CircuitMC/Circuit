@@ -73,7 +73,7 @@ struct Player {
     ChunkPos center{};
     std::set<ChunkPos> sent;
     std::uint32_t ticket{}; // and ticket + 1: the loading and the simulation ticket
-    std::optional<std::pair<contracts::Vec3, bool>> presence; // last sent (position, spectator)
+    std::optional<std::tuple<contracts::Vec3, bool, std::int32_t>> presence; // last sent (position, spectator, held)
     std::optional<std::tuple<float, std::int32_t, std::int32_t>> experience; // last sent (progress, level, total)
     std::int32_t next_teleport{1};
     std::optional<std::int32_t> awaiting_teleport;
@@ -150,7 +150,12 @@ struct Player {
     std::int32_t sent_food{-1};
     bool sent_saturation_zero{};
     // The maps the client was sent, with the markers it last got for each.
-    std::map<std::int32_t, std::vector<gameplay::MapMarker>> maps_sent;
+    // Per map the player carries: the markers and colors last sent.
+    struct SentMap {
+        std::vector<gameplay::MapMarker> markers;
+        std::vector<std::uint8_t> colors;
+    };
+    std::map<std::int32_t, SentMap> maps_sent;
 };
 
 // What the world keeps of a player between sessions besides the inventory,
@@ -785,15 +790,16 @@ struct Game::Impl final : GameServices {
         add_tickets(p, center);
     }
     // Where each player is, for the rules that depend on players (random
-    // ticks and fire near players, experience orbs drawn to them): sent when
-    // the position or the spectator flag changed.
+    // ticks and fire near players, experience orbs drawn to them, the maps
+    // they hold): sent when the position, the spectator flag or the hotbar
+    // slot in the main hand changed.
     void send_presences() {
         for (auto& [id, p] : players) {
             const auto at = p.pos;
-            const auto now = std::pair{at, p.game_mode == spectator};
+            const auto now = std::tuple{at, p.game_mode == spectator, p.held};
             if (p.presence && *p.presence == now) continue;
             p.presence = now;
-            admit(contracts::PlayerPresence{key_of(p), at, now.second, true}, overworld);
+            admit(contracts::PlayerPresence{key_of(p), at, std::get<1>(now), true, static_cast<std::uint8_t>(p.held)}, overworld);
         }
     }
 
@@ -1965,6 +1971,8 @@ struct Game::Impl final : GameServices {
             message(p, std::format("Summoned new {}", type));
         } else if (args[0] == "setblock" && args.size() == 5) {
             setblock(p, args);
+        } else if (args[0] == "fill" && args.size() == 8) {
+            fill(p, args);
         } else if ((args[0] == "xp" || args[0] == "experience") && c.text.starts_with(args[0])) {
             experience(p, c.text, args[0]);
         } else if (args[0] == "tps") {
@@ -2058,19 +2066,25 @@ struct Game::Impl final : GameServices {
     // property, as the fixtures' notation writes them) at whole or `~`
     // coordinates, placed as a set command places it (its block entity
     // empty).
-    void setblock(Player& p, const std::vector<std::string>& args) {
+    // A block position from three arguments, absolute or relative (~) to the
+    // player's block.
+    std::optional<BlockPos> block_argument(const Player& p, std::span<const std::string> args) const {
         std::array<std::int32_t, 3> coords{};
         const std::array<double, 3> here{p.pos.x, p.pos.y, p.pos.z};
         for (std::size_t k = 0; k < 3; ++k) {
-            std::string_view a = args[k + 1];
+            std::string_view a = args[k];
             const bool relative = a.starts_with('~');
             if (relative) a.remove_prefix(1);
             std::int32_t v = 0;
-            if (!a.empty() && std::from_chars(a.data(), a.data() + a.size(), v).ec != std::errc{})
-                return message(p, "Usage: /setblock <x> <y> <z> <block>", "red");
+            if (!a.empty() && std::from_chars(a.data(), a.data() + a.size(), v).ec != std::errc{}) return std::nullopt;
             coords[k] = relative ? static_cast<std::int32_t>(std::floor(here[k])) + v : v;
         }
-        const BlockPos pos{coords[0], coords[1], coords[2]};
+        return BlockPos{coords[0], coords[1], coords[2]};
+    }
+    void setblock(Player& p, const std::vector<std::string>& args) {
+        const auto at_arg = block_argument(p, std::span(args).subspan(1, 3));
+        if (!at_arg) return message(p, "Usage: /setblock <x> <y> <z> <block>", "red");
+        const BlockPos pos = *at_arg;
         auto state = mapping.block(args[4].find(':') == std::string::npos ? "minecraft:" + args[4] : args[4]);
         if (!state) return message(p, state.error(), "red");
         if (!bundle.world.contains_y(pos.y)) return message(p, "Cannot place blocks outside of the world", "red");
@@ -2080,6 +2094,35 @@ struct Game::Impl final : GameServices {
         admit(contracts::SetBlock{pos, state->raw(), std::nullopt});
         pending_setblocks[pos] = *state;
         send_translation(p, "commands.setblock.success", int_arguments({pos.x, pos.y, pos.z}));
+    }
+    // `/fill <from> <to> <block>`, replacing (the default): every block of the
+    // box that differs is set as /setblock sets one, x fastest, then z, then
+    // y; at most 32768 blocks, with both official servers' feedback.
+    void fill(Player& p, const std::vector<std::string>& args) {
+        const auto a = block_argument(p, std::span(args).subspan(1, 3));
+        const auto b = block_argument(p, std::span(args).subspan(4, 3));
+        if (!a || !b) return message(p, "Usage: /fill <x1> <y1> <z1> <x2> <y2> <z2> <block>", "red");
+        const BlockPos low{std::min(a->x, b->x), std::min(a->y, b->y), std::min(a->z, b->z)};
+        const BlockPos high{std::max(a->x, b->x), std::max(a->y, b->y), std::max(a->z, b->z)};
+        const auto volume = (std::int64_t{high.x} - low.x + 1) * (std::int64_t{high.y} - low.y + 1) * (std::int64_t{high.z} - low.z + 1);
+        constexpr std::int64_t limit = 32768;
+        if (volume > limit) return send_translation(p, "commands.fill.toobig", int_arguments({static_cast<std::int32_t>(limit), static_cast<std::int32_t>(std::min<std::int64_t>(volume, INT32_MAX))}));
+        auto state = mapping.block(args[7].find(':') == std::string::npos ? "minecraft:" + args[7] : args[7]);
+        if (!state) return message(p, state.error(), "red");
+        if (!bundle.world.contains_y(low.y) || !bundle.world.contains_y(high.y)) return message(p, "Cannot place blocks outside of the world", "red");
+        std::int32_t count = 0;
+        for (auto y = low.y; y <= high.y; ++y)
+            for (auto z = low.z; z <= high.z; ++z)
+                for (auto x = low.x; x <= high.x; ++x) {
+                    const BlockPos pos{x, y, z};
+                    const auto pending = pending_setblocks.find(pos);
+                    if ((pending != pending_setblocks.end() ? pending->second : at(pos)) == *state) continue;
+                    admit(contracts::SetBlock{pos, state->raw(), std::nullopt});
+                    pending_setblocks[pos] = *state;
+                    ++count;
+                }
+        if (count == 0) return send_translation(p, "commands.fill.failed", nbt::Tag::list(nbt::TagType::string));
+        send_translation(p, "commands.fill.success", int_arguments({count}));
     }
 
     // `/xp` (or `/experience`) `add|set <player> <amount> [levels|points]`
@@ -2567,10 +2610,11 @@ struct Game::Impl final : GameServices {
                 if (const auto id = wire.components().varint_of(s.components, "map_id")) ids.insert(*id);
         return ids;
     }
-    // Map data for the filled maps a player carries (client/maps, both
-    // versions identical): the whole map the first time, then its markers
-    // when they change. A map's markers are those of the players carrying it
-    // in its dimension; its colors stay 0, as maps do not explore yet.
+    // Map data for the filled maps a player carries (client/maps and
+    // client/maps_explore, both versions identical): the whole map the first
+    // time, then each tick the markers when they changed and the rectangle of
+    // pixels that changed. A map's markers are those of the players carrying
+    // it in its dimension.
     void sync_maps(Player& p) {
         const auto view = engine->view();
         for (const auto id : carried_maps(view, p)) {
@@ -2581,14 +2625,34 @@ struct Game::Impl final : GameServices {
             for (const auto& [other_id, other] : players)
                 if (!other.dead && data.dimension == overworld && carried_maps(view, other).contains(id))
                     if (const auto marker = gameplay::player_marker_on(data, other.pos.x, other.pos.z, other.yaw)) markers.push_back(*marker);
+            const auto side = static_cast<std::uint8_t>(gameplay::map_side);
             const auto sent = p.maps_sent.find(id);
             if (sent == p.maps_sent.end()) {
-                p.peer->send(wire.map_item_data(id, data.scale, data.locked, markers, data.colors));
-                p.maps_sent.emplace(id, std::move(markers));
-            } else if (sent->second != markers) {
-                p.peer->send(wire.map_item_data(id, data.scale, data.locked, markers, {}));
-                sent->second = std::move(markers);
+                p.peer->send(wire.map_item_data(id, data.scale, data.locked, std::span<const gameplay::MapMarker>(markers),
+                                                {0, 0, side, side, data.colors}));
+                p.maps_sent.emplace(id, Player::SentMap{std::move(markers), data.colors});
+                continue;
             }
+            Wire::MapPatch patch;
+            std::size_t x0 = side, x1 = 0, z0 = side, z1 = 0;
+            for (std::size_t z = 0; z < side; ++z)
+                for (std::size_t x = 0; x < side; ++x)
+                    if (data.colors[x + z * side] != sent->second.colors[x + z * side]) {
+                        x0 = std::min(x0, x); x1 = std::max(x1, x);
+                        z0 = std::min(z0, z); z1 = std::max(z1, z);
+                    }
+            if (x0 <= x1) {
+                patch = {static_cast<std::uint8_t>(x0), static_cast<std::uint8_t>(z0), static_cast<std::uint8_t>(x1 - x0 + 1),
+                         static_cast<std::uint8_t>(z1 - z0 + 1), {}};
+                for (auto z = z0; z <= z1; ++z)
+                    for (auto x = x0; x <= x1; ++x) patch.colors.push_back(data.colors[x + z * side]);
+                sent->second.colors = data.colors;
+            }
+            const bool moved = sent->second.markers != markers;
+            if (!moved && patch.columns == 0) continue;
+            p.peer->send(wire.map_item_data(id, data.scale, data.locked,
+                                            moved ? std::optional(std::span<const gameplay::MapMarker>(markers)) : std::nullopt, patch));
+            if (moved) sent->second.markers = std::move(markers);
         }
     }
     // A player's experience, when it changed (and once on joining).

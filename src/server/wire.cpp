@@ -287,17 +287,19 @@ Bytes Wire::forget_chunk(std::int32_t x, std::int32_t z) const { return packet(i
 Bytes Wire::block_update(WirePosition pos, std::int32_t state) const {
     return packet(id_->block_update, Writer().position(pos).varint(state));
 }
-Bytes Wire::map_item_data(std::int32_t map, std::uint8_t scale, bool locked, std::span<const gameplay::MapMarker> markers,
-                          std::span<const std::uint8_t> colors) const {
+Bytes Wire::map_item_data(std::int32_t map, std::uint8_t scale, bool locked, std::optional<std::span<const gameplay::MapMarker>> markers,
+                          const MapPatch& patch) const {
     Writer w;
-    w.varint(map).u8(scale).boolean(locked).boolean(true).varint(static_cast<std::int32_t>(markers.size()));
-    for (const auto& m : markers) w.varint(m.type).u8(static_cast<std::uint8_t>(m.x)).u8(static_cast<std::uint8_t>(m.z)).u8(m.direction).boolean(false);
-    // The whole map's colors, or none.
-    if (colors.empty()) {
-        w.u8(0);
-    } else {
-        w.u8(static_cast<std::uint8_t>(gameplay::map_side)).u8(static_cast<std::uint8_t>(gameplay::map_side)).u8(0).u8(0);
-        w.prefixed_bytes(std::as_bytes(colors));
+    w.varint(map).u8(scale).boolean(locked).boolean(markers.has_value());
+    if (markers) {
+        w.varint(static_cast<std::int32_t>(markers->size()));
+        for (const auto& m : *markers)
+            w.varint(m.type).u8(static_cast<std::uint8_t>(m.x)).u8(static_cast<std::uint8_t>(m.z)).u8(m.direction).boolean(false);
+    }
+    w.u8(patch.columns);
+    if (patch.columns > 0) {
+        w.u8(patch.rows).u8(patch.x).u8(patch.z);
+        w.prefixed_bytes(std::as_bytes(std::span(patch.colors)));
     }
     return packet(id_->map_item_data, w);
 }

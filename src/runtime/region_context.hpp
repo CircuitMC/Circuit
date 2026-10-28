@@ -69,8 +69,12 @@ public:
     const gameplay::PlayerInventory* peek_player(contracts::PlayerKey player) override;
     gameplay::PlayerInventory& player(contracts::PlayerKey player) override;
     const gameplay::MapData* peek_map(std::int32_t id) override;
+    gameplay::MapData* map(std::int32_t id) override;
+    std::vector<std::int32_t> map_ids() override;
     std::int32_t add_map(gameplay::MapData data) override;
     std::int32_t last_map_id() override;
+    std::vector<gameplay::Presence> presences() override;
+    std::optional<std::int32_t> column_top(std::int32_t x, std::int32_t z) override;
     std::uint32_t record(TraceKind kind, BlockPos pos, std::uint64_t a, std::uint64_t b, std::uint64_t c) override;
 
     // Staged results, consumed by the engine's commit.

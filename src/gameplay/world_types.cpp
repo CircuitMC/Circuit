@@ -386,7 +386,7 @@ std::uint64_t digest(const WorldDump& d) {
             h.add(contracts::pack_chunk(c.pos)); h.add(c.generation); h.add(static_cast<std::uint64_t>(c.level)); h.add(c.load); h.add(c.simulation); h.add(c.saved_at); h.add(c.resumes);
         }
         h.add(l.presences.size());
-        for (const auto& p : l.presences) { h.add(p.player.hi); h.add(p.player.lo); h.add(p.position); h.add(p.spectator); }
+        for (const auto& p : l.presences) { h.add(p.player.hi); h.add(p.player.lo); h.add(p.position); h.add(p.spectator); h.add(p.held); }
         h.add(l.blocks.size());
         for (const auto& [p, s] : l.blocks) { h.add(p); h.add(s); }
         h.add(l.block_entities.size());
@@ -476,6 +476,8 @@ std::uint64_t digest(const WorldDump& d) {
             for (std::size_t b = 0; b < 8 && k + b < m.colors.size(); ++b) word |= static_cast<std::uint64_t>(m.colors[k + b]) << (8 * b);
             h.add(word);
         }
+        h.add(m.holders.size());
+        for (const auto& holder : m.holders) { h.add(holder.player.hi); h.add(holder.player.lo); h.add(holder.step); }
     }
     return h.value();
 }

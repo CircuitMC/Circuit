@@ -11,6 +11,7 @@
 #include <circuit/gameplay/physics.hpp>
 #include <circuit/gameplay/rules.hpp>
 #include <circuit/gameplay/light.hpp>
+#include <circuit/gameplay/maps.hpp>
 #include <circuit/gameplay/potions.hpp>
 #include <tuple>
 #include <array>
@@ -590,6 +591,46 @@ int main(int argc, char** argv) {
             }
         }
         require(blocks == 1105 + 1095, std::format("{} blocks", blocks));
+    });
+
+    suite.run("map colors match both official servers in every observed state", [&] {
+        // tests/fixtures/maps/colors-*.txt: the base color a held map drew
+        // for every state the probe placed (0 NONE, 12 WATER). The registry's
+        // states, and the rules' own states of blocks they model.
+        namespace registry = circuit::gameplay::registry;
+        std::size_t states = 0, modeled = 0;
+        for (const auto release : {"1.21.8", "1.21.4"}) {
+            const auto* mapping = ContentMapping::for_game_version(release);
+            const auto& looks = circuit::gameplay::map_looks(release);
+            std::istringstream lines(read_text(fixtures / "maps" / std::format("colors-{}.txt", release)));
+            for (std::string line; std::getline(lines, line);) {
+                if (line.empty() || line.front() == '#') continue;
+                const auto space = line.find(' ');
+                const auto notation = line.substr(0, space);
+                const auto expected = std::stoi(line.substr(space + 1));
+                const auto open = notation.find('[');
+                const auto name = notation.substr(10, open == std::string::npos ? std::string::npos : open - 10);
+                std::vector<registry::Property> props;
+                if (open != std::string::npos)
+                    for (std::size_t i = open + 1; i < notation.size() - 1;) {
+                        const auto comma = std::min(notation.find(',', i), notation.size() - 1);
+                        const auto eq = notation.find('=', i);
+                        props.emplace_back(notation.substr(i, eq - i), notation.substr(eq + 1, comma - eq - 1));
+                        i = comma + 1;
+                    }
+                const auto block = registry::find_block(release, name);
+                const auto state = block ? registry::state_of(*block, props) : std::nullopt;
+                require(state.has_value(), std::format("{} {}: in the registry", release, notation));
+                const auto color = looks.of_registry(*state).color;
+                require(color == expected, std::format("{} {}: Circuit draws {}, official {}", release, notation, color, expected));
+                if (const auto s = mapping->block(notation); s && !s->is(circuit::gameplay::BlockType::other)) {
+                    require(looks.of(*s).color == expected, std::format("{} {}: the rules' state draws {}", release, notation, looks.of(*s).color));
+                    ++modeled;
+                }
+                ++states;
+            }
+        }
+        require(states == 6639 + 6538 && modeled > 1000, std::format("{} states, {} modeled", states, modeled));
     });
 
     suite.run("piston push classes match both official servers", [&] {

@@ -33,6 +33,16 @@ void run_entity(RuleContext& ctx, EntityId id);
 // until the commit gives the orb its id (Entity::launch).
 void launch_orb(Entity& orb, contracts::OrbMotion motion);
 void run_block_entity(RuleContext& ctx, BlockPos pos);
+// The maps players hold (map_explore.cpp), after every level ran, as on both
+// official servers, serially like the command phase: first the holders of
+// every map who no longer carry it are forgotten; then, per level (the
+// context's), each player there explores the filled map in their main hand,
+// then the one in their off hand.
+void forget_map_holders(RuleContext& ctx);
+void explore_held_maps(RuleContext& ctx);
+// One map explored by a player at `position` (the map's holder's step counted
+// first); whether a pixel changed.
+bool explore_map(RuleContext& ctx, MapData& map, contracts::PlayerKey player, contracts::Vec3 position);
 
 // Rule primitives, exposed for fixtures.
 bool set_block(RuleContext& ctx, BlockPos pos, BlockState state);

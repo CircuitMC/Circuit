@@ -148,6 +148,31 @@ public:
         const auto it = o_.maps_.find(id);
         return it == o_.maps_.end() ? nullptr : &it->second;
     }
+    MapData* map(std::int32_t id) override {
+        if (phase_ != Phase::commands) throw std::logic_error("oracle: maps outside the command phase");
+        const auto it = o_.maps_.find(id);
+        return it == o_.maps_.end() ? nullptr : &it->second;
+    }
+    std::vector<std::int32_t> map_ids() override {
+        if (phase_ != Phase::commands) throw std::logic_error("oracle: maps outside the command phase");
+        std::vector<std::int32_t> ids;
+        for (const auto& [id, m] : o_.maps_) ids.push_back(id);
+        return ids;
+    }
+    std::vector<gameplay::Presence> presences() override {
+        std::vector<gameplay::Presence> out;
+        for (const auto& [key, p] : lv().presences) out.push_back(p);
+        return out;
+    }
+    std::optional<std::int32_t> column_top(std::int32_t x, std::int32_t z) override {
+        const BlockPos base{x, world().min_y, z};
+        if (!in_world(world(), base) || lv().level(contracts::chunk_of(base)) == ChunkLevel::unloaded) return std::nullopt;
+        std::int32_t top = world().min_y - 1;
+        const auto& blocks = lv().blocks;
+        for (auto it = blocks.lower_bound({x, INT32_MIN, INT32_MIN}); it != blocks.end() && it->first.x == x; ++it)
+            if (it->first.z == z && !it->second.is_air()) top = std::max(top, it->first.y);
+        return top;
+    }
     std::int32_t add_map(MapData data) override {
         if (phase_ != Phase::commands) throw std::logic_error("oracle: maps outside the command phase");
         data.id = ++o_.last_map_id_;
@@ -285,9 +310,12 @@ void Oracle::advance(const std::vector<contracts::Command>& commands) {
             ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
         else if (const auto* add = std::get_if<contracts::AddTicket>(&c.body)) ticket_result = tickets_.add(*add, c.dimension, time_, bundle_.limits);
         else if (const auto* rem = std::get_if<contracts::RemoveTicket>(&c.body)) ticket_result = tickets_.remove(rem->ticket);
+        else if (const auto* presence = std::get_if<contracts::PlayerPresence>(&c.body); presence && presence->held > 8)
+            ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
         else if (const auto* presence = std::get_if<contracts::PlayerPresence>(&c.body)) {
             for (auto& l : levels_) l.presences.erase(presence->player);
-            if (presence->present) at(c.dimension).presences[presence->player] = {presence->player, presence->position, presence->spectator};
+            if (presence->present)
+                at(c.dimension).presences[presence->player] = {presence->player, presence->position, presence->spectator, presence->held};
         } else if (std::holds_alternative<contracts::LevelsStarted>(c.body)) {
             started_ = time_ - 1;
             restart_weather(weather_);
@@ -338,6 +366,17 @@ void Oracle::advance(const std::vector<contracts::Command>& commands) {
         run_block_events(level);
         if (awake) run_entities(level);
         if (awake) run_block_entities(level);
+    }
+    // The maps players hold explore once every level ran, serially like the
+    // commands.
+    if (!maps_.empty()) {
+        ctx_->begin_root(Phase::commands, 0);
+        forget_map_holders(*ctx_);
+        for (const auto level : contracts::level_order) {
+            if (at(level).presences.empty()) continue;
+            ctx_->use_level(level);
+            explore_held_maps(*ctx_);
+        }
     }
     failed_ = false;
 }

@@ -50,6 +50,7 @@ struct Engine::Impl {
     void block_event_phase(DimensionId level);
     void entity_phase(DimensionId level);
     void block_entity_phase(DimensionId level);
+    void map_phase();
     // Whether the level ticks entities and block entities this tick (idle rule).
     bool awake(DimensionId level);
     void run_phase(Phase phase, DimensionId level, std::vector<RootItem> roots);
@@ -295,6 +296,9 @@ void Engine::Impl::advance(const std::vector<Command>& commands) {
         if (level_awake) timed(Phase::block_entities, [&] { block_entity_phase(level); });
         else ++stats.phases;
     }
+    // The maps players hold explore once every level ran, as on both official
+    // servers.
+    map_phase();
     maintain_layout();
     failed = false;
 }
@@ -383,11 +387,14 @@ void Engine::Impl::command_phase(const std::vector<Command>& commands) {
         else if (const auto* add = std::get_if<contracts::AddTicket>(&c.body))
             ticket_result = world.tickets.add(*add, c.dimension, world.time, bundle.limits);
         else if (const auto* rem = std::get_if<contracts::RemoveTicket>(&c.body)) ticket_result = world.tickets.remove(rem->ticket);
+        else if (const auto* presence = std::get_if<contracts::PlayerPresence>(&c.body); presence && presence->held > 8)
+            ticket_result = std::unexpected(contracts::ErrorCode::invalid_argument);
         else if (const auto* presence = std::get_if<contracts::PlayerPresence>(&c.body)) {
             // A player is in at most one level.
             for (auto& l : world.levels) l.presences.erase(presence->player);
             if (presence->present)
-                world.counters(c.dimension).presences[presence->player] = {presence->player, presence->position, presence->spectator};
+                world.counters(c.dimension).presences[presence->player] = {presence->player, presence->position, presence->spectator,
+                                                                           presence->held};
         } else if (std::holds_alternative<contracts::LevelsStarted>(c.body)) {
             world.started = world.time - 1;
             gameplay::restart_weather(world.weather);
@@ -412,6 +419,22 @@ void Engine::Impl::command_phase(const std::vector<Command>& commands) {
         else ctx.record(TraceKind::command_rejected, {}, c.admission, static_cast<std::uint64_t>(ticket_result.error()), 0);
     }
     world.light.fill(nullptr);
+    commit({&ctx});
+}
+
+// The maps players hold (gameplay::explore_held_maps), serially on the
+// coordinator like the command phase, reading every level's loaded columns.
+void Engine::Impl::map_phase() {
+    if (world.maps.empty()) return;
+    RegionContext ctx(bundle, world, regions, all_regions, Phase::commands, DimensionId::overworld, options.record_trace, false,
+                      options.data.get());
+    ctx.begin_root(0, {});
+    gameplay::forget_map_holders(ctx);
+    for (const auto level : contracts::level_order) {
+        if (world.counters(level).presences.empty()) continue;
+        ctx.use_level(level);
+        gameplay::explore_held_maps(ctx);
+    }
     commit({&ctx});
 }
 

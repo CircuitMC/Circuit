@@ -401,6 +401,19 @@ const gameplay::MapData* RegionContext::peek_map(std::int32_t id) {
     return it == world_.maps.end() ? nullptr : &it->second;
 }
 
+gameplay::MapData* RegionContext::map(std::int32_t id) {
+    if (phase_ != Phase::commands) throw std::logic_error("runtime: maps outside the command phase");
+    const auto it = world_.maps.find(id);
+    return it == world_.maps.end() ? nullptr : &it->second;
+}
+
+std::vector<std::int32_t> RegionContext::map_ids() {
+    if (phase_ != Phase::commands) throw std::logic_error("runtime: maps outside the command phase");
+    std::vector<std::int32_t> ids;
+    for (const auto& [id, map] : world_.maps) ids.push_back(id);
+    return ids;
+}
+
 std::int32_t RegionContext::add_map(gameplay::MapData data) {
     if (phase_ != Phase::commands) throw std::logic_error("runtime: maps outside the command phase");
     if (world_.last_map_id == INT32_MAX) throw std::overflow_error("runtime: map ids exhausted");
@@ -412,6 +425,29 @@ std::int32_t RegionContext::add_map(gameplay::MapData data) {
 std::int32_t RegionContext::last_map_id() {
     if (phase_ != Phase::commands) throw std::logic_error("runtime: maps outside the command phase");
     return world_.last_map_id;
+}
+
+std::vector<gameplay::Presence> RegionContext::presences() {
+    std::vector<gameplay::Presence> out;
+    for (const auto& [key, presence] : world_.counters(dimension()).presences) out.push_back(presence);
+    return out;
+}
+
+std::optional<std::int32_t> RegionContext::column_top(std::int32_t x, std::int32_t z) {
+    const auto floor = world().min_y;
+    const BlockPos base{x, floor, z};
+    auto* data = loaded_in_world(base);
+    if (!data) return std::nullopt;
+    const auto& chunk = owned(chunk_of(base), *data);
+    for (auto s = chunk.sections.size(); s-- > 0;) {
+        const auto& section = chunk.sections[s];
+        if (!section) continue;
+        for (std::int32_t dy = 15; dy >= 0; --dy) {
+            const BlockPos pos{x, floor + static_cast<std::int32_t>(s) * 16 + dy, z};
+            if (section->blocks[contracts::section_local_index(pos)] != gameplay::blocks::air()) return pos.y;
+        }
+    }
+    return floor - 1;
 }
 
 std::uint32_t RegionContext::record(TraceKind kind, BlockPos pos, std::uint64_t a, std::uint64_t b, std::uint64_t c) {

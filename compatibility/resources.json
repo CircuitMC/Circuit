@@ -6028,12 +6028,13 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/maps"
+          "client/maps",
+          "client/maps_explore"
         ],
         "deviations": [
-          "filled maps do not explore: their colors stay unexplored, and banners and item frames do not show on them"
+          "maps in the Nether do not explore; banners and item frames do not show on them"
         ],
-        "note": "Its map's data reaches the players carrying it, with their markers, as on both official servers"
+        "note": "Its map's data reaches the players carrying it, with their markers; held in a hand, it explores the terrain, as on both official servers"
       }
     },
     "entity": {
@@ -6402,10 +6403,11 @@
         "impl": "partial",
         "evidence": "compared",
         "cases": [
-          "client/maps"
+          "client/maps",
+          "client/maps_explore"
         ],
         "deviations": [
-          "the colors are those of unexplored maps; banner and frame markers are never sent"
+          "banner and frame markers are never sent"
         ]
       }
     }

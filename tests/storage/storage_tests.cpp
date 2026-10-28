@@ -322,15 +322,17 @@ int main() {
         zoomed.dimension = circuit::contracts::DimensionId::the_nether;
         zoomed.locked = true;
         zoomed.colors[4097] = 34;
+        zoomed.holders = {{{7, 8}, 33}, {{1, 2}, 4294967295u}};
         c.state.last_map_id = 4;
         c.state.maps = {circuit::gameplay::MapData{}, zoomed};
+        c.state.level(circuit::contracts::DimensionId::overworld).presences = {{{1, 2}, {0.5, -60, 0.5}, false, 8}};
         c.state.level(circuit::contracts::DimensionId::overworld).sequences = {
             {"circuit:fresh", circuit::gameplay::RandomSequence{1, 2}},
             {"minecraft:blocks/short_grass", circuit::gameplay::RandomSequence{2022789406501655404ULL, 17977990001259141514ULL}}};
         const auto encoded = circuit::storage::encode_checkpoint(c);
         const auto decoded = circuit::storage::decode_checkpoint(encoded);
         require(decoded.has_value(), decoded ? "" : decoded.error());
-        require(*decoded == c && circuit::storage::encode_checkpoint(*decoded) == encoded, "the sequences, settings, furnace, crafter and chest block entities, player menus, viewing, ender inventories, experience and maps round-trip");
+        require(*decoded == c && circuit::storage::encode_checkpoint(*decoded) == encoded, "the sequences, settings, furnace, crafter and chest block entities, player menus, viewing, ender inventories, experience, maps with their holders and presences with the held slot round-trip");
         auto swapped = c;
         auto& sequences = swapped.state.level(circuit::contracts::DimensionId::overworld).sequences;
         std::swap(sequences[0], sequences[1]);

@@ -515,6 +515,28 @@
       "description": "A survival player fills empty maps at two places, turns, walks off and far from them, then copies, zooms to scale 4 and locks filled maps in a cartography table, with refused items, shift-clicks and a creative and a last empty map used: the window, the inventory with the map ids and each map's last data packet (scale, lock, markers, unexplored colors); Circuit and both official servers give identical output"
     },
     {
+      "id": "client/maps_explore",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/maps-terrain.js",
+      "status": "passing",
+      "description": "A survival player holds filled maps over built terrain (pillars of eight blocks at five heights, a pool 1 to 12 deep, glass, waterlogged slabs, leaves, rails and grates, beds, wheat, blocks north of the map): a new map at the origin, the terrain changing under it, a map made far off and held 100 blocks away (the edge of the explored area), maps zoomed once and twice, a locked map and a map in the off hand; each map's colors after each step; Circuit and both official servers give identical output"
+    },
+    {
+      "id": "maps/colors",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "tests/fixtures/maps/colors-*.txt",
+      "status": "passing",
+      "description": "The base color a held map drew on each official server for every block's default state, each state differing from it in one property, every waterlogged state likewise and blocks on their supports (6639 and 6538 states); evidence_tests checks Circuit's color of each"
+    },
+    {
       "id": "client/loom",
       "kind": "black_box",
       "versions": [

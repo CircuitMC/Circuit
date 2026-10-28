@@ -44,12 +44,14 @@ MapData zoomed_map(const MapData& map) {
     out.z_center = map_center(map.z_center, out.scale);
     out.locked = false;
     out.colors.assign(map_pixels, 0);
+    out.holders.clear();
     return out;
 }
 
 MapData locked_map(const MapData& map) {
     MapData out = map;
     out.locked = true;
+    out.holders.clear();
     return out;
 }
 

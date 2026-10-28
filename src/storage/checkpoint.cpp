@@ -21,6 +21,8 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 50: players' presences name the hotbar slot in their main hand, and maps
+// the players who held them with their steps;
 // 49: the world keeps its maps, and player inventories an open cartography
 // table's slots;
 // 48: chiseled bookshelves have rules of their own;
@@ -86,7 +88,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 49;
+constexpr std::uint32_t version = 50;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -169,7 +171,7 @@ void encode_level(Writer& w, const gameplay::LevelDump& l, Blocks blocks) {
     w.varint(static_cast<std::int32_t>(l.presences.size()));
     for (const auto& p : l.presences)
         w.i64(static_cast<std::int64_t>(p.player.hi)).i64(static_cast<std::int64_t>(p.player.lo)).f64(p.position.x).f64(p.position.y)
-            .f64(p.position.z).boolean(p.spectator);
+            .f64(p.position.z).boolean(p.spectator).u8(p.held);
     w.varint(static_cast<std::int32_t>(l.chunks.size()));
     for (std::size_t i = 0; i < l.chunks.size(); ++i) {
         const auto& ch = l.chunks[i];
@@ -288,6 +290,9 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
         w.varint(m.id).i32(m.x_center).i32(m.z_center).u8(m.scale).u8(static_cast<std::uint8_t>(m.dimension));
         w.u8(static_cast<std::uint8_t>(m.locked | m.tracking_position << 1 | m.unlimited_tracking << 2));
         w.raw(std::as_bytes(std::span(m.colors)));
+        w.varint(static_cast<std::int32_t>(m.holders.size()));
+        for (const auto& h : m.holders)
+            w.i64(static_cast<std::int64_t>(h.player.hi)).i64(static_cast<std::int64_t>(h.player.lo)).i64(static_cast<std::int64_t>(h.step));
     }
     w.varint(static_cast<std::int32_t>(c.extras.size()));
     for (const auto& [name, bytes] : c.extras) w.string(name, 256).prefixed_bytes(bytes);
@@ -702,8 +707,12 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
                     std::int64_t hi{}, lo{};
                     if (!b.get(b.r.i64(), hi) || !b.get(b.r.i64(), lo)
                         || !(b.version >= 13 ? b.vec(presence.position) : b.fixed_vec(presence.position))
-                        || !b.get(b.r.boolean(), presence.spectator))
+                        || !b.get(b.r.boolean(), presence.spectator) || (b.version >= 50 && !b.get(b.r.u8(), presence.held)))
                         return false;
+                    if (presence.held > 8) {
+                        b.error = "invalid presence";
+                        return false;
+                    }
                     presence.player = {static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)};
                     l.presences.push_back(presence);
                 }
@@ -838,6 +847,19 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
             m.locked = flags & 1;
             m.tracking_position = flags & 2;
             m.unlimited_tracking = flags & 4;
+            std::size_t holders = 0;
+            if (b.version >= 50) {
+                if (!b.count(holders, 24)) return false;
+                for (std::size_t h = 0; h < holders; ++h) {
+                    std::int64_t hi{}, lo{}, step{};
+                    if (!b.get(b.r.i64(), hi) || !b.get(b.r.i64(), lo) || !b.get(b.r.i64(), step)) return false;
+                    if (step < 0 || step > UINT32_MAX) {
+                        b.error = "invalid map holder";
+                        return false;
+                    }
+                    m.holders.push_back({{static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)}, static_cast<std::uint32_t>(step)});
+                }
+            }
             s.maps.push_back(std::move(m));
         }
     }
