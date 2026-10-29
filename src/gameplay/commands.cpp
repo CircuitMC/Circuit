@@ -500,6 +500,27 @@ Plan plan(RuleContext& ctx, const contracts::CloseContainer& c) { return detail:
 Plan plan(RuleContext& ctx, const contracts::ContainerButton& c) { return detail::plan_button(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::SetSlotEnabled& c) { return detail::plan_slot_enabled(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::PlaceRecipe& c) { return detail::plan_place_recipe(ctx, c); }
+
+// The crafting recipes a player knows (doLimitedCrafting): the grids'
+// results follow them only once the grid changes, as on both official servers.
+Plan plan(RuleContext& ctx, const contracts::KnowRecipes& c) {
+    if (c.recipes.size() > contracts::max_known_recipes) return std::unexpected(ErrorCode::invalid_argument);
+    return [&ctx, c] {
+        auto& known = ctx.player(c.player).known_crafting;
+        auto recipes = c.recipes;
+        std::ranges::sort(recipes);
+        const auto [first, last] = std::ranges::unique(recipes);
+        recipes.erase(first, last);
+        if (c.replace) {
+            known = c.known ? std::move(recipes) : std::vector<std::uint32_t>{};
+            return;
+        }
+        std::vector<std::uint32_t> out;
+        if (c.known) std::ranges::set_union(known, recipes, std::back_inserter(out));
+        else std::ranges::set_difference(known, recipes, std::back_inserter(out));
+        known = std::move(out);
+    };
+}
 Plan plan(RuleContext& ctx, const contracts::PlayerUseItem& c) { return detail::plan_use_item(ctx, c); }
 
 // The name a player types into their anvil window: the result follows it.

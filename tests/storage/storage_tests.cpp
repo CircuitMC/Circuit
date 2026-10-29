@@ -308,6 +308,7 @@ int main() {
             p.ender[0] = {circuit::gameplay::items::iron_ingot, 64};
             p.ender[26] = named(circuit::gameplay::items::stone, 3, "Kept");
             p.cartography[1] = {circuit::gameplay::items::paper, 5};
+            p.known_crafting = {0, 262, 805, 4000000000u};
             p.xp_level = 9;
             p.xp_progress = 0.6000000834465027f;
             p.xp_total = 150;

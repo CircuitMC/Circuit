@@ -21,6 +21,7 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 51: player inventories keep the crafting recipes the player knows;
 // 50: players' presences name the hotbar slot in their main hand, and maps
 // the players who held them with their steps;
 // 49: the world keeps its maps, and player inventories an open cartography
@@ -88,7 +89,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 50;
+constexpr std::uint32_t version = 51;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -284,6 +285,8 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
         if (p.viewing) pos(w, *p.viewing);
         for (const auto& st : p.ender) stack(w, st);
         for (const auto& st : p.cartography) stack(w, st);
+        w.varint(static_cast<std::int32_t>(p.known_crafting.size()));
+        for (const auto r : p.known_crafting) w.varlong(r);
     }
     w.varint(s.last_map_id).varint(static_cast<std::int32_t>(s.maps.size()));
     for (const auto& m : s.maps) {
@@ -824,6 +827,16 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
             if (b.version >= 49)
                 for (auto& st : p.cartography)
                     if (!b.stack(st)) return false;
+            if (b.version >= 51) {
+                std::size_t known{};
+                if (!b.count(known, 1)) return false;
+                for (std::size_t k = 0; k < known; ++k) {
+                    std::uint64_t r{};
+                    // Ascending, each once.
+                    if (!b.u64(r) || r > UINT32_MAX || (!p.known_crafting.empty() && r <= p.known_crafting.back())) return false;
+                    p.known_crafting.push_back(static_cast<std::uint32_t>(r));
+                }
+            }
             p.player = {static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)};
             s.players.push_back(p);
         }

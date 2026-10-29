@@ -559,6 +559,17 @@
       "description": "79 steps placing recipes from the book in the own window, at crafting tables and in a furnace, blast furnace and smoker: once, once more and as many as fit (the stack each item fills, eggs and milk buckets), uneven stacks of the recipe, shapes centered and recipes too big for the grid, too few items (ghosts), full inventories, recipes of other kinds, a recipe not known, another window's id, the selected slot and creative mode; Circuit and both official servers give identical windows and ghosts"
     },
     {
+      "id": "client/recipes_limited",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/recipes-limited.js",
+      "status": "passing",
+      "description": "14 steps with doLimitedCrafting on: a known recipe's result in the own grid, the recipe taken and given while the grid holds it (the result follows at the next change), creative mode, the rule turned off and on, a crafting table, and a stonecutter's and a smithing table's results with no recipe known; Circuit and both official servers give identical windows"
+    },
+    {
       "id": "client/loom",
       "kind": "black_box",
       "versions": [

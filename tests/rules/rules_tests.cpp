@@ -3962,6 +3962,52 @@ int main() {
                 "a stonecutting recipe without stone");
     });
 
+    suite.run("with doLimitedCrafting on, grids make only the recipes a player knows", [] {
+        namespace recipes = circuit::gameplay::recipes;
+        using circuit::contracts::KnowRecipes;
+        using circuit::contracts::SetGameRule;
+        using circuit::contracts::SetPlayerSlot;
+        using recipes::Ingredient;
+        using recipes::Recipe;
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        const Ingredient log{{items::oak_log}}, p{{items::oak_planks}};
+        data->crafting = {
+            {Recipe::Kind::shapeless, "test:planks", 0, 0, {log}, {items::oak_planks, 4}},
+            {Recipe::Kind::shaped, "test:table", 2, 2, {p, p, p, p}, {*circuit::gameplay::items::by_name("minecraft:crafting_table"), 1}},
+        };
+        const PlayerKey alex{4, 2};
+        Sim s(bundle(), 7, 2, data);
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            const auto it = std::ranges::find(d.players, alex, &PlayerInventory::player);
+            if (it != d.players.end()) return *it;
+            PlayerInventory none;
+            none.player = alex;
+            return none;
+        };
+        const auto result = [&] { return player().slots[0]; };
+        s.tick({SetGameRule{"doLimitedCrafting", 1}, SetPlayerSlot{alex, 1, {items::oak_log, 1}}});
+        require(result().empty(), "an unknown recipe makes nothing");
+        s.tick({KnowRecipes{alex, {0}}});
+        require(result().empty() && player().known_crafting == std::vector<std::uint32_t>{0}, "learned: the result waits for the grid");
+        s.tick({SetPlayerSlot{alex, 1, {items::oak_log, 2}}});
+        require(result() == ItemStack{items::oak_planks, 4}, "the grid changed");
+        s.tick({KnowRecipes{alex, {0}, false}});
+        require(result() == ItemStack{items::oak_planks, 4} && player().known_crafting.empty(), "forgotten: the result stays");
+        s.tick({SetPlayerSlot{alex, 1, {items::oak_log, 1}}});
+        require(result().empty(), "until the grid changes");
+        s.tick({SetGameRule{"doLimitedCrafting", 0}});
+        s.tick({SetPlayerSlot{alex, 1, {items::oak_log, 2}}});
+        require(result() == ItemStack{items::oak_planks, 4}, "the rule off");
+        // Known recipes stay ascending, each once; replacing sets them all.
+        s.tick({KnowRecipes{alex, {1, 0, 1}}});
+        require((player().known_crafting == std::vector<std::uint32_t>{0, 1}), "ascending, once each");
+        s.tick({KnowRecipes{alex, {1}, true, true}});
+        require((player().known_crafting == std::vector<std::uint32_t>{1}), "replaced");
+        s.tick({KnowRecipes{alex, {}, false, true}});
+        require(player().known_crafting.empty(), "none known");
+    });
+
     suite.run("smithing tables upgrade and trim by the data packs' recipes", [] {
         namespace recipes = circuit::gameplay::recipes;
         using circuit::contracts::CloseContainer;

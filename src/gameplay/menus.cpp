@@ -985,11 +985,17 @@ void click_result(RuleContext& ctx, Menu& menu, const contracts::ContainerClick&
 void update_crafting(RuleContext& ctx, PlayerInventory& inv) {
     const auto* data = ctx.data();
     if (!data) return;
+    // With doLimitedCrafting on, only recipes the player knows make a result
+    // (in creative mode too; both official servers).
+    const bool limited = ctx.bundle().schema.game_rule("doLimitedCrafting") && ctx.game_rule("doLimitedCrafting") != 0;
+    const auto known = [&](const recipes::Recipe* r) {
+        return std::ranges::binary_search(inv.known_crafting, static_cast<std::uint32_t>(r - data->crafting.data()));
+    };
     const auto craft = [&](std::span<ItemStack> slots, std::uint8_t width, std::uint8_t first) {
         const auto grid = slots.subspan(1);
         const bool empty = std::ranges::all_of(grid, [](const ItemStack& s) { return s.empty(); });
         const auto made = empty ? std::nullopt : recipes::match(data->crafting, {width, width, grid});
-        const auto result = made ? made->result : ItemStack{};
+        const auto result = made && (!limited || known(made->recipe)) ? made->result : ItemStack{};
         if (slots[0] == result) return;
         slots[0] = result;
         record_slot(ctx, inv, first);

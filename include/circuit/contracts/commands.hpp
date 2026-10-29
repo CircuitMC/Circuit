@@ -395,6 +395,19 @@ struct PlaceRecipe {
     bool operator==(const PlaceRecipe&) const = default;
 };
 
+// The crafting recipes a player knows, from the server's recipe book (for
+// the doLimitedCrafting rule): `recipes`, indices of the game data's crafting
+// recipes, become known (`known`) or not; with `replace` they are all the
+// player knows. Results already shown stay until the grid changes.
+inline constexpr std::size_t max_known_recipes = 65536;
+struct KnowRecipes {
+    PlayerKey player;
+    std::vector<std::uint32_t> recipes;
+    bool known{true};
+    bool replace{};
+    bool operator==(const KnowRecipes&) const = default;
+};
+
 // A player types a name into their anvil window (UTF-8, at most
 // max_item_name UTF-16 code units; empty removes a name).
 struct RenameItem {
@@ -417,7 +430,7 @@ struct ChangeExperience {
 using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket,
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
                                  PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity, PlayerUseItem,
-                                 SetDifficulty, ContainerButton, SetSlotEnabled, RenameItem, ChangeExperience, PlaceRecipe>;
+                                 SetDifficulty, ContainerButton, SetSlotEnabled, RenameItem, ChangeExperience, PlaceRecipe, KnowRecipes>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.
@@ -446,6 +459,8 @@ public:
                      || !std::ranges::all_of(rule->name, [](char ch) { return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'); })))
             return std::unexpected(ErrorCode::invalid_argument);
         if (const auto* day = std::get_if<SetDayTime>(&body); day && day->time < 0) return std::unexpected(ErrorCode::invalid_argument);
+        if (const auto* know = std::get_if<KnowRecipes>(&body); know && know->recipes.size() > max_known_recipes)
+            return std::unexpected(ErrorCode::invalid_argument);
         if (const auto* set = std::get_if<SetDifficulty>(&body); set && set->difficulty > max_difficulty)
             return std::unexpected(ErrorCode::invalid_argument);
         if (const auto* summon = std::get_if<SummonEntity>(&body); summon && !valid_entity_type(summon->type))

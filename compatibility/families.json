@@ -2394,7 +2394,6 @@
           "evidence": "compared",
           "deviations": [
             "special recipes (repairing, map and book cloning, fireworks, armor dye, banner copying, shield decoration, tipped arrows, decorated pots) and recipes whose results carry components (suspicious stew) make nothing",
-            "the doLimitedCrafting rule is not applied",
             "among several kinds of items for one ingredient, placing a recipe from the book takes them in the order the inventory first holds them; the official servers' choice varies from run to run",
             "the recipes unlocked in one tick come in advancement id order (the official servers' order varies); advancement packets are not sent",
             "without the official data pack there are no recipes"
@@ -2403,9 +2402,10 @@
             "client/crafting",
             "client/crafting_table",
             "client/recipes",
-            "client/recipes_place"
+            "client/recipes_place",
+            "client/recipes_limited"
           ],
-          "note": "The player's 2x2 grid and the crafting table's 3x3 grid craft with the shaped, shapeless and transmute recipes of the loaded data packs: the result follows the grid, every click mode takes it, ingredients are used and remainders kept, and the grids go back to the inventory on closing and drop when the player leaves or dies; 48 steps in the own window and 47 at crafting tables give the same windows as both official servers. The recipe book shows every recipe's display, and the data packs' recipe advancements unlock recipes as both official servers do (items in the inventory, filled slots, the first tick, water, crafting, /recipe), with seen recipes and the books' settings kept; recipes placed from the book fill the own grid, crafting tables and furnaces, with ghosts for missing items, as both official servers place them"
+          "note": "The player's 2x2 grid and the crafting table's 3x3 grid craft with the shaped, shapeless and transmute recipes of the loaded data packs: the result follows the grid, every click mode takes it, ingredients are used and remainders kept, and the grids go back to the inventory on closing and drop when the player leaves or dies; 48 steps in the own window and 47 at crafting tables give the same windows as both official servers. The recipe book shows every recipe's display, and the data packs' recipe advancements unlock recipes as both official servers do (items in the inventory, filled slots, the first tick, water, crafting, /recipe), with seen recipes and the books' settings kept; recipes placed from the book fill the own grid, crafting tables and furnaces, with ghosts for missing items, as both official servers place them; with doLimitedCrafting on, the grids make only known recipes"
         },
         {
           "id": "smelting",

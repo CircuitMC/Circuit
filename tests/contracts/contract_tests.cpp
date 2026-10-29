@@ -176,6 +176,9 @@ int main() {
                                   {35, CloseContainer{alex, {1, 2, 3}, {0, 0.3, 0}, true, BlockPos{4, 5, 6}}}}});
         // Recipes placed from the recipe book (tag 37).
         log.ticks.push_back({11, {{36, PlaceRecipe{alex, std::nullopt, 0, 805, false}}, {37, PlaceRecipe{alex, BlockPos{-2, -60, 3}, 1, 4294967295u, true, 44}}}});
+        // Known crafting recipes (tag 38): learned, forgotten, replaced.
+        log.ticks.push_back({12, {{38, KnowRecipes{alex, {3, 805, 4294967295u}, true, false}}, {39, KnowRecipes{alex, {805}, false, false}},
+                                  {40, KnowRecipes{alex, {}, true, true}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);

@@ -762,6 +762,7 @@ struct Game::Impl final : GameServices {
             for (const auto r : p.book.known)
                 entries.push_back({static_cast<std::int32_t>(r), &data.recipe_book->recipes[r], static_cast<std::uint8_t>(p.book.highlighted.contains(r) ? 2 : 0)});
             peer.send(wire.recipe_book_add(entries, true, wire_item()));
+            tell_known(p, p.book.known, true, true);
         }
         peer.send(wire.spawn_position(wire_pos({meta.spawn.x, meta.spawn.y + 1, meta.spawn.z}), 0.0f));
         peer.send(time_packet());
@@ -2041,6 +2042,7 @@ struct Game::Impl final : GameServices {
     // What unlocking gave a player: each list of new recipes as one packet,
     // a notification for those that show one, all highlighted.
     void send_unlocks(Player& p, const Unlocks& unlocks) {
+        std::vector<std::size_t> all;
         for (const auto& recipes : unlocks) {
             std::vector<Wire::BookEntry> entries;
             for (const auto r : recipes) {
@@ -2048,7 +2050,21 @@ struct Game::Impl final : GameServices {
                 entries.push_back({static_cast<std::int32_t>(r), &recipe, static_cast<std::uint8_t>((recipe.notification ? 1 : 0) | 2)});
             }
             p.peer->send(wire.recipe_book_add(entries, false, wire_item()));
+            all.insert(all.end(), recipes.begin(), recipes.end());
         }
+        tell_known(p, all, true);
+    }
+    // Tells the rules which crafting recipes a player knows (KnowRecipes, for
+    // doLimitedCrafting): the crafting recipes among the book's `recipes`,
+    // known or not, or with `replace` all the player knows.
+    template <class Recipes> void tell_known(Player& p, const Recipes& recipes, bool known, bool replace = false) {
+        const auto* book = data.recipe_book.get();
+        if (!book) return;
+        std::vector<std::uint32_t> crafting;
+        for (const auto r : recipes)
+            if (const auto rule = rule_recipe(book->recipes[r].id); rule && rule->first == 0) crafting.push_back(rule->second);
+        if (crafting.empty() && !replace) return;
+        admit(contracts::KnowRecipes{key_of(p), std::move(crafting), known, replace});
     }
     // After each tick, in order: the recipes the player's taken results came
     // from (TraceKind::recipe_used), then the triggers of the inventory's
@@ -2117,6 +2133,7 @@ struct Game::Impl final : GameServices {
             if (changed) {
                 std::vector<std::int32_t> ids(taken.begin(), taken.end());
                 target->peer->send(wire.recipe_book_remove(ids));
+                tell_known(*target, taken, false);
             }
         }
         // The reply counts the recipes named (every recipe for *, special

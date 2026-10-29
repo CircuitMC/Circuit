@@ -136,8 +136,9 @@ private:
 // 33 ChangeExperience, 34 ContainerButton of a creative player (tag 29's
 // players are not), 35 CloseContainer naming its window's block (tags 14 and
 // 28 name none), 36 PlayerPresence with the hotbar slot in the main hand
-// (tag 17's is the first), 37 PlaceRecipe.
+// (tag 17's is the first), 37 PlaceRecipe, 38 KnowRecipes.
 std::uint8_t tag_of(const CommandBody& body) {
+    if (std::holds_alternative<KnowRecipes>(body)) return 38;
     if (std::holds_alternative<PlaceRecipe>(body)) return 37;
     if (const auto* summon = std::get_if<SummonEntity>(&body); summon && (summon->value != 0 || summon->count != 1 || summon->age != 0))
         return 31;
@@ -312,6 +313,11 @@ void encode_command(Writer& w, const Command& c) {
             w.put(static_cast<std::uint16_t>(body.name.size()));
             for (const char ch : body.name) w.put(static_cast<std::uint8_t>(ch));
             w.put(static_cast<std::uint8_t>(body.creative));
+        } else if constexpr (std::is_same_v<T, KnowRecipes>) {
+            w.player(body.player);
+            w.put(static_cast<std::uint32_t>(body.recipes.size()));
+            for (const auto r : body.recipes) w.put(r);
+            w.put(static_cast<std::uint8_t>(body.known | body.replace << 1));
         } else if constexpr (std::is_same_v<T, PlaceRecipe>) {
             w.player(body.player);
             w.put(static_cast<std::uint8_t>(body.container.has_value()));
@@ -595,6 +601,20 @@ bool decode_command(Reader& r, Command& c) {
         b.levels = levels == 1;
         b.set = set == 1;
         c.body = b;
+        return true;
+    }
+    case 38: {
+        KnowRecipes b;
+        std::uint32_t n{};
+        std::uint8_t flags{};
+        if (!r.player(b.player) || !r.get(n) || n > max_known_recipes) return false;
+        b.recipes.resize(n);
+        for (auto& recipe : b.recipes)
+            if (!r.get(recipe)) return false;
+        if (!r.get(flags) || flags > 3) return false;
+        b.known = (flags & 1) != 0;
+        b.replace = (flags & 2) != 0;
+        c.body = std::move(b);
         return true;
     }
     case 37: {

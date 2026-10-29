@@ -1785,6 +1785,48 @@ int main() {
         require(slot(1).empty() && slot(36).count == 1 && ghosts().empty(), "ignored");
     });
 
+    suite.run("the rules learn the crafting recipes of each player's book, for doLimitedCrafting", [] {
+        const char* jar = std::getenv("CIRCUIT_VANILLA_JAR_1_21_8");
+        if (!jar || !*jar) {
+            std::puts("  (no official 1.21.8 server jar given: the known recipe checks did not run)");
+            return;
+        }
+        using I = server::Intent;
+        auto d = server::load_server_data(**contracts::BundleRegistry::find("java-1.21.8"), {jar, {}});
+        require(d.has_value() && d->recipe_book && d->game, d ? "" : d.error());
+        GameFixture f(offline_config(), std::move(*d));
+        const auto index = [&](std::string_view id) {
+            const auto& c = f.data.game->crafting;
+            return static_cast<std::uint32_t>(std::ranges::find(c, id, &gameplay::recipes::Recipe::id) - c.begin());
+        };
+        const auto table = index("minecraft:crafting_table"), planks = index("minecraft:oak_planks");
+        const contracts::PlayerKey key{1, 1};
+        const auto known = [&] {
+            const auto inv = f.game->engine().view().player(key).value();
+            return inv ? inv->known_crafting : std::vector<std::uint32_t>{};
+        };
+        auto peer = f.join(1, "Chef");
+        f.game->tick();
+        require(known() == std::vector<std::uint32_t>{table}, "a new player: the crafting table");
+        f.hold(1, "minecraft:oak_log");
+        f.game->tick();
+        f.game->tick();
+        const auto now = known();
+        require(std::ranges::binary_search(now, planks) && std::ranges::binary_search(now, table), "oak planks unlocked by the log");
+        f.game->submit(1, I{server::intent::Command{"recipe take Chef minecraft:oak_planks"}});
+        f.game->tick();
+        f.game->tick();
+        require(!std::ranges::binary_search(known(), planks), "taken");
+        // Joining again replaces what the rules know with the book.
+        f.game->submit(1, I{server::intent::Command{"recipe give Chef minecraft:oak_planks"}});
+        f.game->tick();
+        f.game->leave(1);
+        f.game->tick();
+        peer = f.join(1, "Chef");
+        f.game->tick();
+        require(known() == now, "back: the same recipes");
+    });
+
     suite.run("composters take held items and the players nearby get the level event", [] {
         using I = server::Intent;
         GameFixture f;
