@@ -121,6 +121,16 @@ public:
     [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> writable_book(std::int32_t pages, const ComponentContext& ctx) const;
     // The pages of the patch's writable or written book content (0 without one).
     [[nodiscard]] std::int32_t book_pages_of(const contracts::ComponentPatch& patch) const;
+    // `base` with its writable book content holding `pages` (none filtered);
+    // and a book and quill's `base` signed: its writable content gone, a
+    // written book content added (the title, the author, generation 0, each
+    // page as plain text, none filtered, resolved), its other components kept.
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> with_book_pages(const contracts::ComponentPatch& base,
+                                                                                        std::span<const std::string> pages,
+                                                                                        const ComponentContext& ctx) const;
+    [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> signed_book(const contracts::ComponentPatch& base,
+                                                                                    std::span<const std::string> pages, std::string_view title,
+                                                                                    std::string_view author, const ComponentContext& ctx) const;
     // The stacks of a patch's container component (a shulker box item's
     // contents, slot by slot up to its last stack; none without one), their
     // protocol item ids mapped by `item_of`; and the patch with its container

@@ -55,7 +55,7 @@ Feature counts per implementation state, then the number of features with compar
 | V29 Bosses and progression | C8 | 11 | 0 / 0 | 0 / 0 | 4 / 4 | 7 / 7 | 0 / 0 | 0 / 0 |
 | V30 Data-pack execution | C1, C5, C9 | 8 | 0 / 0 | 1 / 1 | 0 / 0 | 6 / 7 | 1 / 0 | 0 / 0 |
 | V31 Commands and administration | C9 | 117 | 0 / 0 | 8 / 8 | 16 / 20 | 84 / 89 | 9 / 0 | 1 / 1 |
-| V32 Client-visible world state | C10 | 287 | 10 / 10 | 62 / 62 | 0 / 0 | 208 / 214 | 7 / 1 | 17 / 17 |
+| V32 Client-visible world state | C10 | 287 | 11 / 11 | 63 / 63 | 0 / 0 | 206 / 212 | 7 / 1 | 19 / 19 |
 | V33 Communication and connection lifecycle | C10 | 85 | 17 / 17 | 19 / 19 | 0 / 0 | 41 / 49 | 8 / 0 | 0 / 0 |
 | V34 Save compatibility | C11 | 6 | 1 / 1 | 0 / 1 | 0 / 0 | 4 / 3 | 1 / 1 | 0 / 1 |
 | V35 Version-specific gameplay and optional profiles | C12 | 6 | 0 / 0 | 0 / 0 | 1 / 3 | 3 / 3 | 2 / 0 | 0 / 0 |
@@ -77,7 +77,7 @@ One feature per name. Inventories marked approximate come from a minecraft-data 
 | biome | minecraft-data pc/1.21.4/biomes.json / minecraft-data pc/1.21.8/biomes.json | 65 / 65 | 0 / 0 | 1 / 1 | 64 / 64 | 0 / 0 |
 | particle | minecraft-data pc/1.21.4/particles.json / minecraft-data pc/1.21.8/particles.json | 112 / 114 | 0 / 0 | 0 / 0 | 0 / 0 | 112 / 114 |
 | command | approximate: minecraft-data pc/1.20.5/commands.json / approximate: minecraft-data pc/1.21.6/commands.json | 83 / 88 | 0 / 0 | 5 / 5 | 0 / 0 | 78 / 83 |
-| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 25 / 25 | 76 / 76 | 0 / 0 | 133 / 143 |
+| packet | src/protocol/packets_769.cpp (minecraft.wiki protocol tables) / src/protocol/packets_772.cpp (minecraft.wiki protocol tables) | 234 / 244 | 26 / 26 | 77 / 77 | 0 / 0 | 131 / 141 |
 | block_state | minecraft-data pc/1.21.4/blocks.json / minecraft-data pc/1.21.8/blocks.json | 27866 / 27946 | — | — | — | — |
 | sound_event | minecraft-data pc/1.21.4/sounds.json / minecraft-data pc/1.21.8/sounds.json | 1651 / 1728 | — | — | — | — |
 | recipe | minecraft-data pc/1.21.4/recipes.json / minecraft-data pc/1.21.8/recipes.json | 1557 / 1607 | — | — | — | — |
@@ -127,7 +127,7 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 81 |
+| black_box | passing | 82 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
 | official_trace | passing | 231 |
@@ -499,7 +499,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Entity metadata, equipment, animations and events | C10 | partial, none | partial, none | Items, players and damage events |
 | Sounds and particles | C10 | missing, none | missing, none |  |
 | Boss bars, titles, scoreboards, world border and tab list | C10 | partial, none | partial, none | Tab list |
-| Maps, books, signs and displays | C10 | partial, compared | partial, compared | `client/maps`, `client/maps_explore`, `maps/colors`; books, signs and displays are not shown; maps in the Nether do not explore (the official servers draw a pattern not described publicly); banners and item frames are not modeled; Empty maps become filled maps of new maps, and the players carrying them get their data and markers (on the map, on its edge, or none far off), as both official servers send them; maps held in a hand explore the terrain around their holder, every block state's color, shading and water depth drawn as both official servers draw them |
+| Maps, books, signs and displays | C10 | partial, compared | partial, compared | `client/books`, `client/maps`, `client/maps_explore`, `maps/colors`; maps in the Nether do not explore (the official servers draw a pattern not described publicly); banners and item frames are not modeled; signs and displays are not shown; written books are not cloned (a special recipe), and books given unresolved are not resolved when opened; Empty maps become filled maps of new maps, and the players carrying them get their data and markers (on the map, on its edge, or none far off), as both official servers send them; maps held in a hand explore the terrain around their holder, every block state's color, shading and water depth drawn as both official servers draw them. A book and quill in a hotbar slot or the off hand takes the pages a client edits (100 of 1024 code units at most, kept as sent) and is signed into a written book (a title of 32 at most, the player as author, generation 0, pages as plain text, resolved), and a written book opens for reading, as both official servers do |
 | Inventory and window synchronization | C10 | implemented, compared | implemented, compared | `client/windows` |
 
 ### V33 Communication and connection lifecycle

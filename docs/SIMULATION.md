@@ -137,6 +137,8 @@ Player inventories are simulation state, changed only by commands in the command
 | `PlayerBreak` | Breaks a block; in survival it drops what the tool harvests and wears the tool |
 | `PickUp` | Moves an item entity, or part of it, into the inventory |
 | `DropItem` | Throws one item or the stack from a slot |
+| `SwapHands` | Swaps the main hand's stack with the off hand's (the swap key) |
+| `EditBook` | Sets the pages of the book and quill in a hotbar slot or the off hand, or signs it into a written book by the player (another stack there is left alone; the server gives the components' encoding) |
 | `ContainerClick` | One click in the player's own window or an open container's window |
 | `CloseContainer` | Returns the carried stack and the crafting grid to the inventory, or throws them |
 | `PlayerDeath` | Drops the whole inventory, the crafting grid and the carried stack around the player; below the world the items are lost |

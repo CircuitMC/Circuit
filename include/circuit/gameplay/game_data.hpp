@@ -148,6 +148,13 @@ struct GameData {
     std::function<std::int32_t(const contracts::ItemStack&)> book_pages;
     // A writable book's components with pages "1" to "n" (fixtures' books).
     std::function<std::optional<contracts::ComponentPatch>(std::int32_t pages)> writable_book;
+    // A book and quill's components with its pages set, and those of the
+    // written book it becomes when signed (`title` by `author`); set by the
+    // server. Without them books are not edited.
+    std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, std::span<const std::string> pages)> with_book_pages;
+    std::function<std::optional<contracts::ComponentPatch>(const contracts::ComponentPatch&, std::span<const std::string> pages,
+                                                           std::string_view title, std::string_view author)>
+        signed_book;
     // A shulker box item's contents (its container component, slot by slot
     // up to its last stack), and components with the container set to
     // `stacks` (none: without it); set by the server. Without them a broken

@@ -2929,13 +2929,14 @@
           "evidence": "compared",
           "deviations": [
             "maps in the Nether do not explore (the official servers draw a pattern not described publicly); banners and item frames are not modeled",
-            "books, signs and displays are not shown"
+            "signs and displays are not shown; written books are not cloned (a special recipe), and books given unresolved are not resolved when opened"
           ],
-          "note": "Empty maps become filled maps of new maps, and the players carrying them get their data and markers (on the map, on its edge, or none far off), as both official servers send them; maps held in a hand explore the terrain around their holder, every block state's color, shading and water depth drawn as both official servers draw them",
+          "note": "Empty maps become filled maps of new maps, and the players carrying them get their data and markers (on the map, on its edge, or none far off), as both official servers send them; maps held in a hand explore the terrain around their holder, every block state's color, shading and water depth drawn as both official servers draw them. A book and quill in a hotbar slot or the off hand takes the pages a client edits (100 of 1024 code units at most, kept as sent) and is signed into a written book (a title of 32 at most, the player as author, generation 0, pages as plain text, resolved), and a written book opens for reading, as both official servers do",
           "cases": [
             "client/maps",
             "client/maps_explore",
-            "maps/colors"
+            "maps/colors",
+            "client/books"
           ]
         },
         {

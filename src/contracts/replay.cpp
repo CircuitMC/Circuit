@@ -136,8 +136,11 @@ private:
 // 33 ChangeExperience, 34 ContainerButton of a creative player (tag 29's
 // players are not), 35 CloseContainer naming its window's block (tags 14 and
 // 28 name none), 36 PlayerPresence with the hotbar slot in the main hand
-// (tag 17's is the first), 37 PlaceRecipe, 38 KnowRecipes.
+// (tag 17's is the first), 37 PlaceRecipe, 38 KnowRecipes, 39 EditBook,
+// 40 SwapHands.
 std::uint8_t tag_of(const CommandBody& body) {
+    if (std::holds_alternative<SwapHands>(body)) return 40;
+    if (std::holds_alternative<EditBook>(body)) return 39;
     if (std::holds_alternative<KnowRecipes>(body)) return 38;
     if (std::holds_alternative<PlaceRecipe>(body)) return 37;
     if (const auto* summon = std::get_if<SummonEntity>(&body); summon && (summon->value != 0 || summon->count != 1 || summon->age != 0))
@@ -313,6 +316,21 @@ void encode_command(Writer& w, const Command& c) {
             w.put(static_cast<std::uint16_t>(body.name.size()));
             for (const char ch : body.name) w.put(static_cast<std::uint8_t>(ch));
             w.put(static_cast<std::uint8_t>(body.creative));
+        } else if constexpr (std::is_same_v<T, SwapHands>) {
+            w.player(body.player);
+            w.put(body.slot);
+        } else if constexpr (std::is_same_v<T, EditBook>) {
+            const auto text = [&](const std::string& s) {
+                w.put(static_cast<std::uint16_t>(s.size()));
+                for (const char ch : s) w.put(static_cast<std::uint8_t>(ch));
+            };
+            w.player(body.player);
+            w.put(body.slot);
+            w.put(static_cast<std::uint8_t>(body.pages.size()));
+            for (const auto& p : body.pages) text(p);
+            w.put(static_cast<std::uint8_t>(body.title.has_value()));
+            if (body.title) text(*body.title);
+            text(body.author);
         } else if constexpr (std::is_same_v<T, KnowRecipes>) {
             w.player(body.player);
             w.put(static_cast<std::uint32_t>(body.recipes.size()));
@@ -601,6 +619,34 @@ bool decode_command(Reader& r, Command& c) {
         b.levels = levels == 1;
         b.set = set == 1;
         c.body = b;
+        return true;
+    }
+    case 40: {
+        SwapHands b;
+        if (!r.player(b.player) || !r.get(b.slot) || b.slot < hotbar_first || b.slot >= hotbar_first + 9) return false;
+        c.body = b;
+        return true;
+    }
+    case 39: {
+        EditBook b;
+        const auto text = [&](std::string& s, std::size_t max) {
+            std::uint16_t n{};
+            return r.get(n) && n <= max && r.bytes(n, s);
+        };
+        std::uint8_t pages{}, titled{};
+        if (!r.player(b.player) || !r.get(b.slot) || !(b.slot == offhand_slot || (b.slot >= hotbar_first && b.slot < hotbar_first + 9))) return false;
+        if (!r.get(pages) || pages > max_book_pages) return false;
+        b.pages.resize(pages);
+        for (auto& p : b.pages)
+            if (!text(p, 3 * max_page_units)) return false;
+        if (!r.get(titled) || titled > 1) return false;
+        if (titled) {
+            std::string title;
+            if (!text(title, 3 * max_title_units)) return false;
+            b.title = std::move(title);
+        }
+        if (!text(b.author, max_author_bytes)) return false;
+        c.body = std::move(b);
         return true;
     }
     case 38: {

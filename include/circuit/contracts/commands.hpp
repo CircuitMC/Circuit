@@ -408,6 +408,30 @@ struct KnowRecipes {
     bool operator==(const KnowRecipes&) const = default;
 };
 
+// A player swaps the stacks of the main hand (`slot`, a hotbar slot) and the
+// off hand (the swap key).
+struct SwapHands {
+    PlayerKey player;
+    std::uint8_t slot{hotbar_first};
+    bool operator==(const SwapHands&) const = default;
+};
+
+// A player edits the book and quill in a hotbar slot or the off hand (the
+// edit_book packet): its pages become `pages`; with a title it is signed and
+// becomes a written book by `author`. Another stack there is left alone.
+inline constexpr std::size_t max_book_pages = 100;
+inline constexpr std::size_t max_page_units = 1024; // UTF-16 code units
+inline constexpr std::size_t max_title_units = 32;
+inline constexpr std::size_t max_author_bytes = 64;
+struct EditBook {
+    PlayerKey player;
+    std::uint8_t slot{hotbar_first};
+    std::vector<std::string> pages;
+    std::optional<std::string> title;
+    std::string author;
+    bool operator==(const EditBook&) const = default;
+};
+
 // A player types a name into their anvil window (UTF-8, at most
 // max_item_name UTF-16 code units; empty removes a name).
 struct RenameItem {
@@ -430,7 +454,7 @@ struct ChangeExperience {
 using CommandBody = std::variant<SetBlock, UseBlock, InsertItem, SpawnItem, RemoveEntity, AddTicket, RemoveTicket,
                                  PlayerUse, PlayerBreak, SetPlayerSlot, PickUp, DropItem, ContainerClick, CloseContainer,
                                  PlayerDeath, PlayerPresence, LevelsStarted, SetGameRule, SetDayTime, SetWeather, SummonEntity, PlayerUseItem,
-                                 SetDifficulty, ContainerButton, SetSlotEnabled, RenameItem, ChangeExperience, PlaceRecipe, KnowRecipes>;
+                                 SetDifficulty, ContainerButton, SetSlotEnabled, RenameItem, ChangeExperience, PlaceRecipe, KnowRecipes, EditBook, SwapHands>;
 
 // Admission order is the recorded decision that orders inputs from different
 // sources. Network arrival timing on a particular thread never orders commands.
@@ -460,6 +484,11 @@ public:
             return std::unexpected(ErrorCode::invalid_argument);
         if (const auto* day = std::get_if<SetDayTime>(&body); day && day->time < 0) return std::unexpected(ErrorCode::invalid_argument);
         if (const auto* know = std::get_if<KnowRecipes>(&body); know && know->recipes.size() > max_known_recipes)
+            return std::unexpected(ErrorCode::invalid_argument);
+        if (const auto* edit = std::get_if<EditBook>(&body);
+            edit && (edit->pages.size() > max_book_pages || edit->author.size() > max_author_bytes
+                     || std::ranges::any_of(edit->pages, [](const std::string& p) { return p.size() > 3 * max_page_units; })
+                     || (edit->title && edit->title->size() > 3 * max_title_units)))
             return std::unexpected(ErrorCode::invalid_argument);
         if (const auto* set = std::get_if<SetDifficulty>(&body); set && set->difficulty > max_difficulty)
             return std::unexpected(ErrorCode::invalid_argument);

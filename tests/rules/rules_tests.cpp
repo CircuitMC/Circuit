@@ -1382,6 +1382,25 @@ int main() {
         require(s.at({4, 0, 0}).is_air() && disarmed && damage() == 3, "tripwire disarmed first; an instant block wears shears");
     });
 
+    suite.run("the swap key swaps the hands; books are edited only with the server's components", [] {
+        using circuit::contracts::EditBook;
+        using circuit::contracts::SetPlayerSlot;
+        using circuit::contracts::SwapHands;
+        const PlayerKey alex{4, 2};
+        Sim s;
+        const auto slot = [&](std::size_t i) {
+            const auto d = s.oracle.dump();
+            return std::ranges::find(d.players, alex, &PlayerInventory::player)->slots[i];
+        };
+        s.tick({SetPlayerSlot{alex, 38, {items::stone, 3}}, SetPlayerSlot{alex, 45, {items::oak_log, 1}}});
+        s.tick({SwapHands{alex, 38}});
+        require(slot(38) == ItemStack{items::oak_log, 1} && slot(45) == ItemStack{items::stone, 3}, "swapped");
+        const auto writable = *circuit::gameplay::items::by_name("minecraft:writable_book");
+        s.tick({SetPlayerSlot{alex, 36, {writable, 1}}});
+        s.tick({EditBook{alex, 36, {"page"}, std::string("Title"), "alex"}});
+        require(slot(36) == ItemStack{writable, 1}, "without the components' encoding the book stays");
+    });
+
     suite.run("items burn in fire and lava, netherite does not, and lava reaches them by the version", [] {
         const auto stick = *circuit::gameplay::items::by_name("minecraft:stick");
         const auto netherite = *circuit::gameplay::items::by_name("minecraft:netherite_ingot");

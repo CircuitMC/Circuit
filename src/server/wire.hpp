@@ -156,6 +156,13 @@ struct RecipeBookSettings {
     bool open{};
     bool filtering{};
 };
+// A book and quill edited (hand: a hotbar slot 0-8 or the off hand 40): its
+// pages, and a title when it is signed.
+struct EditBook {
+    std::int32_t hand{};
+    std::vector<std::string> pages;
+    std::optional<std::string> title;
+};
 // A recipe of the book placed into a window (by display id), once more or
 // as many times as fit.
 struct PlaceRecipe {
@@ -168,7 +175,7 @@ using Intent = std::variant<intent::Move, intent::ConfirmTeleport, intent::Dig, 
                             intent::HeldSlot, intent::CreativeSlot, intent::Command, intent::Chat, intent::Sneak,
                             intent::Flying, intent::Loaded, intent::ContainerClick, intent::ContainerClose,
                             intent::ClientCommand, intent::Sprint, intent::ContainerButton, intent::SlotState, intent::RenameItem,
-                            intent::RecipeSeen, intent::RecipeBookSettings, intent::PlaceRecipe>;
+                            intent::RecipeSeen, intent::RecipeBookSettings, intent::PlaceRecipe, intent::EditBook>;
 
 class Wire {
 public:
@@ -302,6 +309,8 @@ public:
     Bytes recipe_book_settings(const std::array<bool, 8>& settings) const;
     Bytes recipe_book_add(std::span<const BookEntry> entries, bool replace, const std::function<std::int32_t(std::uint16_t)>& item) const;
     Bytes recipe_book_remove(std::span<const std::int32_t> ids) const;
+    // A written book opened for reading (hand 0 the main hand, 1 the off hand).
+    Bytes open_book(std::int32_t hand) const;
     // The ghost of a recipe that could not be placed, shown in a window's grid.
     Bytes place_ghost_recipe(std::int32_t window, const BookRecipe& recipe, const std::function<std::int32_t(std::uint16_t)>& item) const;
     // What item components may refer to on this protocol.

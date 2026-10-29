@@ -547,6 +547,38 @@ Plan plan(RuleContext& ctx, const contracts::ContainerButton& c) { return detail
 Plan plan(RuleContext& ctx, const contracts::SetSlotEnabled& c) { return detail::plan_slot_enabled(ctx, c); }
 Plan plan(RuleContext& ctx, const contracts::PlaceRecipe& c) { return detail::plan_place_recipe(ctx, c); }
 
+// The main hand's and the off hand's stacks swapped (the swap key; client/books).
+Plan plan(RuleContext& ctx, const contracts::SwapHands& c) {
+    if (c.slot < contracts::hotbar_first || c.slot >= contracts::hotbar_first + 9) return std::unexpected(ErrorCode::invalid_slot);
+    return [&ctx, c] {
+        auto& inv = ctx.player(c.player);
+        if (inv.slots[c.slot] == inv.slots[contracts::offhand_slot]) return;
+        std::swap(inv.slots[c.slot], inv.slots[contracts::offhand_slot]);
+        detail::record_slot(ctx, inv, c.slot);
+        detail::record_slot(ctx, inv, contracts::offhand_slot);
+    };
+}
+
+// A book and quill edited or signed (the edit_book packet; client/books):
+// its pages set, or with a title a written book made of it; another stack in
+// the slot is left alone.
+Plan plan(RuleContext& ctx, const contracts::EditBook& c) {
+    if (!(c.slot == contracts::offhand_slot || (c.slot >= contracts::hotbar_first && c.slot < contracts::hotbar_first + 9)))
+        return std::unexpected(ErrorCode::invalid_slot);
+    return [&ctx, c] {
+        const auto* data = ctx.data();
+        static const auto writable = items::by_name("minecraft:writable_book"), written = items::by_name("minecraft:written_book");
+        auto& inv = ctx.player(c.player);
+        auto& slot = inv.slots[c.slot];
+        if (!data || !writable || !written || slot.item != *writable || !data->with_book_pages || !data->signed_book) return;
+        const auto components = c.title ? data->signed_book(slot.components, c.pages, *c.title, c.author) : data->with_book_pages(slot.components, c.pages);
+        if (!components) return;
+        if (c.title) slot.item = *written;
+        slot.components = *components;
+        detail::record_slot(ctx, inv, c.slot);
+    };
+}
+
 // The crafting recipes a player knows (doLimitedCrafting): the grids'
 // results follow them only once the grid changes, as on both official servers.
 Plan plan(RuleContext& ctx, const contracts::KnowRecipes& c) {

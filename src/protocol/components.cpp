@@ -3,6 +3,7 @@
 #include <circuit/protocol/components.hpp>
 #include <circuit/protocol/nbt.hpp>
 #include <algorithm>
+#include <array>
 #include <charconv>
 #include <cstring>
 #include <format>
@@ -909,6 +910,57 @@ std::expected<contracts::ComponentPatch, std::string> ComponentCodec::writable_b
     auto value = canonical_value(*type, w.bytes(), ctx);
     if (!value) return std::unexpected(value.error());
     return contracts::ComponentPatch::make(protocol(), {{*type, std::move(*value)}}, {}, {});
+}
+
+namespace {
+// `base` without the components `gone`, with `added` (none: nothing more).
+contracts::ComponentPatch replaced(const contracts::ComponentPatch& base, std::int32_t protocol, std::span<const std::uint16_t> gone,
+                                   std::optional<contracts::ComponentPatch::Added> added) {
+    std::vector<contracts::ComponentPatch::Added> out;
+    for (const auto& a : base.added())
+        if (std::ranges::find(gone, a.type) == gone.end() && (!added || a.type != added->type)) out.push_back(a);
+    if (added) out.push_back(std::move(*added));
+    std::ranges::sort(out, {}, &contracts::ComponentPatch::Added::type);
+    std::vector<std::uint16_t> removed;
+    for (const auto r : base.removed())
+        if (std::ranges::find(gone, r) == gone.end() && (!added || r != added->type)) removed.push_back(r);
+    if (out.empty() && removed.empty()) return contracts::ComponentPatch{};
+    return contracts::ComponentPatch::make(protocol, std::move(out), std::move(removed), base.typed());
+}
+} // namespace
+
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::with_book_pages(const contracts::ComponentPatch& base,
+                                                                                      std::span<const std::string> pages,
+                                                                                      const ComponentContext& ctx) const {
+    const auto type = type_id("writable_book_content");
+    if (!type) return std::unexpected("no writable_book_content component");
+    Writer w;
+    w.varint(static_cast<std::int32_t>(pages.size()));
+    for (const auto& p : pages) w.string(p).boolean(false);
+    auto value = canonical_value(*type, w.bytes(), ctx);
+    if (!value) return std::unexpected(value.error());
+    return replaced(base, protocol(), {}, contracts::ComponentPatch::Added{*type, std::move(*value)});
+}
+
+std::expected<contracts::ComponentPatch, std::string> ComponentCodec::signed_book(const contracts::ComponentPatch& base,
+                                                                                  std::span<const std::string> pages, std::string_view title,
+                                                                                  std::string_view author, const ComponentContext& ctx) const {
+    const auto writable = type_id("writable_book_content");
+    const auto written = type_id("written_book_content");
+    if (!writable || !written) return std::unexpected("no book content components");
+    // The title (no filtered title), the author, generation 0, the pages as
+    // plain text (none filtered), resolved.
+    Writer w;
+    w.string(std::string(title)).boolean(false).string(std::string(author)).varint(0).varint(static_cast<std::int32_t>(pages.size()));
+    for (const auto& p : pages) {
+        nbt::write_network(w, nbt::Tag::string(p));
+        w.boolean(false);
+    }
+    w.boolean(true);
+    auto value = canonical_value(*written, w.bytes(), ctx);
+    if (!value) return std::unexpected(value.error());
+    const std::array gone{*writable};
+    return replaced(base, protocol(), gone, contracts::ComponentPatch::Added{*written, std::move(*value)});
 }
 
 std::int32_t ComponentCodec::book_pages_of(const contracts::ComponentPatch& patch) const {

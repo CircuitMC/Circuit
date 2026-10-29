@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
+#include <circuit/contracts/commands.hpp>
 #include "wire.hpp"
 #include <circuit/protocol/content.hpp>
 #include <algorithm>
@@ -23,7 +24,7 @@ struct Wire::Ids {
         set_entity_data, remove_entities, entity_position_sync, rotate_head, container_set_content, disconnect, take_item_entity,
         open_screen, container_close, container_set_slot, container_set_data, set_cursor_item, set_player_inventory, respawn, combat_kill, damage_event, sb_container_click,
         sb_container_close, sb_container_button_click, sb_container_slot_state_changed, sb_rename_item, update_recipes,
-        commands, explode, set_experience, map_item_data, recipe_book_add, recipe_book_remove, recipe_book_settings, place_ghost_recipe;
+        commands, explode, set_experience, map_item_data, recipe_book_add, recipe_book_remove, recipe_book_settings, place_ghost_recipe, open_book;
     // The orb spawn packet of protocols before 1.21.5's (-1: none; orbs are
     // entities with their value as data).
     std::int32_t add_experience_orb{-1};
@@ -31,7 +32,7 @@ struct Wire::Ids {
     std::int32_t sb_accept_teleportation, sb_move_pos, sb_move_pos_rot, sb_move_rot, sb_move_status,
         sb_player_action, sb_use_item_on, sb_use_item, sb_set_carried_item, sb_set_creative_slot, sb_chat_command,
         sb_chat_command_signed, sb_chat, sb_player_input, sb_player_abilities, sb_player_loaded, sb_client_command, sb_player_command,
-        sb_recipe_book_seen_recipe, sb_recipe_book_change_settings, sb_place_recipe;
+        sb_recipe_book_seen_recipe, sb_recipe_book_change_settings, sb_place_recipe, sb_edit_book;
 };
 
 Wire::Wire(std::int32_t protocol) : Wire(protocol, server::component_context(protocol)) {}
@@ -106,11 +107,13 @@ Wire::Wire(std::int32_t protocol, protocol::ComponentContext components) : proto
     ids->sb_recipe_book_seen_recipe = sb(State::play, "recipe_book_seen_recipe");
     ids->sb_recipe_book_change_settings = sb(State::play, "recipe_book_change_settings");
     ids->sb_place_recipe = sb(State::play, "place_recipe");
+    ids->sb_edit_book = sb(State::play, "edit_book");
     ids->update_recipes = cb(State::play, "update_recipes");
     ids->recipe_book_add = cb(State::play, "recipe_book_add");
     ids->recipe_book_remove = cb(State::play, "recipe_book_remove");
     ids->recipe_book_settings = cb(State::play, "recipe_book_settings");
     ids->place_ghost_recipe = cb(State::play, "place_ghost_recipe");
+    ids->open_book = cb(State::play, "open_book");
     ids->disconnect = cb(State::play, "disconnect");
     ids->commands = cb(State::play, "commands");
     ids->explode = cb(State::play, "explode");
@@ -546,6 +549,12 @@ Bytes Wire::recipe_book_add(std::span<const BookEntry> entries, bool replace, co
     return packet(id_->recipe_book_add, w);
 }
 
+Bytes Wire::open_book(std::int32_t hand) const {
+    Writer w;
+    w.varint(hand);
+    return packet(id_->open_book, w);
+}
+
 Bytes Wire::place_ghost_recipe(std::int32_t window, const BookRecipe& recipe, const std::function<std::int32_t(std::uint16_t)>& item) const {
     Writer w;
     const auto stack = [this](Writer& out, const WireStack& s) { slot(out, s); };
@@ -782,6 +791,24 @@ std::expected<std::optional<Intent>, CodecError> Wire::parse_play(std::int32_t i
     if (id == i.sb_recipe_book_seen_recipe) {
         TRY(display, r.varint());
         return done(intent::RecipeSeen{*display});
+    }
+    // A book's edit: at most 100 pages of 1024 UTF-16 code units and a title
+    // of 32; more fails to decode, and the connection closes (client/books).
+    if (id == i.sb_edit_book) {
+        TRY(hand, r.varint());
+        TRY(count, r.varint());
+        if (*count < 0 || *count > static_cast<std::int32_t>(contracts::max_book_pages)) return std::unexpected(CodecError::too_large);
+        intent::EditBook e{*hand, {}, std::nullopt};
+        for (std::int32_t k = 0; k < *count; ++k) {
+            TRY(page, r.string(contracts::max_page_units));
+            e.pages.push_back(std::move(*page));
+        }
+        TRY(titled, r.boolean());
+        if (*titled) {
+            TRY(title, r.string(contracts::max_title_units));
+            e.title = std::move(*title);
+        }
+        return done(std::move(e));
     }
     if (id == i.sb_place_recipe) {
         TRY(window, r.varint());

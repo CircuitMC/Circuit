@@ -1827,6 +1827,60 @@ int main() {
         require(known() == now, "back: the same recipes");
     });
 
+    suite.run("books and quills are edited and signed, within the edit packet's limits", [] {
+        using I = server::Intent;
+        // The packet's limits: 100 pages of 1024 code units, a title of 32.
+        {
+            GameFixture f;
+            const auto id = f.wire.ids().id(State::play, Bound::serverbound, "edit_book");
+            const auto parse = [&](std::int32_t pages, std::size_t page_units, std::optional<std::size_t> title_units) {
+                Writer w;
+                w.varint(0).varint(pages);
+                for (std::int32_t k = 0; k < pages; ++k) w.string(std::string(page_units, 'x'));
+                w.boolean(title_units.has_value());
+                if (title_units) w.string(std::string(*title_units, 't'));
+                protocol::Reader r(w.bytes());
+                return f.wire.parse_play(id, r).has_value();
+            };
+            require(parse(100, 1024, 32) && !parse(101, 1, std::nullopt) && !parse(1, 1025, std::nullopt) && !parse(1, 1, 33), "the limits");
+        }
+        const char* jar = std::getenv("CIRCUIT_VANILLA_JAR_1_21_8");
+        if (!jar || !*jar) {
+            std::puts("  (no official 1.21.8 server jar given: the book editing checks did not run)");
+            return;
+        }
+        auto d = server::load_server_data(**contracts::BundleRegistry::find("java-1.21.8"), {jar, {}});
+        require(d.has_value() && d->game, d ? "" : d.error());
+        GameFixture f(offline_config(), std::move(*d));
+        auto peer = f.join(1, "Writer");
+        const contracts::PlayerKey key{1, 1};
+        const auto slot = [&](std::size_t i) {
+            const auto inv = f.game->engine().view().player(key).value();
+            return inv ? inv->slots[i] : contracts::ItemStack{};
+        };
+        const auto* codec = protocol::ComponentCodec::for_protocol(772);
+        const auto writable = *gameplay::items::by_name("minecraft:writable_book"), written = *gameplay::items::by_name("minecraft:written_book");
+        f.hold(1, "minecraft:writable_book");
+        f.game->tick();
+        f.game->submit(1, I{server::intent::EditBook{0, {"hello", "", "world"}, std::nullopt}});
+        f.game->tick();
+        require(slot(36).item == writable && codec->book_pages_of(slot(36).components) == 3, "three pages written");
+        f.game->submit(1, I{server::intent::EditBook{9, {"no"}, std::nullopt}});
+        f.game->submit(1, I{server::intent::EditBook{40, {"no"}, std::string("No")}});
+        f.game->tick();
+        require(slot(36).item == writable && codec->book_pages_of(slot(36).components) == 3 && slot(45).empty(), "another hand: nothing");
+        // Swapped into the off hand, it is signed there.
+        f.game->submit(1, I{server::intent::Dig{6, {0, 0, 0}, 0, 0}});
+        f.game->tick();
+        require(slot(36).empty() && slot(45).item == writable, "swapped");
+        f.game->submit(1, I{server::intent::EditBook{40, {"first", "second"}, std::string("My Book")}});
+        f.game->tick();
+        require(slot(45).item == written && codec->book_pages_of(slot(45).components) == 2, "signed");
+        f.game->submit(1, I{server::intent::EditBook{40, {"again"}, std::nullopt}});
+        f.game->tick();
+        require(slot(45).item == written && codec->book_pages_of(slot(45).components) == 2, "a written book is not edited");
+    });
+
     suite.run("composters take held items and the players nearby get the level event", [] {
         using I = server::Intent;
         GameFixture f;

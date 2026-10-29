@@ -179,6 +179,9 @@ int main() {
         // Known crafting recipes (tag 38): learned, forgotten, replaced.
         log.ticks.push_back({12, {{38, KnowRecipes{alex, {3, 805, 4294967295u}, true, false}}, {39, KnowRecipes{alex, {805}, false, false}},
                                   {40, KnowRecipes{alex, {}, true, true}}}});
+        // Books edited and signed (tag 39).
+        log.ticks.push_back({13, {{41, EditBook{alex, 36, {"hello", "", "\xC2\xA7" "cred\n"}, std::nullopt, "alice"}},
+                                  {42, EditBook{alex, offhand_slot, {"first"}, std::string(32, 'y'), "alice"}}, {43, EditBook{alex, 44, {}, std::nullopt, ""}}, {44, SwapHands{alex, 40}}}});
         const auto bytes = encode_replay(log);
         require(bytes.has_value(), "encode");
         const auto decoded = decode_replay(*bytes);

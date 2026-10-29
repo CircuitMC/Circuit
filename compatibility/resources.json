@@ -6451,6 +6451,23 @@
           "among several kinds of items for one ingredient, the kinds are taken in the order the inventory first holds them; the official servers' choice varies"
         ]
       },
+      "play/clientbound/open_book": {
+        "impl": "partial",
+        "evidence": "compared",
+        "cases": [
+          "client/books"
+        ],
+        "deviations": [
+          "a written book given unresolved is opened without being resolved"
+        ]
+      },
+      "play/serverbound/edit_book": {
+        "impl": "implemented",
+        "evidence": "compared",
+        "cases": [
+          "client/books"
+        ]
+      },
       "play/serverbound/recipe_book_change_settings": {
         "impl": "implemented",
         "evidence": "compared",

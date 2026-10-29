@@ -413,6 +413,17 @@ std::expected<ServerData, std::string> load_server_data(const contracts::Version
                 return patch ? std::optional(std::move(*patch)) : std::nullopt;
             };
             game->custom_name_of = [codec](const contracts::ComponentPatch& patch) { return codec->custom_name_of(patch); };
+            game->with_book_pages = [codec, ctx = component_context(bundle, out.registries)](
+                                        const contracts::ComponentPatch& base, std::span<const std::string> pages) -> std::optional<contracts::ComponentPatch> {
+                auto patch = codec->with_book_pages(base, pages, ctx);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
+            game->signed_book = [codec, ctx = component_context(bundle, out.registries)](
+                                    const contracts::ComponentPatch& base, std::span<const std::string> pages, std::string_view title,
+                                    std::string_view author) -> std::optional<contracts::ComponentPatch> {
+                auto patch = codec->signed_book(base, pages, title, author, ctx);
+                return patch ? std::optional(std::move(*patch)) : std::nullopt;
+            };
             game->with_custom_name = [codec, ctx = component_context(bundle, out.registries)](
                                          const contracts::ComponentPatch& base, const std::optional<std::string>& name) -> std::optional<contracts::ComponentPatch> {
                 auto patch = codec->with_custom_name(base, name, ctx);

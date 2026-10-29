@@ -1661,6 +1661,12 @@ struct Game::Impl final : GameServices {
             drop(p, d.status == 3);
             return;
         }
+        // The swap key: the main hand's and the off hand's stacks swap places,
+        // not for spectators (client/books).
+        if (d.status == 6) {
+            if (p.game_mode != spectator) admit(contracts::SwapHands{key_of(p), main_hand(p)});
+            return;
+        }
         p.acks.push_back(d.sequence);
         if (d.status == 1) { // aborted
             p.digging.reset();
@@ -1855,6 +1861,11 @@ struct Game::Impl final : GameServices {
         if (p.dead || p.game_mode == spectator) return;
         const auto slot = static_cast<std::uint8_t>(u.hand == 0 ? contracts::hotbar_first + p.held : contracts::offhand_slot);
         const auto item = slot_of(p, slot).item;
+        // A written book opens for reading (client/books).
+        if (static const auto written = gameplay::items::by_name("minecraft:written_book"); written && item == *written) {
+            p.peer->send(wire.open_book(u.hand));
+            return;
+        }
         if (item != gameplay::items::bucket && item != gameplay::items::water_bucket && item != gameplay::items::lava_bucket
             && item != gameplay::items::map)
             return;
@@ -1974,6 +1985,17 @@ struct Game::Impl final : GameServices {
         if (r.book < 0 || r.book > 3) return;
         p.book.settings[static_cast<std::size_t>(2 * r.book)] = r.open;
         p.book.settings[static_cast<std::size_t>(2 * r.book + 1)] = r.filtering;
+    }
+
+    // A book and quill edited or signed in a hotbar slot or the off hand, as
+    // both official servers take it (client/books): signed by the player.
+    void handle(Player& p, intent::EditBook& e) {
+        if (p.dead) return;
+        const auto slot = e.hand >= 0 && e.hand < 9 ? std::optional<std::uint8_t>(contracts::hotbar_first + e.hand)
+                        : e.hand == 40               ? std::optional<std::uint8_t>(contracts::offhand_slot)
+                                                     : std::nullopt;
+        if (!slot) return;
+        admit(contracts::EditBook{key_of(p), *slot, std::move(e.pages), std::move(e.title), p.name});
     }
 
     // A recipe of the book placed into the open window (the own window while

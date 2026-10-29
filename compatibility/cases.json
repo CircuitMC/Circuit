@@ -592,6 +592,17 @@
       "description": "23 steps of shears used by a player in survival and creative mode: tripwire, leaves, a cobweb, wool, a vine, grass and dirt broken at the client's shears speeds with their drops and each break's wear, pumpkins carved from a side and from above (facing the player), a full beehive emptied of honeycomb and one at level 3 left alone; Circuit and both official servers give identical blocks, held stacks and dropped items"
     },
     {
+      "id": "client/books",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/books.js",
+      "status": "passing",
+      "description": "14 steps of a survival player's book and quill: pages edited (empty ones, 1024 code units, 100 pages, formatting codes and control characters kept), in the off hand after the swap key, not in an empty slot, with stone held or through an invalid hand, signed with titles of 7 and 32 characters into written books, a written book opened and not edited, and a title of 33 closing the connection; Circuit and both official servers give identical slots and book openings"
+    },
+    {
       "id": "client/loom",
       "kind": "black_box",
       "versions": [
