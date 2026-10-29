@@ -1881,6 +1881,62 @@ int main() {
         require(slot(45).item == written && codec->book_pages_of(slot(45).components) == 2, "a written book is not edited");
     });
 
+    suite.run("knowledge books give their recipes when every one is a recipe, and are used up", [] {
+        const char* jar = std::getenv("CIRCUIT_VANILLA_JAR_1_21_8");
+        if (!jar || !*jar) {
+            std::puts("  (no official 1.21.8 server jar given: the knowledge book checks did not run)");
+            return;
+        }
+        using I = server::Intent;
+        auto d = server::load_server_data(**contracts::BundleRegistry::find("java-1.21.8"), {jar, {}});
+        require(d.has_value() && d->recipe_book, d ? "" : d.error());
+        GameFixture f(offline_config(), std::move(*d));
+        auto peer = f.join(1, "Reader");
+        const contracts::PlayerKey key{1, 1};
+        const auto& codec = f.wire.components();
+        // A knowledge book's components: its recipes as a list of ids.
+        const auto book_of = [&](std::vector<std::string> ids) {
+            auto list = protocol::nbt::Tag::list(protocol::nbt::TagType::string);
+            for (auto& id : ids) list.push(protocol::nbt::Tag::string(std::move(id)));
+            Writer w;
+            protocol::nbt::write_network(w, list);
+            const auto type = *codec.type_id("recipes");
+            auto value = codec.canonical_value(type, w.bytes(), f.wire.component_context());
+            require(value.has_value(), value ? "" : value.error());
+            return contracts::ComponentPatch::make(772, {{type, std::move(*value)}}, {}, {});
+        };
+        const auto give = [&](std::vector<std::string> ids) {
+            f.game->submit(1, I{server::intent::CreativeSlot{36, 1, content().item_id("minecraft:knowledge_book").value(), 0, book_of(std::move(ids))}});
+        };
+        // What the rules know of the player's book (its crafting recipes).
+        const auto knows = [&](std::string_view id) {
+            const auto& c = f.data.game->crafting;
+            const auto index = static_cast<std::uint32_t>(std::ranges::find(c, id, &gameplay::recipes::Recipe::id) - c.begin());
+            const auto inv = f.game->engine().view().player(key).value();
+            return inv && std::ranges::binary_search(inv->known_crafting, index);
+        };
+        f.game->submit(1, I{server::intent::Command{"recipe take Reader *"}});
+        f.game->tick();
+        give({"minecraft:no_such_recipe", "minecraft:chest"});
+        f.game->submit(1, I{server::intent::Command{"gamemode survival"}});
+        f.game->tick();
+        f.game->submit(1, I{server::intent::Use{0, 1, 0.0f, 0.0f}});
+        f.game->tick();
+        f.game->tick();
+        const auto held = [&] {
+            const auto inv = f.game->engine().view().player(key).value();
+            return inv ? inv->slots[36] : contracts::ItemStack{};
+        };
+        require(!knows("minecraft:chest") && held().empty(), "a recipe that does not exist: none given, the book used up");
+        f.game->submit(1, I{server::intent::Command{"gamemode creative"}});
+        give({"minecraft:stick", "minecraft:chest"});
+        f.game->tick();
+        f.game->submit(1, I{server::intent::Use{0, 2, 0.0f, 0.0f}});
+        f.game->tick();
+        f.game->tick();
+        require(knows("minecraft:stick") && knows("minecraft:chest") && !held().empty(), "creative: given, the book kept");
+    });
+
     suite.run("composters take held items and the players nearby get the level event", [] {
         using I = server::Intent;
         GameFixture f;

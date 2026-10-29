@@ -1866,9 +1866,14 @@ struct Game::Impl final : GameServices {
             p.peer->send(wire.open_book(u.hand));
             return;
         }
+        // A knowledge book gives its recipes, and the rules use it up
+        // (client/knowledge_books).
+        static const auto knowledge = gameplay::items::by_name("minecraft:knowledge_book");
+        const bool knowledge_book = knowledge && item == *knowledge;
         if (item != gameplay::items::bucket && item != gameplay::items::water_bucket && item != gameplay::items::lava_bucket
-            && item != gameplay::items::map)
+            && item != gameplay::items::map && !knowledge_book)
             return;
+        if (knowledge_book) learn_from_book(p, slot_of(p, slot));
         if (std::isfinite(u.yaw) && std::isfinite(u.pitch)) {
             p.yaw = std::fmod(u.yaw, 360.0f);
             p.pitch = std::clamp(u.pitch, -90.0f, 90.0f);
@@ -1985,6 +1990,21 @@ struct Game::Impl final : GameServices {
         if (r.book < 0 || r.book > 3) return;
         p.book.settings[static_cast<std::size_t>(2 * r.book)] = r.open;
         p.book.settings[static_cast<std::size_t>(2 * r.book + 1)] = r.filtering;
+    }
+
+    // The recipes a knowledge book names, given as /recipe gives them, when
+    // every one is a recipe of the book; otherwise none (both official servers).
+    void learn_from_book(Player& p, const contracts::ItemStack& stack) {
+        const auto* book = data.recipe_book.get();
+        const auto ids = wire.components().recipes_of(stack.components);
+        if (!book || !ids || ids->empty()) return;
+        std::vector<std::size_t> recipes;
+        for (const auto& id : *ids) {
+            const auto it = book->by_id.find(id.find(':') == std::string::npos ? "minecraft:" + id : id);
+            if (it == book->by_id.end()) return;
+            recipes.push_back(it->second);
+        }
+        send_unlocks(p, server::award(*book, p.book, recipes));
     }
 
     // A book and quill edited or signed in a hotbar slot or the off hand, as

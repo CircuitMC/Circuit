@@ -119,6 +119,9 @@ public:
 
     // A writable book's content of pages "1" to "n" (fixtures' books).
     [[nodiscard]] std::expected<contracts::ComponentPatch, std::string> writable_book(std::int32_t pages, const ComponentContext& ctx) const;
+    // The recipe ids of the patch's recipes component (a knowledge book's;
+    // none without one).
+    [[nodiscard]] std::optional<std::vector<std::string>> recipes_of(const contracts::ComponentPatch& patch) const;
     // The pages of the patch's writable or written book content (0 without one).
     [[nodiscard]] std::int32_t book_pages_of(const contracts::ComponentPatch& patch) const;
     // `base` with its writable book content holding `pages` (none filtered);

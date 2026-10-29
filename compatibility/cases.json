@@ -603,6 +603,17 @@
       "description": "14 steps of a survival player's book and quill: pages edited (empty ones, 1024 code units, 100 pages, formatting codes and control characters kept), in the off hand after the swap key, not in an empty slot, with stone held or through an invalid hand, signed with titles of 7 and 32 characters into written books, a written book opened and not edited, and a title of 33 closing the connection; Circuit and both official servers give identical slots and book openings"
     },
     {
+      "id": "client/knowledge_books",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/knowledge-books.js",
+      "status": "passing",
+      "description": "6 knowledge books used: recipes not known yet (added with what they unlock), the same again, none, an empty list, a list with a recipe that does not exist (none added), and one in creative mode; per step the recipe book's unlocks and whether the book was kept; Circuit and both official servers give identical output"
+    },
+    {
       "id": "client/loom",
       "kind": "black_box",
       "versions": [

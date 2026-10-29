@@ -133,7 +133,7 @@ Player inventories are simulation state, changed only by commands in the command
 | --- | --- |
 | `SetPlayerSlot` | Sets one slot (creative inventory) |
 | `PlayerUse` | Uses a block or places the held item; in survival the item is used up |
-| `PlayerUseItem` | Uses the held bucket along the player's view: an empty one takes the first fluid source the view enters before the block it meets, or from that block; a filled one pours into that block or beside it |
+| `PlayerUseItem` | Uses up a knowledge book outside creative mode (the server gives its recipes); uses the held bucket along the player's view: an empty one takes the first fluid source the view enters before the block it meets, or from that block; a filled one pours into that block or beside it |
 | `PlayerBreak` | Breaks a block; in survival it drops what the tool harvests and wears the tool |
 | `PickUp` | Moves an item entity, or part of it, into the inventory |
 | `DropItem` | Throws one item or the stack from a slot |

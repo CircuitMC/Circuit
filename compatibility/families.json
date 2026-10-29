@@ -2365,9 +2365,10 @@
             "client/shears_items",
             "trace/shears_use",
             "trace/shears_break",
-            "trace/dispenser_shears"
+            "trace/dispenser_shears",
+            "client/knowledge_books"
           ],
-          "note": "Flint and steel and fire charges: fire beside the face used where it can stay, campfires, candles and candle cakes lit, TNT primed, the level random's sound draws, flint and steel worn by one (and gone at its durability) and fire charges used up outside creative mode, flint and steel in dispensers. Shears: pumpkins carved (facing the face used or the player, four seeds out of it), full beehives and bee nests emptied of three honeycomb (also by dispensers), cobwebs, leaves, wool, vines and glow lichen cut at their tool component's speeds, tripwire disarmed when broken, every block broken wearing them. As both official servers do",
+          "note": "Flint and steel and fire charges: fire beside the face used where it can stay, campfires, candles and candle cakes lit, TNT primed, the level random's sound draws, flint and steel worn by one (and gone at its durability) and fire charges used up outside creative mode, flint and steel in dispensers. Shears: pumpkins carved (facing the face used or the player, four seeds out of it), full beehives and bee nests emptied of three honeycomb (also by dispensers), cobwebs, leaves, wool, vines and glow lichen cut at their tool component's speeds, tripwire disarmed when broken, every block broken wearing them. Knowledge books: the recipes they name given when every one is a recipe (none otherwise), the book used up outside creative mode. As both official servers do",
           "deviations": [
             "spawn eggs, fishing and books are not modeled here; buckets, bone meal and maps are covered by their own families",
             "shears on sheep, mooshrooms, snow golems and bogged (C8), and the bees an emptied hive angers, are not modeled",

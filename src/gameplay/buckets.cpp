@@ -223,6 +223,16 @@ contracts::Result<std::function<void()>> plan_use_item(RuleContext& ctx, const c
         const auto d = view(c.yaw, c.pitch);
         return Vec3{c.eye.x + d.x * t, c.eye.y + d.y * t, c.eye.z + d.z * t};
     };
+    // A knowledge book is used up outside creative mode, whatever recipes it
+    // names (the server gives them; client/knowledge_books).
+    if (static const auto knowledge = items::by_name("minecraft:knowledge_book"); knowledge && held.item == *knowledge && !held.empty())
+        return [&ctx, c] {
+            if (!c.survival) return;
+            auto& inv = ctx.player(c.player);
+            auto& slot = inv.slots[c.slot];
+            if (--slot.count == 0) slot = {};
+            record_slot(ctx, inv, c.slot);
+        };
     if (held.item == items::bucket && !held.empty()) {
         // The view goes as far as the block it meets.
         auto to = end(c.reach);

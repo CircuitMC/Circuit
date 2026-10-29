@@ -963,6 +963,24 @@ std::expected<contracts::ComponentPatch, std::string> ComponentCodec::signed_boo
     return replaced(base, protocol(), gone, contracts::ComponentPatch::Added{*written, std::move(*value)});
 }
 
+std::optional<std::vector<std::string>> ComponentCodec::recipes_of(const contracts::ComponentPatch& patch) const {
+    const auto type = type_id("recipes");
+    if (!type || patch.empty() || patch.protocol() != protocol()) return std::nullopt;
+    for (const auto& a : patch.added()) {
+        if (a.type != *type) continue;
+        // A list of ids, as NBT.
+        Reader r(a.value);
+        const auto tag = nbt::read_network(r);
+        if (!tag) return std::nullopt;
+        std::vector<std::string> out;
+        if (tag->type() == nbt::TagType::list)
+            for (const auto& e : tag->items())
+                if (e.type() == nbt::TagType::string) out.push_back(e.text());
+        return out;
+    }
+    return std::nullopt;
+}
+
 std::int32_t ComponentCodec::book_pages_of(const contracts::ComponentPatch& patch) const {
     const auto writable = type_id("writable_book_content");
     const auto written = type_id("written_book_content");

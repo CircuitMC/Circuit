@@ -1401,6 +1401,26 @@ int main() {
         require(slot(36) == ItemStack{writable, 1}, "without the components' encoding the book stays");
     });
 
+    suite.run("a knowledge book is used up outside creative mode", [] {
+        using circuit::contracts::PlayerUseItem;
+        using circuit::contracts::SetPlayerSlot;
+        const PlayerKey alex{4, 2};
+        const auto book = *circuit::gameplay::items::by_name("minecraft:knowledge_book");
+        Sim s;
+        // An inventory left empty is no longer in the dump.
+        const auto slot = [&] {
+            const auto d = s.oracle.dump();
+            const auto it = std::ranges::find(d.players, alex, &PlayerInventory::player);
+            return it == d.players.end() ? ItemStack{} : it->slots[36];
+        };
+        const auto use = [&](bool survival) { return PlayerUseItem{alex, 36, {0.5, 1.62, 0.5}, 0.0f, 0.0f, 4.5, survival, std::nullopt}; };
+        s.tick({SetPlayerSlot{alex, 36, {book, 1}}});
+        s.tick({use(false)});
+        require(slot() == ItemStack{book, 1}, "creative: kept");
+        s.tick({use(true)});
+        require(slot().empty(), "survival: used up");
+    });
+
     suite.run("items burn in fire and lava, netherite does not, and lava reaches them by the version", [] {
         const auto stick = *circuit::gameplay::items::by_name("minecraft:stick");
         const auto netherite = *circuit::gameplay::items::by_name("minecraft:netherite_ingot");

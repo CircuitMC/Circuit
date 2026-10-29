@@ -76,6 +76,7 @@ When the command is applied:
 - **Shears** (client/shears_items, both versions identical): pumpkins carved (facing the face used, or from above the player) with their four seeds, full beehives and bee nests emptied of three honeycomb; cobwebs, leaves, wool, vines and glow lichen dug at the shears' speeds; every block broken wears them, none in creative mode.
 - **Books** (client/books, both versions identical): a book and quill in a hotbar slot or the off hand takes the pages the client edits, kept as sent (100 pages of 1024 code units at most; more, or a title of more than 32, fails to decode and closes the connection), and signing makes a written book with the title, the player as author, generation 0 and the pages as plain text; a written book is not edited, and using one opens it for reading.
 - **The swap key** swaps the main hand's and the off hand's stacks (not for spectators).
+- **Knowledge books** (client/knowledge_books, both versions identical): using one gives the recipes its recipes component names, as `/recipe give` does, when every one is a recipe (one that is not gives none); it is used up outside creative mode, also when it gives nothing.
 - **Breaking:** any block but air and moving pistons; a piston head takes its base along.
 
 A refused action is answered with the current state of the affected blocks, or, for a command refused when applied, restored by the client when the action is acknowledged. Every block action is acknowledged with its sequence number.
