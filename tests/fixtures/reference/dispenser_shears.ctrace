@@ -1,0 +1,160 @@
+circuit-trace 2
+title Dispensers with shears facing beehives and a bee nest full of honey and not, a pumpkin and air
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v12
+mechanisms dispenser shears
+area 0 0 0 7 3 14
+ticks 30
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 0
+
+at 0 set 5 0 1 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 5 1 1 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 1 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 1 minecraft:beehive[facing=north,honey_level=5]
+at 0 set 5 0 4 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 5 1 4 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 4 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 4 minecraft:bee_nest[facing=north,honey_level=5]
+at 0 set 5 0 7 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 5 1 7 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 7 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 7 minecraft:beehive[facing=north,honey_level=2]
+at 0 set 5 0 10 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 5 1 10 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 10 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 10 minecraft:pumpkin
+at 0 set 5 0 13 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 5 1 13 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 13 minecraft:lever[face=floor,facing=north,powered=false]
+
+at 1 insert 5 1 1 0 minecraft:shears 1
+at 1 insert 5 1 4 0 minecraft:shears 1
+at 1 insert 5 1 7 0 minecraft:shears 1
+at 1 insert 5 1 10 0 minecraft:shears 1
+at 1 insert 5 1 13 0 minecraft:shears 1
+
+at 4 use 4 1 1
+at 4 use 4 1 4
+at 4 use 4 1 7
+at 4 use 4 1 10
+at 4 use 4 1 13
+change 4 commands 4 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 4 commands 5 1 1 minecraft:dispenser[facing=up,triggered=false] minecraft:dispenser[facing=up,triggered=true]
+change 4 commands 4 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 4 commands 5 1 4 minecraft:dispenser[facing=up,triggered=false] minecraft:dispenser[facing=up,triggered=true]
+change 4 commands 4 1 7 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 4 commands 5 1 7 minecraft:dispenser[facing=up,triggered=false] minecraft:dispenser[facing=up,triggered=true]
+change 4 commands 4 1 10 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 4 commands 5 1 10 minecraft:dispenser[facing=up,triggered=false] minecraft:dispenser[facing=up,triggered=true]
+change 4 commands 4 1 13 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 4 commands 5 1 13 minecraft:dispenser[facing=up,triggered=false] minecraft:dispenser[facing=up,triggered=true]
+
+entity-added 7 block_ticks e1 minecraft:item 5.665720494393531 2.42817260799868 1.4045252840998546 -0.07659867823855498 0.2 0.05630692640906096 item=minecraft:honeycomb count=3
+change 7 block_ticks 5 2 1 minecraft:beehive[facing=north,honey_level=5] minecraft:beehive[facing=north,honey_level=0]
+entity-added 7 block_ticks e2 minecraft:item 5.44259459237036 2.6174207700999044 4.68959125893624 0.08824983589642288 0.2 -0.04500920679290304 item=minecraft:honeycomb count=3
+change 7 block_ticks 5 2 4 minecraft:bee_nest[facing=north,honey_level=5] minecraft:bee_nest[facing=north,honey_level=0]
+draws 7 block_ticks level 25
+entity-order 7 entities e1 e2
+entity 7 e1 5.847736658457938 2.54817260799868 1.4467554789066503 0.17837584425480202 0.1176 0.04138559171613685 item=minecraft:honeycomb count=3 age=1 pickup-delay=9 on-ground=false
+entity 7 e2 5.508781969292677 2.8977103008539937 4.655834353841563 0.06486363064629484 0.27468374013900754 -0.0330817676366456 item=minecraft:honeycomb count=3 age=1 pickup-delay=9 on-ground=false
+
+entity-order 8 entities e1 e2
+entity 8 e1 6.029224606160346 2.6063726079986798 1.477794672693753 0.17785819220996757 0.057036 0.030418410503386225 item=minecraft:honeycomb count=3 age=2 pickup-delay=8 on-ground=false
+entity 8 e2 5.557429692277398 3.0737231059582495 4.7566655644548135 0.04767476945290838 0.17249254900217054 0.09881458832418843 item=minecraft:honeycomb count=3 age=2 pickup-delay=8 on-ground=false
+
+entity-order 9 entities e1 e2
+entity 9 e1 6.162618250317822 2.7479155642317044 1.5006084805712927 0.130725773818608 0.1387120971083641 0.022357532155127726 item=minecraft:honeycomb count=3 age=3 pickup-delay=7 on-ground=false
+entity 9 e2 5.605104461730306 3.20621565496042 4.855480152779002 0.04672127497317428 0.1298426980221271 0.09683829844244336 item=minecraft:honeycomb count=3 age=3 pickup-delay=7 on-ground=false
+
+entity-order 10 entities e1 e2
+entity 10 e1 6.29334402413643 2.8466276613400683 1.5229660127264204 0.1281112608356321 0.0967378551661968 0.021910381938461256 item=minecraft:honeycomb count=3 age=4 pickup-delay=6 on-ground=false
+entity 10 e2 5.651825736703481 3.296058352982547 4.952318451221445 0.04578685036484839 0.08804584406168456 0.09490153432063846 item=minecraft:honeycomb count=3 age=4 pickup-delay=6 on-ground=false
+
+entity-order 11 entities e1 e2
+entity 11 e1 6.421455284972062 2.9033655165062653 1.5448763946648816 0.12554903806244783 0.05560309806287286 0.0214721747175994 item=minecraft:honeycomb count=3 age=5 pickup-delay=5 on-ground=false
+entity 11 e2 5.697612587068329 3.344104197044232 5.047219985542084 0.04487111423086629 0.04708492718045087 0.09300350544432881 item=minecraft:honeycomb count=3 age=5 pickup-delay=5 on-ground=false
+
+entity-order 12 entities e1 e2
+entity 12 e1 6.54700432303451 2.9189686145691383 1.566348569382481 0.12303805969585672 0.015291036101615404 0.021042731632796643 item=minecraft:honeycomb count=3 age=6 pickup-delay=4 on-ground=false
+entity 12 e2 5.742483701299196 3.3511891242246827 5.140223490986412 0.04397369280209754 0.00694322863684185 0.09114343710934332 item=minecraft:honeycomb count=3 age=6 pickup-delay=4 on-ground=false
+
+entity-order 13 entities e1 e2
+entity 13 e1 6.670042382730366 2.8942596506707536 1.5873913010152776 0.12057730084870434 -0.024214784620416905 0.020621877401498966 item=minecraft:honeycomb count=3 age=7 pickup-delay=3 on-ground=false
+entity 13 e2 5.786457394101293 3.3181323528615247 5.231366928095755 0.04309421978478722 -0.032395635935894986 0.08932057010557956 item=minecraft:honeycomb count=3 age=7 pickup-delay=3 on-ground=false
+
+entity-order 14 entities e1 e2
+entity 14 e1 6.79061968357907 2.830044866050337 1.6080131784167766 0.11816575713155976 -0.06293048892800857 0.020209440246800082 item=minecraft:honeycomb count=3 age=8 pickup-delay=2 on-ground=false
+entity 14 e2 5.82955161388608 3.24573671692563 5.320687498201335 0.042232336211048487 -0.07094772321717709 0.08753416040712264 item=minecraft:honeycomb count=3 age=8 pickup-delay=2 on-ground=false
+
+entity-order 15 entities e1 e2
+entity 15 e1 6.90878544071063 2.7271143771223283 1.6282226186635766 0.11580244424276152 -0.1008718791494484 0.019805251827328563 item=minecraft:honeycomb count=3 age=9 pickup-delay=1 on-ground=false
+entity 15 e2 5.871783950097129 3.1347889937084528 5.408221658608458 0.0413876902923454 -0.10872876875283354 0.0857834788685618 item=minecraft:honeycomb count=3 age=9 pickup-delay=1 on-ground=false
+
+entity-order 16 entities e1 e2
+entity 16 e1 7.024587884953391 2.5862424979728798 1.6480278704909053 0.11348639756666264 -0.13805444156645943 0.019409147168537193 item=minecraft:honeycomb count=3 age=10 pickup-delay=0 on-ground=false
+entity 16 e2 5.913171640389474 2.986060224955619 5.49400513747702 0.04055993727590604 -0.14575419337777687 0.08406781092738058 item=minecraft:honeycomb count=3 age=10 pickup-delay=0 on-ground=false
+
+entity-order 17 entities e1 e2
+entity 17 e1 7.138074282520053 2.4081880564064204 1.6674370176594424 0.11121667177991064 -0.17449335273513025 0.019020964595366553 item=minecraft:honeycomb count=3 age=11 pickup-delay=0 on-ground=false
+entity 17 e2 5.95373157766538 2.8003060315778425 5.5780729484044 0.039748739304007324 -0.18203910951022134 0.08238645631229921 item=minecraft:honeycomb count=3 age=11 pickup-delay=0 on-ground=false
+
+entity-order 18 entities e1 e2
+entity 18 e1 7.249290954299964 2.19369470367129 1.686457982254809 0.10899234046560209 -0.21020348568042765 0.01864054566625533 item=minecraft:honeycomb count=3 age=12 pickup-delay=0 on-ground=false
+entity 18 e2 5.9934803169693875 2.578266922067621 5.6604594047167 0.03895376527607421 -0.2175983273200169 0.08073872875745018 item=minecraft:honeycomb count=3 age=12 pickup-delay=0 on-ground=false
+
+entity-order 19 entities e1 e2
+entity 19 e1 7.358283294765566 1.9434912179908623 1.7050985279210642 0.10681249573515396 -0.2451994159668191 0.018267735108470417 item=minecraft:honeycomb count=3 age=13 pickup-delay=0 on-ground=false
+entity 19 e2 6.032434082245461 2.320668594747604 5.74119813347415 0.03817469071353684 -0.2524463607736166 0.07912395572227021 item=minecraft:honeycomb count=3 age=13 pickup-delay=0 on-ground=false
+
+entity-order 20 entities e1 e2
+entity 20 e1 7.46509579050072 1.6582918020240434 1.7233662630295346 0.10467624785773756 -0.2794954276474827 0.017902380754730406 item=minecraft:honeycomb count=3 age=14 pickup-delay=0 on-ground=false
+entity 20 e2 6.070608772958998 2.0282222339739873 5.82032208919642 0.03741119762739054 -0.28659743355814427 0.0775414781169945 item=minecraft:honeycomb count=3 age=14 pickup-delay=0 on-ground=false
+
+entity-order 21 entities e1 e2
+entity 21 e1 7.569772038358457 1.3387963743765607 1.741268643784265 0.10258272489712379 -0.313105519094533 0.017544333481096613 item=minecraft:honeycomb count=3 age=15 pickup-delay=0 on-ground=false
+entity 21 e2 6.108019970586389 1.701624800415843 5.897863567313414 0.0366629743884047 -0.32006548488698133 0.07599065003364093 item=minecraft:honeycomb count=3 age=15 pickup-delay=0 on-ground=false
+
+entity-order 22 entities e1 e2
+entity 22 e1 7.672354763255581 0.9856908552820278 1.7588129772653616 0.10053107235579152 -0.34604340871264233 0.017193447146106284 item=minecraft:honeycomb count=3 age=16 pickup-delay=0 on-ground=false
+entity 22 e2 6.144682944974793 1.3415593155288617 5.973854217347055 0.035929715599927345 -0.3528641751892417 0.07447083848237473 item=minecraft:honeycomb count=3 age=16 pickup-delay=0 on-ground=false
+
+entity-order 23 entities e1 e2
+entity 23 e1 7.772885835611373 0.5996474465693855 1.776006424411468 0.09852045282615372 -0.3783225405383895 0.01684957853112314 item=minecraft:honeycomb count=3 age=17 pickup-delay=0 on-ground=false
+entity 23 e2 6.18061266057472 0.94869514033962 6.04832505582943 0.035211121973233735 -0.3850068916854568 0.07298142313314576 item=minecraft:honeycomb count=3 age=17 pickup-delay=0 on-ground=false
+
+entity-order 24 entities e1 e2
+entity 24 e1 7.871406288437527 0.18132490603099605 1.792856002942591 0.09655004564875916 -0.40995608972762165 0.016512587281880882 item=minecraft:honeycomb count=3 age=18 pickup-delay=0 on-ground=false
+entity 24 e2 6.215823782547954 0.5236882486541632 6.121306478962576 0.03450690020536791 -0.4165067538517477 0.07152179606249302 item=minecraft:honeycomb count=3 age=18 pickup-delay=0 on-ground=false
+
+entity-order 25 entities e1 e2
+entity 25 e1 7.967956334086286 -0.2686311836966256 1.809368590224472 0.09461904657732995 -0.4409569679330692 0.016182335851195873 item=minecraft:honeycomb count=3 age=19 pickup-delay=0 on-ground=false
+entity 25 e2 6.250330682753321 0.06718149480241553 6.192828275025069 0.03381676285942744 -0.4473766187747127 0.07009136150541316 item=minecraft:honeycomb count=3 age=19 pickup-delay=0 on-ground=false
+
+entity-order 26 entities e1 e2
+entity 26 e1 8.062575380663615 -0.7495881516296947 1.825550926075668 0.09272666745049844 -0.4713378285744078 0.015858689442825518 item=minecraft:honeycomb count=3 age=20 pickup-delay=0 on-ground=false
+entity 26 e2 6.284147445612748 -0.42019512397229714 6.262919636530482 0.033140428247242455 -0.4776290863992184 0.06868953561219153 item=minecraft:honeycomb count=3 age=20 pickup-delay=0 on-ground=false
+
+entity-order 27 entities e1 e2
+entity 27 e1 8.155302048114114 -1.2609259802041026 1.8414096155184934 0.0908721358701093 -0.5011110720029196 0.015541515956449503 item=minecraft:honeycomb count=3 age=21 pickup-delay=0 on-ground=false
+entity 27 e2 6.317287873859991 -0.9378242103715155 6.331609172142674 0.03247762031440111 -0.5072765046712341 0.06731574621009662 item=minecraft:honeycomb count=3 age=21 pickup-delay=0 on-ground=false
+
+entity-order 28 entities e1 e2
+entity 28 e1 8.246174183984223 -1.8020370522070221 1.856951131474943 0.08905469488595555 -0.5302888505628612 0.015230685933751405 item=minecraft:honeycomb count=3 age=22 pickup-delay=0 on-ground=false
+entity 28 e2 6.349765494174392 -1.4851007150427495 6.398924918352771 0.031828068527574534 -0.5363309745778094 0.06596943256984066 item=minecraft:honeycomb count=3 age=22 pickup-delay=0 on-ground=false
+
+entity-order 29 entities e1 e2
+entity 29 e1 8.33522887887018 -2.3723259027698833 1.8721818174086944 0.08727360268681994 -0.558883073551604 0.014926072505578657 item=minecraft:honeycomb count=3 age=23 pickup-delay=0 on-ground=false
+entity 29 e2 6.381593562701966 -2.061431689620559 6.464894350922611 0.031191507764095273 -0.5648043550862533 0.06465004517671091 item=minecraft:honeycomb count=3 age=23 pickup-delay=0 on-ground=false
+
+entity-order 30 entities e1 e2
+entity 30 e1 8.422502481556998 -2.9712089763214875 1.887107889914273 0.0855281322976954 -0.586905412080572 0.014627551340159323 item=minecraft:honeycomb count=3 age=24 pickup-delay=0 on-ground=false
+entity 30 e2 6.412785070466062 -2.6662360447068125 6.529544396099322 0.030567678203744165 -0.5927082679845282 0.06335704550627845 item=minecraft:honeycomb count=3 age=24 pickup-delay=0 on-ground=false

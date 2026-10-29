@@ -1,0 +1,47 @@
+circuit-trace 2
+title Dispensers with shears facing beehives and a bee nest full of honey and not, a pumpkin and air
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms dispenser shears
+area 0 0 0 7 3 14
+ticks 30
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 0
+
+at 0 set 5 0 1 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 5 1 1 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 1 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 1 minecraft:beehive[facing=north,honey_level=5]
+at 0 set 5 0 4 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 5 1 4 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 4 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 4 minecraft:bee_nest[facing=north,honey_level=5]
+at 0 set 5 0 7 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 5 1 7 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 7 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 7 minecraft:beehive[facing=north,honey_level=2]
+at 0 set 5 0 10 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 5 1 10 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 10 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 10 minecraft:pumpkin
+at 0 set 5 0 13 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 5 1 13 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 13 minecraft:lever[face=floor,facing=north,powered=false]
+at 1 insert 5 1 1 0 minecraft:shears 1
+at 1 insert 5 1 4 0 minecraft:shears 1
+at 1 insert 5 1 7 0 minecraft:shears 1
+at 1 insert 5 1 10 0 minecraft:shears 1
+at 1 insert 5 1 13 0 minecraft:shears 1
+at 4 use 4 1 1
+at 4 use 4 1 4
+at 4 use 4 1 7
+at 4 use 4 1 10
+at 4 use 4 1 13

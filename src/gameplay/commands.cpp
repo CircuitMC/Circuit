@@ -239,6 +239,18 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
     const auto fire_item = held.empty() ? std::nullopt : detail::fire_item(held.item);
     // Blocks are used with the main hand only, and not while sneaking with an item.
     if (!off_hand && !(c.sneaking && holding)) {
+        // Shears carve a pumpkin, and take a full hive's honeycomb, wearing
+        // by one outside creative mode (shears_use, client/shears_items).
+        if (held.item == items::shears && (detail::shears_carve(clicked) || detail::full_hive(clicked)))
+            return [&ctx, c, clicked] {
+                if (detail::shears_carve(clicked)) detail::carve_pumpkin(ctx, c.pos, c.face, c.horizontal);
+                else detail::harvest_hive(ctx, c.pos);
+                if (!c.survival) return;
+                auto& inv = ctx.player(c.player);
+                auto& slot = inv.slots[c.slot];
+                if (const auto* info = items::info(slot.item); info && ++slot.damage >= info->max_damage) slot = {};
+                detail::record_slot(ctx, inv, c.slot);
+            };
         // TNT used with flint and steel or a fire charge is primed.
         if (fire_item && detail::is_tnt(clicked))
             return [&ctx, c, spend_fire_item, charge = *fire_item] {
@@ -322,6 +334,8 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
                 };
         }
     }
+    // Shears do nothing else to a block (shears_use).
+    if (held.item == items::shears) return [] {};
     if (fire_item) {
         if ((c.reach & 3) == 0) return std::unexpected(ErrorCode::out_of_reach);
         return [&ctx, c, spend_fire_item, charge = *fire_item] {
@@ -422,7 +436,9 @@ Plan plan(RuleContext& ctx, const contracts::PlayerBreak& c) {
         const auto base_pos = c.pos.relative(contracts::opposite(s.facing()));
         const bool head_with_base = s.is(BlockType::piston_head) && detail::head_has_base(ctx, c.pos, s);
         if (head_with_base && !c.survival) set_block(ctx, base_pos, blocks::air());
-        if (c.survival && hardness(s) != 0.0f && tool.item != 0) {
+        // Shears wear on every block, those broken at once too (client/shears_items).
+        const bool shears = tool.item == items::shears;
+        if (c.survival && (hardness(s) != 0.0f || shears) && tool.item != 0) {
             // The tool wears by one and breaks at its durability.
             if (const auto* info = items::info(tool.item); info && info->max_damage > 0) {
                 auto& inv = ctx.player(c.player);
@@ -439,11 +455,16 @@ Plan plan(RuleContext& ctx, const contracts::PlayerBreak& c) {
                              ? std::optional(detail::shulker_box_item(ctx, c.pos, s)) : std::nullopt;
         const auto* held_contents = box ? ctx.peek_block_entity(c.pos) : nullptr;
         const bool filled = held_contents && std::ranges::any_of(held_contents->slots, [](const ItemStack& st) { return !st.empty(); });
+        // Tripwire broken with shears is disarmed first (shears_break).
+        if (const auto disarmed = shears ? detail::disarmed_tripwire(s) : std::nullopt) detail::set_block_quiet(ctx, c.pos, *disarmed);
+        // A tall plant drops from the half broken before it goes (shears_break).
+        const bool drops_first = c.survival && detail::tall_plant(s);
+        if (drops_first) detail::drop_items(ctx, c.pos, s, tool, true);
         set_block(ctx, c.pos, blocks::air());
         if (box && (c.survival || filled)) {
             detail::pop_resource(ctx, c.pos, *box);
         } else if (c.survival) {
-            detail::drop_items(ctx, c.pos, s, tool, true);
+            if (!drops_first) detail::drop_items(ctx, c.pos, s, tool, true);
             // What the tool harvests gives experience too.
             if (harvests(s, tool, ctx.data())) detail::drop_experience(ctx, c.pos, s, tool);
             detail::ice_broken(ctx, c.pos, s, tool);

@@ -38,17 +38,17 @@ constexpr std::uint32_t dispense_delay = 4;
 constexpr double eject_spread = 0.0172275 * 6;
 
 // What a dispenser does with an item. `keep`: a use the rules do not model
-// (projectiles, fire charges, shears, golem and wither heads, placing
+// (projectiles, fire charges, shears on mobs, golem and wither heads, placing
 // shulker boxes, armor stands, mobs, other fluids and other minecarts); the
 // item stays. The conditional ones eject unless the cell in front is one
 // they act on, which the rules do not model either: boats on water,
 // bottles at water or a full hive, honeycomb at copper that is not waxed,
 // glowstone at a respawn anchor, a potion with data at dirt.
-enum class Use : std::uint8_t { eject, keep, tnt, water, lava, bucket, minecart, boat, bottle, honeycomb, glowstone, potion, bone_meal, flint };
+enum class Use : std::uint8_t { eject, keep, tnt, water, lava, bucket, minecart, boat, bottle, honeycomb, glowstone, potion, bone_meal, flint, shears };
 
 Use classify(std::string_view name) {
-    static constexpr std::array<std::string_view, 30> kept{
-        "shears", "carved_pumpkin", "brush", "wither_skeleton_skull", "arrow", "spectral_arrow",
+    static constexpr std::array<std::string_view, 29> kept{
+        "carved_pumpkin", "brush", "wither_skeleton_skull", "arrow", "spectral_arrow",
         "tipped_arrow", "snowball", "egg", "blue_egg", "brown_egg", "experience_bottle", "splash_potion", "lingering_potion",
         "fire_charge", "firework_rocket", "wind_charge", "armor_stand", "powder_snow_bucket", "cod_bucket",
         "salmon_bucket", "pufferfish_bucket", "tropical_fish_bucket", "axolotl_bucket", "tadpole_bucket", "chest_minecart",
@@ -56,6 +56,7 @@ Use classify(std::string_view name) {
     if (name == "tnt") return Use::tnt;
     if (name == "bone_meal") return Use::bone_meal;
     if (name == "flint_and_steel") return Use::flint;
+    if (name == "shears") return Use::shears;
     if (name == "water_bucket") return Use::water;
     if (name == "lava_bucket") return Use::lava;
     if (name == "bucket") return Use::bucket;
@@ -253,15 +254,19 @@ void dispense_from(RuleContext& ctx, BlockPos pos, Direction facing, std::size_t
     case Use::bone_meal:
         if (loaded_in_world(ctx, front) && apply_bone_meal(ctx, front)) set_slot(ctx, pos, slot, less_one(stack));
         return;
-    // Flint and steel sets fire, lights or primes in front, wearing by one
-    // (and gone at its durability), or stays (dispenser_flint).
-    case Use::flint:
-        if (loaded_in_world(ctx, front) && dispense_fire(ctx, front)) {
-            auto worn = stack;
-            if (const auto* info = items::info(worn.item); info && ++worn.damage >= info->max_damage) worn = {};
-            set_slot(ctx, pos, slot, worn);
-        }
+    // Flint and steel sets fire, lights or primes in front (dispenser_flint);
+    // shears take a full hive's honeycomb (dispenser_shears; sheep and other
+    // mobs are not modeled). Either wears by one (gone at its durability),
+    // or stays.
+    case Use::flint: case Use::shears: {
+        if (!loaded_in_world(ctx, front)) return;
+        if (use == Use::flint ? !dispense_fire(ctx, front) : !full_hive(ctx.block(front))) return;
+        if (use == Use::shears) harvest_hive(ctx, front);
+        auto worn = stack;
+        if (const auto* info = items::info(worn.item); info && ++worn.damage >= info->max_damage) worn = {};
+        set_slot(ctx, pos, slot, worn);
         return;
+    }
     case Use::boat: case Use::bottle: case Use::honeycomb: case Use::glowstone: case Use::potion:
         if (has_target(ctx, use, front, stack)) return;
         break;

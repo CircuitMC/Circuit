@@ -1,0 +1,61 @@
+circuit-trace 2
+title A player breaks leaves, a cobweb, grass, a fern, a dead bush, a vine, glow lichen, tripwire, wool, stone, hanging roots, tall grass (each half) and a large fern with shears
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms shears loot
+area -1 0 -2 27 3 1
+ticks 40
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 0
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 1 0 minecraft:oak_leaves[distance=7,persistent=true,waterlogged=false]
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 1 0 minecraft:cobweb
+at 0 set 4 0 0 minecraft:grass_block[snowy=false]
+at 0 set 4 1 0 minecraft:short_grass
+at 0 set 6 0 0 minecraft:grass_block[snowy=false]
+at 0 set 6 1 0 minecraft:fern
+at 0 set 8 0 0 minecraft:terracotta
+at 0 set 8 1 0 minecraft:dead_bush
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 1 -1 minecraft:stone
+at 0 set 10 1 0 minecraft:vine[east=false,north=true,south=false,up=false,west=false]
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 1 -1 minecraft:stone
+at 0 set 12 1 0 minecraft:glow_lichen[down=false,east=false,north=true,south=false,up=false,waterlogged=false,west=false]
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 1 0 minecraft:tripwire[attached=false,disarmed=false,east=false,north=false,powered=false,south=false,west=false]
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 1 0 minecraft:white_wool
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 1 0 minecraft:stone
+at 0 set 20 0 0 minecraft:stone
+at 0 set 20 2 0 minecraft:dirt
+at 0 set 20 1 0 minecraft:hanging_roots[waterlogged=false]
+at 0 set 22 0 0 minecraft:grass_block[snowy=false]
+at 0 set 22 1 0 minecraft:tall_grass[half=lower]
+at 0 set 22 2 0 minecraft:tall_grass[half=upper]
+at 0 set 24 0 0 minecraft:grass_block[snowy=false]
+at 0 set 24 1 0 minecraft:tall_grass[half=lower]
+at 0 set 24 2 0 minecraft:tall_grass[half=upper]
+at 0 set 26 0 0 minecraft:grass_block[snowy=false]
+at 0 set 26 1 0 minecraft:large_fern[half=lower]
+at 0 set 26 2 0 minecraft:large_fern[half=upper]
+at 2 break 0 1 0 minecraft:shears
+at 3 break 2 1 0 minecraft:shears
+at 4 break 4 1 0 minecraft:shears
+at 5 break 6 1 0 minecraft:shears
+at 6 break 8 1 0 minecraft:shears
+at 7 break 10 1 0 minecraft:shears
+at 8 break 12 1 0 minecraft:shears
+at 9 break 14 1 0 minecraft:shears
+at 10 break 16 1 0 minecraft:shears
+at 11 break 18 1 0 minecraft:shears
+at 12 break 20 1 0 minecraft:shears
+at 13 break 22 1 0 minecraft:shears
+at 14 break 24 2 0 minecraft:shears
+at 15 break 26 1 0 minecraft:shears

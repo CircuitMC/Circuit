@@ -127,10 +127,10 @@ Their counts are unknown, not zero.
 
 | Kind | Status | Cases |
 | --- | --- | ---: |
-| black_box | passing | 80 |
+| black_box | passing | 81 |
 | black_box | unsupported | 1 |
 | official_trace | failing | 4 |
-| official_trace | passing | 228 |
+| official_trace | passing | 231 |
 | real_client | passing | 2 |
 | round_trip | passing | 2 |
 
@@ -410,7 +410,7 @@ Trace cases are the reference traces in `tests/fixtures/`; the other cases are l
 | Tools, durability and harvest rules | C5 | partial, documented | partial, documented | Pickaxes and axes |
 | Eating and drinking | C6 | missing, none | missing, none |  |
 | Bows, crossbows and tridents | C6 | missing, none | missing, none |  |
-| Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books | C5 | partial, compared | partial, compared | `client/fire_items`, `trace/dispenser_flint`, `trace/fire_charge_use`, `trace/flint_and_steel_use`; shears, spawn eggs, fishing and books are not modeled here; buckets, bone meal and maps are covered by their own families; the use sounds are not sent; Flint and steel and fire charges: fire beside the face used where it can stay, campfires, candles and candle cakes lit, TNT primed, the level random's sound draws, flint and steel worn by one (and gone at its durability) and fire charges used up outside creative mode, flint and steel in dispensers, as both official servers do |
+| Other item uses: buckets, shears, flint and steel, bone meal, spawn eggs, fishing, maps, books | C5 | partial, compared | partial, compared | `client/fire_items`, `client/shears_items`, `trace/dispenser_flint`, `trace/dispenser_shears`, `trace/fire_charge_use`, `trace/flint_and_steel_use`, `trace/shears_break`, `trace/shears_use`; shears on sheep, mooshrooms, snow golems and bogged (C8), and the bees an emptied hive angers, are not modeled; spawn eggs, fishing and books are not modeled here; buckets, bone meal and maps are covered by their own families; the use sounds are not sent; Flint and steel and fire charges: fire beside the face used where it can stay, campfires, candles and candle cakes lit, TNT primed, the level random's sound draws, flint and steel worn by one (and gone at its durability) and fire charges used up outside creative mode, flint and steel in dispensers. Shears: pumpkins carved (facing the face used or the player, four seeds out of it), full beehives and bee nests emptied of three honeycomb (also by dispensers), cobwebs, leaves, wool, vines and glow lichen cut at their tool component's speeds, tripwire disarmed when broken, every block broken wearing them. As both official servers do |
 | Item cooldowns | C6 | missing, none | missing, none |  |
 | Equipment slots and wearing armor | C6 | partial, compared | partial, compared | `client/windows`; Armor slots accept armor; no protection |
 

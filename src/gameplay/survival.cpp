@@ -47,6 +47,24 @@ std::optional<registry::BlockInfo> other_info(BlockState s) noexcept {
     return b ? std::optional(registry::block(*b)) : std::nullopt;
 }
 
+// Shears by their tool component (both official servers' item reports, the
+// same on both): cobwebs 15, and harvested; leaves 15; wool 5; vines and
+// glow lichen 2; other blocks 1.
+struct ShearsRule {
+    float speed{1.0f};
+    bool harvests{};
+};
+ShearsRule shears_rule(BlockState s) noexcept {
+    const auto info = s.is(BlockType::other) ? other_info(s) : std::nullopt;
+    if (!info) return {};
+    const auto n = info->name;
+    if (n == "cobweb") return {15.0f, true};
+    if (n.ends_with("_leaves")) return {15.0f};
+    if (n.ends_with("_wool")) return {5.0f};
+    if (n == "vine" || n == "glow_lichen") return {2.0f};
+    return {};
+}
+
 // Data-pack tool and tier of a block without rules of its own, if any.
 const BlockTool* data_tool(BlockState s, const GameData* data) noexcept {
     if (!data || !s.is(BlockType::other)) return nullptr;
@@ -149,6 +167,7 @@ float hardness(BlockState s) noexcept {
 bool harvests(BlockState s, const contracts::ItemStack& tool, const GameData* data) noexcept {
     const auto need = required_tier(s, data);
     if (need == 0) return true;
+    if (!tool.empty() && tool.item == items::shears && shears_rule(s).harvests) return true;
     const auto t = tool.empty() ? ToolInfo{} : tool_of(tool.item);
     return t.kind == effective_tool(s, data) && t.tier >= need;
 }
@@ -160,6 +179,7 @@ float destroy_progress(BlockState s, const contracts::ItemStack& tool, bool on_g
     if (h == 0.0f) return 1.0f;
     const auto t = tool.empty() ? ToolInfo{} : tool_of(tool.item);
     float speed = t.kind != Tool::none && t.kind == effective_tool(s, data) ? t.speed : 1.0f;
+    if (!tool.empty() && tool.item == items::shears) speed = shears_rule(s).speed;
     if (eyes_in_water) speed *= 0.2f; // the submerged mining speed
     if (!on_ground) speed /= 5.0f;
     return speed / h / (harvests(s, tool, data) ? 30.0f : 100.0f);

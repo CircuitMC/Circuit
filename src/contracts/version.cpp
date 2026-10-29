@@ -476,11 +476,22 @@ constexpr std::array reference_v4_mechanisms{
         "into blocks that hold water, air and what fluids replace, fill buckets from fluid sources, powder snow and "
         "blocks holding water, set minecarts on rails, and eject equipment, as there are no entities to equip; "
         "comparators read them and hoppers fill and empty them (dispensers, dispensers_more, dispenser_cases, "
-        "dispenser_items, dispenser_tnt_rule, dispenser_buckets). Gaps: projectiles, fire, "
-        "bone meal, shears, boats on water, bottles, honeycomb, glowstone and water bottles at their targets, "
+        "dispenser_items, dispenser_tnt_rule, dispenser_buckets); flint and steel sets fire, lights campfires and "
+        "candles or primes TNT in front, and shears take a full hive's honeycomb, wearing by one (dispenser_flint, "
+        "dispenser_shears). Gaps: projectiles and fire charges, "
+        "bone meal, shears on mobs, boats on water, bottles, honeycomb, glowstone and water bottles at their targets, "
         "golem and wither heads, buckets of fish, axolotls, tadpoles and powder snow, minecarts and mobs, and "
         "equipping players are not modeled: those "
         "items stay."},
+    MechanismEntry{"shears", l0_exact, l2_declared_deviation, harness_trace,
+        "Shears as both official servers use them (shears_use, shears_break, dispenser_shears; client/shears_items): "
+        "used on a pumpkin it becomes a carved pumpkin facing the face used (from above or below, the player), with "
+        "four pumpkin seeds out of that face (a new item's velocity drawn from the level random, then replaced); used "
+        "on a beehive or bee nest at honey level 5 it drops three honeycomb as a block drop and empties it, and a "
+        "dispenser's shears do the same to the hive in front. Breaking: cobwebs at speed 15 and harvested, leaves 15, "
+        "wool 5, vines and glow lichen 2 (the item's tool component), tripwire disarmed first; every block broken "
+        "wears them by one. Gaps: sheep, mooshrooms, snow golems and bogged (mobs), the bees an emptied hive "
+        "angers, and the sounds are not modeled."},
     MechanismEntry{"entity_order", l0_exact, l2_declared_deviation, harness_trace,
         "Entities tick in ascending id order once per tick; one merged away before its turn does not tick "
         "(item_hopper_pickup, item_water_current, item_merge, item_merge_moving). Gap: compared for item "
@@ -517,8 +528,11 @@ constexpr std::array reference_v4_mechanisms{
         "tests/fixtures/collision/fire-*.txt); items and arrows in fire burn (items_in_fire, see item_entity and "
         "projectile). Lava sets fire in its random ticks (taken twice: as a block and as its fluid), stepping up to two "
         "cells up and around to air beside a block lava ignites, or setting fire on such a block beside it "
-        "(lava_fire; which blocks lava ignites in tests/fixtures/collision/lava-ignites-*.txt). Gaps: rain and humid "
-        "biomes do not put it out sooner; other entities in fire, and lightning and flint and steel setting fire are "
+        "(lava_fire; which blocks lava ignites in tests/fixtures/collision/lava-ignites-*.txt). Flint and steel and "
+        "fire charges a player uses set fire beside the face used where it can stay, light campfires, candles and "
+        "candle cakes and prime TNT, drawing the sound's pitch first (flint_and_steel_use, fire_charge_use); "
+        "dispensers' flint and steel sets fire, lights and primes in front (dispenser_flint). Gaps: rain and humid "
+        "biomes do not put it out sooner; other entities in fire, lightning setting fire and nether portals are "
         "not modeled; the player range on 1.21.8 is that of "
         "random ticks, not observed for fire; the pending tick of fire that went out stands for any block without rules "
         "of its own set there before it is due (as their ticks do for each other), and Anvil export leaves it out."},

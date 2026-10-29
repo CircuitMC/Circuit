@@ -1334,6 +1334,54 @@ int main() {
                 "TNT primed; in creative mode nothing is used up");
     });
 
+    suite.run("shears carve pumpkins, empty full hives, disarm tripwire, cut fast and wear on every block", [] {
+        using circuit::contracts::PlayerBreak;
+        using circuit::contracts::PlayerUse;
+        using circuit::contracts::SetPlayerSlot;
+        using circuit::gameplay::block_notation;
+        using D = Direction;
+        const auto shears = *circuit::gameplay::items::by_name("minecraft:shears");
+        // Speeds by the item's tool component: cobweb 15 (harvested), leaves 15, wool 5, vines 2, others 1.
+        const ItemStack tool{shears, 1};
+        const auto progress = [&](std::string_view block) {
+            return circuit::gameplay::destroy_progress(registry_block(block), tool, true, false, nullptr);
+        };
+        require(progress("oak_leaves") >= 1.0f && std::abs(progress("cobweb") - 15.0f / 4.0f / 30.0f) < 1e-6f
+                    && std::abs(progress("white_wool") - 5.0f / 0.8f / 30.0f) < 1e-6f && std::abs(progress("dirt") - 1.0f / 0.5f / 30.0f) < 1e-6f,
+                "dig speeds");
+        const PlayerKey alex{4, 2};
+        Sim s;
+        s.tick({place({0, 0, 0}, registry_block("pumpkin")), place({2, 0, 0}, registry_block("beehive", {{"facing", "north"}, {"honey_level", "5"}})),
+                place({4, 0, 0}, registry_block("tripwire", {{"attached", "false"}, {"disarmed", "false"}, {"east", "false"}, {"north", "false"},
+                                                             {"powered", "false"}, {"south", "false"}, {"west", "false"}})),
+                SetPlayerSlot{alex, 36, {shears, 1}}});
+        const auto damage = [&] {
+            const auto d = s.oracle.dump();
+            return std::ranges::find(d.players, alex, &PlayerInventory::player)->slots[36].damage;
+        };
+        const auto items_of = [&](std::string_view name) {
+            int n = 0;
+            const auto d = s.oracle.dump();
+            for (const auto& e : d.overworld().entities)
+                if (e.kind == circuit::gameplay::EntityKind::item && e.stack.item == *circuit::gameplay::items::by_name(name)) n += e.stack.count;
+            return n;
+        };
+        // Used from above by a player facing east: the carved face looks west.
+        s.tick({PlayerUse{alex, 36, {0, 0, 0}, D::up, D::east, D::east, false, true, 3, 3}});
+        require(block_notation(s.at({0, 0, 0})) == "minecraft:carved_pumpkin[facing=west]" && items_of("minecraft:pumpkin_seeds") == 4 && damage() == 1,
+                "carved, four seeds, worn");
+        s.tick({PlayerUse{alex, 36, {2, 0, 0}, D::up, D::east, D::east, false, true, 3, 3}});
+        require(block_notation(s.at({2, 0, 0})) == "minecraft:beehive[facing=north,honey_level=0]" && items_of("minecraft:honeycomb") == 3 && damage() == 2,
+                "a full hive emptied");
+        s.tick({PlayerUse{alex, 36, {2, 0, 0}, D::up, D::east, D::east, false, true, 3, 3}});
+        require(damage() == 2 && items_of("minecraft:honeycomb") == 3, "an empty hive: nothing");
+        s.tick({PlayerBreak{alex, {4, 0, 0}, true, 36}});
+        bool disarmed = false;
+        for (const auto& r : of_kind(s.last, TraceKind::block_changed))
+            if (const auto st = BlockState::decode(static_cast<std::uint32_t>(r.b))) disarmed = disarmed || block_notation(*st).find("disarmed=true") != std::string::npos;
+        require(s.at({4, 0, 0}).is_air() && disarmed && damage() == 3, "tripwire disarmed first; an instant block wears shears");
+    });
+
     suite.run("items burn in fire and lava, netherite does not, and lava reaches them by the version", [] {
         const auto stick = *circuit::gameplay::items::by_name("minecraft:stick");
         const auto netherite = *circuit::gameplay::items::by_name("minecraft:netherite_ingot");

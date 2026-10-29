@@ -487,6 +487,8 @@ void support_shape_update(RuleContext& ctx, BlockPos pos, BlockState s, Directio
     if (lost_top || !supported_at(ctx, pos, s)) destroy_block(ctx, pos);
 }
 
+bool tall_plant(BlockState s) { return need_of(s) == Need::tall_plant; }
+
 std::optional<ItemStack> supported_drop(BlockState s) {
     if (need_of(s) == Need::none) return std::nullopt;
     // A tall flower drops from its lower half, a bed from its head.

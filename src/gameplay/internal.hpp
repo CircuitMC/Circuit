@@ -294,6 +294,8 @@ bool checks_later(BlockState s);
 void check_support_later(RuleContext& ctx, BlockPos pos, BlockState s);
 void support_tick(RuleContext& ctx, BlockPos pos, BlockState s);
 // Its own item, its drop when no data packs give its loot table.
+// Either half of a tall flower, tall grass or a large fern.
+bool tall_plant(BlockState s);
 std::optional<ItemStack> supported_drop(BlockState s);
 
 // ---- cacti (farmland.cpp) ----
@@ -340,6 +342,17 @@ std::optional<bool> fire_item(std::uint16_t item);
 bool light_with(RuleContext& ctx, BlockPos pos, Direction face, bool charge);
 // A dispenser's flint and steel at the cell in front: whether it acted.
 bool dispense_fire(RuleContext& ctx, BlockPos front);
+
+// ---- shears (shears.cpp) ----
+// A pumpkin, which shears carve: into a carved pumpkin facing the face used
+// (from above or below, the player), with four seeds out of that face.
+bool shears_carve(BlockState s);
+void carve_pumpkin(RuleContext& ctx, BlockPos pos, Direction face, Direction player_facing);
+// A beehive or bee nest full of honey, which shears empty of three honeycomb.
+bool full_hive(BlockState s);
+void harvest_hive(RuleContext& ctx, BlockPos pos);
+// Tripwire as breaking it with shears leaves it first: disarmed (none when it is not tripwire or already is).
+std::optional<BlockState> disarmed_tripwire(BlockState s);
 // Whether fire or soul fire can stay with `near(offset)` the block at an offset from it.
 bool fire_supported(BlockState s, const Near& near, std::string_view release);
 // A state of fire set (`previous` was there before): its block tick's delay,

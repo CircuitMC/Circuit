@@ -581,6 +581,17 @@
       "description": "20 steps of flint and steel and fire charges used by a survival player: fire on block tops and beside planks, none where it cannot stay or the cell is taken, soul fire on soul sand, campfires and candles lit (not when lit or in water), nothing on air, TNT primed, the wear of each use and a flint and steel's last use, charges used up, and creative mode; Circuit and both official servers give identical blocks, held stacks and entities"
     },
     {
+      "id": "client/shears_items",
+      "kind": "black_box",
+      "versions": [
+        "java-1.21.4",
+        "java-1.21.8"
+      ],
+      "location": "external: circuit-clienttest/shears-items.js",
+      "status": "passing",
+      "description": "23 steps of shears used by a player in survival and creative mode: tripwire, leaves, a cobweb, wool, a vine, grass and dirt broken at the client's shears speeds with their drops and each break's wear, pumpkins carved from a side and from above (facing the player), a full beehive emptied of honeycomb and one at level 3 left alone; Circuit and both official servers give identical blocks, held stacks and dropped items"
+    },
+    {
       "id": "client/loom",
       "kind": "black_box",
       "versions": [

@@ -1,0 +1,34 @@
+circuit-trace 2
+title A player uses shears on a pumpkin, beehives and a bee nest full of honey and not, a carved pumpkin, stone and tripwire
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms shears
+area -1 0 -1 13 3 1
+ticks 40
+changes ordered
+entities observed
+rng observed
+gamerule randomTickSpeed 0
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 1 0 minecraft:pumpkin
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 1 0 minecraft:beehive[facing=north,honey_level=5]
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 1 0 minecraft:bee_nest[facing=north,honey_level=5]
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 1 0 minecraft:beehive[facing=north,honey_level=4]
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 1 0 minecraft:carved_pumpkin[facing=north]
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 1 0 minecraft:stone
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 1 0 minecraft:tripwire[attached=false,disarmed=false,east=false,north=false,powered=false,south=false,west=false]
+at 2 use-with 0 1 0 minecraft:shears
+at 4 use-with 2 1 0 minecraft:shears
+at 6 use-with 4 1 0 minecraft:shears
+at 8 use-with 6 1 0 minecraft:shears
+at 10 use-with 8 1 0 minecraft:shears
+at 12 use-with 10 1 0 minecraft:shears
+at 14 use-with 12 1 0 minecraft:shears

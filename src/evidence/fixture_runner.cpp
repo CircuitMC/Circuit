@@ -405,6 +405,8 @@ std::expected<Prepared, FixtureReport> prepare(const Fixture& f, bool require_ob
             auto& tick = p.inputs[a.tick + 2];
             if (a.pages > 0) p.books.push_back({a.tick + 2, tick.size(), a.pages, a.line});
             contracts::PlayerUse use{breaker, contracts::hotbar_first, a.pos, contracts::Direction::up};
+            // The harness's player faces south (yaw 0).
+            use.horizontal = use.look = contracts::Direction::south;
             use.survival = true;
             use.reach = 3;
             use.free = 3;
