@@ -1298,6 +1298,42 @@ int main() {
         require(s.at({-2, 0, 2}) == layers(2) && s.at({-2, 1, 2}) == blocks::stone(), "but not two");
     });
 
+    suite.run("flint and steel and fire charges set fire, light campfires, prime TNT and wear", [] {
+        using circuit::contracts::PlayerUse;
+        using circuit::contracts::SetPlayerSlot;
+        using circuit::gameplay::block_notation;
+        using D = Direction;
+        const auto item = [](std::string_view n) { return *circuit::gameplay::items::by_name(n); };
+        const auto flint = item("minecraft:flint_and_steel"), charge = item("minecraft:fire_charge");
+        const PlayerKey alex{4, 2};
+        const auto campfire = [](std::string lit) {
+            return registry_block("campfire", {{"facing", "north"}, {"lit", std::move(lit)}, {"signal_fire", "false"}, {"waterlogged", "false"}});
+        };
+        Sim s;
+        s.tick({place({0, 0, 0}, blocks::stone()), place({2, 0, 0}, blocks::stone()), place({2, 1, 0}, blocks::stone()), place({4, 0, 0}, campfire("false")),
+                place({6, 0, 0}, registry_block("tnt", {{"unstable", "false"}})), place({8, 0, 0}, registry_block("soul_soil"))});
+        const auto held = [&] {
+            const auto d = s.oracle.dump();
+            return std::ranges::find(d.players, alex, &PlayerInventory::player)->slots[36];
+        };
+        const auto use = [&](BlockPos pos, bool survival = true) { return PlayerUse{alex, 36, pos, D::up, D::south, D::south, false, survival, 3, 3}; };
+        s.tick({SetPlayerSlot{alex, 36, {flint, 1, 62}}});
+        s.tick({use({0, 0, 0})});
+        require(block_notation(s.at({0, 1, 0})).starts_with("minecraft:fire[age=0") && held().damage == 63, "fire on stone, worn by one");
+        s.tick({use({2, 0, 0})});
+        require(s.at({2, 1, 0}) == blocks::stone() && held().damage == 63, "the cell taken: nothing, and no wear");
+        s.tick({use({4, 0, 0})});
+        require(s.at({4, 0, 0}) == campfire("true") && held().empty(), "a campfire lit, and the last use breaks it");
+        s.tick({SetPlayerSlot{alex, 36, {charge, 2}}});
+        s.tick({use({8, 0, 0})});
+        require(block_notation(s.at({8, 1, 0})) == "minecraft:soul_fire" && held().count == 1, "soul fire on soul soil, a charge used up");
+        s.tick({use({6, 0, 0}, false)});
+        const auto d = s.oracle.dump();
+        require(s.at({6, 0, 0}).is_air() && held().count == 1
+                    && std::ranges::any_of(d.overworld().entities, [](const auto& e) { return e.kind == circuit::gameplay::EntityKind::primed_tnt; }),
+                "TNT primed; in creative mode nothing is used up");
+    });
+
     suite.run("items burn in fire and lava, netherite does not, and lava reaches them by the version", [] {
         const auto stick = *circuit::gameplay::items::by_name("minecraft:stick");
         const auto netherite = *circuit::gameplay::items::by_name("minecraft:netherite_ingot");

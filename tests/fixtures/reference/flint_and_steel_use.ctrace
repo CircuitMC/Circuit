@@ -1,0 +1,231 @@
+circuit-trace 2
+title A player uses flint and steel on the tops of stone, netherrack, soul soil, TNT, unlit, waterlogged and lit campfires, a soul campfire, candles, a candle cake and planks under glass
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v12
+mechanisms fire tnt
+area -1 0 -1 22 3 1
+ticks 60
+changes ordered
+entities observed
+rng observed
+gamerule allowFireTicksAwayFromPlayer true
+gamerule randomTickSpeed 0
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 1 0 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 1 0 minecraft:netherrack
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 1 0 minecraft:soul_soil
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 1 0 minecraft:tnt[unstable=false]
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 1 0 minecraft:campfire[facing=north,lit=false,signal_fire=false,waterlogged=false]
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 1 0 minecraft:candle[candles=2,lit=false,waterlogged=false]
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 1 0 minecraft:campfire[facing=north,lit=false,signal_fire=false,waterlogged=true]
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 1 0 minecraft:oak_planks
+at 0 set 14 2 0 minecraft:glass
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 1 0 minecraft:soul_campfire[facing=north,lit=false,signal_fire=false,waterlogged=false]
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 1 0 minecraft:candle_cake[lit=false]
+at 0 set 20 0 0 minecraft:stone
+at 0 set 20 1 0 minecraft:campfire[facing=north,lit=true,signal_fire=false,waterlogged=false]
+
+at 2 use-with 0 1 0 minecraft:flint_and_steel
+change 2 commands 0 2 0 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+draws 2 commands level 2
+
+at 4 use-with 2 1 0 minecraft:flint_and_steel
+change 4 commands 2 2 0 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+draws 4 commands level 2
+
+at 6 use-with 4 1 0 minecraft:flint_and_steel
+change 6 commands 4 2 0 minecraft:air minecraft:soul_fire
+draws 6 commands level 1
+
+at 8 use-with 6 1 0 minecraft:flint_and_steel
+entity-added 8 commands e1 minecraft:tnt 6.5 1 0.5 -0.018639118805943402 0.20000000298023224 0.007251430902789256 fuse=80
+change 8 commands 6 1 0 minecraft:tnt[unstable=false] minecraft:air
+draws 8 commands level 2
+entity-order 8 entities e1
+entity 8 e1 6.481360881194057 1.1600000029802322 0.5072514309027892 -0.018266336429824535 0.1568000029206276 0.007106402284733471 fuse=79 on-ground=false
+
+entity-order 9 entities e1
+entity 9 e1 6.463094544764233 1.2768000059008597 0.5143578331875227 -0.017901009701228043 0.11446400286221503 0.006964274239038801 fuse=78 on-ground=false
+
+at 10 use-with 8 1 0 minecraft:flint_and_steel
+change 10 commands 8 1 0 minecraft:campfire[facing=north,lit=false,signal_fire=false,waterlogged=false] minecraft:campfire[facing=north,lit=true,signal_fire=false,waterlogged=false]
+draws 10 commands level 1
+entity-order 10 entities e1
+entity 10 e1 6.445193535063004 1.3512640087630747 0.5213221074265615 -0.017542989507203482 0.07297472280497072 0.006824988754258025 fuse=77 on-ground=false
+
+entity-order 11 entities e1
+entity 11 e1 6.4276505455558 1.3842387315680456 0.5281470961808196 -0.017192129717059412 0.03231522834887131 0.006688488979172864 fuse=76 on-ground=false
+
+at 12 use-with 10 1 0 minecraft:flint_and_steel
+change 12 commands 10 1 0 minecraft:candle[candles=2,lit=false,waterlogged=false] minecraft:candle[candles=2,lit=true,waterlogged=false]
+draws 12 commands level 1
+entity-order 12 entities e1
+entity 12 e1 6.410458415838741 1.3765539599169168 0.5348355851599924 -0.016848287122718224 -0.0075310762181061185 0.006554719199589406 fuse=75 on-ground=false
+
+entity-order 13 entities e1
+entity 13 e1 6.393610128716023 1.3290228836988107 0.5413903043595818 -0.01651132138026386 -0.046580454693744 0.006423624815597618 fuse=74 on-ground=false
+
+at 14 use-with 12 1 0 minecraft:flint_and_steel
+entity-order 14 entities e1
+entity 14 e1 6.377098807335759 1.2424424290050666 0.5478139291751795 -0.016181094952658584 -0.08484884559986913 0.006295152319285666 fuse=73 on-ground=false
+
+entity-order 15 entities e1
+entity 15 e1 6.360917712383101 1.1175935834051975 0.5541090814944651 -0.015857473053605412 -0.12235186868787176 0.0061692492728999525 fuse=72 on-ground=false
+
+at 16 use-with 14 1 0 minecraft:flint_and_steel
+entity-order 16 entities e1
+entity 16 e1 6.345060239329495 1 0.5602783307673651 -0.010878226514773312 0 0.004232105001209368 fuse=71 on-ground=true
+
+entity-order 17 entities e1
+entity 17 e1 6.334182012814722 1 0.5645104357685745 -0.007462463389134491 0 0.002903224030829626 fuse=70 on-ground=true
+
+at 18 use-with 16 1 0 minecraft:flint_and_steel
+change 18 commands 16 1 0 minecraft:soul_campfire[facing=north,lit=false,signal_fire=false,waterlogged=false] minecraft:soul_campfire[facing=north,lit=true,signal_fire=false,waterlogged=false]
+draws 18 commands level 1
+entity-order 18 entities e1
+entity 18 e1 6.3267195494255875 1 0.5674136597994042 -0.0051192498849462606 0 0.001991611685149123 fuse=69 on-ground=true
+
+entity-order 19 entities e1
+entity 19 e1 6.321600299540641 1 0.5694052714845533 -0.003511805421073134 0 0.0013662456160122983 fuse=68 on-ground=true
+
+at 20 use-with 18 1 0 minecraft:flint_and_steel
+change 20 commands 18 1 0 minecraft:candle_cake[lit=false] minecraft:candle_cake[lit=true]
+draws 20 commands level 1
+entity-order 20 entities e1
+entity 20 e1 6.318088494119568 1 0.5707715171005656 -0.0024090985188561695 0 0.0009372444925844365 fuse=67 on-ground=true
+
+entity-order 21 entities e1
+entity 21 e1 6.315679395600712 1 0.5717087615931501 -0.0016526415839353322 0 0.0006429497219129234 fuse=66 on-ground=true
+
+at 22 use-with 20 1 0 minecraft:flint_and_steel
+entity-order 22 entities e1
+entity 22 e1 6.314026754016776 1 0.572351711315063 -0.0011337121265796379 0 0.00044106350923226546 fuse=65 on-ground=true
+
+entity-order 23 entities e1
+entity 23 e1 6.312893041890197 1 0.5727927748242952 -0.0007777265188336315 0 0.00030256956733333405 fuse=64 on-ground=true
+
+entity-order 24 entities e1
+entity 24 e1 6.312115315371363 1 0.5730953443916286 -0.0005335203919198711 0 0.00020756272319066713 fuse=63 on-ground=true
+
+entity-order 25 entities e1
+entity 25 e1 6.3115817949794435 1 0.5733029071148192 -0.00036599498885703154 0 0.00014238802810879764 fuse=62 on-ground=true
+
+entity-order 26 entities e1
+entity 26 e1 6.3112157999905865 1 0.5734452951429281 -0.0002510725623559236 0 9.767818728263518e-05 fuse=61 on-ground=true
+
+entity-order 27 entities e1
+entity 27 e1 6.3112157999905865 1 0.5734452951429281 -0.0001722357777761636 0 6.700723647588773e-05 fuse=60 on-ground=true
+
+entity-order 28 entities e1
+entity 28 e1 6.3112157999905865 1 0.5734452951429281 -0.00011815374355444822 0 4.596696422245898e-05 fuse=59 on-ground=true
+
+entity-order 29 entities e1
+entity 29 e1 6.3112157999905865 1 0.5734452951429281 -8.105346807835147e-05 0 3.153333745660686e-05 fuse=58 on-ground=true
+
+entity-order 30 entities e1
+entity 30 e1 6.3112157999905865 1 0.5734452951429281 -5.56026791017491e-05 0 2.1631869495232304e-05 fuse=57 on-ground=true
+
+entity-order 31 entities e1
+entity 31 e1 6.3112157999905865 1 0.5734452951429281 -3.814343786379988e-05 0 1.483946247372936e-05 fuse=56 on-ground=true
+
+entity-order 32 entities e1
+entity 32 e1 6.3112157999905865 1 0.5734452951429281 -2.6166398374566716e-05 0 1.0179871256978339e-05 fuse=55 on-ground=true
+
+entity-order 33 entities e1
+entity 33 e1 6.3112157999905865 1 0.5734452951429281 -1.7950149284952766e-05 0 6.983391682287139e-06 fuse=54 on-ground=true
+
+entity-order 34 entities e1
+entity 34 e1 6.3112157999905865 1 0.5734452951429281 -1.2313802409477598e-05 0 4.790606694048977e-06 fuse=53 on-ground=true
+
+entity-order 35 entities e1
+entity 35 e1 6.3112157999905865 1 0.5734452951429281 -8.447268452901633e-06 0 3.2863561921175986e-06 fuse=52 on-ground=true
+
+entity-order 36 entities e1
+entity 36 e1 6.3112157999905865 1 0.5734452951429281 -5.794826158690519e-06 0 2.2544403477926724e-06 fuse=51 on-ground=true
+
+entity-order 37 entities e1
+entity 37 e1 6.3112157999905865 1 0.5734452951429281 -3.975250744861696e-06 0 1.5465460785857733e-06 fuse=50 on-ground=true
+
+entity-order 38 entities e1
+entity 38 e1 6.3112157999905865 1 0.5734452951429281 -2.7270220109751233e-06 0 1.0609306099098403e-06 fuse=49 on-ground=true
+
+change 39 block_ticks 0 2 0 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false]
+draws 39 block_ticks level 3
+entity-order 39 entities e1
+entity 39 e1 6.3112157999905865 1 0.5734452951429281 -1.8707370995289345e-06 0 7.277983983981503e-07 fuse=48 on-ground=true
+
+change 40 block_ticks 2 2 0 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false]
+draws 40 block_ticks level 9
+entity-order 40 entities e1
+entity 40 e1 6.3112157999905865 1 0.5734452951429281 -1.283325650276849e-06 0 4.992697013011311e-07 fuse=47 on-ground=true
+
+entity-order 41 entities e1
+entity 41 e1 6.3112157999905865 1 0.5734452951429281 -8.803613960899184e-07 0 3.4249901509257597e-07 fuse=46 on-ground=true
+
+entity-order 42 entities e1
+entity 42 e1 6.3112157999905865 1 0.5734452951429281 -6.03927917717684e-07 0 2.349543243535071e-07 fuse=45 on-ground=true
+
+entity-order 43 entities e1
+entity 43 e1 6.3112157999905865 1 0.5734452951429281 -4.142945515543312e-07 0 1.6117866650650585e-07 fuse=44 on-ground=true
+
+entity-order 44 entities e1
+entity 44 e1 6.3112157999905865 1 0.5734452951429281 -2.8420606236627117e-07 0 1.10568565223463e-07 fuse=43 on-ground=true
+
+entity-order 45 entities e1
+entity 45 e1 6.3112157999905865 1 0.5734452951429281 -1.94965358783262e-07 0 7.585003574329561e-08 fuse=42 on-ground=true
+
+entity-order 46 entities e1
+entity 46 e1 6.3112157999905865 1 0.5734452951429281 -1.3374623612531772e-07 0 5.203312451990078e-08 fuse=41 on-ground=true
+
+entity-order 47 entities e1
+entity 47 e1 6.3112157999905865 1 0.5734452951429281 -9.174991798196796e-08 0 3.569472342065193e-08 fuse=40 on-ground=true
+
+entity-order 48 entities e1
+entity 48 e1 6.3112157999905865 1 0.5734452951429281 -6.294044373563001e-08 0 2.4486580266567222e-08 fuse=39 on-ground=true
+
+entity-order 49 entities e1
+entity 49 e1 6.3112157999905865 1 0.5734452951429281 -4.3177144402642183e-08 0 1.6797794062865114e-08 fuse=38 on-ground=true
+
+entity-order 50 entities e1
+entity 50 e1 6.3112157999905865 1 0.5734452951429281 -2.9619521060212534e-08 0 1.1523286727125468e-08 fuse=37 on-ground=true
+
+entity-order 51 entities e1
+entity 51 e1 6.3112157999905865 1 0.5734452951429281 -2.0318991447305796e-08 0 7.90497469480807e-09 fuse=36 on-ground=true
+
+entity-order 52 entities e1
+entity 52 e1 6.3112157999905865 1 0.5734452951429281 -1.3938828132851776e-08 0 5.422812640638335e-09 fuse=35 on-ground=true
+
+entity-order 53 entities e1
+entity 53 e1 6.3112157999905865 1 0.5734452951429281 -9.562036099136317e-09 0 3.7200494714778972e-09 fuse=34 on-ground=true
+
+entity-order 54 entities e1
+entity 54 e1 6.3112157999905865 1 0.5734452951429281 -6.559556764007513e-09 0 2.551953937433837e-09 fuse=33 on-ground=true
+
+entity-order 55 entities e1
+entity 55 e1 6.3112157999905865 1 0.5734452951429281 -4.4998559401091534e-09 0 1.7506404010796121e-09 fuse=32 on-ground=true
+
+entity-order 56 entities e1
+entity 56 e1 6.3112157999905865 1 0.5734452951429281 -3.086901174914879e-09 0 1.2009393151406138e-09 fuse=31 on-ground=true
+
+entity-order 57 entities e1
+entity 57 e1 6.3112157999905865 1 0.5734452951429281 -2.117614205991607e-09 0 8.23844370186461e-10 fuse=30 on-ground=true
+
+entity-order 58 entities e1
+entity 58 e1 6.3112157999905865 1 0.5734452951429281 -1.452683345310242e-09 0 5.651572379479122e-10 fuse=29 on-ground=true
+
+entity-order 59 entities e1
+entity 59 e1 6.3112157999905865 1 0.5734452951429281 -9.96540774882826e-10 0 3.8769786523226773e-10 fuse=28 on-ground=true
+
+entity-order 60 entities e1
+entity 60 e1 6.3112157999905865 1 0.5734452951429281 -6.836269715696184e-10 0 2.6596073554933566e-10 fuse=27 on-ground=true

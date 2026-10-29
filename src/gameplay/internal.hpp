@@ -333,6 +333,13 @@ void ice_broken(RuleContext& ctx, BlockPos pos, BlockState s, const ItemStack& t
 // ---- fire (fire.cpp) ----
 bool is_fire(BlockState s);
 bool is_soul_fire(BlockState s);
+// Whether an item lights fire: flint and steel (false) or a fire charge (true).
+std::optional<bool> fire_item(std::uint16_t item);
+// Flint and steel or a fire charge used on a face of the block at `pos`:
+// whether it lit something or set fire.
+bool light_with(RuleContext& ctx, BlockPos pos, Direction face, bool charge);
+// A dispenser's flint and steel at the cell in front: whether it acted.
+bool dispense_fire(RuleContext& ctx, BlockPos front);
 // Whether fire or soul fire can stay with `near(offset)` the block at an offset from it.
 bool fire_supported(BlockState s, const Near& near, std::string_view release);
 // A state of fire set (`previous` was there before): its block tick's delay,
@@ -551,6 +558,8 @@ void check_tnt(RuleContext& ctx, BlockPos pos);
 void prime_by_explosion(RuleContext& ctx, BlockPos pos);
 // TNT a burning projectile hit: primed as by redstone.
 void prime_by_fire(RuleContext& ctx, BlockPos pos);
+// TNT a player primes with flint and steel or a fire charge: whether it was primed.
+bool prime_used(RuleContext& ctx, BlockPos pos);
 // TNT fire burned (its block already replaced): primed as by redstone.
 void prime_burned(RuleContext& ctx, BlockPos pos);
 // TNT a dispenser primes in the cell `pos`, as by redstone; false when the

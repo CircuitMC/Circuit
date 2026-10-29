@@ -81,6 +81,12 @@ void prime_by_fire(RuleContext& ctx, BlockPos pos) {
     if (tnt_explodes(ctx)) prime(ctx, pos);
 }
 
+bool prime_used(RuleContext& ctx, BlockPos pos) {
+    if (!tnt_explodes(ctx)) return false;
+    prime(ctx, pos);
+    return true;
+}
+
 void prime_burned(RuleContext& ctx, BlockPos pos) {
     if (!tnt_explodes(ctx)) return;
     auto e = primed_at(ctx, pos);

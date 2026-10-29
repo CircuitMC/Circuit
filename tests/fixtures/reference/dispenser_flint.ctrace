@@ -1,0 +1,192 @@
+circuit-trace 2
+title Dispensers with flint and steel facing air (twice), an unlit campfire, candles, TNT, stone, a lit campfire, and air where fire cannot stay
+game-version 1.21.8
+source circuit_reference
+harness circuit-reference-rules-v12
+mechanisms dispenser fire tnt
+area 0 0 0 7 3 20
+ticks 40
+changes ordered
+entities observed
+rng observed
+gamerule allowFireTicksAwayFromPlayer true
+gamerule randomTickSpeed 0
+
+at 0 set 5 0 1 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 5 1 1 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 1 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 0 4 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 5 1 4 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 4 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 4 minecraft:campfire[facing=north,lit=false,signal_fire=false,waterlogged=false]
+at 0 set 5 0 7 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 5 1 7 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 7 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 7 minecraft:candle[candles=1,lit=false,waterlogged=false]
+at 0 set 5 0 10 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 5 1 10 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 10 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 10 minecraft:tnt[unstable=false]
+at 0 set 5 0 13 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 5 1 13 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 13 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 13 minecraft:stone
+at 0 set 5 0 16 minecraft:stone
+at 0 set 4 0 16 minecraft:stone
+at 0 set 5 1 16 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 16 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 0 19 minecraft:stone
+at 0 set 4 0 19 minecraft:stone
+at 0 set 5 1 19 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 19 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 19 minecraft:campfire[facing=north,lit=true,signal_fire=false,waterlogged=false]
+
+at 1 insert 5 1 1 0 minecraft:flint_and_steel 1
+at 1 insert 5 1 4 0 minecraft:flint_and_steel 1
+at 1 insert 5 1 7 0 minecraft:flint_and_steel 1
+at 1 insert 5 1 10 0 minecraft:flint_and_steel 1
+at 1 insert 5 1 13 0 minecraft:flint_and_steel 1
+at 1 insert 5 1 16 0 minecraft:flint_and_steel 1
+at 1 insert 5 1 19 0 minecraft:flint_and_steel 1
+
+at 4 use 4 1 1
+at 4 use 4 1 4
+at 4 use 4 1 7
+at 4 use 4 1 10
+at 4 use 4 1 13
+at 4 use 4 1 16
+at 4 use 4 1 19
+change 4 commands 4 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 4 commands 5 1 1 minecraft:dispenser[facing=up,triggered=false] minecraft:dispenser[facing=up,triggered=true]
+change 4 commands 4 1 4 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 4 commands 5 1 4 minecraft:dispenser[facing=up,triggered=false] minecraft:dispenser[facing=up,triggered=true]
+change 4 commands 4 1 7 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 4 commands 5 1 7 minecraft:dispenser[facing=up,triggered=false] minecraft:dispenser[facing=up,triggered=true]
+change 4 commands 4 1 10 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 4 commands 5 1 10 minecraft:dispenser[facing=up,triggered=false] minecraft:dispenser[facing=up,triggered=true]
+change 4 commands 4 1 13 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 4 commands 5 1 13 minecraft:dispenser[facing=up,triggered=false] minecraft:dispenser[facing=up,triggered=true]
+change 4 commands 4 1 16 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 4 commands 5 1 16 minecraft:dispenser[facing=east,triggered=false] minecraft:dispenser[facing=east,triggered=true]
+change 4 commands 4 1 19 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 4 commands 5 1 19 minecraft:dispenser[facing=up,triggered=false] minecraft:dispenser[facing=up,triggered=true]
+
+change 7 block_ticks 5 2 1 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+change 7 block_ticks 5 2 4 minecraft:campfire[facing=north,lit=false,signal_fire=false,waterlogged=false] minecraft:campfire[facing=north,lit=true,signal_fire=false,waterlogged=false]
+change 7 block_ticks 5 2 7 minecraft:candle[candles=1,lit=false,waterlogged=false] minecraft:candle[candles=1,lit=true,waterlogged=false]
+entity-added 7 block_ticks e1 minecraft:tnt 5.5 2 10.5 -0.018639118805943402 0.20000000298023224 0.007251430902789256 fuse=80
+change 7 block_ticks 5 2 10 minecraft:tnt[unstable=false] minecraft:air
+draws 7 block_ticks level 10
+entity-order 7 entities e1
+entity 7 e1 5.481360881194057 2.160000002980232 10.50725143090279 -0.018266336429824535 0.1568000029206276 0.007106402284733471 fuse=79 on-ground=false
+
+entity-order 8 entities e1
+entity 8 e1 5.463094544764233 2.27680000590086 10.514357833187523 -0.017901009701228043 0.11446400286221503 0.006964274239038801 fuse=78 on-ground=false
+
+entity-order 9 entities e1
+entity 9 e1 5.445193535063004 2.351264008763075 10.521322107426561 -0.017542989507203482 0.07297472280497072 0.006824988754258025 fuse=77 on-ground=false
+
+entity-order 10 entities e1
+entity 10 e1 5.4276505455558 2.384238731568046 10.52814709618082 -0.017192129717059412 0.03231522834887131 0.006688488979172864 fuse=76 on-ground=false
+
+entity-order 11 entities e1
+entity 11 e1 5.410458415838741 2.3765539599169174 10.534835585159993 -0.016848287122718224 -0.0075310762181061185 0.006554719199589406 fuse=75 on-ground=false
+
+at 12 use 4 1 1
+change 12 commands 4 1 1 minecraft:lever[face=floor,facing=north,powered=true] minecraft:lever[face=floor,facing=north,powered=false]
+change 12 commands 5 1 1 minecraft:dispenser[facing=up,triggered=true] minecraft:dispenser[facing=up,triggered=false]
+entity-order 12 entities e1
+entity 12 e1 5.393610128716023 2.329022883698811 10.541390304359583 -0.01651132138026386 -0.046580454693744 0.006423624815597618 fuse=74 on-ground=false
+
+entity-order 13 entities e1
+entity 13 e1 5.377098807335759 2.242442429005067 10.547813929175181 -0.016181094952658584 -0.08484884559986913 0.006295152319285666 fuse=73 on-ground=false
+
+entity-order 14 entities e1
+entity 14 e1 5.360917712383101 2.1175935834051978 10.554109081494467 -0.015857473053605412 -0.12235186868787176 0.0061692492728999525 fuse=72 on-ground=false
+
+entity-order 15 entities e1
+entity 15 e1 5.345060239329495 2 10.560278330767366 -0.010878226514773312 0 0.004232105001209368 fuse=71 on-ground=true
+
+at 16 use 4 1 1
+change 16 commands 4 1 1 minecraft:lever[face=floor,facing=north,powered=false] minecraft:lever[face=floor,facing=north,powered=true]
+change 16 commands 5 1 1 minecraft:dispenser[facing=up,triggered=false] minecraft:dispenser[facing=up,triggered=true]
+entity-order 16 entities e1
+entity 16 e1 5.334182012814722 2 10.564510435768575 -0.007462463389134491 0 0.002903224030829626 fuse=70 on-ground=true
+
+entity-order 17 entities e1
+entity 17 e1 5.3267195494255875 2 10.567413659799405 -0.0051192498849462606 0 0.001991611685149123 fuse=69 on-ground=true
+
+entity-order 18 entities e1
+entity 18 e1 5.321600299540641 2 10.569405271484554 -0.003511805421073134 0 0.0013662456160122983 fuse=68 on-ground=true
+
+draws 19 block_ticks level 1
+entity-order 19 entities e1
+entity 19 e1 5.318088494119568 2 10.570771517100566 -0.0024090985188561695 0 0.0009372444925844365 fuse=67 on-ground=true
+
+entity-order 20 entities e1
+entity 20 e1 5.315679395600712 2 10.57170876159315 -0.0016526415839353322 0 0.0006429497219129234 fuse=66 on-ground=true
+
+entity-order 21 entities e1
+entity 21 e1 5.314026754016776 2 10.572351711315063 -0.0011337121265796379 0 0.00044106350923226546 fuse=65 on-ground=true
+
+entity-order 22 entities e1
+entity 22 e1 5.312893041890197 2 10.572792774824295 -0.0007777265188336315 0 0.00030256956733333405 fuse=64 on-ground=true
+
+entity-order 23 entities e1
+entity 23 e1 5.312115315371363 2 10.573095344391628 -0.0005335203919198711 0 0.00020756272319066713 fuse=63 on-ground=true
+
+entity-order 24 entities e1
+entity 24 e1 5.3115817949794435 2 10.573302907114819 -0.00036599498885703154 0 0.00014238802810879764 fuse=62 on-ground=true
+
+entity-order 25 entities e1
+entity 25 e1 5.3112157999905865 2 10.573445295142928 -0.0002510725623559236 0 9.767818728263518e-05 fuse=61 on-ground=true
+
+entity-order 26 entities e1
+entity 26 e1 5.3112157999905865 2 10.573445295142928 -0.0001722357777761636 0 6.700723647588773e-05 fuse=60 on-ground=true
+
+entity-order 27 entities e1
+entity 27 e1 5.3112157999905865 2 10.573445295142928 -0.00011815374355444822 0 4.596696422245898e-05 fuse=59 on-ground=true
+
+entity-order 28 entities e1
+entity 28 e1 5.3112157999905865 2 10.573445295142928 -8.105346807835147e-05 0 3.153333745660686e-05 fuse=58 on-ground=true
+
+entity-order 29 entities e1
+entity 29 e1 5.3112157999905865 2 10.573445295142928 -5.56026791017491e-05 0 2.1631869495232304e-05 fuse=57 on-ground=true
+
+entity-order 30 entities e1
+entity 30 e1 5.3112157999905865 2 10.573445295142928 -3.814343786379988e-05 0 1.483946247372936e-05 fuse=56 on-ground=true
+
+entity-order 31 entities e1
+entity 31 e1 5.3112157999905865 2 10.573445295142928 -2.6166398374566716e-05 0 1.0179871256978339e-05 fuse=55 on-ground=true
+
+entity-order 32 entities e1
+entity 32 e1 5.3112157999905865 2 10.573445295142928 -1.7950149284952766e-05 0 6.983391682287139e-06 fuse=54 on-ground=true
+
+entity-order 33 entities e1
+entity 33 e1 5.3112157999905865 2 10.573445295142928 -1.2313802409477598e-05 0 4.790606694048977e-06 fuse=53 on-ground=true
+
+entity-order 34 entities e1
+entity 34 e1 5.3112157999905865 2 10.573445295142928 -8.447268452901633e-06 0 3.2863561921175986e-06 fuse=52 on-ground=true
+
+entity-order 35 entities e1
+entity 35 e1 5.3112157999905865 2 10.573445295142928 -5.794826158690519e-06 0 2.2544403477926724e-06 fuse=51 on-ground=true
+
+entity-order 36 entities e1
+entity 36 e1 5.3112157999905865 2 10.573445295142928 -3.975250744861696e-06 0 1.5465460785857733e-06 fuse=50 on-ground=true
+
+entity-order 37 entities e1
+entity 37 e1 5.3112157999905865 2 10.573445295142928 -2.7270220109751233e-06 0 1.0609306099098403e-06 fuse=49 on-ground=true
+
+entity-order 38 entities e1
+entity 38 e1 5.3112157999905865 2 10.573445295142928 -1.8707370995289345e-06 0 7.277983983981503e-07 fuse=48 on-ground=true
+
+entity-order 39 entities e1
+entity 39 e1 5.3112157999905865 2 10.573445295142928 -1.283325650276849e-06 0 4.992697013011311e-07 fuse=47 on-ground=true
+
+entity-order 40 entities e1
+entity 40 e1 5.3112157999905865 2 10.573445295142928 -8.803613960899184e-07 0 3.4249901509257597e-07 fuse=46 on-ground=true

@@ -1,0 +1,230 @@
+circuit-trace 2
+title A player uses a fire charge on the tops of stone, netherrack, soul soil, TNT, unlit, waterlogged and lit campfires, a soul campfire, candles, a candle cake and planks under glass
+game-version 1.21.8
+source harness_trace
+harness circuit-harness:0.38.0+mc1.21.8
+mechanisms fire tnt
+area -1 0 -1 22 3 1
+ticks 60
+changes ordered
+entities observed
+rng observed
+gamerule allowFireTicksAwayFromPlayer true
+gamerule randomTickSpeed 0
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 1 0 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 1 0 minecraft:netherrack
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 1 0 minecraft:soul_soil
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 1 0 minecraft:tnt[unstable=false]
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 1 0 minecraft:campfire[facing=north,lit=false,signal_fire=false,waterlogged=false]
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 1 0 minecraft:candle[candles=2,lit=false,waterlogged=false]
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 1 0 minecraft:campfire[facing=north,lit=false,signal_fire=false,waterlogged=true]
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 1 0 minecraft:oak_planks
+at 0 set 14 2 0 minecraft:glass
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 1 0 minecraft:soul_campfire[facing=north,lit=false,signal_fire=false,waterlogged=false]
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 1 0 minecraft:candle_cake[lit=false]
+at 0 set 20 0 0 minecraft:stone
+at 0 set 20 1 0 minecraft:campfire[facing=north,lit=true,signal_fire=false,waterlogged=false]
+
+at 2 use-with 0 1 0 minecraft:fire_charge
+change 2 commands 0 2 0 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+draws 2 commands level 3
+
+at 4 use-with 2 1 0 minecraft:fire_charge
+change 4 commands 2 2 0 minecraft:air minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false]
+draws 4 commands level 3
+
+at 6 use-with 4 1 0 minecraft:fire_charge
+change 6 commands 4 2 0 minecraft:air minecraft:soul_fire
+draws 6 commands level 2
+
+at 8 use-with 6 1 0 minecraft:fire_charge
+entity-added 8 commands e1 minecraft:tnt 6.5 1.0 0.5 0.01150476137312696 0.20000000298023224 0.01635972083341907 fuse=80
+change 8 commands 6 1 0 minecraft:tnt[unstable=false] minecraft:air
+draws 8 commands level 2
+entity-order 8 entities e1
+entity 8 e1 6.511504761373127 1.1600000029802322 0.5163597208334191 0.01127466614566442 0.1568000029206276 0.016032526416750688 fuse=79 on-ground=false
+
+entity-order 9 entities e1
+entity 9 e1 6.522779427518791 1.2768000059008597 0.5323922472501698 0.011049172822751132 0.11446400286221503 0.015711875888415675 fuse=78 on-ground=false
+
+at 10 use-with 8 1 0 minecraft:fire_charge
+change 10 commands 8 1 0 minecraft:campfire[facing=north,lit=false,signal_fire=false,waterlogged=false] minecraft:campfire[facing=north,lit=true,signal_fire=false,waterlogged=false]
+draws 10 commands level 2
+entity-order 10 entities e1
+entity 10 e1 6.5338286003415424 1.3512640087630747 0.5481041231385855 0.01082818936629611 0.07297472280497072 0.01539763837064736 fuse=77 on-ground=false
+
+entity-order 11 entities e1
+entity 11 e1 6.5446567897078385 1.3842387315680456 0.5635017615092328 0.010611625578970187 0.03231522834887131 0.015089685603234412 fuse=76 on-ground=false
+
+at 12 use-with 10 1 0 minecraft:fire_charge
+change 12 commands 10 1 0 minecraft:candle[candles=2,lit=false,waterlogged=false] minecraft:candle[candles=2,lit=true,waterlogged=false]
+draws 12 commands level 2
+entity-order 12 entities e1
+entity 12 e1 6.555268415286808 1.3765539599169168 0.5785914471124672 0.010399393067390784 -0.0075310762181061185 0.014787891891169724 fuse=75 on-ground=false
+
+entity-order 13 entities e1
+entity 13 e1 6.565667808354199 1.3290228836988107 0.5933793390036369 0.010191405206042968 -0.046580454693744 0.01449213405334633 fuse=74 on-ground=false
+
+at 14 use-with 12 1 0 minecraft:fire_charge
+entity-order 14 entities e1
+entity 14 e1 6.575859213560242 1.2424424290050666 0.6078714730569833 0.009987577101922109 -0.08484884559986913 0.014202291372279402 fuse=73 on-ground=false
+
+entity-order 15 entities e1
+entity 15 e1 6.585846790662164 1.1175935834051975 0.6220737644292627 0.009787825559883667 -0.12235186868787176 0.013918245544833814 fuse=72 on-ground=false
+
+at 16 use-with 14 1 0 minecraft:fire_charge
+entity-order 16 entities e1
+entity 16 e1 6.595634616222048 1.0 0.6359920099740964 0.006714448334080195 0 0.009547916443755996 fuse=71 on-ground=true
+
+entity-order 17 entities e1
+entity 17 e1 6.602349064556129 1.0 0.6455399264178524 0.004606111557179013 0 0.006549870680416613 fuse=70 on-ground=true
+
+at 18 use-with 16 1 0 minecraft:fire_charge
+change 18 commands 16 1 0 minecraft:soul_campfire[facing=north,lit=false,signal_fire=false,waterlogged=false] minecraft:soul_campfire[facing=north,lit=true,signal_fire=false,waterlogged=false]
+draws 18 commands level 2
+entity-order 18 entities e1
+entity 18 e1 6.606955176113308 1.0 0.652089797098269 0.003159792528224803 0 0.004493211286765796 fuse=69 on-ground=true
+
+entity-order 19 entities e1
+entity 19 e1 6.610114968641533 1.0 0.6565830083850348 0.0021676176743622147 0 0.003082342942721336 fuse=68 on-ground=true
+
+at 20 use-with 18 1 0 minecraft:fire_charge
+change 20 commands 18 1 0 minecraft:candle_cake[lit=false] minecraft:candle_cake[lit=true]
+draws 20 commands level 2
+entity-order 20 entities e1
+entity 20 e1 6.612282586315895 1.0 0.6596653513277562 0.0014869857246124793 0 0.0021144872587068363 fuse=67 on-ground=true
+
+entity-order 21 entities e1
+entity 21 e1 6.613769572040508 1.0 0.661779838586463 0.0010200722070841607 0 0.0014505382594728895 fuse=66 on-ground=true
+
+at 22 use-with 20 1 0 minecraft:fire_charge
+entity-order 22 entities e1
+entity 22 e1 6.614789644247592 1.0 0.663230376845936 6.997695340597342E-4 0 9.95069245998402E-4 fuse=65 on-ground=true
+
+entity-order 23 entities e1
+entity 23 e1 6.615489413781652 1.0 0.6642254460919343 4.800419003649776E-4 0 6.826175027549037E-4 fuse=64 on-ground=true
+
+entity-order 24 entities e1
+entity 24 e1 6.615969455682016 1.0 0.6649080635946892 3.293087436503746E-4 0 4.68275606889864E-4 fuse=63 on-ground=true
+
+entity-order 25 entities e1
+entity 25 e1 6.616298764425666 1.0 0.6653763392015791 2.2590579814415695E-4 0 3.2123706632644666E-4 fuse=62 on-ground=true
+
+entity-order 26 entities e1
+entity 26 e1 6.616524670223811 1.0 0.6656975762679056 1.5497137752689167E-4 0 2.2036862749994236E-4 fuse=61 on-ground=true
+
+entity-order 27 entities e1
+entity 27 e1 6.616524670223811 1.0 0.6656975762679056 1.0631036498344767E-4 0 1.5117287846496045E-4 fuse=60 on-ground=true
+
+entity-order 28 entities e1
+entity 28 e1 6.616524670223811 1.0 0.6656975762679056 7.29289103786451E-5 0 1.0370459462696286E-4 fuse=59 on-ground=true
+
+entity-order 29 entities e1
+entity 29 e1 6.616524670223811 1.0 0.6656975762679056 5.0029232519750536E-5 0 7.114135191409651E-5 fuse=58 on-ground=true
+
+entity-order 30 entities e1
+entity 30 e1 6.616524670223811 1.0 0.6656975762679056 3.4320053508548866E-5 0 4.88029674130702E-5 fuse=57 on-ground=true
+
+entity-order 31 entities e1
+entity 31 e1 6.616524670223811 1.0 0.6656975762679056 2.354355670686452E-5 0 3.347883564536616E-5 fuse=56 on-ground=true
+
+entity-order 32 entities e1
+entity 32 e1 6.616524670223811 1.0 0.6656975762679056 1.615087990090906E-5 0 2.296648125272118E-5 fuse=55 on-ground=true
+
+entity-order 33 entities e1
+entity 33 e1 6.616524670223811 1.0 0.6656975762679056 1.1079503612023615E-5 0 1.575500613936673E-5 fuse=54 on-ground=true
+
+entity-order 34 entities e1
+entity 34 e1 6.616524670223811 1.0 0.6656975762679056 7.600539477848199E-6 0 1.0807934211605574E-5 fuse=53 on-ground=true
+
+entity-order 35 entities e1
+entity 35 e1 6.616524670223811 1.0 0.6656975762679056 5.213970081803864E-6 0 7.414242869161423E-6 fuse=52 on-ground=true
+
+change 36 block_ticks 2 2 0 minecraft:fire[age=0,east=false,north=false,south=false,up=false,west=false] minecraft:fire[age=1,east=false,north=false,south=false,up=false,west=false]
+draws 36 block_ticks level 9
+entity-order 36 entities e1
+entity 36 e1 6.616524670223811 1.0 0.6656975762679056 3.5767834761174504E-6 0 5.0861706082447356E-6 fuse=51 on-ground=true
+
+entity-order 37 entities e1
+entity 37 e1 6.616524670223811 1.0 0.6656975762679056 2.4536734646165707E-6 0 3.4891130372558886E-6 fuse=50 on-ground=true
+
+entity-order 38 entities e1
+entity 38 e1 6.616524670223811 1.0 0.6656975762679056 1.6832199967269674E-6 0 2.3935315435575393E-6 fuse=49 on-ground=true
+
+entity-order 39 entities e1
+entity 39 e1 6.616524670223811 1.0 0.6656975762679056 1.1546889177546996E-6 0 1.6419626388804718E-6 fuse=48 on-ground=true
+
+draws 40 block_ticks level 2
+entity-order 40 entities e1
+entity 40 e1 6.616524670223811 1.0 0.6656975762679056 7.921165975797239E-7 0 1.1263863702720035E-6 fuse=47 on-ground=true
+
+entity-order 41 entities e1
+entity 41 e1 6.616524670223811 1.0 0.6656975762679056 5.433919859396906E-7 0 7.727010500065944E-7 fuse=46 on-ground=true
+
+entity-order 42 entities e1
+entity 42 e1 6.616524670223811 1.0 0.6656975762679056 3.727669023546277E-7 0 5.300729203045237E-7 fuse=45 on-ground=true
+
+entity-order 43 entities e1
+entity 43 e1 6.616524670223811 1.0 0.6656975762679056 2.557180950152746E-7 0 3.636300233289032E-7 fuse=44 on-ground=true
+
+entity-order 44 entities e1
+entity 44 e1 6.616524670223811 1.0 0.6656975762679056 1.7542261318047834E-7 0 2.494501960036276E-7 fuse=43 on-ground=true
+
+entity-order 45 entities e1
+entity 45 e1 6.616524670223811 1.0 0.6656975762679056 1.2033991264180812E-7 0 1.711228344584885E-7 fuse=42 on-ground=true
+
+entity-order 46 entities e1
+entity 46 e1 6.616524670223811 1.0 0.6656975762679056 8.255318007228035E-8 0 1.173902644385231E-7 fuse=41 on-ground=true
+
+entity-order 47 entities e1
+entity 47 e1 6.616524670223811 1.0 0.6656975762679056 5.663148152958431E-8 0 8.052972140482684E-8 fuse=40 on-ground=true
+
+entity-order 48 entities e1
+entity 48 e1 6.616524670223811 1.0 0.6656975762679056 3.8849196329294834E-8 0 5.5243388883711206E-8 fuse=39 on-ground=true
+
+entity-order 49 entities e1
+entity 49 e1 6.616524670223811 1.0 0.6656975762679056 2.6650548681896254E-8 0 3.7896964774225886E-8 fuse=38 on-ground=true
+
+entity-order 50 entities e1
+entity 50 e1 6.616524670223811 1.0 0.6656975762679056 1.828227639578083E-8 0 2.5997317835118955E-8 fuse=37 on-ground=true
+
+entity-order 51 entities e1
+entity 51 e1 6.616524670223811 1.0 0.6656975762679056 1.2541641607505647E-8 0 1.78341600348916E-8 fuse=36 on-ground=true
+
+entity-order 52 entities e1
+entity 52 e1 6.616524670223811 1.0 0.6656975762679056 8.603566142748874E-9 0 1.2234233783935637E-8 fuse=35 on-ground=true
+
+entity-order 53 entities e1
+entity 53 e1 6.616524670223811 1.0 0.6656975762679056 5.9020463739257265E-9 0 8.392684375779845E-9 fuse=34 on-ground=true
+
+entity-order 54 entities e1
+entity 54 e1 6.616524670223811 1.0 0.6656975762679056 4.048803812513048E-9 0 5.757381481784973E-9 fuse=33 on-ground=true
+
+entity-order 55 entities e1
+entity 55 e1 6.616524670223811 1.0 0.6656975762679056 2.7774794153839506E-9 0 3.9495636965044916E-9 fuse=32 on-ground=true
+
+entity-order 56 entities e1
+entity 56 e1 6.616524670223811 1.0 0.6656975762679056 1.90535087895339E-9 0 2.7094006958020807E-9 fuse=31 on-ground=true
+
+entity-order 57 entities e1
+entity 57 e1 6.616524670223811 1.0 0.6656975762679056 1.3070707029620255E-9 0 1.8586488773202272E-9 fuse=30 on-ground=true
+
+entity-order 58 entities e1
+entity 58 e1 6.616524670223811 1.0 0.6656975762679056 8.966505022319495E-10 0 1.2750331298416757E-9 fuse=29 on-ground=true
+
+entity-order 59 entities e1
+entity 59 e1 6.616524670223811 1.0 0.6656975762679056 6.151022445311173E-10 0 8.746727270713896E-10 fuse=28 on-ground=true
+
+entity-order 60 entities e1
+entity 60 e1 6.616524670223811 1.0 0.6656975762679056 4.219601397483464E-10 0 6.000254907709732E-10 fuse=27 on-ground=true

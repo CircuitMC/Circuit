@@ -166,6 +166,45 @@ void burn(RuleContext& ctx, BlockPos pos, int chance, int age) {
     if (is_tnt(s)) prime_burned(ctx, pos);
 }
 
+std::string value_of(BlockState s, std::string_view key) {
+    for (const auto& [k, v] : registry::properties(s.registry_state()))
+        if (k == key) return v;
+    return {};
+}
+
+// A campfire, candles or a candle cake that flint and steel or a fire charge
+// lights: unlit, and not in water.
+bool lightable(BlockState s) {
+    if (!s.is(BlockType::other)) return false;
+    const auto n = name_of(s);
+    const bool campfire = n == "campfire" || n == "soul_campfire";
+    const bool candle = n.ends_with("candle");
+    if (!campfire && !candle && !n.ends_with("candle_cake")) return false;
+    return value_of(s, "lit") == "false" && value_of(s, "waterlogged") != "true";
+}
+
+BlockState lit(BlockState s) {
+    auto props = registry::properties(s.registry_state());
+    for (auto& [k, v] : props)
+        if (k == "lit") v = "true";
+    const auto block = registry::block_of(s.registry_state());
+    const auto state = block ? registry::state_of(*block, props) : std::nullopt;
+    return state ? BlockState::registered(*state) : s;
+}
+
+// The fire set at an empty cell where it can stay: soul fire on soul sand
+// and soul soil, else fire with the faces of its flammable neighbors.
+std::optional<BlockState> fire_to_set(RuleContext& ctx, BlockPos target) {
+    if (!in_world(ctx.world(), target) || !ctx.block(target).is_air()) return std::nullopt;
+    const auto below = name_of(ctx.block(target.relative(Direction::down)));
+    const auto release = ctx.bundle().schema.content_release;
+    const auto fire = below == "soul_sand" || below == "soul_soil"
+                          ? BlockState::registered(registry::block(*registry::find_block(release, "soul_fire")).default_state)
+                          : fire_of_age(ctx, target, 0);
+    if (!stays(ctx, target, fire)) return std::nullopt;
+    return fire;
+}
+
 // The best ignite odds beside an empty cell; 0 for a cell that is not empty.
 int ignite_odds_at(RuleContext& ctx, BlockPos pos) {
     if (!ctx.block(pos).is_air()) return 0;
@@ -176,6 +215,54 @@ int ignite_odds_at(RuleContext& ctx, BlockPos pos) {
 } // namespace
 
 bool is_fire(BlockState s) { return s.is(BlockType::other) && name_of(s) == "fire"; }
+
+std::optional<bool> fire_item(std::uint16_t item) {
+    static const auto flint = items::by_name("minecraft:flint_and_steel"), charge = items::by_name("minecraft:fire_charge");
+    if (flint && item == *flint) return false;
+    if (charge && item == *charge) return true;
+    return std::nullopt;
+}
+
+// Flint and steel and fire charges used on a block's face (both official
+// servers; flint_and_steel_use, fire_charge_use, client/fire_items): an unlit
+// campfire, soul campfire, candles or candle cake not in water is lit;
+// otherwise fire goes into the cell beside the face when it is air and fire
+// can stay there (soul fire on soul sand and soul soil). The sound's pitch
+// draws from the level random first: one float for flint and steel, two for
+// a fire charge; fire set draws its tick's delay after that. Nothing else
+// does anything, nor draws.
+bool light_with(RuleContext& ctx, BlockPos pos, Direction face, bool charge) {
+    const auto sound = [&] {
+        (void)ctx.random_float();
+        if (charge) (void)ctx.random_float();
+    };
+    if (const auto s = ctx.block(pos); lightable(s)) {
+        sound();
+        set_block(ctx, pos, lit(s));
+        return true;
+    }
+    const auto target = pos.relative(face);
+    const auto fire = fire_to_set(ctx, target);
+    if (!fire) return false;
+    sound();
+    set_block(ctx, target, *fire);
+    return true;
+}
+
+// A dispenser's flint and steel (both official servers; dispenser_flint):
+// fire into the cell in front as above, else a campfire or candles there
+// lit, else TNT there primed; no sound draws.
+bool dispense_fire(RuleContext& ctx, BlockPos front) {
+    if (const auto fire = fire_to_set(ctx, front)) {
+        set_block(ctx, front, *fire);
+        return true;
+    }
+    if (const auto s = ctx.block(front); lightable(s)) {
+        set_block(ctx, front, lit(s));
+        return true;
+    }
+    return is_tnt(ctx.block(front)) && prime_used(ctx, front);
+}
 
 // Lava setting fire in its random ticks (the official 1.21.8 server;
 // lava_fire; minecraft.wiki "Lava"): with doFireTick (and, from 1.21.5, a

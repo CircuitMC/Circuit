@@ -223,8 +223,27 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
     const bool off_hand = c.slot == contracts::offhand_slot;
     const bool holding = !held.empty() || (inventory && !inventory->slots[contracts::offhand_slot].empty());
     const auto clicked = ctx.block(c.pos);
+    // Flint and steel or a fire charge wears by one, or is used up, outside
+    // creative mode once it acted.
+    const auto spend_fire_item = [&ctx, c](bool charge) {
+        if (!c.survival) return;
+        auto& inv = ctx.player(c.player);
+        auto& slot = inv.slots[c.slot];
+        if (charge) {
+            if (--slot.count == 0) slot = {};
+        } else if (const auto* info = items::info(slot.item); info && ++slot.damage >= info->max_damage) {
+            slot = {};
+        }
+        detail::record_slot(ctx, inv, c.slot);
+    };
+    const auto fire_item = held.empty() ? std::nullopt : detail::fire_item(held.item);
     // Blocks are used with the main hand only, and not while sneaking with an item.
     if (!off_hand && !(c.sneaking && holding)) {
+        // TNT used with flint and steel or a fire charge is primed.
+        if (fire_item && detail::is_tnt(clicked))
+            return [&ctx, c, spend_fire_item, charge = *fire_item] {
+                if (detail::prime_used(ctx, c.pos)) spend_fire_item(charge);
+            };
         // A composter gives its bone meal when ready; below that it takes a
         // compostable item (used up outside creative mode, whether or not it
         // adds a layer), and at level 7 it takes nothing and the item does
@@ -302,6 +321,12 @@ Plan plan(RuleContext& ctx, const contracts::PlayerUse& c) {
                     detail::record_slot(ctx, inv, c.slot);
                 };
         }
+    }
+    if (fire_item) {
+        if ((c.reach & 3) == 0) return std::unexpected(ErrorCode::out_of_reach);
+        return [&ctx, c, spend_fire_item, charge = *fire_item] {
+            if (detail::light_with(ctx, c.pos, c.face, charge)) spend_fire_item(charge);
+        };
     }
     // Bone meal acts on the clicked block as a dispenser's does, used up in
     // survival when it acts (not compared with a client yet).

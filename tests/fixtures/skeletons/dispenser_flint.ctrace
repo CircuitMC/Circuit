@@ -1,0 +1,63 @@
+circuit-trace 2
+title Dispensers with flint and steel facing air (twice), an unlit campfire, candles, TNT, stone, a lit campfire, and air where fire cannot stay
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms dispenser fire tnt
+area 0 0 0 7 3 20
+ticks 40
+changes ordered
+entities observed
+rng observed
+gamerule allowFireTicksAwayFromPlayer true
+gamerule randomTickSpeed 0
+
+at 0 set 5 0 1 minecraft:stone
+at 0 set 4 0 1 minecraft:stone
+at 0 set 5 1 1 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 1 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 0 4 minecraft:stone
+at 0 set 4 0 4 minecraft:stone
+at 0 set 5 1 4 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 4 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 4 minecraft:campfire[facing=north,lit=false,signal_fire=false,waterlogged=false]
+at 0 set 5 0 7 minecraft:stone
+at 0 set 4 0 7 minecraft:stone
+at 0 set 5 1 7 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 7 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 7 minecraft:candle[candles=1,lit=false,waterlogged=false]
+at 0 set 5 0 10 minecraft:stone
+at 0 set 4 0 10 minecraft:stone
+at 0 set 5 1 10 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 10 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 10 minecraft:tnt[unstable=false]
+at 0 set 5 0 13 minecraft:stone
+at 0 set 4 0 13 minecraft:stone
+at 0 set 5 1 13 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 13 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 13 minecraft:stone
+at 0 set 5 0 16 minecraft:stone
+at 0 set 4 0 16 minecraft:stone
+at 0 set 5 1 16 minecraft:dispenser[facing=east,triggered=false]
+at 0 set 4 1 16 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 0 19 minecraft:stone
+at 0 set 4 0 19 minecraft:stone
+at 0 set 5 1 19 minecraft:dispenser[facing=up,triggered=false]
+at 0 set 4 1 19 minecraft:lever[face=floor,facing=north,powered=false]
+at 0 set 5 2 19 minecraft:campfire[facing=north,lit=true,signal_fire=false,waterlogged=false]
+at 1 insert 5 1 1 0 minecraft:flint_and_steel 1
+at 1 insert 5 1 4 0 minecraft:flint_and_steel 1
+at 1 insert 5 1 7 0 minecraft:flint_and_steel 1
+at 1 insert 5 1 10 0 minecraft:flint_and_steel 1
+at 1 insert 5 1 13 0 minecraft:flint_and_steel 1
+at 1 insert 5 1 16 0 minecraft:flint_and_steel 1
+at 1 insert 5 1 19 0 minecraft:flint_and_steel 1
+at 4 use 4 1 1
+at 4 use 4 1 4
+at 4 use 4 1 7
+at 4 use 4 1 10
+at 4 use 4 1 13
+at 4 use 4 1 16
+at 4 use 4 1 19
+at 12 use 4 1 1
+at 16 use 4 1 1

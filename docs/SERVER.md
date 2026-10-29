@@ -72,6 +72,7 @@ When the command is applied:
   - TNT placed where redstone reaches it is primed at once;
   - a chest joins a neighboring single chest as the official server does: next to one of the same facing, clockwise first, unless the player sneaks; when sneaking, the chest whose side was clicked, taking its facing.
   - building blocks place the block of their item as both official servers do: full blocks without properties (not spawners, beacons, sponges or test instance blocks), soul sand and mud as they are; logs and other pillars along the clicked face's axis; carved pumpkins, jack o'lanterns, glazed terracotta, looms, stonecutters and end portal frames facing the player; end rods and lightning rods out of the clicked face; stairs facing the player's way, and stairs and slabs in the top half for a click on a bottom face or in the upper half of a side; a slab clicked on its free half, or placed into a slab of its kind, becomes a double slab; fences, panes, bars, walls and stairs take their shapes from their neighbors; all are waterlogged in a water source; grass blocks, podzol and mycelium are snowy under snow; snow layers stack, a layer more for snow clicked on a layer's top or placed into it, up to eight. Blocks go into water and lava as into air, replacing them; neither can be mined. A single snow layer is replaced by any block placed at it. The client reports where its click hit the block. Buckets act on the use of the item that follows the click, along the player's view with the rotation the client sends: an empty one takes the first fluid source on it before the clicked block, a filled one pours into the clicked block or beside it (see [the simulation core](SIMULATION.md), Buckets).
+- **Flint and steel and fire charges** (client/fire_items, both versions identical): fire beside the face used where it can stay (soul fire on soul sand), campfires, candles and candle cakes lit, TNT primed; flint and steel wears by one and breaks at its durability, a fire charge is used up, neither in creative mode, and a use that does nothing costs nothing.
 - **Breaking:** any block but air and moving pistons; a piston head takes its base along.
 
 A refused action is answered with the current state of the affected blocks, or, for a command refused when applied, restored by the client when the action is acknowledged. Every block action is acknowledged with its sequence number.
@@ -160,7 +161,7 @@ Each version bundle names its registry set (`circuit-server --compatibility` pri
 
 - Mobs, combat between players and armor protection.
 - Special recipes (repairing, cloning, fireworks, dyeing armor), and crafting without the official data pack.
-- Item use other than placement (eating, buckets of other fluids, tools on blocks) and item cooldowns.
+- Item use other than placement, water and lava buckets, bone meal, maps, flint and steel and fire charges (eating, other buckets, tools on blocks), use sounds, and item cooldowns.
 - Respawning picks the exact world spawn; the target version picks a random position around it. Death drops spread in a fixed pattern instead of at random.
 - Swimming and crawling poses, climbing, elytra flight and vehicles: their movement is checked like walking.
 - World generation is a flat floor.

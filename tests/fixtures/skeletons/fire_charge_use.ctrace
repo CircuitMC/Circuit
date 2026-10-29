@@ -1,0 +1,48 @@
+circuit-trace 2
+title A player uses a fire charge on the tops of stone, netherrack, soul soil, TNT, unlit, waterlogged and lit campfires, a soul campfire, candles, a candle cake and planks under glass
+game-version 1.21.8
+source circuit_reference
+harness -
+mechanisms fire tnt
+area -1 0 -1 22 3 1
+ticks 60
+changes ordered
+entities observed
+rng observed
+gamerule allowFireTicksAwayFromPlayer true
+gamerule randomTickSpeed 0
+
+at 0 set 0 0 0 minecraft:stone
+at 0 set 0 1 0 minecraft:stone
+at 0 set 2 0 0 minecraft:stone
+at 0 set 2 1 0 minecraft:netherrack
+at 0 set 4 0 0 minecraft:stone
+at 0 set 4 1 0 minecraft:soul_soil
+at 0 set 6 0 0 minecraft:stone
+at 0 set 6 1 0 minecraft:tnt[unstable=false]
+at 0 set 8 0 0 minecraft:stone
+at 0 set 8 1 0 minecraft:campfire[facing=north,lit=false,signal_fire=false,waterlogged=false]
+at 0 set 10 0 0 minecraft:stone
+at 0 set 10 1 0 minecraft:candle[candles=2,lit=false,waterlogged=false]
+at 0 set 12 0 0 minecraft:stone
+at 0 set 12 1 0 minecraft:campfire[facing=north,lit=false,signal_fire=false,waterlogged=true]
+at 0 set 14 0 0 minecraft:stone
+at 0 set 14 1 0 minecraft:oak_planks
+at 0 set 14 2 0 minecraft:glass
+at 0 set 16 0 0 minecraft:stone
+at 0 set 16 1 0 minecraft:soul_campfire[facing=north,lit=false,signal_fire=false,waterlogged=false]
+at 0 set 18 0 0 minecraft:stone
+at 0 set 18 1 0 minecraft:candle_cake[lit=false]
+at 0 set 20 0 0 minecraft:stone
+at 0 set 20 1 0 minecraft:campfire[facing=north,lit=true,signal_fire=false,waterlogged=false]
+at 2 use-with 0 1 0 minecraft:fire_charge
+at 4 use-with 2 1 0 minecraft:fire_charge
+at 6 use-with 4 1 0 minecraft:fire_charge
+at 8 use-with 6 1 0 minecraft:fire_charge
+at 10 use-with 8 1 0 minecraft:fire_charge
+at 12 use-with 10 1 0 minecraft:fire_charge
+at 14 use-with 12 1 0 minecraft:fire_charge
+at 16 use-with 14 1 0 minecraft:fire_charge
+at 18 use-with 16 1 0 minecraft:fire_charge
+at 20 use-with 18 1 0 minecraft:fire_charge
+at 22 use-with 20 1 0 minecraft:fire_charge
