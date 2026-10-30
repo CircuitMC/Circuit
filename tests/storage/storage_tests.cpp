@@ -288,6 +288,7 @@ int main() {
             p.player = {0, 77};
             p.table[0] = {circuit::gameplay::items::oak_planks, 4};
             p.table[5] = {circuit::gameplay::items::oak_log, 2};
+            p.table_recipe = 7;
             p.cutter[0] = {circuit::gameplay::items::stone, 9};
             p.cutter_recipe = 3;
             p.smith[1] = {circuit::gameplay::items::diamond_pickaxe, 1, 17};

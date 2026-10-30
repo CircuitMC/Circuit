@@ -223,7 +223,9 @@ std::optional<SpecialMade> special_crafting(const GameData& data, std::span<cons
 
 namespace circuit::gameplay {
 namespace detail {
-GridRecipe grid_recipe(const GameData& data, const recipes::Grid& grid) {
+GridRecipe grid_recipe(const GameData& data, const recipes::Grid& grid, std::int32_t placed) {
+    if (placed >= 0 && static_cast<std::size_t>(placed) < data.crafting.size())
+        if (auto made = recipes::match(std::span(&data.crafting[static_cast<std::size_t>(placed)], 1), grid)) return {std::move(made), std::nullopt};
     auto made = recipes::match(data.crafting, grid);
     auto special = special_crafting(data, grid.slots);
     if (made && special) {

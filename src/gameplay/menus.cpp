@@ -391,6 +391,8 @@ public:
             const auto before = slot;
             slot = stack;
             record_slot(ctx_, inv_, s.index);
+            // Any change of a crafting table's grid ends its placed recipe.
+            if (s.index > contracts::table_first && s.index < contracts::table_first + contracts::table_slots) inv_.table_recipe = -1;
             if (s.index == contracts::cutter_first) cutter_input_changed(ctx_, inv_, before);
             if (s.index >= contracts::smith_first && s.index < contracts::smith_first + 3) set_smith_result(ctx_, inv_);
             if (s.index >= contracts::grind_first && s.index < contracts::grind_first + 2) set_grind_result(ctx_, inv_);
@@ -773,13 +775,17 @@ void pickup(RuleContext& ctx, Menu& menu, const contracts::ContainerClick& c, st
 // The slot changes twice then, as both official servers count it (each
 // change sends the result again; client/special_a, client/own_grid_counts).
 void use_grid(RuleContext& ctx, PlayerInventory& inv, CraftingGrid grid, const contracts::ContainerClick& c) {
+    const bool table = grid.first == table_grid.first;
     // A special recipe's kept stack (a banner copied) is its remainder.
     std::optional<std::size_t> kept;
     if (const auto* data = ctx.data()) {
         std::vector<ItemStack> stacks;
         for (std::size_t k = 1; k <= grid.size(); ++k) stacks.push_back(player_slot(inv, grid.record(k)));
-        if (const auto r = grid_recipe(*data, {grid.width, grid.width, stacks}); r.special) kept = r.special->kept;
+        if (const auto r = grid_recipe(*data, {grid.width, grid.width, stacks}, table ? inv.table_recipe : -1); r.special) kept = r.special->kept;
     }
+    // The grid changes: a crafting table's next result is the first recipe's
+    // (a shift-click then stops when that is another item; client/ns_place2).
+    if (table) inv.table_recipe = -1;
     for (std::size_t k = 1; k <= grid.size(); ++k) {
         const auto slot = grid.record(k);
         auto s = player_slot(inv, slot);
@@ -931,8 +937,10 @@ void record_recipe_used(RuleContext& ctx, const Menu& menu, PlayerInventory& inv
         const auto grid = menu.grid();
         std::vector<ItemStack> stacks;
         for (std::size_t k = 1; k <= grid.size(); ++k) stacks.push_back(player_slot(inv, grid.record(k)));
-        // A special recipe (one that comes first in id order too) is not recorded.
-        if (const auto r = grid_recipe(*data, {grid.width, grid.width, stacks}); r.made && r.made->recipe)
+        // A special recipe (one that comes first in id order too) is not
+        // recorded; a crafting table's placed recipe is (not observed: the
+        // player who placed it knows it already).
+        if (const auto r = grid_recipe(*data, {grid.width, grid.width, stacks}, menu.table() ? inv.table_recipe : -1); r.made && r.made->recipe)
             record(0, static_cast<std::size_t>(r.made->recipe - data->crafting.data()));
     }
 }
@@ -1013,18 +1021,20 @@ void update_crafting(RuleContext& ctx, PlayerInventory& inv) {
     const auto known = [&](const recipes::Recipe* r) {
         return std::ranges::binary_search(inv.known_crafting, static_cast<std::uint32_t>(r - data->crafting.data()));
     };
-    const auto craft = [&](std::span<ItemStack> slots, std::uint8_t width, std::uint8_t first) {
+    const auto craft = [&](std::span<ItemStack> slots, std::uint8_t width, std::uint8_t first, std::int32_t placed) {
         const auto grid = slots.subspan(1);
         const bool empty = std::ranges::all_of(grid, [](const ItemStack& s) { return s.empty(); });
-        const auto r = empty ? GridRecipe{} : grid_recipe(*data, {width, width, grid});
+        const auto r = empty ? GridRecipe{} : grid_recipe(*data, {width, width, grid}, placed);
         // Special recipes are not limited.
         const auto result = r.made && (!limited || known(r.made->recipe)) ? r.made->result : r.special ? r.special->result : ItemStack{};
         if (slots[0] == result) return;
         slots[0] = result;
         record_slot(ctx, inv, first);
     };
-    craft(std::span(inv.slots).first(5), 2, 0);
-    craft(std::span(inv.table), 3, contracts::table_first);
+    // Only a crafting table keeps a placed recipe: the own grid makes the
+    // first recipe, placed or not (both official servers; client/ns_place).
+    craft(std::span(inv.slots).first(5), 2, 0, -1);
+    craft(std::span(inv.table), 3, contracts::table_first, inv.table_recipe);
 }
 
 contracts::Result<std::vector<BlockPos>> menu_parts(RuleContext& ctx, std::optional<BlockPos> container) {
@@ -1534,6 +1544,10 @@ void place_recipe(RuleContext& ctx, Menu& menu, const contracts::PlaceRecipe& c,
         if (y >= width) break;
         if (!l.cells[j]->empty()) menu.set(first + y * width + x, take((*chosen)[j]));
     }
+    // A crafting table makes the placed recipe while its grid stays as placed,
+    // also where an earlier recipe takes it, with doLimitedCrafting off and on
+    // (both official servers; client/ns_place, client/ns_place2).
+    if (menu.table()) inv.table_recipe = static_cast<std::int32_t>(c.recipe);
     if (crafting) update_crafting(ctx, inv);
 }
 } // namespace
@@ -1573,6 +1587,7 @@ contracts::Result<std::function<void()>> plan_close(RuleContext& ctx, const cont
                 record_slot(ctx, inv, grid.record(k));
                 throw_item(ctx, c.drop_position, c.drop_velocity, put_back(s));
             }
+        inv.table_recipe = -1;
         update_crafting(ctx, inv);
         // An open stonecutter's input and smithing table's inputs too; their
         // results and the stonecutter's recipe clear.
@@ -1665,6 +1680,7 @@ contracts::Result<std::function<void()>> plan_death(RuleContext& ctx, const cont
             record_slot(ctx, inv, s);
             drop(stack);
         }
+        inv.table_recipe = -1;
         update_crafting(ctx, inv);
         inv.cutter_recipe = -1;
         set_cutter_result(ctx, inv);

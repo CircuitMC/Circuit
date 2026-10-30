@@ -210,6 +210,11 @@ struct PlayerInventory {
     // The crafting table window the player has open: its result (0) and
     // grid (1-9, row by row); empty while none is open.
     std::array<ItemStack, contracts::table_slots> table{};
+    // The crafting recipe last placed into that grid from the recipe book
+    // (an index of the game data's crafting recipes; -1: none): while the
+    // grid stays as placed it makes the result, before an earlier recipe that
+    // takes the same grid (both official servers; client/ns_place).
+    std::int32_t table_recipe{-1};
     // The stonecutter window the player has open: its input (0) and result
     // (1), and the recipe chosen among the input's (-1: none).
     std::array<ItemStack, contracts::cutter_slots> cutter{};
@@ -268,7 +273,7 @@ struct PlayerInventory {
     Tick xp_ready{};
     [[nodiscard]] bool empty() const noexcept {
         const auto none = [](const ItemStack& s) { return s.empty(); };
-        return cursor.empty() && drag_stage == 0 && std::ranges::all_of(slots, none) && std::ranges::all_of(table, none)
+        return cursor.empty() && drag_stage == 0 && std::ranges::all_of(slots, none) && std::ranges::all_of(table, none) && table_recipe == -1
             && std::ranges::all_of(cutter, none) && cutter_recipe == -1 && std::ranges::all_of(smith, none)
             && std::ranges::all_of(grind, none) && std::ranges::all_of(loom, none) && loom_pattern == -1
             && std::ranges::all_of(anvil, none) && anvil_name.empty() && anvil_cost == 0 && std::ranges::all_of(enchant, none)

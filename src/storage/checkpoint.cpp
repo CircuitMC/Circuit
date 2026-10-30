@@ -21,6 +21,8 @@ using protocol::Writer;
 
 namespace {
 constexpr std::string_view magic{"CIRCKPT\0", 8};
+// 52: player inventories keep the recipe placed into an open crafting
+// table's grid;
 // 51: player inventories keep the crafting recipes the player knows;
 // 50: players' presences name the hotbar slot in their main hand, and maps
 // the players who held them with their steps;
@@ -89,7 +91,7 @@ constexpr std::string_view magic{"CIRCKPT\0", 8};
 // overworld's state: versions before 5 predate the block registry and hold
 // only states that circuit-blocks-1 keeps; versions before 6 have stacks
 // without components.
-constexpr std::uint32_t version = 51;
+constexpr std::uint32_t version = 52;
 constexpr std::string_view version_4_registry = "circuit-blocks-1";
 constexpr std::int32_t max_chunk = 1 << 26;       // block coordinates within ±2^30
 constexpr std::int32_t max_section_y = 1 << 26;
@@ -287,6 +289,7 @@ void encode_body(Writer& w, const Checkpoint& c, Blocks blocks) {
         for (const auto& st : p.cartography) stack(w, st);
         w.varint(static_cast<std::int32_t>(p.known_crafting.size()));
         for (const auto r : p.known_crafting) w.varlong(r);
+        w.varint(p.table_recipe);
     }
     w.varint(s.last_map_id).varint(static_cast<std::int32_t>(s.maps.size()));
     for (const auto& m : s.maps) {
@@ -837,6 +840,7 @@ bool decode_body(BodyReader& b, Checkpoint& c) {
                     p.known_crafting.push_back(static_cast<std::uint32_t>(r));
                 }
             }
+            if (b.version >= 52 && (!b.get(b.r.varint(), p.table_recipe) || p.table_recipe < -1)) return false;
             p.player = {static_cast<std::uint64_t>(hi), static_cast<std::uint64_t>(lo)};
             s.players.push_back(p);
         }

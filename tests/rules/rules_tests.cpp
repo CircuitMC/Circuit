@@ -4131,6 +4131,130 @@ int main() {
         require(player().known_crafting.empty(), "none known");
     });
 
+    suite.run("a crafting table makes the recipe placed from the book while its grid stays as placed", [] {
+        namespace recipes = circuit::gameplay::recipes;
+        using circuit::contracts::CloseContainer;
+        using circuit::contracts::ContainerClick;
+        using circuit::contracts::KnowRecipes;
+        using circuit::contracts::PlaceRecipe;
+        using circuit::contracts::SetGameRule;
+        using circuit::contracts::SetPlayerSlot;
+        using recipes::Ingredient;
+        using recipes::Recipe;
+        const auto stick = *circuit::gameplay::items::by_name("minecraft:stick"), birch = *circuit::gameplay::items::by_name("minecraft:birch_log");
+        // Two recipes of the test pack of client/ns_place for one grid,
+        // aaa:same_mix first in id order.
+        auto data = std::make_shared<circuit::gameplay::GameData>();
+        const Ingredient st{{stick}}, cobble{{items::cobblestone}};
+        data->crafting = {
+            {Recipe::Kind::shapeless, "aaa:same_mix", 0, 0, {st, cobble}, {items::oak_log, 1}},
+            {Recipe::Kind::shapeless, "bbb:same_mix", 0, 0, {st, cobble}, {birch, 1}},
+        };
+        const PlayerKey alex{4, 2};
+        const BlockPos table{0, 0, 0};
+        Sim s(bundle(), 7, 2, data);
+        s.tick({place(table, registry_block("crafting_table"))});
+        // Crafting table window: 0 the result, 1-9 the grid, 10-36 the main
+        // inventory, 37-45 the hotbar (inventory slot + 1).
+        const auto click = [&](std::int16_t slot, std::uint8_t button, std::uint8_t mode, std::optional<BlockPos> at) {
+            return ContainerClick{alex, at, slot, button, mode, false, at_block(0.5, 2, 0.5), {}};
+        };
+        const auto at_table = [&](std::int16_t slot, std::uint8_t button = 0, std::uint8_t mode = 0) { return click(slot, button, mode, table); };
+        const auto player = [&] {
+            const auto d = s.oracle.dump();
+            return *std::ranges::find(d.players, alex, &PlayerInventory::player);
+        };
+        const auto result = [&] { return player().table[0]; };
+        const auto count = [&](std::uint16_t item) {
+            int n = 0;
+            for (const auto& t : player().slots)
+                if (t.item == item) n += t.count;
+            return n;
+        };
+        // The table window's slot of the first inventory stack of an item, the hotbar first.
+        const auto find = [&](std::uint16_t item) {
+            const auto p = player();
+            for (std::size_t i = 36; i < 45; ++i)
+                if (p.slots[i].item == item) return static_cast<std::int16_t>(i + 1);
+            for (std::size_t i = 9; i < 36; ++i)
+                if (p.slots[i].item == item) return static_cast<std::int16_t>(i + 1);
+            return std::int16_t{-1};
+        };
+        // One of an item into a grid cell by hand.
+        const auto one = [&](std::uint16_t item, std::int16_t cell) {
+            const auto from = find(item);
+            s.tick({at_table(from), at_table(cell, 1), at_table(from)});
+        };
+        const auto used = [&] {
+            std::vector<std::uint64_t> out;
+            for (const auto& r : of_kind(s.last, TraceKind::recipe_used))
+                if (r.a == alex.hi && r.b == alex.lo) out.push_back(r.c);
+            return out;
+        };
+        const auto placed = [&](bool all, bool own = false) { return PlaceRecipe{alex, own ? std::nullopt : std::optional(table), 0, 1, all}; };
+        const auto close = [&] { s.tick({CloseContainer{alex, at_block(0.5, 2, 0.5), {}, false, table}}); };
+        s.tick({SetPlayerSlot{alex, 36, {stick, 64}}, SetPlayerSlot{alex, 37, {items::cobblestone, 64}}, SetPlayerSlot{alex, 38, {stick, 64}},
+                SetPlayerSlot{alex, 39, {items::cobblestone, 64}}});
+        // As many as fit, shift-clicked: one birch log by the placed recipe,
+        // then the first recipe's oak log, another item, ends it.
+        s.tick({placed(true)});
+        require(result() == ItemStack{birch, 1} && player().table[1].count == 64 && player().table_recipe == 1, "the placed recipe's birch log");
+        s.tick({at_table(0, 0, 1)});
+        require(count(birch) == 1 && count(items::oak_log) == 0 && result() == ItemStack{items::oak_log, 1} && player().table[1].count == 63
+                    && player().table_recipe == -1,
+                "one birch log, then the first recipe's oak log");
+        require(used() == std::vector<std::uint64_t>{1}, "the placed recipe used");
+        close();
+        // Clicks outside the grid keep it, and so does a second placement.
+        s.tick({placed(false)});
+        s.tick({at_table(20)});
+        require(result() == ItemStack{birch, 1}, "an empty slot clicked");
+        {
+            const auto k = find(stick);
+            s.tick({at_table(k), at_table(k)});
+        }
+        require(result() == ItemStack{birch, 1} && player().table_recipe == 1, "sticks picked up and put back");
+        s.tick({placed(false)});
+        require(result() == ItemStack{birch, 1} && player().table[1].count == 2, "placed once more");
+        // A grid stack taken and put back ends it.
+        s.tick({at_table(2)});
+        require(result().empty(), "the cobblestone taken");
+        s.tick({at_table(2)});
+        require(result() == ItemStack{items::oak_log, 1} && player().table_recipe == -1, "put back: the first recipe's");
+        close();
+        // So does one more stick.
+        s.tick({placed(false)});
+        one(stick, 1);
+        require(result() == ItemStack{items::oak_log, 1} && player().table[1].count == 2, "one more stick");
+        close();
+        // A grid filled by hand makes the first recipe; placing onto it, the placed one.
+        one(stick, 1);
+        one(items::cobblestone, 2);
+        require(result() == ItemStack{items::oak_log, 1} && player().table_recipe == -1, "by hand");
+        s.tick({placed(false)});
+        require(result() == ItemStack{birch, 1} && player().table[1].count == 2 && player().table[2].count == 2, "then placed");
+        close();
+        require(player().table_recipe == -1, "closed");
+        // With doLimitedCrafting on and only the placed recipe known.
+        s.tick({SetGameRule{"doLimitedCrafting", 1}, KnowRecipes{alex, {1}}});
+        one(stick, 1);
+        one(items::cobblestone, 2);
+        require(result().empty(), "by hand: the first recipe, not known, makes nothing");
+        s.tick({placed(false)});
+        require(result() == ItemStack{birch, 1}, "placed: the known one");
+        close();
+        s.tick({placed(true)});
+        s.tick({at_table(0)});
+        require(player().cursor == ItemStack{birch, 1} && result().empty() && player().table[1].count == 63, "one taken: then nothing");
+        close();
+        // The own grid makes the first recipe, placed or not.
+        s.tick({SetGameRule{"doLimitedCrafting", 0}});
+        s.tick({placed(true, true)});
+        require(player().slots[0] == ItemStack{items::oak_log, 1} && player().slots[1].count == 64 && player().table_recipe == -1, "the own grid");
+        s.tick({click(0, 0, 1, std::nullopt)});
+        require(count(items::oak_log) == 64 && player().slots[1].empty() && used() == std::vector<std::uint64_t>(64, 0), "64 oak logs");
+    });
+
     suite.run("special recipes repair, dye armor, copy banners and decorate shields", [] {
         namespace recipes = circuit::gameplay::recipes;
         using circuit::contracts::CloseContainer;

@@ -132,12 +132,14 @@ std::optional<SpecialMade> special_crafting(const GameData& data, std::span<cons
 // A crafting grid's recipe: the first in id order among the data packs'
 // recipes and the special ones (at most one of the two set). Both official
 // servers make the special firework_rocket, not firework_rocket_simple, from
-// paper and gunpowder (client/rocket_order).
+// paper and gunpowder (client/rocket_order). `placed`, a crafting table's
+// placed recipe (PlayerInventory::table_recipe), comes first when it takes
+// the grid (client/ns_place).
 struct GridRecipe {
     std::optional<recipes::Match> made;
     std::optional<SpecialMade> special;
 };
-GridRecipe grid_recipe(const GameData& data, const recipes::Grid& grid);
+GridRecipe grid_recipe(const GameData& data, const recipes::Grid& grid, std::int32_t placed = -1);
 
 // ---- dust (redstone.cpp) ----
 bool is_dot(BlockState s);
